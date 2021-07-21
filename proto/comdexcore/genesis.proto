@@ -1,0 +1,12 @@
+syntax = "proto3";
+package comdexOne.comdexcore.comdexcore;
+
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/comdexOne/comdexCore/x/comdexcore/types";
+
+// GenesisState defines the comdexcore module's genesis state.
+message GenesisState {
+    // this line is used by starport scaffolding # genesis/proto/state
+    // this line is used by starport scaffolding # ibc/genesis/proto
+}
