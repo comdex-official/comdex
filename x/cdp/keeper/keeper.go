@@ -5,7 +5,7 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/comdexOne/comdexCore/x/comdexcore/types"
+	"github.com/comdexOne/comdexCore/x/cdp/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	// this line is used by starport scaffolding # ibc/keeper/import

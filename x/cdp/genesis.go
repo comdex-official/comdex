@@ -1,8 +1,8 @@
-package comdexcore
+package cdp
 
 import (
-	"github.com/comdexOne/comdexCore/x/comdexcore/keeper"
-	"github.com/comdexOne/comdexCore/x/comdexcore/types"
+	"github.com/comdexOne/comdexCore/x/cdp/keeper"
+	"github.com/comdexOne/comdexCore/x/cdp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

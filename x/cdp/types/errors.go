@@ -6,7 +6,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// x/comdexcore module sentinel errors
+// x/cdp module sentinel errors
 var (
 	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
 	// this line is used by starport scaffolding # ibc/errors
