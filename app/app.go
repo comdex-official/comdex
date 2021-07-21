@@ -84,9 +84,9 @@ import (
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-	comdexcoremodule "github.com/comdexOne/comdexCore/x/comdexcore"
-	comdexcoremodulekeeper "github.com/comdexOne/comdexCore/x/comdexcore/keeper"
-	comdexcoremoduletypes "github.com/comdexOne/comdexCore/x/comdexcore/types"
+	cdpmodule "github.com/comdexOne/comdexCore/x/cdp"
+	cdpmodulekeeper "github.com/comdexOne/comdexCore/x/cdp/keeper"
+	cdpmoduletypes "github.com/comdexOne/comdexCore/x/cdp/types"
 
 	"github.com/tendermint/spm/cosmoscmd"
 )
@@ -138,7 +138,7 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
-		comdexcoremodule.AppModuleBasic{},
+		cdpmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -207,7 +207,7 @@ type App struct {
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
-	ComdexcoreKeeper comdexcoremodulekeeper.Keeper
+	CDPKeeper cdpmodulekeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -242,7 +242,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
-		comdexcoremoduletypes.StoreKey,
+		cdpmoduletypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -338,12 +338,12 @@ func New(
 		&stakingKeeper, govRouter,
 	)
 
-	app.ComdexcoreKeeper = *comdexcoremodulekeeper.NewKeeper(
+	app.CDPKeeper = *cdpmodulekeeper.NewKeeper(
 		appCodec,
-		keys[comdexcoremoduletypes.StoreKey],
-		keys[comdexcoremoduletypes.MemStoreKey],
+		keys[cdpmoduletypes.StoreKey],
+		keys[cdpmoduletypes.MemStoreKey],
 	)
-	comdexcoreModule := comdexcoremodule.NewAppModule(appCodec, app.ComdexcoreKeeper)
+	cdpModule := cdpmodule.NewAppModule(appCodec, app.CDPKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
@@ -383,7 +383,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
-		comdexcoreModule,
+		cdpModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -417,7 +417,7 @@ func New(
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
-		comdexcoremoduletypes.ModuleName,
+		cdpmoduletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -605,7 +605,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
-	paramsKeeper.Subspace(comdexcoremoduletypes.ModuleName)
+	paramsKeeper.Subspace(cdpmoduletypes.ModuleName)
 
 	return paramsKeeper
 }

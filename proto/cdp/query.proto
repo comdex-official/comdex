@@ -1,11 +1,11 @@
 syntax = "proto3";
-package comdexOne.comdexcore.comdexcore;
+package comdexOne.comdexcore.cdp;
 
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 // this line is used by starport scaffolding # 1
 
-option go_package = "github.com/comdexOne/comdexCore/x/comdexcore/types";
+option go_package = "github.com/comdexOne/comdexCore/x/cdp/types";
 
 // Query defines the gRPC querier service.
 service Query {

@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/comdexOne/comdexCore/x/comdexcore/types"
+	"github.com/comdexOne/comdexCore/x/cdp/types"
 )
 
 type msgServer struct {

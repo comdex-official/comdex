@@ -1,10 +1,10 @@
-package comdexcore
+package cdp
 
 import (
 	"fmt"
 
-	"github.com/comdexOne/comdexCore/x/comdexcore/keeper"
-	"github.com/comdexOne/comdexCore/x/comdexcore/types"
+	"github.com/comdexOne/comdexCore/x/cdp/keeper"
+	"github.com/comdexOne/comdexCore/x/cdp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

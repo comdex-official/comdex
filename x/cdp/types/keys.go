@@ -2,7 +2,7 @@ package types
 
 const (
 	// ModuleName defines the module name
-	ModuleName = "comdexcore"
+	ModuleName = "cdp"
 
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName
@@ -14,7 +14,7 @@ const (
 	QuerierRoute = ModuleName
 
 	// MemStoreKey defines the in-memory store key
-	MemStoreKey = "mem_comdexcore"
+	MemStoreKey = "mem_cdp"
 
 	// this line is used by starport scaffolding # ibc/keys/name
 )
