@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	"os"
 
-	"github.com/comdexOne/comdexCore/app"
+	"github.com/comdex-official/comdex/app"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	"github.com/tendermint/spm/cosmoscmd"
 )

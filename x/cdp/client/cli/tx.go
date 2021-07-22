@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/comdexOne/comdexCore/x/cdp/types"
+	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
 var (

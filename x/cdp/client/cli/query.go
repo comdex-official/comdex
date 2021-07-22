@@ -10,7 +10,7 @@ import (
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdexOne/comdexCore/x/cdp/types"
+	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module
