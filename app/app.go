@@ -92,8 +92,8 @@ import (
 )
 
 const (
-	AccountAddressPrefix = "cosmos"
-	Name                 = "comdexCore"
+	AccountAddressPrefix = "comdex"
+	Name                 = "comdex"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
