@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/comdexOne/comdexCore/x/cdp/types"
+	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
 var _ types.QueryServer = Keeper{}

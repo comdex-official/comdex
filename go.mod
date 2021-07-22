@@ -1,4 +1,4 @@
-module github.com/comdexOne/comdexCore
+module github.com/comdex-official/comdex
 
 go 1.16
 

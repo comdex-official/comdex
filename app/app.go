@@ -15,7 +15,7 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/comdexOne/comdexCore/docs"
+	"github.com/comdex-official/comdex/docs"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -84,9 +84,9 @@ import (
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-	cdpmodule "github.com/comdexOne/comdexCore/x/cdp"
-	cdpmodulekeeper "github.com/comdexOne/comdexCore/x/cdp/keeper"
-	cdpmoduletypes "github.com/comdexOne/comdexCore/x/cdp/types"
+	cdpmodule "github.com/comdex-official/comdex/x/cdp"
+	cdpmodulekeeper "github.com/comdex-official/comdex/x/cdp/keeper"
+	cdpmoduletypes "github.com/comdex-official/comdex/x/cdp/types"
 
 	"github.com/tendermint/spm/cosmoscmd"
 )

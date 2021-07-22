@@ -11,9 +11,9 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/comdexOne/comdexCore/x/cdp/client/cli"
-	"github.com/comdexOne/comdexCore/x/cdp/keeper"
-	"github.com/comdexOne/comdexCore/x/cdp/types"
+	"github.com/comdex-official/comdex/x/cdp/client/cli"
+	"github.com/comdex-official/comdex/x/cdp/keeper"
+	"github.com/comdex-official/comdex/x/cdp/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"

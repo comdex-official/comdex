@@ -3,7 +3,7 @@ package keeper
 import (
 	"testing"
 
-	"github.com/comdexOne/comdexCore/x/cdp/types"
+	"github.com/comdex-official/comdex/x/cdp/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"

@@ -3,8 +3,8 @@ package cdp
 import (
 	"fmt"
 
-	"github.com/comdexOne/comdexCore/x/cdp/keeper"
-	"github.com/comdexOne/comdexCore/x/cdp/types"
+	"github.com/comdex-official/comdex/x/cdp/keeper"
+	"github.com/comdex-official/comdex/x/cdp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
