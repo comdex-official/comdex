@@ -15,10 +15,11 @@ import (
 
 // New creates application instance with in-memory database and disabled logging.
 func New(dir string) *comdex.App {
-	db := tmdb.NewMemDB()
-	logger := log.NewNopLogger()
-
-	encoding := comdex.MakeEncodingConfig()
+	var (
+		db       = tmdb.NewMemDB()
+		logger   = log.NewNopLogger()
+		encoding = comdex.MakeEncodingConfig()
+	)
 
 	a := comdex.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
 		simapp.EmptyAppOptions{})

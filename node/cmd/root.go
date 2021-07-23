@@ -85,8 +85,8 @@ func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
 	)
 }
 
-func addModuleInitFlags(startCmd *cobra.Command) {
-	crisis.AddModuleInitFlags(startCmd)
+func addModuleInitFlags(cmd *cobra.Command) {
+	crisis.AddModuleInitFlags(cmd)
 }
 
 func queryCommand() *cobra.Command {
