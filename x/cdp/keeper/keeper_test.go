@@ -3,7 +3,6 @@ package keeper
 import (
 	"testing"
 
-	"github.com/comdex-official/comdex/x/cdp/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -13,6 +12,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
+
+	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
 func setupKeeper(t testing.TB) (*Keeper, sdk.Context) {

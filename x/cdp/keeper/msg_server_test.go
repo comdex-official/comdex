@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/comdex-official/comdex/x/cdp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
 func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {

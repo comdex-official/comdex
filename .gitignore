@@ -1,6 +1,5 @@
-node/__debug_bin/
-vendor/
-.vscode/
-.idea/
-target/
-release/
+/vendor/
+/.vscode/
+/.idea/
+/target/
+/release/
