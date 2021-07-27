@@ -1,6 +1,2 @@
-comdex start >~/.comdex/log &
+comdex start
 
-echo "
-Node started up. For logs:
-tail -f ~/.comdex/log
-"
