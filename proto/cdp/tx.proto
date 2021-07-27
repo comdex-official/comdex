@@ -1,14 +1,13 @@
 syntax = "proto3";
 package comdexOne.comdexcore.cdp;
 
-// this line is used by starport scaffolding # proto/tx/import
 import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/cdp/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+
   rpc CreateCDP(MsgCreateCDP) returns (MsgCreateCDPResponse);
 
   rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
@@ -55,7 +54,6 @@ message MsgDeposit{
 
 message MsgDepositResponse{}
 
-// this line is used by starport scaffolding # proto/tx/message
 
 message MsgWithdraw{
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
