@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package cdp;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/cdp/types";
+
+
+message CDP{
+  uint64 ID = 1;
+  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  string type = 3 [ (gogoproto.moretags) = "yaml:\"type\"" ];
+
+  cosmos.base.v1beta1.Coin collateral = 4 [
+    (gogoproto.moretags) = "yaml:\"collateral\"",
+    (gogoproto.nullable) = false
+  ];
+
+  cosmos.base.v1beta1.Coin principal = 5 [
+    (gogoproto.moretags) = "yaml:\"principal\"",
+    (gogoproto.nullable) = false
+  ];
+
+  cosmos.base.v1beta1.Coin accumulatedFees = 6 [
+    (gogoproto.moretags) = "yaml:\"accumulatedFees\"",
+    (gogoproto.nullable) = false
+  ];
+
+  google.protobuf.Timestamp feesUpdated = 7 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"feesUpdated\""
+  ];
+}
+
+message AugmentedCDP{
+  CDP cdp = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin collateralValue = 2 [
+    (gogoproto.moretags) = "yaml:\"collateralValue\"",
+    (gogoproto.nullable) = false
+  ];
+
+  double collateralizationRatio = 3 [ (gogoproto.nullable) = false ];
+}
+

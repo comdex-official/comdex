@@ -1,5 +1,5 @@
 syntax = "proto3";
-package comdexOne.comdexcore.cdp;
+package comdex-official.comdex.cdp;
 
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
@@ -10,6 +10,42 @@ option go_package = "github.com/comdex-official/comdex/x/cdp/types";
 // Query defines the gRPC querier service.
 service Query {
     // this line is used by starport scaffolding # 2
+  rpc GetCDP(GetCDPRequest) returns(GetCDPResponse);
+
+  rpc GetCDPs(GetCDPsRequest) returns(GetCDPsResponse);
+
+  rpc GetCDPsByCollateralType(GetCDPsByCollateralTypeRequest) returns(GetCDPsByCollateralTypeResponse);
+
+  rpc GetCDPsByCollateralizationRatio(GetCDPsByCollateralizationRatioRequest) returns(GetCDPsByCollateralizationRatioResponse);
+
+  rpc GetParams(GetParamsRequest) returns(GetParamsResponse);
+
+
 }
+
+message GetCDPRequest{
+  uint64 ID = 1;
+}
+
+message GetCDPResponse{
+  CDP cdp = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin collateralValue = 2 [
+    (gogoproto.moretags) = "yaml:\"collateralValue\"",
+    (gogoproto.nullable) = false
+  ];
+
+  double collateralizationRatio = 3 [ (gogoproto.nullable) = false ];
+}
+
+message GetCDPsRequest{
+  uint64 ID = 1;
+}
+
+message GetCDPsResponse{
+  repeated comdexcore.cdp.
+}
+
+
+
 
 // this line is used by starport scaffolding # 3
