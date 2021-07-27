@@ -3,6 +3,7 @@ package cdp;
 
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "cdp/cdp.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/cdp/types";
 
@@ -41,6 +42,40 @@ message GetCDPsRequest{
 }
 
 message GetCDPsResponse{
-  repeated comdexcore.cdp.
+  repeated AugmentedCDP cdps = 1 [
+    (gogoproto.moretags) = "yaml:\"cdps\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message GetCDPsByCollateralTypeRequest{
+  string collateralType = 1 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+}
+
+message GetCDPsByCollateralTypeResponse{
+  repeated AugmentedCDP cdps = 1 [
+    (gogoproto.moretags) = "yaml:\"cdps\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message GetCDPsByCollateralizationRatioRequest{
+  string collateralType = 1 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+  uint64 ratio = 2 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+}
+
+message GetCDPsByCollateralizationRatioResponse{
+  repeated AugmentedCDP cdps = 1 [
+    (gogoproto.moretags) = "yaml:\"cdps\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message GetParamsRequest{
+
+}
+
+message GetParamsResponse{
+  Params params = 1 [ (gogoproto.nullable) = false ];
 }
 

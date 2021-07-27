@@ -34,7 +34,7 @@ verify:
 	@echo "verifying modules"
 	@go mod verify
 
-.PHONY: all install build verify
+.PHONY: all install build verify docker-run
 
 proto-gen:
 	@echo "Generating Protobuf files"
