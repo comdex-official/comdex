@@ -7,32 +7,32 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
-func (k Keeper) GetCDP(ctx context.Context, request *types.GetCDPRequest) (*types.GetCDPResponse, error) {
+func (k Keeper) CDP(ctx context.Context, request *types.QueryCDPRequest) (*types.QueryCDPResponse, error) {
 	//TODO
 	return nil, nil
 }
 
-func (k Keeper) GetCDPs(ctx context.Context, request *types.GetCDPsRequest) (*types.GetCDPsResponse, error) {
+func (k Keeper) CDPs(ctx context.Context, request *types.QueryCDPsRequest) (*types.QueryCDPsResponse, error) {
 	//TODO
 	return nil, nil
 }
 
-func (k Keeper) GetCDPDeposits(ctx context.Context, request *types.GetCDPDepositsRequest) (*types.GetCDPDepositsResponse, error) {
+func (k Keeper) CDPDeposits(ctx context.Context, request *types.QueryCDPDepositsRequest) (*types.QueryCDPDepositsResponse, error) {
 	//TODO
 	return nil, nil
 }
 
-func (k Keeper) GetCDPsByCollateralType(ctx context.Context, request *types.GetCDPsByCollateralTypeRequest) (*types.GetCDPsByCollateralTypeResponse, error) {
+func (k Keeper) CDPsByCollateralType(ctx context.Context, request *types.QueryCDPsByCollateralTypeRequest) (*types.QueryCDPsByCollateralTypeResponse, error) {
 	//TODO
 	return nil, nil
 }
 
-func (k Keeper) GetCDPsByCollateralizationRatio(ctx context.Context, request *types.GetCDPsByCollateralizationRatioRequest) (*types.GetCDPsByCollateralizationRatioResponse, error) {
+func (k Keeper) CDPsByCollateralizationRatio(ctx context.Context, request *types.QueryCDPsByCollateralizationRatioRequest) (*types.QueryCDPsByCollateralizationRatioResponse, error) {
 	//TODO
 	return nil, nil
 }
 
-func (k Keeper) GetParams(ctx context.Context, request *types.GetParamsRequest) (*types.GetParamsResponse, error) {
+func (k Keeper) Params(ctx context.Context, request *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	//TODO
 	return nil, nil
 }
