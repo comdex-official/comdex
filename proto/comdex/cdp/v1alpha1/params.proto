@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package comdex.cdp.v1alpha1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/cdp/types";
+
+
+message Params {
+  repeated CollateralParam collateral_params = 1[
+    (gogoproto.moretags) = "yaml:\"collateral_params\"",
+    (gogoproto.nullable) = false
+  ];
+
+  DebtParam debt_param = 2[
+    (gogoproto.moretags) = "yaml:\"debt_param\"",
+    (gogoproto.nullable) = false
+  ];
+
+  cosmos.base.v1beta1.Coin global_debt_limit = 3 [
+    (gogoproto.moretags) = "yaml:\"global_debt_limit\"",
+    (gogoproto.nullable) = false
+  ];
+
+  int64 surplus_auction_threshold = 4 [
+    (gogoproto.moretags) = "yaml:\"surplus_auction_threshold\""
+  ];
+
+  int64 surplus_auction_lot = 5 [
+    (gogoproto.moretags) = "yaml:\"surplus_auction_lot\""
+  ];
+
+  int64 debt_auction_threshold = 6 [
+    (gogoproto.moretags) = "yaml:\"debt_auction_threshold\""
+  ];
+
+  int64 debt_auction_lot = 7 [
+    (gogoproto.moretags) = "yaml:\"debt_auction_lot\""
+  ];
+
+  bool circuit_breaker = 8 [
+    (gogoproto.moretags) = "yaml:\"circuit_breaker\""
+  ];
+}
+
+
+message CollateralParam{
+  string denom =1;
+  string type = 2;
+  string liquidation_ratio = 3 [
+    (gogoproto.moretags) = "yaml:\"liquidation_ratio\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  cosmos.base.v1beta1.Coin debt_limit = 4 [
+    (gogoproto.moretags) = "yaml:\"debt_limit\"",
+    (gogoproto.nullable) = false
+  ];
+
+  string stability_fee = 5 [
+    (gogoproto.moretags) = "yaml:\"stability_fee\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  int64 auction_size = 6 [
+    (gogoproto.moretags) = "yaml:\"auction_size\""
+  ];
+
+  string liquidation_penalty = 7 [
+    (gogoproto.moretags) = "yaml:\"liquidation_penalty\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  bytes prefix = 8;
+
+  string spot_market_id = 9 [
+    (gogoproto.moretags) = "yaml:\"spot_market_id\""
+  ];
+
+  string liquidation_market_id = 10 [
+    (gogoproto.moretags) = "yaml:\"liquidation_market_id\""
+  ];
+
+  string keeper_reward_percentage = 11 [
+    (gogoproto.moretags) = "yaml:\"keeper_reward_percentage\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  int64 check_collateralization_index_count = 12 [
+    (gogoproto.moretags) = "yaml:\"check_collateralization_index_count\""
+  ];
+
+  int64 conversion_factor = 13 [
+    (gogoproto.moretags) = "yaml:\"conversion_factor\""
+  ];
+
+}
+
+message DebtParam{
+  string denom = 1 [
+    (gogoproto.moretags) = "yaml:\"denom\""
+  ];
+
+  string reference_asset = 2 [
+    (gogoproto.moretags) = "yaml:\"reference_asset\""
+  ];
+
+  int64 conversion_factor = 3 [
+    (gogoproto.moretags) = "yaml:\"conversion_factor\""
+  ];
+
+  int64 debt_floor = 4 [
+    (gogoproto.moretags) = "yaml:\"debt_floor\""
+  ];
+
+
+}

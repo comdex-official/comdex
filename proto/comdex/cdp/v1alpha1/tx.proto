@@ -1,5 +1,6 @@
 syntax = "proto3";
-package comdex.cdp;
+
+package comdex.cdp.v1alpha1;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
@@ -63,7 +64,7 @@ message MsgWithdraw{
     (gogoproto.nullable) = false
   ];
 
-  string collateralType = 3 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+  string collateral_type = 3 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
 
 }
 
@@ -71,7 +72,7 @@ message MsgWithdrawResponse{}
 
 message MsgDrawDebt{
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  string collateralType = 2 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+  string collateral_type = 2 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
   cosmos.base.v1beta1.Coin principal = 3 [
     (gogoproto.moretags) = "yaml:\"principal\"",
     (gogoproto.nullable) = false
@@ -82,7 +83,7 @@ message MsgDrawDebtResponse{}
 
 message MsgRepayDebt{
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  string collateralType = 2 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+  string collateral_type = 2 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
   cosmos.base.v1beta1.Coin payment = 3 [
     (gogoproto.moretags) = "yaml:\"payment\"",
     (gogoproto.nullable) = false
@@ -94,8 +95,7 @@ message MsgRepayDebtResponse{}
 
 message MsgLiquidate{
   string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  string collateralType = 2 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+  string collateral_type = 2 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
 }
 
 message MsgLiquidateResponse{}
-
