@@ -1,7 +1,8 @@
 syntax = "proto3";
-package cdp;
+package comdex.cdp;
 
 import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/cdp/types";
 

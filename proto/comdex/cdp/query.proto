@@ -1,9 +1,11 @@
 syntax = "proto3";
-package cdp;
+package comdex.cdp;
 
+import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "cdp/cdp.proto";
+import "comdex/cdp/cdp.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/cdp/types";
 
@@ -18,8 +20,6 @@ service Query {
 
   rpc GetCDPsByCollateralizationRatio(GetCDPsByCollateralizationRatioRequest) returns(GetCDPsByCollateralizationRatioResponse);
 
-  rpc GetParams(GetParamsRequest) returns(GetParamsResponse);
-
 
 }
 
@@ -28,13 +28,10 @@ message GetCDPRequest{
 }
 
 message GetCDPResponse{
-  CDP cdp = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.v1beta1.Coin collateralValue = 2 [
-    (gogoproto.moretags) = "yaml:\"collateralValue\"",
+  AugmentedCDP cdp = 1 [
+    (gogoproto.moretags) = "yaml:\"cdp\"",
     (gogoproto.nullable) = false
   ];
-
-  double collateralizationRatio = 3 [ (gogoproto.nullable) = false ];
 }
 
 message GetCDPsRequest{
@@ -61,7 +58,7 @@ message GetCDPsByCollateralTypeResponse{
 
 message GetCDPsByCollateralizationRatioRequest{
   string collateralType = 1 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
-  uint64 ratio = 2 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+  uint64 ratio = 2 [ (gogoproto.moretags) = "yaml:\"ratio\"" ];
 }
 
 message GetCDPsByCollateralizationRatioResponse{
@@ -71,11 +68,4 @@ message GetCDPsByCollateralizationRatioResponse{
   ];
 }
 
-message GetParamsRequest{
-
-}
-
-message GetParamsResponse{
-  Params params = 1 [ (gogoproto.nullable) = false ];
-}
 

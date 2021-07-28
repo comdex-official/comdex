@@ -34,6 +34,15 @@ verify:
 	@echo "verifying modules"
 	@go mod verify
 
+
+DOCKER := $(shell which docker)
+
+DOCKER_IMAGE_NAME = comdex-official/comdex
+DOCKER_TAG_NAME = latest
+DOCKER_CONTAINER_NAME = comdex-container
+DOCKER_CMD ?= "/bin/sh"
+DOCKER_VOLUME = -v $(CURDIR):/usr/local/app
+
 .PHONY: all install build verify docker-run
 
 proto-gen:

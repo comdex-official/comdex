@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cdp;
+package comdex.cdp;
 
 
 option go_package = "github.com/comdex-official/comdex/x/cdp/types";

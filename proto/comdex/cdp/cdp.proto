@@ -1,8 +1,10 @@
 syntax = "proto3";
 
-package cdp;
+package comdex.cdp;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/cdp/types";
 
@@ -41,6 +43,6 @@ message AugmentedCDP{
     (gogoproto.nullable) = false
   ];
 
-  double collateralizationRatio = 3 [ (gogoproto.nullable) = false ];
+  double collateralizationRatio = 3;
 }
 
