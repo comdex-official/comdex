@@ -35,20 +35,33 @@ verify:
 	@go mod verify
 
 
-DOCKER := $(shell which docker)
 
-DOCKER_IMAGE_NAME = comdex-official/comdex
-DOCKER_TAG_NAME = latest
-DOCKER_CONTAINER_NAME = comdex-container
-DOCKER_CMD ?= "/bin/sh"
-DOCKER_VOLUME = -v $(CURDIR):/usr/local/app
+.PHONY: all install build verify
 
-.PHONY: all install build verify docker-run
+.PHONY: clean
+clean:
+	rm -rf ./bin ./vendor
 
+.PHONY: install
+install: mod-vendor
+	go install -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" ./node/cmd
+
+.PHONY: mod-vendor
+mod-vendor: tools
+	@go mod vendor
+	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto
+
+.PHONY: proto-gen
 proto-gen:
-	@echo "Generating Protobuf files"
-	$(DOCKER) run --rm -v $(shell go list -f "{{ .Dir }}" \
-	-m github.com/cosmos/cosmos-sdk):/workspace/cosmos_sdk_dir\
-	 --env COSMOS_SDK_DIR=/workspace/cosmos_sdk_dir \
-	 -v $(CURDIR):/workspace --workdir /workspace \
-	 tendermintdev/sdk-proto-gen sh ./.script/protocgen.sh
+	@.script/proto-gen.sh
+
+.PHONY: proto-lint
+proto-lint:
+	@find proto -name *.proto -exec clang-format-12 -i {} \;
+
+.PHONY: tools
+tools:
+	@go install github.com/bufbuild/buf/cmd/buf@v0.37.0
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.27.0
+	@go install github.com/goware/modvendor@v0.3.0
+	@go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0

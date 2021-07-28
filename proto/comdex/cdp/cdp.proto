@@ -11,7 +11,7 @@ option go_package = "github.com/comdex-official/comdex/x/cdp/types";
 
 message CDP{
   uint64 ID = 1;
-  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  string ownqweer = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
   string type = 3 [ (gogoproto.moretags) = "yaml:\"type\"" ];
 
   cosmos.base.v1beta1.Coin collateral = 4 [
