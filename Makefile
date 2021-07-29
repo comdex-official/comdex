@@ -35,3 +35,31 @@ verify:
 	@go mod verify
 
 .PHONY: all install build verify
+
+.PHONY: clean
+clean:
+	rm -rf ./bin ./vendor
+
+.PHONY: install
+install: mod-vendor
+	go install -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" ./node/cmd
+
+.PHONY: mod-vendor
+mod-vendor: tools
+	@go mod vendor
+	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto
+
+.PHONY: proto-gen
+proto-gen:
+	@.script/protocgen.sh
+
+.PHONY: proto-lint
+proto-lint:
+	@find proto -name *.proto -exec clang-format-12 -i {} \;
+
+.PHONY: tools
+tools:
+	@go install github.com/bufbuild/buf/cmd/buf@v0.37.0
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.27.0
+	@go install github.com/goware/modvendor@v0.3.0
+	@go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0
