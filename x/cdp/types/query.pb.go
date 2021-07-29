@@ -583,56 +583,56 @@ func init() {
 func init() { proto.RegisterFile("comdex/cdp/v1alpha1/query.proto", fileDescriptor_b888451e45daea73) }
 
 var fileDescriptor_b888451e45daea73 = []byte{
-	// 773 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x56, 0xc1, 0x4f, 0x13, 0x4d,
-	0x14, 0xef, 0x96, 0xc2, 0xf7, 0x7d, 0x03, 0x01, 0xbe, 0xa1, 0x91, 0x66, 0xc5, 0xb6, 0x4c, 0x14,
-	0xd1, 0x48, 0x97, 0x62, 0x24, 0x6a, 0xa2, 0x89, 0x6d, 0x13, 0x12, 0x4f, 0x65, 0xe3, 0x49, 0x0f,
-	0xcd, 0x74, 0x77, 0x58, 0x36, 0x6e, 0x77, 0x86, 0xee, 0x16, 0xac, 0x4d, 0x2f, 0x1e, 0x3c, 0x9b,
-	0x78, 0x30, 0xf1, 0xe8, 0x3f, 0xe2, 0x95, 0x23, 0x89, 0x31, 0xf1, 0xd4, 0x18, 0xf0, 0x2f, 0xe0,
-	0x2f, 0x30, 0x3b, 0x33, 0x0b, 0xdb, 0xb2, 0x94, 0x6a, 0xe0, 0x42, 0xc8, 0x7b, 0xbf, 0xf7, 0x7e,
-	0xbf, 0x37, 0x6f, 0x7f, 0x2f, 0x05, 0x39, 0x83, 0x36, 0x4c, 0xf2, 0x46, 0x33, 0x4c, 0xa6, 0xed,
-	0x16, 0xb1, 0xc3, 0xb6, 0x71, 0x51, 0xdb, 0x69, 0x91, 0x66, 0xbb, 0xc0, 0x9a, 0xd4, 0xa7, 0x70,
-	0x4e, 0x00, 0x0a, 0x86, 0xc9, 0x0a, 0x21, 0x40, 0x4d, 0x5b, 0xd4, 0xa2, 0x3c, 0xaf, 0x05, 0xff,
-	0x09, 0xa8, 0xba, 0x60, 0x51, 0x6a, 0x39, 0x44, 0xc3, 0xcc, 0xd6, 0xb0, 0xeb, 0x52, 0x1f, 0xfb,
-	0x36, 0x75, 0x3d, 0x99, 0xbd, 0x6b, 0x50, 0xaf, 0x41, 0x3d, 0xad, 0x8e, 0x3d, 0x22, 0x18, 0xb4,
-	0xdd, 0x62, 0x9d, 0xf8, 0xb8, 0xa8, 0x31, 0x6c, 0xd9, 0x2e, 0x07, 0x4b, 0xec, 0x8d, 0x38, 0x55,
-	0x81, 0x02, 0x91, 0xce, 0xc7, 0xa5, 0x19, 0x6e, 0xe2, 0x46, 0x48, 0x96, 0x8d, 0x92, 0x85, 0x34,
-	0x06, 0xb5, 0x25, 0x01, 0x5a, 0x04, 0x33, 0x9b, 0x81, 0x84, 0x72, 0xa5, 0xaa, 0x93, 0x9d, 0x16,
-	0xf1, 0x7c, 0x38, 0x0d, 0x92, 0xb6, 0x99, 0x51, 0xf2, 0xca, 0x72, 0x4a, 0x4f, 0xda, 0x26, 0x7a,
-	0x05, 0x66, 0x4f, 0x21, 0x1e, 0xa3, 0xae, 0x47, 0xe0, 0x06, 0x18, 0x33, 0x4c, 0xc6, 0x41, 0x93,
-	0x6b, 0x8b, 0x85, 0x98, 0xa7, 0x29, 0x3c, 0x6b, 0x59, 0x0d, 0xe2, 0xfa, 0xc4, 0x2c, 0x57, 0xaa,
-	0x25, 0xb8, 0xdf, 0xcb, 0x25, 0x8e, 0x7b, 0x39, 0xd0, 0xc6, 0x0d, 0xe7, 0x31, 0x32, 0x4c, 0x86,
-	0xf4, 0xa0, 0x03, 0x82, 0xa7, 0xcd, 0x3d, 0x29, 0x00, 0xd5, 0xc0, 0xff, 0x91, 0x98, 0x64, 0x7c,
-	0x0e, 0x52, 0x86, 0xc9, 0xbc, 0x8c, 0x92, 0x1f, 0x1b, 0x8d, 0x72, 0x4e, 0x52, 0x4e, 0x9e, 0x50,
-	0x7a, 0x48, 0xe7, 0x3d, 0xd0, 0x7b, 0x05, 0xcc, 0x87, 0x0c, 0x15, 0xc2, 0xa8, 0x67, 0xfb, 0x21,
-	0x39, 0x2c, 0x83, 0x19, 0x83, 0x3a, 0x0e, 0xf6, 0x49, 0x13, 0x3b, 0x35, 0xbf, 0xcd, 0x08, 0x9f,
-	0xf2, 0xbf, 0x92, 0x7a, 0xdc, 0xcb, 0x5d, 0x93, 0xbd, 0xfa, 0x01, 0x48, 0x9f, 0x3e, 0x8d, 0xbc,
-	0x68, 0x33, 0x02, 0x97, 0xc0, 0x38, 0xdd, 0x73, 0x49, 0x33, 0x93, 0xe4, 0xa5, 0xb3, 0xc7, 0xbd,
-	0xdc, 0x94, 0x28, 0xe5, 0x61, 0xa4, 0x8b, 0x34, 0x6a, 0x80, 0xcc, 0x59, 0x1d, 0x72, 0xe0, 0x4d,
-	0xf0, 0xaf, 0x29, 0x63, 0x72, 0xe8, 0x85, 0xd8, 0xa1, 0x65, 0x61, 0x69, 0x5e, 0xce, 0x3b, 0x23,
-	0x88, 0xc2, 0x5a, 0xa4, 0x9f, 0xb4, 0x41, 0x16, 0xc8, 0x9f, 0x3c, 0x6c, 0xa9, 0x5d, 0xee, 0xd3,
-	0x7c, 0x99, 0xf3, 0x23, 0x0a, 0x16, 0x87, 0x10, 0x5d, 0xc1, 0x46, 0x3f, 0x29, 0x60, 0x39, 0x96,
-	0xd1, 0x7e, 0xcb, 0xed, 0xa4, 0x07, 0x7f, 0x2f, 0x7b, 0xc5, 0xcd, 0xa0, 0x29, 0x5f, 0x71, 0x2a,
-	0xba, 0x62, 0x1e, 0x46, 0xba, 0x48, 0xa3, 0x3d, 0x70, 0x67, 0x04, 0x61, 0x57, 0xf0, 0x24, 0x69,
-	0x00, 0x39, 0x71, 0x95, 0x9f, 0x83, 0xd0, 0x5b, 0x55, 0x30, 0xd7, 0x17, 0x95, 0xc4, 0x8f, 0xc0,
-	0x84, 0x38, 0x1b, 0xd2, 0xd2, 0xd7, 0x63, 0xa9, 0x45, 0x51, 0x29, 0x15, 0x90, 0xea, 0xb2, 0x60,
-	0xed, 0xf3, 0x3f, 0x60, 0x9c, 0xb7, 0x84, 0x0e, 0x18, 0x2b, 0x57, 0xaa, 0xf0, 0x66, 0x6c, 0xed,
-	0xc0, 0x95, 0x51, 0x6f, 0x5d, 0x80, 0x12, 0xc2, 0x50, 0xe6, 0xdd, 0xb7, 0x5f, 0x1f, 0x93, 0x10,
-	0xce, 0x6a, 0x91, 0x53, 0xd7, 0xb1, 0xcd, 0x2e, 0x7c, 0x0d, 0x52, 0xc1, 0x9b, 0xc2, 0xe1, 0x8d,
-	0xc2, 0xc1, 0xd5, 0xa5, 0x8b, 0x60, 0x92, 0x30, 0xcd, 0x09, 0xa7, 0xe1, 0x54, 0x84, 0xd0, 0x83,
-	0x5f, 0x14, 0x30, 0x19, 0x31, 0x29, 0xbc, 0x37, 0xb4, 0xdb, 0xc0, 0x4d, 0x51, 0x57, 0x46, 0x44,
-	0x4b, 0x09, 0xeb, 0x5c, 0xc2, 0x2a, 0x2c, 0x44, 0x67, 0x0e, 0x4d, 0xac, 0x75, 0x06, 0x3e, 0xcd,
-	0xae, 0xd6, 0xe1, 0xc7, 0xa4, 0x0b, 0xbf, 0x2a, 0x20, 0x1d, 0xe7, 0x38, 0xf8, 0x60, 0xf8, 0xec,
-	0xe7, 0x9c, 0x02, 0x75, 0xfd, 0x4f, 0xcb, 0xa4, 0xfe, 0x87, 0x5c, 0xff, 0x1a, 0x5c, 0x8d, 0x3e,
-	0x61, 0xad, 0xde, 0xae, 0xf5, 0x5b, 0xe8, 0xec, 0x24, 0xf0, 0xbb, 0x02, 0x16, 0x86, 0x19, 0x05,
-	0x3e, 0x19, 0x5d, 0x52, 0x8c, 0xf3, 0xd5, 0xa7, 0x7f, 0x5b, 0x3e, 0x64, 0x33, 0x03, 0x93, 0x45,
-	0xeb, 0xb4, 0x0e, 0xbf, 0x01, 0x5d, 0xb8, 0x07, 0x26, 0x84, 0x77, 0xe0, 0xed, 0xf3, 0x15, 0xf4,
-	0x19, 0x55, 0x5d, 0xbe, 0x18, 0x28, 0x45, 0xa9, 0x5c, 0x54, 0x1a, 0xc2, 0xe8, 0xe7, 0x22, 0xcc,
-	0x59, 0xda, 0xd8, 0x3f, 0xcc, 0x2a, 0x07, 0x87, 0x59, 0xe5, 0xe7, 0x61, 0x56, 0xf9, 0x70, 0x94,
-	0x4d, 0x1c, 0x1c, 0x65, 0x13, 0x3f, 0x8e, 0xb2, 0x89, 0x97, 0x2b, 0x96, 0xed, 0x6f, 0xb7, 0xea,
-	0x01, 0x8b, 0xac, 0x5b, 0xa1, 0x5b, 0x5b, 0xb6, 0x61, 0x63, 0x27, 0xec, 0x23, 0x3a, 0x05, 0x9b,
-	0xf1, 0xea, 0x13, 0xfc, 0xe7, 0xc2, 0xfd, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff, 0xcc, 0x7c, 0xdc,
-	0x77, 0x27, 0x09, 0x00, 0x00,
+	// 784 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x56, 0xcf, 0x4e, 0x13, 0x5f,
+	0x14, 0xee, 0x94, 0xfe, 0xf8, 0xc1, 0x85, 0xf0, 0xe7, 0xb6, 0x91, 0x32, 0x62, 0x5b, 0x6e, 0x14,
+	0xd1, 0x48, 0x2f, 0xc5, 0x48, 0xd4, 0x44, 0x13, 0x5b, 0x12, 0x12, 0x57, 0x65, 0x74, 0xa5, 0x8b,
+	0x66, 0x3a, 0x73, 0x19, 0x26, 0x69, 0x7b, 0x2f, 0x33, 0x53, 0xb0, 0xd6, 0x6e, 0x5c, 0xb8, 0x36,
+	0x71, 0xe1, 0x23, 0xf8, 0x1a, 0x2e, 0x5c, 0xb0, 0x24, 0x71, 0x63, 0x5c, 0x34, 0x06, 0x7c, 0x02,
+	0x9e, 0xc0, 0xcc, 0x9d, 0x3b, 0xed, 0xb4, 0x4c, 0x4b, 0x35, 0xb0, 0x21, 0xe4, 0x9e, 0xef, 0x7c,
+	0xdf, 0x77, 0xce, 0x99, 0x73, 0x52, 0x90, 0xd6, 0x68, 0x55, 0x27, 0x6f, 0xb0, 0xa6, 0x33, 0x7c,
+	0x90, 0x53, 0x2b, 0x6c, 0x4f, 0xcd, 0xe1, 0xfd, 0x3a, 0xb1, 0x1a, 0x59, 0x66, 0x51, 0x87, 0xc2,
+	0xb8, 0x07, 0xc8, 0x6a, 0x3a, 0xcb, 0xfa, 0x00, 0x39, 0x61, 0x50, 0x83, 0xf2, 0x38, 0x76, 0xff,
+	0xf3, 0xa0, 0xf2, 0x92, 0x41, 0xa9, 0x51, 0x21, 0x58, 0x65, 0x26, 0x56, 0x6b, 0x35, 0xea, 0xa8,
+	0x8e, 0x49, 0x6b, 0xb6, 0x88, 0xde, 0xd5, 0xa8, 0x5d, 0xa5, 0x36, 0x2e, 0xab, 0x36, 0xf1, 0x14,
+	0xf0, 0x41, 0xae, 0x4c, 0x1c, 0x35, 0x87, 0x99, 0x6a, 0x98, 0x35, 0x0e, 0x16, 0xd8, 0x1b, 0x61,
+	0xae, 0x5c, 0x07, 0x5e, 0x38, 0x13, 0x16, 0x66, 0xaa, 0xa5, 0x56, 0x7d, 0xb1, 0x54, 0x50, 0xcc,
+	0x97, 0xd1, 0xa8, 0x29, 0x04, 0xd0, 0x32, 0x98, 0xdd, 0x71, 0x2d, 0x14, 0xb6, 0x8a, 0x0a, 0xd9,
+	0xaf, 0x13, 0xdb, 0x81, 0x33, 0x20, 0x6a, 0xea, 0x49, 0x29, 0x23, 0xad, 0xc6, 0x94, 0xa8, 0xa9,
+	0xa3, 0xd7, 0x60, 0xae, 0x0b, 0xb1, 0x19, 0xad, 0xd9, 0x04, 0x6e, 0x83, 0x31, 0x4d, 0x67, 0x1c,
+	0x34, 0xb5, 0xb1, 0x9c, 0x0d, 0x69, 0x4d, 0xf6, 0x59, 0xdd, 0xa8, 0x92, 0x9a, 0x43, 0xf4, 0xc2,
+	0x56, 0x31, 0x0f, 0x8f, 0xda, 0xe9, 0xc8, 0x59, 0x3b, 0x0d, 0x1a, 0x6a, 0xb5, 0xf2, 0x18, 0x69,
+	0x3a, 0x43, 0x8a, 0xcb, 0x80, 0x60, 0x97, 0xdc, 0x16, 0x06, 0x50, 0x09, 0xcc, 0x07, 0xde, 0x84,
+	0xe2, 0x73, 0x10, 0xd3, 0x74, 0x66, 0x27, 0xa5, 0xcc, 0xd8, 0x68, 0x92, 0x71, 0x21, 0x39, 0xd5,
+	0x91, 0xb4, 0x91, 0xc2, 0x39, 0xd0, 0x07, 0x09, 0x2c, 0xf8, 0x0a, 0x5b, 0x84, 0x51, 0xdb, 0x74,
+	0x7c, 0x71, 0x58, 0x00, 0xb3, 0x1a, 0xad, 0x54, 0x54, 0x87, 0x58, 0x6a, 0xa5, 0xe4, 0x34, 0x18,
+	0xe1, 0x55, 0x4e, 0xe6, 0xe5, 0xb3, 0x76, 0xfa, 0x9a, 0xe0, 0xea, 0x05, 0x20, 0x65, 0xa6, 0xfb,
+	0xf2, 0xb2, 0xc1, 0x08, 0x5c, 0x01, 0xff, 0xd1, 0xc3, 0x1a, 0xb1, 0x92, 0x51, 0x9e, 0x3a, 0x77,
+	0xd6, 0x4e, 0x4f, 0x7b, 0xa9, 0xfc, 0x19, 0x29, 0x5e, 0x18, 0x55, 0x41, 0xf2, 0xbc, 0x0f, 0x51,
+	0xf0, 0x0e, 0x98, 0xd0, 0xc5, 0x9b, 0x28, 0x7a, 0x29, 0xb4, 0x68, 0x91, 0x98, 0x5f, 0x10, 0xf5,
+	0xce, 0x7a, 0x42, 0x7e, 0x2e, 0x52, 0x3a, 0x34, 0xc8, 0x00, 0x99, 0x4e, 0x63, 0xf3, 0x8d, 0x42,
+	0x8f, 0xe7, 0xcb, 0xac, 0x1f, 0x51, 0xb0, 0x3c, 0x44, 0xe8, 0x0a, 0x26, 0xfa, 0x59, 0x02, 0xab,
+	0xa1, 0x8a, 0xe6, 0x5b, 0xbe, 0x4e, 0x8a, 0xfb, 0xf7, 0xb2, 0x47, 0x6c, 0xb9, 0xa4, 0x7c, 0xc4,
+	0xb1, 0xe0, 0x88, 0xf9, 0x33, 0x52, 0xbc, 0x30, 0x3a, 0x04, 0x77, 0x46, 0x30, 0x76, 0x05, 0x2d,
+	0x49, 0x00, 0xc8, 0x85, 0x8b, 0xfc, 0x1c, 0xf8, 0xbb, 0x55, 0x04, 0xf1, 0x9e, 0x57, 0x21, 0xfc,
+	0x08, 0x8c, 0x7b, 0x67, 0x43, 0xac, 0xf4, 0xf5, 0x50, 0x69, 0x2f, 0x29, 0x1f, 0x73, 0x45, 0x15,
+	0x91, 0xb0, 0xf1, 0xf5, 0x7f, 0x30, 0xcd, 0x29, 0x5f, 0x10, 0xeb, 0xc0, 0xd4, 0x08, 0xb4, 0xc0,
+	0x84, 0x5f, 0x31, 0xbc, 0x19, 0xca, 0xd3, 0x77, 0x71, 0xe4, 0x5b, 0x17, 0xa0, 0x3c, 0x93, 0x68,
+	0xf1, 0xfd, 0xf7, 0xdf, 0x9f, 0xa2, 0x71, 0x38, 0x8f, 0xbb, 0x67, 0xcf, 0xc6, 0x4d, 0x53, 0x6f,
+	0x41, 0x06, 0x26, 0x3b, 0x5d, 0x86, 0xc3, 0xe9, 0xfc, 0x56, 0xc8, 0x2b, 0x17, 0xc1, 0x84, 0x6c,
+	0x82, 0xcb, 0xce, 0xc0, 0xe9, 0xa0, 0x2c, 0xfc, 0x22, 0x75, 0x2f, 0x97, 0xbf, 0xbb, 0xf0, 0xde,
+	0x50, 0xca, 0xbe, 0x53, 0x23, 0xaf, 0x8d, 0x88, 0x16, 0x3e, 0x36, 0xb9, 0x8f, 0x75, 0x98, 0x0d,
+	0xf8, 0xc0, 0xfe, 0x6e, 0xe3, 0x66, 0xdf, 0x17, 0xdb, 0xc2, 0x4d, 0x7e, 0x63, 0x5a, 0xf0, 0x9b,
+	0x04, 0x16, 0x07, 0x6e, 0x23, 0x7c, 0x30, 0xbc, 0x0b, 0x03, 0xce, 0x84, 0xbc, 0xf9, 0xb7, 0x69,
+	0xa2, 0x88, 0x87, 0xbc, 0x88, 0x0d, 0xb8, 0x1e, 0x6c, 0x66, 0xa9, 0xdc, 0x28, 0xf5, 0xae, 0xd7,
+	0xf9, 0x72, 0xe0, 0x4f, 0x69, 0xc0, 0x51, 0x09, 0x6e, 0x12, 0x7c, 0x32, 0xba, 0xaf, 0x90, 0xd3,
+	0x20, 0x3f, 0xfd, 0xd7, 0xf4, 0x21, 0x33, 0xea, 0x2b, 0x2f, 0x98, 0x87, 0x9b, 0xfc, 0x48, 0xb4,
+	0xe0, 0x3b, 0x30, 0x15, 0x58, 0x4b, 0x78, 0x7b, 0xb0, 0x8d, 0x9e, 0x75, 0x96, 0x57, 0x2f, 0x06,
+	0x0a, 0x67, 0x32, 0x77, 0x96, 0x80, 0x30, 0xf8, 0xf5, 0x78, 0x2b, 0x9c, 0xdf, 0x3e, 0x3a, 0x49,
+	0x49, 0xc7, 0x27, 0x29, 0xe9, 0xd7, 0x49, 0x4a, 0xfa, 0x78, 0x9a, 0x8a, 0x1c, 0x9f, 0xa6, 0x22,
+	0x3f, 0x4e, 0x53, 0x91, 0x57, 0x6b, 0x86, 0xe9, 0xec, 0xd5, 0xcb, 0xae, 0x8a, 0xc8, 0x5b, 0xa3,
+	0xbb, 0xbb, 0xa6, 0x66, 0xaa, 0x15, 0x9f, 0xc7, 0x63, 0x72, 0x67, 0x64, 0x97, 0xc7, 0xf9, 0x8f,
+	0x8a, 0xfb, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0xff, 0x7e, 0xdf, 0xac, 0x4d, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -643,252 +643,252 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// QueryClient is the client API for Query service.
+// QueryServiceClient is the client API for QueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type QueryClient interface {
-	CDP(ctx context.Context, in *QueryCDPRequest, opts ...grpc.CallOption) (*QueryCDPResponse, error)
-	CDPs(ctx context.Context, in *QueryCDPsRequest, opts ...grpc.CallOption) (*QueryCDPsResponse, error)
-	CDPDeposits(ctx context.Context, in *QueryCDPDepositsRequest, opts ...grpc.CallOption) (*QueryCDPDepositsResponse, error)
-	CDPsByCollateralType(ctx context.Context, in *QueryCDPsByCollateralTypeRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralTypeResponse, error)
-	CDPsByCollateralizationRatio(ctx context.Context, in *QueryCDPsByCollateralizationRatioRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralizationRatioResponse, error)
-	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+type QueryServiceClient interface {
+	QueryCDP(ctx context.Context, in *QueryCDPRequest, opts ...grpc.CallOption) (*QueryCDPResponse, error)
+	QueryCDPs(ctx context.Context, in *QueryCDPsRequest, opts ...grpc.CallOption) (*QueryCDPsResponse, error)
+	QueryCDPDeposits(ctx context.Context, in *QueryCDPDepositsRequest, opts ...grpc.CallOption) (*QueryCDPDepositsResponse, error)
+	QueryCDPsByCollateralType(ctx context.Context, in *QueryCDPsByCollateralTypeRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralTypeResponse, error)
+	QueryCDPsByCollateralizationRatio(ctx context.Context, in *QueryCDPsByCollateralizationRatioRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralizationRatioResponse, error)
+	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 }
 
-type queryClient struct {
+type queryServiceClient struct {
 	cc grpc1.ClientConn
 }
 
-func NewQueryClient(cc grpc1.ClientConn) QueryClient {
-	return &queryClient{cc}
+func NewQueryServiceClient(cc grpc1.ClientConn) QueryServiceClient {
+	return &queryServiceClient{cc}
 }
 
-func (c *queryClient) CDP(ctx context.Context, in *QueryCDPRequest, opts ...grpc.CallOption) (*QueryCDPResponse, error) {
+func (c *queryServiceClient) QueryCDP(ctx context.Context, in *QueryCDPRequest, opts ...grpc.CallOption) (*QueryCDPResponse, error) {
 	out := new(QueryCDPResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Query/CDP", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.QueryService/QueryCDP", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) CDPs(ctx context.Context, in *QueryCDPsRequest, opts ...grpc.CallOption) (*QueryCDPsResponse, error) {
+func (c *queryServiceClient) QueryCDPs(ctx context.Context, in *QueryCDPsRequest, opts ...grpc.CallOption) (*QueryCDPsResponse, error) {
 	out := new(QueryCDPsResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Query/CDPs", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.QueryService/QueryCDPs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) CDPDeposits(ctx context.Context, in *QueryCDPDepositsRequest, opts ...grpc.CallOption) (*QueryCDPDepositsResponse, error) {
+func (c *queryServiceClient) QueryCDPDeposits(ctx context.Context, in *QueryCDPDepositsRequest, opts ...grpc.CallOption) (*QueryCDPDepositsResponse, error) {
 	out := new(QueryCDPDepositsResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Query/CDPDeposits", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.QueryService/QueryCDPDeposits", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) CDPsByCollateralType(ctx context.Context, in *QueryCDPsByCollateralTypeRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralTypeResponse, error) {
+func (c *queryServiceClient) QueryCDPsByCollateralType(ctx context.Context, in *QueryCDPsByCollateralTypeRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralTypeResponse, error) {
 	out := new(QueryCDPsByCollateralTypeResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Query/CDPsByCollateralType", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.QueryService/QueryCDPsByCollateralType", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) CDPsByCollateralizationRatio(ctx context.Context, in *QueryCDPsByCollateralizationRatioRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralizationRatioResponse, error) {
+func (c *queryServiceClient) QueryCDPsByCollateralizationRatio(ctx context.Context, in *QueryCDPsByCollateralizationRatioRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralizationRatioResponse, error) {
 	out := new(QueryCDPsByCollateralizationRatioResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Query/CDPsByCollateralizationRatio", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.QueryService/QueryCDPsByCollateralizationRatio", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
+func (c *queryServiceClient) QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
 	out := new(QueryParamsResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Query/Params", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.QueryService/QueryParams", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// QueryServer is the server API for Query service.
-type QueryServer interface {
-	CDP(context.Context, *QueryCDPRequest) (*QueryCDPResponse, error)
-	CDPs(context.Context, *QueryCDPsRequest) (*QueryCDPsResponse, error)
-	CDPDeposits(context.Context, *QueryCDPDepositsRequest) (*QueryCDPDepositsResponse, error)
-	CDPsByCollateralType(context.Context, *QueryCDPsByCollateralTypeRequest) (*QueryCDPsByCollateralTypeResponse, error)
-	CDPsByCollateralizationRatio(context.Context, *QueryCDPsByCollateralizationRatioRequest) (*QueryCDPsByCollateralizationRatioResponse, error)
-	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+// QueryServiceServer is the server API for QueryService service.
+type QueryServiceServer interface {
+	QueryCDP(context.Context, *QueryCDPRequest) (*QueryCDPResponse, error)
+	QueryCDPs(context.Context, *QueryCDPsRequest) (*QueryCDPsResponse, error)
+	QueryCDPDeposits(context.Context, *QueryCDPDepositsRequest) (*QueryCDPDepositsResponse, error)
+	QueryCDPsByCollateralType(context.Context, *QueryCDPsByCollateralTypeRequest) (*QueryCDPsByCollateralTypeResponse, error)
+	QueryCDPsByCollateralizationRatio(context.Context, *QueryCDPsByCollateralizationRatioRequest) (*QueryCDPsByCollateralizationRatioResponse, error)
+	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 }
 
-// UnimplementedQueryServer can be embedded to have forward compatible implementations.
-type UnimplementedQueryServer struct {
+// UnimplementedQueryServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedQueryServiceServer struct {
 }
 
-func (*UnimplementedQueryServer) CDP(ctx context.Context, req *QueryCDPRequest) (*QueryCDPResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CDP not implemented")
+func (*UnimplementedQueryServiceServer) QueryCDP(ctx context.Context, req *QueryCDPRequest) (*QueryCDPResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCDP not implemented")
 }
-func (*UnimplementedQueryServer) CDPs(ctx context.Context, req *QueryCDPsRequest) (*QueryCDPsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CDPs not implemented")
+func (*UnimplementedQueryServiceServer) QueryCDPs(ctx context.Context, req *QueryCDPsRequest) (*QueryCDPsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCDPs not implemented")
 }
-func (*UnimplementedQueryServer) CDPDeposits(ctx context.Context, req *QueryCDPDepositsRequest) (*QueryCDPDepositsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CDPDeposits not implemented")
+func (*UnimplementedQueryServiceServer) QueryCDPDeposits(ctx context.Context, req *QueryCDPDepositsRequest) (*QueryCDPDepositsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCDPDeposits not implemented")
 }
-func (*UnimplementedQueryServer) CDPsByCollateralType(ctx context.Context, req *QueryCDPsByCollateralTypeRequest) (*QueryCDPsByCollateralTypeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CDPsByCollateralType not implemented")
+func (*UnimplementedQueryServiceServer) QueryCDPsByCollateralType(ctx context.Context, req *QueryCDPsByCollateralTypeRequest) (*QueryCDPsByCollateralTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCDPsByCollateralType not implemented")
 }
-func (*UnimplementedQueryServer) CDPsByCollateralizationRatio(ctx context.Context, req *QueryCDPsByCollateralizationRatioRequest) (*QueryCDPsByCollateralizationRatioResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CDPsByCollateralizationRatio not implemented")
+func (*UnimplementedQueryServiceServer) QueryCDPsByCollateralizationRatio(ctx context.Context, req *QueryCDPsByCollateralizationRatioRequest) (*QueryCDPsByCollateralizationRatioResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCDPsByCollateralizationRatio not implemented")
 }
-func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
-}
-
-func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
-	s.RegisterService(&_Query_serviceDesc, srv)
+func (*UnimplementedQueryServiceServer) QueryParams(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryParams not implemented")
 }
 
-func _Query_CDP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func RegisterQueryServiceServer(s grpc1.Server, srv QueryServiceServer) {
+	s.RegisterService(&_QueryService_serviceDesc, srv)
+}
+
+func _QueryService_QueryCDP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryCDPRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).CDP(ctx, in)
+		return srv.(QueryServiceServer).QueryCDP(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Query/CDP",
+		FullMethod: "/comdex.cdp.v1alpha1.QueryService/QueryCDP",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CDP(ctx, req.(*QueryCDPRequest))
+		return srv.(QueryServiceServer).QueryCDP(ctx, req.(*QueryCDPRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_CDPs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _QueryService_QueryCDPs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryCDPsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).CDPs(ctx, in)
+		return srv.(QueryServiceServer).QueryCDPs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Query/CDPs",
+		FullMethod: "/comdex.cdp.v1alpha1.QueryService/QueryCDPs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CDPs(ctx, req.(*QueryCDPsRequest))
+		return srv.(QueryServiceServer).QueryCDPs(ctx, req.(*QueryCDPsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_CDPDeposits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _QueryService_QueryCDPDeposits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryCDPDepositsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).CDPDeposits(ctx, in)
+		return srv.(QueryServiceServer).QueryCDPDeposits(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Query/CDPDeposits",
+		FullMethod: "/comdex.cdp.v1alpha1.QueryService/QueryCDPDeposits",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CDPDeposits(ctx, req.(*QueryCDPDepositsRequest))
+		return srv.(QueryServiceServer).QueryCDPDeposits(ctx, req.(*QueryCDPDepositsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_CDPsByCollateralType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _QueryService_QueryCDPsByCollateralType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryCDPsByCollateralTypeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).CDPsByCollateralType(ctx, in)
+		return srv.(QueryServiceServer).QueryCDPsByCollateralType(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Query/CDPsByCollateralType",
+		FullMethod: "/comdex.cdp.v1alpha1.QueryService/QueryCDPsByCollateralType",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CDPsByCollateralType(ctx, req.(*QueryCDPsByCollateralTypeRequest))
+		return srv.(QueryServiceServer).QueryCDPsByCollateralType(ctx, req.(*QueryCDPsByCollateralTypeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_CDPsByCollateralizationRatio_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _QueryService_QueryCDPsByCollateralizationRatio_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryCDPsByCollateralizationRatioRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).CDPsByCollateralizationRatio(ctx, in)
+		return srv.(QueryServiceServer).QueryCDPsByCollateralizationRatio(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Query/CDPsByCollateralizationRatio",
+		FullMethod: "/comdex.cdp.v1alpha1.QueryService/QueryCDPsByCollateralizationRatio",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CDPsByCollateralizationRatio(ctx, req.(*QueryCDPsByCollateralizationRatioRequest))
+		return srv.(QueryServiceServer).QueryCDPsByCollateralizationRatio(ctx, req.(*QueryCDPsByCollateralizationRatioRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _QueryService_QueryParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryParamsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).Params(ctx, in)
+		return srv.(QueryServiceServer).QueryParams(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Query/Params",
+		FullMethod: "/comdex.cdp.v1alpha1.QueryService/QueryParams",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
+		return srv.(QueryServiceServer).QueryParams(ctx, req.(*QueryParamsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Query_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "comdex.cdp.v1alpha1.Query",
-	HandlerType: (*QueryServer)(nil),
+var _QueryService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "comdex.cdp.v1alpha1.QueryService",
+	HandlerType: (*QueryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CDP",
-			Handler:    _Query_CDP_Handler,
+			MethodName: "QueryCDP",
+			Handler:    _QueryService_QueryCDP_Handler,
 		},
 		{
-			MethodName: "CDPs",
-			Handler:    _Query_CDPs_Handler,
+			MethodName: "QueryCDPs",
+			Handler:    _QueryService_QueryCDPs_Handler,
 		},
 		{
-			MethodName: "CDPDeposits",
-			Handler:    _Query_CDPDeposits_Handler,
+			MethodName: "QueryCDPDeposits",
+			Handler:    _QueryService_QueryCDPDeposits_Handler,
 		},
 		{
-			MethodName: "CDPsByCollateralType",
-			Handler:    _Query_CDPsByCollateralType_Handler,
+			MethodName: "QueryCDPsByCollateralType",
+			Handler:    _QueryService_QueryCDPsByCollateralType_Handler,
 		},
 		{
-			MethodName: "CDPsByCollateralizationRatio",
-			Handler:    _Query_CDPsByCollateralizationRatio_Handler,
+			MethodName: "QueryCDPsByCollateralizationRatio",
+			Handler:    _QueryService_QueryCDPsByCollateralizationRatio_Handler,
 		},
 		{
-			MethodName: "Params",
-			Handler:    _Query_Params_Handler,
+			MethodName: "QueryParams",
+			Handler:    _QueryService_QueryParams_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1514,10 +1514,7 @@ func (m *QueryCDPRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -1600,10 +1597,7 @@ func (m *QueryCDPResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -1653,10 +1647,7 @@ func (m *QueryCDPsRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -1740,10 +1731,7 @@ func (m *QueryCDPsResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -1857,10 +1845,7 @@ func (m *QueryCDPDepositsRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -1944,10 +1929,7 @@ func (m *QueryCDPDepositsResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -2029,10 +2011,7 @@ func (m *QueryCDPsByCollateralTypeRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -2116,10 +2095,7 @@ func (m *QueryCDPsByCollateralTypeResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -2220,10 +2196,7 @@ func (m *QueryCDPsByCollateralizationRatioRequest) Unmarshal(dAtA []byte) error 
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -2307,10 +2280,7 @@ func (m *QueryCDPsByCollateralizationRatioResponse) Unmarshal(dAtA []byte) error
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -2360,10 +2330,7 @@ func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -2446,10 +2413,7 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
