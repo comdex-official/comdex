@@ -6,8 +6,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	k.paramSpace.Get()
+func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
+	k.paramSpace.GetParamSet(ctx, &params)
+	return params
 }
 
 func (k Keeper) getLiquidationRatio(ctx sdk.Context, collateralType string) sdk.Dec {
