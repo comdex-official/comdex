@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package comdex.cdp.v1alpha1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/cdp/types";
+
+// Msg defines the Msg service.
+service Msg {
+
+  rpc CreateCDP(MsgCreateCDPRequest) returns (MsgCreateCDPResponse);
+
+  rpc Deposit(MsgDepositRequest) returns (MsgDepositResponse);
+
+  rpc Withdraw(MsgWithdrawRequest) returns (MsgWithdrawResponse);
+
+  rpc DrawDebt(MsgDrawDebtRequest) returns (MsgDrawDebtResponse);
+
+  rpc RepayDebt(MsgRepayDebtRequest) returns (MsgRepayDebtResponse);
+
+  rpc Liquidate(MsgLiquidateRequest) returns (MsgLiquidateResponse);
+
+
+}
+
+message MsgCreateCDPRequest{
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  cosmos.base.v1beta1.Coin collateral = 2 [
+    (gogoproto.moretags) = "yaml:\"collateral\"",
+    (gogoproto.nullable) = false
+  ];
+
+  cosmos.base.v1beta1.Coin principal = 3 [
+    (gogoproto.moretags) = "yaml:\"principal\"",
+    (gogoproto.nullable) = false
+  ];
+
+  string collateralType = 4 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+
+}
+
+message MsgCreateCDPResponse{}
+
+message MsgDepositRequest{
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  cosmos.base.v1beta1.Coin collateral = 2 [
+    (gogoproto.moretags) = "yaml:\"collateral\"",
+    (gogoproto.nullable) = false
+  ];
+
+  string collateralType = 3 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+
+}
+
+message MsgDepositResponse{}
+
+
+message MsgWithdrawRequest{
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  cosmos.base.v1beta1.Coin collateral = 2 [
+    (gogoproto.moretags) = "yaml:\"collateral\"",
+    (gogoproto.nullable) = false
+  ];
+
+  string collateral_type = 3 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
+
+}
+
+message MsgWithdrawResponse{}
+
+message MsgDrawDebtRequest{
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  string collateral_type = 2 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
+  cosmos.base.v1beta1.Coin principal = 3 [
+    (gogoproto.moretags) = "yaml:\"principal\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgDrawDebtResponse{}
+
+message MsgRepayDebtRequest{
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  string collateral_type = 2 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
+  cosmos.base.v1beta1.Coin payment = 3 [
+    (gogoproto.moretags) = "yaml:\"payment\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgRepayDebtResponse{}
+
+
+message MsgLiquidateRequest{
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  string collateral_type = 2 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
+}
+
+message MsgLiquidateResponse{}

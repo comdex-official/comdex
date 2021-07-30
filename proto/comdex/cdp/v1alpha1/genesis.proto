@@ -28,9 +28,6 @@ message GenesisState {
 
     uint64 starting_cdp_id = 4;
     string debt_denom = 5 [ (gogoproto.moretags) = "yaml:\"debt_denom\"" ];
-    string gov_denom = 6 [ (gogoproto.moretags) = "yaml:\"gov_denom\"" ];
-    repeated GenesisAccumulationTime previous_accumulation_times =7;
-    repeated GenesisTotalPrincipal total_principals =8;
 
 }
 

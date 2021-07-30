@@ -5,8 +5,8 @@ package types
 
 import (
 	fmt "fmt"
+	_ "github.com/cosmos/cosmos-sdk/types"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	io "io"
@@ -26,14 +26,8 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Params struct {
-	CollateralParams        []CollateralParam `protobuf:"bytes,1,rep,name=collateral_params,json=collateralParams,proto3" json:"collateral_params" yaml:"collateral_params"`
-	DebtParam               DebtParam         `protobuf:"bytes,2,opt,name=debt_param,json=debtParam,proto3" json:"debt_param" yaml:"debt_param"`
-	GlobalDebtLimit         types.Coin        `protobuf:"bytes,3,opt,name=global_debt_limit,json=globalDebtLimit,proto3" json:"global_debt_limit" yaml:"global_debt_limit"`
-	SurplusAuctionThreshold int64             `protobuf:"varint,4,opt,name=surplus_auction_threshold,json=surplusAuctionThreshold,proto3" json:"surplus_auction_threshold,omitempty" yaml:"surplus_auction_threshold"`
-	SurplusAuctionLot       int64             `protobuf:"varint,5,opt,name=surplus_auction_lot,json=surplusAuctionLot,proto3" json:"surplus_auction_lot,omitempty" yaml:"surplus_auction_lot"`
-	DebtAuctionThreshold    int64             `protobuf:"varint,6,opt,name=debt_auction_threshold,json=debtAuctionThreshold,proto3" json:"debt_auction_threshold,omitempty" yaml:"debt_auction_threshold"`
-	DebtAuctionLot          int64             `protobuf:"varint,7,opt,name=debt_auction_lot,json=debtAuctionLot,proto3" json:"debt_auction_lot,omitempty" yaml:"debt_auction_lot"`
-	CircuitBreaker          bool              `protobuf:"varint,8,opt,name=circuit_breaker,json=circuitBreaker,proto3" json:"circuit_breaker,omitempty" yaml:"circuit_breaker"`
+	CollateralParams []CollateralParam `protobuf:"bytes,1,rep,name=collateral_params,json=collateralParams,proto3" json:"collateral_params" yaml:"collateral_params"`
+	DebtParam        DebtParam         `protobuf:"bytes,2,opt,name=debt_param,json=debtParam,proto3" json:"debt_param" yaml:"debt_param"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -83,62 +77,11 @@ func (m *Params) GetDebtParam() DebtParam {
 	return DebtParam{}
 }
 
-func (m *Params) GetGlobalDebtLimit() types.Coin {
-	if m != nil {
-		return m.GlobalDebtLimit
-	}
-	return types.Coin{}
-}
-
-func (m *Params) GetSurplusAuctionThreshold() int64 {
-	if m != nil {
-		return m.SurplusAuctionThreshold
-	}
-	return 0
-}
-
-func (m *Params) GetSurplusAuctionLot() int64 {
-	if m != nil {
-		return m.SurplusAuctionLot
-	}
-	return 0
-}
-
-func (m *Params) GetDebtAuctionThreshold() int64 {
-	if m != nil {
-		return m.DebtAuctionThreshold
-	}
-	return 0
-}
-
-func (m *Params) GetDebtAuctionLot() int64 {
-	if m != nil {
-		return m.DebtAuctionLot
-	}
-	return 0
-}
-
-func (m *Params) GetCircuitBreaker() bool {
-	if m != nil {
-		return m.CircuitBreaker
-	}
-	return false
-}
-
 type CollateralParam struct {
-	Denom                            string                                 `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
-	Type                             string                                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	LiquidationRatio                 github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=liquidation_ratio,json=liquidationRatio,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_ratio" yaml:"liquidation_ratio"`
-	DebtLimit                        types.Coin                             `protobuf:"bytes,4,opt,name=debt_limit,json=debtLimit,proto3" json:"debt_limit" yaml:"debt_limit"`
-	StabilityFee                     github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,5,opt,name=stability_fee,json=stabilityFee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"stability_fee" yaml:"stability_fee"`
-	AuctionSize                      int64                                  `protobuf:"varint,6,opt,name=auction_size,json=auctionSize,proto3" json:"auction_size,omitempty" yaml:"auction_size"`
-	LiquidationPenalty               github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,7,opt,name=liquidation_penalty,json=liquidationPenalty,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_penalty" yaml:"liquidation_penalty"`
-	Prefix                           []byte                                 `protobuf:"bytes,8,opt,name=prefix,proto3" json:"prefix,omitempty"`
-	SpotMarketId                     string                                 `protobuf:"bytes,9,opt,name=spot_market_id,json=spotMarketId,proto3" json:"spot_market_id,omitempty" yaml:"spot_market_id"`
-	LiquidationMarketId              string                                 `protobuf:"bytes,10,opt,name=liquidation_market_id,json=liquidationMarketId,proto3" json:"liquidation_market_id,omitempty" yaml:"liquidation_market_id"`
-	KeeperRewardPercentage           github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,11,opt,name=keeper_reward_percentage,json=keeperRewardPercentage,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"keeper_reward_percentage" yaml:"keeper_reward_percentage"`
-	CheckCollateralizationIndexCount int64                                  `protobuf:"varint,12,opt,name=check_collateralization_index_count,json=checkCollateralizationIndexCount,proto3" json:"check_collateralization_index_count,omitempty" yaml:"check_collateralization_index_count"`
-	ConversionFactor                 int64                                  `protobuf:"varint,13,opt,name=conversion_factor,json=conversionFactor,proto3" json:"conversion_factor,omitempty" yaml:"conversion_factor"`
+	Denom            string                                 `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+	Type             string                                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	LiquidationRatio github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=liquidation_ratio,json=liquidationRatio,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_ratio" yaml:"liquidation_ratio"`
+	Prefix           []byte                                 `protobuf:"bytes,4,opt,name=prefix,proto3" json:"prefix,omitempty"`
 }
 
 func (m *CollateralParam) Reset()         { *m = CollateralParam{} }
@@ -188,20 +131,6 @@ func (m *CollateralParam) GetType() string {
 	return ""
 }
 
-func (m *CollateralParam) GetDebtLimit() types.Coin {
-	if m != nil {
-		return m.DebtLimit
-	}
-	return types.Coin{}
-}
-
-func (m *CollateralParam) GetAuctionSize() int64 {
-	if m != nil {
-		return m.AuctionSize
-	}
-	return 0
-}
-
 func (m *CollateralParam) GetPrefix() []byte {
 	if m != nil {
 		return m.Prefix
@@ -209,39 +138,10 @@ func (m *CollateralParam) GetPrefix() []byte {
 	return nil
 }
 
-func (m *CollateralParam) GetSpotMarketId() string {
-	if m != nil {
-		return m.SpotMarketId
-	}
-	return ""
-}
-
-func (m *CollateralParam) GetLiquidationMarketId() string {
-	if m != nil {
-		return m.LiquidationMarketId
-	}
-	return ""
-}
-
-func (m *CollateralParam) GetCheckCollateralizationIndexCount() int64 {
-	if m != nil {
-		return m.CheckCollateralizationIndexCount
-	}
-	return 0
-}
-
-func (m *CollateralParam) GetConversionFactor() int64 {
-	if m != nil {
-		return m.ConversionFactor
-	}
-	return 0
-}
-
 type DebtParam struct {
 	Denom            string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty" yaml:"denom"`
 	ReferenceAsset   string `protobuf:"bytes,2,opt,name=reference_asset,json=referenceAsset,proto3" json:"reference_asset,omitempty" yaml:"reference_asset"`
 	ConversionFactor int64  `protobuf:"varint,3,opt,name=conversion_factor,json=conversionFactor,proto3" json:"conversion_factor,omitempty" yaml:"conversion_factor"`
-	DebtFloor        int64  `protobuf:"varint,4,opt,name=debt_floor,json=debtFloor,proto3" json:"debt_floor,omitempty" yaml:"debt_floor"`
 }
 
 func (m *DebtParam) Reset()         { *m = DebtParam{} }
@@ -298,13 +198,6 @@ func (m *DebtParam) GetConversionFactor() int64 {
 	return 0
 }
 
-func (m *DebtParam) GetDebtFloor() int64 {
-	if m != nil {
-		return m.DebtFloor
-	}
-	return 0
-}
-
 func init() {
 	proto.RegisterType((*Params)(nil), "comdex.cdp.v1alpha1.Params")
 	proto.RegisterType((*CollateralParam)(nil), "comdex.cdp.v1alpha1.CollateralParam")
@@ -314,68 +207,37 @@ func init() {
 func init() { proto.RegisterFile("comdex/cdp/v1alpha1/params.proto", fileDescriptor_bf9893c9be4c20a1) }
 
 var fileDescriptor_bf9893c9be4c20a1 = []byte{
-	// 968 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x56, 0xcd, 0x6e, 0xdb, 0x46,
-	0x10, 0x36, 0xeb, 0x9f, 0x5a, 0x6b, 0xc5, 0xb6, 0xd6, 0x7f, 0xb4, 0x9a, 0x8a, 0x2c, 0x1b, 0x04,
-	0x42, 0x01, 0x93, 0x70, 0xda, 0x53, 0x2e, 0x45, 0xa4, 0xd4, 0x85, 0x0b, 0xb7, 0x70, 0x99, 0x00,
-	0x2d, 0x7a, 0x61, 0x57, 0xe4, 0x4a, 0x5a, 0x88, 0xe2, 0xb2, 0xcb, 0x95, 0x63, 0x1b, 0xc8, 0x13,
-	0xf4, 0xd2, 0xc7, 0xe9, 0x23, 0xe4, 0x98, 0x5b, 0x8b, 0x1e, 0x88, 0xc2, 0x7e, 0x03, 0xde, 0x7a,
-	0x2b, 0xf6, 0x47, 0x32, 0xf5, 0x13, 0x04, 0xce, 0x45, 0xe4, 0xce, 0x7c, 0xf3, 0xcd, 0xec, 0xe8,
-	0xdb, 0x59, 0x02, 0x3b, 0xa4, 0xc3, 0x08, 0x5f, 0x7a, 0x61, 0x94, 0x7a, 0x17, 0xc7, 0x28, 0x4e,
-	0xfb, 0xe8, 0xd8, 0x4b, 0x11, 0x43, 0xc3, 0xcc, 0x4d, 0x19, 0xe5, 0x14, 0xee, 0x28, 0x84, 0x1b,
-	0x46, 0xa9, 0x3b, 0x46, 0xd4, 0x77, 0x7b, 0xb4, 0x47, 0xa5, 0xdf, 0x13, 0x6f, 0x0a, 0x5a, 0x6f,
-	0x84, 0x34, 0x1b, 0xd2, 0xcc, 0xeb, 0xa0, 0x0c, 0x7b, 0x17, 0xc7, 0x1d, 0xcc, 0xd1, 0xb1, 0x17,
-	0x52, 0x92, 0x28, 0xbf, 0xf3, 0xd7, 0x2a, 0x58, 0x3b, 0x97, 0xdc, 0x30, 0x03, 0xb5, 0x90, 0xc6,
-	0x31, 0xe2, 0x98, 0xa1, 0x38, 0x50, 0x09, 0x4d, 0xc3, 0x5e, 0x6e, 0x6e, 0x3c, 0x79, 0xe4, 0x2e,
-	0xc8, 0xe8, 0xb6, 0x27, 0x68, 0xc9, 0xd0, 0xb2, 0xdf, 0xe4, 0xd6, 0x52, 0x91, 0x5b, 0xe6, 0x15,
-	0x1a, 0xc6, 0x4f, 0x9d, 0x39, 0x32, 0xc7, 0xdf, 0x0e, 0xa7, 0x43, 0x32, 0xf8, 0x33, 0x00, 0x11,
-	0xee, 0x70, 0x85, 0x30, 0x3f, 0xb2, 0x8d, 0xe6, 0xc6, 0x93, 0xc6, 0xc2, 0x6c, 0xcf, 0x71, 0x87,
-	0xab, 0x3c, 0x87, 0x3a, 0x4f, 0x4d, 0xe5, 0xb9, 0x8b, 0x77, 0xfc, 0x4a, 0x34, 0x46, 0xc1, 0x1e,
-	0xa8, 0xf5, 0x62, 0xda, 0x41, 0x71, 0x20, 0x01, 0x31, 0x19, 0x12, 0x6e, 0x2e, 0xcb, 0x04, 0x87,
-	0xae, 0xea, 0x8a, 0x2b, 0xba, 0xe2, 0xea, 0xae, 0xb8, 0x6d, 0x4a, 0x92, 0xd9, 0x3d, 0xcc, 0x31,
-	0x38, 0xfe, 0x96, 0xb2, 0x89, 0x72, 0xce, 0x84, 0x05, 0xfe, 0x0a, 0x0e, 0xb3, 0x11, 0x4b, 0xe3,
-	0x51, 0x16, 0xa0, 0x51, 0xc8, 0x09, 0x4d, 0x02, 0xde, 0x67, 0x38, 0xeb, 0xd3, 0x38, 0x32, 0x57,
-	0x6c, 0xa3, 0xb9, 0xdc, 0x7a, 0x54, 0xe4, 0x96, 0xad, 0x18, 0xdf, 0x09, 0x75, 0xfc, 0x03, 0xed,
-	0x7b, 0xa6, 0x5c, 0x2f, 0xc7, 0x1e, 0xf8, 0x03, 0xd8, 0x99, 0x0d, 0x8b, 0x29, 0x37, 0x57, 0x25,
-	0x77, 0xa3, 0xc8, 0xad, 0xfa, 0x62, 0xee, 0x98, 0x72, 0xc7, 0xaf, 0x4d, 0xb3, 0x9e, 0x51, 0x0e,
-	0x7f, 0x02, 0xfb, 0x72, 0x47, 0xf3, 0xe5, 0xae, 0x49, 0xca, 0xcf, 0x8a, 0xdc, 0xfa, 0xb4, 0xd4,
-	0xdc, 0x05, 0xb5, 0xee, 0x0a, 0xc7, 0x5c, 0xa1, 0xdf, 0x80, 0xed, 0xa9, 0x00, 0x51, 0xe5, 0xc7,
-	0x92, 0xf2, 0x93, 0x22, 0xb7, 0x0e, 0x16, 0x50, 0xca, 0x12, 0x37, 0x4b, 0x64, 0xa2, 0xbe, 0x36,
-	0xd8, 0x0a, 0x09, 0x0b, 0x47, 0x84, 0x07, 0x1d, 0x86, 0xd1, 0x00, 0x33, 0x73, 0xdd, 0x36, 0x9a,
-	0xeb, 0xad, 0x7a, 0x91, 0x5b, 0xfb, 0x5a, 0x5d, 0xd3, 0x00, 0xc7, 0xdf, 0xd4, 0x96, 0x96, 0x36,
-	0xfc, 0xb9, 0x0e, 0xb6, 0x66, 0x14, 0x0a, 0x77, 0xc1, 0x6a, 0x84, 0x13, 0x3a, 0x34, 0x0d, 0xdb,
-	0x68, 0x56, 0x7c, 0xb5, 0x80, 0x10, 0xac, 0xf0, 0xab, 0x14, 0x4b, 0xf5, 0x55, 0x7c, 0xf9, 0x0e,
-	0x5f, 0x81, 0x5a, 0x4c, 0x7e, 0x1b, 0x91, 0x08, 0xc9, 0x32, 0x99, 0x78, 0x48, 0xf5, 0x54, 0x5a,
-	0xdf, 0x09, 0x89, 0xfc, 0x93, 0x5b, 0x8f, 0x7b, 0x84, 0xf7, 0x47, 0x1d, 0x21, 0x56, 0x4f, 0x9f,
-	0x32, 0xf5, 0x38, 0xca, 0xa2, 0x81, 0x27, 0x58, 0x32, 0xf7, 0x39, 0x0e, 0xef, 0xc4, 0x34, 0x47,
-	0xe8, 0xf8, 0xdb, 0x25, 0x9b, 0x2f, 0x7e, 0xe1, 0x0b, 0x7d, 0x20, 0x94, 0x5e, 0x57, 0xde, 0xa7,
-	0xd7, 0x45, 0x67, 0x41, 0x0b, 0x55, 0x9e, 0x05, 0x25, 0xd1, 0x01, 0x78, 0x90, 0x71, 0xd4, 0x21,
-	0x31, 0xe1, 0x57, 0x41, 0x17, 0x63, 0x29, 0x9d, 0x4a, 0xeb, 0xe4, 0xde, 0x3b, 0xd9, 0xd5, 0x42,
-	0x2b, 0x93, 0x39, 0x7e, 0x75, 0xb2, 0x3e, 0xc1, 0x18, 0x3e, 0x05, 0xd5, 0xf1, 0xbf, 0x9b, 0x91,
-	0x6b, 0xac, 0x35, 0x75, 0x50, 0xe4, 0xd6, 0x8e, 0x8a, 0x2e, 0x7b, 0x1d, 0x7f, 0x43, 0x2f, 0x5f,
-	0x90, 0x6b, 0x0c, 0x5f, 0x83, 0x9d, 0x72, 0x97, 0x52, 0x9c, 0xa0, 0x98, 0x5f, 0x49, 0x0d, 0x55,
-	0x5a, 0x67, 0xf7, 0x2e, 0xb7, 0x3e, 0xdf, 0x78, 0x4d, 0xe9, 0xf8, 0xb0, 0x64, 0x3d, 0x57, 0x46,
-	0xb8, 0x0f, 0xd6, 0x52, 0x86, 0xbb, 0xe4, 0x52, 0xea, 0xad, 0xea, 0xeb, 0x15, 0xfc, 0x1a, 0x6c,
-	0x66, 0x29, 0xe5, 0xc1, 0x10, 0xb1, 0x01, 0xe6, 0x01, 0x89, 0xcc, 0x8a, 0xac, 0xe8, 0xb0, 0xc8,
-	0xad, 0x3d, 0xdd, 0x92, 0x29, 0xbf, 0xe8, 0x49, 0x4a, 0xf9, 0xf7, 0x72, 0x7d, 0x1a, 0xc1, 0x97,
-	0x60, 0xaf, 0x5c, 0xc4, 0x1d, 0x0f, 0x90, 0x3c, 0x76, 0x91, 0x5b, 0x0f, 0xe7, 0x6b, 0x2d, 0xd1,
-	0x95, 0xdb, 0x32, 0x61, 0xfd, 0xdd, 0x00, 0xe6, 0x00, 0xe3, 0x14, 0xb3, 0x80, 0xe1, 0x57, 0x88,
-	0x45, 0x41, 0x8a, 0x59, 0x88, 0x13, 0x8e, 0x7a, 0xd8, 0xdc, 0x90, 0xcc, 0x3f, 0xde, 0xbb, 0x67,
-	0x96, 0xaa, 0xe3, 0x5d, 0xbc, 0x8e, 0xbf, 0xaf, 0x5c, 0xbe, 0xf4, 0x9c, 0x4f, 0x1c, 0xf0, 0x35,
-	0xf8, 0x3c, 0xec, 0xe3, 0x70, 0x10, 0xdc, 0x0d, 0x79, 0x72, 0xad, 0x36, 0x42, 0x92, 0x08, 0x5f,
-	0x06, 0x21, 0x1d, 0x25, 0xdc, 0xac, 0x4a, 0x39, 0xb8, 0x45, 0x6e, 0x7d, 0xa1, 0x4f, 0xf2, 0xfb,
-	0x83, 0x1c, 0xdf, 0x96, 0xa8, 0xf6, 0x2c, 0xe8, 0x54, 0x60, 0xda, 0x02, 0x02, 0x4f, 0xc5, 0xf5,
-	0x95, 0x5c, 0x60, 0x96, 0x89, 0xe0, 0x2e, 0x0a, 0x39, 0x65, 0xe6, 0x03, 0x99, 0xec, 0x61, 0xf9,
-	0x52, 0x9a, 0x81, 0xc8, 0x4b, 0x69, 0x6c, 0x3b, 0x51, 0xa6, 0xff, 0x0c, 0x50, 0x99, 0x5c, 0x37,
-	0xf0, 0xf1, 0xd4, 0xd0, 0x68, 0x6d, 0x17, 0xb9, 0x55, 0x1d, 0x9f, 0xb6, 0x84, 0x0e, 0x9d, 0xf1,
-	0x18, 0x69, 0x83, 0x2d, 0x86, 0xbb, 0x98, 0xe1, 0x24, 0xc4, 0x01, 0xca, 0x32, 0xcc, 0xd5, 0x44,
-	0x29, 0x4f, 0xad, 0x19, 0x80, 0xe3, 0x6f, 0x4e, 0x2c, 0xcf, 0x84, 0x61, 0xf1, 0x2e, 0x96, 0x3f,
-	0x64, 0x17, 0xf0, 0x2b, 0x3d, 0x49, 0xba, 0x31, 0xa5, 0x4c, 0x5f, 0x44, 0x7b, 0x33, 0xa3, 0x42,
-	0xfa, 0xf4, 0xa8, 0x38, 0x11, 0xef, 0xad, 0x6f, 0xdf, 0xdc, 0x34, 0x8c, 0xb7, 0x37, 0x0d, 0xe3,
-	0xdf, 0x9b, 0x86, 0xf1, 0xc7, 0x6d, 0x63, 0xe9, 0xed, 0x6d, 0x63, 0xe9, 0xef, 0xdb, 0xc6, 0xd2,
-	0x2f, 0x47, 0x53, 0x12, 0x12, 0x17, 0xf4, 0x11, 0xed, 0x76, 0x49, 0x48, 0x50, 0xac, 0xd7, 0x9e,
-	0xfa, 0x68, 0x91, 0x6a, 0xea, 0xac, 0xc9, 0x0f, 0x8c, 0x2f, 0xff, 0x0f, 0x00, 0x00, 0xff, 0xff,
-	0x9f, 0x29, 0xf1, 0xc7, 0xcf, 0x08, 0x00, 0x00,
+	// 479 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x53, 0x41, 0x6f, 0xd3, 0x30,
+	0x14, 0xae, 0xe9, 0xa8, 0x54, 0x6f, 0x62, 0xad, 0x99, 0xa6, 0x50, 0xa1, 0x34, 0x8a, 0xd0, 0xd4,
+	0x4b, 0x63, 0x75, 0xdc, 0xb8, 0x91, 0x4d, 0x20, 0x38, 0xa1, 0x9c, 0x10, 0x97, 0xca, 0x71, 0x9c,
+	0x2e, 0x22, 0x89, 0x83, 0xed, 0x95, 0xed, 0x5f, 0xf0, 0x9f, 0xb8, 0xec, 0xc0, 0x61, 0x37, 0x10,
+	0x87, 0x08, 0xb5, 0xff, 0xa0, 0xbf, 0x00, 0xd9, 0x6e, 0xba, 0xb5, 0xdb, 0x25, 0xb6, 0x9f, 0xbf,
+	0xf7, 0x7d, 0xef, 0x7d, 0xcf, 0x81, 0x1e, 0xe5, 0x45, 0xc2, 0xae, 0x30, 0x4d, 0x2a, 0x3c, 0x9f,
+	0x90, 0xbc, 0xba, 0x20, 0x13, 0x5c, 0x11, 0x41, 0x0a, 0x19, 0x54, 0x82, 0x2b, 0x8e, 0x9e, 0x5b,
+	0x44, 0x40, 0x93, 0x2a, 0x68, 0x10, 0x83, 0xa3, 0x19, 0x9f, 0x71, 0x73, 0x8f, 0xf5, 0xce, 0x42,
+	0x07, 0x2e, 0xe5, 0xb2, 0xe0, 0x12, 0xc7, 0x44, 0x32, 0x3c, 0x9f, 0xc4, 0x4c, 0x91, 0x09, 0xa6,
+	0x3c, 0x2b, 0xed, 0xbd, 0xff, 0x1b, 0xc0, 0xce, 0x27, 0xc3, 0x8d, 0x24, 0xec, 0x53, 0x9e, 0xe7,
+	0x44, 0x31, 0x41, 0xf2, 0xa9, 0x15, 0x74, 0x80, 0xd7, 0x1e, 0xed, 0x9f, 0xbe, 0x0a, 0x1e, 0x51,
+	0x0c, 0xce, 0x36, 0x68, 0xc3, 0x10, 0x7a, 0x37, 0xf5, 0xb0, 0xb5, 0xaa, 0x87, 0xce, 0x35, 0x29,
+	0xf2, 0x37, 0xfe, 0x03, 0x32, 0x3f, 0xea, 0xd1, 0xed, 0x14, 0x89, 0x3e, 0x43, 0x98, 0xb0, 0x58,
+	0x59, 0x84, 0xf3, 0xc4, 0x03, 0xa3, 0xfd, 0x53, 0xf7, 0x51, 0xb5, 0x73, 0x16, 0x2b, 0xab, 0xf3,
+	0x62, 0xad, 0xd3, 0xb7, 0x3a, 0x77, 0xf9, 0x7e, 0xd4, 0x4d, 0x1a, 0x94, 0xff, 0x0b, 0xc0, 0xc3,
+	0x9d, 0x0a, 0xd1, 0x11, 0x7c, 0x9a, 0xb0, 0x92, 0x17, 0x0e, 0xf0, 0xc0, 0xa8, 0x1b, 0xd9, 0x03,
+	0x42, 0x70, 0x4f, 0x5d, 0x57, 0xcc, 0xa8, 0x77, 0x23, 0xb3, 0x47, 0xdf, 0x61, 0x3f, 0xcf, 0xbe,
+	0x5d, 0x66, 0x09, 0x51, 0x19, 0x2f, 0xa7, 0x42, 0x2f, 0x4e, 0x5b, 0x03, 0xc2, 0x8f, 0x5a, 0xfe,
+	0x6f, 0x3d, 0x3c, 0x99, 0x65, 0xea, 0xe2, 0x32, 0xd6, 0xc5, 0xe2, 0xb5, 0xcb, 0x76, 0x19, 0xcb,
+	0xe4, 0x2b, 0xd6, 0x2c, 0x32, 0x38, 0x67, 0xf4, 0xce, 0x90, 0x07, 0x84, 0x7e, 0xd4, 0xbb, 0x17,
+	0x8b, 0xf4, 0x17, 0x1d, 0xc3, 0x4e, 0x25, 0x58, 0x9a, 0x5d, 0x39, 0x7b, 0x1e, 0x18, 0x1d, 0x44,
+	0xeb, 0x93, 0xff, 0x13, 0xc0, 0xee, 0xc6, 0x02, 0x74, 0xb2, 0xd5, 0x48, 0xd8, 0x5b, 0xd5, 0xc3,
+	0x83, 0xc6, 0x8d, 0x92, 0x17, 0x7e, 0xd3, 0xda, 0x19, 0x3c, 0x14, 0x2c, 0x65, 0x82, 0x95, 0x94,
+	0x4d, 0x89, 0x94, 0x4c, 0xd9, 0x2e, 0xc3, 0xc1, 0xaa, 0x1e, 0x1e, 0xdb, 0x8c, 0x1d, 0x80, 0x1f,
+	0x3d, 0xdb, 0x44, 0xde, 0xea, 0x00, 0xfa, 0xa0, 0x1f, 0x46, 0x39, 0x67, 0x42, 0xea, 0xca, 0x53,
+	0x42, 0x15, 0x17, 0xc6, 0x8b, 0x76, 0xf8, 0xf2, 0xfe, 0xb8, 0x77, 0x20, 0x66, 0xdc, 0x4d, 0xec,
+	0x9d, 0x09, 0x85, 0xef, 0x6f, 0x16, 0x2e, 0xb8, 0x5d, 0xb8, 0xe0, 0xdf, 0xc2, 0x05, 0x3f, 0x96,
+	0x6e, 0xeb, 0x76, 0xe9, 0xb6, 0xfe, 0x2c, 0xdd, 0xd6, 0x97, 0xf1, 0x96, 0x9b, 0x7a, 0xfc, 0x63,
+	0x9e, 0xa6, 0x19, 0xcd, 0x48, 0xbe, 0x3e, 0x63, 0xfb, 0x4b, 0x18, 0x63, 0xe3, 0x8e, 0x79, 0xbe,
+	0xaf, 0xff, 0x07, 0x00, 0x00, 0xff, 0xff, 0x88, 0x92, 0x9f, 0x8c, 0x2d, 0x03, 0x00, 0x00,
 }
 
 func (m *Params) Marshal() (dAtA []byte, err error) {
@@ -398,46 +260,6 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.CircuitBreaker {
-		i--
-		if m.CircuitBreaker {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x40
-	}
-	if m.DebtAuctionLot != 0 {
-		i = encodeVarintParams(dAtA, i, uint64(m.DebtAuctionLot))
-		i--
-		dAtA[i] = 0x38
-	}
-	if m.DebtAuctionThreshold != 0 {
-		i = encodeVarintParams(dAtA, i, uint64(m.DebtAuctionThreshold))
-		i--
-		dAtA[i] = 0x30
-	}
-	if m.SurplusAuctionLot != 0 {
-		i = encodeVarintParams(dAtA, i, uint64(m.SurplusAuctionLot))
-		i--
-		dAtA[i] = 0x28
-	}
-	if m.SurplusAuctionThreshold != 0 {
-		i = encodeVarintParams(dAtA, i, uint64(m.SurplusAuctionThreshold))
-		i--
-		dAtA[i] = 0x20
-	}
-	{
-		size, err := m.GlobalDebtLimit.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintParams(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x1a
 	{
 		size, err := m.DebtParam.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
@@ -485,82 +307,13 @@ func (m *CollateralParam) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.ConversionFactor != 0 {
-		i = encodeVarintParams(dAtA, i, uint64(m.ConversionFactor))
-		i--
-		dAtA[i] = 0x68
-	}
-	if m.CheckCollateralizationIndexCount != 0 {
-		i = encodeVarintParams(dAtA, i, uint64(m.CheckCollateralizationIndexCount))
-		i--
-		dAtA[i] = 0x60
-	}
-	{
-		size := m.KeeperRewardPercentage.Size()
-		i -= size
-		if _, err := m.KeeperRewardPercentage.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintParams(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x5a
-	if len(m.LiquidationMarketId) > 0 {
-		i -= len(m.LiquidationMarketId)
-		copy(dAtA[i:], m.LiquidationMarketId)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.LiquidationMarketId)))
-		i--
-		dAtA[i] = 0x52
-	}
-	if len(m.SpotMarketId) > 0 {
-		i -= len(m.SpotMarketId)
-		copy(dAtA[i:], m.SpotMarketId)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.SpotMarketId)))
-		i--
-		dAtA[i] = 0x4a
-	}
 	if len(m.Prefix) > 0 {
 		i -= len(m.Prefix)
 		copy(dAtA[i:], m.Prefix)
 		i = encodeVarintParams(dAtA, i, uint64(len(m.Prefix)))
 		i--
-		dAtA[i] = 0x42
+		dAtA[i] = 0x22
 	}
-	{
-		size := m.LiquidationPenalty.Size()
-		i -= size
-		if _, err := m.LiquidationPenalty.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintParams(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x3a
-	if m.AuctionSize != 0 {
-		i = encodeVarintParams(dAtA, i, uint64(m.AuctionSize))
-		i--
-		dAtA[i] = 0x30
-	}
-	{
-		size := m.StabilityFee.Size()
-		i -= size
-		if _, err := m.StabilityFee.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintParams(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x2a
-	{
-		size, err := m.DebtLimit.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintParams(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x22
 	{
 		size := m.LiquidationRatio.Size()
 		i -= size
@@ -608,11 +361,6 @@ func (m *DebtParam) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.DebtFloor != 0 {
-		i = encodeVarintParams(dAtA, i, uint64(m.DebtFloor))
-		i--
-		dAtA[i] = 0x20
-	}
 	if m.ConversionFactor != 0 {
 		i = encodeVarintParams(dAtA, i, uint64(m.ConversionFactor))
 		i--
@@ -660,23 +408,6 @@ func (m *Params) Size() (n int) {
 	}
 	l = m.DebtParam.Size()
 	n += 1 + l + sovParams(uint64(l))
-	l = m.GlobalDebtLimit.Size()
-	n += 1 + l + sovParams(uint64(l))
-	if m.SurplusAuctionThreshold != 0 {
-		n += 1 + sovParams(uint64(m.SurplusAuctionThreshold))
-	}
-	if m.SurplusAuctionLot != 0 {
-		n += 1 + sovParams(uint64(m.SurplusAuctionLot))
-	}
-	if m.DebtAuctionThreshold != 0 {
-		n += 1 + sovParams(uint64(m.DebtAuctionThreshold))
-	}
-	if m.DebtAuctionLot != 0 {
-		n += 1 + sovParams(uint64(m.DebtAuctionLot))
-	}
-	if m.CircuitBreaker {
-		n += 2
-	}
 	return n
 }
 
@@ -696,34 +427,9 @@ func (m *CollateralParam) Size() (n int) {
 	}
 	l = m.LiquidationRatio.Size()
 	n += 1 + l + sovParams(uint64(l))
-	l = m.DebtLimit.Size()
-	n += 1 + l + sovParams(uint64(l))
-	l = m.StabilityFee.Size()
-	n += 1 + l + sovParams(uint64(l))
-	if m.AuctionSize != 0 {
-		n += 1 + sovParams(uint64(m.AuctionSize))
-	}
-	l = m.LiquidationPenalty.Size()
-	n += 1 + l + sovParams(uint64(l))
 	l = len(m.Prefix)
 	if l > 0 {
 		n += 1 + l + sovParams(uint64(l))
-	}
-	l = len(m.SpotMarketId)
-	if l > 0 {
-		n += 1 + l + sovParams(uint64(l))
-	}
-	l = len(m.LiquidationMarketId)
-	if l > 0 {
-		n += 1 + l + sovParams(uint64(l))
-	}
-	l = m.KeeperRewardPercentage.Size()
-	n += 1 + l + sovParams(uint64(l))
-	if m.CheckCollateralizationIndexCount != 0 {
-		n += 1 + sovParams(uint64(m.CheckCollateralizationIndexCount))
-	}
-	if m.ConversionFactor != 0 {
-		n += 1 + sovParams(uint64(m.ConversionFactor))
 	}
 	return n
 }
@@ -744,9 +450,6 @@ func (m *DebtParam) Size() (n int) {
 	}
 	if m.ConversionFactor != 0 {
 		n += 1 + sovParams(uint64(m.ConversionFactor))
-	}
-	if m.DebtFloor != 0 {
-		n += 1 + sovParams(uint64(m.DebtFloor))
 	}
 	return n
 }
@@ -853,135 +556,6 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GlobalDebtLimit", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.GlobalDebtLimit.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SurplusAuctionThreshold", wireType)
-			}
-			m.SurplusAuctionThreshold = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.SurplusAuctionThreshold |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SurplusAuctionLot", wireType)
-			}
-			m.SurplusAuctionLot = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.SurplusAuctionLot |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 6:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DebtAuctionThreshold", wireType)
-			}
-			m.DebtAuctionThreshold = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.DebtAuctionThreshold |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 7:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DebtAuctionLot", wireType)
-			}
-			m.DebtAuctionLot = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.DebtAuctionLot |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 8:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CircuitBreaker", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.CircuitBreaker = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipParams(dAtA[iNdEx:])
@@ -1135,126 +709,6 @@ func (m *CollateralParam) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DebtLimit", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.DebtLimit.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field StabilityFee", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.StabilityFee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 6:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AuctionSize", wireType)
-			}
-			m.AuctionSize = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.AuctionSize |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 7:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LiquidationPenalty", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.LiquidationPenalty.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 8:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Prefix", wireType)
 			}
 			var byteLen int
@@ -1287,142 +741,6 @@ func (m *CollateralParam) Unmarshal(dAtA []byte) error {
 				m.Prefix = []byte{}
 			}
 			iNdEx = postIndex
-		case 9:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SpotMarketId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SpotMarketId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 10:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LiquidationMarketId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.LiquidationMarketId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 11:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field KeeperRewardPercentage", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.KeeperRewardPercentage.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 12:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CheckCollateralizationIndexCount", wireType)
-			}
-			m.CheckCollateralizationIndexCount = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.CheckCollateralizationIndexCount |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 13:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ConversionFactor", wireType)
-			}
-			m.ConversionFactor = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ConversionFactor |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipParams(dAtA[iNdEx:])
@@ -1555,25 +873,6 @@ func (m *DebtParam) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.ConversionFactor |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DebtFloor", wireType)
-			}
-			m.DebtFloor = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.DebtFloor |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
