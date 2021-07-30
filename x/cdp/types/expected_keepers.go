@@ -3,7 +3,8 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	bankTypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	paramTypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // AccountKeeper expected interface for the account keeper (noalias)
@@ -36,7 +37,7 @@ type BankKeeper interface {
 	MintCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
 	BurnCoins(ctx sdk.Context, name string, amt sdk.Coins) error
 
-	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
+	SetDenomMetaData(ctx sdk.Context, denomMetaData bankTypes.Metadata)
 
 	// Only needed for simulation interface matching
 	// TODO: Look into golang syntax to make this "Everything in stakingtypes.bankkeeper + extra funcs"
@@ -49,4 +50,13 @@ type BankKeeper interface {
 	GetSupply(ctx sdk.Context) bankexported.SupplyI
 	UndelegateCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	DelegateCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+}
+
+// ParamSubspace defines the expected Subspace interfacace
+type ParamSubspace interface {
+	HasKeyTable() bool
+	WithKeyTable(table paramTypes.KeyTable) paramTypes.Subspace
+	Get(ctx sdk.Context, key []byte, ptr interface{})
+	GetParamSet(ctx sdk.Context, ps paramTypes.ParamSet)
+	SetParamSet(ctx sdk.Context, ps paramTypes.ParamSet)
 }

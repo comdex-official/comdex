@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/comdex-official/comdex/x/cdp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -17,6 +18,10 @@ func (k Keeper) AddCdp(ctx sdk.Context, owner sdk.AccAddress, collateral sdk.Coi
 		return err
 	}
 
+	err = k.ValidateCollateralizationRatio(ctx, collateral, collateralType, principal, sdk.NewCoin(principal.Denom, sdk.ZeroInt()))
+	if err != nil {
+		return err
+	}
 }
 
 func (k Keeper) ValidateBalance(ctx sdk.Context, amount sdk.Coin, sender sdk.AccAddress) error {
@@ -31,4 +36,32 @@ func (k Keeper) ValidateBalance(ctx sdk.Context, amount sdk.Coin, sender sdk.Acc
 	}
 
 	return nil
+}
+
+func (k Keeper) ValidateCollateralizationRatio(ctx sdk.Context, collateral sdk.Coin, collateralType string, principal sdk.Coin) error {
+	collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, collateral, collateralType, principal, spot)
+	if err != nil {
+		return err
+	}
+	liquidationRatio := k.getLiquidationRatio(ctx, collateralType)
+
+}
+
+func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, collateral sdk.Coin, collateralType string, principal sdk.Coin, pfType pricefeedType) (sdk.Dec, error) {
+	//TODO
+}
+
+type pricefeedType string
+
+const (
+	spot        pricefeedType = "spot"
+	liquidation pricefeedType = "liquidation"
+)
+
+func (pft pricefeedType) IsValid() error {
+	switch pft {
+	case spot, liquidation:
+		return nil
+	}
+	return fmt.Errorf("invalid pricefeed type: %s", pft)
 }
