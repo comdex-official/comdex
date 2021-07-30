@@ -24,18 +24,18 @@ message CDP{
   ];
 
   cosmos.base.v1beta1.Coin accumulated_fees = 6 [
-    (gogoproto.moretags) = "yaml:\"accumulatedFees\"",
+    (gogoproto.moretags) = "yaml:\"accumulated_fees\"",
     (gogoproto.nullable) = false
   ];
 
   google.protobuf.Timestamp fees_updated = 7 [
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"feesUpdated\""
+    (gogoproto.moretags) = "yaml:\"fees_updated\""
   ];
 
   string interest_factor = 8 [
-    (gogoproto.moretags) = "yaml:\"interestFactor\"",
+    (gogoproto.moretags) = "yaml:\"interest_factor\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
@@ -44,7 +44,7 @@ message CDP{
 message AugmentedCDP{
   CDP cdp = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.v1beta1.Coin collateral_value = 2 [
-    (gogoproto.moretags) = "yaml:\"collateralValue\"",
+    (gogoproto.moretags) = "yaml:\"collateral_value\"",
     (gogoproto.nullable) = false
   ];
 
