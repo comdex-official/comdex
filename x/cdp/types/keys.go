@@ -17,6 +17,15 @@ const (
 	MemStoreKey = "mem_cdp"
 )
 
+var (
+	TypeMsgCreateCDPRequest = ModuleName + ":create_cdp"
+	TypeMsgDepositRequest = ModuleName + ":deposit"
+	TypeMsgWithdrawRequest = ModuleName + ":withdraw"
+	TypeMsgDrawDebtRequest = ModuleName + ":draw_debt"
+	TypeMsgRepayDebtRequest = ModuleName + ":repay_debt"
+	TypeMsgLiquidateRequest = ModuleName + ":liquidate"
+)
+
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
