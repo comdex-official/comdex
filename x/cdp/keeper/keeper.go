@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -33,6 +35,34 @@ func NewKeeper(
 		storeKey: storeKey,
 		memKey:   memKey,
 	}
+}
+
+func (k Keeper) IncrementTotalPrincipal(ctx sdk.Context, collateralType string, principal sdk.Coin){
+	total:= k.GetTotalPrincipal(ctx, collateralType ,principal.Denom)
+	total= total.Add(principal.Amount)
+	k.SetTotalPrincipal(ctx, collateralType, principal.Denom, total)
+}
+
+func (k Keeper) GetTotalPrincipal(ctx sdk.Context, collateralType , principalDenom string) (total sdk.Int)  {
+	store:= prefix.NewStore(ctx.KVStore(k.storeKey), types.PrincipalKeyPrefix)
+	bz:= store.Get([]byte(collateralType+principalDenom))
+
+	if(bz==nil){
+		k.SetTotalPrincipal(ctx, collateralType, principalDenom, sdk.ZeroInt())
+		return sdk.ZeroInt()
+	}
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &total)
+	return
+}
+
+func (k Keeper) SetTotalPrincipal(ctx sdk.Context, collateralType, principalDenom string, total sdk.Int)  {
+	store:= prefix.NewStore(ctx.KVStore(k.storeKey), types.PrincipalKeyPrefix)
+	_, found:= k.GetCollateralTypePrefix(ctx, collateralType)
+	if !found{
+		fmt.Sprintf("collateral not found")
+	}
+	store.Set([]byte(collateralType+principalDenom), k.cdc.MustMarshalBinaryLengthPrefixed(total))
+
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {

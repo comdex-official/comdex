@@ -20,8 +20,32 @@ func (k Keeper) getLiquidationRatio(ctx sdk.Context, collateralType string) sdk.
 
 }
 
+func (k Keeper) GetDebtParam(ctx sdk.Context, denom string) (types.DebtParam, bool) {
+	dp := k.GetParams(ctx).DebtParam
+	if dp.Denom == denom {
+		return dp, true
+	}
+	return types.DebtParam{}, false
+}
+
+func (k Keeper) GetCollateralTypePrefix(ctx sdk.Context, collateralType string) (byte, bool)  {
+	params:= k.GetParams(ctx)
+
+	for _, cp := range params.CollateralParams{
+		if cp.Type == collateralType{
+			return cp.Prefix, true
+		}
+	}
+	return 0x00, false
+}
+
+
 func (k Keeper) GetCollateral(ctx sdk.Context, collateralType string) (types.CollateralParam, bool) {
 	params := k.GetParams(ctx)
-	//for _,collateralParam:= range params.C
-
+	for _, collateralParam := range params.CollateralParams {
+		if collateralParam.Type == collateralType {
+			return collateralParam, true
+		}
+	}
+	return types.CollateralParam{}, false
 }

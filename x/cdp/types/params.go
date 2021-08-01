@@ -16,6 +16,9 @@ func (p *Params) ParamSetPairs() paramTypes.ParamSetPairs {
 	}
 }
 
+
+
+
 func validateCollateralParams(i interface{}) error {
 	//TODO
 	return nil

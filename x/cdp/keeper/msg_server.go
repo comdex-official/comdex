@@ -18,9 +18,8 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-func (ms msgServer) CreateCDP(goCtx context.Context, msg *types.MsgCreateCDPRequest) (*types.MsgCreateCDPResponse, error) {
-	//TODO
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (ms msgServer) CreateCDP(context context.Context, msg *types.MsgCreateCDPRequest) (*types.MsgCreateCDPResponse, error) {
+	ctx := sdk.UnwrapSDKContext(context)
 
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
@@ -42,27 +41,92 @@ func (ms msgServer) CreateCDP(goCtx context.Context, msg *types.MsgCreateCDPRequ
 	return &types.MsgCreateCDPResponse{}, nil
 }
 
-func (ms msgServer) Deposit(ctx context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
-	//TODO
-	return nil, nil
+func (ms msgServer) Deposit(context context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
+	ctx:= sdk.UnwrapSDKContext(context)
+	err:= ms.DepositCollateral(ctx, msg.Sender, msg.Collateral, msg.CollateralType)
+	if err !=nil{
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Collateral.Amount.String()),
+			),
+		)
+
+	return &types.MsgDepositResponse{}, nil
 }
 
-func (ms msgServer) Withdraw(ctx context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
-	//TODO
-	return nil, nil
+func (ms msgServer) Withdraw(context context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
+	ctx:= sdk.UnwrapSDKContext(context)
+	err:= ms.DepositCollateral(ctx, msg.Sender, msg.Collateral, msg.CollateralType)
+	if err !=nil{
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Collateral.Amount.String()),
+		),
+	)
+
+	return &types.MsgWithdrawResponse{}, nil
 }
 
-func (ms msgServer) DrawDebt(ctx context.Context, msg *types.MsgDrawDebtRequest) (*types.MsgDrawDebtResponse, error) {
-	//TODO
-	return nil, nil
+func (ms msgServer) DrawDebt(context context.Context, msg *types.MsgDrawDebtRequest) (*types.MsgDrawDebtResponse, error) {
+	ctx:= sdk.UnwrapSDKContext(context)
+	err:= ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Principal)
+	if err !=nil{
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Principal.Amount.String()),
+		),
+	)
+
+	return &types.MsgDrawDebtResponse{}, nil
 }
 
-func (ms msgServer) RepayDebt(ctx context.Context, msg *types.MsgRepayDebtRequest) (*types.MsgRepayDebtResponse, error) {
-	//TODO
-	return nil, nil
+func (ms msgServer) RepayDebt(context context.Context, msg *types.MsgRepayDebtRequest) (*types.MsgRepayDebtResponse, error) {
+	ctx:= sdk.UnwrapSDKContext(context)
+	err:= ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Payment)
+	if err !=nil{
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Payment.Amount.String()),
+		),
+	)
+
+	return &types.MsgRepayDebtResponse{}, nil
 }
 
-func (ms msgServer) Liquidate(ctx context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {
-	//TODO
-	return nil, nil
+func (ms msgServer) Liquidate(context context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {
+	ctx:= sdk.UnwrapSDKContext(context)
+	err:= ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Principal)
+	if err !=nil{
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Principal.Amount.String()),
+		),
+	)
+
+	return &types.MsgLiquidateResponse{}, nil
 }
