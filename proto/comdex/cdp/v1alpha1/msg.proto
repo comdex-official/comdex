@@ -8,19 +8,19 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/comdex-official/comdex/x/cdp/types";
 
 // Msg defines the Msg service.
-service Msg {
+service MsgService {
 
-  rpc CreateCDP(MsgCreateCDPRequest) returns (MsgCreateCDPResponse);
+  rpc MsgCreateCDP(MsgCreateCDPRequest) returns (MsgCreateCDPResponse);
 
-  rpc Deposit(MsgDepositRequest) returns (MsgDepositResponse);
+  rpc MsgDeposit(MsgDepositRequest) returns (MsgDepositResponse);
 
-  rpc Withdraw(MsgWithdrawRequest) returns (MsgWithdrawResponse);
+  rpc MsgWithdraw(MsgWithdrawRequest) returns (MsgWithdrawResponse);
 
-  rpc DrawDebt(MsgDrawDebtRequest) returns (MsgDrawDebtResponse);
+  rpc MsgDrawDebt(MsgDrawDebtRequest) returns (MsgDrawDebtResponse);
 
-  rpc RepayDebt(MsgRepayDebtRequest) returns (MsgRepayDebtResponse);
+  rpc MsgRepayDebt(MsgRepayDebtRequest) returns (MsgRepayDebtResponse);
 
-  rpc Liquidate(MsgLiquidateRequest) returns (MsgLiquidateResponse);
+  rpc MsgLiquidate(MsgLiquidateRequest) returns (MsgLiquidateResponse);
 
 
 }
@@ -37,7 +37,7 @@ message MsgCreateCDPRequest{
     (gogoproto.nullable) = false
   ];
 
-  string collateralType = 4 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+  string collateralType = 4 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
 
 }
 
@@ -50,7 +50,7 @@ message MsgDepositRequest{
     (gogoproto.nullable) = false
   ];
 
-  string collateralType = 3 [ (gogoproto.moretags) = "yaml:\"collateralType\"" ];
+  string collateralType = 3 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
 
 }
 

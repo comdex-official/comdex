@@ -8,9 +8,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var _ types.QueryServer = Keeper{}
+var _ types.QueryServiceServer = Keeper{}
 
-func (k Keeper) CDP(context context.Context, request *types.QueryCDPRequest) (*types.QueryCDPResponse, error) {
+func (k Keeper) QueryCDP(context context.Context, request *types.QueryCDPRequest) (*types.QueryCDPResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
 	ownerAddrs, err := sdk.AccAddressFromBech32(request.Owner)
 	if err != nil {
@@ -24,27 +24,27 @@ func (k Keeper) CDP(context context.Context, request *types.QueryCDPRequest) (*t
 	return &types.QueryCDPResponse{Cdp: cdp}, nil
 }
 
-func (k Keeper) CDPs(ctx context.Context, request *types.QueryCDPsRequest) (*types.QueryCDPsResponse, error) {
+func (k Keeper) QueryCDPs(ctx context.Context, request *types.QueryCDPsRequest) (*types.QueryCDPsResponse, error) {
 	//TODO
 	return nil, nil
 }
 
-func (k Keeper) CDPDeposits(ctx context.Context, request *types.QueryCDPDepositsRequest) (*types.QueryCDPDepositsResponse, error) {
+func (k Keeper) QueryCDPDeposits(ctx context.Context, request *types.QueryCDPDepositsRequest) (*types.QueryCDPDepositsResponse, error) {
 	//TODO
 	return nil, nil
 }
 
-func (k Keeper) CDPsByCollateralType(ctx context.Context, request *types.QueryCDPsByCollateralTypeRequest) (*types.QueryCDPsByCollateralTypeResponse, error) {
+func (k Keeper) QueryCDPsByCollateralType(ctx context.Context, request *types.QueryCDPsByCollateralTypeRequest) (*types.QueryCDPsByCollateralTypeResponse, error) {
 	//TODO
 	return nil, nil
 }
 
-func (k Keeper) CDPsByCollateralizationRatio(ctx context.Context, request *types.QueryCDPsByCollateralizationRatioRequest) (*types.QueryCDPsByCollateralizationRatioResponse, error) {
+func (k Keeper) QueryCDPsByCollateralizationRatio(ctx context.Context, request *types.QueryCDPsByCollateralizationRatioRequest) (*types.QueryCDPsByCollateralizationRatioResponse, error) {
 	//TODO
 	return nil, nil
 }
 
-func (k Keeper) Params(context context.Context, request *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (k Keeper) QueryParams(context context.Context, request *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")

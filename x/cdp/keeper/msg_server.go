@@ -12,13 +12,13 @@ type msgServer struct {
 
 // NewMsgServerImpl returns an implementation of the MsgServer interface
 // for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) types.MsgServer {
+func NewMsgServerImpl(keeper Keeper) types.MsgServiceServer {
 	return &msgServer{Keeper: keeper}
 }
 
-var _ types.MsgServer = msgServer{}
+var _ types.MsgServiceServer = msgServer{}
 
-func (ms msgServer) CreateCDP(context context.Context, msg *types.MsgCreateCDPRequest) (*types.MsgCreateCDPResponse, error) {
+func (ms msgServer) MsgCreateCDP(context context.Context, msg *types.MsgCreateCDPRequest) (*types.MsgCreateCDPResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
 
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
@@ -41,7 +41,7 @@ func (ms msgServer) CreateCDP(context context.Context, msg *types.MsgCreateCDPRe
 	return &types.MsgCreateCDPResponse{}, nil
 }
 
-func (ms msgServer) Deposit(context context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
+func (ms msgServer) MsgDeposit(context context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
 	err := ms.DepositCollateral(ctx, msg.Sender, msg.Collateral, msg.CollateralType)
 	if err != nil {
@@ -59,7 +59,7 @@ func (ms msgServer) Deposit(context context.Context, msg *types.MsgDepositReques
 	return &types.MsgDepositResponse{}, nil
 }
 
-func (ms msgServer) Withdraw(context context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
+func (ms msgServer) MsgWithdraw(context context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
 	err := ms.DepositCollateral(ctx, msg.Sender, msg.Collateral, msg.CollateralType)
 	if err != nil {
@@ -77,7 +77,7 @@ func (ms msgServer) Withdraw(context context.Context, msg *types.MsgWithdrawRequ
 	return &types.MsgWithdrawResponse{}, nil
 }
 
-func (ms msgServer) DrawDebt(context context.Context, msg *types.MsgDrawDebtRequest) (*types.MsgDrawDebtResponse, error) {
+func (ms msgServer) MsgDrawDebt(context context.Context, msg *types.MsgDrawDebtRequest) (*types.MsgDrawDebtResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
 	err := ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Principal)
 	if err != nil {
@@ -95,7 +95,7 @@ func (ms msgServer) DrawDebt(context context.Context, msg *types.MsgDrawDebtRequ
 	return &types.MsgDrawDebtResponse{}, nil
 }
 
-func (ms msgServer) RepayDebt(context context.Context, msg *types.MsgRepayDebtRequest) (*types.MsgRepayDebtResponse, error) {
+func (ms msgServer) MsgRepayDebt(context context.Context, msg *types.MsgRepayDebtRequest) (*types.MsgRepayDebtResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
 	err := ms.RepayPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Payment)
 	if err != nil {
@@ -113,7 +113,7 @@ func (ms msgServer) RepayDebt(context context.Context, msg *types.MsgRepayDebtRe
 	return &types.MsgRepayDebtResponse{}, nil
 }
 
-func (ms msgServer) Liquidate(context context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {
+func (ms msgServer) MsgLiquidate(context context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
 	err := ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Principal)
 	if err != nil {

@@ -33,7 +33,7 @@ type MsgCreateCDPRequest struct {
 	Sender         string     `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty" yaml:"sender"`
 	Collateral     types.Coin `protobuf:"bytes,2,opt,name=collateral,proto3" json:"collateral" yaml:"collateral"`
 	Principal      types.Coin `protobuf:"bytes,3,opt,name=principal,proto3" json:"principal" yaml:"principal"`
-	CollateralType string     `protobuf:"bytes,4,opt,name=collateralType,proto3" json:"collateralType,omitempty" yaml:"collateralType"`
+	CollateralType string     `protobuf:"bytes,4,opt,name=collateralType,proto3" json:"collateralType,omitempty" yaml:"collateral_type"`
 }
 
 func (m *MsgCreateCDPRequest) Reset()         { *m = MsgCreateCDPRequest{} }
@@ -136,7 +136,7 @@ var xxx_messageInfo_MsgCreateCDPResponse proto.InternalMessageInfo
 type MsgDepositRequest struct {
 	Sender         string     `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty" yaml:"sender"`
 	Collateral     types.Coin `protobuf:"bytes,2,opt,name=collateral,proto3" json:"collateral" yaml:"collateral"`
-	CollateralType string     `protobuf:"bytes,3,opt,name=collateralType,proto3" json:"collateralType,omitempty" yaml:"collateralType"`
+	CollateralType string     `protobuf:"bytes,3,opt,name=collateralType,proto3" json:"collateralType,omitempty" yaml:"collateral_type"`
 }
 
 func (m *MsgDepositRequest) Reset()         { *m = MsgDepositRequest{} }
@@ -623,46 +623,46 @@ func init() {
 func init() { proto.RegisterFile("comdex/cdp/v1alpha1/msg.proto", fileDescriptor_36e7dbbc8c8df5ed) }
 
 var fileDescriptor_36e7dbbc8c8df5ed = []byte{
-	// 616 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0x41, 0x6f, 0xd3, 0x30,
-	0x14, 0xc7, 0x9b, 0x75, 0xda, 0xa8, 0x11, 0x83, 0x66, 0x5d, 0xd5, 0x46, 0x22, 0x9d, 0x72, 0x80,
-	0xee, 0xb0, 0x44, 0x1d, 0x37, 0x6e, 0xb4, 0x95, 0x38, 0x40, 0x25, 0x88, 0x26, 0x21, 0x4d, 0x42,
-	0xe0, 0x26, 0x5e, 0x6a, 0x29, 0x8d, 0xbd, 0xd8, 0xdd, 0xe8, 0x07, 0xe0, 0xce, 0x07, 0xe1, 0x6b,
-	0x20, 0xed, 0x38, 0x71, 0x01, 0x71, 0xa8, 0x50, 0xfb, 0x0d, 0xfa, 0x09, 0x50, 0x62, 0xb7, 0xe9,
-	0xd2, 0x46, 0x65, 0x48, 0x68, 0xbb, 0x25, 0xf6, 0x7b, 0xff, 0xf7, 0x7e, 0xcf, 0xef, 0x39, 0x01,
-	0x8f, 0x1d, 0xd2, 0x77, 0xd1, 0x27, 0xcb, 0x71, 0xa9, 0x75, 0xde, 0x80, 0x3e, 0xed, 0xc1, 0x86,
-	0xd5, 0x67, 0x9e, 0x49, 0x43, 0xc2, 0x89, 0xba, 0x2b, 0xb6, 0x4d, 0xc7, 0xa5, 0xe6, 0x6c, 0x5b,
-	0xd3, 0x1d, 0xc2, 0xfa, 0x84, 0x59, 0x5d, 0xc8, 0x90, 0x75, 0xde, 0xe8, 0x22, 0x0e, 0x1b, 0x96,
-	0x43, 0x70, 0x20, 0x9c, 0xb4, 0x92, 0x47, 0x3c, 0x12, 0x3f, 0x5a, 0xd1, 0x93, 0x58, 0x35, 0xbe,
-	0x6e, 0x80, 0xdd, 0x0e, 0xf3, 0x5a, 0x21, 0x82, 0x1c, 0xb5, 0xda, 0x6f, 0x6c, 0x74, 0x36, 0x40,
-	0x8c, 0xab, 0x07, 0x60, 0x8b, 0xa1, 0xc0, 0x45, 0x61, 0x45, 0xd9, 0x57, 0xea, 0x85, 0x66, 0x71,
-	0x3a, 0xaa, 0x3d, 0x18, 0xc2, 0xbe, 0xff, 0xdc, 0x10, 0xeb, 0x86, 0x2d, 0x0d, 0xd4, 0x63, 0x00,
-	0x1c, 0xe2, 0xfb, 0x90, 0xa3, 0x10, 0xfa, 0x95, 0x8d, 0x7d, 0xa5, 0x7e, 0xff, 0xa8, 0x6a, 0x8a,
-	0x6c, 0xcc, 0x28, 0x1b, 0x53, 0x66, 0x63, 0xb6, 0x08, 0x0e, 0x9a, 0xd5, 0xcb, 0x51, 0x2d, 0x37,
-	0x1d, 0xd5, 0x8a, 0x42, 0x2d, 0x71, 0x35, 0xec, 0x05, 0x1d, 0xf5, 0x2d, 0x28, 0xd0, 0x10, 0x07,
-	0x0e, 0xa6, 0xd0, 0xaf, 0xe4, 0xd7, 0x89, 0x56, 0xa4, 0xe8, 0x23, 0x21, 0x3a, 0xf7, 0x34, 0xec,
-	0x44, 0x45, 0x7d, 0x01, 0x76, 0x92, 0x00, 0xc7, 0x43, 0x8a, 0x2a, 0x9b, 0x31, 0x5b, 0x75, 0x3a,
-	0xaa, 0xed, 0xa5, 0xb3, 0x89, 0xf6, 0x0d, 0x3b, 0xe5, 0x60, 0x94, 0x41, 0xe9, 0x7a, 0xb5, 0x18,
-	0x25, 0x01, 0x43, 0xc6, 0x0f, 0x05, 0x14, 0x3b, 0xcc, 0x6b, 0x23, 0x4a, 0x18, 0xe6, 0x77, 0xa6,
-	0x88, 0xcb, 0xc4, 0xf9, 0x9b, 0x12, 0x97, 0x80, 0xba, 0x08, 0x26, 0x79, 0x7f, 0x29, 0xf1, 0xf2,
-	0x3b, 0xcc, 0x7b, 0x6e, 0x08, 0x2f, 0xee, 0x0c, 0x70, 0x0b, 0x3c, 0x4c, 0xde, 0x3e, 0xf0, 0x84,
-	0x58, 0x9b, 0x8e, 0x6a, 0xe5, 0xb4, 0x6f, 0x6c, 0xb0, 0x8c, 0xbc, 0x17, 0x8f, 0x44, 0xc2, 0x96,
-	0x9c, 0x71, 0x5c, 0x8a, 0x10, 0x5e, 0xb4, 0x51, 0xf7, 0x5f, 0x0e, 0x79, 0x45, 0x76, 0x1b, 0x37,
-	0xcd, 0xee, 0x3f, 0x0c, 0x86, 0x04, 0x4e, 0xc0, 0x24, 0xf0, 0x77, 0x25, 0x5e, 0xb7, 0x11, 0x85,
-	0xc3, 0xdb, 0x24, 0x7e, 0x05, 0xb6, 0x29, 0x1c, 0xf6, 0x51, 0xc0, 0xd7, 0xf3, 0x96, 0x25, 0xef,
-	0x8e, 0xe4, 0x15, 0x7e, 0x86, 0x3d, 0x53, 0x90, 0x13, 0xbc, 0xc0, 0x24, 0x61, 0x3f, 0x0b, 0xd8,
-	0xd7, 0xf8, 0x6c, 0x80, 0x5d, 0xc8, 0xd1, 0x2d, 0xc1, 0xca, 0xfc, 0x16, 0xd2, 0x10, 0xf9, 0x1d,
-	0x7d, 0xdb, 0x04, 0xf9, 0x0e, 0xf3, 0xd4, 0x8f, 0xa0, 0x30, 0xbf, 0x7e, 0xd4, 0xba, 0xb9, 0xe2,
-	0x4b, 0x60, 0xae, 0xb8, 0xcf, 0xb5, 0x83, 0xbf, 0xb0, 0x14, 0x91, 0xd4, 0x13, 0xb0, 0x2d, 0xc7,
-	0x5d, 0x7d, 0x92, 0xe5, 0x75, 0xfd, 0xa2, 0xd3, 0x9e, 0xae, 0xb5, 0x93, 0xda, 0xef, 0xc1, 0xbd,
-	0xd9, 0x5c, 0xa9, 0x99, 0x4e, 0xa9, 0x5b, 0x45, 0xab, 0xaf, 0x37, 0x4c, 0xe4, 0x67, 0x5d, 0x9c,
-	0x2d, 0x9f, 0x1a, 0xe0, 0x6c, 0xf9, 0xf4, 0x40, 0x44, 0xb5, 0x9f, 0x37, 0x4e, 0x76, 0xed, 0xd3,
-	0xf3, 0x92, 0x5d, 0xfb, 0xa5, 0x2e, 0x8c, 0x22, 0xcc, 0x8f, 0x3e, 0x3b, 0x42, 0xba, 0x49, 0xb3,
-	0x23, 0x2c, 0xf5, 0x51, 0xf3, 0xe5, 0xe5, 0x58, 0x57, 0xae, 0xc6, 0xba, 0xf2, 0x7b, 0xac, 0x2b,
-	0x5f, 0x26, 0x7a, 0xee, 0x6a, 0xa2, 0xe7, 0x7e, 0x4e, 0xf4, 0xdc, 0xc9, 0xa1, 0x87, 0x79, 0x6f,
-	0xd0, 0x8d, 0xa4, 0x2c, 0x21, 0x77, 0x48, 0x4e, 0x4f, 0xb1, 0x83, 0xa1, 0x2f, 0xdf, 0x2d, 0xf1,
-	0x47, 0x12, 0x35, 0x2e, 0xeb, 0x6e, 0xc5, 0x3f, 0x10, 0xcf, 0xfe, 0x04, 0x00, 0x00, 0xff, 0xff,
-	0xa8, 0x99, 0x93, 0x6c, 0xac, 0x08, 0x00, 0x00,
+	// 613 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0x41, 0x6f, 0xda, 0x3c,
+	0x18, 0xc7, 0x49, 0x5b, 0xf5, 0x55, 0xdd, 0x77, 0xdd, 0x70, 0x19, 0xa2, 0x91, 0x16, 0xaa, 0x1c,
+	0x36, 0x7a, 0x68, 0x22, 0xba, 0xdb, 0x8e, 0x80, 0xb4, 0xc3, 0x86, 0xb4, 0x65, 0x95, 0x26, 0x4d,
+	0x9a, 0x36, 0x93, 0xb8, 0xc1, 0x52, 0x88, 0xdd, 0xd8, 0xd0, 0xf1, 0x01, 0x76, 0xdf, 0x17, 0xd9,
+	0xf7, 0xe8, 0xb1, 0xda, 0x65, 0xd5, 0x0e, 0x68, 0x82, 0x6f, 0xc0, 0x27, 0x98, 0x88, 0x0d, 0x84,
+	0x40, 0xc4, 0x5a, 0x69, 0x6a, 0x6f, 0xc1, 0xf1, 0xf3, 0x7f, 0xfe, 0xbf, 0xf8, 0x79, 0x1e, 0x0c,
+	0x9e, 0xb8, 0xb4, 0xe3, 0xe1, 0x2f, 0xb6, 0xeb, 0x31, 0xbb, 0x57, 0x45, 0x01, 0x6b, 0xa3, 0xaa,
+	0xdd, 0xe1, 0xbe, 0xc5, 0x22, 0x2a, 0x28, 0xdc, 0x97, 0xaf, 0x2d, 0xd7, 0x63, 0xd6, 0xf4, 0xb5,
+	0x6e, 0xb8, 0x94, 0x77, 0x28, 0xb7, 0x5b, 0x88, 0x63, 0xbb, 0x57, 0x6d, 0x61, 0x81, 0xaa, 0xb6,
+	0x4b, 0x49, 0x28, 0x83, 0xf4, 0x82, 0x4f, 0x7d, 0x1a, 0x3f, 0xda, 0x93, 0x27, 0xb9, 0x6a, 0x7e,
+	0xdf, 0x00, 0xfb, 0x4d, 0xee, 0xd7, 0x23, 0x8c, 0x04, 0xae, 0x37, 0xde, 0x38, 0xf8, 0xbc, 0x8b,
+	0xb9, 0x80, 0x47, 0x60, 0x9b, 0xe3, 0xd0, 0xc3, 0x51, 0x49, 0x3b, 0xd4, 0x2a, 0x3b, 0xb5, 0xfc,
+	0x78, 0x50, 0x7e, 0xd0, 0x47, 0x9d, 0xe0, 0x85, 0x29, 0xd7, 0x4d, 0x47, 0x6d, 0x80, 0xa7, 0x00,
+	0xb8, 0x34, 0x08, 0x90, 0xc0, 0x11, 0x0a, 0x4a, 0x1b, 0x87, 0x5a, 0x65, 0xf7, 0xe4, 0xc0, 0x92,
+	0x6e, 0xac, 0x89, 0x1b, 0x4b, 0xb9, 0xb1, 0xea, 0x94, 0x84, 0xb5, 0x83, 0xcb, 0x41, 0x39, 0x37,
+	0x1e, 0x94, 0xf3, 0x52, 0x6d, 0x1e, 0x6a, 0x3a, 0x09, 0x1d, 0xf8, 0x16, 0xec, 0xb0, 0x88, 0x84,
+	0x2e, 0x61, 0x28, 0x28, 0x6d, 0xae, 0x13, 0x2d, 0x29, 0xd1, 0x47, 0x52, 0x74, 0x16, 0x69, 0x3a,
+	0x73, 0x15, 0x58, 0x03, 0x7b, 0xf3, 0x04, 0xa7, 0x7d, 0x86, 0x4b, 0x5b, 0x31, 0x9b, 0x3e, 0x1e,
+	0x94, 0x8b, 0x69, 0x37, 0x9f, 0x44, 0x9f, 0x61, 0xd3, 0x49, 0x45, 0x98, 0x45, 0x50, 0x58, 0xfc,
+	0x5c, 0x9c, 0xd1, 0x90, 0x63, 0xf3, 0x5a, 0x03, 0xf9, 0x26, 0xf7, 0x1b, 0x98, 0x51, 0x4e, 0xc4,
+	0xbd, 0xf9, 0x8a, 0xcb, 0xc8, 0x9b, 0x37, 0x46, 0x2e, 0x00, 0x98, 0x24, 0x53, 0xc0, 0xbf, 0xb4,
+	0x78, 0xf9, 0x3d, 0x11, 0x6d, 0x2f, 0x42, 0x17, 0xf7, 0x86, 0xb8, 0x0e, 0x1e, 0xa6, 0x88, 0x6e,
+	0x81, 0xfc, 0x38, 0x6e, 0x8a, 0x39, 0x9b, 0x62, 0xfe, 0x29, 0x99, 0x1b, 0x11, 0xba, 0x68, 0xe0,
+	0xd6, 0x6d, 0x4e, 0x79, 0x85, 0xbb, 0x8d, 0x9b, 0xba, 0xfb, 0x07, 0xad, 0xa1, 0x80, 0xe7, 0x60,
+	0x0a, 0xf8, 0x87, 0x16, 0xaf, 0x3b, 0x98, 0xa1, 0xfe, 0x5d, 0x12, 0xbf, 0x02, 0xff, 0x31, 0xd4,
+	0xef, 0xe0, 0x50, 0xac, 0xe7, 0x2d, 0x2a, 0xde, 0x3d, 0xc5, 0x2b, 0xe3, 0x4c, 0x67, 0xaa, 0xa0,
+	0x5a, 0x38, 0xc1, 0xa4, 0x60, 0xbf, 0x4a, 0xd8, 0xd7, 0xe4, 0xbc, 0x4b, 0x3c, 0x24, 0xf0, 0x1d,
+	0xc1, 0x2a, 0x7f, 0x09, 0x1b, 0xd2, 0xdf, 0xc9, 0x60, 0x0b, 0x80, 0x26, 0xf7, 0xdf, 0xe1, 0xa8,
+	0x47, 0x5c, 0x0c, 0x5d, 0xf0, 0x7f, 0x72, 0x12, 0xc1, 0x8a, 0xb5, 0xe2, 0x5f, 0xc1, 0x5a, 0x31,
+	0xdb, 0xf5, 0xa3, 0xbf, 0xd8, 0x29, 0x73, 0xc2, 0x8f, 0x71, 0x4a, 0xd5, 0xfb, 0xf0, 0x69, 0x56,
+	0xe0, 0xe2, 0xd8, 0xd3, 0x9f, 0xad, 0xdd, 0xa7, 0xe4, 0x3f, 0x83, 0xdd, 0x44, 0x9f, 0xc1, 0xcc,
+	0xb8, 0xd4, 0x94, 0xd1, 0x2b, 0xeb, 0x37, 0x2e, 0x64, 0x98, 0x16, 0x76, 0x76, 0x86, 0x54, 0x4f,
+	0x67, 0x67, 0x48, 0xf7, 0x88, 0x3a, 0x87, 0x59, 0x39, 0x65, 0x9f, 0x43, 0xba, 0x8b, 0xb2, 0xcf,
+	0x61, 0xa9, 0x36, 0x55, 0x92, 0x59, 0x4d, 0x64, 0x27, 0x49, 0x57, 0x6f, 0x76, 0x92, 0xa5, 0x02,
+	0xab, 0xbd, 0xbc, 0x1c, 0x1a, 0xda, 0xd5, 0xd0, 0xd0, 0x7e, 0x0f, 0x0d, 0xed, 0xdb, 0xc8, 0xc8,
+	0x5d, 0x8d, 0x8c, 0xdc, 0xf5, 0xc8, 0xc8, 0x7d, 0x38, 0xf6, 0x89, 0x68, 0x77, 0x5b, 0x13, 0x29,
+	0x5b, 0xca, 0x1d, 0xd3, 0xb3, 0x33, 0xe2, 0x12, 0x14, 0xa8, 0xdf, 0xb6, 0xbc, 0xac, 0x4c, 0x2a,
+	0x9a, 0xb7, 0xb6, 0xe3, 0xbb, 0xc5, 0xf3, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xaa, 0x68, 0x77,
+	0x7b, 0xc7, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -673,252 +673,252 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// MsgClient is the client API for Msg service.
+// MsgServiceClient is the client API for MsgService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type MsgClient interface {
-	CreateCDP(ctx context.Context, in *MsgCreateCDPRequest, opts ...grpc.CallOption) (*MsgCreateCDPResponse, error)
-	Deposit(ctx context.Context, in *MsgDepositRequest, opts ...grpc.CallOption) (*MsgDepositResponse, error)
-	Withdraw(ctx context.Context, in *MsgWithdrawRequest, opts ...grpc.CallOption) (*MsgWithdrawResponse, error)
-	DrawDebt(ctx context.Context, in *MsgDrawDebtRequest, opts ...grpc.CallOption) (*MsgDrawDebtResponse, error)
-	RepayDebt(ctx context.Context, in *MsgRepayDebtRequest, opts ...grpc.CallOption) (*MsgRepayDebtResponse, error)
-	Liquidate(ctx context.Context, in *MsgLiquidateRequest, opts ...grpc.CallOption) (*MsgLiquidateResponse, error)
+type MsgServiceClient interface {
+	MsgCreateCDP(ctx context.Context, in *MsgCreateCDPRequest, opts ...grpc.CallOption) (*MsgCreateCDPResponse, error)
+	MsgDeposit(ctx context.Context, in *MsgDepositRequest, opts ...grpc.CallOption) (*MsgDepositResponse, error)
+	MsgWithdraw(ctx context.Context, in *MsgWithdrawRequest, opts ...grpc.CallOption) (*MsgWithdrawResponse, error)
+	MsgDrawDebt(ctx context.Context, in *MsgDrawDebtRequest, opts ...grpc.CallOption) (*MsgDrawDebtResponse, error)
+	MsgRepayDebt(ctx context.Context, in *MsgRepayDebtRequest, opts ...grpc.CallOption) (*MsgRepayDebtResponse, error)
+	MsgLiquidate(ctx context.Context, in *MsgLiquidateRequest, opts ...grpc.CallOption) (*MsgLiquidateResponse, error)
 }
 
-type msgClient struct {
+type msgServiceClient struct {
 	cc grpc1.ClientConn
 }
 
-func NewMsgClient(cc grpc1.ClientConn) MsgClient {
-	return &msgClient{cc}
+func NewMsgServiceClient(cc grpc1.ClientConn) MsgServiceClient {
+	return &msgServiceClient{cc}
 }
 
-func (c *msgClient) CreateCDP(ctx context.Context, in *MsgCreateCDPRequest, opts ...grpc.CallOption) (*MsgCreateCDPResponse, error) {
+func (c *msgServiceClient) MsgCreateCDP(ctx context.Context, in *MsgCreateCDPRequest, opts ...grpc.CallOption) (*MsgCreateCDPResponse, error) {
 	out := new(MsgCreateCDPResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Msg/CreateCDP", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.MsgService/MsgCreateCDP", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) Deposit(ctx context.Context, in *MsgDepositRequest, opts ...grpc.CallOption) (*MsgDepositResponse, error) {
+func (c *msgServiceClient) MsgDeposit(ctx context.Context, in *MsgDepositRequest, opts ...grpc.CallOption) (*MsgDepositResponse, error) {
 	out := new(MsgDepositResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Msg/Deposit", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.MsgService/MsgDeposit", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) Withdraw(ctx context.Context, in *MsgWithdrawRequest, opts ...grpc.CallOption) (*MsgWithdrawResponse, error) {
+func (c *msgServiceClient) MsgWithdraw(ctx context.Context, in *MsgWithdrawRequest, opts ...grpc.CallOption) (*MsgWithdrawResponse, error) {
 	out := new(MsgWithdrawResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Msg/Withdraw", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.MsgService/MsgWithdraw", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) DrawDebt(ctx context.Context, in *MsgDrawDebtRequest, opts ...grpc.CallOption) (*MsgDrawDebtResponse, error) {
+func (c *msgServiceClient) MsgDrawDebt(ctx context.Context, in *MsgDrawDebtRequest, opts ...grpc.CallOption) (*MsgDrawDebtResponse, error) {
 	out := new(MsgDrawDebtResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Msg/DrawDebt", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.MsgService/MsgDrawDebt", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) RepayDebt(ctx context.Context, in *MsgRepayDebtRequest, opts ...grpc.CallOption) (*MsgRepayDebtResponse, error) {
+func (c *msgServiceClient) MsgRepayDebt(ctx context.Context, in *MsgRepayDebtRequest, opts ...grpc.CallOption) (*MsgRepayDebtResponse, error) {
 	out := new(MsgRepayDebtResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Msg/RepayDebt", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.MsgService/MsgRepayDebt", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) Liquidate(ctx context.Context, in *MsgLiquidateRequest, opts ...grpc.CallOption) (*MsgLiquidateResponse, error) {
+func (c *msgServiceClient) MsgLiquidate(ctx context.Context, in *MsgLiquidateRequest, opts ...grpc.CallOption) (*MsgLiquidateResponse, error) {
 	out := new(MsgLiquidateResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.Msg/Liquidate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.MsgService/MsgLiquidate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// MsgServer is the server API for Msg service.
-type MsgServer interface {
-	CreateCDP(context.Context, *MsgCreateCDPRequest) (*MsgCreateCDPResponse, error)
-	Deposit(context.Context, *MsgDepositRequest) (*MsgDepositResponse, error)
-	Withdraw(context.Context, *MsgWithdrawRequest) (*MsgWithdrawResponse, error)
-	DrawDebt(context.Context, *MsgDrawDebtRequest) (*MsgDrawDebtResponse, error)
-	RepayDebt(context.Context, *MsgRepayDebtRequest) (*MsgRepayDebtResponse, error)
-	Liquidate(context.Context, *MsgLiquidateRequest) (*MsgLiquidateResponse, error)
+// MsgServiceServer is the server API for MsgService service.
+type MsgServiceServer interface {
+	MsgCreateCDP(context.Context, *MsgCreateCDPRequest) (*MsgCreateCDPResponse, error)
+	MsgDeposit(context.Context, *MsgDepositRequest) (*MsgDepositResponse, error)
+	MsgWithdraw(context.Context, *MsgWithdrawRequest) (*MsgWithdrawResponse, error)
+	MsgDrawDebt(context.Context, *MsgDrawDebtRequest) (*MsgDrawDebtResponse, error)
+	MsgRepayDebt(context.Context, *MsgRepayDebtRequest) (*MsgRepayDebtResponse, error)
+	MsgLiquidate(context.Context, *MsgLiquidateRequest) (*MsgLiquidateResponse, error)
 }
 
-// UnimplementedMsgServer can be embedded to have forward compatible implementations.
-type UnimplementedMsgServer struct {
+// UnimplementedMsgServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedMsgServiceServer struct {
 }
 
-func (*UnimplementedMsgServer) CreateCDP(ctx context.Context, req *MsgCreateCDPRequest) (*MsgCreateCDPResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateCDP not implemented")
+func (*UnimplementedMsgServiceServer) MsgCreateCDP(ctx context.Context, req *MsgCreateCDPRequest) (*MsgCreateCDPResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgCreateCDP not implemented")
 }
-func (*UnimplementedMsgServer) Deposit(ctx context.Context, req *MsgDepositRequest) (*MsgDepositResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Deposit not implemented")
+func (*UnimplementedMsgServiceServer) MsgDeposit(ctx context.Context, req *MsgDepositRequest) (*MsgDepositResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgDeposit not implemented")
 }
-func (*UnimplementedMsgServer) Withdraw(ctx context.Context, req *MsgWithdrawRequest) (*MsgWithdrawResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Withdraw not implemented")
+func (*UnimplementedMsgServiceServer) MsgWithdraw(ctx context.Context, req *MsgWithdrawRequest) (*MsgWithdrawResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgWithdraw not implemented")
 }
-func (*UnimplementedMsgServer) DrawDebt(ctx context.Context, req *MsgDrawDebtRequest) (*MsgDrawDebtResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DrawDebt not implemented")
+func (*UnimplementedMsgServiceServer) MsgDrawDebt(ctx context.Context, req *MsgDrawDebtRequest) (*MsgDrawDebtResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgDrawDebt not implemented")
 }
-func (*UnimplementedMsgServer) RepayDebt(ctx context.Context, req *MsgRepayDebtRequest) (*MsgRepayDebtResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RepayDebt not implemented")
+func (*UnimplementedMsgServiceServer) MsgRepayDebt(ctx context.Context, req *MsgRepayDebtRequest) (*MsgRepayDebtResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgRepayDebt not implemented")
 }
-func (*UnimplementedMsgServer) Liquidate(ctx context.Context, req *MsgLiquidateRequest) (*MsgLiquidateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Liquidate not implemented")
-}
-
-func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
-	s.RegisterService(&_Msg_serviceDesc, srv)
+func (*UnimplementedMsgServiceServer) MsgLiquidate(ctx context.Context, req *MsgLiquidateRequest) (*MsgLiquidateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgLiquidate not implemented")
 }
 
-func _Msg_CreateCDP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func RegisterMsgServiceServer(s grpc1.Server, srv MsgServiceServer) {
+	s.RegisterService(&_MsgService_serviceDesc, srv)
+}
+
+func _MsgService_MsgCreateCDP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgCreateCDPRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).CreateCDP(ctx, in)
+		return srv.(MsgServiceServer).MsgCreateCDP(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Msg/CreateCDP",
+		FullMethod: "/comdex.cdp.v1alpha1.MsgService/MsgCreateCDP",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateCDP(ctx, req.(*MsgCreateCDPRequest))
+		return srv.(MsgServiceServer).MsgCreateCDP(ctx, req.(*MsgCreateCDPRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_Deposit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MsgService_MsgDeposit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgDepositRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).Deposit(ctx, in)
+		return srv.(MsgServiceServer).MsgDeposit(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Msg/Deposit",
+		FullMethod: "/comdex.cdp.v1alpha1.MsgService/MsgDeposit",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Deposit(ctx, req.(*MsgDepositRequest))
+		return srv.(MsgServiceServer).MsgDeposit(ctx, req.(*MsgDepositRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_Withdraw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MsgService_MsgWithdraw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgWithdrawRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).Withdraw(ctx, in)
+		return srv.(MsgServiceServer).MsgWithdraw(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Msg/Withdraw",
+		FullMethod: "/comdex.cdp.v1alpha1.MsgService/MsgWithdraw",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Withdraw(ctx, req.(*MsgWithdrawRequest))
+		return srv.(MsgServiceServer).MsgWithdraw(ctx, req.(*MsgWithdrawRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_DrawDebt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MsgService_MsgDrawDebt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgDrawDebtRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).DrawDebt(ctx, in)
+		return srv.(MsgServiceServer).MsgDrawDebt(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Msg/DrawDebt",
+		FullMethod: "/comdex.cdp.v1alpha1.MsgService/MsgDrawDebt",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DrawDebt(ctx, req.(*MsgDrawDebtRequest))
+		return srv.(MsgServiceServer).MsgDrawDebt(ctx, req.(*MsgDrawDebtRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_RepayDebt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MsgService_MsgRepayDebt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgRepayDebtRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).RepayDebt(ctx, in)
+		return srv.(MsgServiceServer).MsgRepayDebt(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Msg/RepayDebt",
+		FullMethod: "/comdex.cdp.v1alpha1.MsgService/MsgRepayDebt",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RepayDebt(ctx, req.(*MsgRepayDebtRequest))
+		return srv.(MsgServiceServer).MsgRepayDebt(ctx, req.(*MsgRepayDebtRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_Liquidate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MsgService_MsgLiquidate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgLiquidateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).Liquidate(ctx, in)
+		return srv.(MsgServiceServer).MsgLiquidate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.Msg/Liquidate",
+		FullMethod: "/comdex.cdp.v1alpha1.MsgService/MsgLiquidate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Liquidate(ctx, req.(*MsgLiquidateRequest))
+		return srv.(MsgServiceServer).MsgLiquidate(ctx, req.(*MsgLiquidateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Msg_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "comdex.cdp.v1alpha1.Msg",
-	HandlerType: (*MsgServer)(nil),
+var _MsgService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "comdex.cdp.v1alpha1.MsgService",
+	HandlerType: (*MsgServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateCDP",
-			Handler:    _Msg_CreateCDP_Handler,
+			MethodName: "MsgCreateCDP",
+			Handler:    _MsgService_MsgCreateCDP_Handler,
 		},
 		{
-			MethodName: "Deposit",
-			Handler:    _Msg_Deposit_Handler,
+			MethodName: "MsgDeposit",
+			Handler:    _MsgService_MsgDeposit_Handler,
 		},
 		{
-			MethodName: "Withdraw",
-			Handler:    _Msg_Withdraw_Handler,
+			MethodName: "MsgWithdraw",
+			Handler:    _MsgService_MsgWithdraw_Handler,
 		},
 		{
-			MethodName: "DrawDebt",
-			Handler:    _Msg_DrawDebt_Handler,
+			MethodName: "MsgDrawDebt",
+			Handler:    _MsgService_MsgDrawDebt_Handler,
 		},
 		{
-			MethodName: "RepayDebt",
-			Handler:    _Msg_RepayDebt_Handler,
+			MethodName: "MsgRepayDebt",
+			Handler:    _MsgService_MsgRepayDebt_Handler,
 		},
 		{
-			MethodName: "Liquidate",
-			Handler:    _Msg_Liquidate_Handler,
+			MethodName: "MsgLiquidate",
+			Handler:    _MsgService_MsgLiquidate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

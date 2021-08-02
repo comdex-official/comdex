@@ -12,36 +12,36 @@ import "cosmos/base/v1beta1/coin.proto";
 option go_package = "github.com/comdex-official/comdex/x/cdp/types";
 
 // Query defines the gRPC querier service.
-service Query {
+service QueryService {
 
-  rpc CDP(QueryCDPRequest) returns(QueryCDPResponse){
+  rpc QueryCDP(QueryCDPRequest) returns(QueryCDPResponse){
     option (google.api.http).get =
-        "/comdex/cdp/{collateral_type}/{owner}";
+        "/comdex/cdps/{collateral_type}/{owner}";
   };
 
-  rpc CDPs(QueryCDPsRequest) returns(QueryCDPsResponse){
+  rpc QueryCDPs(QueryCDPsRequest) returns(QueryCDPsResponse){
     option (google.api.http).get =
-        "/comdex/cdps";
+            "/comdex/cdps";
   };
 
-  rpc CDPDeposits(QueryCDPDepositsRequest) returns(QueryCDPDepositsResponse){
+  rpc QueryCDPDeposits(QueryCDPDepositsRequest) returns(QueryCDPDepositsResponse){
     option (google.api.http).get =
-        "/comdex/cdp/deposits/{collateral_type}/{owner}";
+            "/comdex/cdp/deposits/{collateral_type}/{owner}";
   };
 
-  rpc CDPsByCollateralType(QueryCDPsByCollateralTypeRequest) returns(QueryCDPsByCollateralTypeResponse){
+  rpc QueryCDPsByCollateralType(QueryCDPsByCollateralTypeRequest) returns(QueryCDPsByCollateralTypeResponse){
     option (google.api.http).get =
-        "/comdex/cdps_by_collateralType/{collateral_type}";
+            "/comdex/cdps_by_collateralType/{collateral_type}";
   };
 
-  rpc CDPsByCollateralizationRatio(QueryCDPsByCollateralizationRatioRequest) returns(QueryCDPsByCollateralizationRatioResponse){
+  rpc QueryCDPsByCollateralizationRatio(QueryCDPsByCollateralizationRatioRequest) returns(QueryCDPsByCollateralizationRatioResponse){
     option (google.api.http).get =
-        "/comdex/cdps_by_collateralizationRatio/{ratio}";
+            "/comdex/cdps_by_collateralizationRatio/{ratio}";
   };
 
-  rpc Params(QueryParamsRequest) returns(QueryParamsResponse){
+  rpc QueryParams(QueryParamsRequest) returns(QueryParamsResponse){
     option (google.api.http).get =
-        "/comdex/cdp/params";
+            "/comdex/cdp/params";
   };
 }
 
