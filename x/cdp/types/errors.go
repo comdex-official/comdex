@@ -21,5 +21,15 @@ var (
 
 	ErrCdpNotFound = sdkerrors.Register(ModuleName, 5, "cdp not found")
 
+	ErrInvalidCDP = sdkerrors.Register(ModuleName, 6, " cdp type does not exist")
+
+	ErrDenomPrefixNotFound = sdkerrors.Register(ModuleName, 7, "denom prefix not found")
+
+	ErrInvalidDebtRequest = sdkerrors.Register(ModuleName, 8, "only one principal type per cdp")
+
+	ErrDebtNotSupported = sdkerrors.Register(ModuleName, 9, "debt not supported")
+
+	ErrInvalidPayment = sdkerrors.Register(ModuleName, 10, "invalid payment")
+
 	ErrInvalidWithdrawAmount = sdkerrors.Register(ModuleName, 13, "withdrawal amount exceeds deposit")
 )

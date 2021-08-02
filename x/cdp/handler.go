@@ -19,16 +19,16 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 
 		switch msg := msg.(type) {
 		case *types.MsgCreateCDPRequest:
-			result, err := msgServer.CreateCDP(sdk.WrapSDKContext(ctx), msg)
+			result, err := msgServer.MsgCreateCDP(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, result, err)
 		case *types.MsgDepositRequest:
-			result, err:= msgServer.Deposit(sdk.WrapSDKContext(ctx), msg)
+			result, err := msgServer.MsgDeposit(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, result, err)
 		case *types.MsgWithdrawRequest:
-			result, err:= msgServer.Withdraw(sdk.WrapSDKContext(ctx), msg)
+			result, err := msgServer.MsgWithdraw(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, result, err)
 		case *types.MsgDrawDebtRequest:
-			result, err:= msgServer.DrawDebt(sdk.WrapSDKContext(ctx), msg)
+			result, err := msgServer.MsgDrawDebt(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, result, err)
 
 		default:

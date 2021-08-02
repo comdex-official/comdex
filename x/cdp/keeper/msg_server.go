@@ -115,7 +115,7 @@ func (ms msgServer) MsgRepayDebt(context context.Context, msg *types.MsgRepayDeb
 
 func (ms msgServer) MsgLiquidate(context context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
-	err := ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Principal)
+	err := ms.AttemptLiquidation(ctx, msg.Sender, msg.CollateralType)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +124,7 @@ func (ms msgServer) MsgLiquidate(context context.Context, msg *types.MsgLiquidat
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Principal.Amount.String()),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
 		),
 	)
 

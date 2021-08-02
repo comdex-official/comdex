@@ -91,12 +91,11 @@ func (k Keeper) RepayPrincipal(ctx sdk.Context, owner string, collateralType str
 	cdp.Principal = cdp.Principal.Sub(payment)
 
 	if cdp.Principal.IsZero() {
-		//k.ReturnCollateral(ctx, cdp)
-		//k.RemoveCdpOwnerIndex(ctx, cdp)
-		//err= k.DeleteCdpAndCollateralRatioIndex(ctx, cdp)
-		//if err != nil {
-		//	return err
-		//}
+		k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddrs, sdk.NewCoins(cdp.Collateral))
+		err = k.DeleteCDP(ctx, cdp)
+		if err != nil {
+			return err
+		}
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeCdpClose,
@@ -107,4 +106,15 @@ func (k Keeper) RepayPrincipal(ctx sdk.Context, owner string, collateralType str
 	}
 
 	return k.SetCdp(ctx, cdp)
+}
+
+func (k Keeper) ValidatePaymentCoins(ctx sdk.Context, cdp types.CDP, payment sdk.Coin) error {
+	if payment.Denom != cdp.Principal.Denom {
+		return sdkerrors.Wrapf(types.ErrInvalidPayment, "cdp %d: expected %s, got %s", cdp.Id, cdp.Principal.Denom, payment.Denom)
+	}
+	_, found := k.GetDebtParam(ctx, payment.Denom)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidPayment, "payment denom %s not found", payment.Denom)
+	}
+	return nil
 }

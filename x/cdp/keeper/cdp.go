@@ -35,13 +35,13 @@ func (k Keeper) AddCdp(ctx sdk.Context, owner sdk.AccAddress, collateral sdk.Coi
 
 	err = k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(principal))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, owner, sdk.NewCoins(principal))
-
-	k.IncrementTotalPrincipal(ctx, collateralType, principal)
-
+	if err != nil {
+		return err
+	}
 	k.SetCdp(ctx, cdp)
 	k.IndexCdpByOwner(ctx, cdp)
 	k.SetNextCdpId(ctx, id+1)
@@ -53,6 +53,11 @@ func (k Keeper) AddCdp(ctx sdk.Context, owner sdk.AccAddress, collateral sdk.Coi
 		),
 	)
 
+	return nil
+}
+
+func (k Keeper) AttemptLiquidation(ctx sdk.Context, owner string, collateralType string) error {
+	//TOD)
 	return nil
 }
 
@@ -73,11 +78,11 @@ func (k Keeper) ValidateBalance(ctx sdk.Context, amount sdk.Coin, sender sdk.Acc
 func (k Keeper) ValidateCollateral(ctx sdk.Context, collateral sdk.Coin, collateralType string) error {
 	collateralParam, found := k.GetCollateral(ctx, collateralType)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidCollateral, "error")
+		return sdkerrors.Wrapf(types.ErrCdpNotFound, "%s cdp does not exist", collateralType)
 	}
 
 	if collateralParam.Denom != collateral.Denom {
-		return sdkerrors.Wrapf(types.ErrInvalidCollateral, "error")
+		return sdkerrors.Wrapf(types.ErrInvalidCollateral, "collateral given %s , collateral required %s", collateral.Denom, collateralParam.Denom)
 	}
 	return nil
 }
@@ -97,12 +102,12 @@ func (k Keeper) ValidateCollateralizationRatio(ctx sdk.Context, collateral sdk.C
 }
 
 func (k Keeper) GetCdpByOwnerAndCollateralType(ctx sdk.Context, owner sdk.AccAddress, collateralType string) (types.CDP, bool) {
-	cdpIDs, found := k.GetCdpIdsByOnwer(ctx, owner)
+	cdpIdList, found := k.GetCdpIdsByOnwer(ctx, owner)
 	if !found {
 		return types.CDP{}, false
 	}
 
-	for _, id := range cdpIDs {
+	for _, id := range cdpIdList.Ids {
 		cdp, found := k.GetCDP(ctx, collateralType, id)
 		if found {
 			return cdp, true
@@ -112,32 +117,42 @@ func (k Keeper) GetCdpByOwnerAndCollateralType(ctx sdk.Context, owner sdk.AccAdd
 	return types.CDP{}, false
 }
 
-func (k Keeper) GetCDP(ctx sdk.Context, colalteralType string, cdpID uint64) (types.CDP, bool) {
+func (k Keeper) GetCDP(ctx sdk.Context, collateralType string, cdpID uint64) (types.CDP, bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpKeyPrefix)
-	prefix, found := k.GetCollateralTypePrefix(ctx, colalteralType)
+	cdpPrefix, found := k.GetCollateralTypePrefix(ctx, collateralType)
 
 	if !found {
 		return types.CDP{}, false
 	}
 
-	bz := store.Get(types.CdpKey(prefix, cdpID))
+	bz := store.Get(types.CdpKey(cdpPrefix, cdpID))
 
 	if bz == nil {
 		return types.CDP{}, false
 	}
 	var cdp types.CDP
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &cdp)
+	k.cdc.MustUnmarshalBinaryBare(bz, &cdp)
 	return cdp, true
 }
 
 func (k Keeper) SetCdp(ctx sdk.Context, cdp types.CDP) error {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpKeyPrefix)
-	prefix, found := k.GetCollateralTypePrefix(ctx, cdp.Type)
+	cdpPrefix, found := k.GetCollateralTypePrefix(ctx, cdp.Type)
 	if !found {
-		sdkerrors.Wrapf(types.ErrSample, "error")
+		sdkerrors.Wrapf(types.ErrDenomPrefixNotFound, "%s", cdp.Collateral.Denom)
 	}
-	bz := k.cdc.MustMarshalBinaryLengthPrefixed(cdp)
-	store.Set(types.CdpKey(prefix, cdp.Id), bz)
+	bz := k.cdc.MustMarshalBinaryBare(&cdp)
+	store.Set(types.CdpKey(cdpPrefix, cdp.Id), bz)
+	return nil
+}
+
+func (k Keeper) DeleteCDP(ctx sdk.Context, cdp types.CDP) error {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpKeyPrefix)
+	db, found := k.GetCollateralTypePrefix(ctx, cdp.Type)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrDenomPrefixNotFound, "%s", cdp.Collateral.Denom)
+	}
+	store.Delete(types.CdpKey(db, cdp.Id))
 	return nil
 }
 
@@ -157,28 +172,20 @@ func (k Keeper) MintDebtCoins(ctx sdk.Context, moduleAccount string, denom strin
 	return k.bankKeeper.MintCoins(ctx, moduleAccount, debtCoins)
 }
 
-func (k Keeper) GetDebtDenom(ctx sdk.Context) (denom string) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.DebtDenomKey)
-	bz := store.Get([]byte{})
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &denom)
-	return
-}
-
 func (k Keeper) IndexCdpByOwner(ctx sdk.Context, cdp types.CDP) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIDKeyPrefix)
 	ownerAddrs, _ := sdk.AccAddressFromBech32(cdp.Owner)
 	cdpIDs, found := k.GetCdpIdsByOnwer(ctx, ownerAddrs)
 	if !found {
-		idBytes := k.cdc.MustMarshalBinaryLengthPrefixed([]uint64{cdp.Id})
+		idBytes := k.cdc.MustMarshalBinaryBare(&types.CdpIdList{[]uint64{cdp.Id}})
 		store.Set(ownerAddrs, idBytes)
 		return
-
 	}
 
-	cdpIDs = append(cdpIDs, cdp.Id)
-	sort.Slice(cdpIDs, func(i, j int) bool { return cdpIDs[i] < cdpIDs[j] })
-
-	store.Set(ownerAddrs, k.cdc.MustMarshalBinaryLengthPrefixed(cdpIDs))
+	cdpIDList := append(cdpIDs.Ids, cdp.Id)
+	sort.Slice(cdpIDs, func(i, j int) bool { return cdpIDList[i] < cdpIDList[j] })
+	cdpIDs.Ids = cdpIDList
+	store.Set(ownerAddrs, k.cdc.MustMarshalBinaryBare(&cdpIDs))
 }
 
 func (k Keeper) SetNextCdpId(ctx sdk.Context, id uint64) {
@@ -186,26 +193,26 @@ func (k Keeper) SetNextCdpId(ctx sdk.Context, id uint64) {
 	store.Set([]byte{}, types.GetCdpIDBytes(id))
 }
 
-func (k Keeper) GetCdpIdsByOnwer(ctx sdk.Context, owner sdk.AccAddress) ([]uint64, bool) {
+func (k Keeper) GetCdpIdsByOnwer(ctx sdk.Context, owner sdk.AccAddress) (types.CdpIdList, bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIDKeyPrefix)
 	bz := store.Get(owner)
 	if bz == nil {
-		return []uint64{}, false
+		return types.CdpIdList{[]uint64{}}, false
 	}
 
-	var cdpIDs []uint64
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &cdpIDs)
+	var cdpIDs types.CdpIdList
+	k.cdc.MustUnmarshalBinaryBare(bz, &cdpIDs)
 	return cdpIDs, true
 }
 
 func (k Keeper) ValidatePrincipalDraw(ctx sdk.Context, principal sdk.Coin, expectedDenom string) error {
 	if principal.Denom != expectedDenom {
-		return sdkerrors.Wrapf(types.ErrSample, "")
+		return sdkerrors.Wrapf(types.ErrInvalidDebtRequest, "proposed %s, expected %s", principal.Denom, expectedDenom)
 	}
 
 	_, found := k.GetDebtParam(ctx, principal.Denom)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrSample, "")
+		return sdkerrors.Wrapf(types.ErrDebtNotSupported, principal.Denom)
 	}
 	return nil
 }

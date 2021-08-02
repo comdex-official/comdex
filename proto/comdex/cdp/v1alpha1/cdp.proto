@@ -60,3 +60,8 @@ message Deposit{
     (gogoproto.nullable) = false
   ];
 }
+
+message CdpIdList{
+  repeated uint64 ids = 1;
+}
+
