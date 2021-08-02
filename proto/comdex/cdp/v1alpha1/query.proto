@@ -16,7 +16,7 @@ service Query {
 
   rpc CDP(QueryCDPRequest) returns(QueryCDPResponse){
     option (google.api.http).get =
-        "/comdex/cdp/{id}";
+        "/comdex/cdp/{collateral_type}/{owner}";
   };
 
   rpc CDPs(QueryCDPsRequest) returns(QueryCDPsResponse){
@@ -46,11 +46,12 @@ service Query {
 }
 
 message QueryCDPRequest{
-  uint64 id = 1;
+  string collateral_type = 1 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
+  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 }
 
 message QueryCDPResponse{
-  AugmentedCDP cdp = 1 [
+  CDP cdp = 1 [
     (gogoproto.moretags) = "yaml:\"cdp\"",
     (gogoproto.nullable) = false
   ];

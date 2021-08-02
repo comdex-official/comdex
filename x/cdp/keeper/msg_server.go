@@ -42,9 +42,9 @@ func (ms msgServer) CreateCDP(context context.Context, msg *types.MsgCreateCDPRe
 }
 
 func (ms msgServer) Deposit(context context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
-	ctx:= sdk.UnwrapSDKContext(context)
-	err:= ms.DepositCollateral(ctx, msg.Sender, msg.Collateral, msg.CollateralType)
-	if err !=nil{
+	ctx := sdk.UnwrapSDKContext(context)
+	err := ms.DepositCollateral(ctx, msg.Sender, msg.Collateral, msg.CollateralType)
+	if err != nil {
 		return nil, err
 	}
 
@@ -53,16 +53,16 @@ func (ms msgServer) Deposit(context context.Context, msg *types.MsgDepositReques
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Collateral.Amount.String()),
-			),
-		)
+		),
+	)
 
 	return &types.MsgDepositResponse{}, nil
 }
 
 func (ms msgServer) Withdraw(context context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
-	ctx:= sdk.UnwrapSDKContext(context)
-	err:= ms.DepositCollateral(ctx, msg.Sender, msg.Collateral, msg.CollateralType)
-	if err !=nil{
+	ctx := sdk.UnwrapSDKContext(context)
+	err := ms.DepositCollateral(ctx, msg.Sender, msg.Collateral, msg.CollateralType)
+	if err != nil {
 		return nil, err
 	}
 
@@ -78,9 +78,9 @@ func (ms msgServer) Withdraw(context context.Context, msg *types.MsgWithdrawRequ
 }
 
 func (ms msgServer) DrawDebt(context context.Context, msg *types.MsgDrawDebtRequest) (*types.MsgDrawDebtResponse, error) {
-	ctx:= sdk.UnwrapSDKContext(context)
-	err:= ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Principal)
-	if err !=nil{
+	ctx := sdk.UnwrapSDKContext(context)
+	err := ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Principal)
+	if err != nil {
 		return nil, err
 	}
 
@@ -96,9 +96,9 @@ func (ms msgServer) DrawDebt(context context.Context, msg *types.MsgDrawDebtRequ
 }
 
 func (ms msgServer) RepayDebt(context context.Context, msg *types.MsgRepayDebtRequest) (*types.MsgRepayDebtResponse, error) {
-	ctx:= sdk.UnwrapSDKContext(context)
-	err:= ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Payment)
-	if err !=nil{
+	ctx := sdk.UnwrapSDKContext(context)
+	err := ms.RepayPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Payment)
+	if err != nil {
 		return nil, err
 	}
 
@@ -114,9 +114,9 @@ func (ms msgServer) RepayDebt(context context.Context, msg *types.MsgRepayDebtRe
 }
 
 func (ms msgServer) Liquidate(context context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {
-	ctx:= sdk.UnwrapSDKContext(context)
-	err:= ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Principal)
-	if err !=nil{
+	ctx := sdk.UnwrapSDKContext(context)
+	err := ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Principal)
+	if err != nil {
 		return nil, err
 	}
 

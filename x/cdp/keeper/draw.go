@@ -8,29 +8,32 @@ import (
 )
 
 func (k Keeper) AddPrincipal(ctx sdk.Context, owner string, collateralType string, principal sdk.Coin) error {
-	ownerAddrs,_ := sdk.AccAddressFromBech32(owner)
-	cdp, found:= k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
+	ownerAddrs, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		return err
+	}
+	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrCdpNotFound, "owner %s, denom %s", owner, collateralType)
 	}
 
-	err:= k.ValidatePrincipalDraw(ctx, principal, cdp.Principal.Denom)
+	err = k.ValidatePrincipalDraw(ctx, principal, cdp.Principal.Denom)
 	if err != nil {
 		return err
 	}
 
-	err= k.ValidateCollateralizationRatio(ctx, cdp.Collateral, cdp.Type, cdp.Principal.Add(principal))
+	err = k.ValidateCollateralizationRatio(ctx, cdp.Collateral, cdp.Type, cdp.Principal.Add(principal))
 	if err != nil {
 		return err
 	}
 
-	err= k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(principal))
+	err = k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(principal))
 	if err != nil {
-		panic( err)
+		panic(err)
 	}
 	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddrs, sdk.NewCoins(principal))
 	if err != nil {
-		panic( err)
+		panic(err)
 	}
 
 	ctx.EventManager().EmitEvent(
@@ -41,34 +44,38 @@ func (k Keeper) AddPrincipal(ctx sdk.Context, owner string, collateralType strin
 		),
 	)
 
-	cdp.Principal= cdp.Principal.Add(principal)
+	cdp.Principal = cdp.Principal.Add(principal)
 
 	return k.SetCdp(ctx, cdp)
 
 }
 
-func (k Keeper) RepayPrincipal(ctx sdk.Context, owner sdk.AccAddress, collateralType string, payment sdk.Coin) error {
-	cdp, found:= k.GetCdpByOwnerAndCollateralType(ctx, owner, collateralType)
-	if !found{
+func (k Keeper) RepayPrincipal(ctx sdk.Context, owner string, collateralType string, payment sdk.Coin) error {
+	ownerAddrs, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		return err
+	}
+	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
+	if !found {
 		return sdkerrors.Wrapf(types.ErrCdpNotFound, "owner %s, denom %s", owner, collateralType)
 	}
 
-	err:= k.ValidatePaymentCoins(ctx, cdp, payment)
+	err = k.ValidatePaymentCoins(ctx, cdp, payment)
 	if err != nil {
 		return err
 	}
 
-	err= k.ValidateBalance(ctx, payment, owner)
+	err = k.ValidateBalance(ctx, payment, ownerAddrs)
 	if err != nil {
 		return err
 	}
 
-	err= k.bankKeeper.SendCoinsFromAccountToModule(ctx, owner, types.ModuleName, sdk.NewCoins(payment))
+	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddrs, types.ModuleName, sdk.NewCoins(payment))
 	if err != nil {
 		return err
 	}
 
-	err= k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(payment))
+	err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(payment))
 	if err != nil {
 		return err
 	}
@@ -78,19 +85,18 @@ func (k Keeper) RepayPrincipal(ctx sdk.Context, owner sdk.AccAddress, collateral
 			types.EventTypeCDPRepay,
 			sdk.NewAttribute(sdk.AttributeKeyAmount, payment.Amount.String()),
 			sdk.NewAttribute(types.AttributeKeyCdpID, fmt.Sprintf("%d", cdp.Id)),
-			),
-		)
+		),
+	)
 
-	cdp.Principal= cdp.Principal.Sub(payment)
+	cdp.Principal = cdp.Principal.Sub(payment)
 
-
-	if cdp.Principal.IsZero(){
-		k.ReturnCollateral(ctx, cdp)
-		k.RemoveCdpOwnerIndex(ctx, cdp)
-		err= k.DeleteCdpAndCollateralRatioIndex(ctx, cdp)
-		if err != nil {
-			return err
-		}
+	if cdp.Principal.IsZero() {
+		//k.ReturnCollateral(ctx, cdp)
+		//k.RemoveCdpOwnerIndex(ctx, cdp)
+		//err= k.DeleteCdpAndCollateralRatioIndex(ctx, cdp)
+		//if err != nil {
+		//	return err
+		//}
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeCdpClose,
@@ -99,7 +105,6 @@ func (k Keeper) RepayPrincipal(ctx sdk.Context, owner sdk.AccAddress, collateral
 		)
 		return nil
 	}
-
 
 	return k.SetCdp(ctx, cdp)
 }

@@ -44,15 +44,26 @@ func request_Query_CDP_0(ctx context.Context, marshaler runtime.Marshaler, clien
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["collateral_type"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "collateral_type")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.CollateralType, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "collateral_type", err)
+	}
+
+	val, ok = pathParams["owner"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
+	}
+
+	protoReq.Owner, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
 	msg, err := client.CDP(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -71,15 +82,26 @@ func local_request_Query_CDP_0(ctx context.Context, marshaler runtime.Marshaler,
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["collateral_type"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "collateral_type")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.CollateralType, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "collateral_type", err)
+	}
+
+	val, ok = pathParams["owner"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
+	}
+
+	protoReq.Owner, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
 	msg, err := server.CDP(ctx, &protoReq)
@@ -634,7 +656,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_CDP_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"comdex", "cdp", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CDP_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"comdex", "cdp", "collateral_type", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_CDPs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"comdex", "cdps"}, "", runtime.AssumeColonVerbOpt(true)))
 
