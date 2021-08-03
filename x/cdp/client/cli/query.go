@@ -21,8 +21,8 @@ func GetQueryCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(QueryCdp(),
-		QueryCdpDeposits(),
+	cmd.AddCommand(
+		QueryCdp(),
 		QueryParams())
 
 	return cmd
@@ -30,9 +30,9 @@ func GetQueryCmd() *cobra.Command {
 
 func QueryCdp() *cobra.Command {
 	return &cobra.Command{
-		Use:   "cdps [owner-addr] [collateral-type]",
+		Use:   "cdp [owner-addr]",
 		Short: "cdp's information",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -40,55 +40,18 @@ func QueryCdp() *cobra.Command {
 				return err
 			}
 
-			var (
-				_, error = sdk.AccAddressFromBech32(args[0])
-			)
-			if error != nil {
-				return error
+			_, err = sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
 			}
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			qc := types.NewQueryServiceClient(ctx)
-
-			res, err := qc.QueryCDP(context.Background(), &types.QueryCDPRequest{})
+			res, err := queryClient.QueryCDP(context.Background(), &types.QueryCDPRequest{})
 
 			if err != nil {
 				return err
 			}
 			flags.AddQueryFlagsToCmd(cmd)
-			return ctx.PrintProto(res)
-		},
-	}
-}
-
-func QueryCdpDeposits() *cobra.Command {
-	return &cobra.Command{
-		Use:   "deposits [owner-addr] [collateral-type]",
-		Short: "returns cdp deposits",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			var (
-				_, error = sdk.AccAddressFromBech32(args[0])
-			)
-			if error != nil {
-				return error
-			}
-			qc := types.NewQueryServiceClient(ctx)
-
-			res, err := qc.QueryCDPDeposits(context.Background(),
-				&types.QueryCDPDepositsRequest{
-					Owner:          args[0],
-					CollateralType: args[1],
-				})
-			if err != nil {
-				return err
-			}
-
 			return ctx.PrintProto(res)
 		},
 	}
@@ -107,9 +70,9 @@ func QueryParams() *cobra.Command {
 				return err
 			}
 
-			qc := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := qc.QueryParams(context.Background(), &types.QueryParamsRequest{})
+			res, err := queryClient.QueryParams(context.Background(), &types.QueryParamsRequest{})
 			if err != nil {
 				return err
 			}
