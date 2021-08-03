@@ -26,7 +26,7 @@ func (k Keeper) AddCdp(ctx sdk.Context, owner sdk.AccAddress, collateral sdk.Coi
 
 	id := k.GetNextCdpID(ctx)
 
-	cdp := types.NewCDP(id, owner, collateral, collateralType, principal, ctx.BlockHeader().Time)
+	cdp := types.NewCDP(id, owner, collateral, collateralType, principal)
 
 	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, owner, types.ModuleName, sdk.NewCoins(collateral))
 	if err != nil {
@@ -118,47 +118,33 @@ func (k Keeper) GetCdpByOwnerAndCollateralType(ctx sdk.Context, owner sdk.AccAdd
 }
 
 func (k Keeper) GetCDP(ctx sdk.Context, collateralType string, cdpID uint64) (types.CDP, bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpKeyPrefix)
-	cdpPrefix, found := k.GetCollateralTypePrefix(ctx, collateralType)
-
-	if !found {
-		return types.CDP{}, false
-	}
-
-	bz := store.Get(types.CdpKey(cdpPrefix, cdpID))
-
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.CdpKey(cdpID))
 	if bz == nil {
 		return types.CDP{}, false
 	}
+
 	var cdp types.CDP
 	k.cdc.MustUnmarshalBinaryBare(bz, &cdp)
 	return cdp, true
 }
 
 func (k Keeper) SetCdp(ctx sdk.Context, cdp types.CDP) error {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpKeyPrefix)
-	cdpPrefix, found := k.GetCollateralTypePrefix(ctx, cdp.Type)
-	if !found {
-		sdkerrors.Wrapf(types.ErrDenomPrefixNotFound, "%s", cdp.Collateral.Denom)
-	}
+	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(&cdp)
-	store.Set(types.CdpKey(cdpPrefix, cdp.Id), bz)
+	store.Set(types.CdpKey(cdp.Id), bz)
 	return nil
 }
 
 func (k Keeper) DeleteCDP(ctx sdk.Context, cdp types.CDP) error {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpKeyPrefix)
-	db, found := k.GetCollateralTypePrefix(ctx, cdp.Type)
-	if !found {
-		return sdkerrors.Wrapf(types.ErrDenomPrefixNotFound, "%s", cdp.Collateral.Denom)
-	}
-	store.Delete(types.CdpKey(db, cdp.Id))
+	store.Delete(types.CdpKey(cdp.Id))
 	return nil
 }
 
 func (k Keeper) GetNextCdpID(ctx sdk.Context) (id uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIDKey)
-	bz := store.Get([]byte{})
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.CdpIDKey)
 
 	if bz == nil {
 		panic("starting cdp id not set in genesis")
@@ -167,13 +153,8 @@ func (k Keeper) GetNextCdpID(ctx sdk.Context) (id uint64) {
 	return
 }
 
-func (k Keeper) MintDebtCoins(ctx sdk.Context, moduleAccount string, denom string, principalCoins sdk.Coin) error {
-	debtCoins := sdk.NewCoins(sdk.NewCoin(denom, principalCoins.Amount))
-	return k.bankKeeper.MintCoins(ctx, moduleAccount, debtCoins)
-}
-
 func (k Keeper) IndexCdpByOwner(ctx sdk.Context, cdp types.CDP) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIDKeyPrefix)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIDIndexKeyPrefix)
 	ownerAddrs, _ := sdk.AccAddressFromBech32(cdp.Owner)
 	cdpIDs, found := k.GetCdpIdsByOnwer(ctx, ownerAddrs)
 	if !found {
@@ -189,12 +170,12 @@ func (k Keeper) IndexCdpByOwner(ctx sdk.Context, cdp types.CDP) {
 }
 
 func (k Keeper) SetNextCdpId(ctx sdk.Context, id uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIDKey)
-	store.Set([]byte{}, types.GetCdpIDBytes(id))
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.CdpIDKey, types.GetCdpIDBytes(id))
 }
 
 func (k Keeper) GetCdpIdsByOnwer(ctx sdk.Context, owner sdk.AccAddress) (types.CdpIdList, bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIDKeyPrefix)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIDIndexKeyPrefix)
 	bz := store.Get(owner)
 	if bz == nil {
 		return types.CdpIdList{[]uint64{}}, false

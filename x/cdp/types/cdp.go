@@ -2,20 +2,15 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
 )
 
-func NewCDP(id uint64, owner sdk.AccAddress, collateral sdk.Coin, collateralType string, principal sdk.Coin, time time.Time ) CDP {
-	fees := sdk.NewCoin(principal.Denom, sdk.ZeroInt())
+func NewCDP(id uint64, owner sdk.AccAddress, collateral sdk.Coin, collateralType string, principal sdk.Coin) CDP {
 	return CDP{
-		Id: id,
-		Owner: owner.String(),
-		Type: collateralType,
+		Id:         id,
+		Owner:      owner.String(),
+		Type:       collateralType,
 		Collateral: collateral,
-		Principal: principal,
-		AccumulatedFees: fees,
-		FeesUpdated: time,
-		InterestFactor: sdk.ZeroDec(),
+		Principal:  principal,
 	}
 }
 

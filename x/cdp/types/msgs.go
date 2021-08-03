@@ -1,5 +1,14 @@
 package types
 
+/*import (
+	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"strings"
+)*/
+
+/*
+
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -136,3 +145,4 @@ func (msg MsgLiquidateRequest) GetSigners() []sdk.AccAddress {
 	}
 	return []sdk.AccAddress{sender}
 }
+*/
