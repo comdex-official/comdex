@@ -6,10 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/comdex-official/comdex/x/cdp/types"
+	"github.com/cosmos/cosmos-sdk/client"
 )
 
 func GetQueryCmd() *cobra.Command {
@@ -30,21 +28,14 @@ func GetQueryCmd() *cobra.Command {
 
 func QueryCdp() *cobra.Command {
 	return &cobra.Command{
-		Use:   "cdp [owner-addr] [collateral-type]",
+		Use:   "cdp [owner-addr]",
 		Short: "cdp's information",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
-			}
-
-			var (
-				_, error = sdk.AccAddressFromBech32(args[0])
-			)
-			if error != nil {
-				return error
 			}
 
 			queryClient := types.NewQueryServiceClient(ctx)

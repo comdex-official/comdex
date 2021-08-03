@@ -52,7 +52,7 @@ func txCreateCdp() *cobra.Command {
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			ctx, err := client.GetClientQueryContext(cmd)
+			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -85,7 +85,7 @@ func txDeposit() *cobra.Command {
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			ctx, err := client.GetClientQueryContext(cmd)
+			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -116,7 +116,7 @@ func txWithdraw() *cobra.Command {
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			ctx, err := client.GetClientQueryContext(cmd)
+			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -147,7 +147,7 @@ func txDrawDebt() *cobra.Command {
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			ctx, err := client.GetClientQueryContext(cmd)
+			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -178,7 +178,7 @@ func txRepayDebt() *cobra.Command {
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			ctx, err := client.GetClientQueryContext(cmd)
+			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -209,7 +209,7 @@ func txLiquidate() *cobra.Command {
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			ctx, err := client.GetClientQueryContext(cmd)
+			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}

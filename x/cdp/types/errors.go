@@ -6,7 +6,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// x/cdp module sentinel errors
 var (
 	ErrorInvalidField    = sdkerrors.Register(ModuleName, 101, "invalid field")
 	ErrorInvalidFrom     = sdkerrors.Register(ModuleName, 102, "invalid from")
