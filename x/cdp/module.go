@@ -18,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/comdex-official/comdex/x/cdp/client/cli"
+	"github.com/comdex-official/comdex/x/cdp/client/rest"
 	"github.com/comdex-official/comdex/x/cdp/keeper"
 	"github.com/comdex-official/comdex/x/cdp/types"
 )
@@ -74,11 +75,12 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, config client.TxE
 
 // RegisterRESTRoutes registers the capability module's REST service handlers.
 func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
+	rest.RegisterRoutes(clientCtx, rtr)
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-types.RegisterQueryServiceHandlerClient(context.Background(),mux,types.NewQueryServiceClient(clientCtx))
+	types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(clientCtx))
 }
 
 // GetTxCmd returns the capability module's root tx command.
