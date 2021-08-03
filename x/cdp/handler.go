@@ -30,7 +30,12 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgDrawDebtRequest:
 			result, err := msgServer.MsgDrawDebt(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, result, err)
-
+		case *types.MsgRepayDebtRequest:
+			result, err := msgServer.MsgRepayDebt(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, result, err)
+		case *types.MsgLiquidateRequest:
+			result, err := msgServer.MsgLiquidate(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, result, err)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
