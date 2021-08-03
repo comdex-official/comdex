@@ -57,7 +57,7 @@ func (k Keeper) AddCdp(ctx sdk.Context, owner sdk.AccAddress, collateral sdk.Coi
 }
 
 func (k Keeper) AttemptLiquidation(ctx sdk.Context, owner string, collateralType string) error {
-	//TOD)
+	//TODO
 	return nil
 }
 
