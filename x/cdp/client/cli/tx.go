@@ -33,9 +33,14 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	cmd.AddCommand(txCreateCdp(),
+	cmd.AddCommand(
+		txCreateCdp(),
 		txDeposit(),
-		txWithdraw())
+		txWithdraw(),
+		txDrawDebt(),
+		txRepayDebt(),
+		txLiquidate(),
+		)
 
 	return cmd
 }

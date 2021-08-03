@@ -16,17 +16,17 @@ func registerQueryRoutes(ctx client.Context, router *mux.Router) {
 }
 
 func registerTxRoutes(ctx client.Context, router *mux.Router) {
-	router.HandleFunc("/cdps/id", postCdp(ctx)).
+	router.HandleFunc("/cdps/id", createCdp(ctx)).
 		Methods("POST")
-	router.HandleFunc("/deposit", postDeposit(ctx)).
+	router.HandleFunc("/deposit", createDeposit(ctx)).
 		Methods("POST")
-	router.HandleFunc("/withdraw", postWithdraw(ctx)).
+	router.HandleFunc("/withdraw", createWithdraw(ctx)).
 		Methods("POST")
-	router.HandleFunc("/draw", postDrawDebt(ctx)).
+	router.HandleFunc("/draw", createDrawDebt(ctx)).
 		Methods("POST")
-	router.HandleFunc("/repay", postRepay(ctx)).
+	router.HandleFunc("/repay", createRepay(ctx)).
 		Methods("POST")
-	router.HandleFunc("/liquidate", postLiquidate(ctx)).
+	router.HandleFunc("/liquidate", createLiquidate(ctx)).
 		Methods("POST")
 
 }
