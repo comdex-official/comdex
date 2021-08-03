@@ -6,10 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/comdex-official/comdex/x/cdp/types"
+	"github.com/cosmos/cosmos-sdk/client"
 )
 
 func GetQueryCmd() *cobra.Command {
@@ -40,10 +38,6 @@ func QueryCdp() *cobra.Command {
 				return err
 			}
 
-			_, err = sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
 			queryClient := types.NewQueryServiceClient(ctx)
 
 			res, err := queryClient.QueryCDP(context.Background(), &types.QueryCDPRequest{})

@@ -3,19 +3,13 @@ package keeper
 import (
 	"context"
 	"github.com/comdex-official/comdex/x/cdp/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var _ types.QueryServiceServer = Keeper{}
 
 func (k Keeper) QueryCDP(ctx context.Context, request *types.QueryCDPRequest) (*types.QueryCDPResponse, error) {
 	//TODO
-	sdkContext := sdk.UnwrapSDKContext(ctx)
-	k.Logger(sdkContext).Info("something to log")
-	augmentedCDP := types.AugmentedCDP{
-		Cdp: types.CDP{},
-	}
-	return &types.QueryCDPResponse{Cdp: augmentedCDP}, nil
+	return nil, nil
 }
 
 func (k Keeper) QueryCDPs(ctx context.Context, request *types.QueryCDPsRequest) (*types.QueryCDPsResponse, error) {
