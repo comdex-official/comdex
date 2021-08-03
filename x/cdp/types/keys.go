@@ -1,6 +1,8 @@
 package types
 
-import "encoding/binary"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 const (
 	// ModuleName defines the module name
@@ -34,28 +36,14 @@ var (
 	CdpIDKey            = []byte{0x03}
 )
 
-func KeyPrefix(p string) []byte {
-	return []byte(p)
-}
-
 func GetCdpIDBytes(cdpID uint64) (cdpIDBz []byte) {
-	cdpIDBz = make([]byte, 8)
-	binary.BigEndian.PutUint64(cdpIDBz, cdpID)
-	return
+	return sdk.Uint64ToBigEndian(cdpID)
 }
 
-// GetCdpIDFromBytes returns cdpID in uint64 format from a byte array
 func GetCdpIDFromBytes(bz []byte) (cdpID uint64) {
-	return binary.BigEndian.Uint64(bz)
+	return sdk.BigEndianToUint64(bz)
 }
 
 func CdpKey(cdpID uint64) []byte {
-	return createKey(CdpKeyPrefix, GetCdpIDBytes(cdpID))
-}
-
-func createKey(bytes ...[]byte) (r []byte) {
-	for _, b := range bytes {
-		r = append(r, b...)
-	}
-	return
+	return append(CdpKeyPrefix, GetCdpIDBytes(cdpID)...)
 }
