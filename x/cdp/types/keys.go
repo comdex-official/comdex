@@ -22,12 +22,12 @@ const (
 )
 
 var (
-	TypeMsgCreateCDPRequest = ModuleName + ":create_cdp"
-	TypeMsgDepositRequest   = ModuleName + ":deposit"
-	TypeMsgWithdrawRequest  = ModuleName + ":withdraw"
-	TypeMsgDrawDebtRequest  = ModuleName + ":draw_debt"
-	TypeMsgRepayDebtRequest = ModuleName + ":repay_debt"
-	TypeMsgLiquidateRequest = ModuleName + ":liquidate"
+	TypeMsgCreateCDPRequest          = ModuleName + ":create_cdp"
+	TypeMsgDepositCollateralRequest  = ModuleName + ":deposit_collateral"
+	TypeMsgWithdrawCollateralRequest = ModuleName + ":withdraw_collateral"
+	TypeMsgDrawDebtRequest           = ModuleName + ":draw_debt"
+	TypeMsgRepayDebtRequest          = ModuleName + ":repay_debt"
+	TypeMsgLiquidateCDPRequest       = ModuleName + ":liquidate_cdp"
 )
 
 var (

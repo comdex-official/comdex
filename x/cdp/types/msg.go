@@ -71,7 +71,7 @@ func NewMsgDepositCollateralRequest(owner sdk.AccAddress, collateral sdk.Coin, c
 
 func (msg *MsgDepositCollateralRequest) Route() string { return RouterKey }
 
-func (msg *MsgDepositCollateralRequest) Type() string { return TypeMsgDepositRequest }
+func (msg *MsgDepositCollateralRequest) Type() string { return TypeMsgDepositCollateralRequest }
 
 func (msg MsgDepositCollateralRequest) ValidateBasic() error {
 	if msg.Owner == "" {
@@ -110,7 +110,7 @@ func NewMsgWithdrawCollateralRequest(owner sdk.AccAddress, collateral sdk.Coin, 
 
 func (msg *MsgWithdrawCollateralRequest) Route() string { return RouterKey }
 
-func (msg *MsgWithdrawCollateralRequest) Type() string { return TypeMsgWithdrawRequest }
+func (msg *MsgWithdrawCollateralRequest) Type() string { return TypeMsgWithdrawCollateralRequest }
 
 func (msg MsgWithdrawCollateralRequest) ValidateBasic() error {
 	if msg.Owner == "" {
@@ -226,7 +226,7 @@ func NewMsgLiquidateCDPRequest(sender sdk.AccAddress, collateralType string) *Ms
 
 func (msg *MsgLiquidateCDPRequest) Route() string { return RouterKey }
 
-func (msg *MsgLiquidateCDPRequest) Type() string { return TypeMsgLiquidateRequest }
+func (msg *MsgLiquidateCDPRequest) Type() string { return TypeMsgLiquidateCDPRequest }
 
 func (msg MsgLiquidateCDPRequest) ValidateBasic() error {
 	if msg.Owner == "" {
