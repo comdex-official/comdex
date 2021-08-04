@@ -90,7 +90,7 @@ func txDeposit() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgDepositRequest(owner, collateral, args[2])
+			msg := types.NewMsgDepositCollateralRequest(owner, collateral, args[2])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -121,7 +121,7 @@ func txWithdraw() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgWithdrawRequest(owner, collateral, args[2])
+			msg := types.NewMsgWithdrawCollateralRequest(owner, collateral, args[2])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -209,7 +209,7 @@ func txLiquidate() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgLiquidateRequest(owner, args[2])
+			msg := types.NewMsgLiquidateCDPRequest(owner, args[2])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

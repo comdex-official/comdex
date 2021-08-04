@@ -19,7 +19,7 @@ var (
 	ErrorCdpNotFound            = sdkerrors.Register(ModuleName, 111, "cdp not found")
 	ErrorInvalidCDP             = sdkerrors.Register(ModuleName, 112, "cdp type does not exist")
 	ErrorDenomPrefixNotFound    = sdkerrors.Register(ModuleName, 113, "denom prefix not found")
-	ErrorInvalidDebtRequest     = sdkerrors.Register(ModuleName, 114, "only one principal type per cdp")
+	ErrorInvalidDebt            = sdkerrors.Register(ModuleName, 114, "only one principal type per cdp")
 	ErrorDebtNotSupported       = sdkerrors.Register(ModuleName, 115, "debt not supported")
 	ErrorInvalidPayment         = sdkerrors.Register(ModuleName, 116, "invalid payment")
 	ErrorInvalidWithdrawAmount  = sdkerrors.Register(ModuleName, 117, "withdrawal amount exceeds deposit")

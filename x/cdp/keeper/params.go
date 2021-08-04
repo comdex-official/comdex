@@ -16,22 +16,14 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 }
 
 func (k Keeper) GetLiquidationRatio(ctx sdk.Context, collateralType string) sdk.Dec {
-	collateralParam, found := k.GetCollateral(ctx, collateralType)
+	collateralParam, found := k.GetCollateralParam(ctx, collateralType)
 	if !found {
 		panic(fmt.Sprintf("collateral not found: %s", collateralType))
 	}
 	return collateralParam.LiquidationRatio
 }
 
-func (k Keeper) GetDebtParam(ctx sdk.Context, denom string) (types.DebtParam, bool) {
-	dp := k.GetParams(ctx).DebtParam
-	if dp.Denom == denom {
-		return dp, true
-	}
-	return types.DebtParam{}, false
-}
-
-func (k Keeper) GetCollateral(ctx sdk.Context, collateralType string) (types.CollateralParam, bool) {
+func (k Keeper) GetCollateralParam(ctx sdk.Context, collateralType string) (types.CollateralParam, bool) {
 	params := k.GetParams(ctx)
 	for _, collateralParam := range params.CollateralParams {
 		if collateralParam.Type == collateralType {

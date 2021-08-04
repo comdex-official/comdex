@@ -26,70 +26,85 @@ func (ms msgServer) MsgCreateCDP(context context.Context, msg *types.MsgCreateCD
 		return nil, err
 	}
 
-	err = ms.Keeper.AddCdp(ctx, sender, msg.Collateral, msg.Principal, msg.CollateralType)
+	err = ms.Keeper.AddCdp(ctx, sender, msg.Collateral, msg.Debt, msg.CollateralType)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
-		),
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventCreateCDP{
+			Sender:         sender.String(),
+			CollateralType: msg.CollateralType,
+		},
 	)
 	return &types.MsgCreateCDPResponse{}, nil
 }
 
-func (ms msgServer) MsgDeposit(context context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
+func (ms msgServer) MsgDepositCollateral(context context.Context, msg *types.MsgDepositCollateralRequest) (*types.MsgDepositCollateralResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
-	err := ms.DepositCollateral(ctx, msg.Sender, msg.Collateral, msg.CollateralType)
+
+	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Collateral.Amount.String()),
-		),
+	err = ms.DepositCollateral(ctx, owner, msg.Collateral, msg.CollateralType)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventDepositCollateral{
+			Owner:          owner.String(),
+			CollateralType: msg.CollateralType,
+			Collateral:     msg.Collateral,
+		},
 	)
 
-	return &types.MsgDepositResponse{}, nil
+	return &types.MsgDepositCollateralResponse{}, nil
 }
 
-func (ms msgServer) MsgWithdraw(context context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
+func (ms msgServer) MsgWithdrawCollateral(context context.Context, msg *types.MsgWithdrawCollateralRequest) (*types.MsgWithdrawCollateralResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
-	err := ms.DepositCollateral(ctx, msg.Sender, msg.Collateral, msg.CollateralType)
+	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Collateral.Amount.String()),
-		),
+	err = ms.WithdrawCollateral(ctx, owner, msg.Collateral, msg.CollateralType)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventWithdrawCollateral{
+			Owner:          owner.String(),
+			CollateralType: msg.CollateralType,
+			Collateral:     msg.Collateral,
+		},
 	)
 
-	return &types.MsgWithdrawResponse{}, nil
+	return &types.MsgWithdrawCollateralResponse{}, nil
 }
 
 func (ms msgServer) MsgDrawDebt(context context.Context, msg *types.MsgDrawDebtRequest) (*types.MsgDrawDebtResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
-	err := ms.AddPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Principal)
+	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Principal.Amount.String()),
-		),
+	err = ms.DrawDebt(ctx, owner, msg.CollateralType, msg.Debt)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventDrawDebt{
+			Owner:          owner.String(),
+			CollateralType: msg.CollateralType,
+			Debt:           msg.Debt,
+		},
 	)
 
 	return &types.MsgDrawDebtResponse{}, nil
@@ -97,36 +112,45 @@ func (ms msgServer) MsgDrawDebt(context context.Context, msg *types.MsgDrawDebtR
 
 func (ms msgServer) MsgRepayDebt(context context.Context, msg *types.MsgRepayDebtRequest) (*types.MsgRepayDebtResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
-	err := ms.RepayPrincipal(ctx, msg.Sender, msg.CollateralType, msg.Payment)
+	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Payment.Amount.String()),
-		),
+	err = ms.RepayDebt(ctx, owner, msg.CollateralType, msg.Debt)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventRepayDebt{
+			Owner:          owner.String(),
+			CollateralType: msg.CollateralType,
+			Debt:           msg.Debt,
+		},
 	)
 
 	return &types.MsgRepayDebtResponse{}, nil
 }
 
-func (ms msgServer) MsgLiquidate(context context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {
+func (ms msgServer) MsgLiquidateCDP(context context.Context, msg *types.MsgLiquidateCDPRequest) (*types.MsgLiquidateCDPResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
-	err := ms.AttemptLiquidation(ctx, msg.Sender, msg.CollateralType)
+	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
-		),
+	err = ms.AttemptLiquidation(ctx, owner, msg.CollateralType)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventLiquidateCDP{
+			Owner:          owner.String(),
+			CollateralType: msg.CollateralType,
+		},
 	)
 
-	return &types.MsgLiquidateResponse{}, nil
+	return &types.MsgLiquidateCDPResponse{}, nil
 }

@@ -18,28 +18,8 @@ message CDP{
     (gogoproto.nullable) = false
   ];
 
-  cosmos.base.v1beta1.Coin principal = 5 [
-    (gogoproto.moretags) = "yaml:\"principal\"",
-    (gogoproto.nullable) = false
-  ];
-}
-
-message AugmentedCDP{
-  CDP cdp = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.v1beta1.Coin collateral_value = 2 [
-    (gogoproto.moretags) = "yaml:\"collateral_value\"",
-    (gogoproto.nullable) = false
-  ];
-
-  double collateralization_ratio = 3;
-}
-
-message Deposit{
-  uint64 cdp_id = 1;
-  string depositor = 2 [ (gogoproto.moretags) = "yaml:\"depositor\"" ];
-
-  cosmos.base.v1beta1.Coin amount = 3 [
-    (gogoproto.moretags) = "yaml:\"amount\"",
+  cosmos.base.v1beta1.Coin debt = 5 [
+    (gogoproto.moretags) = "yaml:\"debt\"",
     (gogoproto.nullable) = false
   ];
 }

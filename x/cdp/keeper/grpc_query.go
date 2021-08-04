@@ -16,7 +16,7 @@ func (k Keeper) QueryCDP(context context.Context, request *types.QueryCDPRequest
 	if err != nil {
 		return &types.QueryCDPResponse{}, err
 	}
-	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, request.CollateralType)
+	cdp, found := k.GetCDPByOwnerAndCollateralType(ctx, ownerAddrs, request.CollateralType)
 	if !found {
 		return nil, status.Error(codes.InvalidArgument, "cdp not found")
 	}
@@ -29,17 +29,7 @@ func (k Keeper) QueryCDPs(ctx context.Context, request *types.QueryCDPsRequest) 
 	return nil, nil
 }
 
-func (k Keeper) QueryCDPDeposits(ctx context.Context, request *types.QueryCDPDepositsRequest) (*types.QueryCDPDepositsResponse, error) {
-	//TODO
-	return nil, nil
-}
-
-func (k Keeper) QueryCDPsByCollateralType(ctx context.Context, request *types.QueryCDPsByCollateralTypeRequest) (*types.QueryCDPsByCollateralTypeResponse, error) {
-	//TODO
-	return nil, nil
-}
-
-func (k Keeper) QueryCDPsByCollateralizationRatio(ctx context.Context, request *types.QueryCDPsByCollateralizationRatioRequest) (*types.QueryCDPsByCollateralizationRatioResponse, error) {
+func (k Keeper) QueryCDPById(ctx context.Context, request *types.QueryCDPByIdRequest) (*types.QueryCDPByIdResponse, error) {
 	//TODO
 	return nil, nil
 }

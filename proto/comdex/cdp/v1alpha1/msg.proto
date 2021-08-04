@@ -12,16 +12,15 @@ service MsgService {
 
   rpc MsgCreateCDP(MsgCreateCDPRequest) returns (MsgCreateCDPResponse);
 
-  rpc MsgDeposit(MsgDepositRequest) returns (MsgDepositResponse);
+  rpc MsgDepositCollateral(MsgDepositCollateralRequest) returns (MsgDepositCollateralResponse);
 
-  rpc MsgWithdraw(MsgWithdrawRequest) returns (MsgWithdrawResponse);
+  rpc MsgWithdrawCollateral(MsgWithdrawCollateralRequest) returns (MsgWithdrawCollateralResponse);
 
   rpc MsgDrawDebt(MsgDrawDebtRequest) returns (MsgDrawDebtResponse);
 
   rpc MsgRepayDebt(MsgRepayDebtRequest) returns (MsgRepayDebtResponse);
 
-  rpc MsgLiquidate(MsgLiquidateRequest) returns (MsgLiquidateResponse);
-
+  rpc MsgLiquidateCDP(MsgLiquidateCDPRequest) returns (MsgLiquidateCDPResponse);
 
 }
 
@@ -32,33 +31,19 @@ message MsgCreateCDPRequest{
     (gogoproto.nullable) = false
   ];
 
-  cosmos.base.v1beta1.Coin principal = 3 [
-    (gogoproto.moretags) = "yaml:\"principal\"",
+  cosmos.base.v1beta1.Coin debt = 3 [
+    (gogoproto.moretags) = "yaml:\"debt\"",
     (gogoproto.nullable) = false
   ];
 
-  string collateralType = 4 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
+  string collateral_type = 4 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
 
 }
 
 message MsgCreateCDPResponse{}
 
-message MsgDepositRequest{
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  cosmos.base.v1beta1.Coin collateral = 2 [
-    (gogoproto.moretags) = "yaml:\"collateral\"",
-    (gogoproto.nullable) = false
-  ];
-
-  string collateralType = 3 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
-
-}
-
-message MsgDepositResponse{}
-
-
-message MsgWithdrawRequest{
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+message MsgDepositCollateralRequest{
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   cosmos.base.v1beta1.Coin collateral = 2 [
     (gogoproto.moretags) = "yaml:\"collateral\"",
     (gogoproto.nullable) = false
@@ -68,13 +53,27 @@ message MsgWithdrawRequest{
 
 }
 
-message MsgWithdrawResponse{}
+message MsgDepositCollateralResponse{}
+
+
+message MsgWithdrawCollateralRequest{
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  cosmos.base.v1beta1.Coin collateral = 2 [
+    (gogoproto.moretags) = "yaml:\"collateral\"",
+    (gogoproto.nullable) = false
+  ];
+
+  string collateral_type = 3 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
+
+}
+
+message MsgWithdrawCollateralResponse{}
 
 message MsgDrawDebtRequest{
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   string collateral_type = 2 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
-  cosmos.base.v1beta1.Coin principal = 3 [
-    (gogoproto.moretags) = "yaml:\"principal\"",
+  cosmos.base.v1beta1.Coin debt = 3 [
+    (gogoproto.moretags) = "yaml:\"debt\"",
     (gogoproto.nullable) = false
   ];
 }
@@ -82,9 +81,9 @@ message MsgDrawDebtRequest{
 message MsgDrawDebtResponse{}
 
 message MsgRepayDebtRequest{
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   string collateral_type = 2 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
-  cosmos.base.v1beta1.Coin payment = 3 [
+  cosmos.base.v1beta1.Coin debt = 3 [
     (gogoproto.moretags) = "yaml:\"payment\"",
     (gogoproto.nullable) = false
   ];
@@ -92,10 +91,9 @@ message MsgRepayDebtRequest{
 
 message MsgRepayDebtResponse{}
 
-
-message MsgLiquidateRequest{
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+message MsgLiquidateCDPRequest{
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   string collateral_type = 2 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
 }
 
-message MsgLiquidateResponse{}
+message MsgLiquidateCDPResponse{}

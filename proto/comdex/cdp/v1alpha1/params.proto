@@ -13,36 +13,17 @@ message Params {
     (gogoproto.moretags) = "yaml:\"collateral_params\"",
     (gogoproto.nullable) = false
   ];
-
-  DebtParam debt_param = 2[
-    (gogoproto.moretags) = "yaml:\"debt_param\"",
-    (gogoproto.nullable) = false
-  ];
-
 }
 
 
 message CollateralParam{
-  string denom =1;
-  string type = 2;
-  string liquidation_ratio = 3 [
+  string collateral_denom = 1;
+  string debt_denom = 2;
+  string type = 3;
+
+  string liquidation_ratio = 4 [
     (gogoproto.moretags) = "yaml:\"liquidation_ratio\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
-}
-
-message DebtParam{
-  string denom = 1 [
-    (gogoproto.moretags) = "yaml:\"denom\""
-  ];
-
-  string reference_asset = 2 [
-    (gogoproto.moretags) = "yaml:\"reference_asset\""
-  ];
-
-  int64 conversion_factor = 3 [
-    (gogoproto.moretags) = "yaml:\"conversion_factor\""
-  ];
-
 }

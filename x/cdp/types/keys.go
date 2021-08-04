@@ -31,9 +31,9 @@ var (
 )
 
 var (
-	CdpIDIndexKeyPrefix = []byte{0x01}
+	CdpIdIndexKeyPrefix = []byte{0x01}
 	CdpKeyPrefix        = []byte{0x02}
-	CdpIDKey            = []byte{0x03}
+	CdpIdKey            = []byte{0x03}
 )
 
 func GetCdpIDBytes(cdpID uint64) (cdpIDBz []byte) {

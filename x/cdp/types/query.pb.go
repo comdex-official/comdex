@@ -128,6 +128,7 @@ func (m *QueryCDPResponse) GetCdp() CDP {
 }
 
 type QueryCDPsRequest struct {
+	Owner string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 }
 
 func (m *QueryCDPsRequest) Reset()         { *m = QueryCDPsRequest{} }
@@ -163,8 +164,15 @@ func (m *QueryCDPsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCDPsRequest proto.InternalMessageInfo
 
+func (m *QueryCDPsRequest) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
 type QueryCDPsResponse struct {
-	Cdps []AugmentedCDP `protobuf:"bytes,1,rep,name=cdps,proto3" json:"cdps" yaml:"cdps"`
+	Cdps []CDP `protobuf:"bytes,1,rep,name=cdps,proto3" json:"cdps" yaml:"cdps"`
 }
 
 func (m *QueryCDPsResponse) Reset()         { *m = QueryCDPsResponse{} }
@@ -200,30 +208,29 @@ func (m *QueryCDPsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCDPsResponse proto.InternalMessageInfo
 
-func (m *QueryCDPsResponse) GetCdps() []AugmentedCDP {
+func (m *QueryCDPsResponse) GetCdps() []CDP {
 	if m != nil {
 		return m.Cdps
 	}
 	return nil
 }
 
-type QueryCDPDepositsRequest struct {
-	CollateralType string `protobuf:"bytes,1,opt,name=collateral_type,json=collateralType,proto3" json:"collateral_type,omitempty" yaml:"collateral_type"`
-	Owner          string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+type QueryCDPByIdRequest struct {
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *QueryCDPDepositsRequest) Reset()         { *m = QueryCDPDepositsRequest{} }
-func (m *QueryCDPDepositsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryCDPDepositsRequest) ProtoMessage()    {}
-func (*QueryCDPDepositsRequest) Descriptor() ([]byte, []int) {
+func (m *QueryCDPByIdRequest) Reset()         { *m = QueryCDPByIdRequest{} }
+func (m *QueryCDPByIdRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCDPByIdRequest) ProtoMessage()    {}
+func (*QueryCDPByIdRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b888451e45daea73, []int{4}
 }
-func (m *QueryCDPDepositsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryCDPByIdRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryCDPDepositsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCDPByIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryCDPDepositsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCDPByIdRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -233,238 +240,41 @@ func (m *QueryCDPDepositsRequest) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *QueryCDPDepositsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCDPDepositsRequest.Merge(m, src)
+func (m *QueryCDPByIdRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCDPByIdRequest.Merge(m, src)
 }
-func (m *QueryCDPDepositsRequest) XXX_Size() int {
+func (m *QueryCDPByIdRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryCDPDepositsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCDPDepositsRequest.DiscardUnknown(m)
+func (m *QueryCDPByIdRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCDPByIdRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryCDPDepositsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryCDPByIdRequest proto.InternalMessageInfo
 
-func (m *QueryCDPDepositsRequest) GetCollateralType() string {
+func (m *QueryCDPByIdRequest) GetId() uint64 {
 	if m != nil {
-		return m.CollateralType
-	}
-	return ""
-}
-
-func (m *QueryCDPDepositsRequest) GetOwner() string {
-	if m != nil {
-		return m.Owner
-	}
-	return ""
-}
-
-type QueryCDPDepositsResponse struct {
-	Deposits []Deposit `protobuf:"bytes,1,rep,name=deposits,proto3" json:"deposits" yaml:"deposits"`
-}
-
-func (m *QueryCDPDepositsResponse) Reset()         { *m = QueryCDPDepositsResponse{} }
-func (m *QueryCDPDepositsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryCDPDepositsResponse) ProtoMessage()    {}
-func (*QueryCDPDepositsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b888451e45daea73, []int{5}
-}
-func (m *QueryCDPDepositsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryCDPDepositsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryCDPDepositsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryCDPDepositsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCDPDepositsResponse.Merge(m, src)
-}
-func (m *QueryCDPDepositsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryCDPDepositsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCDPDepositsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryCDPDepositsResponse proto.InternalMessageInfo
-
-func (m *QueryCDPDepositsResponse) GetDeposits() []Deposit {
-	if m != nil {
-		return m.Deposits
-	}
-	return nil
-}
-
-type QueryCDPsByCollateralTypeRequest struct {
-	CollateralType string `protobuf:"bytes,1,opt,name=collateral_type,json=collateralType,proto3" json:"collateral_type,omitempty" yaml:"collateral_type"`
-}
-
-func (m *QueryCDPsByCollateralTypeRequest) Reset()         { *m = QueryCDPsByCollateralTypeRequest{} }
-func (m *QueryCDPsByCollateralTypeRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryCDPsByCollateralTypeRequest) ProtoMessage()    {}
-func (*QueryCDPsByCollateralTypeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b888451e45daea73, []int{6}
-}
-func (m *QueryCDPsByCollateralTypeRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryCDPsByCollateralTypeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryCDPsByCollateralTypeRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryCDPsByCollateralTypeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCDPsByCollateralTypeRequest.Merge(m, src)
-}
-func (m *QueryCDPsByCollateralTypeRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryCDPsByCollateralTypeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCDPsByCollateralTypeRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryCDPsByCollateralTypeRequest proto.InternalMessageInfo
-
-func (m *QueryCDPsByCollateralTypeRequest) GetCollateralType() string {
-	if m != nil {
-		return m.CollateralType
-	}
-	return ""
-}
-
-type QueryCDPsByCollateralTypeResponse struct {
-	Cdps []AugmentedCDP `protobuf:"bytes,1,rep,name=cdps,proto3" json:"cdps" yaml:"cdps"`
-}
-
-func (m *QueryCDPsByCollateralTypeResponse) Reset()         { *m = QueryCDPsByCollateralTypeResponse{} }
-func (m *QueryCDPsByCollateralTypeResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryCDPsByCollateralTypeResponse) ProtoMessage()    {}
-func (*QueryCDPsByCollateralTypeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b888451e45daea73, []int{7}
-}
-func (m *QueryCDPsByCollateralTypeResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryCDPsByCollateralTypeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryCDPsByCollateralTypeResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryCDPsByCollateralTypeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCDPsByCollateralTypeResponse.Merge(m, src)
-}
-func (m *QueryCDPsByCollateralTypeResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryCDPsByCollateralTypeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCDPsByCollateralTypeResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryCDPsByCollateralTypeResponse proto.InternalMessageInfo
-
-func (m *QueryCDPsByCollateralTypeResponse) GetCdps() []AugmentedCDP {
-	if m != nil {
-		return m.Cdps
-	}
-	return nil
-}
-
-type QueryCDPsByCollateralizationRatioRequest struct {
-	CollateralType string `protobuf:"bytes,1,opt,name=collateral_type,json=collateralType,proto3" json:"collateral_type,omitempty" yaml:"collateral_type"`
-	Ratio          uint64 `protobuf:"varint,2,opt,name=ratio,proto3" json:"ratio,omitempty" yaml:"ratio"`
-}
-
-func (m *QueryCDPsByCollateralizationRatioRequest) Reset() {
-	*m = QueryCDPsByCollateralizationRatioRequest{}
-}
-func (m *QueryCDPsByCollateralizationRatioRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryCDPsByCollateralizationRatioRequest) ProtoMessage()    {}
-func (*QueryCDPsByCollateralizationRatioRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b888451e45daea73, []int{8}
-}
-func (m *QueryCDPsByCollateralizationRatioRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryCDPsByCollateralizationRatioRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryCDPsByCollateralizationRatioRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryCDPsByCollateralizationRatioRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCDPsByCollateralizationRatioRequest.Merge(m, src)
-}
-func (m *QueryCDPsByCollateralizationRatioRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryCDPsByCollateralizationRatioRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCDPsByCollateralizationRatioRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryCDPsByCollateralizationRatioRequest proto.InternalMessageInfo
-
-func (m *QueryCDPsByCollateralizationRatioRequest) GetCollateralType() string {
-	if m != nil {
-		return m.CollateralType
-	}
-	return ""
-}
-
-func (m *QueryCDPsByCollateralizationRatioRequest) GetRatio() uint64 {
-	if m != nil {
-		return m.Ratio
+		return m.Id
 	}
 	return 0
 }
 
-type QueryCDPsByCollateralizationRatioResponse struct {
-	Cdps []AugmentedCDP `protobuf:"bytes,1,rep,name=cdps,proto3" json:"cdps" yaml:"cdps"`
+type QueryCDPByIdResponse struct {
+	Cdp CDP `protobuf:"bytes,1,opt,name=cdp,proto3" json:"cdp" yaml:"cdp"`
 }
 
-func (m *QueryCDPsByCollateralizationRatioResponse) Reset() {
-	*m = QueryCDPsByCollateralizationRatioResponse{}
+func (m *QueryCDPByIdResponse) Reset()         { *m = QueryCDPByIdResponse{} }
+func (m *QueryCDPByIdResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCDPByIdResponse) ProtoMessage()    {}
+func (*QueryCDPByIdResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b888451e45daea73, []int{5}
 }
-func (m *QueryCDPsByCollateralizationRatioResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryCDPsByCollateralizationRatioResponse) ProtoMessage() {}
-func (*QueryCDPsByCollateralizationRatioResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b888451e45daea73, []int{9}
-}
-func (m *QueryCDPsByCollateralizationRatioResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryCDPByIdResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryCDPsByCollateralizationRatioResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCDPByIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryCDPsByCollateralizationRatioResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCDPByIdResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -474,23 +284,23 @@ func (m *QueryCDPsByCollateralizationRatioResponse) XXX_Marshal(b []byte, determ
 		return b[:n], nil
 	}
 }
-func (m *QueryCDPsByCollateralizationRatioResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCDPsByCollateralizationRatioResponse.Merge(m, src)
+func (m *QueryCDPByIdResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCDPByIdResponse.Merge(m, src)
 }
-func (m *QueryCDPsByCollateralizationRatioResponse) XXX_Size() int {
+func (m *QueryCDPByIdResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryCDPsByCollateralizationRatioResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCDPsByCollateralizationRatioResponse.DiscardUnknown(m)
+func (m *QueryCDPByIdResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCDPByIdResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryCDPsByCollateralizationRatioResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryCDPByIdResponse proto.InternalMessageInfo
 
-func (m *QueryCDPsByCollateralizationRatioResponse) GetCdps() []AugmentedCDP {
+func (m *QueryCDPByIdResponse) GetCdp() CDP {
 	if m != nil {
-		return m.Cdps
+		return m.Cdp
 	}
-	return nil
+	return CDP{}
 }
 
 type QueryParamsRequest struct {
@@ -500,7 +310,7 @@ func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
 func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsRequest) ProtoMessage()    {}
 func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b888451e45daea73, []int{10}
+	return fileDescriptor_b888451e45daea73, []int{6}
 }
 func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -537,7 +347,7 @@ func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
 func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsResponse) ProtoMessage()    {}
 func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b888451e45daea73, []int{11}
+	return fileDescriptor_b888451e45daea73, []int{7}
 }
 func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -578,12 +388,8 @@ func init() {
 	proto.RegisterType((*QueryCDPResponse)(nil), "comdex.cdp.v1alpha1.QueryCDPResponse")
 	proto.RegisterType((*QueryCDPsRequest)(nil), "comdex.cdp.v1alpha1.QueryCDPsRequest")
 	proto.RegisterType((*QueryCDPsResponse)(nil), "comdex.cdp.v1alpha1.QueryCDPsResponse")
-	proto.RegisterType((*QueryCDPDepositsRequest)(nil), "comdex.cdp.v1alpha1.QueryCDPDepositsRequest")
-	proto.RegisterType((*QueryCDPDepositsResponse)(nil), "comdex.cdp.v1alpha1.QueryCDPDepositsResponse")
-	proto.RegisterType((*QueryCDPsByCollateralTypeRequest)(nil), "comdex.cdp.v1alpha1.QueryCDPsByCollateralTypeRequest")
-	proto.RegisterType((*QueryCDPsByCollateralTypeResponse)(nil), "comdex.cdp.v1alpha1.QueryCDPsByCollateralTypeResponse")
-	proto.RegisterType((*QueryCDPsByCollateralizationRatioRequest)(nil), "comdex.cdp.v1alpha1.QueryCDPsByCollateralizationRatioRequest")
-	proto.RegisterType((*QueryCDPsByCollateralizationRatioResponse)(nil), "comdex.cdp.v1alpha1.QueryCDPsByCollateralizationRatioResponse")
+	proto.RegisterType((*QueryCDPByIdRequest)(nil), "comdex.cdp.v1alpha1.QueryCDPByIdRequest")
+	proto.RegisterType((*QueryCDPByIdResponse)(nil), "comdex.cdp.v1alpha1.QueryCDPByIdResponse")
 	proto.RegisterType((*QueryParamsRequest)(nil), "comdex.cdp.v1alpha1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "comdex.cdp.v1alpha1.QueryParamsResponse")
 }
@@ -591,56 +397,46 @@ func init() {
 func init() { proto.RegisterFile("comdex/cdp/v1alpha1/query.proto", fileDescriptor_b888451e45daea73) }
 
 var fileDescriptor_b888451e45daea73 = []byte{
-	// 775 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x56, 0x4f, 0x4f, 0x13, 0x41,
-	0x14, 0xef, 0xf2, 0x4f, 0x98, 0x12, 0xc0, 0xa1, 0x91, 0xba, 0x62, 0x5b, 0x26, 0x8a, 0xd5, 0x48,
-	0x97, 0xd6, 0x48, 0xd4, 0x44, 0x12, 0x5b, 0x12, 0x13, 0x4f, 0x65, 0xf5, 0xe4, 0xa5, 0x99, 0xee,
-	0x0e, 0xcb, 0x26, 0x6d, 0x67, 0xe8, 0x6c, 0xc1, 0x8a, 0x78, 0xf0, 0xa0, 0x57, 0x13, 0x0f, 0x7e,
-	0x04, 0xbf, 0x88, 0x07, 0x8e, 0x24, 0x26, 0xc6, 0x78, 0x68, 0x0c, 0xf8, 0x09, 0xf8, 0x04, 0x66,
-	0x67, 0x67, 0xdb, 0x6d, 0xd9, 0x16, 0x34, 0x10, 0x2f, 0xd0, 0xbc, 0x79, 0xef, 0xfd, 0x7e, 0xbf,
-	0xf7, 0xfa, 0x7b, 0x29, 0x48, 0x1a, 0xb4, 0x6a, 0x92, 0x57, 0x9a, 0x61, 0x32, 0x6d, 0x3b, 0x8b,
-	0x2b, 0x6c, 0x13, 0x67, 0xb5, 0xad, 0x06, 0xa9, 0x37, 0x33, 0xac, 0x4e, 0x1d, 0x0a, 0x67, 0xbd,
-	0x84, 0x8c, 0x61, 0xb2, 0x8c, 0x9f, 0xa0, 0xc6, 0x2c, 0x6a, 0x51, 0xf1, 0xae, 0xb9, 0x9f, 0xbc,
-	0x54, 0x75, 0xde, 0xa2, 0xd4, 0xaa, 0x10, 0x0d, 0x33, 0x5b, 0xc3, 0xb5, 0x1a, 0x75, 0xb0, 0x63,
-	0xd3, 0x1a, 0x97, 0xaf, 0x77, 0x0c, 0xca, 0xab, 0x94, 0x6b, 0x65, 0xcc, 0x89, 0x87, 0xa0, 0x6d,
-	0x67, 0xcb, 0xc4, 0xc1, 0x59, 0x8d, 0x61, 0xcb, 0xae, 0x89, 0x64, 0x99, 0x7b, 0x3d, 0x8c, 0x95,
-	0xcb, 0xc0, 0x7b, 0x4e, 0x85, 0x3d, 0x33, 0x5c, 0xc7, 0x55, 0x1f, 0x2c, 0x11, 0x04, 0xf3, 0x61,
-	0x0c, 0x6a, 0x4b, 0x00, 0xf4, 0x16, 0x4c, 0xaf, 0xbb, 0x14, 0x0a, 0x6b, 0x45, 0x9d, 0x6c, 0x35,
-	0x08, 0x77, 0x60, 0x01, 0x4c, 0x1b, 0xb4, 0x52, 0xc1, 0x0e, 0xa9, 0xe3, 0x4a, 0xc9, 0x69, 0x32,
-	0x12, 0x57, 0x52, 0x4a, 0x7a, 0x22, 0xaf, 0x1e, 0xb7, 0x92, 0x57, 0x9a, 0xb8, 0x5a, 0x79, 0x84,
-	0x7a, 0x12, 0x90, 0x3e, 0xd5, 0x89, 0xbc, 0x68, 0x32, 0x02, 0x17, 0xc1, 0x28, 0xdd, 0xa9, 0x91,
-	0x7a, 0x7c, 0x48, 0x94, 0xce, 0x1c, 0xb7, 0x92, 0x93, 0x5e, 0xa9, 0x08, 0x23, 0x7d, 0x54, 0xfe,
-	0x07, 0x33, 0x1d, 0x7c, 0xce, 0x68, 0x8d, 0x13, 0xb8, 0x0a, 0x86, 0x0d, 0x93, 0x09, 0xd0, 0x68,
-	0x2e, 0x9e, 0x09, 0x99, 0x7b, 0xa6, 0xb0, 0x56, 0xcc, 0xc3, 0xfd, 0x56, 0x32, 0x72, 0xdc, 0x4a,
-	0x02, 0x49, 0xc9, 0x64, 0x48, 0x77, 0x0b, 0x11, 0xec, 0xf4, 0xe4, 0x52, 0x14, 0x2a, 0x81, 0xcb,
-	0x81, 0x98, 0x04, 0x7a, 0x06, 0x46, 0x0c, 0x93, 0xf1, 0xb8, 0x92, 0x1a, 0x4e, 0x47, 0x73, 0x0b,
-	0xa1, 0x48, 0x4f, 0x1a, 0x56, 0x95, 0xd4, 0x1c, 0x62, 0xba, 0x90, 0xb3, 0x12, 0x32, 0xda, 0x86,
-	0xe4, 0x48, 0x17, 0x3d, 0xd0, 0x7b, 0x05, 0xcc, 0xf9, 0x08, 0x6b, 0x84, 0x51, 0x6e, 0x3b, 0xfc,
-	0xbf, 0x4c, 0xb4, 0x0a, 0xe2, 0x27, 0x79, 0x48, 0xc1, 0xeb, 0x60, 0xdc, 0x94, 0x31, 0x29, 0x7a,
-	0x3e, 0x54, 0xb4, 0x2c, 0xcc, 0xcf, 0x49, 0xbd, 0xd3, 0x1e, 0x90, 0x5f, 0x8b, 0xf4, 0x76, 0x1b,
-	0x64, 0x81, 0x54, 0x7b, 0xb0, 0xf9, 0x66, 0xa1, 0x8b, 0xf3, 0x79, 0xea, 0x47, 0x14, 0x2c, 0x0c,
-	0x00, 0xba, 0x80, 0x8d, 0x7e, 0x56, 0x40, 0x3a, 0x14, 0xd1, 0x7e, 0x2d, 0x2c, 0xaa, 0xbb, 0x7f,
-	0xcf, 0x7b, 0xc5, 0x75, 0xb7, 0xa9, 0x58, 0xf1, 0x48, 0x70, 0xc5, 0x22, 0x8c, 0x74, 0xef, 0x19,
-	0xed, 0x80, 0xdb, 0x67, 0x20, 0x76, 0x01, 0x23, 0x89, 0x01, 0x28, 0x80, 0x8b, 0xe2, 0xc4, 0xf8,
-	0xde, 0x2a, 0x82, 0xd9, 0xae, 0xa8, 0x04, 0x7e, 0x08, 0xc6, 0xbc, 0x53, 0x24, 0x9d, 0x7c, 0x2d,
-	0x14, 0xda, 0x2b, 0xca, 0x8f, 0xb8, 0xa0, 0xba, 0x2c, 0xc8, 0x7d, 0xbf, 0x04, 0x26, 0x45, 0xcb,
-	0xe7, 0xa4, 0xbe, 0x6d, 0x1b, 0x04, 0x7e, 0x50, 0xc0, 0xb8, 0x2f, 0x19, 0xde, 0x08, 0x6d, 0xd4,
-	0x73, 0xc6, 0xd4, 0x9b, 0xa7, 0x64, 0x79, 0x2c, 0x51, 0xe6, 0xdd, 0xb7, 0xdf, 0x9f, 0x86, 0xd2,
-	0x70, 0x51, 0xeb, 0xdc, 0x52, 0xae, 0xed, 0xf6, 0xec, 0x6a, 0x4f, 0xdb, 0x15, 0xee, 0xda, 0x83,
-	0x0c, 0x4c, 0xb4, 0x67, 0x0f, 0x07, 0x63, 0xf8, 0x03, 0x52, 0x17, 0x4f, 0x4b, 0x93, 0x5c, 0x62,
-	0x82, 0xcb, 0x14, 0x9c, 0x0c, 0x72, 0x81, 0x5f, 0x94, 0xce, 0x3d, 0xf3, 0x1d, 0x0d, 0xef, 0x0e,
-	0x6c, 0xd9, 0x73, 0x80, 0xd4, 0xa5, 0x33, 0x66, 0x4b, 0x1e, 0x2b, 0x82, 0xc7, 0x32, 0xcc, 0x04,
-	0x78, 0x68, 0xbe, 0xe3, 0x07, 0xcc, 0xe6, 0xab, 0x02, 0xae, 0xf6, 0xf5, 0x28, 0xbc, 0x3f, 0x78,
-	0x0a, 0x7d, 0x8e, 0x87, 0xba, 0xf2, 0xb7, 0x65, 0x52, 0xc4, 0x03, 0x21, 0x22, 0x07, 0x97, 0x83,
-	0xc3, 0x2c, 0x95, 0x9b, 0xa5, 0x6e, 0xd3, 0x9d, 0x94, 0x03, 0x7f, 0x2a, 0x7d, 0x4e, 0x4d, 0xd0,
-	0x5f, 0xf0, 0xf1, 0xd9, 0x79, 0x85, 0x1c, 0x0c, 0x75, 0xf5, 0x5f, 0xcb, 0x07, 0xec, 0xa8, 0x47,
-	0x5e, 0xb0, 0x4e, 0xdb, 0x15, 0xa7, 0x63, 0x0f, 0xbe, 0x01, 0xd1, 0x80, 0x59, 0xe1, 0xad, 0xfe,
-	0x34, 0xba, 0x4c, 0xae, 0xa6, 0x4f, 0x4f, 0x94, 0xcc, 0x54, 0xc1, 0x2c, 0x06, 0x61, 0xf0, 0xdb,
-	0xe3, 0x19, 0x3b, 0xff, 0x74, 0xff, 0x30, 0xa1, 0x1c, 0x1c, 0x26, 0x94, 0x5f, 0x87, 0x09, 0xe5,
-	0xe3, 0x51, 0x22, 0x72, 0x70, 0x94, 0x88, 0xfc, 0x38, 0x4a, 0x44, 0x5e, 0x2e, 0x59, 0xb6, 0xb3,
-	0xd9, 0x28, 0xbb, 0x28, 0xb2, 0x6e, 0x89, 0x6e, 0x6c, 0xd8, 0x86, 0x8d, 0x2b, 0x7e, 0x1f, 0xaf,
-	0x93, 0xbb, 0x23, 0x5e, 0x1e, 0x13, 0x3f, 0x5f, 0xee, 0xfd, 0x09, 0x00, 0x00, 0xff, 0xff, 0x5d,
-	0xbd, 0xab, 0x4b, 0xb7, 0x09, 0x00, 0x00,
+	// 609 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x94, 0x4f, 0x6f, 0xda, 0x30,
+	0x18, 0xc6, 0x09, 0xa5, 0xd5, 0x6a, 0xaa, 0xfe, 0x31, 0xa8, 0x62, 0x59, 0x17, 0x50, 0xb4, 0x32,
+	0x36, 0xa9, 0xb1, 0xe8, 0x4e, 0xeb, 0x61, 0xd2, 0xa0, 0xd2, 0xb4, 0x1b, 0xcb, 0xa6, 0x1e, 0x76,
+	0x99, 0x4c, 0xe2, 0xa6, 0x91, 0x42, 0xec, 0xc6, 0x81, 0x15, 0x75, 0xf4, 0xb0, 0xcb, 0xae, 0x95,
+	0xf6, 0xa5, 0x7a, 0xac, 0xb4, 0xcb, 0x4e, 0x68, 0x82, 0x7d, 0x02, 0x3e, 0xc1, 0x14, 0xc7, 0x29,
+	0x7f, 0xc4, 0xa0, 0x87, 0x9e, 0x40, 0xf6, 0xf3, 0x3e, 0xcf, 0xcf, 0x7e, 0xdf, 0x18, 0x14, 0x2d,
+	0xda, 0xb2, 0xc9, 0x05, 0xb2, 0x6c, 0x86, 0x3a, 0x55, 0xec, 0xb1, 0x33, 0x5c, 0x45, 0xe7, 0x6d,
+	0x12, 0x74, 0x0d, 0x16, 0xd0, 0x90, 0xc2, 0x5c, 0x2c, 0x30, 0x2c, 0x9b, 0x19, 0x89, 0x40, 0xcd,
+	0x3b, 0xd4, 0xa1, 0x62, 0x1f, 0x45, 0xff, 0x62, 0xa9, 0xba, 0xe7, 0x50, 0xea, 0x78, 0x04, 0x61,
+	0xe6, 0x22, 0xec, 0xfb, 0x34, 0xc4, 0xa1, 0x4b, 0x7d, 0x2e, 0x77, 0x5f, 0x5a, 0x94, 0xb7, 0x28,
+	0x47, 0x4d, 0xcc, 0x49, 0x9c, 0x80, 0x3a, 0xd5, 0x26, 0x09, 0x71, 0x15, 0x31, 0xec, 0xb8, 0xbe,
+	0x10, 0x4b, 0xed, 0xd3, 0x79, 0x54, 0x11, 0x41, 0xbc, 0x5d, 0x9a, 0xb7, 0xcd, 0x70, 0x80, 0x5b,
+	0x49, 0x98, 0x36, 0x19, 0x96, 0xc4, 0x58, 0xd4, 0x95, 0x01, 0xfa, 0x15, 0xd8, 0xfa, 0x10, 0x21,
+	0xd4, 0x8f, 0x1b, 0x26, 0x39, 0x6f, 0x13, 0x1e, 0xc2, 0x3a, 0xd8, 0xb2, 0xa8, 0xe7, 0xe1, 0x90,
+	0x04, 0xd8, 0xfb, 0x12, 0x76, 0x19, 0x29, 0x28, 0x25, 0xa5, 0xb2, 0x5e, 0x53, 0x47, 0xfd, 0xe2,
+	0x6e, 0x17, 0xb7, 0xbc, 0x23, 0x7d, 0x46, 0xa0, 0x9b, 0x9b, 0xe3, 0x95, 0x4f, 0x5d, 0x46, 0x60,
+	0x19, 0xac, 0xd2, 0xaf, 0x3e, 0x09, 0x0a, 0x69, 0x51, 0xba, 0x3d, 0xea, 0x17, 0x37, 0xe2, 0x52,
+	0xb1, 0xac, 0x9b, 0xab, 0xf2, 0x17, 0x6c, 0x8f, 0xf3, 0x39, 0xa3, 0x3e, 0x27, 0xf0, 0x0d, 0x58,
+	0xb1, 0x6c, 0x26, 0x42, 0xb3, 0x87, 0x05, 0x63, 0xce, 0xbd, 0x1b, 0xf5, 0xe3, 0x46, 0x0d, 0xde,
+	0xf4, 0x8b, 0xa9, 0x51, 0xbf, 0x08, 0x24, 0x92, 0xcd, 0x74, 0x33, 0x2a, 0xd4, 0x8f, 0xc6, 0x9e,
+	0x3c, 0x39, 0xd4, 0x7d, 0x79, 0x4e, 0xc0, 0xce, 0x44, 0xad, 0x04, 0x7a, 0x0b, 0x32, 0x96, 0xcd,
+	0x78, 0x41, 0x29, 0xad, 0x2c, 0x24, 0xca, 0x49, 0xa2, 0xec, 0x1d, 0x11, 0xd7, 0x4d, 0x51, 0xaa,
+	0xef, 0x83, 0x5c, 0xe2, 0x5b, 0xeb, 0xbe, 0xb7, 0x13, 0xac, 0x4d, 0x90, 0x76, 0x6d, 0x71, 0xd2,
+	0x8c, 0x99, 0x76, 0x6d, 0xfd, 0x04, 0xe4, 0xa7, 0x65, 0x0f, 0x74, 0x25, 0x79, 0x00, 0x85, 0x6f,
+	0x43, 0xcc, 0x86, 0x4c, 0xd7, 0x1b, 0x12, 0x2a, 0x59, 0x95, 0x61, 0xaf, 0xc1, 0x5a, 0x3c, 0x43,
+	0x32, 0xef, 0xc9, 0xdc, 0xbc, 0xb8, 0xa8, 0x96, 0x89, 0x22, 0x4d, 0x59, 0x70, 0x78, 0x9d, 0x01,
+	0x1b, 0xc2, 0xf2, 0x23, 0x09, 0x3a, 0xae, 0x45, 0xe0, 0x0f, 0x05, 0x3c, 0x4a, 0x4e, 0x04, 0x9f,
+	0xcd, 0x35, 0x9a, 0x99, 0x3f, 0x75, 0x7f, 0x89, 0x2a, 0xa6, 0xd4, 0x8d, 0xef, 0xbf, 0xfe, 0xfe,
+	0x4c, 0x57, 0x60, 0x19, 0x8d, 0x3f, 0x02, 0x8e, 0x2e, 0x67, 0x26, 0xb3, 0x87, 0x2e, 0x45, 0x63,
+	0x7b, 0xf0, 0x02, 0xac, 0xdf, 0x75, 0x16, 0x2e, 0xce, 0x48, 0x2e, 0x48, 0x2d, 0x2f, 0x93, 0x49,
+	0x96, 0x3d, 0xc1, 0xb2, 0x0b, 0xf3, 0xd3, 0x2c, 0x32, 0xf9, 0x4a, 0xde, 0x89, 0x6c, 0x2a, 0xac,
+	0x2c, 0x74, 0x9d, 0x18, 0x0f, 0xf5, 0xc5, 0x3d, 0x94, 0x12, 0xe1, 0xb1, 0x40, 0xc8, 0xc1, 0x9d,
+	0x69, 0x04, 0xd7, 0xee, 0xc1, 0x6f, 0x20, 0x3b, 0xd1, 0x66, 0xf8, 0xfc, 0xff, 0xa6, 0x53, 0xe3,
+	0xa1, 0x56, 0x96, 0x0b, 0x65, 0xb8, 0x2a, 0xc2, 0xf3, 0x10, 0x4e, 0x84, 0xcb, 0x77, 0xa8, 0xf6,
+	0xee, 0x66, 0xa0, 0x29, 0xb7, 0x03, 0x4d, 0xf9, 0x33, 0xd0, 0x94, 0xeb, 0xa1, 0x96, 0xba, 0x1d,
+	0x6a, 0xa9, 0xdf, 0x43, 0x2d, 0xf5, 0xf9, 0xc0, 0x71, 0xc3, 0xb3, 0x76, 0x33, 0x4a, 0x91, 0x75,
+	0x07, 0xf4, 0xf4, 0xd4, 0xb5, 0x5c, 0xec, 0x25, 0x3e, 0xb1, 0x53, 0xd4, 0x48, 0xde, 0x5c, 0x13,
+	0x2f, 0xd6, 0xab, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xa3, 0x62, 0xc9, 0x26, 0xaa, 0x05, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -657,9 +453,7 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryServiceClient interface {
 	QueryCDP(ctx context.Context, in *QueryCDPRequest, opts ...grpc.CallOption) (*QueryCDPResponse, error)
 	QueryCDPs(ctx context.Context, in *QueryCDPsRequest, opts ...grpc.CallOption) (*QueryCDPsResponse, error)
-	QueryCDPDeposits(ctx context.Context, in *QueryCDPDepositsRequest, opts ...grpc.CallOption) (*QueryCDPDepositsResponse, error)
-	QueryCDPsByCollateralType(ctx context.Context, in *QueryCDPsByCollateralTypeRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralTypeResponse, error)
-	QueryCDPsByCollateralizationRatio(ctx context.Context, in *QueryCDPsByCollateralizationRatioRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralizationRatioResponse, error)
+	QueryCDPById(ctx context.Context, in *QueryCDPByIdRequest, opts ...grpc.CallOption) (*QueryCDPByIdResponse, error)
 	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 }
 
@@ -689,27 +483,9 @@ func (c *queryServiceClient) QueryCDPs(ctx context.Context, in *QueryCDPsRequest
 	return out, nil
 }
 
-func (c *queryServiceClient) QueryCDPDeposits(ctx context.Context, in *QueryCDPDepositsRequest, opts ...grpc.CallOption) (*QueryCDPDepositsResponse, error) {
-	out := new(QueryCDPDepositsResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.QueryService/QueryCDPDeposits", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryServiceClient) QueryCDPsByCollateralType(ctx context.Context, in *QueryCDPsByCollateralTypeRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralTypeResponse, error) {
-	out := new(QueryCDPsByCollateralTypeResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.QueryService/QueryCDPsByCollateralType", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryServiceClient) QueryCDPsByCollateralizationRatio(ctx context.Context, in *QueryCDPsByCollateralizationRatioRequest, opts ...grpc.CallOption) (*QueryCDPsByCollateralizationRatioResponse, error) {
-	out := new(QueryCDPsByCollateralizationRatioResponse)
-	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.QueryService/QueryCDPsByCollateralizationRatio", in, out, opts...)
+func (c *queryServiceClient) QueryCDPById(ctx context.Context, in *QueryCDPByIdRequest, opts ...grpc.CallOption) (*QueryCDPByIdResponse, error) {
+	out := new(QueryCDPByIdResponse)
+	err := c.cc.Invoke(ctx, "/comdex.cdp.v1alpha1.QueryService/QueryCDPById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -729,9 +505,7 @@ func (c *queryServiceClient) QueryParams(ctx context.Context, in *QueryParamsReq
 type QueryServiceServer interface {
 	QueryCDP(context.Context, *QueryCDPRequest) (*QueryCDPResponse, error)
 	QueryCDPs(context.Context, *QueryCDPsRequest) (*QueryCDPsResponse, error)
-	QueryCDPDeposits(context.Context, *QueryCDPDepositsRequest) (*QueryCDPDepositsResponse, error)
-	QueryCDPsByCollateralType(context.Context, *QueryCDPsByCollateralTypeRequest) (*QueryCDPsByCollateralTypeResponse, error)
-	QueryCDPsByCollateralizationRatio(context.Context, *QueryCDPsByCollateralizationRatioRequest) (*QueryCDPsByCollateralizationRatioResponse, error)
+	QueryCDPById(context.Context, *QueryCDPByIdRequest) (*QueryCDPByIdResponse, error)
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 }
 
@@ -745,14 +519,8 @@ func (*UnimplementedQueryServiceServer) QueryCDP(ctx context.Context, req *Query
 func (*UnimplementedQueryServiceServer) QueryCDPs(ctx context.Context, req *QueryCDPsRequest) (*QueryCDPsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryCDPs not implemented")
 }
-func (*UnimplementedQueryServiceServer) QueryCDPDeposits(ctx context.Context, req *QueryCDPDepositsRequest) (*QueryCDPDepositsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryCDPDeposits not implemented")
-}
-func (*UnimplementedQueryServiceServer) QueryCDPsByCollateralType(ctx context.Context, req *QueryCDPsByCollateralTypeRequest) (*QueryCDPsByCollateralTypeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryCDPsByCollateralType not implemented")
-}
-func (*UnimplementedQueryServiceServer) QueryCDPsByCollateralizationRatio(ctx context.Context, req *QueryCDPsByCollateralizationRatioRequest) (*QueryCDPsByCollateralizationRatioResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryCDPsByCollateralizationRatio not implemented")
+func (*UnimplementedQueryServiceServer) QueryCDPById(ctx context.Context, req *QueryCDPByIdRequest) (*QueryCDPByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCDPById not implemented")
 }
 func (*UnimplementedQueryServiceServer) QueryParams(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryParams not implemented")
@@ -798,56 +566,20 @@ func _QueryService_QueryCDPs_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_QueryCDPDeposits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCDPDepositsRequest)
+func _QueryService_QueryCDPById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCDPByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).QueryCDPDeposits(ctx, in)
+		return srv.(QueryServiceServer).QueryCDPById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.QueryService/QueryCDPDeposits",
+		FullMethod: "/comdex.cdp.v1alpha1.QueryService/QueryCDPById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).QueryCDPDeposits(ctx, req.(*QueryCDPDepositsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _QueryService_QueryCDPsByCollateralType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCDPsByCollateralTypeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServiceServer).QueryCDPsByCollateralType(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.QueryService/QueryCDPsByCollateralType",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).QueryCDPsByCollateralType(ctx, req.(*QueryCDPsByCollateralTypeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _QueryService_QueryCDPsByCollateralizationRatio_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCDPsByCollateralizationRatioRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServiceServer).QueryCDPsByCollateralizationRatio(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/comdex.cdp.v1alpha1.QueryService/QueryCDPsByCollateralizationRatio",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).QueryCDPsByCollateralizationRatio(ctx, req.(*QueryCDPsByCollateralizationRatioRequest))
+		return srv.(QueryServiceServer).QueryCDPById(ctx, req.(*QueryCDPByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -883,16 +615,8 @@ var _QueryService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _QueryService_QueryCDPs_Handler,
 		},
 		{
-			MethodName: "QueryCDPDeposits",
-			Handler:    _QueryService_QueryCDPDeposits_Handler,
-		},
-		{
-			MethodName: "QueryCDPsByCollateralType",
-			Handler:    _QueryService_QueryCDPsByCollateralType_Handler,
-		},
-		{
-			MethodName: "QueryCDPsByCollateralizationRatio",
-			Handler:    _QueryService_QueryCDPsByCollateralizationRatio_Handler,
+			MethodName: "QueryCDPById",
+			Handler:    _QueryService_QueryCDPById_Handler,
 		},
 		{
 			MethodName: "QueryParams",
@@ -993,6 +717,13 @@ func (m *QueryCDPsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0x12
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -1033,7 +764,7 @@ func (m *QueryCDPsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryCDPDepositsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryCDPByIdRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1043,34 +774,25 @@ func (m *QueryCDPDepositsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryCDPDepositsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCDPByIdRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryCDPDepositsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCDPByIdRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Owner) > 0 {
-		i -= len(m.Owner)
-		copy(dAtA[i:], m.Owner)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Owner)))
+	if m.Id != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Id))
 		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.CollateralType) > 0 {
-		i -= len(m.CollateralType)
-		copy(dAtA[i:], m.CollateralType)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.CollateralType)))
-		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryCDPDepositsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryCDPByIdResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1080,169 +802,26 @@ func (m *QueryCDPDepositsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryCDPDepositsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCDPByIdResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryCDPDepositsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCDPByIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Deposits) > 0 {
-		for iNdEx := len(m.Deposits) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Deposits[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
+	{
+		size, err := m.Cdp.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
 		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
 	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryCDPsByCollateralTypeRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryCDPsByCollateralTypeRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryCDPsByCollateralTypeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.CollateralType) > 0 {
-		i -= len(m.CollateralType)
-		copy(dAtA[i:], m.CollateralType)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.CollateralType)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryCDPsByCollateralTypeResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryCDPsByCollateralTypeResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryCDPsByCollateralTypeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Cdps) > 0 {
-		for iNdEx := len(m.Cdps) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Cdps[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryCDPsByCollateralizationRatioRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryCDPsByCollateralizationRatioRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryCDPsByCollateralizationRatioRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Ratio != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.Ratio))
-		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.CollateralType) > 0 {
-		i -= len(m.CollateralType)
-		copy(dAtA[i:], m.CollateralType)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.CollateralType)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryCDPsByCollateralizationRatioResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryCDPsByCollateralizationRatioResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryCDPsByCollateralizationRatioResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Cdps) > 0 {
-		for iNdEx := len(m.Cdps) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Cdps[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
+	i--
+	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -1347,6 +926,10 @@ func (m *QueryCDPsRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -1365,94 +948,26 @@ func (m *QueryCDPsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryCDPDepositsRequest) Size() (n int) {
+func (m *QueryCDPByIdRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.CollateralType)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	l = len(m.Owner)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
+	if m.Id != 0 {
+		n += 1 + sovQuery(uint64(m.Id))
 	}
 	return n
 }
 
-func (m *QueryCDPDepositsResponse) Size() (n int) {
+func (m *QueryCDPByIdResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.Deposits) > 0 {
-		for _, e := range m.Deposits {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *QueryCDPsByCollateralTypeRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.CollateralType)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
-func (m *QueryCDPsByCollateralTypeResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.Cdps) > 0 {
-		for _, e := range m.Cdps {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *QueryCDPsByCollateralizationRatioRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.CollateralType)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	if m.Ratio != 0 {
-		n += 1 + sovQuery(uint64(m.Ratio))
-	}
-	return n
-}
-
-func (m *QueryCDPsByCollateralizationRatioResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.Cdps) > 0 {
-		for _, e := range m.Cdps {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
+	l = m.Cdp.Size()
+	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
 
@@ -1714,6 +1229,38 @@ func (m *QueryCDPsRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: QueryCDPsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -1796,7 +1343,7 @@ func (m *QueryCDPsResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Cdps = append(m.Cdps, AugmentedCDP{})
+			m.Cdps = append(m.Cdps, CDP{})
 			if err := m.Cdps[len(m.Cdps)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1825,7 +1372,7 @@ func (m *QueryCDPsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryCDPDepositsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryCDPByIdRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1848,425 +1395,17 @@ func (m *QueryCDPDepositsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCDPDepositsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCDPByIdRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCDPDepositsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCDPByIdRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CollateralType", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CollateralType = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Owner = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryCDPDepositsResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCDPDepositsResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCDPDepositsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Deposits", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Deposits = append(m.Deposits, Deposit{})
-			if err := m.Deposits[len(m.Deposits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryCDPsByCollateralTypeRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCDPsByCollateralTypeRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCDPsByCollateralTypeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CollateralType", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CollateralType = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryCDPsByCollateralTypeResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCDPsByCollateralTypeResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCDPsByCollateralTypeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Cdps", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Cdps = append(m.Cdps, AugmentedCDP{})
-			if err := m.Cdps[len(m.Cdps)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryCDPsByCollateralizationRatioRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCDPsByCollateralizationRatioRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCDPsByCollateralizationRatioRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CollateralType", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CollateralType = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ratio", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			m.Ratio = 0
+			m.Id = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -2276,7 +1415,7 @@ func (m *QueryCDPsByCollateralizationRatioRequest) Unmarshal(dAtA []byte) error 
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Ratio |= uint64(b&0x7F) << shift
+				m.Id |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2305,7 +1444,7 @@ func (m *QueryCDPsByCollateralizationRatioRequest) Unmarshal(dAtA []byte) error 
 	}
 	return nil
 }
-func (m *QueryCDPsByCollateralizationRatioResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryCDPByIdResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2328,15 +1467,15 @@ func (m *QueryCDPsByCollateralizationRatioResponse) Unmarshal(dAtA []byte) error
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCDPsByCollateralizationRatioResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCDPByIdResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCDPsByCollateralizationRatioResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCDPByIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Cdps", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Cdp", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -2363,8 +1502,7 @@ func (m *QueryCDPsByCollateralizationRatioResponse) Unmarshal(dAtA []byte) error
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Cdps = append(m.Cdps, AugmentedCDP{})
-			if err := m.Cdps[len(m.Cdps)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Cdp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

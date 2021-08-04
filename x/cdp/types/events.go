@@ -7,7 +7,8 @@ const (
 	EventTypeCDPDraw       = "cdp_draw"
 	EventTypeCDPRepay      = "cdp_repay"
 	EventTypeCdpClose      = "cdp_close"
-	AttributeValueCategory = ModuleName
+
+	AttributeValueModule = ModuleName
 
 	AttributeKeyCdpID = "cdp_id"
 )

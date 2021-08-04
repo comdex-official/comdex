@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"github.com/comdex-official/comdex/x/cdp/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,110 +8,84 @@ import (
 	"sort"
 )
 
-func (k Keeper) AddCdp(ctx sdk.Context, owner sdk.AccAddress, collateral sdk.Coin, principal sdk.Coin, collateralType string) error {
-	err := k.ValidateCollateral(ctx, collateral, collateralType)
-	if err != nil {
-		return err
-	}
-	err = k.ValidateBalance(ctx, collateral, owner)
+func (k Keeper) AddCdp(ctx sdk.Context, owner sdk.AccAddress, collateral sdk.Coin, debt sdk.Coin, collateralType string) error {
+	err := k.VerifyCollateralAndDebt(ctx, collateral, debt, collateralType)
 	if err != nil {
 		return err
 	}
 
-	err = k.ValidateCollateralizationRatio(ctx, collateral, collateralType, principal)
+	err = k.VerifyBalance(ctx, collateral, owner)
+	if err != nil {
+		return err
+	}
+
+	err = k.VerifyCollateralizationRatio(ctx, collateral, debt, collateralType)
 	if err != nil {
 		return err
 	}
 
 	id := k.GetNextCdpID(ctx)
-
-	cdp := types.NewCDP(id, owner, collateral, collateralType, principal)
+	cdp := types.NewCDP(id, owner, collateral, collateralType, debt)
 
 	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, owner, types.ModuleName, sdk.NewCoins(collateral))
 	if err != nil {
 		return err
 	}
 
-	err = k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(principal))
+	err = k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(debt))
 	if err != nil {
 		return err
 	}
 
-	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, owner, sdk.NewCoins(principal))
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, owner, sdk.NewCoins(debt))
 	if err != nil {
 		return err
 	}
-	k.SetCdp(ctx, cdp)
-	k.IndexCdpByOwner(ctx, cdp)
+
+	k.SetCDP(ctx, cdp)
+	k.IndexCDPByOwner(ctx, cdp)
 	k.SetNextCdpId(ctx, id+1)
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeCDPCreated,
-			sdk.NewAttribute(types.AttributeKeyCdpID, fmt.Sprintf("%d", cdp.Id)),
-		),
-	)
 
 	return nil
 }
 
-func (k Keeper) DepositCollateral(ctx sdk.Context, owner string, collateral sdk.Coin, collateralType string) error {
-	err := k.ValidateCollateral(ctx, collateral, collateralType)
-	if err != nil {
-		return err
-	}
-
-	ownerAddrs, _ := sdk.AccAddressFromBech32(owner)
-	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
+func (k Keeper) DepositCollateral(ctx sdk.Context, owner sdk.AccAddress, collateral sdk.Coin, collateralType string) error {
+	cdp, found := k.GetCDPByOwnerAndCollateralType(ctx, owner, collateralType)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrorCdpNotFound, "owner %s, collateral %s", owner, collateral.Denom)
 	}
 
-	err = k.ValidateBalance(ctx, collateral, ownerAddrs)
-	if err != nil {
-		return err
+	if collateral.Denom != cdp.Collateral.Denom {
+		return sdkerrors.Wrapf(types.ErrorInvalidCollateral, "collateral given %s , collateral required %s", collateral.Denom, cdp.Collateral.Denom)
 	}
 
-	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddrs, types.ModuleName, sdk.NewCoins(collateral))
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, owner, types.ModuleName, sdk.NewCoins(collateral))
 	if err != nil {
 		return err
 	}
 
 	cdp.Collateral = cdp.Collateral.Add(collateral)
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeCDPDeposit,
-			sdk.NewAttribute(sdk.AttributeKeyAmount, collateral.String()),
-			sdk.NewAttribute(types.AttributeKeyCdpID, fmt.Sprintf("%d", cdp.Id)),
-		),
-	)
-
-	return k.SetCdp(ctx, cdp)
+	k.SetCDP(ctx, cdp)
+	return nil
 }
 
-func (k Keeper) WithdrawCollateral(ctx sdk.Context, owner string, collateral sdk.Coin, collateralType string) error {
-	err := k.ValidateCollateral(ctx, collateral, collateralType)
-	if err != nil {
-		return err
-	}
-
-	ownerAddrs, err := sdk.AccAddressFromBech32(owner)
-	if err != nil {
-		return err
-	}
-
-	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
+func (k Keeper) WithdrawCollateral(ctx sdk.Context, owner sdk.AccAddress, collateral sdk.Coin, collateralType string) error {
+	cdp, found := k.GetCDPByOwnerAndCollateralType(ctx, owner, collateralType)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrorCdpNotFound, "owner %s, collateral %s", owner, collateral.Denom)
 	}
 
+	if collateral.Denom != cdp.Collateral.Denom {
+		return sdkerrors.Wrapf(types.ErrorInvalidCollateral, "collateral given %s , collateral required %s", collateral.Denom, cdp.Collateral.Denom)
+	}
+
 	if collateral.Amount.GT(cdp.Collateral.Amount) {
-		return sdkerrors.Wrapf(types.ErrorInvalidWithdrawAmount, "collateral %s, deposit %s", collateral, cdp.Collateral.Amount)
+		return sdkerrors.Wrapf(types.ErrorInvalidWithdrawAmount, "collateral %s, deposited %s", collateral, cdp.Collateral.Amount)
 	}
 
 	liquidationRatio := k.GetLiquidationRatio(ctx, collateralType)
-	collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, cdp.Collateral.Sub(collateral), cdp.Type, cdp.Principal, types.Spot)
+	collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, cdp.Collateral.Sub(collateral), cdp.Type, cdp.Debt, types.Spot)
 	if err != nil {
 		return err
 	}
@@ -121,132 +94,97 @@ func (k Keeper) WithdrawCollateral(ctx sdk.Context, owner string, collateral sdk
 		return sdkerrors.Wrapf(types.ErrorInvalidCollateralRatio, "collateral %s, collateral ratio %s, liquidation ration %s", collateral.Denom, collateralizationRatio, liquidationRatio)
 	}
 
-	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddrs, sdk.NewCoins(collateral))
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, owner, sdk.NewCoins(collateral))
 	if err != nil {
 		return err
 	}
 
 	cdp.Collateral = cdp.Collateral.Sub(collateral)
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeCDPWithdrawal,
-			sdk.NewAttribute(sdk.AttributeKeyAmount, collateral.String()),
-			sdk.NewAttribute(types.AttributeKeyCdpID, fmt.Sprintf("%d", cdp.Id)),
-		),
-	)
-
-	return k.SetCdp(ctx, cdp)
+	k.SetCDP(ctx, cdp)
+	return nil
 
 }
 
-func (k Keeper) AddPrincipal(ctx sdk.Context, owner string, collateralType string, principal sdk.Coin) error {
-	ownerAddrs, err := sdk.AccAddressFromBech32(owner)
-	if err != nil {
-		return err
-	}
-	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
+func (k Keeper) DrawDebt(ctx sdk.Context, owner sdk.AccAddress, collateralType string, debt sdk.Coin) error {
+	cdp, found := k.GetCDPByOwnerAndCollateralType(ctx, owner, collateralType)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrorCdpNotFound, "owner %s, denom %s", owner, collateralType)
 	}
 
-	err = k.ValidatePrincipalDraw(ctx, principal, cdp.Principal.Denom)
+	if debt.Denom != cdp.Debt.Denom {
+		return sdkerrors.Wrapf(types.ErrorInvalidDebt, "requested %s, expected %s", debt.Denom, cdp.Debt.Denom)
+	}
+
+	err := k.VerifyCollateralizationRatio(ctx, cdp.Collateral, cdp.Debt.Add(debt), cdp.Type)
 	if err != nil {
 		return err
 	}
 
-	err = k.ValidateCollateralizationRatio(ctx, cdp.Collateral, cdp.Type, cdp.Principal.Add(principal))
-	if err != nil {
-		return err
-	}
-
-	err = k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(principal))
+	err = k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(debt))
 	if err != nil {
 		panic(err)
 	}
-	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddrs, sdk.NewCoins(principal))
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, owner, sdk.NewCoins(debt))
 	if err != nil {
 		panic(err)
 	}
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeCDPDraw,
-			sdk.NewAttribute(sdk.AttributeKeyAmount, principal.String()),
-			sdk.NewAttribute(types.AttributeKeyCdpID, fmt.Sprintf("%d", cdp.Id)),
-		),
-	)
+	cdp.Debt = cdp.Debt.Add(debt)
+	k.SetCDP(ctx, cdp)
 
-	cdp.Principal = cdp.Principal.Add(principal)
-
-	return k.SetCdp(ctx, cdp)
-
+	return nil
 }
 
-func (k Keeper) RepayPrincipal(ctx sdk.Context, owner string, collateralType string, payment sdk.Coin) error {
-	ownerAddrs, err := sdk.AccAddressFromBech32(owner)
-	if err != nil {
-		return err
-	}
-	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
+func (k Keeper) RepayDebt(ctx sdk.Context, owner sdk.AccAddress, collateralType string, debt sdk.Coin) error {
+	cdp, found := k.GetCDPByOwnerAndCollateralType(ctx, owner, collateralType)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrorCdpNotFound, "owner %s, denom %s", owner, collateralType)
 	}
 
-	err = k.ValidatePaymentCoins(ctx, cdp, payment)
+	if cdp.Debt.Denom != debt.Denom {
+		return sdkerrors.Wrapf(types.ErrorInvalidPayment, "cdp %d: expected %s, got %s", cdp.Id, cdp.Debt.Denom, debt.Denom)
+	}
+
+	if debt.Amount.GT(cdp.Debt.Amount) {
+		return sdkerrors.Wrapf(types.ErrorInvalidAmount, "debt amount %s greater than present in cdp %s", debt.Amount, cdp.Debt.Amount)
+	}
+
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, owner, types.ModuleName, sdk.NewCoins(debt))
 	if err != nil {
 		return err
 	}
 
-	err = k.ValidateBalance(ctx, payment, ownerAddrs)
+	err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(debt))
 	if err != nil {
 		return err
 	}
 
-	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddrs, types.ModuleName, sdk.NewCoins(payment))
-	if err != nil {
-		return err
-	}
+	cdp.Debt = cdp.Debt.Sub(debt)
 
-	err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(payment))
-	if err != nil {
-		return err
-	}
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeCDPRepay,
-			sdk.NewAttribute(sdk.AttributeKeyAmount, payment.Amount.String()),
-			sdk.NewAttribute(types.AttributeKeyCdpID, fmt.Sprintf("%d", cdp.Id)),
-		),
-	)
-
-	cdp.Principal = cdp.Principal.Sub(payment)
-
-	if cdp.Principal.IsZero() {
-		k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddrs, sdk.NewCoins(cdp.Collateral))
+	if cdp.Debt.IsZero() {
+		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, owner, sdk.NewCoins(cdp.Collateral))
+		if err != nil {
+			return err
+		}
 		err = k.DeleteCDP(ctx, cdp)
 		if err != nil {
 			return err
 		}
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				types.EventTypeCdpClose,
-				sdk.NewAttribute(types.AttributeKeyCdpID, fmt.Sprintf("%d", cdp.Id)),
-			),
-		)
 		return nil
 	}
 
-	return k.SetCdp(ctx, cdp)
+	k.SetCDP(ctx, cdp)
+
+	return nil
 }
 
-func (k Keeper) AttemptLiquidation(ctx sdk.Context, owner string, collateralType string) error {
+func (k Keeper) AttemptLiquidation(ctx sdk.Context, owner sdk.AccAddress, collateralType string) error {
 	//TODO
 	return nil
 }
 
-func (k Keeper) ValidateBalance(ctx sdk.Context, amount sdk.Coin, sender sdk.AccAddress) error {
+func (k Keeper) VerifyBalance(ctx sdk.Context, amount sdk.Coin, sender sdk.AccAddress) error {
 	acc := k.accountKeeper.GetAccount(ctx, sender)
 	if acc == nil {
 		return sdkerrors.Wrapf(types.ErrorAccountNotFound, "address: %s", sender)
@@ -260,20 +198,24 @@ func (k Keeper) ValidateBalance(ctx sdk.Context, amount sdk.Coin, sender sdk.Acc
 	return nil
 }
 
-func (k Keeper) ValidateCollateral(ctx sdk.Context, collateral sdk.Coin, collateralType string) error {
-	collateralParam, found := k.GetCollateral(ctx, collateralType)
+func (k Keeper) VerifyCollateralAndDebt(ctx sdk.Context, collateral sdk.Coin, debt sdk.Coin, collateralType string) error {
+	collateralParam, found := k.GetCollateralParam(ctx, collateralType)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrorCdpNotFound, "%s cdp does not exist", collateralType)
 	}
 
-	if collateralParam.Denom != collateral.Denom {
-		return sdkerrors.Wrapf(types.ErrorInvalidCollateral, "collateral given %s , collateral required %s", collateral.Denom, collateralParam.Denom)
+	if collateralParam.CollateralDenom != collateral.Denom {
+		return sdkerrors.Wrapf(types.ErrorInvalidCollateral, "collateral given %s , collateral required %s", collateral.Denom, collateralParam.CollateralDenom)
+	}
+
+	if collateralParam.DebtDenom != debt.Denom {
+		return sdkerrors.Wrapf(types.ErrorInvalidDebt, "collateral given %s , collateral required %s", collateral.Denom, collateralParam.CollateralDenom)
 	}
 	return nil
 }
 
-func (k Keeper) ValidateCollateralizationRatio(ctx sdk.Context, collateral sdk.Coin, collateralType string, principal sdk.Coin) error {
-	collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, collateral, collateralType, principal, types.Spot)
+func (k Keeper) VerifyCollateralizationRatio(ctx sdk.Context, collateral sdk.Coin, debt sdk.Coin, collateralType string) error {
+	collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, collateral, collateralType, debt, types.Spot)
 	if err != nil {
 		return err
 	}
@@ -286,7 +228,7 @@ func (k Keeper) ValidateCollateralizationRatio(ctx sdk.Context, collateral sdk.C
 	return nil
 }
 
-func (k Keeper) GetCdpByOwnerAndCollateralType(ctx sdk.Context, owner sdk.AccAddress, collateralType string) (types.CDP, bool) {
+func (k Keeper) GetCDPByOwnerAndCollateralType(ctx sdk.Context, owner sdk.AccAddress, collateralType string) (types.CDP, bool) {
 	cdpIdList, found := k.GetCdpIdsByOnwer(ctx, owner)
 	if !found {
 		return types.CDP{}, false
@@ -314,11 +256,11 @@ func (k Keeper) GetCDP(ctx sdk.Context, collateralType string, cdpID uint64) (ty
 	return cdp, true
 }
 
-func (k Keeper) SetCdp(ctx sdk.Context, cdp types.CDP) error {
+func (k Keeper) SetCDP(ctx sdk.Context, cdp types.CDP) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryBare(&cdp)
 	store.Set(types.CdpKey(cdp.Id), bz)
-	return nil
+	return
 }
 
 func (k Keeper) DeleteCDP(ctx sdk.Context, cdp types.CDP) error {
@@ -329,7 +271,7 @@ func (k Keeper) DeleteCDP(ctx sdk.Context, cdp types.CDP) error {
 
 func (k Keeper) GetNextCdpID(ctx sdk.Context) (id uint64) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.CdpIDKey)
+	bz := store.Get(types.CdpIdKey)
 
 	if bz == nil {
 		panic("starting cdp id not set in genesis")
@@ -338,8 +280,8 @@ func (k Keeper) GetNextCdpID(ctx sdk.Context) (id uint64) {
 	return
 }
 
-func (k Keeper) IndexCdpByOwner(ctx sdk.Context, cdp types.CDP) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIDIndexKeyPrefix)
+func (k Keeper) IndexCDPByOwner(ctx sdk.Context, cdp types.CDP) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIdIndexKeyPrefix)
 	ownerAddrs, _ := sdk.AccAddressFromBech32(cdp.Owner)
 	cdpIDs, found := k.GetCdpIdsByOnwer(ctx, ownerAddrs)
 	if !found {
@@ -356,11 +298,11 @@ func (k Keeper) IndexCdpByOwner(ctx sdk.Context, cdp types.CDP) {
 
 func (k Keeper) SetNextCdpId(ctx sdk.Context, id uint64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.CdpIDKey, types.GetCdpIDBytes(id))
+	store.Set(types.CdpIdKey, types.GetCdpIDBytes(id))
 }
 
 func (k Keeper) GetCdpIdsByOnwer(ctx sdk.Context, owner sdk.AccAddress) (types.CdpIdList, bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIDIndexKeyPrefix)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIdIndexKeyPrefix)
 	bz := store.Get(owner)
 	if bz == nil {
 		return types.CdpIdList{[]uint64{}}, false
@@ -371,30 +313,7 @@ func (k Keeper) GetCdpIdsByOnwer(ctx sdk.Context, owner sdk.AccAddress) (types.C
 	return cdpIDs, true
 }
 
-func (k Keeper) ValidatePrincipalDraw(ctx sdk.Context, principal sdk.Coin, expectedDenom string) error {
-	if principal.Denom != expectedDenom {
-		return sdkerrors.Wrapf(types.ErrorInvalidDebtRequest, "proposed %s, expected %s", principal.Denom, expectedDenom)
-	}
-
-	_, found := k.GetDebtParam(ctx, principal.Denom)
-	if !found {
-		return sdkerrors.Wrapf(types.ErrorDebtNotSupported, principal.Denom)
-	}
-	return nil
-}
-
-func (k Keeper) ValidatePaymentCoins(ctx sdk.Context, cdp types.CDP, payment sdk.Coin) error {
-	if payment.Denom != cdp.Principal.Denom {
-		return sdkerrors.Wrapf(types.ErrorInvalidPayment, "cdp %d: expected %s, got %s", cdp.Id, cdp.Principal.Denom, payment.Denom)
-	}
-	_, found := k.GetDebtParam(ctx, payment.Denom)
-	if !found {
-		return sdkerrors.Wrapf(types.ErrorInvalidPayment, "payment denom %s not found", payment.Denom)
-	}
-	return nil
-}
-
-func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, collateral sdk.Coin, collateralType string, principal sdk.Coin, pfType types.PricefeedType) (sdk.Dec, error) {
+func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, collateral sdk.Coin, collateralType string, debt sdk.Coin, pfType types.PricefeedType) (sdk.Dec, error) {
 	//TODO
 	return sdk.NewDec(2), nil
 }

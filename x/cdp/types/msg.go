@@ -10,19 +10,19 @@ import (
 
 var (
 	_ sdk.Msg = (*MsgCreateCDPRequest)(nil)
-	_ sdk.Msg = (*MsgDepositRequest)(nil)
-	_ sdk.Msg = (*MsgWithdrawRequest)(nil)
+	_ sdk.Msg = (*MsgDepositCollateralRequest)(nil)
+	_ sdk.Msg = (*MsgWithdrawCollateralRequest)(nil)
 	_ sdk.Msg = (*MsgDrawDebtRequest)(nil)
 	_ sdk.Msg = (*MsgRepayDebtRequest)(nil)
-	_ sdk.Msg = (*MsgLiquidateRequest)(nil)
+	_ sdk.Msg = (*MsgLiquidateCDPRequest)(nil)
 )
 
 // returns a new NewMsgCreateCDPRequest.
-func NewMsgCreateCDPRequest(sender sdk.AccAddress, collateral sdk.Coin, principal sdk.Coin, collateralType string) *MsgCreateCDPRequest {
+func NewMsgCreateCDPRequest(sender sdk.AccAddress, collateral sdk.Coin, debt sdk.Coin, collateralType string) *MsgCreateCDPRequest {
 	return &MsgCreateCDPRequest{
 		Sender:         sender.String(),
 		Collateral:     collateral,
-		Principal:      principal,
+		Debt:           debt,
 		CollateralType: collateralType,
 	}
 }
@@ -38,8 +38,8 @@ func (msg MsgCreateCDPRequest) ValidateBasic() error {
 	if msg.Collateral.IsZero() || !msg.Collateral.IsValid() {
 		return errors.Wrapf(ErrorInvalidCoins, "collateral amount %s", msg.Collateral)
 	}
-	if msg.Principal.IsZero() || !msg.Principal.IsValid() {
-		return errors.Wrapf(ErrorInvalidCoins, "principal amount %s", msg.Principal)
+	if msg.Debt.IsZero() || !msg.Debt.IsValid() {
+		return errors.Wrapf(ErrorInvalidCoins, "principal amount %s", msg.Debt)
 	}
 	if strings.TrimSpace(msg.CollateralType) == "" {
 		return fmt.Errorf("collateral type cannot be empty")
@@ -61,20 +61,20 @@ func (msg *MsgCreateCDPRequest) GetSigners() []sdk.AccAddress {
 }
 
 //returns new deposit request
-func NewMsgDepositRequest(sender sdk.AccAddress, collateral sdk.Coin, collateralType string) *MsgDepositRequest {
-	return &MsgDepositRequest{
-		Sender:         sender.String(),
+func NewMsgDepositCollateralRequest(owner sdk.AccAddress, collateral sdk.Coin, collateralType string) *MsgDepositCollateralRequest {
+	return &MsgDepositCollateralRequest{
+		Owner:          owner.String(),
 		Collateral:     collateral,
 		CollateralType: collateralType,
 	}
 }
 
-func (msg *MsgDepositRequest) Route() string { return RouterKey }
+func (msg *MsgDepositCollateralRequest) Route() string { return RouterKey }
 
-func (msg *MsgDepositRequest) Type() string { return TypeMsgDepositRequest }
+func (msg *MsgDepositCollateralRequest) Type() string { return TypeMsgDepositRequest }
 
-func (msg MsgDepositRequest) ValidateBasic() error {
-	if msg.Sender == "" {
+func (msg MsgDepositCollateralRequest) ValidateBasic() error {
+	if msg.Owner == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
 	if msg.Collateral.IsZero() || !msg.Collateral.IsValid() {
@@ -86,12 +86,12 @@ func (msg MsgDepositRequest) ValidateBasic() error {
 	return nil
 }
 
-func (msg *MsgDepositRequest) GetSignBytes() []byte {
+func (msg *MsgDepositCollateralRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
-func (msg *MsgDepositRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Sender)
+func (msg *MsgDepositCollateralRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
@@ -100,20 +100,20 @@ func (msg *MsgDepositRequest) GetSigners() []sdk.AccAddress {
 }
 
 //returns new withdraw request
-func NewMsgWithdrawRequest(sender sdk.AccAddress, collateral sdk.Coin, collateralType string) *MsgWithdrawRequest {
-	return &MsgWithdrawRequest{
-		Sender:         sender.String(),
+func NewMsgWithdrawCollateralRequest(owner sdk.AccAddress, collateral sdk.Coin, collateralType string) *MsgWithdrawCollateralRequest {
+	return &MsgWithdrawCollateralRequest{
+		Owner:          owner.String(),
 		Collateral:     collateral,
 		CollateralType: collateralType,
 	}
 }
 
-func (msg *MsgWithdrawRequest) Route() string { return RouterKey }
+func (msg *MsgWithdrawCollateralRequest) Route() string { return RouterKey }
 
-func (msg *MsgWithdrawRequest) Type() string { return TypeMsgWithdrawRequest }
+func (msg *MsgWithdrawCollateralRequest) Type() string { return TypeMsgWithdrawRequest }
 
-func (msg MsgWithdrawRequest) ValidateBasic() error {
-	if msg.Sender == "" {
+func (msg MsgWithdrawCollateralRequest) ValidateBasic() error {
+	if msg.Owner == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
 	if msg.Collateral.IsZero() || !msg.Collateral.IsValid() {
@@ -125,12 +125,12 @@ func (msg MsgWithdrawRequest) ValidateBasic() error {
 	return nil
 }
 
-func (msg *MsgWithdrawRequest) GetSignBytes() []byte {
+func (msg *MsgWithdrawCollateralRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
-func (msg *MsgWithdrawRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Sender)
+func (msg *MsgWithdrawCollateralRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
@@ -139,11 +139,11 @@ func (msg *MsgWithdrawRequest) GetSigners() []sdk.AccAddress {
 }
 
 //returns new draw debt request
-func NewMsgDrawDebtRequest(sender sdk.AccAddress, collateralType string, principal sdk.Coin) *MsgDrawDebtRequest {
+func NewMsgDrawDebtRequest(owner sdk.AccAddress, collateralType string, debt sdk.Coin) *MsgDrawDebtRequest {
 	return &MsgDrawDebtRequest{
-		Sender:         sender.String(),
+		Owner:          owner.String(),
 		CollateralType: collateralType,
-		Principal:      principal,
+		Debt:           debt,
 	}
 }
 
@@ -152,11 +152,11 @@ func (msg *MsgDrawDebtRequest) Route() string { return RouterKey }
 func (msg *MsgDrawDebtRequest) Type() string { return TypeMsgDrawDebtRequest }
 
 func (msg MsgDrawDebtRequest) ValidateBasic() error {
-	if msg.Sender == "" {
+	if msg.Owner == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
-	if msg.Principal.IsZero() || !msg.Principal.IsValid() {
-		return errors.Wrapf(ErrorInvalidCoins, "Principal amount %s", msg.Principal)
+	if msg.Debt.IsZero() || !msg.Debt.IsValid() {
+		return errors.Wrapf(ErrorInvalidCoins, "Debt amount %s", msg.Debt)
 	}
 	if strings.TrimSpace(msg.CollateralType) == "" {
 		return fmt.Errorf("collateral type cannot be empty")
@@ -169,7 +169,7 @@ func (msg *MsgDrawDebtRequest) GetSignBytes() []byte {
 }
 
 func (msg *MsgDrawDebtRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	from, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
@@ -178,11 +178,11 @@ func (msg *MsgDrawDebtRequest) GetSigners() []sdk.AccAddress {
 }
 
 //returns new repay debt request
-func NewMsgRepayDebtRequest(sender sdk.AccAddress, collateralType string, payment sdk.Coin) *MsgRepayDebtRequest {
+func NewMsgRepayDebtRequest(owner sdk.AccAddress, collateralType string, debt sdk.Coin) *MsgRepayDebtRequest {
 	return &MsgRepayDebtRequest{
-		Sender:         sender.String(),
+		Owner:          owner.String(),
 		CollateralType: collateralType,
-		Payment:        payment,
+		Debt:           debt,
 	}
 }
 
@@ -191,11 +191,11 @@ func (msg *MsgRepayDebtRequest) Route() string { return RouterKey }
 func (msg *MsgRepayDebtRequest) Type() string { return TypeMsgRepayDebtRequest }
 
 func (msg MsgRepayDebtRequest) ValidateBasic() error {
-	if msg.Sender == "" {
+	if msg.Owner == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
-	if msg.Payment.IsZero() || !msg.Payment.IsValid() {
-		return errors.Wrapf(ErrorInvalidCoins, "payment amount %s", msg.Payment)
+	if msg.Debt.IsZero() || !msg.Debt.IsValid() {
+		return errors.Wrapf(ErrorInvalidCoins, "payment amount %s", msg.Debt)
 	}
 	if strings.TrimSpace(msg.CollateralType) == "" {
 		return fmt.Errorf("collateral type cannot be empty")
@@ -208,7 +208,7 @@ func (msg *MsgRepayDebtRequest) GetSignBytes() []byte {
 }
 
 func (msg *MsgRepayDebtRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	from, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
@@ -217,19 +217,19 @@ func (msg *MsgRepayDebtRequest) GetSigners() []sdk.AccAddress {
 }
 
 //returns new liquidate request
-func NewMsgLiquidateRequest(sender sdk.AccAddress, collateralType string) *MsgLiquidateRequest {
-	return &MsgLiquidateRequest{
-		Sender:         sender.String(),
+func NewMsgLiquidateCDPRequest(sender sdk.AccAddress, collateralType string) *MsgLiquidateCDPRequest {
+	return &MsgLiquidateCDPRequest{
+		Owner:          sender.String(),
 		CollateralType: collateralType,
 	}
 }
 
-func (msg *MsgLiquidateRequest) Route() string { return RouterKey }
+func (msg *MsgLiquidateCDPRequest) Route() string { return RouterKey }
 
-func (msg *MsgLiquidateRequest) Type() string { return TypeMsgLiquidateRequest }
+func (msg *MsgLiquidateCDPRequest) Type() string { return TypeMsgLiquidateRequest }
 
-func (msg MsgLiquidateRequest) ValidateBasic() error {
-	if msg.Sender == "" {
+func (msg MsgLiquidateCDPRequest) ValidateBasic() error {
+	if msg.Owner == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
 	if strings.TrimSpace(msg.CollateralType) == "" {
@@ -238,12 +238,12 @@ func (msg MsgLiquidateRequest) ValidateBasic() error {
 	return nil
 }
 
-func (msg *MsgLiquidateRequest) GetSignBytes() []byte {
+func (msg *MsgLiquidateCDPRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
-func (msg *MsgLiquidateRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Sender)
+func (msg *MsgLiquidateCDPRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
