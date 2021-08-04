@@ -30,7 +30,7 @@ func QueryCdp() *cobra.Command {
 	return &cobra.Command{
 		Use:   "cdp [owner-addr] [collateralType]",
 		Short: "cdp's information",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientQueryContext(cmd)

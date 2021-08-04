@@ -15,13 +15,12 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
-func (k Keeper) getLiquidationRatio(ctx sdk.Context, collateralType string) sdk.Dec {
+func (k Keeper) GetLiquidationRatio(ctx sdk.Context, collateralType string) sdk.Dec {
 	collateralParam, found := k.GetCollateral(ctx, collateralType)
 	if !found {
 		panic(fmt.Sprintf("collateral not found: %s", collateralType))
 	}
 	return collateralParam.LiquidationRatio
-
 }
 
 func (k Keeper) GetDebtParam(ctx sdk.Context, denom string) (types.DebtParam, bool) {

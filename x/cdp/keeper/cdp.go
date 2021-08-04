@@ -65,7 +65,7 @@ func (k Keeper) DepositCollateral(ctx sdk.Context, owner string, collateral sdk.
 	ownerAddrs, _ := sdk.AccAddressFromBech32(owner)
 	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrCdpNotFound, "owner %s, collateral %s", owner, collateral.Denom)
+		return sdkerrors.Wrapf(types.ErrorCdpNotFound, "owner %s, collateral %s", owner, collateral.Denom)
 	}
 
 	err = k.ValidateBalance(ctx, collateral, ownerAddrs)
@@ -104,21 +104,21 @@ func (k Keeper) WithdrawCollateral(ctx sdk.Context, owner string, collateral sdk
 
 	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrCdpNotFound, "owner %s, collateral %s", owner, collateral.Denom)
+		return sdkerrors.Wrapf(types.ErrorCdpNotFound, "owner %s, collateral %s", owner, collateral.Denom)
 	}
 
 	if collateral.Amount.GT(cdp.Collateral.Amount) {
-		return sdkerrors.Wrapf(types.ErrInvalidWithdrawAmount, "collateral %s, deposit %s", collateral, cdp.Collateral.Amount)
+		return sdkerrors.Wrapf(types.ErrorInvalidWithdrawAmount, "collateral %s, deposit %s", collateral, cdp.Collateral.Amount)
 	}
 
-	liquidationRatio := k.getLiquidationRatio(ctx, collateralType)
+	liquidationRatio := k.GetLiquidationRatio(ctx, collateralType)
 	collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, cdp.Collateral.Sub(collateral), cdp.Type, cdp.Principal, types.Spot)
 	if err != nil {
 		return err
 	}
 
 	if collateralizationRatio.LT(liquidationRatio) {
-		return sdkerrors.Wrapf(types.ErrInvalidCollateralRatio, "collateral %s, collateral ratio %s, liquidation ration %s", collateral.Denom, collateralizationRatio, liquidationRatio)
+		return sdkerrors.Wrapf(types.ErrorInvalidCollateralRatio, "collateral %s, collateral ratio %s, liquidation ration %s", collateral.Denom, collateralizationRatio, liquidationRatio)
 	}
 
 	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddrs, sdk.NewCoins(collateral))
@@ -147,7 +147,7 @@ func (k Keeper) AddPrincipal(ctx sdk.Context, owner string, collateralType strin
 	}
 	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrCdpNotFound, "owner %s, denom %s", owner, collateralType)
+		return sdkerrors.Wrapf(types.ErrorCdpNotFound, "owner %s, denom %s", owner, collateralType)
 	}
 
 	err = k.ValidatePrincipalDraw(ctx, principal, cdp.Principal.Denom)
@@ -190,7 +190,7 @@ func (k Keeper) RepayPrincipal(ctx sdk.Context, owner string, collateralType str
 	}
 	cdp, found := k.GetCdpByOwnerAndCollateralType(ctx, ownerAddrs, collateralType)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrCdpNotFound, "owner %s, denom %s", owner, collateralType)
+		return sdkerrors.Wrapf(types.ErrorCdpNotFound, "owner %s, denom %s", owner, collateralType)
 	}
 
 	err = k.ValidatePaymentCoins(ctx, cdp, payment)
@@ -249,12 +249,12 @@ func (k Keeper) AttemptLiquidation(ctx sdk.Context, owner string, collateralType
 func (k Keeper) ValidateBalance(ctx sdk.Context, amount sdk.Coin, sender sdk.AccAddress) error {
 	acc := k.accountKeeper.GetAccount(ctx, sender)
 	if acc == nil {
-		return sdkerrors.Wrapf(types.ErrAccountNotFound, "address: %s", sender)
+		return sdkerrors.Wrapf(types.ErrorAccountNotFound, "address: %s", sender)
 	}
 
 	spendableBalance := k.bankKeeper.SpendableCoins(ctx, sender).AmountOf(amount.Denom)
 	if spendableBalance.LT(amount.Amount) {
-		return sdkerrors.Wrapf(types.ErrInsufficientBalance, "%s < %s", sdk.NewCoin(amount.Denom, spendableBalance), amount)
+		return sdkerrors.Wrapf(types.ErrorInsufficientBalance, "%s < %s", sdk.NewCoin(amount.Denom, spendableBalance), amount)
 	}
 
 	return nil
@@ -263,11 +263,11 @@ func (k Keeper) ValidateBalance(ctx sdk.Context, amount sdk.Coin, sender sdk.Acc
 func (k Keeper) ValidateCollateral(ctx sdk.Context, collateral sdk.Coin, collateralType string) error {
 	collateralParam, found := k.GetCollateral(ctx, collateralType)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrCdpNotFound, "%s cdp does not exist", collateralType)
+		return sdkerrors.Wrapf(types.ErrorCdpNotFound, "%s cdp does not exist", collateralType)
 	}
 
 	if collateralParam.Denom != collateral.Denom {
-		return sdkerrors.Wrapf(types.ErrInvalidCollateral, "collateral given %s , collateral required %s", collateral.Denom, collateralParam.Denom)
+		return sdkerrors.Wrapf(types.ErrorInvalidCollateral, "collateral given %s , collateral required %s", collateral.Denom, collateralParam.Denom)
 	}
 	return nil
 }
@@ -277,10 +277,10 @@ func (k Keeper) ValidateCollateralizationRatio(ctx sdk.Context, collateral sdk.C
 	if err != nil {
 		return err
 	}
-	liquidationRatio := k.getLiquidationRatio(ctx, collateralType)
+	liquidationRatio := k.GetLiquidationRatio(ctx, collateralType)
 
 	if collateralizationRatio.LT(liquidationRatio) {
-		return sdkerrors.Wrapf(types.ErrInvalidCollateralRatio, "collateral %s, collateral ratio %s, liquidation ratio %s", collateral.Denom, collateralizationRatio, liquidationRatio)
+		return sdkerrors.Wrapf(types.ErrorInvalidCollateralRatio, "collateral %s, collateral ratio %s, liquidation ratio %s", collateral.Denom, collateralizationRatio, liquidationRatio)
 	}
 
 	return nil
@@ -373,23 +373,23 @@ func (k Keeper) GetCdpIdsByOnwer(ctx sdk.Context, owner sdk.AccAddress) (types.C
 
 func (k Keeper) ValidatePrincipalDraw(ctx sdk.Context, principal sdk.Coin, expectedDenom string) error {
 	if principal.Denom != expectedDenom {
-		return sdkerrors.Wrapf(types.ErrInvalidDebtRequest, "proposed %s, expected %s", principal.Denom, expectedDenom)
+		return sdkerrors.Wrapf(types.ErrorInvalidDebtRequest, "proposed %s, expected %s", principal.Denom, expectedDenom)
 	}
 
 	_, found := k.GetDebtParam(ctx, principal.Denom)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrDebtNotSupported, principal.Denom)
+		return sdkerrors.Wrapf(types.ErrorDebtNotSupported, principal.Denom)
 	}
 	return nil
 }
 
 func (k Keeper) ValidatePaymentCoins(ctx sdk.Context, cdp types.CDP, payment sdk.Coin) error {
 	if payment.Denom != cdp.Principal.Denom {
-		return sdkerrors.Wrapf(types.ErrInvalidPayment, "cdp %d: expected %s, got %s", cdp.Id, cdp.Principal.Denom, payment.Denom)
+		return sdkerrors.Wrapf(types.ErrorInvalidPayment, "cdp %d: expected %s, got %s", cdp.Id, cdp.Principal.Denom, payment.Denom)
 	}
 	_, found := k.GetDebtParam(ctx, payment.Denom)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidPayment, "payment denom %s not found", payment.Denom)
+		return sdkerrors.Wrapf(types.ErrorInvalidPayment, "payment denom %s not found", payment.Denom)
 	}
 	return nil
 }
