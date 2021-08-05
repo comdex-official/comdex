@@ -1,5 +1,9 @@
 package types
 
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "cdp"
@@ -18,14 +22,28 @@ const (
 )
 
 var (
-	TypeMsgCreateCDPRequest = ModuleName + ":create_cdp"
-	TypeMsgDepositRequest = ModuleName + ":deposit"
-	TypeMsgWithdrawRequest = ModuleName + ":withdraw"
-	TypeMsgDrawDebtRequest = ModuleName + ":draw_debt"
-	TypeMsgRepayDebtRequest = ModuleName + ":repay_debt"
-	TypeMsgLiquidateRequest = ModuleName + ":liquidate"
+	TypeMsgCreateCDPRequest          = ModuleName + ":create_cdp"
+	TypeMsgDepositCollateralRequest  = ModuleName + ":deposit_collateral"
+	TypeMsgWithdrawCollateralRequest = ModuleName + ":withdraw_collateral"
+	TypeMsgDrawDebtRequest           = ModuleName + ":draw_debt"
+	TypeMsgRepayDebtRequest          = ModuleName + ":repay_debt"
+	TypeMsgLiquidateCDPRequest       = ModuleName + ":liquidate_cdp"
 )
 
-func KeyPrefix(p string) []byte {
-	return []byte(p)
+var (
+	CdpIdIndexKeyPrefix = []byte{0x01}
+	CdpKeyPrefix        = []byte{0x02}
+	CdpIdKey            = []byte{0x03}
+)
+
+func GetCdpIDBytes(cdpID uint64) (cdpIDBz []byte) {
+	return sdk.Uint64ToBigEndian(cdpID)
+}
+
+func GetCdpIDFromBytes(bz []byte) (cdpID uint64) {
+	return sdk.BigEndianToUint64(bz)
+}
+
+func CdpKey(cdpID uint64) []byte {
+	return append(CdpKeyPrefix, GetCdpIDBytes(cdpID)...)
 }

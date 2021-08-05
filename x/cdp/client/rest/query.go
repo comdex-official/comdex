@@ -63,8 +63,7 @@ func queryParams(ctx client.Context) http.HandlerFunc {
 
 		qc := types.NewQueryServiceClient(ctx)
 
-		res, err := qc.QueryParams(context.Background(), &types.QueryParamsRequest{
-		})
+		res, err := qc.QueryParams(context.Background(), &types.QueryParamsRequest{})
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

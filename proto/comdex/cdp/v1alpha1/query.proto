@@ -16,27 +16,17 @@ service QueryService {
 
   rpc QueryCDP(QueryCDPRequest) returns(QueryCDPResponse){
     option (google.api.http).get =
-            "/comdex/cdps/{id}";
+        "/comdex/cdps/{collateral_type}/{owner}";
   };
 
   rpc QueryCDPs(QueryCDPsRequest) returns(QueryCDPsResponse){
     option (google.api.http).get =
-            "/comdex/cdps";
+            "/comdex/cdps/{owner}";
   };
 
-  rpc QueryCDPDeposits(QueryCDPDepositsRequest) returns(QueryCDPDepositsResponse){
+  rpc QueryCDPById(QueryCDPByIdRequest) returns(QueryCDPByIdResponse){
     option (google.api.http).get =
-            "/comdex/cdp/deposits/{collateral_type}/{owner}";
-  };
-
-  rpc QueryCDPsByCollateralType(QueryCDPsByCollateralTypeRequest) returns(QueryCDPsByCollateralTypeResponse){
-    option (google.api.http).get =
-            "/comdex/cdps_by_collateralType/{collateral_type}";
-  };
-
-  rpc QueryCDPsByCollateralizationRatio(QueryCDPsByCollateralizationRatioRequest) returns(QueryCDPsByCollateralizationRatioResponse){
-    option (google.api.http).get =
-            "/comdex/cdps_by_collateralizationRatio/{ratio}";
+            "/comdex/cdps/{id}";
   };
 
   rpc QueryParams(QueryParamsRequest) returns(QueryParamsResponse){
@@ -46,56 +36,35 @@ service QueryService {
 }
 
 message QueryCDPRequest{
-  uint64 id = 1;
+  string collateral_type = 1 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
+  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 }
 
 message QueryCDPResponse{
-  AugmentedCDP cdp = 1 [
+  CDP cdp = 1 [
     (gogoproto.moretags) = "yaml:\"cdp\"",
     (gogoproto.nullable) = false
   ];
 }
 
-message QueryCDPsRequest{}
-
-message QueryCDPsResponse{
-  repeated AugmentedCDP cdps = 1 [
-    (gogoproto.moretags) = "yaml:\"cdps\"",
-    (gogoproto.nullable) = false
-  ];
-}
-
-message QueryCDPDepositsRequest{
-  string collateral_type = 1 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
+message QueryCDPsRequest{
   string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 }
 
-message QueryCDPDepositsResponse{
-  repeated Deposit deposits = 1 [
-    (gogoproto.moretags) = "yaml:\"deposits\"",
-    (gogoproto.nullable) = false
-  ];
-}
-
-message QueryCDPsByCollateralTypeRequest{
-  string collateral_type = 1 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
-}
-
-message QueryCDPsByCollateralTypeResponse{
-  repeated AugmentedCDP cdps = 1 [
+message QueryCDPsResponse{
+  repeated CDP cdps = 1 [
     (gogoproto.moretags) = "yaml:\"cdps\"",
     (gogoproto.nullable) = false
   ];
 }
 
-message QueryCDPsByCollateralizationRatioRequest{
-  string collateral_type = 1 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
-  uint64 ratio = 2 [ (gogoproto.moretags) = "yaml:\"ratio\"" ];
+message QueryCDPByIdRequest{
+  uint64 id = 1;
 }
 
-message QueryCDPsByCollateralizationRatioResponse{
-  repeated AugmentedCDP cdps = 1 [
-    (gogoproto.moretags) = "yaml:\"cdps\"",
+message QueryCDPByIdResponse{
+  CDP cdp = 1 [
+    (gogoproto.moretags) = "yaml:\"cdp\"",
     (gogoproto.nullable) = false
   ];
 }
