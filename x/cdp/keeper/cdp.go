@@ -229,7 +229,7 @@ func (k Keeper) VerifyCollateralizationRatio(ctx sdk.Context, collateral sdk.Coi
 }
 
 func (k Keeper) GetCDPByOwnerAndCollateralType(ctx sdk.Context, owner sdk.AccAddress, collateralType string) (types.CDP, bool) {
-	cdpIdList, found := k.GetCdpIdsByOnwer(ctx, owner)
+	cdpIdList, found := k.GetCdpIdsByOwner(ctx, owner)
 	if !found {
 		return types.CDP{}, false
 	}
@@ -283,7 +283,7 @@ func (k Keeper) GetNextCdpID(ctx sdk.Context) (id uint64) {
 func (k Keeper) IndexCDPByOwner(ctx sdk.Context, cdp types.CDP) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIdIndexKeyPrefix)
 	ownerAddrs, _ := sdk.AccAddressFromBech32(cdp.Owner)
-	cdpIDs, found := k.GetCdpIdsByOnwer(ctx, ownerAddrs)
+	cdpIDs, found := k.GetCdpIdsByOwner(ctx, ownerAddrs)
 	if !found {
 		idBytes := k.cdc.MustMarshalBinaryBare(&types.CdpIdList{[]uint64{cdp.Id}})
 		store.Set(ownerAddrs, idBytes)
@@ -301,7 +301,7 @@ func (k Keeper) SetNextCdpId(ctx sdk.Context, id uint64) {
 	store.Set(types.CdpIdKey, types.GetCdpIDBytes(id))
 }
 
-func (k Keeper) GetCdpIdsByOnwer(ctx sdk.Context, owner sdk.AccAddress) (types.CdpIdList, bool) {
+func (k Keeper) GetCdpIdsByOwner(ctx sdk.Context, owner sdk.AccAddress) (types.CdpIdList, bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIdIndexKeyPrefix)
 	bz := store.Get(owner)
 	if bz == nil {
