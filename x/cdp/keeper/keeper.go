@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -13,14 +12,17 @@ import (
 
 type (
 	Keeper struct {
-		cdc      codec.Marshaler
-		storeKey sdk.StoreKey
-		memKey   sdk.StoreKey
+		cdc           codec.BinaryMarshaler
+		storeKey      sdk.StoreKey
+		memKey        sdk.StoreKey
+		accountKeeper types.AccountKeeper
+		bankKeeper    types.BankKeeper
+		paramSpace    types.ParamSubspace
 	}
 )
 
 func NewKeeper(
-	cdc codec.Marshaler,
+	cdc codec.BinaryMarshaler,
 	storeKey,
 	memKey sdk.StoreKey,
 

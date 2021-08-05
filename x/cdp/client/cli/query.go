@@ -28,9 +28,9 @@ func GetQueryCmd() *cobra.Command {
 
 func QueryCdp() *cobra.Command {
 	return &cobra.Command{
-		Use:   "cdp [owner-addr]",
+		Use:   "cdp [owner-addr] [collateralType]",
 		Short: "cdp's information",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -38,9 +38,22 @@ func QueryCdp() *cobra.Command {
 				return err
 			}
 
+			owner, err := cmd.Flags().GetString(args[0])
+			if err != nil {
+				return err
+			}
+
+			collateralType, err := cmd.Flags().GetString(args[1])
+			if err != nil {
+				return err
+			}
+
 			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := queryClient.QueryCDP(context.Background(), &types.QueryCDPRequest{})
+			res, err := queryClient.QueryCDP(context.Background(), &types.QueryCDPRequest{
+				CollateralType: collateralType,
+				Owner:          owner,
+			})
 
 			if err != nil {
 				return err

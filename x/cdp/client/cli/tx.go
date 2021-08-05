@@ -2,8 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -12,14 +10,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/cdp/types"
-)
-
-var (
-	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
-)
-
-const (
-	flagPacketTimeoutTimestamp = "packet-timeout-timestamp"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -100,7 +90,7 @@ func txDeposit() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgDepositRequest(owner, collateral, args[2])
+			msg := types.NewMsgDepositCollateralRequest(owner, collateral, args[2])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -131,7 +121,7 @@ func txWithdraw() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgWithdrawRequest(owner, collateral, args[2])
+			msg := types.NewMsgWithdrawCollateralRequest(owner, collateral, args[2])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -219,7 +209,7 @@ func txLiquidate() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgLiquidateRequest(owner, args[2])
+			msg := types.NewMsgLiquidateCDPRequest(owner, args[2])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
