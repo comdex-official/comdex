@@ -229,7 +229,7 @@ func (k Keeper) VerifyCollateralizationRatio(ctx sdk.Context, collateral sdk.Coi
 }
 
 func (k Keeper) GetCDPByOwnerAndCollateralType(ctx sdk.Context, owner sdk.AccAddress, collateralType string) (types.CDP, bool) {
-	cdpIdList, found := k.GetCdpIdsByOwner(ctx, owner)
+	cdpIdList, found := k.GetCdpIdsByOnwer(ctx, owner)
 	if !found {
 		return types.CDP{}, false
 	}
