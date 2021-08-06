@@ -36,10 +36,10 @@ func (msg MsgCreateCDPRequest) ValidateBasic() error {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
 	if !msg.Collateral.IsPositive() || !msg.Collateral.IsValid() {
-		return errors.Wrapf(ErrorInvalidCoins, "collateral amount %s is not valid", msg.Collateral)
+		return errors.Wrapf(ErrorInvalidCoins, "collateral amount %s", msg.Collateral)
 	}
 	if !msg.Debt.IsPositive() || !msg.Debt.IsValid() {
-		return errors.Wrapf(ErrorInvalidCoins, "principal amount %s is not valid", msg.Debt)
+		return errors.Wrapf(ErrorInvalidCoins, "principal amount %s", msg.Debt)
 	}
 	if strings.TrimSpace(msg.CollateralType) == "" {
 		return fmt.Errorf("collateral type cannot be empty")
