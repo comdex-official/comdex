@@ -10,8 +10,6 @@ func registerQueryRoutes(ctx client.Context, router *mux.Router) {
 		Methods("GET")
 	router.HandleFunc("/params", queryParams(ctx)).
 		Methods("GET")
-	router.HandleFunc("/deposits/collateral_type/owner", queryDeposits(ctx)).
-		Methods("GET")
 
 }
 

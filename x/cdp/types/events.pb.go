@@ -24,7 +24,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// GenesisState defines the cdp module's genesis state.
 type EventCreateCDP struct {
 	Sender         string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	CollateralType string `protobuf:"bytes,2,opt,name=collateral_type,json=collateralType,proto3" json:"collateral_type,omitempty"`

@@ -24,7 +24,15 @@ message CDP{
   ];
 }
 
-message CdpIdList{
-  repeated uint64 ids = 1;
+message OwnerCDPList{
+  repeated OwnedCDP ownedCDPs = 1 [
+    (gogoproto.moretags) = "yaml:\"ownedCDP\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message OwnedCDP{
+  uint64 id = 1;
+  string collateral_type = 3 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
 }
 

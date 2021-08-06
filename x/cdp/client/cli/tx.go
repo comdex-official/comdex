@@ -2,10 +2,10 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -22,7 +22,6 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	flags.AddQueryFlagsToCmd(cmd)
 	cmd.AddCommand(
 		txCreateCdp(),
 		txDeposit(),
@@ -36,12 +35,11 @@ func GetTxCmd() *cobra.Command {
 }
 
 func txCreateCdp() *cobra.Command {
-	return &cobra.Command{
-		Use:   "create [collateral] [debt] [collateral-type]",
+	cmd := &cobra.Command{
+		Use:   "create [collateral] [debt] [collateral_type]",
 		Short: "create a new cdp",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -57,7 +55,8 @@ func txCreateCdp() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCreateCDPRequest(ctx.FromAddress, collateral, debt, args[2])
+			ctype := args[2]
+			msg := types.NewMsgCreateCDPRequest(ctx.FromAddress, collateral, debt, ctype)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -66,11 +65,15 @@ func txCreateCdp() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
 }
 
 func txDeposit() *cobra.Command {
 	return &cobra.Command{
-		Use:   "deposit [owner-addr] [collateral] [collateral-type]",
+		Use:   "deposit [owner_addr] [collateral] [collateral_type]",
 		Short: "creates a new deposit",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
