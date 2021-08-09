@@ -2,10 +2,10 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -22,7 +22,6 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	flags.AddQueryFlagsToCmd(cmd)
 	cmd.AddCommand(
 		txCreateCdp(),
 		txDeposit(),
@@ -36,12 +35,11 @@ func GetTxCmd() *cobra.Command {
 }
 
 func txCreateCdp() *cobra.Command {
-	return &cobra.Command{
-		Use:   "create [collateral] [debt] [collateral-type]",
+	cmd := &cobra.Command{
+		Use:   "create [collateral] [debt] [collateral_type]",
 		Short: "create a new cdp",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -57,7 +55,8 @@ func txCreateCdp() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCreateCDPRequest(ctx.FromAddress, collateral, debt, args[2])
+			ctype := args[2]
+			msg := types.NewMsgCreateCDPRequest(ctx.FromAddress, collateral, debt, ctype)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -66,21 +65,20 @@ func txCreateCdp() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
 }
 
 func txDeposit() *cobra.Command {
 	return &cobra.Command{
-		Use:   "deposit [owner-addr] [collateral] [collateral-type]",
+		Use:   "deposit [collateral] [collateral_type]",
 		Short: "creates a new deposit",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			owner, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
@@ -90,7 +88,7 @@ func txDeposit() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgDepositCollateralRequest(owner, collateral, args[2])
+			msg := types.NewMsgDepositCollateralRequest(ctx.FromAddress, collateral, args[1])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -101,17 +99,12 @@ func txDeposit() *cobra.Command {
 
 func txWithdraw() *cobra.Command {
 	return &cobra.Command{
-		Use:   "withdraw [owner-addr] [collateral] [collateral-type]",
+		Use:   "withdraw [collateral] [collateral-type]",
 		Short: "create a new withdraw",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			owner, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
@@ -121,7 +114,7 @@ func txWithdraw() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgWithdrawCollateralRequest(owner, collateral, args[2])
+			msg := types.NewMsgWithdrawCollateralRequest(ctx.FromAddress, collateral, args[1])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -134,7 +127,7 @@ func txDrawDebt() *cobra.Command {
 	return &cobra.Command{
 		Use:   "drawDebt [collateral] [collateral-type]",
 		Short: "draw debt",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientTxContext(cmd)
@@ -163,9 +156,9 @@ func txDrawDebt() *cobra.Command {
 
 func txRepayDebt() *cobra.Command {
 	return &cobra.Command{
-		Use:   "repay debt [collateral] [collateral-type]",
+		Use:   "repay debt [debt] [collateral-type]",
 		Short: "repay debt",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientTxContext(cmd)
@@ -173,17 +166,12 @@ func txRepayDebt() *cobra.Command {
 				return err
 			}
 
-			owner, err := sdk.AccAddressFromBech32(args[0])
+			debt, err := sdk.ParseCoinNormalized(args[0])
 			if err != nil {
 				return err
 			}
 
-			payment, err := sdk.ParseCoinNormalized(args[0])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgRepayDebtRequest(owner, args[2], payment)
+			msg := types.NewMsgRepayDebtRequest(ctx.FromAddress, args[2], debt)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -194,9 +182,9 @@ func txRepayDebt() *cobra.Command {
 
 func txLiquidate() *cobra.Command {
 	return &cobra.Command{
-		Use:   "liquidate [owner] [collateral-type]",
+		Use:   "liquidate [collateral-type]",
 		Short: "liquidate",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientTxContext(cmd)
@@ -204,12 +192,7 @@ func txLiquidate() *cobra.Command {
 				return err
 			}
 
-			owner, err := sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgLiquidateCDPRequest(owner, args[2])
+			msg := types.NewMsgLiquidateCDPRequest(ctx.FromAddress, args[0])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

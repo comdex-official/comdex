@@ -35,10 +35,10 @@ func (msg MsgCreateCDPRequest) ValidateBasic() error {
 	if msg.Sender == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
-	if msg.Collateral.IsZero() || !msg.Collateral.IsValid() {
+	if !msg.Collateral.IsPositive() || !msg.Collateral.IsValid() {
 		return errors.Wrapf(ErrorInvalidCoins, "collateral amount %s", msg.Collateral)
 	}
-	if msg.Debt.IsZero() || !msg.Debt.IsValid() {
+	if !msg.Debt.IsPositive() || !msg.Debt.IsValid() {
 		return errors.Wrapf(ErrorInvalidCoins, "principal amount %s", msg.Debt)
 	}
 	if strings.TrimSpace(msg.CollateralType) == "" {
@@ -77,7 +77,7 @@ func (msg MsgDepositCollateralRequest) ValidateBasic() error {
 	if msg.Owner == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
-	if msg.Collateral.IsZero() || !msg.Collateral.IsValid() {
+	if !msg.Collateral.IsPositive() || !msg.Collateral.IsValid() {
 		return errors.Wrapf(ErrorInvalidCoins, "collateral amount %s", msg.Collateral)
 	}
 	if strings.TrimSpace(msg.CollateralType) == "" {
@@ -116,7 +116,7 @@ func (msg MsgWithdrawCollateralRequest) ValidateBasic() error {
 	if msg.Owner == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
-	if msg.Collateral.IsZero() || !msg.Collateral.IsValid() {
+	if !msg.Collateral.IsPositive() || !msg.Collateral.IsValid() {
 		return errors.Wrapf(ErrorInvalidCoins, "collateral amount %s", msg.Collateral)
 	}
 	if strings.TrimSpace(msg.CollateralType) == "" {
@@ -155,7 +155,7 @@ func (msg MsgDrawDebtRequest) ValidateBasic() error {
 	if msg.Owner == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
-	if msg.Debt.IsZero() || !msg.Debt.IsValid() {
+	if !msg.Debt.IsPositive() || !msg.Debt.IsValid() {
 		return errors.Wrapf(ErrorInvalidCoins, "Debt amount %s", msg.Debt)
 	}
 	if strings.TrimSpace(msg.CollateralType) == "" {
@@ -194,7 +194,7 @@ func (msg MsgRepayDebtRequest) ValidateBasic() error {
 	if msg.Owner == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
-	if msg.Debt.IsZero() || !msg.Debt.IsValid() {
+	if !msg.Debt.IsPositive() || !msg.Debt.IsValid() {
 		return errors.Wrapf(ErrorInvalidCoins, "payment amount %s", msg.Debt)
 	}
 	if strings.TrimSpace(msg.CollateralType) == "" {
