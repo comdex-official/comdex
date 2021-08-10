@@ -6,8 +6,10 @@ import (
 )
 
 func registerQueryRoutes(ctx client.Context, router *mux.Router) {
-	router.HandleFunc("/cdps/{collateral_type}/{owner}", queryCdp(ctx)).Methods("GET")
-	router.HandleFunc("/params", queryParams(ctx)).Methods("GET")
+	router.HandleFunc("/cdps/id", queryCdp(ctx)).
+		Methods("GET")
+	router.HandleFunc("/params", queryParams(ctx)).
+		Methods("GET")
 
 }
 

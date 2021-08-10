@@ -27,7 +27,7 @@ func GetQueryCmd() *cobra.Command {
 }
 
 func QueryCdp() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "cdp [owner-addr] [collateralType]",
 		Short: "cdp's information",
 		Args:  cobra.ExactArgs(2),
@@ -38,34 +38,26 @@ func QueryCdp() *cobra.Command {
 				return err
 			}
 
-			owner, err := cmd.Flags().GetString(args[0])
-			if err != nil {
-				return err
-			}
-
-			collateralType, err := cmd.Flags().GetString(args[1])
-			if err != nil {
-				return err
-			}
-
 			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := queryClient.QueryCDP(context.Background(), &types.QueryCDPRequest{
-				CollateralType: collateralType,
-				Owner:          owner,
+			res, err := queryClient.QueryCDP(cmd.Context(), &types.QueryCDPRequest{
+				Owner:          args[0],
+				CollateralType: args[1],
 			})
 
 			if err != nil {
 				return err
 			}
-			flags.AddQueryFlagsToCmd(cmd)
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 func QueryParams() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "params",
 		Short: "get the cdp module parameters",
 		Long:  "get the current global cdp module parameters.",
@@ -87,4 +79,7 @@ func QueryParams() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }

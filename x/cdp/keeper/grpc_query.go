@@ -18,7 +18,7 @@ func (k Keeper) QueryCDP(context context.Context, request *types.QueryCDPRequest
 	}
 	cdp, found := k.GetCDPByOwnerAndCollateralType(ctx, ownerAddrs, request.CollateralType)
 	if !found {
-		return nil, status.Error(codes.InvalidArgument, "cdp not found")
+		return nil, status.Error(codes.NotFound, "cdp not found")
 	}
 
 	return &types.QueryCDPResponse{Cdp: cdp}, nil

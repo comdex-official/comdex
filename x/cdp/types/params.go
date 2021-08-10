@@ -6,8 +6,11 @@ import (
 
 var (
 	KeyCollateralParams = []byte("CollateralParams")
-	KeyDebtParam        = []byte("DebtParam")
 )
+
+func ParamKeyTable() paramTypes.KeyTable {
+	return paramTypes.NewKeyTable().RegisterParamSet(&Params{})
+}
 
 func (p *Params) ParamSetPairs() paramTypes.ParamSetPairs {
 	return paramTypes.ParamSetPairs{

@@ -389,6 +389,9 @@ func New(
 		app.cdc,
 		app.keys[cdptypes.StoreKey],
 		app.keys[cdptypes.MemStoreKey],
+		app.accountKeeper,
+		app.bankKeeper,
+		app.GetSubspace(cdptypes.ModuleName),
 	)
 
 	/****  Module Options ****/

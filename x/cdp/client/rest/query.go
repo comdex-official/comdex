@@ -13,10 +13,10 @@ func queryCdp(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		vars := mux.Vars(r)
-		owner := vars["owner"]
-		collateralType := vars["collateral_type"]
 
 		qc := types.NewQueryServiceClient(ctx)
+		owner := vars["owner"]
+		collateralType := vars["collateral_type"]
 
 		res, err := qc.QueryCDP(context.Background(),
 			&types.QueryCDPRequest{
