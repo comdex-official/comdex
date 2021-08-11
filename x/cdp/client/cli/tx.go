@@ -72,7 +72,7 @@ func txCreateCdp() *cobra.Command {
 }
 
 func txDeposit() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "deposit [collateral] [collateral_type]",
 		Short: "creates a new deposit",
 		Args:  cobra.ExactArgs(2),
@@ -92,13 +92,16 @@ func txDeposit() *cobra.Command {
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags())
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }
 
 func txWithdraw() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "withdraw [collateral] [collateral-type]",
 		Short: "create a new withdraw",
 		Args:  cobra.ExactArgs(2),
@@ -118,14 +121,16 @@ func txWithdraw() *cobra.Command {
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags())
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }
 
 func txDrawDebt() *cobra.Command {
-	return &cobra.Command{
-		Use:   "drawDebt [collateral] [collateral-type]",
+	cmd := &cobra.Command{
+		Use:   "draw [debt] [collateral-type]",
 		Short: "draw debt",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -135,28 +140,25 @@ func txDrawDebt() *cobra.Command {
 				return err
 			}
 
-			owner, err := sdk.AccAddressFromBech32(args[0])
+			debt, err := sdk.ParseCoinNormalized(args[0])
 			if err != nil {
 				return err
 			}
 
-			principal, err := sdk.ParseCoinNormalized(args[0])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgDrawDebtRequest(owner, args[2], principal)
+			msg := types.NewMsgDrawDebtRequest(ctx.FromAddress, args[1], debt)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags())
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }
 
 func txRepayDebt() *cobra.Command {
-	return &cobra.Command{
-		Use:   "repay debt [debt] [collateral-type]",
+	cmd := &cobra.Command{
+		Use:   "repay [debt] [collateral-type]",
 		Short: "repay debt",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -171,17 +173,19 @@ func txRepayDebt() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRepayDebtRequest(ctx.FromAddress, args[2], debt)
+			msg := types.NewMsgRepayDebtRequest(ctx.FromAddress, args[1], debt)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags())
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }
 
 func txLiquidate() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "liquidate [collateral-type]",
 		Short: "liquidate",
 		Args:  cobra.ExactArgs(1),
@@ -196,7 +200,9 @@ func txLiquidate() *cobra.Command {
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags())
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

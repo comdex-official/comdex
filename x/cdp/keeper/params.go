@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	"fmt"
 	"github.com/comdex-official/comdex/x/cdp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
@@ -15,12 +15,12 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
-func (k Keeper) GetLiquidationRatio(ctx sdk.Context, collateralType string) sdk.Dec {
+func (k Keeper) GetLiquidationRatio(ctx sdk.Context, collateralType string) (sdk.Dec, error) {
 	collateralParam, found := k.GetCollateralParam(ctx, collateralType)
 	if !found {
-		panic(fmt.Sprintf("collateral not found: %s", collateralType))
+		return sdk.ZeroDec(), sdkerrors.Wrapf(types.ErrorCollateralNotFound, "collateral not found: %s", collateralType)
 	}
-	return collateralParam.LiquidationRatio
+	return collateralParam.LiquidationRatio, nil
 }
 
 func (k Keeper) GetCollateralParam(ctx sdk.Context, collateralType string) (types.CollateralParam, bool) {
