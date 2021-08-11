@@ -19,7 +19,6 @@ func (k Keeper) GetLiquidationRatio(ctx sdk.Context, collateralType string) (sdk
 	collateralParam, found := k.GetCollateralParam(ctx, collateralType)
 	if !found {
 		return sdk.ZeroDec(), sdkerrors.Wrapf(types.ErrorCollateralNotFound, "collateral not found: %s", collateralType)
-		//panic(fmt.Sprintf("collateral not found: %s", collateralType))
 	}
 	return collateralParam.LiquidationRatio, nil
 }

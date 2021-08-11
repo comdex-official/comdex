@@ -358,6 +358,11 @@ func (k Keeper) VerifyLiquidation(ctx sdk.Context, collateral sdk.Coin, debt sdk
 }
 
 func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, collateral sdk.Coin, collateralType string, debt sdk.Coin, pfType types.PricefeedType) (sdk.Dec, error) {
-	//TODO
-	return sdk.NewDec(2), nil
+	//TODO update when the price of token is available from oracle
+	collateralTokenPrice := sdk.NewInt(5)
+	debtTokenPrice := sdk.NewInt(1)
+	collateralWorth := sdk.NewDecFromInt(collateral.Amount.Mul(collateralTokenPrice))
+	debtPrice := sdk.NewDecFromInt(debt.Amount.Mul(debtTokenPrice))
+
+	return collateralWorth.Quo(debtPrice), nil
 }
