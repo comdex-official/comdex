@@ -621,5 +621,6 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		cdptypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
 	}
 }
