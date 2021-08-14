@@ -260,9 +260,9 @@ func RegisterQueryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 }
 
 var (
-	pattern_QueryService_QueryPools_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "assets", "v1beta1", "pools"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_QueryService_QueryPools_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "pools"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_QueryService_QueryPool_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "assets", "v1beta1", "pools", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_QueryService_QueryPool_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "pools", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
