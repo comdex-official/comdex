@@ -1,13 +1,12 @@
 syntax = "proto3";
 package comdex.asset.v1beta1;
 
-option go_package = "github.com/comdex-official/comdex/x/asset/types";
-
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/asset/v1beta1/pool.proto";
 
+option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
@@ -34,10 +33,10 @@ message QueryPoolResponse {
 
 service QueryService {
   rpc QueryPools(QueryPoolsRequest) returns (QueryPoolsResponse) {
-    option (google.api.http).get = "/comdex/assets/v1beta1/pools";
+    option (google.api.http).get = "/comdex/asset/v1beta1/pools";
   }
 
   rpc QueryPool(QueryPoolRequest) returns (QueryPoolResponse) {
-    option (google.api.http).get = "/comdex/assets/v1beta1/pools/{id}";
+    option (google.api.http).get = "/comdex/asset/v1beta1/pools/{id}";
   }
 }
