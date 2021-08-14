@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (m *Pool) Validate() error {
+func (m *Pair) Validate() error {
 	if m.Id == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}

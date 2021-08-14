@@ -8,12 +8,12 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
-	for _, item := range state.Pools {
-		k.SetPool(ctx, item)
+	for _, item := range state.Pairs {
+		k.SetPair(ctx, item)
 	}
 
 	count := uint64(0)
-	for _, item := range state.Pools {
+	for _, item := range state.Pairs {
 		if item.Id > count {
 			count = item.Id
 		}
@@ -24,6 +24,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
-		k.GetPools(ctx),
+		k.GetPairs(ctx),
 	)
 }

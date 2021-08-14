@@ -9,24 +9,24 @@ import (
 )
 
 const (
-	ProposalTypeAddPool = "AddPool"
+	ProposalTypeAddPair = "AddPair"
 )
 
 func init() {
-	govtypes.RegisterProposalType(ProposalTypeAddPool)
-	govtypes.RegisterProposalTypeCodec(&AddPoolProposal{}, fmt.Sprintf("comdex/%s", ProposalTypeAddPool))
+	govtypes.RegisterProposalType(ProposalTypeAddPair)
+	govtypes.RegisterProposalTypeCodec(&AddPairProposal{}, fmt.Sprintf("comdex/%s", ProposalTypeAddPair))
 }
 
 var (
-	_ govtypes.Content = (*AddPoolProposal)(nil)
+	_ govtypes.Content = (*AddPairProposal)(nil)
 )
 
-func (m *AddPoolProposal) GetTitle() string       { return m.Title }
-func (m *AddPoolProposal) GetDescription() string { return m.Description }
-func (m *AddPoolProposal) ProposalRoute() string  { return RouterKey }
-func (m *AddPoolProposal) ProposalType() string   { return ProposalTypeAddPool }
+func (m *AddPairProposal) GetTitle() string       { return m.Title }
+func (m *AddPairProposal) GetDescription() string { return m.Description }
+func (m *AddPairProposal) ProposalRoute() string  { return RouterKey }
+func (m *AddPairProposal) ProposalType() string   { return ProposalTypeAddPair }
 
-func (m *AddPoolProposal) ValidateBasic() error {
+func (m *AddPairProposal) ValidateBasic() error {
 	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}

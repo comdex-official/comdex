@@ -4,39 +4,39 @@ package comdex.asset.v1beta1;
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "comdex/asset/v1beta1/pool.proto";
+import "comdex/asset/v1beta1/pair.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message QueryPoolsRequest {
+message QueryPairsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryPoolsResponse {
-  repeated Pool pools = 1
-      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"pools\"" ];
+message QueryPairsResponse {
+  repeated Pair pairs = 1
+      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"pairs\"" ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryPoolRequest {
+message QueryPairRequest {
   uint64 id = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
 }
 
-message QueryPoolResponse {
-  Pool pool = 1
-      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"pool\"" ];
+message QueryPairResponse {
+  Pair pair = 1
+      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"pair\"" ];
 }
 
 service QueryService {
-  rpc QueryPools(QueryPoolsRequest) returns (QueryPoolsResponse) {
-    option (google.api.http).get = "/comdex/asset/v1beta1/pools";
+  rpc QueryPairs(QueryPairsRequest) returns (QueryPairsResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/pairs";
   }
 
-  rpc QueryPool(QueryPoolRequest) returns (QueryPoolResponse) {
-    option (google.api.http).get = "/comdex/asset/v1beta1/pools/{id}";
+  rpc QueryPair(QueryPairRequest) returns (QueryPairResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/pairs/{id}";
   }
 }

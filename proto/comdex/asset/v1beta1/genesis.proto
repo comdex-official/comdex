@@ -2,13 +2,13 @@ syntax = "proto3";
 package comdex.asset.v1beta1;
 
 import "gogoproto/gogo.proto";
-import "comdex/asset/v1beta1/pool.proto";
+import "comdex/asset/v1beta1/pair.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message GenesisState {
-  repeated Pool pools = 1
-      [ (gogoproto.moretags) = "yaml:\"pools\"", (gogoproto.nullable) = false ];
+  repeated Pair pairs = 1
+      [ (gogoproto.moretags) = "yaml:\"pairs\"", (gogoproto.nullable) = false ];
 }

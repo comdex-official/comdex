@@ -11,10 +11,10 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func queryPool() *cobra.Command {
+func queryPair() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pool [id]",
-		Short: "Query an asset pool",
+		Use:   "pair [id]",
+		Short: "Query an asset pair",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -31,9 +31,9 @@ func queryPool() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryPool(
+			res, err := qc.QueryPair(
 				context.Background(),
-				&types.QueryPoolRequest{
+				&types.QueryPairRequest{
 					Id: id,
 				},
 			)
@@ -50,10 +50,10 @@ func queryPool() *cobra.Command {
 	return cmd
 }
 
-func queryPools() *cobra.Command {
+func queryPairs() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pools",
-		Short: "Query asset pools",
+		Use:   "pairs",
+		Short: "Query asset pairs",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -69,9 +69,9 @@ func queryPools() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryPools(
+			res, err := qc.QueryPairs(
 				context.Background(),
-				&types.QueryPoolsRequest{
+				&types.QueryPairsRequest{
 					Pagination: pagination,
 				},
 			)
@@ -84,7 +84,7 @@ func queryPools() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "asset pools")
+	flags.AddPaginationFlagsToCmd(cmd, "asset pairs")
 
 	return cmd
 }

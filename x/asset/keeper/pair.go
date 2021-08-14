@@ -38,44 +38,44 @@ func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
 	return count.GetValue()
 }
 
-func (k *Keeper) SetPool(ctx sdk.Context, pool types.Pool) {
+func (k *Keeper) SetPair(ctx sdk.Context, pair types.Pair) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PoolKey(pool.Id)
-		value = k.cdc.MustMarshalBinaryBare(&pool)
+		key   = types.PairKey(pair.Id)
+		value = k.cdc.MustMarshalBinaryBare(&pair)
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetPool(ctx sdk.Context, id uint64) (pool types.Pool, found bool) {
+func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PoolKey(id)
+		key   = types.PairKey(id)
 		value = store.Get(key)
 	)
 
 	if value == nil {
-		return pool, false
+		return pair, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(value, &pool)
-	return pool, true
+	k.cdc.MustUnmarshalBinaryBare(value, &pair)
+	return pair, true
 }
 
-func (k *Keeper) GetPools(ctx sdk.Context) (pools []types.Pool) {
+func (k *Keeper) GetPairs(ctx sdk.Context) (pairs []types.Pair) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.PoolKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.PairKeyPrefix)
 	)
 
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var pool types.Pool
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &pool)
-		pools = append(pools, pool)
+		var pair types.Pair
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &pair)
+		pairs = append(pairs, pair)
 	}
 
-	return pools
+	return pairs
 }

@@ -6,10 +6,10 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func (k *Keeper) HandleAddPoolProposal(ctx sdk.Context, p *types.AddPoolProposal) error {
+func (k *Keeper) HandleAddPairProposal(ctx sdk.Context, p *types.AddPairProposal) error {
 	var (
 		count = k.GetCount(ctx)
-		pool  = types.Pool{
+		pair  = types.Pair{
 			Id:               count + 1,
 			DenomIn:          p.DenomIn,
 			DenomOut:         p.DenomOut,
@@ -17,12 +17,12 @@ func (k *Keeper) HandleAddPoolProposal(ctx sdk.Context, p *types.AddPoolProposal
 		}
 	)
 
-	k.SetPool(ctx, pool)
+	k.SetPair(ctx, pair)
 	k.SetCount(ctx, count+1)
 
 	_ = ctx.EventManager().EmitTypedEvent(
-		&types.EventAddPool{
-			Id: pool.Id,
+		&types.EventAddPair{
+			Id: pair.Id,
 		},
 	)
 
