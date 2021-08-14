@@ -30,7 +30,3 @@ func (m *Pool) Validate() error {
 
 	return nil
 }
-
-type (
-	Pools []Pool
-)
