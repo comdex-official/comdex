@@ -2,6 +2,7 @@ package asset
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/comdex-official/comdex/x/asset/keeper"
@@ -14,7 +15,7 @@ func NewAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 		case *types.AddPoolProposal:
 			return k.HandleAddPoolProposal(ctx, c)
 		default:
-			return nil
+			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}
 	}
 }

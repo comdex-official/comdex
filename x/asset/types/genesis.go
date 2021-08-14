@@ -1,6 +1,6 @@
 package types
 
-func NewGenesisState(pools Pools) *GenesisState {
+func NewGenesisState(pools []Pool) *GenesisState {
 	return &GenesisState{
 		Pools: pools,
 	}
