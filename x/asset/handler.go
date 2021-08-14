@@ -12,8 +12,8 @@ import (
 func NewAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
-		case *types.AddPoolProposal:
-			return k.HandleAddPoolProposal(ctx, c)
+		case *types.AddPairProposal:
+			return k.HandleAddPairProposal(ctx, c)
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}

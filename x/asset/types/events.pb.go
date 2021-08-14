@@ -23,22 +23,22 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type EventAddPool struct {
+type EventAddPair struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
-func (m *EventAddPool) Reset()         { *m = EventAddPool{} }
-func (m *EventAddPool) String() string { return proto.CompactTextString(m) }
-func (*EventAddPool) ProtoMessage()    {}
-func (*EventAddPool) Descriptor() ([]byte, []int) {
+func (m *EventAddPair) Reset()         { *m = EventAddPair{} }
+func (m *EventAddPair) String() string { return proto.CompactTextString(m) }
+func (*EventAddPair) ProtoMessage()    {}
+func (*EventAddPair) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8698e7aadaab4005, []int{0}
 }
-func (m *EventAddPool) XXX_Unmarshal(b []byte) error {
+func (m *EventAddPair) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventAddPool) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventAddPair) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventAddPool.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventAddPair.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -48,20 +48,20 @@ func (m *EventAddPool) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
-func (m *EventAddPool) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventAddPool.Merge(m, src)
+func (m *EventAddPair) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventAddPair.Merge(m, src)
 }
-func (m *EventAddPool) XXX_Size() int {
+func (m *EventAddPair) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventAddPool) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventAddPool.DiscardUnknown(m)
+func (m *EventAddPair) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventAddPair.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventAddPool proto.InternalMessageInfo
+var xxx_messageInfo_EventAddPair proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*EventAddPool)(nil), "comdex.asset.v1beta1.EventAddPool")
+	proto.RegisterType((*EventAddPair)(nil), "comdex.asset.v1beta1.EventAddPair")
 }
 
 func init() { proto.RegisterFile("comdex/asset/v1beta1/events.proto", fileDescriptor_8698e7aadaab4005) }
@@ -72,18 +72,18 @@ var fileDescriptor_8698e7aadaab4005 = []byte{
 	0x49, 0xad, 0xd0, 0x4f, 0x2c, 0x2e, 0x4e, 0x2d, 0xd1, 0x2f, 0x33, 0x4c, 0x4a, 0x2d, 0x49, 0x34,
 	0xd4, 0x4f, 0x2d, 0x4b, 0xcd, 0x2b, 0x29, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x81,
 	0x28, 0xd1, 0x03, 0x2b, 0xd1, 0x83, 0x2a, 0x91, 0x12, 0x49, 0xcf, 0x4f, 0xcf, 0x07, 0x2b, 0xd0,
-	0x07, 0xb1, 0x20, 0x6a, 0x95, 0x74, 0xb9, 0x78, 0x5c, 0x41, 0x7a, 0x1d, 0x53, 0x52, 0x02, 0xf2,
-	0xf3, 0x73, 0x84, 0x64, 0xb9, 0x98, 0x32, 0x53, 0x24, 0x18, 0x15, 0x18, 0x35, 0x58, 0x9c, 0x78,
+	0x07, 0xb1, 0x20, 0x6a, 0x95, 0x74, 0xb9, 0x78, 0x5c, 0x41, 0x7a, 0x1d, 0x53, 0x52, 0x02, 0x12,
+	0x33, 0x8b, 0x84, 0x64, 0xb9, 0x98, 0x32, 0x53, 0x24, 0x18, 0x15, 0x18, 0x35, 0x58, 0x9c, 0x78,
 	0x3f, 0xdd, 0x93, 0xe7, 0xac, 0x4c, 0xcc, 0xcd, 0xb1, 0x52, 0xca, 0x4c, 0x51, 0x0a, 0x62, 0xca,
 	0x4c, 0x71, 0x0a, 0x3c, 0xf1, 0x50, 0x8e, 0x61, 0xc5, 0x23, 0x39, 0x86, 0x13, 0x8f, 0xe4, 0x18,
 	0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5,
 	0x18, 0x6e, 0x3c, 0x96, 0x63, 0x88, 0xd2, 0x4f, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce,
 	0xcf, 0xd5, 0x87, 0xb8, 0x43, 0x37, 0x3f, 0x2d, 0x2d, 0x33, 0x39, 0x33, 0x31, 0x07, 0xca, 0xd7,
 	0x87, 0x39, 0xbe, 0xa4, 0xb2, 0x20, 0xb5, 0x38, 0x89, 0x0d, 0xec, 0x10, 0x63, 0x40, 0x00, 0x00,
-	0x00, 0xff, 0xff, 0x67, 0xed, 0x94, 0x70, 0xd9, 0x00, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0xda, 0x39, 0x81, 0xea, 0xd9, 0x00, 0x00, 0x00,
 }
 
-func (m *EventAddPool) Marshal() (dAtA []byte, err error) {
+func (m *EventAddPair) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -93,12 +93,12 @@ func (m *EventAddPool) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventAddPool) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventAddPair) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventAddPool) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventAddPair) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -122,7 +122,7 @@ func encodeVarintEvents(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *EventAddPool) Size() (n int) {
+func (m *EventAddPair) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -140,7 +140,7 @@ func sovEvents(x uint64) (n int) {
 func sozEvents(x uint64) (n int) {
 	return sovEvents(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *EventAddPool) Unmarshal(dAtA []byte) error {
+func (m *EventAddPair) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -163,10 +163,10 @@ func (m *EventAddPool) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventAddPool: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventAddPair: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventAddPool: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventAddPair: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

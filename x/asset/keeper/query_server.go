@@ -26,22 +26,22 @@ func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
 	}
 }
 
-func (q *queryServer) QueryPools(c context.Context, req *types.QueryPoolsRequest) (*types.QueryPoolsResponse, error) {
+func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest) (*types.QueryPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
-		items      []types.Pool
+		items      []types.Pair
 		pagination *query.PageResponse
 		ctx        = sdk.UnwrapSDKContext(c)
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.PoolKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.PairKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.Pool
+			var item types.Pair
 			if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
 				return false, err
 			}
@@ -58,13 +58,13 @@ func (q *queryServer) QueryPools(c context.Context, req *types.QueryPoolsRequest
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryPoolsResponse{
-		Pools:      items,
+	return &types.QueryPairsResponse{
+		Pairs:      items,
 		Pagination: pagination,
 	}, nil
 }
 
-func (q *queryServer) QueryPool(c context.Context, req *types.QueryPoolRequest) (*types.QueryPoolResponse, error) {
+func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (*types.QueryPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -73,12 +73,12 @@ func (q *queryServer) QueryPool(c context.Context, req *types.QueryPoolRequest) 
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetPool(ctx, req.Id)
+	item, found := q.GetPair(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "pool does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", req.Id)
 	}
 
-	return &types.QueryPoolResponse{
-		Pool: item,
+	return &types.QueryPairResponse{
+		Pair: item,
 	}, nil
 }
