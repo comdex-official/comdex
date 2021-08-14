@@ -5,7 +5,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (m *Collateral) Validate() error {
+func (m *Pool) Validate() error {
 	if m.Id == 0 {
 		return errors.New("id cannot be zero")
 	}
@@ -32,5 +32,5 @@ func (m *Collateral) Validate() error {
 }
 
 type (
-	Collaterals []Collateral
+	Pools []Pool
 )
