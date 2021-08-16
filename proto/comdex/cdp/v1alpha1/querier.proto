@@ -1,0 +1,48 @@
+syntax = "proto3";
+package comdex.cdp.v1alpha1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "comdex/cdp/v1alpha1/cdp.proto";
+
+option go_package            = "github.com/comdex-official/comdex/x/cdp/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message QueryCDPRequest {
+  uint64 id = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+}
+
+message QueryCDPResponse {
+  CDP cdp = 1 [
+    (gogoproto.customname) = "CDP",
+    (gogoproto.moretags)   = "yaml:\"cdp\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message QueryCDPsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryCDPsResponse {
+  repeated CDP cdps = 1 [
+    (gogoproto.customname) = "CDPs",
+    (gogoproto.moretags)   = "yaml:\"cdps\"",
+    (gogoproto.nullable)   = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+service QueryService {
+  rpc QueryCDP(QueryCDPRequest) returns (QueryCDPResponse) {
+    option (google.api.http).get = "/comdex/cdp/v1alpha1/cdps/{id}";
+  };
+
+  rpc QueryCDPs(QueryCDPsRequest) returns (QueryCDPsResponse) {
+    option (google.api.http).get = "/comdex/cdp/v1alpha1/cdps";
+  };
+}

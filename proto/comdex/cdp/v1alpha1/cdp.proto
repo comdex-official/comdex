@@ -1,38 +1,24 @@
 syntax = "proto3";
-
 package comdex.cdp.v1alpha1;
 
 import "gogoproto/gogo.proto";
-import "google/protobuf/timestamp.proto";
-import "cosmos/base/v1beta1/coin.proto";
 
-option go_package = "github.com/comdex-official/comdex/x/cdp/types";
+option go_package            = "github.com/comdex-official/comdex/x/cdp/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
 
-message CDP{
-  uint64 id = 1;
-  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-  string type = 3 [ (gogoproto.moretags) = "yaml:\"type\"" ];
-
-  cosmos.base.v1beta1.Coin collateral = 4 [
-    (gogoproto.moretags) = "yaml:\"collateral\"",
-    (gogoproto.nullable) = false
+message CDP {
+  uint64 id        = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  uint64 pair_id   = 2 [ (gogoproto.moretags) = "yaml:\"pair_id\"" ];
+  string owner     = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  string amount_in = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount_in\"",
+    (gogoproto.nullable)   = false
   ];
-
-  cosmos.base.v1beta1.Coin debt = 5 [
-    (gogoproto.moretags) = "yaml:\"debt\"",
-    (gogoproto.nullable) = false
-  ];
-}
-
-message OwnerCDPList{
-  repeated OwnedCDP ownedCDPs = 1 [
-    (gogoproto.moretags) = "yaml:\"ownedCDP\"",
-    (gogoproto.nullable) = false
+  string amount_out = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount_out\"",
+    (gogoproto.nullable)   = false
   ];
 }
-
-message OwnedCDP{
-  uint64 id = 1;
-  string collateral_type = 3 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
-}
-
