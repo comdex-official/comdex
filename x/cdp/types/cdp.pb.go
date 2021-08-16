@@ -5,10 +5,9 @@ package types
 
 import (
 	fmt "fmt"
-	types "github.com/cosmos/cosmos-sdk/types"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -26,11 +25,11 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type CDP struct {
-	Id         uint64     `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Owner      string     `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
-	Type       string     `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty" yaml:"type"`
-	Collateral types.Coin `protobuf:"bytes,4,opt,name=collateral,proto3" json:"collateral" yaml:"collateral"`
-	Debt       types.Coin `protobuf:"bytes,5,opt,name=debt,proto3" json:"debt" yaml:"debt"`
+	Id        uint64                                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	PairId    uint64                                 `protobuf:"varint,2,opt,name=pair_id,json=pairId,proto3" json:"pair_id,omitempty" yaml:"pair_id"`
+	Owner     string                                 `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+	AmountIn  github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=amount_in,json=amountIn,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount_in" yaml:"amount_in"`
+	AmountOut github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount_out,json=amountOut,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount_out" yaml:"amount_out"`
 }
 
 func (m *CDP) Reset()         { *m = CDP{} }
@@ -66,174 +65,36 @@ func (m *CDP) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CDP proto.InternalMessageInfo
 
-func (m *CDP) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *CDP) GetOwner() string {
-	if m != nil {
-		return m.Owner
-	}
-	return ""
-}
-
-func (m *CDP) GetType() string {
-	if m != nil {
-		return m.Type
-	}
-	return ""
-}
-
-func (m *CDP) GetCollateral() types.Coin {
-	if m != nil {
-		return m.Collateral
-	}
-	return types.Coin{}
-}
-
-func (m *CDP) GetDebt() types.Coin {
-	if m != nil {
-		return m.Debt
-	}
-	return types.Coin{}
-}
-
-type OwnerCDPList struct {
-	OwnedCDPs []OwnedCDP `protobuf:"bytes,1,rep,name=ownedCDPs,proto3" json:"ownedCDPs" yaml:"ownedCDP"`
-}
-
-func (m *OwnerCDPList) Reset()         { *m = OwnerCDPList{} }
-func (m *OwnerCDPList) String() string { return proto.CompactTextString(m) }
-func (*OwnerCDPList) ProtoMessage()    {}
-func (*OwnerCDPList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_79abe14dd4273326, []int{1}
-}
-func (m *OwnerCDPList) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *OwnerCDPList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_OwnerCDPList.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *OwnerCDPList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OwnerCDPList.Merge(m, src)
-}
-func (m *OwnerCDPList) XXX_Size() int {
-	return m.Size()
-}
-func (m *OwnerCDPList) XXX_DiscardUnknown() {
-	xxx_messageInfo_OwnerCDPList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_OwnerCDPList proto.InternalMessageInfo
-
-func (m *OwnerCDPList) GetOwnedCDPs() []OwnedCDP {
-	if m != nil {
-		return m.OwnedCDPs
-	}
-	return nil
-}
-
-type OwnedCDP struct {
-	Id             uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	CollateralType string `protobuf:"bytes,3,opt,name=collateral_type,json=collateralType,proto3" json:"collateral_type,omitempty" yaml:"collateral_type"`
-}
-
-func (m *OwnedCDP) Reset()         { *m = OwnedCDP{} }
-func (m *OwnedCDP) String() string { return proto.CompactTextString(m) }
-func (*OwnedCDP) ProtoMessage()    {}
-func (*OwnedCDP) Descriptor() ([]byte, []int) {
-	return fileDescriptor_79abe14dd4273326, []int{2}
-}
-func (m *OwnedCDP) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *OwnedCDP) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_OwnedCDP.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *OwnedCDP) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OwnedCDP.Merge(m, src)
-}
-func (m *OwnedCDP) XXX_Size() int {
-	return m.Size()
-}
-func (m *OwnedCDP) XXX_DiscardUnknown() {
-	xxx_messageInfo_OwnedCDP.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_OwnedCDP proto.InternalMessageInfo
-
-func (m *OwnedCDP) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *OwnedCDP) GetCollateralType() string {
-	if m != nil {
-		return m.CollateralType
-	}
-	return ""
-}
-
 func init() {
 	proto.RegisterType((*CDP)(nil), "comdex.cdp.v1alpha1.CDP")
-	proto.RegisterType((*OwnerCDPList)(nil), "comdex.cdp.v1alpha1.OwnerCDPList")
-	proto.RegisterType((*OwnedCDP)(nil), "comdex.cdp.v1alpha1.OwnedCDP")
 }
 
 func init() { proto.RegisterFile("comdex/cdp/v1alpha1/cdp.proto", fileDescriptor_79abe14dd4273326) }
 
 var fileDescriptor_79abe14dd4273326 = []byte{
-	// 425 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x52, 0x41, 0x6b, 0xdb, 0x30,
-	0x18, 0xb5, 0x12, 0x77, 0xac, 0x4a, 0x69, 0x36, 0x77, 0x6c, 0xae, 0xa1, 0xb6, 0xd1, 0x60, 0xf8,
-	0x52, 0x89, 0x74, 0xb7, 0x1d, 0xed, 0xc0, 0x2e, 0x83, 0x06, 0x93, 0xd3, 0x2e, 0x41, 0xb6, 0x15,
-	0x57, 0x60, 0x47, 0x26, 0x56, 0xbb, 0xe5, 0x5f, 0xec, 0x67, 0xf5, 0xd8, 0xe3, 0x4e, 0x66, 0x24,
-	0xff, 0xc0, 0xe7, 0x1d, 0x86, 0x2c, 0x17, 0x97, 0x6d, 0xd0, 0x5b, 0xbe, 0xf7, 0xde, 0xf7, 0xf2,
-	0xbd, 0x67, 0xc1, 0x8b, 0x54, 0x94, 0x19, 0xfb, 0x4e, 0xd2, 0xac, 0x22, 0x77, 0x33, 0x5a, 0x54,
-	0x37, 0x74, 0xa6, 0x06, 0x5c, 0x6d, 0x85, 0x14, 0xd6, 0x99, 0xa6, 0xb1, 0x42, 0x1e, 0x69, 0xe7,
-	0x4d, 0x2e, 0x72, 0xd1, 0xf1, 0x44, 0xfd, 0xd2, 0x52, 0xc7, 0xcb, 0x85, 0xc8, 0x0b, 0x46, 0xba,
-	0x29, 0xb9, 0x5d, 0x13, 0xc9, 0x4b, 0x56, 0x4b, 0x5a, 0xf6, 0x5e, 0x8e, 0x9b, 0x8a, 0xba, 0x14,
-	0x35, 0x49, 0x68, 0xcd, 0xc8, 0xdd, 0x2c, 0x61, 0x52, 0xfd, 0x95, 0xe0, 0x1b, 0xcd, 0xa3, 0xdf,
-	0x00, 0x8e, 0xa3, 0xf9, 0xc2, 0x3a, 0x85, 0x23, 0x9e, 0xd9, 0xc0, 0x07, 0x81, 0x19, 0x8f, 0x78,
-	0x66, 0x7d, 0x80, 0x47, 0xe2, 0xdb, 0x86, 0x6d, 0xed, 0x91, 0x0f, 0x82, 0xe3, 0xf0, 0x55, 0xdb,
-	0x78, 0x27, 0x3b, 0x5a, 0x16, 0x9f, 0x50, 0x07, 0xa3, 0x58, 0xd3, 0xd6, 0x7b, 0x68, 0xca, 0x5d,
-	0xc5, 0xec, 0x71, 0x27, 0x9b, 0xb6, 0x8d, 0x37, 0xd1, 0x32, 0x85, 0xa2, 0xb8, 0x23, 0xad, 0x25,
-	0x84, 0xa9, 0x28, 0x0a, 0x2a, 0xd9, 0x96, 0x16, 0xb6, 0xe9, 0x83, 0x60, 0x72, 0x75, 0x8e, 0xf5,
-	0x65, 0x58, 0x5d, 0x86, 0xfb, 0xcb, 0x70, 0x24, 0xf8, 0x26, 0x3c, 0xbf, 0x6f, 0x3c, 0xa3, 0x6d,
-	0xbc, 0xd7, 0xda, 0x69, 0x58, 0x45, 0xf1, 0x13, 0x1f, 0x2b, 0x84, 0x66, 0xc6, 0x12, 0x69, 0x1f,
-	0x3d, 0xe7, 0x77, 0xd6, 0xfb, 0xf5, 0x97, 0xa9, 0x25, 0x14, 0x77, 0xbb, 0x28, 0x83, 0x27, 0xd7,
-	0x2a, 0x47, 0x34, 0x5f, 0x7c, 0xe1, 0xb5, 0xb4, 0x96, 0xf0, 0x58, 0xe5, 0xca, 0xa2, 0xf9, 0xa2,
-	0xb6, 0x81, 0x3f, 0x0e, 0x26, 0x57, 0x17, 0xf8, 0x3f, 0x9f, 0x03, 0x5f, 0xf7, 0xaa, 0xf0, 0x5d,
-	0x6f, 0x3e, 0x1d, 0xda, 0x51, 0x38, 0x8a, 0x07, 0x23, 0xb4, 0x82, 0x2f, 0x1f, 0xf5, 0xff, 0x14,
-	0x1d, 0xc1, 0xe9, 0x90, 0x69, 0xf5, 0xa4, 0x4b, 0xa7, 0x6d, 0xbc, 0xb7, 0x7f, 0x37, 0xb0, 0xd2,
-	0xb5, 0x9e, 0x0e, 0xc8, 0x72, 0x57, 0xb1, 0xf0, 0xf3, 0xfd, 0xde, 0x05, 0x0f, 0x7b, 0x17, 0xfc,
-	0xda, 0xbb, 0xe0, 0xc7, 0xc1, 0x35, 0x1e, 0x0e, 0xae, 0xf1, 0xf3, 0xe0, 0x1a, 0x5f, 0x2f, 0x73,
-	0x2e, 0x6f, 0x6e, 0x13, 0x95, 0x81, 0xe8, 0x1c, 0x97, 0x62, 0xbd, 0xe6, 0x29, 0xa7, 0x45, 0x3f,
-	0x13, 0xfd, 0x0e, 0x95, 0x71, 0x9d, 0xbc, 0xe8, 0x5e, 0xc5, 0xc7, 0x3f, 0x01, 0x00, 0x00, 0xff,
-	0xff, 0x91, 0x87, 0x6e, 0x9a, 0xa2, 0x02, 0x00, 0x00,
+	// 341 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x91, 0x3d, 0x4e, 0xeb, 0x40,
+	0x14, 0x85, 0x6d, 0xe7, 0xe7, 0xbd, 0x8c, 0xde, 0x43, 0x61, 0xa0, 0xb0, 0x90, 0x32, 0x8e, 0xa6,
+	0x88, 0x22, 0xa1, 0xd8, 0x8a, 0xe8, 0x28, 0x1d, 0x9a, 0x54, 0x41, 0x2e, 0x69, 0x22, 0xc7, 0x93,
+	0x9f, 0x11, 0xb1, 0xaf, 0x15, 0x8f, 0x81, 0xec, 0x82, 0x65, 0xb0, 0x0a, 0xea, 0x94, 0x29, 0x11,
+	0x85, 0x05, 0xce, 0x0e, 0xbc, 0x02, 0xe4, 0x19, 0x83, 0x94, 0x92, 0x6a, 0xee, 0x3d, 0xe7, 0xe8,
+	0x7e, 0x23, 0x1d, 0xd4, 0x09, 0x20, 0x64, 0xf3, 0x27, 0x27, 0x60, 0xb1, 0xf3, 0x30, 0xf4, 0xd7,
+	0xf1, 0xca, 0x1f, 0x96, 0x8b, 0x1d, 0x6f, 0x40, 0x00, 0x3e, 0x53, 0xb6, 0x5d, 0x2a, 0xdf, 0xf6,
+	0xc5, 0xf9, 0x12, 0x96, 0x20, 0x7d, 0xa7, 0x9c, 0x54, 0x94, 0xbe, 0x1a, 0xa8, 0x36, 0xba, 0xb9,
+	0xc5, 0x1d, 0x64, 0x70, 0x66, 0xea, 0x5d, 0xbd, 0x5f, 0x77, 0xff, 0x17, 0x99, 0xd5, 0xda, 0xfa,
+	0xe1, 0xfa, 0x9a, 0x72, 0x46, 0x3d, 0x83, 0x33, 0x7c, 0x89, 0xfe, 0xc4, 0x3e, 0xdf, 0x4c, 0x39,
+	0x33, 0x0d, 0x99, 0xc1, 0x45, 0x66, 0x9d, 0xa8, 0x4c, 0x65, 0x50, 0xaf, 0x59, 0x4e, 0x63, 0x86,
+	0x7b, 0xa8, 0x01, 0x8f, 0xd1, 0x7c, 0x63, 0xd6, 0xba, 0x7a, 0xbf, 0xe5, 0xb6, 0x8b, 0xcc, 0xfa,
+	0xa7, 0xa2, 0x52, 0xa6, 0x9e, 0xb2, 0xf1, 0x14, 0xb5, 0xfc, 0x10, 0xd2, 0x48, 0x4c, 0x79, 0x64,
+	0xd6, 0x65, 0xd6, 0xdd, 0x65, 0x96, 0xf6, 0x9e, 0x59, 0xbd, 0x25, 0x17, 0xab, 0x74, 0x66, 0x07,
+	0x10, 0x3a, 0x01, 0x24, 0x21, 0x24, 0xd5, 0x33, 0x48, 0xd8, 0xbd, 0x23, 0xb6, 0xf1, 0x3c, 0xb1,
+	0xc7, 0x91, 0x28, 0x32, 0xab, 0xad, 0x2e, 0xff, 0x1c, 0xa2, 0xde, 0x5f, 0x35, 0x8f, 0x23, 0x3c,
+	0x43, 0xa8, 0xd2, 0x21, 0x15, 0x66, 0x43, 0x12, 0x46, 0xbf, 0x26, 0x9c, 0x1e, 0x11, 0x20, 0x15,
+	0xd4, 0xab, 0xfe, 0x3d, 0x49, 0x85, 0x3b, 0xd9, 0x7d, 0x12, 0xed, 0x25, 0x27, 0xda, 0x2e, 0x27,
+	0xfa, 0x3e, 0x27, 0xfa, 0x47, 0x4e, 0xf4, 0xe7, 0x03, 0xd1, 0xf6, 0x07, 0xa2, 0xbd, 0x1d, 0x88,
+	0x76, 0x37, 0x38, 0x22, 0x95, 0xc5, 0x0c, 0x60, 0xb1, 0xe0, 0x01, 0xf7, 0xd7, 0xd5, 0xee, 0xa8,
+	0x26, 0x25, 0x74, 0xd6, 0x94, 0xc5, 0x5c, 0x7d, 0x05, 0x00, 0x00, 0xff, 0xff, 0xb8, 0x98, 0xeb,
+	0x7a, 0xe4, 0x01, 0x00, 0x00,
 }
 
 func (m *CDP) Marshal() (dAtA []byte, err error) {
@@ -257,110 +118,36 @@ func (m *CDP) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	{
-		size, err := m.Debt.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
+		size := m.AmountOut.Size()
+		i -= size
+		if _, err := m.AmountOut.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
-		i -= size
 		i = encodeVarintCdp(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x2a
 	{
-		size, err := m.Collateral.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
+		size := m.AmountIn.Size()
+		i -= size
+		if _, err := m.AmountIn.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
-		i -= size
 		i = encodeVarintCdp(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x22
-	if len(m.Type) > 0 {
-		i -= len(m.Type)
-		copy(dAtA[i:], m.Type)
-		i = encodeVarintCdp(dAtA, i, uint64(len(m.Type)))
-		i--
-		dAtA[i] = 0x1a
-	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
 		copy(dAtA[i:], m.Owner)
 		i = encodeVarintCdp(dAtA, i, uint64(len(m.Owner)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if m.Id != 0 {
-		i = encodeVarintCdp(dAtA, i, uint64(m.Id))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *OwnerCDPList) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *OwnerCDPList) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *OwnerCDPList) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.OwnedCDPs) > 0 {
-		for iNdEx := len(m.OwnedCDPs) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.OwnedCDPs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCdp(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *OwnedCDP) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *OwnedCDP) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *OwnedCDP) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.CollateralType) > 0 {
-		i -= len(m.CollateralType)
-		copy(dAtA[i:], m.CollateralType)
-		i = encodeVarintCdp(dAtA, i, uint64(len(m.CollateralType)))
-		i--
 		dAtA[i] = 0x1a
+	}
+	if m.PairId != 0 {
+		i = encodeVarintCdp(dAtA, i, uint64(m.PairId))
+		i--
+		dAtA[i] = 0x10
 	}
 	if m.Id != 0 {
 		i = encodeVarintCdp(dAtA, i, uint64(m.Id))
@@ -390,49 +177,17 @@ func (m *CDP) Size() (n int) {
 	if m.Id != 0 {
 		n += 1 + sovCdp(uint64(m.Id))
 	}
+	if m.PairId != 0 {
+		n += 1 + sovCdp(uint64(m.PairId))
+	}
 	l = len(m.Owner)
 	if l > 0 {
 		n += 1 + l + sovCdp(uint64(l))
 	}
-	l = len(m.Type)
-	if l > 0 {
-		n += 1 + l + sovCdp(uint64(l))
-	}
-	l = m.Collateral.Size()
+	l = m.AmountIn.Size()
 	n += 1 + l + sovCdp(uint64(l))
-	l = m.Debt.Size()
+	l = m.AmountOut.Size()
 	n += 1 + l + sovCdp(uint64(l))
-	return n
-}
-
-func (m *OwnerCDPList) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.OwnedCDPs) > 0 {
-		for _, e := range m.OwnedCDPs {
-			l = e.Size()
-			n += 1 + l + sovCdp(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *OwnedCDP) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Id != 0 {
-		n += 1 + sovCdp(uint64(m.Id))
-	}
-	l = len(m.CollateralType)
-	if l > 0 {
-		n += 1 + l + sovCdp(uint64(l))
-	}
 	return n
 }
 
@@ -491,6 +246,25 @@ func (m *CDP) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PairId", wireType)
+			}
+			m.PairId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCdp
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PairId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
@@ -522,9 +296,9 @@ func (m *CDP) Unmarshal(dAtA []byte) error {
 			}
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AmountIn", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -552,236 +326,13 @@ func (m *CDP) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Type = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Collateral", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCdp
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCdp
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCdp
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Collateral.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.AmountIn.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Debt", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCdp
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCdp
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCdp
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Debt.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCdp(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthCdp
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthCdp
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *OwnerCDPList) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCdp
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: OwnerCDPList: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: OwnerCDPList: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OwnedCDPs", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCdp
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCdp
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCdp
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.OwnedCDPs = append(m.OwnedCDPs, OwnedCDP{})
-			if err := m.OwnedCDPs[len(m.OwnedCDPs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCdp(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthCdp
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthCdp
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *OwnedCDP) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCdp
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: OwnedCDP: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: OwnedCDP: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCdp
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CollateralType", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AmountOut", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -809,7 +360,9 @@ func (m *OwnedCDP) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CollateralType = string(dAtA[iNdEx:postIndex])
+			if err := m.AmountOut.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -817,10 +370,7 @@ func (m *OwnedCDP) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthCdp
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthCdp
 			}
 			if (iNdEx + skippy) > l {
