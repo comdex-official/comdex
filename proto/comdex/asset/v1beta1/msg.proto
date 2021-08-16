@@ -1,0 +1,34 @@
+syntax = "proto3";
+package comdex.asset.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "ibc/core/client/v1/client.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/asset/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MsgFetchPriceFromBandRequest {
+  string from           = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string source_channel = 2
+      [ (gogoproto.moretags) = "yaml:\"source_channel\"" ];
+  ibc.core.client.v1.Height timeout_height = 3 [
+    (gogoproto.moretags) = "yaml:\"timeout_height\"",
+    (gogoproto.nullable) = false
+  ];
+  uint64 timeout_timestamp = 4
+      [ (gogoproto.moretags) = "yaml:\"timeout_timestamp\"" ];
+  bytes packet_data = 5 [
+    (gogoproto.customtype) = "github.com/bandprotocol/bandchain-packet/"
+                             "packet.OracleRequestPacketData",
+    (gogoproto.moretags) = "yaml:\"packet\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgFetchPriceFromBandResponse {}
+
+service MsgService {
+  rpc MsgFetchPriceFromBand(MsgFetchPriceFromBandRequest)
+      returns (MsgFetchPriceFromBandResponse);
+}
