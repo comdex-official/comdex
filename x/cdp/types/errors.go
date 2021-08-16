@@ -1,28 +1,24 @@
 package types
 
-// DONTCOVER
-
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var (
-	ErrorInvalidField              = sdkerrors.Register(ModuleName, 101, "invalid field")
-	ErrorInvalidFrom               = sdkerrors.Register(ModuleName, 102, "invalid from")
-	ErrorInvalidReceiver           = sdkerrors.Register(ModuleName, 103, "invalid receiver")
-	ErrorInvalidCoins              = sdkerrors.Register(ModuleName, 104, "invalid coins")
-	ErrorInvalidAmount             = sdkerrors.Register(ModuleName, 105, "invalid amount")
-	ErrorAccountNotFound           = sdkerrors.Register(ModuleName, 107, "account not found")
-	ErrorInsufficientBalance       = sdkerrors.Register(ModuleName, 108, "insufficient balance")
-	ErrorInvalidCollateralRatio    = sdkerrors.Register(ModuleName, 109, "proposed collateral ratio is below liquidation ratio")
-	ErrorInvalidCollateral         = sdkerrors.Register(ModuleName, 110, "collateral does not exist")
-	ErrorCdpNotFound               = sdkerrors.Register(ModuleName, 111, "cdp not found")
-	ErrorInvalidCDP                = sdkerrors.Register(ModuleName, 112, "cdp type does not exist")
-	ErrorDenomPrefixNotFound       = sdkerrors.Register(ModuleName, 113, "denom prefix not found")
-	ErrorInvalidDebt               = sdkerrors.Register(ModuleName, 114, "only one principal type per cdp")
-	ErrorDebtNotSupported          = sdkerrors.Register(ModuleName, 115, "debt not supported")
-	ErrorInvalidPayment            = sdkerrors.Register(ModuleName, 116, "invalid payment")
-	ErrorInvalidWithdrawAmount     = sdkerrors.Register(ModuleName, 117, "withdrawal amount exceeds deposit")
-	ErrorCollateralNotFound        = sdkerrors.Register(ModuleName, 118, "collateral not found")
-	ErrorLowCollateralizationRatio = sdkerrors.Register(ModuleName, 119, "collateralization ratio less than required")
+	ErrorInvalidField     = errors.Register(ModuleName, 101, "invalid field")
+	ErrorInvalidSender    = errors.Register(ModuleName, 102, "invalid sender")
+	ErrorInvalidAmountIn  = errors.Register(ModuleName, 103, "invalid amount_in")
+	ErrorInvalidAmountOut = errors.Register(ModuleName, 104, "invalid amount_out")
+	ErrorInvalidId        = errors.Register(ModuleName, 105, "invalid id")
+	ErrorInvalidAmount    = errors.Register(ModuleName, 106, "invalid amount")
+)
+
+var (
+	ErrorCDPAlreadyExists       = errors.Register(ModuleName, 201, "cdp already exists")
+	ErrorAssetPairDoesNotExist  = errors.Register(ModuleName, 202, "asset pair does not exist")
+	ErrorInsufficientCollateral = errors.Register(ModuleName, 203, "insufficient collateral")
+)
+
+var (
+	ErrorUnknownMsgType = errors.Register(ModuleName, 301, "unknown message type")
 )
