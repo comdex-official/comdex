@@ -2,155 +2,72 @@ package keeper
 
 import (
 	"context"
-	"github.com/comdex-official/comdex/x/cdp/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/pkg/errors"
+
+	"github.com/comdex-official/comdex/x/cdp/types"
+)
+
+var (
+	_ types.MsgServiceServer = (*msgServer)(nil)
 )
 
 type msgServer struct {
 	Keeper
 }
 
-// NewMsgServerImpl returns an implementation of the MsgServer interface
-// for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) types.MsgServiceServer {
-	return &msgServer{Keeper: keeper}
+func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
+	return &msgServer{
+		Keeper: keeper,
+	}
 }
 
-var _ types.MsgServiceServer = msgServer{}
-
-func (ms msgServer) MsgCreateCDP(context context.Context, msg *types.MsgCreateCDPRequest) (*types.MsgCreateCDPResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
+func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
 
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ms.Keeper.AddCdp(ctx, sender, msg.Collateral, msg.Debt, msg.CollateralType)
-	if err != nil {
-		return nil, err
+	if k.HasCDPForAddressByAssetPair(ctx, sender, msg.PairId) {
+		return nil, types.ErrorCDPAlreadyExists
 	}
 
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventCreateCDP{
-			Sender:         sender.String(),
-			CollateralType: msg.CollateralType,
-		},
+	pair, found := k.GetAssetPair(ctx, msg.PairId)
+	if !found {
+		return nil, errors.Wrapf(types.ErrorAssetPairDoesNotExist, "%d", msg.PairId)
+	}
+
+	var (
+		coins  = k.SpendableCoins(ctx, sender)
+		amount = coins.AmountOf(pair.DenomIn)
 	)
-	return &types.MsgCreateCDPResponse{}, nil
+
+	if amount.LT(msg.AmountIn) {
+		return nil, errors.Wrapf(types.ErrorInsufficientCollateral, "expected %s, have %s", msg.AmountIn, amount)
+	}
+
+	return &types.MsgCreateResponse{}, nil
 }
 
-func (ms msgServer) MsgDepositCollateral(context context.Context, msg *types.MsgDepositCollateralRequest) (*types.MsgDepositCollateralResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
-
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ms.DepositCollateral(ctx, owner, msg.Collateral, msg.CollateralType)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventDepositCollateral{
-			Owner:          owner.String(),
-			CollateralType: msg.CollateralType,
-			Collateral:     msg.Collateral,
-		},
-	)
-
-	return &types.MsgDepositCollateralResponse{}, nil
+func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
+	panic("implement me")
 }
 
-func (ms msgServer) MsgWithdrawCollateral(context context.Context, msg *types.MsgWithdrawCollateralRequest) (*types.MsgWithdrawCollateralResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ms.WithdrawCollateral(ctx, owner, msg.Collateral, msg.CollateralType)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventWithdrawCollateral{
-			Owner:          owner.String(),
-			CollateralType: msg.CollateralType,
-			Collateral:     msg.Collateral,
-		},
-	)
-
-	return &types.MsgWithdrawCollateralResponse{}, nil
+func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
+	panic("implement me")
 }
 
-func (ms msgServer) MsgDrawDebt(context context.Context, msg *types.MsgDrawDebtRequest) (*types.MsgDrawDebtResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ms.DrawDebt(ctx, owner, msg.CollateralType, msg.Debt)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventDrawDebt{
-			Owner:          owner.String(),
-			CollateralType: msg.CollateralType,
-			Debt:           msg.Debt,
-		},
-	)
-
-	return &types.MsgDrawDebtResponse{}, nil
+func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
+	panic("implement me")
 }
 
-func (ms msgServer) MsgRepayDebt(context context.Context, msg *types.MsgRepayDebtRequest) (*types.MsgRepayDebtResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ms.RepayDebt(ctx, owner, msg.CollateralType, msg.Debt)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventRepayDebt{
-			Owner:          owner.String(),
-			CollateralType: msg.CollateralType,
-			Debt:           msg.Debt,
-		},
-	)
-
-	return &types.MsgRepayDebtResponse{}, nil
+func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
+	panic("implement me")
 }
 
-func (ms msgServer) MsgLiquidateCDP(context context.Context, msg *types.MsgLiquidateCDPRequest) (*types.MsgLiquidateCDPResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ms.AttemptLiquidation(ctx, owner, msg.CollateralType)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventLiquidateCDP{
-			Owner:          owner.String(),
-			CollateralType: msg.CollateralType,
-		},
-	)
-
-	return &types.MsgLiquidateCDPResponse{}, nil
+func (k *msgServer) MsgLiquidate(c context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {
+	panic("implement me")
 }
