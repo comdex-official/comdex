@@ -8,6 +8,7 @@ const (
 	ModuleName     = "asset"
 	ParamsSubspace = ModuleName
 	QuerierRoute   = ModuleName
+	PortId         = ModuleName
 	RouterKey      = ModuleName
 	StoreKey       = ModuleName
 )
