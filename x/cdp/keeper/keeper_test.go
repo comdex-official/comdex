@@ -1,8 +1,7 @@
 package keeper
 
 import (
-	"testing"
-
+	"github.com/comdex-official/comdex/x/cdp/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -12,8 +11,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
-
-	"github.com/comdex-official/comdex/x/cdp/types"
+	"testing"
 )
 
 func setupKeeper(t testing.TB) (*Keeper, sdk.Context) {
@@ -27,11 +25,7 @@ func setupKeeper(t testing.TB) (*Keeper, sdk.Context) {
 	require.NoError(t, stateStore.LoadLatestVersion())
 
 	registry := codectypes.NewInterfaceRegistry()
-	keeper := NewKeeper(
-		codec.NewProtoCodec(registry),
-		storeKey,
-		memStoreKey,
-	)
+	keeper := NewKeeper(codec.NewProtoCodec(registry), storeKey, memStoreKey, nil, nil,nil)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
 	return keeper, ctx
