@@ -39,23 +39,6 @@ func (suite *CdpTestSuite)TestCdp_GetNextCdpID() {
 	suite.Equal(types.DefaultIndex, id)
 }
 
-/*func (suite *CdpTestSuite) TestAddCdp() {
-	_, addrs := app.GeneratePrivKeyAddressPairs(2)
-	ak := suite.app.GetAccountKeeper()
-	acc := ak.NewAccountWithAddress(suite.ctx, addrs[0])
-	bk := suite.app.GetBankKeeper()
-	bk.AddCoins(suite.ctx,acc.GetAddress(),sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(200000000)), sdk.NewCoin("btc", sdk.NewInt(500000000))})
-	ak.SetAccount(suite.ctx, acc)
-	err := suite.keeper.AddCdp(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(200000000) ), sdk.NewCoin("usdx", sdk.NewInt(10000000) ), "btc-a")
-	suite.Require().True(errors.Is(err, types.ErrorInvalidCollateral))
-	err = suite.keeper.AddCdp(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(200000000) ), sdk.NewCoin("usdx", sdk.NewInt(26000000) ), "xrp-a")
-	suite.Require().True(errors.Is(err, types.ErrorInvalidCollateralRatio))
-	err = suite.keeper.AddCdp(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(500000000) ), sdk.NewCoin("usdx", sdk.NewInt(26000000) ), "xrp-a")
-	suite.Error(err) // insufficient balance
-	err = suite.keeper.AddCdp(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(200000000) ), sdk.NewCoin("xusd", sdk.NewInt(10000000) ), "xrp-a")
-	suite.Require().True(errors.Is(err, types.ErrorDebtNotSupported))
-
-}*/
 
 func (suite *CdpTestSuite) TestCdp_SetGet() {
 	_, addrs := app.GeneratePrivKeyAddressPairs(1)
@@ -78,17 +61,14 @@ func (suite *CdpTestSuite) TestDepositCollateral() {
 	err := suite.keeper.DepositCollateral(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(200000000) ),"cmdx-a")
 	suite.Require().True(errors.Is(err, types.ErrorCdpNotFound))
 
-	//err = suite.keeper.DepositCollateral(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(500000000) ),"cmdx-a")
-	//suite.Require().True(errors.Is(err, types.ErrorInvalidCollateral))
 }
 
 func (suite *CdpTestSuite) TestWithdrawCollateral() {
+
 	_, addrs := app.GeneratePrivKeyAddressPairs(1)
 	err := suite.keeper.WithdrawCollateral(suite.ctx,addrs[0],sdk.NewCoin("cmdx", sdk.NewInt(200000000) ),"cmdx-a")
 	suite.Require().True(errors.Is(err, types.ErrorCdpNotFound))
 
-	//err = suite.keeper.WithdrawCollateral(suite.ctx,addrs[1],sdk.NewCoin("usdt", sdk.NewInt(0) ),"usdt-a")
-	//suite.Require().True(errors.Is(err, types.ErrorInvalidCollateral))
 
 
 }
@@ -104,8 +84,7 @@ func (suite *CdpTestSuite) TestRepayDebt(){
 	err := suite.keeper.RepayDebt(suite.ctx, addrs[0],  "cmdx", sdk.NewCoin("cmdx", sdk.NewInt(200000)))
 	suite.Require().True(errors.Is(err, types.ErrorCdpNotFound))
 
-	//err = suite.keeper.RepayDebt(suite.ctx, addrs[0],  "cmdx", sdk.NewCoin("cmdx", sdk.NewInt(200000)))
-	//suite.Require().True(errors.Is(err, types.ErrorInvalidPayment))
+
 
 }
 
@@ -122,21 +101,7 @@ func (suite *CdpTestSuite) TestVerifyBalance(){
 	suite.Require().True(errors.Is(err, types.ErrorAccountNotFound))
 }
 
-/*func (suite *CdpTestSuite) TestVerifyCollateralAndDebt(){
-	err := suite.keeper.VerifyCollateralAndDebt(suite.ctx,sdk.NewCoin("cmdx", sdk.NewInt(200)) , sdk.NewCoin("cmdx", sdk.NewInt(200)), "cmdx"  )
-	suite.Require().True(errors.Is(err, types.ErrorCdpNotFound))
-}
 
-
-func (suite *CdpTestSuite) TestVerifyCollateralizationRatio(){
-	err := suite.keeper.VerifyCollateralizationRatio(suite.ctx,sdk.NewCoin("cmdx", sdk.NewInt(200000)) , sdk.NewCoin("cmdx", sdk.NewInt(200)),"hi" )
-	suite.Require().True(errors.Is(err, types.ErrorInvalidCollateralRatio))
-}
-
-func (suite *CdpTestSuite) TestVerifyLiquidation(){
-	err := suite.keeper.VerifyLiquidation(suite.ctx,sdk.NewCoin("cmdx", sdk.NewInt(200000)) , sdk.NewCoin("cmdx", sdk.NewInt(200000)),"hi" )
-	suite.Require().True(errors.Is(err, types.ErrorLowCollateralizationRatio))
-}*/
 
 
 func (suite *CdpTestSuite) Test(){
