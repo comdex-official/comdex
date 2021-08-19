@@ -6,23 +6,23 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func (k *Keeper) HandleAddPairProposal(ctx sdk.Context, p *types.AddPairProposal) error {
+func (k *Keeper) HandleAddPairProposal(ctx sdk.Context, prop *types.AddPairProposal) error {
 	var (
-		count = k.GetCount(ctx)
-		pair  = types.Pair{
-			Id:               count + 1,
-			DenomIn:          p.DenomIn,
-			DenomOut:         p.DenomOut,
-			LiquidationRatio: p.LiquidationRatio,
+		id   = k.GetPairID(ctx)
+		pair = types.Pair{
+			ID:               id + 1,
+			AssetIn:          prop.AssetIn,
+			AssetOut:         prop.AssetOut,
+			LiquidationRatio: prop.LiquidationRatio,
 		}
 	)
 
 	k.SetPair(ctx, pair)
-	k.SetCount(ctx, count+1)
+	k.SetPairID(ctx, id+1)
 
 	_ = ctx.EventManager().EmitTypedEvent(
 		&types.EventAddPair{
-			Id: pair.Id,
+			ID: pair.ID,
 		},
 	)
 

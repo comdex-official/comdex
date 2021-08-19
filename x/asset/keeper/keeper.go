@@ -3,18 +3,21 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/comdex-official/comdex/x/asset/expected"
 )
 
 type Keeper struct {
-	cdc     codec.BinaryMarshaler
+	cdc     codec.BinaryCodec
 	key     sdk.StoreKey
+	params  paramstypes.Subspace
 	channel expected.ChannelKeeper
+	port    expected.PortKeeper
 	scoped  expected.ScopedKeeper
 }
 
-func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey) *Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) *Keeper {
 	return &Keeper{
 		cdc: cdc,
 		key: key,

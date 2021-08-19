@@ -34,7 +34,7 @@ func queryPair() *cobra.Command {
 			res, err := qc.QueryPair(
 				context.Background(),
 				&types.QueryPairRequest{
-					Id: id,
+					ID: id,
 				},
 			)
 			if err != nil {

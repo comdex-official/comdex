@@ -7,13 +7,13 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
+func (k *Keeper) SetPairID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.CountKey
-		value = k.cdc.MustMarshalBinaryBare(
+		key   = types.PairIDKey
+		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
-				Value: count,
+				Value: id,
 			},
 		)
 	)
@@ -21,10 +21,10 @@ func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
+func (k *Keeper) GetPairID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.CountKey
+		key   = types.PairIDKey
 		value = store.Get(key)
 	)
 
@@ -33,7 +33,7 @@ func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
 	}
 
 	var count protobuftypes.UInt64Value
-	k.cdc.MustUnmarshalBinaryBare(value, &count)
+	k.cdc.MustUnmarshal(value, &count)
 
 	return count.GetValue()
 }
@@ -41,8 +41,8 @@ func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
 func (k *Keeper) SetPair(ctx sdk.Context, pair types.Pair) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PairKey(pair.Id)
-		value = k.cdc.MustMarshalBinaryBare(&pair)
+		key   = types.PairKey(pair.ID)
+		value = k.cdc.MustMarshal(&pair)
 	)
 
 	store.Set(key, value)
@@ -59,7 +59,7 @@ func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found boo
 		return pair, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(value, &pair)
+	k.cdc.MustUnmarshal(value, &pair)
 	return pair, true
 }
 
@@ -73,7 +73,7 @@ func (k *Keeper) GetPairs(ctx sdk.Context) (pairs []types.Pair) {
 
 	for ; iter.Valid(); iter.Next() {
 		var pair types.Pair
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &pair)
+		k.cdc.MustUnmarshal(iter.Value(), &pair)
 		pairs = append(pairs, pair)
 	}
 

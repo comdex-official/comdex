@@ -10,8 +10,8 @@ option (gogoproto.goproto_getters_all) = false;
 message AddPairProposal {
   string title       = 1 [ (gogoproto.moretags) = "yaml:\"title\"" ];
   string description = 2 [ (gogoproto.moretags) = "yaml:\"description\"" ];
-  string denom_in    = 3 [ (gogoproto.moretags) = "yaml:\"denom_in\"" ];
-  string denom_out   = 4 [ (gogoproto.moretags) = "yaml:\"denom_out\"" ];
+  uint64 asset_in    = 3 [ (gogoproto.moretags) = "yaml:\"asset_in\"" ];
+  uint64 asset_out   = 4 [ (gogoproto.moretags) = "yaml:\"asset_out\"" ];
   string liquidation_ratio = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false,

@@ -42,7 +42,7 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.Pair
-			if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
 
@@ -73,9 +73,9 @@ func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) 
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetPair(ctx, req.Id)
+	item, found := q.GetPair(ctx, req.ID)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", req.ID)
 	}
 
 	return &types.QueryPairResponse{

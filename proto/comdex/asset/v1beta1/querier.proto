@@ -23,7 +23,8 @@ message QueryPairsResponse {
 }
 
 message QueryPairRequest {
-  uint64 id = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  uint64 id = 1
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
 }
 
 message QueryPairResponse {
