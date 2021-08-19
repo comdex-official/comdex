@@ -3,14 +3,22 @@ package asset
 import (
 	"context"
 	"encoding/json"
+	"math"
 	"math/rand"
 
+	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
+	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	ibcporttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -25,6 +33,7 @@ var (
 	_ module.AppModule           = AppModule{}
 	_ module.AppModuleBasic      = AppModuleBasic{}
 	_ module.AppModuleSimulation = AppModule{}
+	_ ibcporttypes.IBCModule     = AppModule{}
 )
 
 type AppModuleBasic struct{}
@@ -39,11 +48,11 @@ func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 	types.RegisterInterfaces(registry)
 }
 
-func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
+func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
-func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEncodingConfig, message json.RawMessage) error {
+func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
 	var state types.GenesisState
 	if err := cdc.UnmarshalJSON(message, &state); err != nil {
 		return err
@@ -66,20 +75,24 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	cdc codec.Marshaler
-	k   keeper.Keeper
+	cdc    codec.JSONCodec
+	keeper keeper.Keeper
 }
 
-func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, message json.RawMessage) []abcitypes.ValidatorUpdate {
+func (a AppModule) ConsensusVersion() uint64 {
+	panic("implement me")
+}
+
+func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
 	var state types.GenesisState
 	cdc.MustUnmarshalJSON(message, &state)
-	InitGenesis(ctx, a.k, &state)
+	InitGenesis(ctx, a.keeper, &state)
 
 	return nil
 }
 
-func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
-	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
+func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.keeper))
 }
 
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
@@ -95,7 +108,7 @@ func (a AppModule) QuerierRoute() string {
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
-	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.k))
+	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.keeper))
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abcitypes.RequestBeginBlock) {}
@@ -118,4 +131,106 @@ func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 func (a AppModule) WeightedOperations(_ module.SimulationState) []simulation.WeightedOperation {
 	return nil
+}
+
+func ValidateAssetChannelParams(ctx sdk.Context, keeper keeper.Keeper, order ibcchanneltypes.Order, portID string, channelID string, counterpartyVersion string) error {
+	version := keeper.IBCVersion(ctx)
+	if counterpartyVersion != version {
+		return errors.Wrapf(types.ErrorInvalidVersion, "expected %s, got %s", version, counterpartyVersion)
+	}
+
+	sequence, err := ibcchanneltypes.ParseChannelSequence(channelID)
+	if err != nil {
+		return err
+	}
+	if sequence > uint64(math.MaxUint32) {
+		return types.ErrorMaxAssetChannels
+	}
+	if order != ibcchanneltypes.UNORDERED {
+		return ibcchanneltypes.ErrInvalidChannelOrdering
+	}
+
+	port := keeper.IBCPort(ctx)
+	if portID != port {
+		return ibcporttypes.ErrInvalidPort
+	}
+
+	return nil
+}
+
+func (a AppModule) OnChanOpenInit(ctx sdk.Context, order ibcchanneltypes.Order, _ []string, portID string, channelID string, capability *capabilitytypes.Capability, _ ibcchanneltypes.Counterparty, version string) error {
+	if err := ValidateAssetChannelParams(ctx, a.keeper, order, portID, channelID, version); err != nil {
+		return err
+	}
+
+	if err := a.keeper.ClaimCapability(ctx, capability, ibchost.ChannelCapabilityPath(portID, channelID)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a AppModule) OnChanOpenTry(ctx sdk.Context, order ibcchanneltypes.Order, _ []string, portID string, channelID string, capability *capabilitytypes.Capability, _ ibcchanneltypes.Counterparty, version string, counterpartyVersion string) error {
+	if counterpartyVersion != a.keeper.IBCVersion(ctx) {
+		return types.ErrorInvalidVersion
+	}
+
+	if err := ValidateAssetChannelParams(ctx, a.keeper, order, portID, channelID, version); err != nil {
+		return err
+	}
+
+	if !a.keeper.AuthenticateCapability(ctx, capability, ibchost.ChannelCapabilityPath(portID, channelID)) {
+		if err := a.keeper.ClaimCapability(ctx, capability, ibchost.ChannelCapabilityPath(portID, channelID)); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (a AppModule) OnChanOpenAck(ctx sdk.Context, _ string, _ string, counterpartyVersion string) error {
+	if counterpartyVersion != a.keeper.IBCVersion(ctx) {
+		return types.ErrorInvalidVersion
+	}
+
+	return nil
+}
+
+func (a AppModule) OnChanOpenConfirm(_ sdk.Context, _ string, _ string) error {
+	return nil
+}
+
+func (a AppModule) OnChanCloseInit(_ sdk.Context, _ string, _ string) error {
+	return errors.Wrap(errors.ErrInvalidRequest, "user cannot close channel")
+}
+
+func (a AppModule) OnChanCloseConfirm(_ sdk.Context, _ string, _ string) error {
+	return nil
+}
+
+func (a AppModule) OnRecvPacket(ctx sdk.Context, packet ibcchanneltypes.Packet, relayer sdk.AccAddress) ibcexported.Acknowledgement {
+	var (
+		data bandpacket.OracleResponsePacketData
+		ack  = ibcchanneltypes.NewResultAcknowledgement([]byte{byte(1)})
+	)
+
+	if err := a.cdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
+		ack = ibcchanneltypes.NewErrorAcknowledgement(err.Error())
+	}
+
+	if ack.Success() {
+		if err := a.keeper.OnRecvPacket(ctx, data); err != nil {
+			ack = ibcchanneltypes.NewErrorAcknowledgement(err.Error())
+		}
+	}
+
+	return ack
+}
+
+func (a AppModule) OnAcknowledgementPacket(ctx sdk.Context, packet ibcchanneltypes.Packet, acknowledgement []byte, relayer sdk.AccAddress) (*sdk.Result, error) {
+	panic("implement me")
+}
+
+func (a AppModule) OnTimeoutPacket(ctx sdk.Context, packet ibcchanneltypes.Packet, relayer sdk.AccAddress) (*sdk.Result, error) {
+	panic("implement me")
 }
