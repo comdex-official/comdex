@@ -6,8 +6,9 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	github_com_bandprotocol_bandchain_packet_packet "github.com/bandprotocol/bandchain-packet/packet"
-	types "github.com/cosmos/cosmos-sdk/x/ibc/core/02-client/types"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+	types1 "github.com/cosmos/cosmos-sdk/types"
+	types "github.com/cosmos/ibc-go/modules/core/02-client/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -30,26 +31,31 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgFetchPriceFromBandRequest struct {
-	From             string                                                                  `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	SourceChannel    string                                                                  `protobuf:"bytes,2,opt,name=source_channel,json=sourceChannel,proto3" json:"source_channel,omitempty" yaml:"source_channel"`
-	TimeoutHeight    types.Height                                                            `protobuf:"bytes,3,opt,name=timeout_height,json=timeoutHeight,proto3" json:"timeout_height" yaml:"timeout_height"`
-	TimeoutTimestamp uint64                                                                  `protobuf:"varint,4,opt,name=timeout_timestamp,json=timeoutTimestamp,proto3" json:"timeout_timestamp,omitempty" yaml:"timeout_timestamp"`
-	PacketData       github_com_bandprotocol_bandchain_packet_packet.OracleRequestPacketData `protobuf:"bytes,5,opt,name=packet_data,json=packetData,proto3,customtype=github.com/bandprotocol/bandchain-packet/packet.OracleRequestPacketData" json:"packet_data" yaml:"packet"`
+type MsgFetchPriceRequest struct {
+	From             string                                   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	SourcePort       string                                   `protobuf:"bytes,2,opt,name=source_port,json=sourcePort,proto3" json:"source_port,omitempty" yaml:"source_port"`
+	SourceChannel    string                                   `protobuf:"bytes,3,opt,name=source_channel,json=sourceChannel,proto3" json:"source_channel,omitempty" yaml:"source_channel"`
+	TimeoutHeight    types.Height                             `protobuf:"bytes,4,opt,name=timeout_height,json=timeoutHeight,proto3" json:"timeout_height" yaml:"timeout_height"`
+	TimeoutTimestamp uint64                                   `protobuf:"varint,5,opt,name=timeout_timestamp,json=timeoutTimestamp,proto3" json:"timeout_timestamp,omitempty" yaml:"timeout_timestamp"`
+	Symbols          []string                                 `protobuf:"bytes,6,rep,name=symbols,proto3" json:"symbols,omitempty" yaml:"symbols"`
+	ScriptID         uint64                                   `protobuf:"varint,7,opt,name=script_id,json=scriptId,proto3" json:"script_id,omitempty" yaml:"script_id"`
+	FeeLimit         github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,8,rep,name=fee_limit,json=feeLimit,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"fee_limit" yaml:"fee_limit"`
+	PrepareGas       uint64                                   `protobuf:"varint,9,opt,name=prepare_gas,json=prepareGas,proto3" json:"prepare_gas,omitempty" yaml:"prepare_gas"`
+	ExecuteGas       uint64                                   `protobuf:"varint,10,opt,name=execute_gas,json=executeGas,proto3" json:"execute_gas,omitempty" yaml:"execute_gas"`
 }
 
-func (m *MsgFetchPriceFromBandRequest) Reset()         { *m = MsgFetchPriceFromBandRequest{} }
-func (m *MsgFetchPriceFromBandRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgFetchPriceFromBandRequest) ProtoMessage()    {}
-func (*MsgFetchPriceFromBandRequest) Descriptor() ([]byte, []int) {
+func (m *MsgFetchPriceRequest) Reset()         { *m = MsgFetchPriceRequest{} }
+func (m *MsgFetchPriceRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgFetchPriceRequest) ProtoMessage()    {}
+func (*MsgFetchPriceRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_71dc8806a9f74763, []int{0}
 }
-func (m *MsgFetchPriceFromBandRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgFetchPriceRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgFetchPriceFromBandRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgFetchPriceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgFetchPriceFromBandRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgFetchPriceRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -59,33 +65,33 @@ func (m *MsgFetchPriceFromBandRequest) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgFetchPriceFromBandRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgFetchPriceFromBandRequest.Merge(m, src)
+func (m *MsgFetchPriceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgFetchPriceRequest.Merge(m, src)
 }
-func (m *MsgFetchPriceFromBandRequest) XXX_Size() int {
+func (m *MsgFetchPriceRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgFetchPriceFromBandRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgFetchPriceFromBandRequest.DiscardUnknown(m)
+func (m *MsgFetchPriceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgFetchPriceRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgFetchPriceFromBandRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgFetchPriceRequest proto.InternalMessageInfo
 
-type MsgFetchPriceFromBandResponse struct {
+type MsgFetchPriceResponse struct {
 }
 
-func (m *MsgFetchPriceFromBandResponse) Reset()         { *m = MsgFetchPriceFromBandResponse{} }
-func (m *MsgFetchPriceFromBandResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgFetchPriceFromBandResponse) ProtoMessage()    {}
-func (*MsgFetchPriceFromBandResponse) Descriptor() ([]byte, []int) {
+func (m *MsgFetchPriceResponse) Reset()         { *m = MsgFetchPriceResponse{} }
+func (m *MsgFetchPriceResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgFetchPriceResponse) ProtoMessage()    {}
+func (*MsgFetchPriceResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_71dc8806a9f74763, []int{1}
 }
-func (m *MsgFetchPriceFromBandResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgFetchPriceResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgFetchPriceFromBandResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgFetchPriceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgFetchPriceFromBandResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgFetchPriceResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -95,58 +101,66 @@ func (m *MsgFetchPriceFromBandResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *MsgFetchPriceFromBandResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgFetchPriceFromBandResponse.Merge(m, src)
+func (m *MsgFetchPriceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgFetchPriceResponse.Merge(m, src)
 }
-func (m *MsgFetchPriceFromBandResponse) XXX_Size() int {
+func (m *MsgFetchPriceResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgFetchPriceFromBandResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgFetchPriceFromBandResponse.DiscardUnknown(m)
+func (m *MsgFetchPriceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgFetchPriceResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgFetchPriceFromBandResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgFetchPriceResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgFetchPriceFromBandRequest)(nil), "comdex.asset.v1beta1.MsgFetchPriceFromBandRequest")
-	proto.RegisterType((*MsgFetchPriceFromBandResponse)(nil), "comdex.asset.v1beta1.MsgFetchPriceFromBandResponse")
+	proto.RegisterType((*MsgFetchPriceRequest)(nil), "comdex.asset.v1beta1.MsgFetchPriceRequest")
+	proto.RegisterType((*MsgFetchPriceResponse)(nil), "comdex.asset.v1beta1.MsgFetchPriceResponse")
 }
 
 func init() { proto.RegisterFile("comdex/asset/v1beta1/msg.proto", fileDescriptor_71dc8806a9f74763) }
 
 var fileDescriptor_71dc8806a9f74763 = []byte{
-	// 489 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x93, 0xc1, 0x6e, 0xd3, 0x30,
-	0x18, 0xc7, 0x63, 0x56, 0x90, 0x70, 0xe9, 0x80, 0x68, 0x93, 0x42, 0xb5, 0x25, 0x55, 0xb8, 0xf4,
-	0x32, 0x47, 0xed, 0x6e, 0x9c, 0x50, 0x40, 0x03, 0x0e, 0x13, 0x23, 0x70, 0xe2, 0xd2, 0x39, 0xee,
-	0xd7, 0xc4, 0x22, 0x89, 0x43, 0xec, 0x56, 0xec, 0x06, 0x4f, 0x00, 0x8f, 0xc1, 0x13, 0xf0, 0x0c,
-	0x3d, 0xee, 0x88, 0x38, 0x44, 0xd0, 0xbe, 0x41, 0x9f, 0x00, 0x25, 0x4e, 0x07, 0x95, 0x0a, 0xd2,
-	0x4e, 0xf6, 0xf7, 0xff, 0xff, 0x3e, 0xfb, 0xcb, 0x97, 0xcf, 0xd8, 0x66, 0x22, 0x1d, 0xc3, 0x07,
-	0x8f, 0x4a, 0x09, 0xca, 0x9b, 0x0d, 0x42, 0x50, 0x74, 0xe0, 0xa5, 0x32, 0x22, 0x79, 0x21, 0x94,
-	0x30, 0xf7, 0xb4, 0x4f, 0x6a, 0x9f, 0x34, 0x7e, 0x77, 0x2f, 0x12, 0x91, 0xa8, 0x01, 0xaf, 0xda,
-	0x69, 0xb6, 0xeb, 0xf0, 0x90, 0x79, 0x4c, 0x14, 0xe0, 0xb1, 0x84, 0x43, 0x56, 0x1d, 0xd7, 0xec,
-	0x34, 0xe0, 0x7e, 0xdb, 0xc1, 0x07, 0xa7, 0x32, 0x3a, 0x01, 0xc5, 0xe2, 0xb3, 0x82, 0x33, 0x38,
-	0x29, 0x44, 0xea, 0xd3, 0x6c, 0x1c, 0xc0, 0xfb, 0x29, 0x48, 0x65, 0x3e, 0xc4, 0xad, 0x49, 0x21,
-	0x52, 0x0b, 0xf5, 0x50, 0xff, 0xb6, 0x7f, 0x77, 0x55, 0x3a, 0xed, 0x0b, 0x9a, 0x26, 0x8f, 0xdc,
-	0x4a, 0x75, 0x83, 0xda, 0x34, 0x1f, 0xe3, 0x5d, 0x29, 0xa6, 0x05, 0x83, 0x11, 0x8b, 0x69, 0x96,
-	0x41, 0x62, 0xdd, 0xa8, 0xf1, 0x07, 0xab, 0xd2, 0xd9, 0xd7, 0xf8, 0xa6, 0xef, 0x06, 0x1d, 0x2d,
-	0x3c, 0xd1, 0xb1, 0x79, 0x8e, 0x77, 0x15, 0x4f, 0x41, 0x4c, 0xd5, 0x28, 0x06, 0x1e, 0xc5, 0xca,
-	0xda, 0xe9, 0xa1, 0x7e, 0x7b, 0xd8, 0x25, 0x3c, 0x64, 0xa4, 0xfa, 0x02, 0xd2, 0xd4, 0x3d, 0x1b,
-	0x90, 0xe7, 0x35, 0xe1, 0x1f, 0xce, 0x4b, 0xc7, 0xf8, 0x73, 0xc3, 0x66, 0xbe, 0x1b, 0x74, 0x1a,
-	0x41, 0xd3, 0xe6, 0x0b, 0x7c, 0x7f, 0x4d, 0x54, 0xab, 0x54, 0x34, 0xcd, 0xad, 0x56, 0x0f, 0xf5,
-	0x5b, 0xfe, 0xc1, 0xaa, 0x74, 0xac, 0xcd, 0x43, 0xae, 0x10, 0x37, 0xb8, 0xd7, 0x68, 0x6f, 0xd6,
-	0x92, 0xf9, 0x09, 0xe1, 0x76, 0x4e, 0xd9, 0x3b, 0x50, 0xa3, 0x31, 0x55, 0xd4, 0xba, 0xd9, 0x43,
-	0xfd, 0x3b, 0xfe, 0x79, 0x55, 0xce, 0x8f, 0xd2, 0x79, 0x16, 0x71, 0x15, 0x4f, 0x43, 0xc2, 0x44,
-	0xea, 0x85, 0x34, 0x1b, 0xd7, 0x8d, 0x66, 0x22, 0xa9, 0x03, 0x16, 0x53, 0x9e, 0x1d, 0xe9, 0x64,
-	0x4f, 0x2f, 0xe4, 0x65, 0x41, 0x59, 0x02, 0x4d, 0xc3, 0xcf, 0x6a, 0xed, 0x29, 0x55, 0x74, 0x55,
-	0x3a, 0x1d, 0x5d, 0x94, 0xe6, 0xdc, 0x00, 0xe7, 0x57, 0xa6, 0xeb, 0xe0, 0xc3, 0x7f, 0xfc, 0x37,
-	0x99, 0x8b, 0x4c, 0xc2, 0xf0, 0x33, 0xc2, 0xf8, 0x54, 0x46, 0xaf, 0xa1, 0x98, 0x71, 0x06, 0xe6,
-	0x47, 0x84, 0xf7, 0xb7, 0x26, 0x98, 0x43, 0xb2, 0x6d, 0xa0, 0xc8, 0xff, 0xa6, 0xa2, 0x7b, 0x7c,
-	0xad, 0x1c, 0x5d, 0x91, 0xff, 0x6a, 0xfe, 0xcb, 0x36, 0xbe, 0x2e, 0x6c, 0x63, 0xbe, 0xb0, 0xd1,
-	0xe5, 0xc2, 0x46, 0x3f, 0x17, 0x36, 0xfa, 0xb2, 0xb4, 0x8d, 0xcb, 0xa5, 0x6d, 0x7c, 0x5f, 0xda,
-	0xc6, 0x5b, 0xef, 0xaf, 0xd6, 0xe9, 0x0b, 0x8e, 0xc4, 0x64, 0xc2, 0x19, 0xa7, 0x49, 0x13, 0x7b,
-	0xeb, 0x77, 0xa1, 0x2e, 0x72, 0x90, 0xe1, 0xad, 0xba, 0xb9, 0xc7, 0xbf, 0x03, 0x00, 0x00, 0xff,
-	0xff, 0x63, 0xf5, 0x3e, 0x87, 0x34, 0x03, 0x00, 0x00,
+	// 619 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xcb, 0x6e, 0xd3, 0x4c,
+	0x14, 0x8e, 0xff, 0xde, 0x92, 0x89, 0xda, 0xbf, 0x8c, 0x5a, 0x70, 0x23, 0xb0, 0xa3, 0x61, 0x13,
+	0x01, 0x1d, 0xab, 0x65, 0x81, 0x84, 0x84, 0x84, 0xd2, 0x8a, 0x52, 0x89, 0x4a, 0xc5, 0x65, 0xc5,
+	0x26, 0xd8, 0x93, 0x13, 0x67, 0x44, 0x9c, 0x31, 0x9e, 0x49, 0xd4, 0x4a, 0x3c, 0x04, 0x8f, 0x81,
+	0x78, 0x0a, 0x96, 0x5d, 0x76, 0xc9, 0xca, 0x40, 0xfa, 0x06, 0x79, 0x02, 0x64, 0xcf, 0x38, 0x24,
+	0x55, 0x17, 0xac, 0x7c, 0xce, 0x77, 0x39, 0x27, 0x33, 0xfa, 0x26, 0xc8, 0x61, 0x22, 0xee, 0xc2,
+	0xb9, 0x17, 0x48, 0x09, 0xca, 0x1b, 0xef, 0x85, 0xa0, 0x82, 0x3d, 0x2f, 0x96, 0x11, 0x4d, 0x52,
+	0xa1, 0x04, 0xde, 0xd2, 0x3c, 0x2d, 0x78, 0x6a, 0xf8, 0x86, 0xc3, 0x84, 0x8c, 0x85, 0xf4, 0xc2,
+	0x40, 0xc2, 0xcc, 0xc4, 0x04, 0x1f, 0x6a, 0x57, 0x63, 0x2b, 0x12, 0x91, 0x28, 0x4a, 0x2f, 0xaf,
+	0x0c, 0xea, 0xf2, 0x90, 0x79, 0x4c, 0xa4, 0xe0, 0xb1, 0x01, 0x87, 0x61, 0xbe, 0xce, 0x54, 0x5a,
+	0x40, 0xbe, 0xaf, 0xa0, 0xad, 0x13, 0x19, 0xbd, 0x02, 0xc5, 0xfa, 0xa7, 0x29, 0x67, 0xe0, 0xc3,
+	0xa7, 0x11, 0x48, 0x85, 0x1f, 0xa2, 0xe5, 0x5e, 0x2a, 0x62, 0xdb, 0x6a, 0x5a, 0xad, 0x5a, 0xfb,
+	0xff, 0x69, 0xe6, 0xd6, 0x2f, 0x82, 0x78, 0xf0, 0x9c, 0xe4, 0x28, 0xf1, 0x0b, 0x12, 0x3f, 0x43,
+	0x75, 0x29, 0x46, 0x29, 0x83, 0x4e, 0x22, 0x52, 0x65, 0xff, 0x57, 0x68, 0xef, 0x4e, 0x33, 0x17,
+	0x6b, 0xed, 0x1c, 0x49, 0x7c, 0xa4, 0xbb, 0x53, 0x91, 0x2a, 0xfc, 0x12, 0x6d, 0x18, 0x8e, 0xf5,
+	0x83, 0xe1, 0x10, 0x06, 0xf6, 0x52, 0xe1, 0xdd, 0x99, 0x66, 0xee, 0xf6, 0x82, 0xd7, 0xf0, 0xc4,
+	0x5f, 0xd7, 0xc0, 0x81, 0xee, 0xf1, 0x07, 0xb4, 0xa1, 0x78, 0x0c, 0x62, 0xa4, 0x3a, 0x7d, 0xe0,
+	0x51, 0x5f, 0xd9, 0xcb, 0x4d, 0xab, 0x55, 0xdf, 0x6f, 0x50, 0x1e, 0x32, 0x9a, 0x1f, 0x99, 0x9a,
+	0x83, 0x8e, 0xf7, 0xe8, 0xeb, 0x42, 0xd1, 0x7e, 0x70, 0x99, 0xb9, 0x95, 0xbf, 0x1b, 0x16, 0xfd,
+	0xc4, 0x5f, 0x37, 0x80, 0x56, 0xe3, 0x63, 0x74, 0xa7, 0x54, 0xe4, 0x5f, 0xa9, 0x82, 0x38, 0xb1,
+	0x57, 0x9a, 0x56, 0x6b, 0xb9, 0x7d, 0x7f, 0x9a, 0xb9, 0xf6, 0xe2, 0x90, 0x99, 0x84, 0xf8, 0x9b,
+	0x06, 0x7b, 0x57, 0x42, 0xf8, 0x09, 0x5a, 0x93, 0x17, 0x71, 0x28, 0x06, 0xd2, 0x5e, 0x6d, 0x2e,
+	0xb5, 0x6a, 0x6d, 0x3c, 0xcd, 0xdc, 0x0d, 0x73, 0x4e, 0x4d, 0x10, 0xbf, 0x94, 0xe0, 0x17, 0xa8,
+	0x26, 0x59, 0xca, 0x13, 0xd5, 0xe1, 0x5d, 0x7b, 0xad, 0x58, 0xd8, 0x9c, 0x64, 0x6e, 0xf5, 0xac,
+	0x00, 0x8f, 0x0f, 0xa7, 0x99, 0xbb, 0x69, 0xbc, 0xa5, 0x8c, 0xf8, 0x55, 0x5d, 0x1f, 0x77, 0xf1,
+	0x67, 0x54, 0xeb, 0x01, 0x74, 0x06, 0x3c, 0xe6, 0xca, 0xae, 0x36, 0x97, 0x5a, 0xf5, 0xfd, 0x1d,
+	0xaa, 0xd3, 0x43, 0xf3, 0xf4, 0x94, 0x91, 0xa2, 0x07, 0x82, 0x0f, 0xdb, 0x87, 0xe6, 0x4e, 0xcc,
+	0xc4, 0x99, 0x93, 0x7c, 0xfb, 0xe9, 0xb6, 0x22, 0xae, 0xfa, 0xa3, 0x90, 0x32, 0x11, 0x7b, 0x26,
+	0x7e, 0xfa, 0xb3, 0x2b, 0xbb, 0x1f, 0x3d, 0x75, 0x91, 0x80, 0x2c, 0x86, 0x48, 0xbf, 0xda, 0x03,
+	0x78, 0x93, 0xdb, 0xf2, 0x48, 0x24, 0x29, 0x24, 0x41, 0x0a, 0x9d, 0x28, 0x90, 0x76, 0xad, 0xf8,
+	0xf9, 0x73, 0x91, 0x98, 0x23, 0x89, 0x8f, 0x4c, 0x77, 0x14, 0xc8, 0xdc, 0x08, 0xe7, 0xc0, 0x46,
+	0x4a, 0x1b, 0xd1, 0x4d, 0xe3, 0x1c, 0x49, 0x7c, 0x64, 0xba, 0xa3, 0x40, 0x92, 0x7b, 0x68, 0xfb,
+	0x46, 0x82, 0x65, 0x22, 0x86, 0x12, 0xf6, 0xc7, 0x08, 0x9d, 0xc8, 0xe8, 0x0c, 0xd2, 0x31, 0x67,
+	0x80, 0xfb, 0x68, 0x7d, 0x41, 0x86, 0x1f, 0xd1, 0xdb, 0x1e, 0x1a, 0xbd, 0xed, 0x35, 0x34, 0x1e,
+	0xff, 0x93, 0x56, 0xef, 0x6d, 0xbf, 0xbd, 0xfc, 0xed, 0x54, 0xbe, 0x4e, 0x9c, 0xca, 0xe5, 0xc4,
+	0xb1, 0xae, 0x26, 0x8e, 0xf5, 0x6b, 0xe2, 0x58, 0x5f, 0xae, 0x9d, 0xca, 0xd5, 0xb5, 0x53, 0xf9,
+	0x71, 0xed, 0x54, 0xde, 0x7b, 0x0b, 0x17, 0x9b, 0x0f, 0xde, 0x15, 0xbd, 0x1e, 0x67, 0x3c, 0x18,
+	0x98, 0xde, 0x2b, 0xff, 0x1f, 0x8a, 0x5b, 0x0e, 0x57, 0x8b, 0xd7, 0xfa, 0xf4, 0x4f, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0x6f, 0x44, 0x42, 0xa6, 0x3c, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -161,7 +175,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgServiceClient interface {
-	MsgFetchPriceFromBand(ctx context.Context, in *MsgFetchPriceFromBandRequest, opts ...grpc.CallOption) (*MsgFetchPriceFromBandResponse, error)
+	MsgFetchPrice(ctx context.Context, in *MsgFetchPriceRequest, opts ...grpc.CallOption) (*MsgFetchPriceResponse, error)
 }
 
 type msgServiceClient struct {
@@ -172,9 +186,9 @@ func NewMsgServiceClient(cc grpc1.ClientConn) MsgServiceClient {
 	return &msgServiceClient{cc}
 }
 
-func (c *msgServiceClient) MsgFetchPriceFromBand(ctx context.Context, in *MsgFetchPriceFromBandRequest, opts ...grpc.CallOption) (*MsgFetchPriceFromBandResponse, error) {
-	out := new(MsgFetchPriceFromBandResponse)
-	err := c.cc.Invoke(ctx, "/comdex.asset.v1beta1.MsgService/MsgFetchPriceFromBand", in, out, opts...)
+func (c *msgServiceClient) MsgFetchPrice(ctx context.Context, in *MsgFetchPriceRequest, opts ...grpc.CallOption) (*MsgFetchPriceResponse, error) {
+	out := new(MsgFetchPriceResponse)
+	err := c.cc.Invoke(ctx, "/comdex.asset.v1beta1.MsgService/MsgFetchPrice", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -183,35 +197,35 @@ func (c *msgServiceClient) MsgFetchPriceFromBand(ctx context.Context, in *MsgFet
 
 // MsgServiceServer is the server API for MsgService service.
 type MsgServiceServer interface {
-	MsgFetchPriceFromBand(context.Context, *MsgFetchPriceFromBandRequest) (*MsgFetchPriceFromBandResponse, error)
+	MsgFetchPrice(context.Context, *MsgFetchPriceRequest) (*MsgFetchPriceResponse, error)
 }
 
 // UnimplementedMsgServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServiceServer struct {
 }
 
-func (*UnimplementedMsgServiceServer) MsgFetchPriceFromBand(ctx context.Context, req *MsgFetchPriceFromBandRequest) (*MsgFetchPriceFromBandResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MsgFetchPriceFromBand not implemented")
+func (*UnimplementedMsgServiceServer) MsgFetchPrice(ctx context.Context, req *MsgFetchPriceRequest) (*MsgFetchPriceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgFetchPrice not implemented")
 }
 
 func RegisterMsgServiceServer(s grpc1.Server, srv MsgServiceServer) {
 	s.RegisterService(&_MsgService_serviceDesc, srv)
 }
 
-func _MsgService_MsgFetchPriceFromBand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgFetchPriceFromBandRequest)
+func _MsgService_MsgFetchPrice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgFetchPriceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).MsgFetchPriceFromBand(ctx, in)
+		return srv.(MsgServiceServer).MsgFetchPrice(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.asset.v1beta1.MsgService/MsgFetchPriceFromBand",
+		FullMethod: "/comdex.asset.v1beta1.MsgService/MsgFetchPrice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).MsgFetchPriceFromBand(ctx, req.(*MsgFetchPriceFromBandRequest))
+		return srv.(MsgServiceServer).MsgFetchPrice(ctx, req.(*MsgFetchPriceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -221,15 +235,15 @@ var _MsgService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "MsgFetchPriceFromBand",
-			Handler:    _MsgService_MsgFetchPriceFromBand_Handler,
+			MethodName: "MsgFetchPrice",
+			Handler:    _MsgService_MsgFetchPrice_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "comdex/asset/v1beta1/msg.proto",
 }
 
-func (m *MsgFetchPriceFromBandRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgFetchPriceRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -239,30 +253,58 @@ func (m *MsgFetchPriceFromBandRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgFetchPriceFromBandRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgFetchPriceRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgFetchPriceFromBandRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgFetchPriceRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	{
-		size := m.PacketData.Size()
-		i -= size
-		if _, err := m.PacketData.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintMsg(dAtA, i, uint64(size))
+	if m.ExecuteGas != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.ExecuteGas))
+		i--
+		dAtA[i] = 0x50
 	}
-	i--
-	dAtA[i] = 0x2a
+	if m.PrepareGas != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.PrepareGas))
+		i--
+		dAtA[i] = 0x48
+	}
+	if len(m.FeeLimit) > 0 {
+		for iNdEx := len(m.FeeLimit) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.FeeLimit[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintMsg(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x42
+		}
+	}
+	if m.ScriptID != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.ScriptID))
+		i--
+		dAtA[i] = 0x38
+	}
+	if len(m.Symbols) > 0 {
+		for iNdEx := len(m.Symbols) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Symbols[iNdEx])
+			copy(dAtA[i:], m.Symbols[iNdEx])
+			i = encodeVarintMsg(dAtA, i, uint64(len(m.Symbols[iNdEx])))
+			i--
+			dAtA[i] = 0x32
+		}
+	}
 	if m.TimeoutTimestamp != 0 {
 		i = encodeVarintMsg(dAtA, i, uint64(m.TimeoutTimestamp))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x28
 	}
 	{
 		size, err := m.TimeoutHeight.MarshalToSizedBuffer(dAtA[:i])
@@ -273,11 +315,18 @@ func (m *MsgFetchPriceFromBandRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 		i = encodeVarintMsg(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x1a
+	dAtA[i] = 0x22
 	if len(m.SourceChannel) > 0 {
 		i -= len(m.SourceChannel)
 		copy(dAtA[i:], m.SourceChannel)
 		i = encodeVarintMsg(dAtA, i, uint64(len(m.SourceChannel)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.SourcePort) > 0 {
+		i -= len(m.SourcePort)
+		copy(dAtA[i:], m.SourcePort)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.SourcePort)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -291,7 +340,7 @@ func (m *MsgFetchPriceFromBandRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgFetchPriceFromBandResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgFetchPriceResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -301,12 +350,12 @@ func (m *MsgFetchPriceFromBandResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgFetchPriceFromBandResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgFetchPriceResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgFetchPriceFromBandResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgFetchPriceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -325,13 +374,17 @@ func encodeVarintMsg(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgFetchPriceFromBandRequest) Size() (n int) {
+func (m *MsgFetchPriceRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
+	}
+	l = len(m.SourcePort)
 	if l > 0 {
 		n += 1 + l + sovMsg(uint64(l))
 	}
@@ -344,12 +397,31 @@ func (m *MsgFetchPriceFromBandRequest) Size() (n int) {
 	if m.TimeoutTimestamp != 0 {
 		n += 1 + sovMsg(uint64(m.TimeoutTimestamp))
 	}
-	l = m.PacketData.Size()
-	n += 1 + l + sovMsg(uint64(l))
+	if len(m.Symbols) > 0 {
+		for _, s := range m.Symbols {
+			l = len(s)
+			n += 1 + l + sovMsg(uint64(l))
+		}
+	}
+	if m.ScriptID != 0 {
+		n += 1 + sovMsg(uint64(m.ScriptID))
+	}
+	if len(m.FeeLimit) > 0 {
+		for _, e := range m.FeeLimit {
+			l = e.Size()
+			n += 1 + l + sovMsg(uint64(l))
+		}
+	}
+	if m.PrepareGas != 0 {
+		n += 1 + sovMsg(uint64(m.PrepareGas))
+	}
+	if m.ExecuteGas != 0 {
+		n += 1 + sovMsg(uint64(m.ExecuteGas))
+	}
 	return n
 }
 
-func (m *MsgFetchPriceFromBandResponse) Size() (n int) {
+func (m *MsgFetchPriceResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -364,7 +436,7 @@ func sovMsg(x uint64) (n int) {
 func sozMsg(x uint64) (n int) {
 	return sovMsg(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgFetchPriceFromBandRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgFetchPriceRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -387,10 +459,10 @@ func (m *MsgFetchPriceFromBandRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgFetchPriceFromBandRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgFetchPriceRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgFetchPriceFromBandRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgFetchPriceRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -427,6 +499,38 @@ func (m *MsgFetchPriceFromBandRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourcePort", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SourcePort = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SourceChannel", wireType)
 			}
 			var stringLen uint64
@@ -457,7 +561,7 @@ func (m *MsgFetchPriceFromBandRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.SourceChannel = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TimeoutHeight", wireType)
 			}
@@ -490,7 +594,7 @@ func (m *MsgFetchPriceFromBandRequest) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 4:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TimeoutTimestamp", wireType)
 			}
@@ -509,11 +613,11 @@ func (m *MsgFetchPriceFromBandRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 5:
+		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PacketData", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Symbols", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMsg
@@ -523,25 +627,115 @@ func (m *MsgFetchPriceFromBandRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthMsg
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthMsg
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.PacketData.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Symbols = append(m.Symbols, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ScriptID", wireType)
+			}
+			m.ScriptID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ScriptID |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FeeLimit", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.FeeLimit = append(m.FeeLimit, types1.Coin{})
+			if err := m.FeeLimit[len(m.FeeLimit)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
+		case 9:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrepareGas", wireType)
+			}
+			m.PrepareGas = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PrepareGas |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExecuteGas", wireType)
+			}
+			m.ExecuteGas = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExecuteGas |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMsg(dAtA[iNdEx:])
@@ -563,7 +757,7 @@ func (m *MsgFetchPriceFromBandRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgFetchPriceFromBandResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgFetchPriceResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -586,10 +780,10 @@ func (m *MsgFetchPriceFromBandResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgFetchPriceFromBandResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgFetchPriceResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgFetchPriceFromBandResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgFetchPriceResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
