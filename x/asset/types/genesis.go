@@ -1,13 +1,14 @@
 package types
 
-func NewGenesisState(pairs []Pair) *GenesisState {
+func NewGenesisState(pairs []Pair, params Params) *GenesisState {
 	return &GenesisState{
-		Pairs: pairs,
+		Pairs:  pairs,
+		Params: params,
 	}
 }
 
 func DefaultGenesisState() *GenesisState {
-	return NewGenesisState(nil)
+	return NewGenesisState(nil, Params{})
 }
 
 func ValidateGenesis(_ *GenesisState) error {

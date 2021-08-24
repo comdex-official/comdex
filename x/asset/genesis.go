@@ -14,16 +14,17 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 	count := uint64(0)
 	for _, item := range state.Pairs {
-		if item.Id > count {
-			count = item.Id
+		if item.ID > count {
+			count = item.ID
 		}
 	}
 
-	k.SetCount(ctx, count)
+	k.SetPairID(ctx, count)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
 		k.GetPairs(ctx),
+		types.Params{},
 	)
 }
