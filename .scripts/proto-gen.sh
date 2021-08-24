@@ -10,6 +10,7 @@ for directory in ${directories}; do
       --proto_path="proto" \
       --proto_path="vendor/github.com/cosmos/cosmos-sdk/proto" \
       --proto_path="vendor/github.com/cosmos/cosmos-sdk/third_party/proto" \
+      --proto_path="vendor/github.com/cosmos/ibc-go/proto" \
       --gocosmos_out="plugins=interfacetype+grpc,Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:${GOPATH}/src" \
       "${file}"
 
@@ -17,6 +18,7 @@ for directory in ${directories}; do
       --proto_path="proto" \
       --proto_path="vendor/github.com/cosmos/cosmos-sdk/proto" \
       --proto_path="vendor/github.com/cosmos/cosmos-sdk/third_party/proto" \
+      --proto_path="vendor/github.com/cosmos/ibc-go/proto" \
       --grpc-gateway_out="logtostderr=true:${GOPATH}/src" \
       "${file}"
   done
