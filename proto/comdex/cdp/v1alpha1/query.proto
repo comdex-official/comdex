@@ -16,22 +16,22 @@ service QueryService {
 
   rpc QueryCDP(QueryCDPRequest) returns(QueryCDPResponse){
     option (google.api.http).get =
-        "/comdex/cdps/{collateral_type}/{owner}";
+      "/comdex/cdps/{collateral_type}/{owner}";
   };
 
   rpc QueryCDPs(QueryCDPsRequest) returns(QueryCDPsResponse){
     option (google.api.http).get =
-            "/comdex/cdps/{owner}";
+      "/comdex/cdps/{owner}";
   };
 
   rpc QueryCDPById(QueryCDPByIdRequest) returns(QueryCDPByIdResponse){
     option (google.api.http).get =
-            "/comdex/cdps/{id}";
+      "/comdex/cdps/{id}";
   };
 
   rpc QueryParams(QueryParamsRequest) returns(QueryParamsResponse){
     option (google.api.http).get =
-            "/comdex/cdp/params";
+      "/comdex/cdp/params";
   };
 }
 
@@ -48,14 +48,16 @@ message QueryCDPResponse{
 }
 
 message QueryCDPsRequest{
-  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryCDPsResponse{
-  repeated CDP cdps = 1 [
-    (gogoproto.moretags) = "yaml:\"cdps\"",
+  OwnerCDPList cdps = 1 [
+    (gogoproto.moretags) = "yaml:\"OwnerCDPList\"",
     (gogoproto.nullable) = false
   ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryCDPByIdRequest{
