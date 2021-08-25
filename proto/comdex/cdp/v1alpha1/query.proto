@@ -53,8 +53,8 @@ message QueryCDPsRequest{
 }
 
 message QueryCDPsResponse{
-  OwnerCDPList cdps = 1 [
-    (gogoproto.moretags) = "yaml:\"OwnerCDPList\"",
+ repeated CDP cdps = 1 [
+    (gogoproto.moretags) = "yaml:\"cdps\"",
     (gogoproto.nullable) = false
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
