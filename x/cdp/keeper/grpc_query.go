@@ -45,7 +45,7 @@ func (k Keeper) QueryCDPs(context context.Context, request *types.QueryCDPsReque
 
 	for _, ownedCdp := range ownerCDPList.OwnedCDPs {
 
-		cdp, found := k.GetCDPByOwnerAndCollateralType(ctx, ownerAddrs, ownedCdp.CollateralType)
+		cdp, found := k.GetCDP(ctx, ownedCdp.Id)
 
 		if found {
 			cdps = append(cdps, cdp)
@@ -59,9 +59,18 @@ func (k Keeper) QueryCDPs(context context.Context, request *types.QueryCDPsReque
 
 }
 
-func (k Keeper) QueryCDPById(ctx context.Context, request *types.QueryCDPByIdRequest) (*types.QueryCDPByIdResponse, error) {
-	//TODO
-	return nil, nil
+func (k Keeper) QueryCDPById(context context.Context, request *types.QueryCDPByIdRequest) (*types.QueryCDPByIdResponse, error) {
+
+	ctx := sdk.UnwrapSDKContext(context)
+	cdp, found := k.GetCDP(ctx, request.Id)
+
+	if !found {
+		return nil, status.Error(codes.NotFound, "cdp not found")
+	}
+
+	return &types.QueryCDPByIdResponse{
+		Cdp: cdp,
+	}, nil
 }
 
 func (k Keeper) QueryParams(context context.Context, request *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
