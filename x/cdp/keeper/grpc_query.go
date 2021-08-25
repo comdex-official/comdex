@@ -43,17 +43,17 @@ func (k Keeper) QueryCDPs(context context.Context, request *types.QueryCDPsReque
 		return nil, status.Error(codes.NotFound, "cdp not found")
 	}
 
-	for _,ownedCdp := range ownerCDPList.OwnedCDPs {
+	for _, ownedCdp := range ownerCDPList.OwnedCDPs {
 
-		cdp, found := k.GetCDPByOwnerAndCollateralType(ctx,ownerAddrs,ownedCdp.CollateralType)
+		cdp, found := k.GetCDPByOwnerAndCollateralType(ctx, ownerAddrs, ownedCdp.CollateralType)
 
 		if found {
-			cdps = append(cdps,cdp)
+			cdps = append(cdps, cdp)
 		}
 	}
 
 	return &types.QueryCDPsResponse{
-		Cdps: cdps,
+		Cdps:       cdps,
 		Pagination: pagination,
 	}, nil
 

@@ -107,8 +107,8 @@ func QueryCdps() *cobra.Command {
 			queryClient := types.NewQueryServiceClient(ctx)
 
 			res, err := queryClient.QueryCDPs(cmd.Context(), &types.QueryCDPsRequest{
-				Owner:          args[0],
-				Pagination:     pagination,
+				Owner:      args[0],
+				Pagination: pagination,
 			})
 
 			if err != nil {
