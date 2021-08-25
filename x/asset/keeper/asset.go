@@ -32,10 +32,10 @@ func (k *Keeper) GetAssetID(ctx sdk.Context) uint64 {
 		return 0
 	}
 
-	var count protobuftypes.UInt64Value
-	k.cdc.MustUnmarshal(value, &count)
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
 
-	return count.GetValue()
+	return id.GetValue()
 }
 
 func (k *Keeper) SetAsset(ctx sdk.Context, asset types.Asset) {
@@ -46,6 +46,15 @@ func (k *Keeper) SetAsset(ctx sdk.Context, asset types.Asset) {
 	)
 
 	store.Set(key, value)
+}
+
+func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetKey(id)
+	)
+
+	return store.Has(key)
 }
 
 func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found bool) {
@@ -80,10 +89,10 @@ func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
 	return assets
 }
 
-func (k *Keeper) SetAssetIDForMarket(ctx sdk.Context, id uint64, symbol string) {
+func (k *Keeper) SetAssetForDenom(ctx sdk.Context, denom string, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetForMarketKey(symbol)
+		key   = types.AssetForDenomKey(denom)
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -94,28 +103,37 @@ func (k *Keeper) SetAssetIDForMarket(ctx sdk.Context, id uint64, symbol string) 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAssetIDForMarket(ctx sdk.Context, symbol string) uint64 {
+func (k *Keeper) HasAssetForDenom(ctx sdk.Context, denom string) bool {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetForMarketKey(symbol)
+		key   = types.AssetForDenomKey(denom)
+	)
+
+	return store.Has(key)
+}
+
+func (k *Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (asset types.Asset, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForDenomKey(denom)
 		value = store.Get(key)
 	)
 
 	if value == nil {
-		return 0
+		return asset, false
 	}
 
 	var id protobuftypes.UInt64Value
 	k.cdc.MustUnmarshal(value, &id)
 
-	return id.GetValue()
+	return k.GetAsset(ctx, id.GetValue())
 }
 
-func (k *Keeper) GetAssetForMarket(ctx sdk.Context, symbol string) (asset types.Asset, found bool) {
-	id := k.GetAssetIDForMarket(ctx, symbol)
-	if id == 0 {
-		return asset, false
-	}
+func (k *Keeper) DeleteAssetForDenom(ctx sdk.Context, denom string) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForDenomKey(denom)
+	)
 
-	return k.GetAsset(ctx, id)
+	store.Delete(key)
 }

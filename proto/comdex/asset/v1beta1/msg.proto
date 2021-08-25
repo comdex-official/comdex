@@ -9,6 +9,92 @@ option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
+message MsgAddMarketRequest {
+  string from      = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string symbol    = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+  uint64 script_id = 3 [
+    (gogoproto.customname) = "ScriptID",
+    (gogoproto.moretags)   = "yaml:\"script_id\""
+  ];
+}
+
+message MsgAddMarketResponse {}
+
+message MsgUpdateMarketRequest {
+  string from      = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string symbol    = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+  uint64 script_id = 3 [
+    (gogoproto.customname) = "ScriptID",
+    (gogoproto.moretags)   = "yaml:\"script_id\""
+  ];
+}
+
+message MsgUpdateMarketResponse {}
+
+message MsgAddAssetRequest {
+  string from  = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string name  = 2 [ (gogoproto.moretags) = "yaml:\"name\"" ];
+  string denom = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+}
+
+message MsgAddAssetResponse {}
+
+message MsgUpdateAssetRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string name  = 3 [ (gogoproto.moretags) = "yaml:\"name\"" ];
+  string denom = 4 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+}
+
+message MsgUpdateAssetResponse {}
+
+message MsgAddMarketForAssetRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string symbol = 3 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+}
+
+message MsgAddMarketForAssetResponse {}
+
+message MsgRemoveMarketForAssetRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string symbol = 3 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+}
+
+message MsgRemoveMarketForAssetResponse {}
+
+message MsgAddPairRequest {
+  string from              = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 asset_in          = 2 [ (gogoproto.moretags) = "yaml:\"asset_in\"" ];
+  uint64 asset_out         = 3 [ (gogoproto.moretags) = "yaml:\"asset_out\"" ];
+  string liquidation_ratio = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false,
+    (gogoproto.moretags)   = "yaml:\"liquidation_ratio\""
+  ];
+}
+
+message MsgAddPairResponse {}
+
+message MsgUpdatePairRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  uint64 asset_in          = 3 [ (gogoproto.moretags) = "yaml:\"asset_in\"" ];
+  uint64 asset_out         = 4 [ (gogoproto.moretags) = "yaml:\"asset_out\"" ];
+  string liquidation_ratio = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false,
+    (gogoproto.moretags)   = "yaml:\"liquidation_ratio\""
+  ];
+}
+
+message MsgUpdatePairResponse {}
+
 message MsgFetchPriceRequest {
   string from           = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   string source_port    = 2 [ (gogoproto.moretags) = "yaml:\"source_port\"" ];
@@ -37,5 +123,15 @@ message MsgFetchPriceRequest {
 message MsgFetchPriceResponse {}
 
 service MsgService {
+  rpc MsgAddMarket(MsgAddMarketRequest) returns (MsgAddMarketResponse);
+  rpc MsgUpdateMarket(MsgUpdateMarketRequest) returns (MsgUpdateMarketResponse);
+  rpc MsgAddAsset(MsgAddAssetRequest) returns (MsgAddAssetResponse);
+  rpc MsgUpdateAsset(MsgUpdateAssetRequest) returns (MsgUpdateAssetResponse);
+  rpc MsgAddMarketForAsset(MsgAddMarketForAssetRequest)
+      returns (MsgAddMarketForAssetResponse);
+  rpc MsgRemoveMarketForAsset(MsgRemoveMarketForAssetRequest)
+      returns (MsgRemoveMarketForAssetResponse);
+  rpc MsgAddPair(MsgAddPairRequest) returns (MsgAddPairResponse);
+  rpc MsgUpdatePair(MsgUpdatePairRequest) returns (MsgUpdatePairResponse);
   rpc MsgFetchPrice(MsgFetchPriceRequest) returns (MsgFetchPriceResponse);
 }

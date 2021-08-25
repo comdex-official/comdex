@@ -14,6 +14,17 @@ var (
 )
 
 var (
+	ErrorDuplicateMarket            = errors.Register(ModuleName, 201, "duplicate market")
+	ErrorMarketDoesNotExist         = errors.Register(ModuleName, 202, "market does not exist")
+	ErrorDuplicateAsset             = errors.Register(ModuleName, 203, "duplicate asset")
+	ErrorAssetDoesNotExist          = errors.Register(ModuleName, 204, "asset does not exist")
+	ErrorDuplicateMarketForAsset    = errors.Register(ModuleName, 205, "duplicate market for asset")
+	ErrorMarketForAssetDoesNotExist = errors.Register(ModuleName, 206, "market for asset does not exist")
+	ErrorPairDoesNotExist           = errors.Register(ModuleName, 207, "pair does not exist")
+	ErrorScriptIDMismatch           = errors.Register(ModuleName, 208, "script_id mismatch")
+)
+
+var (
 	ErrorUnknownProposalType = errors.Register(ModuleName, 401, "unknown proposal type")
 )
 

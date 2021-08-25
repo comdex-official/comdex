@@ -20,6 +20,15 @@ func (k *Keeper) SetMarket(ctx sdk.Context, market types.Market) {
 	store.Set(key, value)
 }
 
+func (k *Keeper) HasMarket(ctx sdk.Context, symbol string) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.MarketKey(symbol)
+	)
+
+	return store.Has(key)
+}
+
 func (k *Keeper) GetMarket(ctx sdk.Context, symbol string) (market types.Market, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -35,13 +44,13 @@ func (k *Keeper) GetMarket(ctx sdk.Context, symbol string) (market types.Market,
 	return market, true
 }
 
-func (k *Keeper) SetMarketSymbolForAsset(ctx sdk.Context, symbol string, id uint64) {
+func (k *Keeper) SetPriceForMarket(ctx sdk.Context, symbol string, price uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.MarketForAssetKey(id)
+		key   = types.PriceForMarketKey(symbol)
 		value = k.cdc.MustMarshal(
-			&protobuftypes.StringValue{
-				Value: symbol,
+			&protobuftypes.UInt64Value{
+				Value: price,
 			},
 		)
 	)
@@ -49,30 +58,53 @@ func (k *Keeper) SetMarketSymbolForAsset(ctx sdk.Context, symbol string, id uint
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetMarketSymbolForAsset(ctx sdk.Context, id uint64) string {
+func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.MarketForAssetKey(id)
+		key   = types.PriceForMarketKey(symbol)
 		value = store.Get(key)
 	)
 
 	if value == nil {
-		return ""
+		return 0, false
 	}
 
-	var symbol protobuftypes.StringValue
-	k.cdc.MustUnmarshal(value, &symbol)
+	var price protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &price)
 
-	return symbol.GetValue()
+	return price.GetValue(), true
 }
 
-func (k *Keeper) GetMarketForAsset(ctx sdk.Context, id uint64) (market types.Market, found bool) {
-	symbol := k.GetMarketSymbolForAsset(ctx, id)
-	if symbol == "" {
-		return market, false
-	}
+func (k *Keeper) SetMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
+	var (
+		store = k.Store(ctx)
+		key   = types.MarketForAssetKey(id, symbol)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.BoolValue{
+				Value: true,
+			},
+		)
+	)
 
-	return k.GetMarket(ctx, symbol)
+	store.Set(key, value)
+}
+
+func (k *Keeper) HasMarketForAsset(ctx sdk.Context, id uint64, symbol string) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.MarketForAssetKey(id, symbol)
+	)
+
+	return store.Has(key)
+}
+
+func (k *Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
+	var (
+		store = k.Store(ctx)
+		key   = types.MarketForAssetKey(id, symbol)
+	)
+
+	store.Delete(key)
 }
 
 func (k *Keeper) SetCalldataID(ctx sdk.Context, id uint64) {
@@ -106,17 +138,17 @@ func (k *Keeper) GetCalldataID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) SetCalldata(ctx sdk.Context, id uint64, data types.Calldata) {
+func (k *Keeper) SetCalldata(ctx sdk.Context, id uint64, calldata types.Calldata) {
 	var (
 		store = k.Store(ctx)
 		key   = types.CalldataKey(id)
-		value = k.cdc.MustMarshal(&data)
+		value = k.cdc.MustMarshal(&calldata)
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetCalldata(ctx sdk.Context, id uint64) (data types.Calldata, found bool) {
+func (k *Keeper) GetCalldata(ctx sdk.Context, id uint64) (calldata types.Calldata, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.CalldataKey(id)
@@ -124,42 +156,11 @@ func (k *Keeper) GetCalldata(ctx sdk.Context, id uint64) (data types.Calldata, f
 	)
 
 	if value == nil {
-		return data, false
+		return calldata, false
 	}
 
-	k.cdc.MustUnmarshal(value, &data)
-	return data, true
-}
-
-func (k *Keeper) SetPrice(ctx sdk.Context, id uint64, price uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.PriceKey(id)
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: price,
-			},
-		)
-	)
-
-	store.Set(key, value)
-}
-
-func (k *Keeper) GetPrice(ctx sdk.Context, id uint64) (uint64, bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.PriceKey(id)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return 0, false
-	}
-
-	var price protobuftypes.UInt64Value
-	k.cdc.MustUnmarshal(value, &price)
-
-	return price.GetValue(), true
+	k.cdc.MustUnmarshal(value, &calldata)
+	return calldata, true
 }
 
 func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePacketData) error {
@@ -180,8 +181,7 @@ func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePack
 		}
 
 		for i := range calldata.Symbols {
-			id := k.GetAssetIDForMarket(ctx, calldata.Symbols[i])
-			k.SetPrice(ctx, id, result.Rates[0])
+			k.SetPriceForMarket(ctx, calldata.Symbols[i], result.Rates[i])
 		}
 	}
 
