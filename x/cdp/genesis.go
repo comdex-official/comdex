@@ -12,14 +12,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetCDP(ctx, item)
 	}
 
-	count := uint64(0)
+	id := uint64(0)
 	for _, item := range state.CDPs {
-		if item.Id > count {
-			count = item.Id
+		if item.ID > id {
+			id = item.ID
 		}
 	}
 
-	k.SetCount(ctx, count)
+	k.SetID(ctx, id)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {

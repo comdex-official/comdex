@@ -7,13 +7,13 @@ import (
 	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
-func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
+func (k *Keeper) SetID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.CountKey
-		value = k.cdc.MustMarshalBinaryBare(
+		key   = types.IDKey
+		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
-				Value: count,
+				Value: id,
 			},
 		)
 	)
@@ -21,10 +21,10 @@ func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
+func (k *Keeper) GetID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.CountKey
+		key   = types.IDKey
 		value = store.Get(key)
 	)
 
@@ -32,17 +32,17 @@ func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
 		return 0
 	}
 
-	var count protobuftypes.UInt64Value
-	k.cdc.MustUnmarshalBinaryBare(value, &count)
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
 
-	return count.GetValue()
+	return id.GetValue()
 }
 
 func (k *Keeper) SetCDP(ctx sdk.Context, cdp types.CDP) {
 	var (
 		store = k.Store(ctx)
-		key   = types.CDPKey(cdp.Id)
-		value = k.cdc.MustMarshalBinaryBare(&cdp)
+		key   = types.CDPKey(cdp.ID)
+		value = k.cdc.MustMarshal(&cdp)
 	)
 
 	store.Set(key, value)
@@ -59,7 +59,7 @@ func (k *Keeper) GetCDP(ctx sdk.Context, id uint64) (cdp types.CDP, found bool) 
 		return cdp, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(value, &cdp)
+	k.cdc.MustUnmarshal(value, &cdp)
 	return cdp, true
 }
 
@@ -73,18 +73,18 @@ func (k *Keeper) GetCDPs(ctx sdk.Context) (cdps []types.CDP) {
 
 	for ; iter.Valid(); iter.Next() {
 		var cdp types.CDP
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &cdp)
+		k.cdc.MustUnmarshal(iter.Value(), &cdp)
 		cdps = append(cdps, cdp)
 	}
 
 	return cdps
 }
 
-func (k *Keeper) SetCDPForAddressByAssetPair(ctx sdk.Context, address sdk.AccAddress, pairId, id uint64) {
+func (k *Keeper) SetCDPForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.CDPForAddressByAssetPairKey(address, pairId)
-		value = k.cdc.MustMarshalBinaryBare(
+		key   = types.CDPForAddressByPair(address, pairID)
+		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
 			},
@@ -94,10 +94,10 @@ func (k *Keeper) SetCDPForAddressByAssetPair(ctx sdk.Context, address sdk.AccAdd
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasCDPForAddressByAssetPair(ctx sdk.Context, address sdk.AccAddress, pairId uint64) (yes bool) {
+func (k *Keeper) HasCDPForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
 	var (
 		store = k.Store(ctx)
-		key   = types.CDPForAddressByAssetPairKey(address, pairId)
+		key   = types.CDPForAddressByPair(address, pairID)
 	)
 
 	return store.Has(key)

@@ -23,20 +23,20 @@ var (
 )
 
 var (
-	CountKey                          = []byte{0x00}
-	CDPKeyPrefix                      = []byte{0x10}
-	CDPForAddressByAssetPairKeyPrefix = []byte{0x20}
+	IDKey                        = []byte{0x00}
+	CDPKeyPrefix                 = []byte{0x10}
+	CDPForAddressByPairKeyPrefix = []byte{0x20}
 )
 
 func CDPKey(id uint64) []byte {
 	return append(CDPKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func CDPForAddressByAssetPairKey(address sdk.AccAddress, pairId uint64) []byte {
-	v := append(CDPForAddressByAssetPairKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+func CDPForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
+	v := append(CDPForAddressByPairKeyPrefix, address.Bytes()...)
+	if len(v) != 1+20 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+20))
 	}
 
-	return append(v, sdk.Uint64ToBigEndian(pairId)...)
+	return append(v, sdk.Uint64ToBigEndian(pairID)...)
 }

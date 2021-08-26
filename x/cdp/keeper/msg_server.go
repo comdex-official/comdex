@@ -3,10 +3,8 @@ package keeper
 import (
 	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/pkg/errors"
-
 	"github.com/comdex-official/comdex/x/cdp/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
@@ -26,27 +24,32 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	if k.HasCDPForAddressByAssetPair(ctx, sender, msg.PairId) {
-		return nil, types.ErrorCDPAlreadyExists
+	if k.HasCDPForAddressByPair(ctx, from, msg.PairID) {
+		return nil, types.ErrorDuplicateCDP
 	}
 
-	pair, found := k.GetAssetPair(ctx, msg.PairId)
+	pair, found := k.GetPair(ctx, msg.PairID)
 	if !found {
-		return nil, errors.Wrapf(types.ErrorAssetPairDoesNotExist, "%d", msg.PairId)
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
 	}
 
 	var (
-		coins  = k.SpendableCoins(ctx, sender)
-		amount = coins.AmountOf(pair.DenomIn)
+		balance = k.SpendableCoins(ctx, from)
+		amount  = balance.AmountOf(assetIn.Denom)
 	)
 
 	if amount.LT(msg.AmountIn) {
-		return nil, errors.Wrapf(types.ErrorInsufficientCollateral, "expected %s, have %s", msg.AmountIn, amount)
+		return nil, types.ErrorInsufficientAmount
 	}
 
 	return &types.MsgCreateResponse{}, nil

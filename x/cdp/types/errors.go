@@ -5,18 +5,18 @@ import (
 )
 
 var (
-	ErrorInvalidField     = errors.Register(ModuleName, 101, "invalid field")
-	ErrorInvalidSender    = errors.Register(ModuleName, 102, "invalid sender")
-	ErrorInvalidAmountIn  = errors.Register(ModuleName, 103, "invalid amount_in")
-	ErrorInvalidAmountOut = errors.Register(ModuleName, 104, "invalid amount_out")
-	ErrorInvalidId        = errors.Register(ModuleName, 105, "invalid id")
-	ErrorInvalidAmount    = errors.Register(ModuleName, 106, "invalid amount")
+	ErrorInvalidAmount    = errors.Register(ModuleName, 101, "invalid amount")
+	ErrorInvalidAmountIn  = errors.Register(ModuleName, 102, "invalid amount_in")
+	ErrorInvalidAmountOut = errors.Register(ModuleName, 103, "invalid amount_out")
+	ErrorInvalidFrom      = errors.Register(ModuleName, 104, "invalid from")
+	ErrorInvalidID        = errors.Register(ModuleName, 105, "invalid id")
 )
 
 var (
-	ErrorCDPAlreadyExists       = errors.Register(ModuleName, 201, "cdp already exists")
-	ErrorAssetPairDoesNotExist  = errors.Register(ModuleName, 202, "asset pair does not exist")
-	ErrorInsufficientCollateral = errors.Register(ModuleName, 203, "insufficient collateral")
+	ErrorAssetDoesNotExist  = errors.Register(ModuleName, 201, "asset does not exist")
+	ErrorDuplicateCDP       = errors.Register(ModuleName, 202, "duplicate cdp")
+	ErrorInsufficientAmount = errors.Register(ModuleName, 203, "insufficient amount")
+	ErrorPairDoesNotExist   = errors.Register(ModuleName, 204, "pair does not exist")
 )
 
 var (
