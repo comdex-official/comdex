@@ -279,7 +279,53 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 }
 
 func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
-	panic("implement me")
+	ctx := sdk.UnwrapSDKContext(c)
+
+	from, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	cdp, found := k.GetCDP(ctx, msg.ID)
+	if !found {
+		return nil, types.ErrorCDPDoesNotExist
+	}
+	if msg.From != cdp.Owner {
+		return nil, types.ErrorUnauthorized
+	}
+	if !msg.Amount.Equal(cdp.AmountOut) {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	pair, found := k.GetPair(ctx, cdp.PairID)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(assetOut.Denom, cdp.AmountOut)); err != nil {
+		return nil, err
+	}
+	if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, cdp.AmountOut)); err != nil {
+		return nil, err
+	}
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetIn.Denom, cdp.AmountIn)); err != nil {
+		return nil, err
+	}
+
+	k.DeleteCDP(ctx, cdp.ID)
+	k.DeleteCDPForAddressByPair(ctx, from, cdp.PairID)
+
+	return &types.MsgRepayResponse{}, nil
 }
 
 func (k *msgServer) MsgLiquidate(c context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {

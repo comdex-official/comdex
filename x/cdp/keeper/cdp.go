@@ -63,6 +63,15 @@ func (k *Keeper) GetCDP(ctx sdk.Context, id uint64) (cdp types.CDP, found bool) 
 	return cdp, true
 }
 
+func (k *Keeper) DeleteCDP(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.CDPKey(id)
+	)
+
+	store.Delete(key)
+}
+
 func (k *Keeper) GetCDPs(ctx sdk.Context) (cdps []types.CDP) {
 	var (
 		store = k.Store(ctx)
@@ -101,4 +110,13 @@ func (k *Keeper) HasCDPForAddressByPair(ctx sdk.Context, address sdk.AccAddress,
 	)
 
 	return store.Has(key)
+}
+
+func (k *Keeper) DeleteCDPForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.CDPForAddressByPair(address, pairID)
+	)
+
+	store.Delete(key)
 }
