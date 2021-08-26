@@ -8,8 +8,11 @@ import (
 )
 
 func (m *CDP) Validate() error {
-	if m.Id == 0 {
+	if m.ID == 0 {
 		return fmt.Errorf("id cannot be empty")
+	}
+	if m.PairID == 0 {
+		return fmt.Errorf("pair_id cannot be empty")
 	}
 	if m.Owner == "" {
 		return fmt.Errorf("owner cannot be empty")

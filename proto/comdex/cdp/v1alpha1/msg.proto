@@ -8,8 +8,11 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message MsgCreateRequest {
-  string sender    = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  uint64 pair_id   = 2 [ (gogoproto.moretags) = "yaml:\"pair_id\"" ];
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 pair_id = 2 [
+    (gogoproto.customname) = "PairID",
+    (gogoproto.moretags)   = "yaml:\"pair_id\""
+  ];
   string amount_in = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount_in\"",
@@ -25,8 +28,9 @@ message MsgCreateRequest {
 message MsgCreateResponse {}
 
 message MsgDepositRequest {
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  uint64 id     = 2 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
   string amount = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -37,8 +41,9 @@ message MsgDepositRequest {
 message MsgDepositResponse {}
 
 message MsgWithdrawRequest {
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  uint64 id     = 2 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
   string amount = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -49,8 +54,9 @@ message MsgWithdrawRequest {
 message MsgWithdrawResponse {}
 
 message MsgDrawRequest {
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  uint64 id     = 2 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
   string amount = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -61,8 +67,9 @@ message MsgDrawRequest {
 message MsgDrawResponse {}
 
 message MsgRepayRequest {
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  uint64 id     = 2 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
   string amount = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -73,8 +80,9 @@ message MsgRepayRequest {
 message MsgRepayResponse {}
 
 message MsgLiquidateRequest {
-  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
-  uint64 id     = 2 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
 }
 
 message MsgLiquidateResponse {}

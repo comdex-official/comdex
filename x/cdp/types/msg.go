@@ -14,10 +14,10 @@ var (
 	_ sdk.Msg = (*MsgLiquidateRequest)(nil)
 )
 
-func NewMsgCreateRequest(sender sdk.AccAddress, pairId uint64, amountIn, amountOut sdk.Int) *MsgCreateRequest {
+func NewMsgCreateRequest(from sdk.AccAddress, pairID uint64, amountIn, amountOut sdk.Int) *MsgCreateRequest {
 	return &MsgCreateRequest{
-		Sender:    sender.String(),
-		PairId:    pairId,
+		From:      from.String(),
+		PairID:    pairID,
 		AmountIn:  amountIn,
 		AmountOut: amountOut,
 	}
@@ -32,11 +32,11 @@ func (m *MsgCreateRequest) Type() string {
 }
 
 func (m *MsgCreateRequest) ValidateBasic() error {
-	if m.Sender == "" {
-		return errors.Wrap(ErrorInvalidSender, "sender cannot be empty")
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
-		return errors.Wrapf(ErrorInvalidSender, "%s", err)
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 	if m.AmountIn.IsNil() {
 		return errors.Wrap(ErrorInvalidAmountIn, "amount_in cannot be nil")
@@ -65,7 +65,7 @@ func (m *MsgCreateRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgCreateRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.Sender)
+	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
@@ -73,10 +73,10 @@ func (m *MsgCreateRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgDepositRequest(sender sdk.AccAddress, id uint64, amount sdk.Int) *MsgDepositRequest {
+func NewMsgDepositRequest(from sdk.AccAddress, id uint64, amount sdk.Int) *MsgDepositRequest {
 	return &MsgDepositRequest{
-		Sender: sender.String(),
-		Id:     id,
+		From:   from.String(),
+		ID:     id,
 		Amount: amount,
 	}
 }
@@ -90,14 +90,14 @@ func (m *MsgDepositRequest) Type() string {
 }
 
 func (m *MsgDepositRequest) ValidateBasic() error {
-	if m.Sender == "" {
-		return errors.Wrap(ErrorInvalidSender, "sender cannot be empty")
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
-		return errors.Wrapf(ErrorInvalidSender, "%s", err)
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if m.Id == 0 {
-		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
 	}
 	if m.Amount.IsNil() {
 		return errors.Wrap(ErrorInvalidAmount, "amount cannot be nil")
@@ -117,7 +117,7 @@ func (m *MsgDepositRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgDepositRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.Sender)
+	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
@@ -125,10 +125,10 @@ func (m *MsgDepositRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgWithdrawRequest(sender sdk.AccAddress, id uint64, amount sdk.Int) *MsgWithdrawRequest {
+func NewMsgWithdrawRequest(from sdk.AccAddress, id uint64, amount sdk.Int) *MsgWithdrawRequest {
 	return &MsgWithdrawRequest{
-		Sender: sender.String(),
-		Id:     id,
+		From:   from.String(),
+		ID:     id,
 		Amount: amount,
 	}
 }
@@ -142,14 +142,14 @@ func (m *MsgWithdrawRequest) Type() string {
 }
 
 func (m *MsgWithdrawRequest) ValidateBasic() error {
-	if m.Sender == "" {
-		return errors.Wrap(ErrorInvalidSender, "sender cannot be empty")
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
-		return errors.Wrapf(ErrorInvalidSender, "%s", err)
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if m.Id == 0 {
-		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
 	}
 	if m.Amount.IsNil() {
 		return errors.Wrap(ErrorInvalidAmount, "amount cannot be nil")
@@ -169,7 +169,7 @@ func (m *MsgWithdrawRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgWithdrawRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.Sender)
+	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
@@ -177,10 +177,10 @@ func (m *MsgWithdrawRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgDrawRequest(sender sdk.AccAddress, id uint64, amount sdk.Int) *MsgDrawRequest {
+func NewMsgDrawRequest(from sdk.AccAddress, id uint64, amount sdk.Int) *MsgDrawRequest {
 	return &MsgDrawRequest{
-		Sender: sender.String(),
-		Id:     id,
+		From:   from.String(),
+		ID:     id,
 		Amount: amount,
 	}
 }
@@ -194,14 +194,14 @@ func (m *MsgDrawRequest) Type() string {
 }
 
 func (m *MsgDrawRequest) ValidateBasic() error {
-	if m.Sender == "" {
-		return errors.Wrap(ErrorInvalidSender, "sender cannot be empty")
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
-		return errors.Wrapf(ErrorInvalidSender, "%s", err)
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if m.Id == 0 {
-		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
 	}
 	if m.Amount.IsNil() {
 		return errors.Wrap(ErrorInvalidAmount, "amount cannot be nil")
@@ -221,7 +221,7 @@ func (m *MsgDrawRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgDrawRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.Sender)
+	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
@@ -229,10 +229,10 @@ func (m *MsgDrawRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgRepayRequest(sender sdk.AccAddress, id uint64, amount sdk.Int) *MsgRepayRequest {
+func NewMsgRepayRequest(from sdk.AccAddress, id uint64, amount sdk.Int) *MsgRepayRequest {
 	return &MsgRepayRequest{
-		Sender: sender.String(),
-		Id:     id,
+		From:   from.String(),
+		ID:     id,
 		Amount: amount,
 	}
 }
@@ -246,14 +246,14 @@ func (m *MsgRepayRequest) Type() string {
 }
 
 func (m *MsgRepayRequest) ValidateBasic() error {
-	if m.Sender == "" {
-		return errors.Wrap(ErrorInvalidSender, "sender cannot be empty")
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
-		return errors.Wrapf(ErrorInvalidSender, "%s", err)
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if m.Id == 0 {
-		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
 	}
 	if m.Amount.IsNil() {
 		return errors.Wrap(ErrorInvalidAmount, "amount cannot be nil")
@@ -273,7 +273,7 @@ func (m *MsgRepayRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgRepayRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.Sender)
+	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
@@ -281,10 +281,10 @@ func (m *MsgRepayRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgLiquidateRequest(sender sdk.AccAddress, id uint64) *MsgLiquidateRequest {
+func NewMsgLiquidateRequest(from sdk.AccAddress, id uint64) *MsgLiquidateRequest {
 	return &MsgLiquidateRequest{
-		Sender: sender.String(),
-		Id:     id,
+		From: from.String(),
+		ID:   id,
 	}
 }
 
@@ -297,14 +297,14 @@ func (m *MsgLiquidateRequest) Type() string {
 }
 
 func (m *MsgLiquidateRequest) ValidateBasic() error {
-	if m.Sender == "" {
-		return errors.Wrap(ErrorInvalidSender, "sender cannot be empty")
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
-		return errors.Wrapf(ErrorInvalidSender, "%s", err)
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if m.Id == 0 {
-		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
 	}
 
 	return nil
@@ -315,7 +315,7 @@ func (m *MsgLiquidateRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgLiquidateRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.Sender)
+	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
