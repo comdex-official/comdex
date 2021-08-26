@@ -101,7 +101,39 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 }
 
 func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
-	panic("implement me")
+	ctx := sdk.UnwrapSDKContext(c)
+
+	from, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	cdp, found := k.GetCDP(ctx, msg.ID)
+	if !found {
+		return nil, types.ErrorCDPDoesNotExist
+	}
+	if msg.From != cdp.Owner {
+		return nil, types.ErrorUnauthorized
+	}
+
+	pair, found := k.GetPair(ctx, cdp.PairID)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	asset, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
+		return nil, err
+	}
+
+	cdp.AmountIn = cdp.AmountIn.Add(msg.Amount)
+	k.SetCDP(ctx, cdp)
+
+	return &types.MsgDepositResponse{}, nil
 }
 
 func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
