@@ -17,6 +17,7 @@ var (
 	ErrorDuplicateCDP       = errors.Register(ModuleName, 202, "duplicate cdp")
 	ErrorInsufficientAmount = errors.Register(ModuleName, 203, "insufficient amount")
 	ErrorPairDoesNotExist   = errors.Register(ModuleName, 204, "pair does not exist")
+	ErrorPriceDoesNotExist  = errors.Register(ModuleName, 203, "price does not exist")
 )
 
 var (

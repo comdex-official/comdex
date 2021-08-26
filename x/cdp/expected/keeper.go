@@ -13,4 +13,5 @@ type BankKeeper interface {
 type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
+	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }

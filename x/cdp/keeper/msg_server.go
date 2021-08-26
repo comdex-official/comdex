@@ -43,6 +43,11 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
+	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
 	var (
 		balance = k.SpendableCoins(ctx, from)
 		amount  = balance.AmountOf(assetIn.Denom)
@@ -50,6 +55,25 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 
 	if amount.LT(msg.AmountIn) {
 		return nil, types.ErrorInsufficientAmount
+	}
+
+	priceIn, found := k.GetPriceForAsset(ctx, assetIn.ID)
+	if !found {
+		return nil, types.ErrorPriceDoesNotExist
+	}
+
+	priceOut, found := k.GetPriceForAsset(ctx, assetOut.ID)
+	if !found {
+		return nil, types.ErrorPriceDoesNotExist
+	}
+
+	var (
+		amountIn  = sdk.NewDecFromInt(msg.AmountIn.Mul(sdk.NewIntFromUint64(priceIn)))
+		amountOut = sdk.NewDecFromInt(msg.AmountOut.Mul(sdk.NewIntFromUint64(priceOut)))
+	)
+
+	if amountIn.Quo(amountOut).LT(pair.LiquidationRatio) {
+		return nil, types.ErrorInvalidAmount
 	}
 
 	return &types.MsgCreateResponse{}, nil

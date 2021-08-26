@@ -17,3 +17,7 @@ func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
 func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool) {
 	return k.asset.GetPair(ctx, id)
 }
+
+func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
+	return k.asset.GetPriceForAsset(ctx, id)
+}
