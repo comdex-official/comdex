@@ -19,7 +19,7 @@ func (k Keeper) QueryCDP(context context.Context, request *types.QueryCDPRequest
 	}
 	cdp, found := k.GetCDPByOwnerAndCollateralType(ctx, ownerAddrs, request.CollateralType)
 	if !found {
-		return nil, status.Error(codes.NotFound, "cdp not found")
+		return &types.QueryCDPResponse{}, status.Error(codes.NotFound, "cdp not found")
 	}
 
 	return &types.QueryCDPResponse{Cdp: cdp}, nil
@@ -40,7 +40,7 @@ func (k Keeper) QueryCDPs(context context.Context, request *types.QueryCDPsReque
 
 	ownerCDPList, found := k.GetOwnerCDPList(ctx, ownerAddrs)
 	if !found {
-		return nil, status.Error(codes.NotFound, "cdp not found")
+		return &types.QueryCDPsResponse{}, status.Error(codes.NotFound, "no cdps created for this account")
 	}
 
 	for _, ownedCdp := range ownerCDPList.OwnedCDPs {
@@ -65,7 +65,7 @@ func (k Keeper) QueryCDPById(context context.Context, request *types.QueryCDPByI
 	cdp, found := k.GetCDP(ctx, request.Id)
 
 	if !found {
-		return nil, status.Error(codes.NotFound, "cdp not found")
+		return &types.QueryCDPByIdResponse{}, status.Error(codes.NotFound, "cdp not found")
 	}
 
 	return &types.QueryCDPByIdResponse{
@@ -76,7 +76,7 @@ func (k Keeper) QueryCDPById(context context.Context, request *types.QueryCDPByI
 func (k Keeper) QueryParams(context context.Context, request *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
 	if request == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
+		return &types.QueryParamsResponse{}, status.Error(codes.InvalidArgument, "empty request")
 	}
 
 	params := k.GetParams(ctx)
