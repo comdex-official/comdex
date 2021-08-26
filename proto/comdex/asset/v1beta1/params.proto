@@ -1,0 +1,31 @@
+syntax = "proto3";
+package comdex.asset.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/asset/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message IBCParams {
+  string port    = 1 [ (gogoproto.moretags) = "yaml:\"port\"" ];
+  string version = 2 [ (gogoproto.moretags) = "yaml:\"version\"" ];
+}
+
+message OracleParams {
+  uint64 ask_count  = 1 [ (gogoproto.moretags) = "yaml:\"ask_count\"" ];
+  uint64 min_count  = 2 [ (gogoproto.moretags) = "yaml:\"min_count\"" ];
+  uint64 multiplier = 3 [ (gogoproto.moretags) = "yaml:\"multiplier\"" ];
+}
+
+message Params {
+  IBCParams ibc = 2 [
+    (gogoproto.customname) = "IBC",
+    (gogoproto.moretags)   = "yaml:\"ibc\"",
+    (gogoproto.nullable)   = false
+  ];
+  OracleParams oracle = 1 [
+    (gogoproto.moretags) = "yaml:\"oracle\"",
+    (gogoproto.nullable) = false
+  ];
+}

@@ -1,0 +1,137 @@
+syntax = "proto3";
+package comdex.asset.v1beta1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+import "ibc/core/client/v1/client.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/asset/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MsgAddMarketRequest {
+  string from      = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string symbol    = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+  uint64 script_id = 3 [
+    (gogoproto.customname) = "ScriptID",
+    (gogoproto.moretags)   = "yaml:\"script_id\""
+  ];
+}
+
+message MsgAddMarketResponse {}
+
+message MsgUpdateMarketRequest {
+  string from      = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string symbol    = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+  uint64 script_id = 3 [
+    (gogoproto.customname) = "ScriptID",
+    (gogoproto.moretags)   = "yaml:\"script_id\""
+  ];
+}
+
+message MsgUpdateMarketResponse {}
+
+message MsgAddAssetRequest {
+  string from  = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string name  = 2 [ (gogoproto.moretags) = "yaml:\"name\"" ];
+  string denom = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+}
+
+message MsgAddAssetResponse {}
+
+message MsgUpdateAssetRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string name  = 3 [ (gogoproto.moretags) = "yaml:\"name\"" ];
+  string denom = 4 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+}
+
+message MsgUpdateAssetResponse {}
+
+message MsgAddMarketForAssetRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string symbol = 3 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+}
+
+message MsgAddMarketForAssetResponse {}
+
+message MsgRemoveMarketForAssetRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string symbol = 3 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+}
+
+message MsgRemoveMarketForAssetResponse {}
+
+message MsgAddPairRequest {
+  string from              = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 asset_in          = 2 [ (gogoproto.moretags) = "yaml:\"asset_in\"" ];
+  uint64 asset_out         = 3 [ (gogoproto.moretags) = "yaml:\"asset_out\"" ];
+  string liquidation_ratio = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false,
+    (gogoproto.moretags)   = "yaml:\"liquidation_ratio\""
+  ];
+}
+
+message MsgAddPairResponse {}
+
+message MsgUpdatePairRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  uint64 asset_in          = 3 [ (gogoproto.moretags) = "yaml:\"asset_in\"" ];
+  uint64 asset_out         = 4 [ (gogoproto.moretags) = "yaml:\"asset_out\"" ];
+  string liquidation_ratio = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false,
+    (gogoproto.moretags)   = "yaml:\"liquidation_ratio\""
+  ];
+}
+
+message MsgUpdatePairResponse {}
+
+message MsgFetchPriceRequest {
+  string from           = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string source_port    = 2 [ (gogoproto.moretags) = "yaml:\"source_port\"" ];
+  string source_channel = 3
+      [ (gogoproto.moretags) = "yaml:\"source_channel\"" ];
+  ibc.core.client.v1.Height timeout_height = 4 [
+    (gogoproto.moretags) = "yaml:\"timeout_height\"",
+    (gogoproto.nullable) = false
+  ];
+  uint64 timeout_timestamp = 5
+      [ (gogoproto.moretags) = "yaml:\"timeout_timestamp\"" ];
+  repeated string symbols = 6 [ (gogoproto.moretags) = "yaml:\"symbols\"" ];
+  uint64 script_id        = 7 [
+    (gogoproto.customname) = "ScriptID",
+    (gogoproto.moretags)   = "yaml:\"script_id\""
+  ];
+  repeated cosmos.base.v1beta1.Coin fee_limit = 8 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.moretags)     = "yaml:\"fee_limit\"",
+    (gogoproto.nullable)     = false
+  ];
+  uint64 prepare_gas = 9 [ (gogoproto.moretags) = "yaml:\"prepare_gas\"" ];
+  uint64 execute_gas = 10 [ (gogoproto.moretags) = "yaml:\"execute_gas\"" ];
+}
+
+message MsgFetchPriceResponse {}
+
+service MsgService {
+  rpc MsgAddMarket(MsgAddMarketRequest) returns (MsgAddMarketResponse);
+  rpc MsgUpdateMarket(MsgUpdateMarketRequest) returns (MsgUpdateMarketResponse);
+  rpc MsgAddAsset(MsgAddAssetRequest) returns (MsgAddAssetResponse);
+  rpc MsgUpdateAsset(MsgUpdateAssetRequest) returns (MsgUpdateAssetResponse);
+  rpc MsgAddMarketForAsset(MsgAddMarketForAssetRequest)
+      returns (MsgAddMarketForAssetResponse);
+  rpc MsgRemoveMarketForAsset(MsgRemoveMarketForAssetRequest)
+      returns (MsgRemoveMarketForAssetResponse);
+  rpc MsgAddPair(MsgAddPairRequest) returns (MsgAddPairResponse);
+  rpc MsgUpdatePair(MsgUpdatePairRequest) returns (MsgUpdatePairResponse);
+  rpc MsgFetchPrice(MsgFetchPriceRequest) returns (MsgFetchPriceResponse);
+}
