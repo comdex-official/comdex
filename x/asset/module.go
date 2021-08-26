@@ -133,10 +133,20 @@ func (a AppModule) WeightedOperations(_ module.SimulationState) []simulation.Wei
 	return nil
 }
 
-func ValidateAssetChannelParams(ctx sdk.Context, keeper keeper.Keeper, order ibcchanneltypes.Order, portID string, channelID string, counterpartyVersion string) error {
+func ValidateAssetChannelParams(
+	ctx sdk.Context,
+	keeper keeper.Keeper,
+	order ibcchanneltypes.Order,
+	portID, channelID, channelVersion string,
+) error {
 	version := keeper.IBCVersion(ctx)
-	if counterpartyVersion != version {
-		return errors.Wrapf(types.ErrorInvalidVersion, "expected %s, got %s", version, counterpartyVersion)
+	if channelVersion != version {
+		return types.ErrorInvalidVersion
+	}
+
+	port := keeper.IBCPort(ctx)
+	if portID != port {
+		return ibcporttypes.ErrInvalidPort
 	}
 
 	sequence, err := ibcchanneltypes.ParseChannelSequence(channelID)
@@ -150,16 +160,19 @@ func ValidateAssetChannelParams(ctx sdk.Context, keeper keeper.Keeper, order ibc
 		return ibcchanneltypes.ErrInvalidChannelOrdering
 	}
 
-	port := keeper.IBCPort(ctx)
-	if portID != port {
-		return ibcporttypes.ErrInvalidPort
-	}
-
 	return nil
 }
 
-func (a AppModule) OnChanOpenInit(ctx sdk.Context, order ibcchanneltypes.Order, _ []string, portID string, channelID string, capability *capabilitytypes.Capability, _ ibcchanneltypes.Counterparty, version string) error {
-	if err := ValidateAssetChannelParams(ctx, a.keeper, order, portID, channelID, version); err != nil {
+func (a AppModule) OnChanOpenInit(
+	ctx sdk.Context,
+	order ibcchanneltypes.Order,
+	_ []string,
+	portID, channelID string,
+	capability *capabilitytypes.Capability,
+	_ ibcchanneltypes.Counterparty,
+	channelVersion string,
+) error {
+	if err := ValidateAssetChannelParams(ctx, a.keeper, order, portID, channelID, channelVersion); err != nil {
 		return err
 	}
 
@@ -170,12 +183,20 @@ func (a AppModule) OnChanOpenInit(ctx sdk.Context, order ibcchanneltypes.Order, 
 	return nil
 }
 
-func (a AppModule) OnChanOpenTry(ctx sdk.Context, order ibcchanneltypes.Order, _ []string, portID string, channelID string, capability *capabilitytypes.Capability, _ ibcchanneltypes.Counterparty, version string, counterpartyVersion string) error {
+func (a AppModule) OnChanOpenTry(
+	ctx sdk.Context,
+	order ibcchanneltypes.Order,
+	_ []string,
+	portID, channelID string,
+	capability *capabilitytypes.Capability,
+	_ ibcchanneltypes.Counterparty,
+	channelVersion, counterpartyVersion string,
+) error {
 	if counterpartyVersion != a.keeper.IBCVersion(ctx) {
 		return types.ErrorInvalidVersion
 	}
 
-	if err := ValidateAssetChannelParams(ctx, a.keeper, order, portID, channelID, version); err != nil {
+	if err := ValidateAssetChannelParams(ctx, a.keeper, order, portID, channelID, channelVersion); err != nil {
 		return err
 	}
 
@@ -188,38 +209,55 @@ func (a AppModule) OnChanOpenTry(ctx sdk.Context, order ibcchanneltypes.Order, _
 	return nil
 }
 
-func (a AppModule) OnChanOpenAck(ctx sdk.Context, _ string, _ string, counterpartyVersion string) error {
-	if counterpartyVersion != a.keeper.IBCVersion(ctx) {
+func (a AppModule) OnChanOpenAck(
+	ctx sdk.Context,
+	_, _, counterpartyVersion string,
+) error {
+	version := a.keeper.IBCVersion(ctx)
+	if counterpartyVersion != version {
 		return types.ErrorInvalidVersion
 	}
 
 	return nil
 }
 
-func (a AppModule) OnChanOpenConfirm(_ sdk.Context, _ string, _ string) error {
+func (a AppModule) OnChanOpenConfirm(
+	_ sdk.Context,
+	_, _ string,
+) error {
 	return nil
 }
 
-func (a AppModule) OnChanCloseInit(_ sdk.Context, _ string, _ string) error {
-	return errors.Wrap(errors.ErrInvalidRequest, "user cannot close channel")
+func (a AppModule) OnChanCloseInit(
+	_ sdk.Context,
+	_, _ string,
+) error {
+	return errors.ErrInvalidRequest
 }
 
-func (a AppModule) OnChanCloseConfirm(_ sdk.Context, _ string, _ string) error {
+func (a AppModule) OnChanCloseConfirm(
+	_ sdk.Context,
+	_, _ string,
+) error {
 	return nil
 }
 
-func (a AppModule) OnRecvPacket(ctx sdk.Context, packet ibcchanneltypes.Packet, relayer sdk.AccAddress) ibcexported.Acknowledgement {
+func (a AppModule) OnRecvPacket(
+	ctx sdk.Context,
+	packet ibcchanneltypes.Packet,
+	_ sdk.AccAddress,
+) ibcexported.Acknowledgement {
 	var (
-		data bandpacket.OracleResponsePacketData
-		ack  = ibcchanneltypes.NewResultAcknowledgement([]byte{byte(1)})
+		res bandpacket.OracleResponsePacketData
+		ack = ibcchanneltypes.NewResultAcknowledgement([]byte{0x01})
 	)
 
-	if err := a.cdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
+	if err := a.cdc.UnmarshalJSON(packet.GetData(), &res); err != nil {
 		ack = ibcchanneltypes.NewErrorAcknowledgement(err.Error())
 	}
 
 	if ack.Success() {
-		if err := a.keeper.OnRecvPacket(ctx, data); err != nil {
+		if err := a.keeper.OnRecvPacket(ctx, res); err != nil {
 			ack = ibcchanneltypes.NewErrorAcknowledgement(err.Error())
 		}
 	}
@@ -227,10 +265,19 @@ func (a AppModule) OnRecvPacket(ctx sdk.Context, packet ibcchanneltypes.Packet, 
 	return ack
 }
 
-func (a AppModule) OnAcknowledgementPacket(ctx sdk.Context, packet ibcchanneltypes.Packet, acknowledgement []byte, relayer sdk.AccAddress) (*sdk.Result, error) {
-	panic("implement me")
+func (a AppModule) OnAcknowledgementPacket(
+	_ sdk.Context,
+	_ ibcchanneltypes.Packet,
+	_ []byte,
+	_ sdk.AccAddress,
+) (*sdk.Result, error) {
+	return nil, nil
 }
 
-func (a AppModule) OnTimeoutPacket(ctx sdk.Context, packet ibcchanneltypes.Packet, relayer sdk.AccAddress) (*sdk.Result, error) {
-	panic("implement me")
+func (a AppModule) OnTimeoutPacket(
+	_ sdk.Context,
+	_ ibcchanneltypes.Packet,
+	_ sdk.AccAddress,
+) (*sdk.Result, error) {
+	return nil, nil
 }

@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	DefaultIBCPort          = ModuleName
-	DefaultIBCVersion       = "1"
+	DefaultIBCPort          = "asset"
+	DefaultIBCVersion       = "comdex-ics-01"
 	DefaultOracleAskCount   = 1
 	DefaultOracleMinCount   = 1
 	DefaultOracleMultiplier = 9

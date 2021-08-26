@@ -53,9 +53,6 @@ func (k *msgServer) MsgUpdateMarket(c context.Context, msg *types.MsgUpdateMarke
 		return nil, types.ErrorMarketDoesNotExist
 	}
 
-	if msg.Symbol != "" {
-		market.Symbol = msg.Symbol
-	}
 	if msg.ScriptID != 0 {
 		market.ScriptID = msg.ScriptID
 	}

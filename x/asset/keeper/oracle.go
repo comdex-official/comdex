@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/bandprotocol/bandchain-packet/obi"
 	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -163,16 +164,25 @@ func (k *Keeper) GetCalldata(ctx sdk.Context, id uint64) (calldata types.Calldat
 	return calldata, true
 }
 
-func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePacketData) error {
-	if res.ResolveStatus == bandpacket.RESOLVE_STATUS_SUCCESS {
-		id, err := strconv.ParseUint(res.ClientID, 10, 64)
-		if err != nil {
-			return err
-		}
+func (k *Keeper) DeleteCalldata(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.CalldataKey(id)
+	)
 
+	store.Delete(key)
+}
+
+func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePacketData) error {
+	id, err := strconv.ParseUint(res.ClientID, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	if res.ResolveStatus == bandpacket.RESOLVE_STATUS_SUCCESS {
 		calldata, found := k.GetCalldata(ctx, id)
 		if !found {
-			return nil
+			return fmt.Errorf("calldata does not exist for id %d", id)
 		}
 
 		var result types.Result
@@ -185,5 +195,6 @@ func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePack
 		}
 	}
 
+	k.DeleteCalldata(ctx, id)
 	return nil
 }
