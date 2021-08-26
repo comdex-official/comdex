@@ -283,12 +283,10 @@ func (m *MsgAddPairRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdatePairRequest(from sdk.AccAddress, id uint64, assetIn, assetOut uint64, liquidationRatio sdk.Dec) *MsgUpdatePairRequest {
+func NewMsgUpdatePairRequest(from sdk.AccAddress, id uint64, liquidationRatio sdk.Dec) *MsgUpdatePairRequest {
 	return &MsgUpdatePairRequest{
 		From:             from.String(),
 		ID:               id,
-		AssetIn:          assetIn,
-		AssetOut:         assetOut,
 		LiquidationRatio: liquidationRatio,
 	}
 }

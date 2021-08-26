@@ -43,8 +43,8 @@ func AssetForDenomKey(denom string) []byte {
 	return append(AssetForDenomKeyPrefix, []byte(denom)...)
 }
 
-func MarketForAssetKey(id uint64, symbol string) []byte {
-	return append(MarketForAssetKeyPrefix, append(sdk.Uint64ToBigEndian(id), []byte(symbol)...)...)
+func MarketForAssetKey(id uint64) []byte {
+	return append(MarketForAssetKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func PairKey(id uint64) []byte {
