@@ -71,9 +71,10 @@ func (k *msgServer) MsgAddAsset(c context.Context, msg *types.MsgAddAssetRequest
 	var (
 		id    = k.GetAssetID(ctx)
 		asset = types.Asset{
-			ID:    id + 1,
-			Name:  msg.Name,
-			Denom: msg.Denom,
+			ID:       id + 1,
+			Name:     msg.Name,
+			Denom:    msg.Denom,
+			Decimals: msg.Decimals,
 		}
 	)
 
@@ -104,6 +105,9 @@ func (k *msgServer) MsgUpdateAsset(c context.Context, msg *types.MsgUpdateAssetR
 
 		k.DeleteAssetForDenom(ctx, asset.Denom)
 		k.SetAssetForDenom(ctx, asset.Denom, asset.ID)
+	}
+	if msg.Decimals >= 0 {
+		asset.Decimals = msg.Decimals
 	}
 
 	k.SetAsset(ctx, asset)

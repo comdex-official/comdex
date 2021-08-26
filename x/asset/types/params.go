@@ -10,7 +10,7 @@ const (
 	DefaultIBCVersion       = "comdex-ics-01"
 	DefaultOracleAskCount   = 1
 	DefaultOracleMinCount   = 1
-	DefaultOracleMultiplier = 9
+	DefaultOracleMultiplier = 6
 )
 
 var (

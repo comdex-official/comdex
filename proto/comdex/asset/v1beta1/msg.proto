@@ -32,9 +32,10 @@ message MsgUpdateMarketRequest {
 message MsgUpdateMarketResponse {}
 
 message MsgAddAssetRequest {
-  string from  = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  string name  = 2 [ (gogoproto.moretags) = "yaml:\"name\"" ];
-  string denom = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string name    = 2 [ (gogoproto.moretags) = "yaml:\"name\"" ];
+  string denom   = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+  int64 decimals = 4 [ (gogoproto.moretags) = "yaml:\"decimals\"" ];
 }
 
 message MsgAddAssetResponse {}
@@ -43,8 +44,9 @@ message MsgUpdateAssetRequest {
   string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 id   = 2
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  string name  = 3 [ (gogoproto.moretags) = "yaml:\"name\"" ];
-  string denom = 4 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+  string name    = 3 [ (gogoproto.moretags) = "yaml:\"name\"" ];
+  string denom   = 4 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+  int64 decimals = 5 [ (gogoproto.moretags) = "yaml:\"decimals\"" ];
 }
 
 message MsgUpdateAssetResponse {}
