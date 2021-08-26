@@ -119,7 +119,7 @@ func (k *msgServer) MsgAddMarketForAsset(c context.Context, msg *types.MsgAddMar
 	if !k.HasMarket(ctx, msg.Symbol) {
 		return nil, types.ErrorMarketDoesNotExist
 	}
-	if k.HasMarketForAsset(ctx, msg.ID, msg.Symbol) {
+	if k.HasMarketForAsset(ctx, msg.ID) {
 		return nil, types.ErrorDuplicateMarketForAsset
 	}
 
@@ -130,11 +130,11 @@ func (k *msgServer) MsgAddMarketForAsset(c context.Context, msg *types.MsgAddMar
 func (k *msgServer) MsgRemoveMarketForAsset(c context.Context, msg *types.MsgRemoveMarketForAssetRequest) (*types.MsgRemoveMarketForAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	if !k.HasMarketForAsset(ctx, msg.ID, msg.Symbol) {
+	if !k.HasMarketForAsset(ctx, msg.ID) {
 		return nil, types.ErrorMarketForAssetDoesNotExist
 	}
 
-	k.DeleteMarketForAsset(ctx, msg.ID, msg.Symbol)
+	k.DeleteMarketForAsset(ctx, msg.ID)
 	return &types.MsgRemoveMarketForAssetResponse{}, nil
 }
 
@@ -172,20 +172,6 @@ func (k *msgServer) MsgUpdatePair(c context.Context, msg *types.MsgUpdatePairReq
 		return nil, types.ErrorPairDoesNotExist
 	}
 
-	if msg.AssetIn != 0 {
-		if !k.HasAsset(ctx, msg.AssetIn) {
-			return nil, types.ErrorAssetDoesNotExist
-		}
-
-		pair.AssetIn = msg.AssetIn
-	}
-	if msg.AssetOut != 0 {
-		if !k.HasAsset(ctx, msg.AssetOut) {
-			return nil, types.ErrorAssetDoesNotExist
-		}
-
-		pair.AssetOut = msg.AssetOut
-	}
 	if !msg.LiquidationRatio.IsZero() {
 		pair.LiquidationRatio = msg.LiquidationRatio
 	}

@@ -79,10 +79,10 @@ func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool
 func (k *Keeper) SetMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
 	var (
 		store = k.Store(ctx)
-		key   = types.MarketForAssetKey(id, symbol)
+		key   = types.MarketForAssetKey(id)
 		value = k.cdc.MustMarshal(
-			&protobuftypes.BoolValue{
-				Value: true,
+			&protobuftypes.StringValue{
+				Value: symbol,
 			},
 		)
 	)
@@ -90,19 +90,36 @@ func (k *Keeper) SetMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasMarketForAsset(ctx sdk.Context, id uint64, symbol string) bool {
+func (k *Keeper) HasMarketForAsset(ctx sdk.Context, id uint64) bool {
 	var (
 		store = k.Store(ctx)
-		key   = types.MarketForAssetKey(id, symbol)
+		key   = types.MarketForAssetKey(id)
 	)
 
 	return store.Has(key)
 }
 
-func (k *Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
+func (k *Keeper) GetMarketForAsset(ctx sdk.Context, id uint64) (market types.Market, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.MarketForAssetKey(id, symbol)
+		key   = types.MarketForAssetKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return market, false
+	}
+
+	var symbol protobuftypes.StringValue
+	k.cdc.MustUnmarshal(value, &symbol)
+
+	return k.GetMarket(ctx, symbol.GetValue())
+}
+
+func (k *Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.MarketForAssetKey(id)
 	)
 
 	store.Delete(key)
@@ -197,4 +214,13 @@ func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePack
 
 	k.DeleteCalldata(ctx, id)
 	return nil
+}
+
+func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
+	market, found := k.GetMarketForAsset(ctx, id)
+	if !found {
+		return 0, false
+	}
+
+	return k.GetPriceForMarket(ctx, market.Symbol)
 }
