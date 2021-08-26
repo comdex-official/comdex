@@ -5,16 +5,17 @@ import (
 )
 
 var (
-	ErrorInvalidDenom            = errors.Register(ModuleName, 101, "invalid denom")
-	ErrorInvalidFrom             = errors.Register(ModuleName, 102, "invalid from")
-	ErrorInvalidID               = errors.Register(ModuleName, 103, "invalid id")
-	ErrorInvalidLiquidationRatio = errors.Register(ModuleName, 104, "invalid liquidation ratio")
-	ErrorInvalidName             = errors.Register(ModuleName, 105, "invalid name")
-	ErrorInvalidScriptID         = errors.Register(ModuleName, 106, "invalid script id")
-	ErrorInvalidSourceChannel    = errors.Register(ModuleName, 107, "invalid source channel")
-	ErrorInvalidSourcePort       = errors.Register(ModuleName, 108, "invalid source port")
-	ErrorInvalidSymbol           = errors.Register(ModuleName, 109, "invalid symbol")
-	ErrorInvalidSymbols          = errors.Register(ModuleName, 110, "invalid symbols")
+	ErrorInvalidDecimals         = errors.Register(ModuleName, 101, "invalid decimals")
+	ErrorInvalidDenom            = errors.Register(ModuleName, 102, "invalid denom")
+	ErrorInvalidFrom             = errors.Register(ModuleName, 103, "invalid from")
+	ErrorInvalidID               = errors.Register(ModuleName, 104, "invalid id")
+	ErrorInvalidLiquidationRatio = errors.Register(ModuleName, 105, "invalid liquidation ratio")
+	ErrorInvalidName             = errors.Register(ModuleName, 106, "invalid name")
+	ErrorInvalidScriptID         = errors.Register(ModuleName, 107, "invalid script id")
+	ErrorInvalidSourceChannel    = errors.Register(ModuleName, 108, "invalid source channel")
+	ErrorInvalidSourcePort       = errors.Register(ModuleName, 109, "invalid source port")
+	ErrorInvalidSymbol           = errors.Register(ModuleName, 110, "invalid symbol")
+	ErrorInvalidSymbols          = errors.Register(ModuleName, 111, "invalid symbols")
 )
 
 var (

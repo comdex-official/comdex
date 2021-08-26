@@ -116,6 +116,9 @@ func (m *MsgAddAssetRequest) ValidateBasic() error {
 	if err := sdk.ValidateDenom(m.Denom); err != nil {
 		return errors.Wrapf(ErrorInvalidDenom, "%s", err)
 	}
+	if m.Decimals < 0 {
+		return errors.Wrapf(ErrorInvalidDecimals, "decimals cannot be less than zero")
+	}
 
 	return nil
 }
