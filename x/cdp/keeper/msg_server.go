@@ -48,33 +48,54 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	var (
-		balance = k.SpendableCoins(ctx, from)
-		amount  = balance.AmountOf(assetIn.Denom)
-	)
-
-	if amount.LT(msg.AmountIn) {
-		return nil, types.ErrorInsufficientAmount
-	}
-
-	priceIn, found := k.GetPriceForAsset(ctx, assetIn.ID)
+	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.ID)
 	if !found {
 		return nil, types.ErrorPriceDoesNotExist
 	}
 
-	priceOut, found := k.GetPriceForAsset(ctx, assetOut.ID)
+	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.ID)
 	if !found {
 		return nil, types.ErrorPriceDoesNotExist
 	}
 
-	var (
-		amountIn  = sdk.NewDecFromInt(msg.AmountIn.Mul(sdk.NewIntFromUint64(priceIn)))
-		amountOut = sdk.NewDecFromInt(msg.AmountOut.Mul(sdk.NewIntFromUint64(priceOut)))
-	)
-
-	if amountIn.Quo(amountOut).LT(pair.LiquidationRatio) {
+	totalIn := msg.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
+	if totalIn.IsZero() {
 		return nil, types.ErrorInvalidAmount
 	}
+
+	totalOut := msg.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
+	if totalOut.IsZero() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	if totalIn.Quo(totalOut).LT(pair.LiquidationRatio) {
+		return nil, types.ErrorInvalidAmountRatio
+	}
+
+	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(assetIn.Denom, msg.AmountIn)); err != nil {
+		return nil, err
+	}
+	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, msg.AmountOut)); err != nil {
+		return nil, err
+	}
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetOut.Denom, msg.AmountOut)); err != nil {
+		return nil, err
+	}
+
+	var (
+		id  = k.GetID(ctx)
+		cdp = types.CDP{
+			ID:        id + 1,
+			PairID:    msg.PairID,
+			Owner:     msg.From,
+			AmountIn:  msg.AmountIn,
+			AmountOut: msg.AmountOut,
+		}
+	)
+
+	k.SetID(ctx, id+1)
+	k.SetCDP(ctx, cdp)
+	k.SetCDPForAddressByPair(ctx, from, cdp.PairID, cdp.ID)
 
 	return &types.MsgCreateResponse{}, nil
 }

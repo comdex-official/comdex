@@ -15,7 +15,7 @@ var (
 var (
 	ErrorAssetDoesNotExist  = errors.Register(ModuleName, 201, "asset does not exist")
 	ErrorDuplicateCDP       = errors.Register(ModuleName, 202, "duplicate cdp")
-	ErrorInsufficientAmount = errors.Register(ModuleName, 203, "insufficient amount")
+	ErrorInvalidAmountRatio = errors.Register(ModuleName, 203, "invalid amount ratio")
 	ErrorPairDoesNotExist   = errors.Register(ModuleName, 204, "pair does not exist")
 	ErrorPriceDoesNotExist  = errors.Register(ModuleName, 203, "price does not exist")
 )
