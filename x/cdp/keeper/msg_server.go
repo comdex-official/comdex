@@ -208,7 +208,74 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 }
 
 func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
-	panic("implement me")
+	ctx := sdk.UnwrapSDKContext(c)
+
+	from, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	cdp, found := k.GetCDP(ctx, msg.ID)
+	if !found {
+		return nil, types.ErrorCDPDoesNotExist
+	}
+	if msg.From != cdp.Owner {
+		return nil, types.ErrorUnauthorized
+	}
+
+	pair, found := k.GetPair(ctx, cdp.PairID)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.ID)
+	if !found {
+		return nil, types.ErrorPriceDoesNotExist
+	}
+
+	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.ID)
+	if !found {
+		return nil, types.ErrorPriceDoesNotExist
+	}
+
+	cdp.AmountOut = cdp.AmountOut.Add(msg.Amount)
+	if !cdp.AmountOut.IsPositive() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	totalIn := cdp.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
+	if totalIn.IsZero() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	totalOut := cdp.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
+	if totalOut.IsZero() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	if totalIn.Quo(totalOut).LT(pair.LiquidationRatio) {
+		return nil, types.ErrorInvalidAmountRatio
+	}
+
+	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, msg.Amount)); err != nil {
+		return nil, err
+	}
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetOut.Denom, msg.Amount)); err != nil {
+		return nil, err
+	}
+
+	k.SetCDP(ctx, cdp)
+	return &types.MsgDrawResponse{}, nil
 }
 
 func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
