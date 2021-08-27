@@ -138,12 +138,12 @@ func QueryCdpById() *cobra.Command {
 
 			queryClient := types.NewQueryServiceClient(ctx)
 
-			u64, err := strconv.ParseUint(args[0], 10, 64)
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 			res, err := queryClient.QueryCDPById(cmd.Context(), &types.QueryCDPByIdRequest{
-				Id: u64,
+				Id: id,
 			})
 
 			if err != nil {
