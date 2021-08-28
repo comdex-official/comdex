@@ -11,8 +11,13 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		queryAsset(),
+		queryAssets(),
+		queryMarket(),
+		queryMarkets(),
 		queryPair(),
 		queryPairs(),
+		queryParams(),
 	)
 
 	return cmd
