@@ -89,11 +89,12 @@ func (m *MsgUpdateMarketRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgAddAssetRequest(from sdk.AccAddress, name, denom string) *MsgAddAssetRequest {
+func NewMsgAddAssetRequest(from sdk.AccAddress, name, denom string, decimals int64) *MsgAddAssetRequest {
 	return &MsgAddAssetRequest{
-		From:  from.String(),
-		Name:  name,
-		Denom: denom,
+		From:     from.String(),
+		Name:     name,
+		Denom:    denom,
+		Decimals: decimals,
 	}
 }
 
@@ -132,12 +133,13 @@ func (m *MsgAddAssetRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateAssetRequest(from sdk.AccAddress, id uint64, name, denom string) *MsgUpdateAssetRequest {
+func NewMsgUpdateAssetRequest(from sdk.AccAddress, id uint64, name, denom string, decimals int64) *MsgUpdateAssetRequest {
 	return &MsgUpdateAssetRequest{
-		From:  "",
-		ID:    0,
-		Name:  "",
-		Denom: "",
+		From:     from.String(),
+		ID:       id,
+		Name:     name,
+		Denom:    denom,
+		Decimals: decimals,
 	}
 }
 

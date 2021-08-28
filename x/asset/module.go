@@ -67,7 +67,9 @@ func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runti
 	_ = types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))
 }
 
-func (a AppModuleBasic) GetTxCmd() *cobra.Command { return nil }
+func (a AppModuleBasic) GetTxCmd() *cobra.Command {
+	return cli.GetTxCmd()
+}
 
 func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()

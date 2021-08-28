@@ -22,3 +22,23 @@ func GetQueryCmd() *cobra.Command {
 
 	return cmd
 }
+
+func GetTxCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "asset",
+		Short: "asset module sub-commands",
+	}
+
+	cmd.AddCommand(
+		txAddAsset(),
+		txUpdateAsset(),
+		txAddMarket(),
+		txUpdateMarket(),
+		txAddMarketForAsset(),
+		txRemoveMarketForAsset(),
+		txAddPair(),
+		txUpdatePair(),
+	)
+
+	return cmd
+}
