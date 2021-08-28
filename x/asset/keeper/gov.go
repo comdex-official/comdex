@@ -6,25 +6,11 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func (k *Keeper) HandleAddPairProposal(ctx sdk.Context, prop *types.AddPairProposal) error {
-	var (
-		id   = k.GetPairID(ctx)
-		pair = types.Pair{
-			ID:               id + 1,
-			AssetIn:          prop.AssetIn,
-			AssetOut:         prop.AssetOut,
-			LiquidationRatio: prop.LiquidationRatio,
-		}
-	)
+func (k *Keeper) HandleUpdateAdminProposal(ctx sdk.Context, p *types.UpdateAdminProposal) error {
+	params := k.GetParams(ctx)
 
-	k.SetPair(ctx, pair)
-	k.SetPairID(ctx, id+1)
-
-	_ = ctx.EventManager().EmitTypedEvent(
-		&types.EventAddPair{
-			ID: pair.ID,
-		},
-	)
+	params.Admin = p.Address
+	k.SetParams(ctx, params)
 
 	return nil
 }

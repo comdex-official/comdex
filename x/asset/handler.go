@@ -49,8 +49,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 func NewProposalHandler(k keeper.Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
-		case *types.AddPairProposal:
-			return k.HandleAddPairProposal(ctx, c)
+		case *types.UpdateAdminProposal:
+			return k.HandleUpdateAdminProposal(ctx, c)
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}
