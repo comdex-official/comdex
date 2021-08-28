@@ -9,15 +9,12 @@ import (
 )
 
 const (
+	DefaultAdmin            = ""
 	DefaultIBCPort          = "asset"
 	DefaultIBCVersion       = "comdex-ics-01"
 	DefaultOracleAskCount   = 1
 	DefaultOracleMinCount   = 1
 	DefaultOracleMultiplier = 9
-)
-
-var (
-	DefaultAdmin = sdk.AccAddress{}
 )
 
 var (
@@ -85,9 +82,9 @@ func (m *OracleParams) Validate() error {
 	return nil
 }
 
-func NewParams(admin sdk.AccAddress, ibc IBCParams, oracle OracleParams) Params {
+func NewParams(admin string, ibc IBCParams, oracle OracleParams) Params {
 	return Params{
-		Admin:  admin.String(),
+		Admin:  admin,
 		IBC:    ibc,
 		Oracle: oracle,
 	}

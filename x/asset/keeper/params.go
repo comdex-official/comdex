@@ -35,3 +35,22 @@ func (k *Keeper) OracleMultiplier(ctx sdk.Context) (i uint64) {
 	k.params.Get(ctx, types.KeyOracleMultiplier, &i)
 	return
 }
+
+func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) {
+	k.params.SetParamSet(ctx, &params)
+}
+
+func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
+	return types.NewParams(
+		k.Admin(ctx),
+		types.NewIBCParams(
+			k.IBCPort(ctx),
+			k.IBCVersion(ctx),
+		),
+		types.NewOracleParams(
+			k.OracleAskCount(ctx),
+			k.OracleMinCount(ctx),
+			k.OracleMultiplier(ctx),
+		),
+	)
+}

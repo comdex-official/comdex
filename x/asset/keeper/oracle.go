@@ -46,6 +46,23 @@ func (k *Keeper) GetMarket(ctx sdk.Context, symbol string) (market types.Market,
 	return market, true
 }
 
+func (k *Keeper) GetMarkets(ctx sdk.Context) (markets []types.Market) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.MarketKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var market types.Market
+		k.cdc.MustUnmarshal(iter.Value(), &market)
+		markets = append(markets, market)
+	}
+
+	return markets
+}
+
 func (k *Keeper) SetPriceForMarket(ctx sdk.Context, symbol string, price uint64) {
 	var (
 		store = k.Store(ctx)
