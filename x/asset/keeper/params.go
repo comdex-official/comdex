@@ -6,6 +6,11 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
+func (k *Keeper) Admin(ctx sdk.Context) (s string) {
+	k.params.Get(ctx, types.KeyAdmin, &s)
+	return
+}
+
 func (k *Keeper) IBCPort(ctx sdk.Context) (s string) {
 	k.params.Get(ctx, types.KeyIBCPort, &s)
 	return

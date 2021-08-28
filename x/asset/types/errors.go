@@ -27,6 +27,7 @@ var (
 	ErrorMarketForAssetDoesNotExist = errors.Register(ModuleName, 206, "market for asset does not exist")
 	ErrorPairDoesNotExist           = errors.Register(ModuleName, 207, "pair does not exist")
 	ErrorScriptIDMismatch           = errors.Register(ModuleName, 208, "script id mismatch")
+	ErrorUnauthorized               = errors.Register(ModuleName, 209, "unauthorized")
 )
 
 var (

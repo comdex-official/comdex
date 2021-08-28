@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -14,6 +16,11 @@ const (
 )
 
 var (
+	DefaultAdmin = sdk.AccAddress{}
+)
+
+var (
+	KeyAdmin            = []byte("Admin")
 	KeyIBCPort          = []byte("IBCPort")
 	KeyIBCVersion       = []byte("IBCVersion")
 	KeyOracleAskCount   = []byte("OracleAskCount")
@@ -63,8 +70,9 @@ func (m *OracleParams) Validate() error {
 	return nil
 }
 
-func NewParams(ibc IBCParams, oracle OracleParams) Params {
+func NewParams(admin sdk.AccAddress, ibc IBCParams, oracle OracleParams) Params {
 	return Params{
+		Admin:  admin.String(),
 		IBC:    ibc,
 		Oracle: oracle,
 	}
@@ -72,6 +80,7 @@ func NewParams(ibc IBCParams, oracle OracleParams) Params {
 
 func DefaultParams() Params {
 	return NewParams(
+		DefaultAdmin,
 		DefaultIBCParams(),
 		DefaultOracleParams(),
 	)
@@ -79,6 +88,13 @@ func DefaultParams() Params {
 
 func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 	return paramstypes.ParamSetPairs{
+		paramstypes.NewParamSetPair(
+			KeyAdmin,
+			m.Admin,
+			func(value interface{}) error {
+				return nil
+			},
+		),
 		paramstypes.NewParamSetPair(
 			KeyIBCPort,
 			m.IBC.Port,
@@ -118,6 +134,12 @@ func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 }
 
 func (m *Params) Validate() error {
+	if m.Admin == "" {
+		return fmt.Errorf("admin cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return errors.Wrapf(err, "invalid admin %s", m.Admin)
+	}
 	if err := m.IBC.Validate(); err != nil {
 		return errors.Wrapf(err, "invalid ibc params")
 	}
