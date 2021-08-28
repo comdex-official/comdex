@@ -31,6 +31,10 @@ var (
 )
 
 var (
+	ErrorUnknownMsgType = errors.Register(ModuleName, 301, "unknown message type")
+)
+
+var (
 	ErrorUnknownProposalType = errors.Register(ModuleName, 401, "unknown proposal type")
 )
 
