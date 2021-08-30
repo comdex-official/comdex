@@ -28,7 +28,7 @@ func GetTxCmd() *cobra.Command {
 		txWithdraw(),
 		txDrawDebt(),
 		txRepayDebt(),
-		txLiquidate(),
+		txCloseCdp(),
 	)
 
 	return cmd
@@ -184,7 +184,7 @@ func txRepayDebt() *cobra.Command {
 	return cmd
 }
 
-func txLiquidate() *cobra.Command {
+func txCloseCdp() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "liquidate [collateral-type]",
 		Short: "liquidate",

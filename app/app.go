@@ -525,6 +525,13 @@ func (a *App) LoadHeight(height int64) error {
 	return a.LoadVersion(height)
 }
 
+// SetAccountAddressPrefixes sets the global prefix to be used when serializing addresses to bech32 strings.
+func SetAccountAddressPrefixes(config *sdk.Config) {
+	config.SetBech32PrefixForAccount(AccountAddressPrefix, AccountAddressPrefix+sdk.PrefixPublic)
+	config.SetBech32PrefixForValidator(AccountAddressPrefix+sdk.PrefixValidator+sdk.PrefixOperator, AccountAddressPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
+	config.SetBech32PrefixForConsensusNode(AccountAddressPrefix+sdk.PrefixValidator+sdk.PrefixConsensus, AccountAddressPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic)
+}
+
 // ModuleAccountAddrs returns all the app's module account addresses.
 func (a *App) ModuleAccountAddrs() map[string]bool {
 	accounts := make(map[string]bool)
