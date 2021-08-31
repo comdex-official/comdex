@@ -52,7 +52,7 @@ message EventRepayDebt{
   ];
 }
 
-message EventLiquidateCDP{
+message EventCloseCDP{
   string owner = 1;
   string collateral_type = 2;
 }

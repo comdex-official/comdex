@@ -20,7 +20,7 @@ service MsgService {
 
   rpc MsgRepayDebt(MsgRepayDebtRequest) returns (MsgRepayDebtResponse);
 
-  rpc MsgLiquidateCDP(MsgLiquidateCDPRequest) returns (MsgLiquidateCDPResponse);
+  rpc MsgCloseCDP(MsgCloseCDPRequest) returns (MsgCloseCDPResponse);
 
 }
 
@@ -91,9 +91,9 @@ message MsgRepayDebtRequest{
 
 message MsgRepayDebtResponse{}
 
-message MsgLiquidateCDPRequest{
+message MsgCloseCDPRequest{
   string owner = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
   string collateral_type = 2 [ (gogoproto.moretags) = "yaml:\"collateral_type\"" ];
 }
 
-message MsgLiquidateCDPResponse{}
+message MsgCloseCDPResponse{}

@@ -33,8 +33,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgRepayDebtRequest:
 			result, err := msgServer.MsgRepayDebt(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, result, err)
-		case *types.MsgLiquidateCDPRequest:
-			result, err := msgServer.MsgLiquidateCDP(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgCloseCDPRequest:
+			result, err := msgServer.MsgCloseCDP(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, result, err)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)

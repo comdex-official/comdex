@@ -27,7 +27,7 @@ var (
 	TypeMsgWithdrawCollateralRequest = ModuleName + ":withdraw_collateral"
 	TypeMsgDrawDebtRequest           = ModuleName + ":draw_debt"
 	TypeMsgRepayDebtRequest          = ModuleName + ":repay_debt"
-	TypeMsgLiquidateCDPRequest       = ModuleName + ":liquidate_cdp"
+	TypeMsgCloseCDPRequest           = ModuleName + ":close_cdp"
 )
 
 var (

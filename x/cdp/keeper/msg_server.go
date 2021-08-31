@@ -133,7 +133,7 @@ func (ms msgServer) MsgRepayDebt(context context.Context, msg *types.MsgRepayDeb
 	return &types.MsgRepayDebtResponse{}, nil
 }
 
-func (ms msgServer) MsgLiquidateCDP(context context.Context, msg *types.MsgLiquidateCDPRequest) (*types.MsgLiquidateCDPResponse, error) {
+func (ms msgServer) MsgCloseCDP(context context.Context, msg *types.MsgCloseCDPRequest) (*types.MsgCloseCDPResponse, error) {
 	ctx := sdk.UnwrapSDKContext(context)
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
@@ -146,11 +146,11 @@ func (ms msgServer) MsgLiquidateCDP(context context.Context, msg *types.MsgLiqui
 	}
 
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventLiquidateCDP{
+		&types.EventCloseCDP{
 			Owner:          owner.String(),
 			CollateralType: msg.CollateralType,
 		},
 	)
 
-	return &types.MsgLiquidateCDPResponse{}, nil
+	return &types.MsgCloseCDPResponse{}, nil
 }

@@ -20,7 +20,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgWithdrawCollateralRequest{},
 		&MsgDrawDebtRequest{},
 		&MsgRepayDebtRequest{},
-		&MsgLiquidateCDPRequest{},
+		&MsgCloseCDPRequest{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)

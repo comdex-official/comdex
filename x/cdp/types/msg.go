@@ -14,7 +14,7 @@ var (
 	_ sdk.Msg = (*MsgWithdrawCollateralRequest)(nil)
 	_ sdk.Msg = (*MsgDrawDebtRequest)(nil)
 	_ sdk.Msg = (*MsgRepayDebtRequest)(nil)
-	_ sdk.Msg = (*MsgLiquidateCDPRequest)(nil)
+	_ sdk.Msg = (*MsgCloseCDPRequest)(nil)
 )
 
 // returns a new NewMsgCreateCDPRequest.
@@ -216,19 +216,19 @@ func (msg *MsgRepayDebtRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-//returns new liquidate request
-func NewMsgLiquidateCDPRequest(sender sdk.AccAddress, collateralType string) *MsgLiquidateCDPRequest {
-	return &MsgLiquidateCDPRequest{
+//returns new Close request
+func NewMsgCloseCDPRequest(sender sdk.AccAddress, collateralType string) *MsgCloseCDPRequest {
+	return &MsgCloseCDPRequest{
 		Owner:          sender.String(),
 		CollateralType: collateralType,
 	}
 }
 
-func (msg *MsgLiquidateCDPRequest) Route() string { return RouterKey }
+func (msg *MsgCloseCDPRequest) Route() string { return RouterKey }
 
-func (msg *MsgLiquidateCDPRequest) Type() string { return TypeMsgLiquidateCDPRequest }
+func (msg *MsgCloseCDPRequest) Type() string { return TypeMsgCloseCDPRequest }
 
-func (msg MsgLiquidateCDPRequest) ValidateBasic() error {
+func (msg MsgCloseCDPRequest) ValidateBasic() error {
 	if msg.Owner == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "sender address cannot be empty")
 	}
@@ -238,11 +238,11 @@ func (msg MsgLiquidateCDPRequest) ValidateBasic() error {
 	return nil
 }
 
-func (msg *MsgLiquidateCDPRequest) GetSignBytes() []byte {
+func (msg *MsgCloseCDPRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
-func (msg *MsgLiquidateCDPRequest) GetSigners() []sdk.AccAddress {
+func (msg *MsgCloseCDPRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
