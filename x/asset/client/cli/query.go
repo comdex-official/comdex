@@ -27,11 +27,9 @@ func queryAsset() *cobra.Command {
 				return err
 			}
 
-			var (
-				qc = types.NewQueryServiceClient(ctx)
-			)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := qc.QueryAsset(
+			res, err := queryClient.QueryAsset(
 				context.Background(),
 				&types.QueryAssetRequest{
 					ID: id,
@@ -65,11 +63,9 @@ func queryAssets() *cobra.Command {
 				return err
 			}
 
-			var (
-				qc = types.NewQueryServiceClient(ctx)
-			)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := qc.QueryAssets(
+			res, err := queryClient.QueryAssets(
 				context.Background(),
 				&types.QueryAssetsRequest{
 					Pagination: pagination,
@@ -100,11 +96,9 @@ func queryMarket() *cobra.Command {
 				return err
 			}
 
-			var (
-				qc = types.NewQueryServiceClient(ctx)
-			)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := qc.QueryMarket(
+			res, err := queryClient.QueryMarket(
 				context.Background(),
 				&types.QueryMarketRequest{
 					Symbol: args[0],
@@ -138,11 +132,9 @@ func queryMarkets() *cobra.Command {
 				return err
 			}
 
-			var (
-				qc = types.NewQueryServiceClient(ctx)
-			)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := qc.QueryMarkets(
+			res, err := queryClient.QueryMarkets(
 				context.Background(),
 				&types.QueryMarketsRequest{
 					Pagination: pagination,
@@ -178,11 +170,9 @@ func queryPair() *cobra.Command {
 				return err
 			}
 
-			var (
-				qc = types.NewQueryServiceClient(ctx)
-			)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := qc.QueryPair(
+			res, err := queryClient.QueryPair(
 				context.Background(),
 				&types.QueryPairRequest{
 					ID: id,
@@ -216,11 +206,9 @@ func queryPairs() *cobra.Command {
 				return err
 			}
 
-			var (
-				qc = types.NewQueryServiceClient(ctx)
-			)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := qc.QueryPairs(
+			res, err := queryClient.QueryPairs(
 				context.Background(),
 				&types.QueryPairsRequest{
 					Pagination: pagination,
@@ -250,11 +238,9 @@ func queryParams() *cobra.Command {
 				return err
 			}
 
-			var (
-				qc = types.NewQueryServiceClient(ctx)
-			)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := qc.QueryParams(
+			res, err := queryClient.QueryParams(
 				context.Background(),
 				&types.QueryParamsRequest{},
 			)
