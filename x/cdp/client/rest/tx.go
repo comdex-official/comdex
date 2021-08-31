@@ -30,7 +30,7 @@ func createRepay(ctx client.Context) http.HandlerFunc {
 	}
 }
 
-func createCloseCDP(ctx client.Context) http.HandlerFunc {
+func closeCDP(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 	}
 }

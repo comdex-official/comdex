@@ -24,7 +24,7 @@ func registerTxRoutes(ctx client.Context, router *mux.Router) {
 		Methods("POST")
 	router.HandleFunc("/repay", createRepay(ctx)).
 		Methods("POST")
-	router.HandleFunc("/closecdp", createCloseCDP(ctx)).
+	router.HandleFunc("/cdp/close", closeCDP(ctx)).
 		Methods("POST")
 
 }

@@ -40,7 +40,7 @@ func (k Keeper) QueryCDPs(context context.Context, request *types.QueryCDPsReque
 
 	ownerCDPList, found := k.GetOwnerCDPList(ctx, ownerAddrs)
 	if !found {
-		return &types.QueryCDPsResponse{}, status.Error(codes.NotFound, "no cdps created for this account")
+		return &types.QueryCDPsResponse{}, nil
 	}
 
 	for _, ownedCdp := range ownerCDPList.OwnedCDPs {
