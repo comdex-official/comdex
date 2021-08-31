@@ -1,14 +1,14 @@
 package main
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/server"
-	servercmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
 	comdex "github.com/comdex-official/comdex/app"
 	nodecmd "github.com/comdex-official/comdex/node/cmd"
+	servercmd "github.com/cosmos/cosmos-sdk/server/cmd"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/app"
 )

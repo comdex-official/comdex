@@ -44,9 +44,7 @@ func (k Keeper) QueryCDPs(context context.Context, request *types.QueryCDPsReque
 	}
 
 	for _, ownedCdp := range ownerCDPList.OwnedCDPs {
-
 		cdp, found := k.GetCDP(ctx, ownedCdp.Id)
-
 		if found {
 			cdps = append(cdps, cdp)
 		}
