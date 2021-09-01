@@ -12,9 +12,9 @@ import (
 
 type (
 	Keeper struct {
-		cdc           codec.BinaryMarshaler
-		storeKey      sdk.StoreKey
-		memKey        sdk.StoreKey
+		cdc      codec.BinaryMarshaler
+		StoreKey sdk.StoreKey
+		memKey   sdk.StoreKey
 		accountKeeper types.AccountKeeper
 		bankKeeper    types.BankKeeper
 		paramSpace    types.ParamSubspace
@@ -36,7 +36,7 @@ func NewKeeper(
 
 	return &Keeper{
 		cdc:           cdc,
-		storeKey:      storeKey,
+		StoreKey:      storeKey,
 		memKey:        memKey,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,

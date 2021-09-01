@@ -273,7 +273,7 @@ func (k Keeper) GetCDPByOwnerAndCollateralType(ctx sdk.Context, owner sdk.AccAdd
 }
 
 func (k Keeper) GetCDP(ctx sdk.Context, cdpID uint64) (types.CDP, bool) {
-	store := ctx.KVStore(k.storeKey)
+	store := ctx.KVStore(k.StoreKey)
 	bz := store.Get(types.CdpKey(cdpID))
 	if bz == nil {
 		return types.CDP{}, false
@@ -285,20 +285,20 @@ func (k Keeper) GetCDP(ctx sdk.Context, cdpID uint64) (types.CDP, bool) {
 }
 
 func (k Keeper) SetCDP(ctx sdk.Context, cdp types.CDP) {
-	store := ctx.KVStore(k.storeKey)
+	store := ctx.KVStore(k.StoreKey)
 	bz := k.cdc.MustMarshalBinaryBare(&cdp)
 	store.Set(types.CdpKey(cdp.Id), bz)
 	return
 }
 
 func (k Keeper) DeleteCDP(ctx sdk.Context, cdp types.CDP) error {
-	store := ctx.KVStore(k.storeKey)
+	store := ctx.KVStore(k.StoreKey)
 	store.Delete(types.CdpKey(cdp.Id))
 	return nil
 }
 
 func (k Keeper) GetNextCdpID(ctx sdk.Context) (id uint64) {
-	store := ctx.KVStore(k.storeKey)
+	store := ctx.KVStore(k.StoreKey)
 	bz := store.Get(types.CdpIdKey)
 
 	if bz == nil {
@@ -309,7 +309,7 @@ func (k Keeper) GetNextCdpID(ctx sdk.Context) (id uint64) {
 }
 
 func (k Keeper) IndexCDPByOwner(ctx sdk.Context, cdp types.CDP) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIdIndexKeyPrefix)
+	store := prefix.NewStore(ctx.KVStore(k.StoreKey), types.CdpIdIndexKeyPrefix)
 	ownerAddrs, _ := sdk.AccAddressFromBech32(cdp.Owner)
 	ownerCDPList, found := k.GetOwnerCDPList(ctx, ownerAddrs)
 	ownedCDP := types.OwnedCDP{Id: cdp.Id, CollateralType: cdp.Type}
@@ -326,12 +326,12 @@ func (k Keeper) IndexCDPByOwner(ctx sdk.Context, cdp types.CDP) {
 }
 
 func (k Keeper) SetNextCdpId(ctx sdk.Context, id uint64) {
-	store := ctx.KVStore(k.storeKey)
+	store := ctx.KVStore(k.StoreKey)
 	store.Set(types.CdpIdKey, types.GetCdpIDBytes(id))
 }
 
 func (k Keeper) GetOwnerCDPList(ctx sdk.Context, owner sdk.AccAddress) (types.OwnerCDPList, bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CdpIdIndexKeyPrefix)
+	store := prefix.NewStore(ctx.KVStore(k.StoreKey), types.CdpIdIndexKeyPrefix)
 	bz := store.Get(owner)
 	if bz == nil {
 		return types.OwnerCDPList{[]types.OwnedCDP{}}, false
