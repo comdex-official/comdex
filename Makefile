@@ -1,40 +1,20 @@
-export GO111MODULE=on
-
+PACKAGES := $(shell go list ./...)
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
-COMMIT := $(shell git rev-parse --short HEAD)
+COMMIT := $(shell git log -1 --format='%H')
+TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
-build_tags = netgo
-build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
-ldflags = -X github.com/cosmos/cosmos-sdk/version.AppName=comdex \
-		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
-		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-		  -X github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep) \
+BUILD_TAGS := $(strip netgo,ledger)
+LD_FLAGS := -s -w \
+    -X github.com/cosmos/cosmos-sdk/version.Name=comdex \
+    -X github.com/cosmos/cosmos-sdk/version.AppName=comdex \
+    -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
+    -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
+    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
+    -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TENDERMINT_VERSION)
 
-BUILD_FLAGS += -ldflags "${ldflags}"
-
-GOBIN = $(shell go env GOPATH)/bin
-
-all: verify build
-
-install:
-ifeq (${OS},Windows_NT)
-	go build -mod=readonly ${BUILD_FLAGS} -o ${GOBIN}/comdex.exe ./node
-else
-	go build -mod=readonly ${BUILD_FLAGS} -o ${GOBIN}/comdex ./node
-endif
-
-build:
-ifeq (${OS},Windows_NT)
-	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex.exe ./node
-else
-	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex ./node
-endif
-
-verify:
-	@echo "verifying modules"
-	@go mod verify
-
-.PHONY: all install build verify
+.PHONY: benchmark
+benchmark:
+	@go test -mod=readonly -v -bench ${PACKAGES}
 
 .PHONY: clean
 clean:
@@ -42,20 +22,32 @@ clean:
 
 .PHONY: install
 install: mod-vendor
-	go install -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" ./node/cmd
+	go install -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" ./node
+
+.PHONY: go-lint
+go-lint:
+	@golangci-lint run --fix
 
 .PHONY: mod-vendor
 mod-vendor: tools
 	@go mod vendor
-	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto
+	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto,github.com/cosmos/ibc-go/proto
 
 .PHONY: proto-gen
 proto-gen:
-	@.script/protocgen.sh
+	@.scripts/proto-gen.sh
 
 .PHONY: proto-lint
 proto-lint:
 	@find proto -name *.proto -exec clang-format-12 -i {} \;
+
+.PHONY: test
+test:
+	@go test -mod=readonly -timeout 15m -v ${PACKAGES}
+
+.PHONT: test-coverage
+test-coverage:
+	@go test -mod=readonly -timeout 15m -v -covermode=atomic -coverprofile=coverage.txt ${PACKAGES}
 
 .PHONY: tools
 tools:

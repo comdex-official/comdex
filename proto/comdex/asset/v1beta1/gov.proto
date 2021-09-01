@@ -1,0 +1,14 @@
+syntax = "proto3";
+package comdex.asset.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/asset/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message UpdateAdminProposal {
+  string title       = 1 [ (gogoproto.moretags) = "yaml:\"title\"" ];
+  string description = 2 [ (gogoproto.moretags) = "yaml:\"description\"" ];
+  string address     = 3 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+}
