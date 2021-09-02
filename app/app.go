@@ -40,6 +40,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	freegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -61,6 +62,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+	upgradeexported "github.com/cosmos/cosmos-sdk/x/upgrade/exported"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibctransfer "github.com/cosmos/ibc-go/modules/apps/transfer"
@@ -158,6 +160,7 @@ type App struct {
 
 	// keepers
 	accountKeeper     authkeeper.AccountKeeper
+	freegrantKeeper   freegrantkeeper.Keeper
 	bankKeeper        bankkeeper.Keeper
 	capabilityKeeper  *capabilitykeeper.Keeper
 	stakingKeeper     stakingkeeper.Keeper
@@ -470,14 +473,17 @@ func New(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	anteHandler2, _ := ante.NewAnteHandler(
-		app.accountKeeper,
-		app.bankKeeper,
-		ante.DefaultSigVerificationGasConsumer,
-		encoding.TxConfig.SignModeHandler(),
+	anteHandler, _ := ante.NewAnteHandler(
+		ante.HandlerOptions{
+			app.accountKeeper,
+			app.bankKeeper,
+			app.freegrantKeeper,
+			encoding.TxConfig.SignModeHandler(),
+			ante.DefaultSigVerificationGasConsumer,
+		},
 	)
 
-	app.SetAnteHandler(anteHandler2)
+	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
@@ -493,7 +499,8 @@ func New(
 		// Note that since this reads from the store, we can only perform it when
 		// `loadLatest` is set to true.
 		ctx := app.BaseApp.NewUncachedContext(true, tmprototypes.Header{})
-		app.capabilityKeeper.InitializeAndSeal(ctx)
+		app.capabilityKeeper.InitMemStore(ctx)
+		app.capabilityKeeper.Seal()
 	}
 
 	app.scopedIBCKeeper = scopedIBCKeeper

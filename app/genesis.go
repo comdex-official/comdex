@@ -18,6 +18,6 @@ type (
 )
 
 // NewDefaultGenesisState generates the default state for the application.
-func NewDefaultGenesisState(cdc codec.JSONMarshaler) GenesisState {
+func NewDefaultGenesisState(cdc codec.JSONCodec) GenesisState {
 	return ModuleBasics.DefaultGenesis(cdc)
 }
