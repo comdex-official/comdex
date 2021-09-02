@@ -141,8 +141,9 @@ func init() {
 type App struct {
 	*baseapp.BaseApp
 
-	amino             *codec.LegacyAmino
-	cdc               codec.Marshaler
+	amino *codec.LegacyAmino
+	cdc   codec.Codec
+
 	interfaceRegistry codectypes.InterfaceRegistry
 
 	invCheckPeriod uint
@@ -205,7 +206,7 @@ func New(
 
 	baseApp := baseapp.NewBaseApp(Name, logger, db, encoding.TxConfig.TxDecoder(), baseAppOptions...)
 	baseApp.SetCommitMultiStoreTracer(traceStore)
-	baseApp.SetAppVersion(version.Version)
+	baseApp.SetVersion(version.Version)
 	baseApp.SetInterfaceRegistry(encoding.InterfaceRegistry)
 
 	app := &App{
@@ -334,6 +335,7 @@ func New(
 		app.keys[ibchost.StoreKey],
 		app.GetSubspace(ibchost.ModuleName),
 		app.stakingKeeper,
+		app.upgradeKeeper,
 		scopedIBCKeeper,
 	)
 
@@ -343,7 +345,7 @@ func New(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientUpdateProposalHandler(app.ibcKeeper.ClientKeeper))
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
 
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,
@@ -458,7 +460,7 @@ func New(
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encoding.Amino)
-	app.mm.RegisterServices(module.NewConfigurator(app.MsgServiceRouter(), app.GRPCQueryRouter()))
+	app.mm.RegisterServices(module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter()))
 
 	// initialize stores
 	app.MountKVStores(app.keys)
@@ -468,12 +470,14 @@ func New(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(
-		ante.NewAnteHandler(
-			app.accountKeeper, app.bankKeeper, ante.DefaultSigVerificationGasConsumer,
-			encoding.TxConfig.SignModeHandler(),
-		),
+	anteHandler2, _ := ante.NewAnteHandler(
+		app.accountKeeper,
+		app.bankKeeper,
+		ante.DefaultSigVerificationGasConsumer,
+		encoding.TxConfig.SignModeHandler(),
 	)
+
+	app.SetAnteHandler(anteHandler2)
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
@@ -547,7 +551,7 @@ func (a *App) LegacyAmino() *codec.LegacyAmino {
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (a *App) AppCodec() codec.Marshaler {
+func (a *App) AppCodec() codec.BinaryCodec {
 	return a.cdc
 }
 
