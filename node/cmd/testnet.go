@@ -187,8 +187,8 @@ func InitTestnet(
 			return err
 		}
 
-		accTokens := sdk.TokensFromConsensusPower(1000,sdk.NewInt(1))
-		accStakingTokens := sdk.TokensFromConsensusPower(500,sdk.NewInt(1))
+		accTokens := sdk.TokensFromConsensusPower(1000, sdk.NewInt(1))
+		accStakingTokens := sdk.TokensFromConsensusPower(500, sdk.NewInt(1))
 		coins := sdk.Coins{
 			sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
 			sdk.NewCoin(sdk.DefaultBondDenom, accStakingTokens),
@@ -197,7 +197,7 @@ func InitTestnet(
 		genBalances = append(genBalances, banktypes.Balance{Address: addr.String(), Coins: coins.Sort()})
 		genAccounts = append(genAccounts, authtypes.NewBaseAccount(addr, nil, 0, 0))
 
-		valTokens := sdk.TokensFromConsensusPower(100,sdk.NewInt(1))
+		valTokens := sdk.TokensFromConsensusPower(100, sdk.NewInt(1))
 		createValMsg, err := stakingtypes.NewMsgCreateValidator(
 			sdk.ValAddress(addr),
 			valPubKeys[i],
