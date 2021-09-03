@@ -15,6 +15,6 @@ func TestDefaultGenesis(t *testing.T) {
 func TestValidate(t *testing.T) {
 	a := GenesisState{}.Validate()
 	if a != nil {
-		t.Error()
+		t.Errorf("required nil")
 	}
 }

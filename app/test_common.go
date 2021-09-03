@@ -49,5 +49,3 @@ func GeneratePrivKeyAddressPairs(n int) (keys []crypto.PrivKey, addrs []sdk.AccA
 func (tApp TestApp) GetAccountKeeper() authkeeper.AccountKeeper { return tApp.accountKeeper }
 func (tApp TestApp) GetCDPKeeper()      cdpkeeper.Keeper     { return tApp.cdpKeeper }
 func (tApp TestApp) GetBankKeeper() bankkeeper.Keeper { return tApp.bankKeeper }
-
-
