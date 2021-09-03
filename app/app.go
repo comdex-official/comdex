@@ -473,7 +473,7 @@ func New(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	anteHandler, _ := ante.NewAnteHandler(
+	anteHandler, err := ante.NewAnteHandler(
 		ante.HandlerOptions{
 			app.accountKeeper,
 			app.bankKeeper,
@@ -482,6 +482,9 @@ func New(
 			ante.DefaultSigVerificationGasConsumer,
 		},
 	)
+	if err != nil {
+		panic(err)
+	}
 
 	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
