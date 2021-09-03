@@ -157,7 +157,9 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 	return cdc.MustMarshalJSON(genState)
 }
 
-func (AppModule) ConsensusVersion() uint64 { return 3 }
+func (a AppModule) ConsensusVersion() uint64 {
+	return 1
+}
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
 func (am AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
