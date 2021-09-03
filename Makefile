@@ -20,6 +20,8 @@ GOBIN = $(shell go env GOPATH)/bin
 benchmark:
 	@go test -mod=readonly -v -bench ${PACKAGES}
 
+.PHONY: all install build verify
+
 .PHONY: clean
 clean:
 	rm -rf ./bin ./vendor
