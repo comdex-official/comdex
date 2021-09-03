@@ -62,7 +62,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-	upgradeexported "github.com/cosmos/cosmos-sdk/x/upgrade/exported"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibctransfer "github.com/cosmos/ibc-go/modules/apps/transfer"
@@ -321,6 +320,7 @@ func New(
 		app.keys[upgradetypes.StoreKey],
 		app.cdc,
 		homePath,
+		app.BaseApp,
 	)
 
 	// register the staking hooks
