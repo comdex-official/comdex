@@ -17,7 +17,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/snapshots"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -36,7 +35,7 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 	var (
 		config  = comdex.MakeEncodingConfig()
 		context = client.Context{}.
-			WithJSONMarshaler(config.Marshaler).
+			WithCodec(config.Marshaler).
 			WithInterfaceRegistry(config.InterfaceRegistry).
 			WithTxConfig(config.TxConfig).
 			WithLegacyAmino(config.Amino).
@@ -55,7 +54,7 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd)
+			return server.InterceptConfigsPreRunHandler(cmd, "", nil)
 		},
 	}
 
@@ -64,7 +63,6 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 }
 
 func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
-	authclient.Codec = encoding.Marshaler
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(comdex.ModuleBasics, comdex.DefaultNodeHome),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome),

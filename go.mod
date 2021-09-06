@@ -3,7 +3,9 @@ module github.com/comdex-official/comdex
 go 1.16
 
 require (
+	github.com/bandprotocol/bandchain-packet v0.0.2
 	github.com/cosmos/cosmos-sdk v0.43.0
+	github.com/cosmos/ibc-go v1.0.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
