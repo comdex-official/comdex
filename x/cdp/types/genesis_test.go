@@ -6,15 +6,15 @@ import (
 )
 
 func TestDefaultGenesis(t *testing.T) {
-	a := DefaultGenesis()
-	if reflect.TypeOf(a) != reflect.TypeOf(&GenesisState{}) {
+	defaultGenesis := DefaultGenesis()
+	if reflect.TypeOf(defaultGenesis) != reflect.TypeOf(&GenesisState{}) {
 		t.Error()
 	}
 }
 
 func TestValidate(t *testing.T) {
-	a := GenesisState{}.Validate()
-	if a != nil {
+	genesisState := GenesisState{}.Validate()
+	if genesisState != nil {
 		t.Errorf("required nil")
 	}
 }

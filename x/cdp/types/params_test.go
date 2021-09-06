@@ -7,9 +7,9 @@ import (
 )
 
 func TestParamKeyTable(t *testing.T) {
-	a := reflect.TypeOf(ParamKeyTable())
-	var b types.KeyTable
-	if a != reflect.TypeOf(b){
-		t.Errorf("expected %v got %v", a, b)
+	paramKeyTable := reflect.TypeOf(ParamKeyTable())
+	var newParamKeyTable types.KeyTable
+	if paramKeyTable != reflect.TypeOf(newParamKeyTable){
+		t.Errorf("expected %v got %v", paramKeyTable, newParamKeyTable)
 	}
 }

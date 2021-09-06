@@ -13,7 +13,7 @@ import (
 type (
 	Keeper struct {
 		cdc      codec.BinaryMarshaler
-		StoreKey sdk.StoreKey
+		storeKey sdk.StoreKey
 		memKey   sdk.StoreKey
 		accountKeeper types.AccountKeeper
 		bankKeeper    types.BankKeeper
@@ -36,7 +36,7 @@ func NewKeeper(
 
 	return &Keeper{
 		cdc:           cdc,
-		StoreKey:      storeKey,
+		storeKey:      storeKey,
 		memKey:        memKey,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
