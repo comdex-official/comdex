@@ -107,6 +107,7 @@ var xxx_messageInfo_QueryAssetsResponse proto.InternalMessageInfo
 
 type QueryAssetRequest struct {
 	ID uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	Id uint64
 }
 
 func (m *QueryAssetRequest) Reset()         { *m = QueryAssetRequest{} }
@@ -405,6 +406,7 @@ var xxx_messageInfo_QueryPairsResponse proto.InternalMessageInfo
 
 type QueryPairRequest struct {
 	ID uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	Id uint64
 }
 
 func (m *QueryPairRequest) Reset()         { *m = QueryPairRequest{} }
