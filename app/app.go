@@ -123,8 +123,8 @@ var (
 		evidence.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		asset.AppModule{},
 	    cdp.AppModuleBasic{},
+		asset.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 	)
 )
