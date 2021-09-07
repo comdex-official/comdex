@@ -32,7 +32,7 @@ func queryAsset() *cobra.Command {
 			res, err := queryClient.QueryAsset(
 				context.Background(),
 				&types.QueryAssetRequest{
-					ID: id,
+					Id: id,
 				},
 			)
 			if err != nil {
@@ -175,7 +175,7 @@ func queryPair() *cobra.Command {
 			res, err := queryClient.QueryPair(
 				context.Background(),
 				&types.QueryPairRequest{
-					ID: id,
+					Id: id,
 				},
 			)
 			if err != nil {

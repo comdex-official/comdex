@@ -5,7 +5,7 @@ import (
 )
 
 func (m *Pair) Validate() error {
-	if m.ID == 0 {
+	if m.Id == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
 	if m.AssetIn == 0 {

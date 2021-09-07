@@ -80,16 +80,16 @@ func (k *msgServer) MsgAddAsset(c context.Context, msg *types.MsgAddAssetRequest
 	var (
 		id    = k.GetAssetID(ctx)
 		asset = types.Asset{
-			ID:       id + 1,
+			Id:       id + 1,
 			Name:     msg.Name,
 			Denom:    msg.Denom,
 			Decimals: msg.Decimals,
 		}
 	)
 
-	k.SetAssetID(ctx, asset.ID)
+	k.SetAssetID(ctx, asset.Id)
 	k.SetAsset(ctx, asset)
-	k.SetAssetForDenom(ctx, asset.Denom, asset.ID)
+	k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
 
 	return &types.MsgAddAssetResponse{}, nil
 }
@@ -100,7 +100,7 @@ func (k *msgServer) MsgUpdateAsset(c context.Context, msg *types.MsgUpdateAssetR
 		return nil, types.ErrorUnauthorized
 	}
 
-	asset, found := k.GetAsset(ctx, msg.ID)
+	asset, found := k.GetAsset(ctx, msg.Id)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -116,7 +116,7 @@ func (k *msgServer) MsgUpdateAsset(c context.Context, msg *types.MsgUpdateAssetR
 		asset.Denom = msg.Denom
 
 		k.DeleteAssetForDenom(ctx, asset.Denom)
-		k.SetAssetForDenom(ctx, asset.Denom, asset.ID)
+		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
 	}
 	if msg.Decimals >= 0 {
 		asset.Decimals = msg.Decimals
@@ -132,17 +132,17 @@ func (k *msgServer) MsgAddMarketForAsset(c context.Context, msg *types.MsgAddMar
 		return nil, types.ErrorUnauthorized
 	}
 
-	if !k.HasAsset(ctx, msg.ID) {
+	if !k.HasAsset(ctx, msg.Id) {
 		return nil, types.ErrorAssetDoesNotExist
 	}
 	if !k.HasMarket(ctx, msg.Symbol) {
 		return nil, types.ErrorMarketDoesNotExist
 	}
-	if k.HasMarketForAsset(ctx, msg.ID) {
+	if k.HasMarketForAsset(ctx, msg.Id) {
 		return nil, types.ErrorDuplicateMarketForAsset
 	}
 
-	k.SetMarketForAsset(ctx, msg.ID, msg.Symbol)
+	k.SetMarketForAsset(ctx, msg.Id, msg.Symbol)
 	return &types.MsgAddMarketForAssetResponse{}, nil
 }
 
@@ -152,11 +152,11 @@ func (k *msgServer) MsgRemoveMarketForAsset(c context.Context, msg *types.MsgRem
 		return nil, types.ErrorUnauthorized
 	}
 
-	if !k.HasMarketForAsset(ctx, msg.ID) {
+	if !k.HasMarketForAsset(ctx, msg.Id) {
 		return nil, types.ErrorMarketForAssetDoesNotExist
 	}
 
-	k.DeleteMarketForAsset(ctx, msg.ID)
+	k.DeleteMarketForAsset(ctx, msg.Id)
 	return &types.MsgRemoveMarketForAssetResponse{}, nil
 }
 
@@ -176,14 +176,14 @@ func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) 
 	var (
 		id   = k.GetAssetID(ctx)
 		pair = types.Pair{
-			ID:               id + 1,
+			Id:               id + 1,
 			AssetIn:          msg.AssetIn,
 			AssetOut:         msg.AssetOut,
 			LiquidationRatio: msg.LiquidationRatio,
 		}
 	)
 
-	k.SetPairID(ctx, pair.ID)
+	k.SetPairID(ctx, pair.Id)
 	k.SetPair(ctx, pair)
 
 	return &types.MsgAddPairResponse{}, nil
@@ -195,7 +195,7 @@ func (k *msgServer) MsgUpdatePair(c context.Context, msg *types.MsgUpdatePairReq
 		return nil, types.ErrorUnauthorized
 	}
 
-	pair, found := k.GetPair(ctx, msg.ID)
+	pair, found := k.GetPair(ctx, msg.Id)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
