@@ -9,7 +9,7 @@ import (
 	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
-func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
+func setupMsgServer(t testing.TB) (types.MsgServiceServer, context.Context) {
 	keeper, ctx := setupKeeper(t)
 	return NewMsgServerImpl(*keeper), sdk.WrapSDKContext(ctx)
 }
