@@ -8,8 +8,7 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Asset {
-  uint64 id = 1
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  uint64 id = 1;
   string name    = 2 [ (gogoproto.moretags) = "yaml:\"name\"" ];
   string denom   = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
   int64 decimals = 4 [ (gogoproto.moretags) = "yaml:\"decimals\"" ];

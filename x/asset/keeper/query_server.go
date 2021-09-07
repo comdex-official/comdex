@@ -72,9 +72,9 @@ func (q *queryServer) QueryAsset(c context.Context, req *types.QueryAssetRequest
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetAsset(ctx, req.ID)
+	item, found := q.GetAsset(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.ID)
+		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
 	}
 
 	return &types.QueryAssetResponse{
@@ -184,9 +184,9 @@ func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) 
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetPair(ctx, req.ID)
+	item, found := q.GetPair(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", req.ID)
+		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", req.Id)
 	}
 
 	return &types.QueryPairResponse{
