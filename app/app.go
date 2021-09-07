@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/comdex-official/comdex/x/asset"
 	"io"
 	"os"
 	"path/filepath"
@@ -122,7 +123,8 @@ var (
 		evidence.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		cdp.AppModuleBasic{},
+		asset.AppModule{},
+	    cdp.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 	)
 )

@@ -16,8 +16,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
 	for _, item := range state.Assets {
-		if item.ID > assetID {
-			assetID = item.ID
+		if item.Id > assetID {
+			assetID = item.Id
 		}
 
 		k.SetAsset(ctx, item)
@@ -28,8 +28,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	}
 
 	for _, item := range state.Pairs {
-		if item.ID > assetID {
-			pairID = item.ID
+		if item.Id > assetID {
+			pairID = item.Id
 		}
 
 		k.SetPair(ctx, item)
