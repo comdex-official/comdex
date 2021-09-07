@@ -11,7 +11,7 @@ import (
 type EncodingConfig struct {
 	Amino             *codec.LegacyAmino
 	InterfaceRegistry codectypes.InterfaceRegistry
-	Marshaler         codec.Marshaler
+	Marshaler         codec.ProtoCodecMarshaler
 	TxConfig          client.TxConfig
 }
 

@@ -40,19 +40,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	freegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	ibctransfer "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer"
-	ibctransferkeeper "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
-	ibc "github.com/cosmos/cosmos-sdk/x/ibc/core"
-	ibcclient "github.com/cosmos/cosmos-sdk/x/ibc/core/02-client"
-	ibcporttypes "github.com/cosmos/cosmos-sdk/x/ibc/core/05-port/types"
-	ibchost "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
-	ibckeeper "github.com/cosmos/cosmos-sdk/x/ibc/core/keeper"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -71,6 +64,17 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	ibctransfer "github.com/cosmos/ibc-go/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/modules/core/02-client"
+	ibcporttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/modules/core/keeper"
+	"github.com/gravity-devs/liquidity/x/liquidity"
+	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
+	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/spf13/cast"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -119,6 +123,7 @@ var (
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		cdp.AppModuleBasic{},
+		liquidity.AppModuleBasic{},
 	)
 )
 
@@ -141,8 +146,9 @@ func init() {
 type App struct {
 	*baseapp.BaseApp
 
-	amino             *codec.LegacyAmino
-	cdc               codec.Marshaler
+	amino *codec.LegacyAmino
+	cdc   codec.Codec
+
 	interfaceRegistry codectypes.InterfaceRegistry
 
 	invCheckPeriod uint
@@ -157,6 +163,7 @@ type App struct {
 
 	// keepers
 	accountKeeper     authkeeper.AccountKeeper
+	freegrantKeeper   freegrantkeeper.Keeper
 	bankKeeper        bankkeeper.Keeper
 	capabilityKeeper  *capabilitykeeper.Keeper
 	stakingKeeper     stakingkeeper.Keeper
@@ -175,7 +182,8 @@ type App struct {
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
 
-	cdpKeeper cdpkeeper.Keeper
+	cdpKeeper       cdpkeeper.Keeper
+	liquidityKeeper liquiditykeeper.Keeper
 }
 
 // New returns a reference to an initialized App.
@@ -199,13 +207,13 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			cdptypes.StoreKey,
+			cdptypes.StoreKey, liquiditytypes.StoreKey,
 		)
 	)
 
 	baseApp := baseapp.NewBaseApp(Name, logger, db, encoding.TxConfig.TxDecoder(), baseAppOptions...)
 	baseApp.SetCommitMultiStoreTracer(traceStore)
-	baseApp.SetAppVersion(version.Version)
+	baseApp.SetVersion(version.Version)
 	baseApp.SetInterfaceRegistry(encoding.InterfaceRegistry)
 
 	app := &App{
@@ -235,6 +243,7 @@ func New(
 	app.paramsKeeper.Subspace(govtypes.ModuleName).
 		WithKeyTable(govtypes.ParamKeyTable())
 	app.paramsKeeper.Subspace(crisistypes.ModuleName)
+	app.paramsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
 	app.paramsKeeper.Subspace(cdptypes.ModuleName)
@@ -317,6 +326,7 @@ func New(
 		app.keys[upgradetypes.StoreKey],
 		app.cdc,
 		homePath,
+		app.BaseApp,
 	)
 
 	// register the staking hooks
@@ -334,6 +344,7 @@ func New(
 		app.keys[ibchost.StoreKey],
 		app.GetSubspace(ibchost.ModuleName),
 		app.stakingKeeper,
+		app.upgradeKeeper,
 		scopedIBCKeeper,
 	)
 
@@ -343,7 +354,7 @@ func New(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientUpdateProposalHandler(app.ibcKeeper.ClientKeeper))
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
 
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,
@@ -394,6 +405,15 @@ func New(
 		app.GetSubspace(cdptypes.ModuleName),
 	)
 
+	app.liquidityKeeper = liquiditykeeper.NewKeeper(
+		app.cdc,
+		app.keys[liquiditytypes.StoreKey],
+		app.GetSubspace(liquiditytypes.ModuleName),
+		app.bankKeeper,
+		app.accountKeeper,
+		app.distrKeeper,
+	)
+
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -421,6 +441,7 @@ func New(
 		params.NewAppModule(app.paramsKeeper),
 		transferModule,
 		cdp.NewAppModule(app.cdc, app.cdpKeeper),
+		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -429,10 +450,10 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 	)
 
-	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName)
+	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -452,13 +473,14 @@ func New(
 		ibchost.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
+		liquiditytypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		cdptypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encoding.Amino)
-	app.mm.RegisterServices(module.NewConfigurator(app.MsgServiceRouter(), app.GRPCQueryRouter()))
+	app.mm.RegisterServices(module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter()))
 
 	// initialize stores
 	app.MountKVStores(app.keys)
@@ -468,12 +490,20 @@ func New(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(
-		ante.NewAnteHandler(
-			app.accountKeeper, app.bankKeeper, ante.DefaultSigVerificationGasConsumer,
+	anteHandler, err := ante.NewAnteHandler(
+		ante.HandlerOptions{
+			app.accountKeeper,
+			app.bankKeeper,
+			app.freegrantKeeper,
 			encoding.TxConfig.SignModeHandler(),
-		),
+			ante.DefaultSigVerificationGasConsumer,
+		},
 	)
+	if err != nil {
+		panic(err)
+	}
+
+	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
@@ -489,7 +519,8 @@ func New(
 		// Note that since this reads from the store, we can only perform it when
 		// `loadLatest` is set to true.
 		ctx := app.BaseApp.NewUncachedContext(true, tmprototypes.Header{})
-		app.capabilityKeeper.InitializeAndSeal(ctx)
+		app.capabilityKeeper.InitMemStore(ctx)
+		app.capabilityKeeper.Seal()
 	}
 
 	app.scopedIBCKeeper = scopedIBCKeeper
@@ -547,7 +578,7 @@ func (a *App) LegacyAmino() *codec.LegacyAmino {
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (a *App) AppCodec() codec.Marshaler {
+func (a *App) AppCodec() codec.BinaryCodec {
 	return a.cdc
 }
 
@@ -622,5 +653,6 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		cdptypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
+		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 	}
 }
