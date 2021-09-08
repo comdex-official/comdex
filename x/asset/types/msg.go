@@ -136,7 +136,7 @@ func (m *MsgAddAssetRequest) GetSigners() []sdk.AccAddress {
 func NewMsgUpdateAssetRequest(from sdk.AccAddress, id uint64, name, denom string, decimals int64) *MsgUpdateAssetRequest {
 	return &MsgUpdateAssetRequest{
 		From:     from.String(),
-		ID:       id,
+		Id:       id,
 		Name:     name,
 		Denom:    denom,
 		Decimals: decimals,
@@ -176,7 +176,7 @@ func (m *MsgUpdateAssetRequest) GetSigners() []sdk.AccAddress {
 func NewMsgAddMarketForAssetRequest(from sdk.AccAddress, id uint64, symbol string) *MsgAddMarketForAssetRequest {
 	return &MsgAddMarketForAssetRequest{
 		From:   from.String(),
-		ID:     id,
+		Id:     id,
 		Symbol: symbol,
 	}
 }
@@ -188,7 +188,7 @@ func (m *MsgAddMarketForAssetRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if m.ID == 0 {
+	if m.Id == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
 	}
 	if m.Symbol == "" {
@@ -213,7 +213,7 @@ func (m *MsgAddMarketForAssetRequest) GetSigners() []sdk.AccAddress {
 func NewMsgRemoveMarketForAssetRequest(from sdk.AccAddress, id uint64, symbol string) *MsgRemoveMarketForAssetRequest {
 	return &MsgRemoveMarketForAssetRequest{
 		From:   from.String(),
-		ID:     id,
+		Id:     id,
 		Symbol: symbol,
 	}
 }
@@ -225,7 +225,7 @@ func (m *MsgRemoveMarketForAssetRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if m.ID == 0 {
+	if m.Id == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
 	}
 	if m.Symbol == "" {
@@ -291,7 +291,7 @@ func (m *MsgAddPairRequest) GetSigners() []sdk.AccAddress {
 func NewMsgUpdatePairRequest(from sdk.AccAddress, id uint64, liquidationRatio sdk.Dec) *MsgUpdatePairRequest {
 	return &MsgUpdatePairRequest{
 		From:             from.String(),
-		ID:               id,
+		Id:               id,
 		LiquidationRatio: liquidationRatio,
 	}
 }

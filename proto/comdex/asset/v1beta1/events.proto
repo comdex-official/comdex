@@ -8,6 +8,5 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message EventAddPair {
-  uint64 id = 1
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  uint64 id = 1;
 }

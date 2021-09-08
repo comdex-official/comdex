@@ -41,7 +41,7 @@ func (k *Keeper) GetPairID(ctx sdk.Context) uint64 {
 func (k *Keeper) SetPair(ctx sdk.Context, pair types.Pair) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PairKey(pair.ID)
+		key   = types.PairKey(pair.Id)
 		value = k.cdc.MustMarshal(&pair)
 	)
 
