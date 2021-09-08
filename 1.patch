@@ -1,0 +1,40 @@
+diff --git a/x/asset/types/querier.pb.gw.go b/x/asset/types/querier.pb.gw.go
+index 81b453c..9b7e24a 100644
+--- a/x/asset/types/querier.pb.gw.go
++++ b/x/asset/types/querier.pb.gw.go
+@@ -85,7 +85,7 @@ func request_QueryService_QueryAsset_0(ctx context.Context, marshaler runtime.Ma
+ 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+ 	}
+ 
+-	protoReq.Id, err = runtime.Uint64(val)
++	protoReq.id, err = runtime.Uint64(val)
+ 
+ 	if err != nil {
+ 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+@@ -112,7 +112,7 @@ func local_request_QueryService_QueryAsset_0(ctx context.Context, marshaler runt
+ 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+ 	}
+ 
+-	protoReq.Id, err = runtime.Uint64(val)
++	protoReq.id, err = runtime.Uint64(val)
+ 
+ 	if err != nil {
+ 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+@@ -265,7 +265,7 @@ func request_QueryService_QueryPair_0(ctx context.Context, marshaler runtime.Mar
+ 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+ 	}
+ 
+-	protoReq.Id, err = runtime.Uint64(val)
++	protoReq.id, err = runtime.Uint64(val)
+ 
+ 	if err != nil {
+ 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+@@ -292,7 +292,7 @@ func local_request_QueryService_QueryPair_0(ctx context.Context, marshaler runti
+ 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+ 	}
+ 
+-	protoReq.Id, err = runtime.Uint64(val)
++	protoReq.id, err = runtime.Uint64(val)
+ 
+ 	if err != nil {
+ 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
