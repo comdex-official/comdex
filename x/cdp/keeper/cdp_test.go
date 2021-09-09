@@ -6,6 +6,7 @@ import (
 	"github.com/comdex-official/comdex/x/cdp/keeper"
 	"github.com/comdex-official/comdex/x/cdp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
@@ -75,13 +76,6 @@ func (suite *CdpTestSuite) TestAddCdp() {
 	}
 	cparams := [] types.CollateralParam{params}
 	suite.keeper.SetParams(suite.ctx,types.Params{cparams})
-
-	accountKeeper := suite.app.GetAccountKeeper()
-	acc := accountKeeper.NewAccountWithAddress(suite.ctx, addrs)
-
-	bankKeeper := suite.app.GetBankKeeper()
-	bankKeeper.AddCoins(suite.ctx,acc.GetAddress(),sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(200000000)), sdk.NewCoin("uscx", sdk.NewInt(500000000))})
-	accountKeeper.SetAccount(suite.ctx, acc)
 
 	err := suite.keeper.AddCdp(suite.ctx, addrs, sdk.NewCoin("xprt", sdk.NewInt(200000000)), sdk.NewCoin("uscx", sdk.NewInt(10000000)), "btc-a")
 	suite.Require().True(errors.Is(err, types.ErrorCdpNotFound))
@@ -208,21 +202,21 @@ func (suite *CdpTestSuite) TestAttemptLiquidation(){
 
 func (suite *CdpTestSuite) TestVerifyBalance(){
 	addrs, _ := sdk.AccAddressFromBech32("abc")
+	_, addr:= app.GeneratePrivKeyAddressPairs(1)
 	err := suite.keeper.VerifyBalance(suite.ctx,sdk.NewCoin("cmdx", sdk.NewInt(200000)) , addrs )
 	suite.Require().True(errors.Is(err, types.ErrorAccountNotFound))
 
-	accountKeeper := suite.app.GetAccountKeeper()
-	acc := accountKeeper.NewAccountWithAddress(suite.ctx, addrs)
+	_= banktypes.Balance{
+		Address: "bytes,1,opt,name=address,proto3",
+		Coins:   sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(4))},
+	}
 
-	bankKeeper := suite.app.GetBankKeeper()
-	bankKeeper.SetBalance(suite.ctx, addrs, sdk.NewCoin("cmdx", sdk.NewInt(2)))
+	accountKeeper := suite.app.GetAccountKeeper()
+	acc := accountKeeper.NewAccountWithAddress(suite.ctx, addr[0])
 	accountKeeper.SetAccount(suite.ctx, acc)
 
-	err = suite.keeper.VerifyBalance(suite.ctx,sdk.NewCoin("cmdx", sdk.NewInt(3)) , addrs )
+	err = suite.keeper.VerifyBalance(suite.ctx,sdk.NewCoin("cmdx", sdk.NewInt(3)) , addr[0] )
 	suite.Require().True(errors.Is(err, types.ErrorInsufficientBalance))
-
-	err = suite.keeper.VerifyBalance(suite.ctx,sdk.NewCoin("cmdx", sdk.NewInt(1)) , addrs )
-	suite.ErrorIs(err, nil)
 
 }
 
