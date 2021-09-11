@@ -39,7 +39,7 @@ func (suite *KeeperTestSuite) TestSetAndGetAsset() {
 		},
 	}
 
-	//test without any saved in the store
+	//test without any asset saved in the store
 	hasAsset := suite.assetKeeper.HasAsset(suite.ctx, expectedAssets[0].Id)
 	actualAsset, found := suite.assetKeeper.GetAsset(suite.ctx, expectedAssets[0].Id)
 	actualAssets := suite.assetKeeper.GetAssets(suite.ctx)
@@ -53,7 +53,7 @@ func (suite *KeeperTestSuite) TestSetAndGetAsset() {
 		suite.assetKeeper.SetAsset(suite.ctx, asset)
 	}
 
-	//test that the set assets exist
+	//test that the assets exist
 	for _, asset := range expectedAssets {
 		hasAsset = suite.assetKeeper.HasAsset(suite.ctx, asset.Id)
 		actualAsset, found = suite.assetKeeper.GetAsset(suite.ctx, asset.Id)
@@ -62,7 +62,7 @@ func (suite *KeeperTestSuite) TestSetAndGetAsset() {
 		require.Equalf(suite.T(), asset, actualAsset, "GetAsset returns an invalid asset for id %d.", asset.Id)
 	}
 
-	//test get markets
+	//test get markets return all markets
 	actualAssets = suite.assetKeeper.GetAssets(suite.ctx)
 	require.Equal(suite.T(), expectedAssets, actualAssets)
 }
