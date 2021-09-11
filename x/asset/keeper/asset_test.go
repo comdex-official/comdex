@@ -12,13 +12,13 @@ func (suite *KeeperTestSuite) TestSetAndGetAssetID() {
 
 	//test get asset when no asset id saved yet
 	actualAssetId := suite.assetKeeper.GetAssetID(suite.ctx)
-	require.Equalf(suite.T(), expectedAssetId, actualAssetId, "asset ids do not match.")
+	require.Equal(suite.T(), expectedAssetId, actualAssetId)
 
 	expectedAssetId = 2
 
 	suite.assetKeeper.SetAssetID(suite.ctx, expectedAssetId)
 	actualAssetId = suite.assetKeeper.GetAssetID(suite.ctx)
-	require.Equalf(suite.T(), expectedAssetId, actualAssetId, "asset ids do not match.")
+	require.Equal(suite.T(), expectedAssetId, actualAssetId)
 }
 
 func (suite *KeeperTestSuite) TestSetAndGetAsset() {
@@ -43,10 +43,10 @@ func (suite *KeeperTestSuite) TestSetAndGetAsset() {
 	hasAsset := suite.assetKeeper.HasAsset(suite.ctx, expectedAssets[0].Id)
 	actualAsset, found := suite.assetKeeper.GetAsset(suite.ctx, expectedAssets[0].Id)
 	actualAssets := suite.assetKeeper.GetAssets(suite.ctx)
-	require.False(suite.T(), hasAsset, "HasAsset returns true when no asset.")
-	require.False(suite.T(), found, "GetAsset found returns true when no asset.")
-	require.Equal(suite.T(), types.Asset{}, actualAsset, "Get Asset returns an asset when no asset.")
-	require.Equalf(suite.T(), cap(actualAssets), 0, "More than 0 assets found when none were saved")
+	require.False(suite.T(), hasAsset)
+	require.False(suite.T(), found)
+	require.Equal(suite.T(), types.Asset{}, actualAsset)
+	require.Equal(suite.T(), cap(actualAssets), 0)
 
 	//set assets
 	for _, asset := range expectedAssets {
@@ -64,7 +64,7 @@ func (suite *KeeperTestSuite) TestSetAndGetAsset() {
 
 	//test get markets
 	actualAssets = suite.assetKeeper.GetAssets(suite.ctx)
-	require.Equalf(suite.T(), expectedAssets, actualAssets, "Assets returned do not match the saved assets.")
+	require.Equal(suite.T(), expectedAssets, actualAssets)
 }
 
 func (suite *KeeperTestSuite) TestSetAndGetAssetForDenom() {
@@ -77,20 +77,20 @@ func (suite *KeeperTestSuite) TestSetAndGetAssetForDenom() {
 		Decimals: 5,
 	}
 
-	validateAssetForDenomDoesNotExist := func(expectedDenom string) {
-		actualAssetForDenom, found := suite.assetKeeper.GetAssetForDenom(suite.ctx, expectedDenom)
-		hasAssetForDenom := suite.assetKeeper.HasAssetForDenom(suite.ctx, expectedDenom)
-		require.False(suite.T(), found, "GetAssetForDenom found returns true when no asset.")
-		require.False(suite.T(), hasAssetForDenom, "HasAssetForDenom for denom returns true when no asset.")
-		require.Equal(suite.T(), types.Asset{}, actualAssetForDenom, "found an asset for denom when no asset was saved in the store.")
+	validateAssetForDenomDoesNotExist := func(denom string) {
+		actualAssetForDenom, found := suite.assetKeeper.GetAssetForDenom(suite.ctx, denom)
+		hasAssetForDenom := suite.assetKeeper.HasAssetForDenom(suite.ctx, denom)
+		require.Falsef(suite.T(), found, "GetAssetForDenom found returns true when no asset for denom %s.", denom)
+		require.Falsef(suite.T(), hasAssetForDenom, "HasAssetForDenom for denom returns true when no asset for denom %s.", denom)
+		require.Equalf(suite.T(), types.Asset{}, actualAssetForDenom, "found an asset for denom %s when no asset was saved in the store.", denom)
 	}
 
-	validateAssetForDenomExists := func(expectedDenom string) {
-		hasAssetForDenom := suite.assetKeeper.HasAssetForDenom(suite.ctx, expectedDenom)
-		actualAssetForDenom, found := suite.assetKeeper.GetAssetForDenom(suite.ctx, expectedDenom)
-		require.True(suite.T(), found, "GetAssetForDenom found returns false when corresponding asset exists.")
-		require.True(suite.T(), hasAssetForDenom, "HasAssetForDenom for denom returns false when corresponding asset exists.")
-		require.Equal(suite.T(), expectedAsset, actualAssetForDenom, "Assets do not match.")
+	validateAssetForDenomExists := func(denom string) {
+		hasAssetForDenom := suite.assetKeeper.HasAssetForDenom(suite.ctx, denom)
+		actualAssetForDenom, found := suite.assetKeeper.GetAssetForDenom(suite.ctx, denom)
+		require.Truef(suite.T(), found, "Asset for denom %s not found.", denom)
+		require.Truef(suite.T(), hasAssetForDenom, "Asset for denom %s not found.", denom)
+		require.Equalf(suite.T(), expectedAsset, actualAssetForDenom, "Assets do not match for denom %s.", denom)
 	}
 
 	//test when no asset for denom exist in the store yet
@@ -102,9 +102,9 @@ func (suite *KeeperTestSuite) TestSetAndGetAssetForDenom() {
 	//test get asset when no corresponding asset for denom exists yet
 	hasAssetForDenom := suite.assetKeeper.HasAssetForDenom(suite.ctx, expectedAsset.Denom)
 	actualAssetForDenom, found := suite.assetKeeper.GetAssetForDenom(suite.ctx, expectedAsset.Denom)
-	require.False(suite.T(), found, "GetAssetForDenom found returns true when no asset.")
-	require.True(suite.T(), hasAssetForDenom, "HasAssetForDenom for denom returns false when asset exists.")
-	require.Equal(suite.T(), types.Asset{}, actualAssetForDenom, "found an invalid asset when no asset was saved in the store.")
+	require.False(suite.T(), found)
+	require.True(suite.T(), hasAssetForDenom)
+	require.Equal(suite.T(), types.Asset{}, actualAssetForDenom)
 
 	//save the corresponding asset
 	suite.assetKeeper.SetAsset(suite.ctx, expectedAsset)

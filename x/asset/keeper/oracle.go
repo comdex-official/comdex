@@ -214,6 +214,7 @@ func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePack
 		return err
 	}
 
+	defer k.DeleteCalldata(ctx, id)
 	if res.ResolveStatus == bandpacket.RESOLVE_STATUS_SUCCESS {
 		calldata, found := k.GetCalldata(ctx, id)
 		if !found {
@@ -230,7 +231,6 @@ func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePack
 		}
 	}
 
-	k.DeleteCalldata(ctx, id)
 	return nil
 }
 
