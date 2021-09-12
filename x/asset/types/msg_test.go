@@ -21,7 +21,7 @@ func TestNewMsgAddMarketRequest(t *testing.T) {
 		scriptID    uint64
 		expectPass  bool
 	}{
-		{"invalidScriptId", addrs[0], "symStr", 1, false},
+		{"invalidScriptId", addrs[0], "cmdx", 1, false},
 		{"invalid symbol_Length",addrs[0],"asdfghjk",2,true},
 	}
 	for _, tc := range tests {

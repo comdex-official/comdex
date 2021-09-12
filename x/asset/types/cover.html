@@ -55,7 +55,7 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/comdex-official/comdex/x/asset/types/asset.go (0.0%)</option>
+				<option value="file0">github.com/comdex-official/comdex/x/asset/types/asset.go (92.3%)</option>
 				
 				<option value="file1">github.com/comdex-official/comdex/x/asset/types/asset.pb.go (0.9%)</option>
 				
@@ -63,7 +63,7 @@
 				
 				<option value="file3">github.com/comdex-official/comdex/x/asset/types/events.pb.go (1.4%)</option>
 				
-				<option value="file4">github.com/comdex-official/comdex/x/asset/types/genesis.go (66.7%)</option>
+				<option value="file4">github.com/comdex-official/comdex/x/asset/types/genesis.go (100.0%)</option>
 				
 				<option value="file5">github.com/comdex-official/comdex/x/asset/types/genesis.pb.go (0.7%)</option>
 				
@@ -77,15 +77,15 @@
 				
 				<option value="file10">github.com/comdex-official/comdex/x/asset/types/msg.pb.go (0.8%)</option>
 				
-				<option value="file11">github.com/comdex-official/comdex/x/asset/types/oracle.go (0.0%)</option>
+				<option value="file11">github.com/comdex-official/comdex/x/asset/types/oracle.go (100.0%)</option>
 				
 				<option value="file12">github.com/comdex-official/comdex/x/asset/types/oracle.pb.go (0.9%)</option>
 				
-				<option value="file13">github.com/comdex-official/comdex/x/asset/types/pair.go (0.0%)</option>
+				<option value="file13">github.com/comdex-official/comdex/x/asset/types/pair.go (90.9%)</option>
 				
 				<option value="file14">github.com/comdex-official/comdex/x/asset/types/pair.pb.go (0.9%)</option>
 				
-				<option value="file15">github.com/comdex-official/comdex/x/asset/types/params.go (9.7%)</option>
+				<option value="file15">github.com/comdex-official/comdex/x/asset/types/params.go (25.8%)</option>
 				
 				<option value="file16">github.com/comdex-official/comdex/x/asset/types/params.pb.go (0.8%)</option>
 				
@@ -118,27 +118,27 @@ const (
         MaxAssetNameLength = 16
 )
 
-func (m *Asset) Validate() error <span class="cov0" title="0">{
-        if m.Id == 0 </span><span class="cov0" title="0">{
+func (m *Asset) Validate() error <span class="cov8" title="1">{
+        if m.Id == 0 </span><span class="cov8" title="1">{
                 return fmt.Errorf("id cannot be zero")
         }</span>
-        <span class="cov0" title="0">if m.Name == "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.Name == "" </span><span class="cov8" title="1">{
                 return fmt.Errorf("name cannot be empty")
         }</span>
-        <span class="cov0" title="0">if len(m.Name) &gt; MaxAssetNameLength </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if len(m.Name) &gt; MaxAssetNameLength </span><span class="cov8" title="1">{
                 return fmt.Errorf("name length cannot be greater than %d", MaxAssetNameLength)
         }</span>
-        <span class="cov0" title="0">if m.Denom == "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.Denom == "" </span><span class="cov8" title="1">{
                 return fmt.Errorf("denom cannot be empty")
         }</span>
-        <span class="cov0" title="0">if err := sdk.ValidateDenom(m.Denom); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := sdk.ValidateDenom(m.Denom); err != nil </span><span class="cov0" title="0">{
                 return errors.Wrapf(err, "invalid denom %s", m.Denom)
         }</span>
-        <span class="cov0" title="0">if m.Decimals &lt; 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.Decimals &lt; 0 </span><span class="cov8" title="1">{
                 return fmt.Errorf("decimals cannot be less than zero")
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 </pre>
 		
@@ -890,7 +890,7 @@ func DefaultGenesisState() *GenesisState <span class="cov8" title="1">{
         )
 }</span>
 
-func ValidateGenesis(_ *GenesisState) error <span class="cov0" title="0">{
+func ValidateGenesis(_ *GenesisState) error <span class="cov8" title="1">{
         return nil
 }</span>
 </pre>
@@ -2312,6 +2312,10 @@ type MsgAddMarketRequest struct {
         From     string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
         Symbol   string `protobuf:"bytes,2,opt,name=symbol,proto3" json:"symbol,omitempty" yaml:"symbol"`
         ScriptID uint64 `protobuf:"varint,3,opt,name=script_id,json=scriptId,proto3" json:"script_id,omitempty" yaml:"script_id"`
+}
+
+func (m *MsgAddMarketRequest) Error() string <span class="cov0" title="0">{
+        panic("implement me")</span>
 }
 
 func (m *MsgAddMarketRequest) Reset()         <span class="cov0" title="0">{ *m = MsgAddMarketRequest{} }</span>
@@ -6483,18 +6487,18 @@ const (
         MaxMarketSymbolLength = 8
 )
 
-func (m *Market) Validate() error <span class="cov0" title="0">{
-        if m.Symbol == "" </span><span class="cov0" title="0">{
+func (m *Market) Validate() error <span class="cov8" title="1">{
+        if m.Symbol == "" </span><span class="cov8" title="1">{
                 return fmt.Errorf("symbol cannot be empty")
         }</span>
-        <span class="cov0" title="0">if len(m.Symbol) &gt; MaxMarketSymbolLength </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if len(m.Symbol) &gt; MaxMarketSymbolLength </span><span class="cov8" title="1">{
                 return fmt.Errorf("symbol length cannot be greater than %d", MaxMarketSymbolLength)
         }</span>
-        <span class="cov0" title="0">if m.ScriptID == 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.ScriptID == 0 </span><span class="cov8" title="1">{
                 return fmt.Errorf("script_id cannot be zero")
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 </pre>
 		
@@ -7270,24 +7274,23 @@ import (
         "fmt"
 )
 
-func (m *Pair) Validate() error <span class="cov0" title="0">{
-        if m.Id == 0 </span><span class="cov0" title="0">{
+func (m *Pair) Validate() error <span class="cov8" title="1">{
+        if m.Id == 0 </span><span class="cov8" title="1">{
                 return fmt.Errorf("id cannot be zero")
         }</span>
-        <span class="cov0" title="0">if m.AssetIn == 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.AssetIn == 0 </span><span class="cov8" title="1">{
                 return fmt.Errorf("asset_in cannot be zero")
         }</span>
-        <span class="cov0" title="0">if m.AssetOut == 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.AssetOut == 0 </span><span class="cov8" title="1">{
                 return fmt.Errorf("asset_out cannot be zero")
         }</span>
-        <span class="cov0" title="0">if m.LiquidationRatio.IsNil() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.LiquidationRatio.IsNil() </span><span class="cov0" title="0">{
                 return fmt.Errorf("liquidation_ratio cannot be nil")
         }</span>
-        <span class="cov0" title="0">if m.LiquidationRatio.IsNegative() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.LiquidationRatio.IsNegative() </span><span class="cov8" title="1">{
                 return fmt.Errorf("liquidation_ratio cannot be negative")
         }</span>
-
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 </pre>
 		
@@ -7745,15 +7748,15 @@ func DefaultIBCParams() IBCParams <span class="cov8" title="1">{
         )
 }</span>
 
-func (m *IBCParams) Validate() error <span class="cov0" title="0">{
-        if m.Port == "" </span><span class="cov0" title="0">{
+func (m *IBCParams) Validate() error <span class="cov8" title="1">{
+        if m.Port == "" </span><span class="cov8" title="1">{
                 return fmt.Errorf("port cannot be empty")
         }</span>
-        <span class="cov0" title="0">if m.Version == "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.Version == "" </span><span class="cov8" title="1">{
                 return fmt.Errorf("version cannot be empty")
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 func NewOracleParams(askCount, minCount, multiplier uint64) OracleParams <span class="cov8" title="1">{
@@ -7772,15 +7775,15 @@ func DefaultOracleParams() OracleParams <span class="cov8" title="1">{
         )
 }</span>
 
-func (m *OracleParams) Validate() error <span class="cov0" title="0">{
-        if m.AskCount == 0 </span><span class="cov0" title="0">{
+func (m *OracleParams) Validate() error <span class="cov8" title="1">{
+        if m.AskCount == 0 </span><span class="cov8" title="1">{
                 return fmt.Errorf("ask_count cannot be zero")
         }</span>
-        <span class="cov0" title="0">if m.MinCount == 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.MinCount == 0 </span><span class="cov8" title="1">{
                 return fmt.Errorf("min_count cannot be zero")
         }</span>
 
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
 func NewParams(admin string, ibc IBCParams, oracle OracleParams) Params <span class="cov8" title="1">{

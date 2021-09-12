@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
 )
@@ -19,9 +20,13 @@ func TestDefaultGenesisState(t *testing.T) {
 	}
 }
 
-//func TestValidateGenesis(t *testing.T) {
-//	a := GenesisState{}
-//	if a != nil {
-//		t.Error("re")
-//	}
-//}
+func TestValidateGenesis(t *testing.T) {
+	err := ValidateGenesis(&GenesisState{
+		Assets:          nil,
+		Markets:         nil,
+		Pairs:           nil,
+		Params:          Params{},
+		ValidateGenesis: nil,
+	})
+	require.NoError(t, err)
+}
