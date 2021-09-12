@@ -20,6 +20,5 @@ func (m *Pair) Validate() error {
 	if m.LiquidationRatio.IsNegative() {
 		return fmt.Errorf("liquidation_ratio cannot be negative")
 	}
-
 	return nil
 }

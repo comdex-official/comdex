@@ -37,6 +37,10 @@ type MsgAddMarketRequest struct {
 	ScriptID uint64 `protobuf:"varint,3,opt,name=script_id,json=scriptId,proto3" json:"script_id,omitempty" yaml:"script_id"`
 }
 
+func (m *MsgAddMarketRequest) Error() string {
+	panic("implement me")
+}
+
 func (m *MsgAddMarketRequest) Reset()         { *m = MsgAddMarketRequest{} }
 func (m *MsgAddMarketRequest) String() string { return proto.CompactTextString(m) }
 func (*MsgAddMarketRequest) ProtoMessage()    {}

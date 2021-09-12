@@ -21,20 +21,21 @@ func TestNewMsgAddMarketRequest(t *testing.T) {
 		scriptID    uint64
 		expectPass  bool
 	}{
-		{"add market", addrs[0], "symStr", 1, true},
+		{"invalidScriptId", addrs[0], "symStr", 1, false},
+		{"invalid symbol_Length",addrs[0],"asdfghjk",2,true},
 	}
-
 	for _, tc := range tests {
 		m := NewMsgAddMarketRequest(
 			tc.from,
 			tc.symbol,
 			tc.scriptID,
 		)
+
 		if tc.expectPass {
 			require.NoError(t, m.ValidateBasic(), "test: %v", tc.description)
 		} else {
 			require.NoError(t, m.ValidateBasic(), "test: %v", tc.description)
 		}
 	}
-
 }
+

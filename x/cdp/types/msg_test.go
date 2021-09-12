@@ -1,9 +1,8 @@
 package types
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/require"
+	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

@@ -7,7 +7,7 @@ import (
 
 func TestAssetKey(t *testing.T) {
 	get := AssetKey(1)
-	want := []byte{17,0, 0, 0, 0, 0, 0, 0, 1}
+	want := []byte{17, 0, 0, 0, 0, 0, 0, 0, 1}
 	if cmp.Equal(get, want) != true {
 		t.Errorf("wanted %v got %v", get, want)
 	}
