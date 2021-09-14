@@ -3,42 +3,38 @@ package types
 import (
 	"fmt"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 const (
-	ProposalTypeAddPair = "AddPair"
+	ProposalTypeUpdateAdmin = "UpdateAdmin"
 )
 
 func init() {
-	govtypes.RegisterProposalType(ProposalTypeAddPair)
-	govtypes.RegisterProposalTypeCodec(&AddPairProposal{}, fmt.Sprintf("comdex/%s", ProposalTypeAddPair))
+	govtypes.RegisterProposalType(ProposalTypeUpdateAdmin)
+	govtypes.RegisterProposalTypeCodec(&UpdateAdminProposal{}, fmt.Sprintf("comdex/asset/%s", ProposalTypeUpdateAdmin))
 }
 
 var (
-	_ govtypes.Content = (*AddPairProposal)(nil)
+	_ govtypes.Content = (*UpdateAdminProposal)(nil)
 )
 
-func (m *AddPairProposal) GetTitle() string       { return m.Title }
-func (m *AddPairProposal) GetDescription() string { return m.Description }
-func (m *AddPairProposal) ProposalRoute() string  { return RouterKey }
-func (m *AddPairProposal) ProposalType() string   { return ProposalTypeAddPair }
+func (m *UpdateAdminProposal) GetTitle() string       { return m.Title }
+func (m *UpdateAdminProposal) GetDescription() string { return m.Description }
+func (m *UpdateAdminProposal) ProposalRoute() string  { return RouterKey }
+func (m *UpdateAdminProposal) ProposalType() string   { return ProposalTypeUpdateAdmin }
 
-func (m *AddPairProposal) ValidateBasic() error {
+func (m *UpdateAdminProposal) ValidateBasic() error {
 	if err := govtypes.ValidateAbstract(m); err != nil {
 		return err
 	}
-	if m.AssetIn == 0 {
-		return fmt.Errorf("asset_in cannot be zero")
+	if m.Address == "" {
+		return fmt.Errorf("address cannot be empty")
 	}
-	if m.AssetOut == 0 {
-		return fmt.Errorf("asset_out cannot be zero")
-	}
-	if m.LiquidationRatio.IsNil() {
-		return fmt.Errorf("liquidation_ratio cannot be nil")
-	}
-	if m.LiquidationRatio.IsNegative() {
-		return fmt.Errorf("liquidation_ratio cannot be negative")
+	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
+		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
 
 	return nil

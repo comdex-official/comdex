@@ -2,11 +2,12 @@ package keeper
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/bandprotocol/bandchain-packet/obi"
 	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
-	"strconv"
 
 	"github.com/comdex-official/comdex/x/asset/types"
 )
@@ -43,6 +44,23 @@ func (k *Keeper) GetMarket(ctx sdk.Context, symbol string) (market types.Market,
 
 	k.cdc.MustUnmarshal(value, &market)
 	return market, true
+}
+
+func (k *Keeper) GetMarkets(ctx sdk.Context) (markets []types.Market) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.MarketKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var market types.Market
+		k.cdc.MustUnmarshal(iter.Value(), &market)
+		markets = append(markets, market)
+	}
+
+	return markets
 }
 
 func (k *Keeper) SetPriceForMarket(ctx sdk.Context, symbol string, price uint64) {

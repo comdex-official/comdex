@@ -29,6 +29,9 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 
 func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketRequest) (*types.MsgAddMarketResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if msg.From != k.Admin(ctx) {
+		return nil, types.ErrorUnauthorized
+	}
 
 	if k.HasMarket(ctx, msg.Symbol) {
 		return nil, types.ErrorDuplicateMarket
@@ -47,6 +50,9 @@ func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketReque
 
 func (k *msgServer) MsgUpdateMarket(c context.Context, msg *types.MsgUpdateMarketRequest) (*types.MsgUpdateMarketResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if msg.From != k.Admin(ctx) {
+		return nil, types.ErrorUnauthorized
+	}
 
 	market, found := k.GetMarket(ctx, msg.Symbol)
 	if !found {
@@ -63,6 +69,9 @@ func (k *msgServer) MsgUpdateMarket(c context.Context, msg *types.MsgUpdateMarke
 
 func (k *msgServer) MsgAddAsset(c context.Context, msg *types.MsgAddAssetRequest) (*types.MsgAddAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if msg.From != k.Admin(ctx) {
+		return nil, types.ErrorUnauthorized
+	}
 
 	if k.HasAssetForDenom(ctx, msg.Denom) {
 		return nil, types.ErrorDuplicateAsset
@@ -71,24 +80,27 @@ func (k *msgServer) MsgAddAsset(c context.Context, msg *types.MsgAddAssetRequest
 	var (
 		id    = k.GetAssetID(ctx)
 		asset = types.Asset{
-			ID:       id + 1,
+			Id:       id + 1,
 			Name:     msg.Name,
 			Denom:    msg.Denom,
 			Decimals: msg.Decimals,
 		}
 	)
 
-	k.SetAssetID(ctx, asset.ID)
+	k.SetAssetID(ctx, asset.Id)
 	k.SetAsset(ctx, asset)
-	k.SetAssetForDenom(ctx, asset.Denom, asset.ID)
+	k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
 
 	return &types.MsgAddAssetResponse{}, nil
 }
 
 func (k *msgServer) MsgUpdateAsset(c context.Context, msg *types.MsgUpdateAssetRequest) (*types.MsgUpdateAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if msg.From != k.Admin(ctx) {
+		return nil, types.ErrorUnauthorized
+	}
 
-	asset, found := k.GetAsset(ctx, msg.ID)
+	asset, found := k.GetAsset(ctx, msg.Id)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -104,7 +116,7 @@ func (k *msgServer) MsgUpdateAsset(c context.Context, msg *types.MsgUpdateAssetR
 		asset.Denom = msg.Denom
 
 		k.DeleteAssetForDenom(ctx, asset.Denom)
-		k.SetAssetForDenom(ctx, asset.Denom, asset.ID)
+		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
 	}
 	if msg.Decimals >= 0 {
 		asset.Decimals = msg.Decimals
@@ -116,34 +128,43 @@ func (k *msgServer) MsgUpdateAsset(c context.Context, msg *types.MsgUpdateAssetR
 
 func (k *msgServer) MsgAddMarketForAsset(c context.Context, msg *types.MsgAddMarketForAssetRequest) (*types.MsgAddMarketForAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if msg.From != k.Admin(ctx) {
+		return nil, types.ErrorUnauthorized
+	}
 
-	if !k.HasAsset(ctx, msg.ID) {
+	if !k.HasAsset(ctx, msg.Id) {
 		return nil, types.ErrorAssetDoesNotExist
 	}
 	if !k.HasMarket(ctx, msg.Symbol) {
 		return nil, types.ErrorMarketDoesNotExist
 	}
-	if k.HasMarketForAsset(ctx, msg.ID) {
+	if k.HasMarketForAsset(ctx, msg.Id) {
 		return nil, types.ErrorDuplicateMarketForAsset
 	}
 
-	k.SetMarketForAsset(ctx, msg.ID, msg.Symbol)
+	k.SetMarketForAsset(ctx, msg.Id, msg.Symbol)
 	return &types.MsgAddMarketForAssetResponse{}, nil
 }
 
 func (k *msgServer) MsgRemoveMarketForAsset(c context.Context, msg *types.MsgRemoveMarketForAssetRequest) (*types.MsgRemoveMarketForAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if msg.From != k.Admin(ctx) {
+		return nil, types.ErrorUnauthorized
+	}
 
-	if !k.HasMarketForAsset(ctx, msg.ID) {
+	if !k.HasMarketForAsset(ctx, msg.Id) {
 		return nil, types.ErrorMarketForAssetDoesNotExist
 	}
 
-	k.DeleteMarketForAsset(ctx, msg.ID)
+	k.DeleteMarketForAsset(ctx, msg.Id)
 	return &types.MsgRemoveMarketForAssetResponse{}, nil
 }
 
 func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) (*types.MsgAddPairResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if msg.From != k.Admin(ctx) {
+		return nil, types.ErrorUnauthorized
+	}
 
 	if !k.HasAsset(ctx, msg.AssetIn) {
 		return nil, types.ErrorAssetDoesNotExist
@@ -155,14 +176,14 @@ func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) 
 	var (
 		id   = k.GetAssetID(ctx)
 		pair = types.Pair{
-			ID:               id + 1,
+			Id:               id + 1,
 			AssetIn:          msg.AssetIn,
 			AssetOut:         msg.AssetOut,
 			LiquidationRatio: msg.LiquidationRatio,
 		}
 	)
 
-	k.SetPairID(ctx, pair.ID)
+	k.SetPairID(ctx, pair.Id)
 	k.SetPair(ctx, pair)
 
 	return &types.MsgAddPairResponse{}, nil
@@ -170,8 +191,11 @@ func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) 
 
 func (k *msgServer) MsgUpdatePair(c context.Context, msg *types.MsgUpdatePairRequest) (*types.MsgUpdatePairResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	if msg.From != k.Admin(ctx) {
+		return nil, types.ErrorUnauthorized
+	}
 
-	pair, found := k.GetPair(ctx, msg.ID)
+	pair, found := k.GetPair(ctx, msg.Id)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}

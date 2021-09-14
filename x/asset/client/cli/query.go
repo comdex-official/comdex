@@ -11,10 +11,10 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func queryPair() *cobra.Command {
+func queryAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pair [id]",
-		Short: "Query an asset pair",
+		Use:   "asset [id]",
+		Short: "Query an asset",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -27,14 +27,155 @@ func queryPair() *cobra.Command {
 				return err
 			}
 
-			var (
-				qc = types.NewQueryServiceClient(ctx)
-			)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := qc.QueryPair(
+			res, err := queryClient.QueryAsset(
+				context.Background(),
+				&types.QueryAssetRequest{
+					Id: id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryAssets() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "assets",
+		Short: "Query assets",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryAssets(
+				context.Background(),
+				&types.QueryAssetsRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryMarket() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "market [symbol]",
+		Short: "Query a market",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryMarket(
+				context.Background(),
+				&types.QueryMarketRequest{
+					Symbol: args[0],
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryMarkets() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "markets",
+		Short: "Query markets",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryMarkets(
+				context.Background(),
+				&types.QueryMarketsRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "markets")
+
+	return cmd
+}
+
+func queryPair() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "pair [id]",
+		Short: "Query a pair",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryPair(
 				context.Background(),
 				&types.QueryPairRequest{
-					ID: id,
+					Id: id,
 				},
 			)
 			if err != nil {
@@ -53,7 +194,7 @@ func queryPair() *cobra.Command {
 func queryPairs() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pairs",
-		Short: "Query asset pairs",
+		Short: "Query pairs",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -65,11 +206,9 @@ func queryPairs() *cobra.Command {
 				return err
 			}
 
-			var (
-				qc = types.NewQueryServiceClient(ctx)
-			)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := qc.QueryPairs(
+			res, err := queryClient.QueryPairs(
 				context.Background(),
 				&types.QueryPairsRequest{
 					Pagination: pagination,
@@ -84,7 +223,36 @@ func queryPairs() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "asset pairs")
+	flags.AddPaginationFlagsToCmd(cmd, "pairs")
+
+	return cmd
+}
+
+func queryParams() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "params",
+		Short: "Query module parameters",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryParams(
+				context.Background(),
+				&types.QueryParamsRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }

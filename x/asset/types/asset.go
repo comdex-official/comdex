@@ -12,7 +12,7 @@ const (
 )
 
 func (m *Asset) Validate() error {
-	if m.ID == 0 {
+	if m.Id == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
 	if m.Name == "" {
@@ -26,6 +26,9 @@ func (m *Asset) Validate() error {
 	}
 	if err := sdk.ValidateDenom(m.Denom); err != nil {
 		return errors.Wrapf(err, "invalid denom %s", m.Denom)
+	}
+	if m.Decimals < 0 {
+		return fmt.Errorf("decimals cannot be less than zero")
 	}
 
 	return nil

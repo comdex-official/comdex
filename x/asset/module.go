@@ -67,7 +67,9 @@ func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runti
 	_ = types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))
 }
 
-func (a AppModuleBasic) GetTxCmd() *cobra.Command { return nil }
+func (a AppModuleBasic) GetTxCmd() *cobra.Command {
+	return cli.GetTxCmd()
+}
 
 func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()
@@ -80,7 +82,7 @@ type AppModule struct {
 }
 
 func (a AppModule) ConsensusVersion() uint64 {
-	panic("implement me")
+	return 1
 }
 
 func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
@@ -98,7 +100,7 @@ func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawM
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 func (a AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, nil)
+	return sdk.NewRoute(types.RouterKey, NewHandler(a.keeper))
 }
 
 func (a AppModule) QuerierRoute() string {
@@ -108,6 +110,7 @@ func (a AppModule) QuerierRoute() string {
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
+	types.RegisterMsgServiceServer(configurator.MsgServer(), keeper.NewMsgServiceServer(a.keeper))
 	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.keeper))
 }
 

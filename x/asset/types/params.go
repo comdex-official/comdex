@@ -1,19 +1,24 @@
 package types
 
 import (
+	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 const (
+	DefaultAdmin            = ""
 	DefaultIBCPort          = "asset"
 	DefaultIBCVersion       = "comdex-ics-01"
 	DefaultOracleAskCount   = 1
 	DefaultOracleMinCount   = 1
-	DefaultOracleMultiplier = 6
+	DefaultOracleMultiplier = 9
 )
 
 var (
+	KeyAdmin            = []byte("Admin")
 	KeyIBCPort          = []byte("IBCPort")
 	KeyIBCVersion       = []byte("IBCVersion")
 	KeyOracleAskCount   = []byte("OracleAskCount")
@@ -40,6 +45,13 @@ func DefaultIBCParams() IBCParams {
 }
 
 func (m *IBCParams) Validate() error {
+	if m.Port == "" {
+		return fmt.Errorf("port cannot be empty")
+	}
+	if m.Version == "" {
+		return fmt.Errorf("version cannot be empty")
+	}
+
 	return nil
 }
 
@@ -60,11 +72,19 @@ func DefaultOracleParams() OracleParams {
 }
 
 func (m *OracleParams) Validate() error {
+	if m.AskCount == 0 {
+		return fmt.Errorf("ask_count cannot be zero")
+	}
+	if m.MinCount == 0 {
+		return fmt.Errorf("min_count cannot be zero")
+	}
+
 	return nil
 }
 
-func NewParams(ibc IBCParams, oracle OracleParams) Params {
+func NewParams(admin string, ibc IBCParams, oracle OracleParams) Params {
 	return Params{
+		Admin:  admin,
 		IBC:    ibc,
 		Oracle: oracle,
 	}
@@ -72,6 +92,7 @@ func NewParams(ibc IBCParams, oracle OracleParams) Params {
 
 func DefaultParams() Params {
 	return NewParams(
+		DefaultAdmin,
 		DefaultIBCParams(),
 		DefaultOracleParams(),
 	)
@@ -80,37 +101,97 @@ func DefaultParams() Params {
 func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 	return paramstypes.ParamSetPairs{
 		paramstypes.NewParamSetPair(
+			KeyAdmin,
+			m.Admin,
+			func(v interface{}) error {
+				value, ok := v.(string)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value == "" {
+					return fmt.Errorf("admin cannot be empty")
+				}
+				if _, err := sdk.AccAddressFromBech32(value); err != nil {
+					return errors.Wrapf(err, "invalid admin %s", value)
+				}
+
+				return nil
+			},
+		),
+		paramstypes.NewParamSetPair(
 			KeyIBCPort,
 			m.IBC.Port,
-			func(value interface{}) error {
+			func(v interface{}) error {
+				value, ok := v.(string)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value == "" {
+					return fmt.Errorf("ibc.port cannot be empty")
+				}
+
 				return nil
 			},
 		),
 		paramstypes.NewParamSetPair(
 			KeyIBCVersion,
 			m.IBC.Version,
-			func(value interface{}) error {
+			func(v interface{}) error {
+				value, ok := v.(string)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value == "" {
+					return fmt.Errorf("ibc.version cannot be empty")
+				}
+
 				return nil
 			},
 		),
 		paramstypes.NewParamSetPair(
 			KeyOracleAskCount,
 			m.Oracle.AskCount,
-			func(value interface{}) error {
+			func(v interface{}) error {
+				value, ok := v.(uint64)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value == 0 {
+					return fmt.Errorf("oracle.ask_count cannot be zero")
+				}
+
 				return nil
 			},
 		),
 		paramstypes.NewParamSetPair(
 			KeyOracleMinCount,
 			m.Oracle.MinCount,
-			func(value interface{}) error {
+			func(v interface{}) error {
+				value, ok := v.(uint64)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value == 0 {
+					return fmt.Errorf("oracle.min_count cannot be zero")
+				}
+
 				return nil
 			},
 		),
 		paramstypes.NewParamSetPair(
 			KeyOracleMultiplier,
 			m.Oracle.Multiplier,
-			func(value interface{}) error {
+			func(v interface{}) error {
+				_, ok := v.(uint64)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
 				return nil
 			},
 		),
@@ -118,6 +199,12 @@ func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 }
 
 func (m *Params) Validate() error {
+	if m.Admin == "" {
+		return fmt.Errorf("admin cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return errors.Wrapf(err, "invalid admin %s", m.Admin)
+	}
 	if err := m.IBC.Validate(); err != nil {
 		return errors.Wrapf(err, "invalid ibc params")
 	}
