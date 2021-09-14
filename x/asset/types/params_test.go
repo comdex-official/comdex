@@ -93,19 +93,19 @@ func TestDefaultParams(t *testing.T) {
 	}
 }
 
-//func TestValidateParams(t *testing.T) {
-//	invalidParam := []Params{
-//		{},
-//	}
-//	validParam := Params{
-//		{"str",sdk.AccAddress{},5},
-//	}
-//
-//	for _, param := range invalidParam{
-//		err := param.Validate()
-//		require.Error(t, err)
-//	}
-//
-//	err := validParam.Validate()
-//	require.NoError(t, err)
-//}
+func TestValidateParams(t *testing.T) {
+	invalidParam := []Params{
+		{"",IBCParams{},OracleParams{}},
+	}
+	validParam := Params{
+		"str",IBCParams{},OracleParams{},
+	}
+
+	for _, param := range invalidParam{
+		err := param.Validate()
+		require.Error(t, err)
+	}
+
+	err := validParam.Validate()
+	require.NoError(t, err)
+}

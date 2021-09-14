@@ -21,9 +21,14 @@ func TestNewMsgAddMarketRequest(t *testing.T) {
 		scriptID    uint64
 		expectPass  bool
 	}{
-		{"invalidScriptId", addrs[0], "cmdx", 1, false},
-		{"invalid symbol_Length",addrs[0],"asdfghjk",2,true},
+		{"validForm", addrs[0], "cmdx", 1, true},
+		{"invalid formNotEmpty",sdk.AccAddress{},"asdfghjkl",1,false},
+		{"invalid formNotNil", sdk.AccAddress{},"asdfghjkl",1,false},
+		{"invalid symbol", addrs[0], "", 1, false},
+		{"invalid symbol_Length", addrs[0], "asdfghjkl", 1, false},
+		{"invalid script_ID", addrs[0], "cmdx", 0, false},
 	}
+
 	for _, tc := range tests {
 		m := NewMsgAddMarketRequest(
 			tc.from,
@@ -34,8 +39,7 @@ func TestNewMsgAddMarketRequest(t *testing.T) {
 		if tc.expectPass {
 			require.NoError(t, m.ValidateBasic(), "test: %v", tc.description)
 		} else {
-			require.NoError(t, m.ValidateBasic(), "test: %v", tc.description)
+			require.Error(t, m.ValidateBasic(), "test: %v", tc.description)
 		}
 	}
 }
-

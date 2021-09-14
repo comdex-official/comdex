@@ -4,9 +4,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"testing"
 )
-//var(
-//	assetAddr1 = sdk.ValidateDenom("test1")
-//)
+
 
 func TestValidateAsset(t *testing.T) {
 	invalidAsset := []Asset{
@@ -14,7 +12,7 @@ func TestValidateAsset(t *testing.T) {
 		{1, "", "def", 1},
 		{1, "qwertyuioplkjhgfd", "def", 1},
 		{1, "abc", "", 1},
-		//{1,"abcd",assetAddr1{},1},
+		{1,"abcd","\u5586",1},
 		{1, "abc", "def", -1},
 	}
 

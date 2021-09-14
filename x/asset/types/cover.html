@@ -55,7 +55,7 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/comdex-official/comdex/x/asset/types/asset.go (92.3%)</option>
+				<option value="file0">github.com/comdex-official/comdex/x/asset/types/asset.go (100.0%)</option>
 				
 				<option value="file1">github.com/comdex-official/comdex/x/asset/types/asset.pb.go (0.9%)</option>
 				
@@ -73,7 +73,7 @@
 				
 				<option value="file8">github.com/comdex-official/comdex/x/asset/types/keys.go (100.0%)</option>
 				
-				<option value="file9">github.com/comdex-official/comdex/x/asset/types/msg.go (4.7%)</option>
+				<option value="file9">github.com/comdex-official/comdex/x/asset/types/msg.go (7.4%)</option>
 				
 				<option value="file10">github.com/comdex-official/comdex/x/asset/types/msg.pb.go (0.8%)</option>
 				
@@ -81,11 +81,11 @@
 				
 				<option value="file12">github.com/comdex-official/comdex/x/asset/types/oracle.pb.go (0.9%)</option>
 				
-				<option value="file13">github.com/comdex-official/comdex/x/asset/types/pair.go (90.9%)</option>
+				<option value="file13">github.com/comdex-official/comdex/x/asset/types/pair.go (81.8%)</option>
 				
 				<option value="file14">github.com/comdex-official/comdex/x/asset/types/pair.pb.go (0.9%)</option>
 				
-				<option value="file15">github.com/comdex-official/comdex/x/asset/types/params.go (25.8%)</option>
+				<option value="file15">github.com/comdex-official/comdex/x/asset/types/params.go (32.3%)</option>
 				
 				<option value="file16">github.com/comdex-official/comdex/x/asset/types/params.pb.go (0.8%)</option>
 				
@@ -131,7 +131,7 @@ func (m *Asset) Validate() error <span class="cov8" title="1">{
         <span class="cov8" title="1">if m.Denom == "" </span><span class="cov8" title="1">{
                 return fmt.Errorf("denom cannot be empty")
         }</span>
-        <span class="cov8" title="1">if err := sdk.ValidateDenom(m.Denom); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if err := sdk.ValidateDenom(m.Denom); err != nil </span><span class="cov8" title="1">{
                 return errors.Wrapf(err, "invalid denom %s", m.Denom)
         }</span>
         <span class="cov8" title="1">if m.Decimals &lt; 0 </span><span class="cov8" title="1">{
@@ -1922,19 +1922,19 @@ func NewMsgAddMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64)
 }</span>
 
 func (m *MsgAddMarketRequest) ValidateBasic() error <span class="cov8" title="1">{
-        if m.From == "" </span><span class="cov0" title="0">{
+        if m.From == "" </span><span class="cov8" title="1">{
                 return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
         }</span>
         <span class="cov8" title="1">if _, err := sdk.AccAddressFromBech32(m.From); err != nil </span><span class="cov0" title="0">{
                 return errors.Wrapf(ErrorInvalidFrom, "%s", err)
         }</span>
-        <span class="cov8" title="1">if m.Symbol == "" </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.Symbol == "" </span><span class="cov8" title="1">{
                 return errors.Wrap(ErrorInvalidSymbol, "symbol cannot be empty")
         }</span>
-        <span class="cov8" title="1">if len(m.Symbol) &gt; MaxMarketSymbolLength </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if len(m.Symbol) &gt; MaxMarketSymbolLength </span><span class="cov8" title="1">{
                 return errors.Wrapf(ErrorInvalidSymbol, "symbol length cannot be greater than %d", MaxMarketSymbolLength)
         }</span>
-        <span class="cov8" title="1">if m.ScriptID == 0 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if m.ScriptID == 0 </span><span class="cov8" title="1">{
                 return errors.Wrapf(ErrorInvalidScriptID, "script_id cannot be zero")
         }</span>
 
@@ -7287,7 +7287,7 @@ func (m *Pair) Validate() error <span class="cov8" title="1">{
         <span class="cov8" title="1">if m.LiquidationRatio.IsNil() </span><span class="cov0" title="0">{
                 return fmt.Errorf("liquidation_ratio cannot be nil")
         }</span>
-        <span class="cov8" title="1">if m.LiquidationRatio.IsNegative() </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if m.LiquidationRatio.IsNegative() </span><span class="cov0" title="0">{
                 return fmt.Errorf("liquidation_ratio cannot be negative")
         }</span>
         <span class="cov8" title="1">return nil</span>
@@ -7902,11 +7902,11 @@ func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs <span class="cov0" ti
         }
 }
 
-func (m *Params) Validate() error <span class="cov0" title="0">{
-        if m.Admin == "" </span><span class="cov0" title="0">{
+func (m *Params) Validate() error <span class="cov8" title="1">{
+        if m.Admin == "" </span><span class="cov8" title="1">{
                 return fmt.Errorf("admin cannot be empty")
         }</span>
-        <span class="cov0" title="0">if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil </span><span class="cov8" title="1">{
                 return errors.Wrapf(err, "invalid admin %s", m.Admin)
         }</span>
         <span class="cov0" title="0">if err := m.IBC.Validate(); err != nil </span><span class="cov0" title="0">{
