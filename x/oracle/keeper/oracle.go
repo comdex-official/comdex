@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
-	"github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/oracle/types"
 )
 
 func (k *Keeper) SetMarket(ctx sdk.Context, market types.Market) {

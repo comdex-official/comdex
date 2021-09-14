@@ -23,10 +23,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetAsset(ctx, item)
 	}
 
-	for _, item := range state.Markets {
-		k.SetMarket(ctx, item)
-	}
-
 	for _, item := range state.Pairs {
 		if item.Id > assetID {
 			pairID = item.Id
@@ -42,7 +38,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
 		k.GetAssets(ctx),
-		k.GetMarkets(ctx),
 		k.GetPairs(ctx),
 		k.GetParams(ctx),
 	)

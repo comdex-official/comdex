@@ -10,7 +10,7 @@ import (
 	ibcchanneltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
 
-	"github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/oracle/types"
 )
 
 

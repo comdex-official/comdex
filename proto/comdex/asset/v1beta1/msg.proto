@@ -9,28 +9,6 @@ option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message MsgAddMarketRequest {
-  string from      = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  string symbol    = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
-  uint64 script_id = 3 [
-    (gogoproto.customname) = "ScriptID",
-    (gogoproto.moretags)   = "yaml:\"script_id\""
-  ];
-}
-
-message MsgAddMarketResponse {}
-
-message MsgUpdateMarketRequest {
-  string from      = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  string symbol    = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
-  uint64 script_id = 3 [
-    (gogoproto.customname) = "ScriptID",
-    (gogoproto.moretags)   = "yaml:\"script_id\""
-  ];
-}
-
-message MsgUpdateMarketResponse {}
-
 message MsgAddAssetRequest {
   string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   string name    = 2 [ (gogoproto.moretags) = "yaml:\"name\"" ];
@@ -119,8 +97,7 @@ message MsgFetchPriceRequest {
 message MsgFetchPriceResponse {}
 
 service MsgService {
-  rpc MsgAddMarket(MsgAddMarketRequest) returns (MsgAddMarketResponse);
-  rpc MsgUpdateMarket(MsgUpdateMarketRequest) returns (MsgUpdateMarketResponse);
+
   rpc MsgAddAsset(MsgAddAssetRequest) returns (MsgAddAssetResponse);
   rpc MsgUpdateAsset(MsgUpdateAssetRequest) returns (MsgUpdateAssetResponse);
   rpc MsgAddMarketForAsset(MsgAddMarketForAssetRequest)

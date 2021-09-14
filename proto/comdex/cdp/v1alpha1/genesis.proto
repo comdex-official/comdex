@@ -3,7 +3,6 @@ syntax = "proto3";
 package comdex.cdp.v1alpha1;
 
 import "gogoproto/gogo.proto";
-import "google/protobuf/timestamp.proto";
 import "comdex/cdp/v1alpha1/cdp.proto";
 import "comdex/cdp/v1alpha1/params.proto";
 

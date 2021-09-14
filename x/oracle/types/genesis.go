@@ -1,21 +1,22 @@
 package types
 
-func NewGenesisState(assets []Asset, pairs []Pair, params Params) *GenesisState {
+func NewGenesisState(markets []Market) *GenesisState {
 	return &GenesisState{
-		Assets:  assets,
-		Pairs:   pairs,
-		Params:  params,
+		Markets: markets,
 	}
 }
 
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
 		nil,
-		nil,
-		DefaultParams(),
 	)
 }
 
 func ValidateGenesis(_ *GenesisState) error {
+	return nil
+}
+
+func (m GenesisState) Validate() error {
+
 	return nil
 }

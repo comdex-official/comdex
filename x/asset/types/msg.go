@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/comdex-official/comdex/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	ibcclienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
@@ -37,8 +38,8 @@ func (m *MsgAddMarketRequest) ValidateBasic() error {
 	if m.Symbol == "" {
 		return errors.Wrap(ErrorInvalidSymbol, "symbol cannot be empty")
 	}
-	if len(m.Symbol) > MaxMarketSymbolLength {
-		return errors.Wrapf(ErrorInvalidSymbol, "symbol length cannot be greater than %d", MaxMarketSymbolLength)
+	if len(m.Symbol) > types.MaxMarketSymbolLength {
+		return errors.Wrapf(ErrorInvalidSymbol, "symbol length cannot be greater than %d", types.MaxMarketSymbolLength)
 	}
 	if m.ScriptID == 0 {
 		return errors.Wrapf(ErrorInvalidScriptID, "script_id cannot be zero")
@@ -72,8 +73,8 @@ func (m *MsgUpdateMarketRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 	if m.Symbol != "" {
-		if len(m.Symbol) > MaxMarketSymbolLength {
-			return errors.Wrapf(ErrorInvalidSymbol, "symbol length cannot be greater than %d", MaxMarketSymbolLength)
+		if len(m.Symbol) > types.MaxMarketSymbolLength {
+			return errors.Wrapf(ErrorInvalidSymbol, "symbol length cannot be greater than %d", types.MaxMarketSymbolLength)
 		}
 	}
 
@@ -194,8 +195,8 @@ func (m *MsgAddMarketForAssetRequest) ValidateBasic() error {
 	if m.Symbol == "" {
 		return errors.Wrap(ErrorInvalidSymbol, "symbol cannot be empty")
 	}
-	if len(m.Symbol) > MaxMarketSymbolLength {
-		return errors.Wrapf(ErrorInvalidSymbol, "symbol length cannot be greater than %d", MaxMarketSymbolLength)
+	if len(m.Symbol) > types.MaxMarketSymbolLength {
+		return errors.Wrapf(ErrorInvalidSymbol, "symbol length cannot be greater than %d", types.MaxMarketSymbolLength)
 	}
 
 	return nil
@@ -231,8 +232,8 @@ func (m *MsgRemoveMarketForAssetRequest) ValidateBasic() error {
 	if m.Symbol == "" {
 		return errors.Wrap(ErrorInvalidSymbol, "symbol cannot be empty")
 	}
-	if len(m.Symbol) > MaxMarketSymbolLength {
-		return errors.Wrapf(ErrorInvalidSymbol, "symbol length cannot be greater than %d", MaxMarketSymbolLength)
+	if len(m.Symbol) > types.MaxMarketSymbolLength {
+		return errors.Wrapf(ErrorInvalidSymbol, "symbol length cannot be greater than %d", types.MaxMarketSymbolLength)
 	}
 
 	return nil

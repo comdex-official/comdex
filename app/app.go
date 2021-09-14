@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/comdex-official/comdex/x/asset"
+	"github.com/comdex-official/comdex/x/oracle"
 	"io"
 	"os"
 	"path/filepath"
@@ -87,6 +88,7 @@ import (
 	"github.com/comdex-official/comdex/x/cdp"
 	cdpkeeper "github.com/comdex-official/comdex/x/cdp/keeper"
 	cdptypes "github.com/comdex-official/comdex/x/cdp/types"
+	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
 )
 
 const (
@@ -186,6 +188,7 @@ type App struct {
 
 	cdpKeeper       cdpkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
+	oracleKeeper    oraclekeeper.Keeper
 }
 
 // New returns a reference to an initialized App.
@@ -444,6 +447,7 @@ func New(
 		transferModule,
 		cdp.NewAppModule(app.cdc, app.cdpKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
+		oracle.NewAppModule(app.cdc, app.oracleKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that

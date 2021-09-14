@@ -1,104 +1,17 @@
 package cli
 
 import (
+	"github.com/comdex-official/comdex/x/oracle/types"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	ibcchannelclientutils "github.com/cosmos/ibc-go/modules/core/04-channel/client/utils"
 	"github.com/spf13/cobra"
-	"strconv"
-
-	"github.com/comdex-official/comdex/x/asset/types"
 )
-
-func txAddAsset() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "add-asset [name] [denom] [decimals]",
-		Short: "Add an asset",
-		Args:  cobra.ExactArgs(3),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			decimals, err := strconv.ParseInt(args[2], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgAddAssetRequest(
-				ctx.FromAddress,
-				args[0],
-				args[1],
-				decimals,
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func txUpdateAsset() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-asset [id]",
-		Short: "Update an asset",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			name, err := cmd.Flags().GetString(flagName)
-			if err != nil {
-				return err
-			}
-
-			denom, err := cmd.Flags().GetString(flagDenom)
-			if err != nil {
-				return err
-			}
-
-			decimals, err := cmd.Flags().GetInt64(flagDecimals)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgUpdateAssetRequest(
-				ctx.FromAddress,
-				id,
-				name,
-				denom,
-				decimals,
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(flagName, "", "name")
-	cmd.Flags().String(flagDenom, "", "denomination")
-	cmd.Flags().Int64(flagDecimals, -1, "decimals")
-
-	return cmd
-}
 
 func txAddMarket() *cobra.Command {
 	cmd := &cobra.Command{
@@ -237,37 +150,78 @@ func txRemoveMarketForAsset() *cobra.Command {
 	return cmd
 }
 
-func txAddPair() *cobra.Command {
+func txFetchPrice() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-pair [asset-in] [asset-out] [liquidation-ratio]",
-		Short: "Add a pair",
-		Args:  cobra.ExactArgs(3),
+		Use:   "fetch-price [source-port] [source-channel] [symbols] [script-id]",
+		Short: "Fetch price from Oracle",
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			assetIn, err := strconv.ParseUint(args[0], 10, 64)
+			scriptID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			assetOut, err := strconv.ParseUint(args[1], 10, 64)
+			timeoutHeight, err := GetPacketTimeoutHeight(cmd)
 			if err != nil {
 				return err
 			}
 
-			liquidationRatio, err := sdk.NewDecFromStr(args[2])
+			timeoutTimestamp, err := cmd.Flags().GetUint64(flagPacketTimeoutTimestamp)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgAddPairRequest(
+			absoluteTimeouts, err := cmd.Flags().GetBool(flagAbsoluteTimeouts)
+			if err != nil {
+				return err
+			}
+
+			feeLimit, err := GetFeeLimit(cmd)
+			if err != nil {
+				return err
+			}
+
+			prepareGas, err := cmd.Flags().GetUint64(flagPrepareGas)
+			if err != nil {
+				return err
+			}
+
+			executeGas, err := cmd.Flags().GetUint64(flagExecuteGas)
+			if err != nil {
+				return err
+			}
+
+			if !absoluteTimeouts {
+				state, height, _, err := ibcchannelclientutils.QueryLatestConsensusState(ctx, args[0], args[1])
+				if err != nil {
+					return err
+				}
+
+				if !timeoutHeight.IsZero() {
+					timeoutHeight.RevisionHeight += height.RevisionHeight
+					timeoutHeight.RevisionNumber += height.RevisionNumber
+				}
+				if timeoutTimestamp != 0 {
+					timeoutTimestamp += state.GetTimestamp()
+				}
+			}
+
+			msg := types.NewMsgFetchPriceRequest(
 				ctx.FromAddress,
-				assetIn,
-				assetOut,
-				liquidationRatio,
+				args[0],
+				args[1],
+				timeoutHeight,
+				timeoutTimestamp,
+				strings.Split(args[2], ","),
+				scriptID,
+				feeLimit,
+				prepareGas,
+				executeGas,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -278,46 +232,12 @@ func txAddPair() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func txUpdatePair() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-pair [id]",
-		Short: "Update a pair",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			liquidationRatio, err := GetLiquidationRatio(cmd)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgUpdatePairRequest(
-				ctx.FromAddress,
-				id,
-				liquidationRatio,
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(flagLiquidationRatio, "", "liquidation ratio")
+	cmd.Flags().String(flagPacketTimeoutHeight, "0-1000", "packet timeout block height")
+	cmd.Flags().Duration(flagPacketTimeoutTimestamp, 10*time.Minute, "packet timeout timestamp")
+	cmd.Flags().Bool(flagAbsoluteTimeouts, false, "timeout flags are used as absolute timeouts")
+	cmd.Flags().String(flagFeeLimit, "", "fee limit")
+	cmd.Flags().Uint64(flagPrepareGas, 0, "prepare gas")
+	cmd.Flags().Uint64(flagExecuteGas, 0, "execute gas")
 
 	return cmd
 }
