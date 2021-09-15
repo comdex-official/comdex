@@ -9,7 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
-	"github.com/comdex-official/comdex/x/asset/types"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/oracle/types"
 )
 
 func (k *Keeper) SetMarket(ctx sdk.Context, market types.Market) {
@@ -241,4 +242,13 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	}
 
 	return k.GetPriceForMarket(ctx, market.Symbol)
+}
+
+func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
+	var (
+		store = k.Store(ctx)
+		key   = assettypes.AssetKey(id)
+	)
+
+	return store.Has(key)
 }

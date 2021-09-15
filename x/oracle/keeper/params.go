@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/oracle/types"
 )
 
 func (k *Keeper) Admin(ctx sdk.Context) (s string) {

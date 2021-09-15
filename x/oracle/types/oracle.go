@@ -1,11 +1,12 @@
 package types
 
 import (
-	"fmt"
+"fmt"
 )
 
 const (
 	MaxMarketSymbolLength = 8
+	MaxAssetNameLength = 16
 )
 
 func (m *Market) Validate() error {
@@ -21,3 +22,4 @@ func (m *Market) Validate() error {
 
 	return nil
 }
+
