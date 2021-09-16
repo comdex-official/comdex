@@ -280,13 +280,13 @@ func (k Keeper) GetCDP(ctx sdk.Context, cdpID uint64) (types.CDP, bool) {
 	}
 
 	var cdp types.CDP
-	k.cdc.MustUnmarshalBinaryBare(bz, &cdp)
+	k.cdc.MustUnmarshal(bz, &cdp)
 	return cdp, true
 }
 
 func (k Keeper) SetCDP(ctx sdk.Context, cdp types.CDP) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshalBinaryBare(&cdp)
+	bz := k.cdc.MustMarshal(&cdp)
 	store.Set(types.CdpKey(cdp.Id), bz)
 	return
 }
@@ -314,7 +314,7 @@ func (k Keeper) IndexCDPByOwner(ctx sdk.Context, cdp types.CDP) {
 	ownerCDPList, found := k.GetOwnerCDPList(ctx, ownerAddrs)
 	ownedCDP := types.OwnedCDP{Id: cdp.Id, CollateralType: cdp.Type}
 	if !found {
-		idBytes := k.cdc.MustMarshalBinaryBare(&types.OwnerCDPList{[]types.OwnedCDP{ownedCDP}})
+		idBytes := k.cdc.MustMarshal(&types.OwnerCDPList{[]types.OwnedCDP{ownedCDP}})
 		store.Set(ownerAddrs, idBytes)
 		return
 	}
@@ -322,7 +322,7 @@ func (k Keeper) IndexCDPByOwner(ctx sdk.Context, cdp types.CDP) {
 	ownedCDPs := append(ownerCDPList.OwnedCDPs, ownedCDP)
 	sort.Slice(ownedCDPs, func(i, j int) bool { return ownedCDPs[i].Id < ownedCDPs[j].Id })
 	ownerCDPList.OwnedCDPs = ownedCDPs
-	store.Set(ownerAddrs, k.cdc.MustMarshalBinaryBare(&ownerCDPList))
+	store.Set(ownerAddrs, k.cdc.MustMarshal(&ownerCDPList))
 }
 
 func (k Keeper) SetNextCdpId(ctx sdk.Context, id uint64) {
@@ -338,7 +338,7 @@ func (k Keeper) GetOwnerCDPList(ctx sdk.Context, owner sdk.AccAddress) (types.Ow
 	}
 
 	var ownerCDPList types.OwnerCDPList
-	k.cdc.MustUnmarshalBinaryBare(bz, &ownerCDPList)
+	k.cdc.MustUnmarshal(bz, &ownerCDPList)
 	return ownerCDPList, true
 }
 

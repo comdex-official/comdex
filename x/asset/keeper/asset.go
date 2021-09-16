@@ -41,7 +41,7 @@ func (k *Keeper) GetAssetID(ctx sdk.Context) uint64 {
 func (k *Keeper) SetAsset(ctx sdk.Context, asset types.Asset) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetKey(asset.ID)
+		key   = types.AssetKey(asset.Id)
 		value = k.cdc.MustMarshal(&asset)
 	)
 
