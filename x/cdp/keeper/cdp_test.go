@@ -64,7 +64,7 @@ func (suite *CdpTestSuite) TestAddCdp() {
 	addrs:= sdk.AccAddress{byte(110)}
 
 
-	cdp := types.NewCDP(types.DefaultIndex, sdk.AccAddress{byte(10)},sdk.NewCoin("cmdx", sdk.NewInt(200000000)), "cmdx-a", sdk.NewCoin("uscx", sdk.NewInt(500000000)))
+	cdp := types.NewCDP(types.DefaultIndex, sdk.AccAddress{byte(10)},sdk.NewCoin("cmdx", sdk.NewInt(25500000000)), "cmdx-a", sdk.NewCoin("uscx", sdk.NewInt(500000000)))
 	suite.keeper.SetCDP(suite.ctx, cdp)
 
 	params := types.CollateralParam{
@@ -84,10 +84,17 @@ func (suite *CdpTestSuite) TestAddCdp() {
 
 	accountKeeper := suite.app.GetAccountKeeper()
 	acc := accountKeeper.NewAccountWithAddress(suite.ctx, addrs)
-	accountKeeper.SetAccount(suite.ctx, acc)
+	nacc := accountKeeper.NewAccount(suite.ctx, acc)
+	accountKeeper.SetAccount(suite.ctx, nacc)
 
 	err = suite.keeper.AddCdp(suite.ctx, addrs, sdk.NewCoin("cmdx", sdk.NewInt(300000000)), sdk.NewCoin("uscx", sdk.NewInt(200000001)), "cmdx-a")
 
+	bk := suite.app.GetBankKeeper()
+	bk.MintCoins(suite.ctx, "cdp", sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(500000000))})
+	bk.SendCoinsFromModuleToAccount(suite.ctx,"cdp", addrs,sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(500000000))} )
+
+
+	err = suite.keeper.AddCdp(suite.ctx, addrs, sdk.NewCoin("cmdx", sdk.NewInt(30000)), sdk.NewCoin("uscx", sdk.NewInt(200000001)), "cmdx-a")
 
 }
 
@@ -135,10 +142,13 @@ func (suite *CdpTestSuite) TestDepositCollateral() {
 
 	err = suite.keeper.DepositCollateral(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(100) ),"cmdx-a")
 	suite.Error(err)
-	//bk := suite.app.GetBankKeeper()
-	//bk
-	//bankkeeper.BaseSendKeeper.
-	err = suite.keeper.DepositCollateral(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(200000000) ),"cmdx-a")
+
+	//err = suite.keeper.DepositCollateral(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(200000000) ),"cmdx-a")
+	bk := suite.app.GetBankKeeper()
+	bk.MintCoins(suite.ctx, "cdp", sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(500000000))})
+	bk.SendCoinsFromModuleToAccount(suite.ctx,"cdp", addrs[0],sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(500000000))} )
+
+	err = suite.keeper.DepositCollateral(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(100) ),"cmdx-a")
 
 }
 
@@ -171,6 +181,12 @@ func (suite *CdpTestSuite) TestWithdrawCollateral() {
 	err = suite.keeper.WithdrawCollateral(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(2)) , "cmdx-a")
 	suite.Error(err)
 
+	bk := suite.app.GetBankKeeper()
+	bk.MintCoins(suite.ctx, "cdp", sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(500000000))})
+
+	err = suite.keeper.WithdrawCollateral(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(2)) , "cmdx-a")
+
+
 	params2 := types.CollateralParam{
 		CollateralDenom:  "cmdx",
 		DebtDenom:        "uscx",
@@ -181,7 +197,7 @@ func (suite *CdpTestSuite) TestWithdrawCollateral() {
 	suite.keeper.SetParams(suite.ctx,types.Params{cparams2})
 
 	err = suite.keeper.WithdrawCollateral(suite.ctx, addrs[0], sdk.NewCoin("cmdx", sdk.NewInt(2)) , "cmdx-a")
-
+	suite.Require().True(errors.Is(err, types.ErrorInvalidCollateralRatio))
 
 }
 
@@ -209,6 +225,7 @@ func (suite *CdpTestSuite) TestDrawDebt(){
 	suite.Require().True(errors.Is(err, types.ErrorInvalidDebt))
 
 	err = suite.keeper.DrawDebt(suite.ctx, addrs[0],  "cmdx-a", sdk.NewCoin("uscx", sdk.NewInt(200000)))
+	suite.NoError(err)
 }
 
 func (suite *CdpTestSuite) TestRepayDebt(){
@@ -229,8 +246,22 @@ func (suite *CdpTestSuite) TestRepayDebt(){
 	err = suite.keeper.RepayDebt(suite.ctx, addrs[0],  "cmdx-a", sdk.NewCoin("uscx", sdk.NewInt(100)))
 	suite.Error(err)
 
+	bk := suite.app.GetBankKeeper()
+	bk.MintCoins(suite.ctx, "cdp", sdk.Coins{sdk.NewCoin("uscx", sdk.NewInt(500000000))})
+	bk.SendCoinsFromModuleToAccount(suite.ctx,"cdp", addrs[0],sdk.Coins{sdk.NewCoin("uscx", sdk.NewInt(500000000))} )
+
 	err = suite.keeper.RepayDebt(suite.ctx, addrs[0],  "cmdx-a", sdk.NewCoin("uscx", sdk.NewInt(66)))
 
+	cdp = types.NewCDP(types.DefaultIndex, addrs[0],sdk.NewCoin("cmdx", sdk.NewInt(100)), "cmdx-a", sdk.NewCoin("uscx", sdk.NewInt(66)))
+	suite.keeper.SetCDP(suite.ctx, cdp)
+	suite.keeper.IndexCDPByOwner(suite.ctx, cdp)
+
+	err = suite.keeper.RepayDebt(suite.ctx, addrs[0],  "cmdx-a", sdk.NewCoin("uscx", sdk.NewInt(66)))
+
+	bk = suite.app.GetBankKeeper()
+	bk.MintCoins(suite.ctx, "cdp", sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(500000000))})
+
+	err = suite.keeper.RepayDebt(suite.ctx, addrs[0],  "cmdx-a", sdk.NewCoin("uscx", sdk.NewInt(66)))
 }
 
 func (suite *CdpTestSuite) TestAttemptLiquidation(){
@@ -239,21 +270,45 @@ func (suite *CdpTestSuite) TestAttemptLiquidation(){
 	err := suite.keeper.AttemptLiquidation(suite.ctx,addrs[0], "cmdx-a" )
 	suite.Require().True(errors.Is(err, types.ErrorCdpNotFound))
 
+	cdp := types.NewCDP(types.DefaultIndex, addrs[0],sdk.NewCoin("cmdx", sdk.NewInt(1000)), "cmdx-a", sdk.NewCoin("uscx", sdk.NewInt(666)))
+	suite.keeper.SetCDP(suite.ctx, cdp)
+	suite.keeper.IndexCDPByOwner(suite.ctx, cdp)
+
 	params := types.CollateralParam{
+		CollateralDenom:  "cmdx",
+		DebtDenom:        "uscx",
+		Type:             "cmdx-a",
+		LiquidationRatio: sdk.Dec{},
+	}
+	cparams := [] types.CollateralParam{params}
+	suite.keeper.SetParams(suite.ctx,types.Params{cparams})
+
+	err = suite.keeper.AttemptLiquidation(suite.ctx,addrs[0], "cmdx-a" )
+
+	params = types.CollateralParam{
 		CollateralDenom:  "cmdx",
 		DebtDenom:        "uscx",
 		Type:             "cmdx-a",
 		LiquidationRatio: sdk.NewDecFromBigInt(big.NewInt(150)),
 	}
-	cparams := [] types.CollateralParam{params}
+	cparams = [] types.CollateralParam{params}
 	suite.keeper.SetParams(suite.ctx,types.Params{cparams})
-
-	cdp := types.NewCDP(types.DefaultIndex, addrs[0],sdk.NewCoin("cmdx", sdk.NewInt(1000)), "cmdx-a", sdk.NewCoin("uscx", sdk.NewInt(666)))
-	suite.keeper.SetCDP(suite.ctx, cdp)
-	suite.keeper.IndexCDPByOwner(suite.ctx, cdp)
 
 	err = suite.keeper.AttemptLiquidation(suite.ctx,addrs[0], "cmdx-a" )
 	suite.Error(err)
+
+	bk := suite.app.GetBankKeeper()
+	bk.MintCoins(suite.ctx, "cdp", sdk.Coins{sdk.NewCoin("uscx", sdk.NewInt(500000000))})
+	bk.SendCoinsFromModuleToAccount(suite.ctx,"cdp", addrs[0],sdk.Coins{sdk.NewCoin("uscx", sdk.NewInt(500000000))} )
+
+	err = suite.keeper.AttemptLiquidation(suite.ctx,addrs[0], "cmdx-a" )
+	suite.Error(err)
+
+	bk = suite.app.GetBankKeeper()
+	bk.MintCoins(suite.ctx, "cdp", sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(500000000))})
+
+	err = suite.keeper.AttemptLiquidation(suite.ctx,addrs[0], "cmdx-a" )
+	suite.NoError(err)
 }
 
 func (suite *CdpTestSuite) TestVerifyBalance(){
@@ -283,6 +338,7 @@ func (suite *CdpTestSuite) TestVerifyBalance(){
 	//suite.keeper.IndexCDPByOwner(suite.ctx, cdp)
 
 	err = suite.keeper.VerifyBalance(suite.ctx,sdk.NewCoin("cmdx", sdk.NewInt(3)) , addr[0] )
+
 
 }
 
@@ -341,4 +397,13 @@ func (suite *CdpTestSuite) TestKeeper_GetCDPByOwnerAndCollateralType() {
 	suite.keeper.IndexCDPByOwner(suite.ctx, cdp)
 	suite.keeper.GetCDP(suite.ctx,1 )
 	suite.keeper.GetCDPByOwnerAndCollateralType(suite.ctx, addrs[0], "cmdx-a")
+}
+
+func (suite *CdpTestSuite) TestKeeper_QueryCDP() {
+	queryCDP := types.QueryCDPRequest{
+		CollateralType: "cmdx-a",
+		Owner:          "cosmos",
+	}
+	ctx := sdk.WrapSDKContext(suite.ctx)
+	types.QueryServiceServer.QueryCDP(keeper.Keeper{},ctx,&queryCDP)
 }
