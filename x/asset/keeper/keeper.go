@@ -17,8 +17,8 @@ type Keeper struct {
 	scoped  expected.ScopedKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) *Keeper {
-	return &Keeper{
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) Keeper {
+	return Keeper{
 		cdc: cdc,
 		key: key,
 	}

@@ -18,10 +18,11 @@ type Keeper struct {
 	asset expected.AssetKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) *Keeper {
-	return &Keeper{
-		cdc: cdc,
-		key: key,
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, asset expected.AssetKeeper) Keeper {
+	return Keeper{
+		cdc:   cdc,
+		key:   key,
+		asset: asset,
 	}
 }
 

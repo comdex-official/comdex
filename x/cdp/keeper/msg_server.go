@@ -3,8 +3,9 @@ package keeper
 import (
 	"context"
 
-	"github.com/comdex-official/comdex/x/cdp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
 var (
@@ -48,12 +49,12 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.ID)
+	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 	if !found {
 		return nil, types.ErrorPriceDoesNotExist
 	}
 
-	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.ID)
+	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
 	if !found {
 		return nil, types.ErrorPriceDoesNotExist
 	}
@@ -170,12 +171,12 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.ID)
+	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 	if !found {
 		return nil, types.ErrorPriceDoesNotExist
 	}
 
-	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.ID)
+	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
 	if !found {
 		return nil, types.ErrorPriceDoesNotExist
 	}
@@ -238,12 +239,12 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.ID)
+	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 	if !found {
 		return nil, types.ErrorPriceDoesNotExist
 	}
 
-	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.ID)
+	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
 	if !found {
 		return nil, types.ErrorPriceDoesNotExist
 	}

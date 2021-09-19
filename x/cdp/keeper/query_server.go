@@ -41,7 +41,7 @@ func (q *queryServer) QueryCDPs(c context.Context, req *types.QueryCDPsRequest) 
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.CDP
-			if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
 

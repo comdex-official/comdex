@@ -1,7 +1,6 @@
 package app
 
 import (
-	"github.com/comdex-official/comdex/x/asset"
 	"io"
 	"os"
 	"path/filepath"
@@ -84,6 +83,9 @@ import (
 	tmprototypes "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
+	"github.com/comdex-official/comdex/x/asset"
+	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/cdp"
 	cdpkeeper "github.com/comdex-official/comdex/x/cdp/keeper"
 	cdptypes "github.com/comdex-official/comdex/x/cdp/types"
@@ -184,6 +186,7 @@ type App struct {
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
 
+	assetKeeper     assetkeeper.Keeper
 	cdpKeeper       cdpkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
 }
@@ -398,13 +401,14 @@ func New(
 	)
 	app.evidenceKeeper.SetRouter(evidenceRouter)
 
-	app.cdpKeeper = *cdpkeeper.NewKeeper(
+	app.assetKeeper = assetkeeper.NewKeeper(
+		app.cdc,
+		app.keys[assettypes.StoreKey],
+	)
+	app.cdpKeeper = cdpkeeper.NewKeeper(
 		app.cdc,
 		app.keys[cdptypes.StoreKey],
-		app.keys[cdptypes.MemStoreKey],
-		app.accountKeeper,
-		app.bankKeeper,
-		app.GetSubspace(cdptypes.ModuleName),
+		&app.assetKeeper,
 	)
 
 	app.liquidityKeeper = liquiditykeeper.NewKeeper(
@@ -442,6 +446,7 @@ func New(
 		ibc.NewAppModule(app.ibcKeeper),
 		params.NewAppModule(app.paramsKeeper),
 		transferModule,
+		asset.NewAppModule(app.cdc, app.assetKeeper),
 		cdp.NewAppModule(app.cdc, app.cdpKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
 	)
@@ -477,6 +482,7 @@ func New(
 		evidencetypes.ModuleName,
 		liquiditytypes.ModuleName,
 		ibctransfertypes.ModuleName,
+		assettypes.ModuleName,
 		cdptypes.ModuleName,
 	)
 
@@ -494,11 +500,11 @@ func New(
 	app.SetBeginBlocker(app.BeginBlocker)
 	anteHandler, err := ante.NewAnteHandler(
 		ante.HandlerOptions{
-			app.accountKeeper,
-			app.bankKeeper,
-			app.freegrantKeeper,
-			encoding.TxConfig.SignModeHandler(),
-			ante.DefaultSigVerificationGasConsumer,
+			AccountKeeper:   app.accountKeeper,
+			BankKeeper:      app.bankKeeper,
+			FeegrantKeeper:  app.freegrantKeeper,
+			SignModeHandler: encoding.TxConfig.SignModeHandler(),
+			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 		},
 	)
 	if err != nil {

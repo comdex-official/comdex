@@ -1,8 +1,9 @@
 package rest
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
 	"net/http"
+
+	"github.com/cosmos/cosmos-sdk/client"
 )
 
 func createCdp(ctx client.Context) http.HandlerFunc {
