@@ -8,22 +8,12 @@ import "cosmos/base/v1beta1/coin.proto";
 option go_package = "github.com/comdex-official/comdex/x/cdp/types";
 
 message EventCreateCDP {
-  string sender = 1;
+  string sender          = 1;
   string collateral_type = 2;
 }
 
-message EventDepositCollateral{
-  string owner = 1;
-  string collateral_type = 2;
-
-  cosmos.base.v1beta1.Coin collateral = 3 [
-    (gogoproto.moretags) = "yaml:\"payment\"",
-    (gogoproto.nullable) = false
-  ];
-}
-
-message EventWithdrawCollateral{
-  string owner = 1;
+message EventDepositCollateral {
+  string owner           = 1;
   string collateral_type = 2;
 
   cosmos.base.v1beta1.Coin collateral = 3 [
@@ -32,8 +22,18 @@ message EventWithdrawCollateral{
   ];
 }
 
-message EventDrawDebt{
-  string owner = 1;
+message EventWithdrawCollateral {
+  string owner           = 1;
+  string collateral_type = 2;
+
+  cosmos.base.v1beta1.Coin collateral = 3 [
+    (gogoproto.moretags) = "yaml:\"payment\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message EventDrawDebt {
+  string owner           = 1;
   string collateral_type = 2;
 
   cosmos.base.v1beta1.Coin debt = 3 [
@@ -42,8 +42,8 @@ message EventDrawDebt{
   ];
 }
 
-message EventRepayDebt{
-  string owner = 1;
+message EventRepayDebt {
+  string owner           = 1;
   string collateral_type = 2;
 
   cosmos.base.v1beta1.Coin debt = 3 [
@@ -52,7 +52,7 @@ message EventRepayDebt{
   ];
 }
 
-message EventLiquidateCDP{
-  string owner = 1;
+message EventLiquidateCDP {
+  string owner           = 1;
   string collateral_type = 2;
 }

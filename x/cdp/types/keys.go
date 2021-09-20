@@ -1,49 +1,42 @@
 package types
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 const (
-	// ModuleName defines the module name
-	ModuleName = "cdp"
-
-	// StoreKey defines the primary module store key
-	StoreKey = ModuleName
-
-	// RouterKey is the message route for slashing
-	RouterKey = ModuleName
-
-	// QuerierRoute defines the module's query routing key
+	ModuleName   = "cdp"
 	QuerierRoute = ModuleName
-
-	// MemStoreKey defines the in-memory store key
-	MemStoreKey = "mem_cdp"
+	RouterKey    = ModuleName
+	StoreKey     = ModuleName
 )
 
 var (
-	TypeMsgCreateCDPRequest          = ModuleName + ":create_cdp"
-	TypeMsgDepositCollateralRequest  = ModuleName + ":deposit_collateral"
-	TypeMsgWithdrawCollateralRequest = ModuleName + ":withdraw_collateral"
-	TypeMsgDrawDebtRequest           = ModuleName + ":draw_debt"
-	TypeMsgRepayDebtRequest          = ModuleName + ":repay_debt"
-	TypeMsgLiquidateCDPRequest       = ModuleName + ":liquidate_cdp"
+	TypeMsgCreateRequest    = ModuleName + ":create"
+	TypeMsgDepositRequest   = ModuleName + ":deposit"
+	TypeMsgWithdrawRequest  = ModuleName + ":withdraw"
+	TypeMsgDrawRequest      = ModuleName + ":draw"
+	TypeMsgRepayRequest     = ModuleName + ":repay"
+	TypeMsgLiquidateRequest = ModuleName + ":liquidate"
 )
 
 var (
-	CdpIdIndexKeyPrefix = []byte{0x01}
-	CdpKeyPrefix        = []byte{0x02}
-	CdpIdKey            = []byte{0x03}
+	IDKey                        = []byte{0x00}
+	CDPKeyPrefix                 = []byte{0x10}
+	CDPForAddressByPairKeyPrefix = []byte{0x20}
 )
 
-func GetCdpIDBytes(cdpID uint64) (cdpIDBz []byte) {
-	return sdk.Uint64ToBigEndian(cdpID)
+func CDPKey(id uint64) []byte {
+	return append(CDPKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetCdpIDFromBytes(bz []byte) (cdpID uint64) {
-	return sdk.BigEndianToUint64(bz)
-}
+func CDPForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
+	v := append(CDPForAddressByPairKeyPrefix, address.Bytes()...)
+	if len(v) != 1+20 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+20))
+	}
 
-func CdpKey(cdpID uint64) []byte {
-	return append(CdpKeyPrefix, GetCdpIDBytes(cdpID)...)
+	return append(v, sdk.Uint64ToBigEndian(pairID)...)
 }

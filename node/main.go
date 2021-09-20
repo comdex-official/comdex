@@ -3,10 +3,11 @@ package main
 import (
 	"os"
 
-	comdex "github.com/comdex-official/comdex/app"
-	nodecmd "github.com/comdex-official/comdex/node/cmd"
 	"github.com/cosmos/cosmos-sdk/server"
 	servercmd "github.com/cosmos/cosmos-sdk/server/cmd"
+
+	comdex "github.com/comdex-official/comdex/app"
+	nodecmd "github.com/comdex-official/comdex/node/cmd"
 )
 
 func main() {

@@ -1,16 +1,15 @@
 package types
 
-// DefaultIndex is the default capability global index
-const DefaultIndex uint64 = 1
-
-// DefaultGenesis returns the default Capability genesis state
-func DefaultGenesis() *GenesisState {
-	return &GenesisState{}
+func NewGenesisState(cdps []CDP) *GenesisState {
+	return &GenesisState{
+		CDPs: cdps,
+	}
 }
 
-// Validate performs basic genesis state validation returning an error upon any
-// failure.
-func (m GenesisState) Validate() error {
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(nil)
+}
 
+func (m *GenesisState) Validate() error {
 	return nil
 }

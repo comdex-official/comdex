@@ -7,15 +7,23 @@ import (
 	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
-// InitGenesis initializes the capability module's state from a provided genesis
-// state.
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	k.SetParams(ctx, genState.Params)
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
+	for _, item := range state.CDPs {
+		k.SetCDP(ctx, item)
+	}
+
+	id := uint64(0)
+	for _, item := range state.CDPs {
+		if item.ID > id {
+			id = item.ID
+		}
+	}
+
+	k.SetID(ctx, id)
 }
 
-// ExportGenesis returns the capability module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	genesis := types.DefaultGenesis()
-
-	return genesis
+	return types.NewGenesisState(
+		k.GetCDPs(ctx),
+	)
 }
