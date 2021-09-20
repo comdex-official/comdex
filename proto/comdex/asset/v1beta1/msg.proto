@@ -41,8 +41,8 @@ message MsgAddAssetRequest {
 message MsgAddAssetResponse {}
 
 message MsgUpdateAssetRequest {
-  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 id   = 2;
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id      = 2;
   string name    = 3 [ (gogoproto.moretags) = "yaml:\"name\"" ];
   string denom   = 4 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
   int64 decimals = 5 [ (gogoproto.moretags) = "yaml:\"decimals\"" ];
@@ -51,16 +51,16 @@ message MsgUpdateAssetRequest {
 message MsgUpdateAssetResponse {}
 
 message MsgAddMarketForAssetRequest {
-  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 id   = 2;
+  string from   = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id     = 2;
   string symbol = 3 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
 }
 
 message MsgAddMarketForAssetResponse {}
 
 message MsgRemoveMarketForAssetRequest {
-  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 id   = 2;
+  string from   = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id     = 2;
   string symbol = 3 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
 }
 
@@ -80,8 +80,8 @@ message MsgAddPairRequest {
 message MsgAddPairResponse {}
 
 message MsgUpdatePairRequest {
-  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 id   = 2;
+  string from              = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 id                = 2;
   string liquidation_ratio = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false,

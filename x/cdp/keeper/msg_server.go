@@ -2,155 +2,333 @@ package keeper
 
 import (
 	"context"
-	"github.com/comdex-official/comdex/x/cdp/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/cdp/types"
+)
+
+var (
+	_ types.MsgServiceServer = (*msgServer)(nil)
 )
 
 type msgServer struct {
 	Keeper
 }
 
-// NewMsgServerImpl returns an implementation of the MsgServer interface
-// for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) types.MsgServiceServer {
-	return &msgServer{Keeper: keeper}
+func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
+	return &msgServer{
+		Keeper: keeper,
+	}
 }
 
-var _ types.MsgServiceServer = msgServer{}
+func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
 
-func (ms msgServer) MsgCreateCDP(context context.Context, msg *types.MsgCreateCDPRequest) (*types.MsgCreateCDPResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
-
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ms.Keeper.AddCdp(ctx, sender, msg.Collateral, msg.Debt, msg.CollateralType)
-	if err != nil {
+	if k.HasCDPForAddressByPair(ctx, from, msg.PairID) {
+		return nil, types.ErrorDuplicateCDP
+	}
+
+	pair, found := k.GetPair(ctx, msg.PairID)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
+	if !found {
+		return nil, types.ErrorPriceDoesNotExist
+	}
+
+	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
+	if !found {
+		return nil, types.ErrorPriceDoesNotExist
+	}
+
+	totalIn := msg.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
+	if totalIn.IsZero() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	totalOut := msg.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
+	if totalOut.IsZero() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	if totalIn.Quo(totalOut).LT(pair.LiquidationRatio) {
+		return nil, types.ErrorInvalidAmountRatio
+	}
+
+	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(assetIn.Denom, msg.AmountIn)); err != nil {
+		return nil, err
+	}
+	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, msg.AmountOut)); err != nil {
+		return nil, err
+	}
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetOut.Denom, msg.AmountOut)); err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventCreateCDP{
-			Sender:         sender.String(),
-			CollateralType: msg.CollateralType,
-		},
+	var (
+		id  = k.GetID(ctx)
+		cdp = types.CDP{
+			ID:        id + 1,
+			PairID:    msg.PairID,
+			Owner:     msg.From,
+			AmountIn:  msg.AmountIn,
+			AmountOut: msg.AmountOut,
+		}
 	)
-	return &types.MsgCreateCDPResponse{}, nil
+
+	k.SetID(ctx, id+1)
+	k.SetCDP(ctx, cdp)
+	k.SetCDPForAddressByPair(ctx, from, cdp.PairID, cdp.ID)
+
+	return &types.MsgCreateResponse{}, nil
 }
 
-func (ms msgServer) MsgDepositCollateral(context context.Context, msg *types.MsgDepositCollateralRequest) (*types.MsgDepositCollateralResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
+func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
 
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
+	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ms.DepositCollateral(ctx, owner, msg.Collateral, msg.CollateralType)
-	if err != nil {
+	cdp, found := k.GetCDP(ctx, msg.ID)
+	if !found {
+		return nil, types.ErrorCDPDoesNotExist
+	}
+	if msg.From != cdp.Owner {
+		return nil, types.ErrorUnauthorized
+	}
+
+	pair, found := k.GetPair(ctx, cdp.PairID)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	cdp.AmountIn = cdp.AmountIn.Add(msg.Amount)
+	if !cdp.AmountIn.IsPositive() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(assetIn.Denom, msg.Amount)); err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventDepositCollateral{
-			Owner:          owner.String(),
-			CollateralType: msg.CollateralType,
-			Collateral:     msg.Collateral,
-		},
-	)
-
-	return &types.MsgDepositCollateralResponse{}, nil
+	k.SetCDP(ctx, cdp)
+	return &types.MsgDepositResponse{}, nil
 }
 
-func (ms msgServer) MsgWithdrawCollateral(context context.Context, msg *types.MsgWithdrawCollateralRequest) (*types.MsgWithdrawCollateralResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
+func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ms.WithdrawCollateral(ctx, owner, msg.Collateral, msg.CollateralType)
-	if err != nil {
+	cdp, found := k.GetCDP(ctx, msg.ID)
+	if !found {
+		return nil, types.ErrorCDPDoesNotExist
+	}
+	if msg.From != cdp.Owner {
+		return nil, types.ErrorUnauthorized
+	}
+
+	pair, found := k.GetPair(ctx, cdp.PairID)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
+	if !found {
+		return nil, types.ErrorPriceDoesNotExist
+	}
+
+	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
+	if !found {
+		return nil, types.ErrorPriceDoesNotExist
+	}
+
+	cdp.AmountIn = cdp.AmountIn.Sub(msg.Amount)
+	if !cdp.AmountIn.IsPositive() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	totalIn := cdp.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
+	if totalIn.IsZero() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	totalOut := cdp.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
+	if totalOut.IsZero() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	if totalIn.Quo(totalOut).LT(pair.LiquidationRatio) {
+		return nil, types.ErrorInvalidAmountRatio
+	}
+
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetIn.Denom, msg.Amount)); err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventWithdrawCollateral{
-			Owner:          owner.String(),
-			CollateralType: msg.CollateralType,
-			Collateral:     msg.Collateral,
-		},
-	)
-
-	return &types.MsgWithdrawCollateralResponse{}, nil
+	k.SetCDP(ctx, cdp)
+	return &types.MsgWithdrawResponse{}, nil
 }
 
-func (ms msgServer) MsgDrawDebt(context context.Context, msg *types.MsgDrawDebtRequest) (*types.MsgDrawDebtResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
+func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ms.DrawDebt(ctx, owner, msg.CollateralType, msg.Debt)
-	if err != nil {
+	cdp, found := k.GetCDP(ctx, msg.ID)
+	if !found {
+		return nil, types.ErrorCDPDoesNotExist
+	}
+	if msg.From != cdp.Owner {
+		return nil, types.ErrorUnauthorized
+	}
+
+	pair, found := k.GetPair(ctx, cdp.PairID)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
+	if !found {
+		return nil, types.ErrorPriceDoesNotExist
+	}
+
+	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
+	if !found {
+		return nil, types.ErrorPriceDoesNotExist
+	}
+
+	cdp.AmountOut = cdp.AmountOut.Add(msg.Amount)
+	if !cdp.AmountOut.IsPositive() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	totalIn := cdp.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
+	if totalIn.IsZero() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	totalOut := cdp.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
+	if totalOut.IsZero() {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	if totalIn.Quo(totalOut).LT(pair.LiquidationRatio) {
+		return nil, types.ErrorInvalidAmountRatio
+	}
+
+	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, msg.Amount)); err != nil {
+		return nil, err
+	}
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetOut.Denom, msg.Amount)); err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventDrawDebt{
-			Owner:          owner.String(),
-			CollateralType: msg.CollateralType,
-			Debt:           msg.Debt,
-		},
-	)
-
-	return &types.MsgDrawDebtResponse{}, nil
+	k.SetCDP(ctx, cdp)
+	return &types.MsgDrawResponse{}, nil
 }
 
-func (ms msgServer) MsgRepayDebt(context context.Context, msg *types.MsgRepayDebtRequest) (*types.MsgRepayDebtResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
+func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ms.RepayDebt(ctx, owner, msg.CollateralType, msg.Debt)
-	if err != nil {
+	cdp, found := k.GetCDP(ctx, msg.ID)
+	if !found {
+		return nil, types.ErrorCDPDoesNotExist
+	}
+	if msg.From != cdp.Owner {
+		return nil, types.ErrorUnauthorized
+	}
+	if !msg.Amount.Equal(cdp.AmountOut) {
+		return nil, types.ErrorInvalidAmount
+	}
+
+	pair, found := k.GetPair(ctx, cdp.PairID)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(assetOut.Denom, cdp.AmountOut)); err != nil {
+		return nil, err
+	}
+	if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, cdp.AmountOut)); err != nil {
+		return nil, err
+	}
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetIn.Denom, cdp.AmountIn)); err != nil {
 		return nil, err
 	}
 
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventRepayDebt{
-			Owner:          owner.String(),
-			CollateralType: msg.CollateralType,
-			Debt:           msg.Debt,
-		},
-	)
+	k.DeleteCDP(ctx, cdp.ID)
+	k.DeleteCDPForAddressByPair(ctx, from, cdp.PairID)
 
-	return &types.MsgRepayDebtResponse{}, nil
+	return &types.MsgRepayResponse{}, nil
 }
 
-func (ms msgServer) MsgLiquidateCDP(context context.Context, msg *types.MsgLiquidateCDPRequest) (*types.MsgLiquidateCDPResponse, error) {
-	ctx := sdk.UnwrapSDKContext(context)
-	owner, err := sdk.AccAddressFromBech32(msg.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ms.AttemptLiquidation(ctx, owner, msg.CollateralType)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventLiquidateCDP{
-			Owner:          owner.String(),
-			CollateralType: msg.CollateralType,
-		},
-	)
-
-	return &types.MsgLiquidateCDPResponse{}, nil
+func (k *msgServer) MsgLiquidate(c context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {
+	panic("implement me")
 }

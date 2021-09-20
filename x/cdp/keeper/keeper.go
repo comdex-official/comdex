@@ -2,48 +2,34 @@ package keeper
 
 import (
 	"fmt"
-	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/libs/log"
 
+	"github.com/comdex-official/comdex/x/cdp/expected"
 	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
-type (
-	Keeper struct {
-		cdc           codec.BinaryCodec
-		storeKey      sdk.StoreKey
-		memKey        sdk.StoreKey
-		accountKeeper types.AccountKeeper
-		bankKeeper    types.BankKeeper
-		paramSpace    types.ParamSubspace
-	}
-)
+type Keeper struct {
+	cdc   codec.BinaryCodec
+	key   sdk.StoreKey
+	bank  expected.BankKeeper
+	asset expected.AssetKeeper
+}
 
-func NewKeeper(
-	cdc codec.BinaryCodec,
-	storeKey,
-	memKey sdk.StoreKey,
-	accountKeeper types.AccountKeeper,
-	bankKeeper types.BankKeeper,
-	paramSpace types.ParamSubspace,
-) *Keeper {
-
-	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
-	}
-
-	return &Keeper{
-		cdc:           cdc,
-		storeKey:      storeKey,
-		memKey:        memKey,
-		accountKeeper: accountKeeper,
-		bankKeeper:    bankKeeper,
-		paramSpace:    paramSpace,
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, asset expected.AssetKeeper) Keeper {
+	return Keeper{
+		cdc:   cdc,
+		key:   key,
+		asset: asset,
 	}
 }
 
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+}
+
+func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
+	return ctx.KVStore(k.key)
 }
