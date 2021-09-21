@@ -11,7 +11,7 @@ var (
 	_ sdk.Msg = (*MsgWithdrawRequest)(nil)
 	_ sdk.Msg = (*MsgDrawRequest)(nil)
 	_ sdk.Msg = (*MsgRepayRequest)(nil)
-	_ sdk.Msg = (*MsgLiquidateRequest)(nil)
+	_ sdk.Msg = (*MsgCloseRequest)(nil)
 )
 
 func NewMsgCreateRequest(from sdk.AccAddress, pairID uint64, amountIn, amountOut sdk.Int) *MsgCreateRequest {
@@ -281,22 +281,22 @@ func (m *MsgRepayRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgLiquidateRequest(from sdk.AccAddress, id uint64) *MsgLiquidateRequest {
-	return &MsgLiquidateRequest{
+func NewMsgLiquidateRequest(from sdk.AccAddress, id uint64) *MsgCloseRequest {
+	return &MsgCloseRequest{
 		From: from.String(),
 		ID:   id,
 	}
 }
 
-func (m *MsgLiquidateRequest) Route() string {
+func (m *MsgCloseRequest) Route() string {
 	return RouterKey
 }
 
-func (m *MsgLiquidateRequest) Type() string {
+func (m *MsgCloseRequest) Type() string {
 	return TypeMsgLiquidateRequest
 }
 
-func (m *MsgLiquidateRequest) ValidateBasic() error {
+func (m *MsgCloseRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
@@ -310,11 +310,11 @@ func (m *MsgLiquidateRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgLiquidateRequest) GetSignBytes() []byte {
+func (m *MsgCloseRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
-func (m *MsgLiquidateRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgCloseRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

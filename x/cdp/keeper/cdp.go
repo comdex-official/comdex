@@ -120,3 +120,48 @@ func (k *Keeper) DeleteCDPForAddressByPair(ctx sdk.Context, address sdk.AccAddre
 
 	store.Delete(key)
 }
+
+func (k *Keeper) CalculateCollaterlizationRatio(
+	ctx sdk.Context,
+	amountIn sdk.Int,
+	amountOut sdk.Int,
+	pairId uint64,
+) (sdk.Dec, error) {
+
+	pair, found := k.GetPair(ctx, pairId)
+	if !found {
+		return sdk.ZeroDec(), types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return sdk.ZeroDec(), types.ErrorAssetDoesNotExist
+	}
+
+	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return sdk.ZeroDec(), types.ErrorAssetDoesNotExist
+	}
+
+	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
+	if !found {
+		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+	}
+
+	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
+	if !found {
+		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+	}
+
+	totalIn := amountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
+	if totalIn.IsZero() {
+		return sdk.ZeroDec(), types.ErrorInvalidAmount
+	}
+
+	totalOut := amountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
+	if totalOut.IsZero() {
+		return sdk.ZeroDec(), types.ErrorInvalidAmount
+	}
+
+	return totalIn.Quo(totalOut), nil
+}

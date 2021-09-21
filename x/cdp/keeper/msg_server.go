@@ -329,6 +329,6 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 	return &types.MsgRepayResponse{}, nil
 }
 
-func (k *msgServer) MsgLiquidate(c context.Context, msg *types.MsgLiquidateRequest) (*types.MsgLiquidateResponse, error) {
+func (k *msgServer) MsgLiquidate(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
 	panic("implement me")
 }

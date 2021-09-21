@@ -72,12 +72,34 @@ func (q *queryServer) QueryCDP(c context.Context, req *types.QueryCDPRequest) (*
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetCDP(ctx, req.Id)
+	cdp, found := q.GetCDP(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "cdp does not exist for id %d", req.Id)
 	}
 
+	pair,found:= q.GetPair(ctx, cdp.PairID)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", cdp.PairID)
+	}
+
+	assetIn,found:= q.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
+	}
+
+	assetOut,found:= q.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
+	}
+
 	return &types.QueryCDPResponse{
-		CDP: item,
+		CDPInfo: types.CDPInfo{
+			Id: cdp.ID,
+			PairID: cdp.PairID,
+			Owner: cdp.Owner,
+			Collateral: sdk.NewCoin(assetIn.Denom, cdp.AmountIn),
+			Debt: sdk.NewCoin(assetOut.Denom, cdp.AmountOut),
+
+				}
 	}, nil
 }
