@@ -2,7 +2,7 @@ syntax = "proto3";
 package comdex.cdp.v1beta1;
 
 import "gogoproto/gogo.proto";
-import "comdex/cdp/v1alpha1/cdp.proto";
+import "comdex/cdp/v1beta1/cdp.proto";
 
 option go_package            = "github.com/comdex-official/comdex/x/cdp/types";
 option (gogoproto.equal_all) = false;
