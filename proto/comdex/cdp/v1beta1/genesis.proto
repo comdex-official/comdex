@@ -1,5 +1,5 @@
 syntax = "proto3";
-package comdex.cdp.v1alpha1;
+package comdex.cdp.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "comdex/cdp/v1alpha1/cdp.proto";
