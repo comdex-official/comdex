@@ -588,11 +588,11 @@ func TestMsgUpdatePairRequest_GetSigners(t *testing.T) {
 }
 
 func TestNewMsgFetchPriceRequest(t *testing.T) {
-	a := ibcclienttypes.Height{
+	timeOutHeight := ibcclienttypes.Height{
 		1, 1,
 	}
-	b := []string{"abc"}
-	c := sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(1000))}
+	timeOutStamp := []string{"abc"}
+	feeLimit := sdk.Coins{sdk.NewCoin("cmdx", sdk.NewInt(1000))}
 
 	tests := []struct {
 		description      string
@@ -608,14 +608,14 @@ func TestNewMsgFetchPriceRequest(t *testing.T) {
 		executeGas       uint64
 		expectPass       bool
 	}{
-		{"valid_Form", addrs[0], "srsStr", "channelStr", a, 1, b, 1, c, 1, 1, true},
-		{"invalid_form", sdk.AccAddress{}, "srsStr", "channelStr", a, 1, b, 1, c, 1, 1, false},
-		{"invalid_err", addrs[2], "srsStr", "channelStr", a, 1, b, 1, c, 1, 1, false},
-		{"invalid_srsPort", addrs[0], "a&", "channelStr", a, 1, b, 1, c, 1, 1, false},
-		{"invalid_srsChannel", addrs[0], "a1", "5s", a, 1, b, 1, c, 1, 1, false},
-		{"invalid_symbolNil", addrs[0], "a1", "channelStr", a, 1, nil, 1, c, 1, 1, false},
-		{"invalid_symbolEmpty", addrs[0], "a1", "channelStr", a, 1, []string{}, 1, c, 1, 1, false},
-		{"invalid_scriptId", addrs[0], "a1", "channelStr", a, 1, b, 0, c, 1, 1, false},
+		{"valid_Form", addrs[0], "srsStr", "channelStr", timeOutHeight, 1, timeOutStamp, 1, feeLimit, 1, 1, true},
+		{"invalid_form", sdk.AccAddress{}, "srsStr", "channelStr", timeOutHeight, 1, timeOutStamp, 1, feeLimit, 1, 1, false},
+		{"invalid_err", addrs[2], "srsStr", "channelStr", timeOutHeight, 1, timeOutStamp, 1, feeLimit, 1, 1, false},
+		{"invalid_srsPort", addrs[0], "a&", "channelStr", timeOutHeight, 1, timeOutStamp, 1, feeLimit, 1, 1, false},
+		{"invalid_srsChannel", addrs[0], "a1", "5s", timeOutHeight, 1, timeOutStamp, 1, feeLimit, 1, 1, false},
+		{"invalid_symbolNil", addrs[0], "a1", "channelStr", timeOutHeight, 1, nil, 1, feeLimit, 1, 1, false},
+		{"invalid_symbolEmpty", addrs[0], "a1", "channelStr", timeOutHeight, 1, []string{}, 1, feeLimit, 1, 1, false},
+		{"invalid_scriptId", addrs[0], "a1", "channelStr", timeOutHeight, 1, timeOutStamp, 0, feeLimit, 1, 1, false},
 	}
 
 	for _, tc := range tests {
