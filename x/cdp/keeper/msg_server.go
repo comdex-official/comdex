@@ -49,28 +49,8 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-	if !found {
-		return nil, types.ErrorPriceDoesNotExist
-	}
-
-	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
-	if !found {
-		return nil, types.ErrorPriceDoesNotExist
-	}
-
-	totalIn := msg.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
-	if totalIn.IsZero() {
-		return nil, types.ErrorInvalidAmount
-	}
-
-	totalOut := msg.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
-	if totalOut.IsZero() {
-		return nil, types.ErrorInvalidAmount
-	}
-
-	if totalIn.Quo(totalOut).LT(pair.LiquidationRatio) {
-		return nil, types.ErrorInvalidAmountRatio
+	if err := k.VerifyCollaterlizationRatio(ctx, msg.AmountIn, assetIn, msg.AmountOut, assetOut, pair.LiquidationRatio); err != nil {
+		return nil, err
 	}
 
 	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(assetIn.Denom, msg.AmountIn)); err != nil {
@@ -171,33 +151,13 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-	if !found {
-		return nil, types.ErrorPriceDoesNotExist
-	}
-
-	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
-	if !found {
-		return nil, types.ErrorPriceDoesNotExist
-	}
-
 	cdp.AmountIn = cdp.AmountIn.Sub(msg.Amount)
 	if !cdp.AmountIn.IsPositive() {
 		return nil, types.ErrorInvalidAmount
 	}
 
-	totalIn := cdp.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
-	if totalIn.IsZero() {
-		return nil, types.ErrorInvalidAmount
-	}
-
-	totalOut := cdp.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
-	if totalOut.IsZero() {
-		return nil, types.ErrorInvalidAmount
-	}
-
-	if totalIn.Quo(totalOut).LT(pair.LiquidationRatio) {
-		return nil, types.ErrorInvalidAmountRatio
+	if err := k.VerifyCollaterlizationRatio(ctx, cdp.AmountIn, assetIn, cdp.AmountOut, assetOut, pair.LiquidationRatio); err != nil {
+		return nil, err
 	}
 
 	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetIn.Denom, msg.Amount)); err != nil {
@@ -239,33 +199,13 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-	if !found {
-		return nil, types.ErrorPriceDoesNotExist
-	}
-
-	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
-	if !found {
-		return nil, types.ErrorPriceDoesNotExist
-	}
-
 	cdp.AmountOut = cdp.AmountOut.Add(msg.Amount)
 	if !cdp.AmountOut.IsPositive() {
 		return nil, types.ErrorInvalidAmount
 	}
 
-	totalIn := cdp.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
-	if totalIn.IsZero() {
-		return nil, types.ErrorInvalidAmount
-	}
-
-	totalOut := cdp.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
-	if totalOut.IsZero() {
-		return nil, types.ErrorInvalidAmount
-	}
-
-	if totalIn.Quo(totalOut).LT(pair.LiquidationRatio) {
-		return nil, types.ErrorInvalidAmountRatio
+	if err := k.VerifyCollaterlizationRatio(ctx, cdp.AmountIn, assetIn, cdp.AmountOut, assetOut, pair.LiquidationRatio); err != nil {
+		return nil, err
 	}
 
 	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, msg.Amount)); err != nil {
@@ -329,6 +269,6 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 	return &types.MsgRepayResponse{}, nil
 }
 
-func (k *msgServer) MsgLiquidate(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
+func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
 	panic("implement me")
 }

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -121,27 +122,34 @@ func (k *Keeper) DeleteCDPForAddressByPair(ctx sdk.Context, address sdk.AccAddre
 	store.Delete(key)
 }
 
+func (k *Keeper) VerifyCollaterlizationRatio(
+	ctx sdk.Context,
+	amountIn sdk.Int,
+	assetIn assettypes.Asset,
+	amountOut sdk.Int,
+	assetOut assettypes.Asset,
+	liquidationRatio sdk.Dec,
+) error {
+
+	collaterlizationRatio, err := k.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
+	if err != nil {
+		return err
+	}
+
+	if collaterlizationRatio.LT(liquidationRatio) {
+		return types.ErrorInvalidCollateralizationRatio
+	}
+
+	return nil
+}
+
 func (k *Keeper) CalculateCollaterlizationRatio(
 	ctx sdk.Context,
 	amountIn sdk.Int,
+	assetIn assettypes.Asset,
 	amountOut sdk.Int,
-	pairId uint64,
+	assetOut assettypes.Asset,
 ) (sdk.Dec, error) {
-
-	pair, found := k.GetPair(ctx, pairId)
-	if !found {
-		return sdk.ZeroDec(), types.ErrorPairDoesNotExist
-	}
-
-	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-	if !found {
-		return sdk.ZeroDec(), types.ErrorAssetDoesNotExist
-	}
-
-	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
-	if !found {
-		return sdk.ZeroDec(), types.ErrorAssetDoesNotExist
-	}
 
 	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 	if !found {
