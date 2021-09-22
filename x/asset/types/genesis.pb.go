@@ -24,10 +24,11 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type GenesisState struct {
-	Assets  []Asset  `protobuf:"bytes,1,rep,name=assets,proto3" json:"assets" yaml:"assets"`
-	Markets []Market `protobuf:"bytes,2,rep,name=markets,proto3" json:"markets" yaml:"markets"`
-	Pairs   []Pair   `protobuf:"bytes,3,rep,name=pairs,proto3" json:"pairs" yaml:"pairs"`
-	Params  Params   `protobuf:"bytes,4,opt,name=params,proto3" json:"params" yaml:"params"`
+	Assets          []Asset  `protobuf:"bytes,1,rep,name=assets,proto3" json:"assets" yaml:"assets"`
+	Markets         []Market `protobuf:"bytes,2,rep,name=markets,proto3" json:"markets" yaml:"markets"`
+	Pairs           []Pair   `protobuf:"bytes,3,rep,name=pairs,proto3" json:"pairs" yaml:"pairs"`
+	Params          Params   `protobuf:"bytes,4,opt,name=params,proto3" json:"params" yaml:"params"`
+
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }

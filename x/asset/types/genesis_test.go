@@ -6,8 +6,9 @@ import (
 	"testing"
 )
 
+
 func TestNewGenesisState(t *testing.T) {
-	genesis := GenesisState{}.ValidateGenesis
+	genesis := GenesisState{}.Assets
 	if genesis != nil {
 		t.Error("required nil")
 	}
@@ -21,12 +22,12 @@ func TestDefaultGenesisState(t *testing.T) {
 }
 
 func TestValidateGenesis(t *testing.T) {
+
 	err := ValidateGenesis(&GenesisState{
 		Assets:          nil,
 		Markets:         nil,
 		Pairs:           nil,
 		Params:          Params{},
-		ValidateGenesis: nil,
 	})
 	require.NoError(t, err)
 }

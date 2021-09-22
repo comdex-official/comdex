@@ -1,18 +1,9 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
-)
-
-var (
-	addr = []sdk.AccAddress{
-		sdk.AccAddress("test1"),
-		sdk.AccAddress(""),
-		sdk.AccAddress("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"),
-	}
 )
 
 func TestNewIBCParams(t *testing.T) {
@@ -97,36 +88,4 @@ func TestDefaultParams(t *testing.T) {
 	}) {
 		t.Error()
 	}
-}
-
-func TestValidateParams(t *testing.T) {
-	var _ = sdk.AccAddress("")
-	invalidParam := []Params{
-		{"", IBCParams{
-			Port:    "abc",
-			Version: "def",
-		}, OracleParams{1, 1, 1}},
-
-		{"",IBCParams{},OracleParams{}},
-
-		{"str", IBCParams{
-			Port:    "",
-			Version: "",
-		}, OracleParams{1, 1, 1}},
-
-		{"str", IBCParams{"abc", "dcf"}, OracleParams{},
-		},
-	}
-
-	validParam := Params{
-		"str", IBCParams{"abc", "def"}, OracleParams{1, 1, 1},
-	}
-
-	for _, param := range invalidParam {
-		err := param.Validate()
-		require.Error(t, err)
-	}
-
-	err := validParam.Validate()
-	require.NoError(t, err)
 }

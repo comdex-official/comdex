@@ -47,6 +47,43 @@ func TestNewMsgAddMarketRequest(t *testing.T) {
 	}
 }
 
+func TestNewMsgAddMarketRequest_GetSigners(t *testing.T) {
+	msgsWithInvalidFrom := []MsgAddMarketRequest{
+		{
+			From:     "",
+			Symbol:   "",
+			ScriptID: 0,
+		},
+		{
+			From:     "randomString",
+			Symbol:   "",
+			ScriptID: 0,
+		},
+		{
+			From:     "5t3y445wiu4",
+			Symbol:   "",
+			ScriptID: 0,
+		},
+	}
+
+	msgWithValidFrom := MsgAddMarketRequest{
+		From:     "cosmos1cs644d07zvrmcray3uflmn3lwz7gyecyle8vn7",
+		Symbol:   "cmdx",
+		ScriptID: 1,
+	}
+
+	for _, msg := range msgsWithInvalidFrom {
+		funcThatPanics := func() {
+			msg.GetSigners()
+		}
+		require.Panics(t, funcThatPanics)
+	}
+
+	require.NotPanics(t, func() {
+		msgWithValidFrom.GetSigners()
+	})
+}
+
 func TestNewMsgUpdateMarketRequest(t *testing.T) {
 	tests := []struct {
 		description string
@@ -74,6 +111,43 @@ func TestNewMsgUpdateMarketRequest(t *testing.T) {
 			require.Error(t, m.ValidateBasic(), "test: %v", tc.description)
 		}
 	}
+}
+
+func TestMsgUpdateMarketRequest_GetSigners(t *testing.T) {
+	msgsWithInvalidFrom := []MsgUpdateMarketRequest{
+		{
+			From:     "",
+			Symbol:   "",
+			ScriptID: 0,
+		},
+		{
+			From:     "randomString",
+			Symbol:   "",
+			ScriptID: 0,
+		},
+		{
+			From:     "5t3y445wiu4",
+			Symbol:   "",
+			ScriptID: 0,
+		},
+	}
+
+	msgWithValidFrom := MsgUpdateMarketRequest{
+		From:     "cosmos1cs644d07zvrmcray3uflmn3lwz7gyecyle8vn7",
+		Symbol:   "cmdx",
+		ScriptID: 1,
+	}
+
+	for _, msg := range msgsWithInvalidFrom {
+		funcThatPanics := func() {
+			msg.GetSigners()
+		}
+		require.Panics(t, funcThatPanics)
+	}
+
+	require.NotPanics(t, func() {
+		msgWithValidFrom.GetSigners()
+	})
 }
 
 func TestNewMsgAddAssetRequest(t *testing.T) {
@@ -111,6 +185,47 @@ func TestNewMsgAddAssetRequest(t *testing.T) {
 	}
 }
 
+func TestMsgAddAssetRequest_GetSigners(t *testing.T) {
+	msgsWithInvalidFrom := []MsgAddAssetRequest{
+		{
+			From:     "",
+			Name:     "",
+			Denom:    "",
+			Decimals: 0,
+		},
+		{
+			From:     "randomString",
+			Name:     "",
+			Denom:    "",
+			Decimals: 0,
+		},
+		{
+			From:     "5t3y445wiu4",
+			Name:     "",
+			Denom:    "",
+			Decimals: 0,
+		},
+	}
+
+	msgWithValidFrom := MsgAddAssetRequest{
+		From:     "cosmos1cs644d07zvrmcray3uflmn3lwz7gyecyle8vn7",
+		Name:     "cmdx",
+		Denom:    "system",
+		Decimals: 1,
+	}
+
+	for _, msg := range msgsWithInvalidFrom {
+		funcThatPanics := func() {
+			msg.GetSigners()
+		}
+		require.Panics(t, funcThatPanics)
+	}
+
+	require.NotPanics(t, func() {
+		msgWithValidFrom.GetSigners()
+	})
+}
+
 func TestNewMsgUpdateAssetRequest(t *testing.T) {
 	tests := []struct {
 		description string
@@ -146,6 +261,51 @@ func TestNewMsgUpdateAssetRequest(t *testing.T) {
 
 }
 
+func TestMsgUpdateAssetRequest_GetSigners(t *testing.T) {
+	msgsWithInvalidFrom := []MsgUpdateAssetRequest{
+		{
+			From:     "",
+			Id:       0,
+			Name:     "",
+			Denom:    "",
+			Decimals: 0,
+		},
+		{
+			From:     "randomString",
+			Id:       0,
+			Name:     "",
+			Denom:    "",
+			Decimals: 0,
+		},
+		{
+			From:     "5t3y445wiu4",
+			Id:       0,
+			Name:     "",
+			Denom:    "",
+			Decimals: 0,
+		},
+	}
+
+	msgWithValidFrom := MsgUpdateAssetRequest{
+		From:     "cosmos1cs644d07zvrmcray3uflmn3lwz7gyecyle8vn7",
+		Id:       1,
+		Name:     "cmdx",
+		Denom:    "system",
+		Decimals: 1,
+	}
+
+	for _, msg := range msgsWithInvalidFrom {
+		funcThatPanics := func() {
+			msg.GetSigners()
+		}
+		require.Panics(t, funcThatPanics)
+	}
+
+	require.NotPanics(t, func() {
+		msgWithValidFrom.GetSigners()
+	})
+}
+
 func TestNewMsgAddMarketForAssetRequest(t *testing.T) {
 	tests := []struct {
 		description string
@@ -178,6 +338,43 @@ func TestNewMsgAddMarketForAssetRequest(t *testing.T) {
 
 }
 
+func TestMsgAddMarketForAssetRequest_GetSigners(t *testing.T) {
+	msgsWithInvalidFrom := []MsgAddMarketForAssetRequest{
+		{
+			From:   "",
+			Id:     0,
+			Symbol: "",
+		},
+		{
+			From:   "randomString",
+			Id:     0,
+			Symbol: "",
+		},
+		{
+			From:   "5t3y445wiu4",
+			Id:     0,
+			Symbol: "",
+		},
+	}
+
+	msgWithValidFrom := MsgAddMarketForAssetRequest{
+		From:   "cosmos1cs644d07zvrmcray3uflmn3lwz7gyecyle8vn7",
+		Id:     1,
+		Symbol: "cmdx",
+	}
+
+	for _, msg := range msgsWithInvalidFrom {
+		funcThatPanics := func() {
+			msg.GetSigners()
+		}
+		require.Panics(t, funcThatPanics)
+	}
+
+	require.NotPanics(t, func() {
+		msgWithValidFrom.GetSigners()
+	})
+}
+
 func TestNewMsgRemoveMarketForAssetRequest(t *testing.T) {
 	tests := []struct {
 		description string
@@ -208,6 +405,43 @@ func TestNewMsgRemoveMarketForAssetRequest(t *testing.T) {
 		}
 	}
 
+}
+
+func TestMsgRemoveMarketForAssetRequest_GetSigners(t *testing.T) {
+	msgsWithInvalidFrom := []MsgRemoveMarketForAssetRequest{
+		{
+			From:   "",
+			Id:     0,
+			Symbol: "",
+		},
+		{
+			From:   "randomString",
+			Id:     0,
+			Symbol: "",
+		},
+		{
+			From:   "5t3y445wiu4",
+			Id:     0,
+			Symbol: "",
+		},
+	}
+
+	msgWithValidFrom := MsgRemoveMarketForAssetRequest{
+		From:   "cosmos1cs644d07zvrmcray3uflmn3lwz7gyecyle8vn7",
+		Id:     1,
+		Symbol: "cmdx",
+	}
+
+	for _, msg := range msgsWithInvalidFrom {
+		funcThatPanics := func() {
+			msg.GetSigners()
+		}
+		require.Panics(t, funcThatPanics)
+	}
+
+	require.NotPanics(t, func() {
+		msgWithValidFrom.GetSigners()
+	})
 }
 
 func TestNewMsgAddPairRequest(t *testing.T) {
@@ -245,6 +479,47 @@ func TestNewMsgAddPairRequest(t *testing.T) {
 
 }
 
+func TestMsgAddPairRequest_GetSigners(t *testing.T) {
+	msgsWithInvalidFrom := []MsgAddPairRequest{
+		{
+			From:             "",
+			AssetIn:          0,
+			AssetOut:         0,
+			LiquidationRatio: sdk.NewDec(0),
+		},
+		{
+			From:             "randomString",
+			AssetIn:          0,
+			AssetOut:         0,
+			LiquidationRatio: sdk.NewDec(0),
+		},
+		{
+			From:             "5t3y445wiu4",
+			AssetIn:          0,
+			AssetOut:         0,
+			LiquidationRatio: sdk.NewDec(0),
+		},
+	}
+
+	msgWithValidFrom := MsgAddPairRequest{
+		From:             "cosmos1cs644d07zvrmcray3uflmn3lwz7gyecyle8vn7",
+		AssetIn:          1,
+		AssetOut:         0,
+		LiquidationRatio: sdk.NewDec(0),
+	}
+
+	for _, msg := range msgsWithInvalidFrom {
+		funcThatPanics := func() {
+			msg.GetSigners()
+		}
+		require.Panics(t, funcThatPanics)
+	}
+
+	require.NotPanics(t, func() {
+		msgWithValidFrom.GetSigners()
+	})
+}
+
 func TestNewMsgUpdatePairRequest(t *testing.T) {
 	tests := []struct {
 		description       string
@@ -273,6 +548,43 @@ func TestNewMsgUpdatePairRequest(t *testing.T) {
 		}
 	}
 
+}
+
+func TestMsgUpdatePairRequest_GetSigners(t *testing.T) {
+	msgsWithInvalidFrom := []MsgUpdatePairRequest{
+		{
+			From:             "",
+			Id:               0,
+			LiquidationRatio: sdk.NewDec(0),
+		},
+		{
+			From:             "randomString",
+			Id:               0,
+			LiquidationRatio: sdk.NewDec(0),
+		},
+		{
+			From:             "5t3y445wiu4",
+			Id:               0,
+			LiquidationRatio: sdk.NewDec(0),
+		},
+	}
+
+	msgWithValidFrom := MsgUpdatePairRequest{
+		From:             "cosmos1cs644d07zvrmcray3uflmn3lwz7gyecyle8vn7",
+		Id:               0,
+		LiquidationRatio: sdk.NewDec(0),
+	}
+
+	for _, msg := range msgsWithInvalidFrom {
+		funcThatPanics := func() {
+			msg.GetSigners()
+		}
+		require.Panics(t, funcThatPanics)
+	}
+
+	require.NotPanics(t, func() {
+		msgWithValidFrom.GetSigners()
+	})
 }
 
 func TestNewMsgFetchPriceRequest(t *testing.T) {
@@ -329,9 +641,48 @@ func TestNewMsgFetchPriceRequest(t *testing.T) {
 	}
 }
 
-func TestGet_Signers(t *testing.T) {
-	 err := MsgFetchPriceRequest{
-		From:             "",
+func TestMsgFetchPriceRequest_GetSigners(t *testing.T) {
+	msgsWithInvalidFrom := []MsgFetchPriceRequest{
+		{
+			From:             "",
+			SourcePort:       "",
+			SourceChannel:    "",
+			TimeoutHeight:    ibcclienttypes.Height{},
+			TimeoutTimestamp: 0,
+			Symbols:          nil,
+			ScriptID:         0,
+			FeeLimit:         nil,
+			PrepareGas:       0,
+			ExecuteGas:       0,
+		},
+		{
+			From:             "randomString",
+			SourcePort:       "",
+			SourceChannel:    "",
+			TimeoutHeight:    ibcclienttypes.Height{},
+			TimeoutTimestamp: 0,
+			Symbols:          nil,
+			ScriptID:         0,
+			FeeLimit:         nil,
+			PrepareGas:       0,
+			ExecuteGas:       0,
+		},
+		{
+			From:             "5t3y445wiu4",
+			SourcePort:       "",
+			SourceChannel:    "",
+			TimeoutHeight:    ibcclienttypes.Height{},
+			TimeoutTimestamp: 0,
+			Symbols:          nil,
+			ScriptID:         0,
+			FeeLimit:         nil,
+			PrepareGas:       0,
+			ExecuteGas:       0,
+		},
+	}
+
+	msgWithValidFrom := MsgFetchPriceRequest{
+		From:             "cosmos1cs644d07zvrmcray3uflmn3lwz7gyecyle8vn7",
 		SourcePort:       "",
 		SourceChannel:    "",
 		TimeoutHeight:    ibcclienttypes.Height{},
@@ -342,7 +693,15 @@ func TestGet_Signers(t *testing.T) {
 		PrepareGas:       0,
 		ExecuteGas:       0,
 	}
-	err.GetSigners()
-	require.Error(t, &err)
 
+	for _, msg := range msgsWithInvalidFrom {
+		funcThatPanics := func() {
+			msg.GetSigners()
+		}
+		require.Panics(t, funcThatPanics)
+	}
+
+	require.NotPanics(t, func() {
+		msgWithValidFrom.GetSigners()
+	})
 }
