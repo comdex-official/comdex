@@ -16,6 +16,7 @@ message MsgAddMarketRequest {
         (gogoproto.customname) = "ScriptID",
         (gogoproto.moretags)   = "yaml:\"script_id\""
     ];
+    uint64 id   = 4;
 }
 
 message MsgAddMarketResponse {}
@@ -30,14 +31,6 @@ message MsgUpdateMarketRequest {
 }
 
 message MsgUpdateMarketResponse {}
-
-message MsgAddMarketForAssetRequest {
-    string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-    uint64 id   = 2;
-    string symbol = 3 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
-}
-
-message MsgAddMarketForAssetResponse {}
 
 message MsgRemoveMarketForAssetRequest {
     string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
@@ -77,8 +70,6 @@ message MsgFetchPriceResponse {}
 service MsgService {
     rpc MsgAddMarket(MsgAddMarketRequest) returns (MsgAddMarketResponse);
     rpc MsgUpdateMarket(MsgUpdateMarketRequest) returns (MsgUpdateMarketResponse);
-    rpc MsgAddMarketForAsset(MsgAddMarketForAssetRequest)
-            returns (MsgAddMarketForAssetResponse);
     rpc MsgRemoveMarketForAsset(MsgRemoveMarketForAssetRequest)
             returns (MsgRemoveMarketForAssetResponse);
     rpc MsgFetchPrice(MsgFetchPriceRequest) returns (MsgFetchPriceResponse);

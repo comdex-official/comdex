@@ -10,16 +10,16 @@ import (
 var (
 	_ sdk.Msg = (*MsgAddMarketRequest)(nil)
 	_ sdk.Msg = (*MsgUpdateMarketRequest)(nil)
-	_ sdk.Msg = (*MsgAddMarketForAssetRequest)(nil)
 	_ sdk.Msg = (*MsgRemoveMarketForAssetRequest)(nil)
 	_ sdk.Msg = (*MsgFetchPriceRequest)(nil)
 )
 
-func NewMsgAddMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64) *MsgAddMarketRequest {
+func NewMsgAddMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64, assetID uint64) *MsgAddMarketRequest {
 	return &MsgAddMarketRequest{
 		From:     from.String(),
 		Symbol:   symbol,
 		ScriptID: scriptID,
+		Id: assetID,
 	}
 }
 
@@ -77,43 +77,6 @@ func (m *MsgUpdateMarketRequest) ValidateBasic() error {
 }
 
 func (m *MsgUpdateMarketRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.From)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{from}
-}
-
-func NewMsgAddMarketForAssetRequest(from sdk.AccAddress, id uint64, symbol string) *MsgAddMarketForAssetRequest {
-	return &MsgAddMarketForAssetRequest{
-		From:   from.String(),
-		Id:     id,
-		Symbol: symbol,
-	}
-}
-
-func (m *MsgAddMarketForAssetRequest) ValidateBasic() error {
-	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
-	}
-	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
-	}
-	if m.Id == 0 {
-		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
-	}
-	if m.Symbol == "" {
-		return errors.Wrap(ErrorInvalidSymbol, "symbol cannot be empty")
-	}
-	if len(m.Symbol) > MaxMarketSymbolLength {
-		return errors.Wrapf(ErrorInvalidSymbol, "symbol length cannot be greater than %d", MaxMarketSymbolLength)
-	}
-
-	return nil
-}
-
-func (m *MsgAddMarketForAssetRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

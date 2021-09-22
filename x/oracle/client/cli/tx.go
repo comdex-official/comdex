@@ -14,7 +14,7 @@ import (
 
 func txAddMarket() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-market [symbol] [script-id]",
+		Use:   "add-market [symbol] [script-id] [asset]",
 		Short: "Add a market",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -28,10 +28,16 @@ func txAddMarket() *cobra.Command {
 				return err
 			}
 
+			asset, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
 			msg := types.NewMsgAddMarketRequest(
 				ctx.FromAddress,
 				args[0],
 				scriptID,
+				asset,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -81,7 +87,7 @@ func txUpdateMarket() *cobra.Command {
 	return cmd
 }
 
-func txAddMarketForAsset() *cobra.Command {
+/*func txAddMarketForAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-market-for-asset [asset] [symbol]",
 		Short: "Add a market for asset",
@@ -113,7 +119,7 @@ func txAddMarketForAsset() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
-}
+}*/
 
 func txRemoveMarketForAsset() *cobra.Command {
 	cmd := &cobra.Command{

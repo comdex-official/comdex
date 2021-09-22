@@ -26,26 +26,6 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 	}
 }
 
-func (k *msgServer) MsgAddMarketForAsset(c context.Context, msg *types.MsgAddMarketForAssetRequest) (*types.MsgAddMarketForAssetResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.Admin(ctx) {
-		return nil, types.ErrorUnauthorized
-	}
-
-	if !k.HasAsset(ctx, msg.Id) {
-		return nil, types.ErrorAssetDoesNotExist
-	}
-	if !k.HasMarket(ctx, msg.Symbol) {
-		return nil, types.ErrorMarketDoesNotExist
-	}
-	if k.HasMarketForAsset(ctx, msg.Id) {
-		return nil, types.ErrorDuplicateMarketForAsset
-	}
-
-	k.SetMarketForAsset(ctx, msg.Id, msg.Symbol)
-	return &types.MsgAddMarketForAssetResponse{}, nil
-}
-
 func (k *msgServer) MsgRemoveMarketForAsset(c context.Context, msg *types.MsgRemoveMarketForAssetRequest) (*types.MsgRemoveMarketForAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	if msg.From != k.Admin(ctx) {
