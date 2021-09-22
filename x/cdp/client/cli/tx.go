@@ -30,7 +30,7 @@ func GetTxCmd() *cobra.Command {
 		txWithdraw(),
 		txDrawDebt(),
 		txRepayDebt(),
-		//txLiquidate(),
+		txClose(),
 	)
 
 	return cmd
@@ -79,7 +79,7 @@ func txCreateCdp() *cobra.Command {
 
 func txDeposit() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit [collateral] [collateral_type]",
+		Use:   "deposit [id] [amount]",
 		Short: "creates a new deposit",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -113,7 +113,7 @@ func txDeposit() *cobra.Command {
 
 func txWithdraw() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw [collateral] [collateral-type]",
+		Use:   "withdraw [id] [amount]",
 		Short: "create a new withdraw",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -147,7 +147,7 @@ func txWithdraw() *cobra.Command {
 
 func txDrawDebt() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "draw [debt] [collateral-type]",
+		Use:   "draw [id] [amount]",
 		Short: "draw debt",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -180,7 +180,7 @@ func txDrawDebt() *cobra.Command {
 
 func txRepayDebt() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "repay [debt] [collateral-type]",
+		Use:   "repay [id] [amount]",
 		Short: "repay debt",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -213,7 +213,7 @@ func txRepayDebt() *cobra.Command {
 
 func txClose() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "close [collateral-type]",
+		Use:   "close [id]",
 		Short: "close",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
