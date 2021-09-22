@@ -38,7 +38,7 @@ func GetTxCmd() *cobra.Command {
 
 func txCreateCdp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create [pair-id] [amount_in] [amount_out]",
+		Use:   "create [pair_id] [amount_in] [amount_out]",
 		Short: "create a new cdp",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {

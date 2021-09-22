@@ -31,9 +31,9 @@ func GetQueryCmd() *cobra.Command {
 
 func QueryCdp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "cdp [owner-addr] [collateralType]",
+		Use:   "cdp [id]",
 		Short: "cdp's information",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -65,9 +65,9 @@ func QueryCdp() *cobra.Command {
 
 func QueryCdps() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "cdps [owner-addr]",
+		Use:   "cdps [owner]",
 		Short: "cdps list for an individual account",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			pagination, err := client.ReadPageRequest(cmd.Flags())
