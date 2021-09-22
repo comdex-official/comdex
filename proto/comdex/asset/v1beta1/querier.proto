@@ -26,9 +26,7 @@ message QueryAssetsResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryAssetRequest {
-  uint64 id = 1;
-}
+message QueryAssetRequest { uint64 id = 1; }
 
 message QueryAssetResponse {
   Asset asset = 1
@@ -49,9 +47,7 @@ message QueryPairsResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryPairRequest {
-  uint64 id = 1;
-}
+message QueryPairRequest { uint64 id = 1; }
 
 message QueryPairResponse {
   Pair pair = 1

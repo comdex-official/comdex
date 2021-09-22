@@ -2,11 +2,13 @@ package rest
 
 import (
 	"context"
-	"github.com/comdex-official/comdex/x/cdp/types"
+	"net/http"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
-	"net/http"
+
+	"github.com/comdex-official/comdex/x/cdp/types"
 )
 
 func queryCdp(ctx client.Context) http.HandlerFunc {

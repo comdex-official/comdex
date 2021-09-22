@@ -83,6 +83,13 @@ type AppModule struct {
 	keeper keeper.Keeper
 }
 
+func NewAppModule(cdc codec.JSONCodec, keeper keeper.Keeper) AppModule {
+	return AppModule{
+		cdc:    cdc,
+		keeper: keeper,
+	}
+}
+
 func (a AppModule) ConsensusVersion() uint64 {
 	return 1
 }
