@@ -12,16 +12,14 @@ type Keeper struct {
 	cdc    codec.BinaryCodec
 	key    sdk.StoreKey
 	params paramstypes.Subspace
-	scoped expected.ScopedKeeper
 	oracle expected.OracleKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, scoped expected.ScopedKeeper, oracle expected.OracleKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, oracle expected.OracleKeeper) Keeper {
 	return Keeper{
 		cdc:    cdc,
 		key:    key,
 		params: params,
-		scoped: scoped,
 		oracle: oracle,
 	}
 }
