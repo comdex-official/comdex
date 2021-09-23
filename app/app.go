@@ -413,7 +413,7 @@ func New(
 	app.assetKeeper = assetkeeper.NewKeeper(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
-		app.GetSubspace(vaulttypes.ModuleName),
+		app.GetSubspace(assettypes.ModuleName),
 		app.scopedIBCKeeper,
 		&app.oracleKeeper,
 	)
