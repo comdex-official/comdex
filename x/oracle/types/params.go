@@ -10,7 +10,7 @@ import (
 
 const (
 	DefaultAdmin            = ""
-	DefaultIBCPort          = "asset"
+	DefaultIBCPort          = "oracle"
 	DefaultIBCVersion       = "comdex-ics-01"
 )
 
