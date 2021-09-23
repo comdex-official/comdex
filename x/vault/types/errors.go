@@ -14,12 +14,12 @@ var (
 
 var (
 	ErrorAssetDoesNotExist             = errors.Register(ModuleName, 201, "asset does not exist")
-	ErrorVaultDoesNotExist               = errors.Register(ModuleName, 102, "vault does not exist")
-	ErrorUnauthorized                  = errors.Register(ModuleName, 102, "unauthorized")
-	ErrorDuplicateVault                  = errors.Register(ModuleName, 202, "duplicate vault")
-	ErrorInvalidCollateralizationRatio = errors.Register(ModuleName, 203, "invalid collateralization ratio")
-	ErrorPairDoesNotExist              = errors.Register(ModuleName, 204, "pair does not exist")
-	ErrorPriceDoesNotExist             = errors.Register(ModuleName, 203, "price does not exist")
+	ErrorVaultDoesNotExist               = errors.Register(ModuleName, 202, "vault does not exist")
+	ErrorUnauthorized                  = errors.Register(ModuleName, 203, "unauthorized")
+	ErrorDuplicateVault                  = errors.Register(ModuleName, 204, "duplicate vault")
+	ErrorInvalidCollateralizationRatio = errors.Register(ModuleName, 205, "invalid collateralization ratio")
+	ErrorPairDoesNotExist              = errors.Register(ModuleName, 206, "pair does not exist")
+	ErrorPriceDoesNotExist             = errors.Register(ModuleName, 207, "price does not exist")
 )
 
 var (
