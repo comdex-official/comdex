@@ -51,5 +51,5 @@ func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool) {
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	return k.asset.GetPriceForAsset(ctx, id)
+	return k.oracle.GetPriceForAsset(ctx, id)
 }

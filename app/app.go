@@ -86,12 +86,12 @@ import (
 	"github.com/comdex-official/comdex/x/asset"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/vault"
-	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	"github.com/comdex-official/comdex/x/oracle"
 	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
 	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
+	"github.com/comdex-official/comdex/x/vault"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
 const (
@@ -193,7 +193,7 @@ type App struct {
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
 
 	assetKeeper     assetkeeper.Keeper
-	vaultKeeper       vaultkeeper.Keeper
+	vaultKeeper     vaultkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
 	oracleKeeper    oraclekeeper.Keeper
 }
@@ -413,11 +413,16 @@ func New(
 	app.assetKeeper = assetkeeper.NewKeeper(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
+		app.GetSubspace(vaulttypes.ModuleName),
+		app.scopedIBCKeeper,
+		&app.oracleKeeper,
 	)
 	app.vaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
 		app.keys[vaulttypes.StoreKey],
+		app.bankKeeper,
 		&app.assetKeeper,
+		&app.oracleKeeper,
 	)
 
 	app.liquidityKeeper = liquiditykeeper.NewKeeper(
@@ -432,6 +437,11 @@ func New(
 	app.oracleKeeper = *oraclekeeper.NewKeeper(
 		app.cdc,
 		app.keys[oracletypes.StoreKey],
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		app.scopedIBCKeeper,
+
+
 	)
 	/****  Module Options ****/
 
@@ -462,8 +472,8 @@ func New(
 		asset.NewAppModule(app.cdc, app.assetKeeper),
 		vault.NewAppModule(app.cdc, app.vaultKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
-		asset.NewAppModule(app.cdc,app.assetKeeper),
-		oracle.NewAppModule(app.cdc,app.oracleKeeper),
+		asset.NewAppModule(app.cdc, app.assetKeeper),
+		oracle.NewAppModule(app.cdc, app.oracleKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -675,7 +685,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		vaulttypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
+		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 	}
 }

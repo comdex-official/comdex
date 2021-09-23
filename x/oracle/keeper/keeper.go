@@ -17,10 +17,14 @@ type Keeper struct {
 	scoped  expected.ScopedKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) *Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey,channel expected.ChannelKeeper,port expected.PortKeeper,scoped expected.ScopedKeeper) *Keeper {
 	return &Keeper{
 		cdc: cdc,
 		key: key,
+		channel: channel,
+		port: port,
+		scoped: scoped,
+
 	}
 }
 
