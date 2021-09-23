@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package comdex.vault.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/vault/types";
+
+message EventCreateVault {
+  string sender          = 1;
+  string collateral_type = 2;
+}
+
+message EventDepositCollateral {
+  string owner           = 1;
+  string collateral_type = 2;
+
+  cosmos.base.v1beta1.Coin collateral = 3 [
+    (gogoproto.moretags) = "yaml:\"payment\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message EventWithdrawCollateral {
+  string owner           = 1;
+  string collateral_type = 2;
+
+  cosmos.base.v1beta1.Coin collateral = 3 [
+    (gogoproto.moretags) = "yaml:\"payment\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message EventDrawDebt {
+  string owner           = 1;
+  string collateral_type = 2;
+
+  cosmos.base.v1beta1.Coin debt = 3 [
+    (gogoproto.moretags) = "yaml:\"payment\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message EventRepayDebt {
+  string owner           = 1;
+  string collateral_type = 2;
+
+  cosmos.base.v1beta1.Coin debt = 3 [
+    (gogoproto.moretags) = "yaml:\"payment\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message EventCloseVault {
+  string owner           = 1;
+  string collateral_type = 2;
+}
