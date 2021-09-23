@@ -235,15 +235,6 @@ func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePack
 	return nil
 }
 
-func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	market, found := k.GetMarketForAsset(ctx, id)
-	if !found {
-		return 0, false
-	}
-
-	return k.GetPriceForMarket(ctx, market.Symbol)
-}
-
 func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
 	var (
 		store = k.Store(ctx)

@@ -19,7 +19,6 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		(*sdk.Msg)(nil),
 		&MsgAddMarketRequest{},
 		&MsgUpdateMarketRequest{},
-		&MsgAddMarketForAssetRequest{},
 		&MsgFetchPriceRequest{},
 		&MsgRemoveMarketForAssetRequest{},
 	)

@@ -1,9 +1,7 @@
 syntax = "proto3";
 package comdex.asset.v1beta1;
 
-import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
-import "ibc/core/client/v1/client.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all)           = false;

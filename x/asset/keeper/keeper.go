@@ -15,6 +15,7 @@ type Keeper struct {
 	channel expected.ChannelKeeper
 	port    expected.PortKeeper
 	scoped  expected.ScopedKeeper
+	oracle expected.OracleKeeper
 }
 
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) Keeper {

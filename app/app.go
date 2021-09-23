@@ -195,7 +195,6 @@ type App struct {
 	assetKeeper     assetkeeper.Keeper
 	cdpKeeper       cdpkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
-	assetKeeper     assetkeeper.Keeper
 	oracleKeeper    oraclekeeper.Keeper
 }
 
@@ -428,11 +427,6 @@ func New(
 		app.bankKeeper,
 		app.accountKeeper,
 		app.distrKeeper,
-	)
-
-	app.assetKeeper = *assetkeeper.NewKeeper(
-		app.cdc,
-		app.keys[assettypes.StoreKey],
 	)
 
 	app.oracleKeeper = *oraclekeeper.NewKeeper(
