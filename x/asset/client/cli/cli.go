@@ -17,8 +17,6 @@ func GetQueryCmd() *cobra.Command {
 	cmd.AddCommand(
 		queryAsset(),
 		queryAssets(),
-		queryMarket(),
-		queryMarkets(),
 		queryPair(),
 		queryPairs(),
 		queryParams(),
@@ -39,13 +37,8 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(
 		txAddAsset(),
 		txUpdateAsset(),
-		txAddMarket(),
-		txUpdateMarket(),
-		txAddMarketForAsset(),
-		txRemoveMarketForAsset(),
 		txAddPair(),
 		txUpdatePair(),
-		txFetchPrice(),
 	)
 
 	return cmd

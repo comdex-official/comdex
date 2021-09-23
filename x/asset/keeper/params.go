@@ -47,10 +47,5 @@ func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 			k.IBCPort(ctx),
 			k.IBCVersion(ctx),
 		),
-		types.NewOracleParams(
-			k.OracleAskCount(ctx),
-			k.OracleMinCount(ctx),
-			k.OracleMultiplier(ctx),
-		),
 	)
 }

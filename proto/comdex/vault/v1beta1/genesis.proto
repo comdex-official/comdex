@@ -1,0 +1,17 @@
+syntax = "proto3";
+package comdex.vault.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/vault/v1beta1/vault.proto";
+
+option go_package            = "github.com/comdex-official/comdex/x/vault/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message GenesisState {
+  repeated Vault vaults = 1 [
+    (gogoproto.customname) = "Vaults",
+    (gogoproto.moretags)   = "yaml:\"vaults\"",
+    (gogoproto.nullable)   = false
+  ];
+}

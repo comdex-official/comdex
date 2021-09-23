@@ -3,22 +3,14 @@ package asset
 import (
 	"context"
 	"encoding/json"
-	"math"
 	"math/rand"
 
-	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	ibcporttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
-	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -33,10 +25,20 @@ var (
 	_ module.AppModule           = AppModule{}
 	_ module.AppModuleBasic      = AppModuleBasic{}
 	_ module.AppModuleSimulation = AppModule{}
-	_ ibcporttypes.IBCModule     = AppModule{}
 )
 
-type AppModuleBasic struct{}
+type AppModuleBasic struct{ cdc codec.BinaryCodec }
+
+func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
+	return AppModule{
+		AppModuleBasic: NewAppModuleBasic(cdc),
+		keeper:         keeper,
+	}
+}
+
+func NewAppModuleBasic(cdc codec.BinaryCodec) AppModuleBasic {
+	return AppModuleBasic{cdc: cdc}
+}
 
 func (a AppModuleBasic) Name() string {
 	return types.ModuleName
@@ -79,13 +81,6 @@ type AppModule struct {
 	AppModuleBasic
 	cdc    codec.JSONCodec
 	keeper keeper.Keeper
-}
-
-func NewAppModule(cdc codec.JSONCodec, keeper keeper.Keeper) AppModule {
-	return AppModule{
-		cdc:    cdc,
-		keeper: keeper,
-	}
 }
 
 func (a AppModule) ConsensusVersion() uint64 {
@@ -141,153 +136,4 @@ func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 func (a AppModule) WeightedOperations(_ module.SimulationState) []simulation.WeightedOperation {
 	return nil
-}
-
-func ValidateAssetChannelParams(
-	ctx sdk.Context,
-	keeper keeper.Keeper,
-	order ibcchanneltypes.Order,
-	portID, channelID, channelVersion string,
-) error {
-	version := keeper.IBCVersion(ctx)
-	if channelVersion != version {
-		return types.ErrorInvalidVersion
-	}
-
-	port := keeper.IBCPort(ctx)
-	if portID != port {
-		return ibcporttypes.ErrInvalidPort
-	}
-
-	sequence, err := ibcchanneltypes.ParseChannelSequence(channelID)
-	if err != nil {
-		return err
-	}
-	if sequence > uint64(math.MaxUint32) {
-		return types.ErrorMaxAssetChannels
-	}
-	if order != ibcchanneltypes.UNORDERED {
-		return ibcchanneltypes.ErrInvalidChannelOrdering
-	}
-
-	return nil
-}
-
-func (a AppModule) OnChanOpenInit(
-	ctx sdk.Context,
-	order ibcchanneltypes.Order,
-	_ []string,
-	portID, channelID string,
-	capability *capabilitytypes.Capability,
-	_ ibcchanneltypes.Counterparty,
-	channelVersion string,
-) error {
-	if err := ValidateAssetChannelParams(ctx, a.keeper, order, portID, channelID, channelVersion); err != nil {
-		return err
-	}
-
-	if err := a.keeper.ClaimCapability(ctx, capability, ibchost.ChannelCapabilityPath(portID, channelID)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (a AppModule) OnChanOpenTry(
-	ctx sdk.Context,
-	order ibcchanneltypes.Order,
-	_ []string,
-	portID, channelID string,
-	capability *capabilitytypes.Capability,
-	_ ibcchanneltypes.Counterparty,
-	channelVersion, counterpartyVersion string,
-) error {
-	if counterpartyVersion != a.keeper.IBCVersion(ctx) {
-		return types.ErrorInvalidVersion
-	}
-
-	if err := ValidateAssetChannelParams(ctx, a.keeper, order, portID, channelID, channelVersion); err != nil {
-		return err
-	}
-
-	if !a.keeper.AuthenticateCapability(ctx, capability, ibchost.ChannelCapabilityPath(portID, channelID)) {
-		if err := a.keeper.ClaimCapability(ctx, capability, ibchost.ChannelCapabilityPath(portID, channelID)); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (a AppModule) OnChanOpenAck(
-	ctx sdk.Context,
-	_, _, counterpartyVersion string,
-) error {
-	version := a.keeper.IBCVersion(ctx)
-	if counterpartyVersion != version {
-		return types.ErrorInvalidVersion
-	}
-
-	return nil
-}
-
-func (a AppModule) OnChanOpenConfirm(
-	_ sdk.Context,
-	_, _ string,
-) error {
-	return nil
-}
-
-func (a AppModule) OnChanCloseInit(
-	_ sdk.Context,
-	_, _ string,
-) error {
-	return errors.ErrInvalidRequest
-}
-
-func (a AppModule) OnChanCloseConfirm(
-	_ sdk.Context,
-	_, _ string,
-) error {
-	return nil
-}
-
-func (a AppModule) OnRecvPacket(
-	ctx sdk.Context,
-	packet ibcchanneltypes.Packet,
-	_ sdk.AccAddress,
-) ibcexported.Acknowledgement {
-	var (
-		res bandpacket.OracleResponsePacketData
-		ack = ibcchanneltypes.NewResultAcknowledgement([]byte{0x01})
-	)
-
-	if err := a.cdc.UnmarshalJSON(packet.GetData(), &res); err != nil {
-		ack = ibcchanneltypes.NewErrorAcknowledgement(err.Error())
-	}
-
-	if ack.Success() {
-		if err := a.keeper.OnRecvPacket(ctx, res); err != nil {
-			ack = ibcchanneltypes.NewErrorAcknowledgement(err.Error())
-		}
-	}
-
-	return ack
-}
-
-func (a AppModule) OnAcknowledgementPacket(
-	_ sdk.Context,
-	_ ibcchanneltypes.Packet,
-	_ []byte,
-	_ sdk.AccAddress,
-) (*sdk.Result, error) {
-	return nil, nil
-}
-
-func (a AppModule) OnTimeoutPacket(
-	_ sdk.Context,
-	_ ibcchanneltypes.Packet,
-	_ sdk.AccAddress,
-) (*sdk.Result, error) {
-	return nil, nil
 }
