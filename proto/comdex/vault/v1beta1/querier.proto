@@ -28,8 +28,8 @@ message VaultInfo{
     (gogoproto.nullable) = false
   ];
 
-  string collaterlization_ratio = 6 [
-    (gogoproto.moretags) = "yaml:\"collaterlization_ratio\"",
+  string collateralization_ratio = 6 [
+    (gogoproto.moretags) = "yaml:\"collateralization_ratio\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];

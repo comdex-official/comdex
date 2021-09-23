@@ -71,7 +71,7 @@ func (q *queryServer) QueryVaults(c context.Context, req *types.QueryVaultsReque
 				Owner:                 item.Owner,
 				Collateral:            sdk.NewCoin(assetIn.Denom, item.AmountIn),
 				Debt:                  sdk.NewCoin(assetOut.Denom, item.AmountOut),
-				CollaterlizationRatio: collateralizationRatio,
+				CollateralizationRatio: collateralizationRatio,
 			}
 
 			if accumulate {
@@ -132,7 +132,7 @@ func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest
 			Owner:                 vault.Owner,
 			Collateral:            sdk.NewCoin(assetIn.Denom, vault.AmountIn),
 			Debt:                  sdk.NewCoin(assetOut.Denom, vault.AmountOut),
-			CollaterlizationRatio: collateralizationRatio,
+			CollateralizationRatio: collateralizationRatio,
 		},
 	}, nil
 }
