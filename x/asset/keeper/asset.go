@@ -137,12 +137,3 @@ func (k *Keeper) DeleteAssetForDenom(ctx sdk.Context, denom string) {
 
 	store.Delete(key)
 }
-
-func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	market, found := k.oracle.GetMarketForAsset(ctx, id)
-	if !found {
-		return 0, false
-	}
-
-	return k.oracle.GetPriceForMarket(ctx, market.Symbol)
-}

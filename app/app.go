@@ -418,6 +418,7 @@ func New(
 		app.cdc,
 		app.keys[cdptypes.StoreKey],
 		&app.assetKeeper,
+		&app.oracleKeeper,
 	)
 
 	app.liquidityKeeper = liquiditykeeper.NewKeeper(
@@ -462,8 +463,8 @@ func New(
 		asset.NewAppModule(app.cdc, app.assetKeeper),
 		cdp.NewAppModule(app.cdc, app.cdpKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
-		asset.NewAppModule(app.cdc,app.assetKeeper),
-		oracle.NewAppModule(app.cdc,app.oracleKeeper),
+		asset.NewAppModule(app.cdc, app.assetKeeper),
+		oracle.NewAppModule(app.cdc, app.oracleKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
