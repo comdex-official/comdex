@@ -14,11 +14,9 @@ const (
 
 var (
 	AssetIDKey    = []byte{0x01}
-	CalldataIDKey = []byte{0x02}
 	PairIDKey     = []byte{0x03}
 
 	AssetKeyPrefix    = []byte{0x11}
-	CalldataKeyPrefix = []byte{0x12}
 	PairKeyPrefix     = []byte{0x14}
 
 	AssetForDenomKeyPrefix  = []byte{0x21}
@@ -26,10 +24,6 @@ var (
 
 func AssetKey(id uint64) []byte {
 	return append(AssetKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func CalldataKey(id uint64) []byte {
-	return append(CalldataKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func AssetForDenomKey(denom string) []byte {

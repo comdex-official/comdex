@@ -9,60 +9,26 @@ import (
 )
 
 const (
-	DefaultAdmin            = ""
-	DefaultIBCPort          = "asset"
-	DefaultIBCVersion       = "comdex-ics-01"
+	DefaultAdmin = ""
 )
 
 var (
-	KeyAdmin            = []byte("Admin")
-	KeyIBCPort          = []byte("IBCPort")
-	KeyIBCVersion       = []byte("IBCVersion")
-	KeyOracleAskCount   = []byte("OracleAskCount")
-	KeyOracleMinCount   = []byte("OracleMinCount")
-	KeyOracleMultiplier = []byte("OracleMultiplier")
+	KeyAdmin = []byte("Admin")
 )
 
 var (
 	_ paramstypes.ParamSet = (*Params)(nil)
 )
 
-func NewIBCParams(port, version string) IBCParams {
-	return IBCParams{
-		Port:    port,
-		Version: version,
-	}
-}
-
-func DefaultIBCParams() IBCParams {
-	return NewIBCParams(
-		DefaultIBCPort,
-		DefaultIBCVersion,
-	)
-}
-
-func (m *IBCParams) Validate() error {
-	if m.Port == "" {
-		return fmt.Errorf("port cannot be empty")
-	}
-	if m.Version == "" {
-		return fmt.Errorf("version cannot be empty")
-	}
-
-	return nil
-}
-
-func NewParams(admin string, ibc IBCParams) Params {
+func NewParams(admin string) Params {
 	return Params{
-		Admin:  admin,
-		IBC:    ibc,
+		Admin: admin,
 	}
 }
 
 func DefaultParams() Params {
 	return NewParams(
 		DefaultAdmin,
-		DefaultIBCParams(),
 	)
 }
 
@@ -87,38 +53,6 @@ func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 				return nil
 			},
 		),
-		paramstypes.NewParamSetPair(
-			KeyIBCPort,
-			m.IBC.Port,
-			func(v interface{}) error {
-				value, ok := v.(string)
-				if !ok {
-					return fmt.Errorf("invalid parameter type %T", v)
-				}
-
-				if value == "" {
-					return fmt.Errorf("ibc.port cannot be empty")
-				}
-
-				return nil
-			},
-		),
-		paramstypes.NewParamSetPair(
-			KeyIBCVersion,
-			m.IBC.Version,
-			func(v interface{}) error {
-				value, ok := v.(string)
-				if !ok {
-					return fmt.Errorf("invalid parameter type %T", v)
-				}
-
-				if value == "" {
-					return fmt.Errorf("ibc.version cannot be empty")
-				}
-
-				return nil
-			},
-		),
 	}
 }
 
@@ -128,9 +62,6 @@ func (m *Params) Validate() error {
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
 		return errors.Wrapf(err, "invalid admin %s", m.Admin)
-	}
-	if err := m.IBC.Validate(); err != nil {
-		return errors.Wrapf(err, "invalid ibc params")
 	}
 
 	return nil

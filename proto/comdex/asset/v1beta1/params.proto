@@ -7,16 +7,6 @@ option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message IBCParams {
-  string port    = 1 [ (gogoproto.moretags) = "yaml:\"port\"" ];
-  string version = 2 [ (gogoproto.moretags) = "yaml:\"version\"" ];
-}
-
 message Params {
   string admin  = 1 [ (gogoproto.moretags) = "yaml:\"admin\"" ];
-  IBCParams ibc = 2 [
-    (gogoproto.customname) = "IBC",
-    (gogoproto.moretags)   = "yaml:\"ibc\"",
-    (gogoproto.nullable)   = false
-  ];
 }
