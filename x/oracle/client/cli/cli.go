@@ -7,18 +7,16 @@ import (
 
 func GetQueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                        "asset",
-		Short:                      "Asset module sub-commands",
+		Use:   "oracle",
+		Short: "Asset module sub-commands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
 
 	cmd.AddCommand(
-		queryAsset(),
-		queryAssets(),
-		queryPair(),
-		queryPairs(),
+		queryMarket(),
+		queryMarkets(),
 		queryParams(),
 	)
 
@@ -27,18 +25,19 @@ func GetQueryCmd() *cobra.Command {
 
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                        "asset",
-		Short:                      "asset module sub-commands",
+		Use:   "oracle",
+		Short: "asset module sub-commands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
 
 	cmd.AddCommand(
-		txAddAsset(),
-		txUpdateAsset(),
-		txAddPair(),
-		txUpdatePair(),
+		txAddMarket(),
+		txUpdateMarket(),
+		txAddMarketForAsset(),
+		txRemoveMarketForAsset(),
+		txFetchPrice(),
 	)
 
 	return cmd

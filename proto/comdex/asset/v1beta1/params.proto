@@ -12,21 +12,11 @@ message IBCParams {
   string version = 2 [ (gogoproto.moretags) = "yaml:\"version\"" ];
 }
 
-message OracleParams {
-  uint64 ask_count  = 1 [ (gogoproto.moretags) = "yaml:\"ask_count\"" ];
-  uint64 min_count  = 2 [ (gogoproto.moretags) = "yaml:\"min_count\"" ];
-  uint64 multiplier = 3 [ (gogoproto.moretags) = "yaml:\"multiplier\"" ];
-}
-
 message Params {
   string admin  = 1 [ (gogoproto.moretags) = "yaml:\"admin\"" ];
   IBCParams ibc = 2 [
     (gogoproto.customname) = "IBC",
     (gogoproto.moretags)   = "yaml:\"ibc\"",
     (gogoproto.nullable)   = false
-  ];
-  OracleParams oracle = 3 [
-    (gogoproto.moretags) = "yaml:\"oracle\"",
-    (gogoproto.nullable) = false
   ];
 }

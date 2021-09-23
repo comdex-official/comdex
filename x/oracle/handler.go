@@ -1,12 +1,12 @@
-package asset
+package oracle
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	"github.com/comdex-official/comdex/x/asset/keeper"
-	"github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/oracle/keeper"
+	"github.com/comdex-official/comdex/x/oracle/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
@@ -16,17 +16,17 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgAddAssetRequest:
-			res, err := server.MsgAddAsset(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgAddMarketRequest:
+			res, err := server.MsgAddMarket(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgUpdateAssetRequest:
-			res, err := server.MsgUpdateAsset(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgUpdateMarketRequest:
+			res, err := server.MsgUpdateMarket(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddPairRequest:
-			res, err := server.MsgAddPair(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgAddMarketForAssetRequest:
+			res, err := server.MsgAddMarketForAsset(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgUpdatePairRequest:
-			res, err := server.MsgUpdatePair(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgRemoveMarketForAssetRequest:
+			res, err := server.MsgRemoveMarketForAsset(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)

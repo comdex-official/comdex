@@ -89,6 +89,9 @@ import (
 	"github.com/comdex-official/comdex/x/cdp"
 	cdpkeeper "github.com/comdex-official/comdex/x/cdp/keeper"
 	cdptypes "github.com/comdex-official/comdex/x/cdp/types"
+	"github.com/comdex-official/comdex/x/oracle"
+	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
+	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
 )
 
 const (
@@ -128,6 +131,9 @@ var (
 		cdp.AppModuleBasic{},
 		asset.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
+		asset.AppModuleBasic{},
+		oracle.AppModuleBasic{},
+
 	)
 )
 
@@ -189,6 +195,8 @@ type App struct {
 	assetKeeper     assetkeeper.Keeper
 	cdpKeeper       cdpkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
+	assetKeeper     assetkeeper.Keeper
+	oracleKeeper    oraclekeeper.Keeper
 }
 
 // New returns a reference to an initialized App.
@@ -212,7 +220,7 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			cdptypes.StoreKey, liquiditytypes.StoreKey,
+			cdptypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
 		)
 	)
 
@@ -252,6 +260,8 @@ func New(
 	app.paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
 	app.paramsKeeper.Subspace(cdptypes.ModuleName)
+	app.paramsKeeper.Subspace(assettypes.ModuleName)
+	app.paramsKeeper.Subspace(oracletypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -420,6 +430,15 @@ func New(
 		app.distrKeeper,
 	)
 
+	app.assetKeeper = *assetkeeper.NewKeeper(
+		app.cdc,
+		app.keys[assettypes.StoreKey],
+	)
+
+	app.oracleKeeper = *oraclekeeper.NewKeeper(
+		app.cdc,
+		app.keys[oracletypes.StoreKey],
+	)
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -449,6 +468,8 @@ func New(
 		asset.NewAppModule(app.cdc, app.assetKeeper),
 		cdp.NewAppModule(app.cdc, app.cdpKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
+		asset.NewAppModule(app.cdc,app.assetKeeper),
+		oracle.NewAppModule(app.cdc,app.oracleKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
