@@ -22,9 +22,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgUpdateMarketRequest:
 			res, err := server.MsgUpdateMarket(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddMarketForAssetRequest:
-			res, err := server.MsgAddMarketForAsset(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgRemoveMarketForAssetRequest:
 			res, err := server.MsgRemoveMarketForAsset(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

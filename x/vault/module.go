@@ -1,4 +1,4 @@
-package asset
+package vault
 
 import (
 	"context"
@@ -16,9 +16,9 @@ import (
 	"github.com/spf13/cobra"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/comdex-official/comdex/x/asset/client/cli"
-	"github.com/comdex-official/comdex/x/asset/keeper"
-	"github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/vault/client/cli"
+	"github.com/comdex-official/comdex/x/vault/keeper"
+	"github.com/comdex-official/comdex/x/vault/types"
 )
 
 var (
@@ -27,18 +27,7 @@ var (
 	_ module.AppModuleSimulation = AppModule{}
 )
 
-type AppModuleBasic struct{ cdc codec.BinaryCodec }
-
-func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
-	return AppModule{
-		AppModuleBasic: NewAppModuleBasic(cdc),
-		keeper:         keeper,
-	}
-}
-
-func NewAppModuleBasic(cdc codec.BinaryCodec) AppModuleBasic {
-	return AppModuleBasic{cdc: cdc}
-}
+type AppModuleBasic struct{}
 
 func (a AppModuleBasic) Name() string {
 	return types.ModuleName
@@ -60,7 +49,7 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncoding
 		return err
 	}
 
-	return types.ValidateGenesis(&state)
+	return state.Validate()
 }
 
 func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
@@ -79,8 +68,15 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	cdc    codec.JSONCodec
-	keeper keeper.Keeper
+	cdc codec.Codec
+	k   keeper.Keeper
+}
+
+func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
+	return AppModule{
+		cdc: cdc,
+		k:   keeper,
+	}
 }
 
 func (a AppModule) ConsensusVersion() uint64 {
@@ -90,19 +86,19 @@ func (a AppModule) ConsensusVersion() uint64 {
 func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
 	var state types.GenesisState
 	cdc.MustUnmarshalJSON(message, &state)
-	InitGenesis(ctx, a.keeper, &state)
+	InitGenesis(ctx, a.k, &state)
 
 	return nil
 }
 
 func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.keeper))
+	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
 }
 
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 func (a AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, NewHandler(a.keeper))
+	return sdk.NewRoute(types.RouterKey, NewHandler(a.k))
 }
 
 func (a AppModule) QuerierRoute() string {
@@ -112,8 +108,8 @@ func (a AppModule) QuerierRoute() string {
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
-	types.RegisterMsgServiceServer(configurator.MsgServer(), keeper.NewMsgServiceServer(a.keeper))
-	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.keeper))
+	types.RegisterMsgServiceServer(configurator.QueryServer(), keeper.NewMsgServiceServer(a.k))
+	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.k))
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abcitypes.RequestBeginBlock) {}

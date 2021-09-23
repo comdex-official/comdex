@@ -9,18 +9,20 @@ import (
 )
 
 type Keeper struct {
-	cdc     codec.BinaryCodec
-	key     sdk.StoreKey
-	params  paramstypes.Subspace
-	channel expected.ChannelKeeper
-	port    expected.PortKeeper
-	scoped  expected.ScopedKeeper
+	cdc    codec.BinaryCodec
+	key    sdk.StoreKey
+	params paramstypes.Subspace
+	scoped expected.ScopedKeeper
+	oracle expected.OracleKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, scoped expected.ScopedKeeper, oracle expected.OracleKeeper) Keeper {
 	return Keeper{
-		cdc: cdc,
-		key: key,
+		cdc:    cdc,
+		key:    key,
+		params: params,
+		scoped: scoped,
+		oracle: oracle,
 	}
 }
 

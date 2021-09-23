@@ -86,12 +86,12 @@ import (
 	"github.com/comdex-official/comdex/x/asset"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/cdp"
-	cdpkeeper "github.com/comdex-official/comdex/x/cdp/keeper"
-	cdptypes "github.com/comdex-official/comdex/x/cdp/types"
 	"github.com/comdex-official/comdex/x/oracle"
 	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
 	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
+	"github.com/comdex-official/comdex/x/vault"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
 const (
@@ -128,7 +128,7 @@ var (
 		evidence.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		cdp.AppModuleBasic{},
+		vault.AppModuleBasic{},
 		asset.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 		asset.AppModuleBasic{},
@@ -193,9 +193,8 @@ type App struct {
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
 
 	assetKeeper     assetkeeper.Keeper
-	cdpKeeper       cdpkeeper.Keeper
+	vaultKeeper     vaultkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
-	assetKeeper     assetkeeper.Keeper
 	oracleKeeper    oraclekeeper.Keeper
 }
 
@@ -220,7 +219,7 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			cdptypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
+			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
 		)
 	)
 
@@ -259,7 +258,7 @@ func New(
 	app.paramsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
-	app.paramsKeeper.Subspace(cdptypes.ModuleName)
+	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
 	app.paramsKeeper.Subspace(assettypes.ModuleName)
 	app.paramsKeeper.Subspace(oracletypes.ModuleName)
 
@@ -414,11 +413,16 @@ func New(
 	app.assetKeeper = assetkeeper.NewKeeper(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
+		app.GetSubspace(assettypes.ModuleName),
+		app.scopedIBCKeeper,
+		&app.oracleKeeper,
 	)
-	app.cdpKeeper = cdpkeeper.NewKeeper(
+	app.vaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
-		app.keys[cdptypes.StoreKey],
+		app.keys[vaulttypes.StoreKey],
+		app.bankKeeper,
 		&app.assetKeeper,
+		&app.oracleKeeper,
 	)
 
 	app.liquidityKeeper = liquiditykeeper.NewKeeper(
@@ -430,14 +434,14 @@ func New(
 		app.distrKeeper,
 	)
 
-	app.assetKeeper = *assetkeeper.NewKeeper(
-		app.cdc,
-		app.keys[assettypes.StoreKey],
-	)
-
 	app.oracleKeeper = *oraclekeeper.NewKeeper(
 		app.cdc,
 		app.keys[oracletypes.StoreKey],
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		app.scopedIBCKeeper,
+
+
 	)
 	/****  Module Options ****/
 
@@ -466,10 +470,10 @@ func New(
 		params.NewAppModule(app.paramsKeeper),
 		transferModule,
 		asset.NewAppModule(app.cdc, app.assetKeeper),
-		cdp.NewAppModule(app.cdc, app.cdpKeeper),
+		vault.NewAppModule(app.cdc, app.vaultKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
-		asset.NewAppModule(app.cdc,app.assetKeeper),
-		oracle.NewAppModule(app.cdc,app.oracleKeeper),
+		asset.NewAppModule(app.cdc, app.assetKeeper),
+		oracle.NewAppModule(app.cdc, app.oracleKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -504,7 +508,7 @@ func New(
 		liquiditytypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		assettypes.ModuleName,
-		cdptypes.ModuleName,
+		vaulttypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
@@ -681,7 +685,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		cdptypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
+		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 	}
 }
