@@ -13,13 +13,13 @@ var (
 )
 
 var (
-	ErrorAssetDoesNotExist  = errors.Register(ModuleName, 201, "asset does not exist")
-	ErrorCDPDoesNotExist    = errors.Register(ModuleName, 102, "cdp does not exist")
-	ErrorUnauthorized       = errors.Register(ModuleName, 102, "unauthorized")
-	ErrorDuplicateCDP       = errors.Register(ModuleName, 202, "duplicate cdp")
-	ErrorInvalidAmountRatio = errors.Register(ModuleName, 203, "invalid amount ratio")
-	ErrorPairDoesNotExist   = errors.Register(ModuleName, 204, "pair does not exist")
-	ErrorPriceDoesNotExist  = errors.Register(ModuleName, 203, "price does not exist")
+	ErrorAssetDoesNotExist             = errors.Register(ModuleName, 201, "asset does not exist")
+	ErrorCDPDoesNotExist               = errors.Register(ModuleName, 102, "cdp does not exist")
+	ErrorUnauthorized                  = errors.Register(ModuleName, 102, "unauthorized")
+	ErrorDuplicateCDP                  = errors.Register(ModuleName, 202, "duplicate cdp")
+	ErrorInvalidCollateralizationRatio = errors.Register(ModuleName, 203, "invalid collateralization ratio")
+	ErrorPairDoesNotExist              = errors.Register(ModuleName, 204, "pair does not exist")
+	ErrorPriceDoesNotExist             = errors.Register(ModuleName, 203, "price does not exist")
 )
 
 var (

@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
@@ -23,16 +23,17 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		QueryCdp(),
-		QueryParams())
+		QueryCdps(),
+	)
 
 	return cmd
 }
 
 func QueryCdp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "cdp [owner-addr] [collateralType]",
+		Use:   "cdp [id]",
 		Short: "cdp's information",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -40,11 +41,15 @@ func QueryCdp() *cobra.Command {
 				return err
 			}
 
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
 			queryClient := types.NewQueryServiceClient(ctx)
 
 			res, err := queryClient.QueryCDP(cmd.Context(), &types.QueryCDPRequest{
-				Owner:          args[0],
-				CollateralType: args[1],
+				Id: id,
 			})
 
 			if err != nil {
@@ -58,13 +63,17 @@ func QueryCdp() *cobra.Command {
 	return cmd
 }
 
-func QueryParams() *cobra.Command {
+func QueryCdps() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "params",
-		Short: "get the cdp module parameters",
-		Long:  "get the current global cdp module parameters.",
-		Args:  cobra.NoArgs,
+		Use:   "cdps [owner]",
+		Short: "cdps list for an individual account",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -73,11 +82,14 @@ func QueryParams() *cobra.Command {
 
 			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := queryClient.QueryParams(context.Background(), &types.QueryParamsRequest{})
+			res, err := queryClient.QueryCDPs(cmd.Context(), &types.QueryCDPsRequest{
+				Owner:      args[0],
+				Pagination: pagination,
+			})
+
 			if err != nil {
 				return err
 			}
-
 			return ctx.PrintProto(res)
 		},
 	}

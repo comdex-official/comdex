@@ -32,7 +32,7 @@ func (q *queryServer) QueryCDPs(c context.Context, req *types.QueryCDPsRequest) 
 	}
 
 	var (
-		items []types.CDP
+		items []types.CDPInfo
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
@@ -45,8 +45,37 @@ func (q *queryServer) QueryCDPs(c context.Context, req *types.QueryCDPsRequest) 
 				return false, err
 			}
 
+			pair, found := q.GetPair(ctx, item.PairID)
+			if !found {
+				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.PairID)
+			}
+
+			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
+			if !found {
+				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
+			}
+
+			assetOut, found := q.GetAsset(ctx, pair.AssetOut)
+			if !found {
+				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
+			}
+
+			collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, item.AmountIn, assetIn, item.AmountOut, assetOut)
+			if err != nil {
+				return false, err
+			}
+
+			cdpInfo := types.CDPInfo{
+				Id:                    item.ID,
+				PairID:                item.PairID,
+				Owner:                 item.Owner,
+				Collateral:            sdk.NewCoin(assetIn.Denom, item.AmountIn),
+				Debt:                  sdk.NewCoin(assetOut.Denom, item.AmountOut),
+				CollaterlizationRatio: collateralizationRatio,
+			}
+
 			if accumulate {
-				items = append(items, item)
+				items = append(items, cdpInfo)
 			}
 
 			return true, nil
@@ -58,7 +87,7 @@ func (q *queryServer) QueryCDPs(c context.Context, req *types.QueryCDPsRequest) 
 	}
 
 	return &types.QueryCDPsResponse{
-		CDPs:       items,
+		CDPsInfo:   items,
 		Pagination: pagination,
 	}, nil
 }
@@ -72,12 +101,38 @@ func (q *queryServer) QueryCDP(c context.Context, req *types.QueryCDPRequest) (*
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetCDP(ctx, req.Id)
+	cdp, found := q.GetCDP(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "cdp does not exist for id %d", req.Id)
 	}
 
+	pair, found := q.GetPair(ctx, cdp.PairID)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", cdp.PairID)
+	}
+
+	assetIn, found := q.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
+	}
+
+	assetOut, found := q.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
+	}
+
+	collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, cdp.AmountIn, assetIn, cdp.AmountOut, assetOut)
+	if err != nil {
+		return nil, err
+	}
 	return &types.QueryCDPResponse{
-		CDP: item,
+		CDPInfo: types.CDPInfo{
+			Id:                    cdp.ID,
+			PairID:                cdp.PairID,
+			Owner:                 cdp.Owner,
+			Collateral:            sdk.NewCoin(assetIn.Denom, cdp.AmountIn),
+			Debt:                  sdk.NewCoin(assetOut.Denom, cdp.AmountOut),
+			CollaterlizationRatio: collateralizationRatio,
+		},
 	}, nil
 }

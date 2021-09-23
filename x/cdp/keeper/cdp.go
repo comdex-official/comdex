@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -119,4 +120,56 @@ func (k *Keeper) DeleteCDPForAddressByPair(ctx sdk.Context, address sdk.AccAddre
 	)
 
 	store.Delete(key)
+}
+
+func (k *Keeper) VerifyCollaterlizationRatio(
+	ctx sdk.Context,
+	amountIn sdk.Int,
+	assetIn assettypes.Asset,
+	amountOut sdk.Int,
+	assetOut assettypes.Asset,
+	liquidationRatio sdk.Dec,
+) error {
+
+	collaterlizationRatio, err := k.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
+	if err != nil {
+		return err
+	}
+
+	if collaterlizationRatio.LT(liquidationRatio) {
+		return types.ErrorInvalidCollateralizationRatio
+	}
+
+	return nil
+}
+
+func (k *Keeper) CalculateCollaterlizationRatio(
+	ctx sdk.Context,
+	amountIn sdk.Int,
+	assetIn assettypes.Asset,
+	amountOut sdk.Int,
+	assetOut assettypes.Asset,
+) (sdk.Dec, error) {
+
+	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
+	if !found {
+		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+	}
+
+	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
+	if !found {
+		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+	}
+
+	totalIn := amountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
+	if totalIn.IsZero() {
+		return sdk.ZeroDec(), types.ErrorInvalidAmount
+	}
+
+	totalOut := amountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
+	if totalOut.IsZero() {
+		return sdk.ZeroDec(), types.ErrorInvalidAmount
+	}
+
+	return totalIn.Quo(totalOut), nil
 }

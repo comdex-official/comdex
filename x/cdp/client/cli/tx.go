@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
@@ -29,7 +30,7 @@ func GetTxCmd() *cobra.Command {
 		txWithdraw(),
 		txDrawDebt(),
 		txRepayDebt(),
-		txLiquidate(),
+		txClose(),
 	)
 
 	return cmd
@@ -37,7 +38,7 @@ func GetTxCmd() *cobra.Command {
 
 func txCreateCdp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create [collateral] [debt] [collateral_type]",
+		Use:   "create [pair_id] [amount_in] [amount_out]",
 		Short: "create a new cdp",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -46,18 +47,22 @@ func txCreateCdp() *cobra.Command {
 				return err
 			}
 
-			collateral, err := sdk.ParseCoinNormalized(args[0])
+			pairId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			debt, err := sdk.ParseCoinNormalized(args[1])
-			if err != nil {
-				return err
+			amountIn, ok := sdk.NewIntFromString(args[1])
+			if !ok {
+				return types.ErrorInvalidAmountIn
 			}
 
-			ctype := args[2]
-			msg := types.NewMsgCreateCDPRequest(ctx.FromAddress, collateral, debt, ctype)
+			amountOut, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidAmountOut
+			}
+
+			msg := types.NewMsgCreateRequest(ctx.FromAddress, pairId, amountIn, amountOut)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -74,7 +79,7 @@ func txCreateCdp() *cobra.Command {
 
 func txDeposit() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit [collateral] [collateral_type]",
+		Use:   "deposit [id] [amount]",
 		Short: "creates a new deposit",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -84,12 +89,17 @@ func txDeposit() *cobra.Command {
 				return err
 			}
 
-			collateral, err := sdk.ParseCoinNormalized(args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgDepositCollateralRequest(ctx.FromAddress, collateral, args[1])
+			amount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidAmount
+			}
+
+			msg := types.NewMsgDepositRequest(ctx.FromAddress, id, amount)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -103,7 +113,7 @@ func txDeposit() *cobra.Command {
 
 func txWithdraw() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw [collateral] [collateral-type]",
+		Use:   "withdraw [id] [amount]",
 		Short: "create a new withdraw",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -113,15 +123,21 @@ func txWithdraw() *cobra.Command {
 				return err
 			}
 
-			collateral, err := sdk.ParseCoinNormalized(args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgWithdrawCollateralRequest(ctx.FromAddress, collateral, args[1])
+			amount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidAmount
+			}
+
+			msg := types.NewMsgWithdrawRequest(ctx.FromAddress, id, amount)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
+
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
@@ -131,7 +147,7 @@ func txWithdraw() *cobra.Command {
 
 func txDrawDebt() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "draw [debt] [collateral-type]",
+		Use:   "draw [id] [amount]",
 		Short: "draw debt",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -141,12 +157,17 @@ func txDrawDebt() *cobra.Command {
 				return err
 			}
 
-			debt, err := sdk.ParseCoinNormalized(args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgDrawDebtRequest(ctx.FromAddress, args[1], debt)
+			amount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidAmount
+			}
+
+			msg := types.NewMsgDrawRequest(ctx.FromAddress, id, amount)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -159,7 +180,7 @@ func txDrawDebt() *cobra.Command {
 
 func txRepayDebt() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "repay [debt] [collateral-type]",
+		Use:   "repay [id] [amount]",
 		Short: "repay debt",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -169,12 +190,17 @@ func txRepayDebt() *cobra.Command {
 				return err
 			}
 
-			debt, err := sdk.ParseCoinNormalized(args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgRepayDebtRequest(ctx.FromAddress, args[1], debt)
+			amount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidAmount
+			}
+
+			msg := types.NewMsgRepayRequest(ctx.FromAddress, id, amount)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -185,10 +211,10 @@ func txRepayDebt() *cobra.Command {
 	return cmd
 }
 
-func txLiquidate() *cobra.Command {
+func txClose() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "liquidate [collateral-type]",
-		Short: "liquidate",
+		Use:   "close [id]",
+		Short: "close",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -197,7 +223,12 @@ func txLiquidate() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgLiquidateCDPRequest(ctx.FromAddress, args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgLiquidateRequest(ctx.FromAddress, id)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

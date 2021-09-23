@@ -1,5 +1,5 @@
 syntax = "proto3";
-package comdex.cdp.v1alpha1;
+package comdex.cdp.v1beta1;
 
 import "gogoproto/gogo.proto";
 
@@ -79,13 +79,13 @@ message MsgRepayRequest {
 
 message MsgRepayResponse {}
 
-message MsgLiquidateRequest {
+message MsgCloseRequest {
   string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 id   = 2
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
 }
 
-message MsgLiquidateResponse {}
+message MsgCloseResponse {}
 
 service MsgService {
   rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
@@ -93,5 +93,5 @@ service MsgService {
   rpc MsgWithdraw(MsgWithdrawRequest) returns (MsgWithdrawResponse);
   rpc MsgDraw(MsgDrawRequest) returns (MsgDrawResponse);
   rpc MsgRepay(MsgRepayRequest) returns (MsgRepayResponse);
-  rpc MsgLiquidate(MsgLiquidateRequest) returns (MsgLiquidateResponse);
+  rpc MsgClose(MsgCloseRequest) returns (MsgCloseResponse);
 }

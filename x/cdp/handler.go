@@ -30,8 +30,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgRepayRequest:
 			res, err := server.MsgRepay(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgLiquidateRequest:
-			res, err := server.MsgLiquidate(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgCloseRequest:
+			res, err := server.MsgClose(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)

@@ -16,7 +16,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&MsgWithdrawRequest{},
 		&MsgDrawRequest{},
 		&MsgRepayRequest{},
-		&MsgLiquidateRequest{},
+		&MsgCloseRequest{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)

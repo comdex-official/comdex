@@ -1,0 +1,74 @@
+syntax = "proto3";
+package comdex.cdp.v1beta1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package            = "github.com/comdex-official/comdex/x/cdp/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message CDPInfo{
+  uint64 id = 1;
+  uint64 pair_id = 2 [
+    (gogoproto.customname) = "PairID",
+    (gogoproto.moretags)   = "yaml:\"pair_id\""
+  ];
+  string owner     = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+
+  cosmos.base.v1beta1.Coin collateral = 4 [
+    (gogoproto.moretags) = "yaml:\"collateral\"",
+    (gogoproto.nullable) = false
+  ];
+
+  cosmos.base.v1beta1.Coin debt = 5 [
+    (gogoproto.moretags) = "yaml:\"debt\"",
+    (gogoproto.nullable) = false
+  ];
+
+  string collaterlization_ratio = 6 [
+    (gogoproto.moretags) = "yaml:\"collaterlization_ratio\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryCDPRequest {
+  uint64 id = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+}
+
+message QueryCDPResponse {
+  CDPInfo cdpInfo = 1[
+    (gogoproto.customname) = "CDPInfo",
+    (gogoproto.moretags)   = "yaml:\"cdpInfo\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message QueryCDPsRequest {
+  string owner    = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryCDPsResponse {
+  repeated CDPInfo cdpsInfo = 1 [
+    (gogoproto.customname) = "CDPsInfo",
+    (gogoproto.moretags)   = "yaml:\"cdpsInfo\"",
+    (gogoproto.nullable)   = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+service QueryService {
+  rpc QueryCDP(QueryCDPRequest) returns (QueryCDPResponse) {
+    option (google.api.http).get = "/comdex/cdp/v1beta1/cdps/{id}";
+  };
+
+  rpc QueryCDPs(QueryCDPsRequest) returns (QueryCDPsResponse) {
+    option (google.api.http).get = "/comdex/cdp/v1beta1/cdps/{owner}";
+  };
+}
