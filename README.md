@@ -48,4 +48,4 @@ Licensed under the [Apache v2 License](LICENSE).
 [![API Reference](https://godoc.org/github.com/comdex-official/comdex?status.svg)](https://godoc.org/github.com/comdex-official/comdex)
 [![GitHub](https://img.shields.io/github/license/comdex-official/comdex.svg)](https://github.com/comdex-official/comdex/blob/development/LICENSE)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ComdexOfficial?label=Follow&style=social)](https://twitter.com/ComdexOfficial)
-[![Discord Chat](https://img.shields.io/discord/.svg)](https://discord.com/invite/)
+[![Discord Chat](https://img.shields.io/discord/comdex.svg)](https://discord.gg/2ga9pSX56V)
