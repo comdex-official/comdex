@@ -19,7 +19,7 @@ linters-settings:
   gocyclo:
     min-complexity: 16
   goimports:
-    local-prefixes: github.com/sentinel-official/hub
+    local-prefixes: github.com/comdex-official/comdex
 
 linters:
   disable-all: true
