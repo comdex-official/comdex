@@ -29,7 +29,7 @@ make install
 
 ## Testnet
 
-For further information on joining the testnet, head over to the [testnet repo](https://github.com/comdex-official/comdex/testnet).
+For further information on joining the testnet, head over to the [testnet repo](https://comdex-official.github.io/docs/Node_testnet/).
 
 ## Docs
 
@@ -39,7 +39,7 @@ If you have technical questions or concerns, ask a developer or community member
 
 ## License
 
-Copyright © Comdex Pte Ltd. All rights reserved.
+Copyright © Comdex Technologies Pte Ltd. All rights reserved.
 
 Licensed under the [Apache v2 License](LICENSE).
 
