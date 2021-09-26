@@ -90,7 +90,7 @@ func TestNewMsgWithdrawRequest(t *testing.T) {
 		Amount         sdk.Int
 		expectPass     bool
 	}{
-		{"", addrs[0], 1, sdk.NewInt(100), true},
+		{"Msg Withdraw Request", addrs[0], 1, sdk.NewInt(100), true},
 		{"Invalid From", addrs[1], 1, sdk.NewInt(100), false},
 		{"Invalid ID", addrs[0], 0, sdk.NewInt(100), false},
 		{"Amount IsNil", addrs[0], 1, k, false},
