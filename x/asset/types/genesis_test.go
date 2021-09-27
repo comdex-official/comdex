@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-
 func TestNewGenesisState(t *testing.T) {
 	genesis := GenesisState{}.Assets
 	if genesis != nil {
@@ -22,10 +21,8 @@ func TestDefaultGenesisState(t *testing.T) {
 }
 
 func TestValidateGenesis(t *testing.T) {
-
 	err := ValidateGenesis(&GenesisState{
 		Assets:          nil,
-		Markets:         nil,
 		Pairs:           nil,
 		Params:          Params{},
 	})
