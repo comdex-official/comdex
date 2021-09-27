@@ -1,4 +1,4 @@
-# comdex-core-test-1
+# comdex-test-1
 > This is comdex test-net chain
 > GENESIS PUBLISHED
 > PEERS PUBLISHED
@@ -58,10 +58,10 @@ or
 * [Install](#installation-steps) comdex core application
 * Initialize node
 ```shell
-comdex init {{NODE_NAME}} --chain-id comdex-core-test-1
+comdex init {{NODE_NAME}} --chain-id comdex-test-1
 comdex add-genesis-account {{KEY_NAME}} 100000000000000ucmdx
 comdex gentx {{KEY_NAME}} 10000000ucmdx \
---chain-id comdex-core-test-1 \
+--chain-id comdex-test-1 \
 --moniker="{{VALIDATOR_NAME}}" \
 --commission-max-change-rate=0.01 \
 --commission-max-rate=1.0 \
@@ -72,14 +72,14 @@ comdex gentx {{KEY_NAME}} 10000000ucmdx \
 ```
 * Copy the contents of `${HOME}/.comdex/config/gentx/gentx-XXXXXXXX.json`.
 * Fork the [repository](https://github.com/comdex-official/comdex)
-* Create a file `gentx-{{VALIDATOR_NAME}}.json` under the test-core-1/gentxs folder in the forked repo, paste the copied text into the file. Find reference file gentx-examplexxxxxxxx.json in the same folder.
+* Create a file `gentx-{{VALIDATOR_NAME}}.json` under the comdex-test-1/gentxs folder in the forked repo, paste the copied text into the file. Find reference file gentx-examplexxxxxxxx.json in the same folder.
 * Run `comdex tendermint show-node-id` and copy your nodeID.
 * Run `ifconfig` or `curl ipinfo.io/ip` and copy your publicly reachable IP address.
-* Create a file `peers-{{VALIDATOR_NAME}}.json` under the test-core-1/peers folder in the forked repo, paste the copied text from the last two steps into the file. Find reference file peers-examplexxxxxxxx.json in the same folder.
+* Create a file `peers-{{VALIDATOR_NAME}}.json` under the comdex-test-1/peers folder in the forked repo, paste the copied text from the last two steps into the file. Find reference file peers-examplexxxxxxxx.json in the same folder.
 * Create a Pull Request to the `master` branch of the [repository](https://github.com/comdex-official/comdex/)
->**NOTE:** the Pull Request will be merged by the maintainers to confirm the inclusion of the validator at the genesis. The final genesis file will be published under the file comdex-core-test-1/final_genesis.json.
-* Replace the contents of your `${HOME}/.comdex/config/genesis.json` with that of test-core-1/final_genesis.json.
-* Add `persistent_peers` or `seeds` in `${HOME}/.comdex/config/config.toml` from test-core-1/final_peers.json.
+>**NOTE:** the Pull Request will be merged by the maintainers to confirm the inclusion of the validator at the genesis. The final genesis file will be published under the file comdex-test-1/final_genesis.json.
+* Replace the contents of your `${HOME}/.comdex/config/genesis.json` with that of comdex-test-1/genesis.json.
+* Add `persistent_peers` or `seeds` in `${HOME}/.comdex/config/config.toml` :: .
 * Start node
 ```shell
 comdex start
@@ -92,8 +92,8 @@ comdex start
 ```shell
 comdex init {{NODE_NAME}}
 ```
-* Replace the contents of your `${HOME}/.comdex/config/genesis.json` with that of test-core-1/final_genesis.json from the `master` branch of [repository](https://github.com/comdex-official/comdex).
-* Add `persistent_peers` or `seeds` in `${HOME}/.comdex/config/config.toml` from test-core-1/final_peers.json from the `master` branch of [repository](https://github.com/comdex-official/comdex).
+* Replace the contents of your `${HOME}/.comdex/config/genesis.json` with that of comdex-test-1/genesis.json from the `master` branch of [repository](https://github.com/comdex-official/comdex).
+* Add `persistent_peers` or `seeds` in `${HOME}/.comdex/config/config.toml` :: 
 * Start node
 ```shell
 comdex start
@@ -106,7 +106,7 @@ comdex tx staking create-validator \
 --from {{KEY_NAME}} \
 --amount XXXXXXXXucmdx \
 --pubkey comdexvalconspubXXXXXXXX
---chain-id test-core-1 \
+--chain-id comdex-test-1 \
 --moniker="{{VALIDATOR_NAME}}" \
 --commission-max-change-rate=0.01 \
 --commission-max-rate=1.0 \
