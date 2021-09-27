@@ -15,7 +15,7 @@ This mechanism essentially enables holders of crypto assets to take simultaneous
 
 ## Docs
 
-Comdex protocol and client documentation can be found in the [Comdex docs](https://comdex-official.github.io/docs).
+Comdex protocol and client documentation can be found in the [Comdex docs](https://docs.comdex.one).
 
 If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](https://discord.gg/zBEM4UFq9t).
 
@@ -37,7 +37,7 @@ make install
 
 For further information on joining the testnet, head over to the 
 [testnet directory](https://github.com/comdex-official/comdex/tree/updateDocs/testnet) OR
-[testnet docs](https://comdex-official.github.io/docs/Node_testnet/).
+[testnet docs](https://docs.comdex.one/Node_testnet/).
 
 ## License
 
