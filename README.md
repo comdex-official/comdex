@@ -35,7 +35,9 @@ make install
 
 ## Testnet
 
-For further information on joining the testnet, head over to the [testnet docs](https://comdex-official.github.io/docs/Node_testnet/).
+For further information on joining the testnet, head over to the 
+[testnet directory](https://github.com/comdex-official/comdex/testnet) OR
+[testnet docs](https://comdex-official.github.io/docs/Node_testnet/).
 
 ## License
 
