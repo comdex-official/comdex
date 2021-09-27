@@ -16,23 +16,11 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgAddMarketRequest:
-			res, err := server.MsgAddMarket(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgUpdateMarketRequest:
-			res, err := server.MsgUpdateMarket(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgAddAssetRequest:
 			res, err := server.MsgAddAsset(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgUpdateAssetRequest:
 			res, err := server.MsgUpdateAsset(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddMarketForAssetRequest:
-			res, err := server.MsgAddMarketForAsset(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgRemoveMarketForAssetRequest:
-			res, err := server.MsgRemoveMarketForAsset(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgAddPairRequest:
 			res, err := server.MsgAddPair(sdk.WrapSDKContext(ctx), msg)

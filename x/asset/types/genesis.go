@@ -1,9 +1,8 @@
 package types
 
-func NewGenesisState(assets []Asset, markets []Market, pairs []Pair, params Params) *GenesisState {
+func NewGenesisState(assets []Asset, pairs []Pair, params Params) *GenesisState {
 	return &GenesisState{
 		Assets:  assets,
-		Markets: markets,
 		Pairs:   pairs,
 		Params:  params,
 	}
@@ -11,7 +10,6 @@ func NewGenesisState(assets []Asset, markets []Market, pairs []Pair, params Para
 
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
-		nil,
 		nil,
 		nil,
 		DefaultParams(),

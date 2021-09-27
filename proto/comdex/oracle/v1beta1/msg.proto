@@ -1,0 +1,76 @@
+syntax = "proto3";
+package comdex.oracle.v1beta1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+import "ibc/core/client/v1/client.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/oracle/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MsgAddMarketRequest {
+    string from      = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+    string symbol    = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+    uint64 script_id = 3 [
+        (gogoproto.customname) = "ScriptID",
+        (gogoproto.moretags)   = "yaml:\"script_id\""
+    ];
+    uint64 id   = 4;
+}
+
+message MsgAddMarketResponse {}
+
+message MsgUpdateMarketRequest {
+    string from      = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+    string symbol    = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+    uint64 script_id = 3 [
+        (gogoproto.customname) = "ScriptID",
+        (gogoproto.moretags)   = "yaml:\"script_id\""
+    ];
+}
+
+message MsgUpdateMarketResponse {}
+
+message MsgRemoveMarketForAssetRequest {
+    string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+    uint64 id   = 2;
+    string symbol = 3 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+}
+
+message MsgRemoveMarketForAssetResponse {}
+
+message MsgFetchPriceRequest {
+    string from           = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+    string source_port    = 2 [ (gogoproto.moretags) = "yaml:\"source_port\"" ];
+    string source_channel = 3
+    [ (gogoproto.moretags) = "yaml:\"source_channel\"" ];
+    ibc.core.client.v1.Height timeout_height = 4 [
+        (gogoproto.moretags) = "yaml:\"timeout_height\"",
+        (gogoproto.nullable) = false
+    ];
+    uint64 timeout_timestamp = 5
+    [ (gogoproto.moretags) = "yaml:\"timeout_timestamp\"" ];
+    repeated string symbols = 6 [ (gogoproto.moretags) = "yaml:\"symbols\"" ];
+    uint64 script_id        = 7 [
+        (gogoproto.customname) = "ScriptID",
+        (gogoproto.moretags)   = "yaml:\"script_id\""
+    ];
+    repeated cosmos.base.v1beta1.Coin fee_limit = 8 [
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+        (gogoproto.moretags)     = "yaml:\"fee_limit\"",
+        (gogoproto.nullable)     = false
+    ];
+    uint64 prepare_gas = 9 [ (gogoproto.moretags) = "yaml:\"prepare_gas\"" ];
+    uint64 execute_gas = 10 [ (gogoproto.moretags) = "yaml:\"execute_gas\"" ];
+}
+
+message MsgFetchPriceResponse {}
+
+service MsgService {
+    rpc MsgAddMarket(MsgAddMarketRequest) returns (MsgAddMarketResponse);
+    rpc MsgUpdateMarket(MsgUpdateMarketRequest) returns (MsgUpdateMarketResponse);
+    rpc MsgRemoveMarketForAsset(MsgRemoveMarketForAssetRequest)
+            returns (MsgRemoveMarketForAssetResponse);
+    rpc MsgFetchPrice(MsgFetchPriceRequest) returns (MsgFetchPriceResponse);
+}

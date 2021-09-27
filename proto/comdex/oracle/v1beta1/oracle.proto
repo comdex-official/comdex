@@ -1,0 +1,25 @@
+syntax = "proto3";
+package comdex.oracle.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/oracle/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message Market {
+string symbol    = 1 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+uint64 script_id = 2 [
+(gogoproto.customname) = "ScriptID",
+(gogoproto.moretags)   = "yaml:\"script_id\""
+];
+}
+
+message Calldata {
+repeated string symbols = 1 [ (gogoproto.moretags) = "yaml:\"symbols\"" ];
+uint64 multiplier       = 2 [ (gogoproto.moretags) = "yaml:\"multiplier\"" ];
+}
+
+message Result {
+repeated uint64 rates = 1 [ (gogoproto.moretags) = "yaml:\"rates\"" ];
+}
