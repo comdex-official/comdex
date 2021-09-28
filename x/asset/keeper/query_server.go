@@ -88,7 +88,7 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 	}
 
 	var (
-		pairInfos []types.PairInfo
+		pairsInfo []types.PairInfo
 		ctx       = sdk.UnwrapSDKContext(c)
 	)
 
@@ -121,7 +121,7 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 			}
 
 			if accumulate {
-				pairInfos = append(pairInfos, pairInfo)
+				pairsInfo = append(pairsInfo, pairInfo)
 			}
 
 			return true, nil
@@ -133,7 +133,7 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 	}
 
 	return &types.QueryPairsResponse{
-		PairsInfo:  pairInfos,
+		PairsInfo:  pairsInfo,
 		Pagination: pagination,
 	}, nil
 }
