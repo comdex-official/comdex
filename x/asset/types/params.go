@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	DefaultAdmin = ""
+	DefaultAdmin = "comdex1pkkayn066msg6kn33wnl5srhdt3tnu2v9jjqu0"
 )
 
 var (
@@ -30,6 +30,10 @@ func DefaultParams() Params {
 	return NewParams(
 		DefaultAdmin,
 	)
+}
+
+func ParamKeyTable() paramstypes.KeyTable {
+	return paramstypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
 func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
