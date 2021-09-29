@@ -88,21 +88,40 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 	}
 
 	var (
-		items []types.Pair
-		ctx   = sdk.UnwrapSDKContext(c)
+		pairsInfo []types.PairInfo
+		ctx       = sdk.UnwrapSDKContext(c)
 	)
 
 	pagination, err := query.FilteredPaginate(
 		prefix.NewStore(q.Store(ctx), types.PairKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.Pair
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
+			var pair types.Pair
+			if err := q.cdc.Unmarshal(value, &pair); err != nil {
 				return false, err
 			}
 
+			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
+			if !found {
+				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
+			}
+
+			assetOut, found := q.GetAsset(ctx, pair.AssetOut)
+			if !found {
+				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
+			}
+
+			pairInfo := types.PairInfo{
+				Id:               pair.Id,
+				AssetIn:          pair.AssetIn,
+				DenomIn:          assetIn.Denom,
+				AssetOut:         pair.AssetOut,
+				DenomOut:         assetOut.Denom,
+				LiquidationRatio: pair.LiquidationRatio,
+			}
+
 			if accumulate {
-				items = append(items, item)
+				pairsInfo = append(pairsInfo, pairInfo)
 			}
 
 			return true, nil
@@ -114,7 +133,7 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 	}
 
 	return &types.QueryPairsResponse{
-		Pairs:      items,
+		PairsInfo:  pairsInfo,
 		Pagination: pagination,
 	}, nil
 }
@@ -124,17 +143,34 @@ func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) 
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetPair(ctx, req.Id)
+	pair, found := q.GetPair(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", req.Id)
 	}
 
+	assetIn, found := q.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
+	}
+
+	assetOut, found := q.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
+	}
+
+	pairInfo := types.PairInfo{
+		Id:               pair.Id,
+		AssetIn:          pair.AssetIn,
+		DenomIn:          assetIn.Denom,
+		AssetOut:         pair.AssetOut,
+		DenomOut:         assetOut.Denom,
+		LiquidationRatio: pair.LiquidationRatio,
+	}
+
 	return &types.QueryPairResponse{
-		Pair: item,
+		PairInfo: pairInfo,
 	}, nil
 }
 
