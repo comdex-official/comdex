@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	DefaultAdmin = "comdex1pkkayn066msg6kn33wnl5srhdt3tnu2v9jjqu0"
+	DefaultAdmin = ""
 )
 
 var (
@@ -41,28 +41,30 @@ func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(
 			KeyAdmin,
 			m.Admin,
-			func(v interface{}) error {
-				value, ok := v.(string)
-				if !ok {
-					return fmt.Errorf("invalid parameter type %T", v)
-				}
-
-				if value == "" {
-					return fmt.Errorf("admin cannot be empty")
-				}
-				if _, err := sdk.AccAddressFromBech32(value); err != nil {
-					return errors.Wrapf(err, "invalid admin %s", value)
-				}
-
-				return nil
-			},
+			validateAdmin,
 		),
 	}
 }
 
+func validateAdmin(v interface{}) error {
+	value, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type %T", v)
+	}
+
+	if value == "" {
+		return fmt.Errorf("admin cannot be empty1111")
+	}
+	if _, err := sdk.AccAddressFromBech32(value); err != nil {
+		return errors.Wrapf(err, "invalid admin %s", value)
+	}
+
+	return nil
+}
+
 func (m *Params) Validate() error {
 	if m.Admin == "" {
-		return fmt.Errorf("admin cannot be empty")
+		return fmt.Errorf("admin cannot be empty222")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
 		return errors.Wrapf(err, "invalid admin %s", m.Admin)
