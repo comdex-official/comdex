@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"github.com/comdex-official/comdex/app"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/vault/keeper"
 	types2 "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,6 +12,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
+	"math/big"
 	"testing"
 )
 type QueryTestSuite struct {
@@ -25,9 +27,11 @@ type QueryTestSuite struct {
 func (suite *QueryTestSuite) SetupTest() {
 	testApp := app.NewTestApp()
 	k := testApp.GetVaultKeeper()
+	ak := testApp.GetAssetKeeper()
 	ctx := testApp.NewContext(true, tmproto.Header{Height: 1, Time: tmtime.Now()})
 	suite.app = testApp
 	suite.keeper = k
+	suite.assetKeeper = ak
 	suite.ctx = ctx
 
 	return
@@ -47,6 +51,16 @@ func (suite *QueryTestSuite)TestQueryVaults() {
 	suite.keeper.SetVault(suite.ctx, vault)
 	_,err = queryserver.QueryVaults(sdk.WrapSDKContext(suite.ctx), &qvr )
 	suite.Error(err)
+	pair := assettypes.Pair{
+		Id:               1,
+		AssetIn:          1500000,
+		AssetOut:         1000000,
+		LiquidationRatio: sdk.NewDecFromBigInt(big.NewInt(150)),
+	}
+	suite.assetKeeper.SetPair(suite.ctx, pair)
+	_,err = queryserver.QueryVaults(sdk.WrapSDKContext(suite.ctx), &qvr )
+	suite.Error(err)
+
 }
 
 func (suite *QueryTestSuite)TestQueryVault() {
