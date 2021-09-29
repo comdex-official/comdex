@@ -258,7 +258,7 @@ func New(
 	app.paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
 	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
-	app.paramsKeeper.Subspace(assettypes.ModuleName).WithKeyTable(assettypes.ParamKeyTable())
+	app.paramsKeeper.Subspace(assettypes.ModuleName)
 	app.paramsKeeper.Subspace(oracletypes.ModuleName)
 
 	// set the BaseApp's parameter store
