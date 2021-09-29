@@ -53,7 +53,7 @@ func validateAdmin(v interface{}) error {
 	}
 
 	if value == "" {
-		return fmt.Errorf("admin cannot be empty1111")
+		return fmt.Errorf("admin cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(value); err != nil {
 		return errors.Wrapf(err, "invalid admin %s", value)
@@ -64,7 +64,7 @@ func validateAdmin(v interface{}) error {
 
 func (m *Params) Validate() error {
 	if m.Admin == "" {
-		return fmt.Errorf("admin cannot be empty222")
+		return fmt.Errorf("admin cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
 		return errors.Wrapf(err, "invalid admin %s", m.Admin)
