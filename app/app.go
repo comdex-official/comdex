@@ -133,7 +133,6 @@ var (
 		liquidity.AppModuleBasic{},
 		asset.AppModuleBasic{},
 		oracle.AppModuleBasic{},
-
 	)
 )
 
@@ -439,8 +438,6 @@ func New(
 		app.ibcKeeper.ChannelKeeper,
 		&app.ibcKeeper.PortKeeper,
 		app.scopedIBCKeeper,
-
-
 	)
 	/****  Module Options ****/
 
