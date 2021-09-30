@@ -15,18 +15,20 @@ type Keeper struct {
 	channel expected.ChannelKeeper
 	port    expected.PortKeeper
 	scoped  expected.ScopedKeeper
-	asset expected.AssetKeeper
+	asset   expected.AssetKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey,channel expected.ChannelKeeper,port expected.PortKeeper,scoped expected.ScopedKeeper, asset expected.AssetKeeper) *Keeper {
-	return &Keeper{
-		cdc: cdc,
-		key: key,
-		channel: channel,
-		port: port,
-		scoped: scoped,
-		asset: asset,
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, channel expected.ChannelKeeper,
+	port expected.PortKeeper, scoped expected.ScopedKeeper, asset expected.AssetKeeper) *Keeper {
 
+	return &Keeper{
+		cdc:     cdc,
+		key:     key,
+		params:  params,
+		channel: channel,
+		port:    port,
+		scoped:  scoped,
+		asset:   asset,
 	}
 }
 

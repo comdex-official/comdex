@@ -435,6 +435,7 @@ func New(
 	app.oracleKeeper = *oraclekeeper.NewKeeper(
 		app.cdc,
 		app.keys[oracletypes.StoreKey],
+		app.GetSubspace(oracletypes.ModuleName),
 		app.ibcKeeper.ChannelKeeper,
 		&app.ibcKeeper.PortKeeper,
 		app.scopedIBCKeeper,
