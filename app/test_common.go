@@ -2,6 +2,7 @@ package app
 
 import (
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	tmdb "github.com/tendermint/tm-db"
@@ -23,6 +24,6 @@ func NewTestApp() TestApp {
 	return TestApp{App: *app}
 }
 
-
 func (tApp TestApp) GetVaultKeeper() vaultkeeper.Keeper { return tApp.vaultKeeper }
 func (tApp TestApp) GetAssetKeeper() assetkeeper.Keeper { return tApp.assetKeeper }
+func (tApp TestApp) GetOracleKeeper() oraclekeeper.Keeper {return tApp.oracleKeeper}

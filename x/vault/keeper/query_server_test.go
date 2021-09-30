@@ -53,11 +53,31 @@ func (suite *QueryTestSuite)TestQueryVaults() {
 	suite.Error(err)
 	pair := assettypes.Pair{
 		Id:               1,
-		AssetIn:          1500000,
-		AssetOut:         1000000,
+		AssetIn:          2,
+		AssetOut:         3,
 		LiquidationRatio: sdk.NewDecFromBigInt(big.NewInt(150)),
 	}
 	suite.assetKeeper.SetPair(suite.ctx, pair)
+	_,err = queryserver.QueryVaults(sdk.WrapSDKContext(suite.ctx), &qvr )
+	suite.Error(err)
+
+	asset := assettypes.Asset{
+		Id:       2,
+		Name:     "Comdex",
+		Denom:    "ucmdx",
+		Decimals: 1000000,
+	}
+	suite.assetKeeper.SetAsset(suite.ctx, asset)
+	_,err = queryserver.QueryVaults(sdk.WrapSDKContext(suite.ctx), &qvr )
+	suite.Error(err)
+
+	asset = assettypes.Asset{
+		Id:       3,
+		Name:     "Comdex",
+		Denom:    "uuscx",
+		Decimals: 1000000,
+	}
+	suite.assetKeeper.SetAsset(suite.ctx, asset)
 	_,err = queryserver.QueryVaults(sdk.WrapSDKContext(suite.ctx), &qvr )
 	suite.Error(err)
 
@@ -75,4 +95,35 @@ func (suite *QueryTestSuite)TestQueryVault() {
 	suite.keeper.SetVault(suite.ctx, vault)
 	_,err = queryserver.QueryVault(sdk.WrapSDKContext(suite.ctx), &qvr )
 	suite.Error(err)
+
+	pair := assettypes.Pair{
+		Id:               1,
+		AssetIn:          2,
+		AssetOut:         3,
+		LiquidationRatio: sdk.NewDecFromBigInt(big.NewInt(150)),
+	}
+	suite.assetKeeper.SetPair(suite.ctx, pair)
+	_,err = queryserver.QueryVault(sdk.WrapSDKContext(suite.ctx), &qvr )
+	suite.Error(err)
+
+	asset := assettypes.Asset{
+		Id:       2,
+		Name:     "Comdex",
+		Denom:    "ucmdx",
+		Decimals: 1000000,
+	}
+	suite.assetKeeper.SetAsset(suite.ctx, asset)
+	_,err = queryserver.QueryVault(sdk.WrapSDKContext(suite.ctx), &qvr )
+	suite.Error(err)
+
+	asset = assettypes.Asset{
+		Id:       3,
+		Name:     "Comdex",
+		Denom:    "ucmdx",
+		Decimals: 1000000,
+	}
+	suite.assetKeeper.SetAsset(suite.ctx, asset)
+	_,err = queryserver.QueryVault(sdk.WrapSDKContext(suite.ctx), &qvr )
+	suite.Error(err)
+
 }

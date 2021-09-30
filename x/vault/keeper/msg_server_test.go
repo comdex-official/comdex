@@ -281,7 +281,6 @@ func (suite *MsgTestSuite) TestMsgDraw(){
 }
 
 func (suite *MsgTestSuite) TestMsgRepay(){
-	app.SetAccountAddressPrefixes()
 	msgServer := keeper.NewMsgServiceServer(suite.keeper)
 	msgRepayReq := types.MsgRepayRequest{
 		From:   "comdex1yples84d8avjlmegn90663mmjs4tardw45af6a",
@@ -346,18 +345,18 @@ func (suite *MsgTestSuite) TestMsgRepay(){
 		Denom:    "ucmdx",
 		Decimals: 1000000,
 	}
-	suite.assetKeeper.SetAssetID(suite.ctx, 3)
 	suite.assetKeeper.SetAsset(suite.ctx, asset)
 	_,err = msgServer.MsgRepay(sdk.WrapSDKContext(suite.ctx), &msgRepayReq)
 	suite.Error(err)
+	addr,_ := sdk.AccAddressFromBech32("comdex1yples84d8avjlmegn90663mmjs4tardw45af6v")
 
 	suite.keeper.MintCoin(suite.ctx, "vault",sdk.Coin{
 		Denom:  "ucmdx",
-		Amount: sdk.NewIntFromBigInt(big.NewInt(1000000)) ,
+		Amount: sdk.NewIntFromBigInt(big.NewInt(1000000000)) ,
 	})
-	suite.keeper.SendCoinFromModuleToAccount(suite.ctx,"vault", sdk.AccAddress("comdex1yples84d8avjlmegn90663mmjs4tardw45af6v"),sdk.Coin{
+	suite.keeper.SendCoinFromModuleToAccount(suite.ctx,"vault",addr,sdk.Coin{
 		Denom:  "ucmdx",
-		Amount: sdk.NewIntFromBigInt(big.NewInt(1000000)) ,
+		Amount: sdk.NewIntFromBigInt(big.NewInt(100000000)) ,
 	})
 
 	_,err = msgServer.MsgRepay(sdk.WrapSDKContext(suite.ctx), &msgRepayReq)
