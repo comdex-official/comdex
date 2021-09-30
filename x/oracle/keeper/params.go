@@ -6,11 +6,6 @@ import (
 	"github.com/comdex-official/comdex/x/oracle/types"
 )
 
-func (k *Keeper) Admin(ctx sdk.Context) (s string) {
-	k.params.Get(ctx, types.KeyAdmin, &s)
-	return
-}
-
 func (k *Keeper) IBCPort(ctx sdk.Context) (s string) {
 	k.params.Get(ctx, types.KeyIBCPort, &s)
 	return
@@ -42,7 +37,6 @@ func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) {
 
 func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
-		k.Admin(ctx),
 		types.NewIBCParams(
 			k.IBCPort(ctx),
 			k.IBCVersion(ctx),

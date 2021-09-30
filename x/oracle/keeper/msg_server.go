@@ -28,7 +28,7 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 
 func (k *msgServer) MsgRemoveMarketForAsset(c context.Context, msg *types.MsgRemoveMarketForAssetRequest) (*types.MsgRemoveMarketForAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.Admin(ctx) {
+	if msg.From != k.asset.GetAdmin(ctx) {
 		return nil, types.ErrorUnauthorized
 	}
 
@@ -42,7 +42,7 @@ func (k *msgServer) MsgRemoveMarketForAsset(c context.Context, msg *types.MsgRem
 
 func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketRequest) (*types.MsgAddMarketResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.Admin(ctx) {
+	if msg.From != k.asset.GetAdmin(ctx) {
 		return nil, types.ErrorUnauthorized
 	}
 
@@ -63,7 +63,7 @@ func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketReque
 
 func (k *msgServer) MsgUpdateMarket(c context.Context, msg *types.MsgUpdateMarketRequest) (*types.MsgUpdateMarketResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.Admin(ctx) {
+	if msg.From != k.asset.GetAdmin(ctx) {
 		return nil, types.ErrorUnauthorized
 	}
 

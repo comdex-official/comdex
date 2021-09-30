@@ -19,7 +19,6 @@ message OracleParams {
 }
 
 message Params {
-    string admin  = 1 [ (gogoproto.moretags) = "yaml:\"admin\"" ];
     IBCParams ibc = 2 [
         (gogoproto.customname) = "IBC",
         (gogoproto.moretags)   = "yaml:\"ibc\"",

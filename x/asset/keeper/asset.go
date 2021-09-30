@@ -146,3 +146,20 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 
 	return k.oracle.GetPriceForMarket(ctx, market.Symbol)
 }
+
+func (k *Keeper) GetAdmin(ctx sdk.Context) string {
+	var (
+		store = k.Store(ctx)
+		key   = types.KeyAdmin
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return ""
+	}
+
+	var id protobuftypes.StringValue
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}

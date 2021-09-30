@@ -23,3 +23,7 @@ type ScopedKeeper interface {
 	ClaimCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) error
 	GetCapability(ctx sdk.Context, name string) (*capabilitytypes.Capability, bool)
 }
+
+type AssetKeeper interface {
+	GetAdmin(ctx sdk.Context) string
+}
