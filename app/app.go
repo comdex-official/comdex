@@ -439,7 +439,7 @@ func New(
 		app.ibcKeeper.ChannelKeeper,
 		&app.ibcKeeper.PortKeeper,
 		app.scopedIBCKeeper,
-		&app.assetKeeper,
+		app.assetKeeper,
 	)
 	/****  Module Options ****/
 
