@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	DefaultAdmin = "comdex1pkkayn066msg6kn33wnl5srhdt3tnu2v9jjqu0"
+	DefaultAdmin = ""
 )
 
 var (
