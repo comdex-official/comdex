@@ -31,6 +31,10 @@ func NewIBCParams(port, version string) IBCParams {
 	}
 }
 
+func ParamKeyTable() paramstypes.KeyTable {
+	return paramstypes.NewKeyTable().RegisterParamSet(&Params{})
+}
+
 func DefaultIBCParams() IBCParams {
 	return NewIBCParams(
 		DefaultIBCPort,

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -21,6 +22,10 @@ type Keeper struct {
 
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, channel expected.ChannelKeeper,
 	port expected.PortKeeper, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper) *Keeper {
+
+	if !params.HasKeyTable() {
+		params = params.WithKeyTable(oracletypes.ParamKeyTable())
+	}
 
 	return &Keeper{
 		cdc:         cdc,
