@@ -184,8 +184,5 @@ func (m *Params) Validate() error {
 		return errors.Wrapf(err, "invalid ibc params")
 	}
 
-	if err := m.Oracle.Validate(); err != nil{
-		return errors.Wrapf(err, "invalid oracle params")
-	}
 	return nil
 }
