@@ -22,8 +22,6 @@ func TestDefaultGenesisState(t *testing.T) {
 
 func TestValidateGenesis(t *testing.T) {
 	err := ValidateGenesis(&GenesisState{
-		Assets:          nil,
-		Pairs:           nil,
 		Params:          Params{},
 	})
 	require.NoError(t, err)

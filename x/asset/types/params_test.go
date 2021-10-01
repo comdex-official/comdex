@@ -22,3 +22,4 @@ func TestDefaultParams(t *testing.T) {
 		t.Error()
 	}
 }
+
