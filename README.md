@@ -1,17 +1,15 @@
 <p align="center">
   <img src="./logo.svg" width="300">
 </p>
-<h3 align="center">Comdex :Democratizing Finance </h3>
+<h3 align="center">Democratizing Finance </h3>
 
 <div align="center">
 <h4> An ecosystem of solutions built with an aim of bridging DeFi & CeFi </h4>
 </div>
 
-Comdex is an ecosystem of solutions built to bridge the gap between DeFi & CeFi by creating synthetic representations of real-world assets.
-
-Investors holding a range of crypto assets can, on Comdex, collateralise and leverage their holdings to take exposure to synthetic assets. Users can lock-up their crypto holding in vaults and mint cAssets (synthetic assets on Comdex) which can be traded on a native exchange with other holders of cAssets.
-
-This mechanism essentially enables holders of crypto assets to take simultaneous “long” positions on their holdings and on other cAssets.
+Comdex is a decentralized synthetics protocol of the Persistence ecosystem.
+Users can collateralize their holdings from the Cosmos ecosystem to take exposure to a range of synthetic assets.
+Comdex builds solutions to democratize finance by giving investors exposure to a large range of asset classes.
 
 ## Docs
 

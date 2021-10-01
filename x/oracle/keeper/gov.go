@@ -9,7 +9,6 @@ import (
 func (k *Keeper) HandleUpdateAdminProposal(ctx sdk.Context, prop *types.UpdateAdminProposal) error {
 	params := k.GetParams(ctx)
 
-	params.Admin = prop.Address
 	k.SetParams(ctx, params)
 
 	return nil
