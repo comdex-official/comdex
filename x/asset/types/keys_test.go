@@ -1,37 +1,23 @@
 package types
 
 import (
-	"fmt"
+	"github.com/stretchr/testify/require"
 	"math/rand"
-	"reflect"
 	"testing"
 )
 
 func TestAssetKey(t *testing.T) {
-	keyMatch := AssetKey(uint64(rand.Int()))
-	var match []uint8
-	fmt.Printf("assetTest %T", keyMatch)
-	if reflect.TypeOf(keyMatch) != reflect.TypeOf(match){
-		t.Errorf("type misMatched")
-	}
-}
-
-func TestAssetForDenomKey(t *testing.T) {
-	keyMatch := AssetForDenomKey("AssetKey")
-	var match []uint8
-	fmt.Printf("denom key %T", keyMatch)
-	if reflect.TypeOf(keyMatch) != reflect.TypeOf(match){
-		t.Errorf("type misMatched")
-	}
+	key := AssetKey(uint64(rand.Int()))
+	id := len(key)
+	require.Equal(t, id,9)
 }
 
 func TestPairKey(t *testing.T) {
-	keyMatch := PairKey(uint64(rand.Int()))
-	var match []uint8
-	fmt.Printf("pair key %T", keyMatch)
-	if reflect.TypeOf(keyMatch) != reflect.TypeOf(match){
-		t.Errorf("type misMatched")
-	}
+	key := PairKey(uint64(rand.Int()))
+	id := len(key)
+	require.Equal(t, id,9)
 }
+
+
 
 
