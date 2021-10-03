@@ -17,7 +17,3 @@ func TestPairKey(t *testing.T) {
 	id := len(key)
 	require.Equal(t, id,9)
 }
-
-
-
-
