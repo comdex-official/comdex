@@ -13,13 +13,13 @@ Comdex builds solutions to democratize finance by giving investors exposure to a
 
 ## Docs
 
-Comdex protocol and client documentation can be found in the [Comdex docs](https://docs.comdex.one).
+Comdex protocol and client documentation can be found in the [Comdex Networks](https://github.com/comdex-official/networks).
 
 If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](hhttps://discord.gg/CNU5CSYdKc).
 
 ### Installation
 
-Requires [Go 1.16+](https://golang.org/dl/)
+Requires [Go 1.17+](https://golang.org/dl/)
 
 ### Linux
 
@@ -34,7 +34,7 @@ make install
 ## Testnet
 
 For further information on joining the testnet, head over to the 
-[testnet docs](https://docs.comdex.one/Node_testnet/).
+[Comdex Networks](https://github.com/comdex-official/networks/testnet).
 
 ## License
 
