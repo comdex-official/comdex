@@ -94,7 +94,7 @@ func txDeposit() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[2])
+			amount, ok := sdk.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
@@ -128,7 +128,7 @@ func txWithdraw() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[2])
+			amount, ok := sdk.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
@@ -162,7 +162,7 @@ func txDrawDebt() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[2])
+			amount, ok := sdk.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
@@ -195,7 +195,7 @@ func txRepayDebt() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[2])
+			amount, ok := sdk.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
