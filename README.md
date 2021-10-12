@@ -13,7 +13,7 @@ Comdex builds solutions to democratize finance by giving investors exposure to a
 
 ## Docs
 
-Comdex protocol and client documentation can be found in the [Comdex Networks](https://github.com/comdex-official/networks).
+We will be soon releasing out documentations.
 
 If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](hhttps://discord.gg/CNU5CSYdKc).
 
