@@ -13,9 +13,9 @@ Comdex builds solutions to democratize finance by giving investors exposure to a
 
 ## Docs
 
-Comdex protocol and client documentation can be found in the [Comdex Networks](https://github.com/comdex-official/networks).
+We will be soon releasing out documentations.
 
-If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](hhttps://discord.gg/CNU5CSYdKc).
+If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](https://discord.com/invite/7vjPvWKKMT).
 
 ### Installation
 
@@ -47,4 +47,4 @@ Licensed under the [Apache v2 License](LICENSE).
 [![API Reference](https://godoc.org/github.com/comdex-official/comdex?status.svg)](https://godoc.org/github.com/comdex-official/comdex)
 [![GitHub](https://img.shields.io/github/license/comdex-official/comdex.svg)](https://github.com/comdex-official/comdex/blob/development/LICENSE)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ComdexOfficial?label=Follow&style=social)](https://twitter.com/ComdexOfficial)
-[![Discord Chat](https://img.shields.io/badge/discord-chat-blue)](https://discord.gg/CNU5CSYdKc)
+[![Discord Chat](https://img.shields.io/badge/discord-chat-blue)](https://discord.com/invite/7vjPvWKKMT)
