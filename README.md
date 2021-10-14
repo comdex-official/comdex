@@ -34,7 +34,7 @@ make install
 ## Testnet
 
 For further information on joining the testnet, head over to the 
-[Comdex Networks](https://github.com/comdex-official/networks/testnet).
+[Comdex Networks](https://github.com/comdex-official/networks/).
 
 ## License
 
