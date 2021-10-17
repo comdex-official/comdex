@@ -6,15 +6,16 @@ WORKDIR /sources
 COPY go.* .
 
 # Install minimum necessary dependencies
-RUN apk add --no-cache make gcc libc-dev
+RUN apk add --no-cache make gcc libc-dev curl
 
-RUN make install
+RUN make install && curl -O https://raw.githubusercontent.com/comdex-official/networks/main/mainnet/genesis.json
 
 # ----------------------------
 
 FROM alpine:3.14
 
 COPY --from=builder /sources/build/ /usr/local/bin/
+COPY --from=builder /sources/genesis.json /data/.comdex/config/genesis.json
 
 RUN addgroup ucmdx && adduser -S -G ucmdx ucmdx -h /data
 
