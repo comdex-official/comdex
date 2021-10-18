@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/bandprotocol/bandchain-packet v0.0.2
-	github.com/cosmos/cosmos-sdk v0.44.1
+	github.com/cosmos/cosmos-sdk v0.44.2
 	github.com/cosmos/ibc-go v1.0.0
 	github.com/gin-gonic/gin v1.7.4 // indirect
 	github.com/gogo/protobuf v1.3.3
