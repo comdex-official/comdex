@@ -4,13 +4,13 @@ go 1.16
 
 require (
 	github.com/bandprotocol/bandchain-packet v0.0.2
-	github.com/cosmos/cosmos-sdk v0.44.1
-	github.com/cosmos/ibc-go v1.0.0
+	github.com/cosmos/cosmos-sdk v0.44.2
+	github.com/cosmos/ibc-go v1.2.2
 	github.com/gin-gonic/gin v1.7.4 // indirect
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
-	github.com/gravity-devs/liquidity v1.3.0
+	github.com/gravity-devs/liquidity v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cast v1.3.1
