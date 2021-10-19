@@ -212,6 +212,7 @@ github.com/coreos/go-systemd/v22 v22.3.2/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSV
 github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cosmos/cosmos-sdk v0.43.0/go.mod h1:ctcrTEAhei9s8O3KSNvL0dxe+fVQGp07QyRb/7H9JYE=
+github.com/cosmos/cosmos-sdk v0.44.0/go.mod h1:orG0jzFJ2KsDfzLd/X0JSOMzF4Oxc/BQz2GkcYF4gRE=
 github.com/cosmos/cosmos-sdk v0.44.2 h1:EWoj9h9Q9t7uqS3LyqzZWWwnSEodUJlYDMloDoPBD3Y=
 github.com/cosmos/cosmos-sdk v0.44.2/go.mod h1:fwQJdw+aECatpTvQTo1tSfHEsxACdZYU80QCZUPnHr4=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
@@ -316,6 +317,7 @@ github.com/gballet/go-libpcsclite v0.0.0-20190607065134-2772fd86a8ff/go.mod h1:x
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
 github.com/gin-contrib/sse v0.1.0/go.mod h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI=
+github.com/gin-gonic/gin v1.6.3 h1:ahKqKTFpO5KTPHxWZjEdPScmYaGtLo8Y4DMHoEsnp14=
 github.com/gin-gonic/gin v1.6.3/go.mod h1:75u5sXoLsGZoRN5Sgbi1eraJ4GU3++wFwWzhwvtwp4M=
 github.com/gin-gonic/gin v1.7.4 h1:QmUZXrvJ9qZ3GfWvQ+2wnW/1ePrTEJqPKMYEU3lD/DM=
 github.com/gin-gonic/gin v1.7.4/go.mod h1:jD2toBW3GZUr5UMcdrwQA10I7RuaFOl/SGeDjXkfUtY=
@@ -500,6 +502,8 @@ github.com/gotestyourself/gotestyourself v2.2.0+incompatible/go.mod h1:zZKM6oeNM
 github.com/graph-gophers/graphql-go v0.0.0-20191115155744-f33e81362277/go.mod h1:9CQHMSxwO4MprSdzoIEobiHpoLtHm77vfxsvsIN5Vuc=
 github.com/gravity-devs/liquidity v1.3.0 h1:91n+NK37/40RHR7KZnmU542MwHxfxCtf5RESV9dieoU=
 github.com/gravity-devs/liquidity v1.3.0/go.mod h1:s6OIsYvW4Tvn7tHdSddalPFMmaddkcuYoY7lQcc55VM=
+github.com/gravity-devs/liquidity v1.4.0 h1:v61DU8YooC84jS8NQ2YVwgq9wIwYFMpFA4h15yrXlig=
+github.com/gravity-devs/liquidity v1.4.0/go.mod h1:jNsP6O6PS8ROvpP65p25mLmtW/z8J4rbgO5YTEKVYHk=
 github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79/go.mod h1:FecbI9+v66THATjSRHfNgh1IVFe/9kFxbXtjV0ctIMA=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.0/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=
@@ -1013,6 +1017,7 @@ github.com/tendermint/tendermint v0.34.0-rc6/go.mod h1:ugzyZO5foutZImv0Iyx/gOFCX
 github.com/tendermint/tendermint v0.34.0/go.mod h1:Aj3PIipBFSNO21r+Lq3TtzQ+uKESxkbA3yo/INM4QwQ=
 github.com/tendermint/tendermint v0.34.10/go.mod h1:aeHL7alPh4uTBIJQ8mgFEE8VwJLXI1VD3rVOmH2Mcy0=
 github.com/tendermint/tendermint v0.34.11/go.mod h1:aeHL7alPh4uTBIJQ8mgFEE8VwJLXI1VD3rVOmH2Mcy0=
+github.com/tendermint/tendermint v0.34.12/go.mod h1:aeHL7alPh4uTBIJQ8mgFEE8VwJLXI1VD3rVOmH2Mcy0=
 github.com/tendermint/tendermint v0.34.13 h1:fu+tsHudbOr5PvepjH0q47Jae59hQAvn3IqAHv2EbC8=
 github.com/tendermint/tendermint v0.34.13/go.mod h1:6RVVRBqwtKhA+H59APKumO+B7Nye4QXSFc6+TYxAxCI=
 github.com/tendermint/tm-db v0.6.2/go.mod h1:GYtQ67SUvATOcoY8/+x6ylk8Qo02BQyLrAs+yAcLvGI=
