@@ -190,6 +190,7 @@ type App struct {
 	// make scoped keepers public for test purposes
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
+	scopedIBCOracleKeeper capabilitykeeper.ScopedKeeper
 
 	assetKeeper     assetkeeper.Keeper
 	vaultKeeper     vaultkeeper.Keeper
@@ -279,6 +280,7 @@ func New(
 	var (
 		scopedIBCKeeper      = app.capabilityKeeper.ScopeToModule(ibchost.ModuleName)
 		scopedTransferKeeper = app.capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+		scopedIBCOracleKeeper = app.capabilityKeeper.ScopeToModule(oracletypes.ModuleName)
 	)
 
 	// add keepers
@@ -379,36 +381,6 @@ func New(
 		govRouter,
 	)
 
-	// Create Transfer Keepers
-	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
-		app.cdc,
-		app.keys[ibctransfertypes.StoreKey],
-		app.GetSubspace(ibctransfertypes.ModuleName),
-		app.ibcKeeper.ChannelKeeper,
-		&app.ibcKeeper.PortKeeper,
-		app.accountKeeper,
-		app.bankKeeper,
-		scopedTransferKeeper,
-	)
-
-	var (
-		evidenceRouter = evidencetypes.NewRouter()
-		ibcRouter      = ibcporttypes.NewRouter()
-		transferModule = ibctransfer.NewAppModule(app.ibcTransferKeeper)
-	)
-
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-	app.ibcKeeper.SetRouter(ibcRouter)
-
-	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
-	app.evidenceKeeper = *evidencekeeper.NewKeeper(
-		app.cdc,
-		app.keys[evidencetypes.StoreKey],
-		&app.stakingKeeper,
-		app.slashingKeeper,
-	)
-	app.evidenceKeeper.SetRouter(evidenceRouter)
-
 	app.assetKeeper = assetkeeper.NewKeeper(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
@@ -438,9 +410,42 @@ func New(
 		app.GetSubspace(oracletypes.ModuleName),
 		app.ibcKeeper.ChannelKeeper,
 		&app.ibcKeeper.PortKeeper,
-		app.scopedIBCKeeper,
+		scopedIBCOracleKeeper,
 		app.assetKeeper,
 	)
+	// Create Transfer Keepers
+	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
+		app.cdc,
+		app.keys[ibctransfertypes.StoreKey],
+		app.GetSubspace(ibctransfertypes.ModuleName),
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		app.accountKeeper,
+		app.bankKeeper,
+		scopedTransferKeeper,
+	)
+
+	var (
+		evidenceRouter = evidencetypes.NewRouter()
+		ibcRouter      = ibcporttypes.NewRouter()
+		transferModule = ibctransfer.NewAppModule(app.ibcTransferKeeper)
+		oracleModule = oracle.NewAppModule(app.cdc,app.oracleKeeper)
+	)
+
+	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
+	ibcRouter.AddRoute(oracletypes.ModuleName, oracleModule )
+	app.ibcKeeper.SetRouter(ibcRouter)
+
+	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
+	app.evidenceKeeper = *evidencekeeper.NewKeeper(
+		app.cdc,
+		app.keys[evidencetypes.StoreKey],
+		&app.stakingKeeper,
+		app.slashingKeeper,
+	)
+	app.evidenceKeeper.SetRouter(evidenceRouter)
+
+
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -471,7 +476,7 @@ func New(
 		vault.NewAppModule(app.cdc, app.vaultKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
 		asset.NewAppModule(app.cdc, app.assetKeeper),
-		oracle.NewAppModule(app.cdc, app.oracleKeeper),
+		oracleModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -507,6 +512,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		assettypes.ModuleName,
 		vaulttypes.ModuleName,
+		oracletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
@@ -556,6 +562,7 @@ func New(
 
 	app.scopedIBCKeeper = scopedIBCKeeper
 	app.scopedIBCTransferKeeper = scopedTransferKeeper
+	app.scopedIBCOracleKeeper = scopedIBCOracleKeeper
 
 	return app
 }

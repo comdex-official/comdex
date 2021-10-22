@@ -151,12 +151,9 @@ func ValidateAssetChannelParams(
 	ctx sdk.Context,
 	keeper keeper.Keeper,
 	order ibcchanneltypes.Order,
-	portID, channelID, channelVersion string,
+	portID, channelID, Version string,
 ) error {
-	version := keeper.IBCVersion(ctx)
-	if channelVersion != version {
-		return types.ErrorInvalidVersion
-	}
+	Version = "bandchain-1"
 
 	port := keeper.IBCPort(ctx)
 	if portID != port {
@@ -227,10 +224,8 @@ func (a AppModule) OnChanOpenAck(
 	ctx sdk.Context,
 	_, _, counterpartyVersion string,
 ) error {
-	version := a.keeper.IBCVersion(ctx)
-	if counterpartyVersion != version {
-		return types.ErrorInvalidVersion
-	}
+	version := "bandchain-1"
+	counterpartyVersion = version
 
 	return nil
 }
@@ -265,6 +260,7 @@ func (a AppModule) OnRecvPacket(
 		res bandpacket.OracleResponsePacketData
 		ack = ibcchanneltypes.NewResultAcknowledgement([]byte{0x01})
 	)
+	ack = ibcchanneltypes.NewErrorAcknowledgement("err.Error()")
 
 	if err := a.cdc.UnmarshalJSON(packet.GetData(), &res); err != nil {
 		ack = ibcchanneltypes.NewErrorAcknowledgement(err.Error())

@@ -19,7 +19,9 @@ var (
 	ErrorDuplicateVault                = errors.Register(ModuleName, 204, "duplicate vault")
 	ErrorInvalidCollateralizationRatio = errors.Register(ModuleName, 205, "invalid collateralization ratio")
 	ErrorPairDoesNotExist              = errors.Register(ModuleName, 206, "pair does not exist")
-	ErrorPriceDoesNotExist             = errors.Register(ModuleName, 207, "price does not exist")
+	ErrorPriceInDoesNotExist           = errors.Register(ModuleName, 207, "price in does not exist")
+	ErrorPriceOutDoesNotExist          = errors.Register(ModuleName, 208, "price out does not exist")
+
 )
 
 var (

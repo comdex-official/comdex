@@ -15,6 +15,15 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 	k.SetParams(ctx, state.Params)
 
+	portId:= k.IBCPort(ctx)
+
+	if !k.IsBound(ctx, portId) {
+
+		err := k.BindPort(ctx, portId)
+		if err != nil {
+			panic("could not claim port capability: " + err.Error())
+		}
+	}
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {

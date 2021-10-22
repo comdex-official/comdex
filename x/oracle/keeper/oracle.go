@@ -9,7 +9,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/oracle/types"
 )
 
@@ -230,19 +229,18 @@ func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePack
 			k.SetPriceForMarket(ctx, calldata.Symbols[i], result.Rates[i])
 		}
 	}
-
 	k.DeleteCalldata(ctx, id)
 	return nil
 }
 
-func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
+/*func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
 	var (
 		store = k.Store(ctx)
 		key   = assettypes.AssetKey(id)
 	)
 
 	return store.Has(key)
-}
+}*/
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	market, found := k.GetMarketForAsset(ctx, id)
