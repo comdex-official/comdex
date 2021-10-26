@@ -26,7 +26,7 @@ benchmark:
 clean:
 	rm -rf ./bin ./vendor
 
-all: verify build
+all: verify build install
 
 install:
 ifeq (${OS},Windows_NT)
