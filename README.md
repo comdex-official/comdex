@@ -24,10 +24,10 @@ Requires [Go 1.17+](https://golang.org/dl/)
 ### Linux
 
 ```shell
-mkdir -p ${GOPATH}/src/github.com/comdex-official && \
-cd ${GOPATH}/src/github.com/comdex-official && \
-git clone https://github.com/comdex-official/comdex.git && \
+mkdir -p ${GOPATH}/src/github.com/comdex-official/comdex/ && \
 cd ${GOPATH}/src/github.com/comdex-official/comdex/ && \
+git clone https://github.com/comdex-official/comdex.git && \
+cd ${GOPATH}/src/github.com/comdex-official/comdex/comdex/ && \
 make install
 ```
 
