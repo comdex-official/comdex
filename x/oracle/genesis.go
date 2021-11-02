@@ -13,6 +13,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetMarket(ctx, item)
 	}
 
+	k.SetParams(ctx, state.Params)
+
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {

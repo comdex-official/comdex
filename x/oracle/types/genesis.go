@@ -3,6 +3,7 @@ package types
 func NewGenesisState(markets []Market, params Params) *GenesisState {
 	return &GenesisState{
 		Markets: markets,
+		Params:  params,
 	}
 }
 

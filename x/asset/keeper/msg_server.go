@@ -93,7 +93,7 @@ func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) 
 	}
 
 	var (
-		id   = k.GetAssetID(ctx)
+		id   = k.GetPairID(ctx)
 		pair = types.Pair{
 			Id:               id + 1,
 			AssetIn:          msg.AssetIn,
