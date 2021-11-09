@@ -17,6 +17,11 @@ tags:
     externalDocs:
       description: Find out more
       url: http://comdex.one
+  - name: Oracle
+    description: Everything about Oracle
+    externalDocs:
+      description: Find out more
+      url: http://comdex.one
 paths:
   /comdex/asset/v1beta1/assets:
     get:
@@ -134,6 +139,80 @@ paths:
           description: Message for an unexpected error.
           schema:
             type: object
+  /comdex/oracle/v1beta1/markets:
+    get:
+      description: Get list of all available Markets
+      consumes:
+        - text/plain
+      produces:
+        - application/json
+      tags:
+        - Oracle
+      summary: Available Markets
+      parameters: []
+      responses:
+        '200':
+          description: Message for a successful request.
+          schema:
+            $ref: '#/definitions/oracle.markets.queryResponse.all'
+        default:
+          description: Message for an unexpected error.
+          schema:
+            $ref: '#/definitions/oracle.markets.queryResponse.all'
+  /comdex/oracle/v1beta1/markets/{marketSymbol}:
+    get:
+      description: Search for any market by using market symbol
+      consumes:
+        - text/plain
+      produces:
+        - application/json
+      tags:
+        - Oracle
+      summary: Search for market by market symbol
+      parameters:
+        - type: string
+          description: Symbol
+          name: marketSymbol
+          in: path
+          required: true
+      responses:
+        '200':
+          description: Message for a successful search.
+          schema:
+            $ref: '#/definitions/oracle.market.queryResponse.one.success'
+        default:
+          description: Message for an unexpected error.
+          schema:
+            $ref: '#/definitions/oracle.market.queryResponse.one.failed'
+  /comdex/oracle/v1beta1/params:
+    get:
+      description: Params
+      consumes:
+        - text/plain
+      produces:
+        - application/json
+      tags:
+        - Oracle
+      summary: Params
+      parameters: []
+      responses:
+        '200':
+          description: Message for a successful request.
+          schema:
+            type: object
+        default:
+          description: Message for an unexpected error.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  $ref: '#/definitions/helpers.Mappable'
 definitions:
   assets.asset.queryResponse.all:
     type: object
@@ -195,6 +274,36 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/helpers.Mappable'
+  oracle.markets.queryResponse.all:
+    type: object
+    properties:
+      markets:
+        type: array
+        items:
+          $ref: '#/definitions/helpers.marketObject'
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+          total:
+            type: integer
+  oracle.market.queryResponse.one.success:
+    type: object
+    properties:
+      market:
+        $ref: '#/definitions/helpers.marketObject'
+  oracle.market.queryResponse.one.failed:
+    type: object
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      details:
+        type: array
+        items:
+          $ref: '#/definitions/helpers.Mappable'
   helpers.assetObject:
     type: object
     properties:
@@ -220,6 +329,13 @@ definitions:
       denom_out:
         type: string
       liquidation_ratio:
+        type: string
+  helpers.marketObject:
+    type: object
+    properties:
+      symbol:
+        type: string
+      script_id:
         type: string
   helpers.Mappable:
     type: object
