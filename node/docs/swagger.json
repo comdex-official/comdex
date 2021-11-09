@@ -1,0 +1,112 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "description": "API Documentation of Comdex custom modules",
+      "title": "Comdex Swagger Documentation",
+      "contact": {},
+      "license": {
+        "name": "Apache 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+      },
+      "version": "0.1.0"
+    },
+    "host": "localhost:1317",
+    "schemes": [
+      "http",
+      "https"
+    ],
+    "tags": [
+      {
+        "name": "Assets",
+        "description": "Everything about Assets",
+        "externalDocs": {
+          "description": "Find out more",
+          "url": "http://comdex.one"
+        }
+      }
+    ],
+    "paths": {
+      "/comdex/asset/v1beta1/assets/{assetId}": {
+        "get": {
+          "description": "Unique identifier of an asset.",
+          "consumes": [
+            "text/plain"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Assets"
+          ],
+          "summary": "Search for an asset by Asset ID",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "Asset ID",
+              "name": "assetId",
+              "in": "path",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Message for a successful search.",
+              "schema": {
+                "$ref": "#/definitions/asset.queryResponse.success"
+              }
+            },
+            "default": {
+              "description": "Message for an unexpected error.",
+              "schema": {
+                "$ref": "#/definitions/asset.queryResponse.failed"
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "asset.queryResponse.success": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "denom": {
+                "type": "string"
+              },
+              "decimals": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "asset.queryResponse.failed": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/helpers.Mappable"
+            }
+          }
+        }
+      },
+      "helpers.Mappable": {
+        "type": "object"
+      }
+    }
+  }
