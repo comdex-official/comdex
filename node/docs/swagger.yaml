@@ -18,9 +18,29 @@ tags:
       description: Find out more
       url: http://comdex.one
 paths:
+  /comdex/asset/v1beta1/assets:
+    get:
+      description: Get list of all available Assets
+      consumes:
+        - text/plain
+      produces:
+        - application/json
+      tags:
+        - Assets
+      summary: Available Assets
+      parameters: []
+      responses:
+        '200':
+          description: Message for a successful request.
+          schema:
+            $ref: '#/definitions/assets.asset.queryResponse.all'
+        default:
+          description: Message for an unexpected error.
+          schema:
+            $ref: '#/definitions/assets.asset.queryResponse.all'
   /comdex/asset/v1beta1/assets/{assetId}:
     get:
-      description: Unique identifier of an asset.
+      description: Search for any assets by using assetId
       consumes:
         - text/plain
       produces:
@@ -38,27 +58,103 @@ paths:
         '200':
           description: Message for a successful search.
           schema:
-            $ref: '#/definitions/asset.queryResponse.success'
+            $ref: '#/definitions/assets.asset.queryResponse.one.success'
         default:
           description: Message for an unexpected error.
           schema:
-            $ref: '#/definitions/asset.queryResponse.failed'
+            $ref: '#/definitions/assets.asset.queryResponse.one.failed'
+  /comdex/asset/v1beta1/pairs:
+    get:
+      description: Get list of all available Pairs
+      consumes:
+        - text/plain
+      produces:
+        - application/json
+      tags:
+        - Assets
+      summary: Available Pairs
+      parameters: []
+      responses:
+        '200':
+          description: Message for a successful request.
+          schema:
+            $ref: '#/definitions/assets.pair.queryResponse.all'
+        default:
+          description: Message for an unexpected error.
+          schema:
+            $ref: '#/definitions/assets.pair.queryResponse.all'
+  /comdex/asset/v1beta1/pairs/{pairId}:
+    get:
+      description: Search for any assets by using assetId
+      consumes:
+        - text/plain
+      produces:
+        - application/json
+      tags:
+        - Assets
+      summary: Search for pair by pair ID
+      parameters:
+        - type: string
+          description: Pair ID
+          name: pairId
+          in: path
+          required: true
+      responses:
+        '200':
+          description: Message for a successful search.
+          schema:
+            $ref: '#/definitions/assets.pair.queryResponse.one.success'
+        default:
+          description: Message for an unexpected error.
+          schema:
+            $ref: '#/definitions/assets.pair.queryResponse.one.failed'
+  /comdex/asset/v1beta1/params:
+    get:
+      description: Params
+      consumes:
+        - text/plain
+      produces:
+        - application/json
+      tags:
+        - Assets
+      summary: Params
+      parameters: []
+      responses:
+        '200':
+          description: Message for a successful request.
+          schema:
+            type: object
+            properties:
+              params:
+                type: object
+                properties:
+                  admin:
+                    type: string
+        default:
+          description: Message for an unexpected error.
+          schema:
+            type: object
 definitions:
-  asset.queryResponse.success:
+  assets.asset.queryResponse.all:
+    type: object
+    properties:
+      assets:
+        type: array
+        items:
+          $ref: '#/definitions/helpers.assetObject'
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+          total:
+            type: integer
+  assets.asset.queryResponse.one.success:
     type: object
     properties:
       asset:
-        type: object
-        properties:
-          id:
-            type: string
-          name:
-            type: string
-          denom:
-            type: string
-          decimals:
-            type: string
-  asset.queryResponse.failed:
+        $ref: '#/definitions/helpers.assetObject'
+  assets.asset.queryResponse.one.failed:
     type: object
     properties:
       code:
@@ -69,5 +165,61 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/helpers.Mappable'
+  assets.pair.queryResponse.all:
+    type: object
+    properties:
+      pairInfo:
+        type: array
+        items:
+          $ref: '#/definitions/helpers.pairObject'
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+          total:
+            type: integer
+  assets.pair.queryResponse.one.success:
+    type: object
+    properties:
+      pairInfo:
+        $ref: '#/definitions/helpers.pairObject'
+  assets.pair.queryResponse.one.failed:
+    type: object
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      details:
+        type: array
+        items:
+          $ref: '#/definitions/helpers.Mappable'
+  helpers.assetObject:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      denom:
+        type: string
+      decimals:
+        type: string
+  helpers.pairObject:
+    type: object
+    properties:
+      id:
+        type: string
+      asset_in:
+        type: string
+      denom_in:
+        type: string
+      asset_out:
+        type: string
+      denom_out:
+        type: string
+      liquidation_ratio:
+        type: string
   helpers.Mappable:
     type: object
