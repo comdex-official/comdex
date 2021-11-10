@@ -22,10 +22,44 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		QueryAllVaults(),
 		QueryVault(),
 		QueryVaults(),
 	)
 
+	return cmd
+}
+
+func QueryAllVaults() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vaults",
+		Short: "list of all vaults available",
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryAllVaults(cmd.Context(), &types.QueryAllVaultsRequest{
+				Pagination: pagination,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }
 
