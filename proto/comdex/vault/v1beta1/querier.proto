@@ -80,7 +80,7 @@ message QueryAllVaultsResponse {
 
 service QueryService {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vault/{id}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
   };
 
   rpc QueryVaults(QueryVaultsRequest) returns (QueryVaultsResponse) {
