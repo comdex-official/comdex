@@ -64,7 +64,7 @@ message QueryVaultsResponse {
 }
 
 message QueryAllVaultsRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 

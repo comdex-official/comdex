@@ -17,7 +17,7 @@
     ],
     "tags": [
         {
-            "name": "Assets",
+            "name": "Asset",
             "description": "Everything about Assets",
             "externalDocs": {
                 "description": "Find out more",
@@ -27,6 +27,14 @@
         {
             "name": "Oracle",
             "description": "Everything about Oracle",
+            "externalDocs": {
+                "description": "Find out more",
+                "url": "http://comdex.one"
+            }
+        },
+        {
+            "name": "Vault",
+            "description": "Everything about Vault",
             "externalDocs": {
                 "description": "Find out more",
                 "url": "http://comdex.one"
@@ -44,7 +52,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Assets"
+                    "Asset"
                 ],
                 "summary": "Available Assets",
                 "parameters": [],
@@ -58,7 +66,7 @@
                     "default": {
                         "description": "Message for an unexpected error.",
                         "schema": {
-                            "$ref": "#/definitions/assets.asset.queryResponse.all"
+                            "$ref": "#/definitions/helpers.errorObject"
                         }
                     }
                 }
@@ -74,7 +82,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Assets"
+                    "Asset"
                 ],
                 "summary": "Search for an asset by Asset ID",
                 "parameters": [
@@ -96,7 +104,7 @@
                     "default": {
                         "description": "Message for an unexpected error.",
                         "schema": {
-                            "$ref": "#/definitions/assets.asset.queryResponse.one.failed"
+                            "$ref": "#/definitions/helpers.errorObject"
                         }
                     }
                 }
@@ -112,7 +120,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Assets"
+                    "Asset"
                 ],
                 "summary": "Available Pairs",
                 "parameters": [],
@@ -126,7 +134,7 @@
                     "default": {
                         "description": "Message for an unexpected error.",
                         "schema": {
-                            "$ref": "#/definitions/assets.pair.queryResponse.all"
+                            "$ref": "#/definitions/helpers.errorObject"
                         }
                     }
                 }
@@ -142,7 +150,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Assets"
+                    "Asset"
                 ],
                 "summary": "Search for pair by pair ID",
                 "parameters": [
@@ -164,7 +172,7 @@
                     "default": {
                         "description": "Message for an unexpected error.",
                         "schema": {
-                            "$ref": "#/definitions/assets.pair.queryResponse.one.failed"
+                            "$ref": "#/definitions/helpers.errorObject"
                         }
                     }
                 }
@@ -180,7 +188,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Assets"
+                    "Asset"
                 ],
                 "summary": "Params",
                 "parameters": [],
@@ -204,7 +212,7 @@
                     "default": {
                         "description": "Message for an unexpected error.",
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/helpers.errorObject"
                         }
                     }
                 }
@@ -234,7 +242,7 @@
                     "default": {
                         "description": "Message for an unexpected error.",
                         "schema": {
-                            "$ref": "#/definitions/oracle.markets.queryResponse.all"
+                            "$ref": "#/definitions/helpers.errorObject"
                         }
                     }
                 }
@@ -272,7 +280,7 @@
                     "default": {
                         "description": "Message for an unexpected error.",
                         "schema": {
-                            "$ref": "#/definitions/oracle.market.queryResponse.one.failed"
+                            "$ref": "#/definitions/helpers.errorObject"
                         }
                     }
                 }
@@ -302,21 +310,75 @@
                     "default": {
                         "description": "Message for an unexpected error.",
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "code": {
-                                    "type": "integer"
-                                },
-                                "message": {
-                                    "type": "string"
-                                },
-                                "details": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/definitions/helpers.Mappable"
-                                    }
-                                }
-                            }
+                            "$ref": "#/definitions/helpers.errorObject"
+                        }
+                    }
+                }
+            }
+        },
+        "/comdex/vault/v1beta1/vaults": {
+            "get": {
+                "description": "Get list of all available vaults",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vault"
+                ],
+                "summary": "Available Vaults",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Message for a successful request.",
+                        "schema": {
+                            "$ref": "#/definitions/vault.vaults.queryResponse.all"
+                        }
+                    },
+                    "default": {
+                        "description": "Message for an unexpected error.",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.errorObject"
+                        }
+                    }
+                }
+            }
+        },
+        "/comdex/vault/v1beta1/vaults/{vaultId}": {
+            "get": {
+                "description": "Search for any vault by using vaultId",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vault"
+                ],
+                "summary": "Search for an vault by Vault ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vault ID",
+                        "name": "vaultId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Message for a successful search.",
+                        "schema": {
+                            "$ref": "#/definitions/vault.vaults.queryResponse.one.success"
+                        }
+                    },
+                    "default": {
+                        "description": "Message for an unexpected error.",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.errorObject"
                         }
                     }
                 }
@@ -354,23 +416,6 @@
                 }
             }
         },
-        "assets.asset.queryResponse.one.failed": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "details": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/helpers.Mappable"
-                    }
-                }
-            }
-        },
         "assets.pair.queryResponse.all": {
             "type": "object",
             "properties": {
@@ -398,23 +443,6 @@
             "properties": {
                 "pairInfo": {
                     "$ref": "#/definitions/helpers.pairObject"
-                }
-            }
-        },
-        "assets.pair.queryResponse.one.failed": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "details": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/helpers.Mappable"
-                    }
                 }
             }
         },
@@ -448,20 +476,33 @@
                 }
             }
         },
-        "oracle.market.queryResponse.one.failed": {
+        "vault.vaults.queryResponse.all": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "details": {
+                "vaultsInfo": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/helpers.Mappable"
+                        "$ref": "#/definitions/helpers.vaultObject"
                     }
+                },
+                "pagination": {
+                    "type": "object",
+                    "properties": {
+                        "next_key": {
+                            "type": "string"
+                        },
+                        "total": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "vault.vaults.queryResponse.one.success": {
+            "type": "object",
+            "properties": {
+                "vaultInfo": {
+                    "$ref": "#/definitions/helpers.vaultObject"
                 }
             }
         },
@@ -513,6 +554,62 @@
                 },
                 "script_id": {
                     "type": "string"
+                }
+            }
+        },
+        "helpers.vaultObject": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "pair_id": {
+                    "type": "string"
+                },
+                "owner": {
+                    "type": "string"
+                },
+                "collateral": {
+                    "type": "object",
+                    "properties": {
+                        "denom": {
+                            "type": "string"
+                        },
+                        "amount": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "debt": {
+                    "type": "object",
+                    "properties": {
+                        "denom": {
+                            "type": "string"
+                        },
+                        "amount": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "collateralization_ratio": {
+                    "type": "string"
+                }
+            }
+        },
+        "helpers.errorObject": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/helpers.Mappable"
+                    }
                 }
             }
         },
