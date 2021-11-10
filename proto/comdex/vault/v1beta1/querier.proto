@@ -63,6 +63,21 @@ message QueryVaultsResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
+message QueryAllVaultsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryAllVaultsResponse {
+  repeated VaultInfo vaultsInfo = 1 [
+    (gogoproto.customname) = "VaultsInfo",
+    (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
+    (gogoproto.nullable)   = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
 service QueryService {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vault/{id}";
@@ -70,5 +85,9 @@ service QueryService {
 
   rpc QueryVaults(QueryVaultsRequest) returns (QueryVaultsResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{owner}";
+  };
+
+  rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults";
   };
 }
