@@ -79,16 +79,6 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	tmprototypes "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
-
-	"github.com/comdex-official/comdex/x/asset"
-	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/oracle"
-	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
-	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
-	"github.com/comdex-official/comdex/x/vault"
-	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
 const (
@@ -125,9 +115,6 @@ var (
 		evidence.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		vault.AppModuleBasic{},
-		asset.AppModuleBasic{},
-		oracle.AppModuleBasic{},
 	)
 )
 
@@ -186,9 +173,6 @@ type App struct {
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
 
-	assetKeeper     assetkeeper.Keeper
-	vaultKeeper     vaultkeeper.Keeper
-	oracleKeeper    oraclekeeper.Keeper
 }
 
 // New returns a reference to an initialized App.
@@ -212,7 +196,6 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			vaulttypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
 		)
 	)
 
@@ -250,9 +233,6 @@ func New(
 	app.paramsKeeper.Subspace(crisistypes.ModuleName)
 	app.paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
-	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
-	app.paramsKeeper.Subspace(assettypes.ModuleName)
-	app.paramsKeeper.Subspace(oracletypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -402,29 +382,6 @@ func New(
 	)
 	app.evidenceKeeper.SetRouter(evidenceRouter)
 
-	app.assetKeeper = assetkeeper.NewKeeper(
-		app.cdc,
-		app.keys[assettypes.StoreKey],
-		app.GetSubspace(assettypes.ModuleName),
-		&app.oracleKeeper,
-	)
-	app.vaultKeeper = vaultkeeper.NewKeeper(
-		app.cdc,
-		app.keys[vaulttypes.StoreKey],
-		app.bankKeeper,
-		&app.assetKeeper,
-		&app.oracleKeeper,
-	)
-
-	app.oracleKeeper = *oraclekeeper.NewKeeper(
-		app.cdc,
-		app.keys[oracletypes.StoreKey],
-		app.GetSubspace(oracletypes.ModuleName),
-		app.ibcKeeper.ChannelKeeper,
-		&app.ibcKeeper.PortKeeper,
-		app.scopedIBCKeeper,
-		app.assetKeeper,
-	)
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -451,9 +408,6 @@ func New(
 		ibc.NewAppModule(app.ibcKeeper),
 		params.NewAppModule(app.paramsKeeper),
 		transferModule,
-		vault.NewAppModule(app.cdc, app.vaultKeeper),
-		asset.NewAppModule(app.cdc, app.assetKeeper),
-		oracle.NewAppModule(app.cdc, app.oracleKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -486,8 +440,6 @@ func New(
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
-		assettypes.ModuleName,
-		vaulttypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
@@ -664,6 +616,5 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 	}
 }
