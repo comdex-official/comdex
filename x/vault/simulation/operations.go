@@ -143,7 +143,7 @@ func SimulateMsgCreateVault(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 		}
 
 		//create the msg
-		msg := types.NewMsgCreateRequest(simAccount.Address, 1, sdk.Int(sdk.NewInt(100)), sdk.Int(sdk.NewInt(100)))
+		msg := types.NewMsgCreateRequest(simAccount.Address, 1, sdk.Int(sdk.NewInt(100)), sdk.Int(sdk.NewInt(150)))
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
