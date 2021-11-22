@@ -64,7 +64,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	}
 
 	var (
-		id  = k.GetID(ctx)
+		id    = k.GetID(ctx)
 		vault = types.Vault{
 			ID:        id + 1,
 			PairID:    msg.PairID,

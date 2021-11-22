@@ -21,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
@@ -195,6 +196,9 @@ type App struct {
 	vaultKeeper     vaultkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
 	oracleKeeper    oraclekeeper.Keeper
+
+	// simulation manager
+	sm *module.SimulationManager
 }
 
 // New returns a reference to an initialized App.
@@ -513,6 +517,28 @@ func New(
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encoding.Amino)
 	app.mm.RegisterServices(module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter()))
 
+	// create the simulation manager and define the order of the modules for deterministic simulations
+	//
+	// NOTE: this is not required apps that don't use the simulator for fuzz testing
+	// transactions
+	app.sm = module.NewSimulationManager(
+		auth.NewAppModule(app.AppCodec(), app.accountKeeper, authsims.RandomGenesisAccounts),
+		bank.NewAppModule(app.AppCodec(), app.bankKeeper, app.accountKeeper),
+		capability.NewAppModule(app.AppCodec(), *app.capabilityKeeper),
+		gov.NewAppModule(app.AppCodec(), app.govKeeper, app.accountKeeper, app.bankKeeper),
+		mint.NewAppModule(app.AppCodec(), app.mintKeeper, app.accountKeeper),
+		slashing.NewAppModule(app.AppCodec(), app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
+		distr.NewAppModule(app.AppCodec(), app.distrKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
+		staking.NewAppModule(app.AppCodec(), app.stakingKeeper, app.accountKeeper, app.bankKeeper),
+		params.NewAppModule(app.paramsKeeper),
+		evidence.NewAppModule(app.evidenceKeeper),
+		ibc.NewAppModule(app.ibcKeeper),
+		vault.NewAppModule(app.AppCodec(), app.vaultKeeper),
+		transferModule,
+	)
+
+	app.sm.RegisterStoreDecoders()
+
 	// initialize stores
 	app.MountKVStores(app.keys)
 	app.MountTransientStores(app.tkeys)
@@ -609,7 +635,7 @@ func (a *App) LegacyAmino() *codec.LegacyAmino {
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (a *App) AppCodec() codec.BinaryCodec {
+func (a *App) AppCodec() codec.Codec {
 	return a.cdc
 }
 
@@ -645,6 +671,11 @@ func (a *App) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
 func (a *App) GetSubspace(moduleName string) paramstypes.Subspace {
 	subspace, _ := a.paramsKeeper.GetSubspace(moduleName)
 	return subspace
+}
+
+// SimulationManager implements the SimulationApp interface
+func (app *App) SimulationManager() *module.SimulationManager {
+	return app.sm
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
