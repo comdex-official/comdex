@@ -1,0 +1,11 @@
+syntax = "proto3";
+package comdex.v1beta1.rewards;
+
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/rewards/types";
+
+service QueryService {
+}
+

@@ -1,0 +1,18 @@
+syntax = "proto3";
+package comdex.rewards.v1beta1;
+
+option go_package = "github.com/comdex-official/comdex/x/rewards/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MsgClaimRewardsRequest{
+
+}
+
+message MsgClaimRewardsResponse{
+
+}
+
+service MsgService {
+  rpc MsgClaimRewards(MsgClaimRewardsRequest) returns (MsgClaimRewardsResponse);
+}
