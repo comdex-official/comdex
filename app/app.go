@@ -92,6 +92,9 @@ import (
 	"github.com/comdex-official/comdex/x/vault"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	bandoraclemodule "github.com/comdex-official/comdex/x/bandoracle"
+	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
+	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 const (
@@ -133,6 +136,7 @@ var (
 		liquidity.AppModuleBasic{},
 		asset.AppModuleBasic{},
 		oracle.AppModuleBasic{},
+		bandoraclemodule.AppModuleBasic{},
 	)
 )
 
@@ -191,7 +195,9 @@ type App struct {
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
 	scopedIBCOracleKeeper capabilitykeeper.ScopedKeeper
+	scopedBandoracleKeeper capabilitykeeper.ScopedKeeper
 
+	BandoracleKeeper bandoraclemodulekeeper.Keeper
 	assetKeeper     assetkeeper.Keeper
 	vaultKeeper     vaultkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
@@ -211,6 +217,7 @@ func New(
 	appOptions servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
+	appCodec := encoding.Marshaler
 	var (
 		tkeys = sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 		mkeys = sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -219,7 +226,7 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
+			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,bandoraclemoduletypes.StoreKey,
 		)
 	)
 
@@ -261,6 +268,7 @@ func New(
 	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
 	app.paramsKeeper.Subspace(assettypes.ModuleName)
 	app.paramsKeeper.Subspace(oracletypes.ModuleName)
+	app.paramsKeeper.Subspace(bandoraclemoduletypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -413,6 +421,20 @@ func New(
 		scopedIBCOracleKeeper,
 		app.assetKeeper,
 	)
+
+	scopedBandoracleKeeper := app.capabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
+	app.scopedBandoracleKeeper = scopedBandoracleKeeper
+	app.BandoracleKeeper = *bandoraclemodulekeeper.NewKeeper(
+		appCodec,
+		keys[bandoraclemoduletypes.StoreKey],
+		keys[bandoraclemoduletypes.MemStoreKey],
+		app.GetSubspace(bandoraclemoduletypes.ModuleName),
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		scopedBandoracleKeeper,
+	)
+	bandoracleModule := bandoraclemodule.NewAppModule(appCodec, app.BandoracleKeeper, app.accountKeeper, app.bankKeeper)
+
 	// Create Transfer Keepers
 	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.cdc,
@@ -434,6 +456,7 @@ func New(
 
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
 	ibcRouter.AddRoute(oracletypes.ModuleName, oracleModule )
+	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandoracleModule)
 	app.ibcKeeper.SetRouter(ibcRouter)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
@@ -477,6 +500,7 @@ func New(
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
 		asset.NewAppModule(app.cdc, app.assetKeeper),
 		oracleModule,
+		bandoracleModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -513,6 +537,7 @@ func New(
 		assettypes.ModuleName,
 		vaulttypes.ModuleName,
 		oracletypes.ModuleName,
+		bandoraclemoduletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)

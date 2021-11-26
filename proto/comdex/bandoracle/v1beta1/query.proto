@@ -1,0 +1,36 @@
+syntax = "proto3";
+package comdex.bandoracle.v1beta1;
+
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "comdex/bandoracle/v1beta1/fetch_price.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
+
+// Query defines the gRPC querier service.
+service Query {
+    
+  	// FetchPriceResult defines a rpc handler method for MsgFetchPriceData.
+  	rpc FetchPriceResult(QueryFetchPriceRequest) returns (QueryFetchPriceResponse) {
+		option (google.api.http).get = "/comdex/bandoracle/fetch_price_result/{request_id}";
+  	}
+
+  	// LastFetchPriceId query the last FetchPrice result id
+  	rpc LastFetchPriceId(QueryLastFetchPriceIdRequest) returns (QueryLastFetchPriceIdResponse) {
+		option (google.api.http).get = "/comdex/bandoracle/last_fetch_price_id";
+  	}
+// this line is used by starport scaffolding # 2
+}
+
+message QueryFetchPriceRequest {int64 request_id = 1;}
+
+message QueryFetchPriceResponse {
+  FetchPriceResult result = 1;
+}
+
+message QueryLastFetchPriceIdRequest {}
+
+message QueryLastFetchPriceIdResponse {int64 request_id = 1;}
+
+// this line is used by starport scaffolding # 3

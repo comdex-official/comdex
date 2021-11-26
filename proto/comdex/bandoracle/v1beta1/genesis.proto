@@ -1,0 +1,12 @@
+syntax = "proto3";
+package comdex.bandoracle.v1beta1;
+
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
+
+// GenesisState defines the bandoracle module's genesis state.
+message GenesisState {
+    string port_id = 1;
+  // this line is used by starport scaffolding # genesis/proto/state
+}
