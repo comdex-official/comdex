@@ -151,6 +151,7 @@ func (a AppModuleSimulation) RandomizedParams(_ *rand.Rand) []sim.ParamChange {
 func (a AppModuleSimulation) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 func (a AppModuleSimulation) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
-	return simulation.WeightedOperations(simState.AppParams, simState.Cdc,
-		a.akeeper, a.bkeeper, a.keeper)
+	return simulation.WeightedOperations(
+		simState.AppParams, simState.Cdc, a.akeeper,
+		a.bkeeper, a.keeper)
 }
