@@ -3,6 +3,7 @@ package comdex.bandoracle.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "comdex/bandoracle/v1beta1/params.proto";
+import "comdex/bandoracle/v1beta1/fetch_price.proto";
 
 // this line is used by starport scaffolding # genesis/proto/import
 
@@ -12,5 +13,9 @@ option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
 message GenesisState {
     Params params = 1 [(gogoproto.nullable) = false ];
     string port_id = 2;
-  // this line is used by starport scaffolding # genesis/proto/state
+    repeated Market markets = 3 [
+        (gogoproto.moretags) = "yaml:\"markets\"",
+        (gogoproto.nullable) = false
+    ];
+    // this line is used by starport scaffolding # genesis/proto/state
 }

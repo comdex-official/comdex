@@ -1,7 +1,11 @@
 syntax = "proto3";
 package comdex.bandoracle.v1beta1;
 
+import "gogoproto/gogo.proto";
+
 option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
 
 message FetchPriceCallData {
   repeated string symbols = 1;
@@ -10,4 +14,12 @@ message FetchPriceCallData {
 
 message FetchPriceResult {
   repeated uint64 rates = 1;
+}
+
+message Market {
+  string symbol    = 1 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+  uint64 script_id = 2 [
+    (gogoproto.customname) = "ScriptID",
+    (gogoproto.moretags)   = "yaml:\"script_id\""
+  ];
 }

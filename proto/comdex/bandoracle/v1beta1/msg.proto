@@ -1,0 +1,46 @@
+syntax = "proto3";
+package comdex.bandoracle.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MsgAddMarketRequest {
+    string from      = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+    string symbol    = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+    uint64 script_id = 3 [
+        (gogoproto.customname) = "ScriptID",
+        (gogoproto.moretags)   = "yaml:\"script_id\""
+    ];
+    uint64 id   = 4;
+}
+
+message MsgAddMarketResponse {}
+
+message MsgUpdateMarketRequest {
+    string from      = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+    string symbol    = 2 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+    uint64 script_id = 3 [
+        (gogoproto.customname) = "ScriptID",
+        (gogoproto.moretags)   = "yaml:\"script_id\""
+    ];
+}
+
+message MsgUpdateMarketResponse {}
+
+message MsgRemoveMarketForAssetRequest {
+    string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+    uint64 id   = 2;
+    string symbol = 3 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+}
+
+message MsgRemoveMarketForAssetResponse {}
+
+service MsgService {
+    rpc MsgAddMarket(MsgAddMarketRequest) returns (MsgAddMarketResponse);
+    rpc MsgUpdateMarket(MsgUpdateMarketRequest) returns (MsgUpdateMarketResponse);
+    rpc MsgRemoveMarketForAsset(MsgRemoveMarketForAssetRequest)
+            returns (MsgRemoveMarketForAssetResponse);
+}
