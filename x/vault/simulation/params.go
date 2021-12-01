@@ -17,7 +17,7 @@ const (
 
 var (
 	// TODO: remove hardcoded params
-	// refer x/epochs/simulation/genesis.go
+	// refer x/vault/simulation/genesis.go
 	vaultIdentifiers = []string{"day", "hour"}
 )
 

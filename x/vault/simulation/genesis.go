@@ -20,11 +20,11 @@ const (
 
 // RandomizedGenState generates a random GenesisState for gov
 func RandomizedGenState(simState *module.SimulationState) {
-	// Parameter for how often rewards get distributed
-	var distrEpochIdentifier string
+	// Parameter for how
+	var distrVaultIdentifier string
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, ParamsDistrVaultIdentifier, &distrEpochIdentifier, simState.Rand,
-		func(r *rand.Rand) { distrEpochIdentifier = GenParamsDistrVaultIdentifier(r) },
+		simState.Cdc, ParamsDistrVaultIdentifier, &distrVaultIdentifier, simState.Rand,
+		func(r *rand.Rand) { distrVaultIdentifier = GenParamsDistrVaultIdentifier(r) },
 	)
 
 	vaultGenesis := types.GenesisState{
@@ -32,7 +32,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 			{
 				ID:        1,
 				PairID:    1,
-				Owner:     "comdex11111111111111",
+				Owner:     "comdex1hpsnswhtlfu8r5a6psxdszm4p6j98wrj29t6hc",
 				AmountIn:  sdk.Int(sdk.NewInt(100)),
 				AmountOut: sdk.Int(sdk.NewInt(66)),
 			},
@@ -43,6 +43,6 @@ func RandomizedGenState(simState *module.SimulationState) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Selected randomly generated incentives parameters:\n%s\n", bz)
+	fmt.Printf("Selected randomly generated vault parameters:\n%s\n", bz)
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&vaultGenesis)
 }

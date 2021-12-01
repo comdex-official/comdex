@@ -138,7 +138,9 @@ func NewAppModuleSimulation(k keeper.Keeper, akeeper authkeeper.AccountKeeper, b
 	}
 }
 
-func (a AppModuleSimulation) GenerateGenesisState(_ *module.SimulationState) {}
+func (a AppModuleSimulation) GenerateGenesisState(simState *module.SimulationState) {
+	simulation.RandomizedGenState(simState)
+}
 
 func (a AppModuleSimulation) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
 	return nil
