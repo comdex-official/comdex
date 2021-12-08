@@ -9,14 +9,13 @@ import (
 	"github.com/spf13/cobra"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func txAddMarket() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-market [symbol] [script-id] [asset]",
 		Short: "Add a market",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -28,7 +27,7 @@ func txAddMarket() *cobra.Command {
 				return err
 			}
 
-			asset, err := strconv.ParseUint(args[0], 10, 64)
+			asset, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -86,40 +85,6 @@ func txUpdateMarket() *cobra.Command {
 
 	return cmd
 }
-
-/*func txAddMarketForAsset() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "add-market-for-asset [asset] [symbol]",
-		Short: "Add a market for asset",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			asset, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgAddMarketForAssetRequest(
-				ctx.FromAddress,
-				asset,
-				args[1],
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}*/
 
 func txRemoveMarketForAsset() *cobra.Command {
 	cmd := &cobra.Command{
@@ -238,7 +203,7 @@ func txFetchPrice() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagPacketTimeoutHeight, "0-1000", "packet timeout block height")
-	cmd.Flags().Duration(flagPacketTimeoutTimestamp, 10*time.Minute, "packet timeout timestamp")
+	cmd.Flags().Uint64(flagPacketTimeoutTimestamp, 60, "packet timeout timestamp")
 	cmd.Flags().Bool(flagAbsoluteTimeouts, false, "timeout flags are used as absolute timeouts")
 	cmd.Flags().String(flagFeeLimit, "", "fee limit")
 	cmd.Flags().Uint64(flagPrepareGas, 0, "prepare gas")

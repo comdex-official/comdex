@@ -12,7 +12,7 @@ LD_FLAGS := -s -w \
     -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
     -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TENDERMINT_VERSION)
 
-BUILD_FLAGS += -ldflags "${LD_FLAGS}" -tags "${BUILD_TAGS}"
+BUILD_FLAGS += -ldflags "${ldflags}"
 
 GOBIN = $(shell go env GOPATH)/bin
 
@@ -41,6 +41,9 @@ ifeq (${OS},Windows_NT)
 else
 	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex ./node
 endif
+
+install: mod-vendor
+	go install -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" ./node
 
 .PHONY: go-lint
 go-lint:

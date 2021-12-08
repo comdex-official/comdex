@@ -153,10 +153,10 @@ func ValidateAssetChannelParams(
 	order ibcchanneltypes.Order,
 	portID, channelID, channelVersion string,
 ) error {
-	version := keeper.IBCVersion(ctx)
+	/*version := keeper.IBCVersion(ctx)
 	if channelVersion != version {
 		return types.ErrorInvalidVersion
-	}
+	}*/
 
 	port := keeper.IBCPort(ctx)
 	if portID != port {
@@ -206,9 +206,9 @@ func (a AppModule) OnChanOpenTry(
 	_ ibcchanneltypes.Counterparty,
 	channelVersion, counterpartyVersion string,
 ) error {
-	if counterpartyVersion != a.keeper.IBCVersion(ctx) {
+	/*if counterpartyVersion != a.keeper.IBCVersion(ctx) {
 		return types.ErrorInvalidVersion
-	}
+	}*/
 
 	if err := ValidateAssetChannelParams(ctx, a.keeper, order, portID, channelID, channelVersion); err != nil {
 		return err
@@ -227,11 +227,11 @@ func (a AppModule) OnChanOpenAck(
 	ctx sdk.Context,
 	_, _, counterpartyVersion string,
 ) error {
-	version := a.keeper.IBCVersion(ctx)
+	/*version := a.keeper.IBCVersion(ctx)
 	if counterpartyVersion != version {
 		return types.ErrorInvalidVersion
 	}
-
+*/
 	return nil
 }
 

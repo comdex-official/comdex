@@ -10,6 +10,8 @@ const (
 	QuerierRoute   = ModuleName
 	RouterKey      = ModuleName
 	StoreKey       = ModuleName
+	PortID 		   = ModuleName
+
 )
 
 var (

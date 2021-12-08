@@ -6,8 +6,10 @@ import (
 	bandobi "github.com/bandprotocol/bandchain-packet/obi"
 	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
+	"time"
 
 	"github.com/comdex-official/comdex/x/oracle/types"
 )
@@ -82,6 +84,10 @@ func (k *msgServer) MsgUpdateMarket(c context.Context, msg *types.MsgUpdateMarke
 
 func (k *msgServer) MsgFetchPrice(c context.Context, msg *types.MsgFetchPriceRequest) (*types.MsgFetchPriceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	sourcePort := types.PortID
+	sourceChannelEnd, found := k.channel.GetChannel(ctx, sourcePort, msg.SourceChannel)
+	destinationPort := sourceChannelEnd.GetCounterparty().GetPortID()
+	destinationChannel := sourceChannelEnd.GetCounterparty().GetChannelID()
 
 	var (
 		calldata = types.Calldata{
@@ -102,11 +108,6 @@ func (k *msgServer) MsgFetchPrice(c context.Context, msg *types.MsgFetchPriceReq
 		calldata.Symbols = append(calldata.Symbols, market.Symbol)
 	}
 
-	channel, found := k.channel.GetChannel(ctx, msg.SourcePort, msg.SourceChannel)
-	if !found {
-		return nil, ibcchanneltypes.ErrChannelNotFound
-	}
-
 	sequence, found := k.channel.GetNextSequenceSend(ctx, msg.SourcePort, msg.SourceChannel)
 	if !found {
 		return nil, ibcchanneltypes.ErrSequenceSendNotFound
@@ -119,31 +120,30 @@ func (k *msgServer) MsgFetchPrice(c context.Context, msg *types.MsgFetchPriceReq
 
 	var (
 		id     = k.GetCalldataID(ctx)
-		packet = ibcchanneltypes.Packet{
-			Sequence:           sequence,
-			SourcePort:         msg.SourcePort,
-			SourceChannel:      msg.SourceChannel,
-			DestinationPort:    channel.GetCounterparty().GetPortID(),
-			DestinationChannel: channel.GetCounterparty().GetChannelID(),
-			Data: bandpacket.OracleRequestPacketData{
-				ClientID:       fmt.Sprintf("%d", id),
-				OracleScriptID: msg.ScriptID,
-				Calldata:       bandobi.MustEncode(calldata),
-				AskCount:       k.OracleAskCount(ctx),
-				MinCount:       k.OracleMinCount(ctx),
-				FeeLimit:       msg.FeeLimit,
-				PrepareGas:     msg.PrepareGas,
-				ExecuteGas:     msg.ExecuteGas,
-			}.GetBytes(),
-			TimeoutHeight:    msg.TimeoutHeight,
-			TimeoutTimestamp: msg.TimeoutTimestamp,
-		}
 	)
 
-	k.SetCalldataID(ctx, id+1)
+Data:= bandpacket.OracleRequestPacketData{
+	ClientID:       fmt.Sprintf("%d", id),
+	OracleScriptID: msg.ScriptID,
+	Calldata:       bandobi.MustEncode(calldata),
+	AskCount:       k.OracleAskCount(ctx),
+	MinCount:       k.OracleMinCount(ctx),
+	FeeLimit:       msg.FeeLimit,
+	PrepareGas:     msg.PrepareGas,
+	ExecuteGas:     msg.ExecuteGas,
+}
 	k.SetCalldata(ctx, id, calldata)
 
-	if err := k.channel.SendPacket(ctx, capability, packet); err != nil {
+	if err := k.channel.SendPacket(ctx, capability, ibcchanneltypes.NewPacket(
+		Data.GetBytes(),
+		sequence,
+		sourcePort,
+		msg.SourceChannel,
+		destinationPort,
+		destinationChannel,
+		ibcclienttypes.NewHeight(0, 0),
+		uint64(ctx.BlockTime().UnixNano()+int64(10*time.Minute)), // Arbitrary timestamp timeout for now
+	)); err != nil {
 		return nil, err
 	}
 

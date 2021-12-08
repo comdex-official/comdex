@@ -11,6 +11,7 @@ const (
 	QuerierRoute = ModuleName
 	RouterKey    = ModuleName
 	StoreKey     = ModuleName
+	Version      = "bandchain-1"
 )
 
 var (
