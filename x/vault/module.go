@@ -20,7 +20,7 @@ import (
 
 	"github.com/comdex-official/comdex/x/vault/client/cli"
 	"github.com/comdex-official/comdex/x/vault/keeper"
-	"github.com/comdex-official/comdex/x/vault/simulation"
+	simulation "github.com/comdex-official/comdex/x/vault/simulation"
 	"github.com/comdex-official/comdex/x/vault/types"
 )
 

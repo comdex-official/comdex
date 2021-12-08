@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	app "github.com/comdex-official/comdex/app"
+	"github.com/comdex-official/comdex/app"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdkSimapp "github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -13,12 +13,12 @@ import (
 )
 
 // Profile with:
-// /usr/local/go/bin/go test -benchmem -run=^$ github.com/comdex-official/comdex/simapp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
+// /usr/local/go/bin/go test -benchmem -run=^$ github.com/osmosis-labs/osmosis/simapp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
 func BenchmarkFullAppSimulation(b *testing.B) {
 	// -Enabled=true -NumBlocks=1000 -BlockSize=200 \
 	// -Period=1 -Commit=true -Seed=57 -v -timeout 24h
 	sdkSimapp.FlagEnabledValue = true
-	sdkSimapp.FlagNumBlocksValue = 100
+	sdkSimapp.FlagNumBlocksValue = 1000
 	sdkSimapp.FlagBlockSizeValue = 200
 	sdkSimapp.FlagCommitValue = true
 	sdkSimapp.FlagVerboseValue = true
@@ -30,8 +30,8 @@ func TestFullAppSimulation(t *testing.T) {
 	// -Enabled=true -NumBlocks=1000 -BlockSize=200 \
 	// -Period=1 -Commit=true -Seed=57 -v -timeout 24h
 	sdkSimapp.FlagEnabledValue = true
-	sdkSimapp.FlagNumBlocksValue = 15
-	sdkSimapp.FlagBlockSizeValue = 10
+	sdkSimapp.FlagNumBlocksValue = 20
+	sdkSimapp.FlagBlockSizeValue = 25
 	sdkSimapp.FlagCommitValue = true
 	sdkSimapp.FlagVerboseValue = true
 	sdkSimapp.FlagPeriodValue = 10
@@ -44,6 +44,7 @@ func fullAppSimulation(tb testing.TB, is_testing bool) {
 	if err != nil {
 		tb.Fatalf("simulation setup failed: %s", err.Error())
 	}
+
 	defer func() {
 		db.Close()
 		err = os.RemoveAll(dir)
@@ -78,7 +79,7 @@ func fullAppSimulation(tb testing.TB, is_testing bool) {
 		tb,
 		os.Stdout,
 		comdex.BaseApp,
-		sdkSimapp.AppStateFn(comdex.AppCodec(), comdex.SimulationManager()),
+		AppStateFn(comdex.AppCodec(), comdex.SimulationManager()),
 		simulation2.RandomAccounts,                                        // Replace with own random account function if using keys other than secp256k1
 		sdkSimapp.SimulationOperations(comdex, comdex.AppCodec(), config), // Run all registered operations
 		comdex.ModuleAccountAddrs(),
@@ -105,80 +106,3 @@ func fullAppSimulation(tb testing.TB, is_testing bool) {
 func interBlockCacheOpt() func(*baseapp.BaseApp) {
 	return baseapp.SetInterBlockCache(store.NewCommitKVStoreCacheManager())
 }
-
-// // TODO: Make another test for the fuzzer itself, which just has noOp txs
-// // and doesn't depend on the application.
-// func TestAppStateDeterminism(t *testing.T) {
-// 	// if !sdkSimapp.FlagEnabledValue {
-// 	// 	t.Skip("skipping application simulation")
-// 	// }
-
-// 	config := sdkSimapp.NewConfigFromFlags()
-// 	config.InitialBlockHeight = 1
-// 	config.ExportParamsPath = ""
-// 	config.OnOperation = false
-// 	config.AllInvariants = false
-// 	config.ChainID = helpers.SimAppChainID
-
-// 	numSeeds := 3
-// 	numTimesToRunPerSeed := 5
-// 	appHashList := make([]json.RawMessage, numTimesToRunPerSeed)
-
-// 	for i := 0; i < numSeeds; i++ {
-// 		config.Seed = rand.Int63()
-
-// 		for j := 0; j < numTimesToRunPerSeed; j++ {
-// 			var logger log.Logger
-// 			if sdkSimapp.FlagVerboseValue {
-// 				logger = log.TestingLogger()
-// 			} else {
-// 				logger = log.NewNopLogger()
-// 			}
-
-// 			db := dbm.NewMemDB()
-// 			app := app.New(
-// 				logger,
-// 				db,
-// 				nil,
-// 				true,
-// 				map[int64]bool{},
-// 				app.DefaultNodeHome,
-// 				sdkSimapp.FlagPeriodValue,
-// 				app.MakeEncodingConfig(),
-// 				sdkSimapp.EmptyAppOptions{},
-// 				interBlockCacheOpt())
-
-// 			fmt.Printf(
-// 				"Running non-determinism simulation ; seed %d: %d/%d, attempt: %d/%d\n",
-// 				config.Seed, i+1, numSeeds, j+1, numTimesToRunPerSeed,
-// 			)
-
-// 			_, _, err := simulation.SimulateFromSeed(
-// 				t,
-// 				os.Stdout,
-// 				app.BaseApp,
-// 				AppStateFn(app.AppCodec(), app.SimulationManager()),
-// 				simulation2.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-// 				sdkSimapp.SimulationOperations(app, app.AppCodec(), config),
-// 				app.ModuleAccountAddrs(),
-// 				config,
-// 				app.AppCodec(),
-// 			)
-// 			require.NoError(t, err)
-
-// 			if config.Commit {
-// 				sdkSimapp.PrintStats(db)
-// 			}
-
-// 			appHash := app.LastCommitID().Hash
-// 			appHashList[j] = appHash
-
-// 			if j != 0 {
-// 				require.Equal(
-// 					t, string(appHashList[0]), string(appHashList[j]),
-// 					"non-determinism in seed %d: %d/%d, attempt: %d/%d\n", config.Seed, i+1, numSeeds, j+1, numTimesToRunPerSeed,
-// 				)
-// 			}
-// 		}
-// 	}
-// }
