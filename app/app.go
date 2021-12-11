@@ -533,6 +533,7 @@ func New(
 		params.NewAppModule(app.paramsKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
+		asset.NewAppModuleSimulation(app.assetKeeper, app.accountKeeper, app.bankKeeper),
 		transferModule,
 	)
 

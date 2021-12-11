@@ -10,7 +10,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/types/simulation"
+	sim "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -18,13 +18,16 @@ import (
 
 	"github.com/comdex-official/comdex/x/asset/client/cli"
 	"github.com/comdex-official/comdex/x/asset/keeper"
+	simulation "github.com/comdex-official/comdex/x/asset/simulation"
 	"github.com/comdex-official/comdex/x/asset/types"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 )
 
 var (
 	_ module.AppModule           = AppModule{}
 	_ module.AppModuleBasic      = AppModuleBasic{}
-	_ module.AppModuleSimulation = AppModule{}
+	_ module.AppModuleSimulation = AppModuleSimulation{}
 )
 
 type AppModuleBasic struct{ cdc codec.BinaryCodec }
@@ -122,18 +125,38 @@ func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcity
 	return nil
 }
 
-func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
+// AppModuleSimulation implements an application simulation module for the deployment module.
+type AppModuleSimulation struct {
+	keeper  keeper.Keeper
+	akeeper authkeeper.AccountKeeper
+	bkeeper bankkeeper.Keeper
+}
 
-func (a AppModule) ProposalContents(_ module.SimulationState) []simulation.WeightedProposalContent {
+// NewAppModuleSimulation creates a new AppModuleSimulation instance
+func NewAppModuleSimulation(k keeper.Keeper, akeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.Keeper) AppModuleSimulation {
+	return AppModuleSimulation{
+		keeper:  k,
+		akeeper: akeeper,
+		bkeeper: bankKeeper,
+	}
+}
+
+func (a AppModuleSimulation) GenerateGenesisState(simState *module.SimulationState) {
+	//
+}
+
+func (a AppModuleSimulation) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
 	return nil
 }
 
-func (a AppModule) RandomizedParams(_ *rand.Rand) []simulation.ParamChange {
+func (a AppModuleSimulation) RandomizedParams(_ *rand.Rand) []sim.ParamChange {
 	return nil
 }
 
-func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
+func (a AppModuleSimulation) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
-func (a AppModule) WeightedOperations(_ module.SimulationState) []simulation.WeightedOperation {
-	return nil
+func (a AppModuleSimulation) WeightedOperations(simState module.SimulationState) []sim.WeightedOperation {
+	return simulation.WeightedOperations(
+		simState.AppParams, simState.Cdc, a.akeeper,
+		a.bkeeper, a.keeper)
 }

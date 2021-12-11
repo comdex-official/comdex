@@ -23,7 +23,7 @@ var (
 )
 
 var (
-	IDKey                        = []byte{0x00}
+	IDKey                          = []byte{0x00}
 	VaultKeyPrefix                 = []byte{0x10}
 	VaultForAddressByPairKeyPrefix = []byte{0x20}
 )

@@ -14,21 +14,16 @@ import (
 
 // Profile with:
 // /usr/local/go/bin/go test -benchmem -run=^$ github.com/osmosis-labs/osmosis/simapp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
-func BenchmarkFullAppSimulation(b *testing.B) {
-	// -Enabled=true -NumBlocks=1000 -BlockSize=200 \
-	// -Period=1 -Commit=true -Seed=57 -v -timeout 24h
-	sdkSimapp.FlagEnabledValue = true
-	sdkSimapp.FlagNumBlocksValue = 1000
-	sdkSimapp.FlagBlockSizeValue = 200
-	sdkSimapp.FlagCommitValue = true
-	sdkSimapp.FlagVerboseValue = true
-	// sdkSimapp.FlagPeriodValue = 1000
-	fullAppSimulation(b, false)
+
+// fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of
+// an IAVLStore for faster simulation speed.
+func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
+	bapp.SetFauxMerkleMode()
 }
 
-func TestFullAppSimulation(t *testing.T) {
-	// -Enabled=true -NumBlocks=1000 -BlockSize=200 \
-	// -Period=1 -Commit=true -Seed=57 -v -timeout 24h
+func TestFullAppSimulation(tb *testing.T) {
+
+	//flags
 	sdkSimapp.FlagEnabledValue = true
 	sdkSimapp.FlagNumBlocksValue = 20
 	sdkSimapp.FlagBlockSizeValue = 25
@@ -36,10 +31,7 @@ func TestFullAppSimulation(t *testing.T) {
 	sdkSimapp.FlagVerboseValue = true
 	sdkSimapp.FlagPeriodValue = 10
 	sdkSimapp.FlagSeedValue = 10
-	fullAppSimulation(t, true)
-}
 
-func fullAppSimulation(tb testing.TB, is_testing bool) {
 	config, db, dir, logger, _, err := sdkSimapp.SetupSimulation("goleveldb-app-sim", "Simulation")
 	if err != nil {
 		tb.Fatalf("simulation setup failed: %s", err.Error())
@@ -52,14 +44,6 @@ func fullAppSimulation(tb testing.TB, is_testing bool) {
 			tb.Fatal(err)
 		}
 	}()
-
-	// fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of
-	// an IAVLStore for faster simulation speed.
-	fauxMerkleModeOpt := func(bapp *baseapp.BaseApp) {
-		if is_testing {
-			bapp.SetFauxMerkleMode()
-		}
-	}
 
 	comdex := app.New(
 		logger,

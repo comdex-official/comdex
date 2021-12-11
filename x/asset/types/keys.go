@@ -13,13 +13,13 @@ const (
 )
 
 var (
-	AssetIDKey    = []byte{0x01}
-	PairIDKey     = []byte{0x03}
+	AssetIDKey = []byte{0x01}
+	PairIDKey  = []byte{0x03}
 
-	AssetKeyPrefix    = []byte{0x11}
-	PairKeyPrefix     = []byte{0x14}
+	AssetKeyPrefix = []byte{0x11}
+	PairKeyPrefix  = []byte{0x14}
 
-	AssetForDenomKeyPrefix  = []byte{0x21}
+	AssetForDenomKeyPrefix = []byte{0x21}
 )
 
 func AssetKey(id uint64) []byte {
