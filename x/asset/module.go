@@ -142,15 +142,15 @@ func NewAppModuleSimulation(k keeper.Keeper, akeeper authkeeper.AccountKeeper, b
 }
 
 func (a AppModuleSimulation) GenerateGenesisState(simState *module.SimulationState) {
-	//
+	simulation.RandomizedGenState(simState)
 }
 
 func (a AppModuleSimulation) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
 	return nil
 }
 
-func (a AppModuleSimulation) RandomizedParams(_ *rand.Rand) []sim.ParamChange {
-	return nil
+func (a AppModuleSimulation) RandomizedParams(r *rand.Rand) []sim.ParamChange {
+	return simulation.ParamChanges(r)
 }
 
 func (a AppModuleSimulation) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
