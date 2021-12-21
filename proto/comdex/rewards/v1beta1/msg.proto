@@ -1,6 +1,8 @@
 syntax = "proto3";
 package comdex.rewards.v1beta1;
 
+import "gogoproto/gogo.proto";
+
 option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
