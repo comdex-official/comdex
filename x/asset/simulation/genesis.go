@@ -19,7 +19,8 @@ const (
 
 func GenAssetAdmin(r *rand.Rand) string {
 	types.SetAccountAddressPrefixes()
-	return "comdex1pwu5sjk2lje94cwhnh0dhr0fery2c75w4y09t4"
+	assetadmin := "comdex1pwu5sjk2lje94cwhnh0dhr0fery2c75w4y09t4"
+	return assetadmin
 	//replace with random account generating func
 }
 
