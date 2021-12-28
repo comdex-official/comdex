@@ -139,7 +139,8 @@ func NewAppModuleSimulation(k keeper.Keeper, akeeper authkeeper.AccountKeeper, b
 }
 
 func (a AppModuleSimulation) GenerateGenesisState(simState *module.SimulationState) {
-	simulation.RandomizedGenState(simState)
+	//TODO
+	//?Do we need a genesis for vault sim
 }
 
 func (a AppModuleSimulation) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {

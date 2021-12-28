@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -74,6 +75,7 @@ func SimulateMsgAddAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keep
 		simAccount, _ := simtypes.RandomAcc(r, accounts)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		balance := bk.SpendableCoins(ctx, simAccount.Address)
+		fmt.Println(simAccount.Address.String())
 
 		if balance.Len() <= 0 {
 			return simtypes.NoOpMsg(
@@ -127,6 +129,90 @@ func SimulateMsgAddAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keep
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, "MsgAddAssetRequest", "unable to deliver mock tx"), nil, err
+		}
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+	}
+}
+
+// SimulateMsgAddPair creates new Asset Pair
+func SimulateMsgUpdateAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account,
+		chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+
+		// UpdateAsset updates the existing Asset.
+
+		// type MsgUpdateAssetRequest struct {
+		// 	From     string
+		// 	Id       uint64
+		// 	Name     string
+		// 	Denom    string
+		// 	Decimals int64
+		// }
+		// Resulting changes:
+
+		// An existing Asset is updated with the latest price.
+
+		simAccount, _ := simtypes.RandomAcc(r, accounts)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		balance := bk.SpendableCoins(ctx, simAccount.Address)
+		if balance.Len() <= 0 {
+			return simtypes.NoOpMsg(
+				types.ModuleName, "MsgUpdateAssetRequest", "Account does not have any coin"), nil, nil
+		}
+		//balance exists
+		if !balance.IsAnyNegative() {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgUpdateAssetRequest", "balance is negative"), nil, nil
+		}
+
+		asset_new := sdk.Coin{
+			Denom:  "ucGOLD",
+			Amount: sdk.Int(sdk.NewInt(1000000000)),
+		}
+
+		//check whether balance is less than deposit amount
+		if balance.AmountOf(asset_new.Denom).LT(asset_new.Amount) {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgUpdateAssetRequest", "not enough funds"), nil, nil
+		}
+
+		//then subtract deposit coins from balance
+		balance = balance.Sub(sdk.NewCoins(asset_new))
+
+		k.SetParams(ctx, types.Params{})
+		//declare fees
+		feeinucdmx := sdk.Coin{
+			Denom:  "ucmdx",
+			Amount: sdk.Int(sdk.NewInt(4000)),
+		}
+		fees := sdk.Coins{
+			feeinucdmx,
+		}
+
+		//check whether balance is less than fees
+		if balance.AmountOf(feeinucdmx.Denom).LT(feeinucdmx.Amount) {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgUpdateAssetRequest", "unable to generate fees"), nil, nil
+		}
+
+		//create the msg
+		msg := types.NewMsgUpdateAssetRequest(sdk.AccAddress(account.GetAddress().String()), 1, "gold", "ucGOLD", asset_new.Amount.Int64())
+
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			simAccount.PrivKey,
+		)
+
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgUpdateAssetRequest", "unable to generate mock tx"), nil, err
+		}
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgUpdateAssetRequest", "unable to deliver mock tx"), nil, err
 		}
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
@@ -187,7 +273,7 @@ func SimulateMsgAddAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keep
 // 		}
 
 // 		//create the msg
-// 		msg := types.NewMsgCreateRequest(simAccount.Address, 1, sdk.Int(sdk.NewInt(100000)), sdk.Int(sdk.NewInt(66666)))
+// 		msg := types.NewMsgAddPairRequest(sdk.AccAddress(account.GetAddress().String()))
 
 // 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 // 		tx, err := helpers.GenTx(
