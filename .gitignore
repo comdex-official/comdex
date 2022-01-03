@@ -3,3 +3,6 @@
 /.idea/
 /target/
 /release/
+
+# ignore all coverage output files
+*.out

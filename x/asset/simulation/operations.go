@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"fmt"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -75,7 +74,6 @@ func SimulateMsgAddAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keep
 		simAccount, _ := simtypes.RandomAcc(r, accounts)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		balance := bk.SpendableCoins(ctx, simAccount.Address)
-		fmt.Println(simAccount.Address.String())
 
 		if balance.Len() <= 0 {
 			return simtypes.NoOpMsg(
@@ -151,7 +149,6 @@ func SimulateMsgUpdateAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 		// Resulting changes:
 
 		// An existing Asset is updated with the latest price.
-
 		simAccount, _ := simtypes.RandomAcc(r, accounts)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		balance := bk.SpendableCoins(ctx, simAccount.Address)

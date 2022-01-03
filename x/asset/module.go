@@ -150,7 +150,7 @@ func (a AppModuleSimulation) ProposalContents(_ module.SimulationState) []sim.We
 }
 
 func (a AppModuleSimulation) RandomizedParams(r *rand.Rand) []sim.ParamChange {
-	return simulation.ParamChanges(r)
+	return nil
 }
 
 func (a AppModuleSimulation) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}

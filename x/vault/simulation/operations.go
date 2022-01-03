@@ -162,3 +162,166 @@ func SimulateMsgCreateVault(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
+
+// SimulateMsgDepositVault generates a NewMsgCreateRequest with random values
+func SimulateMsgDepositVault(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account,
+		chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+
+		// Deposit adds collateral to a Vault in the form of a deposit. Collateral is taken from owner.
+
+		// type MsgDepositRequest struct {
+		// 	From   string
+		// 	ID     uint64
+		// 	Amount types.Int
+		// }
+		// Resulting Changes:
+
+		// Collateral is taken from the owner and sent to the Vault module account.
+		// The depositor's Deposit Collateral struct is updated, or a new one created.
+
+		simAccount, _ := simtypes.RandomAcc(r, accounts)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		balance := bk.SpendableCoins(ctx, simAccount.Address)
+		if balance.Len() <= 0 {
+			return simtypes.NoOpMsg(
+				types.ModuleName, types.TypeMsgDepositRequest, "Account does not have any coin"), nil, nil
+		}
+		//balance exists
+		if !balance.IsAnyNegative() {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDepositRequest, "balance is negative"), nil, nil
+		}
+
+		deposit := sdk.Coin{
+			Denom:  "ucmdx",
+			Amount: sdk.Int(sdk.NewInt(100000)),
+		}
+
+		//check whether balance is less than deposit amount
+		if balance.AmountOf(deposit.Denom).LT(deposit.Amount) {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDepositRequest, "not enough funds"), nil, nil
+		}
+
+		//then subtract deposit coins from balance
+		balance = balance.Sub(sdk.NewCoins(deposit))
+
+		//declare fees
+		feeinucdmx := sdk.Coin{
+			Denom:  "ucmdx",
+			Amount: sdk.Int(sdk.NewInt(4000)),
+		}
+		fees := sdk.Coins{
+			feeinucdmx,
+		}
+
+		//check whether balance is less than fees
+		if balance.AmountOf(deposit.Denom).LT(feeinucdmx.Amount) {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDepositRequest, "unable to generate fees"), nil, nil
+		}
+
+		//create the msg
+		msg := types.NewMsgDepositRequest(simAccount.Address, 1, sdk.Int(sdk.NewInt(deposit.Amount.Int64())))
+
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			simAccount.PrivKey,
+		)
+
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+		}
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver mock tx"), nil, err
+		}
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+	}
+}
+
+// SimulateMsgWithdrawVault generates a NewMsgCreateRequest with random values
+func SimulateMsgWithdrawVault(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account,
+		chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+
+		// Withdraw removes collateral asset from the vault, provided it does not put the Vault under the liquidation ratio.
+
+		// type MsgWithdrawRequest struct {
+		// 	From   string
+		// 	ID     uint64
+		// 	Amount types.Int
+		// }
+		// State Changes:
+
+		// Collateral assets are sent from the vault to the owner.
+
+		simAccount, _ := simtypes.RandomAcc(r, accounts)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		balance := bk.SpendableCoins(ctx, simAccount.Address)
+		if balance.Len() <= 0 {
+			return simtypes.NoOpMsg(
+				types.ModuleName, types.TypeMsgDepositRequest, "Account does not have any coin"), nil, nil
+		}
+		//balance exists
+		if !balance.IsAnyNegative() {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDepositRequest, "balance is negative"), nil, nil
+		}
+
+		deposit := sdk.Coin{
+			Denom:  "ucmdx",
+			Amount: sdk.Int(sdk.NewInt(100000)),
+		}
+
+		//check whether balance is less than deposit amount
+		if balance.AmountOf(deposit.Denom).LT(deposit.Amount) {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDepositRequest, "not enough funds"), nil, nil
+		}
+
+		//then subtract deposit coins from balance
+		balance = balance.Sub(sdk.NewCoins(deposit))
+
+		//declare fees
+		feeinucdmx := sdk.Coin{
+			Denom:  "ucmdx",
+			Amount: sdk.Int(sdk.NewInt(4000)),
+		}
+		fees := sdk.Coins{
+			feeinucdmx,
+		}
+
+		//check whether balance is less than fees
+		if balance.AmountOf(deposit.Denom).LT(feeinucdmx.Amount) {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDepositRequest, "unable to generate fees"), nil, nil
+		}
+
+		//create the msg
+		msg := types.NewMsgWithdrawRequest(simAccount.Address, 1, sdk.Int(sdk.NewInt(deposit.Amount.Int64())))
+
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			simAccount.PrivKey,
+		)
+
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+		}
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver mock tx"), nil, err
+		}
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+	}
+}

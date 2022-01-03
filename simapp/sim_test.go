@@ -32,6 +32,8 @@ func TestFullAppSimulation(tb *testing.T) {
 	sdkSimapp.FlagPeriodValue = 10
 	sdkSimapp.FlagSeedValue = 10
 
+	app.SetAccountAddressPrefixes()
+
 	config, db, dir, logger, _, err := sdkSimapp.SetupSimulation("goleveldb-app-sim", "Simulation")
 	if err != nil {
 		tb.Fatalf("simulation setup failed: %s", err.Error())
