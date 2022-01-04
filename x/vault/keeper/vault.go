@@ -162,12 +162,12 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 	}
 
 	totalIn := amountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
-	if totalIn.IsPositive() {
+	if totalIn.IsNegative() {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountIn
 	}
 
 	totalOut := amountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
-	if totalOut.IsPositive() {
+	if totalOut.IsNegative() {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountOut
 	}
 
