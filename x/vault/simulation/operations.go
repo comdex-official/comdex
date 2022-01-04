@@ -106,7 +106,7 @@ func SimulateMsgCreateVault(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 				types.ModuleName, types.TypeMsgCreateRequest, "Account does not have any coin"), nil, nil
 		}
 		//balance exists
-		if !balance.IsAnyNegative() {
+		if balance.IsAnyNegative() {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateRequest, "balance is negative"), nil, nil
 		}
 

@@ -19,10 +19,10 @@ import (
 
 // Simulation operation weights constants
 const (
-	DefaultWeightMsgAddAsset   int = 10
-	DefaultWeightMsgAddToGauge int = 10
-	OpWeightMsgAddAsset            = "op_weight_msg_add_asset"
-	OpWeightMsgAddToGauge          = "op_weight_msg_add_to_gauge"
+	DefaultWeightMsgAddAsset    int = 10
+	DefaultWeightMsgUpdateAsset int = 10
+	OpWeightMsgAddAsset             = "op_weight_msg_add_asset"
+	OpWeightMsgUpdateAsset          = "op_weight_msg_add_to_gauge"
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -30,31 +30,31 @@ func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec, ak govtypes.AccountKeeper,
 	bk bankkeeper.Keeper, k keeper.Keeper) simulation.WeightedOperations {
 	var (
-		weightMsgAddAsset int
-		// weightMsgAddToGauge int
+		weightMsgAddAsset    int
+		weightMsgUpdateAsset int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgAddAsset, &weightMsgAddAsset, nil,
 		func(_ *rand.Rand) {
-			weightMsgAddAsset = simappparams.DefaultWeightMsgCreateValidator
+			weightMsgAddAsset = DefaultWeightMsgAddAsset
 		},
 	)
 
-	// appParams.GetOrGenerate(cdc, OpWeightMsgAddToGauge, &weightMsgAddToGauge, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgAddToGauge = simappparams.DefaultWeightMsgCreateValidator
-	// 	},
-	// )
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateAsset, &weightMsgUpdateAsset, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateAsset = DefaultWeightMsgUpdateAsset
+		},
+	)
 
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgAddAsset,
 			SimulateMsgAddAsset(ak, bk, k),
 		),
-		// simulation.NewWeightedOperation(
-		// 	weightMsgAddToGauge,
-		// 	SimulateMsgAddToGaug(ak, bk, k),
-		// ),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateAsset,
+			SimulateMsgUpdateAsset(ak, bk, k),
+		),
 	}
 }
 
@@ -80,7 +80,7 @@ func SimulateMsgAddAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keep
 				types.ModuleName, "MsgAddAssetRequest", "Account does not have any coin"), nil, nil
 		}
 
-		if !balance.IsAnyNegative() {
+		if balance.IsAnyNegative() {
 			return simtypes.NoOpMsg(types.ModuleName, "MsgAddAssetRequest", "balance is negative"), nil, nil
 		}
 
@@ -157,7 +157,7 @@ func SimulateMsgUpdateAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 				types.ModuleName, "MsgUpdateAssetRequest", "Account does not have any coin"), nil, nil
 		}
 		//balance exists
-		if !balance.IsAnyNegative() {
+		if balance.IsAnyNegative() {
 			return simtypes.NoOpMsg(types.ModuleName, "MsgUpdateAssetRequest", "balance is negative"), nil, nil
 		}
 
