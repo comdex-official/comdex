@@ -2,12 +2,12 @@ package keeper
 
 import (
 	"context"
-
 	"github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// FetchPriceResult returns the FetchPrice result by RequestId
+var _ types.QueryServer = Keeper{}
+
 func (k Keeper) FetchPriceResult(c context.Context, req *types.QueryFetchPriceRequest) (*types.QueryFetchPriceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	result, err := k.GetFetchPriceResult(ctx, types.OracleRequestID(req.RequestId))
@@ -17,7 +17,6 @@ func (k Keeper) FetchPriceResult(c context.Context, req *types.QueryFetchPriceRe
 	return &types.QueryFetchPriceResponse{Result: &result}, nil
 }
 
-// LastFetchPriceId returns the last FetchPrice request Id
 func (k Keeper) LastFetchPriceId(c context.Context, req *types.QueryLastFetchPriceIdRequest) (*types.QueryLastFetchPriceIdResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	id := k.GetLastFetchPriceID(ctx)

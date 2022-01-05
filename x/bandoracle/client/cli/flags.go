@@ -16,6 +16,15 @@ const (
 	flagAbsoluteTimeouts       = "absolute-timeouts"
 )
 
+const (
+	flagChannel    = "channel"
+	flagSymbols    = "symbols"
+	flagMultiplier = "multiplier"
+	flagFeeLimit   = "fee-limit"
+	flagPrepareGas = "prepare-gas"
+	flagExecuteGas = "execute-gas"
+)
+
 func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
 	s, err := cmd.Flags().GetString(flagLiquidationRatio)
 	if err != nil {

@@ -7,7 +7,6 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 )
 
-// SetFetchPriceResult saves the FetchPrice result
 func (k Keeper) SetFetchPriceResult(ctx sdk.Context, requestID types.OracleRequestID, result types.FetchPriceResult) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.FetchPriceResultStoreKey(requestID), k.cdc.MustMarshal(&result))
