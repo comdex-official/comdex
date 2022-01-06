@@ -9,8 +9,6 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 )
 
-// handleOraclePacket handles the result of the received BandChain oracles
-// packet and saves the data into the KV database
 func (am AppModule) handleOraclePacket(
 	ctx sdk.Context,
 	modulePacket channeltypes.Packet,
@@ -30,10 +28,9 @@ func (am AppModule) handleOraclePacket(
 			return ack, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,
 				"cannot decode the fetchPrice received packet")
 		}
-		am.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(modulePacketData.RequestID), fetchPriceResult)
+		am.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(1), fetchPriceResult)
 
 		// TODO: FetchPrice oracle data reception logic
-		// this line is used by starport scaffolding # oracle/module/recv
 
 	default:
 		err := sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal,
@@ -50,8 +47,6 @@ func (am AppModule) handleOraclePacket(
 	return ack, nil
 }
 
-// handleOracleAcknowledgment handles the acknowledgment result from the BandChain
-// request and saves the request-id into the KV database
 func (am AppModule) handleOracleAcknowledgment(
 	ctx sdk.Context,
 	ack channeltypes.Acknowledgement,
@@ -69,7 +64,7 @@ func (am AppModule) handleOracleAcknowledgment(
 		if err = types.ModuleCdc.UnmarshalJSON(modulePacket.GetData(), &data); err != nil {
 			return nil, nil
 		}
-		requestID := types.OracleRequestID(oracleAck.RequestID)
+		requestID := types.OracleRequestID(1)
 
 		switch data.GetClientID() {
 
@@ -81,7 +76,6 @@ func (am AppModule) handleOracleAcknowledgment(
 			}
 			am.keeper.SetLastFetchPriceID(ctx, requestID)
 			return &sdk.Result{}, nil
-			// this line is used by starport scaffolding # oracle/module/ack
 
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal,

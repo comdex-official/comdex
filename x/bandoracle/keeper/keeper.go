@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -23,17 +22,6 @@ type (
 	}
 )
 
-func (k Keeper) QueryMarkets(ctx context.Context, request *types.QueryMarketsRequest) (*types.QueryMarketsResponse, error) {
-	panic("implement me")
-}
-
-func (k Keeper) QueryMarket(ctx context.Context, request *types.QueryMarketRequest) (*types.QueryMarketResponse, error) {
-	panic("implement me")
-}
-
-func (k Keeper) QueryParams(ctx context.Context, request *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	panic("implement me")
-}
 
 func NewKeeper(
 	cdc codec.BinaryCodec,

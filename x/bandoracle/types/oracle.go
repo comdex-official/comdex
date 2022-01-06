@@ -3,10 +3,7 @@ package types
 import "encoding/binary"
 
 type (
-	// OracleScriptID is the type-safe unique identifier type for oracle scripts.
 	OracleScriptID uint64
-
-	// OracleRequestID is the type-safe unique identifier type for data requests.
 	OracleRequestID int64
 )
 

@@ -1,6 +1,7 @@
 package expected
 
 import (
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
@@ -22,4 +23,8 @@ type ScopedKeeper interface {
 	AuthenticateCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) bool
 	ClaimCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) error
 	GetCapability(ctx sdk.Context, name string) (*capabilitytypes.Capability, bool)
+}
+
+type BandOracleKeeper interface {
+	ParseRates(ctx sdk.Context,id types.OracleRequestID)
 }

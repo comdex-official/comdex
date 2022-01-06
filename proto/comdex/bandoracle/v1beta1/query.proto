@@ -11,31 +11,6 @@ import "comdex/bandoracle/v1beta1/params.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
 
-message QueryMarketsRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
-}
-
-message QueryMarketsResponse {
-  repeated Market markets = 1 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"markets\""
-  ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
-}
-
-message QueryMarketRequest {
-  string symbol = 1 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
-}
-
-message QueryMarketResponse {
-  Market market = 1 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"market\""
-  ];
-}
-
 // Query defines the gRPC querier service.
 service Query {
   // Parameters queries the parameters of the module.
@@ -53,16 +28,6 @@ service Query {
     option (google.api.http).get = "/comdex/bandoracle/v1beta1/last_fetch_price_id";
   }
   // this line is used by starport scaffolding # 2
-
-  rpc QueryMarkets(QueryMarketsRequest) returns (QueryMarketsResponse) {
-    option (google.api.http).get = "/comdex/bandoracle/v1beta1/markets";
-  }
-  rpc QueryMarket(QueryMarketRequest) returns (QueryMarketResponse) {
-    option (google.api.http).get = "/comdex/bandoracle/v1beta1/markets/{symbol}";
-  }
-  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/comdex/bandoracle/v1beta1/params";
-  }
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
