@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -39,16 +38,4 @@ func (k Keeper) SetLastFetchPriceID(ctx sdk.Context, id types.OracleRequestID) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.KeyPrefix(types.LastFetchPriceIDKey),
 		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: int64(id)}))
-}
-
-func (k Keeper) ParseRates(ctx sdk.Context) []uint64 {
-	var data []uint64
-	result,_ := k.GetFetchPriceResult(ctx, 1)
-	fmt.Print(result)
-	fmt.Println(data)
-	i := 0
-	for i =  range data {
-		fmt.Printf("%d th element of data is %s\n", i, data[i])
-	}
-	return data
 }

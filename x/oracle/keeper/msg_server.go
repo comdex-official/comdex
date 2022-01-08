@@ -60,6 +60,7 @@ func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketReque
 	)
 
 	k.SetMarket(ctx, market)
+	k.SetPriceForMarket(ctx,msg.Symbol,0)
 	ID := k.assetKeeper.GetAssetID(ctx)
 	k.SetMarketForAsset(ctx, ID, msg.Symbol )
 	return &types.MsgAddMarketResponse{}, nil

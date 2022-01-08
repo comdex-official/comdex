@@ -66,15 +66,45 @@ func (k *Keeper) GetMarkets(ctx sdk.Context) (markets []types.Market) {
 func (k *Keeper) SetPriceForMarket(ctx sdk.Context, symbol string, price uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PriceForMarketKey(symbol)
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: price,
-			},
-		)
+		key1   = types.PriceForMarketKey("ATOM")
+		key2   = types.PriceForMarketKey("BTC")
+		key3   = types.PriceForMarketKey("ETH")
+		key4   = types.PriceForMarketKey("XRP")
+
 	)
 
-	store.Set(key, value)
+	var prices [4]uint64
+	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, 1)
+	for i, j := range data.Rates {
+	prices[i] = j
+	}
+	value1 := k.cdc.MustMarshal(
+		&protobuftypes.UInt64Value{
+			Value: prices[0],
+		},
+	)
+	store.Set(key1, value1)
+
+	value2 := k.cdc.MustMarshal(
+		&protobuftypes.UInt64Value{
+			Value: prices[1],
+		},
+	)
+	store.Set(key2, value2)
+
+	value3 := k.cdc.MustMarshal(
+		&protobuftypes.UInt64Value{
+			Value: prices[2],
+		},
+	)
+	store.Set(key3, value3)
+
+	value4 := k.cdc.MustMarshal(
+		&protobuftypes.UInt64Value{
+			Value: prices[3],
+		},
+	)
+	store.Set(key4, value4)
 }
 
 func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool) {
