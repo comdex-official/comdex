@@ -20,6 +20,14 @@ type queryServer struct {
 	Keeper
 }
 
+func (q *queryServer) FetchPriceResult(ctx context.Context, request *types.QueryFetchPriceRequest) (*types.QueryFetchPriceResponse, error) {
+	panic("implement me")
+}
+
+func (q *queryServer) LastFetchPriceId(ctx context.Context, request *types.QueryLastFetchPriceIdRequest) (*types.QueryLastFetchPriceIdResponse, error) {
+	panic("implement me")
+}
+
 func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
 	return &queryServer{
 		Keeper: k,

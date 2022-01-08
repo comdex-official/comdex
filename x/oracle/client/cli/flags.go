@@ -9,15 +9,9 @@ import (
 const (
 	flagLiquidationRatio       = "liquidation-ratio"
 	flagScriptID               = "script-id"
-	flagName                   = "name"
-	flagDenom                  = "denom"
-	flagDecimals               = "decimals"
 	flagPacketTimeoutHeight    = "packet-timeout-height"
-	flagPacketTimeoutTimestamp = "packet-timeout-timestamp"
-	flagAbsoluteTimeouts       = "absolute-timeouts"
 	flagFeeLimit               = "fee-limit"
-	flagPrepareGas             = "prepare-gas"
-	flagExecuteGas             = "execute-gas"
+
 )
 
 func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {

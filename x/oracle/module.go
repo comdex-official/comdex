@@ -3,7 +3,6 @@ package oracle
 import (
 	"context"
 	"encoding/json"
-	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
@@ -90,6 +89,18 @@ type AppModule struct {
 	AppModuleBasic
 	cdc    codec.JSONCodec
 	keeper keeper.Keeper
+}
+
+func (a AppModule) OnRecvPacket(ctx sdk.Context, packet ibcchanneltypes.Packet, relayer sdk.AccAddress) ibcexported.Acknowledgement {
+	panic("implement me")
+}
+
+func (a AppModule) OnAcknowledgementPacket(ctx sdk.Context, packet ibcchanneltypes.Packet, acknowledgement []byte, relayer sdk.AccAddress) (*sdk.Result, error) {
+	panic("implement me")
+}
+
+func (a AppModule) OnTimeoutPacket(ctx sdk.Context, packet ibcchanneltypes.Packet, relayer sdk.AccAddress) (*sdk.Result, error) {
+	panic("implement me")
 }
 
 func (a AppModule) ConsensusVersion() uint64 {
@@ -254,44 +265,4 @@ func (a AppModule) OnChanCloseConfirm(
 	_, _ string,
 ) error {
 	return nil
-}
-
-func (a AppModule) OnRecvPacket(
-	ctx sdk.Context,
-	packet ibcchanneltypes.Packet,
-	_ sdk.AccAddress,
-) ibcexported.Acknowledgement {
-	var (
-		res bandpacket.OracleResponsePacketData
-		ack = ibcchanneltypes.NewResultAcknowledgement([]byte{0x01})
-	)
-
-	if err := a.cdc.UnmarshalJSON(packet.GetData(), &res); err != nil {
-		ack = ibcchanneltypes.NewErrorAcknowledgement(err.Error())
-	}
-
-	if ack.Success() {
-		if err := a.keeper.OnRecvPacket(ctx, res); err != nil {
-			ack = ibcchanneltypes.NewErrorAcknowledgement(err.Error())
-		}
-	}
-
-	return ack
-}
-
-func (a AppModule) OnAcknowledgementPacket(
-	_ sdk.Context,
-	_ ibcchanneltypes.Packet,
-	_ []byte,
-	_ sdk.AccAddress,
-) (*sdk.Result, error) {
-	return nil, nil
-}
-
-func (a AppModule) OnTimeoutPacket(
-	_ sdk.Context,
-	_ ibcchanneltypes.Packet,
-	_ sdk.AccAddress,
-) (*sdk.Result, error) {
-	return nil, nil
 }

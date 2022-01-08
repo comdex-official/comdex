@@ -4,14 +4,11 @@ package comdex.bandoracle.v1beta1;
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "comdex/bandoracle/v1beta1/fetch_price.proto";
-// this line is used by starport scaffolding # proto/tx/import
 
 option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
 
-// Msg defines the Msg service.
 service Msg {
       rpc FetchPriceData(MsgFetchPriceData) returns (MsgFetchPriceDataResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgFetchPriceData {
@@ -36,5 +33,3 @@ message MsgFetchPriceData {
 
 message MsgFetchPriceDataResponse {
 }
-
-// this line is used by starport scaffolding # proto/tx/message

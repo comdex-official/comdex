@@ -1,11 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-	"strconv"
-
-	"github.com/bandprotocol/bandchain-packet/obi"
-	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -204,7 +199,7 @@ func (k *Keeper) GetCalldataID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) SetCalldata(ctx sdk.Context, id uint64, calldata types.Calldata) {
+func (k *Keeper) SetCalldata(ctx sdk.Context, id uint64, calldata types.FetchPriceCallData) {
 	var (
 		store = k.Store(ctx)
 		key   = types.CalldataKey(id)
@@ -214,7 +209,7 @@ func (k *Keeper) SetCalldata(ctx sdk.Context, id uint64, calldata types.Calldata
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetCalldata(ctx sdk.Context, id uint64) (calldata types.Calldata, found bool) {
+func (k *Keeper) GetCalldata(ctx sdk.Context, id uint64) (calldata types.FetchPriceCallData, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.CalldataKey(id)
@@ -238,7 +233,7 @@ func (k *Keeper) DeleteCalldata(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePacketData) error {
+/*func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePacketData) error {
 	id, err := strconv.ParseUint(res.ClientID, 10, 64)
 	if err != nil {
 		return err
@@ -262,7 +257,7 @@ func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePack
 	k.DeleteCalldata(ctx, id)
 	return nil
 }
-
+*/
 /*func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
 	var (
 		store = k.Store(ctx)
