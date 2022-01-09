@@ -13,7 +13,9 @@ uint64 script_id = 2 [
 (gogoproto.customname) = "ScriptID",
 (gogoproto.moretags)   = "yaml:\"script_id\""
 ];
+uint64 rates = 3;
 }
+
 
 message FetchPriceCallData {
   repeated string symbols = 1 [ (gogoproto.moretags) = "yaml:\"symbols\"" ];

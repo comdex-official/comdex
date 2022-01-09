@@ -18,6 +18,7 @@ message MsgAddMarketRequest {
         (gogoproto.moretags)   = "yaml:\"script_id\""
     ];
     uint64 id   = 4;
+    uint64 rates = 5;
 }
 
 message MsgAddMarketResponse {}

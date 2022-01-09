@@ -30,11 +30,15 @@ func txAddMarket() *cobra.Command {
 				return err
 			}
 
+			var rates uint64
+			rates = 0
+
 			msg := types.NewMsgAddMarketRequest(
 				ctx.FromAddress,
 				args[0],
 				scriptID,
 				asset,
+				rates,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

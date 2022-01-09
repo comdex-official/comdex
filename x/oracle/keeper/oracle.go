@@ -34,7 +34,7 @@ func (k *Keeper) GetMarket(ctx sdk.Context, symbol string) (market types.Market,
 	)
 
 	if value == nil {
-		return market, found
+		return market, false
 	}
 
 	k.cdc.MustUnmarshal(value, &market)
