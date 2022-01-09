@@ -69,14 +69,14 @@ func (k *Keeper) SetPriceForMarket(ctx sdk.Context, symbol string, price uint64)
 	)
 
 	var prices [4]uint64
-	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, 1)
+	/*data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, 1)
 	for i, j := range data.Rates {
 	prices[i] = j
-	}
-	/*prices[0] = 30
+	}*/
+	prices[0] = 30
 	prices[1] = 40000
 	prices[2] = 3000
-	prices[3] = 200*/
+	prices[3] = 200
 
 	value1 := k.cdc.MustMarshal(
 		&protobuftypes.UInt64Value{

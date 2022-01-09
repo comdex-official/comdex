@@ -86,15 +86,15 @@ import (
 	"github.com/comdex-official/comdex/x/asset"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	bandoraclemodule "github.com/comdex-official/comdex/x/bandoracle"
+	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
+	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/comdex-official/comdex/x/oracle"
 	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
 	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
 	"github.com/comdex-official/comdex/x/vault"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-	bandoraclemodule "github.com/comdex-official/comdex/x/bandoracle"
-	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
-	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 const (
@@ -420,6 +420,7 @@ func New(
 		&app.ibcKeeper.PortKeeper,
 		scopedIBCOracleKeeper,
 		app.assetKeeper,
+		app.BandoracleKeeper,
 	)
 
 	scopedBandoracleKeeper := app.capabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
