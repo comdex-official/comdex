@@ -24,7 +24,7 @@ type Keeper struct {
 }
 
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, channel expected.ChannelKeeper,
-	port expected.PortKeeper, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper) *Keeper {
+	port expected.PortKeeper, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper, bandoraclekeeper bandoraclekeeper.Keeper) *Keeper {
 
 	if !params.HasKeyTable() {
 		params = params.WithKeyTable(oracletypes.ParamKeyTable())
@@ -38,6 +38,7 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subsp
 		port:        port,
 		scoped:      scoped,
 		assetKeeper: assetKeeper,
+		bandoraclekeeper: bandoraclekeeper,
 	}
 }
 
