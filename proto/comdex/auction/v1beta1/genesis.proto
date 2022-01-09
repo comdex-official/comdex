@@ -1,0 +1,24 @@
+syntax = "proto3";
+package comdex.auction.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/auction/v1beta1/auction.proto";
+import "comdex/auction/v1beta1/pair.proto";
+import "comdex/auction/v1beta1/params.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/auction/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message GenesisState {
+  repeated Auction auctions = 1 [
+    (gogoproto.moretags) = "yaml:\"auction\"",
+    (gogoproto.nullable) = false
+  ];
+  repeated Pair pairs = 3
+      [ (gogoproto.moretags) = "yaml:\"auction\"", (gogoproto.nullable) = false ];
+  Params params = 4 [
+    (gogoproto.moretags) = "yaml:\"params\"",
+    (gogoproto.nullable) = false
+  ];
+}
