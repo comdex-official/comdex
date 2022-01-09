@@ -14,9 +14,6 @@ type msgServer struct {
 	Keeper
 }
 
-func (k *msgServer) FetchPriceData(ctx context.Context, data *types.MsgFetchPriceData) (*types.MsgFetchPriceDataResponse, error) {
-	panic("implement me")
-}
 
 func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 	return &msgServer{
