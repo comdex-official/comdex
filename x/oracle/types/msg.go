@@ -50,11 +50,12 @@ func (m *MsgAddMarketRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64) *MsgUpdateMarketRequest {
+func NewMsgUpdateMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64, rates uint64) *MsgUpdateMarketRequest {
 	return &MsgUpdateMarketRequest{
 		From:     from.String(),
 		Symbol:   symbol,
 		ScriptID: scriptID,
+		Rates: rates,
 	}
 }
 

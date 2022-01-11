@@ -30,6 +30,7 @@ message MsgUpdateMarketRequest {
         (gogoproto.customname) = "ScriptID",
         (gogoproto.moretags)   = "yaml:\"script_id\""
     ];
+    uint64 rates = 4;
 }
 
 message MsgUpdateMarketResponse {}

@@ -69,10 +69,14 @@ func txUpdateMarket() *cobra.Command {
 				return err
 			}
 
+			//rates, _ := keeper.Keeper.GetPriceForMarket(keeper.Keeper{}, sdk.Context{},args[0])
+			var rates uint64
+			rates = 40
 			msg := types.NewMsgUpdateMarketRequest(
 				ctx.FromAddress,
 				args[0],
 				scriptID,
+				rates,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
