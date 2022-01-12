@@ -412,17 +412,6 @@ func New(
 		app.distrKeeper,
 	)
 
-	app.oracleKeeper = *oraclekeeper.NewKeeper(
-		app.cdc,
-		app.keys[oracletypes.StoreKey],
-		app.GetSubspace(oracletypes.ModuleName),
-		app.ibcKeeper.ChannelKeeper,
-		&app.ibcKeeper.PortKeeper,
-		scopedIBCOracleKeeper,
-		app.assetKeeper,
-		app.BandoracleKeeper,
-	)
-
 	scopedBandoracleKeeper := app.capabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
 	app.scopedBandoracleKeeper = scopedBandoracleKeeper
 	app.BandoracleKeeper = *bandoraclemodulekeeper.NewKeeper(
@@ -435,6 +424,17 @@ func New(
 		scopedBandoracleKeeper,
 	)
 	bandoracleModule := bandoraclemodule.NewAppModule(appCodec, app.BandoracleKeeper, app.accountKeeper, app.bankKeeper)
+
+	app.oracleKeeper = *oraclekeeper.NewKeeper(
+		app.cdc,
+		app.keys[oracletypes.StoreKey],
+		app.GetSubspace(oracletypes.ModuleName),
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		scopedIBCOracleKeeper,
+		app.assetKeeper,
+		app.BandoracleKeeper,
+	)
 
 	// Create Transfer Keepers
 	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(

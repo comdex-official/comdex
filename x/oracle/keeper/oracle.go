@@ -151,42 +151,28 @@ func (k *Keeper) setRates(ctx sdk.Context) {
 		key4   = types.PriceForMarketKey("xrp")
 
 	)
-
-	var prices []uint64
 	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, 1)
-	//for i, j := range data.Rates {
-	//prices[i] = j
-	//}
-	prices[0] = data.Rates[1]
-	/*prices[0] = 38
-	prices[1] = 40000
-	prices[2] = 3000
-	prices[3] = 200*/
 
-	value1 := k.cdc.MustMarshal(
-		&protobuftypes.UInt64Value{
-			Value: prices[0],
+	value1, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+		Value: data.Rates[0],
 		},
 	)
 	store.Set(key1, value1)
 
-	value2 := k.cdc.MustMarshal(
-		&protobuftypes.UInt64Value{
-			Value: prices[1],
+	value2, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+		Value: data.Rates[1],
 		},
 	)
 	store.Set(key2, value2)
 
-	value3 := k.cdc.MustMarshal(
-		&protobuftypes.UInt64Value{
-			Value: prices[2],
+	value3, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+		Value: data.Rates[2],
 		},
 	)
 	store.Set(key3, value3)
 
-	value4 := k.cdc.MustMarshal(
-		&protobuftypes.UInt64Value{
-			Value: prices[3],
+	value4, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+		Value: data.Rates[3],
 		},
 	)
 	store.Set(key4, value4)
