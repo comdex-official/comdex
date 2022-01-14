@@ -18,7 +18,7 @@ const (
 )
 
 func GenAssetAdmin(r *rand.Rand) string {
-	assetadmin := "comdex1pwu5sjk2lje94cwhnh0dhr0fery2c75w4y09t4"
+	assetadmin := "comdex1d7q0h7dn9sv37a77f47zzu3a8y5z8wcauzuw37"
 	return assetadmin
 	//replace with random account generating func
 }

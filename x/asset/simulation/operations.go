@@ -190,7 +190,6 @@ func SimulateMsgUpdateAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 		//then subtract deposit coins from balance
 		balance = balance.Sub(sdk.NewCoins(asset_new))
 
-		k.SetParams(ctx, types.Params{})
 		//declare fees
 		feeinucdmx := sdk.Coin{
 			Denom:  "ucmdx",
@@ -296,5 +295,72 @@ func SimulateMsgAddPair(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keepe
 			return simtypes.NoOpMsg(types.ModuleName, "MsgAddPairRequest", "unable to deliver mock tx"), nil, err
 		}
 		return simtypes.NewOperationMsg(msg, true, "MsgAddPairRequest", nil), nil, nil
+	}
+}
+
+// SimulateMsgAddPair creates new Asset Pair
+func SimulateMsgUpdatePair(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account,
+		chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+
+		// UpdatePair updates an existing asset pair.
+
+		// type MsgUpdatePairRequest struct {
+		// 	From             string
+		// 	Id               uint64
+		// 	LiquidationRatio types.Dec
+		// }
+
+		simAccount, _ := simtypes.RandomAcc(r, accounts)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		balance := bk.SpendableCoins(ctx, simAccount.Address)
+		if balance.Len() <= 0 {
+			return simtypes.NoOpMsg(
+				types.ModuleName, "MsgUpdatePairRequest", "Account does not have any coin"), nil, nil
+		}
+		//balance exists
+		if !balance.IsAnyNegative() {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgUpdatePairRequest", "balance is negative"), nil, nil
+		}
+
+		//declare fees
+		feeinucdmx := sdk.Coin{
+			Denom:  "ucmdx",
+			Amount: sdk.Int(sdk.NewInt(4000)),
+		}
+		fees := sdk.Coins{
+			feeinucdmx,
+		}
+
+		//check whether balance is less than fees
+		if balance.AmountOf("ucmdx").LT(feeinucdmx.Amount) {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgUpdatePairRequest", "unable to generate fees"), nil, nil
+		}
+
+		//define the liq ratio
+		liq_ratio := sdk.MustNewDecFromStr("0.15")
+		//create the msg
+		msg := types.NewMsgUpdatePairRequest(simAccount.Address, 1, liq_ratio)
+
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			simAccount.PrivKey,
+		)
+
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgUpdatePairRequest", "unable to generate mock tx"), nil, err
+		}
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgUpdatePairRequest", "unable to deliver mock tx"), nil, err
+		}
+		return simtypes.NewOperationMsg(msg, true, "MsgUpdatePairRequest", nil), nil, nil
 	}
 }
