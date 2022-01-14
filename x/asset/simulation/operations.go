@@ -21,6 +21,7 @@ import (
 const (
 	DefaultWeightMsgAddAsset    int = 10
 	DefaultWeightMsgUpdateAsset int = 10
+	DefaultWeightMsgAddPair     int = 10
 	OpWeightMsgAddAsset             = "op_weight_msg_add_asset"
 	OpWeightMsgUpdateAsset          = "op_weight_msg_add_to_gauge"
 )
@@ -32,6 +33,7 @@ func WeightedOperations(
 	var (
 		weightMsgAddAsset    int
 		weightMsgUpdateAsset int
+		weightMsgAddPair     int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgAddAsset, &weightMsgAddAsset, nil,
@@ -46,7 +48,17 @@ func WeightedOperations(
 		},
 	)
 
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateAsset, &weightMsgUpdateAsset, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddPair = DefaultWeightMsgAddPair
+		},
+	)
+
 	return simulation.WeightedOperations{
+		simulation.NewWeightedOperation(
+			weightMsgAddAsset,
+			SimulateMsgAddAsset(ak, bk, k),
+		),
 		simulation.NewWeightedOperation(
 			weightMsgAddAsset,
 			SimulateMsgAddAsset(ak, bk, k),
@@ -54,6 +66,10 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightMsgUpdateAsset,
 			SimulateMsgUpdateAsset(ak, bk, k),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgAddPair,
+			SimulateMsgAddPair(ak, bk, k),
 		),
 	}
 }
@@ -190,7 +206,7 @@ func SimulateMsgUpdateAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 		}
 
 		//create the msg
-		msg := types.NewMsgUpdateAssetRequest(sdk.AccAddress(account.GetAddress().String()), 1, "gold", "ucGOLD", asset_new.Amount.Int64())
+		msg := types.NewMsgUpdateAssetRequest(sdk.AccAddress(account.GetAddress().String()), 2, "gold", "ucGOLD", asset_new.Amount.Int64())
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
@@ -215,82 +231,70 @@ func SimulateMsgUpdateAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 	}
 }
 
-// // SimulateMsgAddPair creates new Asset Pair
-// func SimulateMsgAddPair(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
-// 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account,
-// 		chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+// SimulateMsgAddPair creates new Asset Pair
+func SimulateMsgAddPair(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keeper.Keeper) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account,
+		chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
-// 		//AssetIn will be the user provided asset.
+		//AssetIn will be the user provided asset.
 
-// 		// type MsgAddPairRequest struct {
-// 		// 	From             string
-// 		// 	AssetIn          uint64
-// 		// 	AssetOut         uint64
-// 		// 	LiquidationRatio types.Dec
-// 		// }
+		// type MsgAddPairRequest struct {
+		// 	From             string
+		// 	AssetIn          uint64
+		// 	AssetOut         uint64
+		// 	LiquidationRatio types.Dec
+		// }
 
-// 		simAccount, _ := simtypes.RandomAcc(r, accounts)
-// 		account := ak.GetAccount(ctx, simAccount.Address)
-// 		balance := bk.SpendableCoins(ctx, simAccount.Address)
-// 		if balance.Len() <= 0 {
-// 			return simtypes.NoOpMsg(
-// 				types.ModuleName, "MsgAddPairRequest", "Account does not have any coin"), nil, nil
-// 		}
-// 		//balance exists
-// 		if !balance.IsAnyNegative() {
-// 			return simtypes.NoOpMsg(types.ModuleName, "MsgAddPairRequest", "balance is negative"), nil, nil
-// 		}
+		simAccount, _ := simtypes.RandomAcc(r, accounts)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		balance := bk.SpendableCoins(ctx, simAccount.Address)
+		if balance.Len() <= 0 {
+			return simtypes.NoOpMsg(
+				types.ModuleName, "MsgAddPairRequest", "Account does not have any coin"), nil, nil
+		}
+		//balance exists
+		if !balance.IsAnyNegative() {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgAddPairRequest", "balance is negative"), nil, nil
+		}
 
-// 		assetin := sdk.Coin{
-// 			Denom:  "ucmdx",
-// 			Amount: sdk.Int(sdk.NewInt(100000)),
-// 		}
+		//declare fees
+		feeinucdmx := sdk.Coin{
+			Denom:  "ucmdx",
+			Amount: sdk.Int(sdk.NewInt(4000)),
+		}
+		fees := sdk.Coins{
+			feeinucdmx,
+		}
 
-// 		//check whether balance is less than deposit amount
-// 		if balance.AmountOf(assetin.Denom).LT(assetin.Amount) {
-// 			return simtypes.NoOpMsg(types.ModuleName, "MsgAddPairRequest", "not enough funds"), nil, nil
-// 		}
+		//check whether balance is less than fees
+		if balance.AmountOf("ucmdx").LT(feeinucdmx.Amount) {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgAddPairRequest", "unable to generate fees"), nil, nil
+		}
 
-// 		//then subtract deposit coins from balance
-// 		balance = balance.Sub(sdk.NewCoins(assetin))
+		//define the liq ratio
+		liq_ratio := sdk.MustNewDecFromStr("0.15")
+		//create the msg
+		msg := types.NewMsgAddPairRequest(simAccount.Address, 1, 2, liq_ratio)
 
-// 		k.SetParams(ctx, types.Params{})
-// 		//declare fees
-// 		feeinucdmx := sdk.Coin{
-// 			Denom:  "ucmdx",
-// 			Amount: sdk.Int(sdk.NewInt(4000)),
-// 		}
-// 		fees := sdk.Coins{
-// 			feeinucdmx,
-// 		}
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			simAccount.PrivKey,
+		)
 
-// 		//check whether balance is less than fees
-// 		if balance.AmountOf(deposit.Denom).LT(feeinucdmx.Amount) {
-// 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateRequest, "unable to generate fees"), nil, nil
-// 		}
-
-// 		//create the msg
-// 		msg := types.NewMsgAddPairRequest(sdk.AccAddress(account.GetAddress().String()))
-
-// 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-// 		tx, err := helpers.GenTx(
-// 			txGen,
-// 			[]sdk.Msg{msg},
-// 			fees,
-// 			helpers.DefaultGenTxGas,
-// 			chainID,
-// 			[]uint64{account.GetAccountNumber()},
-// 			[]uint64{account.GetSequence()},
-// 			simAccount.PrivKey,
-// 		)
-
-// 		if err != nil {
-// 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
-// 		}
-// 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
-// 		if err != nil {
-// 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver mock tx"), nil, err
-// 		}
-// 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
-// 	}
-// }
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgAddPairRequest", "unable to generate mock tx"), nil, err
+		}
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, "MsgAddPairRequest", "unable to deliver mock tx"), nil, err
+		}
+		return simtypes.NewOperationMsg(msg, true, "MsgAddPairRequest", nil), nil, nil
+	}
+}
