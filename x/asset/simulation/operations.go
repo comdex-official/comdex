@@ -26,6 +26,8 @@ const (
 	OpWeightMsgUpdateAsset          = "op_weight_msg_add_to_gauge"
 )
 
+var counter int = 0
+
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec, ak govtypes.AccountKeeper,
@@ -87,6 +89,8 @@ func SimulateMsgAddAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keep
 		//     Denom    string
 		//     Decimals int64
 
+		assetarr := [2][2]string{{"gold", "ucGOLD"}, {"silver", "ucSILVER"}}
+
 		simAccount, _ := simtypes.RandomAcc(r, accounts)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		balance := bk.SpendableCoins(ctx, simAccount.Address)
@@ -123,7 +127,7 @@ func SimulateMsgAddAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keep
 			return simtypes.NoOpMsg(types.ModuleName, "MsgAddAssetRequest", "Not enough funds for fees"), nil, nil
 		}
 
-		msg := types.NewMsgAddAssetRequest(sdk.AccAddress(account.GetAddress().String()), "gold", "ucGOLD", asset.Amount.Int64())
+		msg := types.NewMsgAddAssetRequest(sdk.AccAddress(account.GetAddress().String()), assetarr[counter][0], assetarr[counter][1], asset.Amount.Int64())
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
@@ -144,6 +148,10 @@ func SimulateMsgAddAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k keep
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, "MsgAddAssetRequest", "unable to deliver mock tx"), nil, err
 		}
+
+		//increment asset count
+		counter++
+
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
@@ -205,7 +213,7 @@ func SimulateMsgUpdateAsset(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 		}
 
 		//create the msg
-		msg := types.NewMsgUpdateAssetRequest(sdk.AccAddress(account.GetAddress().String()), 2, "gold", "ucGOLD", asset_new.Amount.Int64())
+		msg := types.NewMsgUpdateAssetRequest(sdk.AccAddress(account.GetAddress().String()), 1, "gold", "ucGOLD", asset_new.Amount.Int64())
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(

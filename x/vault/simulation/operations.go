@@ -112,7 +112,7 @@ func SimulateMsgCreateVault(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 
 		deposit := sdk.Coin{
 			Denom:  "ucmdx",
-			Amount: sdk.Int(sdk.NewInt(100000)),
+			Amount: sdk.Int(sdk.NewInt(2000000)),
 		}
 
 		//check whether balance is less than deposit amount
@@ -138,7 +138,7 @@ func SimulateMsgCreateVault(ak govtypes.AccountKeeper, bk bankkeeper.Keeper, k k
 		}
 
 		//create the msg
-		msg := types.NewMsgCreateRequest(simAccount.Address, 1, sdk.Int(sdk.NewInt(100000)), sdk.Int(sdk.NewInt(66666)))
+		msg := types.NewMsgCreateRequest(simAccount.Address, 1, sdk.Int(sdk.NewInt(2000000)), sdk.Int(sdk.NewInt(3000000)))
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
