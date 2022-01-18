@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 	"github.com/comdex-official/comdex/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -47,10 +46,8 @@ func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketReque
 	if k.HasMarket(ctx, msg.Symbol) {
 		return nil, types.ErrorDuplicateMarket
 	}
-	k.setRates(ctx)
-	fmt.Println("{{{{{}}}}}{}}}}{}}}{}}}}}}{}{{{{{{{{}}}}}}}}}}}}}}}}}")
-	Rates,found := k.getrates(ctx, msg.Symbol)
-	fmt.Println(found, Rates)
+	k.setRates(ctx, msg.Symbol)
+	Rates,_ := k.getrates(ctx, msg.Symbol)
 
 	var (
 		market = types.Market{
@@ -83,6 +80,5 @@ func (k *msgServer) MsgUpdateMarket(c context.Context, msg *types.MsgUpdateMarke
 	k.SetMarket(ctx, market)
 	ID := k.assetKeeper.GetAssetID(ctx)
 	k.SetMarketForAsset(ctx, ID, msg.Symbol )
-	k.SetPriceForMarket(ctx, msg.Symbol, msg.Rates)
 	return &types.MsgUpdateMarketResponse{}, nil
 }
