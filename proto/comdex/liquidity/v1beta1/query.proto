@@ -1,0 +1,36 @@
+syntax = "proto3";
+package comdex.liquidity.v1beta1;
+
+import "tendermint/liquidity/v1beta1/tx.proto";
+import "gogoproto/gogo.proto";
+import "cosmos_proto/coin.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/vault/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message QueryIndividualLiquidityPoolRequest{
+    uint64 pool_id=1;
+}
+
+message QueryIndividualLiquidityPoolResponse{
+    uint64 id=1;   [ (gogoproto.moretags) = "yaml:\"id\"" 
+    (gogoproto.nullable)=false];   
+}
+
+message QueryTotalLiquidityRequest{
+}
+
+message QueryTotalLiquidityResponse{
+    uint64 id=1;   [ (gogoproto.moretags) = "yaml:\"id\"" 
+    (gogoproto.nullable)=false];  
+}
+
+message QueryTotalCollateralRequest{
+}
+
+message QueryTotalCollateralResponse{
+    uint64 id=1;   [ (gogoproto.moretags) = "yaml:\"id\"" 
+    (gogoproto.nullable)=false];  
+}
