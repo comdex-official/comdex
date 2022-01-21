@@ -11,11 +11,12 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message QueryIndividualLiquidityPoolRequest{
-    uint64 pool_id=1;
+    uint64 pool_id=1;   [ (gogoproto.moretags) = "yaml:\"id\"" 
+    (gogoproto.nullable)=false];
 }
 
 message QueryIndividualLiquidityPoolResponse{
-    uint64 id=1;   [ (gogoproto.moretags) = "yaml:\"id\"" 
+    uint64 id=1;   [ (gogoproto.moretags) = "yaml:\"pool_liquidity\"" 
     (gogoproto.nullable)=false];   
 }
 
@@ -23,7 +24,7 @@ message QueryTotalLiquidityRequest{
 }
 
 message QueryTotalLiquidityResponse{
-    uint64 id=1;   [ (gogoproto.moretags) = "yaml:\"id\"" 
+    uint64 liquidity=1;   [ (gogoproto.moretags) = "yaml:\"total_liquidity\"" 
     (gogoproto.nullable)=false];  
 }
 
@@ -31,6 +32,6 @@ message QueryTotalCollateralRequest{
 }
 
 message QueryTotalCollateralResponse{
-    uint64 id=1;   [ (gogoproto.moretags) = "yaml:\"id\"" 
+    uint64 id=1;   [ (gogoproto.moretags) = "yaml:\"total_collateral\"" 
     (gogoproto.nullable)=false];  
 }
