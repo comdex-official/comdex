@@ -1,0 +1,80 @@
+syntax = "proto3";
+package comdex.vault.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/auction/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message AuctionedVault {
+
+    uint64 pair_id = 2 [
+        (gogoproto.customname) = "PairID",
+        (gogoproto.moretags)   = "yaml:\"pair_id\""
+    ];
+    string owner     = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+    string amount_in = 4 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+        (gogoproto.moretags)   = "yaml:\"amount_in\"",
+        (gogoproto.nullable)   = false
+    ];
+    string amount_out = 5 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+        (gogoproto.moretags)   = "yaml:\"amount_out\"",
+        (gogoproto.nullable)   = false
+    ];
+    string cr_at_liquidation = 6 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable)   = false,
+        (gogoproto.moretags)   = "yaml:\"cr_at_liquidation\""
+    ];
+    google.protobuf.Timestamp liquidation_timestamp = 7 [
+        (gogoproto.nullable) = false, 
+        (gogoproto.stdtime) = true,
+        (gogoproto.moretags)   = "yaml:\"liquidation_timestamp\""
+    ];
+}
+
+message CollateralAuction {
+    uint64 id = 1 [ 
+        (gogoproto.customname) = "ID", 
+        (gogoproto.moretags) = "yaml:\"id\""
+    ];
+    AuctionedVault auctioned_vault = 2 [
+        (gogoproto.embed) = true, 
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags)   = "yaml:\"auctioned_vault\""
+    ];
+    bytes lot = 3 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags)   = "yaml:\"lot\"",
+        (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+    ];
+    string bidder = 4 [
+        (gogoproto.moretags) = "yaml:\"owner\"",
+        (cosmos_proto.scalar) = "cosmos.AddressBytes",
+        (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.AccAddress"
+    ];
+    bytes bid = 5 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags)   = "yaml:\"bid\"",
+        (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+    ];
+    google.protobuf.Timestamp end_time = 6 [
+        (gogoproto.nullable) = false, 
+        (gogoproto.stdtime) = true,
+        (gogoproto.moretags)   = "yaml:\"end_time\""
+    ];
+    google.protobuf.Timestamp max_end_time = 7 [
+        (gogoproto.nullable) = false, 
+        (gogoproto.stdtime) = true,
+        (gogoproto.moretags)   = "yaml:\"max_end_time\""
+    ];
+    bytes max_bid = 8 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags)   = "yaml:\"max_bid\"",
+        (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+    ];
+  }

@@ -454,6 +454,10 @@ func New(
 		keys[auctiontypes.StoreKey],
 		keys[auctiontypes.MemStoreKey],
 		app.GetSubspace(auctiontypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+		&app.vaultKeeper,
+		&app.assetKeeper,
 	)
 	// auction := auction.NewAppModule(app.cdc, app.auctionKeeper, app.accountKeeper, app.bankKeeper)
 	/****  Module Options ****/
@@ -497,6 +501,7 @@ func New(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
+		auctiontypes.ModuleName, vaulttypes.ModuleName, assettypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName)

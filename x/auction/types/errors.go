@@ -1,13 +1,9 @@
 package types
 
-// DONTCOVER
-
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// x/auction module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
-	
+	ErrInvalidInitialAuctionID = errors.Register(ModuleName, 101, "initial auction ID hasn't been set")
 )
