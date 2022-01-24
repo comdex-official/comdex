@@ -456,7 +456,6 @@ func New(
 	)
 
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-	ibcRouter.AddRoute(oracletypes.ModuleName, oracleModule )
 	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandoracleModule)
 	app.ibcKeeper.SetRouter(ibcRouter)
 

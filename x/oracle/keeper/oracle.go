@@ -101,11 +101,38 @@ func (k *Keeper) setRates(ctx sdk.Context, symbol string) {
 	)
 	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, 1)
 
-	value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
-		Value: data.Rates[0],
+
+	switch symbol {
+	case "atom":
+		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[0],
 		},
-	)
-	store.Set(key, value)
+		)
+		store.Set(key, value)
+
+	case "cGOLD":
+		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[1],
+		},
+		)
+		store.Set(key, value)
+
+	case "cSILVER":
+		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[2],
+		},
+		)
+		store.Set(key, value)
+
+	case "cOIL":
+		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[3],
+		},
+		)
+		store.Set(key, value)
+
+	default:
+	}
 
 }
 
@@ -187,40 +214,6 @@ func (k *Keeper) GetCalldataID(ctx sdk.Context) uint64 {
 	k.cdc.MustUnmarshal(value, &id)
 
 	return id.GetValue()
-}
-
-func (k *Keeper) SetCalldata(ctx sdk.Context, id uint64, calldata types.FetchPriceCallData) {
-	var (
-		store = k.Store(ctx)
-		key   = types.CalldataKey(id)
-		value = k.cdc.MustMarshal(&calldata)
-	)
-
-	store.Set(key, value)
-}
-
-func (k *Keeper) GetCalldata(ctx sdk.Context, id uint64) (calldata types.FetchPriceCallData, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.CalldataKey(id)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return calldata, false
-	}
-
-	k.cdc.MustUnmarshal(value, &calldata)
-	return calldata, true
-}
-
-func (k *Keeper) DeleteCalldata(ctx sdk.Context, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.CalldataKey(id)
-	)
-
-	store.Delete(key)
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {

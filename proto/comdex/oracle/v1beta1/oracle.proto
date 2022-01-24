@@ -15,13 +15,3 @@ uint64 script_id = 2 [
 ];
 uint64 rates = 3;
 }
-
-
-message FetchPriceCallData {
-  repeated string symbols = 1 [ (gogoproto.moretags) = "yaml:\"symbols\"" ];
-  uint64 multiplier = 2 [ (gogoproto.moretags) = "yaml:\"multiplier\"" ];
-}
-
-message FetchPriceResult {
-  repeated uint64 rates = 1 [ (gogoproto.moretags) = "yaml:\"rates\"" ];
-}

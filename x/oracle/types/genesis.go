@@ -1,16 +1,14 @@
 package types
 
-func NewGenesisState(markets []Market, params Params) *GenesisState {
+func NewGenesisState(markets []Market) *GenesisState {
 	return &GenesisState{
 		Markets: markets,
-		Params:  params,
 	}
 }
 
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
 		nil,
-		DefaultParams(),
 	)
 }
 
