@@ -2,12 +2,87 @@ package cli
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/comdex-official/comdex/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 )
+
+func queryAuction() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "auction [id]",
+		Short: "Query an auction",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryAuction(
+				context.Background(),
+				&types.QueryAuctionRequest{
+					Id: id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryAuctions() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "auctions",
+		Short: "Query auctions",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryAuctions(
+				context.Background(),
+				&types.QueryAuctionsRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "auctions")
+
+	return cmd
+}
 
 func queryParams() *cobra.Command {
 	cmd := &cobra.Command{

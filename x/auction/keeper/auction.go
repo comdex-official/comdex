@@ -86,3 +86,18 @@ func (k *Keeper) GetAuctions(ctx sdk.Context) (auctions []auctiontypes.Collatera
 
 	return auctions
 }
+
+func (k *Keeper) GetAuction(ctx sdk.Context, id uint64) (auction auctiontypes.CollateralAuction, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.AuctionKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return auction, false
+	}
+
+	k.cdc.MustUnmarshal(value, &auction)
+	return auction, true
+}
