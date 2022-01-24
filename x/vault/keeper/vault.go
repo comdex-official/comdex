@@ -161,14 +161,14 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 		return sdk.ZeroDec(), types.ErrorPriceOutDoesNotExist
 	}
 
-	totalIn := amountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).QuoRaw(assetIn.Decimals).ToDec()
-	if totalIn.IsZero() {
-		return sdk.ZeroDec(), types.ErrorInvalidAmount
+	totalIn := amountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
+	if totalIn.LTE(sdk.ZeroDec()) {
+		return sdk.ZeroDec(), types.ErrorInvalidAmountIn
 	}
 
-	totalOut := amountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).QuoRaw(assetOut.Decimals).ToDec()
-	if totalOut.IsZero() {
-		return sdk.ZeroDec(), types.ErrorInvalidAmount
+	totalOut := amountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
+	if totalOut.LTE(sdk.ZeroDec()) {
+		return sdk.ZeroDec(), types.ErrorInvalidAmountOut
 	}
 
 	return totalIn.Quo(totalOut), nil
