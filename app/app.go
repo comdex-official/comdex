@@ -507,6 +507,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		assettypes.ModuleName,
 		vaulttypes.ModuleName,
+		oracletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
