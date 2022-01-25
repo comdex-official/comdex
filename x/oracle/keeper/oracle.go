@@ -13,7 +13,6 @@ func (k *Keeper) SetMarket(ctx sdk.Context, market types.Market) {
 		key   = types.MarketKey(market.Symbol)
 		value = k.cdc.MustMarshal(&market)
 	)
-
 	store.Set(key, value)
 }
 
@@ -22,7 +21,6 @@ func (k *Keeper) HasMarket(ctx sdk.Context, symbol string) bool {
 		store = k.Store(ctx)
 		key   = types.MarketKey(symbol)
 	)
-
 	return store.Has(key)
 }
 
@@ -76,7 +74,7 @@ func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool
 	return price.GetValue(), true
 }
 
-func (k *Keeper) getrates(ctx sdk.Context, symbol string) (uint64, bool){
+func (k *Keeper) getRates(ctx sdk.Context, symbol string) (uint64, bool){
 
 	var (
 		store = k.Store(ctx)
@@ -94,7 +92,7 @@ func (k *Keeper) getrates(ctx sdk.Context, symbol string) (uint64, bool){
 	return price.GetValue(), true
 }
 
-func (k *Keeper) setRates(ctx sdk.Context, symbol string) {
+func (k *Keeper) SetRates(ctx sdk.Context, symbol string) {
 	var (
 		store = k.Store(ctx)
 		key   = types.PriceForMarketKey(symbol)
@@ -127,6 +125,13 @@ func (k *Keeper) setRates(ctx sdk.Context, symbol string) {
 	case "cOIL":
 		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[3],
+		},
+		)
+		store.Set(key, value)
+
+	case "UST":
+		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[4],
 		},
 		)
 		store.Set(key, value)

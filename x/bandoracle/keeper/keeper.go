@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/comdex-official/comdex/x/bandoracle/expected"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -19,6 +20,7 @@ type (
 		storeKey   sdk.StoreKey
 		memKey     sdk.StoreKey
 		paramstore paramtypes.Subspace
+		oracle expected.OracleKeeper
 	}
 )
 
@@ -31,6 +33,7 @@ func NewKeeper(
 	channelKeeper ibckeeper.ChannelKeeper,
 	portKeeper ibckeeper.PortKeeper,
 	scopedKeeper ibckeeper.ScopedKeeper,
+	oracle expected.OracleKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -50,6 +53,7 @@ func NewKeeper(
 		storeKey:   storeKey,
 		memKey:     memKey,
 		paramstore: ps,
+		oracle: oracle,
 	}
 }
 

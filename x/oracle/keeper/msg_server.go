@@ -46,8 +46,8 @@ func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketReque
 	if k.HasMarket(ctx, msg.Symbol) {
 		return nil, types.ErrorDuplicateMarket
 	}
-	k.setRates(ctx, msg.Symbol)
-	Rates,_ := k.getrates(ctx, msg.Symbol)
+	k.SetRates(ctx, msg.Symbol)
+	Rates,_ := k.getRates(ctx, msg.Symbol)
 
 	var (
 		market = types.Market{
