@@ -101,7 +101,7 @@ func (k *Keeper) SetRates(ctx sdk.Context, symbol string) {
 
 
 	switch symbol {
-	case "atom":
+	case "ATOM":
 		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[0],
 		},

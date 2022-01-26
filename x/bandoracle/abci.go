@@ -16,11 +16,11 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 			37,
 			"channel-0",
 			&types.FetchPriceCallData{[]string{"ATOM"}, 1000000} ,
-			5,
+			6,
 			3,
-			sdk.Coins{sdk.NewCoin("uband", sdk.NewInt(30))},
-			6000,
-			6000,
+			sdk.Coins{sdk.NewCoin("uband", sdk.NewInt(30000))},
+			600000,
+			600000,
 		)
 		fmt.Println("beginblocker")
 		_, err := k.FetchPrice(ctx, *msg)
