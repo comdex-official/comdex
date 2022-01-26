@@ -74,7 +74,7 @@ func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool
 	return price.GetValue(), true
 }
 
-func (k *Keeper) getRates(ctx sdk.Context, symbol string) (uint64, bool){
+func (k *Keeper) GetRates(ctx sdk.Context, symbol string) (uint64, bool){
 
 	var (
 		store = k.Store(ctx)
