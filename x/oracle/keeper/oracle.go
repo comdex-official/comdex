@@ -108,21 +108,21 @@ func (k *Keeper) SetRates(ctx sdk.Context, symbol string) {
 		)
 		store.Set(key, value)
 
-	case "cGOLD":
+	case "XAU":
 		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[1],
 		},
 		)
 		store.Set(key, value)
 
-	case "cSILVER":
+	case "XAG":
 		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[2],
 		},
 		)
 		store.Set(key, value)
 
-	case "cOIL":
+	case "OIL":
 		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[3],
 		},

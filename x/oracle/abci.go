@@ -13,16 +13,24 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	fmt.Println("yes")
 	if ctx.BlockHeight()>=59{
 		fmt.Println("Setting Rates")
-	k.SetRates(ctx, "ATOM")
-	rates, _:= k.GetRates(ctx, "ATOM")
+	rates1, _:= k.GetRates(ctx, "ATOM")
+	rates2, _:= k.GetRates(ctx, "uGOLD")
+
 
 		var (
-			market = types.Market{
+			market1 = types.Market{
 				Symbol:   "ATOM",
 				ScriptID: 37,
-				Rates: rates,
+				Rates: rates1,
+			}
+			market2 = types.Market{
+				Symbol:   "uGOLD",
+				ScriptID: 37,
+				Rates: rates2,
 			}
 		)
-		k.SetMarket(ctx, market)
+		k.SetMarket(ctx, market1)
+		k.SetMarket(ctx, market2)
+
 	}
 }
