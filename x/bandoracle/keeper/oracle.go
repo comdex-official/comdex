@@ -69,7 +69,7 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 		return nil, nil
 	}
 
-	encodedCalldata := obi.MustEncode(types.FetchPriceCallData{[]string{"ATOM","BTC"}, 1000000})
+	encodedCalldata := obi.MustEncode(types.FetchPriceCallData{[]string{"ATOM","XAU"}, 1000000})
 	packetData := packet.NewOracleRequestPacketData(
 		msg.ClientID,
 		msg.OracleScriptID,

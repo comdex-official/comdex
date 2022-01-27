@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
@@ -152,15 +151,7 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 	assetOut assettypes.Asset,
 ) (sdk.Dec, error) {
 
-	fmt.Println(assetIn)
-	fmt.Println(assetOut)
-	fmt.Println(amountIn)
-	fmt.Println(amountOut)
-	fmt.Println(assetIn.Id)
 	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-	fmt.Println("{{{{{{")
-	fmt.Println(assetInPrice)
-	fmt.Println(found)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorPriceInDoesNotExist
 	}
