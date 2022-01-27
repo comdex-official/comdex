@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -108,7 +109,7 @@ func (k *Keeper) SetRates(ctx sdk.Context, symbol string) {
 		)
 		store.Set(key, value)
 
-	case "XAU":
+	case "BTC":
 		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[1],
 		},
@@ -170,7 +171,11 @@ func (k *Keeper) GetMarketForAsset(ctx sdk.Context, id uint64) (market types.Mar
 		key   = types.MarketForAssetKey(id)
 		value = store.Get(key)
 	)
-
+	fmt.Println("GetMarketForAsset")
+	fmt.Println("will print id")
+	fmt.Println(id)
+	fmt.Println("id printed")
+	fmt.Println(value)
 	if value == nil {
 		return market, false
 	}
@@ -222,7 +227,17 @@ func (k *Keeper) GetCalldataID(ctx sdk.Context) uint64 {
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
+	fmt.Println("in oracle module")
 	market, found := k.GetMarketForAsset(ctx, id)
+	fmt.Println(id)
+	fmt.Println(market)
+	m,_:=k.GetMarket(ctx,"ATOM")
+	fmt.Println(m)
+	fmt.Println("last")
+	f:=k.HasMarketForAsset(ctx,id)
+	fmt.Println("Printing F")
+	fmt.Println(f)
+
 	if !found {
 		return 0, false
 	}

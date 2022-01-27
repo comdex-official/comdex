@@ -11,10 +11,17 @@ import (
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	fmt.Println("yes")
+
 	if ctx.BlockHeight()>=59{
+
 		fmt.Println("Setting Rates")
-	rates1, _:= k.GetRates(ctx, "ATOM")
-	rates2, _:= k.GetRates(ctx, "uGOLD")
+	k.SetRates(ctx, "ATOM")
+	k.SetRates(ctx, "BTC")
+	k.SetMarketForAsset(ctx, 1, "ATOM")
+	k.SetMarketForAsset(ctx, 2, "BTC")
+
+		rates1, _:= k.GetRates(ctx, "ATOM")
+		rates2, _:= k.GetRates(ctx, "BTC")
 
 
 		var (
@@ -24,7 +31,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 				Rates: rates1,
 			}
 			market2 = types.Market{
-				Symbol:   "uGOLD",
+				Symbol:   "BTC",
 				ScriptID: 37,
 				Rates: rates2,
 			}

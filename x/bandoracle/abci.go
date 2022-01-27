@@ -10,19 +10,22 @@ import (
 
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
+	fmt.Println("bandoracle executed")
 	if ctx.BlockHeight()>=39 && ctx.BlockHeight()%20==0{
 		msg := types.NewMsgFetchPriceData(
 			types.ModuleName,
-			112,
+			37,
 			"channel-0",
-			&types.FetchPriceCallData{[]string{"ATOM,XAU"}, 1000000} ,
-			1,
-			1,
+			&types.FetchPriceCallData{[]string{"BTC","ATOM"}, 1000000} ,
+			6,
+			3,
 			sdk.Coins{sdk.NewCoin("uband", sdk.NewInt(30000))},
 			600000,
 			600000,
 		)
 		fmt.Println("beginblocker")
+		fmt.Println(msg)
+		fmt.Println("{{{{{{{{{{{{{{{{{{{{{{{{{{{{[")
 		_, err := k.FetchPrice(ctx, *msg)
 		if err != nil {
 			return
