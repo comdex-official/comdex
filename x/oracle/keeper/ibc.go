@@ -2,8 +2,8 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
+	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 )
 
 func (k Keeper) IsBound(ctx sdk.Context, id string) bool {

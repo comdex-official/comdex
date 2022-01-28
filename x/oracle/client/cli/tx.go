@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	ibcchannelclientutils "github.com/cosmos/ibc-go/modules/core/04-channel/client/utils"
+	ibcchannelclientutils "github.com/cosmos/ibc-go/v2/modules/core/04-channel/client/utils"
 	"github.com/spf13/cobra"
 	"strconv"
 	"strings"
