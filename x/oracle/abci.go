@@ -1,6 +1,7 @@
 package oracle
 
 import (
+	"fmt"
 	"github.com/comdex-official/comdex/x/oracle/keeper"
 	"github.com/comdex-official/comdex/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,31 +10,23 @@ import (
 
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
-
+	a := k.GetAssets(ctx)
+	fmt.Println(a)
+	fmt.Println("printing Assets")
 	if ctx.BlockHeight()>=59{
-	k.SetRates(ctx, "ATOM")
-	k.SetRates(ctx, "XAU")
-	k.SetMarketForAsset(ctx, 1, "ATOM")
-	k.SetMarketForAsset(ctx, 2, "XAU")
-
-		rates1, _:= k.GetRates(ctx, "ATOM")
-		rates2, _:= k.GetRates(ctx, "XAU")
-
-
-		var (
-			market1 = types.Market{
-				Symbol:   "ATOM",
-				ScriptID: 112,
-				Rates: rates1,
-			}
-			market2 = types.Market{
-				Symbol:   "XAU",
-				ScriptID: 112,
-				Rates: rates2,
-			}
-		)
-		k.SetMarket(ctx, market1)
-		k.SetMarket(ctx, market2)
-
+		assets := k.GetAssets(ctx)
+		for _, asset := range assets{
+			k.SetRates(ctx, asset.Name)
+			k.SetMarketForAsset(ctx, asset.Id, asset.Name)
+			rate,_ := k.GetRates(ctx, asset.Name)
+			var (
+				market = types.Market{
+					Symbol:   asset.Name,
+					ScriptID: 112,
+					Rates:    rate,
+				}
+			)
+			k.SetMarket(ctx, market)
+		}
 	}
 }

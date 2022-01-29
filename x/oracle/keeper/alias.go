@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 )
@@ -17,3 +18,6 @@ func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) ( bool) {
 	return k.assetKeeper.HasAsset(ctx, id)
 }
 
+func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset){
+	return k.assetKeeper.GetAssets(ctx)
+}

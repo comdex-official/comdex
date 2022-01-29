@@ -1,6 +1,7 @@
 package expected
 
 import (
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
@@ -23,6 +24,11 @@ type ScopedKeeper interface {
 	AuthenticateCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) bool
 	ClaimCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) error
 	GetCapability(ctx sdk.Context, name string) (*capabilitytypes.Capability, bool)
+}
+
+type AssetKeeper interface {
+	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
+	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 }
 
 type BandOracleKeeper interface {
