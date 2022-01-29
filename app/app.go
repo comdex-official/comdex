@@ -2,6 +2,7 @@ package app
 
 import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"io"
 	"os"
 	"path/filepath"
@@ -25,6 +26,7 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -72,6 +74,7 @@ import (
 	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
 	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
+	ibctypes "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 	"github.com/gravity-devs/liquidity/x/liquidity"
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
@@ -202,6 +205,8 @@ type App struct {
 	wasmKeeper wasm.Keeper
 	// the module manager
 	mm *module.Manager
+	// Module configurator
+	configurator module.Configurator
 }
 
 // New returns a reference to an initialized App.
@@ -353,7 +358,7 @@ func New(
 		homePath,
 		app.BaseApp,
 	)
-
+	app.registerUpgradeHandlers()
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.stakingKeeper = *stakingKeeper.SetHooks(
@@ -562,8 +567,8 @@ func New(
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encoding.Amino)
-	app.mm.RegisterServices(module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter()))
-
+	app.configurator = module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter())
+	app.mm.RegisterServices(app.configurator)
 	// initialize stores
 	app.MountKVStores(app.keys)
 	app.MountTransientStores(app.tkeys)
@@ -738,5 +743,46 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
+	}
+}
+func (app *App) registerUpgradeHandlers() {
+	app.upgradeKeeper.SetUpgradeHandler("v0.1.0", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
+		// 1st-time running in-store migrations, using 1 as fromVersion to
+		// avoid running InitGenesis.
+		fromVM := map[string]uint64{
+			authtypes.ModuleName:        auth.AppModule{}.ConsensusVersion(),
+			banktypes.ModuleName:        bank.AppModule{}.ConsensusVersion(),
+			capabilitytypes.ModuleName:  capability.AppModule{}.ConsensusVersion(),
+			crisistypes.ModuleName:      crisis.AppModule{}.ConsensusVersion(),
+			distrtypes.ModuleName:       distr.AppModule{}.ConsensusVersion(),
+			evidencetypes.ModuleName:    evidence.AppModule{}.ConsensusVersion(),
+			govtypes.ModuleName:         gov.AppModule{}.ConsensusVersion(),
+			minttypes.ModuleName:        mint.AppModule{}.ConsensusVersion(),
+			paramstypes.ModuleName:      params.AppModule{}.ConsensusVersion(),
+			slashingtypes.ModuleName:    slashing.AppModule{}.ConsensusVersion(),
+			stakingtypes.ModuleName:     staking.AppModule{}.ConsensusVersion(),
+			upgradetypes.ModuleName:     upgrade.AppModule{}.ConsensusVersion(),
+			vestingtypes.ModuleName:     vesting.AppModule{}.ConsensusVersion(),
+			ibctypes.ModuleName:         ibc.AppModule{}.ConsensusVersion(),
+			genutiltypes.ModuleName:     genutil.AppModule{}.ConsensusVersion(),
+			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
+			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
+			oracletypes.ModuleName:      oracle.AppModule{}.ConsensusVersion(),
+			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
+		}
+		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+	})
+
+	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(err)
+	}
+	if upgradeInfo.Name == "v0.1.0" && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{wasmtypes.ModuleName},
+		}
+
+		// configure store loader that checks if version == upgradeHeight and applies store upgrades
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 	}
 }
