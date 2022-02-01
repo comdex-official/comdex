@@ -93,7 +93,7 @@ type AppModule struct {
 }
 
 func (a AppModule) ConsensusVersion() uint64 {
-	return 0
+	return 1
 }
 
 func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
