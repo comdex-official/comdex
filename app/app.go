@@ -769,7 +769,6 @@ func (app *App) registerUpgradeHandlers() {
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
 		}
-		//app.mm.Modules[oracletypes.ModuleName].InitGenesis(ctx, app.cdc, app.cdc.MustMarshalJSON(oracletypes.DefaultGenesisState()))
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 
