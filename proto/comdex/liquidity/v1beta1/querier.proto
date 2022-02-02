@@ -21,7 +21,7 @@ service QueryService {
     }
 
     //Get total collateral 
-    rpc PoolCollateral(QueryTotalCollateralRequest) returns (QueryTotalCollateralResponse){
+    rpc TotalCollateral(QueryTotalCollateralRequest) returns (QueryTotalCollateralResponse){
         option (google.api.http).get = "/comdex/liquidity/v1beta1/collateral";
     }
 }
