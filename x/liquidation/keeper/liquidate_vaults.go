@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	"time"
 
 	"github.com/comdex-official/comdex/x/liquidation/types"
@@ -67,8 +65,6 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 	)
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, lockedVaultId+1)
-	fmt.Println(value)
-	fmt.Println("---------------Locked Vault Created-------------")
 
 	//Create a new Data Structure with the current Params
 	//Set nil for all the values not available right now
@@ -118,18 +114,10 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 			var v, t sdk.Dec
 			v, _ = sdk.NewDecFromStr("1.6")
 			t, _ = sdk.NewDecFromStr("0.28")
-			a:=totalOut.Mul(v)
-			b:= totalIn
-			c:= a.Sub(b)
-			fmt.Println(a)
-			fmt.Println("{{{{{{{{{{{{{{{printing a")
-			fmt.Println(b)
-			fmt.Println("{{{{{{{{{{{{{{{printing b")
-			fmt.Println(c)
-			fmt.Println("{{{{{{{{{{{{{{{printing c")
+			a := totalOut.Mul(v)
+			b := totalIn
+			c := a.Sub(b)
 			selloffAmount = (c).Quo(t)
-			fmt.Println(selloffAmount)
-			fmt.Println("{{{{{{{{{{{{{{{printing selloff")
 
 			if selloffAmount.GTE(totalIn) {
 				lockedVault.CollateralToBeAuctioned = &totalIn
@@ -155,8 +143,6 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 				SellOffHistory:               nil,
 			}
 
-			fmt.Println("----------------Checking Selloff Amount for Collateral----------------")
-			fmt.Println(updatedLockedVault)
 			k.SetLockedVault(ctx, updatedLockedVault)
 
 		}

@@ -1,7 +1,8 @@
 package keeper
 
 import (
-	"fmt"
+	"time"
+
 	"github.com/bandprotocol/bandchain-packet/obi"
 	"github.com/bandprotocol/bandchain-packet/packet"
 	"github.com/comdex-official/comdex/x/bandoracle/types"
@@ -11,7 +12,6 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	host "github.com/cosmos/ibc-go/modules/core/24-host"
 	gogotypes "github.com/gogo/protobuf/types"
-	"time"
 )
 
 func (k Keeper) SetFetchPriceResult(ctx sdk.Context, requestID types.OracleRequestID, result types.FetchPriceResult) {
@@ -52,7 +52,6 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	sourcePort := types.PortID
 	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, sourcePort, msg.SourceChannel)
 	if !found {
-		fmt.Println("sourcechannel not found")
 		return nil, nil
 	}
 	destinationPort := sourceChannelEnd.GetCounterparty().GetPortID()
@@ -69,7 +68,7 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 		return nil, nil
 	}
 
-	encodedCalldata := obi.MustEncode(types.FetchPriceCallData{[]string{"ATOM","XAU"}, 1000000})
+	encodedCalldata := obi.MustEncode(types.FetchPriceCallData{[]string{"ATOM", "XAU"}, 1000000})
 	packetData := packet.NewOracleRequestPacketData(
 		msg.ClientID,
 		msg.OracleScriptID,
@@ -80,7 +79,6 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 		msg.PrepareGas,
 		msg.ExecuteGas,
 	)
-	fmt.Println(packetData)
 	err := k.ChannelKeeper.SendPacket(ctx, channelCap, channeltypes.NewPacket(
 		packetData.GetBytes(),
 		sequence,

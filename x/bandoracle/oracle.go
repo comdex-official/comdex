@@ -1,7 +1,6 @@
 package bandoracle
 
 import (
-	"fmt"
 	"github.com/bandprotocol/bandchain-packet/obi"
 	"github.com/bandprotocol/bandchain-packet/packet"
 	"github.com/comdex-official/comdex/x/bandoracle/types"
@@ -16,7 +15,6 @@ func (am AppModule) handleOraclePacket(
 ) (channeltypes.Acknowledgement, error) {
 	var ack channeltypes.Acknowledgement
 	var modulePacketData packet.OracleResponsePacketData
-	fmt.Println("going inside?????????????????")
 	if err := types.ModuleCdc.UnmarshalJSON(modulePacket.GetData(), &modulePacketData); err != nil {
 		return ack, nil
 	}
@@ -30,9 +28,7 @@ func (am AppModule) handleOraclePacket(
 			return ack, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,
 				"cannot decode the fetchPrice received packet")
 		}
-		fmt.Println("|||||||||||||||PASSSSS @@@@")
 		am.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(1), fetchPriceResult)
-		fmt.Println(fetchPriceResult)
 		// TODO: FetchPrice oracle data reception logic
 
 	default:

@@ -132,7 +132,6 @@ func (am AppModule) OnRecvPacket(
 	relayer sdk.AccAddress,
 ) ibcexported.Acknowledgement {
 	var ack channeltypes.Acknowledgement
-	fmt.Println("{{{{{{{{{{{{}}}}}}}}}}")
 	oracleAck, err := am.handleOraclePacket(ctx, modulePacket)
 	if err != nil {
 		return channeltypes.NewErrorAcknowledgement(sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: "+err.Error()).Error())

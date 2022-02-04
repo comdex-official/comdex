@@ -56,7 +56,6 @@ func (k *Keeper) GetMarkets(ctx sdk.Context) (markets []types.Market) {
 	return markets
 }
 
-
 func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool) {
 	var (
 		store = k.Store(ctx)
@@ -74,7 +73,7 @@ func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool
 	return price.GetValue(), true
 }
 
-func (k *Keeper) GetRates(ctx sdk.Context, symbol string) (uint64, bool){
+func (k *Keeper) GetRates(ctx sdk.Context, symbol string) (uint64, bool) {
 
 	var (
 		store = k.Store(ctx)
@@ -99,38 +98,37 @@ func (k *Keeper) SetRates(ctx sdk.Context, symbol string) {
 	)
 	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, 1)
 
-
 	switch symbol {
 	case "ATOM":
-		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[0],
 		},
 		)
 		store.Set(key, value)
 
 	case "XAU":
-		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[1],
 		},
 		)
 		store.Set(key, value)
 
 	case "XAG":
-		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[2],
 		},
 		)
 		store.Set(key, value)
 
 	case "OIL":
-		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[3],
 		},
 		)
 		store.Set(key, value)
 
 	case "UST":
-		value, _:= k.cdc.Marshal(&protobuftypes.UInt64Value{
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
 			Value: data.Rates[4],
 		},
 		)
