@@ -115,9 +115,15 @@ func(k Keeper) UpdateLockedVaults(ctx sdk.Context) error{
 		CurrentCollaterlisationRatio=collateralizationRatio
 
 		selloffAmount:=k.calc(lockedVault.AmountIn, lockedVault.AmountOut)
-		str := fmt.Sprint(lockedVault.AmountIn)
-		lin, _ := strconv.ParseFloat(str, 64)
-		lockedVault.CollateralToBeAuctioned=uint64(lin)-selloffAmount
+		if (selloffAmount>=lockedVault.AmountIn){
+			lockedVault.CollateralToBeAuctioned=lockedVault.AmountIn
+		}
+		else{
+			str := fmt.Sprint(lockedVault.AmountIn)
+			lin, _ := strconv.ParseFloat(str, 64)
+			lockedVault.CollateralToBeAuctioned=uint64(lin)-selloffAmount
+		}
+
 		fmt.Println("----------------Checking Selloff Amount for Collateral----------------")
 		fmt.Println(lockedVault)
 		k.SetLockedVault(ctx,lockedVault)
