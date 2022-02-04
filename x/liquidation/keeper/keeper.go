@@ -21,6 +21,7 @@ type Keeper struct {
 	bank       expected.BankKeeper
 	vault      expected.VaultKeeper
 	asset      expected.AssetKeeper
+	oracle	   expected.OracleKeeper
 }
 
 func NewKeeper(
@@ -32,6 +33,7 @@ func NewKeeper(
 	bank expected.BankKeeper,
 	asset expected.AssetKeeper,
 	vault expected.VaultKeeper,
+	oracle expected.OracleKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -49,6 +51,7 @@ func NewKeeper(
 		bank:       bank,
 		asset:      asset,
 		vault:      vault,
+		oracle:     oracle,
 	}
 }
 
