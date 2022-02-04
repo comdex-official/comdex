@@ -5,7 +5,6 @@ import (
 
 	"time"
 
-
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -34,52 +33,42 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 			continue
 		}
 		if sdk.Dec.LT(collateralizationRatio, liquidationRatio) {
-			err := k.CreateLockedVault(ctx, vault , collateralizationRatio)
+			err := k.CreateLockedVault(ctx, vault, collateralizationRatio)
 			if err != nil {
 				return err
 			}
-			k.DeleteVault(ctx,vault.ID)
+			k.DeleteVault(ctx, vault.ID)
 		}
 	}
 	return nil
 }
 
+func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, collateralizationRatio sdk.Dec) error {
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context,vault  vaulttypes.Vault,collateralizationRatio sdk.Dec) error{
-
-	lockedVaultId:=k.GetLockedVaultID(ctx)
+	lockedVaultId := k.GetLockedVaultID(ctx)
 
 	var (
-
-
-
-		value =types.LockedVault{
-			LockedVaultId : lockedVaultId,
-			OriginalVaultId: vault.ID,
-			PairId:vault.PairID,
-			Owner:vault.Owner,
-			AmountIn:	vault.AmountIn,
-			AmountOut:	vault.AmountOut,
-			Initiator:types.ModuleName,
-			IsAuctionComplete:false,
-			IsAuctionInProgress:false,
-			CrAtLiquidation:	collateralizationRatio,
-			CurrentCollaterlisationRatio:	collateralizationRatio,
-			CollateralToBeAuctioned: nil,
-			LiquidationTimestamp:	time.Time{},
-			SellOffHistory:nil,
-
-
+		value = types.LockedVault{
+			LockedVaultId:                lockedVaultId,
+			OriginalVaultId:              vault.ID,
+			PairId:                       vault.PairID,
+			Owner:                        vault.Owner,
+			AmountIn:                     vault.AmountIn,
+			AmountOut:                    vault.AmountOut,
+			Initiator:                    types.ModuleName,
+			IsAuctionComplete:            false,
+			IsAuctionInProgress:          false,
+			CrAtLiquidation:              collateralizationRatio,
+			CurrentCollaterlisationRatio: collateralizationRatio,
+			CollateralToBeAuctioned:      nil,
+			LiquidationTimestamp:         time.Time{},
+			SellOffHistory:               nil,
 		}
-
-
 	)
-	k.SetLockedVault(ctx,value)
-	k.SetLockedVaultID(ctx,lockedVaultId+1)
+	k.SetLockedVault(ctx, value)
+	k.SetLockedVaultID(ctx, lockedVaultId+1)
 	fmt.Println(value)
 	fmt.Println("---------------Locked Vault Created-------------")
-
-
 
 	//Create a new Data Structure with the current Params
 	//Set nil for all the values not available right now
@@ -91,21 +80,25 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context,vault  vaulttypes.Vault,collat
 	return nil
 
 }
+
 //for first time to update the coollateralization value & sell off amount
-func(k Keeper) UpdateLockedVaults(ctx sdk.Context) error{
-	lockedVaults:=k.GetLockedVaults(ctx)
-	if len(lockedVaults)==0{
+func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
+	lockedVaults := k.GetLockedVaults(ctx)
+	if len(lockedVaults) == 0 {
 		return nil
 	}
-	for _,lockedVault:=range lockedVaults{
-		if(lockedVault.IsAuctionInProgress==false ){
-			pairId := lockedVault.PairId
-			assetIn, found := k.GetAsset(ctx, pairId)
+	for _, lockedVault := range lockedVaults {
+		if !lockedVault.IsAuctionInProgress {
+			pair, found := k.GetPair(ctx, lockedVault.PairId)
+			if !found {
+				continue
+			}
+			assetIn, found := k.GetAsset(ctx, pair.AssetIn)
 			if !found {
 				continue
 			}
 
-			assetOut, found := k.GetAsset(ctx, pairId)
+			assetOut, found := k.GetAsset(ctx, pair.AssetOut)
 			if !found {
 				continue
 			}
@@ -113,7 +106,7 @@ func(k Keeper) UpdateLockedVaults(ctx sdk.Context) error{
 			if err != nil {
 				continue
 			}
-			lockedVault.CurrentCollaterlisationRatio=collateralizationRatio
+			lockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 
 			assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
 			assetOutPrice, _ := k.GetPriceForAsset(ctx, assetOut.Id)
@@ -122,23 +115,21 @@ func(k Keeper) UpdateLockedVaults(ctx sdk.Context) error{
 			totalOut := lockedVault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
 
 			var selloffAmount sdk.Dec
-			var v,t sdk.Dec
+			var v, t sdk.Dec
 			v, _ = sdk.NewDecFromStr("1.6")
 			t, _ = sdk.NewDecFromStr("0.28")
-			selloffAmount =((totalOut.Mul(v)).Sub(totalIn)).Quo(t)
+			selloffAmount = ((totalOut.Mul(v)).Sub(totalIn)).Quo(t)
 
-			if selloffAmount.GTE(totalIn){
+			if selloffAmount.GTE(totalIn) {
 				lockedVault.CollateralToBeAuctioned = &totalIn
-			} else{
+			} else {
 				value := totalIn.Sub(selloffAmount)
 				lockedVault.CollateralToBeAuctioned = &value
 			}
 
-
 			fmt.Println("----------------Checking Selloff Amount for Collateral----------------")
 			fmt.Println(lockedVault)
-			k.SetLockedVault(ctx,lockedVault)
-
+			k.SetLockedVault(ctx, lockedVault)
 
 		}
 
@@ -146,18 +137,18 @@ func(k Keeper) UpdateLockedVaults(ctx sdk.Context) error{
 	return nil
 }
 
-func(k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error{
-	lockedVaults:=k.GetLockedVaults(ctx)
-	if len(lockedVaults)==0{
+func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
+	lockedVaults := k.GetLockedVaults(ctx)
+	if len(lockedVaults) == 0 {
 		return nil
 	}
-	for _,lockedVault:=range lockedVaults {
+	for _, lockedVault := range lockedVaults {
 		v, _ := sdk.NewDecFromStr("1.6")
 		//also calculate the current collaterlization ration to ensure there is no sudden changes
 		if lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.GTE(v) {
 
 			var (
-				id  = k.GetVaultID(ctx)
+				id    = k.GetVaultID(ctx)
 				vault = vaulttypes.Vault{
 					ID:        id + 1,
 					PairID:    lockedVault.PairId,
@@ -169,18 +160,16 @@ func(k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error{
 
 			k.SetVaultID(ctx, id+1)
 			k.SetVault(ctx, vault)
-			k.SetVaultForAddressByPair(ctx, sdk.AccAddress(lockedVault.Owner), lockedVault.PairId, id + 1)
+			k.SetVaultForAddressByPair(ctx, sdk.AccAddress(lockedVault.Owner), lockedVault.PairId, id+1)
 			//Save Locked vault historical data in a store
 			//Set Auctioned historical in a store seperately
-			k.DeleteLockedVault(ctx,lockedVault.LockedVaultId)
+			k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 		}
 
 	}
 
 	return nil
 }
-
-
 
 func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom string) sdk.Int {
 	macc := k.GetModuleAccount(ctx, accountName)
@@ -265,4 +254,3 @@ func (k *Keeper) GetLockedVaults(ctx sdk.Context) (locked_vaults []types.LockedV
 
 	return locked_vaults
 }
-
