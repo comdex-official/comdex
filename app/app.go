@@ -86,6 +86,9 @@ import (
 	"github.com/comdex-official/comdex/x/asset"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/auction"
+	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	bandoraclemodule "github.com/comdex-official/comdex/x/bandoracle"
 	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
@@ -141,6 +144,7 @@ var (
 		oracle.AppModuleBasic{},
 		bandoraclemodule.AppModuleBasic{},
 		liquidation.AppModuleBasic{},
+		auction.AppModuleBasic{},
 	)
 )
 
@@ -198,15 +202,16 @@ type App struct {
 	// make scoped keepers public for test purposes
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
-	scopedIBCOracleKeeper capabilitykeeper.ScopedKeeper
-	scopedBandoracleKeeper capabilitykeeper.ScopedKeeper
+	scopedIBCOracleKeeper   capabilitykeeper.ScopedKeeper
+	scopedBandoracleKeeper  capabilitykeeper.ScopedKeeper
 
-	BandoracleKeeper bandoraclemodulekeeper.Keeper
-	assetKeeper     assetkeeper.Keeper
-	vaultKeeper     vaultkeeper.Keeper
-	liquidityKeeper liquiditykeeper.Keeper
-	oracleKeeper    oraclekeeper.Keeper
+	BandoracleKeeper  bandoraclemodulekeeper.Keeper
+	assetKeeper       assetkeeper.Keeper
+	vaultKeeper       vaultkeeper.Keeper
+	liquidityKeeper   liquiditykeeper.Keeper
+	oracleKeeper      oraclekeeper.Keeper
 	liquidationKeeper liquidationkeeper.Keeper
+	auctionKeeper     auctionkeeper.Keeper
 }
 
 // New returns a reference to an initialized App.
@@ -231,7 +236,9 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,bandoraclemoduletypes.StoreKey,liquidationtypes.StoreKey,
+			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey,
+			oracletypes.StoreKey, bandoraclemoduletypes.StoreKey, liquidationtypes.StoreKey,
+			auctiontypes.StoreKey,
 		)
 	)
 
@@ -275,6 +282,7 @@ func New(
 	app.paramsKeeper.Subspace(oracletypes.ModuleName)
 	app.paramsKeeper.Subspace(bandoraclemoduletypes.ModuleName)
 	app.paramsKeeper.Subspace(liquidationtypes.ModuleName)
+	app.paramsKeeper.Subspace(auctiontypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -292,8 +300,8 @@ func New(
 
 	// grant capabilities for the ibc and ibc-transfer modules
 	var (
-		scopedIBCKeeper      = app.capabilityKeeper.ScopeToModule(ibchost.ModuleName)
-		scopedTransferKeeper = app.capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+		scopedIBCKeeper       = app.capabilityKeeper.ScopeToModule(ibchost.ModuleName)
+		scopedTransferKeeper  = app.capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 		scopedIBCOracleKeeper = app.capabilityKeeper.ScopeToModule(oracletypes.ModuleName)
 	)
 
@@ -453,6 +461,16 @@ func New(
 		&app.assetKeeper,
 		&app.vaultKeeper,
 	)
+
+	app.auctionKeeper = *auctionkeeper.NewKeeper(
+		app.cdc,
+		keys[auctiontypes.StoreKey],
+		keys[auctiontypes.MemStoreKey],
+		app.GetSubspace(auctiontypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+	)
+
 	// Create Transfer Keepers
 	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.cdc,
@@ -469,7 +487,7 @@ func New(
 		evidenceRouter = evidencetypes.NewRouter()
 		ibcRouter      = ibcporttypes.NewRouter()
 		transferModule = ibctransfer.NewAppModule(app.ibcTransferKeeper)
-		oracleModule = oracle.NewAppModule(app.cdc,app.oracleKeeper)
+		oracleModule   = oracle.NewAppModule(app.cdc, app.oracleKeeper)
 	)
 
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
@@ -484,7 +502,6 @@ func New(
 		app.slashingKeeper,
 	)
 	app.evidenceKeeper.SetRouter(evidenceRouter)
-
 
 	/****  Module Options ****/
 
@@ -519,6 +536,7 @@ func New(
 		oracleModule,
 		bandoracleModule,
 		liquidation.NewAppModule(app.cdc, app.liquidationKeeper, app.accountKeeper, app.bankKeeper),
+		auction.NewAppModule(app.cdc, app.auctionKeeper, app.accountKeeper, app.bankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -527,7 +545,9 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName, bandoraclemoduletypes.ModuleName, oracletypes.ModuleName,liquidationtypes.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
+		bandoraclemoduletypes.ModuleName, oracletypes.ModuleName, liquidationtypes.ModuleName,
+		auctiontypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, bandoraclemoduletypes.ModuleName)
@@ -557,6 +577,7 @@ func New(
 		bandoraclemoduletypes.ModuleName,
 		oracletypes.ModuleName,
 		liquidationtypes.ModuleName,
+		auctiontypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
@@ -737,5 +758,6 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		auctiontypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 	}
 }

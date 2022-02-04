@@ -1,0 +1,10 @@
+syntax = "proto3";
+package comdex.auction.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/auction/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+service MsgService {}

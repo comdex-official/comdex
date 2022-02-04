@@ -1,0 +1,25 @@
+syntax = "proto3";
+package comdex.auction.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "comdex/auction/v1beta1/params.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/auction/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [
+    (gogoproto.moretags) = "yaml:\"params\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+service QueryService {
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+      option (google.api.http).get = "/comdex/auction/v1beta1/params";
+  }
+}
