@@ -28,7 +28,7 @@ clean:
 
 all: verify build
 
-install:
+install: mod-vendor
 ifeq (${OS},Windows_NT)
 	go build -mod=readonly ${BUILD_FLAGS} -o ${GOBIN}/comdex.exe ./node
 else
