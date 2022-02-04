@@ -9,7 +9,7 @@ import (
 
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
-	if ctx.BlockHeight()>=39 && ctx.BlockHeight()%20==0{
+	if ctx.BlockHeight()>=299 && ctx.BlockHeight()%20==0{
 		msg := types.NewMsgFetchPriceData(
 			types.ModuleName,
 			112,

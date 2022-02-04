@@ -13,7 +13,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	a := k.GetAssets(ctx)
 	fmt.Println(a)
 	fmt.Println("printing Assets")
-	if ctx.BlockHeight()>=59{
+	if ctx.BlockHeight()>=349{
 		assets := k.GetAssets(ctx)
 		for _, asset := range assets{
 			k.SetRates(ctx, asset.Name)

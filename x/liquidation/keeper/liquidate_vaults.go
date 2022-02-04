@@ -121,15 +121,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 			a:=totalOut.Mul(v)
 			b:= totalIn
 			c:= a.Sub(b)
-			fmt.Println(a)
-			fmt.Println("{{{{{{{{{{{{{{{printing a")
-			fmt.Println(b)
-			fmt.Println("{{{{{{{{{{{{{{{printing b")
-			fmt.Println(c)
-			fmt.Println("{{{{{{{{{{{{{{{printing c")
 			selloffAmount = (c).Quo(t)
-			fmt.Println(selloffAmount)
-			fmt.Println("{{{{{{{{{{{{{{{printing selloff")
 
 			if selloffAmount.GTE(totalIn) {
 				lockedVault.CollateralToBeAuctioned = &totalIn
