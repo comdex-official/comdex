@@ -9,4 +9,5 @@ import (
 func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
 	k.LiquidateVaults(ctx)
 	k.UpdateLockedVaults(ctx)
+	k.UnliquidateLockedVaults(ctx)
 }

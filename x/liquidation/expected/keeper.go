@@ -38,3 +38,7 @@ type VaultKeeper interface {
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
 	SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64, id uint64)
 }
+
+type OracleKeeper interface {
+	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+}

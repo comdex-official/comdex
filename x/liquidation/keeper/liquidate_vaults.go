@@ -2,8 +2,9 @@ package keeper
 
 import (
 	"fmt"
-	"strconv"
+
 	"time"
+	"math/big"
 
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -64,7 +65,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context,vault  vaulttypes.Vault,collat
 			IsAuctionInProgress:false,
 			CrAtLiquidation:	collateralizationRatio,
 			CurrentCollaterlisationRatio:	collateralizationRatio,
-			CollateralToBeAuctioned: 0,
+			CollateralToBeAuctioned: nil,
 			LiquidationTimestamp:	time.Time{},
 			SellOffHistory:nil,
 
@@ -112,18 +113,27 @@ func(k Keeper) UpdateLockedVaults(ctx sdk.Context) error{
 			if err != nil {
 				continue
 			}
-			lockedVault.
-				CurrentCollaterlisationRatio=collateralizationRatio
+			lockedVault.CurrentCollaterlisationRatio=collateralizationRatio
 
-			selloffAmount:=k.calc(lockedVault.AmountIn, lockedVault.AmountOut)
-			if (selloffAmount.GTE(lockedVault.AmountIn)){
-				lockedVault.CollateralToBeAuctioned=lockedVault.AmountIn
+			assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
+			assetOutPrice, _ := k.GetPriceForAsset(ctx, assetOut.Id)
+
+			totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
+			totalOut := lockedVault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
+
+			var selloffAmount sdk.Dec
+			var v,t sdk.Dec
+			v = sdk.NewDecFromBigInt(big.NewInt(1.6))
+			t = sdk.NewDecFromBigInt(big.NewInt(0.28))
+			selloffAmount =((totalOut.Mul(v)).Sub(totalIn)).Quo(t)
+
+			if selloffAmount.GTE(totalIn){
+				lockedVault.CollateralToBeAuctioned = &totalIn
+			} else{
+				value := totalIn.Sub(selloffAmount)
+				lockedVault.CollateralToBeAuctioned = &value
 			}
-			else{
-				str := fmt.Sprint(lockedVault.AmountIn)
-				lin, _ := strconv.ParseFloat(str, 64)
-				lockedVault.CollateralToBeAuctioned=uint64(lin)-selloffAmount
-			}
+
 
 			fmt.Println("----------------Checking Selloff Amount for Collateral----------------")
 			fmt.Println(lockedVault)
@@ -142,8 +152,8 @@ func(k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error{
 		return nil
 	}
 	for _,lockedVault:=range lockedVaults {
-		if(lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio>=1.6)
-		{
+		v:=sdk.NewDecFromBigInt(big.NewInt(1.6))
+		if lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.GTE(v) {
 
 			var (
 				id  = k.GetVaultID(ctx)
@@ -169,15 +179,7 @@ func(k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error{
 	return nil
 }
 
-func (k Keeper) calc (ain,  aout sdk.Int) uint64{
-	str := fmt.Sprint(ain)
-	sin, _ := strconv.ParseFloat(str, 64)
-	str1 := fmt.Sprint(aout)
-	sout, _ := strconv.ParseFloat(str1, 64)
-	selloffAmount:=((sin*1.6)-sout)/0.28
 
-	return uint64(selloffAmount)
-}
 
 func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom string) sdk.Int {
 	macc := k.GetModuleAccount(ctx, accountName)
