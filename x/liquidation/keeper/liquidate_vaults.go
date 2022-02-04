@@ -3,6 +3,8 @@ package keeper
 import (
 	"time"
 
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -267,4 +269,51 @@ func (k *Keeper) GetLockedVaults(ctx sdk.Context) (locked_vaults []types.LockedV
 	}
 
 	return locked_vaults
+}
+
+func (k *Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag bool) error {
+
+	locked_vault, found := k.GetLockedVault(ctx, id)
+	if !found {
+		return types.LockedVaultDoesNotExist
+	}
+	locked_vault.IsAuctionInProgress = flag
+	k.SetLockedVault(ctx, locked_vault)
+	return nil
+}
+
+func (k *Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) error {
+
+	locked_vault, found := k.GetLockedVault(ctx, id)
+	if !found {
+		return types.LockedVaultDoesNotExist
+	}
+	locked_vault.IsAuctionComplete = flag
+	k.SetLockedVault(ctx, locked_vault)
+	return nil
+}
+
+func (k *Keeper) UpdateAssetQuantitiesInLockedVault(
+	ctx sdk.Context,
+	collateral_auction auctiontypes.CollateralAuction,
+	amountIn sdk.Int,
+	assetIn assettypes.Asset,
+	amountOut sdk.Int,
+	assetOut assettypes.Asset,
+) error {
+
+	locked_vault, found := k.GetLockedVault(ctx, collateral_auction.LockedVaultId)
+	if !found {
+		return types.LockedVaultDoesNotExist
+	}
+	updatedAmountIn := locked_vault.AmountIn.Sub(amountIn)
+	updatedAmountOut := locked_vault.AmountOut.Sub(amountOut)
+	updatedCollateralizationRatio, _ := k.CalculateCollaterlizationRatio(ctx, updatedAmountIn, assetIn, updatedAmountOut, assetOut)
+
+	locked_vault.AmountIn = updatedAmountIn
+	locked_vault.AmountOut = updatedAmountOut
+	locked_vault.CurrentCollaterlisationRatio = updatedCollateralizationRatio
+	locked_vault.SellOffHistory = append(locked_vault.SellOffHistory, collateral_auction.String())
+	k.SetLockedVault(ctx, locked_vault)
+	return nil
 }

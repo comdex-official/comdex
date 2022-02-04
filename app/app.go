@@ -470,6 +470,10 @@ func New(
 		app.GetSubspace(auctiontypes.ModuleName),
 		app.accountKeeper,
 		app.bankKeeper,
+		&app.assetKeeper,
+		&app.vaultKeeper,
+		&app.oracleKeeper,
+		&app.liquidationKeeper,
 	)
 
 	// Create Transfer Keepers

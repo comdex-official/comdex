@@ -16,6 +16,8 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		queryParams(),
+		queryAuction(),
+		queryAuctions(),
 	)
 
 	return cmd
@@ -30,7 +32,9 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand()
+	cmd.AddCommand(
+		txPlaceBid(),
+	)
 
 	return cmd
 }
