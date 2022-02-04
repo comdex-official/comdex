@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"time"
-	"math/big"
+
 
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -123,8 +123,8 @@ func(k Keeper) UpdateLockedVaults(ctx sdk.Context) error{
 
 			var selloffAmount sdk.Dec
 			var v,t sdk.Dec
-			v = sdk.NewDecFromBigInt(big.NewInt(1.6))
-			t = sdk.NewDecFromBigInt(big.NewInt(0.28))
+			v, _ = sdk.NewDecFromStr("1.6")
+			t, _ = sdk.NewDecFromStr("0.28")
 			selloffAmount =((totalOut.Mul(v)).Sub(totalIn)).Quo(t)
 
 			if selloffAmount.GTE(totalIn){
@@ -152,7 +152,8 @@ func(k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error{
 		return nil
 	}
 	for _,lockedVault:=range lockedVaults {
-		v:=sdk.NewDecFromBigInt(big.NewInt(1.6))
+		v, _ := sdk.NewDecFromStr("1.6")
+		//also calculate the current collaterlization ration to ensure there is no sudden changes
 		if lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.GTE(v) {
 
 			var (

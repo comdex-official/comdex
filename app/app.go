@@ -460,6 +460,7 @@ func New(
 		app.bankKeeper,
 		&app.assetKeeper,
 		&app.vaultKeeper,
+		&app.oracleKeeper,
 	)
 
 	app.auctionKeeper = *auctionkeeper.NewKeeper(
