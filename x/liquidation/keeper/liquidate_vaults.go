@@ -118,7 +118,18 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 			var v, t sdk.Dec
 			v, _ = sdk.NewDecFromStr("1.6")
 			t, _ = sdk.NewDecFromStr("0.28")
-			selloffAmount = ((totalOut.Mul(v)).Sub(totalIn)).Quo(t)
+			a:=totalOut.Mul(v)
+			b:= totalIn
+			c:= a.Sub(b)
+			fmt.Println(a)
+			fmt.Println("{{{{{{{{{{{{{{{printing a")
+			fmt.Println(b)
+			fmt.Println("{{{{{{{{{{{{{{{printing b")
+			fmt.Println(c)
+			fmt.Println("{{{{{{{{{{{{{{{printing c")
+			selloffAmount = (c).Quo(t)
+			fmt.Println(selloffAmount)
+			fmt.Println("{{{{{{{{{{{{{{{printing selloff")
 
 			if selloffAmount.GTE(totalIn) {
 				lockedVault.CollateralToBeAuctioned = &totalIn
@@ -127,9 +138,26 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 				lockedVault.CollateralToBeAuctioned = &value
 			}
 
+			updatedLockedVault := types.LockedVault{
+				LockedVaultId:                lockedVault.LockedVaultId,
+				OriginalVaultId:              lockedVault.OriginalVaultId,
+				PairId:                       lockedVault.PairId,
+				Owner:                        lockedVault.Owner,
+				AmountIn:                     lockedVault.AmountIn,
+				AmountOut:                    lockedVault.AmountOut,
+				Initiator:                    lockedVault.Initiator,
+				IsAuctionComplete:            false,
+				IsAuctionInProgress:          false,
+				CrAtLiquidation:              lockedVault.CrAtLiquidation,
+				CurrentCollaterlisationRatio: collateralizationRatio,
+				CollateralToBeAuctioned:      &selloffAmount,
+				LiquidationTimestamp:         lockedVault.LiquidationTimestamp,
+				SellOffHistory:               nil,
+			}
+
 			fmt.Println("----------------Checking Selloff Amount for Collateral----------------")
-			fmt.Println(lockedVault)
-			k.SetLockedVault(ctx, lockedVault)
+			fmt.Println(updatedLockedVault)
+			k.SetLockedVault(ctx, updatedLockedVault)
 
 		}
 
