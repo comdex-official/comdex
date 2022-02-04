@@ -61,6 +61,7 @@ func (k *Keeper) GetVaultID(ctx sdk.Context) uint64 {
 	return k.vault.GetID(ctx)
 }
 
+
 func (k *Keeper) SetVaultID(ctx sdk.Context, id uint64) {
 	k.vault.SetID(ctx, id)
 }

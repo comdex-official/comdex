@@ -90,45 +90,82 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context,vault  vaulttypes.Vault,collat
 	return nil
 
 }
-
+//for first time to update the coollateralization value & sell off amount
 func(k Keeper) UpdateLockedVaults(ctx sdk.Context) error{
 	lockedVaults:=k.GetLockedVaults(ctx)
 	if len(lockedVaults)==0{
 		return nil
 	}
 	for _,lockedVault:=range lockedVaults{
-		pairId := lockedVault.PairId
-		assetIn, found := k.GetAsset(ctx, pairId)
-		if !found {
-			continue
-		}
+		if(lockedVault.IsAuctionInProgress==false ){
+			pairId := lockedVault.PairId
+			assetIn, found := k.GetAsset(ctx, pairId)
+			if !found {
+				continue
+			}
 
-		assetOut, found := k.GetAsset(ctx, pairId)
-		if !found {
-			continue
-		}
-		collateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.AmountOut, assetOut)
-		if err != nil {
-			continue
-		}
-		lockedVault.
-		CurrentCollaterlisationRatio=collateralizationRatio
+			assetOut, found := k.GetAsset(ctx, pairId)
+			if !found {
+				continue
+			}
+			collateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.AmountOut, assetOut)
+			if err != nil {
+				continue
+			}
+			lockedVault.
+				CurrentCollaterlisationRatio=collateralizationRatio
 
-		selloffAmount:=k.calc(lockedVault.AmountIn, lockedVault.AmountOut)
-		if (selloffAmount>=lockedVault.AmountIn){
-			lockedVault.CollateralToBeAuctioned=lockedVault.AmountIn
-		}
-		else{
-			str := fmt.Sprint(lockedVault.AmountIn)
-			lin, _ := strconv.ParseFloat(str, 64)
-			lockedVault.CollateralToBeAuctioned=uint64(lin)-selloffAmount
-		}
+			selloffAmount:=k.calc(lockedVault.AmountIn, lockedVault.AmountOut)
+			if (selloffAmount.GTE(lockedVault.AmountIn)){
+				lockedVault.CollateralToBeAuctioned=lockedVault.AmountIn
+			}
+			else{
+				str := fmt.Sprint(lockedVault.AmountIn)
+				lin, _ := strconv.ParseFloat(str, 64)
+				lockedVault.CollateralToBeAuctioned=uint64(lin)-selloffAmount
+			}
 
-		fmt.Println("----------------Checking Selloff Amount for Collateral----------------")
-		fmt.Println(lockedVault)
-		k.SetLockedVault(ctx,lockedVault)
+			fmt.Println("----------------Checking Selloff Amount for Collateral----------------")
+			fmt.Println(lockedVault)
+			k.SetLockedVault(ctx,lockedVault)
+
+
+		}
 
 	}
+	return nil
+}
+
+func(k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error{
+	lockedVaults:=k.GetLockedVaults(ctx)
+	if len(lockedVaults)==0{
+		return nil
+	}
+	for _,lockedVault:=range lockedVaults {
+		if(lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio>=1.6)
+		{
+
+			var (
+				id  = k.GetVaultID(ctx)
+				vault = vaulttypes.Vault{
+					ID:        id + 1,
+					PairID:    lockedVault.PairId,
+					Owner:     lockedVault.Owner,
+					AmountIn:  lockedVault.AmountIn,
+					AmountOut: lockedVault.AmountOut,
+				}
+			)
+
+			k.SetVaultID(ctx, id+1)
+			k.SetVault(ctx, vault)
+			k.SetVaultForAddressByPair(ctx, sdk.AccAddress(lockedVault.Owner), lockedVault.PairId, id + 1)
+			//Save Locked vault historical data in a store
+			//Set Auctioned historical in a store seperately
+			k.DeleteLockedVault(ctx,lockedVault.LockedVaultId)
+		}
+
+	}
+
 	return nil
 }
 

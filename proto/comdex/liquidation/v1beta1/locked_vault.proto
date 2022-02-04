@@ -24,9 +24,8 @@ message LockedVault {
     (gogoproto.moretags)   = "yaml:\"pair_id\""
   ];
 
-  string owner     = 4 [ 
-    (gogoproto.customname) = "Owner",
-    (gogoproto.moretags) = "yaml:\"owner\"" 
+  string owner     = 3 [
+    (gogoproto.moretags) = "yaml:\"owner\""
   ];
 
   string amount_in = 5 [
