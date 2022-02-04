@@ -51,5 +51,20 @@ func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool) {
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
+	if (id == 1){
+		return 100, true
+	}else if(id == 2){
+		return 52, true
+	}else if(id == 3){
+		return 10, true
+	}else if(id == 4){
+		return 6, true
+	}else if(id == 5){
+		return 5, true
+	} else if(id == 6){
+		return 5, true
+	} else if(id == 7){
+		return 5, true
+	}
 	return k.oracle.GetPriceForAsset(ctx, id)
 }

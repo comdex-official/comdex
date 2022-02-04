@@ -1,10 +1,11 @@
 package keeper
 
 import (
+	"fmt"
+	"strconv"
 	"time"
 
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
@@ -32,109 +33,107 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 			continue
 		}
 		if sdk.Dec.LT(collateralizationRatio, liquidationRatio) {
-			err := k.TransferCollateralCreateLockedVaultAndDeleteVault(ctx, vault, assetIn, assetOut, collateralizationRatio)
+			err := k.CreateLockedVault(ctx, vault , collateralizationRatio)
 			if err != nil {
 				return err
 			}
+			k.DeleteVault(ctx,vault.ID)
 		}
 	}
 	return nil
 }
 
-func (k Keeper) UnLiquidateVaults(ctx sdk.Context) error {
-	locked_vaults := k.GetLockedVaults(ctx)
-	for _, locked_vault := range locked_vaults {
-		pair, found := k.GetPair(ctx, locked_vault.PairId)
-		if !found {
-			continue
+
+func (k Keeper) CreateLockedVault(ctx sdk.Context,vault  vaulttypes.Vault,collateralizationRatio sdk.Dec) error{
+
+	lockedVaultId:=k.GetLockedVaultID(ctx)
+
+	var (
+
+
+
+		value =types.LockedVault{
+			LockedVaultId : lockedVaultId,
+			OriginalVaultId: vault.ID,
+			PairId:vault.PairID,
+			Owner:vault.Owner,
+			AmountIn:	vault.AmountIn,
+			AmountOut:	vault.AmountOut,
+			Initiator:types.ModuleName,
+			IsAuctionComplete:false,
+			IsAuctionInProgress:false,
+			CrAtLiquidation:	collateralizationRatio,
+			CurrentCollaterlisationRatio:	collateralizationRatio,
+			CollateralToBeAuctioned: 0,
+			LiquidationTimestamp:	time.Time{},
+			SellOffHistory:nil,
+
+
 		}
-		liquidationRatio := pair.LiquidationRatio
-		assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+
+
+	)
+	k.SetLockedVault(ctx,value)
+	k.SetLockedVaultID(ctx,lockedVaultId+1)
+	fmt.Println(value)
+	fmt.Println("---------------Locked Vault Created-------------")
+
+
+
+	//Create a new Data Structure with the current Params
+	//Set nil for all the values not available right now
+	//New function will loop over locked vaults to set all values so that they can be auctioned, seperately
+	//Auction will then use the selloff amount set by lockedvault function to update params .
+	//Unliquidate will take place after all the vents trigger.
+
+	//
+	return nil
+
+}
+
+func(k Keeper) UpdateLockedVaults(ctx sdk.Context) error{
+	lockedVaults:=k.GetLockedVaults(ctx)
+	if len(lockedVaults)==0{
+		return nil
+	}
+	for _,lockedVault:=range lockedVaults{
+		pairId := lockedVault.PairId
+		assetIn, found := k.GetAsset(ctx, pairId)
 		if !found {
 			continue
 		}
 
-		assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+		assetOut, found := k.GetAsset(ctx, pairId)
 		if !found {
 			continue
 		}
-		collateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, locked_vault.AmountIn, assetIn, locked_vault.AmountOut, assetOut)
+		collateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.AmountOut, assetOut)
 		if err != nil {
 			continue
 		}
-		if sdk.Dec.GT(collateralizationRatio, liquidationRatio) && !locked_vault.IsAuctioned {
-			err := k.TransferCollateralRecreateVaultAndDeleteLockedVault(ctx, locked_vault, assetIn, assetOut, collateralizationRatio)
-			if err != nil {
-				return err
-			}
-		}
+		lockedVault.
+		CurrentCollaterlisationRatio=collateralizationRatio
+
+		selloffAmount:=k.calc(lockedVault.AmountIn, lockedVault.AmountOut)
+		str := fmt.Sprint(lockedVault.AmountIn)
+		lin, _ := strconv.ParseFloat(str, 64)
+		lockedVault.CollateralToBeAuctioned=uint64(lin)-selloffAmount
+		fmt.Println("----------------Checking Selloff Amount for Collateral----------------")
+		fmt.Println(lockedVault)
+		k.SetLockedVault(ctx,lockedVault)
+
 	}
 	return nil
 }
 
-func (k Keeper) TransferCollateralCreateLockedVaultAndDeleteVault(
-	ctx sdk.Context,
-	vault vaulttypes.Vault,
-	assetIn assettypes.Asset,
-	assetOut assettypes.Asset,
-	collateralizationRatio sdk.Dec,
-) error {
-	collateralAvailableInVaultModule := k.GetModAccountBalances(ctx, vaulttypes.ModuleName, assetIn.Denom)
-	collateralCoins := sdk.NewCoin(assetIn.Denom, sdk.MinInt(vault.AmountIn, collateralAvailableInVaultModule))
+func (k Keeper) calc (ain,  aout sdk.Int) uint64{
+	str := fmt.Sprint(ain)
+	sin, _ := strconv.ParseFloat(str, 64)
+	str1 := fmt.Sprint(aout)
+	sout, _ := strconv.ParseFloat(str1, 64)
+	selloffAmount:=((sin*1.6)-sout)/0.28
 
-	err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, liquidationtypes.ModuleName, sdk.NewCoins(collateralCoins))
-	if err != nil {
-		return err
-	}
-
-	locked_vault := liquidationtypes.LockedVault{
-		Id:                   k.GetLockedVaultID(ctx) + 1,
-		VaultId:              vault.ID,
-		PairId:               vault.PairID,
-		Owner:                vault.Owner,
-		AmountIn:             vault.AmountIn,
-		AmountOut:            vault.AmountOut,
-		Initiator:            liquidationtypes.ModuleName,
-		IsAuctioned:          false,
-		CrAtLiquidation:      collateralizationRatio,
-		LiquidationTimestamp: time.Now().UTC(),
-	}
-	k.SetLockedVaultID(ctx, locked_vault.Id)
-	k.SetLockedVault(ctx, locked_vault)
-
-	vaultOwner, _ := sdk.AccAddressFromBech32(vault.Owner)
-	k.DeleteVault(ctx, vault.ID)
-	k.DeleteVaultForAddressByPair(ctx, vaultOwner, vault.PairID)
-	return nil
-}
-
-func (k Keeper) TransferCollateralRecreateVaultAndDeleteLockedVault(
-	ctx sdk.Context,
-	locked_vault liquidationtypes.LockedVault,
-	assetIn assettypes.Asset,
-	assetOut assettypes.Asset,
-	collateralizationRatio sdk.Dec,
-) error {
-	collateralAvailableInLiquidationModule := k.GetModAccountBalances(ctx, liquidationtypes.ModuleName, assetIn.Denom)
-	collateralCoins := sdk.NewCoin(assetIn.Denom, sdk.MinInt(locked_vault.AmountIn, collateralAvailableInLiquidationModule))
-
-	err := k.bank.SendCoinsFromModuleToModule(ctx, liquidationtypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(collateralCoins))
-	if err != nil {
-		return err
-	}
-	vault := vaulttypes.Vault{
-		ID:        k.GetVaultID(ctx) + 1,
-		PairID:    locked_vault.PairId,
-		Owner:     locked_vault.Owner,
-		AmountIn:  locked_vault.AmountIn,
-		AmountOut: locked_vault.AmountOut,
-	}
-	vaultOwner, _ := sdk.AccAddressFromBech32(vault.Owner)
-	k.SetVaultID(ctx, vault.ID)
-	k.SetVault(ctx, vault)
-	k.SetVaultForAddressByPair(ctx, vaultOwner, vault.PairID, vault.ID)
-	k.DeleteLockedVault(ctx, locked_vault.Id)
-	return nil
+	return uint64(selloffAmount)
 }
 
 func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom string) sdk.Int {
@@ -145,7 +144,7 @@ func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom
 func (k *Keeper) GetLockedVaultID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = liquidationtypes.LockedVaultIdKey
+		key   = types.LockedVaultIdKey
 		value = store.Get(key)
 	)
 
@@ -162,7 +161,7 @@ func (k *Keeper) GetLockedVaultID(ctx sdk.Context) uint64 {
 func (k *Keeper) SetLockedVaultID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = liquidationtypes.LockedVaultIdKey
+		key   = types.LockedVaultIdKey
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -172,10 +171,10 @@ func (k *Keeper) SetLockedVaultID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetLockedVault(ctx sdk.Context, locked_vault liquidationtypes.LockedVault) {
+func (k *Keeper) SetLockedVault(ctx sdk.Context, locked_vault types.LockedVault) {
 	var (
 		store = k.Store(ctx)
-		key   = liquidationtypes.LockedVaultKey(locked_vault.Id)
+		key   = types.LockedVaultKey(locked_vault.LockedVaultId)
 		value = k.cdc.MustMarshal(&locked_vault)
 	)
 	store.Set(key, value)
@@ -184,15 +183,15 @@ func (k *Keeper) SetLockedVault(ctx sdk.Context, locked_vault liquidationtypes.L
 func (k *Keeper) DeleteLockedVault(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = liquidationtypes.LockedVaultKey(id)
+		key   = types.LockedVaultKey(id)
 	)
 	store.Delete(key)
 }
 
-func (k *Keeper) GetLockedVault(ctx sdk.Context, id uint64) (locked_vault liquidationtypes.LockedVault, found bool) {
+func (k *Keeper) GetLockedVault(ctx sdk.Context, id uint64) (locked_vault types.LockedVault, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = liquidationtypes.LockedVaultKey(id)
+		key   = types.LockedVaultKey(id)
 		value = store.Get(key)
 	)
 
@@ -204,16 +203,16 @@ func (k *Keeper) GetLockedVault(ctx sdk.Context, id uint64) (locked_vault liquid
 	return locked_vault, true
 }
 
-func (k *Keeper) GetLockedVaults(ctx sdk.Context) (locked_vaults []liquidationtypes.LockedVault) {
+func (k *Keeper) GetLockedVaults(ctx sdk.Context) (locked_vaults []types.LockedVault) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, liquidationtypes.LockedVaultKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.LockedVaultKeyPrefix)
 	)
 
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var locked_vault liquidationtypes.LockedVault
+		var locked_vault types.LockedVault
 		k.cdc.MustUnmarshal(iter.Value(), &locked_vault)
 		locked_vaults = append(locked_vaults, locked_vault)
 	}
@@ -221,24 +220,3 @@ func (k *Keeper) GetLockedVaults(ctx sdk.Context) (locked_vaults []liquidationty
 	return locked_vaults
 }
 
-func (k *Keeper) FlagLockedVaultAsAuctioned(ctx sdk.Context, id uint64) error {
-
-	locked_vault, found := k.GetLockedVault(ctx, id)
-	if !found {
-		return liquidationtypes.LockedVaultDoesNotExist
-	}
-	locked_vault.IsAuctioned = true
-	k.SetLockedVault(ctx, locked_vault)
-	return nil
-}
-
-func (k *Keeper) UnflagLockedVaultAsAuctioned(ctx sdk.Context, id uint64) error {
-
-	locked_vault, found := k.GetLockedVault(ctx, id)
-	if !found {
-		return liquidationtypes.LockedVaultDoesNotExist
-	}
-	locked_vault.IsAuctioned = false
-	k.SetLockedVault(ctx, locked_vault)
-	return nil
-}

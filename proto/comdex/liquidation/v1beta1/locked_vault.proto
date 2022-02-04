@@ -10,12 +10,12 @@ option (gogoproto.goproto_getters_all) = false;
 
 message LockedVault {
   uint64 id = 1 [
-    (gogoproto.customname) = "Id",
+    (gogoproto.customname) = "LockedVaultId",
     (gogoproto.moretags) = "yaml:\"id\"" 
   ];
 
   uint64 vault_id = 2 [
-    (gogoproto.customname) = "VaultId",
+    (gogoproto.customname) = "OriginalVaultId",
     (gogoproto.moretags) = "yaml:\"id\""
   ];
 
@@ -48,22 +48,42 @@ message LockedVault {
     (gogoproto.moretags) = "yaml:\"admin\""
   ];
 
-  bool is_auctioned = 8 [
-    (gogoproto.customname) = "IsAuctioned",
-    (gogoproto.moretags) = "yaml:\"is_auctioned\""
+  bool is_auction_complete = 8 [
+    (gogoproto.customname) = "IsAuctionComplete",
+    (gogoproto.moretags) = "yaml:\"is_auction_complete\""
+  ];
+  bool is_auction_in_progress = 9 [
+    (gogoproto.customname) = "IsAuctionInProgress",
+    (gogoproto.moretags) = "yaml:\"is_auction_in_progress\""
   ];
 
-  string cr_at_liquidation = 9 [
+  string cr_at_liquidation = 10 [
     (gogoproto.customname) = "CrAtLiquidation",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false,
     (gogoproto.moretags)   = "yaml:\"cr_at_liquidation\""
   ];
+  string current_collateralisation_ratio = 11 [
+    (gogoproto.customname) = "CurrentCollaterlisationRatio",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false,
+    (gogoproto.moretags)   = "yaml:\"current_collateralisation_ratio\""
+  ];
+  uint64 collateral_to_be_auctioned = 12 [
+    (gogoproto.customname) = "CollateralToBeAuctioned",
 
-  google.protobuf.Timestamp liquidation_timestamp = 10 [
+    (gogoproto.nullable)   = true,
+    (gogoproto.moretags)   = "yaml:\"collateral_to_be_auctioned\""
+  ];
+
+  google.protobuf.Timestamp liquidation_timestamp = 13 [
     (gogoproto.customname) = "LiquidationTimestamp",
     (gogoproto.nullable) = false, 
     (gogoproto.stdtime) = true,
     (gogoproto.moretags)   = "yaml:\"liquidation_timestamp\""
+  ];
+  repeated string selloff_history = 14 [
+    (gogoproto.customname) = "SellOffHistory",
+    (gogoproto.moretags)   = "yaml:\"selloff_history\""
   ];
 }

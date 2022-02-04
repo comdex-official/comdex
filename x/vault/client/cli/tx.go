@@ -57,7 +57,7 @@ func txCreate() *cobra.Command {
 				return types.ErrorInvalidAmountIn
 			}
 
-			amountOut, ok := sdk.NewIntFromString(args[2])
+			amountOut, ok :=sdk.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmountOut
 			}
