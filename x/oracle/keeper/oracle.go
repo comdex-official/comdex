@@ -134,6 +134,12 @@ func (k *Keeper) SetRates(ctx sdk.Context, symbol string) {
 		)
 		store.Set(key, value)
 
+	case "CMDX":
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[5],
+		},
+		)
+		store.Set(key, value)
 	default:
 	}
 
