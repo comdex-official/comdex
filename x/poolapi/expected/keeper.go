@@ -1,8 +1,7 @@
 package expected
 
 import (
-	"context"
-
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	liquiditytypes "github.com/tendermint/liquidity/x/liquidity/types"
@@ -19,5 +18,10 @@ type OracleKeeper interface {
 }
 
 type VaultKeeper interface {
-	QueryAllVaults(c context.Context, req *vaulttypes.QueryAllVaultsRequest) (*vaulttypes.QueryAllVaultsResponse, error)
+	GetVaults(ctx sdk.Context) (vaults []vaulttypes.Vault)
+}
+
+type AssetKeeper interface {
+	GetAsset(ctx sdk.Context, id uint64) (asset assettypes.Asset, found bool)
+	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 }

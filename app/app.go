@@ -466,8 +466,9 @@ func New(
 		app.keys[poolapitypes.StoreKey],
 		app.GetSubspace(poolapitypes.ModuleName),
 		app.tmliquidityKeeper,
-		app.oracleKeeper,
-		app.vaultKeeper,
+		&app.oracleKeeper,
+		&app.vaultKeeper,
+		&app.assetKeeper,
 	)
 	/****  Module Options ****/
 
