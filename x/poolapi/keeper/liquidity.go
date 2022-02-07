@@ -8,12 +8,12 @@ import (
 )
 
 func (k *Keeper) GetLiquidity(ctx sdk.Context, pool_id uint64) (uint64, bool) {
-	pool, _ := k.liquiditykeeper.GetPool(ctx, pool_id)
-	// if !found {
-	// 	return sdk., false
-	// }
-	pool_metadata := k.liquiditykeeper.GetPoolMetaData(ctx, pool)
+	pool, found := k.liquiditykeeper.GetPool(ctx, pool_id)
+	if !found {
+		return 0, false
+	}
 
+	pool_metadata := k.liquiditykeeper.GetPoolMetaData(ctx, pool)
 	reserve_coins := pool_metadata.ReserveCoins
 
 	var pool_liquidity uint64 = 0
@@ -41,7 +41,10 @@ func (k *Keeper) TotalLiquidity(ctx sdk.Context) (uint64, bool) {
 
 	for i := 0; i < len(pools); i++ {
 		pool_id := pools[i].Id
-		liquidity_of_ith_pool, _ := k.GetLiquidity(ctx, pool_id)
+		liquidity_of_ith_pool, found := k.GetLiquidity(ctx, pool_id)
+		if !found {
+			return 0, false
+		}
 		total_liquidity = total_liquidity + liquidity_of_ith_pool
 	}
 
@@ -50,7 +53,10 @@ func (k *Keeper) TotalLiquidity(ctx sdk.Context) (uint64, bool) {
 
 func (k *Keeper) GetTotalCollateral(c context.Context) (uint64, bool) {
 	req := &types.QueryAllVaultsRequest{}
-	vaults, _ := k.vaultkeeper.QueryAllVaults(c, req)
+	vaults, err := k.vaultkeeper.QueryAllVaults(c, req)
+	if err != nil {
+		return 0, false
+	}
 
 	var (
 		total_liquidity uint64 = 0
@@ -61,7 +67,11 @@ func (k *Keeper) GetTotalCollateral(c context.Context) (uint64, bool) {
 		collateral := vault.Collateral
 		amount := collateral.Amount
 		denom := collateral.Denom
-		price_of_coin, _ := k.oraclekeeper.GetPriceForMarket(ctx, denom)
+		price_of_coin, found := k.oraclekeeper.GetPriceForMarket(ctx, denom)
+		if !found {
+			return 0, false
+		}
+
 		price_of_collateral := price_of_coin * amount.Uint64()
 		total_liquidity = total_liquidity + price_of_collateral
 	}

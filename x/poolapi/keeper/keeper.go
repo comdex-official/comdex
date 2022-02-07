@@ -6,7 +6,9 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/liquidity/expected"
+	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
+	"github.com/comdex-official/comdex/x/poolapi/expected"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 )
 
 type Keeper struct {
@@ -14,11 +16,12 @@ type Keeper struct {
 	key             sdk.StoreKey
 	params          paramstypes.Subspace
 	liquiditykeeper expected.LiquidityKeeper
-	oraclekeeper    expected.OracleKeeper
-	vaultkeeper     expected.VaultKeeper
+	oracleKeeper    oraclekeeper.Keeper
+	vaultKeeper     vaultkeeper.Keeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, liquidity expected.LiquidityKeeper, oracle expected.OracleKeeper, vault expected.VaultKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, liquidity expected.LiquidityKeeper,
+	oracleKeeper oraclekeeper.Keeper, vaultKeeper vaultkeeper.Keeper) Keeper {
 	if !params.HasKeyTable() {
 		params = params.WithKeyTable(types.ParamKeyTable())
 	}
@@ -28,8 +31,8 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subsp
 		key:             key,
 		params:          params,
 		liquiditykeeper: liquidity,
-		oraclekeeper:    oracle,
-		vaultkeeper:     vault,
+		oracleKeeper:    oracleKeeper,
+		vaultKeeper:     vaultKeeper,
 	}
 }
 

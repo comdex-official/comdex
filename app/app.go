@@ -76,6 +76,8 @@ import (
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/spf13/cast"
+	tmliquiditykeeper "github.com/tendermint/liquidity/x/liquidity/keeper"
+	tmliquiditytypes "github.com/tendermint/liquidity/x/liquidity/types"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -89,6 +91,9 @@ import (
 	"github.com/comdex-official/comdex/x/oracle"
 	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
 	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
+	poolapi "github.com/comdex-official/comdex/x/poolapi"
+	poolapikeeper "github.com/comdex-official/comdex/x/poolapi/keeper"
+	poolapitypes "github.com/comdex-official/comdex/x/poolapi/types"
 	"github.com/comdex-official/comdex/x/vault"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -133,6 +138,7 @@ var (
 		liquidity.AppModuleBasic{},
 		asset.AppModuleBasic{},
 		oracle.AppModuleBasic{},
+		poolapi.AppModuleBasic{},
 	)
 )
 
@@ -186,6 +192,7 @@ type App struct {
 	ibcKeeper         *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	evidenceKeeper    evidencekeeper.Keeper
 	ibcTransferKeeper ibctransferkeeper.Keeper
+	tmliquidityKeeper tmliquiditykeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
@@ -195,6 +202,7 @@ type App struct {
 	vaultKeeper     vaultkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
 	oracleKeeper    oraclekeeper.Keeper
+	poolapiKeeper   poolapikeeper.Keeper
 }
 
 // New returns a reference to an initialized App.
@@ -219,6 +227,7 @@ func New(
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
+			poolapitypes.StoreKey,
 		)
 	)
 
@@ -260,6 +269,7 @@ func New(
 	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
 	app.paramsKeeper.Subspace(assettypes.ModuleName)
 	app.paramsKeeper.Subspace(oracletypes.ModuleName)
+	app.paramsKeeper.Subspace(poolapitypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -441,6 +451,24 @@ func New(
 		app.scopedIBCKeeper,
 		app.assetKeeper,
 	)
+
+	app.tmliquidityKeeper = tmliquiditykeeper.NewKeeper(
+		app.cdc,
+		app.keys[tmliquiditytypes.StoreKey],
+		app.GetSubspace(tmliquiditytypes.ModuleName),
+		app.bankKeeper,
+		app.accountKeeper,
+		app.distrKeeper,
+	)
+
+	app.poolapiKeeper = poolapikeeper.NewKeeper(
+		app.cdc,
+		app.keys[poolapitypes.StoreKey],
+		app.GetSubspace(poolapitypes.ModuleName),
+		app.tmliquidityKeeper,
+		app.oracleKeeper,
+		app.vaultKeeper,
+	)
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -472,6 +500,7 @@ func New(
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
 		asset.NewAppModule(app.cdc, app.assetKeeper),
 		oracle.NewAppModule(app.cdc, app.oracleKeeper),
+		poolapi.NewAppModule(app.cdc, app.poolapiKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -507,6 +536,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		assettypes.ModuleName,
 		vaulttypes.ModuleName,
+		poolapitypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)

@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/comdex-official/comdex/x/liquidity/types"
+	"github.com/comdex-official/comdex/x/poolapi/types"
 )
 
 type queryServer struct {
@@ -48,7 +48,10 @@ func (q *queryServer) PoolsLiquidity(c context.Context, req *types.QueryTotalLiq
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	total_liquidity, _ := q.TotalLiquidity(ctx)
+	total_liquidity, found := q.TotalLiquidity(ctx)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "one or multiple pools or denoms does not exist ")
+	}
 
 	return &types.QueryTotalLiquidityResponse{
 		TotalLiquidity: total_liquidity,
