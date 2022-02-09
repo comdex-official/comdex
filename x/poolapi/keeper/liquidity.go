@@ -72,3 +72,5 @@ func (k *Keeper) GetTotalCollateral(c context.Context) (uint64, bool) {
 
 	return total_liquidity, true
 }
+
+func (k *Keeper) GetAPR(c context.Context) float64

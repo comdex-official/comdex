@@ -4,7 +4,7 @@ package comdex.liquidity.v1beta1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
-option go_package = "github.com/comdex-official/comdex/x/liquidity/types";
+option go_package = "github.com/comdex-official/comdex/x/poolapi/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
@@ -23,6 +23,11 @@ service QueryService {
     //Get total collateral 
     rpc TotalCollateral(QueryTotalCollateralRequest) returns (QueryTotalCollateralResponse){
         option (google.api.http).get = "/comdex/liquidity/v1beta1/collateral";
+    }
+
+    //Get PoolAPR
+    rpc PoolAPR(QueryPoolAPRRequest) returns (QueryPoolAPRResponse){
+        option (google.api.http).get = "/comdex/liquidity/v1beta1/apr";
     }
 }
     
@@ -56,3 +61,14 @@ message QueryTotalCollateralResponse{
         (gogoproto.moretags) = "yaml:\"total_collateral\""
     ];  
 }
+
+message QueryPoolAPRRequest{
+
+}
+
+message QueryPoolAPRResponse{
+    float64 apr=1   [ 
+        (gogoproto.moretags) = "yaml:\"apr\""
+    ];  
+}
+

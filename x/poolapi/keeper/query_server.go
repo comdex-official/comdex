@@ -69,3 +69,14 @@ func (q *queryServer) TotalCollateral(c context.Context, req *types.QueryTotalCo
 		TotalCollateral: total_collateral,
 	}, nil
 }
+
+func (q *queryServer) PoolAPR(c context.Context, req *types.QueryPoolAPRRequest) (*types.QueryPoolAPRResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	pool_apr,_ : = q.GetAPR(c)
+
+	return &types.QueryPoolAPRResponse{
+		Apr : pool_apr,
+	}, nil
+}
