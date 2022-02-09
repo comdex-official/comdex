@@ -1,0 +1,18 @@
+syntax = "proto3";
+package comdex.bandoracle.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/bandoracle/v1beta1/params.proto";
+import "comdex/bandoracle/v1beta1/fetch_price.proto";
+
+
+option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
+
+message GenesisState {
+    Params params = 1 [(gogoproto.nullable) = false ];
+    string port_id = 2;
+    repeated Market markets = 3 [
+        (gogoproto.moretags) = "yaml:\"markets\"",
+        (gogoproto.nullable) = false
+    ];
+}

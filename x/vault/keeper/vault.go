@@ -153,12 +153,12 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 
 	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 	if !found {
-		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+		return sdk.ZeroDec(), types.ErrorPriceInDoesNotExist
 	}
 
 	assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
 	if !found {
-		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+		return sdk.ZeroDec(), types.ErrorPriceOutDoesNotExist
 	}
 
 	totalIn := amountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()

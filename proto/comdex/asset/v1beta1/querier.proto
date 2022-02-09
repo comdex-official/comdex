@@ -5,7 +5,6 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/asset/v1beta1/asset.proto";
-import "comdex/asset/v1beta1/pair.proto";
 import "comdex/asset/v1beta1/params.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";

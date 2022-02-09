@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -18,14 +17,11 @@ type Keeper struct {
 	port        expected.PortKeeper
 	scoped      expected.ScopedKeeper
 	assetKeeper assetkeeper.Keeper
+	bandoraclekeeper expected.BandOracleKeeper
 }
 
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, channel expected.ChannelKeeper,
-	port expected.PortKeeper, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper) *Keeper {
-
-	if !params.HasKeyTable() {
-		params = params.WithKeyTable(oracletypes.ParamKeyTable())
-	}
+	port expected.PortKeeper, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper, bandoraclekeeper expected.BandOracleKeeper) *Keeper {
 
 	return &Keeper{
 		cdc:         cdc,
@@ -35,6 +31,7 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subsp
 		port:        port,
 		scoped:      scoped,
 		assetKeeper: assetKeeper,
+		bandoraclekeeper: bandoraclekeeper,
 	}
 }
 

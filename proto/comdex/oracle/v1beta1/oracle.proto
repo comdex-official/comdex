@@ -13,13 +13,5 @@ uint64 script_id = 2 [
 (gogoproto.customname) = "ScriptID",
 (gogoproto.moretags)   = "yaml:\"script_id\""
 ];
-}
-
-message Calldata {
-repeated string symbols = 1 [ (gogoproto.moretags) = "yaml:\"symbols\"" ];
-uint64 multiplier       = 2 [ (gogoproto.moretags) = "yaml:\"multiplier\"" ];
-}
-
-message Result {
-repeated uint64 rates = 1 [ (gogoproto.moretags) = "yaml:\"rates\"" ];
+uint64 rates = 3;
 }

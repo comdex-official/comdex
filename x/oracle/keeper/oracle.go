@@ -1,15 +1,9 @@
 package keeper
 
 import (
-	"fmt"
-	"strconv"
-
-	"github.com/bandprotocol/bandchain-packet/obi"
-	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/oracle/types"
 )
 
@@ -19,7 +13,6 @@ func (k *Keeper) SetMarket(ctx sdk.Context, market types.Market) {
 		key   = types.MarketKey(market.Symbol)
 		value = k.cdc.MustMarshal(&market)
 	)
-
 	store.Set(key, value)
 }
 
@@ -28,7 +21,6 @@ func (k *Keeper) HasMarket(ctx sdk.Context, symbol string) bool {
 		store = k.Store(ctx)
 		key   = types.MarketKey(symbol)
 	)
-
 	return store.Has(key)
 }
 
@@ -40,7 +32,7 @@ func (k *Keeper) GetMarket(ctx sdk.Context, symbol string) (market types.Market,
 	)
 
 	if value == nil {
-		return market, found
+		return market, false
 	}
 
 	k.cdc.MustUnmarshal(value, &market)
@@ -64,20 +56,6 @@ func (k *Keeper) GetMarkets(ctx sdk.Context) (markets []types.Market) {
 	return markets
 }
 
-func (k *Keeper) SetPriceForMarket(ctx sdk.Context, symbol string, price uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.PriceForMarketKey(symbol)
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: price,
-			},
-		)
-	)
-
-	store.Set(key, value)
-}
-
 func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool) {
 	var (
 		store = k.Store(ctx)
@@ -93,6 +71,78 @@ func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool
 	k.cdc.MustUnmarshal(value, &price)
 
 	return price.GetValue(), true
+}
+
+func (k *Keeper) GetRates(ctx sdk.Context, symbol string) (uint64, bool) {
+
+	var (
+		store = k.Store(ctx)
+		key   = types.PriceForMarketKey(symbol)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return 0, false
+	}
+
+	var price protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &price)
+
+	return price.GetValue(), true
+}
+
+func (k *Keeper) SetRates(ctx sdk.Context, symbol string) {
+	var (
+		store = k.Store(ctx)
+		key   = types.PriceForMarketKey(symbol)
+	)
+	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, 1)
+
+	switch symbol {
+	case "ATOM":
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[0],
+		},
+		)
+		store.Set(key, value)
+
+	case "XAU":
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[1],
+		},
+		)
+		store.Set(key, value)
+
+	case "XAG":
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[2],
+		},
+		)
+		store.Set(key, value)
+
+	case "OIL":
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[3],
+		},
+		)
+		store.Set(key, value)
+
+	case "UST":
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[4],
+		},
+		)
+		store.Set(key, value)
+
+	case "CMDX":
+		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+			Value: data.Rates[5],
+		},
+		)
+		store.Set(key, value)
+	default:
+	}
+
 }
 
 func (k *Keeper) SetMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
@@ -173,75 +223,6 @@ func (k *Keeper) GetCalldataID(ctx sdk.Context) uint64 {
 	k.cdc.MustUnmarshal(value, &id)
 
 	return id.GetValue()
-}
-
-func (k *Keeper) SetCalldata(ctx sdk.Context, id uint64, calldata types.Calldata) {
-	var (
-		store = k.Store(ctx)
-		key   = types.CalldataKey(id)
-		value = k.cdc.MustMarshal(&calldata)
-	)
-
-	store.Set(key, value)
-}
-
-func (k *Keeper) GetCalldata(ctx sdk.Context, id uint64) (calldata types.Calldata, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.CalldataKey(id)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return calldata, false
-	}
-
-	k.cdc.MustUnmarshal(value, &calldata)
-	return calldata, true
-}
-
-func (k *Keeper) DeleteCalldata(ctx sdk.Context, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.CalldataKey(id)
-	)
-
-	store.Delete(key)
-}
-
-func (k *Keeper) OnRecvPacket(ctx sdk.Context, res bandpacket.OracleResponsePacketData) error {
-	id, err := strconv.ParseUint(res.ClientID, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	if res.ResolveStatus == bandpacket.RESOLVE_STATUS_SUCCESS {
-		calldata, found := k.GetCalldata(ctx, id)
-		if !found {
-			return fmt.Errorf("calldata does not exist for id %d", id)
-		}
-
-		var result types.Result
-		if err := obi.Decode(res.Result, &result); err != nil {
-			return err
-		}
-
-		for i := range calldata.Symbols {
-			k.SetPriceForMarket(ctx, calldata.Symbols[i], result.Rates[i])
-		}
-	}
-
-	k.DeleteCalldata(ctx, id)
-	return nil
-}
-
-func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
-	var (
-		store = k.Store(ctx)
-		key   = assettypes.AssetKey(id)
-	)
-
-	return store.Has(key)
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {

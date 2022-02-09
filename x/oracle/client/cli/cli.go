@@ -36,7 +36,6 @@ func GetTxCmd() *cobra.Command {
 		txAddMarket(),
 		txUpdateMarket(),
 		txRemoveMarketForAsset(),
-		txFetchPrice(),
 	)
 
 	return cmd
