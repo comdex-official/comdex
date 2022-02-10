@@ -63,11 +63,10 @@ message QueryTotalCollateralResponse{
 }
 
 message QueryPoolAPRRequest{
-
 }
 
 message QueryPoolAPRResponse{
-    float64 apr=1   [ 
+    double apr=1   [ 
         (gogoproto.moretags) = "yaml:\"apr\""
     ];  
 }

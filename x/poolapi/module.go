@@ -16,6 +16,7 @@ import (
 	"github.com/spf13/cobra"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/comdex-official/comdex/x/poolapi/cli"
 	"github.com/comdex-official/comdex/x/poolapi/keeper"
 	"github.com/comdex-official/comdex/x/poolapi/types"
 )
@@ -56,7 +57,7 @@ func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 }
 
 func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
-	return nil
+	return cli.GetQueryCmd()
 }
 
 type AppModule struct {

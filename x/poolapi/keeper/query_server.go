@@ -74,9 +74,9 @@ func (q *queryServer) PoolAPR(c context.Context, req *types.QueryPoolAPRRequest)
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	pool_apr,_ : = q.GetAPR(c)
+	pool_apr, _ := q.GetAPR(c)
 
 	return &types.QueryPoolAPRResponse{
-		Apr : pool_apr,
+		Apr: uint64(pool_apr),
 	}, nil
 }
