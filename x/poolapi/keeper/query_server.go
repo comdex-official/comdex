@@ -77,6 +77,6 @@ func (q *queryServer) PoolAPR(c context.Context, req *types.QueryPoolAPRRequest)
 	pool_apr, _ := q.GetAPR(c)
 
 	return &types.QueryPoolAPRResponse{
-		Apr: uint64(pool_apr),
+		Apr: pool_apr,
 	}, nil
 }

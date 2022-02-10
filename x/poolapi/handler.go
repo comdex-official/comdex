@@ -1,4 +1,4 @@
-package liquidity
+package poolapi
 
 import (
 	"github.com/comdex-official/comdex/x/poolapi/keeper"

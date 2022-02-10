@@ -1,5 +1,5 @@
 syntax = "proto3";
-package comdex.liquidity.v1beta1;
+package comdex.poolapi.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
@@ -12,22 +12,22 @@ option (gogoproto.goproto_getters_all) = false;
 service QueryService {
     // Get liquidity of a single pool given id
     rpc IndividualPoolLiquidity (QueryIndividualPoolLiquidityRequest) returns (QueryIndividualPoolLiquidityResponse) {
-        option (google.api.http).get = "/comdex/liquidity/v1beta1/liquidity/{pool_id}";
+        option (google.api.http).get = "/comdex/poolapi/v1beta1/liquidity/{pool_id}";
     }
 
     //Get total liquidity of all pools
     rpc PoolsLiquidity(QueryTotalLiquidityRequest) returns (QueryTotalLiquidityResponse){
-        option (google.api.http).get = "/comdex/liquidity/v1beta1/liquidity";
+        option (google.api.http).get = "/comdex/poolapi/v1beta1/liquidity";
     }
 
     //Get total collateral 
     rpc TotalCollateral(QueryTotalCollateralRequest) returns (QueryTotalCollateralResponse){
-        option (google.api.http).get = "/comdex/liquidity/v1beta1/collateral";
+        option (google.api.http).get = "/comdex/poolapi/v1beta1/collateral";
     }
 
     //Get PoolAPR
     rpc PoolAPR(QueryPoolAPRRequest) returns (QueryPoolAPRResponse){
-        option (google.api.http).get = "/comdex/liquidity/v1beta1/apr";
+        option (google.api.http).get = "/comdex/poolapi/v1beta1/apr";
     }
 }
     

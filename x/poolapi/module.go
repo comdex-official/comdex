@@ -1,4 +1,4 @@
-package liquidity
+package poolapi
 
 import (
 	"context"
@@ -92,7 +92,7 @@ func (a AppModule) Route() sdk.Route {
 }
 
 func (a AppModule) QuerierRoute() string {
-	return types.ModuleName
+	return types.QuerierRoute
 }
 
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
