@@ -81,7 +81,7 @@ func (k Keeper) StartCollateralAuction(
 		MinBid:              sdk.NewCoin(assetOut.Denom, minBid),
 		MaxBid:              sdk.NewCoin(assetOut.Denom, maxBid),
 		EndTime:             ctx.BlockTime().Add(time.Hour * 6),
-		Pair:                auctiontypes.Pair(pair),
+		Pair:                pair,
 	}
 	auction.Id = k.GetCollateralAuctionID(ctx) + 1
 	k.SetCollateralAuctionID(ctx, auction.Id)

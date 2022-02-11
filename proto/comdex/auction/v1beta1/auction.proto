@@ -11,11 +11,11 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message CollateralAuction {
-    uint64 id = 1 [ 
+    uint64 id = 1 [
         (gogoproto.moretags) = "yaml:\"id\""
     ];
 
-    uint64 locked_vault_id = 2 [ 
+    uint64 locked_vault_id = 2 [
         (gogoproto.moretags) = "yaml:\"locked_vault_id\""
     ];
     cosmos.base.v1beta1.Coin auctioned_collateral = 3 [
@@ -48,12 +48,12 @@ message CollateralAuction {
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
     google.protobuf.Timestamp end_time = 9 [
-        (gogoproto.nullable) = false, 
+        (gogoproto.nullable) = false,
         (gogoproto.stdtime) = true,
         (gogoproto.moretags)   = "yaml:\"end_time\""
     ];
-    Pair pair = 10 [
-        (gogoproto.nullable) = false, 
+    comdex.asset.v1beta1.Pair pair = 10 [
+        (gogoproto.nullable) = false,
         (gogoproto.moretags)   = "yaml:\"pair\""
     ];
   }
