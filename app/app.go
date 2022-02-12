@@ -100,9 +100,6 @@ import (
 	"github.com/comdex-official/comdex/x/oracle"
 	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
 	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
-	poolapi "github.com/comdex-official/comdex/x/poolapi"
-	poolapikeeper "github.com/comdex-official/comdex/x/poolapi/keeper"
-	poolapitypes "github.com/comdex-official/comdex/x/poolapi/types"
 	"github.com/comdex-official/comdex/x/vault"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -147,7 +144,6 @@ var (
 		liquidity.AppModuleBasic{},
 		asset.AppModuleBasic{},
 		oracle.AppModuleBasic{},
-		poolapi.AppModuleBasic{},
 		bandoraclemodule.AppModuleBasic{},
 		liquidation.AppModuleBasic{},
 		auction.AppModuleBasic{},
@@ -210,8 +206,6 @@ type App struct {
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
 
-	poolapiKeeper poolapikeeper.Keeper
-
 	scopedIBCOracleKeeper  capabilitykeeper.ScopedKeeper
 	scopedBandoracleKeeper capabilitykeeper.ScopedKeeper
 
@@ -248,7 +242,7 @@ func New(
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey,
 			oracletypes.StoreKey, bandoraclemoduletypes.StoreKey, liquidationtypes.StoreKey,
-			auctiontypes.StoreKey, poolapitypes.StoreKey,
+			auctiontypes.StoreKey,
 		)
 	)
 
@@ -290,7 +284,6 @@ func New(
 	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
 	app.paramsKeeper.Subspace(assettypes.ModuleName)
 	app.paramsKeeper.Subspace(oracletypes.ModuleName)
-	app.paramsKeeper.Subspace(poolapitypes.ModuleName)
 	app.paramsKeeper.Subspace(bandoraclemoduletypes.ModuleName)
 	app.paramsKeeper.Subspace(liquidationtypes.ModuleName)
 	app.paramsKeeper.Subspace(auctiontypes.ModuleName)
@@ -420,12 +413,23 @@ func New(
 		app.GetSubspace(assettypes.ModuleName),
 		&app.oracleKeeper,
 	)
+
+	app.tmliquidityKeeper = tmliquiditykeeper.NewKeeper(
+		app.cdc,
+		app.keys[tmliquiditytypes.StoreKey],
+		app.GetSubspace(tmliquiditytypes.ModuleName),
+		app.bankKeeper,
+		app.accountKeeper,
+		app.distrKeeper,
+	)
+
 	app.vaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
 		app.keys[vaulttypes.StoreKey],
 		app.bankKeeper,
 		&app.assetKeeper,
 		&app.oracleKeeper,
+		&app.tmliquidityKeeper,
 	)
 
 	app.liquidityKeeper = liquiditykeeper.NewKeeper(
@@ -462,24 +466,6 @@ func New(
 		app.BandoracleKeeper,
 	)
 
-	app.tmliquidityKeeper = tmliquiditykeeper.NewKeeper(
-		app.cdc,
-		app.keys[tmliquiditytypes.StoreKey],
-		app.GetSubspace(tmliquiditytypes.ModuleName),
-		app.bankKeeper,
-		app.accountKeeper,
-		app.distrKeeper,
-	)
-
-	app.poolapiKeeper = poolapikeeper.NewKeeper(
-		app.cdc,
-		app.keys[poolapitypes.StoreKey],
-		app.GetSubspace(poolapitypes.ModuleName),
-		app.tmliquidityKeeper,
-		&app.oracleKeeper,
-		&app.vaultKeeper,
-		&app.assetKeeper,
-	)
 	app.liquidationKeeper = *liquidationkeeper.NewKeeper(
 		app.cdc,
 		keys[liquidationtypes.StoreKey],
@@ -567,7 +553,6 @@ func New(
 		vault.NewAppModule(app.cdc, app.vaultKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
 		asset.NewAppModule(app.cdc, app.assetKeeper),
-		poolapi.NewAppModule(app.cdc, app.poolapiKeeper),
 		oracleModule,
 		bandoracleModule,
 		liquidation.NewAppModule(app.cdc, app.liquidationKeeper, app.accountKeeper, app.bankKeeper),
@@ -609,7 +594,6 @@ func New(
 		ibctransfertypes.ModuleName,
 		assettypes.ModuleName,
 		vaulttypes.ModuleName,
-		poolapitypes.ModuleName,
 		bandoraclemoduletypes.ModuleName,
 		oracletypes.ModuleName,
 		liquidationtypes.ModuleName,

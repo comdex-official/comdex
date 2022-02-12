@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	liquiditytypes "github.com/tendermint/liquidity/x/liquidity/types"
 )
 
 type BankKeeper interface {
@@ -21,4 +22,11 @@ type AssetKeeper interface {
 
 type OracleKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+	GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool)
+}
+
+type LiquidityKeeper interface {
+	GetPool(ctx sdk.Context, poolID uint64) (liquiditytypes.Pool, bool)
+	GetPoolMetaData(ctx sdk.Context, pool liquiditytypes.Pool) liquiditytypes.PoolMetadata
+	GetAllPools(ctx sdk.Context) (pools []liquiditytypes.Pool)
 }

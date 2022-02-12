@@ -202,3 +202,64 @@ func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest
 		},
 	}, nil
 }
+
+func (q *queryServer) IndividualPoolLiquidity(c context.Context, req *types.QueryIndividualPoolLiquidityRequest) (*types.QueryIndividualPoolLiquidityResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	liquidity, found := q.PoolLiquidity(ctx, req.PoolId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "pool does not exist for id %d", req.PoolId)
+	}
+
+	return &types.QueryIndividualPoolLiquidityResponse{
+		PoolLiquidity: liquidity,
+	}, nil
+}
+
+func (q *queryServer) PoolsLiquidity(c context.Context, req *types.QueryTotalLiquidityRequest) (*types.QueryTotalLiquidityResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	total_liquidity, found := q.TotalLiquidity(ctx)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "one or multiple pools or denoms does not exist ")
+	}
+
+	return &types.QueryTotalLiquidityResponse{
+		TotalLiquidity: total_liquidity,
+	}, nil
+}
+
+func (q *queryServer) TotalCollateral(c context.Context, req *types.QueryTotalCollateralRequest) (*types.QueryTotalCollateralResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	total_collateral, _ := q.GetTotalCollateral(c)
+
+	return &types.QueryTotalCollateralResponse{
+		TotalCollateral: total_collateral,
+	}, nil
+}
+
+func (q *queryServer) PoolAPR(c context.Context, req *types.QueryPoolAPRRequest) (*types.QueryPoolAPRResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	pool_apr, _ := q.GetAPR(c)
+
+	return &types.QueryPoolAPRResponse{
+		Apr: pool_apr,
+	}, nil
+}

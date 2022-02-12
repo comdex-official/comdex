@@ -78,6 +78,45 @@ message QueryAllVaultsResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
+message QueryIndividualPoolLiquidityRequest{
+    uint64 pool_id=1   [ 
+        (gogoproto.moretags) = "yaml:\"pool_id\""
+    ];
+}
+
+message QueryIndividualPoolLiquidityResponse{
+    uint64 pool_liquidity=1   [
+        (gogoproto.moretags) = "yaml:\"pool_liquidity\"" 
+    ];   
+}
+
+message QueryTotalLiquidityRequest{
+}
+
+message QueryTotalLiquidityResponse{
+    uint64 total_liquidity=1   [ 
+        (gogoproto.moretags) = "yaml:\"total_liquidity\""
+    ];  
+}
+
+message QueryTotalCollateralRequest{
+}
+
+message QueryTotalCollateralResponse{
+    uint64 total_collateral=1   [ 
+        (gogoproto.moretags) = "yaml:\"total_collateral\""
+    ];  
+}
+
+message QueryPoolAPRRequest{
+}
+
+message QueryPoolAPRResponse{
+    double apr=1   [ 
+        (gogoproto.moretags) = "yaml:\"apr\""
+    ];  
+}
+
 service QueryService {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
@@ -90,4 +129,24 @@ service QueryService {
   rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults";
   };
+
+  // Get liquidity of a single pool given id
+  rpc IndividualPoolLiquidity (QueryIndividualPoolLiquidityRequest) returns (QueryIndividualPoolLiquidityResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/liquidity/{pool_id}";
+  }
+
+  //Get total liquidity of all pools
+  rpc PoolsLiquidity(QueryTotalLiquidityRequest) returns (QueryTotalLiquidityResponse){
+    option (google.api.http).get = "/comdex/vault/v1beta1/liquidity";
+  }
+
+  //Get total collateral 
+  rpc TotalCollateral(QueryTotalCollateralRequest) returns (QueryTotalCollateralResponse){
+    option (google.api.http).get = "/comdex/vault/v1beta1/collateral";
+  }
+
+  //Get PoolAPR
+  rpc PoolAPR(QueryPoolAPRRequest) returns (QueryPoolAPRResponse){
+    option (google.api.http).get = "/comdex/vault/v1beta1/apr";
+  }
 }
