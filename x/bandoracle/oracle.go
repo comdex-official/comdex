@@ -28,7 +28,7 @@ func (am AppModule) handleOraclePacket(
 			return ack, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,
 				"cannot decode the fetchPrice received packet")
 		}
-		am.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(1), fetchPriceResult)
+		am.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(modulePacketData.RequestID), fetchPriceResult)
 		// TODO: FetchPrice oracle data reception logic
 
 	default:
@@ -63,7 +63,7 @@ func (am AppModule) handleOracleAcknowledgment(
 		if err = types.ModuleCdc.UnmarshalJSON(modulePacket.GetData(), &data); err != nil {
 			return nil, nil
 		}
-		requestID := types.OracleRequestID(1)
+		requestID := types.OracleRequestID(oracleAck.RequestID)
 
 		switch data.GetClientID() {
 
