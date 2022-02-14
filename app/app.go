@@ -54,6 +54,7 @@ import (
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
@@ -562,7 +563,13 @@ func New(
 		auctiontypes.ModuleName,
 	)
 
-	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, bandoraclemoduletypes.ModuleName)
+	app.mm.SetOrderEndBlockers(transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName, authtypes.ModuleName,
+		banktypes.ModuleName, crisistypes.ModuleName, govtypes.ModuleName, paramstypes.ModuleName,
+		genutiltypes.ModuleName, capabilitytypes.ModuleName, vestingtypes.ModuleName,
+		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
+		bandoraclemoduletypes.ModuleName, oracletypes.ModuleName, liquidationtypes.ModuleName,
+		auctiontypes.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -590,6 +597,9 @@ func New(
 		oracletypes.ModuleName,
 		liquidationtypes.ModuleName,
 		auctiontypes.ModuleName,
+		vestingtypes.ModuleName,
+		paramtypes.ModuleName,
+		upgradetypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
