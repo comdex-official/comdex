@@ -54,7 +54,6 @@ import (
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
@@ -598,7 +597,7 @@ func New(
 		liquidationtypes.ModuleName,
 		auctiontypes.ModuleName,
 		vestingtypes.ModuleName,
-		paramtypes.ModuleName,
+		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 	)
 
