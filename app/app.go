@@ -76,8 +76,6 @@ import (
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/spf13/cast"
-	tmliquiditykeeper "github.com/tendermint/liquidity/x/liquidity/keeper"
-	tmliquiditytypes "github.com/tendermint/liquidity/x/liquidity/types"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -200,7 +198,6 @@ type App struct {
 	ibcKeeper         *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	evidenceKeeper    evidencekeeper.Keeper
 	ibcTransferKeeper ibctransferkeeper.Keeper
-	tmliquidityKeeper tmliquiditykeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
@@ -414,22 +411,13 @@ func New(
 		&app.oracleKeeper,
 	)
 
-	app.tmliquidityKeeper = tmliquiditykeeper.NewKeeper(
-		app.cdc,
-		app.keys[tmliquiditytypes.StoreKey],
-		app.GetSubspace(tmliquiditytypes.ModuleName),
-		app.bankKeeper,
-		app.accountKeeper,
-		app.distrKeeper,
-	)
-
 	app.vaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
 		app.keys[vaulttypes.StoreKey],
 		app.bankKeeper,
 		&app.assetKeeper,
 		&app.oracleKeeper,
-		&app.tmliquidityKeeper,
+		&app.liquidityKeeper,
 	)
 
 	app.liquidityKeeper = liquiditykeeper.NewKeeper(

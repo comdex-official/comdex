@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	liquiditytypes "github.com/tendermint/liquidity/x/liquidity/types"
+	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 )
 
 type BankKeeper interface {

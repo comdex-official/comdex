@@ -20,7 +20,6 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/swag v1.7.4
-	github.com/tendermint/liquidity v1.4.5
 	github.com/tendermint/spm v0.1.9
 	github.com/tendermint/tendermint v0.34.14
 	github.com/tendermint/tm-db v0.6.4
