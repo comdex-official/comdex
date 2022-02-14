@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -156,6 +157,7 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 	assetOut assettypes.Asset,
 ) (sdk.Dec, error) {
 
+	fmt.Println("got in ")
 	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorPriceInDoesNotExist
@@ -246,22 +248,31 @@ func (k *Keeper) GetTotalCollateral(c context.Context) (uint64, bool) {
 	return total_liquidity, true
 }
 
+type HelpStruct struct {
+	Denom  string `json:"denom"`
+	Amount string `json:"amount"`
+}
 type BankTotal struct {
-	Height string
-	Result []string
+	Height string     `json:"height"`
+	Result HelpStruct `json:"result"`
 }
 
 type Inflation struct {
-	Height string
-	Result string
+	Height string `json:"height"`
+	Result string `json:"result"`
 }
 
+type HelpStruct2 struct {
+	Notbonded string `json:"not_bonded_tokens"`
+	Bonded    string `json:"bonded_tokens"`
+}
 type StakingPool struct {
-	Height string
-	Result []string
+	Height string      `json:"height"`
+	Result HelpStruct2 `json:"result"`
 }
 
 func (k *Keeper) GetAPR(c context.Context) (float64, bool) {
+
 	var client http.Client
 	var (
 		apr float64 = 0.0
@@ -272,12 +283,12 @@ func (k *Keeper) GetAPR(c context.Context) (float64, bool) {
 		return 0.0, false
 	}
 
-	inflation_res, err := http.Get("https://api-comdex.zenchainlabs.io/minting/inflation")
+	inflation_res, err := client.Get("https://api-comdex.zenchainlabs.io/minting/inflation")
 	if err != nil {
 		return 0.0, false
 	}
 
-	stakingtokens_res, err := http.Get("https://api-comdex.zenchainlabs.io/staking/pool")
+	stakingtokens_res, err := client.Get("https://api-comdex.zenchainlabs.io/staking/pool")
 	if err != nil {
 		return 0.0, false
 	}
@@ -290,8 +301,9 @@ func (k *Keeper) GetAPR(c context.Context) (float64, bool) {
 		return 0.0, false
 	}
 
-	denom := json1.Result[0]
-	amount, _ := strconv.ParseUint(json1.Result[1], 10, 64)
+	fmt.Println(json1)
+	denom := json1.Result.Denom
+	amount, _ := strconv.ParseUint(json1.Result.Amount, 10, 64)
 	denom_price, _ := k.oracle.GetPriceForMarket(ctx, denom)
 	banktotal := amount * denom_price
 
@@ -314,7 +326,7 @@ func (k *Keeper) GetAPR(c context.Context) (float64, bool) {
 		return 0.0, false
 	}
 
-	bondedtokens_string := json3.Result[1]
+	bondedtokens_string := json3.Result.Bonded
 	bondedtokens, _ := strconv.ParseUint(bondedtokens_string, 10, 64)
 
 	apr = inflation * float64(banktotal) / float64(bondedtokens)
