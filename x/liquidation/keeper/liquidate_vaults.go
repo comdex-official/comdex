@@ -80,13 +80,16 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 }
 
 //for first time to update the coollateralization value & sell off amount
+//and if auction is complete and cr is less than 1.6
 func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 	lockedVaults := k.GetLockedVaults(ctx)
 	if len(lockedVaults) == 0 {
 		return nil
 	}
 	for _, lockedVault := range lockedVaults {
-		if !lockedVault.IsAuctionInProgress {
+		v, _ := sdk.NewDecFromStr("1.6")
+
+		if (!lockedVault.IsAuctionInProgress && !lockedVault.IsAuctionComplete) || (lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.LTE(v)) {
 			pair, found := k.GetPair(ctx, lockedVault.PairId)
 			if !found {
 				continue
@@ -95,7 +98,6 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 			if !found {
 				continue
 			}
-
 			assetOut, found := k.GetAsset(ctx, pair.AssetOut)
 			if !found {
 				continue
@@ -104,7 +106,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 			if err != nil {
 				continue
 			}
-			lockedVault.CurrentCollaterlisationRatio = collateralizationRatio
+			//lockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 
 			assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
 			assetOutPrice, _ := k.GetPriceForAsset(ctx, assetOut.Id)
@@ -113,18 +115,14 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 			totalOut := lockedVault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
 
 			var selloffAmount sdk.Dec
-
 			var collateralToBeAuctioned sdk.Dec
-
 			var unliquidatePoint, dividingFactor sdk.Dec
-
 			unliquidatePoint, _ = sdk.NewDecFromStr("1.6")
 			dividingFactor, _ = sdk.NewDecFromStr("0.28")
 			assetOutatLiquidatePoint := totalOut.Mul(unliquidatePoint)
 			collateralIn := totalIn
 			assetsDifference := assetOutatLiquidatePoint.Sub(collateralIn)
 			selloffAmount = (assetsDifference).Quo(dividingFactor)
-
 			if selloffAmount.GTE(totalIn) {
 				collateralToBeAuctioned = totalIn
 			} else {
@@ -155,6 +153,8 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 	}
 	return nil
 }
+
+
 
 func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 	lockedVaults := k.GetLockedVaults(ctx)
