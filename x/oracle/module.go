@@ -6,10 +6,10 @@ import (
 	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	ibcporttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
-	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
+	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/v2/modules/core/exported"
 	"math"
 	"math/rand"
 
@@ -90,6 +90,11 @@ type AppModule struct {
 	AppModuleBasic
 	cdc    codec.JSONCodec
 	keeper keeper.Keeper
+}
+
+func (a AppModule) NegotiateAppVersion(ctx sdk.Context, order ibcchanneltypes.Order, connectionID string, portID string, counterparty ibcchanneltypes.Counterparty, proposedVersion string) (version string, err error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (a AppModule) ConsensusVersion() uint64 {
@@ -280,18 +285,16 @@ func (a AppModule) OnRecvPacket(
 }
 
 func (a AppModule) OnAcknowledgementPacket(
-	_ sdk.Context,
-	_ ibcchanneltypes.Packet,
-	_ []byte,
-	_ sdk.AccAddress,
-) (*sdk.Result, error) {
-	return nil, nil
+	ctx sdk.Context,
+	packet ibcchanneltypes.Packet,
+	acknowledgement []byte,
+	relayer sdk.AccAddress) error {
+	panic("implement me")
 }
 
 func (a AppModule) OnTimeoutPacket(
-	_ sdk.Context,
-	_ ibcchanneltypes.Packet,
-	_ sdk.AccAddress,
-) (*sdk.Result, error) {
-	return nil, nil
+	ctx sdk.Context,
+	packet ibcchanneltypes.Packet,
+	relayer sdk.AccAddress) error {
+	panic("implement me")
 }
