@@ -18,7 +18,7 @@ message Biddings {
         (gogoproto.moretags) = "yaml:\"auction_id\""
     ];
 
-    bool auction_status = 3 [ 
+    string auction_status = 3 [ 
         (gogoproto.moretags) = "yaml:\"auction_status\""
     ];
 
