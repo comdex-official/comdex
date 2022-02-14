@@ -139,13 +139,13 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 				AmountIn:                     lockedVault.AmountIn,
 				AmountOut:                    lockedVault.AmountOut,
 				Initiator:                    lockedVault.Initiator,
-				IsAuctionComplete:            false,
-				IsAuctionInProgress:          false,
+				IsAuctionComplete:            lockedVault.IsAuctionComplete,
+				IsAuctionInProgress:          lockedVault.IsAuctionInProgress,
 				CrAtLiquidation:              lockedVault.CrAtLiquidation,
 				CurrentCollaterlisationRatio: collateralizationRatio,
 				CollateralToBeAuctioned:      &collateralToBeAuctioned,
 				LiquidationTimestamp:         lockedVault.LiquidationTimestamp,
-				SellOffHistory:               nil,
+				SellOffHistory:               lockedVault.SellOffHistory,
 			}
 
 			k.SetLockedVault(ctx, updatedLockedVault)
