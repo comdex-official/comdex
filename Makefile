@@ -30,7 +30,7 @@ clean:
 
 all: verify build
 
-install:
+install: mod-vendor
 ifeq (${OS},Windows_NT)
 	go build -mod=readonly ${BUILD_FLAGS} -o ${GOBIN}/comdex.exe ./node
 else
@@ -59,7 +59,7 @@ go-lint:
 .PHONY: mod-vendor
 mod-vendor: tools
 	@go mod vendor
-	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto,github.com/cosmos/ibc-go/proto
+	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto,github.com/cosmos/ibc-go/v2/proto
 
 .PHONY: proto-gen
 proto-gen:

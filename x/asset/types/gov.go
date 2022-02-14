@@ -13,7 +13,7 @@ const (
 )
 
 func init() {
-	govtypes.RegisterProposalType(ProposalTypeUpdateAdmin)
+	//govtypes.RegisterProposalType(ProposalTypeUpdateAdmin)
 	govtypes.RegisterProposalTypeCodec(&UpdateAdminProposal{}, fmt.Sprintf("comdex/asset/%s", ProposalTypeUpdateAdmin))
 }
 

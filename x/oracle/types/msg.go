@@ -3,8 +3,8 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	ibcclienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
+	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
+	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 )
 
 var (
@@ -19,7 +19,7 @@ func NewMsgAddMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64,
 		From:     from.String(),
 		Symbol:   symbol,
 		ScriptID: scriptID,
-		Id: assetID,
+		Id:       assetID,
 	}
 }
 
