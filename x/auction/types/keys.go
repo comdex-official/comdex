@@ -11,6 +11,9 @@ const (
 	QuerierRoute = ModuleName
 	MemStoreKey  = ModuleName
 
+	ActiveAuctionStatus = "active"
+	ClosedAuctionStatus = "inactive"
+
 	PlacedBiddingStatus   = "placed"
 	RejectedBiddingStatus = "rejected"
 	SuccessBiddingStatus  = "success"
