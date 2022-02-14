@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -96,8 +97,8 @@ func (k *Keeper) SetRates(ctx sdk.Context, symbol string) {
 		store = k.Store(ctx)
 		key   = types.PriceForMarketKey(symbol)
 	)
-	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, 1)
-
+	id := k.bandoraclekeeper.GetLastFetchPriceID(ctx)
+	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))
 	switch symbol {
 	case "ATOM":
 		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{

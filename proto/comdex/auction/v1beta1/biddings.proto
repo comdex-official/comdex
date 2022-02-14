@@ -18,7 +18,7 @@ message Biddings {
         (gogoproto.moretags) = "yaml:\"auction_id\""
     ];
 
-    bool auction_status = 3 [ 
+    string auction_status = 3 [ 
         (gogoproto.moretags) = "yaml:\"auction_status\""
     ];
 
@@ -43,4 +43,18 @@ message Biddings {
         (gogoproto.moretags) = "yaml:\"bidding_status\""
     ];
 
+}
+
+message UserBiddings {
+    uint64 id = 1 [ 
+        (gogoproto.moretags) = "yaml:\"id\""
+    ];
+
+    string bidder = 2 [
+        (gogoproto.moretags) = "yaml:\"bidder\""
+    ];
+
+    repeated uint64 bidding_ids = 3 [
+        (gogoproto.moretags) = "yaml:\"bidding_ids\""
+    ];
 }

@@ -89,3 +89,35 @@ func (q *queryServer) QueryAuctions(c context.Context, req *types.QueryAuctionsR
 		Pagination: pagination,
 	}, nil
 }
+
+func (q *queryServer) QueryBiddings(c context.Context, req *types.QueryBiddingsRequest) (*types.QueryBiddingsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	item, found := q.GetUserBiddings(ctx, req.Bidder)
+	if !found {
+		return &types.QueryBiddingsResponse{
+			Bidder:   req.Bidder,
+			Biddings: []types.Biddings{},
+		}, nil
+	}
+
+	userBiddings := []types.Biddings{}
+	for _, biddingId := range item.BiddingIds {
+		bidding, found := q.GetBidding(ctx, biddingId)
+		if !found {
+			continue
+		}
+		userBiddings = append(userBiddings, bidding)
+	}
+
+	return &types.QueryBiddingsResponse{
+		Bidder:   req.Bidder,
+		Biddings: userBiddings,
+	}, nil
+}

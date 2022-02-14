@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/auction/v1beta1/params.proto";
 import "comdex/auction/v1beta1/auction.proto";
+import "comdex/auction/v1beta1/biddings.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/auction/types";
@@ -34,6 +35,20 @@ message QueryAuctionsResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
+message QueryBiddingsRequest {
+  string bidder = 1;
+}
+
+message QueryBiddingsResponse {
+  string bidder = 1 [
+    (gogoproto.moretags) = "yaml:\"bidder\""
+  ];
+  repeated Biddings biddings = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"biddings\""
+  ];
+}
+
 message QueryParamsRequest {}
 
 message QueryParamsResponse {
@@ -49,6 +64,9 @@ service QueryService {
   }
   rpc QueryAuctions(QueryAuctionsRequest) returns (QueryAuctionsResponse) {
     option (google.api.http).get = "/comdex/auction/v1beta1/auctions";
+  }
+  rpc QueryBiddings(QueryBiddingsRequest) returns (QueryBiddingsResponse) {
+    option (google.api.http).get = "/comdex/auction/v1beta1/biddings/{bidder}";
   }
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
       option (google.api.http).get = "/comdex/auction/v1beta1/params";

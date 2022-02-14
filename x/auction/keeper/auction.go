@@ -76,12 +76,14 @@ func (k Keeper) StartCollateralAuction(
 		LockedVaultId:       locked_vault.LockedVaultId,
 		AuctionedCollateral: sdk.NewCoin(assetIn.Denom, sdk.NewInt(AuctioningQuantity)),
 		DiscountQuantity:    sdk.NewCoin(assetIn.Denom, sdk.NewInt(DiscountedQuantity)),
+		ActiveBiddingId:     0,
 		Bidder:              nil,
 		Bid:                 sdk.NewCoin(assetOut.Denom, sdk.NewInt(0)),
 		MinBid:              sdk.NewCoin(assetOut.Denom, minBid),
 		MaxBid:              sdk.NewCoin(assetOut.Denom, maxBid),
 		EndTime:             ctx.BlockTime().Add(time.Hour * 6),
 		Pair:                pair,
+		BiddingIds:          []uint64{},
 	}
 	auction.Id = k.GetCollateralAuctionID(ctx) + 1
 	k.SetCollateralAuctionID(ctx, auction.Id)
@@ -123,8 +125,20 @@ func (k Keeper) CloseCollateralAuction(
 		if err != nil {
 			return err
 		}
+		bidding, _ := k.GetBidding(ctx, collateral_auction.ActiveBiddingId)
+		bidding.BiddingStatus = auctiontypes.SuccessBiddingStatus
+		k.SetBidding(ctx, bidding)
 		k.BurnCoin(ctx, vaulttypes.ModuleName, highestBidReceived)
 		k.UpdateAssetQuantitiesInLockedVault(ctx, collateral_auction, sdk.NewInt(collateralQuantity), assetIn, highestBidReceived.Amount, assetOut)
+
+		for _, biddingId := range collateral_auction.BiddingIds {
+			bidding, found := k.GetBidding(ctx, biddingId)
+			if !found {
+				continue
+			}
+			bidding.AuctionStatus = auctiontypes.ClosedAuctionStatus
+			k.SetBidding(ctx, bidding)
+		}
 	}
 	k.SetFlagIsAuctionComplete(ctx, collateral_auction.LockedVaultId, true)
 	k.SetFlagIsAuctionInProgress(ctx, collateral_auction.LockedVaultId, false)
@@ -210,6 +224,156 @@ func (k *Keeper) GetCollateralAuctions(ctx sdk.Context) (auctions []auctiontypes
 	return auctions
 }
 
+func (k *Keeper) GetBiddingID(ctx sdk.Context) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.BiddingsIdKey
+		value = store.Get(key)
+	)
+	if value == nil {
+		return 0
+	}
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}
+
+func (k *Keeper) GetUserBiddingID(ctx sdk.Context) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.UserBiddingsIdKey
+		value = store.Get(key)
+	)
+	if value == nil {
+		return 0
+	}
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}
+
+func (k *Keeper) SetBiddingID(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.BiddingsIdKey
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) SetUserBiddingID(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.UserBiddingsIdKey
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) SetBidding(ctx sdk.Context, bidding auctiontypes.Biddings) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.BiddingsKey(bidding.Id)
+		value = k.cdc.MustMarshal(&bidding)
+	)
+	store.Set(key, value)
+}
+
+func (k *Keeper) SetUserBidding(ctx sdk.Context, userBiddings auctiontypes.UserBiddings) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.UserBiddingsKey(userBiddings.Bidder)
+		value = k.cdc.MustMarshal(&userBiddings)
+	)
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetBidding(ctx sdk.Context, id uint64) (bidding auctiontypes.Biddings, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.BiddingsKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return bidding, false
+	}
+
+	k.cdc.MustUnmarshal(value, &bidding)
+	return bidding, true
+}
+
+func (k *Keeper) GetBiddings(ctx sdk.Context) (biddings []auctiontypes.Biddings) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, auctiontypes.BiddingsKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var bidding auctiontypes.Biddings
+		k.cdc.MustUnmarshal(iter.Value(), &bidding)
+		biddings = append(biddings, bidding)
+	}
+
+	return biddings
+}
+
+func (k *Keeper) GetUserBiddings(ctx sdk.Context, bidder string) (userBiddings auctiontypes.UserBiddings, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.UserBiddingsKey(bidder)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return userBiddings, false
+	}
+
+	k.cdc.MustUnmarshal(value, &userBiddings)
+	return userBiddings, true
+}
+
+func (k Keeper) CreateNewBid(ctx sdk.Context, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin) (biddingId uint64, err error) {
+	bidding := auctiontypes.Biddings{
+		Id:               k.GetBiddingID(ctx) + 1,
+		AuctionId:        auctionId,
+		AuctionStatus:    auctiontypes.ActiveAuctionStatus,
+		Bidder:           bidder,
+		Bid:              bid,
+		BiddingTimestamp: ctx.BlockTime(),
+		BiddingStatus:    auctiontypes.PlacedBiddingStatus,
+	}
+	k.SetBiddingID(ctx, bidding.Id)
+	k.SetBidding(ctx, bidding)
+
+	userBiddings, found := k.GetUserBiddings(ctx, bidder.String())
+	if !found {
+		userBiddings = auctiontypes.UserBiddings{
+			Id:         k.GetUserBiddingID(ctx) + 1,
+			Bidder:     bidder.String(),
+			BiddingIds: []uint64{},
+		}
+		k.SetUserBiddingID(ctx, userBiddings.Id)
+	}
+	userBiddings.BiddingIds = append(userBiddings.BiddingIds, bidding.Id)
+	k.SetUserBidding(ctx, userBiddings)
+	return bidding.Id, nil
+}
+
 func (k Keeper) PlaceBid(ctx sdk.Context, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin) error {
 	auction, found := k.GetCollateralAuction(ctx, auctionId)
 	if !found {
@@ -231,10 +395,21 @@ func (k Keeper) PlaceBid(ctx sdk.Context, auctionId uint64, bidder sdk.AccAddres
 	if err != nil {
 		return err
 	}
+	biddingId, err := k.CreateNewBid(ctx, auctionId, bidder, bid)
+	if err != nil {
+		return err
+	}
 	err = k.bank.SendCoinsFromModuleToAccount(ctx, liquidationtypes.ModuleName, auction.Bidder, sdk.NewCoins(auction.Bid))
 	if err != nil {
 		return err
 	}
+	if auction.ActiveBiddingId != 0 {
+		bidding, _ := k.GetBidding(ctx, auction.ActiveBiddingId)
+		bidding.BiddingStatus = auctiontypes.RejectedBiddingStatus
+		k.SetBidding(ctx, bidding)
+	}
+	auction.ActiveBiddingId = biddingId
+	auction.BiddingIds = append(auction.BiddingIds, biddingId)
 	auction.Bidder = bidder
 	auction.Bid = bid
 	k.SetCollateralAuction(ctx, auction)
