@@ -3,7 +3,7 @@ VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
-BUILD_TAGS := $(strip netgo,ledger)
+BUILD_TAGS := $(strip netgo)
 LD_FLAGS := -s -w \
     -X github.com/cosmos/cosmos-sdk/version.Name=comdex \
     -X github.com/cosmos/cosmos-sdk/version.AppName=comdex \
@@ -15,8 +15,6 @@ LD_FLAGS := -s -w \
 BUILD_FLAGS += -ldflags "${LD_FLAGS}" -tags "${BUILD_TAGS}"
 
 GOBIN = $(shell go env GOPATH)/bin
-GOARCH = $(shell go env GOARCH)
-GOOS = $(shell go env GOOS)
 
 .PHONY: benchmark
 benchmark:
@@ -42,14 +40,6 @@ ifeq (${OS},Windows_NT)
 	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex.exe ./node
 else
 	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex ./node
-endif
-
-release: build
-	mkdir -p release
-ifeq (${OS},Windows_NT)
-	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=build/${GOOS}/${GOARCH} comdex.exe
-else
-	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=build/${GOOS}/${GOARCH} comdex
 endif
 
 install: mod-vendor
