@@ -8,7 +8,7 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
-	if ctx.BlockHeight() >= 59 && ctx.BlockHeight()%20 == 0 {
+	if ctx.BlockHeight() >= 599 && ctx.BlockHeight()%20 == 0 {
 		assets := k.GetAssets(ctx)
 		for _, asset := range assets {
 			k.SetRates(ctx, asset.Name)
