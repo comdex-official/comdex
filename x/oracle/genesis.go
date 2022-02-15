@@ -18,8 +18,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	return types.NewGenesisState(
+	/*return types.NewGenesisState(
 		k.GetMarkets(ctx),
 		k.GetParams(ctx),
-	)
+	)*/
+	return types.DefaultGenesisState()
 }
