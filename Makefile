@@ -12,9 +12,11 @@ LD_FLAGS := -s -w \
     -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
     -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TENDERMINT_VERSION)
 
-BUILD_FLAGS += -ldflags "${ldflags}"
+BUILD_FLAGS += -ldflags "${LD_FLAGS}" -tags "${BUILD_TAGS}"
 
 GOBIN = $(shell go env GOPATH)/bin
+GOARCH = $(shell go env GOARCH)
+GOOS = $(shell go env GOOS)
 
 .PHONY: benchmark
 benchmark:
@@ -28,7 +30,7 @@ clean:
 
 all: verify build
 
-install:
+install: mod-vendor
 ifeq (${OS},Windows_NT)
 	go build -mod=readonly ${BUILD_FLAGS} -o ${GOBIN}/comdex.exe ./node
 else
@@ -37,9 +39,17 @@ endif
 
 build:
 ifeq (${OS},Windows_NT)
-	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex.exe ./node
+	go build  ${BUILD_FLAGS} -o build/${GOOS}/${GOARCH}/comdex.exe ./node
 else
-	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex ./node
+	go build  ${BUILD_FLAGS} -o build/${GOOS}/${GOARCH}/comdex ./node
+endif
+
+release: build
+	mkdir -p release
+ifeq (${OS},Windows_NT)
+	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=build/${GOOS}/${GOARCH} comdex.exe
+else
+	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=build/${GOOS}/${GOARCH} comdex
 endif
 
 install: mod-vendor
