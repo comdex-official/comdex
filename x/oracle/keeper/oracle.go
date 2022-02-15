@@ -92,56 +92,23 @@ func (k *Keeper) GetRates(ctx sdk.Context, symbol string) (uint64, bool) {
 	return price.GetValue(), true
 }
 
-func (k *Keeper) SetRates(ctx sdk.Context, symbol string) {
-	var (
-		store = k.Store(ctx)
-		key   = types.PriceForMarketKey(symbol)
-	)
+func (k *Keeper) SetRates(ctx sdk.Context, _ string) {
+
 	id := k.bandoraclekeeper.GetLastFetchPriceID(ctx)
 	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))
-	switch symbol {
-	case "ATOM":
+
+	var sym []string
+	assets := k.GetAssets(ctx)
+	for i, asset := range assets {
+		sym = append(sym, asset.Name)
+		store := k.Store(ctx)
+		key   := types.PriceForMarketKey(sym[i])
 		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-			Value: data.Rates[0],
+			Value: data.Rates[i],
 		},
 		)
 		store.Set(key, value)
 
-	case "XAU":
-		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-			Value: data.Rates[1],
-		},
-		)
-		store.Set(key, value)
-
-	case "XAG":
-		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-			Value: data.Rates[2],
-		},
-		)
-		store.Set(key, value)
-
-	case "OIL":
-		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-			Value: data.Rates[3],
-		},
-		)
-		store.Set(key, value)
-
-	case "UST":
-		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-			Value: data.Rates[4],
-		},
-		)
-		store.Set(key, value)
-
-	case "CMDX":
-		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-			Value: data.Rates[5],
-		},
-		)
-		store.Set(key, value)
-	default:
 	}
 
 }

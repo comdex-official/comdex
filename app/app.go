@@ -437,6 +437,7 @@ func New(
 		&app.ibcKeeper.PortKeeper,
 		scopedBandoracleKeeper,
 		&app.oracleKeeper,
+		app.assetKeeper,
 	)
 	bandoracleModule := bandoraclemodule.NewAppModule(appCodec, app.BandoracleKeeper, app.accountKeeper, app.bankKeeper)
 

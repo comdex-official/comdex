@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/bandoracle/expected"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -21,6 +22,7 @@ type (
 		memKey     sdk.StoreKey
 		paramstore paramtypes.Subspace
 		oracle expected.OracleKeeper
+		assetKeeper assetkeeper.Keeper
 	}
 )
 
@@ -34,6 +36,7 @@ func NewKeeper(
 	portKeeper ibckeeper.PortKeeper,
 	scopedKeeper ibckeeper.ScopedKeeper,
 	oracle expected.OracleKeeper,
+	assetKeeper assetkeeper.Keeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -54,6 +57,7 @@ func NewKeeper(
 		memKey:     memKey,
 		paramstore: ps,
 		oracle: oracle,
+		assetKeeper: assetKeeper,
 	}
 }
 

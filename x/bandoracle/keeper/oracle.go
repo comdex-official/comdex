@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/bandprotocol/bandchain-packet/obi"
@@ -68,7 +69,14 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 		return nil, nil
 	}
 
-	encodedCalldata := obi.MustEncode(types.FetchPriceCallData{[]string{ "ATOM", "XAU", "XAG", "OIL", "UST", "CMDX"}, 1000000})
+	var symbol []string
+	assets := k.GetAssets(ctx)
+	fmt.Println(assets)
+	for _, asset := range assets {
+		symbol = append(symbol,asset.Name)
+	}
+
+	encodedCalldata := obi.MustEncode(types.FetchPriceCallData{symbol, 1000000})
 	packetData := packet.NewOracleRequestPacketData(
 		msg.ClientID,
 		msg.OracleScriptID,
