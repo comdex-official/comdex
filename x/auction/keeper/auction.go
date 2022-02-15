@@ -348,14 +348,19 @@ func (k *Keeper) GetUserBiddings(ctx sdk.Context, bidder string) (userBiddings a
 }
 
 func (k Keeper) CreateNewBid(ctx sdk.Context, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin) (biddingId uint64, err error) {
+	auction, found := k.GetCollateralAuction(ctx, auctionId)
+	if !found {
+		return 0, auctiontypes.ErrorInvalidAuctionId
+	}
 	bidding := auctiontypes.Biddings{
-		Id:               k.GetBiddingID(ctx) + 1,
-		AuctionId:        auctionId,
-		AuctionStatus:    auctiontypes.ActiveAuctionStatus,
-		Bidder:           bidder,
-		Bid:              bid,
-		BiddingTimestamp: ctx.BlockTime(),
-		BiddingStatus:    auctiontypes.PlacedBiddingStatus,
+		Id:                  k.GetBiddingID(ctx) + 1,
+		AuctionId:           auctionId,
+		AuctionStatus:       auctiontypes.ActiveAuctionStatus,
+		AuctionedCollateral: auction.AuctionedCollateral,
+		Bidder:              bidder.String(),
+		Bid:                 bid,
+		BiddingTimestamp:    ctx.BlockTime(),
+		BiddingStatus:       auctiontypes.PlacedBiddingStatus,
 	}
 	k.SetBiddingID(ctx, bidding.Id)
 	k.SetBidding(ctx, bidding)
