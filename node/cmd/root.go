@@ -1,6 +1,10 @@
 package cmd
 
 import (
+	"errors"
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	"github.com/prometheus/client_golang/prometheus"
 	"io"
 	"os"
 	"path/filepath"
@@ -69,6 +73,7 @@ func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
 		genutilcli.GenTxCmd(comdex.ModuleBasics, encoding.TxConfig, banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(comdex.ModuleBasics),
 		AddGenesisAccountCmd(comdex.DefaultNodeHome),
+		AddGenesisWasmMsgCmd(comdex.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		testnetCmd(comdex.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		debug.Cmd(),
@@ -162,13 +167,17 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 	if err != nil {
 		panic(err)
 	}
-
+	var wasmOpts []wasm.Option
+	if cast.ToBool(options.Get("telemetry.enabled")) {
+		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
+	}
 	return comdex.New(
 		logger, db, tracer, true, skipUpgradeHeights,
 		cast.ToString(options.Get(flags.FlagHome)),
 		cast.ToUint(options.Get(server.FlagInvCheckPeriod)),
 		comdex.MakeEncodingConfig(),
 		options,
+		wasmOpts,
 		baseapp.SetPruning(pruningOptions),
 		baseapp.SetMinGasPrices(cast.ToString(options.Get(server.FlagMinGasPrices))),
 		baseapp.SetHaltHeight(cast.ToUint64(options.Get(server.FlagHaltHeight))),
@@ -187,16 +196,20 @@ func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64
 	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions) (servertypes.ExportedApp, error) {
 	config := comdex.MakeEncodingConfig()
 	config.Marshaler = codec.NewProtoCodec(config.InterfaceRegistry)
-
+	homePath, ok := options.Get(flags.FlagHome).(string)
+	if !ok || homePath == "" {
+		return servertypes.ExportedApp{}, errors.New("application home is not set")
+	}
+	var emptyWasmOpts []wasm.Option
 	var app *comdex.App
 	if height != -1 {
-		app = comdex.New(logger, db, tracer, false, map[int64]bool{}, "", cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options)
+		app = comdex.New(logger, db, tracer, false, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, emptyWasmOpts)
 
 		if err := app.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		app = comdex.New(logger, db, tracer, true, map[int64]bool{}, "", cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options)
+		app = comdex.New(logger, db, tracer, true, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, emptyWasmOpts)
 	}
 
 	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)

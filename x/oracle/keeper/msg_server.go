@@ -6,8 +6,8 @@ import (
 	bandobi "github.com/bandprotocol/bandchain-packet/obi"
 	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
+	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 
 	"github.com/comdex-official/comdex/x/oracle/types"
 )
