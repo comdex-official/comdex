@@ -157,7 +157,6 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 	assetOut assettypes.Asset,
 ) (sdk.Dec, error) {
 
-	fmt.Println("got in ")
 	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorPriceInDoesNotExist
