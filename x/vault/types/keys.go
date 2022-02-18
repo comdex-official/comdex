@@ -23,9 +23,10 @@ var (
 )
 
 var (
-	IDKey                        = []byte{0x00}
+	IDKey                          = []byte{0x00}
 	VaultKeyPrefix                 = []byte{0x10}
 	VaultForAddressByPairKeyPrefix = []byte{0x20}
+	VaultForAddressKeyPrefix       = []byte{0x30}
 )
 
 func VaultKey(id uint64) []byte {
@@ -39,4 +40,13 @@ func VaultForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
 	}
 
 	return append(v, sdk.Uint64ToBigEndian(pairID)...)
+}
+
+func VaultForAddress(address sdk.AccAddress) []byte {
+	v := append(VaultForAddressKeyPrefix, address.Bytes()...)
+	if len(v) != 1+30 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+30))
+	}
+
+	return v
 }

@@ -77,6 +77,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	k.SetID(ctx, id+1)
 	k.SetVault(ctx, vault)
 	k.SetVaultForAddressByPair(ctx, from, vault.PairID, vault.ID)
+	k.SetVaultForAddress(ctx, from, vault.ID)
 
 	return &types.MsgCreateResponse{}, nil
 }

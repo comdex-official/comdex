@@ -103,7 +103,7 @@ func (q *queryServer) QueryVaults(c context.Context, req *types.QueryVaultsReque
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.VaultKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.VaultForAddressKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.Vault

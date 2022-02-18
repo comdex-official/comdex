@@ -104,6 +104,37 @@ func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddres
 	store.Set(key, value)
 }
 
+func (k *Keeper) SetVaultForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.VaultForAddress(address)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetVaultForAddress(ctx sdk.Context, address sdk.AccAddress) (vaults []types.Vault) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.VaultForAddressKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var vault types.Vault
+		k.cdc.MustUnmarshal(iter.Value(), &vault)
+		vaults = append(vaults, vault)
+	}
+
+	return vaults
+}
+
 func (k *Keeper) HasVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
 	var (
 		store = k.Store(ctx)
