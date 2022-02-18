@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/vault/types"
@@ -77,7 +76,19 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	k.SetID(ctx, id+1)
 	k.SetVault(ctx, vault)
 	k.SetVaultForAddressByPair(ctx, from, vault.PairID, vault.ID)
-	k.SetVaultForAddress(ctx, from, vault.ID)
+
+	userVaults, found := k.GetUserVaults(ctx, msg.From)
+	if !found {
+		userVaults = types.UserVaults{
+			Id:       k.GetUserVaultsID(ctx),
+			Owner:    msg.From,
+			VaultIds: nil,
+		}
+		k.SetUserVaultID(ctx, userVaults.Id)
+	}
+
+	userVaults.VaultIds = append(userVaults.VaultIds, vault.ID)
+	k.SetUserVaults(ctx, userVaults)
 
 	return &types.MsgCreateResponse{}, nil
 }

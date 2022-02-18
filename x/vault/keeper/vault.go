@@ -104,10 +104,25 @@ func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddres
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetVaultForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
+func (k *Keeper) GetUserVaultsID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.VaultForAddress(address)
+		key   = types.UserVaultsIDPrefix
+		value = store.Get(key)
+	)
+	if value == nil {
+		return 0
+	}
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}
+
+func (k *Keeper) SetUserVaultID(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserVaultsIDPrefix
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -118,21 +133,27 @@ func (k *Keeper) SetVaultForAddress(ctx sdk.Context, address sdk.AccAddress, id 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetVaultForAddress(ctx sdk.Context, address sdk.AccAddress) (vaults []types.Vault) {
+func (k *Keeper) GetUserVaults(ctx sdk.Context, address string) (userVaults types.UserVaults, found bool) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.VaultForAddressKeyPrefix)
+		key   = types.UserVaultsForAddressKey(address)
+		value = store.Get(key)
 	)
-
-	defer iter.Close()
-
-	for ; iter.Valid(); iter.Next() {
-		var vault types.Vault
-		k.cdc.MustUnmarshal(iter.Value(), &vault)
-		vaults = append(vaults, vault)
+	if value == nil {
+		return userVaults, false
 	}
+	k.cdc.MustUnmarshal(value, &userVaults)
 
-	return vaults
+	return userVaults, true
+}
+
+func (k *Keeper) SetUserVaults(ctx sdk.Context, userVaults types.UserVaults) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserVaultsForAddressKey(userVaults.Owner)
+		value = k.cdc.MustMarshal(&userVaults)
+	)
+	store.Set(key, value)
 }
 
 func (k *Keeper) HasVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {

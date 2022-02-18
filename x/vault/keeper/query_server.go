@@ -93,68 +93,62 @@ func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVault
 }
 
 func (q *queryServer) QueryVaults(c context.Context, req *types.QueryVaultsRequest) (*types.QueryVaultsResponse, error) {
+
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
-		items []types.VaultInfo
-		ctx   = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.VaultForAddressKeyPrefix),
-		req.Pagination,
-		func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.Vault
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
+	item, found := q.GetUserVaults(ctx, req.Owner)
+	if !found {
+		return &types.QueryVaultsResponse{
+			VaultsInfo: nil,
+			Pagination: nil,
+		}, nil
+	}
 
-			pair, found := q.GetPair(ctx, item.PairID)
-			if !found {
-				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.PairID)
-			}
+	var userVaults []types.VaultInfo
+	for _, vaultId := range item.VaultIds {
+		vault, found := q.GetVault(ctx, vaultId)
+		if !found {
+			continue
+		}
 
-			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
-			if !found {
-				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
-			}
+		pair, found := q.GetPair(ctx, vault.PairID)
+		if !found {
+			continue
+		}
 
-			assetOut, found := q.GetAsset(ctx, pair.AssetOut)
-			if !found {
-				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
-			}
+		assetIn, found := q.GetAsset(ctx, pair.AssetIn)
+		if !found {
+			continue
+		}
 
-			collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, item.AmountIn, assetIn, item.AmountOut, assetOut)
-			if err != nil {
-				return false, err
-			}
+		assetOut, found := q.GetAsset(ctx, pair.AssetOut)
+		if !found {
+			continue
+		}
 
-			vaultInfo := types.VaultInfo{
-				Id:                     item.ID,
-				PairID:                 item.PairID,
-				Owner:                  item.Owner,
-				Collateral:             sdk.NewCoin(assetIn.Denom, item.AmountIn),
-				Debt:                   sdk.NewCoin(assetOut.Denom, item.AmountOut),
-				CollateralizationRatio: collateralizationRatio,
-			}
-
-			if accumulate {
-				items = append(items, vaultInfo)
-			}
-
-			return true, nil
-		},
-	)
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.AmountIn, assetIn, vault.AmountOut, assetOut)
+		if err != nil {
+			continue
+		}
+		vaultInfo := types.VaultInfo{
+			Id:                     vault.ID,
+			PairID:                 vault.PairID,
+			Owner:                  item.Owner,
+			Collateral:             sdk.NewCoin(assetIn.Denom, vault.AmountIn),
+			Debt:                   sdk.NewCoin(assetOut.Denom, vault.AmountOut),
+			CollateralizationRatio: collateralizationRatio,
+		}
+		userVaults = append(userVaults, vaultInfo)
 	}
 
 	return &types.QueryVaultsResponse{
-		VaultsInfo: items,
-		Pagination: pagination,
+		VaultsInfo: userVaults,
 	}, nil
 }
 

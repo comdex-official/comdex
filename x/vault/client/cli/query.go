@@ -99,7 +99,7 @@ func QueryVault() *cobra.Command {
 
 func QueryVaults() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vaults [owner]",
+		Use:   "vaults-by-owner [owner]",
 		Short: "vaults list for an individual account",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
