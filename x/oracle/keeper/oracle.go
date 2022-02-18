@@ -107,8 +107,15 @@ func (k *Keeper) SetRates(ctx sdk.Context, _ string) {
 			Value: data.Rates[i],
 		},
 		)
-		store.Set(key, value)
-
+		if data.Rates == nil{
+			val, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+				Value: 0,
+			},
+			)
+			store.Set(key, val)
+		}else {
+			store.Set(key, value)
+		}
 	}
 
 }

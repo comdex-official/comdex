@@ -81,6 +81,7 @@ func (k msgServer) FetchPriceData(goCtx context.Context, msg *types.MsgFetchPric
 	if err != nil {
 		return nil, err
 	}
+	k.SetFetchPriceMsg(ctx, *msg)
 
 	return &types.MsgFetchPriceDataResponse{}, nil
 }

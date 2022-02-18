@@ -103,3 +103,44 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 
 	return &types.MsgFetchPriceDataResponse{}, nil
 }
+
+func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.MsgdataKey
+		value = k.cdc.MustMarshal(
+			&types.MsgFetchPriceData{
+				Creator:        msg.Creator,
+				OracleScriptID: msg.OracleScriptID,
+				SourceChannel:  msg.SourceChannel,
+				Calldata:       msg.Calldata,
+				AskCount:       msg.AskCount,
+				MinCount:       msg.MinCount,
+				FeeLimit:       msg.FeeLimit,
+				RequestKey:     msg.RequestKey,
+				PrepareGas:     msg.PrepareGas,
+				ExecuteGas:     msg.ExecuteGas,
+				ClientID:       msg.ClientID,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.MsgdataKey
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		fmt.Println("msg value nil")
+	}
+
+	var msg types.MsgFetchPriceData
+	k.cdc.MustUnmarshal(value, &msg)
+
+	return msg
+}

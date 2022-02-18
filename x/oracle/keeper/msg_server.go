@@ -53,7 +53,7 @@ func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketReque
 		market = types.Market{
 			Symbol:   msg.Symbol,
 			ScriptID: msg.ScriptID,
-			Rates: Rates,
+			Rates: 	  Rates,
 		}
 	)
 	k.SetMarket(ctx, market)
