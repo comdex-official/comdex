@@ -26,3 +26,18 @@ message Vault {
     (gogoproto.nullable)   = false
   ];
 }
+
+
+message UserVaults {
+  uint64 id = 1 [ 
+      (gogoproto.moretags) = "yaml:\"id\""
+  ];
+
+  string owner = 2 [
+      (gogoproto.moretags) = "yaml:\"owner\""
+  ];
+
+  repeated uint64 vault_ids = 3 [
+      (gogoproto.moretags) = "yaml:\"vault_ids\""
+  ];
+}
