@@ -8,23 +8,24 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
+	block := k.GetLastBlockheight(ctx)
 	id := k.GetLastFetchPriceID(ctx)
 	if id != 0 {
-		if ctx.BlockHeight()%20 == 0 {
-			assets := k.GetAssets(ctx)
-			for _, asset := range assets {
-				k.SetRates(ctx, asset.Name)
-				k.SetMarketForAsset(ctx, asset.Id, asset.Name)
-				rate, _ := k.GetRates(ctx, asset.Name)
-				var (
-					market = types.Market{
-						Symbol:   asset.Name,
-						ScriptID: 112,
-						Rates:    rate,
-					}
-				)
-				k.SetMarket(ctx, market)
-			}
+	if ctx.BlockHeight()%20 == 0 && ctx.BlockHeight() > block + 41 {
+		assets := k.GetAssets(ctx)
+		for _, asset := range assets {
+			k.SetRates(ctx, asset.Name)
+			k.SetMarketForAsset(ctx, asset.Id, asset.Name)
+			rate, _ := k.GetRates(ctx, asset.Name)
+			var (
+				market = types.Market{
+					Symbol:   asset.Name,
+					ScriptID: 112,
+					Rates:    rate,
+				}
+			)
+			k.SetMarket(ctx, market)
 		}
+	}
 	}
 }

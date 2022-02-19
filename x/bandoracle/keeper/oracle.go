@@ -144,3 +144,16 @@ func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {
 
 	return msg
 }
+
+func (k Keeper) GetLastBlockheight(ctx sdk.Context) int64 {
+	bz := ctx.KVStore(k.storeKey).Get(types.KeyPrefix(types.LastBlockheightKey))
+	intV := gogotypes.Int64Value{}
+	k.cdc.MustUnmarshalLengthPrefixed(bz, &intV)
+	return intV.GetValue()
+}
+
+func (k Keeper) SetLastBlockheight(ctx sdk.Context, id int64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.KeyPrefix(types.LastBlockheightKey),
+		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: int64(id)}))
+}

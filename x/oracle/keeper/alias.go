@@ -22,6 +22,10 @@ func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset){
 	return k.assetKeeper.GetAssets(ctx)
 }
 
-func (k *Keeper) GetLastFetchPriceID(ctx sdk.Context) int64{
+func (k *Keeper) GetLastFetchPriceID(ctx sdk.Context) int64 {
 	return k.bandoraclekeeper.GetLastFetchPriceID(ctx)
+}
+
+func (k *Keeper) GetLastBlockheight(ctx sdk.Context) int64 {
+	return k.bandoraclekeeper.GetLastBlockheight(ctx)
 }

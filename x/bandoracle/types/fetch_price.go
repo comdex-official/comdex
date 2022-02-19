@@ -18,6 +18,8 @@ var (
 
 	// FetchPriceClientIDKey is query request identifier
 	FetchPriceClientIDKey = "fetch_price_id"
+
+	LastBlockheightKey = "last_blockheight"
 )
 
 // NewMsgFetchPriceData creates a new FetchPrice message

@@ -82,6 +82,7 @@ func (k msgServer) FetchPriceData(goCtx context.Context, msg *types.MsgFetchPric
 		return nil, err
 	}
 	k.SetFetchPriceMsg(ctx, *msg)
+	k.SetLastBlockheight(ctx, ctx.BlockHeight())
 
 	return &types.MsgFetchPriceDataResponse{}, nil
 }

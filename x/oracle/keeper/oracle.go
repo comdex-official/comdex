@@ -103,10 +103,6 @@ func (k *Keeper) SetRates(ctx sdk.Context, _ string) {
 		sym = append(sym, asset.Name)
 		store := k.Store(ctx)
 		key   := types.PriceForMarketKey(sym[i])
-		value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-			Value: data.Rates[i],
-		},
-		)
 		if data.Rates == nil{
 			val, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
 				Value: 0,
@@ -114,6 +110,10 @@ func (k *Keeper) SetRates(ctx sdk.Context, _ string) {
 			)
 			store.Set(key, val)
 		}else {
+			value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+				Value: data.Rates[i],
+			},
+			)
 			store.Set(key, value)
 		}
 	}
