@@ -78,6 +78,14 @@ message QueryAllVaultsResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
+message QueryTotalCollateralRequest {}
+
+message QueryTotalCollateralResponse {
+  repeated cosmos.base.v1beta1.Coin collaterals = 1 [
+    (gogoproto.moretags)   = "yaml:\"collaterals\""
+  ];
+}
+
 service QueryService {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
@@ -89,5 +97,9 @@ service QueryService {
 
   rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults";
+  };
+
+  rpc QueryTotalCollaterals(QueryTotalCollateralRequest) returns (QueryTotalCollateralResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults/collateral";
   };
 }

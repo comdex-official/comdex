@@ -25,6 +25,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryAllVaults(),
 		QueryVault(),
 		QueryVaults(),
+		QueryTotalCollaterals(),
 	)
 
 	return cmd
@@ -128,6 +129,27 @@ func QueryVaults() *cobra.Command {
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryTotalCollaterals() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "total-collaterals",
+		Short: "Get total collateral received in vaults",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryServiceClient(ctx)
+			res, err := queryClient.QueryTotalCollaterals(cmd.Context(), &types.QueryTotalCollateralRequest{})
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }

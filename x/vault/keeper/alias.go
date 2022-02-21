@@ -53,3 +53,11 @@ func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool) {
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	return k.oracle.GetPriceForAsset(ctx, id)
 }
+
+func (k *Keeper) GetModuleAddress(name string) sdk.AccAddress {
+	return k.account.GetModuleAddress(name)
+}
+
+func (k *Keeper) GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins {
+	return k.bank.GetAllBalances(ctx, addr)
+}

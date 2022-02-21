@@ -196,3 +196,10 @@ func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest
 		},
 	}, nil
 }
+
+func (q *queryServer) QueryTotalCollaterals(c context.Context, req *types.QueryTotalCollateralRequest) (*types.QueryTotalCollateralResponse, error) {
+	var ctx = sdk.UnwrapSDKContext(c)
+	return &types.QueryTotalCollateralResponse{
+		Collaterals: q.bank.GetAllBalances(ctx, q.account.GetModuleAddress(types.ModuleName)),
+	}, nil
+}
