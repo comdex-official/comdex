@@ -9,9 +9,9 @@ import (
 	"github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	host "github.com/cosmos/ibc-go/modules/core/24-host"
+	clienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
+	host "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	gogotypes "github.com/gogo/protobuf/types"
 )
 
@@ -73,7 +73,7 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	assets := k.GetAssets(ctx)
 	fmt.Println(assets)
 	for _, asset := range assets {
-		symbol = append(symbol,asset.Name)
+		symbol = append(symbol, asset.Name)
 	}
 
 	encodedCalldata := obi.MustEncode(types.FetchPriceCallData{symbol, 1000000})
