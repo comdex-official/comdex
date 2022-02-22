@@ -1,12 +1,13 @@
 package cli
 
 import (
+	"strconv"
+
 	"github.com/comdex-official/comdex/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
-	"strconv"
 )
 
 func txAddMarket() *cobra.Command {

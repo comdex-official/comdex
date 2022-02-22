@@ -11,13 +11,13 @@ var (
 	_ sdk.Msg = (*MsgRemoveMarketForAssetRequest)(nil)
 )
 
-func NewMsgAddMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64, assetID uint64, rates uint64 ) *MsgAddMarketRequest {
+func NewMsgAddMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64, assetID uint64, rates uint64) *MsgAddMarketRequest {
 	return &MsgAddMarketRequest{
 		From:     from.String(),
 		Symbol:   symbol,
 		ScriptID: scriptID,
-		Id: assetID,
-		Rates: rates,
+		Id:       assetID,
+		Rates:    rates,
 	}
 }
 
@@ -55,7 +55,7 @@ func NewMsgUpdateMarketRequest(from sdk.AccAddress, symbol string, scriptID uint
 		From:     from.String(),
 		Symbol:   symbol,
 		ScriptID: scriptID,
-		Rates: rates,
+		Rates:    rates,
 	}
 }
 

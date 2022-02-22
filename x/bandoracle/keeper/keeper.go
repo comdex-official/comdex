@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/bandoracle/expected"
 
@@ -17,15 +18,14 @@ import (
 type (
 	Keeper struct {
 		*ibckeeper.Keeper
-		cdc        codec.BinaryCodec
-		storeKey   sdk.StoreKey
-		memKey     sdk.StoreKey
-		paramstore paramtypes.Subspace
-		oracle expected.OracleKeeper
+		cdc         codec.BinaryCodec
+		storeKey    sdk.StoreKey
+		memKey      sdk.StoreKey
+		paramstore  paramtypes.Subspace
+		oracle      expected.OracleKeeper
 		assetKeeper assetkeeper.Keeper
 	}
 )
-
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
@@ -52,11 +52,11 @@ func NewKeeper(
 			portKeeper,
 			scopedKeeper,
 		),
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
-		oracle: oracle,
+		cdc:         cdc,
+		storeKey:    storeKey,
+		memKey:      memKey,
+		paramstore:  ps,
+		oracle:      oracle,
 		assetKeeper: assetKeeper,
 	}
 }
