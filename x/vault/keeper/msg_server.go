@@ -243,11 +243,9 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
+
 	if msg.From != vault.Owner {
 		return nil, types.ErrorUnauthorized
-	}
-	if !msg.Amount.Equal(vault.AmountOut) {
-		return nil, types.ErrorInvalidAmount
 	}
 
 	pair, found := k.GetPair(ctx, vault.PairID)
@@ -282,5 +280,49 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 }
 
 func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
-	panic("implement me")
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	from, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	vault, found := k.GetVault(ctx, msg.ID)
+	if !found {
+		return nil, types.ErrorVaultDoesNotExist
+	}
+	if msg.From != vault.Owner {
+		return nil, types.ErrorUnauthorized
+	}
+
+	pair, found := k.GetPair(ctx, vault.PairID)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(assetOut.Denom, vault.AmountOut)); err != nil {
+		return nil, err
+	}
+	if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, vault.AmountOut)); err != nil {
+		return nil, err
+	}
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetIn.Denom, vault.AmountIn)); err != nil {
+		return nil, err
+	}
+
+	k.DeleteVault(ctx, vault.ID)
+	k.DeleteVaultForAddressByPair(ctx, from, vault.PairID)
+
+	return &types.MsgCloseResponse{}, nil
 }
