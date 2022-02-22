@@ -464,8 +464,6 @@ func New(
 		app.cdc,
 		app.keys[oracletypes.StoreKey],
 		app.GetSubspace(oracletypes.ModuleName),
-		app.ibcKeeper.ChannelKeeper,
-		&app.ibcKeeper.PortKeeper,
 		scopedIBCOracleKeeper,
 		app.assetKeeper,
 		app.BandoracleKeeper,
