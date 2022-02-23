@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
@@ -104,12 +105,17 @@ func (k *Keeper) SetRates(ctx sdk.Context, _ string) {
 		store := k.Store(ctx)
 		key   := types.PriceForMarketKey(sym[i])
 
+		if data.Rates == nil{
+			fmt.Println("packets not received")
+		}else {
 			value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
 				Value: data.Rates[i],
 			},
 			)
 			store.Set(key, value)
+		}
 	}
+
 }
 
 func (k *Keeper) SetMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
