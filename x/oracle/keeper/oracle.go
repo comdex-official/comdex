@@ -100,17 +100,18 @@ func (k *Keeper) SetRates(ctx sdk.Context, _ string) {
 	var sym []string
 	assets := k.GetAssets(ctx)
 	rateSliceLength := len(data.Rates)
-	for i, asset := range assets {
-		sym = append(sym, asset.Name)
-		store := k.Store(ctx)
-		key := types.PriceForMarketKey(sym[i])
+	if rateSliceLength >= len(assets) {
+		for i, asset := range assets {
+			sym = append(sym, asset.Name)
+			store := k.Store(ctx)
+			key := types.PriceForMarketKey(sym[i])
 
-		if rateSliceLength > i && data.Rates[i] != 0 {
-			value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-				Value: data.Rates[i],
-			},
-			)
-			store.Set(key, value)
+			if data.Rates[i] != 0 {
+				value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+					Value: data.Rates[i],
+				})
+				store.Set(key, value)
+			}
 		}
 	}
 
