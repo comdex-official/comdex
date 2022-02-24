@@ -2,10 +2,91 @@ syntax = "proto3";
 package comdex.liquidation.v1beta1;
 
 import "gogoproto/gogo.proto";
-
+import "cosmos/base/v1beta1/coin.proto";
 option go_package = "github.com/comdex-official/comdex/x/liquidation/types";
 
+// Structure for the pool type to distinguish the characteristics of the reserve pools.
+message PoolType {
+    option (gogoproto.equal) = true;
+
+    // This is the id of the pool_type that is used as pool_type_id for pool creation.
+    // In this version, only pool-type-id 1 is supported.
+    // {"id":1,"name":"ConstantProductLiquidityPool","min_reserve_coin_num":2,"max_reserve_coin_num":2,"description":""}
+    uint32 id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
+
+    // name of the pool type.
+    string name = 2 [(gogoproto.moretags) = "yaml:\"name\""];
+
+    // minimum number of reserveCoins for LiquidityPoolType, only 2 reserve coins are supported.
+    uint32 min_reserve_coin_num = 3 [(gogoproto.moretags) = "yaml:\"min_reserve_coin_num\""];
+
+    // maximum number of reserveCoins for LiquidityPoolType, only 2 reserve coins are supported.
+    uint32 max_reserve_coin_num = 4 [(gogoproto.moretags) = "yaml:\"max_reserve_coin_num\""];
+
+    // description of the pool type.
+    string description = 5 [(gogoproto.moretags) = "yaml:\"description\""];
+}
+
+
+// Params defines the parameters for the liquidation module.
 message Params {
-  option (gogoproto.goproto_stringer) = false;
-  
+    option (gogoproto.equal) = true;
+    option (gogoproto.goproto_stringer) = false;
+
+    // list of available pool types
+    repeated PoolType pool_types = 1 [
+        (gogoproto.moretags) = "yaml:\"pool_types\"",
+        (gogoproto.nullable) = false
+    ];
+
+    // Minimum number of coins to be deposited to the liquidity pool on pool creation.
+    string min_init_deposit_amount = 2 [
+        (gogoproto.moretags)   = "yaml:\"min_init_deposit_amount\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+        (gogoproto.nullable)   = false];
+
+    // Initial mint amount of pool coins upon pool creation.
+    string init_pool_coin_mint_amount = 3 [
+        (gogoproto.moretags)   = "yaml:\"init_pool_coin_mint_amount\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+        (gogoproto.nullable)   = false];
+
+    // Limit the size of each liquidity pool to minimize risk. In development, set to 0 for no limit. In production, set a limit.
+    string max_reserve_coin_amount = 4 [
+        (gogoproto.moretags)   = "yaml:\"max_reserve_coin_amount\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+        (gogoproto.nullable)   = false];
+
+    // Fee paid to create a Liquidity Pool. Set a fee to prevent spamming.
+    repeated cosmos.base.v1beta1.Coin pool_creation_fee = 5 [
+        (gogoproto.moretags)   = "yaml:\"pool_creation_fee\"",
+        (gogoproto.nullable)   = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+    ];
+
+    // Swap fee rate for every executed swap.
+    string swap_fee_rate = 6 [
+        (gogoproto.moretags)   = "yaml:\"swap_fee_rate\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable)   = false];
+
+    // Reserve coin withdrawal with less proportion by withdrawFeeRate.
+    string withdraw_fee_rate = 7 [
+        (gogoproto.moretags)   = "yaml:\"withdraw_fee_rate\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable)   = false];
+
+    // Maximum ratio of reserve coins that can be ordered at a swap order.
+    string max_order_amount_ratio = 8 [
+        (gogoproto.moretags)   = "yaml:\"max_order_amount_ratio\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable)   = false];
+
+    // The smallest unit batch height for every liquidity pool.
+    uint32 unit_batch_height = 9 [
+        (gogoproto.moretags) = "yaml:\"unit_batch_height\""];
+    
+    // Circuit breaker enables or disables transaction messages in liquidity module.
+    bool circuit_breaker_enabled = 10 [
+        (gogoproto.moretags) = "yaml:\"circuit_breaker_enabled\""];
 }
