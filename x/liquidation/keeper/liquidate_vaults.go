@@ -164,6 +164,12 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 		//also calculate the current collaterlization ration to ensure there is no sudden changes
 		if lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.GTE(v) {
 
+			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
+			if err != nil {
+				return err
+			}
+			k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
+
 			var (
 				id    = k.GetVaultID(ctx)
 				vault = vaulttypes.Vault{
@@ -176,12 +182,6 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			)
 			k.SetVaultID(ctx, vault.ID)
 			k.SetVault(ctx, vault)
-			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
-			if err != nil {
-				return err
-			}
-			k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
-
 			k.SetVaultForAddressByPair(ctx, userAddress, lockedVault.PairId, vault.ID)
 			//Save Locked vault historical data in a store
 			//Set Auctioned historical in a store seperately
