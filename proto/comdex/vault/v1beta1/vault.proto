@@ -41,3 +41,12 @@ message UserVaults {
       (gogoproto.moretags) = "yaml:\"vault_ids\""
   ];
 }
+
+message CAssetsMintRecords {
+  string collateral_denom = 1 [
+    (gogoproto.moretags) = "yaml:\"collateral_denom\""
+  ];
+  map<string, uint64> minted_assets = 2 [
+    (gogoproto.moretags) = "yaml:\"minted_assets\""
+  ];
+}

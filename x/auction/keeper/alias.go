@@ -79,3 +79,7 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 ) (sdk.Dec, error) {
 	return k.vault.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
 }
+
+func (k *Keeper) BurnCAssets(ctx sdk.Context, moduleName string, collateralDenom string, denom string, amount sdk.Int) error {
+	return k.vault.BurnCAssets(ctx, moduleName, collateralDenom, denom, amount)
+}

@@ -320,7 +320,7 @@ func (k Keeper) CloseCollateralAuction(
 		bidding, _ := k.GetBidding(ctx, collateral_auction.ActiveBiddingId)
 		bidding.BiddingStatus = auctiontypes.SuccessBiddingStatus
 		k.SetBidding(ctx, bidding)
-		k.BurnCoin(ctx, liquidationtypes.ModuleName, highestBidReceived)
+		k.BurnCAssets(ctx, liquidationtypes.ModuleName, assetIn.Denom, assetOut.Denom, highestBidReceived.Amount)
 		k.UpdateAssetQuantitiesInLockedVault(ctx, collateral_auction, collateralQuantity, assetIn, highestBidReceived.Amount, assetOut)
 
 		for _, biddingId := range collateral_auction.BiddingIds {

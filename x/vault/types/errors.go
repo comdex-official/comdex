@@ -21,7 +21,8 @@ var (
 	ErrorPairDoesNotExist              = errors.Register(ModuleName, 206, "pair does not exist")
 	ErrorPriceInDoesNotExist           = errors.Register(ModuleName, 207, "price in does not exist")
 	ErrorPriceOutDoesNotExist          = errors.Register(ModuleName, 208, "price out does not exist")
-
+	ErrorCAssetRecordDoesNotExist      = errors.Register(ModuleName, 209, "mint record does not exist for provoded collateral denom")
+	ErrorEnoughCAssetsNotMinted        = errors.Register(ModuleName, 210, "cannot burn coin, enough cassets not minted")
 )
 
 var (

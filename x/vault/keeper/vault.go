@@ -225,3 +225,105 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 
 	return totalIn.Quo(totalOut), nil
 }
+
+func isDenomWhitelisted(denom string) bool {
+	whitelistedDenoms := []string{"ucgold", "ucsilver", "ucoil"}
+	for _, whitelistedDenom := range whitelistedDenoms {
+		if denom == whitelistedDenom {
+			return true
+		}
+	}
+	return false
+}
+
+func (k *Keeper) GetAllCAssetMintRecords(ctx sdk.Context) (mintRecords []*types.CAssetsMintRecords) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.CAssetMintRecordsKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var mintRecord types.CAssetsMintRecords
+		k.cdc.MustUnmarshal(iter.Value(), &mintRecord)
+		mintRecords = append(mintRecords, &mintRecord)
+	}
+
+	return mintRecords
+}
+
+func (k *Keeper) GetCAssetMintRecords(ctx sdk.Context, collateralDenom string) (mintRecords types.CAssetsMintRecords, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.CAssetMintRecordsKey(collateralDenom)
+		value = store.Get(key)
+	)
+	if value == nil {
+		return mintRecords, false
+	}
+	k.cdc.MustUnmarshal(value, &mintRecords)
+
+	return mintRecords, true
+}
+
+func (k *Keeper) SetCAssetMintRecords(ctx sdk.Context, mintRecords types.CAssetsMintRecords) {
+	var (
+		store = k.Store(ctx)
+		key   = types.CAssetMintRecordsKey(mintRecords.CollateralDenom)
+		value = k.cdc.MustMarshal(&mintRecords)
+	)
+	store.Set(key, value)
+}
+
+func (k *Keeper) MintCAssets(
+	ctx sdk.Context,
+	moduleName string,
+	collateralDenom string,
+	denom string,
+	amount sdk.Int,
+) error {
+	if !isDenomWhitelisted(denom) {
+		return types.ErrorAssetDoesNotExist
+	}
+	if err := k.MintCoin(ctx, moduleName, sdk.NewCoin(denom, amount)); err != nil {
+		return err
+	}
+	mintRecords, found := k.GetCAssetMintRecords(ctx, collateralDenom)
+	if !found {
+		mintRecords = types.CAssetsMintRecords{
+			CollateralDenom: collateralDenom,
+			MintedAssets:    map[string]uint64{},
+		}
+	}
+	mintRecords.MintedAssets[denom] += amount.Uint64()
+	k.SetCAssetMintRecords(ctx, mintRecords)
+	return nil
+}
+
+func (k *Keeper) BurnCAssets(
+	ctx sdk.Context,
+	moduleName string,
+	collateralDenom string,
+	denom string,
+	amount sdk.Int,
+) error {
+	if !isDenomWhitelisted(denom) {
+		return types.ErrorAssetDoesNotExist
+	}
+
+	mintRecords, found := k.GetCAssetMintRecords(ctx, collateralDenom)
+	if !found {
+		return types.ErrorCAssetRecordDoesNotExist
+	}
+	if mintRecords.MintedAssets[denom] < amount.Uint64() {
+		return types.ErrorEnoughCAssetsNotMinted
+	}
+	mintRecords.MintedAssets[denom] -= amount.Uint64()
+	k.SetCAssetMintRecords(ctx, mintRecords)
+
+	if err := k.BurnCoin(ctx, moduleName, sdk.NewCoin(denom, amount)); err != nil {
+		return err
+	}
+	return nil
+}

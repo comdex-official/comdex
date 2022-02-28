@@ -45,4 +45,5 @@ type VaultKeeper interface {
 		amountOut sdk.Int,
 		assetOut assettypes.Asset,
 	) (sdk.Dec, error)
+	BurnCAssets(ctx sdk.Context, moduleName string, collateralDenom string, denom string, amount sdk.Int) error
 }
