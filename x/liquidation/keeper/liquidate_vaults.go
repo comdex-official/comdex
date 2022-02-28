@@ -165,6 +165,12 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 		//also calculate the current collaterlization ration to ensure there is no sudden changes
 		if lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.GTE(unliquidatePointPercentage) {
 
+			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
+			if err != nil {
+				return err
+			}
+			k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
+
 			var (
 				id    = k.GetVaultID(ctx)
 				vault = vaulttypes.Vault{
@@ -175,11 +181,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 					AmountOut: lockedVault.AmountOut,
 				}
 			)
-			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
-			if err != nil {
-				return err
-			}
-			k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
+			
 			k.SetVaultID(ctx,id + 1)
 			k.SetVault(ctx, vault)
 			
