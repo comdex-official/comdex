@@ -1,0 +1,11 @@
+syntax = "proto3";
+package comdexofficial.comdex.rewards;
+
+import "gogoproto/gogo.proto";
+import "comdex/rewards/v1beta1/params.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/rewards/types";
+
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

@@ -101,6 +101,10 @@ import (
 	"github.com/comdex-official/comdex/x/vault"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+
+	"github.com/comdex-official/comdex/x/rewards"
+	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
 const (
@@ -145,6 +149,7 @@ var (
 		bandoraclemodule.AppModuleBasic{},
 		liquidation.AppModuleBasic{},
 		auction.AppModuleBasic{},
+		rewards.AppModuleBasic{},
 	)
 )
 
@@ -212,6 +217,7 @@ type App struct {
 	oracleKeeper      oraclekeeper.Keeper
 	liquidationKeeper liquidationkeeper.Keeper
 	auctionKeeper     auctionkeeper.Keeper
+	rewardsKeeper     rewardskeeper.Keeper
 }
 
 // New returns a reference to an initialized App.
@@ -238,7 +244,7 @@ func New(
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey,
 			oracletypes.StoreKey, bandoraclemoduletypes.StoreKey, liquidationtypes.StoreKey,
-			auctiontypes.StoreKey,
+			auctiontypes.StoreKey, rewardstypes.StoreKey,
 		)
 	)
 
@@ -283,6 +289,7 @@ func New(
 	app.paramsKeeper.Subspace(bandoraclemoduletypes.ModuleName)
 	app.paramsKeeper.Subspace(liquidationtypes.ModuleName)
 	app.paramsKeeper.Subspace(auctiontypes.ModuleName)
+	app.paramsKeeper.Subspace(rewardstypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -478,6 +485,13 @@ func New(
 		&app.liquidationKeeper,
 	)
 
+	app.rewardsKeeper = *rewardskeeper.NewKeeper(
+		app.cdc,
+		keys[rewardstypes.StoreKey],
+		keys[rewardstypes.MemStoreKey],
+		app.GetSubspace(rewardstypes.ModuleName),
+	)
+
 	// Create Transfer Keepers
 	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.cdc,
@@ -544,6 +558,7 @@ func New(
 		bandoracleModule,
 		liquidation.NewAppModule(app.cdc, app.liquidationKeeper, app.accountKeeper, app.bankKeeper),
 		auction.NewAppModule(app.cdc, app.auctionKeeper, app.accountKeeper, app.bankKeeper),
+		rewards.NewAppModule(app.cdc, app.rewardsKeeper, app.accountKeeper, app.bankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -554,7 +569,7 @@ func New(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 		bandoraclemoduletypes.ModuleName, oracletypes.ModuleName, liquidationtypes.ModuleName,
-		auctiontypes.ModuleName,
+		auctiontypes.ModuleName, rewardstypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, bandoraclemoduletypes.ModuleName)
@@ -585,6 +600,7 @@ func New(
 		oracletypes.ModuleName,
 		liquidationtypes.ModuleName,
 		auctiontypes.ModuleName,
+		rewardstypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)

@@ -1,0 +1,6 @@
+syntax = "proto3";
+package comdexofficial.comdex.rewards;
+
+option go_package = "github.com/comdex-official/comdex/x/rewards/types";
+
+service MsgService {}
