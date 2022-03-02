@@ -99,8 +99,8 @@ import (
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	wasmclient "github.com/comdex-official/comdex/x/wasm/client"
 )
 
 const (
