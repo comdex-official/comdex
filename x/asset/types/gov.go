@@ -31,5 +31,11 @@ func (m *UpdateLiquidationRatioProposal) ValidateBasic() error {
 }
 
 func (m *UpdateLiquidationRatioProposal) GetSigners() []sdk.AccAddress {
-	return nil
+
+	from, err := sdk.AccAddressFromBech32(m.)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
 }
