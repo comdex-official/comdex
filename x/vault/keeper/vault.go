@@ -340,28 +340,35 @@ func (k *Keeper) UpdateUserVaultIdMapping(
 
 func (k *Keeper) UpdateCollateralVaultIdMapping(
 	ctx sdk.Context,
-	collateralDenom string,
+	assetInDenom string,
+	assetOutDenom string,
 	vaultId uint64,
 	isInsert bool,
 ) error {
 
-	collateralBasedVaults, found := k.GetCollateralBasedVaults(ctx, collateralDenom)
+	collateralBasedVaults, found := k.GetCollateralBasedVaults(ctx, assetInDenom)
 
 	if !found && isInsert {
 		collateralBasedVaults = types.CollateralVaultIdMapping{
-			CollateralDenom: collateralDenom,
-			VaultIds:        nil,
+			CollateralDenom:    assetInDenom,
+			CassetsVaultIdsMap: map[string]*types.VaultIds{},
 		}
 	} else if !found && !isInsert {
 		return types.ErrorCollateralDenomNotFound
 	}
 
+	if collateralBasedVaults.CassetsVaultIdsMap[assetOutDenom] == nil {
+		collateralBasedVaults.CassetsVaultIdsMap[assetOutDenom] = &types.VaultIds{
+			VaultIds: []uint64{},
+		}
+	}
+
 	if isInsert {
-		collateralBasedVaults.VaultIds = append(collateralBasedVaults.VaultIds, vaultId)
+		collateralBasedVaults.CassetsVaultIdsMap[assetOutDenom].VaultIds = append(collateralBasedVaults.CassetsVaultIdsMap[assetOutDenom].VaultIds, vaultId)
 	} else {
-		for index, id := range collateralBasedVaults.VaultIds {
+		for index, id := range collateralBasedVaults.CassetsVaultIdsMap[assetOutDenom].VaultIds {
 			if id == vaultId {
-				collateralBasedVaults.VaultIds = append(collateralBasedVaults.VaultIds[:index], collateralBasedVaults.VaultIds[index+1:]...)
+				collateralBasedVaults.CassetsVaultIdsMap[assetOutDenom].VaultIds = append(collateralBasedVaults.CassetsVaultIdsMap[assetOutDenom].VaultIds[:index], collateralBasedVaults.CassetsVaultIdsMap[assetOutDenom].VaultIds[index+1:]...)
 				break
 			}
 		}

@@ -37,12 +37,18 @@ message UserVaultIdMapping {
   ];
 }
 
+message VaultIds {
+  repeated uint64 vault_ids = 1 [
+    (gogoproto.moretags) = "yaml:\"vault_ids\""
+  ];
+}
+
 message CollateralVaultIdMapping {
   string collateral_denom = 1 [
     (gogoproto.moretags) = "yaml:\"collateral_denom\""
   ];
-  repeated uint64 vault_ids = 2 [
-    (gogoproto.moretags) = "yaml:\"vault_ids\""
+  map<string, VaultIds> cassets_vault_ids_map = 2 [
+    (gogoproto.moretags) = "yaml:\"cassets_vault_ids_map\""
   ];
 }
 
