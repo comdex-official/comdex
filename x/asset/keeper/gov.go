@@ -6,11 +6,9 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func (k *Keeper) HandleUpdateLiquidationRatioProposal(ctx sdk.Context, prop *types.UpdateLiquidationRatioProposal) error {
-	params := k.GetParams(ctx)
+func (k *Keeper) HandleUpdateLiquidationRatio(ctx sdk.Context, prop *types.UpdateLiquidationRatioProposal) error {
 
-	params.LiquidationRatio = prop.LiquidationRatio
-	k.SetParams(ctx, params)
+	err := k.UpdateLiquidationRatio(ctx, prop)
 
-	return nil
+	return err
 }
