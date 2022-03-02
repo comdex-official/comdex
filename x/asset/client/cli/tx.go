@@ -215,7 +215,7 @@ func NewSubmitUpdateAdminProposal() *cobra.Command {
 
 			liqratio := args[0]
 
-			var msg = types.UpdateLiquidationRatioProposal{Title: title, Description: description, LiquidationRatio: liqratio, From: from.String()}
+			var msg = types.NewUpdateLiquidationRatio{Title: title, Description: description, LiquidationRatio: liqratio, From: from.String()}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},

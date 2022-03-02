@@ -39,3 +39,12 @@ func (m *UpdateLiquidationRatioProposal) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+func NewUpdateLiquidationRatio(title, description, from, liquidationRatio string) *govtypes.Content {
+	return &UpdateLiquidationRatioProposal{
+		Title:            title,
+		Description:      description,
+		LiquidationRatio: liquidationRatio,
+		From:             from,
+	}
+}
