@@ -229,7 +229,6 @@ func NewSubmitUpdateAdminProposal() *cobra.Command {
 				Title:            title,
 				Description:      description,
 				LiquidationRatio: liq_ratio,
-				From:             from.String(),
 			}
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)

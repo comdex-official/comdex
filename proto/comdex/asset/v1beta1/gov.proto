@@ -11,5 +11,4 @@ message UpdateLiquidationRatioProposal {
   string title       = 1 [ (gogoproto.moretags) = "yaml:\"title\"" ];
   string description = 2 [ (gogoproto.moretags) = "yaml:\"description\"" ];
   string liquidation_ratio = 3 [ (gogoproto.moretags) = "yaml:\"liquidation_ratio\"" ];
-  string from = 4 [ (gogoproto.moretags) = "yaml:\"from\"" ];
 }
