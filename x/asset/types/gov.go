@@ -11,7 +11,7 @@ const (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeUpdateLiquidationRatio)
-	govtypes.RegisterProposalTypeCodec(&UpdateLiquidationRatioProposal{}, "/comdex/UpdateLiquidationRatioProposal")
+	govtypes.RegisterProposalTypeCodec(&UpdateLiquidationRatioProposal{}, "comdex/UpdateLiquidationRatioProposal")
 }
 
 var (
