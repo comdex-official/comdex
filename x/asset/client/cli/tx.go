@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/spf13/cobra"
 	"strconv"
 
@@ -213,11 +214,31 @@ func NewSubmitUpdateAdminProposal() *cobra.Command {
 				return err
 			}
 
+			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
+
 			liq_ratio := args[0]
 
-			var msg = types.NewUpdateLiquidationRatio{Title: title, Description: description, LiquidationRatio: liq_ratio, From: from.String()}
+			content := types.NewUpdateLiquidationRatio{
+				Title:            title,
+				Description:      description,
+				LiquidationRatio: liq_ratio,
+				From:             from.String(),
+			}
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
 	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
