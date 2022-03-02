@@ -27,8 +27,8 @@ var (
 	VaultKeyPrefix                 = []byte{0x10}
 	VaultForAddressByPairKeyPrefix = []byte{0x20}
 	UserVaultsForAddressKeyPrefix  = []byte{0x30}
-	UserVaultsIDPrefix             = []byte{0x40}
 	CAssetMintStatisticsKeyPrefix  = []byte{0x50}
+	VaultIdsForCollateralKeyPrefix = []byte{0x60}
 )
 
 func VaultKey(id uint64) []byte {
@@ -47,6 +47,11 @@ func VaultForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
 func UserVaultsForAddressKey(address string) []byte {
 
 	return append(UserVaultsForAddressKeyPrefix, address...)
+}
+
+func VaultIdsForCollateral(collateralDenom string) []byte {
+
+	return append(VaultIdsForCollateralKeyPrefix, collateralDenom...)
 }
 
 func CAssetMintRecordsKey(collateralDenom string) []byte {

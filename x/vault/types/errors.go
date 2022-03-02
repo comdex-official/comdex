@@ -23,7 +23,8 @@ var (
 	ErrorPriceOutDoesNotExist          = errors.Register(ModuleName, 208, "price out does not exist")
 	ErrorCAssetRecordDoesNotExist      = errors.Register(ModuleName, 209, "mint record does not exist for provoded collateral denom")
 	ErrorEnoughCAssetsNotMinted        = errors.Register(ModuleName, 210, "cannot burn coin, enough cassets not minted")
-	ErrorVaultOwnerNotFound            = errors.Register(ModuleName, 211, "vault owner not found in user vaults")
+	ErrorVaultOwnerNotFound            = errors.Register(ModuleName, 211, "vault owner not found in user vault ids mapping")
+	ErrorCollateralDenomNotFound       = errors.Register(ModuleName, 211, "collateral denom not found in collateral vault ids mapping")
 )
 
 var (

@@ -78,6 +78,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	k.SetVault(ctx, vault)
 	k.SetVaultForAddressByPair(ctx, from, vault.PairID, vault.ID)
 	k.UpdateUserVaultIdMapping(ctx, msg.From, vault.ID, true)
+	k.UpdateCollateralVaultIdMapping(ctx, assetIn.Denom, vault.ID, true)
 
 	return &types.MsgCreateResponse{}, nil
 }
@@ -317,6 +318,7 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 	k.DeleteVault(ctx, vault.ID)
 	k.DeleteVaultForAddressByPair(ctx, from, vault.PairID)
 	k.UpdateUserVaultIdMapping(ctx, msg.From, vault.ID, false)
+	k.UpdateCollateralVaultIdMapping(ctx, assetIn.Denom, vault.ID, false)
 
 	return &types.MsgCloseResponse{}, nil
 }

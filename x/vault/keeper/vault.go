@@ -104,6 +104,24 @@ func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddres
 	store.Set(key, value)
 }
 
+func (k *Keeper) HasVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.VaultForAddressByPair(address, pairID)
+	)
+
+	return store.Has(key)
+}
+
+func (k *Keeper) DeleteVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.VaultForAddressByPair(address, pairID)
+	)
+
+	store.Delete(key)
+}
+
 func (k *Keeper) GetUserVaults(ctx sdk.Context, address string) (userVaults types.UserVaultIdMapping, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -127,22 +145,27 @@ func (k *Keeper) SetUserVaults(ctx sdk.Context, userVaults types.UserVaultIdMapp
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
+func (k *Keeper) GetCollateralBasedVaults(ctx sdk.Context, collateral_denom string) (collateralBasedVaults types.CollateralVaultIdMapping, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.VaultForAddressByPair(address, pairID)
+		key   = types.VaultIdsForCollateral(collateral_denom)
+		value = store.Get(key)
 	)
+	if value == nil {
+		return collateralBasedVaults, false
+	}
+	k.cdc.MustUnmarshal(value, &collateralBasedVaults)
 
-	return store.Has(key)
+	return collateralBasedVaults, true
 }
 
-func (k *Keeper) DeleteVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
+func (k *Keeper) SetCollateralBasedVaults(ctx sdk.Context, collateralBasedVaults types.CollateralVaultIdMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.VaultForAddressByPair(address, pairID)
+		key   = types.VaultIdsForCollateral(collateralBasedVaults.CollateralDenom)
+		value = k.cdc.MustMarshal(&collateralBasedVaults)
 	)
-
-	store.Delete(key)
+	store.Set(key, value)
 }
 
 func (k *Keeper) VerifyCollaterlizationRatio(
@@ -312,5 +335,38 @@ func (k *Keeper) UpdateUserVaultIdMapping(
 	}
 
 	k.SetUserVaults(ctx, userVaults)
+	return nil
+}
+
+func (k *Keeper) UpdateCollateralVaultIdMapping(
+	ctx sdk.Context,
+	collateralDenom string,
+	vaultId uint64,
+	isInsert bool,
+) error {
+
+	collateralBasedVaults, found := k.GetCollateralBasedVaults(ctx, collateralDenom)
+
+	if !found && isInsert {
+		collateralBasedVaults = types.CollateralVaultIdMapping{
+			CollateralDenom: collateralDenom,
+			VaultIds:        nil,
+		}
+	} else if !found && !isInsert {
+		return types.ErrorCollateralDenomNotFound
+	}
+
+	if isInsert {
+		collateralBasedVaults.VaultIds = append(collateralBasedVaults.VaultIds, vaultId)
+	} else {
+		for index, id := range collateralBasedVaults.VaultIds {
+			if id == vaultId {
+				collateralBasedVaults.VaultIds = append(collateralBasedVaults.VaultIds[:index], collateralBasedVaults.VaultIds[index+1:]...)
+				break
+			}
+		}
+	}
+
+	k.SetCollateralBasedVaults(ctx, collateralBasedVaults)
 	return nil
 }
