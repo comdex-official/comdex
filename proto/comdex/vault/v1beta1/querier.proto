@@ -90,7 +90,7 @@ message QueryTotalCollateralResponse {
 message QueryCAssetsMintStatsRequest {}
 
 message QueryCAssetsMintStatsResponse {
-  repeated CAssetsMintRecords mint_stats = 1 [
+  repeated CAssetsMintStatistics mint_stats = 1 [
     (gogoproto.moretags)   = "yaml:\"mint_records\""
   ];
 }

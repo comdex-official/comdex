@@ -104,36 +104,7 @@ func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddres
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetUserVaultsID(ctx sdk.Context) uint64 {
-	var (
-		store = k.Store(ctx)
-		key   = types.UserVaultsIDPrefix
-		value = store.Get(key)
-	)
-	if value == nil {
-		return 0
-	}
-	var id protobuftypes.UInt64Value
-	k.cdc.MustUnmarshal(value, &id)
-
-	return id.GetValue()
-}
-
-func (k *Keeper) SetUserVaultID(ctx sdk.Context, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.UserVaultsIDPrefix
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: id,
-			},
-		)
-	)
-
-	store.Set(key, value)
-}
-
-func (k *Keeper) GetUserVaults(ctx sdk.Context, address string) (userVaults types.UserVaults, found bool) {
+func (k *Keeper) GetUserVaults(ctx sdk.Context, address string) (userVaults types.UserVaultIdMapping, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserVaultsForAddressKey(address)
@@ -147,7 +118,7 @@ func (k *Keeper) GetUserVaults(ctx sdk.Context, address string) (userVaults type
 	return userVaults, true
 }
 
-func (k *Keeper) SetUserVaults(ctx sdk.Context, userVaults types.UserVaults) {
+func (k *Keeper) SetUserVaults(ctx sdk.Context, userVaults types.UserVaultIdMapping) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserVaultsForAddressKey(userVaults.Owner)
@@ -226,16 +197,16 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 	return totalIn.Quo(totalOut), nil
 }
 
-func (k *Keeper) GetAllCAssetMintRecords(ctx sdk.Context) (mintRecords []*types.CAssetsMintRecords) {
+func (k *Keeper) GetAllCAssetMintRecords(ctx sdk.Context) (mintRecords []*types.CAssetsMintStatistics) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.CAssetMintRecordsKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.CAssetMintStatisticsKeyPrefix)
 	)
 
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var mintRecord types.CAssetsMintRecords
+		var mintRecord types.CAssetsMintStatistics
 		k.cdc.MustUnmarshal(iter.Value(), &mintRecord)
 		mintRecords = append(mintRecords, &mintRecord)
 	}
@@ -243,7 +214,7 @@ func (k *Keeper) GetAllCAssetMintRecords(ctx sdk.Context) (mintRecords []*types.
 	return mintRecords
 }
 
-func (k *Keeper) GetCAssetMintRecords(ctx sdk.Context, collateralDenom string) (mintRecords types.CAssetsMintRecords, found bool) {
+func (k *Keeper) GetCAssetMintRecords(ctx sdk.Context, collateralDenom string) (mintRecords types.CAssetsMintStatistics, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.CAssetMintRecordsKey(collateralDenom)
@@ -257,7 +228,7 @@ func (k *Keeper) GetCAssetMintRecords(ctx sdk.Context, collateralDenom string) (
 	return mintRecords, true
 }
 
-func (k *Keeper) SetCAssetMintRecords(ctx sdk.Context, mintRecords types.CAssetsMintRecords) {
+func (k *Keeper) SetCAssetMintRecords(ctx sdk.Context, mintRecords types.CAssetsMintStatistics) {
 	var (
 		store = k.Store(ctx)
 		key   = types.CAssetMintRecordsKey(mintRecords.CollateralDenom)
@@ -278,7 +249,7 @@ func (k *Keeper) MintCAssets(
 	}
 	mintRecords, found := k.GetCAssetMintRecords(ctx, collateralDenom)
 	if !found {
-		mintRecords = types.CAssetsMintRecords{
+		mintRecords = types.CAssetsMintStatistics{
 			CollateralDenom: collateralDenom,
 			MintedAssets:    map[string]uint64{},
 		}
@@ -321,12 +292,10 @@ func (k *Keeper) UpdateUserVaultIdMapping(
 	userVaults, found := k.GetUserVaults(ctx, vaultOwner)
 
 	if !found && isInsert {
-		userVaults = types.UserVaults{
-			Id:       k.GetUserVaultsID(ctx),
+		userVaults = types.UserVaultIdMapping{
 			Owner:    vaultOwner,
 			VaultIds: nil,
 		}
-		k.SetUserVaultID(ctx, userVaults.Id)
 	} else if !found && !isInsert {
 		return types.ErrorVaultOwnerNotFound
 	}
