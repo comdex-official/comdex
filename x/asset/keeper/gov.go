@@ -6,10 +6,10 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func (k *Keeper) HandleUpdateAdminProposal(ctx sdk.Context, prop *types.UpdateAdminProposal) error {
+func (k *Keeper) HandleUpdateLiquidationRatioProposal(ctx sdk.Context, prop *types.UpdateLiquidationRatioProposal) error {
 	params := k.GetParams(ctx)
 
-	params.Admin = prop.Address
+	params.LiquidationRatio = prop.LiquidationRatio
 	k.SetParams(ctx, params)
 
 	return nil

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
@@ -14,28 +13,23 @@ const (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeUpdateAdmin)
-	govtypes.RegisterProposalTypeCodec(&UpdateAdminProposal{}, fmt.Sprintf("comdex/asset/%s", ProposalTypeUpdateAdmin))
+	govtypes.RegisterProposalTypeCodec(&UpdateLiquidationRatioProposal{}, fmt.Sprintf("comdex/asset/%s", ProposalTypeUpdateAdmin))
 }
 
 var (
-	_ govtypes.Content = (*UpdateAdminProposal)(nil)
+	_ govtypes.Content = (*UpdateLiquidationRatioProposal)(nil)
 )
 
-func (m *UpdateAdminProposal) GetTitle() string       { return m.Title }
-func (m *UpdateAdminProposal) GetDescription() string { return m.Description }
-func (m *UpdateAdminProposal) ProposalRoute() string  { return RouterKey }
-func (m *UpdateAdminProposal) ProposalType() string   { return ProposalTypeUpdateAdmin }
+func (m *UpdateLiquidationRatioProposal) GetTitle() string       { return m.Title }
+func (m *UpdateLiquidationRatioProposal) GetDescription() string { return m.Description }
+func (m *UpdateLiquidationRatioProposal) ProposalRoute() string  { return RouterKey }
+func (m *UpdateLiquidationRatioProposal) ProposalType() string   { return ProposalTypeUpdateAdmin }
 
-func (m *UpdateAdminProposal) ValidateBasic() error {
-	if err := govtypes.ValidateAbstract(m); err != nil {
-		return err
-	}
-	if m.Address == "" {
-		return fmt.Errorf("address cannot be empty")
-	}
-	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(err, "invalid address %s", m.Address)
-	}
+func (m *UpdateLiquidationRatioProposal) ValidateBasic() error {
 
+	return nil
+}
+
+func (m *UpdateLiquidationRatioProposal) GetSigners() []sdk.AccAddress {
 	return nil
 }

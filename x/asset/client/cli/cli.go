@@ -39,6 +39,7 @@ func GetTxCmd() *cobra.Command {
 		txUpdateAsset(),
 		txAddPair(),
 		txUpdatePair(),
+		NewSubmitUpdateAdminProposal(),
 	)
 
 	return cmd

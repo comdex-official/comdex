@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	"github.com/spf13/cobra"
 	"strconv"
 
@@ -181,6 +182,44 @@ func txUpdatePair() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagLiquidationRatio, "", "liquidation ratio")
+
+	return cmd
+}
+
+func NewSubmitUpdateAdminProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-liquidation-ratio [liquidation-ratio]",
+		Short: "Submit an update to update Liquidation_ratio",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			title, err := cmd.Flags().GetString(cli.FlagTitle)
+			if err != nil {
+				return err
+			}
+
+			description, err := cmd.Flags().GetString(cli.FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			liqratio := args[0]
+
+			var msg = types.UpdateLiquidationRatioProposal{Title: title, Description: description, LiquidationRatio: liqratio}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
+	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
+	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	_ = cmd.MarkFlagRequired(cli.FlagTitle)
+	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }
