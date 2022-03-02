@@ -9,14 +9,14 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&UpdateLiquidationRatioProposal{}, "comdex/UpdateLiquidationRatioProposal", nil)
+	cdc.RegisterConcrete(&UpdateLiquidationRatio{}, "comdex/UpdateLiquidationRatioProposal", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
-		&UpdateLiquidationRatioProposal{},
+		&UpdateLiquidationRatio{},
 	)
 
 	registry.RegisterImplementations(
