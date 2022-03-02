@@ -226,16 +226,6 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 	return totalIn.Quo(totalOut), nil
 }
 
-func isDenomWhitelisted(denom string) bool {
-	whitelistedDenoms := []string{"ucgold", "ucsilver", "ucoil"}
-	for _, whitelistedDenom := range whitelistedDenoms {
-		if denom == whitelistedDenom {
-			return true
-		}
-	}
-	return false
-}
-
 func (k *Keeper) GetAllCAssetMintRecords(ctx sdk.Context) (mintRecords []*types.CAssetsMintRecords) {
 	var (
 		store = k.Store(ctx)
@@ -283,9 +273,6 @@ func (k *Keeper) MintCAssets(
 	denom string,
 	amount sdk.Int,
 ) error {
-	if !isDenomWhitelisted(denom) {
-		return types.ErrorAssetDoesNotExist
-	}
 	if err := k.MintCoin(ctx, moduleName, sdk.NewCoin(denom, amount)); err != nil {
 		return err
 	}
@@ -308,10 +295,6 @@ func (k *Keeper) BurnCAssets(
 	denom string,
 	amount sdk.Int,
 ) error {
-	if !isDenomWhitelisted(denom) {
-		return types.ErrorAssetDoesNotExist
-	}
-
 	mintRecords, found := k.GetCAssetMintRecords(ctx, collateralDenom)
 	if !found {
 		return types.ErrorCAssetRecordDoesNotExist
@@ -325,5 +308,40 @@ func (k *Keeper) BurnCAssets(
 	if err := k.BurnCoin(ctx, moduleName, sdk.NewCoin(denom, amount)); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (k *Keeper) UpdateUserVaultIdMapping(
+	ctx sdk.Context,
+	vaultOwner string,
+	vaultId uint64,
+	isInsert bool,
+) error {
+
+	userVaults, found := k.GetUserVaults(ctx, vaultOwner)
+
+	if !found && isInsert {
+		userVaults = types.UserVaults{
+			Id:       k.GetUserVaultsID(ctx),
+			Owner:    vaultOwner,
+			VaultIds: nil,
+		}
+		k.SetUserVaultID(ctx, userVaults.Id)
+	} else if !found && !isInsert {
+		return types.ErrorVaultOwnerNotFound
+	}
+
+	if isInsert {
+		userVaults.VaultIds = append(userVaults.VaultIds, vaultId)
+	} else {
+		for index, id := range userVaults.VaultIds {
+			if id == vaultId {
+				userVaults.VaultIds = append(userVaults.VaultIds[:index], userVaults.VaultIds[index+1:]...)
+				break
+			}
+		}
+	}
+
+	k.SetUserVaults(ctx, userVaults)
 	return nil
 }

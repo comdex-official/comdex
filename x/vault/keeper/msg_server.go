@@ -77,19 +77,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	k.SetID(ctx, id+1)
 	k.SetVault(ctx, vault)
 	k.SetVaultForAddressByPair(ctx, from, vault.PairID, vault.ID)
-
-	userVaults, found := k.GetUserVaults(ctx, msg.From)
-	if !found {
-		userVaults = types.UserVaults{
-			Id:       k.GetUserVaultsID(ctx),
-			Owner:    msg.From,
-			VaultIds: nil,
-		}
-		k.SetUserVaultID(ctx, userVaults.Id)
-	}
-
-	userVaults.VaultIds = append(userVaults.VaultIds, vault.ID)
-	k.SetUserVaults(ctx, userVaults)
+	k.UpdateUserVaultIdMapping(ctx, msg.From, vault.ID, true)
 
 	return &types.MsgCreateResponse{}, nil
 }
@@ -328,6 +316,7 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 
 	k.DeleteVault(ctx, vault.ID)
 	k.DeleteVaultForAddressByPair(ctx, from, vault.PairID)
+	k.UpdateUserVaultIdMapping(ctx, msg.From, vault.ID, false)
 
 	return &types.MsgCloseResponse{}, nil
 }
