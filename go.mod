@@ -3,7 +3,7 @@ module github.com/comdex-official/comdex
 go 1.16
 
 require (
-	github.com/CosmWasm/wasmd v0.23.0
+	github.com/CosmWasm/wasmd v0.22.0
 	github.com/bandprotocol/bandchain-packet v0.0.2
 	github.com/cosmos/cosmos-sdk v0.45.1
 	github.com/cosmos/ibc-go/v2 v2.0.2
