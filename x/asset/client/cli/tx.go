@@ -192,9 +192,15 @@ func NewSubmitUpdateAdminProposal() *cobra.Command {
 		Short: "Submit an update to update Liquidation_ratio",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
+			}
+
+			from := clientCtx.FromAddress
+			if from == nil {
+				return err //TODO
 			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
@@ -209,7 +215,7 @@ func NewSubmitUpdateAdminProposal() *cobra.Command {
 
 			liqratio := args[0]
 
-			var msg = types.UpdateLiquidationRatioProposal{Title: title, Description: description, LiquidationRatio: liqratio}
+			var msg = types.UpdateLiquidationRatioProposal{Title: title, Description: description, LiquidationRatio: liqratio, From: from.String()}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},

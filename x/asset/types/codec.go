@@ -12,11 +12,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
-	/*registry.RegisterImplementations(
-		(*govtypes.Content)(nil),
-		&UpdateLiquidationRatioProposal{},
-	)
-*/
+
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgAddAssetRequest{},
