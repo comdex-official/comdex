@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	ProposalTypeUpdateLiquidationRatio = "UpdateLiquidationRatioProposal"
+	ProposalTypeUpdateLiquidationRatio = "UpdateLiquidationRatio"
 )
 
 func init() {
