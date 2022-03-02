@@ -1,7 +1,6 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
@@ -11,26 +10,26 @@ const (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeUpdateLiquidationRatio)
-	govtypes.RegisterProposalTypeCodec(&UpdateLiquidationRatioProposal{}, "comdex/UpdateLiquidationRatioProposal")
+	govtypes.RegisterProposalTypeCodec(&UpdateLiquidationRatio{}, "comdex/UpdateLiquidationRatioProposal")
 }
 
 var (
-	_ govtypes.Content = (*UpdateLiquidationRatioProposal)(nil)
+	_ govtypes.Content = (*UpdateLiquidationRatio)(nil)
 )
 
-func (m *UpdateLiquidationRatioProposal) GetTitle() string       { return m.Title }
-func (m *UpdateLiquidationRatioProposal) GetDescription() string { return m.Description }
-func (m *UpdateLiquidationRatioProposal) ProposalRoute() string  { return RouterKey }
-func (m *UpdateLiquidationRatioProposal) ProposalType() string {
+func (m *UpdateLiquidationRatio) GetTitle() string       { return m.Title }
+func (m *UpdateLiquidationRatio) GetDescription() string { return m.Description }
+func (m *UpdateLiquidationRatio) ProposalRoute() string  { return RouterKey }
+func (m *UpdateLiquidationRatio) ProposalType() string {
 	return ProposalTypeUpdateLiquidationRatio
 }
 
-func (m *UpdateLiquidationRatioProposal) ValidateBasic() error {
+func (m *UpdateLiquidationRatio) ValidateBasic() error {
 
 	return nil
 }
 
-func (m *UpdateLiquidationRatioProposal) GetSigners() []sdk.AccAddress {
+/*func (m *UpdateLiquidationRatioProposal) GetSigners() []sdk.AccAddress {
 
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -38,13 +37,12 @@ func (m *UpdateLiquidationRatioProposal) GetSigners() []sdk.AccAddress {
 	}
 
 	return []sdk.AccAddress{from}
-}
+}*/
 
-func NewUpdateLiquidationRatio(title, description, from, liquidationRatio string) *govtypes.Content {
-	return &UpdateLiquidationRatioProposal{
+func NewUpdateLiquidationRatio(title, description, liquidationRatio string) *govtypes.Content {
+	return &UpdateLiquidationRatio{
 		Title:            title,
 		Description:      description,
 		LiquidationRatio: liquidationRatio,
-		From:             from,
 	}
 }
