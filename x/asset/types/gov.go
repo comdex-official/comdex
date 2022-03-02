@@ -39,7 +39,7 @@ func (m *UpdateLiquidationRatio) ValidateBasic() error {
 	return []sdk.AccAddress{from}
 }*/
 
-func NewUpdateLiquidationRatio(title, description, liquidationRatio string) *govtypes.Content {
+func NewUpdateLiquidationRatio(title, description, liquidationRatio string) govtypes.Content {
 	return &UpdateLiquidationRatio{
 		Title:            title,
 		Description:      description,
