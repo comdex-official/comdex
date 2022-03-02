@@ -225,11 +225,7 @@ func NewSubmitUpdateAdminProposal() *cobra.Command {
 
 			liqRatio := args[0]
 
-			content := types.NewUpdateLiquidationRatio{
-				Title:            title,
-				Description:      description,
-				LiquidationRatio: liqRatio,
-			}
+			content := types.NewUpdateLiquidationRatio(title, description, liqRatio)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 

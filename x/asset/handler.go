@@ -37,7 +37,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 func NewProposalAssetHandler(k keeper.Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
-		case *types.UpdateLiquidationRatioProposal:
+		case *types.UpdateLiquidationRatio:
 			return k.HandleUpdateLiquidationRatio(ctx, c)
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)

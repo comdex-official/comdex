@@ -147,7 +147,7 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	return k.oracle.GetPriceForMarket(ctx, market.Symbol)
 }
 
-func (k *Keeper) UpdateLiquidationRatio(ctx sdk.Context, prop *types.UpdateLiquidationRatioProposal) error {
+func (k *Keeper) UpdateLiquidationRatio(ctx sdk.Context, prop *types.UpdateLiquidationRatio) error {
 
 	params := k.GetParams(ctx)
 
