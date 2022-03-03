@@ -3,16 +3,24 @@ VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
-BUILD_TAGS := $(strip netgo,ledger)
+build_tags := netgo ledger
+build_tags += ${BUILD_TAGS}
+build_tags := $(strip ${build_tags})
+
+empty :=
+whitespace += ${empty} ${empty}
+comma := ,
+build_tags_comma_sep := $(subst ${whitespace},${comma},${build_tags})
+
 LD_FLAGS := -s -w \
     -X github.com/cosmos/cosmos-sdk/version.Name=comdex \
     -X github.com/cosmos/cosmos-sdk/version.AppName=comdex \
     -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
-    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
+    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${build_tags_comma_sep} \
     -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TENDERMINT_VERSION)
 
-BUILD_FLAGS += -ldflags "${LD_FLAGS}" -tags "${BUILD_TAGS}"
+BUILD_FLAGS += -ldflags "${LD_FLAGS}" -tags "${build_tags}"
 
 GOBIN = $(shell go env GOPATH)/bin
 GOARCH = $(shell go env GOARCH)
