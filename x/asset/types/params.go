@@ -5,12 +5,10 @@ import (
 )
 
 var (
-	DefaultAdmin = ""
 	DefaultLiqRatio = "1.5"
 )
 
 var (
-	KeyAdmin = []byte("Admin")
 	KeyLiqRatio = []byte("LiqRatio")
 )
 

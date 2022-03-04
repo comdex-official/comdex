@@ -124,7 +124,8 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abcitypes.RequestBeginBlock) {}
 
-func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
+func (a AppModule) EndBlock(ctx sdk.Context, req abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
+	EndBlocker(ctx, req, a.keeper)
 	return nil
 }
 
