@@ -808,6 +808,7 @@ func (app *App) registerUpgradeHandlers() {
 			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
+			wasmtypes.ModuleName:        wasm.AppModule{}.ConsensusVersion(),
 		}
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
@@ -817,9 +818,7 @@ func (app *App) registerUpgradeHandlers() {
 		panic(err)
 	}
 	if upgradeInfo.Name == "v0.1.2" && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{wasmtypes.ModuleName},
-		}
+		storeUpgrades := storetypes.StoreUpgrades{}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
