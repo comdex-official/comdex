@@ -809,11 +809,15 @@ func (app *App) registerUpgradeHandlers() {
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
 		}
+		newVM, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
+		if err != nil {
+			return newVM, err
+		}
 		//wasm
 		wasmParams := app.wasmKeeper.GetParams(ctx)
 		wasmParams.CodeUploadAccess = wasmtypes.AllowNobody
 		app.wasmKeeper.SetParams(ctx, wasmParams)
-		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+		return newVM, err
 	})
 
 	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
