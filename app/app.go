@@ -821,9 +821,7 @@ func (app *App) registerUpgradeHandlers() {
 		panic(err)
 	}
 	if upgradeInfo.Name == "v0.1.2" && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{wasm.ModuleName},
-		}
+		storeUpgrades := storetypes.StoreUpgrades{}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
