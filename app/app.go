@@ -808,8 +808,11 @@ func (app *App) registerUpgradeHandlers() {
 			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
-			wasmtypes.ModuleName:        wasm.AppModule{}.ConsensusVersion(),
 		}
+		//wasm
+		wasmParams := app.wasmKeeper.GetParams(ctx)
+		wasmParams.CodeUploadAccess = wasmtypes.AllowNobody
+		app.wasmKeeper.SetParams(ctx, wasmParams)
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 
