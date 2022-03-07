@@ -1,8 +1,11 @@
 package types
 
 import (
+	"errors"
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"strings"
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -69,37 +72,154 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 
 // Validate validates the set of params
 func (p Params) Validate() error {
+	if err := ValidateCreator(p.Creator); err != nil {
+		return err
+	}
+	if err := ValidateOracleScriptID(p.OracleScriptId); err != nil {
+		return err
+	}
+	if err := ValidateSourceChannel(p.SourceChannel); err != nil {
+		return err
+	}
+	if err := ValidateAskCount(p.AskCount); err != nil {
+		return err
+	}
+	if err := ValidateMinCount(p.MinCount); err != nil {
+		return err
+	}
+	if err := ValidateFeeLimit(p.FeeLimit); err != nil {
+		return err
+	}
+	if err := ValidatePrepareGas(p.PrepareGas); err != nil {
+		return err
+	}
+	if err := ValidateExecuteGas(p.ExecuteGas); err != nil {
+		return err
+	}
 	return nil
 }
 
 func ValidateCreator(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if strings.TrimSpace(v) == "" {
+		return errors.New("creator cannot be blank")
+	}
+	if err := sdk.ValidateDenom(v); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func ValidateOracleScriptID(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if strings.TrimSpace(v) == "" {
+		return errors.New("oraclesccriptid cannot be blank")
+	}
+	if err := sdk.ValidateDenom(v); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func ValidateSourceChannel(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if strings.TrimSpace(v) == "" {
+		return errors.New("sourcechannel cannot be blank")
+	}
+	if err := sdk.ValidateDenom(v); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func ValidateAskCount(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if strings.TrimSpace(v) == "" {
+		return errors.New("askcount cannot be blank")
+	}
+	if err := sdk.ValidateDenom(v); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func ValidateMinCount(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if strings.TrimSpace(v) == "" {
+		return errors.New("mincount cannot be blank")
+	}
+	if err := sdk.ValidateDenom(v); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func ValidateFeeLimit(i interface{}) error {
+	v, ok := i.(sdk.Coins)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v.Validate() != nil {
+		return fmt.Errorf("feelimit creation fee: %+v", i)
+	}
+
 	return nil
 }
 
 func ValidatePrepareGas(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if strings.TrimSpace(v) == "" {
+		return errors.New("preparegas cannot be blank")
+	}
+	if err := sdk.ValidateDenom(v); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func ValidateExecuteGas(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if strings.TrimSpace(v) == "" {
+		return errors.New("executegas cannot be blank")
+	}
+	if err := sdk.ValidateDenom(v); err != nil {
+		return err
+	}
+
 	return nil
 }

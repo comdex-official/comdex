@@ -1,18 +1,16 @@
 package types
 
 import (
+	"errors"
+	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"strings"
 )
 
 var (
 	DefaultLiqRatio = "1.5"
-)
-
-var (
 	KeyLiqRatio = []byte("LiqRatio")
-)
-
-var (
 	_ paramstypes.ParamSet = (*Params)(nil)
 )
 
@@ -39,5 +37,17 @@ func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 }
 
 func validateLiqRatio(i interface{}) error {
+	v, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if strings.TrimSpace(v) == "" {
+		return errors.New("Liquidation Ratio can not be blank")
+	}
+	if err := sdk.ValidateDenom(v); err != nil {
+		return err
+	}
+
 	return nil
 }
