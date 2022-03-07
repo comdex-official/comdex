@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrorUnknownProposalType = sdkerrors.Register(ModuleName, 1100, "Proposal type is invalid")
 )

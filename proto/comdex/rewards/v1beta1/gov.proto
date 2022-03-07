@@ -1,0 +1,31 @@
+syntax = "proto3";
+package comdex.rewards.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/rewards/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message NewMintRewards {
+  string title       = 1 [ (gogoproto.moretags) = "yaml:\"title\"" ];
+  string description = 2 [ (gogoproto.moretags) = "yaml:\"description\"" ];
+  string allowed_collateral = 3 [
+    (gogoproto.moretags) = "yaml:\"allowed_collateral\""
+  ];
+  repeated string allowed_cassets = 4 [
+    (gogoproto.moretags) = "yaml:\"allowed_cassets\""
+  ];
+  cosmos.base.v1beta1.Coin total_rewards = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags)   = "yaml:\"total_rewards\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  uint64 casset_max_cap = 6 [
+    (gogoproto.moretags) = "yaml:\"casset_max_cap\""
+  ];
+  uint64 duration_days = 7 [
+    (gogoproto.moretags) = "yaml:\"duration_days\""
+  ];
+}
