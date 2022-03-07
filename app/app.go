@@ -490,6 +490,7 @@ func New(
 		keys[rewardstypes.StoreKey],
 		keys[rewardstypes.MemStoreKey],
 		app.GetSubspace(rewardstypes.ModuleName),
+		&app.assetKeeper,
 	)
 
 	// Create Transfer Keepers

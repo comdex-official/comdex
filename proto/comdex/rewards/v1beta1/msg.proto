@@ -1,5 +1,5 @@
 syntax = "proto3";
-package comdexofficial.comdex.rewards;
+package comdex.rewards.v1beta1;
 
 option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 
