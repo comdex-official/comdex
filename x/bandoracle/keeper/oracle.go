@@ -51,7 +51,7 @@ func (k Keeper) SetLastFetchPriceID(ctx sdk.Context, id types.OracleRequestID) {
 func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types.MsgFetchPriceDataResponse, error) {
 
 	sourcePort := types.PortID
-	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, sourcePort, msg.SourceChannel)
+	sourceChannelEnd, found := k.channelKeeper.GetChannel(ctx, sourcePort, msg.SourceChannel)
 	if !found {
 		return nil, nil
 	}
@@ -59,12 +59,12 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	destinationChannel := sourceChannelEnd.GetCounterparty().GetChannelID()
 
 	// get the next sequence
-	sequence, found := k.ChannelKeeper.GetNextSequenceSend(ctx, sourcePort, msg.SourceChannel)
+	sequence, found := k.channelKeeper.GetNextSequenceSend(ctx, sourcePort, msg.SourceChannel)
 	if !found {
 		return nil, nil
 	}
 
-	channelCap, ok := k.ScopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(sourcePort, msg.SourceChannel))
+	channelCap, ok := k.scopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(sourcePort, msg.SourceChannel))
 	if !ok {
 		return nil, nil
 	}
@@ -88,7 +88,7 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 		msg.PrepareGas,
 		msg.ExecuteGas,
 	)
-	err := k.ChannelKeeper.SendPacket(ctx, channelCap, channeltypes.NewPacket(
+	err := k.channelKeeper.SendPacket(ctx, channelCap, channeltypes.NewPacket(
 		packetData.GetBytes(),
 		sequence,
 		sourcePort,
