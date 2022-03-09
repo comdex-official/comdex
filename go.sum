@@ -162,6 +162,8 @@ github.com/aws/aws-sdk-go-v2/service/cloudwatch v1.8.1/go.mod h1:CM+19rL1+4dFWnO
 github.com/aws/smithy-go v1.8.0/go.mod h1:SObp3lf9smib00L/v3U2eAKG8FyQ7iLrJnQiAmR5n+E=
 github.com/bandprotocol/bandchain-packet v0.0.2 h1:FySqsXp6sIh0kHiNBrkvt5CRmsrqTN2Bd26U7cebKxg=
 github.com/bandprotocol/bandchain-packet v0.0.2/go.mod h1:pk/wJxznWERdDVU2WWpzt8Tr0WvDSkT66JDYVdIECAo=
+github.com/bandprotocol/bandchain-packet v0.0.3 h1:Mo2xVmjOSfc//0z1lskNkxrkpcxeU2nIwfHb2rHFLLg=
+github.com/bandprotocol/bandchain-packet v0.0.3/go.mod h1:6mU33VjEShPvWYoTIQywRPxyS+HXcgnm0e7mlJwiTnQ=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=

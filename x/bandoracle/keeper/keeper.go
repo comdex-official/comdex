@@ -2,10 +2,9 @@ package keeper
 
 import (
 	"fmt"
-	host "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/bandoracle/expected"
+	host "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/tendermint/spm/ibckeeper"
 )
 
 type (
@@ -26,7 +24,7 @@ type (
 		assetKeeper   assetkeeper.Keeper
 		channelKeeper expected.ChannelKeeper
 		portKeeper    expected.PortKeeper
-		scopedKeeper  ibckeeper.ScopedKeeper
+		scopedKeeper  expected.ScopedKeeper
 	}
 )
 
@@ -37,7 +35,7 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 	channelKeeper expected.ChannelKeeper,
 	portKeeper expected.PortKeeper,
-	scopedKeeper ibckeeper.ScopedKeeper,
+	scopedKeeper expected.ScopedKeeper,
 	oracle expected.OracleKeeper,
 	assetKeeper assetkeeper.Keeper,
 
