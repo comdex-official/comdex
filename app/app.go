@@ -447,7 +447,8 @@ func New(
 
 	scopedBandoracleKeeper := app.capabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
 	app.scopedBandoracleKeeper = scopedBandoracleKeeper
-	app.BandoracleKeeper = *bandoraclemodulekeeper.NewKeeper(
+
+	app.BandoracleKeeper = bandoraclemodulekeeper.NewKeeper(
 		appCodec,
 		keys[bandoraclemoduletypes.StoreKey],
 		keys[bandoraclemoduletypes.MemStoreKey],
@@ -458,7 +459,15 @@ func New(
 		&app.oracleKeeper,
 		app.assetKeeper,
 	)
-	bandoracleModule := bandoraclemodule.NewAppModule(appCodec, app.BandoracleKeeper, app.accountKeeper, app.bankKeeper)
+	bandoracleModule := bandoraclemodule.NewAppModule(
+		appCodec,
+		app.BandoracleKeeper,
+		app.accountKeeper,
+		app.bankKeeper,
+		app.scopedBandoracleKeeper,
+		&app.ibcKeeper.PortKeeper,
+		app.ibcKeeper.ChannelKeeper,
+	)
 
 	app.oracleKeeper = *oraclekeeper.NewKeeper(
 		app.cdc,

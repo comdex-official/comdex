@@ -36,7 +36,7 @@ func (am AppModule) OnChanOpenInit(
 	}
 
 	// Claim channel capability passed back by IBC module
-	if err := am.keeper.ClaimCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)); err != nil {
+	if err := am.scopedKeeper.ClaimCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)); err != nil {
 		return err
 	}
 
@@ -74,9 +74,9 @@ func (am AppModule) OnChanOpenTry(
 	// (ie chainA and chainB both call ChanOpenInit before one of them calls ChanOpenTry)
 	// If module can already authenticate the capability then module already owns it so we don't need to claim
 	// Otherwise, module does not have channel capability and we must claim it from IBC
-	if !am.keeper.AuthenticateCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)) {
+	if !am.scopedKeeper.AuthenticateCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)) {
 		// Only claim channel capability passed back by IBC module if we do not already own it
-		if err := am.keeper.ClaimCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)); err != nil {
+		if err := am.scopedKeeper.ClaimCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)); err != nil {
 			return err
 		}
 	}
@@ -163,7 +163,7 @@ func (am AppModule) OnAcknowledgementPacket(
 	modulePacket channeltypes.Packet,
 	acknowledgement []byte,
 	relayer sdk.AccAddress,
-)  error {
+) error {
 	var ack channeltypes.Acknowledgement
 	if err := types.ModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet acknowledgement: %v", err)
@@ -227,7 +227,7 @@ func (am AppModule) OnTimeoutPacket(
 	ctx sdk.Context,
 	modulePacket channeltypes.Packet,
 	relayer sdk.AccAddress,
-)  error {
+) error {
 	var modulePacketData types.BandoraclePacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
@@ -241,7 +241,7 @@ func (am AppModule) OnTimeoutPacket(
 		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 	}
 
-	return  nil
+	return nil
 }
 
 func (am AppModule) NegotiateAppVersion(ctx sdk.Context, order channeltypes.Order, connectionID string, portID string, counterparty channeltypes.Counterparty, proposedVersion string) (version string, err error) {

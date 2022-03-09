@@ -30,7 +30,7 @@ func (k msgServer) FetchPriceData(goCtx context.Context, msg *types.MsgFetchPric
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	sourcePort := types.PortID
-	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, sourcePort, msg.SourceChannel)
+	sourceChannelEnd, found := k.channelKeeper.GetChannel(ctx, sourcePort, msg.SourceChannel)
 	if !found {
 		return nil, sdkerrors.Wrapf(
 			sdkerrors.ErrUnknownRequest,
@@ -43,14 +43,14 @@ func (k msgServer) FetchPriceData(goCtx context.Context, msg *types.MsgFetchPric
 	destinationChannel := sourceChannelEnd.GetCounterparty().GetChannelID()
 
 	// get the next sequence
-	sequence, found := k.ChannelKeeper.GetNextSequenceSend(ctx, sourcePort, msg.SourceChannel)
+	sequence, found := k.channelKeeper.GetNextSequenceSend(ctx, sourcePort, msg.SourceChannel)
 	if !found {
 		return nil, sdkerrors.Wrapf(
 			channeltypes.ErrSequenceSendNotFound,
 			"source port: %s, source channel: %s", sourcePort, msg.SourceChannel)
 	}
 
-	channelCap, ok := k.ScopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(sourcePort, msg.SourceChannel))
+	channelCap, ok := k.scopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(sourcePort, msg.SourceChannel))
 	if !ok {
 		return nil, sdkerrors.Wrap(channeltypes.ErrChannelCapabilityNotFound,
 			"module does not own channel capability")
@@ -68,7 +68,7 @@ func (k msgServer) FetchPriceData(goCtx context.Context, msg *types.MsgFetchPric
 		msg.ExecuteGas,
 	)
 
-	err := k.ChannelKeeper.SendPacket(ctx, channelCap, channeltypes.NewPacket(
+	err := k.channelKeeper.SendPacket(ctx, channelCap, channeltypes.NewPacket(
 		packetData.GetBytes(),
 		sequence,
 		sourcePort,
