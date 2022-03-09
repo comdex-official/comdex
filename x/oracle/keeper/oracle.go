@@ -198,15 +198,10 @@ func (k *Keeper) GetCalldataID(ctx sdk.Context) uint64 {
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	if id == 1 {
-		return 100, true
-	} else {
-		return 200, true
+	market, found := k.GetMarketForAsset(ctx, id)
+	if !found {
+		return 0, false
 	}
-	// market, found := k.GetMarketForAsset(ctx, id)
-	// if !found {
-	// 	return 0, false
-	// }
 
-	// return k.GetPriceForMarket(ctx, market.Symbol)
+	return k.GetPriceForMarket(ctx, market.Symbol)
 }

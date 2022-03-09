@@ -30,9 +30,7 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(
-		AddNewMintingRewardsProposal(),
-	)
+	cmd.AddCommand()
 
 	return cmd
 }
