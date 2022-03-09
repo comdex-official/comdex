@@ -1,6 +1,7 @@
 package app
 
 import (
+	authvestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"io"
 	"os"
 	"path/filepath"
@@ -84,6 +85,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	"github.com/comdex-official/comdex/x/asset"
+	assetclient "github.com/comdex-official/comdex/x/asset/client"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/auction"
@@ -128,6 +130,7 @@ var (
 			distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler,
 			upgradeclient.CancelProposalHandler,
+			assetclient.UpdatePoolIncentivesHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -391,7 +394,8 @@ func New(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
+		AddRoute(assettypes.RouterKey, asset.NewUpdateLiquidationRatioProposalHandler(app.assetKeeper))
 
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,
@@ -554,10 +558,18 @@ func New(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 		bandoraclemoduletypes.ModuleName, oracletypes.ModuleName, liquidationtypes.ModuleName,
-		auctiontypes.ModuleName,
+		auctiontypes.ModuleName, assettypes.ModuleName, vaulttypes.ModuleName, govtypes.ModuleName, authvestingtypes.ModuleName,
+		capabilitytypes.ModuleName, crisistypes.ModuleName, paramstypes.ModuleName, authtypes.ModuleName,
+		ibctransfertypes.ModuleName, genutiltypes.ModuleName, banktypes.ModuleName,
 	)
 
-	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, bandoraclemoduletypes.ModuleName)
+	app.mm.SetOrderEndBlockers(upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
+		bandoraclemoduletypes.ModuleName, oracletypes.ModuleName, liquidationtypes.ModuleName,
+		auctiontypes.ModuleName, assettypes.ModuleName, vaulttypes.ModuleName, govtypes.ModuleName, authvestingtypes.ModuleName,
+		capabilitytypes.ModuleName, crisistypes.ModuleName, paramstypes.ModuleName, authtypes.ModuleName,
+		ibctransfertypes.ModuleName, genutiltypes.ModuleName, banktypes.ModuleName,
+	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -585,6 +597,9 @@ func New(
 		oracletypes.ModuleName,
 		liquidationtypes.ModuleName,
 		auctiontypes.ModuleName,
+		paramstypes.ModuleName,
+		authvestingtypes.ModuleName,
+		upgradetypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
