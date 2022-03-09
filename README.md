@@ -34,7 +34,22 @@ make install
 ## Testnet
 
 For further information on joining the testnet, head over to the 
-[Comdex Networks](https://github.com/comdex-official/networks/).
+[Comdex Networks TestNet](https://github.com/comdex-official/networks/tree/main/testnet).
+
+The explorer for this chain is hosted [TestNet Explorer](https://comets-test.comdex.one/)
+
+## MainNet
+For further information on joining the mainnet, head over to the
+[Comdex Networks MainNet](https://github.com/comdex-official/networks/tree/main/mainnet).
+
+## Mainet Explorers 
+The explorer for this chain is hosted
+
+* [Mintscan](https://www.mintscan.io/comdex/)
+* [Aneka - Vitwit](https://comdex.aneka.io/)
+* [Look.Chill](https://look.chillvalidation.com/comdex)
+* [Atomscan](https://atomscan.com/comdex)
+* [ZenChainLabs](https://comdex.zenscan.io/)
 
 ## License
 

@@ -7,10 +7,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
-	host "github.com/cosmos/ibc-go/modules/core/24-host"
-	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
+	channeltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
+	host "github.com/cosmos/ibc-go/v2/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/v2/modules/core/exported"
 )
 
 // OnChanOpenInit implements the IBCModule interface
@@ -36,7 +36,7 @@ func (am AppModule) OnChanOpenInit(
 	}
 
 	// Claim channel capability passed back by IBC module
-	if err := am.keeper.ClaimCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)); err != nil {
+	if err := am.scopedKeeper.ClaimCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)); err != nil {
 		return err
 	}
 
@@ -74,9 +74,9 @@ func (am AppModule) OnChanOpenTry(
 	// (ie chainA and chainB both call ChanOpenInit before one of them calls ChanOpenTry)
 	// If module can already authenticate the capability then module already owns it so we don't need to claim
 	// Otherwise, module does not have channel capability and we must claim it from IBC
-	if !am.keeper.AuthenticateCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)) {
+	if !am.scopedKeeper.AuthenticateCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)) {
 		// Only claim channel capability passed back by IBC module if we do not already own it
-		if err := am.keeper.ClaimCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)); err != nil {
+		if err := am.scopedKeeper.ClaimCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)); err != nil {
 			return err
 		}
 	}
@@ -163,25 +163,25 @@ func (am AppModule) OnAcknowledgementPacket(
 	modulePacket channeltypes.Packet,
 	acknowledgement []byte,
 	relayer sdk.AccAddress,
-) (*sdk.Result, error) {
+) error {
 	var ack channeltypes.Acknowledgement
 	if err := types.ModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet acknowledgement: %v", err)
+		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet acknowledgement: %v", err)
 	}
 
 	sdkResult, err := am.handleOracleAcknowledgment(ctx, ack, modulePacket)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if sdkResult != nil {
 		sdkResult.Events = ctx.EventManager().Events().ToABCIEvents()
-		return sdkResult, nil
+		return nil
 	}
 	// this line is used by starport scaffolding # oracle/packet/module/ack
 
 	var modulePacketData types.BandoraclePacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
+		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
 	}
 
 	var eventType string
@@ -191,7 +191,7 @@ func (am AppModule) OnAcknowledgementPacket(
 	// this line is used by starport scaffolding # ibc/packet/module/ack
 	default:
 		errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 	}
 
 	ctx.EventManager().EmitEvent(
@@ -219,9 +219,7 @@ func (am AppModule) OnAcknowledgementPacket(
 		)
 	}
 
-	return &sdk.Result{
-		Events: ctx.EventManager().Events().ToABCIEvents(),
-	}, nil
+	return nil
 }
 
 // OnTimeoutPacket implements the IBCModule interface
@@ -229,10 +227,10 @@ func (am AppModule) OnTimeoutPacket(
 	ctx sdk.Context,
 	modulePacket channeltypes.Packet,
 	relayer sdk.AccAddress,
-) (*sdk.Result, error) {
+) error {
 	var modulePacketData types.BandoraclePacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
+		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
 	}
 
 	// Dispatch packet
@@ -240,10 +238,12 @@ func (am AppModule) OnTimeoutPacket(
 	// this line is used by starport scaffolding # ibc/packet/module/timeout
 	default:
 		errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 	}
 
-	return &sdk.Result{
-		Events: ctx.EventManager().Events().ToABCIEvents(),
-	}, nil
+	return nil
+}
+
+func (am AppModule) NegotiateAppVersion(ctx sdk.Context, order channeltypes.Order, connectionID string, portID string, counterparty channeltypes.Counterparty, proposedVersion string) (version string, err error) {
+	panic("implement me")
 }
