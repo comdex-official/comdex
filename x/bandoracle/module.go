@@ -3,6 +3,8 @@ package bandoracle
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/comdex-official/comdex/x/oracle/expected"
+
 	// this line is used by starport scaffolding # 1
 
 	"github.com/gorilla/mux"
@@ -19,7 +21,7 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	porttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
+	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
 )
 
 var (
@@ -103,6 +105,9 @@ type AppModule struct {
 	keeper        keeper.Keeper
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
+	scopedKeeper  expected.ScopedKeeper
+	portKeeper    expected.PortKeeper
+	channelKeeper expected.ChannelKeeper
 }
 
 func NewAppModule(
@@ -110,12 +115,18 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	scopedKeeper expected.ScopedKeeper,
+	portKeeper expected.PortKeeper,
+	channelKeeper expected.ChannelKeeper,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
+		scopedKeeper:   scopedKeeper,
+		portKeeper:     portKeeper,
+		channelKeeper:  channelKeeper,
 	}
 }
 

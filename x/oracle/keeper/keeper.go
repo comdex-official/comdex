@@ -13,22 +13,17 @@ type Keeper struct {
 	cdc         codec.BinaryCodec
 	key         sdk.StoreKey
 	params      paramstypes.Subspace
-	channel     expected.ChannelKeeper
-	port        expected.PortKeeper
 	scoped      expected.ScopedKeeper
 	assetKeeper assetkeeper.Keeper
 	bandoraclekeeper expected.BandOracleKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, channel expected.ChannelKeeper,
-	port expected.PortKeeper, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper, bandoraclekeeper expected.BandOracleKeeper) *Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper, bandoraclekeeper expected.BandOracleKeeper) *Keeper {
 
 	return &Keeper{
 		cdc:         cdc,
 		key:         key,
 		params:      params,
-		channel:     channel,
-		port:        port,
 		scoped:      scoped,
 		assetKeeper: assetKeeper,
 		bandoraclekeeper: bandoraclekeeper,

@@ -15,6 +15,8 @@ LD_FLAGS := -s -w \
 BUILD_FLAGS += -ldflags "${LD_FLAGS}" -tags "${BUILD_TAGS}"
 
 GOBIN = $(shell go env GOPATH)/bin
+GOARCH = $(shell go env GOARCH)
+GOOS = $(shell go env GOOS)
 
 .PHONY: benchmark
 benchmark:
@@ -42,6 +44,14 @@ else
 	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex ./node
 endif
 
+release: build
+	mkdir -p release
+ifeq (${OS},Windows_NT)
+	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=build/${GOOS}/${GOARCH} comdex.exe
+else
+	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=build/${GOOS}/${GOARCH} comdex
+endif
+
 .PHONY: go-lint
 go-lint:
 	@golangci-lint run --fix
@@ -49,7 +59,7 @@ go-lint:
 .PHONY: mod-vendor
 mod-vendor: tools
 	@go mod vendor
-	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto,github.com/cosmos/ibc-go/proto
+	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto,github.com/cosmos/ibc-go/v2/proto
 
 .PHONY: proto-gen
 proto-gen:

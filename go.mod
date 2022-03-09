@@ -3,9 +3,10 @@ module github.com/comdex-official/comdex
 go 1.16
 
 require (
+	github.com/CosmWasm/wasmd v0.23.0
 	github.com/bandprotocol/bandchain-packet v0.0.2
 	github.com/cosmos/cosmos-sdk v0.45.1
-	github.com/cosmos/ibc-go v1.2.2
+	github.com/cosmos/ibc-go/v2 v2.0.2
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
@@ -14,14 +15,14 @@ require (
 	github.com/gravity-devs/liquidity v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
-	github.com/osmosis-labs/osmosis/v7 v7.0.3 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/prometheus/client_golang v1.12.1
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/swag v1.7.4
-	github.com/tendermint/spm v0.1.9
+	github.com/tendermint/spm v0.1.9 // indirect
 	github.com/tendermint/tendermint v0.34.15
 	github.com/tendermint/tm-db v0.6.6
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
