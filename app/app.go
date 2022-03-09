@@ -130,7 +130,7 @@ var (
 			distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler,
 			upgradeclient.CancelProposalHandler,
-			assetclient.UpdatePoolIncentivesHandler,
+			assetclient.AddAsssetHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
