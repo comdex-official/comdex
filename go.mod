@@ -6,7 +6,7 @@ require (
 	github.com/CosmWasm/wasmd v0.22.0
 	github.com/bandprotocol/bandchain-packet v0.0.2
 	github.com/cosmos/cosmos-sdk v0.45.1
-	github.com/cosmos/ibc-go v1.2.2
+	github.com/cosmos/ibc-go v1.2.2 // indirect
 	github.com/cosmos/ibc-go/v2 v2.0.2
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gogo/protobuf v1.3.3

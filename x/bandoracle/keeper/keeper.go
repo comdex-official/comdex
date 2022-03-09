@@ -17,13 +17,15 @@ import (
 
 type (
 	Keeper struct {
-		*ibckeeper.Keeper
-		cdc         codec.BinaryCodec
-		storeKey    sdk.StoreKey
-		memKey      sdk.StoreKey
-		paramstore  paramtypes.Subspace
-		oracle      expected.OracleKeeper
-		assetKeeper assetkeeper.Keeper
+		cdc           codec.BinaryCodec
+		storeKey      sdk.StoreKey
+		memKey        sdk.StoreKey
+		paramstore    paramtypes.Subspace
+		oracle        expected.OracleKeeper
+		assetKeeper   assetkeeper.Keeper
+		channelKeeper expected.ChannelKeeper
+		portKeeper    expected.PortKeeper
+		scopedKeeper  ibckeeper.ScopedKeeper
 	}
 )
 
@@ -32,32 +34,28 @@ func NewKeeper(
 	storeKey,
 	memKey sdk.StoreKey,
 	ps paramtypes.Subspace,
-	channelKeeper ibckeeper.ChannelKeeper,
-	portKeeper ibckeeper.PortKeeper,
+	channelKeeper expected.ChannelKeeper,
+	portKeeper expected.PortKeeper,
 	scopedKeeper ibckeeper.ScopedKeeper,
 	oracle expected.OracleKeeper,
 	assetKeeper assetkeeper.Keeper,
 
-) *Keeper {
+) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
 
-	return &Keeper{
-		Keeper: ibckeeper.NewKeeper(
-			types.PortKey,
-			storeKey,
-			channelKeeper,
-			portKeeper,
-			scopedKeeper,
-		),
-		cdc:         cdc,
-		storeKey:    storeKey,
-		memKey:      memKey,
-		paramstore:  ps,
-		oracle:      oracle,
-		assetKeeper: assetKeeper,
+	return Keeper{
+		cdc:           cdc,
+		storeKey:      storeKey,
+		memKey:        memKey,
+		paramstore:    ps,
+		oracle:        oracle,
+		assetKeeper:   assetKeeper,
+		channelKeeper: channelKeeper,
+		portKeeper:    portKeeper,
+		scopedKeeper:  scopedKeeper,
 	}
 }
 
