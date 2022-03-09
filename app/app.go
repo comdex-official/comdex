@@ -253,7 +253,7 @@ func New(
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey,
 			oracletypes.StoreKey, bandoraclemoduletypes.StoreKey, liquidationtypes.StoreKey,
-			auctiontypes.StoreKey, assettypes.StoreKey, wasm.StoreKey,
+			auctiontypes.StoreKey, wasm.StoreKey,
 		)
 	)
 
@@ -616,7 +616,7 @@ func New(
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, paramstypes.ModuleName,
 		oracletypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
-		assettypes.ModuleName, banktypes.ModuleName,
+		assettypes.ModuleName, banktypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
