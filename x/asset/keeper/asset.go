@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -148,6 +149,8 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 }
 
 func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error {
+
+	fmt.Println("reached")
 	/*recordsMap := make(map[uint64]types.Asset)
 	totalWeight := sdk.NewInt(0)
 
@@ -176,7 +179,7 @@ func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error 
 		TotalWeight: totalWeight,
 	})*/
 
-	//fmt.Println(k.GetAssets(ctx))
+	fmt.Println(k.GetAssets(ctx))
 
 	return nil
 }

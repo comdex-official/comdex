@@ -416,7 +416,7 @@ func New(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
-		AddRoute(assettypes.RouterKey, asset.NewUpdateLiquidationRatioProposalHandler(app.assetKeeper))
+		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.assetKeeper))
 
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,
