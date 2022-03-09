@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/bandprotocol/bandchain-packet/obi"
@@ -105,25 +106,30 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	return &types.MsgFetchPriceDataResponse{}, nil
 }
 
-func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) {
+func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context) {
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.MsgdataKey
-		value = k.cdc.MustMarshal(
-			&types.MsgFetchPriceData{
-				Creator:        msg.Creator,
-				OracleScriptID: msg.OracleScriptID,
-				SourceChannel:  msg.SourceChannel,
-				Calldata:       msg.Calldata,
-				AskCount:       msg.AskCount,
-				MinCount:       msg.MinCount,
-				FeeLimit:       msg.FeeLimit,
-				RequestKey:     msg.RequestKey,
-				PrepareGas:     msg.PrepareGas,
-				ExecuteGas:     msg.ExecuteGas,
-				ClientID:       msg.ClientID,
-			},
+		params = k.GetParams(ctx)
+
+		OracleScriptId, _ = strconv.ParseUint(params.OracleScriptId, 10, 64)
+		AskCount, _       = strconv.ParseUint(params.AskCount, 10, 64)
+		MinCount, _       = strconv.ParseUint(params.MinCount, 10, 64)
+		PrepareGas, _     = strconv.ParseUint(params.PrepareGas, 10, 64)
+		ExecuteGas, _     = strconv.ParseUint(params.ExecuteGas, 10, 64)
+
+		msg = types.NewMsgFetchPriceData(
+			types.ModuleName,
+			types.OracleScriptID(OracleScriptId),
+			params.SourceChannel,
+			nil,
+			AskCount,
+			MinCount,
+			params.FeeLimit,
+			PrepareGas,
+			ExecuteGas,
 		)
+		value = k.cdc.MustMarshal(msg)
 	)
 
 	store.Set(key, value)
