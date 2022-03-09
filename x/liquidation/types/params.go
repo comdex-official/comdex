@@ -63,7 +63,7 @@ func ValidateUnliquidatePointPercent(i interface{}) error {
 	}
 	   q,_:=sdk.NewDecFromStr(v)
 	   u,_:=sdk.NewDecFromStr("1")
-	if q.LTE(u) {
+	if q.LT(u) {
 		return fmt.Errorf("Unliquidate Point Percentage cannot be less than 100 percent")
 	}
 

@@ -101,3 +101,9 @@ func queryParams() *cobra.Command {
 
 	return cmd
 }
+
+
+//Query All Locked Vaults history
+// Query Locked Vaults History - User Wise
+//Query Locked Vaults Collateral wise
+//Query Locked Vaults cAssetWise
