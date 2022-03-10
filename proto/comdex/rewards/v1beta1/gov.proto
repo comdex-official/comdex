@@ -8,7 +8,7 @@ option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message NewMintRewards {
+message NewMintRewardsProposal {
   string title       = 1 [ (gogoproto.moretags) = "yaml:\"title\"" ];
   string description = 2 [ (gogoproto.moretags) = "yaml:\"description\"" ];
   MintingRewards mint_rewards = 3 [ (gogoproto.moretags) = "yaml:\"mint_rewards\"" ];

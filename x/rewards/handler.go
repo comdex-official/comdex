@@ -7,6 +7,7 @@ import (
 	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 // NewHandler ...
@@ -23,4 +24,19 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 		}
 	}
+}
+
+func NewRewardsProposalHandler(k keeper.Keeper) govtypes.Handler {
+	return func(ctx sdk.Context, content govtypes.Content) error {
+		switch c := content.(type) {
+		case *types.NewMintRewardsProposal:
+			return handleNewMintRewardsProposal(ctx, k, c)
+		default:
+			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized Minting rewards proposal content type: %T", c)
+		}
+	}
+}
+
+func handleNewMintRewardsProposal(ctx sdk.Context, k keeper.Keeper, p *types.NewMintRewardsProposal) error {
+	return k.HandleNewMintRewardsProposal(ctx, p)
 }

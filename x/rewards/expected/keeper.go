@@ -8,6 +8,7 @@ import (
 
 type AccountKeeper interface {
 	GetModuleAccount(ctx sdk.Context, name string) authtypes.ModuleAccountI
+	GetModuleAddress(name string) sdk.AccAddress
 }
 
 type BankKeeper interface {

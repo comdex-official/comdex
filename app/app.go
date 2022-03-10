@@ -103,6 +103,7 @@ import (
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 
 	"github.com/comdex-official/comdex/x/rewards"
+	rewardsclient "github.com/comdex-official/comdex/x/rewards/client"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
@@ -132,6 +133,7 @@ var (
 			distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler,
 			upgradeclient.CancelProposalHandler,
+			rewardsclient.AddNewMintingRewardsHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -398,7 +400,8 @@ func New(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
+		AddRoute(rewardstypes.RouterKey, rewards.NewRewardsProposalHandler(app.rewardsKeeper))
 
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,
@@ -783,5 +786,6 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		auctiontypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		rewardstypes.ModuleName:        nil,
 	}
 }
