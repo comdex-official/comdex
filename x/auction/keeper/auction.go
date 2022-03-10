@@ -11,141 +11,6 @@ import (
 	protobuftypes "github.com/gogo/protobuf/types"
 )
 
-func (k Keeper) CreateNewAuctions(ctx sdk.Context) {
-	locked_vaults := k.GetLockedVaults(ctx)
-	for _, locked_vault := range locked_vaults {
-		pair, found := k.GetPair(ctx, locked_vault.PairId)
-		if !found {
-			continue
-		}
-		assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-		if !found {
-			continue
-		}
-
-		assetOut, found := k.GetAsset(ctx, pair.AssetOut)
-		if !found {
-			continue
-		}
-		collateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, locked_vault.AmountIn, assetIn, locked_vault.AmountOut, assetOut)
-		if err != nil {
-			continue
-		}
-		if sdk.Dec.LT(collateralizationRatio, pair.LiquidationRatio) && !locked_vault.IsAuctionInProgress {
-			k.StartCollateralAuction(ctx, locked_vault, pair, assetIn, assetOut)
-		}
-	}
-}
-
-func (k Keeper) CloseAuctions(ctx sdk.Context) {
-	collateral_auctions := k.GetCollateralAuctions(ctx)
-	for _, collateral_auction := range collateral_auctions {
-		if ctx.BlockTime().After(collateral_auction.EndTime) {
-			k.CloseCollateralAuction(ctx, collateral_auction)
-		}
-	}
-}
-
-func (k Keeper) StartCollateralAuction(
-	ctx sdk.Context,
-	locked_vault liquidationtypes.LockedVault,
-	pair assettypes.Pair,
-	assetIn assettypes.Asset,
-	assetOut assettypes.Asset,
-) error {
-
-	assetInPrice, found := k.GetPriceForAsset(ctx, pair.AssetIn)
-	if !found {
-		return assettypes.ErrorAssetDoesNotExist
-	}
-
-	assetOutPrice, found := k.GetPriceForAsset(ctx, pair.AssetOut)
-	if !found {
-		return assettypes.ErrorAssetDoesNotExist
-	}
-
-	liquidatedQuantity := sdk.NewDec(locked_vault.CollateralToBeAuctioned.Quo(sdk.NewDec(int64(assetInPrice))).RoundInt64())
-	penaltyQuantity := liquidatedQuantity.Sub(liquidatedQuantity.Mul(sdk.NewDec(85).Quo(sdk.NewDec(100)))).RoundInt64()
-	DiscountedQuantity := liquidatedQuantity.Sub(liquidatedQuantity.Mul(sdk.NewDec(95).Quo(sdk.NewDec(100)))).RoundInt64()
-	AuctioningQuantity := liquidatedQuantity.Sub(sdk.NewDec(int64(penaltyQuantity + DiscountedQuantity))).RoundInt64()
-
-	minBid := sdk.NewDec(AuctioningQuantity * int64(assetInPrice)).Quo(sdk.NewDec(int64(assetOutPrice))).Ceil().RoundInt()
-	maxBid := sdk.NewDec((AuctioningQuantity + DiscountedQuantity) * int64(assetInPrice)).Quo(sdk.NewDec(int64(assetOutPrice))).Ceil().RoundInt()
-
-	auction := auctiontypes.CollateralAuction{
-		LockedVaultId:       locked_vault.LockedVaultId,
-		AuctionedCollateral: sdk.NewCoin(assetIn.Denom, sdk.NewInt(AuctioningQuantity)),
-		DiscountQuantity:    sdk.NewCoin(assetIn.Denom, sdk.NewInt(DiscountedQuantity)),
-		ActiveBiddingId:     0,
-		Bidder:              nil,
-		Bid:                 sdk.NewCoin(assetOut.Denom, sdk.NewInt(0)),
-		MinBid:              sdk.NewCoin(assetOut.Denom, minBid),
-		MaxBid:              sdk.NewCoin(assetOut.Denom, maxBid),
-		EndTime:             ctx.BlockTime().Add(time.Hour * 6),
-		Pair:                pair,
-		BiddingIds:          []uint64{},
-	}
-	auction.Id = k.GetCollateralAuctionID(ctx) + 1
-	k.SetCollateralAuctionID(ctx, auction.Id)
-	k.SetCollateralAuction(ctx, auction)
-	k.SetFlagIsAuctionInProgress(ctx, locked_vault.LockedVaultId, true)
-	return nil
-}
-
-func (k Keeper) CloseCollateralAuction(
-	ctx sdk.Context,
-	collateral_auction auctiontypes.CollateralAuction,
-) error {
-
-	if collateral_auction.Bidder != nil {
-
-		assetIn, found := k.GetAsset(ctx, collateral_auction.Pair.AssetIn)
-		if !found {
-			return assettypes.ErrorAssetDoesNotExist
-		}
-		assetOut, found := k.GetAsset(ctx, collateral_auction.Pair.AssetOut)
-		if !found {
-			return assettypes.ErrorAssetDoesNotExist
-		}
-
-		assetInPrice, found := k.GetPriceForAsset(ctx, collateral_auction.Pair.AssetIn)
-		if !found {
-			return assettypes.ErrorAssetDoesNotExist
-		}
-
-		assetOutPrice, found := k.GetPriceForAsset(ctx, collateral_auction.Pair.AssetOut)
-		if !found {
-			return assettypes.ErrorAssetDoesNotExist
-		}
-
-		highestBidReceived := collateral_auction.Bid
-		collateralQuantity := sdk.NewDec(highestBidReceived.Amount.Int64()).Mul(sdk.NewDec(int64(assetOutPrice))).Quo(sdk.NewDec(int64(assetInPrice))).RoundInt64()
-
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, vaulttypes.ModuleName, collateral_auction.Bidder, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, sdk.NewInt(collateralQuantity))))
-		if err != nil {
-			return err
-		}
-		bidding, _ := k.GetBidding(ctx, collateral_auction.ActiveBiddingId)
-		bidding.BiddingStatus = auctiontypes.SuccessBiddingStatus
-		k.SetBidding(ctx, bidding)
-		k.BurnCoin(ctx, vaulttypes.ModuleName, highestBidReceived)
-		k.UpdateAssetQuantitiesInLockedVault(ctx, collateral_auction, sdk.NewInt(collateralQuantity), assetIn, highestBidReceived.Amount, assetOut)
-
-		for _, biddingId := range collateral_auction.BiddingIds {
-			bidding, found := k.GetBidding(ctx, biddingId)
-			if !found {
-				continue
-			}
-			bidding.AuctionStatus = auctiontypes.ClosedAuctionStatus
-			k.SetBidding(ctx, bidding)
-		}
-	}
-	k.SetFlagIsAuctionComplete(ctx, collateral_auction.LockedVaultId, true)
-	k.SetFlagIsAuctionInProgress(ctx, collateral_auction.LockedVaultId, false)
-	k.DeleteCollateralAuction(ctx, collateral_auction.Id)
-	return nil
-}
-
 func (k *Keeper) GetCollateralAuctionID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
@@ -239,39 +104,10 @@ func (k *Keeper) GetBiddingID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) GetUserBiddingID(ctx sdk.Context) uint64 {
-	var (
-		store = k.Store(ctx)
-		key   = auctiontypes.UserBiddingsIdKey
-		value = store.Get(key)
-	)
-	if value == nil {
-		return 0
-	}
-	var id protobuftypes.UInt64Value
-	k.cdc.MustUnmarshal(value, &id)
-
-	return id.GetValue()
-}
-
 func (k *Keeper) SetBiddingID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.BiddingsIdKey
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: id,
-			},
-		)
-	)
-
-	store.Set(key, value)
-}
-
-func (k *Keeper) SetUserBiddingID(ctx sdk.Context, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = auctiontypes.UserBiddingsIdKey
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -287,15 +123,6 @@ func (k *Keeper) SetBidding(ctx sdk.Context, bidding auctiontypes.Biddings) {
 		store = k.Store(ctx)
 		key   = auctiontypes.BiddingsKey(bidding.Id)
 		value = k.cdc.MustMarshal(&bidding)
-	)
-	store.Set(key, value)
-}
-
-func (k *Keeper) SetUserBidding(ctx sdk.Context, userBiddings auctiontypes.UserBiddings) {
-	var (
-		store = k.Store(ctx)
-		key   = auctiontypes.UserBiddingsKey(userBiddings.Bidder)
-		value = k.cdc.MustMarshal(&userBiddings)
 	)
 	store.Set(key, value)
 }
@@ -332,6 +159,44 @@ func (k *Keeper) GetBiddings(ctx sdk.Context) (biddings []auctiontypes.Biddings)
 	return biddings
 }
 
+func (k *Keeper) GetUserBiddingID(ctx sdk.Context) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.UserBiddingsIdKey
+		value = store.Get(key)
+	)
+	if value == nil {
+		return 0
+	}
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}
+
+func (k *Keeper) SetUserBiddingID(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.UserBiddingsIdKey
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) SetUserBidding(ctx sdk.Context, userBiddings auctiontypes.UserBiddings) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.UserBiddingsKey(userBiddings.Bidder)
+		value = k.cdc.MustMarshal(&userBiddings)
+	)
+	store.Set(key, value)
+}
+
 func (k *Keeper) GetUserBiddings(ctx sdk.Context, bidder string) (userBiddings auctiontypes.UserBiddings, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -345,6 +210,132 @@ func (k *Keeper) GetUserBiddings(ctx sdk.Context, bidder string) (userBiddings a
 
 	k.cdc.MustUnmarshal(value, &userBiddings)
 	return userBiddings, true
+}
+
+func (k Keeper) CreateNewAuctions(ctx sdk.Context) {
+	locked_vaults := k.GetLockedVaults(ctx)
+	for _, locked_vault := range locked_vaults {
+		pair, found := k.GetPair(ctx, locked_vault.PairId)
+		if !found {
+			continue
+		}
+		assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+		if !found {
+			continue
+		}
+
+		assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+		if !found {
+			continue
+		}
+		collateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, locked_vault.AmountIn, assetIn, locked_vault.AmountOut, assetOut)
+		if err != nil {
+			continue
+		}
+		if sdk.Dec.LT(collateralizationRatio, pair.LiquidationRatio) && !locked_vault.IsAuctionInProgress {
+			k.StartCollateralAuction(ctx, locked_vault, pair, assetIn, assetOut)
+		}
+	}
+}
+
+func (k Keeper) CloseAuctions(ctx sdk.Context) {
+	collateral_auctions := k.GetCollateralAuctions(ctx)
+	for _, collateral_auction := range collateral_auctions {
+		if ctx.BlockTime().After(collateral_auction.EndTime) {
+			k.CloseCollateralAuction(ctx, collateral_auction)
+		}
+	}
+}
+
+func (k Keeper) StartCollateralAuction(
+	ctx sdk.Context,
+	locked_vault liquidationtypes.LockedVault,
+	pair assettypes.Pair,
+	assetIn assettypes.Asset,
+	assetOut assettypes.Asset,
+) error {
+
+	assetInPrice, found := k.GetPriceForAsset(ctx, pair.AssetIn)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
+	}
+
+	assetOutPrice, found := k.GetPriceForAsset(ctx, pair.AssetOut)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
+	}
+
+	liquidatedQuantity := sdk.NewDec(locked_vault.CollateralToBeAuctioned.Quo(sdk.NewDec(int64(assetInPrice))).RoundInt64())
+	penaltyQuantity := liquidatedQuantity.Sub(liquidatedQuantity.Mul(sdk.NewDec(85).Quo(sdk.NewDec(100)))).RoundInt64()
+	DiscountedQuantity := liquidatedQuantity.Sub(liquidatedQuantity.Mul(sdk.NewDec(95).Quo(sdk.NewDec(100)))).RoundInt64()
+	AuctioningQuantity := liquidatedQuantity.Sub(sdk.NewDec(int64(penaltyQuantity + DiscountedQuantity))).RoundInt64()
+
+	minBid := sdk.NewDec(AuctioningQuantity * int64(assetInPrice)).Quo(sdk.NewDec(int64(assetOutPrice))).Ceil().RoundInt()
+	maxBid := sdk.NewDec((AuctioningQuantity + DiscountedQuantity) * int64(assetInPrice)).Quo(sdk.NewDec(int64(assetOutPrice))).Ceil().RoundInt()
+
+	auction := auctiontypes.CollateralAuction{
+		LockedVaultId:       locked_vault.LockedVaultId,
+		AuctionedCollateral: sdk.NewCoin(assetIn.Denom, sdk.NewInt(AuctioningQuantity)),
+		DiscountQuantity:    sdk.NewCoin(assetIn.Denom, sdk.NewInt(DiscountedQuantity)),
+		ActiveBiddingId:     0,
+		Bidder:              nil,
+		Bid:                 sdk.NewCoin(assetOut.Denom, sdk.NewInt(0)),
+		MinBid:              sdk.NewCoin(assetOut.Denom, minBid),
+		MaxBid:              sdk.NewCoin(assetOut.Denom, maxBid),
+		EndTime:             ctx.BlockTime().Add(time.Hour * 6),
+		Pair:                pair,
+		BiddingIds:          []uint64{},
+	}
+	auction.Id = k.GetCollateralAuctionID(ctx) + 1
+	k.SetCollateralAuctionID(ctx, auction.Id)
+	k.SetCollateralAuction(ctx, auction)
+	k.SetFlagIsAuctionInProgress(ctx, locked_vault.LockedVaultId, true)
+	return nil
+}
+
+func (k Keeper) CloseCollateralAuction(
+	ctx sdk.Context,
+	collateral_auction auctiontypes.CollateralAuction,
+) error {
+
+	if collateral_auction.Bidder != nil && collateral_auction.Bid.Amount.GTE(collateral_auction.MinBid.Amount) {
+
+		assetIn, found := k.GetAsset(ctx, collateral_auction.Pair.AssetIn)
+		if !found {
+			return assettypes.ErrorAssetDoesNotExist
+		}
+		assetOut, found := k.GetAsset(ctx, collateral_auction.Pair.AssetOut)
+		if !found {
+			return assettypes.ErrorAssetDoesNotExist
+		}
+
+		highestBidReceived := collateral_auction.Bid
+
+		collateralQuantity := collateral_auction.AuctionedCollateral.Amount.Add(collateral_auction.DiscountQuantity.Amount)
+
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, vaulttypes.ModuleName, collateral_auction.Bidder, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, collateralQuantity)))
+		if err != nil {
+			return err
+		}
+		bidding, _ := k.GetBidding(ctx, collateral_auction.ActiveBiddingId)
+		bidding.BiddingStatus = auctiontypes.SuccessBiddingStatus
+		k.SetBidding(ctx, bidding)
+		k.BurnCoin(ctx, liquidationtypes.ModuleName, highestBidReceived)
+		k.UpdateAssetQuantitiesInLockedVault(ctx, collateral_auction, collateralQuantity, assetIn, highestBidReceived.Amount, assetOut)
+
+		for _, biddingId := range collateral_auction.BiddingIds {
+			bidding, found := k.GetBidding(ctx, biddingId)
+			if !found {
+				continue
+			}
+			bidding.AuctionStatus = auctiontypes.ClosedAuctionStatus
+			k.SetBidding(ctx, bidding)
+		}
+	}
+	k.SetFlagIsAuctionComplete(ctx, collateral_auction.LockedVaultId, true)
+	k.SetFlagIsAuctionInProgress(ctx, collateral_auction.LockedVaultId, false)
+	k.DeleteCollateralAuction(ctx, collateral_auction.Id)
+	return nil
 }
 
 func (k Keeper) CreateNewBid(ctx sdk.Context, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin) (biddingId uint64, err error) {
@@ -404,6 +395,7 @@ func (k Keeper) PlaceBid(ctx sdk.Context, auctionId uint64, bidder sdk.AccAddres
 	if err != nil {
 		return err
 	}
+	// auction.Bidder as previous bidder
 	err = k.bank.SendCoinsFromModuleToAccount(ctx, liquidationtypes.ModuleName, auction.Bidder, sdk.NewCoins(auction.Bid))
 	if err != nil {
 		return err

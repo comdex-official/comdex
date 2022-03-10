@@ -1,12 +1,11 @@
 package asset
 
 import (
+	"github.com/comdex-official/comdex/x/asset/keeper"
+	"github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
-	"github.com/comdex-official/comdex/x/asset/keeper"
-	"github.com/comdex-official/comdex/x/asset/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
@@ -34,13 +33,17 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 	}
 }
 
-func NewProposalHandler(k keeper.Keeper) govtypes.Handler {
+func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
-		case *types.UpdateAdminProposal:
-			return k.HandleUpdateAdminProposal(ctx, c)
+		case *types.AddAssetsProposal:
+			return handleUpdateAssetProposal(ctx, k, c)
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}
 	}
+}
+
+func handleUpdateAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetsProposal) error {
+	return k.HandleProposalAddAsset(ctx, p)
 }

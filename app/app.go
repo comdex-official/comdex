@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	authvestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 
@@ -90,6 +92,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	"github.com/comdex-official/comdex/x/asset"
+	assetclient "github.com/comdex-official/comdex/x/asset/client"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/auction"
@@ -133,10 +136,13 @@ var (
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler,
-			distrclient.ProposalHandler,
-			upgradeclient.ProposalHandler,
-			upgradeclient.CancelProposalHandler,
+			append(
+				assetclient.AddAsssetHandler,
+				paramsclient.ProposalHandler,
+				distrclient.ProposalHandler,
+				upgradeclient.ProposalHandler,
+				upgradeclient.CancelProposalHandler,
+			)...,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -409,7 +415,8 @@ func New(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
+		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.assetKeeper))
 
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,
@@ -645,9 +652,11 @@ func New(
 		oracletypes.ModuleName,
 		liquidationtypes.ModuleName,
 		auctiontypes.ModuleName,
+		paramstypes.ModuleName,
+		authvestingtypes.ModuleName,
+		upgradetypes.ModuleName,
 		wasmtypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(),
-		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
 	)
 

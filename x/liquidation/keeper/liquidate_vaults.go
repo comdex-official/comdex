@@ -47,24 +47,23 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 
 	lockedVaultId := k.GetLockedVaultID(ctx)
 
-	var (
-		value = types.LockedVault{
-			LockedVaultId:                lockedVaultId,
-			OriginalVaultId:              vault.ID,
-			PairId:                       vault.PairID,
-			Owner:                        vault.Owner,
-			AmountIn:                     vault.AmountIn,
-			AmountOut:                    vault.AmountOut,
-			Initiator:                    types.ModuleName,
-			IsAuctionComplete:            false,
-			IsAuctionInProgress:          false,
-			CrAtLiquidation:              collateralizationRatio,
-			CurrentCollaterlisationRatio: collateralizationRatio,
-			CollateralToBeAuctioned:      nil,
-			LiquidationTimestamp:         time.Time{},
-			SellOffHistory:               nil,
-		}
-	)
+	var value = types.LockedVault{
+		LockedVaultId:                lockedVaultId,
+		OriginalVaultId:              vault.ID,
+		PairId:                       vault.PairID,
+		Owner:                        vault.Owner,
+		AmountIn:                     vault.AmountIn,
+		AmountOut:                    vault.AmountOut,
+		Initiator:                    types.ModuleName,
+		IsAuctionComplete:            false,
+		IsAuctionInProgress:          false,
+		CrAtLiquidation:              collateralizationRatio,
+		CurrentCollaterlisationRatio: collateralizationRatio,
+		CollateralToBeAuctioned:      nil,
+		LiquidationTimestamp:         time.Time{},
+		SellOffHistory:               nil,
+	}
+
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, lockedVaultId+1)
 
@@ -72,14 +71,14 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 	//Set nil for all the values not available right now
 	//New function will loop over locked vaults to set all values so that they can be auctioned, seperately
 	//Auction will then use the selloff amount set by lockedvault function to update params .
-	//Unliquidate will take place after all the vents trigger.
+	//Unliquidate will take place after all the events trigger.
 
 	//
 	return nil
 
 }
 
-//for first time to update the coollateralization value & sell off amount
+//for first time to update the collateralization value & sell off amount
 //and if auction is complete and cr is less than 1.6
 func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 	lockedVaults := k.GetLockedVaults(ctx)
@@ -87,9 +86,16 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 		return nil
 	}
 	for _, lockedVault := range lockedVaults {
-		v, _ := sdk.NewDecFromStr("1.6")
+		//Should come From Params :1#
 
-		if (!lockedVault.IsAuctionInProgress && !lockedVault.IsAuctionComplete) || (lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.LTE(v)) {
+		unliquidatePointPercentage, _ := sdk.NewDecFromStr(types.DefaultUnliquidatePointPercent)
+		// auctionDiscount,_:=sdk.NewDecFromStr(auctiontypes.DefaultAuctionDiscountPercent)
+		// liquidationPenalty,_:=sdk.NewDecFromStr(auctiontypes.DefaultLiquidationPaneltyPercent)
+		//To be updated with the above 2 variables, below params are only for testing purposes
+		auctionDiscount, _ := sdk.NewDecFromStr("0.05")
+		liquidationPenanlty, _ := sdk.NewDecFromStr("0.15")
+
+		if (!lockedVault.IsAuctionInProgress && !lockedVault.IsAuctionComplete) || (lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.LTE(unliquidatePointPercentage)) {
 			pair, found := k.GetPair(ctx, lockedVault.PairId)
 			if !found {
 				continue
@@ -106,46 +112,36 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 			if err != nil {
 				continue
 			}
-			//lockedVault.CurrentCollaterlisationRatio = collateralizationRatio
-
+			//Asset Price in Dollar Terms to find how how much is to be auctioned
 			assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
 			assetOutPrice, _ := k.GetPriceForAsset(ctx, assetOut.Id)
 
 			totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
 			totalOut := lockedVault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
+			//Selloff Collateral Calculation
+			//Assuming that the collateral to be sold is 1 unit, so finding out how much is going to be deducted from the
+			//collateral which will account as repaying the user's debt
+			deductionPercentage, _ := sdk.NewDecFromStr("1.0")
+			auctionDeduction := (deductionPercentage).Sub(auctionDiscount.Add(liquidationPenanlty))
+			multiplicationFactor := auctionDeduction.Mul(unliquidatePointPercentage)
+			asssetOutMultiplicationFactor := totalOut.Mul(unliquidatePointPercentage)
+			assetsDifference := totalIn.Sub(asssetOutMultiplicationFactor)
+			//Substracting again from 1 unit to find the selloff multiplication factor
+			selloffMultiplicationFactor := deductionPercentage.Sub(multiplicationFactor)
+			selloffAmount := assetsDifference.Quo(selloffMultiplicationFactor)
 
-			var selloffAmount sdk.Dec
 			var collateralToBeAuctioned sdk.Dec
-			var unliquidatePoint, dividingFactor sdk.Dec
-			unliquidatePoint, _ = sdk.NewDecFromStr("1.6")
-			dividingFactor, _ = sdk.NewDecFromStr("0.28")
-			assetOutatLiquidatePoint := totalOut.Mul(unliquidatePoint)
-			collateralIn := totalIn
-			assetsDifference := assetOutatLiquidatePoint.Sub(collateralIn)
-			selloffAmount = (assetsDifference).Quo(dividingFactor)
+
 			if selloffAmount.GTE(totalIn) {
 				collateralToBeAuctioned = totalIn
 			} else {
 
 				collateralToBeAuctioned = selloffAmount
 			}
-			updatedLockedVault := types.LockedVault{
-				LockedVaultId:                lockedVault.LockedVaultId,
-				OriginalVaultId:              lockedVault.OriginalVaultId,
-				PairId:                       lockedVault.PairId,
-				Owner:                        lockedVault.Owner,
-				AmountIn:                     lockedVault.AmountIn,
-				AmountOut:                    lockedVault.AmountOut,
-				Initiator:                    lockedVault.Initiator,
-				IsAuctionComplete:            lockedVault.IsAuctionComplete,
-				IsAuctionInProgress:          lockedVault.IsAuctionInProgress,
-				CrAtLiquidation:              lockedVault.CrAtLiquidation,
-				CurrentCollaterlisationRatio: collateralizationRatio,
-				CollateralToBeAuctioned:      &collateralToBeAuctioned,
-				LiquidationTimestamp:         lockedVault.LiquidationTimestamp,
-				SellOffHistory:               lockedVault.SellOffHistory,
-			}
-
+			var updatedLockedVault types.LockedVault
+			updatedLockedVault = lockedVault
+			updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
+			updatedLockedVault.CollateralToBeAuctioned = &collateralToBeAuctioned
 			k.SetLockedVault(ctx, updatedLockedVault)
 
 		}
@@ -160,34 +156,69 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 		return nil
 	}
 	for _, lockedVault := range lockedVaults {
-		v, _ := sdk.NewDecFromStr("1.6")
-		//also calculate the current collaterlization ration to ensure there is no sudden changes
-		if lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.GTE(v) {
 
-			var (
-				id    = k.GetVaultID(ctx)
-				vault = vaulttypes.Vault{
-					ID:        id + 1,
-					PairID:    lockedVault.PairId,
-					Owner:     lockedVault.Owner,
-					AmountIn:  lockedVault.AmountIn,
-					AmountOut: lockedVault.AmountOut,
-				}
-			)
-			k.SetVaultID(ctx, vault.ID)
-			k.SetVault(ctx, vault)
+		if lockedVault.IsAuctionComplete {
+			//also calculate the current collaterlization ration to ensure there is no sudden changes
+			unliquidatePointPercentage, _ := sdk.NewDecFromStr(types.DefaultUnliquidatePointPercent)
 			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
 			if err != nil {
 				return err
 			}
-			k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
 
-			k.SetVaultForAddressByPair(ctx, userAddress, lockedVault.PairId, vault.ID)
-			//Save Locked vault historical data in a store
-			//Set Auctioned historical in a store seperately
-			k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+			if lockedVault.AmountOut.IsZero() {
+				k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
+				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+				continue
+			}
+
+			pair, found := k.GetPair(ctx, lockedVault.PairId)
+			if !found {
+				continue
+			}
+			assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+			if !found {
+				continue
+			}
+			assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+			if !found {
+				continue
+			}
+			newCalculatedCollateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.AmountOut, assetOut)
+			if err != nil {
+				continue
+			}
+			if newCalculatedCollateralizationRatio.LTE(unliquidatePointPercentage){
+			var updatedLockedVault types.LockedVault
+				updatedLockedVault = lockedVault
+				updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
+				k.SetLockedVault(ctx, updatedLockedVault)
+				continue
+
+			}
+			if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
+
+				k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
+
+				var (
+					id    = k.GetVaultID(ctx)
+					vault = vaulttypes.Vault{
+						ID:        id + 1,
+						PairID:    lockedVault.PairId,
+						Owner:     lockedVault.Owner,
+						AmountIn:  lockedVault.AmountIn,
+						AmountOut: lockedVault.AmountOut,
+					}
+				)
+
+				k.SetVaultID(ctx, id+1)
+				k.SetVault(ctx, vault)
+				k.SetVaultForAddressByPair(ctx, userAddress, lockedVault.PairId, vault.ID)
+				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+				//======================================NOTE TO BE CHANGED================================================
+				//One important thing that we missed is that we need to pop and append the current vault as per the user
+				//IF all the borrowed amount is repayed , then we need to ensure the unliquidate vault is not called for that particular lockedvault- his vault is automatically closed.
+			}
 		}
-
 	}
 
 	return nil

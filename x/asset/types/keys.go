@@ -20,6 +20,8 @@ var (
 	PairKeyPrefix     = []byte{0x14}
 
 	AssetForDenomKeyPrefix  = []byte{0x21}
+
+	RecordKey = []byte{0x22}
 )
 
 func AssetKey(id uint64) []byte {
