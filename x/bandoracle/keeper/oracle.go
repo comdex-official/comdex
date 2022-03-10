@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/bandprotocol/bandchain-packet/obi"
@@ -9,9 +10,9 @@ import (
 	"github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
-	host "github.com/cosmos/ibc-go/modules/core/24-host"
+	clienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
+	host "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	gogotypes "github.com/gogo/protobuf/types"
 )
 
@@ -51,7 +52,7 @@ func (k Keeper) SetLastFetchPriceID(ctx sdk.Context, id types.OracleRequestID) {
 func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types.MsgFetchPriceDataResponse, error) {
 
 	sourcePort := types.PortID
-	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, sourcePort, msg.SourceChannel)
+	sourceChannelEnd, found := k.channelKeeper.GetChannel(ctx, sourcePort, msg.SourceChannel)
 	if !found {
 		return nil, nil
 	}
@@ -59,12 +60,12 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	destinationChannel := sourceChannelEnd.GetCounterparty().GetChannelID()
 
 	// get the next sequence
-	sequence, found := k.ChannelKeeper.GetNextSequenceSend(ctx, sourcePort, msg.SourceChannel)
+	sequence, found := k.channelKeeper.GetNextSequenceSend(ctx, sourcePort, msg.SourceChannel)
 	if !found {
 		return nil, nil
 	}
 
-	channelCap, ok := k.ScopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(sourcePort, msg.SourceChannel))
+	channelCap, ok := k.scopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(sourcePort, msg.SourceChannel))
 	if !ok {
 		return nil, nil
 	}
@@ -73,10 +74,11 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	assets := k.GetAssets(ctx)
 	fmt.Println(assets)
 	for _, asset := range assets {
-		symbol = append(symbol,asset.Name)
+		symbol = append(symbol, asset.Name)
 	}
 
 	encodedCalldata := obi.MustEncode(types.FetchPriceCallData{symbol, 1000000})
+
 	packetData := packet.NewOracleRequestPacketData(
 		msg.ClientID,
 		msg.OracleScriptID,
@@ -87,7 +89,7 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 		msg.PrepareGas,
 		msg.ExecuteGas,
 	)
-	err := k.ChannelKeeper.SendPacket(ctx, channelCap, channeltypes.NewPacket(
+	err := k.channelKeeper.SendPacket(ctx, channelCap, channeltypes.NewPacket(
 		packetData.GetBytes(),
 		sequence,
 		sourcePort,
@@ -104,25 +106,30 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	return &types.MsgFetchPriceDataResponse{}, nil
 }
 
-func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) {
+func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context) {
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.MsgdataKey
-		value = k.cdc.MustMarshal(
-			&types.MsgFetchPriceData{
-				Creator:        msg.Creator,
-				OracleScriptID: msg.OracleScriptID,
-				SourceChannel:  msg.SourceChannel,
-				Calldata:       msg.Calldata,
-				AskCount:       msg.AskCount,
-				MinCount:       msg.MinCount,
-				FeeLimit:       msg.FeeLimit,
-				RequestKey:     msg.RequestKey,
-				PrepareGas:     msg.PrepareGas,
-				ExecuteGas:     msg.ExecuteGas,
-				ClientID:       msg.ClientID,
-			},
+		params = k.GetParams(ctx)
+
+		OracleScriptId, _ = strconv.ParseUint(params.OracleScriptId, 10, 64)
+		AskCount, _       = strconv.ParseUint(params.AskCount, 10, 64)
+		MinCount, _       = strconv.ParseUint(params.MinCount, 10, 64)
+		PrepareGas, _     = strconv.ParseUint(params.PrepareGas, 10, 64)
+		ExecuteGas, _     = strconv.ParseUint(params.ExecuteGas, 10, 64)
+
+		msg = types.NewMsgFetchPriceData(
+			types.ModuleName,
+			types.OracleScriptID(OracleScriptId),
+			params.SourceChannel,
+			nil,
+			AskCount,
+			MinCount,
+			params.FeeLimit,
+			PrepareGas,
+			ExecuteGas,
 		)
+		value = k.cdc.MustMarshal(msg)
 	)
 
 	store.Set(key, value)

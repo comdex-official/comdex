@@ -23,9 +23,6 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 
 func (k *msgServer) MsgRemoveMarketForAsset(c context.Context, msg *types.MsgRemoveMarketForAssetRequest) (*types.MsgRemoveMarketForAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.assetKeeper.Admin(ctx) {
-		return nil, types.ErrorUnauthorized
-	}
 
 	if !k.HasMarketForAsset(ctx, msg.Id) {
 		return nil, types.ErrorMarketForAssetDoesNotExist
@@ -37,9 +34,6 @@ func (k *msgServer) MsgRemoveMarketForAsset(c context.Context, msg *types.MsgRem
 
 func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketRequest) (*types.MsgAddMarketResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.assetKeeper.Admin(ctx) {
-		return nil, types.ErrorUnauthorized
-	}
 	if !k.HasAsset(ctx, msg.Id){
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -64,9 +58,6 @@ func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketReque
 
 func (k *msgServer) MsgUpdateMarket(c context.Context, msg *types.MsgUpdateMarketRequest) (*types.MsgUpdateMarketResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.assetKeeper.Admin(ctx) {
-		return nil, types.ErrorUnauthorized
-	}
 
 	market, found := k.GetMarket(ctx, msg.Symbol)
 	if !found {
