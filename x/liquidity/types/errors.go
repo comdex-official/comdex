@@ -47,4 +47,6 @@ var (
 	ErrDepletedPool                 = sdkerrors.Register(ModuleName, 39, "the pool is depleted of reserve coin, reinitializing is required by deposit")
 	ErrCircuitBreakerEnabled        = sdkerrors.Register(ModuleName, 40, "circuit breaker is triggered")
 	ErrOverflowAmount               = sdkerrors.Register(ModuleName, 41, "invalid amount that can cause overflow")
+	ErrInvalidUserAddress           = sdkerrors.Register(ModuleName, 42, "invalid user address for Bonding Tokens")
+
 )

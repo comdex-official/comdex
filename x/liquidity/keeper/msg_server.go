@@ -165,3 +165,25 @@ func (k msgServer) Swap(goCtx context.Context, msg *types.MsgSwapWithinBatch) (*
 
 	return &types.MsgSwapWithinBatchResponse{}, nil
 }
+
+
+func (k msgServer) BondPoolTokens(goCtx context.Context, msg *types.MsgBondPoolTokens) (*types.MsgBondPoolTokensResponse,error){
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if k.GetCircuitBreakerEnabled(ctx) {
+		return nil, types.ErrCircuitBreakerEnabled
+	}
+
+
+	return &types.MsgBondPoolTokensResponse{},nil
+}
+func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondPoolTokens) (*types.MsgUnbondPoolTokensResponse,error){
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if k.GetCircuitBreakerEnabled(ctx) {
+		return nil, types.ErrCircuitBreakerEnabled
+	}
+
+
+	return &types.MsgUnbondPoolTokensResponse{},nil
+}

@@ -14,6 +14,9 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgDepositWithinBatch{}, "liquidity/MsgDepositWithinBatch", nil)
 	cdc.RegisterConcrete(&MsgWithdrawWithinBatch{}, "liquidity/MsgWithdrawWithinBatch", nil)
 	cdc.RegisterConcrete(&MsgSwapWithinBatch{}, "liquidity/MsgSwapWithinBatch", nil)
+	cdc.RegisterConcrete(&MsgBondPoolTokens{}, "liquidity/MsgBondPoolTokens", nil)
+	cdc.RegisterConcrete(&MsgUnbondPoolTokens{}, "liquidity/MsgUnbondPoolTokens", nil)
+
 }
 
 // RegisterInterfaces registers the x/liquidity interface types with the
@@ -24,6 +27,8 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&MsgDepositWithinBatch{},
 		&MsgWithdrawWithinBatch{},
 		&MsgSwapWithinBatch{},
+		&MsgBondPoolTokens{},
+		&MsgUnbondPoolTokens{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

@@ -33,6 +33,8 @@ func GetTxCmd() *cobra.Command {
 		NewDepositWithinBatchCmd(),
 		NewWithdrawWithinBatchCmd(),
 		NewSwapWithinBatchCmd(),
+		NewBondPoolTokens(),
+		NewUnbondPoolTokens(),
 	)
 
 	return liquidityTxCmd
@@ -322,6 +324,123 @@ The only supported swap-type is 1. For the detailed swap algorithm, see https://
 			}
 
 			msg := types.NewMsgSwapWithinBatch(swapRequester, poolID, uint32(swapTypeID), offerCoin, args[3], orderPrice, swapFeeRate)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewBondPoolTokens() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "bond [pool-id] [pool-coin]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Bond pool coin from the specified liquidity pool",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Bond pool coin from the specified liquidity pool.
+
+
+Example:
+$ %s tx %s bond 1 10000pool96EF6EA6E5AC828ED87E8D07E7AE2A8180570ADD212117B2DA6F0B75D17A6295 --from mykey
+
+This example request bonds 10000 pool coin from the specified liquidity pool.
+The appropriate pool coin must be requested from the specified pool.
+
+[pool-id]: The pool id of the liquidity pool
+[pool-coin]: The amount of pool coin to bond from the liquidity pool
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			userAddress := clientCtx.GetFromAddress()
+
+			// Get pool type index
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("pool-id %s not a valid uint, input a valid unsigned 32-bit integer for pool-id", args[0])
+			}
+
+			// Get pool coin of the target pool
+			poolCoin, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			err = poolCoin.Validate()
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgBondPoolTokens(userAddress, poolID, poolCoin)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+func NewUnbondPoolTokens() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "unbond [pool-id] [pool-coin]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Unbond pool coin from the specified liquidity pool",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Unbond pool coin from the specified liquidity pool.
+
+
+Example:
+$ %s tx %s unbond 1 10000pool96EF6EA6E5AC828ED87E8D07E7AE2A8180570ADD212117B2DA6F0B75D17A6295 --from mykey
+
+This example request unbonds 10000 pool coin from the specified liquidity pool.
+The appropriate pool coin must be requested from the specified pool.
+
+[pool-id]: The pool id of the liquidity pool
+[pool-coin]: The amount of pool coin to unbond from the liquidity pool
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			userAddress := clientCtx.GetFromAddress()
+
+			// Get pool type index
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("pool-id %s not a valid uint, input a valid unsigned 32-bit integer for pool-id", args[0])
+			}
+
+			// Get pool coin of the target pool
+			poolCoin, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			err = poolCoin.Validate()
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgUnbondPoolTokens(userAddress, poolID, poolCoin)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

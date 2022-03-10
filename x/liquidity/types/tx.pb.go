@@ -122,8 +122,7 @@ var xxx_messageInfo_MsgCreatePoolResponse proto.InternalMessageInfo
 type MsgDepositWithinBatch struct {
 	DepositorAddress string `protobuf:"bytes,1,opt,name=depositor_address,json=depositorAddress,proto3" json:"depositor_address,omitempty" yaml:"depositor_address"`
 	// id of the target pool
-	PoolId uint64 `protobuf:"varint,2,opt,name=pool_id,json=poolId,proto3" json:"pool_id" yaml:"pool_id"`
-	// reserve coin pair of the pool to deposit
+	PoolId       uint64                                   `protobuf:"varint,2,opt,name=pool_id,json=poolId,proto3" json:"pool_id" yaml:"pool_id"`
 	DepositCoins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=deposit_coins,json=depositCoins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"deposit_coins" yaml:"deposit_coins"`
 }
 
