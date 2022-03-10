@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -151,34 +152,6 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error {
 
 	fmt.Println("reached")
-	/*recordsMap := make(map[uint64]types.Asset)
-	totalWeight := sdk.NewInt(0)
-
-	for _, record := range records {
-		if val, ok := recordsMap[record.GaugeId]; ok {
-			totalWeight = totalWeight.Sub(val.Weight)
-			recordsMap[record.GaugeId] = record
-			totalWeight = totalWeight.Add(record.Weight)
-		} else {
-			recordsMap[record.GaugeId] = record
-			totalWeight = totalWeight.Add(record.Weight)
-		}
-	}
-
-	newRecords := []types.Asset{}
-
-	for _, val := range recordsMap {
-		if !val.Weight.Equal(sdk.ZeroInt()) {
-			newRecords = append(newRecords, val)
-		}
-	}
-
-
-	k.MsgAddAsset(ctx, types.DistrInfo{
-		Records:     newRecords,
-		TotalWeight: totalWeight,
-	})*/
-
 	fmt.Println(k.GetAssets(ctx))
 
 	return nil
