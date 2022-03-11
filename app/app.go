@@ -137,7 +137,7 @@ var (
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
 			append(
-				assetclient.AddAsssetHandler,
+				assetclient.AddAssetHandler,
 				paramsclient.ProposalHandler,
 				distrclient.ProposalHandler,
 				upgradeclient.ProposalHandler,

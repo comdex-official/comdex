@@ -152,6 +152,7 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error {
 
 	fmt.Println("reached")
+	fmt.Println("reached")
 	fmt.Println(k.GetAssets(ctx))
 
 	return nil

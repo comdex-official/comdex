@@ -596,6 +596,8 @@ github.com/gotestyourself/gotestyourself v2.2.0+incompatible/go.mod h1:zZKM6oeNM
 github.com/graph-gophers/graphql-go v0.0.0-20191115155744-f33e81362277/go.mod h1:9CQHMSxwO4MprSdzoIEobiHpoLtHm77vfxsvsIN5Vuc=
 github.com/gravity-devs/liquidity v1.4.0 h1:v61DU8YooC84jS8NQ2YVwgq9wIwYFMpFA4h15yrXlig=
 github.com/gravity-devs/liquidity v1.4.0/go.mod h1:jNsP6O6PS8ROvpP65p25mLmtW/z8J4rbgO5YTEKVYHk=
+github.com/gravity-devs/liquidity v1.5.0 h1:QOMLCOBrvp6FYUDMbBPJ+K3Oi9UF/q74c1cp48SsCRs=
+github.com/gravity-devs/liquidity v1.5.0/go.mod h1:67P0tk9OThjyIdXlIkxtBzCN+gTqNVc02uqLcrd7dT0=
 github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79/go.mod h1:FecbI9+v66THATjSRHfNgh1IVFe/9kFxbXtjV0ctIMA=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.0/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=

@@ -25,10 +25,29 @@ func NewUpdateLiquidationRatioProposal(title, description string, assets []Asset
 	}
 }
 
+func (p *AddAssetsProposal) GetTitle() string { return p.Title }
+
+func (p *AddAssetsProposal) GetDescription() string { return p.Description }
+
 func (p *AddAssetsProposal) ProposalRoute() string { return RouterKey }
 
 func (p *AddAssetsProposal) ProposalType() string { return ProposalAddAsset }
 
 func (p *AddAssetsProposal) ValidateBasic() error {
+
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
+	}
+	if len(p.Assets) == 0 {
+		return ErrorEmptyProposalAssets
+	}
+
+	for _, asset := range p.Assets {
+		if err := asset.Validate(); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

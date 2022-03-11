@@ -62,20 +62,6 @@ func (m *AddAssetsProposal) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_AddAssetsProposal proto.InternalMessageInfo
 
-func (m *AddAssetsProposal) GetTitle() string {
-	if m != nil {
-		return m.Title
-	}
-	return ""
-}
-
-func (m *AddAssetsProposal) GetDescription() string {
-	if m != nil {
-		return m.Description
-	}
-	return ""
-}
-
 func (m *AddAssetsProposal) GetAssets() []Asset {
 	if m != nil {
 		return m.Assets
