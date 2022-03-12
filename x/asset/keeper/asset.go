@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -150,10 +148,23 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 }
 
 func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error {
+	for _ , msg := range records {
 
-	fmt.Println("reached")
-	fmt.Println("reached")
-	fmt.Println(k.GetAssets(ctx))
+		var (
+			id    = k.GetAssetID(ctx)
+			asset = types.Asset{
+				Id:       id + 1,
+				Name:     msg.Name,
+				Denom:    msg.Denom,
+				Decimals: msg.Decimals,
+			}
+		)
+
+		k.SetAssetID(ctx, asset.Id)
+		k.SetAsset(ctx, asset)
+		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+
+	}
 
 	return nil
 }
