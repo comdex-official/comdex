@@ -146,3 +146,25 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 
 	return k.oracle.GetPriceForMarket(ctx, market.Symbol)
 }
+
+func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error {
+	for _, msg := range records {
+
+		var (
+			id    = k.GetAssetID(ctx)
+			asset = types.Asset{
+				Id:       id + 1,
+				Name:     msg.Name,
+				Denom:    msg.Denom,
+				Decimals: msg.Decimals,
+			}
+		)
+
+		k.SetAssetID(ctx, asset.Id)
+		k.SetAsset(ctx, asset)
+		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+
+	}
+
+	return nil
+}

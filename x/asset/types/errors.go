@@ -14,10 +14,10 @@ var (
 )
 
 var (
-	ErrorAssetDoesNotExist          = errors.Register(ModuleName, 201, "asset does not exist")
-	ErrorDuplicateAsset             = errors.Register(ModuleName, 202, "duplicate asset")
-	ErrorPairDoesNotExist           = errors.Register(ModuleName, 203, "pair does not exist")
-	ErrorUnauthorized               = errors.Register(ModuleName, 204, "unauthorized")
+	ErrorAssetDoesNotExist = errors.Register(ModuleName, 201, "asset does not exist")
+	ErrorDuplicateAsset    = errors.Register(ModuleName, 202, "duplicate asset")
+	ErrorPairDoesNotExist  = errors.Register(ModuleName, 203, "pair does not exist")
+	ErrorUnauthorized      = errors.Register(ModuleName, 204, "unauthorized")
 )
 
 var (
@@ -26,4 +26,5 @@ var (
 
 var (
 	ErrorUnknownProposalType = errors.Register(ModuleName, 401, "unknown proposal type")
+	ErrorEmptyProposalAssets = errors.Register(ModuleName, 402, "empty assets in proposal")
 )

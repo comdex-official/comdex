@@ -8,5 +8,5 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Params {
-  string admin  = 1 [ (gogoproto.moretags) = "yaml:\"admin\"" ];
+  string liquidation_ratio = 1;
 }
