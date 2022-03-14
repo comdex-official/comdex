@@ -38,9 +38,13 @@ For further information on joining the testnet, head over to the
 
 The explorer for this chain is hosted [TestNet Explorer](https://comets-test.comdex.one/)
 
+Latest testnet version - [0.1.0](https://github.com/comdex-official/comdex/releases/tag/v0.1.0)
+
 ## MainNet
 For further information on joining the mainnet, head over to the
 [Comdex Networks MainNet](https://github.com/comdex-official/networks/tree/main/mainnet).
+
+Latest Mainnet verion - [0.1.1](https://github.com/comdex-official/comdex/releases/tag/v0.1.1)
 
 ## Mainet Explorers 
 The explorer for this chain is hosted
