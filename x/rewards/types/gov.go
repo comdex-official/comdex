@@ -16,7 +16,7 @@ func init() {
 
 var _ govtypes.Content = &NewMintRewardsProposal{}
 
-func AddNewMintRewardsProposal(
+func AddNewMintRewardsProposalContent(
 	title,
 	description string,
 	collateralDenom string,

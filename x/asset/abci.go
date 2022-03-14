@@ -6,8 +6,4 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
-	/*a := k.GetRecord(ctx)
-	fmt.Println("printing a", a)
-	fmt.Println(a)*/
-}
+func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {}

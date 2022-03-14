@@ -25,7 +25,7 @@ type AddNewMintingRewardsRequest struct {
 	DurationDays    uint64       `json:"duration_days" yaml:"duration_days"`
 }
 
-func ProposalAddNewMintingRewardsRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+func AddNewMintingRewardsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-new-mint-rewards",
 		Handler:  AddNewMintingRewardsRESTHandler(clientCtx),
@@ -50,7 +50,7 @@ func AddNewMintingRewardsRESTHandler(clientCtx client.Context) http.HandlerFunc 
 			return
 		}
 
-		content := types.AddNewMintRewardsProposal(
+		content := types.AddNewMintRewardsProposalContent(
 			req.Title,
 			req.Description,
 			req.CollateralDenom,

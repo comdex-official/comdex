@@ -72,7 +72,6 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 
 	var symbol []string
 	assets := k.GetAssets(ctx)
-	fmt.Println(assets)
 	for _, asset := range assets {
 		symbol = append(symbol, asset.Name)
 	}
@@ -108,8 +107,8 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 
 func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context) {
 	var (
-		store = ctx.KVStore(k.storeKey)
-		key   = types.MsgdataKey
+		store  = ctx.KVStore(k.storeKey)
+		key    = types.MsgdataKey
 		params = k.GetParams(ctx)
 
 		OracleScriptId, _ = strconv.ParseUint(params.OracleScriptId, 10, 64)

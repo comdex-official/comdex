@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -14,7 +13,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func AddNewMintingRewardsProposal() *cobra.Command {
+func AddNewMintingRewardsProposalCLIHandler() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-new-mint-rewards [collateral-denom] [casset-denoms] [total-rewards] [casset-maxcap] [duration-days]",
 		Short: "add new mint rewards",
@@ -76,7 +75,7 @@ func AddNewMintingRewardsProposal() *cobra.Command {
 				return err
 			}
 
-			content := types.AddNewMintRewardsProposal(
+			content := types.AddNewMintRewardsProposalContent(
 				title,
 				description,
 				collateralDenom,
@@ -85,7 +84,6 @@ func AddNewMintingRewardsProposal() *cobra.Command {
 				cAssetMaxcap,
 				durationDays,
 			)
-			fmt.Println("content.....", content)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {

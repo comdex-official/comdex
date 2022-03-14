@@ -6,4 +6,4 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 )
 
-var AddNewMintingRewardsHandler = govclient.NewProposalHandler(cli.AddNewMintingRewardsProposal, rest.ProposalAddNewMintingRewardsRESTHandler)
+var AddNewMintingRewardsHandler = govclient.NewProposalHandler(cli.AddNewMintingRewardsProposalCLIHandler, rest.AddNewMintingRewardsProposalRESTHandler)

@@ -1,11 +1,12 @@
 package app
 
 import (
-	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
 	"io"
 	"os"
 	"path/filepath"
+
+	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
 
 	authvestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 
@@ -641,7 +642,7 @@ func New(
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, paramstypes.ModuleName,
 		oracletypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
-		assettypes.ModuleName, banktypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName,
+		assettypes.ModuleName, banktypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, rewardstypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
