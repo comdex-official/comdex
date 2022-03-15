@@ -10,12 +10,18 @@ import (
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&AddAssetsProposal{}, "comdex/AddAssetsProposal", nil)
+	cdc.RegisterConcrete(&UpdateAssetProposal{}, "comdex/UpdateAssetProposal", nil)
+	cdc.RegisterConcrete(&AddPairsProposal{}, "comdex/AddPairsProposal", nil)
+	cdc.RegisterConcrete(&UpdatePairProposal{}, "comdex/UpdatePairProposal", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
 		&AddAssetsProposal{},
+		&UpdateAssetProposal{},
+		&AddPairsProposal{},
+		&UpdatePairProposal{},
 	)
 
 	registry.RegisterImplementations(

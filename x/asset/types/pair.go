@@ -5,7 +5,7 @@ import (
 )
 
 func (m *Pair) Validate() error {
-	if m.Id == 0 {
+	/*if m.Id == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
 	if m.AssetIn == 0 {
@@ -13,7 +13,7 @@ func (m *Pair) Validate() error {
 	}
 	if m.AssetOut == 0 {
 		return fmt.Errorf("asset_out cannot be zero")
-	}
+	}*/
 	if m.LiquidationRatio.IsNil() {
 		return fmt.Errorf("liquidation_ratio cannot be nil")
 	}

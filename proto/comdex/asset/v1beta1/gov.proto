@@ -3,11 +3,30 @@ package comdex.asset.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "comdex/asset/v1beta1/asset.proto";
+import "comdex/asset/v1beta1/pair.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
 
 message AddAssetsProposal {
-  string title = 1;
-  string description = 2;
-  repeated Asset assets = 3 [ (gogoproto.nullable) = false ];
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated Asset assets = 3 [(gogoproto.nullable) = false];
+}
+
+message UpdateAssetProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  Asset asset = 3 [(gogoproto.nullable) = false];
+}
+
+message AddPairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated Pair pairs = 3 [(gogoproto.nullable) = false];
+}
+
+message UpdatePairProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  Pair pair = 3 [(gogoproto.nullable) = false];
 }

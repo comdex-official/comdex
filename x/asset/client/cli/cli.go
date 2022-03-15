@@ -34,13 +34,7 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(
-		txAddAsset(),
-		txUpdateAsset(),
-		txAddPair(),
-		txUpdatePair(),
-		NewCmdSubmitAddAssetsProposal(),
-	)
+	cmd.AddCommand()
 
 	return cmd
 }
