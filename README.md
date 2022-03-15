@@ -7,7 +7,7 @@
 <h4> An ecosystem of solutions built with an aim of bridging DeFi & CeFi </h4>
 </div>
 
-Comdex is a decentralized synthetics protocol of the Persistence ecosystem.
+Comdex is a decentralized synthetics protocol built on Cosmos.
 Users can collateralize their holdings from the Cosmos ecosystem to take exposure to a range of synthetic assets.
 Comdex builds solutions to democratize finance by giving investors exposure to a large range of asset classes.
 
