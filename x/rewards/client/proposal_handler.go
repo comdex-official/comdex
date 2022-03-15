@@ -7,3 +7,4 @@ import (
 )
 
 var AddNewMintingRewardsHandler = govclient.NewProposalHandler(cli.AddNewMintingRewardsProposalCLIHandler, rest.AddNewMintingRewardsProposalRESTHandler)
+var DisableMintingRewardsHandler = govclient.NewProposalHandler(cli.DisableMintingRewardsProposalCLIHandler, rest.DisableMintingRewardsProposalRESTHandler)

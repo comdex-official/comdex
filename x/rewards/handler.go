@@ -29,6 +29,8 @@ func NewRewardsProposalHandler(k keeper.Keeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *types.NewMintRewardsProposal:
 			return handleNewMintRewardsProposal(ctx, k, c)
+		case *types.DisbaleMintRewardsProposal:
+			return handleDisableMintRewardsProposal(ctx, k, c)
 		default:
 			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized Minting rewards proposal content type: %T", c)
 		}
@@ -37,4 +39,8 @@ func NewRewardsProposalHandler(k keeper.Keeper) govtypes.Handler {
 
 func handleNewMintRewardsProposal(ctx sdk.Context, k keeper.Keeper, p *types.NewMintRewardsProposal) error {
 	return k.HandleNewMintRewardsProposal(ctx, p)
+}
+
+func handleDisableMintRewardsProposal(ctx sdk.Context, k keeper.Keeper, p *types.DisbaleMintRewardsProposal) error {
+	return k.HandleDisableMintRewardsProposal(ctx, p)
 }

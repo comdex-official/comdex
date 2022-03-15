@@ -148,6 +148,7 @@ var (
 				upgradeclient.ProposalHandler,
 				upgradeclient.CancelProposalHandler,
 				rewardsclient.AddNewMintingRewardsHandler,
+				rewardsclient.DisableMintingRewardsHandler,
 			)...,
 		),
 		params.AppModuleBasic{},
@@ -505,6 +506,7 @@ func New(
 		keys[rewardstypes.StoreKey],
 		keys[rewardstypes.MemStoreKey],
 		app.GetSubspace(rewardstypes.ModuleName),
+		app.bankKeeper,
 		&app.assetKeeper,
 	)
 

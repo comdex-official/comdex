@@ -62,14 +62,54 @@ func (m *NewMintRewardsProposal) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_NewMintRewardsProposal proto.InternalMessageInfo
 
+type DisbaleMintRewardsProposal struct {
+	Title        string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
+	Description  string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
+	MintRewardId uint64 `protobuf:"varint,3,opt,name=mint_reward_id,json=mintRewardId,proto3" json:"mint_reward_id,omitempty" yaml:"mint_reward_id"`
+}
+
+func (m *DisbaleMintRewardsProposal) Reset()         { *m = DisbaleMintRewardsProposal{} }
+func (m *DisbaleMintRewardsProposal) String() string { return proto.CompactTextString(m) }
+func (*DisbaleMintRewardsProposal) ProtoMessage()    {}
+func (*DisbaleMintRewardsProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_67590e1cf8f0fbab, []int{1}
+}
+func (m *DisbaleMintRewardsProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DisbaleMintRewardsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DisbaleMintRewardsProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DisbaleMintRewardsProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DisbaleMintRewardsProposal.Merge(m, src)
+}
+func (m *DisbaleMintRewardsProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *DisbaleMintRewardsProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_DisbaleMintRewardsProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DisbaleMintRewardsProposal proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*NewMintRewardsProposal)(nil), "comdex.rewards.v1beta1.NewMintRewardsProposal")
+	proto.RegisterType((*DisbaleMintRewardsProposal)(nil), "comdex.rewards.v1beta1.DisbaleMintRewardsProposal")
 }
 
 func init() { proto.RegisterFile("comdex/rewards/v1beta1/gov.proto", fileDescriptor_67590e1cf8f0fbab) }
 
 var fileDescriptor_67590e1cf8f0fbab = []byte{
-	// 299 bytes of a gzipped FileDescriptorProto
+	// 346 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x48, 0xce, 0xcf, 0x4d,
 	0x49, 0xad, 0xd0, 0x2f, 0x4a, 0x2d, 0x4f, 0x2c, 0x4a, 0x29, 0xd6, 0x2f, 0x33, 0x4c, 0x4a, 0x2d,
 	0x49, 0x34, 0xd4, 0x4f, 0xcf, 0x2f, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x83, 0xa8,
@@ -83,12 +123,15 @@ var fileDescriptor_67590e1cf8f0fbab = []byte{
 	0x52, 0x10, 0xb2, 0x52, 0xa1, 0x24, 0x2e, 0x9e, 0xdc, 0xcc, 0xbc, 0x92, 0x78, 0xa8, 0x93, 0x24,
 	0x98, 0x15, 0x18, 0x35, 0xb8, 0x8d, 0xd4, 0xf4, 0xb0, 0xfb, 0x53, 0x0f, 0xe4, 0xc8, 0xcc, 0xbc,
 	0x74, 0xa8, 0x3b, 0x9d, 0xc4, 0x3f, 0xdd, 0x93, 0x17, 0x86, 0x58, 0x81, 0x6c, 0x8a, 0x52, 0x10,
-	0x77, 0x2e, 0xc2, 0x37, 0x4e, 0xc1, 0x27, 0x1e, 0xca, 0x31, 0xac, 0x78, 0x24, 0xc7, 0x70, 0xe2,
-	0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70,
-	0xe1, 0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72, 0x0c, 0x51, 0x86, 0xe9, 0x99, 0x25, 0x19, 0xa5, 0x49,
-	0x20, 0x5b, 0xf5, 0x21, 0x36, 0xeb, 0xe6, 0xa7, 0xa5, 0x65, 0x26, 0x67, 0x26, 0xe6, 0x40, 0xf9,
-	0xfa, 0x88, 0x50, 0x2c, 0xa9, 0x2c, 0x48, 0x2d, 0x4e, 0x62, 0x03, 0x07, 0x9e, 0x31, 0x20, 0x00,
-	0x00, 0xff, 0xff, 0x8a, 0xd3, 0x0d, 0xc7, 0xb4, 0x01, 0x00, 0x00,
+	0x77, 0x2e, 0xc2, 0x37, 0x4a, 0xfb, 0x19, 0xb9, 0xa4, 0x5c, 0x32, 0x8b, 0x93, 0x12, 0x73, 0x52,
+	0x07, 0xc6, 0x93, 0xf6, 0x5c, 0x7c, 0x48, 0xce, 0x8b, 0xcf, 0x4c, 0x01, 0x7b, 0x93, 0xc5, 0x49,
+	0xf2, 0xd3, 0x3d, 0x79, 0x51, 0x0c, 0xe7, 0xc7, 0x67, 0xa6, 0x28, 0x05, 0xf1, 0x20, 0x3c, 0xe0,
+	0x99, 0xe2, 0x14, 0x7c, 0xe2, 0xa1, 0x1c, 0xc3, 0x8a, 0x47, 0x72, 0x0c, 0x27, 0x1e, 0xc9, 0x31,
+	0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x84, 0xc7, 0x72, 0x0c, 0x17, 0x1e, 0xcb,
+	0x31, 0xdc, 0x78, 0x2c, 0xc7, 0x10, 0x65, 0x98, 0x9e, 0x59, 0x92, 0x51, 0x9a, 0x04, 0x0a, 0x37,
+	0x7d, 0x48, 0xd8, 0xe9, 0xe6, 0xa7, 0xa5, 0x65, 0x26, 0x67, 0x26, 0xe6, 0x40, 0xf9, 0xfa, 0x88,
+	0x74, 0x50, 0x52, 0x59, 0x90, 0x5a, 0x9c, 0xc4, 0x06, 0x8e, 0x7e, 0x63, 0x40, 0x00, 0x00, 0x00,
+	0xff, 0xff, 0x72, 0x71, 0x72, 0x3c, 0x76, 0x02, 0x00, 0x00,
 }
 
 func (m *NewMintRewardsProposal) Marshal() (dAtA []byte, err error) {
@@ -140,6 +183,48 @@ func (m *NewMintRewardsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
+func (m *DisbaleMintRewardsProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DisbaleMintRewardsProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DisbaleMintRewardsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.MintRewardId != 0 {
+		i = encodeVarintGov(dAtA, i, uint64(m.MintRewardId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintGov(dAtA []byte, offset int, v uint64) int {
 	offset -= sovGov(v)
 	base := offset
@@ -168,6 +253,26 @@ func (m *NewMintRewardsProposal) Size() (n int) {
 	if m.MintRewards != nil {
 		l = m.MintRewards.Size()
 		n += 1 + l + sovGov(uint64(l))
+	}
+	return n
+}
+
+func (m *DisbaleMintRewardsProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	if m.MintRewardId != 0 {
+		n += 1 + sovGov(uint64(m.MintRewardId))
 	}
 	return n
 }
@@ -307,6 +412,139 @@ func (m *NewMintRewardsProposal) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGov(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGov
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DisbaleMintRewardsProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGov
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DisbaleMintRewardsProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DisbaleMintRewardsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MintRewardId", wireType)
+			}
+			m.MintRewardId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MintRewardId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGov(dAtA[iNdEx:])

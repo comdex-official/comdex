@@ -6,16 +6,25 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
+	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
+	io "io"
 	math "math"
+	math_bits "math/bits"
+	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -23,20 +32,196 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type MsgDepositMintingRewardAmountRequest struct {
+	MintingRewardId uint64    `protobuf:"varint,1,opt,name=minting_reward_id,json=mintingRewardId,proto3" json:"minting_reward_id,omitempty"`
+	StartTimestamp  time.Time `protobuf:"bytes,2,opt,name=start_timestamp,json=startTimestamp,proto3,stdtime" json:"start_timestamp" yaml:"start_timestamp"`
+	From            string    `protobuf:"bytes,3,opt,name=from,proto3" json:"from,omitempty"`
+}
+
+func (m *MsgDepositMintingRewardAmountRequest) Reset()         { *m = MsgDepositMintingRewardAmountRequest{} }
+func (m *MsgDepositMintingRewardAmountRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgDepositMintingRewardAmountRequest) ProtoMessage()    {}
+func (*MsgDepositMintingRewardAmountRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b7586e0f456d0ddd, []int{0}
+}
+func (m *MsgDepositMintingRewardAmountRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDepositMintingRewardAmountRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDepositMintingRewardAmountRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDepositMintingRewardAmountRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDepositMintingRewardAmountRequest.Merge(m, src)
+}
+func (m *MsgDepositMintingRewardAmountRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDepositMintingRewardAmountRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDepositMintingRewardAmountRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDepositMintingRewardAmountRequest proto.InternalMessageInfo
+
+type MsgDepositMintingRewardAmountResponse struct {
+}
+
+func (m *MsgDepositMintingRewardAmountResponse) Reset()         { *m = MsgDepositMintingRewardAmountResponse{} }
+func (m *MsgDepositMintingRewardAmountResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDepositMintingRewardAmountResponse) ProtoMessage()    {}
+func (*MsgDepositMintingRewardAmountResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b7586e0f456d0ddd, []int{1}
+}
+func (m *MsgDepositMintingRewardAmountResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDepositMintingRewardAmountResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDepositMintingRewardAmountResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDepositMintingRewardAmountResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDepositMintingRewardAmountResponse.Merge(m, src)
+}
+func (m *MsgDepositMintingRewardAmountResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDepositMintingRewardAmountResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDepositMintingRewardAmountResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDepositMintingRewardAmountResponse proto.InternalMessageInfo
+
+type MsgUpdateMintRewardStartTimeRequest struct {
+	MintingRewardId   uint64    `protobuf:"varint,1,opt,name=minting_reward_id,json=mintingRewardId,proto3" json:"minting_reward_id,omitempty"`
+	NewStartTimestamp time.Time `protobuf:"bytes,2,opt,name=new_start_timestamp,json=newStartTimestamp,proto3,stdtime" json:"new_start_timestamp" yaml:"new_start_timestamp"`
+	From              string    `protobuf:"bytes,3,opt,name=from,proto3" json:"from,omitempty"`
+}
+
+func (m *MsgUpdateMintRewardStartTimeRequest) Reset()         { *m = MsgUpdateMintRewardStartTimeRequest{} }
+func (m *MsgUpdateMintRewardStartTimeRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateMintRewardStartTimeRequest) ProtoMessage()    {}
+func (*MsgUpdateMintRewardStartTimeRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b7586e0f456d0ddd, []int{2}
+}
+func (m *MsgUpdateMintRewardStartTimeRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateMintRewardStartTimeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateMintRewardStartTimeRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateMintRewardStartTimeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateMintRewardStartTimeRequest.Merge(m, src)
+}
+func (m *MsgUpdateMintRewardStartTimeRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateMintRewardStartTimeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateMintRewardStartTimeRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateMintRewardStartTimeRequest proto.InternalMessageInfo
+
+type MsgUpdateMintRewardStartTimeResponse struct {
+}
+
+func (m *MsgUpdateMintRewardStartTimeResponse) Reset()         { *m = MsgUpdateMintRewardStartTimeResponse{} }
+func (m *MsgUpdateMintRewardStartTimeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateMintRewardStartTimeResponse) ProtoMessage()    {}
+func (*MsgUpdateMintRewardStartTimeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b7586e0f456d0ddd, []int{3}
+}
+func (m *MsgUpdateMintRewardStartTimeResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateMintRewardStartTimeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateMintRewardStartTimeResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateMintRewardStartTimeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateMintRewardStartTimeResponse.Merge(m, src)
+}
+func (m *MsgUpdateMintRewardStartTimeResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateMintRewardStartTimeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateMintRewardStartTimeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateMintRewardStartTimeResponse proto.InternalMessageInfo
+
+func init() {
+	proto.RegisterType((*MsgDepositMintingRewardAmountRequest)(nil), "comdex.rewards.v1beta1.MsgDepositMintingRewardAmountRequest")
+	proto.RegisterType((*MsgDepositMintingRewardAmountResponse)(nil), "comdex.rewards.v1beta1.MsgDepositMintingRewardAmountResponse")
+	proto.RegisterType((*MsgUpdateMintRewardStartTimeRequest)(nil), "comdex.rewards.v1beta1.MsgUpdateMintRewardStartTimeRequest")
+	proto.RegisterType((*MsgUpdateMintRewardStartTimeResponse)(nil), "comdex.rewards.v1beta1.MsgUpdateMintRewardStartTimeResponse")
+}
+
 func init() { proto.RegisterFile("comdex/rewards/v1beta1/msg.proto", fileDescriptor_b7586e0f456d0ddd) }
 
 var fileDescriptor_b7586e0f456d0ddd = []byte{
-	// 149 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x48, 0xce, 0xcf, 0x4d,
-	0x49, 0xad, 0xd0, 0x2f, 0x4a, 0x2d, 0x4f, 0x2c, 0x4a, 0x29, 0xd6, 0x2f, 0x33, 0x4c, 0x4a, 0x2d,
-	0x49, 0x34, 0xd4, 0xcf, 0x2d, 0x4e, 0xd7, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x83, 0xa8,
-	0xd0, 0x83, 0xaa, 0xd0, 0x83, 0xaa, 0x30, 0xe2, 0xe1, 0xe2, 0xf2, 0x2d, 0x4e, 0x0f, 0x4e, 0x2d,
-	0x2a, 0xcb, 0x4c, 0x4e, 0x75, 0xf2, 0x3e, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07,
-	0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86,
-	0x28, 0xc3, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0x88, 0x51, 0xba,
-	0xf9, 0x69, 0x69, 0x99, 0xc9, 0x99, 0x89, 0x39, 0x50, 0xbe, 0x3e, 0xc2, 0xfa, 0x92, 0xca, 0x82,
-	0xd4, 0xe2, 0x24, 0x36, 0xb0, 0xcd, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x6a, 0x60, 0x36,
-	0x48, 0x9d, 0x00, 0x00, 0x00,
+	// 449 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x93, 0x41, 0x6f, 0xd3, 0x30,
+	0x14, 0xc7, 0xe3, 0x31, 0x21, 0x61, 0x24, 0xa6, 0x19, 0x34, 0x55, 0x11, 0x72, 0xa3, 0x00, 0xa3,
+	0x42, 0xc2, 0x56, 0xc7, 0x0d, 0xc6, 0x81, 0x89, 0x0b, 0x87, 0x5c, 0x12, 0xb8, 0x70, 0x89, 0x92,
+	0xc6, 0x31, 0x96, 0xea, 0x38, 0xc4, 0xce, 0xca, 0xbe, 0xc5, 0x6e, 0x88, 0x6f, 0xc0, 0xe7, 0xe0,
+	0xd4, 0x1b, 0x3b, 0xc2, 0x65, 0x40, 0xfa, 0x0d, 0xf8, 0x04, 0xa8, 0x71, 0x3a, 0x10, 0x2a, 0x2d,
+	0xeb, 0xcd, 0x4e, 0x7e, 0xef, 0xfd, 0xdf, 0xff, 0xbd, 0x67, 0xe8, 0x8d, 0x94, 0xcc, 0xd8, 0x3b,
+	0x5a, 0xb1, 0x49, 0x52, 0x65, 0x9a, 0x1e, 0x0f, 0x53, 0x66, 0x92, 0x21, 0x95, 0x9a, 0x93, 0xb2,
+	0x52, 0x46, 0xa1, 0x3d, 0x4b, 0x90, 0x8e, 0x20, 0x1d, 0xe1, 0xde, 0xe2, 0x8a, 0xab, 0x16, 0xa1,
+	0xf3, 0x93, 0xa5, 0xdd, 0x3e, 0x57, 0x8a, 0x8f, 0x19, 0x6d, 0x6f, 0x69, 0x9d, 0x53, 0x23, 0x24,
+	0xd3, 0x26, 0x91, 0xa5, 0x05, 0xfc, 0xcf, 0x00, 0xde, 0x0d, 0x34, 0x7f, 0xce, 0x4a, 0xa5, 0x85,
+	0x09, 0x44, 0x61, 0x44, 0xc1, 0xc3, 0x36, 0xf7, 0x33, 0xa9, 0xea, 0xc2, 0x84, 0xec, 0x6d, 0xcd,
+	0xb4, 0x41, 0x0f, 0xe0, 0xae, 0xb4, 0x7f, 0x63, 0x2b, 0x1d, 0x8b, 0xac, 0x07, 0x3c, 0x30, 0xd8,
+	0x0e, 0x77, 0xe4, 0x9f, 0x61, 0x2f, 0x32, 0xc4, 0xe1, 0x8e, 0x36, 0x49, 0x65, 0xe2, 0x0b, 0xb5,
+	0xde, 0x96, 0x07, 0x06, 0xd7, 0x0f, 0x5c, 0x62, 0xeb, 0x21, 0x8b, 0x7a, 0xc8, 0xcb, 0x05, 0x71,
+	0xe4, 0x4f, 0xcf, 0xfb, 0xce, 0xcf, 0xf3, 0xfe, 0xde, 0x49, 0x22, 0xc7, 0x8f, 0xfd, 0xbf, 0x12,
+	0xf8, 0xa7, 0xdf, 0xfa, 0x20, 0xbc, 0xd1, 0x7e, 0xbd, 0x88, 0x41, 0x08, 0x6e, 0xe7, 0x95, 0x92,
+	0xbd, 0x2b, 0x1e, 0x18, 0x5c, 0x0b, 0xdb, 0xb3, 0x7f, 0x1f, 0xde, 0x5b, 0x63, 0x48, 0x97, 0xaa,
+	0xd0, 0xcc, 0xff, 0x0a, 0xe0, 0x9d, 0x40, 0xf3, 0x57, 0x65, 0x96, 0x18, 0x36, 0x07, 0x2d, 0x15,
+	0x2d, 0x24, 0x36, 0x71, 0x5e, 0xc1, 0x9b, 0x05, 0x9b, 0xc4, 0x97, 0x77, 0xbf, 0xdf, 0xb9, 0x77,
+	0xad, 0xfb, 0x25, 0x49, 0x6c, 0x07, 0x76, 0x0b, 0x36, 0x89, 0xd6, 0x37, 0x61, 0xbf, 0x9d, 0xea,
+	0x0a, 0x6b, 0xb6, 0x07, 0x07, 0x9f, 0xb6, 0x20, 0x0c, 0x34, 0x8f, 0x58, 0x75, 0x2c, 0x46, 0x0c,
+	0xbd, 0x07, 0xb0, 0xf7, 0x8f, 0xe6, 0x69, 0x74, 0x48, 0x96, 0xaf, 0x1e, 0xf9, 0x9f, 0xfd, 0x71,
+	0x9f, 0x6e, 0x18, 0x6d, 0x0b, 0x45, 0x1f, 0x00, 0xbc, 0xbd, 0xca, 0x11, 0x7a, 0xb2, 0x22, 0xff,
+	0xba, 0x11, 0xbb, 0x87, 0x9b, 0x05, 0xdb, 0xda, 0x8e, 0xa2, 0xe9, 0x0f, 0xec, 0x7c, 0x6c, 0xb0,
+	0x33, 0x6d, 0x30, 0x38, 0x6b, 0x30, 0xf8, 0xde, 0x60, 0x70, 0x3a, 0xc3, 0xce, 0xd9, 0x0c, 0x3b,
+	0x5f, 0x66, 0xd8, 0x79, 0x3d, 0xe4, 0xc2, 0xbc, 0xa9, 0xd3, 0xb9, 0x0a, 0xb5, 0x4a, 0x0f, 0x55,
+	0x9e, 0x8b, 0x91, 0x48, 0xc6, 0xdd, 0x9d, 0xfe, 0x7e, 0xf3, 0xe6, 0xa4, 0x64, 0x3a, 0xbd, 0xda,
+	0x2e, 0xc9, 0xa3, 0x5f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xb7, 0x78, 0x03, 0x05, 0x12, 0x04, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -51,6 +236,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgServiceClient interface {
+	MsgDepositMintingRewards(ctx context.Context, in *MsgDepositMintingRewardAmountRequest, opts ...grpc.CallOption) (*MsgDepositMintingRewardAmountResponse, error)
+	MsgUpdateMintRewardStartTime(ctx context.Context, in *MsgUpdateMintRewardStartTimeRequest, opts ...grpc.CallOption) (*MsgUpdateMintRewardStartTimeResponse, error)
 }
 
 type msgServiceClient struct {
@@ -61,22 +248,750 @@ func NewMsgServiceClient(cc grpc1.ClientConn) MsgServiceClient {
 	return &msgServiceClient{cc}
 }
 
+func (c *msgServiceClient) MsgDepositMintingRewards(ctx context.Context, in *MsgDepositMintingRewardAmountRequest, opts ...grpc.CallOption) (*MsgDepositMintingRewardAmountResponse, error) {
+	out := new(MsgDepositMintingRewardAmountResponse)
+	err := c.cc.Invoke(ctx, "/comdex.rewards.v1beta1.MsgService/MsgDepositMintingRewards", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgServiceClient) MsgUpdateMintRewardStartTime(ctx context.Context, in *MsgUpdateMintRewardStartTimeRequest, opts ...grpc.CallOption) (*MsgUpdateMintRewardStartTimeResponse, error) {
+	out := new(MsgUpdateMintRewardStartTimeResponse)
+	err := c.cc.Invoke(ctx, "/comdex.rewards.v1beta1.MsgService/MsgUpdateMintRewardStartTime", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServiceServer is the server API for MsgService service.
 type MsgServiceServer interface {
+	MsgDepositMintingRewards(context.Context, *MsgDepositMintingRewardAmountRequest) (*MsgDepositMintingRewardAmountResponse, error)
+	MsgUpdateMintRewardStartTime(context.Context, *MsgUpdateMintRewardStartTimeRequest) (*MsgUpdateMintRewardStartTimeResponse, error)
 }
 
 // UnimplementedMsgServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServiceServer struct {
 }
 
+func (*UnimplementedMsgServiceServer) MsgDepositMintingRewards(ctx context.Context, req *MsgDepositMintingRewardAmountRequest) (*MsgDepositMintingRewardAmountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgDepositMintingRewards not implemented")
+}
+func (*UnimplementedMsgServiceServer) MsgUpdateMintRewardStartTime(ctx context.Context, req *MsgUpdateMintRewardStartTimeRequest) (*MsgUpdateMintRewardStartTimeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgUpdateMintRewardStartTime not implemented")
+}
+
 func RegisterMsgServiceServer(s grpc1.Server, srv MsgServiceServer) {
 	s.RegisterService(&_MsgService_serviceDesc, srv)
+}
+
+func _MsgService_MsgDepositMintingRewards_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDepositMintingRewardAmountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServiceServer).MsgDepositMintingRewards(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.rewards.v1beta1.MsgService/MsgDepositMintingRewards",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServiceServer).MsgDepositMintingRewards(ctx, req.(*MsgDepositMintingRewardAmountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MsgService_MsgUpdateMintRewardStartTime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateMintRewardStartTimeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServiceServer).MsgUpdateMintRewardStartTime(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.rewards.v1beta1.MsgService/MsgUpdateMintRewardStartTime",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServiceServer).MsgUpdateMintRewardStartTime(ctx, req.(*MsgUpdateMintRewardStartTimeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 var _MsgService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "comdex.rewards.v1beta1.MsgService",
 	HandlerType: (*MsgServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams:     []grpc.StreamDesc{},
-	Metadata:    "comdex/rewards/v1beta1/msg.proto",
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "MsgDepositMintingRewards",
+			Handler:    _MsgService_MsgDepositMintingRewards_Handler,
+		},
+		{
+			MethodName: "MsgUpdateMintRewardStartTime",
+			Handler:    _MsgService_MsgUpdateMintRewardStartTime_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "comdex/rewards/v1beta1/msg.proto",
 }
+
+func (m *MsgDepositMintingRewardAmountRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDepositMintingRewardAmountRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDepositMintingRewardAmountRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp):])
+	if err1 != nil {
+		return 0, err1
+	}
+	i -= n1
+	i = encodeVarintMsg(dAtA, i, uint64(n1))
+	i--
+	dAtA[i] = 0x12
+	if m.MintingRewardId != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.MintingRewardId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDepositMintingRewardAmountResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDepositMintingRewardAmountResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDepositMintingRewardAmountResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateMintRewardStartTimeRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateMintRewardStartTimeRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateMintRewardStartTimeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.NewStartTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.NewStartTimestamp):])
+	if err2 != nil {
+		return 0, err2
+	}
+	i -= n2
+	i = encodeVarintMsg(dAtA, i, uint64(n2))
+	i--
+	dAtA[i] = 0x12
+	if m.MintingRewardId != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.MintingRewardId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateMintRewardStartTimeResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateMintRewardStartTimeResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateMintRewardStartTimeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func encodeVarintMsg(dAtA []byte, offset int, v uint64) int {
+	offset -= sovMsg(v)
+	base := offset
+	for v >= 1<<7 {
+		dAtA[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	dAtA[offset] = uint8(v)
+	return base
+}
+func (m *MsgDepositMintingRewardAmountRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.MintingRewardId != 0 {
+		n += 1 + sovMsg(uint64(m.MintingRewardId))
+	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp)
+	n += 1 + l + sovMsg(uint64(l))
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgDepositMintingRewardAmountResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUpdateMintRewardStartTimeRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.MintingRewardId != 0 {
+		n += 1 + sovMsg(uint64(m.MintingRewardId))
+	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.NewStartTimestamp)
+	n += 1 + l + sovMsg(uint64(l))
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpdateMintRewardStartTimeResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func sovMsg(x uint64) (n int) {
+	return (math_bits.Len64(x|1) + 6) / 7
+}
+func sozMsg(x uint64) (n int) {
+	return sovMsg(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *MsgDepositMintingRewardAmountRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDepositMintingRewardAmountRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDepositMintingRewardAmountRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MintingRewardId", wireType)
+			}
+			m.MintingRewardId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MintingRewardId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StartTimestamp", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMsg(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDepositMintingRewardAmountResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDepositMintingRewardAmountResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDepositMintingRewardAmountResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMsg(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateMintRewardStartTimeRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateMintRewardStartTimeRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateMintRewardStartTimeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MintingRewardId", wireType)
+			}
+			m.MintingRewardId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MintingRewardId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewStartTimestamp", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.NewStartTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMsg(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateMintRewardStartTimeResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateMintRewardStartTimeResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateMintRewardStartTimeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMsg(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipMsg(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
+	iNdEx := 0
+	depth := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if dAtA[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+		case 1:
+			iNdEx += 8
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if length < 0 {
+				return 0, ErrInvalidLengthMsg
+			}
+			iNdEx += length
+		case 3:
+			depth++
+		case 4:
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupMsg
+			}
+			depth--
+		case 5:
+			iNdEx += 4
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthMsg
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
+	}
+	return 0, io.ErrUnexpectedEOF
+}
+
+var (
+	ErrInvalidLengthMsg        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowMsg          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupMsg = fmt.Errorf("proto: unexpected end of group")
+)

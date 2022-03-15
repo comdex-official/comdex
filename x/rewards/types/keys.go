@@ -1,5 +1,7 @@
 package types
 
+import sdk "github.com/cosmos/cosmos-sdk/types"
+
 const (
 	ModuleName   = "rewards"
 	StoreKey     = ModuleName
@@ -8,6 +10,11 @@ const (
 	MemStoreKey  = "mem_rewards"
 )
 
-func KeyPrefix(p string) []byte {
-	return []byte(p)
+var (
+	MintingRewardsIdKey     = []byte{0x01}
+	MintingRewardsKeyPrefix = []byte{0x11}
+)
+
+func MintingRewardsKey(id uint64) []byte {
+	return append(MintingRewardsKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }

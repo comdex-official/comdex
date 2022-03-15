@@ -6,4 +6,9 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {}
+func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
+	// fmt.Println("available rewards....", k.GetMintingRewards(ctx))
+	k.EnableMintingRewards(ctx)
+	k.DisableMintingRewards(ctx)
+	k.TriggerRewards(ctx)
+}

@@ -1,6 +1,38 @@
 syntax = "proto3";
 package comdex.rewards.v1beta1;
 
-option go_package = "github.com/comdex-official/comdex/x/rewards/types";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
-service MsgService {}
+option go_package = "github.com/comdex-official/comdex/x/rewards/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MsgDepositMintingRewardAmountRequest {  
+    uint64 minting_reward_id = 1;
+    google.protobuf.Timestamp start_timestamp = 2 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdtime) = true,
+        (gogoproto.moretags)   = "yaml:\"start_timestamp\""
+    ];
+    string from = 3;
+}
+
+message MsgDepositMintingRewardAmountResponse {}
+
+message MsgUpdateMintRewardStartTimeRequest {  
+    uint64 minting_reward_id = 1;
+    google.protobuf.Timestamp new_start_timestamp = 2 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdtime) = true,
+        (gogoproto.moretags)   = "yaml:\"new_start_timestamp\""
+    ];
+    string from = 3;
+}
+
+message MsgUpdateMintRewardStartTimeResponse {}
+
+service MsgService {
+    rpc MsgDepositMintingRewards(MsgDepositMintingRewardAmountRequest) returns (MsgDepositMintingRewardAmountResponse);
+    rpc MsgUpdateMintRewardStartTime(MsgUpdateMintRewardStartTimeRequest) returns (MsgUpdateMintRewardStartTimeResponse);
+}

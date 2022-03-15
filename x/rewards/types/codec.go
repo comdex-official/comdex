@@ -9,12 +9,14 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&NewMintRewardsProposal{}, "comdex/NewMintRewardsProposal", nil)
+	cdc.RegisterConcrete(&DisbaleMintRewardsProposal{}, "comdex/DisbaleMintRewardsProposal", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
 		&NewMintRewardsProposal{},
+		&DisbaleMintRewardsProposal{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)
 }
