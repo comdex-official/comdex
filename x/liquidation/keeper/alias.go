@@ -76,3 +76,11 @@ func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddres
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	return k.oracle.GetPriceForAsset(ctx, id)
 }
+
+func (k *Keeper) UpdateUserVaultIdMapping(ctx sdk.Context, vaultOwner string, vaultId uint64, isInsert bool) error {
+	return k.vault.UpdateUserVaultIdMapping(ctx, vaultOwner, vaultId, isInsert)
+}
+
+func (k *Keeper) UpdateCollateralVaultIdMapping(ctx sdk.Context, assetInDenom string, assetOutDenom string, vaultId uint64, isInsert bool) error {
+	return k.vault.UpdateCollateralVaultIdMapping(ctx, assetInDenom, assetOutDenom, vaultId, isInsert)
+}

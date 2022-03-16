@@ -38,6 +38,8 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				return err
 			}
 			k.DeleteVault(ctx, vault.ID)
+			k.UpdateUserVaultIdMapping(ctx, vault.Owner, vault.ID, false)
+			k.UpdateCollateralVaultIdMapping(ctx, assetIn.Denom, assetOut.Denom, vault.ID, false)
 		}
 	}
 	return nil
@@ -187,8 +189,8 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			if err != nil {
 				continue
 			}
-			if newCalculatedCollateralizationRatio.LTE(unliquidatePointPercentage){
-			var updatedLockedVault types.LockedVault
+			if newCalculatedCollateralizationRatio.LTE(unliquidatePointPercentage) {
+				var updatedLockedVault types.LockedVault
 				updatedLockedVault = lockedVault
 				updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
 				k.SetLockedVault(ctx, updatedLockedVault)
@@ -213,9 +215,11 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				k.SetVaultID(ctx, id+1)
 				k.SetVault(ctx, vault)
 				k.SetVaultForAddressByPair(ctx, userAddress, lockedVault.PairId, vault.ID)
+				k.UpdateUserVaultIdMapping(ctx, vault.Owner, vault.ID, true)
+				k.UpdateCollateralVaultIdMapping(ctx, assetIn.Denom, assetOut.Denom, vault.ID, true)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 				//======================================NOTE TO BE CHANGED================================================
-				//One important thing that we missed is that we need to pop and append the current vault as per the user
+				//One important thing that we missed is that we need to pop and append the current vault as per the user -> This has bee handled -Vishnu
 				//IF all the borrowed amount is repayed , then we need to ensure the unliquidate vault is not called for that particular lockedvault- his vault is automatically closed.
 			}
 		}
