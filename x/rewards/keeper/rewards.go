@@ -279,6 +279,7 @@ func (k Keeper) DistributeRewards(ctx sdk.Context, mintingReward types.MintingRe
 }
 
 func (k Keeper) TriggerRewards(ctx sdk.Context) {
+	// this needs to be updated, the logic should be executed only onece in every 24 hour
 	if ctx.BlockHeight()%2 == 0 {
 		mintingRewards := k.GetMintingRewards(ctx)
 		for _, mintingReward := range mintingRewards {
