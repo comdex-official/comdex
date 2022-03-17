@@ -10,5 +10,5 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 	// fmt.Println("available rewards....", k.GetMintingRewards(ctx))
 	k.EnableMintingRewards(ctx)
 	k.DisableMintingRewards(ctx)
-	k.TriggerRewards(ctx)
+	// k.TriggerRewards(ctx)
 }
