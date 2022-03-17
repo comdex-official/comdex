@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/bandprotocol/bandchain-packet/obi"
@@ -105,33 +104,27 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	return &types.MsgFetchPriceDataResponse{}, nil
 }
 
-func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context) {
+func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) {
 	var (
-		store  = ctx.KVStore(k.storeKey)
-		key    = types.MsgdataKey
-		params = k.GetParams(ctx)
-
-		OracleScriptId, _ = strconv.ParseUint(params.OracleScriptId, 10, 64)
-		AskCount, _       = strconv.ParseUint(params.AskCount, 10, 64)
-		MinCount, _       = strconv.ParseUint(params.MinCount, 10, 64)
-		PrepareGas, _     = strconv.ParseUint(params.PrepareGas, 10, 64)
-		ExecuteGas, _     = strconv.ParseUint(params.ExecuteGas, 10, 64)
-
-		msg = types.NewMsgFetchPriceData(
+		store = ctx.KVStore(k.storeKey)
+		key   = types.MsgdataKey
+		v = types.NewMsgFetchPriceData(
 			types.ModuleName,
-			types.OracleScriptID(OracleScriptId),
-			params.SourceChannel,
+			types.OracleScriptID(msg.OracleScriptID),
+			msg.SourceChannel,
 			nil,
-			AskCount,
-			MinCount,
-			params.FeeLimit,
-			PrepareGas,
-			ExecuteGas,
+			msg.AskCount,
+			msg.MinCount,
+			msg.FeeLimit,
+			msg.PrepareGas,
+			msg.ExecuteGas,
 		)
-		value = k.cdc.MustMarshal(msg)
+		value = k.cdc.MustMarshal(v)
 	)
 
 	store.Set(key, value)
+	fmt.Println("price is being set in store")
+	fmt.Println(v)
 }
 
 func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {
@@ -158,8 +151,14 @@ func (k Keeper) GetLastBlockheight(ctx sdk.Context) int64 {
 	return intV.GetValue()
 }
 
-func (k Keeper) SetLastBlockheight(ctx sdk.Context, id int64) {
+func (k Keeper) SetLastBlockheight(ctx sdk.Context, height int64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.KeyPrefix(types.LastBlockheightKey),
-		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: int64(id)}))
+		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: int64(height)}))
+}
+
+func (k Keeper) AddFetchPriceRecords(ctx sdk.Context, price types.MsgFetchPriceData) error {
+	k.SetFetchPriceMsg(ctx, price)
+	k.SetLastBlockheight(ctx, ctx.BlockHeight())
+	return nil
 }

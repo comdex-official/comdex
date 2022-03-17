@@ -9,9 +9,8 @@ import (
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	block := k.GetLastBlockheight(ctx)
-	id := k.GetLastFetchPriceID(ctx)
-	if id != 0 {
-	if ctx.BlockHeight()%20 == 0 && ctx.BlockHeight() > block + 41 {
+
+	if ctx.BlockHeight()%20 == 0 && ctx.BlockHeight() > block+21 {
 		assets := k.GetAssets(ctx)
 		for _, asset := range assets {
 			k.SetRates(ctx, asset.Name)
@@ -26,6 +25,5 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 			)
 			k.SetMarket(ctx, market)
 		}
-	}
 	}
 }
