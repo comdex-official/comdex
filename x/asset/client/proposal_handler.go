@@ -5,4 +5,11 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 )
 
-var AddAssetHandler = []govclient.ProposalHandler{govclient.NewProposalHandler(cli.NewCmdSubmitAddAssetsProposal, nil)}
+var (
+	AddAssetsHandler = []govclient.ProposalHandler{
+		govclient.NewProposalHandler(cli.NewCmdSubmitAddAssetsProposal, nil),
+		govclient.NewProposalHandler(cli.NewCmdSubmitUpdateAssetProposal, nil),
+		govclient.NewProposalHandler(cli.NewCmdSubmitAddPairsProposal, nil),
+		govclient.NewProposalHandler(cli.NewCmdSubmitUpdatePairProposal, nil),
+	}
+)
