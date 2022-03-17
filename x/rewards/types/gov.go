@@ -29,20 +29,22 @@ func AddNewMintRewardsProposalContent(
 	total_rewards sdk.Coin,
 	casset_maxcap uint64,
 	duration_days uint64,
+	minimumLockupTimeInSeconds uint64,
 ) govtypes.Content {
 	return &NewMintRewardsProposal{
 		Title:       title,
 		Description: description,
 		MintRewards: &MintingRewards{
-			Id:                0,
-			AllowedCollateral: collateralDenom,
-			AllowedCasset:     cassetsDenom,
-			TotalRewards:      total_rewards,
-			CassetMaxCap:      casset_maxcap,
-			DurationDays:      duration_days,
-			IsActive:          false,
-			AvailableRewards:  sdk.NewCoin(total_rewards.Denom, sdk.NewInt(0)),
-			Depositor:         nil,
+			Id:                   0,
+			AllowedCollateral:    collateralDenom,
+			AllowedCasset:        cassetsDenom,
+			TotalRewards:         total_rewards,
+			CassetMaxCap:         casset_maxcap,
+			DurationDays:         duration_days,
+			IsActive:             false,
+			AvailableRewards:     sdk.NewCoin(total_rewards.Denom, sdk.NewInt(0)),
+			Depositor:            nil,
+			MinLockupTimeSeconds: minimumLockupTimeInSeconds,
 		},
 	}
 }

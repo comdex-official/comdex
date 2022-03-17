@@ -15,4 +15,5 @@ var (
 	ErrorMintingRewardExpired          = sdkerrors.Register(ModuleName, 108, "minting rewards expired")
 	ErrorDepositAlreadyMade            = sdkerrors.Register(ModuleName, 109, "deposit already made")
 	ErrorUnauthorized                  = sdkerrors.Register(ModuleName, 110, "unauthorized to update start time")
+	ErrorPriceNotFound                 = sdkerrors.Register(ModuleName, 111, "asset price not found")
 )

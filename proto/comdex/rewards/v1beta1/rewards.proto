@@ -50,7 +50,9 @@ message MintingRewards {
       (gogoproto.stdtime) = true,
       (gogoproto.moretags)   = "yaml:\"end_timestamp\""
   ];
-  
+  uint64 min_lockup_time_seconds = 12 [
+    (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
+  ];
 }
 
 message Rewards {

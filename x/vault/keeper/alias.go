@@ -42,6 +42,10 @@ func (k *Keeper) SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coi
 	return k.bank.SpendableCoins(ctx, address)
 }
 
+func (k *Keeper) GetAssets(ctx sdk.Context) (assets []assettypes.Asset) {
+	return k.asset.GetAssets(ctx)
+}
+
 func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
 	return k.asset.GetAsset(ctx, id)
 }

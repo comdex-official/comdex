@@ -16,9 +16,9 @@ import (
 
 func AddNewMintingRewardsProposalCLIHandler() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-new-mint-rewards [collateral-denom] [casset-denom] [total-rewards] [casset-maxcap] [duration-days]",
+		Use:   "add-new-mint-rewards [collateral-denom] [casset-denom] [total-rewards] [casset-maxcap] [duration-days] [min-lockup-seconds] ",
 		Short: "add new mint rewards",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(6),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -47,6 +47,11 @@ func AddNewMintingRewardsProposalCLIHandler() *cobra.Command {
 				return err
 			}
 			durationDays, err := strconv.ParseUint(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			minimumLockupTimeInSeconds, err := strconv.ParseUint(args[5], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -80,6 +85,7 @@ func AddNewMintingRewardsProposalCLIHandler() *cobra.Command {
 				totalRewards,
 				cAssetMaxcap,
 				durationDays,
+				minimumLockupTimeInSeconds,
 			)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)

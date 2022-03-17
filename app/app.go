@@ -508,6 +508,8 @@ func New(
 		app.GetSubspace(rewardstypes.ModuleName),
 		app.bankKeeper,
 		&app.assetKeeper,
+		&app.vaultKeeper,
+		&app.oracleKeeper,
 	)
 
 	// Create Transfer Keepers

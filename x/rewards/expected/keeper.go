@@ -2,6 +2,7 @@ package expected
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -22,4 +23,16 @@ type BankKeeper interface {
 
 type AssetKeeper interface {
 	GetAssets(ctx sdk.Context) (assets []assettypes.Asset)
+	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
+	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
+}
+
+type VaultKeeper interface {
+	GetCollateralBasedVaults(ctx sdk.Context, collateral_denom string) (collateralBasedVaults vaulttypes.CollateralVaultIdMapping, found bool)
+	GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool)
+	GetCAssetTotalValueMintedForCollateral(ctx sdk.Context, collateralType assettypes.Asset) sdk.Dec
+}
+
+type OracleKeeper interface {
+	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }

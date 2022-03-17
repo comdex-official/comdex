@@ -377,3 +377,61 @@ func (k *Keeper) UpdateCollateralVaultIdMapping(
 	k.SetCollateralBasedVaults(ctx, collateralBasedVaults)
 	return nil
 }
+
+func (k *Keeper) GetCAssetTotalValueMintedForCollateral(ctx sdk.Context, collateralType assettypes.Asset) sdk.Dec {
+	mintStatistics, found := k.GetCAssetMintRecords(ctx, collateralType.Denom)
+	if !found {
+		return sdk.NewDec(0)
+	}
+
+	availableAssets := k.GetAssets(ctx)
+	cAssetDenomIdMap := make(map[string]uint64)
+	for _, asset := range availableAssets {
+		cAssetDenomIdMap[asset.Denom] = asset.Id
+	}
+
+	totalValueCassetMinted := sdk.NewDec(0)
+
+	for cAssetDenom, quantity := range mintStatistics.MintedAssets {
+		assetPrice, found := k.GetPriceForAsset(ctx, cAssetDenomIdMap[cAssetDenom])
+		if found {
+			totalValueCassetMinted = totalValueCassetMinted.Add(sdk.NewDec(int64(quantity)).Quo(sdk.NewDec(1000000)).Mul(sdk.NewDec(int64(assetPrice)).Quo(sdk.NewDec(1000000))))
+		}
+	}
+	return totalValueCassetMinted
+}
+
+func (k *Keeper) CreteNewVault(
+	ctx sdk.Context,
+	pairdId uint64,
+	from string,
+	assetIn assettypes.Asset,
+	amountIn sdk.Int,
+	assetOut assettypes.Asset,
+	amountOut sdk.Int,
+
+) error {
+	parsedFrom, err := sdk.AccAddressFromBech32(from)
+	if err != nil {
+		return err
+	}
+	var (
+		id    = k.GetID(ctx) + 1
+		vault = types.Vault{
+			ID:        id,
+			PairID:    pairdId,
+			Owner:     from,
+			AmountIn:  amountIn,
+			AmountOut: amountOut,
+			CreatedAt: ctx.BlockTime(),
+			MarketCap: k.GetCAssetTotalValueMintedForCollateral(ctx, assetIn),
+		}
+	)
+
+	k.SetID(ctx, vault.ID)
+	k.SetVault(ctx, vault)
+	k.SetVaultForAddressByPair(ctx, parsedFrom, vault.PairID, vault.ID)
+	k.UpdateUserVaultIdMapping(ctx, from, vault.ID, true)
+	k.UpdateCollateralVaultIdMapping(ctx, assetIn.Denom, assetOut.Denom, vault.ID, true)
+	return nil
+}

@@ -14,15 +14,16 @@ import (
 )
 
 type AddNewMintingRewardsRequest struct {
-	BaseReq         rest.BaseReq `json:"base_req" yaml:"base_req"`
-	Title           string       `json:"title" yaml:"title"`
-	Description     string       `json:"description" yaml:"description"`
-	Deposit         sdk.Coins    `json:"deposit" yaml:"deposit"`
-	CollateralDenom string       `json:"collateral_denom" yaml:"collateral_denom"`
-	CAssetDenom     string       `json:"casset_denoms" yaml:"casset_denom"`
-	TotalRewards    sdk.Coin     `json:"total_rewards" yaml:"total_rewards"`
-	CAssetMaxcap    uint64       `json:"casset_maxcap" yaml:"casset_maxcap"`
-	DurationDays    uint64       `json:"duration_days" yaml:"duration_days"`
+	BaseReq                    rest.BaseReq `json:"base_req" yaml:"base_req"`
+	Title                      string       `json:"title" yaml:"title"`
+	Description                string       `json:"description" yaml:"description"`
+	Deposit                    sdk.Coins    `json:"deposit" yaml:"deposit"`
+	CollateralDenom            string       `json:"collateral_denom" yaml:"collateral_denom"`
+	CAssetDenom                string       `json:"casset_denoms" yaml:"casset_denom"`
+	TotalRewards               sdk.Coin     `json:"total_rewards" yaml:"total_rewards"`
+	CAssetMaxcap               uint64       `json:"casset_maxcap" yaml:"casset_maxcap"`
+	DurationDays               uint64       `json:"duration_days" yaml:"duration_days"`
+	minimumLockupTimeInSeconds uint64       `json:"minimum_lockup_time_in_seconds" yaml:"minimum_lockup_time_in_seconds"`
 }
 
 type DisableMintingRewardsRequest struct {
@@ -73,6 +74,7 @@ func AddNewMintingRewardsRESTHandler(clientCtx client.Context) http.HandlerFunc 
 			req.TotalRewards,
 			req.CAssetMaxcap,
 			req.DurationDays,
+			req.minimumLockupTimeInSeconds,
 		)
 		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, fromAddr)
 		if rest.CheckBadRequestError(w, err) {

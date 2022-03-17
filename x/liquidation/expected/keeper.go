@@ -31,6 +31,7 @@ type VaultKeeper interface {
 		amountOut sdk.Int,
 		assetOut assettypes.Asset,
 	) (sdk.Dec, error)
+	CreteNewVault(ctx sdk.Context, pairdId uint64, from string, assetIn assettypes.Asset, amountIn sdk.Int, assetOut assettypes.Asset, amountOut sdk.Int) error
 	DeleteVault(ctx sdk.Context, id uint64)
 	DeleteVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64)
 	GetID(ctx sdk.Context) uint64

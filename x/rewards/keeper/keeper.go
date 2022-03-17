@@ -20,6 +20,8 @@ type (
 		paramstore paramtypes.Subspace
 		bank       expected.BankKeeper
 		asset      expected.AssetKeeper
+		vault      expected.VaultKeeper
+		oracle     expected.OracleKeeper
 	}
 )
 
@@ -30,6 +32,8 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 	bank expected.BankKeeper,
 	asset expected.AssetKeeper,
+	vault expected.VaultKeeper,
+	oracle expected.OracleKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -45,6 +49,8 @@ func NewKeeper(
 		paramstore: ps,
 		bank:       bank,
 		asset:      asset,
+		vault:      vault,
+		oracle:     oracle,
 	}
 }
 

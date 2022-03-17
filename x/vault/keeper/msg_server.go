@@ -62,24 +62,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetOut.Denom, msg.AmountOut)); err != nil {
 		return nil, err
 	}
-
-	var (
-		id    = k.GetID(ctx)
-		vault = types.Vault{
-			ID:        id + 1,
-			PairID:    msg.PairID,
-			Owner:     msg.From,
-			AmountIn:  msg.AmountIn,
-			AmountOut: msg.AmountOut,
-		}
-	)
-
-	k.SetID(ctx, id+1)
-	k.SetVault(ctx, vault)
-	k.SetVaultForAddressByPair(ctx, from, vault.PairID, vault.ID)
-	k.UpdateUserVaultIdMapping(ctx, msg.From, vault.ID, true)
-	k.UpdateCollateralVaultIdMapping(ctx, assetIn.Denom, assetOut.Denom, vault.ID, true)
-
+	k.CreteNewVault(ctx, msg.PairID, msg.From, assetIn, msg.AmountIn, assetOut, msg.AmountOut)
 	return &types.MsgCreateResponse{}, nil
 }
 

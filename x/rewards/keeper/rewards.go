@@ -1,11 +1,12 @@
 package keeper
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	protobuftypes "github.com/gogo/protobuf/types"
@@ -138,7 +139,7 @@ func (k Keeper) TransferDeposits(ctx sdk.Context, mintingRewardsId uint64, from 
 		return types.ErrorMintingRewardAlreadyActive
 	}
 	// change minimum halt require after deposit
-	if startTimeStamp.Before(ctx.BlockTime().Add(time.Minute * 1)) {
+	if startTimeStamp.Before(ctx.BlockTime().Add(time.Minute * 10)) {
 		return types.ErrorInvalidStartTime
 	}
 	if mintingReward.Depositor != nil {
@@ -152,8 +153,8 @@ func (k Keeper) TransferDeposits(ctx sdk.Context, mintingRewardsId uint64, from 
 		return err
 	}
 	mintingReward.StartTimestamp = startTimeStamp
-	// mintingReward.EndTimestamp = startTimeStamp.Add(time.Hour * 24 * time.Duration(mintingReward.DurationDays))
-	mintingReward.EndTimestamp = startTimeStamp.Add(time.Minute * 5)
+	mintingReward.EndTimestamp = startTimeStamp.Add(time.Hour * 24 * time.Duration(mintingReward.DurationDays))
+	// mintingReward.EndTimestamp = startTimeStamp.Add(time.Minute * 5)
 	mintingReward.AvailableRewards = mintingReward.TotalRewards
 	mintingReward.Depositor = from
 	k.SetMintingRewards(ctx, mintingReward)
@@ -175,12 +176,12 @@ func (k Keeper) UpdateMintRewardStartTime(ctx sdk.Context, mintingRewardsId uint
 		return types.ErrorMintingRewardExpired
 	}
 	// change minimum halt require after deposit
-	if newStartTimeStamp.Before(ctx.BlockTime().Add(time.Minute * 1)) {
+	if newStartTimeStamp.Before(ctx.BlockTime().Add(time.Minute * 10)) {
 		return types.ErrorInvalidStartTime
 	}
 	mintingReward.StartTimestamp = newStartTimeStamp
-	// mintingReward.EndTimestamp = newStartTimeStamp.Add(time.Hour * 24 * time.Duration(mintingReward.DurationDays))
-	mintingReward.EndTimestamp = newStartTimeStamp.Add(time.Minute * 5)
+	mintingReward.EndTimestamp = newStartTimeStamp.Add(time.Hour * 24 * time.Duration(mintingReward.DurationDays))
+	// mintingReward.EndTimestamp = newStartTimeStamp.Add(time.Minute * 5)
 	k.SetMintingRewards(ctx, mintingReward)
 	return nil
 }
@@ -225,12 +226,60 @@ func (k Keeper) DisableMintingRewards(ctx sdk.Context) {
 	}
 }
 
+func (k Keeper) CalculateMintRewards(ctx sdk.Context, vault vaulttypes.Vault, mintingRewards types.MintingRewards) (sdk.Dec, error) {
+	pair, found := k.GetPair(ctx, vault.PairID)
+	if !found {
+		return sdk.NewDec(0), assettypes.ErrorPairDoesNotExist
+	}
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return sdk.NewDec(0), assettypes.ErrorAssetDoesNotExist
+	}
+	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return sdk.NewDec(0), assettypes.ErrorAssetDoesNotExist
+	}
+	assetPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
+	if !found {
+		return sdk.NewDec(0), types.ErrorPriceNotFound
+	}
+	currentTotalCassetMintedValue := k.GetCAssetTotalValueMintedForCollateral(ctx, assetIn)
+	divisor := currentTotalCassetMintedValue
+	if currentTotalCassetMintedValue.LT(sdk.NewDec(int64(mintingRewards.CassetMaxCap))) {
+		divisor = sdk.NewDec(int64(mintingRewards.CassetMaxCap))
+	}
+	dailyAllocatedRewards := mintingRewards.TotalRewards.Amount.Quo(sdk.NewInt(1000000)).Quo((sdk.NewIntFromUint64(mintingRewards.DurationDays)))
+	mintValue := sdk.NewDec(vault.AmountOut.Quo(sdk.NewInt(1000000)).Int64()).Mul(sdk.NewDec(int64(assetPrice)).Quo(sdk.NewDec(1000000)))
+	rewardAmount := mintValue.Quo(divisor).Mul(dailyAllocatedRewards.ToDec()).Mul(sdk.NewDec(1000000))
+	return rewardAmount, nil
+}
+
 func (k Keeper) DistributeRewards(ctx sdk.Context, mintingReward types.MintingRewards) {
-	fmt.Println("Active rewards.....", mintingReward)
+	collateralBasedVaults, found := k.GetCollateralBasedVaults(ctx, mintingReward.AllowedCollateral)
+	if found && collateralBasedVaults.CassetsVaultIdsMap[mintingReward.AllowedCasset] != nil {
+		eligibleVaultIds := collateralBasedVaults.CassetsVaultIdsMap[mintingReward.AllowedCasset].VaultIds
+		for _, vaultId := range eligibleVaultIds {
+			vault, found := k.GetVault(ctx, vaultId)
+			if found && vault.MarketCap.LT(sdk.NewDec(int64(mintingReward.CassetMaxCap))) && vault.CreatedAt.Add(time.Second*time.Duration(mintingReward.MinLockupTimeSeconds)).Before(ctx.BlockTime()) {
+				rewardEligible, err := k.CalculateMintRewards(ctx, vault, mintingReward)
+				if err != nil {
+					continue
+				}
+				rewardCoin := sdk.NewCoin(mintingReward.TotalRewards.Denom, rewardEligible.RoundInt())
+				parsedOwner, err := sdk.AccAddressFromBech32(vault.Owner)
+				if err != nil {
+					continue
+				}
+				k.SendCoinsFromModuleToAccount(ctx, types.ModuleName, parsedOwner, sdk.NewCoins(rewardCoin))
+				mintingReward.AvailableRewards = sdk.NewCoin(mintingReward.AvailableRewards.Denom, mintingReward.AvailableRewards.Amount.Sub(rewardCoin.Amount))
+			}
+		}
+		k.SetMintingRewards(ctx, mintingReward)
+	}
 }
 
 func (k Keeper) TriggerRewards(ctx sdk.Context) {
-	if ctx.BlockHeight()%20 == 0 {
+	if ctx.BlockHeight()%2 == 0 {
 		mintingRewards := k.GetMintingRewards(ctx)
 		for _, mintingReward := range mintingRewards {
 			if mintingReward.IsActive {

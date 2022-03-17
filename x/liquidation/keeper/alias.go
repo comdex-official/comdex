@@ -57,6 +57,10 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 	return k.vault.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
 }
 
+func (k *Keeper) CreteNewVault(ctx sdk.Context, pairdId uint64, from string, assetIn assettypes.Asset, amountIn sdk.Int, assetOut assettypes.Asset, amountOut sdk.Int) error {
+	return k.vault.CreteNewVault(ctx, pairdId, from, assetIn, amountIn, assetOut, amountOut)
+}
+
 func (k *Keeper) GetVaultID(ctx sdk.Context) uint64 {
 	return k.vault.GetID(ctx)
 }
