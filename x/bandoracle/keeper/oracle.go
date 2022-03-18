@@ -162,3 +162,36 @@ func (k Keeper) AddFetchPriceRecords(ctx sdk.Context, price types.MsgFetchPriceD
 	k.SetLastBlockheight(ctx, ctx.BlockHeight())
 	return nil
 }
+
+func (k Keeper) OraclePriceValidationByRequestId (ctx sdk.Context, req int64) bool{
+	currentReqId := k.GetLastFetchPriceID(ctx)
+	if currentReqId!=req{
+		return true
+	}else{ return false}
+}
+
+func (k Keeper) SetOracleValidationResult(ctx sdk.Context, res bool) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.KeyPrefix(types.OracleValidationResultKey),
+		k.cdc.MustMarshalLengthPrefixed(&gogotypes.BoolValue{Value: bool(res)}))
+}
+
+func (k Keeper) GetOracleValidationResult(ctx sdk.Context) bool {
+	bz := ctx.KVStore(k.storeKey).Get(types.KeyPrefix(types.OracleValidationResultKey))
+	boolV := gogotypes.BoolValue{}
+	k.cdc.MustUnmarshalLengthPrefixed(bz, &boolV)
+	return boolV.GetValue()
+}
+
+func (k Keeper) SetTempFetchPriceID(ctx sdk.Context, id int64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.KeyPrefix(types.TempFetchPriceIDKey),
+		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: int64(id)}))
+}
+
+func (k Keeper) GetTempFetchPriceID(ctx sdk.Context) int64 {
+	bz := ctx.KVStore(k.storeKey).Get(types.KeyPrefix(types.TempFetchPriceIDKey))
+	intV := gogotypes.Int64Value{}
+	k.cdc.MustUnmarshalLengthPrefixed(bz, &intV)
+	return intV.GetValue()
+}
