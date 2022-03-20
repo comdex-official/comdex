@@ -99,6 +99,11 @@ message Params {
     bool circuit_breaker_enabled = 10 [
         (gogoproto.moretags) = "yaml:\"circuit_breaker_enabled\""
         ];
+        string pool_unbonding_duration = 12 [
+            (gogoproto.moretags)   = "yaml:\"pool_unbonding_duration\"",
+            (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+            (gogoproto.nullable)   = false];
+    
 }
 
 // Pool defines the liquidity pool that contains pool information.

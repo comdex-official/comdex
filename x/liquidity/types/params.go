@@ -43,6 +43,7 @@ var (
 	KeyWithdrawFeeRate        = []byte("WithdrawFeeRate")
 	KeyMaxOrderAmountRatio    = []byte("MaxOrderAmountRatio")
 	KeyCircuitBreakerEnabled  = []byte("CircuitBreakerEnabled")
+	KeyPoolUnbondingDuration  = []byte("PoolUnbondingDuration")
 )
 
 var (
@@ -61,6 +62,7 @@ var (
 		Description:       "Standard liquidity pool with pool price function X/Y, ESPM constraint, and two kinds of reserve coins",
 	}
 	DefaultPoolTypes = []PoolType{DefaultPoolType}
+	DefaultPoolUnbondingDuration = sdk.NewInt(21)
 
 	MinOfferCoinAmount = sdk.NewInt(100)
 )
@@ -85,6 +87,7 @@ func DefaultParams() Params {
 		MaxOrderAmountRatio:    DefaultMaxOrderAmountRatio,
 		UnitBatchHeight:        DefaultUnitBatchHeight,
 		CircuitBreakerEnabled:  DefaultCircuitBreakerEnabled,
+		PoolUnbondingDuration:  DefaultPoolUnbondingDuration,
 	}
 }
 
@@ -101,6 +104,7 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeyMaxOrderAmountRatio, &p.MaxOrderAmountRatio, validateMaxOrderAmountRatio),
 		paramstypes.NewParamSetPair(KeyUnitBatchHeight, &p.UnitBatchHeight, validateUnitBatchHeight),
 		paramstypes.NewParamSetPair(KeyCircuitBreakerEnabled, &p.CircuitBreakerEnabled, validateCircuitBreakerEnabled),
+		paramstypes.NewParamSetPair(KeyPoolUnbondingDuration, &p.PoolUnbondingDuration, validatePoolUnbondingDuration),
 	}
 }
 
@@ -126,6 +130,7 @@ func (p Params) Validate() error {
 		{p.MaxOrderAmountRatio, validateMaxOrderAmountRatio},
 		{p.UnitBatchHeight, validateUnitBatchHeight},
 		{p.CircuitBreakerEnabled, validateCircuitBreakerEnabled},
+		{p.PoolUnbondingDuration, validatePoolUnbondingDuration},
 	} {
 		if err := v.validator(v.value); err != nil {
 			return err
@@ -314,5 +319,17 @@ func validateCircuitBreakerEnabled(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
+	return nil
+}
+
+func validatePoolUnbondingDuration(i interface{}) error {
+	v, ok := i.(sdk.Int)
+	if !ok{
+		return fmt.Errorf("invalid parameter type: %T", i)
+
+	}
+	if v.IsZero() {
+		return fmt.Errorf("Unbonding duration cannot be 0 day: %d", v)
+	}
 	return nil
 }

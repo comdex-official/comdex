@@ -1,8 +1,7 @@
 syntax = "proto3";
 package comdex.liquidity.v1beta1;
 import "gogoproto/gogo.proto";
-// import "google/protobuf/timestamp.proto";
-import "cosmos/base/v1beta1/coin.proto";
+
 
 option go_package = "github.com/comdex-official/comdex/x/liquidity/types";
 option (gogoproto.equal_all) = false;
@@ -24,18 +23,21 @@ message UserPools{
     uint64 pool_id = 1 [(gogoproto.moretags) = "yaml:\"pool_id\"", (gogoproto.jsontag) = "pool_id"
     ];
 
-    cosmos.base.v1beta1.Coin bonded_pool_coin = 2 [
+    string bonded_pool_coin = 2 [
 
-        (gogoproto.moretags) = "yaml:\"bonded_pool_coin\""
+        (gogoproto.moretags) = "yaml:\"bonded_pool_coin\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
        ];
-    cosmos.base.v1beta1.Coin unbonded_pool_coin = 3 [
+    string unbonded_pool_coin = 3 [
     
-            (gogoproto.moretags) = "yaml:\"unbonded_pool_coin\""
+            (gogoproto.moretags) = "yaml:\"unbonded_pool_coin\"",
+            (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
            ];
 
     repeated UserPoolUnbondingTokens unbonding_coins = 4[
         (gogoproto.customname) = "UserPoolUnbondingTokens",
         (gogoproto.moretags)   = "yaml:\"user_pool_unbonding_tokens\""
+       
 
     ]  ;       
     
@@ -44,17 +46,20 @@ message UserPools{
 
 message UserPoolUnbondingTokens{
 
-    cosmos.base.v1beta1.Coin is_unbonding_pool_coin = 1 [ 
-    (gogoproto.moretags) = "yaml:\"is_unbonding_pool_coin\""];
-    string unbonding_start_time=2[
+    string is_unbonding_pool_coin = 1 [ 
+    (gogoproto.moretags) = "yaml:\"is_unbonding_pool_coin\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"];
+    
+    float unbonding_start_time=2[
     (gogoproto.customname) = "UnbondingStartTime",
     (gogoproto.moretags)   = "yaml:\"unbonding_start_time\""
+ 
 
     ];       
-    string unbonding_end_time=3[
+    float unbonding_end_time=3[
     (gogoproto.customname) = "UnbondingEndTime",
     (gogoproto.moretags)   = "yaml:\"unbonding_end_time\""
-
+  
     ]; 
 
 }

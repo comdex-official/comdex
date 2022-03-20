@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -166,24 +167,114 @@ func (k msgServer) Swap(goCtx context.Context, msg *types.MsgSwapWithinBatch) (*
 	return &types.MsgSwapWithinBatchResponse{}, nil
 }
 
-
-func (k msgServer) BondPoolTokens(goCtx context.Context, msg *types.MsgBondPoolTokens) (*types.MsgBondPoolTokensResponse,error){
+func (k msgServer) BondPoolTokens(goCtx context.Context, msg *types.MsgBondPoolTokens) (*types.MsgBondPoolTokensResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	if k.GetCircuitBreakerEnabled(ctx) {
 		return nil, types.ErrCircuitBreakerEnabled
 	}
+	//IF user has provided liquidity to any given pool
+	userPoolsData, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.UserAddress))
+	if !found {
+		return nil, types.ErrUserNotHavingLiquidityInPools
+	}
+	//If user has provided liquidity to the pool he has entered
+	poolExists := k.GetUserPoolsContributionData(userPoolsData, msg.PoolId)
+	if !poolExists {
+		return nil, types.ErrUserNotHavingLiquidityInCurrentPool
+	}
+	for _, pool := range userPoolsData.UserPoolWiseData {
 
+		if pool.PoolId == msg.PoolId {
+			//Check if that amount of  unbonded token exists ,
+			//If exists , then bond user tokens.
+			//Remove from unbonded section
+			if pool.UnbondedPoolCoin.GTE(msg.PoolCoin.Amount) {
+				updatedBondedTokens := msg.PoolCoin.Amount
+				updatedUnBondedTokens := pool.UnbondedPoolCoin.Sub(msg.PoolCoin.Amount)
+				pool.BondedPoolCoin = &updatedBondedTokens
+				pool.UnbondedPoolCoin = &updatedUnBondedTokens
 
-	return &types.MsgBondPoolTokensResponse{},nil
+			} else {
+				return nil, types.ErrNotEnoughCoinsForBonding
+			}
+
+		} else {
+			continue
+		}
+	}
+	k.SetIndividualUserPoolsData(ctx, userPoolsData)
+
+	return &types.MsgBondPoolTokensResponse{}, nil
 }
-func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondPoolTokens) (*types.MsgUnbondPoolTokensResponse,error){
+
+func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondPoolTokens) (*types.MsgUnbondPoolTokensResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	if k.GetCircuitBreakerEnabled(ctx) {
 		return nil, types.ErrCircuitBreakerEnabled
 	}
+	//If user has provided liquidity to any pool
+	userPoolsData, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.UserAddress))
+	if !found {
+		return nil, types.ErrUserNotHavingLiquidityInPools
+	}
+	//If user has provided liquidity to the pool he has entered
+	poolExists := k.GetUserPoolsContributionData(userPoolsData, msg.PoolId)
+	if !poolExists {
+		return nil, types.ErrUserNotHavingLiquidityInCurrentPool
+	}
+	for _, pool := range userPoolsData.UserPoolWiseData {
+
+		if pool.PoolId == msg.PoolId {
+			//Check if that amount of  bonded token exists,
+			//If exists , then unbond user tokens.
+			//Remove from bonded section
+			if pool.BondedPoolCoin.GTE(msg.PoolCoin.Amount) {
+				var userUnbondingTokens types.UserPoolUnbondingTokens
+				userUnbondingTokens.IsUnbondingPoolCoin = &msg.PoolCoin.Amount
+				//Check for mistakes in these values
+				userUnbondingTokens.UnbondingStartTime = float32(time.Unix(0,0).Second())//Check for current second value
+				userUnbondingTokens.UnbondingEndTime =float32(k.CalculateUnbondingEndTime(int64(time.Unix(0,0).Second())))//Ending Time after the unbonding time will get over
+				updatedBondedTokens := pool.BondedPoolCoin.Sub(msg.PoolCoin.Amount)
+				pool.BondedPoolCoin=&updatedBondedTokens
+				pool.UserPoolUnbondingTokens=append(pool.UserPoolUnbondingTokens, &userUnbondingTokens)
+
+			} else {
+				return nil, types.ErrNotEnoughCoinsForUnBonding
+			}
+
+		} else {
+			continue
+		}
+	}
+	//Current Pending Tasks:
+	//1. Setting Unbonding Duration in Params
+	//2. Calculating Current Time - Setting in  start time
+	//3. Calculating End Time- Setting in End Time
+	//4. Write a Begin Blocker  Function that will change the unbonding Tokens to UNbonded Field
+	//5. Writing withdraw CHanges in function for unbonded tokens
+	//6. Create Pool Changes - Addding to bond unbond- Verify First
+	//7. Delete Pool CHanges- Checking it how it works & aliging it accordingly
+	// 8.Query Commands - For All Users
+	//9.Query Commands - USer Wise
+	//10. TS Proto Generation For all the above mentioned functions
+	//11. ENd to ENd Testing
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("Checking updated data----1", userPoolsData)
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("------------------------------------------------------")
+	fmt.Print("------------------------------------------------------")
+	k.SetIndividualUserPoolsData(ctx, userPoolsData)
 
 
-	return &types.MsgUnbondPoolTokensResponse{},nil
+	return &types.MsgUnbondPoolTokensResponse{}, nil
 }

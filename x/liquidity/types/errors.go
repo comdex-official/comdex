@@ -48,5 +48,9 @@ var (
 	ErrCircuitBreakerEnabled        = sdkerrors.Register(ModuleName, 40, "circuit breaker is triggered")
 	ErrOverflowAmount               = sdkerrors.Register(ModuleName, 41, "invalid amount that can cause overflow")
 	ErrInvalidUserAddress           = sdkerrors.Register(ModuleName, 42, "invalid user address for Bonding Tokens")
+	ErrUserNotHavingLiquidityInPools= sdkerrors.Register(ModuleName,43,"user adddress not priving liquidity in any pools currently")
+	ErrUserNotHavingLiquidityInCurrentPool=sdkerrors.Register(ModuleName,44,"user adddress not priving liquidity in current pool")
+	ErrNotEnoughCoinsForBonding     =sdkerrors.Register(ModuleName,45,"User does not have enough unbonded coins for bonding process")
+	ErrNotEnoughCoinsForUnBonding   = sdkerrors.Register(ModuleName,46,"User does not have enough bonded coins for unbonding process")
 
 )

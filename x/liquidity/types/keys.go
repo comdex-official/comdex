@@ -28,12 +28,14 @@ var (
 
 	PoolKeyPrefix                  = []byte{0x11}
 	PoolByReserveAccIndexKeyPrefix = []byte{0x12}
+	UserPoolAddressData            =  []byte{0x13}
 
 	PoolBatchKeyPrefix = []byte{0x22}
 
 	PoolBatchDepositMsgStateIndexKeyPrefix  = []byte{0x31}
 	PoolBatchWithdrawMsgStateIndexKeyPrefix = []byte{0x32}
 	PoolBatchSwapMsgStateIndexKeyPrefix     = []byte{0x33}
+
 )
 
 // GetPoolKey returns kv indexing key of the pool
@@ -47,6 +49,10 @@ func GetPoolKey(poolID uint64) []byte {
 // GetPoolByReserveAccIndexKey returns kv indexing key of the pool indexed by reserve account
 func GetPoolByReserveAccIndexKey(reserveAcc sdk.AccAddress) []byte {
 	return append(PoolByReserveAccIndexKeyPrefix, address.MustLengthPrefix(reserveAcc.Bytes())...)
+}
+
+func UserPoolDataKey(userAccountAddress sdk.AccAddress) []byte {
+	return append(UserPoolAddressData  ,address.MustLengthPrefix(userAccountAddress.Bytes())...)
 }
 
 // GetPoolBatchKey returns kv indexing key of the pool batch indexed by pool id

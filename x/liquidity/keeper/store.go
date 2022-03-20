@@ -111,7 +111,6 @@ func (k Keeper) GetPoolByReserveAccIndex(ctx sdk.Context, reserveAcc sdk.AccAddr
 	poolID := val.GetValue()
 	return k.GetPool(ctx, poolID)
 }
-
 // SetPoolByReserveAccIndex sets Index by ReserveAcc for pool duplication check
 func (k Keeper) SetPoolByReserveAccIndex(ctx sdk.Context, pool types.Pool) {
 	store := ctx.KVStore(k.storeKey)
