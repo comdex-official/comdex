@@ -16,10 +16,14 @@ var (
 	// LastFetchPriceIDKey is the key for the last request id
 	LastFetchPriceIDKey = "fetch_price_last_id"
 
+	TempFetchPriceIDKey = "fetch_price_temp_id"
+
 	// FetchPriceClientIDKey is query request identifier
 	FetchPriceClientIDKey = "fetch_price_id"
 
 	LastBlockheightKey = "last_blockheight"
+
+	OracleValidationResultKey = "Oracle_Validation_Result"
 )
 
 // NewMsgFetchPriceData creates a new FetchPrice message
