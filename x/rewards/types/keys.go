@@ -11,6 +11,10 @@ const (
 )
 
 var (
+	IsMintingRewardsTriggered = false
+)
+
+var (
 	MintingRewardsIdKey     = []byte{0x01}
 	MintingRewardsKeyPrefix = []byte{0x11}
 )

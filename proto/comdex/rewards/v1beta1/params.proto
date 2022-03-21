@@ -1,6 +1,12 @@
 syntax = "proto3";
 package comdex.rewards.v1beta1;
 
+import "gogoproto/gogo.proto";
+
 option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 
-message Params {}
+message Params {
+  string mint_reward_timestamp  = 1 [ 
+    (gogoproto.moretags) = "yaml:\"mint_reward_timestamp\""
+  ]; 
+}

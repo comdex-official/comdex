@@ -279,13 +279,21 @@ func (k Keeper) DistributeRewards(ctx sdk.Context, mintingReward types.MintingRe
 }
 
 func (k Keeper) TriggerRewards(ctx sdk.Context) {
-	// this needs to be updated, the logic should be executed only onece in every 24 hour
-	if ctx.BlockHeight()%2 == 0 {
+	const layoutTime = "15:04:05"
+	params := k.GetParams(ctx)
+	distributionTimeStamp, _ := time.Parse(layoutTime, strings.TrimSpace(params.MintRewardTimestamp))
+	currentTimeStamp, _ := time.Parse(layoutTime, ctx.BlockTime().Format(layoutTime))
+	diff := distributionTimeStamp.Sub(currentTimeStamp).Seconds()
+	if diff >= 60 && types.IsMintingRewardsTriggered {
+		types.IsMintingRewardsTriggered = false
+	}
+	if diff >= -6 && diff <= 6 && !types.IsMintingRewardsTriggered {
 		mintingRewards := k.GetMintingRewards(ctx)
 		for _, mintingReward := range mintingRewards {
 			if mintingReward.IsActive {
 				k.DistributeRewards(ctx, mintingReward)
 			}
 		}
+		types.IsMintingRewardsTriggered = true
 	}
 }
