@@ -284,7 +284,7 @@ func (k Keeper) TriggerRewards(ctx sdk.Context) {
 	distributionTimeStamp, _ := time.Parse(layoutTime, strings.TrimSpace(params.MintRewardTimestamp))
 	currentTimeStamp, _ := time.Parse(layoutTime, ctx.BlockTime().Format(layoutTime))
 	diff := distributionTimeStamp.Sub(currentTimeStamp).Seconds()
-	if diff >= 60 && types.IsMintingRewardsTriggered {
+	if diff >= 1800 && types.IsMintingRewardsTriggered {
 		types.IsMintingRewardsTriggered = false
 	}
 	if diff >= -6 && diff <= 6 && !types.IsMintingRewardsTriggered {
