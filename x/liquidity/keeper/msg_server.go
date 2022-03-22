@@ -234,8 +234,8 @@ func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondP
 				var userUnbondingTokens types.UserPoolUnbondingTokens
 				userUnbondingTokens.IsUnbondingPoolCoin = &msg.PoolCoin.Amount
 				//Check for mistakes in these values
-				userUnbondingTokens.UnbondingStartTime = float32(ctx.BlockTime().Second())//Check for current second value
-				userUnbondingTokens.UnbondingEndTime =float32(k.CalculateUnbondingEndTime(int64(ctx.BlockTime().Second())))//Ending Time after the unbonding time will get over
+				userUnbondingTokens.UnbondingStartTime = ctx.BlockTime()//Check for current second value
+				userUnbondingTokens.UnbondingEndTime = k.CalculateUnbondingEndTime(ctx.BlockTime())//Ending Time after the unbonding time will get over
 				updatedBondedTokens := pool.BondedPoolCoin.Sub(msg.PoolCoin.Amount)
 				pool.BondedPoolCoin=&updatedBondedTokens
 				pool.UserPoolUnbondingTokens=append(pool.UserPoolUnbondingTokens, &userUnbondingTokens)
@@ -249,19 +249,10 @@ func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondP
 		}
 	}
 
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("Checking updated data----1", userPoolsData)
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
+
+	fmt.Println("------------------------------------------------------")
+	fmt.Println("Checking updated data----1", userPoolsData)
+	fmt.Println("------------------------------------------------------")
 	k.SetIndividualUserPoolsData(ctx, userPoolsData)
 
 

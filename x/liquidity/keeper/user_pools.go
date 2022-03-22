@@ -124,21 +124,9 @@ func (k *Keeper) CreatePoolForUser(existinguserPoolsData types.UserPoolsData, po
 
 }
 
-func (k *Keeper) CalculateUnbondingEndTime(currentTime int64) (endTime float64) {
-	//Taking Default UNbonding timline from Params
-	defaultUnbondingPeriod := types.DefaultPoolUnbondingDuration
-	//COnverting it to float
-	value := float64(defaultUnbondingPeriod.Int64())
-	//Calculating hours in a day & seconds
-	hoursInADay, _ := time.ParseDuration("24h")
-	secondsInADay := hoursInADay.Seconds()
-	//CAlculating the total unbonding time in seconds - float64
-	totalUnbondingDuration := secondsInADay * value
-	//Endtime - totalunbonding time + current time
-	endTime = float64(currentTime) + totalUnbondingDuration
-	fmt.Println("Current Time--------", currentTime)
-	fmt.Println("End Time------", endTime)
-
+func (k *Keeper) CalculateUnbondingEndTime(currentTime time.Time) (endTime time.Time) {
+	start := currentTime
+	endTime = start.AddDate(0, 0, 21)
 	return endTime
 }
 
