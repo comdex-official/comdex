@@ -28,3 +28,7 @@ type AssetKeeper interface {
 type OracleKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }
+
+type BandoracleKeeper interface {
+	GetOracleValidationResult(ctx sdk.Context) bool
+}

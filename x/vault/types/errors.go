@@ -25,6 +25,7 @@ var (
 	ErrorEnoughCAssetsNotMinted        = errors.Register(ModuleName, 210, "cannot burn coin, enough cassets not minted")
 	ErrorVaultOwnerNotFound            = errors.Register(ModuleName, 211, "vault owner not found in user vault ids mapping")
 	ErrorCollateralDenomNotFound       = errors.Register(ModuleName, 212, "collateral denom not found in collateral vault ids mapping")
+	ErrorOraclePriceExpired            = errors.Register(ModuleName, 213, "Oracle prices expired")
 )
 
 var (

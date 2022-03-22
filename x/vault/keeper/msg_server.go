@@ -25,6 +25,10 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -69,6 +73,10 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -107,6 +115,10 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 
 func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}
 
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
@@ -155,6 +167,10 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 
 func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}
 
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
@@ -207,6 +223,10 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -257,7 +277,6 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 }
 
 func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(c)
 
 	from, err := sdk.AccAddressFromBech32(msg.From)

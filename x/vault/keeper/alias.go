@@ -65,3 +65,7 @@ func (k *Keeper) GetModuleAddress(name string) sdk.AccAddress {
 func (k *Keeper) GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins {
 	return k.bank.GetAllBalances(ctx, addr)
 }
+
+func (k *Keeper) GetOracleValidationResult(ctx sdk.Context) bool{
+	return k.bandoracle.GetOracleValidationResult(ctx)
+}

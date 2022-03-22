@@ -434,6 +434,7 @@ func New(
 		app.accountKeeper,
 		&app.assetKeeper,
 		&app.oracleKeeper,
+		&app.BandoracleKeeper,
 	)
 
 	app.liquidityKeeper = liquiditykeeper.NewKeeper(
