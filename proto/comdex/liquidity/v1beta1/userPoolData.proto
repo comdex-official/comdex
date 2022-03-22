@@ -7,6 +7,13 @@ option go_package = "github.com/comdex-official/comdex/x/liquidity/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+
+
+message AllUserAddressesArray{
+
+    repeated string user_addresses= 1 [(gogoproto.moretags) = "yaml:\"user_addresses\""];
+}
+
 message UserPoolsData {
     string user_address = 1 [ (gogoproto.moretags) = "yaml:\"user_address\""];
 

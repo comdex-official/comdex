@@ -35,7 +35,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		if sdk.Dec.LT(collateralizationRatio, liquidationRatio) {
 			err := k.CreateLockedVault(ctx, vault, collateralizationRatio)
 			if err != nil {
-				return err
+				continue
 			}
 			k.DeleteVault(ctx, vault.ID)
 		}
@@ -160,7 +160,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			unliquidatePointPercentage, _ := sdk.NewDecFromStr(types.DefaultUnliquidatePointPercent)
 			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
 			if err != nil {
-				return err
+				continue
 			}
 
 			pair, found := k.GetPair(ctx, lockedVault.PairId)
@@ -179,7 +179,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 				if err := k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
-					return err
+					continue
 				}
 				continue
 			}

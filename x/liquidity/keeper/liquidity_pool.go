@@ -7,7 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	
 
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
@@ -334,58 +333,65 @@ func (k Keeper) ExecuteDeposit(ctx sdk.Context, msg types.DepositMsgState, batch
 	fmt.Println("------------------------------------------------------")
 	fmt.Println("------------------------------------------------------")
 	fmt.Println("------------------------------------------------------")
-	fmt.Print("------------------------------------------------------")
-			userDetails,found:=k.GetIndividualUserPoolsData(ctx,sdk.AccAddress(msg.Msg.DepositorAddress))
-			///If user is depositing for the first time on the platform
-			if !found{
-				fmt.Print("No data found of the user")
-				//Set new Data of the user
-				//----------------Reafactor this to a new function and get a seperate function---------------
-				var newUser types.UserPoolsData
-				var userPoolsData types.UserPools
-				// var userUnbondingTokens types.UserPoolUnbondingTokens
-				bondedPoolToken:=sdk.ZeroInt()
-				
-				
-				 newUser.UserAddress=msg.Msg.DepositorAddress
-				 userPoolsData.PoolId=msg.Msg.PoolId
-				 userPoolsData.BondedPoolCoin=&bondedPoolToken
-				 userPoolsData.UnbondedPoolCoin=&mintPoolCoin.Amount
-				 //User Unbonding Stats, to be removed from this section
-				//  unbondingPoolToken:=sdk.ZeroInt()
-				//  userUnbondingTokens.IsUnbondingPoolCoin=&unbondingPoolToken
-				//  userUnbondingTokens.UnbondingStartTime="0"
-				//  userUnbondingTokens.UnbondingEndTime="0"
+	fmt.Println("------------------------------------------------------")
+	userDetails, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.Msg.DepositorAddress))
+	userContribution := k.GetUserAddresses(ctx)
+	foundTheUser:=false
+	///If user is depositing for the first time on the platform
+	for _, userAdd := range userContribution.UserAddresses {
+		if userAdd == msg.Msg.DepositorAddress {
+			foundTheUser = true
+			break
 
-				// userPoolsData.UserPoolUnbondingTokens=append(userPoolsData.UserPoolUnbondingTokens, &userUnbondingTokens)
-				newUser.UserPoolWiseData= append(newUser.UserPoolWiseData, &userPoolsData)
-				k.SetIndividualUserPoolsData(ctx,newUser)
-			} else{
-				//This means user data exists
-				//Now we need to find the pool the are executing deposits, 
-				//1. adding liquidity to a pool , where they have already provided liquidity
-				//2. adding liquidity to a new pool , 
-				  found:=k.GetUserPoolsContributionData(userDetails,msg.Msg.PoolId)
-				  if found{
-					  //User has interacted with this pool earliar
-					  //Update the params in the existitng pool 
-					  updatedUserPoolDetails:=k.UpdateUnbondedTokensUserPoolData(userDetails,msg.Msg.PoolId,mintPoolCoin.Amount)
-					  k.SetIndividualUserPoolsData(ctx,updatedUserPoolDetails)
-					  fmt.Print("Added to the existing pool data for user",updatedUserPoolDetails)
-					  
-				  } else {
-					  // User data exists, but this is a new pool user is interacting with right now
-					  //Create a new pool for user in the array
-					  updatedUserPoolDetails:=k.CreatePoolForUser(userDetails,msg.Msg.PoolId,mintPoolCoin.Amount)
-					  k.SetIndividualUserPoolsData(ctx,updatedUserPoolDetails)
-					  fmt.Print("Created user details for a  new pool",updatedUserPoolDetails)
+		} else {
+			continue
+		}
 
-				  }
-				
-				
-			}
-	fmt.Println("User Balance",msg.Msg.DepositorAddress,mintPoolCoin.Denom,mintPoolCoin.Amount)
-	fmt.Print("------------------------------------------------------")
+	}
+	if !foundTheUser {
+		userContribution.UserAddresses = append(userContribution.UserAddresses, msg.Msg.DepositorAddress)
+		k.SetUserAddresses(ctx, userContribution)
+	}
+	if !found {
+		fmt.Print("No data found of the user")
+		//Set new Data of the user
+		//----------------Refactor this to a new function and get a seperate function---------------
+		var newUser types.UserPoolsData
+		var userPoolsData types.UserPools
+		
+		bondedPoolToken := sdk.ZeroInt()
+		newUser.UserAddress = msg.Msg.DepositorAddress
+		userPoolsData.PoolId = msg.Msg.PoolId
+		userPoolsData.BondedPoolCoin = &bondedPoolToken
+		userPoolsData.UnbondedPoolCoin = &mintPoolCoin.Amount
+		
+		newUser.UserPoolWiseData = append(newUser.UserPoolWiseData, &userPoolsData)
+		k.SetIndividualUserPoolsData(ctx, newUser)
+	} else {
+		//This means user data exists
+		//Now we need to find the pool the are executing deposits,
+		//1. adding liquidity to a pool , where they have already provided liquidity
+		//2. adding liquidity to a new pool ,
+		found := k.GetUserPoolsContributionData(userDetails, msg.Msg.PoolId)
+		if found {
+			//User has interacted with this pool earliar
+			//Update the params in the existitng pool
+			updatedUserPoolDetails := k.UpdateUnbondedTokensUserPoolData(userDetails, msg.Msg.PoolId, mintPoolCoin.Amount)
+			k.SetIndividualUserPoolsData(ctx, updatedUserPoolDetails)
+			fmt.Print("Added to the existing pool data for user", updatedUserPoolDetails)
+
+		} else {
+			// User data exists, but this is a new pool user is interacting with right now
+			//Create a new pool for user in the array
+			updatedUserPoolDetails := k.CreatePoolForUser(userDetails, msg.Msg.PoolId, mintPoolCoin.Amount)
+			k.SetIndividualUserPoolsData(ctx, updatedUserPoolDetails)
+			fmt.Print("Created user details for a  new pool", updatedUserPoolDetails)
+
+		}
+
+	}
+
+	fmt.Println("------------------------------------------------------")
 	fmt.Println("------------------------------------------------------")
 	fmt.Println("------------------------------------------------------")
 	fmt.Println("------------------------------------------------------")
@@ -471,6 +477,17 @@ func (k Keeper) ExecuteWithdrawal(ctx sdk.Context, msg types.WithdrawMsgState, b
 	} else {
 		return types.ErrBadPoolCoinAmount
 	}
+
+	//Executing logic to check if user has unbonded the tokens, then only allowing withdraw.
+	//Check
+	// loop over all user unbonding values, & put them to unbond,
+	//Then check how much he is eligible to withdraw
+	//Allow them if correct,
+	//Substract the required
+	//Continue to next step
+
+	//Function - 1 is unbonding to unbond
+	//Cecking if pool coin is less than equal to withdraw unbond coins.
 
 	// send withdrawing coins to the withdrawer
 	if err := k.bankKeeper.InputOutputCoins(ctx, inputs, outputs); err != nil {

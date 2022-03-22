@@ -9,7 +9,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"time"
+
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -234,8 +234,8 @@ func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondP
 				var userUnbondingTokens types.UserPoolUnbondingTokens
 				userUnbondingTokens.IsUnbondingPoolCoin = &msg.PoolCoin.Amount
 				//Check for mistakes in these values
-				userUnbondingTokens.UnbondingStartTime = float32(time.Unix(0,0).Second())//Check for current second value
-				userUnbondingTokens.UnbondingEndTime =float32(k.CalculateUnbondingEndTime(int64(time.Unix(0,0).Second())))//Ending Time after the unbonding time will get over
+				userUnbondingTokens.UnbondingStartTime = float32(ctx.BlockTime().Second())//Check for current second value
+				userUnbondingTokens.UnbondingEndTime =float32(k.CalculateUnbondingEndTime(int64(ctx.BlockTime().Second())))//Ending Time after the unbonding time will get over
 				updatedBondedTokens := pool.BondedPoolCoin.Sub(msg.PoolCoin.Amount)
 				pool.BondedPoolCoin=&updatedBondedTokens
 				pool.UserPoolUnbondingTokens=append(pool.UserPoolUnbondingTokens, &userUnbondingTokens)
@@ -248,18 +248,7 @@ func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondP
 			continue
 		}
 	}
-	//Current Pending Tasks:
-	//1. Setting Unbonding Duration in Params
-	//2. Calculating Current Time - Setting in  start time
-	//3. Calculating End Time- Setting in End Time
-	//4. Write a Begin Blocker  Function that will change the unbonding Tokens to UNbonded Field
-	//5. Writing withdraw CHanges in function for unbonded tokens
-	//6. Create Pool Changes - Addding to bond unbond- Verify First
-	//7. Delete Pool CHanges- Checking it how it works & aliging it accordingly
-	// 8.Query Commands - For All Users
-	//9.Query Commands - USer Wise
-	//10. TS Proto Generation For all the above mentioned functions
-	//11. ENd to ENd Testing
+
 	fmt.Print("------------------------------------------------------")
 	fmt.Print("------------------------------------------------------")
 	fmt.Print("------------------------------------------------------")

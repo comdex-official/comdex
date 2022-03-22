@@ -8,6 +8,50 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+//1. get all users addresses
+func (k *Keeper) GetUserAddresses(ctx sdk.Context) (usersAddresses types.AllUserAddressesArray) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.UsersAddressesArrayKey(1)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return usersAddresses
+	}
+
+	k.cdc.MustUnmarshal(value, &usersAddresses)
+	return usersAddresses
+}
+
+//2. set to all useraddresses
+func (k *Keeper) SetUserAddresses(ctx sdk.Context, usersAddresses types.AllUserAddressesArray) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.UsersAddressesArrayKey(1)
+		value = k.cdc.MustMarshal(&usersAddresses)
+	)
+
+	store.Set(key, value)
+}
+
+//3. get all users pool data contribution
+//To get all users pool contribution data
+func (k *Keeper) GetAllUsersPoolsData(ctx sdk.Context) (usersPoolDataArray []types.UserPoolsData) {
+
+	userContribution := k.GetUserAddresses(ctx)
+	for _, userAddress := range userContribution.UserAddresses {
+		individualUserData, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(userAddress))
+		if !found {
+			continue
+		}
+		usersPoolDataArray = append(usersPoolDataArray, individualUserData)
+
+	}
+
+	return usersPoolDataArray
+}
+
 func (k *Keeper) GetIndividualUserPoolsData(ctx sdk.Context, address sdk.AccAddress) (userPoolsData types.UserPoolsData, found bool) {
 
 	var (
@@ -69,27 +113,19 @@ func (k *Keeper) UpdateUnbondedTokensUserPoolData(userPoolsData types.UserPoolsD
 
 func (k *Keeper) CreatePoolForUser(existinguserPoolsData types.UserPoolsData, poolId uint64, unbondedTokens sdk.Int) (updatedUserPoolsData types.UserPoolsData) {
 	var userPoolsData types.UserPools
-	// var userUnbondingTokens types.UserPoolUnbondingTokens
+
 	bondedPoolToken := sdk.ZeroInt()
-	// unbondingPoolToken := sdk.ZeroInt()
 	userPoolsData.PoolId = poolId
 	userPoolsData.BondedPoolCoin = &bondedPoolToken
 	userPoolsData.UnbondedPoolCoin = &unbondedTokens
-	// userUnbondingTokens.IsUnbondingPoolCoin = &unbondingPoolToken
-	// userUnbondingTokens.UnbondingStartTime = "0"
-	// userUnbondingTokens.UnbondingEndTime = "0"
-	// userPoolsData.UserPoolUnbondingTokens = append(userPoolsData.UserPoolUnbondingTokens, &userUnbondingTokens)
 	existinguserPoolsData.UserPoolWiseData = append(existinguserPoolsData.UserPoolWiseData, &userPoolsData)
-
 	updatedUserPoolsData = existinguserPoolsData
 	return updatedUserPoolsData
 
 }
 
 func (k *Keeper) CalculateUnbondingEndTime(currentTime int64) (endTime float64) {
-
 	//Taking Default UNbonding timline from Params
-
 	defaultUnbondingPeriod := types.DefaultPoolUnbondingDuration
 	//COnverting it to float
 	value := float64(defaultUnbondingPeriod.Int64())
@@ -100,35 +136,34 @@ func (k *Keeper) CalculateUnbondingEndTime(currentTime int64) (endTime float64) 
 	totalUnbondingDuration := secondsInADay * value
 	//Endtime - totalunbonding time + current time
 	endTime = float64(currentTime) + totalUnbondingDuration
-	fmt.Println("Current Time",currentTime)
-	fmt.Println("End Time",endTime)
+	fmt.Println("Current Time--------", currentTime)
+	fmt.Println("End Time------", endTime)
 
 	return endTime
 }
 
-// func (k *Keeper) GetAllUserPools(ctx sdk.Context) (userpools []types.UserPoolsData) {
-
-// 	var (
-// 		store = k.Store(ctx)
-// 		iter  = sdk.KVStorePrefixIterator(store, types.LockedVaultKeyPrefix)
-// 	)
-
-// 	defer iter.Close()
-
-// 	for ; iter.Valid(); iter.Next() {
-// 		var locked_vault types.LockedVault
-// 		k.cdc.MustUnmarshal(iter.Value(), &locked_vault)
-// 		locked_vaults = append(locked_vaults, locked_vault)
-// 	}
-
-// 	return locked_vaults
-
-// }
-
 //Functions that will be made
-//1. Set USERPOOLSDATA - for a individual user
-//2. Get USERPOOLSDATA- for a individual user
+
 //3. Get AllUsersPOOLSDATA- for all users -- this will
-//4. Bond User Token - for a individual user
 //5. Start Unbonding For User Token- for a individual user
-//6. BEgin Blocker - Unbond User Token whose bonding is complete - Automatic Execution
+
+//Current Pending Tasks:
+//1. Setting Unbonding Duration in Params
+//2. Calculating Current Time - Setting in  start time
+//3. Calculating End Time- Setting in End Time
+//4. Write a Begin Blocker  Function that will change the unbonding Tokens to UNbonded Field
+//5. Writing withdraw CHanges in function for unbonded tokens
+//6. Create Pool Changes - Addding to bond unbond- Verify First
+//7. Delete Pool Changes- Checking it how it works & aliging it accordingly
+// 8.Query Commands - For All Users
+//9.Query Commands - USer Wise
+//10. TS Proto Generation For all the above mentioned functions
+//11. ENd to ENd Testing
+
+//----------
+//New Protobuf File-done
+//For saving the address of all the users-done
+//Key for this in kv store will be a integer-done
+//Now everytime user interacts, it will append it to the struct-done
+//Get and set function to append a vaule to the kv store-done
+//This will be user to automate the begin blocker & rewards distribution mechanism
