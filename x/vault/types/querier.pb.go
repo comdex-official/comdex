@@ -336,7 +336,7 @@ func (m *QueryTotalCollateralRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryTotalCollateralRequest proto.InternalMessageInfo
 
 type QueryTotalCollateralResponse struct {
-	Collaterals []*types.Coin `protobuf:"bytes,1,rep,name=collaterals,proto3" json:"collaterals,omitempty" yaml:"collaterals"`
+	Collaterals []types.Coin `protobuf:"bytes,1,rep,name=collaterals,proto3" json:"collaterals,omitempty" yaml:"collaterals"`
 }
 
 func (m *QueryTotalCollateralResponse) Reset()         { *m = QueryTotalCollateralResponse{} }
@@ -2080,7 +2080,7 @@ func (m *QueryTotalCollateralResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Collaterals = append(m.Collaterals, &types.Coin{})
+			m.Collaterals = append(m.Collaterals, types.Coin{})
 			if err := m.Collaterals[len(m.Collaterals)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
