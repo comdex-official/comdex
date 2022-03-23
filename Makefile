@@ -39,9 +39,9 @@ endif
 
 build:
 ifeq (${OS},Windows_NT)
-	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex.exe ./node
+	go build  ${BUILD_FLAGS} -o build/${GOOS}/${GOARCH}/comdex.exe ./node
 else
-	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex ./node
+	go build  ${BUILD_FLAGS} -o build/${GOOS}/${GOARCH}/comdex ./node
 endif
 
 release: build
