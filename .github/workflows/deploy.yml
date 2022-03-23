@@ -36,3 +36,25 @@ jobs:
         with:
           name: binaries
           path: release/*
+  publish:
+    needs: build
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: binaries
+          path: releases
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: releases
+
+      - name: attach binaries
+        uses: softprops/action-gh-release@v1
+        with:
+          files: releases/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
