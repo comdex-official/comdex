@@ -271,6 +271,13 @@ func (k Keeper) DistributeRewards(ctx sdk.Context, mintingReward types.MintingRe
 					continue
 				}
 				k.SendCoinsFromModuleToAccount(ctx, types.ModuleName, parsedOwner, sdk.NewCoins(rewardCoin))
+				ctx.EventManager().EmitEvents(sdk.Events{
+					sdk.NewEvent(
+						types.TypeEvtMintRewardDistribution,
+						sdk.NewAttribute(types.AttributeReceiver, vault.Owner),
+						sdk.NewAttribute(types.AttributeAmount, rewardCoin.String()),
+					),
+				})
 				mintingReward.AvailableRewards = sdk.NewCoin(mintingReward.AvailableRewards.Denom, mintingReward.AvailableRewards.Amount.Sub(rewardCoin.Amount))
 			}
 		}
