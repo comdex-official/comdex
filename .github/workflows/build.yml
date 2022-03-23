@@ -6,19 +6,19 @@ on:
   release:
     types: [created]
 jobs:
-  # build:
-  #   name: Build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         fetch-depth: 0
-  #     - uses: sonarsource/sonarqube-scan-action@master
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-  build:
+   sonar:
+     name: Sonarqube
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v2
+         with:
+           fetch-depth: 0
+       - uses: sonarsource/sonarqube-scan-action@master
+         env:
+           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+           
+   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
