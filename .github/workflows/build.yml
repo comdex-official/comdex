@@ -6,7 +6,7 @@ on:
   release:
     types: [created]
 jobs:
-    # build:
+  # build:
   #   name: Build
   #   runs-on: ubuntu-latest
   #   steps:
@@ -28,7 +28,7 @@ jobs:
           go-version: ^1.16
         id: go
 
-      - name: Check out code into the Go module directory
+      - name: Check out code into the Go module directory˛˜ 
         uses: actions/checkout@v2
 
       - name: Get dependencies
@@ -38,33 +38,4 @@ jobs:
         run: make verify
 
       - name: Build Release
-        run: make release
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: binaries
-          path: release/*
-
-  publish:
-    needs: build
-    name: Release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: binaries
-          path: releases
-
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: releases
-
-      - name: attach binaries
-        uses: softprops/action-gh-release@v1
-        with:
-          files: releases/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: make build
