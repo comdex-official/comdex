@@ -1,0 +1,39 @@
+name: Deploy
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - os: ubuntu-latest
+          - os: macos-latest
+          - os: windows-latest
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.17
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: Get dependencies
+        run: go get -v -t -d ./...
+
+      - name: Verify
+        run: make verify
+
+      - name: Build Release
+        run: make release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: binaries
+          path: release/*
