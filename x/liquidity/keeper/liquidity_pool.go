@@ -135,8 +135,54 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 		}
 	}
 
-	if _, err := k.MintAndSendPoolCoin(ctx, pool, poolCreator, poolCreator, msg.DepositCoins); err != nil {
+	mintedCoin, err := k.MintAndSendPoolCoin(ctx, pool, poolCreator, poolCreator, msg.DepositCoins)
+	if err != nil {
 		return types.Pool{}, err
+	}
+	//Add Pool Creator data to the userPoolData structure
+	//
+	//
+
+	userDetails, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.PoolCreatorAddress))
+	userContribution := k.GetUserAddresses(ctx)
+	foundTheUser := false
+	///If user is depositing for the first time on the platform
+	for _, userAdd := range userContribution.UserAddresses {
+		if userAdd == msg.PoolCreatorAddress {
+			foundTheUser = true
+			break
+
+		} else {
+			continue
+		}
+
+	}
+	if !foundTheUser {
+		userContribution.UserAddresses = append(userContribution.UserAddresses, msg.PoolCreatorAddress)
+		k.SetUserAddresses(ctx, userContribution)
+	}
+	if !found {
+		fmt.Print("No existing data found of the user")
+		//Set new Data of the user
+		//----------------Refactor this to a new function and get a seperate function---------------
+		var newUser types.UserPoolsData
+		var userPoolsData types.UserPools
+		bondedPoolToken := sdk.ZeroInt()
+		newUser.UserAddress = msg.PoolCreatorAddress
+		userPoolsData.PoolId = uint64(msg.PoolTypeId)
+		userPoolsData.BondedPoolCoin = &bondedPoolToken
+		userPoolsData.UnbondedPoolCoin = &mintedCoin.Amount
+
+		newUser.UserPoolWiseData = append(newUser.UserPoolWiseData, &userPoolsData)
+		k.SetIndividualUserPoolsData(ctx, newUser)
+	} else {
+
+		// User data exists, but this is a new pool user is interacting with right now
+		//Create a new pool for user in the array
+		updatedUserPoolDetails := k.CreatePoolForUser(userDetails, uint64(msg.PoolTypeId), mintedCoin.Amount)
+		k.SetIndividualUserPoolsData(ctx, updatedUserPoolDetails)
+		fmt.Print("Created user details for a  new pool", updatedUserPoolDetails)
+
 	}
 
 	// pool creation fees are collected in community pool
@@ -197,9 +243,69 @@ func (k Keeper) ExecuteDeposit(ctx sdk.Context, msg types.DepositMsgState, batch
 				return types.ErrLessThanMinInitDeposit
 			}
 		}
+		//if pool is depleted add the same struct here
+		//
+
 		poolCoin, err := k.MintAndSendPoolCoin(ctx, pool, batchEscrowAcc, depositor, msg.Msg.DepositCoins)
 		if err != nil {
 			return err
+		}
+
+		userDetails, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.Msg.DepositorAddress))
+		userContribution := k.GetUserAddresses(ctx)
+		foundTheUser := false
+		///If user is depositing for the first time on the platform
+		for _, userAdd := range userContribution.UserAddresses {
+			if userAdd == msg.Msg.DepositorAddress {
+				foundTheUser = true
+				break
+
+			} else {
+				continue
+			}
+
+		}
+		if !foundTheUser {
+			userContribution.UserAddresses = append(userContribution.UserAddresses, msg.Msg.DepositorAddress)
+			k.SetUserAddresses(ctx, userContribution)
+		}
+		if !found {
+			fmt.Print("No existing data found of the user")
+			//Set new Data of the user
+			//----------------Refactor this to a new function and get a seperate function---------------
+			var newUser types.UserPoolsData
+			var userPoolsData types.UserPools
+
+			bondedPoolToken := sdk.ZeroInt()
+			newUser.UserAddress = msg.Msg.DepositorAddress
+			userPoolsData.PoolId = msg.Msg.PoolId
+			userPoolsData.BondedPoolCoin = &bondedPoolToken
+			userPoolsData.UnbondedPoolCoin = &poolCoin.Amount
+
+			newUser.UserPoolWiseData = append(newUser.UserPoolWiseData, &userPoolsData)
+			k.SetIndividualUserPoolsData(ctx, newUser)
+		} else {
+			//This means user data exists
+			//Now we need to find the pool the are executing deposits,
+			//1. adding liquidity to a pool , where they have already provided liquidity
+			//2. adding liquidity to a new pool ,
+			found := k.GetUserPoolsContributionData(userDetails, msg.Msg.PoolId)
+			if found {
+				//User has interacted with this pool earliar
+				//Update the params in the existitng pool
+				updatedUserPoolDetails := k.UpdateUnbondedTokensUserPoolData(userDetails, msg.Msg.PoolId, poolCoin.Amount)
+				k.SetIndividualUserPoolsData(ctx, updatedUserPoolDetails)
+				fmt.Print("Added to the existing pool data for user", updatedUserPoolDetails)
+
+			} else {
+				// User data exists, but this is a new pool user is interacting with right now
+				//Create a new pool for user in the array
+				updatedUserPoolDetails := k.CreatePoolForUser(userDetails, msg.Msg.PoolId, poolCoin.Amount)
+				k.SetIndividualUserPoolsData(ctx, updatedUserPoolDetails)
+				fmt.Print("Created user details for a  new pool", updatedUserPoolDetails)
+
+			}
+
 		}
 
 		// set deposit msg state of the pool batch complete
@@ -336,7 +442,7 @@ func (k Keeper) ExecuteDeposit(ctx sdk.Context, msg types.DepositMsgState, batch
 	fmt.Println("------------------------------------------------------")
 	userDetails, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.Msg.DepositorAddress))
 	userContribution := k.GetUserAddresses(ctx)
-	foundTheUser:=false
+	foundTheUser := false
 	///If user is depositing for the first time on the platform
 	for _, userAdd := range userContribution.UserAddresses {
 		if userAdd == msg.Msg.DepositorAddress {
@@ -346,25 +452,24 @@ func (k Keeper) ExecuteDeposit(ctx sdk.Context, msg types.DepositMsgState, batch
 		} else {
 			continue
 		}
-
 	}
 	if !foundTheUser {
 		userContribution.UserAddresses = append(userContribution.UserAddresses, msg.Msg.DepositorAddress)
 		k.SetUserAddresses(ctx, userContribution)
 	}
 	if !found {
-		fmt.Print("No data found of the user")
+		fmt.Print("No existing data found of the user")
 		//Set new Data of the user
 		//----------------Refactor this to a new function and get a seperate function---------------
 		var newUser types.UserPoolsData
 		var userPoolsData types.UserPools
-		
+
 		bondedPoolToken := sdk.ZeroInt()
 		newUser.UserAddress = msg.Msg.DepositorAddress
 		userPoolsData.PoolId = msg.Msg.PoolId
 		userPoolsData.BondedPoolCoin = &bondedPoolToken
 		userPoolsData.UnbondedPoolCoin = &mintPoolCoin.Amount
-		
+
 		newUser.UserPoolWiseData = append(newUser.UserPoolWiseData, &userPoolsData)
 		k.SetIndividualUserPoolsData(ctx, newUser)
 	} else {
@@ -390,16 +495,6 @@ func (k Keeper) ExecuteDeposit(ctx sdk.Context, msg types.DepositMsgState, batch
 		}
 
 	}
-
-	fmt.Println("------------------------------------------------------")
-	fmt.Println("------------------------------------------------------")
-	fmt.Println("------------------------------------------------------")
-	fmt.Println("------------------------------------------------------")
-	fmt.Println("------------------------------------------------------")
-	fmt.Println("------------------------------------------------------")
-	fmt.Println("------------------------------------------------------")
-	fmt.Println("------------------------------------------------------")
-	fmt.Println("------------------------------------------------------")
 
 	reserveCoins = k.GetReserveCoins(ctx, pool)
 	lastReserveRatio := sdk.NewDecFromInt(reserveCoins[0].Amount).Quo(sdk.NewDecFromInt(reserveCoins[1].Amount))
@@ -488,6 +583,32 @@ func (k Keeper) ExecuteWithdrawal(ctx sdk.Context, msg types.WithdrawMsgState, b
 
 	//Function - 1 is unbonding to unbond
 	//Cecking if pool coin is less than equal to withdraw unbond coins.
+	userDetails, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.Msg.WithdrawerAddress))
+
+	if !found {
+		return types.ErrUserNotHavingLiquidityInPools
+	} else {
+
+		for _, poolData := range userDetails.UserPoolWiseData {
+			if poolData.PoolId == msg.Msg.PoolId {
+				if poolData.UnbondedPoolCoin.GTE(msg.Msg.PoolCoin.Amount) {
+					updatedUnbondedTokens := poolData.UnbondedPoolCoin.Sub(msg.Msg.PoolCoin.Amount)
+					poolData.UnbondedPoolCoin = &updatedUnbondedTokens
+					fmt.Println("Checking updated data----1", poolData.UnbondedPoolCoin)
+					break
+				} else {
+					return types.ErrNotEnoughUnbondedCoins
+				}
+				// fmt.Println(reflect.TypeOf(poolData.UnbondedPoolCoin));
+			} else {
+				continue
+			}
+		}
+
+	}
+	fmt.Println("Checking updated data----2", userDetails)
+	k.SetIndividualUserPoolsData(ctx, userDetails)
+	fmt.Println("Checking updated data----3", userDetails)
 
 	// send withdrawing coins to the withdrawer
 	if err := k.bankKeeper.InputOutputCoins(ctx, inputs, outputs); err != nil {

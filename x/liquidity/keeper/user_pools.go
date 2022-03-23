@@ -84,13 +84,11 @@ func (k *Keeper) GetUserPoolsContributionData(userPoolsData types.UserPoolsData,
 	for _, pool := range userPoolsData.UserPoolWiseData {
 		if pool.PoolId == poolId {
 			return true
-
 		} else {
 			continue
 		}
 	}
 	return false
-
 }
 func (k *Keeper) UpdateUnbondedTokensUserPoolData(userPoolsData types.UserPoolsData, poolId uint64, unbondedTokens sdk.Int) (updatedUserPoolsData types.UserPoolsData) {
 	for _, poolData := range userPoolsData.UserPoolWiseData {
@@ -129,24 +127,67 @@ func (k *Keeper) CalculateUnbondingEndTime(currentTime time.Time) (endTime time.
 	endTime = start.AddDate(0, 0, 21)
 	return endTime
 }
+func (k *Keeper) CompletingUnbondingProcess(ctx sdk.Context) {
+	allUsersData := k.GetAllUsersPoolsData(ctx)
+	for _, individualUser := range allUsersData {
+		fmt.Println(individualUser)
+		fmt.Println(individualUser.UserPoolWiseData)
+		for _, userPoolData := range individualUser.UserPoolWiseData {
+			fmt.Println(userPoolData)
+			lengthOfUnbondingArrray := len(userPoolData.UserPoolUnbondingTokens)
+			if userPoolData.UserPoolUnbondingTokens != nil && lengthOfUnbondingArrray > 0 {
+				fmt.Println(userPoolData.UserPoolUnbondingTokens)
+				fmt.Println("User has got some unbonding tokens")
+				//Check all the unbonding tokens that are in progress right now,
+				//and remove them from unbonding , and move them to the unbonded field
+				for value, userUnbondingPoolCoins := range userPoolData.UserPoolUnbondingTokens {
+					currentTime := time.Now().Unix()
+					if !userUnbondingPoolCoins.IsUnbondingPoolCoin.IsZero() && sdk.NewInt(currentTime).GTE(sdk.NewInt(userUnbondingPoolCoins.UnbondingEndTime.Unix())) {
+						//Move them to unbonded field
+						updatedUnbondedCoins := userPoolData.UnbondedPoolCoin.Add(*userUnbondingPoolCoins.IsUnbondingPoolCoin)
+						userPoolData.UnbondedPoolCoin = &updatedUnbondedCoins
+						//Need to find a better way to pop this array index from the unbonding field
+						zeroVal := sdk.ZeroInt()
+						userPoolData.UserPoolUnbondingTokens[value].IsUnbondingPoolCoin = &zeroVal
+						// userPoolData.UserPoolUnbondingTokens[value].UnbondingStartTime=nil
+						// userPoolData.UserPoolUnbondingTokens[value].UnbondingEndTime=time.Time(zeroVal)
+						fmt.Println("Updated-Unbonding struct---", userUnbondingPoolCoins)
+					} else {
+						continue
+					}
+
+				}
+
+			} else {
+				fmt.Println("User has got no unbonding unbonding tokens")
+				continue
+			}
+		}
+		fmt.Println("Final User Struct----", individualUser)
+		k.SetIndividualUserPoolsData(ctx, individualUser)
+
+	}
+
+}
 
 //Functions that will be made
 
-//3. Get AllUsersPOOLSDATA- for all users -- this will
-//5. Start Unbonding For User Token- for a individual user
+//3. Get AllUsersPOOLSDATA- for all users -- this will -done
+//5. Start Unbonding For User Token- for a individual user - done
 
 //Current Pending Tasks:
-//1. Setting Unbonding Duration in Params
-//2. Calculating Current Time - Setting in  start time
-//3. Calculating End Time- Setting in End Time
-//4. Write a Begin Blocker  Function that will change the unbonding Tokens to UNbonded Field
-//5. Writing withdraw CHanges in function for unbonded tokens
+//1. Setting Unbonding Duration in Params- done ***
+//2. Calculating Current Time - Setting in  start time-done ***
+//3. Calculating End Time- Setting in End Time-done  ***
+//4. Write a Begin Blocker  Function that will change the unbonding Tokens to UNbonded Field-done ****
+//5. Writing withdraw CHanges in function for unbonded tokens - done ***
 //6. Create Pool Changes - Addding to bond unbond- Verify First
 //7. Delete Pool Changes- Checking it how it works & aliging it accordingly
 // 8.Query Commands - For All Users
 //9.Query Commands - USer Wise
 //10. TS Proto Generation For all the above mentioned functions
 //11. ENd to ENd Testing
+//12. Create a new function which get triggered during execute deposits
 
 //----------
 //New Protobuf File-done

@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"strconv"
 
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/liquidity/types"
@@ -234,11 +233,11 @@ func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondP
 				var userUnbondingTokens types.UserPoolUnbondingTokens
 				userUnbondingTokens.IsUnbondingPoolCoin = &msg.PoolCoin.Amount
 				//Check for mistakes in these values
-				userUnbondingTokens.UnbondingStartTime = ctx.BlockTime()//Check for current second value
-				userUnbondingTokens.UnbondingEndTime = k.CalculateUnbondingEndTime(ctx.BlockTime())//Ending Time after the unbonding time will get over
+				userUnbondingTokens.UnbondingStartTime = ctx.BlockTime()                            //Check for current second value
+				userUnbondingTokens.UnbondingEndTime = k.CalculateUnbondingEndTime(ctx.BlockTime()) //Ending Time after the unbonding time will get over
 				updatedBondedTokens := pool.BondedPoolCoin.Sub(msg.PoolCoin.Amount)
-				pool.BondedPoolCoin=&updatedBondedTokens
-				pool.UserPoolUnbondingTokens=append(pool.UserPoolUnbondingTokens, &userUnbondingTokens)
+				pool.BondedPoolCoin = &updatedBondedTokens
+				pool.UserPoolUnbondingTokens = append(pool.UserPoolUnbondingTokens, &userUnbondingTokens)
 
 			} else {
 				return nil, types.ErrNotEnoughCoinsForUnBonding
@@ -249,12 +248,10 @@ func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondP
 		}
 	}
 
-
 	fmt.Println("------------------------------------------------------")
 	fmt.Println("Checking updated data----1", userPoolsData)
 	fmt.Println("------------------------------------------------------")
 	k.SetIndividualUserPoolsData(ctx, userPoolsData)
-
 
 	return &types.MsgUnbondPoolTokensResponse{}, nil
 }
