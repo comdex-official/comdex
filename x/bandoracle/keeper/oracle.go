@@ -123,8 +123,6 @@ func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) 
 	)
 
 	store.Set(key, value)
-	fmt.Println("price is being set in store")
-	fmt.Println(v)
 }
 
 func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {

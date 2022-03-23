@@ -1,14 +1,12 @@
 package bandoracle
 
 import (
-	"fmt"
 	"github.com/comdex-official/comdex/x/bandoracle/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
-	fmt.Println(k.GetOracleValidationResult(ctx))
 	block := k.GetLastBlockheight(ctx)
 	if ctx.BlockHeight()%20 == 0 {
 		req := k.GetTempFetchPriceID(ctx)
