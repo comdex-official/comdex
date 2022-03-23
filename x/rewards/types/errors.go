@@ -17,3 +17,7 @@ var (
 	ErrorUnauthorized                  = sdkerrors.Register(ModuleName, 110, "unauthorized to update start time")
 	ErrorPriceNotFound                 = sdkerrors.Register(ModuleName, 111, "asset price not found")
 )
+
+var (
+	ErrorUnknownMsgType = sdkerrors.Register(ModuleName, 301, "unknown message type")
+)

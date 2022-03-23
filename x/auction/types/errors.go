@@ -14,3 +14,7 @@ var (
 	ErrorMaxBidAmount        = sdkerrors.Register(ModuleName, 104, "Bidding amount is greater than maximum bidding amount")
 	ErrorBidAlreadyExists    = sdkerrors.Register(ModuleName, 105, "Bid with given amount already placed, Please try with higher bid")
 )
+
+var (
+	ErrorUnknownMsgType = sdkerrors.Register(ModuleName, 301, "unknown message type")
+)
