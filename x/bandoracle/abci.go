@@ -12,7 +12,8 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		req := k.GetTempFetchPriceID(ctx)
 		res := k.OraclePriceValidationByRequestId(ctx, req)
 		k.SetOracleValidationResult(ctx, res)
-	} else if ctx.BlockHeight()%20-1 == 0 && ctx.BlockHeight() > block+11 {
+	}
+	if ctx.BlockHeight()%20-1 == 0 && ctx.BlockHeight() > block+11 {
 		id := k.GetLastFetchPriceID(ctx)
 		k.SetTempFetchPriceID(ctx, id)
 		msg := k.GetFetchPriceMsg(ctx)
