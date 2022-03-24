@@ -26,6 +26,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryVault(),
 		QueryVaults(),
 		QueryTotalCollaterals(),
+		QueryMintStatistics(),
 	)
 
 	return cmd
@@ -144,6 +145,27 @@ func QueryTotalCollaterals() *cobra.Command {
 			}
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryTotalCollaterals(cmd.Context(), &types.QueryTotalCollateralRequest{})
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryMintStatistics() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "mint-statistics",
+		Short: "Get statustics for the minted cAssets",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryServiceClient(ctx)
+			res, err := queryClient.QueryCAssetMintStatistics(cmd.Context(), &types.QueryCAssetsMintStatsRequest{})
 			if err != nil {
 				return err
 			}

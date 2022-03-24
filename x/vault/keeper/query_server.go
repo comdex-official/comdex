@@ -203,3 +203,10 @@ func (q *queryServer) QueryTotalCollaterals(c context.Context, req *types.QueryT
 		Collaterals: q.bank.GetAllBalances(ctx, q.account.GetModuleAddress(types.ModuleName)),
 	}, nil
 }
+
+func (q *queryServer) QueryCAssetMintStatistics(c context.Context, req *types.QueryCAssetsMintStatsRequest) (*types.QueryCAssetsMintStatsResponse, error) {
+	var ctx = sdk.UnwrapSDKContext(c)
+	return &types.QueryCAssetsMintStatsResponse{
+		MintStats: q.GetAllCAssetMintRecords(ctx),
+	}, nil
+}

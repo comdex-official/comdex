@@ -1,10 +1,11 @@
 package asset
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/asset/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
@@ -30,4 +31,38 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
 		}
 	}
+}
+
+func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
+	return func(ctx sdk.Context, content govtypes.Content) error {
+		switch c := content.(type) {
+		case *types.AddAssetsProposal:
+			return handleAddAssetProposal(ctx, k, c)
+		case *types.UpdateAssetProposal:
+			return handleUpdateAssetProposal(ctx, k, c)
+		case *types.AddPairsProposal:
+			return handleAddPairsProposal(ctx, k, c)
+		case *types.UpdatePairProposal:
+			return handleUpdatePairProposal(ctx, k, c)
+
+		default:
+			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
+		}
+	}
+}
+
+func handleAddAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetsProposal) error {
+	return k.HandleProposalAddAsset(ctx, p)
+}
+
+func handleUpdateAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateAssetProposal) error {
+	return k.HandleProposalUpdateAsset(ctx, p)
+}
+
+func handleAddPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPairsProposal) error {
+	return k.HandleProposalAddPairs(ctx, p)
+}
+
+func handleUpdatePairProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdatePairProposal) error {
+	return k.HandleProposalUpdatePair(ctx, p)
 }

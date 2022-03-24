@@ -5,6 +5,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "comdex/vault/v1beta1/vault.proto";
 
 option go_package            = "github.com/comdex-official/comdex/x/vault/types";
 option (gogoproto.equal_all) = false;
@@ -86,6 +87,14 @@ message QueryTotalCollateralResponse {
   ];
 }
 
+message QueryCAssetsMintStatsRequest {}
+
+message QueryCAssetsMintStatsResponse {
+  repeated CAssetsMintStatistics mint_stats = 1 [
+    (gogoproto.moretags)   = "yaml:\"mint_records\""
+  ];
+}
+
 service QueryService {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
@@ -101,5 +110,9 @@ service QueryService {
 
   rpc QueryTotalCollaterals(QueryTotalCollateralRequest) returns (QueryTotalCollateralResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/collateral";
+  };
+
+  rpc QueryCAssetMintStatistics(QueryCAssetsMintStatsRequest) returns (QueryCAssetsMintStatsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults/mintstats";
   };
 }

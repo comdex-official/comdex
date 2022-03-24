@@ -1,0 +1,21 @@
+syntax = "proto3";
+package comdex.rewards.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/rewards/v1beta1/rewards.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/rewards/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message NewMintRewardsProposal {
+  string title       = 1 [ (gogoproto.moretags) = "yaml:\"title\"" ];
+  string description = 2 [ (gogoproto.moretags) = "yaml:\"description\"" ];
+  MintingRewards mint_rewards = 3 [ (gogoproto.moretags) = "yaml:\"mint_rewards\"" ];
+}
+
+message DisbaleMintRewardsProposal {
+  string title       = 1 [ (gogoproto.moretags) = "yaml:\"title\"" ];
+  string description = 2 [ (gogoproto.moretags) = "yaml:\"description\"" ];
+  uint64 mint_reward_id = 3 [ (gogoproto.moretags) = "yaml:\"mint_reward_id\"" ];
+}

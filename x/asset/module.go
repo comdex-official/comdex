@@ -116,7 +116,7 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.keeper))
 }
 
-func (a AppModule) BeginBlock(_ sdk.Context, _ abcitypes.RequestBeginBlock) {}
+func (a AppModule) BeginBlock(ctx sdk.Context, req abcitypes.RequestBeginBlock) {}
 
 func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
 	return nil

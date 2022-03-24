@@ -1,0 +1,62 @@
+syntax = "proto3";
+package comdex.rewards.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/rewards/types";
+
+message MintingRewards {
+  uint64 id = 1 [
+    (gogoproto.moretags) = "yaml:\"id\""
+  ];
+  string allowed_collateral = 2 [
+    (gogoproto.moretags) = "yaml:\"allowed_collateral\""
+  ];
+  string allowed_casset = 3 [
+    (gogoproto.moretags) = "yaml:\"allowed_cassets\""
+  ];
+  cosmos.base.v1beta1.Coin total_rewards = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags)   = "yaml:\"total_rewards\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  uint64 casset_max_cap = 5 [
+    (gogoproto.moretags) = "yaml:\"casset_max_cap\""
+  ];
+  uint64 duration_days = 6 [
+    (gogoproto.moretags) = "yaml:\"duration_days\""
+  ];
+  bool is_active = 7 [
+    (gogoproto.moretags) = "yaml:\"is_active\""
+  ];
+  cosmos.base.v1beta1.Coin available_rewards = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags)   = "yaml:\"available_rewards\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  string depositor = 9 [
+      (gogoproto.moretags) = "yaml:\"depositor\"",
+      (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.AccAddress"
+    ];
+  google.protobuf.Timestamp start_timestamp = 10 [
+      (gogoproto.nullable) = false,
+      (gogoproto.stdtime) = true,
+      (gogoproto.moretags)   = "yaml:\"start_timestamp\""
+  ];
+  google.protobuf.Timestamp end_timestamp = 11 [
+      (gogoproto.nullable) = false,
+      (gogoproto.stdtime) = true,
+      (gogoproto.moretags)   = "yaml:\"end_timestamp\""
+  ];
+  uint64 min_lockup_time_seconds = 12 [
+    (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
+  ];
+}
+
+message Rewards {
+    repeated MintingRewards mint_rewards = 1 [
+      (gogoproto.moretags) = "yaml:\"mint_rewards\""
+    ];
+  }

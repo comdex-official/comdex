@@ -38,6 +38,8 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				continue
 			}
 			k.DeleteVault(ctx, vault.ID)
+			k.UpdateUserVaultIdMapping(ctx, vault.Owner, vault.ID, false)
+			k.UpdateCollateralVaultIdMapping(ctx, assetIn.Denom, assetOut.Denom, vault.ID, false)
 		}
 	}
 	return nil
@@ -136,8 +138,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 
 				collateralToBeAuctioned = selloffAmount
 			}
-			var updatedLockedVault types.LockedVault
-			updatedLockedVault = lockedVault
+			updatedLockedVault := lockedVault
 			updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 			updatedLockedVault.CollateralToBeAuctioned = &collateralToBeAuctioned
 			k.SetLockedVault(ctx, updatedLockedVault)
@@ -187,9 +188,8 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			if err != nil {
 				continue
 			}
-			if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
-				var updatedLockedVault types.LockedVault
-				updatedLockedVault = lockedVault
+			if newCalculatedCollateralizationRatio.LTE(unliquidatePointPercentage) {
+				updatedLockedVault := lockedVault
 				updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
 				k.SetLockedVault(ctx, updatedLockedVault)
 				continue
@@ -198,28 +198,13 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
 
 				k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
-
-				var (
-					id    = k.GetVaultID(ctx)
-					vault = vaulttypes.Vault{
-						ID:        id + 1,
-						PairID:    lockedVault.PairId,
-						Owner:     lockedVault.Owner,
-						AmountIn:  lockedVault.AmountIn,
-						AmountOut: lockedVault.AmountOut,
-					}
-				)
-
-				k.SetVaultID(ctx, id+1)
-				k.SetVault(ctx, vault)
-				k.SetVaultForAddressByPair(ctx, userAddress, lockedVault.PairId, vault.ID)
+				k.CreteNewVault(ctx, lockedVault.PairId, lockedVault.Owner, assetIn, lockedVault.AmountIn, assetOut, lockedVault.AmountOut)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 
 
 
 				//======================================NOTE TO BE CHANGED================================================
-				//One important thing that we missed is that we need to pop and append the current vault as per the user
-				//==========================Important================================
+				//One important thing that we missed is that we need to pop and append the current vault as per the user -> This has bee handled -Vishnu
 				//IF all the borrowed amount is repayed , then we need to ensure the unliquidate vault is not called for that particular lockedvault- his vault is automatically closed.
 			}
 		}

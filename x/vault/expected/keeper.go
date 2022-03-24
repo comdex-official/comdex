@@ -20,10 +20,15 @@ type AccountKeeper interface {
 }
 
 type AssetKeeper interface {
+	GetAssets(ctx sdk.Context) (assets []assettypes.Asset)
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 }
 
 type OracleKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+}
+
+type BandoracleKeeper interface {
+	GetOracleValidationResult(ctx sdk.Context) bool
 }

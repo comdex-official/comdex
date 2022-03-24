@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/vault/types"
@@ -23,6 +24,10 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 
 func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}
 
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
@@ -55,46 +60,22 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(assetIn.Denom, msg.AmountIn)); err != nil {
 		return nil, err
 	}
-	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, msg.AmountOut)); err != nil {
+	if err := k.MintCAssets(ctx, types.ModuleName, assetIn.Denom, assetOut.Denom, msg.AmountOut); err != nil {
 		return nil, err
 	}
 	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetOut.Denom, msg.AmountOut)); err != nil {
 		return nil, err
 	}
-
-	var (
-		id    = k.GetID(ctx)
-		vault = types.Vault{
-			ID:        id + 1,
-			PairID:    msg.PairID,
-			Owner:     msg.From,
-			AmountIn:  msg.AmountIn,
-			AmountOut: msg.AmountOut,
-		}
-	)
-
-	k.SetID(ctx, id+1)
-	k.SetVault(ctx, vault)
-	k.SetVaultForAddressByPair(ctx, from, vault.PairID, vault.ID)
-
-	userVaults, found := k.GetUserVaults(ctx, msg.From)
-	if !found {
-		userVaults = types.UserVaults{
-			Id:       k.GetUserVaultsID(ctx),
-			Owner:    msg.From,
-			VaultIds: nil,
-		}
-		k.SetUserVaultID(ctx, userVaults.Id)
-	}
-
-	userVaults.VaultIds = append(userVaults.VaultIds, vault.ID)
-	k.SetUserVaults(ctx, userVaults)
-
+	k.CreteNewVault(ctx, msg.PairID, msg.From, assetIn, msg.AmountIn, assetOut, msg.AmountOut)
 	return &types.MsgCreateResponse{}, nil
 }
 
 func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}
 
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
@@ -134,6 +115,10 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 
 func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}
 
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
@@ -183,6 +168,10 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -220,7 +209,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		return nil, err
 	}
 
-	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, msg.Amount)); err != nil {
+	if err := k.MintCAssets(ctx, types.ModuleName, assetIn.Denom, assetOut.Denom, msg.Amount); err != nil {
 		return nil, err
 	}
 	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetOut.Denom, msg.Amount)); err != nil {
@@ -233,6 +222,10 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 
 func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}
 
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
@@ -257,6 +250,11 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		return nil, types.ErrorPairDoesNotExist
 	}
 
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
 	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
@@ -265,7 +263,7 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(assetOut.Denom, msg.Amount)); err != nil {
 		return nil, err
 	}
-	if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, msg.Amount)); err != nil {
+	if err := k.BurnCAssets(ctx, types.ModuleName, assetIn.Denom, assetOut.Denom, msg.Amount); err != nil {
 		return nil, err
 	}
 
@@ -279,7 +277,6 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 }
 
 func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(c)
 
 	from, err := sdk.AccAddressFromBech32(msg.From)
@@ -313,7 +310,7 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 	if err := k.SendCoinFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoin(assetOut.Denom, vault.AmountOut)); err != nil {
 		return nil, err
 	}
-	if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetOut.Denom, vault.AmountOut)); err != nil {
+	if err := k.BurnCAssets(ctx, types.ModuleName, assetIn.Denom, assetOut.Denom, vault.AmountOut); err != nil {
 		return nil, err
 	}
 	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetIn.Denom, vault.AmountIn)); err != nil {
@@ -322,6 +319,8 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 
 	k.DeleteVault(ctx, vault.ID)
 	k.DeleteVaultForAddressByPair(ctx, from, vault.PairID)
+	k.UpdateUserVaultIdMapping(ctx, msg.From, vault.ID, false)
+	k.UpdateCollateralVaultIdMapping(ctx, assetIn.Denom, assetOut.Denom, vault.ID, false)
 
 	return &types.MsgCloseResponse{}, nil
 }

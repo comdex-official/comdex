@@ -7,11 +7,16 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
-	id := k.GetLastFetchPriceID(ctx)
 	block := k.GetLastBlockheight(ctx)
-	if id != 0 {
-		if ctx.BlockHeight()%20 == 0 && ctx.BlockHeight() > block+21 {
-			k.SetFetchPriceMsg(ctx)
+	if block !=0 {
+		if ctx.BlockHeight()%20 == 0 {
+			req := k.GetTempFetchPriceID(ctx)
+			res := k.OraclePriceValidationByRequestId(ctx, req)
+			k.SetOracleValidationResult(ctx, res)
+		}
+		if ctx.BlockHeight()%20-1 == 0 && ctx.BlockHeight() > block+11 {
+			id := k.GetLastFetchPriceID(ctx)
+			k.SetTempFetchPriceID(ctx, id)
 			msg := k.GetFetchPriceMsg(ctx)
 			_, err := k.FetchPrice(ctx, msg)
 			if err != nil {
