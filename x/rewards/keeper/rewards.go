@@ -248,9 +248,9 @@ func (k Keeper) CalculateMintRewards(ctx sdk.Context, vault vaulttypes.Vault, mi
 	if currentTotalCassetMintedValue.LT(sdk.NewDec(int64(mintingRewards.CassetMaxCap))) {
 		divisor = sdk.NewDec(int64(mintingRewards.CassetMaxCap))
 	}
-	dailyAllocatedRewards := mintingRewards.TotalRewards.Amount.Quo(sdk.NewInt(1000000)).Quo((sdk.NewIntFromUint64(mintingRewards.DurationDays)))
-	mintValue := sdk.NewDec(vault.AmountOut.Quo(sdk.NewInt(1000000)).Int64()).Mul(sdk.NewDec(int64(assetPrice)).Quo(sdk.NewDec(1000000)))
-	rewardAmount := mintValue.Quo(divisor).Mul(dailyAllocatedRewards.ToDec()).Mul(sdk.NewDec(1000000))
+	dailyAllocatedRewards := mintingRewards.TotalRewards.Amount.ToDec().Quo(sdk.NewDec(1000000)).Quo((sdk.NewDec(int64(mintingRewards.DurationDays))))
+	mintValue := vault.AmountOut.ToDec().Quo(sdk.NewDec(1000000)).Mul(sdk.NewDec(int64(assetPrice)).Quo(sdk.NewDec(1000000)))
+	rewardAmount := mintValue.Quo(divisor).Mul(dailyAllocatedRewards).Mul(sdk.NewDec(1000000))
 	return rewardAmount, nil
 }
 
