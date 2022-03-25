@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/bandprotocol/bandchain-packet/obi"
@@ -131,13 +130,10 @@ func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {
 		key   = types.MsgdataKey
 		value = store.Get(key)
 	)
-
-	if value == nil {
-		fmt.Println("msg value nil")
-	}
-
 	var msg types.MsgFetchPriceData
+	if value != nil {
 	k.cdc.MustUnmarshal(value, &msg)
+	}
 
 	return msg
 }
