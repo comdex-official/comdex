@@ -35,7 +35,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		if sdk.Dec.LT(collateralizationRatio, liquidationRatio) {
 			err := k.CreateLockedVault(ctx, vault, collateralizationRatio)
 			if err != nil {
-				return err
+				continue
 			}
 			k.DeleteVault(ctx, vault.ID)
 			k.UpdateUserVaultIdMapping(ctx, vault.Owner, vault.ID, false)
@@ -74,7 +74,6 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 	//New function will loop over locked vaults to set all values so that they can be auctioned, seperately
 	//Auction will then use the selloff amount set by lockedvault function to update params .
 	//Unliquidate will take place after all the events trigger.
-
 	//
 	return nil
 
@@ -89,7 +88,6 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 	}
 	for _, lockedVault := range lockedVaults {
 		//Should come From Params :1#
-
 		unliquidatePointPercentage, _ := sdk.NewDecFromStr(types.DefaultUnliquidatePointPercent)
 		// auctionDiscount,_:=sdk.NewDecFromStr(auctiontypes.DefaultAuctionDiscountPercent)
 		// liquidationPenalty,_:=sdk.NewDecFromStr(auctiontypes.DefaultLiquidationPaneltyPercent)
@@ -163,12 +161,6 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			unliquidatePointPercentage, _ := sdk.NewDecFromStr(types.DefaultUnliquidatePointPercent)
 			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
 			if err != nil {
-				return err
-			}
-
-			if lockedVault.AmountOut.IsZero() {
-				k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
-				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 				continue
 			}
 
@@ -182,6 +174,14 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			}
 			assetOut, found := k.GetAsset(ctx, pair.AssetOut)
 			if !found {
+				continue
+			}
+			if lockedVault.AmountOut.IsZero() {
+				k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
+				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+				if err := k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
+					continue
+				}
 				continue
 			}
 			newCalculatedCollateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.AmountOut, assetOut)
@@ -200,6 +200,9 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
 				k.CreteNewVault(ctx, lockedVault.PairId, lockedVault.Owner, assetIn, lockedVault.AmountIn, assetOut, lockedVault.AmountOut)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+
+
+
 				//======================================NOTE TO BE CHANGED================================================
 				//One important thing that we missed is that we need to pop and append the current vault as per the user -> This has bee handled -Vishnu
 				//IF all the borrowed amount is repayed , then we need to ensure the unliquidate vault is not called for that particular lockedvault- his vault is automatically closed.

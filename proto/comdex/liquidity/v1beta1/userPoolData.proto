@@ -1,0 +1,65 @@
+syntax = "proto3";
+package comdex.liquidity.v1beta1;
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/liquidity/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+
+
+message AllUserAddressesArray{
+
+  repeated string user_addresses = 1 [(gogoproto.moretags) = "yaml:\"user_addresses\""];
+}
+
+message UserPoolsData {
+  string user_address = 1 [(gogoproto.moretags) = "yaml:\"user_address\""];
+
+  repeated UserPools user_pools = 2[
+    (gogoproto.customname) = "UserPoolWiseData",
+    (gogoproto.moretags) = "yaml:\"user_pool_wise_data\""
+  ];
+}
+
+message UserPools{
+  uint64 pool_id = 1 [(gogoproto.moretags) = "yaml:\"pool_id\"", (gogoproto.jsontag) = "pool_id"
+  ];
+
+  string bonded_pool_coin = 2 [
+
+    (gogoproto.moretags) = "yaml:\"bonded_pool_coin\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+  string unbonded_pool_coin = 3 [
+
+    (gogoproto.moretags) = "yaml:\"unbonded_pool_coin\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  repeated UserPoolUnbondingTokens unbonding_coins = 4[
+    (gogoproto.customname) = "UserPoolUnbondingTokens",
+    (gogoproto.moretags) = "yaml:\"user_pool_unbonding_tokens\""
+  ]  ;
+}
+
+message UserPoolUnbondingTokens{
+
+  string is_unbonding_pool_coin = 1 [
+    (gogoproto.moretags) = "yaml:\"is_unbonding_pool_coin\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"];
+
+  google.protobuf.Timestamp unbonding_start_time = 2[
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"unbonding_start_time\""
+
+
+  ];
+  google.protobuf.Timestamp unbonding_end_time = 3[
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"unbonding_end_time\""
+  ];
+}

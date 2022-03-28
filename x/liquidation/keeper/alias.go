@@ -77,6 +77,10 @@ func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddres
 	k.vault.SetVaultForAddressByPair(ctx, address, pairID, id)
 }
 
+func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coin sdk.Coin) error {
+	 return k.bank.SendCoinsFromModuleToAccount(ctx, name, address ,sdk.NewCoins(coin))
+}
+
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	return k.oracle.GetPriceForAsset(ctx, id)
 }
