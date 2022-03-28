@@ -42,6 +42,10 @@ func (k *Keeper) GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, f
 	return k.vault.GetVault(ctx, id)
 }
 
+func (k *Keeper) SetVault(ctx sdk.Context, vault vaulttypes.Vault) {
+	k.vault.SetVault(ctx, vault)
+}
+
 func (k *Keeper) GetCAssetTotalValueMintedForCollateral(ctx sdk.Context, collateralType assettypes.Asset) sdk.Dec {
 	return k.vault.GetCAssetTotalValueMintedForCollateral(ctx, collateralType)
 }

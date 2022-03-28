@@ -418,13 +418,14 @@ func (k *Keeper) CreteNewVault(
 	var (
 		id    = k.GetID(ctx) + 1
 		vault = types.Vault{
-			ID:        id,
-			PairID:    pairdId,
-			Owner:     from,
-			AmountIn:  amountIn,
-			AmountOut: amountOut,
-			CreatedAt: ctx.BlockTime(),
-			MarketCap: k.GetCAssetTotalValueMintedForCollateral(ctx, assetIn),
+			ID:              id,
+			PairID:          pairdId,
+			Owner:           from,
+			AmountIn:        amountIn,
+			AmountOut:       amountOut,
+			CreatedAt:       ctx.BlockTime(),
+			MarketCap:       k.GetCAssetTotalValueMintedForCollateral(ctx, assetIn),
+			RewardsReceived: []sdk.Coin{},
 		}
 	)
 

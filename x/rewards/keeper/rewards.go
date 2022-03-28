@@ -308,7 +308,7 @@ func (k Keeper) DistributeRewards(ctx sdk.Context, mintingReward types.MintingRe
 			// also vault needs to pass the specific threshold time to be eligible for the minting rewards.
 			if found && vault.MarketCap.LT(sdk.NewDec(int64(mintingReward.CassetMaxCap))) && vault.CreatedAt.Add(time.Second*time.Duration(mintingReward.MinLockupTimeSeconds)).Before(ctx.BlockTime()) {
 				rewardEligible, err := k.CalculateMintRewards(ctx, vault, mintingReward)
-				if err != nil {
+				if err != nil || rewardEligible.RoundInt().IsZero() {
 					continue
 				}
 				rewardCoin := sdk.NewCoin(mintingReward.TotalRewards.Denom, rewardEligible.RoundInt())
@@ -318,6 +318,9 @@ func (k Keeper) DistributeRewards(ctx sdk.Context, mintingReward types.MintingRe
 				}
 				err = k.SendCoinsFromModuleToAccount(ctx, types.ModuleName, parsedOwner, sdk.NewCoins(rewardCoin))
 				if err == nil {
+					vault.RewardsReceived = append(vault.RewardsReceived, rewardCoin)
+					k.SetVault(ctx, vault)
+
 					ctx.EventManager().EmitEvents(sdk.Events{
 						sdk.NewEvent(
 							types.TypeEvtMintRewardDistribution,
@@ -325,6 +328,7 @@ func (k Keeper) DistributeRewards(ctx sdk.Context, mintingReward types.MintingRe
 							sdk.NewAttribute(types.AttributeAmount, rewardCoin.String()),
 						),
 					})
+
 					// reduce the available rewards by the reward which being sent in above step.
 					if !mintingReward.AvailableRewards.Amount.Sub(rewardCoin.Amount).IsZero() {
 						mintingReward.AvailableRewards = sdk.NewCoin(mintingReward.AvailableRewards.Denom, mintingReward.AvailableRewards.Amount.Sub(rewardCoin.Amount))

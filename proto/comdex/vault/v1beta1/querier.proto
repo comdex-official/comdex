@@ -34,6 +34,14 @@ message VaultInfo{
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
+
+  repeated cosmos.base.v1beta1.Coin rewards_received = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags)   = "yaml:\"rewards_received\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+
+
 }
 
 message QueryVaultRequest {

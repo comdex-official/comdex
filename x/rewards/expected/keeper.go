@@ -30,6 +30,7 @@ type AssetKeeper interface {
 type VaultKeeper interface {
 	GetCollateralBasedVaults(ctx sdk.Context, collateral_denom string) (collateralBasedVaults vaulttypes.CollateralVaultIdMapping, found bool)
 	GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool)
+	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
 	GetCAssetTotalValueMintedForCollateral(ctx sdk.Context, collateralType assettypes.Asset) sdk.Dec
 }
 
