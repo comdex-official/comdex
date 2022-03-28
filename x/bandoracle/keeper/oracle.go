@@ -107,7 +107,7 @@ func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) 
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.MsgdataKey
-		v = types.NewMsgFetchPriceData(
+		v     = types.NewMsgFetchPriceData(
 			types.ModuleName,
 			types.OracleScriptID(msg.OracleScriptID),
 			msg.SourceChannel,
@@ -132,7 +132,7 @@ func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {
 	)
 	var msg types.MsgFetchPriceData
 	if value != nil {
-	k.cdc.MustUnmarshal(value, &msg)
+		k.cdc.MustUnmarshal(value, &msg)
 	}
 
 	return msg
@@ -157,11 +157,13 @@ func (k Keeper) AddFetchPriceRecords(ctx sdk.Context, price types.MsgFetchPriceD
 	return nil
 }
 
-func (k Keeper) OraclePriceValidationByRequestId (ctx sdk.Context, req int64) bool{
+func (k Keeper) OraclePriceValidationByRequestId(ctx sdk.Context, req int64) bool {
 	currentReqId := k.GetLastFetchPriceID(ctx)
-	if currentReqId!=req{
+	if currentReqId != req {
 		return true
-	}else{ return false}
+	} else {
+		return false
+	}
 }
 
 func (k Keeper) SetOracleValidationResult(ctx sdk.Context, res bool) {
