@@ -612,11 +612,13 @@ func (k Keeper) ExecuteWithdrawal(ctx sdk.Context, msg types.WithdrawMsgState, b
 
 	// send withdrawing coins to the withdrawer
 	if err := k.bankKeeper.InputOutputCoins(ctx, inputs, outputs); err != nil {
+		fmt.Println("My function didnt work correctly")
 		return err
 	}
 
 	// burn the escrowed pool coins
 	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, poolCoins); err != nil {
+		fmt.Println("My function didnt work correctly")
 		return err
 	}
 
