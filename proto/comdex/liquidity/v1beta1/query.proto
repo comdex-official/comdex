@@ -4,6 +4,7 @@ import "gogoproto/gogo.proto";
 import "comdex/liquidity/v1beta1/liquidity.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
+import "comdex/liquidity/v1beta1/userPoolData.proto";
 
 
 
@@ -77,12 +78,41 @@ service Query {
        
     }
 
+
     // Get all parameters of the liquidity module.
     rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
         option (google.api.http).get = "/cosmos/liquidity/v1beta1/params";
         
 }
+// Get the user data regarding contribution in pool
+rpc UserPoolsContribution(QueryUserPoolsContributionMsgRequest) returns (QueryUserPoolsContributionMsgResponse) {
+    option (google.api.http).get = "/cosmos/liquidity/v1beta1/userPoolsContribution/{user_address}";
+   
 }
+// Get all  users data regarding contribution in pool
+rpc AllUserPoolsContribution(QueryAllUsersPoolsContributionMsgRequest) returns (QueryAllUsersPoolsContributionMsgResponse) {
+    option (google.api.http).get = "/cosmos/liquidity/v1beta1/usersPoolsContribution";
+   
+}
+}
+
+
+message QueryUserPoolsContributionMsgRequest{
+    string user_address=1;
+}
+message QueryUserPoolsContributionMsgResponse{
+    UserPoolsData userPoolData = 1 [(gogoproto.nullable) = false];  
+}
+
+message QueryAllUsersPoolsContributionMsgRequest{
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllUsersPoolsContributionMsgResponse{
+    repeated UserPoolsData userPoolData = 1 [(gogoproto.nullable) = false];
+    // cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 
 // the request type for the QueryLiquidityPool RPC method. requestable specified pool_id.
 message QueryLiquidityPoolRequest {

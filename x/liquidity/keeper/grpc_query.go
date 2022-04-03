@@ -329,3 +329,35 @@ func (k Querier) MakeQueryLiquidityPoolsResponse(pools types.Pools) (*[]types.Qu
 	}
 	return &resp, nil
 }
+
+func (k Querier) UserPoolsContribution(c context.Context, req *types.QueryUserPoolsContributionMsgRequest) (*types.QueryUserPoolsContributionMsgResponse, error) {
+
+	empty := &types.QueryUserPoolsContributionMsgRequest{}
+	if req == nil || *req == *empty {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	userDetails, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(req.UserAddress))
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "User not providing liquidity in any pools")
+	}
+
+	return &types.QueryUserPoolsContributionMsgResponse{
+		UserPoolData: userDetails,
+	}, nil
+}
+
+func (k Querier) AllUserPoolsContribution(c context.Context, req *types.QueryAllUsersPoolsContributionMsgRequest) (*types.QueryAllUsersPoolsContributionMsgResponse, error) {
+
+	empty := &types.QueryAllUsersPoolsContributionMsgRequest{}
+	if req == nil || *req == *empty {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	allUsersDetails := k.GetAllUsersPoolsData(ctx)
+
+	return &types.QueryAllUsersPoolsContributionMsgResponse{
+		UserPoolData: allUsersDetails,
+	}, nil
+}

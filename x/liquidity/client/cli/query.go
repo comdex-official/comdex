@@ -38,6 +38,8 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryPoolBatchWithdrawMsg(),
 		GetCmdQueryPoolBatchSwapMsgs(),
 		GetCmdQueryPoolBatchSwapMsg(),
+		GetCmdQueryUserPoolsContributionMsg(),
+		GetCmdQueryAllUsersPoolsContributionMsg(),
 	)
 
 	return liquidityQueryCmd
@@ -560,6 +562,91 @@ $ %s query %s swap 1 20
 				&types.QueryPoolBatchSwapMsgRequest{
 					PoolId:   poolID,
 					MsgIndex: msgIndex,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+//Query individual user's pool contribution data
+func GetCmdQueryUserPoolsContributionMsg() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "userpoolsdata [userAddress]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Query user's pools contribution data",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query the status of the user across all pools with their bonding tokens, unbonded tokens
+			unbonding tokens, unbonding tokens start time, unbonding token end time
+
+Example:
+$ %s query %s userpoolsdata address
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.UserPoolsContribution(
+				context.Background(),
+				&types.QueryUserPoolsContributionMsgRequest{
+					UserAddress: args[0],
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetCmdQueryAllUsersPoolsContributionMsg() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "userspoolsdata",
+		Args:  cobra.ExactArgs(0),
+		Short: "Query all users pool's contribution data",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query the status of all the users across all pools with their bonding tokens, unbonded tokens
+			unbonding tokens, unbonding tokens start time, unbonding token end time
+
+Example:
+$ %s query %s userspoolsdata
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.AllUserPoolsContribution(
+				context.Background(),
+				&types.QueryAllUsersPoolsContributionMsgRequest{
+					Pagination: pageReq,
 				},
 			)
 			if err != nil {
