@@ -1,5 +1,5 @@
 syntax = "proto3";
-package comdex.oracle.v1beta1;
+package comdex.market.v1beta1;
 
 import "gogoproto/gogo.proto";
 
