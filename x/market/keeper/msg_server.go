@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-	"github.com/comdex-official/comdex/x/oracle/types"
+	"github.com/comdex-official/comdex/x/market/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

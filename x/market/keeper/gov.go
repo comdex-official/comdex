@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/oracle/types"
+	"github.com/comdex-official/comdex/x/market/types"
 )
 
 func (k *Keeper) HandleUpdateAdminProposal(ctx sdk.Context, prop *types.UpdateAdminProposal) error {

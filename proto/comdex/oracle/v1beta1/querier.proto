@@ -4,10 +4,10 @@ package comdex.oracle.v1beta1;
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "comdex/oracle/v1beta1/oracle.proto";
-import "comdex/oracle/v1beta1/params.proto";
+import "comdex/market/v1beta1/market.proto";
+import "comdex/market/v1beta1/params.proto";
 
-option go_package = "github.com/comdex-official/comdex/x/oracle/types";
+option go_package = "github.com/comdex-official/comdex/x/market/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
@@ -47,12 +47,12 @@ message QueryParamsResponse {
 
 service QueryService {
     rpc QueryMarkets(QueryMarketsRequest) returns (QueryMarketsResponse) {
-        option (google.api.http).get = "/comdex/oracle/v1beta1/markets";
+        option (google.api.http).get = "/comdex/market/v1beta1/markets";
     }
     rpc QueryMarket(QueryMarketRequest) returns (QueryMarketResponse) {
-        option (google.api.http).get = "/comdex/oracle/v1beta1/markets/{symbol}";
+        option (google.api.http).get = "/comdex/market/v1beta1/markets/{symbol}";
     }
     rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-        option (google.api.http).get = "/comdex/oracle/v1beta1/params";
+        option (google.api.http).get = "/comdex/market/v1beta1/params";
     }
 }

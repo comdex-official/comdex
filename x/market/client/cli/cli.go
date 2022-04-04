@@ -7,8 +7,8 @@ import (
 
 func GetQueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "oracle",
-		Short: "Oracle module sub-commands",
+		Use:   "market",
+		Short: "Market module sub-commands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -25,8 +25,8 @@ func GetQueryCmd() *cobra.Command {
 
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "oracle",
-		Short: "Oracle module sub-commands",
+		Use:   "market",
+		Short: "Market module sub-commands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,

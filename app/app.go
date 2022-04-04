@@ -82,7 +82,7 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibctypes "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
-	
+
 	"github.com/spf13/cast"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -105,9 +105,9 @@ import (
 	"github.com/comdex-official/comdex/x/liquidation"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
-	"github.com/comdex-official/comdex/x/oracle"
-	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
-	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
+	"github.com/comdex-official/comdex/x/market"
+	marketkeeper "github.com/comdex-official/comdex/x/market/keeper"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	"github.com/comdex-official/comdex/x/vault"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -165,7 +165,7 @@ var (
 		asset.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 		asset.AppModuleBasic{},
-		oracle.AppModuleBasic{},
+		market.AppModuleBasic{},
 		bandoraclemodule.AppModuleBasic{},
 		liquidation.AppModuleBasic{},
 		auction.AppModuleBasic{},
@@ -232,7 +232,7 @@ type App struct {
 	assetKeeper       assetkeeper.Keeper
 	vaultKeeper       vaultkeeper.Keeper
 	liquidityKeeper   liquiditykeeper.Keeper
-	oracleKeeper      oraclekeeper.Keeper
+	oracleKeeper      marketkeeper.Keeper
 	liquidationKeeper liquidationkeeper.Keeper
 	auctionKeeper     auctionkeeper.Keeper
 	rewardsKeeper     rewardskeeper.Keeper
@@ -269,7 +269,7 @@ func New(
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey,
-			oracletypes.StoreKey, bandoraclemoduletypes.StoreKey, liquidationtypes.StoreKey,
+			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, liquidationtypes.StoreKey,
 			auctiontypes.StoreKey, wasm.StoreKey, rewardstypes.StoreKey,
 		)
 	)
@@ -312,7 +312,7 @@ func New(
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
 	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
 	app.paramsKeeper.Subspace(assettypes.ModuleName)
-	app.paramsKeeper.Subspace(oracletypes.ModuleName)
+	app.paramsKeeper.Subspace(markettypes.ModuleName)
 	app.paramsKeeper.Subspace(bandoraclemoduletypes.ModuleName)
 	app.paramsKeeper.Subspace(liquidationtypes.ModuleName)
 	app.paramsKeeper.Subspace(auctiontypes.ModuleName)
@@ -337,7 +337,7 @@ func New(
 	var (
 		scopedIBCKeeper       = app.capabilityKeeper.ScopeToModule(ibchost.ModuleName)
 		scopedTransferKeeper  = app.capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
-		scopedIBCOracleKeeper = app.capabilityKeeper.ScopeToModule(oracletypes.ModuleName)
+		scopedIBCOracleKeeper = app.capabilityKeeper.ScopeToModule(markettypes.ModuleName)
 		scopedWasmKeeper      = app.capabilityKeeper.ScopeToModule(wasm.ModuleName)
 	)
 
@@ -470,10 +470,10 @@ func New(
 		app.ibcKeeper.ChannelKeeper,
 	)
 
-	app.oracleKeeper = *oraclekeeper.NewKeeper(
+	app.oracleKeeper = *marketkeeper.NewKeeper(
 		app.cdc,
-		app.keys[oracletypes.StoreKey],
-		app.GetSubspace(oracletypes.ModuleName),
+		app.keys[markettypes.StoreKey],
+		app.GetSubspace(markettypes.ModuleName),
 		scopedIBCOracleKeeper,
 		app.assetKeeper,
 		app.BandoracleKeeper,
@@ -576,7 +576,7 @@ func New(
 		evidenceRouter = evidencetypes.NewRouter()
 		ibcRouter      = ibcporttypes.NewRouter()
 		transferModule = ibctransfer.NewAppModule(app.ibcTransferKeeper)
-		oracleModule   = oracle.NewAppModule(app.cdc, app.oracleKeeper)
+		oracleModule   = market.NewAppModule(app.cdc, app.oracleKeeper)
 	)
 
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
@@ -637,7 +637,7 @@ func New(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
-		bandoraclemoduletypes.ModuleName, oracletypes.ModuleName, liquidationtypes.ModuleName,
+		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, liquidationtypes.ModuleName,
 		auctiontypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName,
 		capabilitytypes.ModuleName, transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName,
@@ -649,7 +649,7 @@ func New(
 		bandoraclemoduletypes.ModuleName, minttypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, paramstypes.ModuleName,
-		oracletypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
+		markettypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
 		assettypes.ModuleName, banktypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, rewardstypes.ModuleName,
 	)
 
@@ -676,7 +676,7 @@ func New(
 		assettypes.ModuleName,
 		vaulttypes.ModuleName,
 		bandoraclemoduletypes.ModuleName,
-		oracletypes.ModuleName,
+		markettypes.ModuleName,
 		liquidationtypes.ModuleName,
 		auctiontypes.ModuleName,
 		rewardstypes.ModuleName,

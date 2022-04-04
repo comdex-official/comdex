@@ -14,11 +14,11 @@ import (
 
 func CmdRequestFetchPriceData() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "fetch-price-data [oracle-script-id] [requested-validator-count] [sufficient-validator-count]",
-		Short: "Make a new FetchPrice query request via an existing BandChain oracle script",
+		Use:   "fetch-price-data [market-script-id] [requested-validator-count] [sufficient-validator-count]",
+		Short: "Make a new FetchPrice query request via an existing BandChain market script",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// retrieve the oracle script id.
+			// retrieve the market script id.
 			uint64OracleScriptID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
@@ -42,7 +42,7 @@ func CmdRequestFetchPriceData() *cobra.Command {
 				return err
 			}
 
-			// retrieve the list of symbols for the requested oracle script.
+			// retrieve the list of symbols for the requested market script.
 			symbols, err := cmd.Flags().GetStringSlice(flagSymbols)
 			if err != nil {
 				return err
@@ -59,7 +59,7 @@ func CmdRequestFetchPriceData() *cobra.Command {
 				Multiplier: multiplier,
 			}
 
-			// retrieve the amount of coins allowed to be paid for oracle request fee from the pool account.
+			// retrieve the amount of coins allowed to be paid for market request fee from the pool account.
 			coinStr, err := cmd.Flags().GetString(flagFeeLimit)
 			if err != nil {
 				return err
@@ -69,13 +69,13 @@ func CmdRequestFetchPriceData() *cobra.Command {
 				return err
 			}
 
-			// retrieve the amount of gas allowed for the prepare step of the oracle script.
+			// retrieve the amount of gas allowed for the prepare step of the market script.
 			prepareGas, err := cmd.Flags().GetUint64(flagPrepareGas)
 			if err != nil {
 				return err
 			}
 
-			// retrieve the amount of gas allowed for the execute step of the oracle script.
+			// retrieve the amount of gas allowed for the execute step of the market script.
 			executeGas, err := cmd.Flags().GetUint64(flagExecuteGas)
 			if err != nil {
 				return err
@@ -106,8 +106,8 @@ func CmdRequestFetchPriceData() *cobra.Command {
 
 	cmd.Flags().String(flagChannel, "", "The channel id")
 	cmd.MarkFlagRequired(flagChannel)
-	cmd.Flags().StringSlice(flagSymbols, nil, "Symbols used in calling the oracle script")
-	cmd.Flags().Uint64(flagMultiplier, 1000000, "Multiplier used in calling the oracle script")
+	cmd.Flags().StringSlice(flagSymbols, nil, "Symbols used in calling the market script")
+	cmd.Flags().Uint64(flagMultiplier, 1000000, "Multiplier used in calling the market script")
 	cmd.Flags().String(flagFeeLimit, "", "the maximum tokens that will be paid to all data source providers")
 	cmd.Flags().Uint64(flagPrepareGas, 200000, "Prepare gas used in fee counting for prepare request")
 	cmd.Flags().Uint64(flagExecuteGas, 200000, "Execute gas used in fee counting for execute request")
@@ -118,11 +118,11 @@ func CmdRequestFetchPriceData() *cobra.Command {
 
 func NewCmdSubmitFetchPriceProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "fetch-price [oracle-script-id] [requested-validator-count] [sufficient-validator-count]",
+		Use:   "fetch-price [market-script-id] [requested-validator-count] [sufficient-validator-count]",
 		Args:  cobra.ExactArgs(3),
-		Short: "Make a new FetchPrice query request via an existing BandChain oracle script",
+		Short: "Make a new FetchPrice query request via an existing BandChain market script",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// retrieve the oracle script id.
+			// retrieve the market script id.
 			uint64OracleScriptID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
@@ -146,7 +146,7 @@ func NewCmdSubmitFetchPriceProposal() *cobra.Command {
 				return err
 			}
 
-			// retrieve the list of symbols for the requested oracle script.
+			// retrieve the list of symbols for the requested market script.
 			symbols, err := cmd.Flags().GetStringSlice(flagSymbols)
 			if err != nil {
 				return err
@@ -163,7 +163,7 @@ func NewCmdSubmitFetchPriceProposal() *cobra.Command {
 				Multiplier: multiplier,
 			}
 
-			// retrieve the amount of coins allowed to be paid for oracle request fee from the pool account.
+			// retrieve the amount of coins allowed to be paid for market request fee from the pool account.
 			coinStr, err := cmd.Flags().GetString(flagFeeLimit)
 			if err != nil {
 				return err
@@ -173,13 +173,13 @@ func NewCmdSubmitFetchPriceProposal() *cobra.Command {
 				return err
 			}
 
-			// retrieve the amount of gas allowed for the prepare step of the oracle script.
+			// retrieve the amount of gas allowed for the prepare step of the market script.
 			prepareGas, err := cmd.Flags().GetUint64(flagPrepareGas)
 			if err != nil {
 				return err
 			}
 
-			// retrieve the amount of gas allowed for the execute step of the oracle script.
+			// retrieve the amount of gas allowed for the execute step of the market script.
 			executeGas, err := cmd.Flags().GetUint64(flagExecuteGas)
 			if err != nil {
 				return err
@@ -245,8 +245,8 @@ func NewCmdSubmitFetchPriceProposal() *cobra.Command {
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
 	cmd.Flags().String(flagChannel, "", "The channel id")
 	cmd.MarkFlagRequired(flagChannel)
-	cmd.Flags().StringSlice(flagSymbols, nil, "Symbols used in calling the oracle script")
-	cmd.Flags().Uint64(flagMultiplier, 1000000, "Multiplier used in calling the oracle script")
+	cmd.Flags().StringSlice(flagSymbols, nil, "Symbols used in calling the market script")
+	cmd.Flags().Uint64(flagMultiplier, 1000000, "Multiplier used in calling the market script")
 	cmd.Flags().String(flagFeeLimit, "", "the maximum tokens that will be paid to all data source providers")
 	cmd.Flags().Uint64(flagPrepareGas, 200000, "Prepare gas used in fee counting for prepare request")
 	cmd.Flags().Uint64(flagExecuteGas, 200000, "Execute gas used in fee counting for execute request")

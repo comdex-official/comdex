@@ -1,8 +1,8 @@
-package oracle
+package market
 
 import (
-	"github.com/comdex-official/comdex/x/oracle/keeper"
-	"github.com/comdex-official/comdex/x/oracle/types"
+	"github.com/comdex-official/comdex/x/market/keeper"
+	"github.com/comdex-official/comdex/x/market/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )

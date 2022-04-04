@@ -6,7 +6,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	"github.com/comdex-official/comdex/x/oracle/expected"
+	"github.com/comdex-official/comdex/x/market/expected"
 )
 
 type Keeper struct {

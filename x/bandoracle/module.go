@@ -3,7 +3,7 @@ package bandoracle
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/comdex-official/comdex/x/oracle/expected"
+	"github.com/comdex-official/comdex/x/market/expected"
 
 	// this line is used by starport scaffolding # 1
 

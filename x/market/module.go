@@ -1,4 +1,4 @@
-package oracle
+package market
 
 import (
 	"context"
@@ -16,9 +16,9 @@ import (
 	"github.com/spf13/cobra"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/comdex-official/comdex/x/oracle/client/cli"
-	"github.com/comdex-official/comdex/x/oracle/keeper"
-	"github.com/comdex-official/comdex/x/oracle/types"
+	"github.com/comdex-official/comdex/x/market/client/cli"
+	"github.com/comdex-official/comdex/x/market/keeper"
+	"github.com/comdex-official/comdex/x/market/types"
 )
 
 var (

@@ -62,7 +62,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-// IsBound checks if the oracle module is already bound to the desired port
+// IsBound checks if the market module is already bound to the desired port
 func (k Keeper) IsBound(ctx sdk.Context, portID string) bool {
 	_, ok := k.scopedKeeper.GetCapability(ctx, host.PortPath(portID))
 	return ok
@@ -75,13 +75,13 @@ func (k Keeper) BindPort(ctx sdk.Context, portID string) error {
 	return k.scopedKeeper.ClaimCapability(ctx, cap, host.PortPath(portID))
 }
 
-// GetPort returns the portID for the oracle module. Used in ExportGenesis
+// GetPort returns the portID for the market module. Used in ExportGenesis
 func (k Keeper) GetPort(ctx sdk.Context) string {
 	store := ctx.KVStore(k.storeKey)
 	return string(store.Get(types.PortKey))
 }
 
-// SetPort sets the portID for the oracle module. Used in InitGenesis
+// SetPort sets the portID for the market module. Used in InitGenesis
 func (k Keeper) SetPort(ctx sdk.Context, portID string) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.PortKey, []byte(portID))

@@ -29,11 +29,11 @@ func (am AppModule) handleOraclePacket(
 				"cannot decode the fetchPrice received packet")
 		}
 		am.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(modulePacketData.RequestID), fetchPriceResult)
-		// TODO: FetchPrice oracle data reception logic
+		// TODO: FetchPrice market data reception logic
 
 	default:
 		err := sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal,
-			"oracle received packet not found: %s", modulePacketData.GetClientID())
+			"market received packet not found: %s", modulePacketData.GetClientID())
 		ack = channeltypes.NewErrorAcknowledgement(err.Error())
 		return ack, err
 
@@ -71,14 +71,14 @@ func (am AppModule) handleOracleAcknowledgment(
 			var fetchPriceData types.FetchPriceCallData
 			if err = obi.Decode(data.GetCalldata(), &fetchPriceData); err != nil {
 				return nil, sdkerrors.Wrap(err,
-					"cannot decode the fetchPrice oracle acknowledgment packet")
+					"cannot decode the fetchPrice market acknowledgment packet")
 			}
 			am.keeper.SetLastFetchPriceID(ctx, requestID)
 			return &sdk.Result{}, nil
 
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal,
-				"oracle acknowledgment packet not found: %s", data.GetClientID())
+				"market acknowledgment packet not found: %s", data.GetClientID())
 		}
 	}
 	return nil, nil

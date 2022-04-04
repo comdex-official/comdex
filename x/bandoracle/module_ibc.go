@@ -138,7 +138,7 @@ func (am AppModule) OnRecvPacket(
 	} else if ack != oracleAck {
 		return oracleAck
 	}
-	// this line is used by starport scaffolding # oracle/packet/module/recv
+	// this line is used by starport scaffolding # market/packet/module/recv
 
 	var modulePacketData types.BandoraclePacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
@@ -177,7 +177,7 @@ func (am AppModule) OnAcknowledgementPacket(
 		sdkResult.Events = ctx.EventManager().Events().ToABCIEvents()
 		return nil
 	}
-	// this line is used by starport scaffolding # oracle/packet/module/ack
+	// this line is used by starport scaffolding # market/packet/module/ack
 
 	var modulePacketData types.BandoraclePacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {

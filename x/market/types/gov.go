@@ -14,7 +14,7 @@ const (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalTypeUpdateAdmin)
-	govtypes.RegisterProposalTypeCodec(&UpdateAdminProposal{}, fmt.Sprintf("comdex/oracle/%s", ProposalTypeUpdateAdmin))
+	govtypes.RegisterProposalTypeCodec(&UpdateAdminProposal{}, fmt.Sprintf("comdex/market/%s", ProposalTypeUpdateAdmin))
 }
 
 var (

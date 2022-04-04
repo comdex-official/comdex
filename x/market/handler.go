@@ -1,12 +1,12 @@
-package oracle
+package market
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	"github.com/comdex-official/comdex/x/oracle/keeper"
-	"github.com/comdex-official/comdex/x/oracle/types"
+	"github.com/comdex-official/comdex/x/market/keeper"
+	"github.com/comdex-official/comdex/x/market/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
