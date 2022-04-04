@@ -35,4 +35,5 @@ type BandOracleKeeper interface {
 	GetFetchPriceResult(ctx sdk.Context, id types.OracleRequestID) (types.FetchPriceResult, error)
 	GetLastFetchPriceID(ctx sdk.Context) int64
 	GetLastBlockheight(ctx sdk.Context) int64
+	GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData
 }

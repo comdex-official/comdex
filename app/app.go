@@ -91,6 +91,8 @@ import (
 	tmprototypes "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/comdex-official/comdex/x/asset"
 	assetclient "github.com/comdex-official/comdex/x/asset/client"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
@@ -105,20 +107,18 @@ import (
 	"github.com/comdex-official/comdex/x/liquidation"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
-	"github.com/comdex-official/comdex/x/market"
-	marketkeeper "github.com/comdex-official/comdex/x/market/keeper"
-	markettypes "github.com/comdex-official/comdex/x/market/types"
-	"github.com/comdex-official/comdex/x/vault"
-	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	"github.com/comdex-official/comdex/x/liquidity"
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	"github.com/comdex-official/comdex/x/market"
+	marketkeeper "github.com/comdex-official/comdex/x/market/keeper"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	"github.com/comdex-official/comdex/x/rewards"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	"github.com/comdex-official/comdex/x/vault"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
 const (
@@ -476,7 +476,7 @@ func New(
 		app.GetSubspace(markettypes.ModuleName),
 		scopedIBCOracleKeeper,
 		app.assetKeeper,
-		app.BandoracleKeeper,
+		&app.BandoracleKeeper,
 	)
 
 	app.liquidationKeeper = *liquidationkeeper.NewKeeper(

@@ -16,10 +16,11 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 				k.SetRates(ctx, asset.Name)
 				k.SetMarketForAsset(ctx, asset.Id, asset.Name)
 				rate, _ := k.GetRates(ctx, asset.Name)
+				scriptID := k.GetFetchPriceMsg(ctx).OracleScriptID
 				var (
 					market = types.Market{
 						Symbol:   asset.Name,
-						ScriptID: 112,
+						ScriptID: scriptID,
 						Rates:    rate,
 					}
 				)

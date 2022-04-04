@@ -166,37 +166,6 @@ func (k *Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) SetCalldataID(ctx sdk.Context, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.CalldataIDKey
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: id,
-			},
-		)
-	)
-
-	store.Set(key, value)
-}
-
-func (k *Keeper) GetCalldataID(ctx sdk.Context) uint64 {
-	var (
-		store = k.Store(ctx)
-		key   = types.CalldataIDKey
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return 0
-	}
-
-	var id protobuftypes.UInt64Value
-	k.cdc.MustUnmarshal(value, &id)
-
-	return id.GetValue()
-}
-
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	market, found := k.GetMarketForAsset(ctx, id)
 	if !found {

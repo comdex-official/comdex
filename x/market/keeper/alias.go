@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"github.com/comdex-official/comdex/x/asset/types"
+	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 )
@@ -28,4 +29,8 @@ func (k *Keeper) GetLastFetchPriceID(ctx sdk.Context) int64 {
 
 func (k *Keeper) GetLastBlockheight(ctx sdk.Context) int64 {
 	return k.bandoraclekeeper.GetLastBlockheight(ctx)
+}
+
+func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) bandoraclemoduletypes.MsgFetchPriceData{
+	return k.bandoraclekeeper.GetFetchPriceMsg(ctx)
 }
