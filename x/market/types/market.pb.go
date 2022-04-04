@@ -33,7 +33,7 @@ func (m *Market) Reset()         { *m = Market{} }
 func (m *Market) String() string { return proto.CompactTextString(m) }
 func (*Market) ProtoMessage()    {}
 func (*Market) Descriptor() ([]byte, []int) {
-	return fileDescriptor_52ea76e22e2125a9, []int{0}
+	return fileDescriptor_c52e410514c538b6, []int{0}
 }
 func (m *Market) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -67,28 +67,27 @@ func init() {
 }
 
 func init() {
-	proto.RegisterFile("comdex/market/v1beta1/market.proto", fileDescriptor_52ea76e22e2125a9)
+	proto.RegisterFile("comdex/market/v1beta1/market.proto", fileDescriptor_c52e410514c538b6)
 }
 
-var fileDescriptor_52ea76e22e2125a9 = []byte{
-	// 258 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_c52e410514c538b6 = []byte{
+	// 255 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x4a, 0xce, 0xcf, 0x4d,
-	0x49, 0xad, 0xd0, 0xcf, 0x2f, 0x4a, 0x4c, 0xce, 0x49, 0xd5, 0x2f, 0x33, 0x4c, 0x4a, 0x2d, 0x49,
+	0x49, 0xad, 0xd0, 0xcf, 0x4d, 0x2c, 0xca, 0x4e, 0x2d, 0xd1, 0x2f, 0x33, 0x4c, 0x4a, 0x2d, 0x49,
 	0x34, 0x84, 0x72, 0xf5, 0x0a, 0x8a, 0xf2, 0x4b, 0xf2, 0x85, 0x44, 0x21, 0x6a, 0xf4, 0xa0, 0x82,
 	0x50, 0x35, 0x52, 0x22, 0xe9, 0xf9, 0xe9, 0xf9, 0x60, 0x15, 0xfa, 0x20, 0x16, 0x44, 0xb1, 0x52,
-	0x07, 0x23, 0x17, 0x9b, 0x6f, 0x62, 0x51, 0x76, 0x6a, 0x89, 0x90, 0x26, 0x17, 0x5b, 0x71, 0x65,
-	0x6e, 0x52, 0x7e, 0x8e, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0xa7, 0x93, 0xe0, 0xa7, 0x7b, 0xf2, 0xbc,
-	0x95, 0x89, 0xb9, 0x39, 0x56, 0x4a, 0x10, 0x71, 0xa5, 0x20, 0xa8, 0x02, 0x21, 0x5b, 0x2e, 0xce,
-	0xe2, 0xe4, 0xa2, 0xcc, 0x82, 0x92, 0xf8, 0xcc, 0x14, 0x09, 0x26, 0x05, 0x46, 0x0d, 0x16, 0x27,
-	0x85, 0x47, 0xf7, 0xe4, 0x39, 0x82, 0xc1, 0x82, 0x9e, 0x2e, 0x9f, 0xee, 0xc9, 0x0b, 0x40, 0x75,
-	0xc2, 0x94, 0x29, 0x05, 0x71, 0x40, 0xd8, 0x9e, 0x29, 0x42, 0x22, 0x5c, 0xac, 0x45, 0x89, 0x25,
-	0xa9, 0xc5, 0x12, 0xcc, 0x20, 0xad, 0x41, 0x10, 0x8e, 0x53, 0xd0, 0x89, 0x87, 0x72, 0x0c, 0x2b,
-	0x1e, 0xc9, 0x31, 0x9c, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c,
-	0x13, 0x1e, 0xcb, 0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x94, 0x41, 0x7a,
-	0x66, 0x49, 0x46, 0x69, 0x92, 0x5e, 0x72, 0x7e, 0xae, 0x3e, 0xc4, 0x93, 0xba, 0xf9, 0x69, 0x69,
-	0x99, 0xc9, 0x99, 0x89, 0x39, 0x50, 0xbe, 0x3e, 0x3c, 0x68, 0x4a, 0x2a, 0x0b, 0x52, 0x8b, 0x93,
-	0xd8, 0xc0, 0xbe, 0x34, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x6f, 0xf0, 0x95, 0x22, 0x38, 0x01,
-	0x00, 0x00,
+	0x07, 0x23, 0x17, 0x9b, 0x2f, 0x58, 0xa1, 0x90, 0x26, 0x17, 0x5b, 0x71, 0x65, 0x6e, 0x52, 0x7e,
+	0x8e, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0xa7, 0x93, 0xe0, 0xa7, 0x7b, 0xf2, 0xbc, 0x95, 0x89, 0xb9,
+	0x39, 0x56, 0x4a, 0x10, 0x71, 0xa5, 0x20, 0xa8, 0x02, 0x21, 0x5b, 0x2e, 0xce, 0xe2, 0xe4, 0xa2,
+	0xcc, 0x82, 0x92, 0xf8, 0xcc, 0x14, 0x09, 0x26, 0x05, 0x46, 0x0d, 0x16, 0x27, 0x85, 0x47, 0xf7,
+	0xe4, 0x39, 0x82, 0xc1, 0x82, 0x9e, 0x2e, 0x9f, 0xee, 0xc9, 0x0b, 0x40, 0x75, 0xc2, 0x94, 0x29,
+	0x05, 0x71, 0x40, 0xd8, 0x9e, 0x29, 0x42, 0x22, 0x5c, 0xac, 0x45, 0x89, 0x25, 0xa9, 0xc5, 0x12,
+	0xcc, 0x20, 0xad, 0x41, 0x10, 0x8e, 0x53, 0xd0, 0x89, 0x87, 0x72, 0x0c, 0x2b, 0x1e, 0xc9, 0x31,
+	0x9c, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb,
+	0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x94, 0x41, 0x7a, 0x66, 0x49, 0x46,
+	0x69, 0x92, 0x5e, 0x72, 0x7e, 0xae, 0x3e, 0xc4, 0x93, 0xba, 0xf9, 0x69, 0x69, 0x99, 0xc9, 0x99,
+	0x89, 0x39, 0x50, 0xbe, 0x3e, 0x3c, 0x68, 0x4a, 0x2a, 0x0b, 0x52, 0x8b, 0x93, 0xd8, 0xc0, 0xbe,
+	0x34, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x0b, 0xd6, 0x78, 0xfb, 0x38, 0x01, 0x00, 0x00,
 }
 
 func (m *Market) Marshal() (dAtA []byte, err error) {
@@ -112,27 +111,27 @@ func (m *Market) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if m.Rates != 0 {
-		i = encodeVarintOracle(dAtA, i, uint64(m.Rates))
+		i = encodeVarintMarket(dAtA, i, uint64(m.Rates))
 		i--
 		dAtA[i] = 0x18
 	}
 	if m.ScriptID != 0 {
-		i = encodeVarintOracle(dAtA, i, uint64(m.ScriptID))
+		i = encodeVarintMarket(dAtA, i, uint64(m.ScriptID))
 		i--
 		dAtA[i] = 0x10
 	}
 	if len(m.Symbol) > 0 {
 		i -= len(m.Symbol)
 		copy(dAtA[i:], m.Symbol)
-		i = encodeVarintOracle(dAtA, i, uint64(len(m.Symbol)))
+		i = encodeVarintMarket(dAtA, i, uint64(len(m.Symbol)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func encodeVarintOracle(dAtA []byte, offset int, v uint64) int {
-	offset -= sovOracle(v)
+func encodeVarintMarket(dAtA []byte, offset int, v uint64) int {
+	offset -= sovMarket(v)
 	base := offset
 	for v >= 1<<7 {
 		dAtA[offset] = uint8(v&0x7f | 0x80)
@@ -150,22 +149,22 @@ func (m *Market) Size() (n int) {
 	_ = l
 	l = len(m.Symbol)
 	if l > 0 {
-		n += 1 + l + sovOracle(uint64(l))
+		n += 1 + l + sovMarket(uint64(l))
 	}
 	if m.ScriptID != 0 {
-		n += 1 + sovOracle(uint64(m.ScriptID))
+		n += 1 + sovMarket(uint64(m.ScriptID))
 	}
 	if m.Rates != 0 {
-		n += 1 + sovOracle(uint64(m.Rates))
+		n += 1 + sovMarket(uint64(m.Rates))
 	}
 	return n
 }
 
-func sovOracle(x uint64) (n int) {
+func sovMarket(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
-func sozOracle(x uint64) (n int) {
-	return sovOracle(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+func sozMarket(x uint64) (n int) {
+	return sovMarket(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *Market) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -175,7 +174,7 @@ func (m *Market) Unmarshal(dAtA []byte) error {
 		var wire uint64
 		for shift := uint(0); ; shift += 7 {
 			if shift >= 64 {
-				return ErrIntOverflowOracle
+				return ErrIntOverflowMarket
 			}
 			if iNdEx >= l {
 				return io.ErrUnexpectedEOF
@@ -203,7 +202,7 @@ func (m *Market) Unmarshal(dAtA []byte) error {
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
-					return ErrIntOverflowOracle
+					return ErrIntOverflowMarket
 				}
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
@@ -217,11 +216,11 @@ func (m *Market) Unmarshal(dAtA []byte) error {
 			}
 			intStringLen := int(stringLen)
 			if intStringLen < 0 {
-				return ErrInvalidLengthOracle
+				return ErrInvalidLengthMarket
 			}
 			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
-				return ErrInvalidLengthOracle
+				return ErrInvalidLengthMarket
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
@@ -235,7 +234,7 @@ func (m *Market) Unmarshal(dAtA []byte) error {
 			m.ScriptID = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
-					return ErrIntOverflowOracle
+					return ErrIntOverflowMarket
 				}
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
@@ -254,7 +253,7 @@ func (m *Market) Unmarshal(dAtA []byte) error {
 			m.Rates = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
-					return ErrIntOverflowOracle
+					return ErrIntOverflowMarket
 				}
 				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
@@ -268,12 +267,12 @@ func (m *Market) Unmarshal(dAtA []byte) error {
 			}
 		default:
 			iNdEx = preIndex
-			skippy, err := skipOracle(dAtA[iNdEx:])
+			skippy, err := skipMarket(dAtA[iNdEx:])
 			if err != nil {
 				return err
 			}
 			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthOracle
+				return ErrInvalidLengthMarket
 			}
 			if (iNdEx + skippy) > l {
 				return io.ErrUnexpectedEOF
@@ -287,7 +286,7 @@ func (m *Market) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func skipOracle(dAtA []byte) (n int, err error) {
+func skipMarket(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0
 	depth := 0
@@ -295,7 +294,7 @@ func skipOracle(dAtA []byte) (n int, err error) {
 		var wire uint64
 		for shift := uint(0); ; shift += 7 {
 			if shift >= 64 {
-				return 0, ErrIntOverflowOracle
+				return 0, ErrIntOverflowMarket
 			}
 			if iNdEx >= l {
 				return 0, io.ErrUnexpectedEOF
@@ -312,7 +311,7 @@ func skipOracle(dAtA []byte) (n int, err error) {
 		case 0:
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
-					return 0, ErrIntOverflowOracle
+					return 0, ErrIntOverflowMarket
 				}
 				if iNdEx >= l {
 					return 0, io.ErrUnexpectedEOF
@@ -328,7 +327,7 @@ func skipOracle(dAtA []byte) (n int, err error) {
 			var length int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
-					return 0, ErrIntOverflowOracle
+					return 0, ErrIntOverflowMarket
 				}
 				if iNdEx >= l {
 					return 0, io.ErrUnexpectedEOF
@@ -341,14 +340,14 @@ func skipOracle(dAtA []byte) (n int, err error) {
 				}
 			}
 			if length < 0 {
-				return 0, ErrInvalidLengthOracle
+				return 0, ErrInvalidLengthMarket
 			}
 			iNdEx += length
 		case 3:
 			depth++
 		case 4:
 			if depth == 0 {
-				return 0, ErrUnexpectedEndOfGroupOracle
+				return 0, ErrUnexpectedEndOfGroupMarket
 			}
 			depth--
 		case 5:
@@ -357,7 +356,7 @@ func skipOracle(dAtA []byte) (n int, err error) {
 			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
 		}
 		if iNdEx < 0 {
-			return 0, ErrInvalidLengthOracle
+			return 0, ErrInvalidLengthMarket
 		}
 		if depth == 0 {
 			return iNdEx, nil
@@ -367,7 +366,7 @@ func skipOracle(dAtA []byte) (n int, err error) {
 }
 
 var (
-	ErrInvalidLengthOracle        = fmt.Errorf("proto: negative length found during unmarshaling")
-	ErrIntOverflowOracle          = fmt.Errorf("proto: integer overflow")
-	ErrUnexpectedEndOfGroupOracle = fmt.Errorf("proto: unexpected end of group")
+	ErrInvalidLengthMarket        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowMarket          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupMarket = fmt.Errorf("proto: unexpected end of group")
 )
