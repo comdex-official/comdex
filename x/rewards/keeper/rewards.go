@@ -318,7 +318,17 @@ func (k Keeper) DistributeRewards(ctx sdk.Context, mintingReward types.MintingRe
 				}
 				err = k.SendCoinsFromModuleToAccount(ctx, types.ModuleName, parsedOwner, sdk.NewCoins(rewardCoin))
 				if err == nil {
-					vault.RewardsReceived = append(vault.RewardsReceived, rewardCoin)
+
+					logged := false
+					for index, receivedReward := range vault.RewardsReceived {
+						if receivedReward.Denom == rewardCoin.Denom {
+							vault.RewardsReceived[index].Amount = vault.RewardsReceived[index].Amount.Add(rewardCoin.Amount)
+							logged = true
+						}
+					}
+					if !logged {
+						vault.RewardsReceived = append(vault.RewardsReceived, rewardCoin)
+					}
 					k.SetVault(ctx, vault)
 
 					ctx.EventManager().EmitEvents(sdk.Events{
