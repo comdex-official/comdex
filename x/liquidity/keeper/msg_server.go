@@ -162,7 +162,6 @@ func (k msgServer) Swap(goCtx context.Context, msg *types.MsgSwapWithinBatch) (*
 			sdk.NewAttribute(types.AttributeValueOrderPrice, batchMsg.Msg.OrderPrice.String()),
 		),
 	})
-
 	return &types.MsgSwapWithinBatchResponse{}, nil
 }
 

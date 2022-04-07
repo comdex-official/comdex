@@ -86,15 +86,12 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 	if len(lockedVaults) == 0 {
 		return nil
 	}
-	for _, lockedVault := range lockedVaults {
-		//Should come From Params :1#
-		unliquidatePointPercentage, _ := sdk.NewDecFromStr(types.DefaultUnliquidatePointPercent)
-		// auctionDiscount,_:=sdk.NewDecFromStr(auctiontypes.DefaultAuctionDiscountPercent)
-		// liquidationPenalty,_:=sdk.NewDecFromStr(auctiontypes.DefaultLiquidationPaneltyPercent)
-		//To be updated with the above 2 variables, below params are only for testing purposes
-		auctionDiscount, _ := sdk.NewDecFromStr("0.05")
-		liquidationPenanlty, _ := sdk.NewDecFromStr("0.15")
 
+	for _, lockedVault := range lockedVaults {
+
+		unliquidatePointPercentage, _ := sdk.NewDecFromStr(types.DefaultUnliquidatePointPercent)
+		auctionDiscount, _ := sdk.NewDecFromStr(auctiontypes.DefaultAuctionDiscountPercent)
+		liquidationPenalty, _ := sdk.NewDecFromStr(auctiontypes.DefaultLiquidationPenaltyPercent)
 		if (!lockedVault.IsAuctionInProgress && !lockedVault.IsAuctionComplete) || (lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.LTE(unliquidatePointPercentage)) {
 			pair, found := k.GetPair(ctx, lockedVault.PairId)
 			if !found {
@@ -122,7 +119,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 			//Assuming that the collateral to be sold is 1 unit, so finding out how much is going to be deducted from the
 			//collateral which will account as repaying the user's debt
 			deductionPercentage, _ := sdk.NewDecFromStr("1.0")
-			auctionDeduction := (deductionPercentage).Sub(auctionDiscount.Add(liquidationPenanlty))
+			auctionDeduction := (deductionPercentage).Sub(auctionDiscount.Add(liquidationPenalty))
 			multiplicationFactor := auctionDeduction.Mul(unliquidatePointPercentage)
 			asssetOutMultiplicationFactor := totalOut.Mul(unliquidatePointPercentage)
 			assetsDifference := totalIn.Sub(asssetOutMultiplicationFactor)
@@ -131,6 +128,24 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 			selloffAmount := assetsDifference.Quo(selloffMultiplicationFactor)
 
 			var collateralToBeAuctioned sdk.Dec
+
+			//Considering a case with sudden pump & dump resulting in sudden liquidation of vaults
+			//Unlocking those account without deducting any fees.
+
+			// baseValue := sdk.ZeroInt()
+			// if selloffAmount.LT(baseValue.ToDec())  {
+			// 	//Unlocking User's Vault
+			// 	//Very less likely scenario , but a possible edge case , nothing is impossible in Blockchain
+			// 	userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
+			// 	if err != nil {
+			// 		continue
+			// 	}
+
+			// 	k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
+			// 	k.CreteNewVault(ctx, lockedVault.PairId, lockedVault.Owner, assetIn, lockedVault.AmountIn, assetOut, lockedVault.AmountOut)
+			// 	k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+
+			// }
 
 			if selloffAmount.GTE(totalIn) {
 				collateralToBeAuctioned = totalIn
@@ -193,15 +208,12 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
 				k.SetLockedVault(ctx, updatedLockedVault)
 				continue
-
 			}
 			if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
 
 				k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
 				k.CreteNewVault(ctx, lockedVault.PairId, lockedVault.Owner, assetIn, lockedVault.AmountIn, assetOut, lockedVault.AmountOut)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
-
-
 
 				//======================================NOTE TO BE CHANGED================================================
 				//One important thing that we missed is that we need to pop and append the current vault as per the user -> This has bee handled -Vishnu

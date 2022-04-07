@@ -3,18 +3,20 @@ package types
 import (
 	"fmt"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 var (
-	KeyLiquidationPaneltyPercent = []byte("LiquidationPaneltyPercent")
+	KeyLiquidationPenaltyPercent = []byte("LiquidationPenaltyPercent")
 	KeyAuctionDiscountPercent    = []byte("AuctionDiscountPercent")
 	KeyAuctionDurationHours      = []byte("AuctionDurationHours")
 )
 
 var (
-	DefaultLiquidationPaneltyPercent = uint64(15)
-	DefaultAuctionDiscountPercent    = uint64(5)
+	DefaultLiquidationPenaltyPercent = "0.15"
+	DefaultAuctionDiscountPercent    = "0.05"
 	DefaultAuctionDurationHours      = uint64(6)
 )
 
@@ -28,7 +30,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 // NewParams creates a new Params instance
 func NewParams() Params {
 	return Params{
-		LiquidationPaneltyPercent: DefaultLiquidationPaneltyPercent,
+		LiquidationPenaltyPercent: DefaultLiquidationPenaltyPercent,
 		AuctionDiscountPercent:    DefaultAuctionDiscountPercent,
 		AuctionDurationHours:      DefaultAuctionDurationHours,
 	}
@@ -42,7 +44,7 @@ func DefaultParams() Params {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyLiquidationPaneltyPercent, &p.LiquidationPaneltyPercent, validateLiquidationPanelty),
+		paramtypes.NewParamSetPair(KeyLiquidationPenaltyPercent, &p.LiquidationPenaltyPercent, validateLiquidationPenalty),
 		paramtypes.NewParamSetPair(KeyAuctionDiscountPercent, &p.AuctionDiscountPercent, validateAuctionDiscount),
 		paramtypes.NewParamSetPair(KeyAuctionDurationHours, &p.AuctionDurationHours, validateAuctionDuration),
 	}
@@ -54,7 +56,7 @@ func (p Params) Validate() error {
 		value     interface{}
 		validator func(interface{}) error
 	}{
-		{p.LiquidationPaneltyPercent, validateLiquidationPanelty},
+		{p.LiquidationPenaltyPercent, validateLiquidationPenalty},
 		{p.AuctionDiscountPercent, validateAuctionDiscount},
 		{p.AuctionDurationHours, validateAuctionDuration},
 	} {
@@ -71,23 +73,27 @@ func (p Params) Validate() error {
 // 	return string(out)
 // }
 
-func validateLiquidationPanelty(i interface{}) error {
-	v, ok := i.(uint64)
+func validateLiquidationPenalty(i interface{}) error {
+	v, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-	if v < 1 {
-		return fmt.Errorf("liquidation panelty cannot be less than 1 percent")
+	q, _ := sdk.NewDecFromStr(v)
+	u, _ := sdk.NewDecFromStr("0.01")
+	if q.LT(u) {
+		return fmt.Errorf("liquidation penalty cannot be less than 1 percent")
 	}
 	return nil
 }
 
 func validateAuctionDiscount(i interface{}) error {
-	v, ok := i.(uint64)
+	v, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-	if v < 1 {
+	q, _ := sdk.NewDecFromStr(v)
+	u, _ := sdk.NewDecFromStr("0.01")
+	if q.LT(u) {
 		return fmt.Errorf("auction discount cannot be less than 1 percent")
 	}
 	return nil
@@ -99,7 +105,7 @@ func validateAuctionDuration(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	if v < 1 {
-		return fmt.Errorf("auction duraction cannot be less than 1 hour")
+		return fmt.Errorf("auction duration cannot be less than 1 hour")
 	}
 	return nil
 }

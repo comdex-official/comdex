@@ -69,9 +69,3 @@ func ValidateUnliquidatePointPercent(i interface{}) error {
 
 	return nil
 }
-
-// String implements the Stringer interface.
-// func (p Params) String() string {
-// 	out, _ := yaml.Marshal(p)
-// 	return string(out)
-// }
