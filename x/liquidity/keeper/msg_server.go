@@ -247,9 +247,6 @@ func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondP
 		}
 	}
 
-	fmt.Println("------------------------------------------------------")
-	fmt.Println("Checking updated data----1", userPoolsData)
-	fmt.Println("------------------------------------------------------")
 	k.SetIndividualUserPoolsData(ctx, userPoolsData)
 
 	return &types.MsgUnbondPoolTokensResponse{}, nil

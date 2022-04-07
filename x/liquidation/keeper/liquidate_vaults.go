@@ -203,7 +203,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			if err != nil {
 				continue
 			}
-			if newCalculatedCollateralizationRatio.LTE(unliquidatePointPercentage) {
+			if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
 				updatedLockedVault := lockedVault
 				updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
 				k.SetLockedVault(ctx, updatedLockedVault)
