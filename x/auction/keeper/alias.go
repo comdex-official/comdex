@@ -43,7 +43,7 @@ func (k *Keeper) SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.Ac
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	return k.oracle.GetPriceForAsset(ctx, id)
+	return k.market.GetPriceForAsset(ctx, id)
 }
 
 func (k *Keeper) GetLockedVaults(ctx sdk.Context) (locked_vaults []liquidationtypes.LockedVault) {

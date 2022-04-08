@@ -43,6 +43,6 @@ type VaultKeeper interface {
 	UpdateCollateralVaultIdMapping(ctx sdk.Context, assetInDenom string, assetOutDenom string, vaultId uint64, isInsert bool) error
 }
 
-type OracleKeeper interface {
+type MarketKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }

@@ -82,7 +82,7 @@ func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, addre
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	return k.oracle.GetPriceForAsset(ctx, id)
+	return k.market.GetPriceForAsset(ctx, id)
 }
 
 func (k *Keeper) UpdateUserVaultIdMapping(ctx sdk.Context, vaultOwner string, vaultId uint64, isInsert bool) error {

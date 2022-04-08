@@ -21,7 +21,7 @@ type BankKeeper interface {
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 }
 
-type OracleKeeper interface {
+type MarketKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }
 

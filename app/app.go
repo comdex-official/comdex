@@ -232,7 +232,7 @@ type App struct {
 	assetKeeper       assetkeeper.Keeper
 	vaultKeeper       vaultkeeper.Keeper
 	liquidityKeeper   liquiditykeeper.Keeper
-	oracleKeeper      marketkeeper.Keeper
+	marketKeeper      marketkeeper.Keeper
 	liquidationKeeper liquidationkeeper.Keeper
 	auctionKeeper     auctionkeeper.Keeper
 	rewardsKeeper     rewardskeeper.Keeper
@@ -425,7 +425,7 @@ func New(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
 		app.GetSubspace(assettypes.ModuleName),
-		&app.oracleKeeper,
+		&app.marketKeeper,
 	)
 	app.vaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
@@ -433,7 +433,7 @@ func New(
 		app.bankKeeper,
 		app.accountKeeper,
 		&app.assetKeeper,
-		&app.oracleKeeper,
+		&app.marketKeeper,
 		&app.BandoracleKeeper,
 	)
 
@@ -457,7 +457,7 @@ func New(
 		app.ibcKeeper.ChannelKeeper,
 		&app.ibcKeeper.PortKeeper,
 		scopedBandoracleKeeper,
-		&app.oracleKeeper,
+		&app.marketKeeper,
 		app.assetKeeper,
 	)
 	bandoracleModule := bandoraclemodule.NewAppModule(
@@ -470,7 +470,7 @@ func New(
 		app.ibcKeeper.ChannelKeeper,
 	)
 
-	app.oracleKeeper = *marketkeeper.NewKeeper(
+	app.marketKeeper = *marketkeeper.NewKeeper(
 		app.cdc,
 		app.keys[markettypes.StoreKey],
 		app.GetSubspace(markettypes.ModuleName),
@@ -488,7 +488,7 @@ func New(
 		app.bankKeeper,
 		&app.assetKeeper,
 		&app.vaultKeeper,
-		&app.oracleKeeper,
+		&app.marketKeeper,
 	)
 
 	app.auctionKeeper = *auctionkeeper.NewKeeper(
@@ -500,7 +500,7 @@ func New(
 		app.bankKeeper,
 		&app.assetKeeper,
 		&app.vaultKeeper,
-		&app.oracleKeeper,
+		&app.marketKeeper,
 		&app.liquidationKeeper,
 	)
 
@@ -512,7 +512,7 @@ func New(
 		app.bankKeeper,
 		&app.assetKeeper,
 		&app.vaultKeeper,
-		&app.oracleKeeper,
+		&app.marketKeeper,
 	)
 
 	// Create Transfer Keepers
@@ -576,7 +576,7 @@ func New(
 		evidenceRouter = evidencetypes.NewRouter()
 		ibcRouter      = ibcporttypes.NewRouter()
 		transferModule = ibctransfer.NewAppModule(app.ibcTransferKeeper)
-		oracleModule   = market.NewAppModule(app.cdc, app.oracleKeeper)
+		oracleModule   = market.NewAppModule(app.cdc, app.marketKeeper)
 	)
 
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
