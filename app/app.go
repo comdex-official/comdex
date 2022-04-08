@@ -2,12 +2,6 @@ package app
 
 import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"io"
-	"os"
-	"path/filepath"
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -17,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/api"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -87,6 +82,9 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	tmprototypes "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
+	"io"
+	"os"
+	"path/filepath"
 
 	"github.com/comdex-official/comdex/x/asset"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
@@ -99,7 +97,6 @@ import (
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
@@ -109,38 +106,10 @@ const (
 )
 
 var (
-	// If EnableSpecificWasmProposals is "", and this is "true", then enable all x/wasm proposals.
-	// If EnableSpecificWasmProposals is "", and this is not "true", then disable all x/wasm proposals.
-	WasmProposalsEnabled = "true"
-	// If set to non-empty string it must be comma-separated list of values that are all a subset
-	// of "EnableAllProposals" (takes precedence over WasmProposalsEnabled)
-	// https://github.com/CosmWasm/wasmd/blob/02a54d33ff2c064f3539ae12d75d027d9c665f05/x/wasm/internal/types/proposal.go#L28-L34
-	EnableSpecificWasmProposals = ""
-	// use this for clarity in argument list
-	EmptyWasmOpts []wasm.Option
-)
-
-// GetWasmEnabledProposals parses the WasmProposalsEnabled / EnableSpecificWasmProposals values to
-// produce a list of enabled proposals to pass into wasmd app.
-func GetWasmEnabledProposals() []wasm.ProposalType {
-	if EnableSpecificWasmProposals == "" {
-		if WasmProposalsEnabled == "true" {
-			return wasm.EnableAllProposals
-		}
-		return wasm.DisableAllProposals
-	}
-	chunks := strings.Split(EnableSpecificWasmProposals, ",")
-	proposals, err := wasm.ConvertToProposals(chunks)
-	if err != nil {
-		panic(err)
-	}
-	return proposals
-}
-
-var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
-
+	// use this for clarity in argument list
+	EmptyWasmOpts []wasm.Option
 	// ModuleBasics defines the module BasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
@@ -153,12 +122,10 @@ var (
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			append(
-				wasmclient.ProposalHandlers,
-				paramsclient.ProposalHandler,
-				distrclient.ProposalHandler,
-				upgradeclient.ProposalHandler,
-				upgradeclient.CancelProposalHandler)...,
+			paramsclient.ProposalHandler,
+			distrclient.ProposalHandler,
+			upgradeclient.ProposalHandler,
+			upgradeclient.CancelProposalHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -253,7 +220,6 @@ func New(
 	invCheckPeriod uint,
 	encoding EncodingConfig,
 	appOptions servertypes.AppOptions,
-	wasmEnabledProposals []wasm.ProposalType,
 	wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
@@ -505,13 +471,7 @@ func New(
 		wasmOpts...,
 	)
 
-	if len(wasmEnabledProposals) != 0 {
-		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, wasmEnabledProposals))
-	}
-	// wire up x/wasm to IBC
-	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.ibcKeeper.ChannelKeeper))
 	app.ibcKeeper.SetRouter(ibcRouter)
-
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,
 		app.keys[govtypes.StoreKey],
@@ -809,15 +769,7 @@ func (app *App) registerUpgradeHandlers() {
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
 		}
-		newVM, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
-		if err != nil {
-			return newVM, err
-		}
-		//wasm
-		wasmParams := app.wasmKeeper.GetParams(ctx)
-		wasmParams.CodeUploadAccess = wasmtypes.AllowNobody
-		app.wasmKeeper.SetParams(ctx, wasmParams)
-		return newVM, err
+		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 
 	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
@@ -825,8 +777,9 @@ func (app *App) registerUpgradeHandlers() {
 		panic(err)
 	}
 	if upgradeInfo.Name == "v0.1.2" && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{}
-
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{wasmtypes.ModuleName},
+		}
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 	}

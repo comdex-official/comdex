@@ -177,7 +177,6 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 		cast.ToUint(options.Get(server.FlagInvCheckPeriod)),
 		comdex.MakeEncodingConfig(),
 		options,
-		comdex.GetWasmEnabledProposals(),
 		wasmOpts,
 		baseapp.SetPruning(pruningOptions),
 		baseapp.SetMinGasPrices(cast.ToString(options.Get(server.FlagMinGasPrices))),
@@ -204,13 +203,13 @@ func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64
 	var emptyWasmOpts []wasm.Option
 	var app *comdex.App
 	if height != -1 {
-		app = comdex.New(logger, db, tracer, false, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, comdex.GetWasmEnabledProposals(), emptyWasmOpts)
+		app = comdex.New(logger, db, tracer, false, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, emptyWasmOpts)
 
 		if err := app.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		app = comdex.New(logger, db, tracer, true, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, comdex.GetWasmEnabledProposals(), emptyWasmOpts)
+		app = comdex.New(logger, db, tracer, true, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, emptyWasmOpts)
 	}
 
 	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
