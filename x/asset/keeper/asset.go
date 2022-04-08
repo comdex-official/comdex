@@ -139,12 +139,12 @@ func (k *Keeper) DeleteAssetForDenom(ctx sdk.Context, denom string) {
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	market, found := k.oracle.GetMarketForAsset(ctx, id)
+	market, found := k.market.GetMarketForAsset(ctx, id)
 	if !found {
 		return 0, false
 	}
 
-	return k.oracle.GetPriceForMarket(ctx, market.Symbol)
+	return k.market.GetPriceForMarket(ctx, market.Symbol)
 }
 
 func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error {

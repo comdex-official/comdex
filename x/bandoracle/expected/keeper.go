@@ -8,7 +8,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v2/modules/core/exported"
 )
 
-type OracleKeeper interface{}
+type MarketKeeper interface{}
 
 type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)

@@ -20,7 +20,7 @@ type (
 		storeKey      sdk.StoreKey
 		memKey        sdk.StoreKey
 		paramstore    paramtypes.Subspace
-		oracle        expected.OracleKeeper
+		market        expected.MarketKeeper
 		assetKeeper   assetkeeper.Keeper
 		channelKeeper expected.ChannelKeeper
 		portKeeper    expected.PortKeeper
@@ -36,7 +36,7 @@ func NewKeeper(
 	channelKeeper expected.ChannelKeeper,
 	portKeeper expected.PortKeeper,
 	scopedKeeper expected.ScopedKeeper,
-	oracle expected.OracleKeeper,
+	market expected.MarketKeeper,
 	assetKeeper assetkeeper.Keeper,
 
 ) Keeper {
@@ -50,7 +50,7 @@ func NewKeeper(
 		storeKey:      storeKey,
 		memKey:        memKey,
 		paramstore:    ps,
-		oracle:        oracle,
+		market:        market,
 		assetKeeper:   assetKeeper,
 		channelKeeper: channelKeeper,
 		portKeeper:    portKeeper,

@@ -34,6 +34,6 @@ type VaultKeeper interface {
 	GetCAssetTotalValueMintedForCollateral(ctx sdk.Context, collateralType assettypes.Asset) sdk.Dec
 }
 
-type OracleKeeper interface {
+type MarketKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }
