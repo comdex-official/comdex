@@ -43,6 +43,65 @@ message QueryParamsResponse {
   ];
 }
 
+message QueryLockedVaultsHistoryRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryLockedVaultsHistoryResponse {
+  repeated LockedVault locked_vaults_history = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"locked_vaults_history\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryUserLockedVaultsRequest {
+  string user_address = 1 [ (gogoproto.moretags) = "yaml:\"user_address\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryUserLockedVaultsResponse {
+  repeated LockedVault user_locked_vaults = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"user_locked_vaults\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryUserLockedVaultsHistoryRequest {
+  string user_address = 1 [ (gogoproto.moretags) = "yaml:\"user_address\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryUserLockedVaultsHistoryResponse {
+  repeated LockedVault user_locked_vaults_history = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"user_locked_vaults_history\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryLockedVaultsPairRequest {
+  uint64 PairId = 1 [ (gogoproto.moretags) = "yaml:\"Pair_Id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryLockedVaultsPairResponse {
+  repeated LockedVault locked_vaults_pair = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"user_locked_vaults_pair\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
 service QueryService {
   rpc QueryLockedVault(QueryLockedVaultRequest) returns (QueryLockedVaultResponse) {
     option (google.api.http).get = "/comdex/liquidation/v1beta1/locked_vault/{id}";
@@ -52,5 +111,17 @@ service QueryService {
   }
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/liquidation/v1beta1/params";
+  }
+  rpc QueryLockedVaultsHistory(QueryLockedVaultsHistoryRequest) returns (QueryLockedVaultsHistoryResponse) {
+    option (google.api.http).get = "/comdex/liquidation/v1beta1/locked_vaults_history";
+  }
+  rpc QueryUserLockedVaults(QueryUserLockedVaultsRequest) returns (QueryUserLockedVaultsResponse) {
+    option (google.api.http).get = "/comdex/liquidation/v1beta1/user_locked_vaults";
+  }
+  rpc QueryUserLockedVaultsHistory(QueryUserLockedVaultsHistoryRequest) returns (QueryUserLockedVaultsHistoryResponse) {
+    option (google.api.http).get = "/comdex/liquidation/v1beta1/user_locked_vaults_history";
+  }
+  rpc QueryLockedVaultsPair(QueryLockedVaultsPairRequest) returns (QueryLockedVaultsPairResponse) {
+    option (google.api.http).get = "/comdex/liquidation/v1beta1/user_locked_vaults_pair";
   }
 }

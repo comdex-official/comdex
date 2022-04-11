@@ -18,6 +18,10 @@ func GetQueryCmd() *cobra.Command {
 		queryParams(),
 		queryLockedVault(),
 		queryLockedVaults(),
+		queryLockedVaultsHistory(),
+		queryUserLockedVaults(),
+		queryUserLockedVaultsHistory(),
+		queryLockedVaultsPair(),
 	)
 
 	return cmd

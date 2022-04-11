@@ -7,6 +7,7 @@ import (
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 )
@@ -62,12 +63,12 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 		CrAtLiquidation:              collateralizationRatio,
 		CurrentCollaterlisationRatio: collateralizationRatio,
 		CollateralToBeAuctioned:      nil,
-		LiquidationTimestamp:         time.Time{},
+		LiquidationTimestamp:         time.Now(),
 		SellOffHistory:               nil,
 	}
 
 	k.SetLockedVault(ctx, value)
-	k.SetLockedVaultID(ctx, lockedVaultId+1)
+	k.SetLockedVaultIDHistory(ctx, lockedVaultId+1)
 
 	//Create a new Data Structure with the current Params
 	//Set nil for all the values not available right now
@@ -79,6 +80,15 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 
 }
 
+func (k Keeper) CreateLockedVaultHistoy(ctx sdk.Context, lockedvault liquidationtypes.LockedVault) error {
+
+	lockedVaultId := k.GetLockedVaultIDHistory(ctx)
+	k.SetLockedVaultHistory(ctx, lockedvault,lockedVaultId)
+	k.SetLockedVaultID(ctx, lockedVaultId+1)
+
+	return nil
+
+}
 //for first time to update the collateralization value & sell off amount
 //and if auction is complete and cr is less than 1.6
 func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
@@ -177,6 +187,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				continue
 			}
 			if lockedVault.AmountOut.IsZero() {
+				k.CreateLockedVaultHistoy(ctx, lockedVault)
 				k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 				if err := k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
@@ -196,7 +207,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 
 			}
 			if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
-
+				k.CreateLockedVaultHistoy(ctx, lockedVault)
 				k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
 				k.CreteNewVault(ctx, lockedVault.PairId, lockedVault.Owner, assetIn, lockedVault.AmountIn, assetOut, lockedVault.AmountOut)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
@@ -235,6 +246,23 @@ func (k *Keeper) GetLockedVaultID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
+func (k *Keeper) GetLockedVaultIDHistory(ctx sdk.Context) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockedVaultKeyHistory
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return 0
+	}
+
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}
+
 func (k *Keeper) SetLockedVaultID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
@@ -248,10 +276,32 @@ func (k *Keeper) SetLockedVaultID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
+func (k *Keeper) SetLockedVaultIDHistory(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockedVaultKeyHistory
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+	store.Set(key, value)
+}
+
 func (k *Keeper) SetLockedVault(ctx sdk.Context, locked_vault types.LockedVault) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultKey(locked_vault.LockedVaultId)
+		value = k.cdc.MustMarshal(&locked_vault)
+	)
+	store.Set(key, value)
+}
+
+func (k *Keeper) SetLockedVaultHistory(ctx sdk.Context, locked_vault types.LockedVault,id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockedVaultKey(id)
 		value = k.cdc.MustMarshal(&locked_vault)
 	)
 	store.Set(key, value)
@@ -343,3 +393,12 @@ func (k *Keeper) UpdateAssetQuantitiesInLockedVault(
 	k.SetLockedVault(ctx, locked_vault)
 	return nil
 }
+
+// func (k *Keeper) AddHistoryVault(ctx sdk.Context, locked_vaults liquidationtypes.LockedVault) {
+// 	var (
+// 		store = k.Store(ctx)
+// 		key   = types.LockedVaultKeyHistory
+// 		value = k.cdc.MustMarshal(&locked_vaults)
+// 	)
+// 	store.Set(key, value)
+// }
