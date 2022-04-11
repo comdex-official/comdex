@@ -19,7 +19,7 @@ func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool) {
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	return k.oracle.GetPriceForAsset(ctx, id)
+	return k.market.GetPriceForAsset(ctx, id)
 }
 
 func (k *Keeper) SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error {

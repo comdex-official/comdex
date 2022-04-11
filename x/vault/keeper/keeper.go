@@ -17,7 +17,7 @@ type Keeper struct {
 	bank    expected.BankKeeper
 	account expected.AccountKeeper
 	asset   expected.AssetKeeper
-	oracle  expected.OracleKeeper
+	market  expected.MarketKeeper
 	bandoracle expected.BandoracleKeeper
 }
 
@@ -27,7 +27,7 @@ func NewKeeper(
 	bank expected.BankKeeper,
 	account expected.AccountKeeper,
 	asset expected.AssetKeeper,
-	oracle expected.OracleKeeper,
+	market expected.MarketKeeper,
 	bandoracle expected.BandoracleKeeper,
 ) Keeper {
 	return Keeper{
@@ -36,7 +36,7 @@ func NewKeeper(
 		bank:    bank,
 		account: account,
 		asset:   asset,
-		oracle:  oracle,
+		market:  market,
 		bandoracle: bandoracle,
 	}
 }

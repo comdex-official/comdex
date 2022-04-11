@@ -162,7 +162,6 @@ func (k msgServer) Swap(goCtx context.Context, msg *types.MsgSwapWithinBatch) (*
 			sdk.NewAttribute(types.AttributeValueOrderPrice, batchMsg.Msg.OrderPrice.String()),
 		),
 	})
-
 	return &types.MsgSwapWithinBatchResponse{}, nil
 }
 
@@ -248,9 +247,6 @@ func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondP
 		}
 	}
 
-	fmt.Println("------------------------------------------------------")
-	fmt.Println("Checking updated data----1", userPoolsData)
-	fmt.Println("------------------------------------------------------")
 	k.SetIndividualUserPoolsData(ctx, userPoolsData)
 
 	return &types.MsgUnbondPoolTokensResponse{}, nil

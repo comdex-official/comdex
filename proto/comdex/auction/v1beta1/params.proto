@@ -6,10 +6,10 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/comdex-official/comdex/x/auction/types";
 
 message Params {
-  uint64 liquidation_panelty_percent  = 1 [ 
-    (gogoproto.moretags) = "yaml:\"liquidation_panelty_percent\""
+  string liquidation_penalty_percent  = 1 [ 
+    (gogoproto.moretags) = "yaml:\"liquidation_penalty_percent\""
   ]; 
-  uint64 auction_discount_percent  = 2 [ 
+  string auction_discount_percent  = 2 [ 
     (gogoproto.moretags) = "yaml:\"auction_discount_percent\""
   ]; 
   uint64 auction_duration_hours  = 3 [ 

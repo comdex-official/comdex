@@ -22,7 +22,7 @@ type (
 		bank        expected.BankKeeper
 		asset       expected.AssetKeeper
 		vault       expected.VaultKeeper
-		oracle      expected.OracleKeeper
+		market      expected.MarketKeeper
 		liquidation expected.LiquidationKeeper
 	}
 )
@@ -36,7 +36,7 @@ func NewKeeper(
 	bank expected.BankKeeper,
 	asset expected.AssetKeeper,
 	vault expected.VaultKeeper,
-	oracle expected.OracleKeeper,
+	market expected.MarketKeeper,
 	liquidation expected.LiquidationKeeper,
 
 ) *Keeper {
@@ -55,7 +55,7 @@ func NewKeeper(
 		bank:        bank,
 		asset:       asset,
 		vault:       vault,
-		oracle:      oracle,
+		market:      market,
 		liquidation: liquidation,
 	}
 }
