@@ -102,6 +102,148 @@ func queryParams() *cobra.Command {
 	return cmd
 }
 
+func queryLockedVaultsHistory() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "locked-vaults-history",
+		Short: "Query locked-vaults history",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryServiceClient(ctx)
+			res, err := queryClient.QueryLockedVaultsHistory(
+				context.Background(),
+				&types.QueryLockedVaultsHistoryRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "locked-vaults-history")
+
+	return cmd
+}
+
+func queryUserLockedVaults() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "locked-vaults-by-user [user_address]",
+		Short: "locked vaults list for an individual account",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryUserLockedVaults(cmd.Context(), &types.QueryUserLockedVaultsRequest{
+				UserAddress: args[0],
+				Pagination: pagination,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func queryUserLockedVaultsHistory() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "locked-vaults-history-by-user [user_address]",
+		Short: "historical locked vaults list for an individual account",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryUserLockedVaultsHistory(cmd.Context(), &types.QueryUserLockedVaultsHistoryRequest{
+				UserAddress: args[0],
+				Pagination: pagination,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func queryLockedVaultsPair() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "locked-vaults-Pair [Pair_Id]",
+		Short: "locked vaults list With Pair Id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			Pair_Id, err := strconv.ParseUint(args[0], 10, 64)
+			
+			if err != nil {
+				return err
+			}
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryLockedVaultsPair(cmd.Context(), &types.QueryLockedVaultsPairRequest{
+				PairId: Pair_Id,
+				Pagination: pagination,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
 
 //Query All Locked Vaults history
 // Query Locked Vaults History - User Wise

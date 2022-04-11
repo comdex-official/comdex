@@ -252,6 +252,309 @@ func (m *QueryParamsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryParamsResponse proto.InternalMessageInfo
 
+type QueryLockedVaultsHistoryRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryLockedVaultsHistoryRequest) Reset()         { *m = QueryLockedVaultsHistoryRequest{} }
+func (m *QueryLockedVaultsHistoryRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryLockedVaultsHistoryRequest) ProtoMessage()    {}
+func (*QueryLockedVaultsHistoryRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f0ea242ad6cfba77, []int{6}
+}
+func (m *QueryLockedVaultsHistoryRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryLockedVaultsHistoryRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryLockedVaultsHistoryRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryLockedVaultsHistoryRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockedVaultsHistoryRequest.Merge(m, src)
+}
+func (m *QueryLockedVaultsHistoryRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryLockedVaultsHistoryRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockedVaultsHistoryRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryLockedVaultsHistoryRequest proto.InternalMessageInfo
+
+type QueryLockedVaultsHistoryResponse struct {
+	LockedVaultsHistory []LockedVault       `protobuf:"bytes,1,rep,name=locked_vaults_history,json=lockedVaultsHistory,proto3" json:"locked_vaults_history" yaml:"locked_vaults_history"`
+	Pagination          *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryLockedVaultsHistoryResponse) Reset()         { *m = QueryLockedVaultsHistoryResponse{} }
+func (m *QueryLockedVaultsHistoryResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryLockedVaultsHistoryResponse) ProtoMessage()    {}
+func (*QueryLockedVaultsHistoryResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f0ea242ad6cfba77, []int{7}
+}
+func (m *QueryLockedVaultsHistoryResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryLockedVaultsHistoryResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryLockedVaultsHistoryResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryLockedVaultsHistoryResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockedVaultsHistoryResponse.Merge(m, src)
+}
+func (m *QueryLockedVaultsHistoryResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryLockedVaultsHistoryResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockedVaultsHistoryResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryLockedVaultsHistoryResponse proto.InternalMessageInfo
+
+type QueryUserLockedVaultsRequest struct {
+	UserAddress string             `protobuf:"bytes,1,opt,name=user_address,json=userAddress,proto3" json:"user_address,omitempty" yaml:"user_address"`
+	Pagination  *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryUserLockedVaultsRequest) Reset()         { *m = QueryUserLockedVaultsRequest{} }
+func (m *QueryUserLockedVaultsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryUserLockedVaultsRequest) ProtoMessage()    {}
+func (*QueryUserLockedVaultsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f0ea242ad6cfba77, []int{8}
+}
+func (m *QueryUserLockedVaultsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryUserLockedVaultsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryUserLockedVaultsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryUserLockedVaultsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUserLockedVaultsRequest.Merge(m, src)
+}
+func (m *QueryUserLockedVaultsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryUserLockedVaultsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUserLockedVaultsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryUserLockedVaultsRequest proto.InternalMessageInfo
+
+type QueryUserLockedVaultsResponse struct {
+	UserLockedVaults []LockedVault       `protobuf:"bytes,1,rep,name=user_locked_vaults,json=userLockedVaults,proto3" json:"user_locked_vaults" yaml:"user_locked_vaults"`
+	Pagination       *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryUserLockedVaultsResponse) Reset()         { *m = QueryUserLockedVaultsResponse{} }
+func (m *QueryUserLockedVaultsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryUserLockedVaultsResponse) ProtoMessage()    {}
+func (*QueryUserLockedVaultsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f0ea242ad6cfba77, []int{9}
+}
+func (m *QueryUserLockedVaultsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryUserLockedVaultsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryUserLockedVaultsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryUserLockedVaultsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUserLockedVaultsResponse.Merge(m, src)
+}
+func (m *QueryUserLockedVaultsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryUserLockedVaultsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUserLockedVaultsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryUserLockedVaultsResponse proto.InternalMessageInfo
+
+type QueryUserLockedVaultsHistoryRequest struct {
+	UserAddress string             `protobuf:"bytes,1,opt,name=user_address,json=userAddress,proto3" json:"user_address,omitempty" yaml:"user_address"`
+	Pagination  *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryUserLockedVaultsHistoryRequest) Reset()         { *m = QueryUserLockedVaultsHistoryRequest{} }
+func (m *QueryUserLockedVaultsHistoryRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryUserLockedVaultsHistoryRequest) ProtoMessage()    {}
+func (*QueryUserLockedVaultsHistoryRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f0ea242ad6cfba77, []int{10}
+}
+func (m *QueryUserLockedVaultsHistoryRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryUserLockedVaultsHistoryRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryUserLockedVaultsHistoryRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryUserLockedVaultsHistoryRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUserLockedVaultsHistoryRequest.Merge(m, src)
+}
+func (m *QueryUserLockedVaultsHistoryRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryUserLockedVaultsHistoryRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUserLockedVaultsHistoryRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryUserLockedVaultsHistoryRequest proto.InternalMessageInfo
+
+type QueryUserLockedVaultsHistoryResponse struct {
+	UserLockedVaultsHistory []LockedVault       `protobuf:"bytes,1,rep,name=user_locked_vaults_history,json=userLockedVaultsHistory,proto3" json:"user_locked_vaults_history" yaml:"user_locked_vaults_history"`
+	Pagination              *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryUserLockedVaultsHistoryResponse) Reset()         { *m = QueryUserLockedVaultsHistoryResponse{} }
+func (m *QueryUserLockedVaultsHistoryResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryUserLockedVaultsHistoryResponse) ProtoMessage()    {}
+func (*QueryUserLockedVaultsHistoryResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f0ea242ad6cfba77, []int{11}
+}
+func (m *QueryUserLockedVaultsHistoryResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryUserLockedVaultsHistoryResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryUserLockedVaultsHistoryResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryUserLockedVaultsHistoryResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUserLockedVaultsHistoryResponse.Merge(m, src)
+}
+func (m *QueryUserLockedVaultsHistoryResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryUserLockedVaultsHistoryResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUserLockedVaultsHistoryResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryUserLockedVaultsHistoryResponse proto.InternalMessageInfo
+
+type QueryLockedVaultsPairRequest struct {
+	PairId     uint64             `protobuf:"varint,1,opt,name=PairId,proto3" json:"PairId,omitempty" yaml:"Pair_Id"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryLockedVaultsPairRequest) Reset()         { *m = QueryLockedVaultsPairRequest{} }
+func (m *QueryLockedVaultsPairRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryLockedVaultsPairRequest) ProtoMessage()    {}
+func (*QueryLockedVaultsPairRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f0ea242ad6cfba77, []int{12}
+}
+func (m *QueryLockedVaultsPairRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryLockedVaultsPairRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryLockedVaultsPairRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryLockedVaultsPairRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockedVaultsPairRequest.Merge(m, src)
+}
+func (m *QueryLockedVaultsPairRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryLockedVaultsPairRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockedVaultsPairRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryLockedVaultsPairRequest proto.InternalMessageInfo
+
+type QueryLockedVaultsPairResponse struct {
+	LockedVaultsPair []LockedVault       `protobuf:"bytes,1,rep,name=locked_vaults_pair,json=lockedVaultsPair,proto3" json:"locked_vaults_pair" yaml:"user_locked_vaults_pair"`
+	Pagination       *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryLockedVaultsPairResponse) Reset()         { *m = QueryLockedVaultsPairResponse{} }
+func (m *QueryLockedVaultsPairResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryLockedVaultsPairResponse) ProtoMessage()    {}
+func (*QueryLockedVaultsPairResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f0ea242ad6cfba77, []int{13}
+}
+func (m *QueryLockedVaultsPairResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryLockedVaultsPairResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryLockedVaultsPairResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryLockedVaultsPairResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockedVaultsPairResponse.Merge(m, src)
+}
+func (m *QueryLockedVaultsPairResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryLockedVaultsPairResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockedVaultsPairResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryLockedVaultsPairResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*QueryLockedVaultRequest)(nil), "comdex.liquidation.v1beta1.QueryLockedVaultRequest")
 	proto.RegisterType((*QueryLockedVaultResponse)(nil), "comdex.liquidation.v1beta1.QueryLockedVaultResponse")
@@ -259,6 +562,14 @@ func init() {
 	proto.RegisterType((*QueryLockedVaultsResponse)(nil), "comdex.liquidation.v1beta1.QueryLockedVaultsResponse")
 	proto.RegisterType((*QueryParamsRequest)(nil), "comdex.liquidation.v1beta1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "comdex.liquidation.v1beta1.QueryParamsResponse")
+	proto.RegisterType((*QueryLockedVaultsHistoryRequest)(nil), "comdex.liquidation.v1beta1.QueryLockedVaultsHistoryRequest")
+	proto.RegisterType((*QueryLockedVaultsHistoryResponse)(nil), "comdex.liquidation.v1beta1.QueryLockedVaultsHistoryResponse")
+	proto.RegisterType((*QueryUserLockedVaultsRequest)(nil), "comdex.liquidation.v1beta1.QueryUserLockedVaultsRequest")
+	proto.RegisterType((*QueryUserLockedVaultsResponse)(nil), "comdex.liquidation.v1beta1.QueryUserLockedVaultsResponse")
+	proto.RegisterType((*QueryUserLockedVaultsHistoryRequest)(nil), "comdex.liquidation.v1beta1.QueryUserLockedVaultsHistoryRequest")
+	proto.RegisterType((*QueryUserLockedVaultsHistoryResponse)(nil), "comdex.liquidation.v1beta1.QueryUserLockedVaultsHistoryResponse")
+	proto.RegisterType((*QueryLockedVaultsPairRequest)(nil), "comdex.liquidation.v1beta1.QueryLockedVaultsPairRequest")
+	proto.RegisterType((*QueryLockedVaultsPairResponse)(nil), "comdex.liquidation.v1beta1.QueryLockedVaultsPairResponse")
 }
 
 func init() {
@@ -266,43 +577,67 @@ func init() {
 }
 
 var fileDescriptor_f0ea242ad6cfba77 = []byte{
-	// 576 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0x4f, 0x6f, 0xd3, 0x30,
-	0x1c, 0x8d, 0xcb, 0xb4, 0x83, 0xd7, 0x21, 0xe6, 0x75, 0xa2, 0x84, 0x29, 0x9d, 0x2c, 0xc4, 0xfe,
-	0xa0, 0xc6, 0xea, 0x46, 0x2f, 0x1c, 0x7b, 0xe6, 0xb0, 0x05, 0x09, 0x24, 0x24, 0x40, 0x6e, 0xe3,
-	0x65, 0x86, 0xb4, 0x4e, 0xeb, 0xb4, 0xa2, 0x42, 0x5c, 0xe0, 0x0b, 0x20, 0x71, 0x41, 0x7c, 0x02,
-	0xee, 0xf0, 0x21, 0x7a, 0x9c, 0xc4, 0x85, 0x53, 0x05, 0x2d, 0x12, 0xf7, 0x7d, 0x02, 0x14, 0xc7,
-	0x69, 0x53, 0xca, 0xb2, 0xf6, 0x16, 0xd9, 0xef, 0xf7, 0x7e, 0xef, 0xbd, 0xdf, 0x2f, 0x86, 0x7b,
-	0x0d, 0xd1, 0x74, 0xd9, 0x6b, 0xe2, 0xf3, 0x76, 0x97, 0xbb, 0x34, 0xe4, 0xa2, 0x45, 0x7a, 0x95,
-	0x3a, 0x0b, 0x69, 0x85, 0xb4, 0xbb, 0xac, 0xc3, 0x59, 0xc7, 0x0e, 0x3a, 0x22, 0x14, 0xc8, 0x8c,
-	0x91, 0x76, 0x0a, 0x69, 0x6b, 0xa4, 0x79, 0xd0, 0x10, 0xb2, 0x29, 0x24, 0xa9, 0x53, 0xc9, 0x54,
-	0x59, 0x7f, 0x42, 0x12, 0x50, 0x8f, 0xb7, 0x62, 0xb4, 0xe2, 0x31, 0xb7, 0x3d, 0x21, 0x3c, 0x9f,
-	0x11, 0x1a, 0x70, 0x42, 0x5b, 0x2d, 0x11, 0xaa, 0x4b, 0xa9, 0x6f, 0x0b, 0x9e, 0xf0, 0x84, 0xfa,
-	0x24, 0xd1, 0x97, 0x3e, 0xdd, 0xcd, 0x50, 0x19, 0xd0, 0x0e, 0x6d, 0x26, 0xe5, 0xe5, 0x0c, 0xa0,
-	0x2f, 0x1a, 0xaf, 0x98, 0xfb, 0xa2, 0x47, 0xbb, 0x7e, 0x18, 0xc3, 0xf1, 0x3e, 0xbc, 0x79, 0x12,
-	0xa9, 0x7d, 0xa8, 0xae, 0x1e, 0x47, 0x37, 0x0e, 0x6b, 0x77, 0x99, 0x0c, 0xd1, 0x75, 0x98, 0xe3,
-	0x6e, 0x11, 0xec, 0x80, 0xbd, 0x15, 0x27, 0xc7, 0x5d, 0xfc, 0x1e, 0xc0, 0xe2, 0x3c, 0x56, 0x06,
-	0xa2, 0x25, 0x19, 0xf2, 0x60, 0x3e, 0xcd, 0xae, 0xca, 0xd6, 0x0e, 0x77, 0xed, 0xcb, 0x23, 0xb3,
-	0x53, 0x34, 0xb5, 0xdb, 0x83, 0x61, 0xc9, 0xb8, 0x18, 0x96, 0x36, 0xfb, 0xb4, 0xe9, 0x3f, 0xc0,
-	0x69, 0x2a, 0xec, 0xac, 0xf9, 0x53, 0x24, 0xee, 0xcf, 0x8b, 0x90, 0x89, 0xe2, 0x67, 0x10, 0x4e,
-	0xc3, 0xd6, 0x12, 0xee, 0xda, 0xf1, 0x64, 0xec, 0x68, 0x32, 0xb6, 0x9a, 0xcc, 0x44, 0xc1, 0x31,
-	0xf5, 0x98, 0xae, 0xad, 0x6d, 0x5d, 0x0c, 0x4b, 0x1b, 0x71, 0xf7, 0x29, 0x07, 0x76, 0x52, 0x84,
-	0xf8, 0x0f, 0x80, 0xb7, 0xfe, 0xd3, 0x5b, 0x27, 0xf0, 0x12, 0xae, 0xa7, 0x65, 0xcb, 0x22, 0xd8,
-	0xb9, 0xb6, 0x4c, 0x04, 0xdb, 0x3a, 0x82, 0xc2, 0x7c, 0x04, 0x12, 0x3b, 0xf9, 0x54, 0x06, 0x12,
-	0x3d, 0x9f, 0x31, 0x9a, 0x9b, 0x64, 0x9d, 0x6d, 0x34, 0x16, 0xba, 0x88, 0xd3, 0x02, 0x44, 0xca,
-	0xe8, 0xb1, 0xda, 0x2c, 0x1d, 0x11, 0x3e, 0x83, 0x9b, 0x33, 0xa7, 0xda, 0xf8, 0x09, 0x5c, 0x8d,
-	0x37, 0x50, 0x27, 0x8e, 0xb3, 0x1c, 0xc7, 0xb5, 0xb5, 0x2d, 0x6d, 0x76, 0x3d, 0xd1, 0x11, 0x9d,
-	0x62, 0x47, 0x13, 0x1d, 0x7e, 0x5a, 0x81, 0x79, 0xd5, 0xea, 0x11, 0xeb, 0xf4, 0x78, 0x83, 0xa1,
-	0x6f, 0x00, 0xde, 0xf8, 0x37, 0x7a, 0x74, 0x94, 0xd5, 0xe8, 0x92, 0xad, 0x36, 0xef, 0x2f, 0x57,
-	0x14, 0x7b, 0xc4, 0xd5, 0x77, 0xdf, 0x7f, 0x7f, 0xcc, 0x11, 0x54, 0x26, 0x0b, 0xfe, 0x5e, 0xe4,
-	0x0d, 0x77, 0xdf, 0xa2, 0xaf, 0x00, 0x6e, 0xcc, 0x6d, 0x0c, 0x5a, 0x4a, 0x42, 0x92, 0xbe, 0x59,
-	0x5d, 0xb2, 0x4a, 0x2b, 0xaf, 0x28, 0xe5, 0xf7, 0xd0, 0xfe, 0xa2, 0xca, 0x25, 0xfa, 0x0c, 0xe0,
-	0x5a, 0x6a, 0xd0, 0xc8, 0xbe, 0xb2, 0xf3, 0xcc, 0x9e, 0x98, 0x64, 0x61, 0xbc, 0xd6, 0x78, 0xa0,
-	0x34, 0xde, 0x41, 0x98, 0x5c, 0xf9, 0xca, 0xd5, 0x9e, 0x0c, 0x7e, 0x59, 0xc6, 0x97, 0x91, 0x65,
-	0x0c, 0x46, 0x16, 0x38, 0x1f, 0x59, 0xe0, 0xe7, 0xc8, 0x02, 0x1f, 0xc6, 0x96, 0x71, 0x3e, 0xb6,
-	0x8c, 0x1f, 0x63, 0xcb, 0x78, 0x5a, 0xf5, 0x78, 0x78, 0xd6, 0xad, 0x47, 0x22, 0x34, 0x5f, 0x59,
-	0x9c, 0x9e, 0xf2, 0x06, 0xa7, 0x7e, 0xc2, 0x3f, 0xdb, 0x21, 0xec, 0x07, 0x4c, 0xd6, 0x57, 0xd5,
-	0x83, 0x78, 0xf4, 0x37, 0x00, 0x00, 0xff, 0xff, 0xbb, 0x75, 0x95, 0xe8, 0x10, 0x06, 0x00, 0x00,
+	// 957 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x57, 0xcd, 0x6f, 0xe3, 0x44,
+	0x14, 0xcf, 0x04, 0x54, 0x89, 0x49, 0x76, 0xd5, 0x9d, 0x36, 0x6a, 0xd7, 0x04, 0xa7, 0x3b, 0x54,
+	0xbb, 0xdb, 0xa2, 0xda, 0x64, 0x43, 0x56, 0xfb, 0x81, 0xf8, 0xc8, 0x89, 0x95, 0x38, 0x74, 0x8d,
+	0x00, 0x09, 0x09, 0x22, 0x27, 0x9e, 0x75, 0x07, 0x9c, 0x38, 0xf5, 0xd8, 0xd5, 0x46, 0x68, 0x25,
+	0x3e, 0x24, 0xae, 0x20, 0x71, 0x41, 0xfc, 0x05, 0x70, 0x86, 0x0b, 0x37, 0x0e, 0x1c, 0xca, 0xad,
+	0x12, 0x17, 0x4e, 0x11, 0x9b, 0x22, 0x71, 0xef, 0x8d, 0x0b, 0x42, 0x1e, 0x8f, 0x13, 0xc7, 0x8e,
+	0xd3, 0x38, 0x10, 0xc4, 0x2d, 0xf6, 0xbc, 0xf7, 0xe6, 0xf7, 0xe1, 0x37, 0xf3, 0x02, 0xaf, 0xb7,
+	0xed, 0x8e, 0x41, 0x1e, 0xaa, 0x16, 0x3d, 0xf4, 0xa8, 0xa1, 0xbb, 0xd4, 0xee, 0xaa, 0x47, 0xd5,
+	0x16, 0x71, 0xf5, 0xaa, 0x7a, 0xe8, 0x11, 0x87, 0x12, 0x47, 0xe9, 0x39, 0xb6, 0x6b, 0x23, 0x29,
+	0x88, 0x54, 0x22, 0x91, 0x8a, 0x88, 0x94, 0x76, 0xdb, 0x36, 0xeb, 0xd8, 0x4c, 0x6d, 0xe9, 0x8c,
+	0xf0, 0xb4, 0xfe, 0xa8, 0x48, 0x4f, 0x37, 0x69, 0x37, 0x88, 0xe6, 0x75, 0xa4, 0xb2, 0x69, 0xdb,
+	0xa6, 0x45, 0x54, 0xbd, 0x47, 0x55, 0xbd, 0xdb, 0xb5, 0x5d, 0xbe, 0xc8, 0xc4, 0xea, 0xba, 0x69,
+	0x9b, 0x36, 0xff, 0xa9, 0xfa, 0xbf, 0xc4, 0xdb, 0x6b, 0x33, 0x50, 0xf6, 0x74, 0x47, 0xef, 0x84,
+	0xe9, 0x7b, 0x33, 0x02, 0x2d, 0xbb, 0xfd, 0x01, 0x31, 0x9a, 0x47, 0xba, 0x67, 0xb9, 0x41, 0x38,
+	0xde, 0x81, 0x1b, 0xf7, 0x7d, 0xb4, 0xaf, 0xf3, 0xa5, 0xb7, 0xfc, 0x15, 0x8d, 0x1c, 0x7a, 0x84,
+	0xb9, 0xe8, 0x22, 0xcc, 0x53, 0x63, 0x13, 0x6c, 0x81, 0xeb, 0x4f, 0x6a, 0x79, 0x6a, 0xe0, 0x4f,
+	0x01, 0xdc, 0x4c, 0xc6, 0xb2, 0x9e, 0xdd, 0x65, 0x04, 0x99, 0xb0, 0x18, 0xad, 0xce, 0xd3, 0x0a,
+	0x37, 0xae, 0x29, 0xe9, 0x92, 0x29, 0x91, 0x32, 0x8d, 0xa7, 0x8f, 0x07, 0x95, 0xdc, 0xd9, 0xa0,
+	0xb2, 0xd6, 0xd7, 0x3b, 0xd6, 0x1d, 0x1c, 0x2d, 0x85, 0xb5, 0x82, 0x35, 0x8e, 0xc4, 0xfd, 0x24,
+	0x08, 0x16, 0x22, 0x7e, 0x17, 0xc2, 0xb1, 0xd8, 0x02, 0xc2, 0x55, 0x25, 0x70, 0x46, 0xf1, 0x9d,
+	0x51, 0xb8, 0x33, 0x23, 0x04, 0xfb, 0xba, 0x49, 0x44, 0x6e, 0xa3, 0x74, 0x36, 0xa8, 0x5c, 0x0a,
+	0x76, 0x1f, 0xd7, 0xc0, 0x5a, 0xa4, 0x20, 0xfe, 0x03, 0xc0, 0xcb, 0x53, 0xf6, 0x16, 0x0a, 0xbc,
+	0x0f, 0x2f, 0x44, 0x61, 0xb3, 0x4d, 0xb0, 0xf5, 0x44, 0x16, 0x09, 0xca, 0x42, 0x82, 0xf5, 0xa4,
+	0x04, 0x0c, 0x6b, 0xc5, 0x88, 0x06, 0x0c, 0xbd, 0x37, 0x41, 0x34, 0x3f, 0xd2, 0x7a, 0x36, 0xd1,
+	0x00, 0xe8, 0x3c, 0x4c, 0xd7, 0x21, 0xe2, 0x44, 0xf7, 0xf9, 0x97, 0x25, 0x24, 0xc2, 0x07, 0x70,
+	0x6d, 0xe2, 0xad, 0x20, 0x7e, 0x1f, 0xae, 0x04, 0x5f, 0xa0, 0x50, 0x1c, 0xcf, 0x62, 0x1c, 0xe4,
+	0x36, 0x4a, 0x82, 0xec, 0x85, 0x10, 0x87, 0xff, 0x16, 0x6b, 0xa2, 0x10, 0xfe, 0x08, 0xc0, 0x4a,
+	0x42, 0xe9, 0xd7, 0x28, 0x73, 0x6d, 0xa7, 0xff, 0x1f, 0x99, 0xfd, 0x59, 0x1e, 0x6e, 0xa5, 0x43,
+	0x10, 0xd4, 0x3f, 0x06, 0xb0, 0x34, 0x61, 0x54, 0xf3, 0x20, 0x88, 0xc8, 0x6a, 0xfe, 0xb6, 0xd0,
+	0xa3, 0x3c, 0xc5, 0xfc, 0xb0, 0x26, 0xd6, 0xd6, 0xac, 0x24, 0x96, 0xa5, 0x7f, 0x0b, 0x3f, 0x00,
+	0x58, 0xe6, 0x42, 0xbc, 0xc9, 0x88, 0x33, 0xad, 0xeb, 0xee, 0xc0, 0xa2, 0xc7, 0x88, 0xd3, 0xd4,
+	0x0d, 0xc3, 0x21, 0x2c, 0xf8, 0x0a, 0x9e, 0x6a, 0x6c, 0x8c, 0xbb, 0x39, 0xba, 0x8a, 0xb5, 0x82,
+	0xff, 0xf8, 0x6a, 0xf0, 0x14, 0x33, 0x31, 0xff, 0x6f, 0x9b, 0xf8, 0x27, 0x80, 0xcf, 0xa4, 0x60,
+	0x17, 0x0e, 0x3e, 0x84, 0x88, 0xc3, 0xfb, 0x47, 0xad, 0x7b, 0x45, 0xb8, 0x77, 0x39, 0xc2, 0x37,
+	0xd6, 0xbf, 0xab, 0x5e, 0x0c, 0xc1, 0xd2, 0x7d, 0xfb, 0x11, 0xc0, 0x67, 0xa7, 0x72, 0x8f, 0xf5,
+	0xd1, 0xff, 0xd8, 0xbe, 0xaf, 0xf2, 0x70, 0x7b, 0x36, 0x05, 0xe1, 0xe2, 0xe7, 0x00, 0x4a, 0x49,
+	0xd5, 0x17, 0x6d, 0xc6, 0x1d, 0x61, 0xe7, 0x95, 0x34, 0x3b, 0xc7, 0x1d, 0xb9, 0xe1, 0x4d, 0x47,
+	0xb6, 0x74, 0x77, 0xbf, 0x0d, 0xbb, 0x32, 0xba, 0xf9, 0xbe, 0x4e, 0x9d, 0xd0, 0xd6, 0x5d, 0xb8,
+	0xe2, 0x3f, 0xde, 0x13, 0x37, 0x78, 0x03, 0x9d, 0x0d, 0x2a, 0x17, 0x83, 0x9a, 0xfe, 0xfb, 0xe6,
+	0x3d, 0x03, 0x6b, 0x22, 0x62, 0xd9, 0x36, 0xfe, 0x15, 0x76, 0x61, 0x12, 0xab, 0xf0, 0xef, 0x11,
+	0x44, 0x93, 0x02, 0xf7, 0x74, 0xea, 0x64, 0xb5, 0xed, 0xaa, 0xb0, 0x4d, 0x4e, 0xb5, 0xcd, 0xaf,
+	0x8a, 0xb5, 0x55, 0x2b, 0x06, 0x63, 0xd9, 0x66, 0xdd, 0x18, 0x42, 0x58, 0xe4, 0x02, 0xbc, 0x41,
+	0x9c, 0x23, 0xda, 0x26, 0xe8, 0x7b, 0x00, 0x57, 0xe3, 0x8a, 0xa0, 0xda, 0x2c, 0xa2, 0x29, 0x43,
+	0x9a, 0xf4, 0x42, 0xb6, 0xa4, 0x00, 0x33, 0xae, 0x7f, 0xf2, 0xcb, 0xef, 0x5f, 0xe6, 0x55, 0xb4,
+	0xa7, 0xce, 0x39, 0x2d, 0xaa, 0x1f, 0x52, 0xe3, 0x11, 0xfa, 0x0e, 0xc0, 0x4b, 0x09, 0x23, 0x51,
+	0x26, 0x08, 0xe1, 0xad, 0x21, 0xd5, 0x33, 0x66, 0x09, 0xe4, 0x55, 0x8e, 0xfc, 0x39, 0xb4, 0x33,
+	0x2f, 0x72, 0x86, 0xbe, 0x06, 0xb0, 0x10, 0x99, 0x5b, 0x90, 0x72, 0xee, 0xce, 0x13, 0x63, 0x8f,
+	0xa4, 0xce, 0x1d, 0x2f, 0x30, 0xee, 0x72, 0x8c, 0xdb, 0x08, 0xab, 0xe7, 0x0e, 0xed, 0xe8, 0x64,
+	0xca, 0x50, 0x3d, 0x3a, 0x44, 0xee, 0x66, 0xd2, 0x68, 0xf2, 0x5c, 0x97, 0x5e, 0x5c, 0x2c, 0x59,
+	0x70, 0xb8, 0xcd, 0x39, 0xd4, 0x50, 0x75, 0x6e, 0x9d, 0xc3, 0x43, 0x11, 0xfd, 0x04, 0x60, 0x69,
+	0xea, 0xa9, 0x8d, 0x6e, 0x9d, 0x0b, 0x29, 0x65, 0xc6, 0x90, 0x6e, 0x2f, 0x90, 0x29, 0x98, 0xdc,
+	0xe4, 0x4c, 0x9e, 0x47, 0xca, 0x2c, 0x26, 0xc9, 0xc3, 0x02, 0x3d, 0x4e, 0x9b, 0x7b, 0x42, 0x77,
+	0x5e, 0xce, 0x8c, 0x29, 0xe6, 0xd0, 0x2b, 0x8b, 0x17, 0x10, 0xdc, 0x5e, 0xe2, 0xdc, 0x6e, 0xa1,
+	0x9b, 0xd9, 0xb8, 0x8d, 0xac, 0xfa, 0x39, 0xb4, 0x2a, 0x7e, 0x32, 0xcf, 0x61, 0x55, 0xca, 0xc5,
+	0x33, 0x87, 0x55, 0x69, 0xd7, 0x00, 0xbe, 0xcb, 0xe9, 0xd4, 0x51, 0x2d, 0x23, 0x1d, 0xff, 0x5c,
+	0x6f, 0xbc, 0x7d, 0xfc, 0x58, 0xce, 0x7d, 0x33, 0x94, 0x73, 0xc7, 0x43, 0x19, 0x9c, 0x0c, 0x65,
+	0xf0, 0xdb, 0x50, 0x06, 0x5f, 0x9c, 0xca, 0xb9, 0x93, 0x53, 0x39, 0xf7, 0xeb, 0xa9, 0x9c, 0x7b,
+	0xa7, 0x6e, 0x52, 0xf7, 0xc0, 0x6b, 0xf9, 0xf8, 0xc4, 0x06, 0x7b, 0xf6, 0x83, 0x07, 0xb4, 0x4d,
+	0x75, 0x2b, 0xdc, 0x70, 0x72, 0x4b, 0xb7, 0xdf, 0x23, 0xac, 0xb5, 0xc2, 0xff, 0x29, 0xd7, 0xfe,
+	0x0e, 0x00, 0x00, 0xff, 0xff, 0x89, 0xaf, 0xc6, 0xde, 0x29, 0x10, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -320,6 +655,10 @@ type QueryServiceClient interface {
 	QueryLockedVault(ctx context.Context, in *QueryLockedVaultRequest, opts ...grpc.CallOption) (*QueryLockedVaultResponse, error)
 	QueryLockedVaults(ctx context.Context, in *QueryLockedVaultsRequest, opts ...grpc.CallOption) (*QueryLockedVaultsResponse, error)
 	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	QueryLockedVaultsHistory(ctx context.Context, in *QueryLockedVaultsHistoryRequest, opts ...grpc.CallOption) (*QueryLockedVaultsHistoryResponse, error)
+	QueryUserLockedVaults(ctx context.Context, in *QueryUserLockedVaultsRequest, opts ...grpc.CallOption) (*QueryUserLockedVaultsResponse, error)
+	QueryUserLockedVaultsHistory(ctx context.Context, in *QueryUserLockedVaultsHistoryRequest, opts ...grpc.CallOption) (*QueryUserLockedVaultsHistoryResponse, error)
+	QueryLockedVaultsPair(ctx context.Context, in *QueryLockedVaultsPairRequest, opts ...grpc.CallOption) (*QueryLockedVaultsPairResponse, error)
 }
 
 type queryServiceClient struct {
@@ -357,11 +696,51 @@ func (c *queryServiceClient) QueryParams(ctx context.Context, in *QueryParamsReq
 	return out, nil
 }
 
+func (c *queryServiceClient) QueryLockedVaultsHistory(ctx context.Context, in *QueryLockedVaultsHistoryRequest, opts ...grpc.CallOption) (*QueryLockedVaultsHistoryResponse, error) {
+	out := new(QueryLockedVaultsHistoryResponse)
+	err := c.cc.Invoke(ctx, "/comdex.liquidation.v1beta1.QueryService/QueryLockedVaultsHistory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryServiceClient) QueryUserLockedVaults(ctx context.Context, in *QueryUserLockedVaultsRequest, opts ...grpc.CallOption) (*QueryUserLockedVaultsResponse, error) {
+	out := new(QueryUserLockedVaultsResponse)
+	err := c.cc.Invoke(ctx, "/comdex.liquidation.v1beta1.QueryService/QueryUserLockedVaults", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryServiceClient) QueryUserLockedVaultsHistory(ctx context.Context, in *QueryUserLockedVaultsHistoryRequest, opts ...grpc.CallOption) (*QueryUserLockedVaultsHistoryResponse, error) {
+	out := new(QueryUserLockedVaultsHistoryResponse)
+	err := c.cc.Invoke(ctx, "/comdex.liquidation.v1beta1.QueryService/QueryUserLockedVaultsHistory", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryServiceClient) QueryLockedVaultsPair(ctx context.Context, in *QueryLockedVaultsPairRequest, opts ...grpc.CallOption) (*QueryLockedVaultsPairResponse, error) {
+	out := new(QueryLockedVaultsPairResponse)
+	err := c.cc.Invoke(ctx, "/comdex.liquidation.v1beta1.QueryService/QueryLockedVaultsPair", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServiceServer is the server API for QueryService service.
 type QueryServiceServer interface {
 	QueryLockedVault(context.Context, *QueryLockedVaultRequest) (*QueryLockedVaultResponse, error)
 	QueryLockedVaults(context.Context, *QueryLockedVaultsRequest) (*QueryLockedVaultsResponse, error)
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	QueryLockedVaultsHistory(context.Context, *QueryLockedVaultsHistoryRequest) (*QueryLockedVaultsHistoryResponse, error)
+	QueryUserLockedVaults(context.Context, *QueryUserLockedVaultsRequest) (*QueryUserLockedVaultsResponse, error)
+	QueryUserLockedVaultsHistory(context.Context, *QueryUserLockedVaultsHistoryRequest) (*QueryUserLockedVaultsHistoryResponse, error)
+	QueryLockedVaultsPair(context.Context, *QueryLockedVaultsPairRequest) (*QueryLockedVaultsPairResponse, error)
 }
 
 // UnimplementedQueryServiceServer can be embedded to have forward compatible implementations.
@@ -376,6 +755,18 @@ func (*UnimplementedQueryServiceServer) QueryLockedVaults(ctx context.Context, r
 }
 func (*UnimplementedQueryServiceServer) QueryParams(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryParams not implemented")
+}
+func (*UnimplementedQueryServiceServer) QueryLockedVaultsHistory(ctx context.Context, req *QueryLockedVaultsHistoryRequest) (*QueryLockedVaultsHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLockedVaultsHistory not implemented")
+}
+func (*UnimplementedQueryServiceServer) QueryUserLockedVaults(ctx context.Context, req *QueryUserLockedVaultsRequest) (*QueryUserLockedVaultsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryUserLockedVaults not implemented")
+}
+func (*UnimplementedQueryServiceServer) QueryUserLockedVaultsHistory(ctx context.Context, req *QueryUserLockedVaultsHistoryRequest) (*QueryUserLockedVaultsHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryUserLockedVaultsHistory not implemented")
+}
+func (*UnimplementedQueryServiceServer) QueryLockedVaultsPair(ctx context.Context, req *QueryLockedVaultsPairRequest) (*QueryLockedVaultsPairResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLockedVaultsPair not implemented")
 }
 
 func RegisterQueryServiceServer(s grpc1.Server, srv QueryServiceServer) {
@@ -436,6 +827,78 @@ func _QueryService_QueryParams_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QueryService_QueryLockedVaultsHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLockedVaultsHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QueryLockedVaultsHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.liquidation.v1beta1.QueryService/QueryLockedVaultsHistory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QueryLockedVaultsHistory(ctx, req.(*QueryLockedVaultsHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryService_QueryUserLockedVaults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUserLockedVaultsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QueryUserLockedVaults(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.liquidation.v1beta1.QueryService/QueryUserLockedVaults",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QueryUserLockedVaults(ctx, req.(*QueryUserLockedVaultsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryService_QueryUserLockedVaultsHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUserLockedVaultsHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QueryUserLockedVaultsHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.liquidation.v1beta1.QueryService/QueryUserLockedVaultsHistory",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QueryUserLockedVaultsHistory(ctx, req.(*QueryUserLockedVaultsHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryService_QueryLockedVaultsPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLockedVaultsPairRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QueryLockedVaultsPair(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.liquidation.v1beta1.QueryService/QueryLockedVaultsPair",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QueryLockedVaultsPair(ctx, req.(*QueryLockedVaultsPairRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _QueryService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "comdex.liquidation.v1beta1.QueryService",
 	HandlerType: (*QueryServiceServer)(nil),
@@ -451,6 +914,22 @@ var _QueryService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryParams",
 			Handler:    _QueryService_QueryParams_Handler,
+		},
+		{
+			MethodName: "QueryLockedVaultsHistory",
+			Handler:    _QueryService_QueryLockedVaultsHistory_Handler,
+		},
+		{
+			MethodName: "QueryUserLockedVaults",
+			Handler:    _QueryService_QueryUserLockedVaults_Handler,
+		},
+		{
+			MethodName: "QueryUserLockedVaultsHistory",
+			Handler:    _QueryService_QueryUserLockedVaultsHistory_Handler,
+		},
+		{
+			MethodName: "QueryLockedVaultsPair",
+			Handler:    _QueryService_QueryLockedVaultsPair_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -658,6 +1137,361 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryLockedVaultsHistoryRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryLockedVaultsHistoryRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryLockedVaultsHistoryRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryLockedVaultsHistoryResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryLockedVaultsHistoryResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryLockedVaultsHistoryResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.LockedVaultsHistory) > 0 {
+		for iNdEx := len(m.LockedVaultsHistory) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.LockedVaultsHistory[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuerier(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryUserLockedVaultsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryUserLockedVaultsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryUserLockedVaultsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.UserAddress) > 0 {
+		i -= len(m.UserAddress)
+		copy(dAtA[i:], m.UserAddress)
+		i = encodeVarintQuerier(dAtA, i, uint64(len(m.UserAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryUserLockedVaultsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryUserLockedVaultsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryUserLockedVaultsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.UserLockedVaults) > 0 {
+		for iNdEx := len(m.UserLockedVaults) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.UserLockedVaults[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuerier(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryUserLockedVaultsHistoryRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryUserLockedVaultsHistoryRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryUserLockedVaultsHistoryRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.UserAddress) > 0 {
+		i -= len(m.UserAddress)
+		copy(dAtA[i:], m.UserAddress)
+		i = encodeVarintQuerier(dAtA, i, uint64(len(m.UserAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryUserLockedVaultsHistoryResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryUserLockedVaultsHistoryResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryUserLockedVaultsHistoryResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.UserLockedVaultsHistory) > 0 {
+		for iNdEx := len(m.UserLockedVaultsHistory) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.UserLockedVaultsHistory[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuerier(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryLockedVaultsPairRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryLockedVaultsPairRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryLockedVaultsPairRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.PairId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.PairId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryLockedVaultsPairResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryLockedVaultsPairResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryLockedVaultsPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.LockedVaultsPair) > 0 {
+		for iNdEx := len(m.LockedVaultsPair) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.LockedVaultsPair[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuerier(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuerier(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuerier(v)
 	base := offset
@@ -741,6 +1575,145 @@ func (m *QueryParamsResponse) Size() (n int) {
 	_ = l
 	l = m.Params.Size()
 	n += 1 + l + sovQuerier(uint64(l))
+	return n
+}
+
+func (m *QueryLockedVaultsHistoryRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryLockedVaultsHistoryResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.LockedVaultsHistory) > 0 {
+		for _, e := range m.LockedVaultsHistory {
+			l = e.Size()
+			n += 1 + l + sovQuerier(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryUserLockedVaultsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.UserAddress)
+	if l > 0 {
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryUserLockedVaultsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.UserLockedVaults) > 0 {
+		for _, e := range m.UserLockedVaults {
+			l = e.Size()
+			n += 1 + l + sovQuerier(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryUserLockedVaultsHistoryRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.UserAddress)
+	if l > 0 {
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryUserLockedVaultsHistoryResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.UserLockedVaultsHistory) > 0 {
+		for _, e := range m.UserLockedVaultsHistory {
+			l = e.Size()
+			n += 1 + l + sovQuerier(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryLockedVaultsPairRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.PairId != 0 {
+		n += 1 + sovQuerier(uint64(m.PairId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryLockedVaultsPairResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.LockedVaultsPair) > 0 {
+		for _, e := range m.LockedVaultsPair {
+			l = e.Size()
+			n += 1 + l + sovQuerier(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
 	return n
 }
 
@@ -1217,6 +2190,913 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryLockedVaultsHistoryRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryLockedVaultsHistoryRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryLockedVaultsHistoryRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryLockedVaultsHistoryResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryLockedVaultsHistoryResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryLockedVaultsHistoryResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LockedVaultsHistory", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LockedVaultsHistory = append(m.LockedVaultsHistory, LockedVault{})
+			if err := m.LockedVaultsHistory[len(m.LockedVaultsHistory)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryUserLockedVaultsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryUserLockedVaultsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryUserLockedVaultsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UserAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryUserLockedVaultsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryUserLockedVaultsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryUserLockedVaultsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserLockedVaults", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UserLockedVaults = append(m.UserLockedVaults, LockedVault{})
+			if err := m.UserLockedVaults[len(m.UserLockedVaults)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryUserLockedVaultsHistoryRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryUserLockedVaultsHistoryRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryUserLockedVaultsHistoryRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UserAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryUserLockedVaultsHistoryResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryUserLockedVaultsHistoryResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryUserLockedVaultsHistoryResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserLockedVaultsHistory", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UserLockedVaultsHistory = append(m.UserLockedVaultsHistory, LockedVault{})
+			if err := m.UserLockedVaultsHistory[len(m.UserLockedVaultsHistory)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryLockedVaultsPairRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryLockedVaultsPairRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryLockedVaultsPairRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PairId", wireType)
+			}
+			m.PairId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PairId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryLockedVaultsPairResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryLockedVaultsPairResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryLockedVaultsPairResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LockedVaultsPair", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LockedVaultsPair = append(m.LockedVaultsPair, LockedVault{})
+			if err := m.LockedVaultsPair[len(m.LockedVaultsPair)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
