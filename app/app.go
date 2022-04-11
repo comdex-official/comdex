@@ -23,6 +23,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -98,6 +99,9 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
+	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 )
 
 const (
@@ -130,6 +134,7 @@ var (
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
+		authzmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
@@ -179,6 +184,7 @@ type App struct {
 	accountKeeper     authkeeper.AccountKeeper
 	freegrantKeeper   freegrantkeeper.Keeper
 	bankKeeper        bankkeeper.Keeper
+	authzKeeper       authzkeeper.Keeper
 	capabilityKeeper  *capabilitykeeper.Keeper
 	stakingKeeper     stakingkeeper.Keeper
 	slashingKeeper    slashingkeeper.Keeper
@@ -232,7 +238,7 @@ func New(
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
-			wasm.StoreKey,
+			wasm.StoreKey, authzkeeper.StoreKey,
 		)
 	)
 
@@ -351,6 +357,13 @@ func New(
 		app.bankKeeper,
 		authtypes.FeeCollectorName,
 	)
+
+	app.authzKeeper = authzkeeper.NewKeeper(
+		keys[authzkeeper.StoreKey],
+		app.cdc,
+		baseApp.MsgServiceRouter(),
+	)
+
 	app.upgradeKeeper = upgradekeeper.NewKeeper(
 		skipUpgradeHeights,
 		app.keys[upgradetypes.StoreKey],
@@ -505,6 +518,7 @@ func New(
 		staking.NewAppModule(app.cdc, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
+		authzmodule.NewAppModule(app.cdc, app.authzKeeper, app.accountKeeper, app.bankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.ibcKeeper),
 		params.NewAppModule(app.paramsKeeper),
 		transferModule,
@@ -524,15 +538,15 @@ func New(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 		crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
-		oracletypes.ModuleName, transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName,
+		authz.ModuleName, oracletypes.ModuleName, transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, minttypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
-		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, paramstypes.ModuleName,
-		oracletypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
+		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
+		paramstypes.ModuleName, oracletypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
 		assettypes.ModuleName, banktypes.ModuleName,
 	)
 
@@ -560,6 +574,7 @@ func New(
 		vaulttypes.ModuleName,
 		oracletypes.StoreKey,
 		wasmtypes.ModuleName,
+		authz.ModuleName,
 		vesting.AppModuleBasic{}.Name(),
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
