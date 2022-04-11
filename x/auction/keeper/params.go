@@ -5,9 +5,27 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+func (k *Keeper) LiquidationPenaltyPercent(ctx sdk.Context) (s string) {
+	k.paramstore.Get(ctx, types.KeyLiquidationPenaltyPercent, &s)
+	return
+}
+
+func (k *Keeper) AuctionDiscountPercent(ctx sdk.Context) (s string) {
+	k.paramstore.Get(ctx, types.KeyAuctionDiscountPercent, &s)
+	return
+}
+
+func (k *Keeper) AuctionDurationHours(ctx sdk.Context) (s uint64) {
+	k.paramstore.Get(ctx, types.KeyAuctionDurationHours, &s)
+	return
+}
+
 // GetParams get all parameters as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
+		k.LiquidationPenaltyPercent(ctx),
+		k.AuctionDiscountPercent(ctx),
+		k.AuctionDurationHours(ctx),
 	)
 }
 
@@ -15,4 +33,3 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramstore.SetParamSet(ctx, &params)
 }
-

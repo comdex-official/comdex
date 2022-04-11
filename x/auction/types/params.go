@@ -28,17 +28,21 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // NewParams creates a new Params instance
-func NewParams() Params {
+func NewParams(liquidationPenaltyPercent string, auctionDiscountPercent string, auctionDurationHours uint64) Params {
 	return Params{
-		LiquidationPenaltyPercent: DefaultLiquidationPenaltyPercent,
-		AuctionDiscountPercent:    DefaultAuctionDiscountPercent,
-		AuctionDurationHours:      DefaultAuctionDurationHours,
+		LiquidationPenaltyPercent: liquidationPenaltyPercent,
+		AuctionDiscountPercent:    auctionDiscountPercent,
+		AuctionDurationHours:      auctionDurationHours,
 	}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	return NewParams()
+	return NewParams(
+		DefaultLiquidationPenaltyPercent,
+		DefaultAuctionDiscountPercent,
+		DefaultAuctionDurationHours,
+	)
 }
 
 // ParamSetPairs get the params.ParamSet
