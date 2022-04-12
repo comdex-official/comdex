@@ -273,8 +273,8 @@ func (k Keeper) StartCollateralAuction(
 
 	liquidatedQuantity := sdk.NewDec(locked_vault.CollateralToBeAuctioned.Quo(sdk.NewDec(int64(assetInPrice))).RoundInt64())
 
-	penaltyQuantity := liquidatedQuantity.Mul(sdk.MustNewDecFromStr(auctionParams.LiquidationPenaltyPercent)).Quo(sdk.NewDec(100))
-	discountedQuantity := liquidatedQuantity.Mul(sdk.MustNewDecFromStr(auctionParams.AuctionDiscountPercent)).Quo(sdk.NewDec(100))
+	penaltyQuantity := liquidatedQuantity.Mul(sdk.MustNewDecFromStr(auctionParams.LiquidationPenaltyPercent).Mul(sdk.NewDec(100))).Quo(sdk.NewDec(100))
+	discountedQuantity := liquidatedQuantity.Mul(sdk.MustNewDecFromStr(auctionParams.AuctionDiscountPercent).Mul(sdk.NewDec(100))).Quo(sdk.NewDec(100))
 	auctioningQuantity := liquidatedQuantity.Sub(penaltyQuantity.Add(discountedQuantity))
 	minBid := auctioningQuantity.Mul(sdk.NewDec(int64(assetInPrice))).Quo(sdk.NewDec(int64(assetOutPrice))).Ceil().RoundInt()
 	maxBid := auctioningQuantity.Add(discountedQuantity).Mul(sdk.NewDec(int64(assetInPrice))).Quo(sdk.NewDec(int64(assetOutPrice))).Ceil().RoundInt()
