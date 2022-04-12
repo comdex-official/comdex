@@ -5,9 +5,4 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/liquidation/types";
 
-message Params {
-  string unliquidate_point_percent = 1 [ 
-    (gogoproto.moretags) = "yaml:\"liquidation_panelty_percent\""
-  ]; 
- 
-}
+message Params {}

@@ -1,13 +1,14 @@
 package app
 
 import (
+	"io"
+	"os"
+	"path/filepath"
+
 	rewardsclient "github.com/comdex-official/comdex/x/rewards/client"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-	"io"
-	"os"
-	"path/filepath"
 
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
@@ -489,6 +490,7 @@ func New(
 		&app.assetKeeper,
 		&app.vaultKeeper,
 		&app.marketKeeper,
+		&app.auctionKeeper,
 	)
 
 	app.auctionKeeper = *auctionkeeper.NewKeeper(

@@ -16,7 +16,7 @@ func (k *Keeper) AuctionDiscountPercent(ctx sdk.Context) (s string) {
 }
 
 func (k *Keeper) AuctionDurationHours(ctx sdk.Context) (s uint64) {
-	k.paramstore.Get(ctx, types.KeyAuctionDurationHours, &s)
+	k.paramstore.Get(ctx, types.KeyAuctionDurationSeconds, &s)
 	return
 }
 

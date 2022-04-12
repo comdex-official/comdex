@@ -5,21 +5,15 @@ import (
 )
 
 var (
-	DefaultLiqRatio = "1.5"
-	KeyLiqRatio = []byte("LiqRatio")
 	_ paramstypes.ParamSet = (*Params)(nil)
 )
 
-func NewParams( ratio string) Params {
-	return Params{
-		LiquidationRatio: ratio,
-	}
+func NewParams() Params {
+	return Params{}
 }
 
 func DefaultParams() Params {
-	return NewParams(
-		DefaultLiqRatio,
-	)
+	return NewParams()
 }
 
 func ParamKeyTable() paramstypes.KeyTable {
@@ -27,9 +21,7 @@ func ParamKeyTable() paramstypes.KeyTable {
 }
 
 func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
-	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(KeyLiqRatio, &m.LiquidationRatio, validateLiqRatio),
-	}
+	return paramstypes.ParamSetPairs{}
 }
 
 func validateLiqRatio(i interface{}) error {

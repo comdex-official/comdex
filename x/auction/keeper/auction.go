@@ -265,24 +265,30 @@ func (k Keeper) StartCollateralAuction(
 		return assettypes.ErrorAssetDoesNotExist
 	}
 
-	liquidatedQuantity := sdk.NewDec(locked_vault.CollateralToBeAuctioned.Quo(sdk.NewDec(int64(assetInPrice))).RoundInt64())
-	penaltyQuantity := liquidatedQuantity.Sub(liquidatedQuantity.Mul(sdk.NewDec(85).Quo(sdk.NewDec(100)))).RoundInt64()
-	DiscountedQuantity := liquidatedQuantity.Sub(liquidatedQuantity.Mul(sdk.NewDec(95).Quo(sdk.NewDec(100)))).RoundInt64()
-	AuctioningQuantity := liquidatedQuantity.Sub(sdk.NewDec(int64(penaltyQuantity + DiscountedQuantity))).RoundInt64()
+	if locked_vault.CollateralToBeAuctioned.LTE(sdk.NewDec(0)) {
+		return auctiontypes.ErrorInvalidAuctioningCollateral
+	}
 
-	minBid := sdk.NewDec(AuctioningQuantity * int64(assetInPrice)).Quo(sdk.NewDec(int64(assetOutPrice))).Ceil().RoundInt()
-	maxBid := sdk.NewDec((AuctioningQuantity + DiscountedQuantity) * int64(assetInPrice)).Quo(sdk.NewDec(int64(assetOutPrice))).Ceil().RoundInt()
+	auctionParams := k.GetParams(ctx)
+
+	liquidatedQuantity := sdk.NewDec(locked_vault.CollateralToBeAuctioned.Quo(sdk.NewDec(int64(assetInPrice))).RoundInt64())
+
+	penaltyQuantity := liquidatedQuantity.Mul(sdk.MustNewDecFromStr(auctionParams.LiquidationPenaltyPercent)).Quo(sdk.NewDec(100))
+	discountedQuantity := liquidatedQuantity.Mul(sdk.MustNewDecFromStr(auctionParams.AuctionDiscountPercent)).Quo(sdk.NewDec(100))
+	auctioningQuantity := liquidatedQuantity.Sub(penaltyQuantity.Add(discountedQuantity))
+	minBid := auctioningQuantity.Mul(sdk.NewDec(int64(assetInPrice))).Quo(sdk.NewDec(int64(assetOutPrice))).Ceil().RoundInt()
+	maxBid := auctioningQuantity.Add(discountedQuantity).Mul(sdk.NewDec(int64(assetInPrice))).Quo(sdk.NewDec(int64(assetOutPrice))).Ceil().RoundInt()
 
 	auction := auctiontypes.CollateralAuction{
 		LockedVaultId:       locked_vault.LockedVaultId,
-		AuctionedCollateral: sdk.NewCoin(assetIn.Denom, sdk.NewInt(AuctioningQuantity)),
-		DiscountQuantity:    sdk.NewCoin(assetIn.Denom, sdk.NewInt(DiscountedQuantity)),
+		AuctionedCollateral: sdk.NewCoin(assetIn.Denom, sdk.NewInt(auctioningQuantity.RoundInt64())),
+		DiscountQuantity:    sdk.NewCoin(assetIn.Denom, sdk.NewInt(discountedQuantity.RoundInt64())),
 		ActiveBiddingId:     0,
 		Bidder:              nil,
 		Bid:                 sdk.NewCoin(assetOut.Denom, sdk.NewInt(0)),
 		MinBid:              sdk.NewCoin(assetOut.Denom, minBid),
 		MaxBid:              sdk.NewCoin(assetOut.Denom, maxBid),
-		EndTime:             ctx.BlockTime().Add(time.Hour * 6),
+		EndTime:             ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
 		Pair:                pair,
 		BiddingIds:          []uint64{},
 	}

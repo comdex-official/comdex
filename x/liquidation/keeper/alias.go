@@ -2,6 +2,7 @@ package keeper
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -78,7 +79,7 @@ func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddres
 }
 
 func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coin sdk.Coin) error {
-	 return k.bank.SendCoinsFromModuleToAccount(ctx, name, address ,sdk.NewCoins(coin))
+	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
@@ -91,4 +92,8 @@ func (k *Keeper) UpdateUserVaultIdMapping(ctx sdk.Context, vaultOwner string, va
 
 func (k *Keeper) UpdateCollateralVaultIdMapping(ctx sdk.Context, assetInDenom string, assetOutDenom string, vaultId uint64, isInsert bool) error {
 	return k.vault.UpdateCollateralVaultIdMapping(ctx, assetInDenom, assetOutDenom, vaultId, isInsert)
+}
+
+func (k *Keeper) GetAuctionParams(ctx sdk.Context) auctiontypes.Params {
+	return k.auction.GetParams(ctx)
 }

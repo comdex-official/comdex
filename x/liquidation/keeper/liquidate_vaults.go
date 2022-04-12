@@ -7,7 +7,6 @@ import (
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 )
@@ -80,15 +79,16 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 
 }
 
-func (k Keeper) CreateLockedVaultHistoy(ctx sdk.Context, lockedvault liquidationtypes.LockedVault) error {
+func (k Keeper) CreateLockedVaultHistoy(ctx sdk.Context, lockedvault types.LockedVault) error {
 
 	lockedVaultId := k.GetLockedVaultIDHistory(ctx)
-	k.SetLockedVaultHistory(ctx, lockedvault,lockedVaultId)
+	k.SetLockedVaultHistory(ctx, lockedvault, lockedVaultId)
 	k.SetLockedVaultID(ctx, lockedVaultId+1)
 
 	return nil
 
 }
+
 //for first time to update the collateralization value & sell off amount
 //and if auction is complete and cr is less than 1.6
 func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
@@ -99,14 +99,19 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 
 	for _, lockedVault := range lockedVaults {
 
-		unliquidatePointPercentage, _ := sdk.NewDecFromStr(types.DefaultUnliquidatePointPercent)
-		auctionDiscount, _ := sdk.NewDecFromStr(auctiontypes.DefaultAuctionDiscountPercent)
-		liquidationPenalty, _ := sdk.NewDecFromStr(auctiontypes.DefaultLiquidationPenaltyPercent)
+		pair, found := k.GetPair(ctx, lockedVault.PairId)
+		if !found {
+			continue
+		}
+
+		auctionParams := k.GetAuctionParams(ctx)
+
+		unliquidatePointPercentage := pair.LiquidationRatio.Add(sdk.MustNewDecFromStr("0.1"))
+
+		auctionDiscount := sdk.MustNewDecFromStr(auctionParams.AuctionDiscountPercent)
+		liquidationPenalty := sdk.MustNewDecFromStr(auctionParams.LiquidationPenaltyPercent)
 		if (!lockedVault.IsAuctionInProgress && !lockedVault.IsAuctionComplete) || (lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.LTE(unliquidatePointPercentage)) {
-			pair, found := k.GetPair(ctx, lockedVault.PairId)
-			if !found {
-				continue
-			}
+
 			assetIn, found := k.GetAsset(ctx, pair.AssetIn)
 			if !found {
 				continue
@@ -183,7 +188,6 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 
 		if lockedVault.IsAuctionComplete {
 			//also calculate the current collaterlization ration to ensure there is no sudden changes
-			unliquidatePointPercentage, _ := sdk.NewDecFromStr(types.DefaultUnliquidatePointPercent)
 			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
 			if err != nil {
 				continue
@@ -193,6 +197,9 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			if !found {
 				continue
 			}
+
+			unliquidatePointPercentage := pair.LiquidationRatio.Add(sdk.MustNewDecFromStr("0.1"))
+
 			assetIn, found := k.GetAsset(ctx, pair.AssetIn)
 			if !found {
 				continue
@@ -310,7 +317,7 @@ func (k *Keeper) SetLockedVault(ctx sdk.Context, locked_vault types.LockedVault)
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetLockedVaultHistory(ctx sdk.Context, locked_vault types.LockedVault,id uint64) {
+func (k *Keeper) SetLockedVaultHistory(ctx sdk.Context, locked_vault types.LockedVault, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultKey(id)
@@ -406,7 +413,7 @@ func (k *Keeper) UpdateAssetQuantitiesInLockedVault(
 	return nil
 }
 
-// func (k *Keeper) AddHistoryVault(ctx sdk.Context, locked_vaults liquidationtypes.LockedVault) {
+// func (k *Keeper) AddHistoryVault(ctx sdk.Context, locked_vaults types.LockedVault) {
 // 	var (
 // 		store = k.Store(ctx)
 // 		key   = types.LockedVaultKeyHistory

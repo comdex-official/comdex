@@ -7,6 +7,4 @@ option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message Params {
-  string liquidation_ratio = 1;
-}
+message Params {}
