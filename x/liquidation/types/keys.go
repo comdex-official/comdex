@@ -22,3 +22,6 @@ var (
 func LockedVaultKey(id uint64) []byte {
 	return append(LockedVaultKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
+func LockedVaultHistoryKey(id uint64) []byte {
+	return append(LockedVaultKeyHistory, sdk.Uint64ToBigEndian(id)...)
+}

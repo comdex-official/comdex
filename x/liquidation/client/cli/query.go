@@ -206,7 +206,7 @@ func queryUserLockedVaultsHistory() *cobra.Command {
 
 func queryLockedVaultsPair() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "locked-vaults-Pair [Pair_Id]",
+		Use:   "locked-vaults-pair [pair_id]",
 		Short: "locked vaults list With Pair Id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
