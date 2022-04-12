@@ -67,7 +67,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 	}
 
 	k.SetLockedVault(ctx, value)
-	k.SetLockedVaultIDHistory(ctx, lockedVaultId+1)
+	k.SetLockedVaultID(ctx, lockedVaultId+1)
 
 	//Create a new Data Structure with the current Params
 	//Set nil for all the values not available right now
@@ -83,7 +83,7 @@ func (k Keeper) CreateLockedVaultHistoy(ctx sdk.Context, lockedvault types.Locke
 
 	lockedVaultId := k.GetLockedVaultIDHistory(ctx)
 	k.SetLockedVaultHistory(ctx, lockedvault, lockedVaultId)
-	k.SetLockedVaultID(ctx, lockedVaultId+1)
+	k.SetLockedVaultIDHistory(ctx, lockedVaultId+1)
 
 	return nil
 

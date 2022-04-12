@@ -11,6 +11,8 @@ var (
 	ErrorInvalidID               = errors.Register(ModuleName, 104, "invalid id")
 	ErrorInvalidLiquidationRatio = errors.Register(ModuleName, 105, "invalid liquidation ratio")
 	ErrorInvalidName             = errors.Register(ModuleName, 106, "invalid name")
+	ErrorInvalidUnliquidationRatio = errors.Register(ModuleName, 107, "invalid unliquidation ratio")
+
 )
 
 var (

@@ -217,6 +217,7 @@ func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
 				AssetIn:          msg.AssetIn,
 				AssetOut:         msg.AssetOut,
 				LiquidationRatio: msg.LiquidationRatio,
+				UnliquidationRatio: msg.UnliquidationRatio,
 			}
 		)
 
@@ -237,6 +238,9 @@ func (k *Keeper) UpdatePairRecords(ctx sdk.Context, msg types.Pair) error {
 		pair.LiquidationRatio = msg.LiquidationRatio
 	}
 
+	if !msg.UnliquidationRatio.IsZero() {
+		pair.LiquidationRatio = msg.UnliquidationRatio
+	}
 	k.SetPair(ctx, pair)
 	return nil
 }

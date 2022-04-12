@@ -9,6 +9,7 @@ import (
 
 const (
 	flagLiquidationRatio       = "liquidation-ratio"
+	flagUnliquidationRatio     = "unliquidation-ratio"
 	flagName                   = "name"
 	flagDenom                  = "denom"
 	flagDecimals               = "decimals"
@@ -22,6 +23,15 @@ func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
 
 	return sdk.NewDecFromStr(s)
 }
+func GetUnliquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
+	s, err := cmd.Flags().GetString(flagUnliquidationRatio)
+	if err != nil {
+		return sdk.Dec{}, err
+	}
+
+	return sdk.NewDecFromStr(s)
+}
+
 
 func ParseStringFromString(s string, seperator string) ([]string, error) {
 	var parsedStrings []string
