@@ -10,12 +10,12 @@ import (
 
 // RegisterLegacyAminoCodec registers concrete types on the codec.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreatePool{}, "liquidity/MsgCreatePool", nil)
-	cdc.RegisterConcrete(&MsgDepositWithinBatch{}, "liquidity/MsgDepositWithinBatch", nil)
-	cdc.RegisterConcrete(&MsgWithdrawWithinBatch{}, "liquidity/MsgWithdrawWithinBatch", nil)
-	cdc.RegisterConcrete(&MsgSwapWithinBatch{}, "liquidity/MsgSwapWithinBatch", nil)
-	cdc.RegisterConcrete(&MsgBondPoolTokens{}, "liquidity/MsgBondPoolTokens", nil)
-	cdc.RegisterConcrete(&MsgUnbondPoolTokens{}, "liquidity/MsgUnbondPoolTokens", nil)
+	cdc.RegisterConcrete(&MsgCreatePool{}, "comdex/liquidity/create-pool", nil)
+	cdc.RegisterConcrete(&MsgDepositWithinBatch{}, "comdex/liquidity/deposit", nil)
+	cdc.RegisterConcrete(&MsgWithdrawWithinBatch{}, "comdex/liquidity/withdraw", nil)
+	cdc.RegisterConcrete(&MsgSwapWithinBatch{}, "comdex/liquidity/swap", nil)
+	cdc.RegisterConcrete(&MsgBondPoolTokens{}, "comdex/liquidity/bond", nil)
+	cdc.RegisterConcrete(&MsgUnbondPoolTokens{}, "comdex/liquidity/unbond", nil)
 
 }
 

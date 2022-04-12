@@ -9,6 +9,13 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	cdc.RegisterConcrete(&MsgAddMarketRequest{}, "comdex/market/add-market", nil)
+	cdc.RegisterConcrete(&MsgUpdateMarketRequest{}, "comdex/market/update-market", nil)
+	cdc.RegisterConcrete(&MsgRemoveMarketForAssetRequest{}, "comdex/market/remove-market-for-asset", nil)
+
+}
+
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
@@ -28,6 +35,10 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 
 var (
 	amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewProtoCodec(types.NewInterfaceRegistry())
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
+func init() {
+	RegisterLegacyAminoCodec(amino)
+	amino.Seal()
+}

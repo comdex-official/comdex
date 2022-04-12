@@ -32,11 +32,7 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(
-		txAddMarket(),
-		txUpdateMarket(),
-		txRemoveMarketForAsset(),
-	)
+	cmd.AddCommand()
 
 	return cmd
 }
