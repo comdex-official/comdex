@@ -7,9 +7,15 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	cdc.RegisterConcrete(&NewMintRewardsProposal{}, "comdex/rewards/add-new-mint-rewards", nil)
+	cdc.RegisterConcrete(&DisbaleMintRewardsProposal{}, "comdex/rewards/disable-mint-rewards", nil)
+
+}
+
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&NewMintRewardsProposal{}, "comdex/NewMintRewardsProposal", nil)
-	cdc.RegisterConcrete(&DisbaleMintRewardsProposal{}, "comdex/DisbaleMintRewardsProposal", nil)
+	cdc.RegisterConcrete(&NewMintRewardsProposal{}, "comdex/rewards/add-new-mint-rewards", nil)
+	cdc.RegisterConcrete(&DisbaleMintRewardsProposal{}, "comdex/rewards/disable-mint-rewards", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -22,6 +28,11 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 }
 
 var (
-	Amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewProtoCodec(cdctypes.NewInterfaceRegistry())
+	amino     = codec.NewLegacyAmino()
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
+
+func init() {
+	RegisterLegacyAminoCodec(amino)
+	amino.Seal()
+}
