@@ -11,13 +11,13 @@ import (
 var (
 	KeyLiquidationPenaltyPercent = []byte("LiquidationPenaltyPercent")
 	KeyAuctionDiscountPercent    = []byte("AuctionDiscountPercent")
-	KeyAuctionDurationHours      = []byte("AuctionDurationHours")
+	KeyAuctionDurationSeconds    = []byte("AuctionDurationSeconds")
 )
 
 var (
 	DefaultLiquidationPenaltyPercent = "0.15"
 	DefaultAuctionDiscountPercent    = "0.05"
-	DefaultAuctionDurationHours      = uint64(6)
+	DefaultAuctionDurationSeconds    = uint64(180)
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -28,11 +28,11 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 // NewParams creates a new Params instance
-func NewParams(liquidationPenaltyPercent string, auctionDiscountPercent string, auctionDurationHours uint64) Params {
+func NewParams(liquidationPenaltyPercent string, auctionDiscountPercent string, auctionDurationSeconds uint64) Params {
 	return Params{
 		LiquidationPenaltyPercent: liquidationPenaltyPercent,
 		AuctionDiscountPercent:    auctionDiscountPercent,
-		AuctionDurationHours:      auctionDurationHours,
+		AuctionDurationSeconds:    auctionDurationSeconds,
 	}
 }
 
@@ -41,7 +41,7 @@ func DefaultParams() Params {
 	return NewParams(
 		DefaultLiquidationPenaltyPercent,
 		DefaultAuctionDiscountPercent,
-		DefaultAuctionDurationHours,
+		DefaultAuctionDurationSeconds,
 	)
 }
 
@@ -50,7 +50,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyLiquidationPenaltyPercent, &p.LiquidationPenaltyPercent, validateLiquidationPenalty),
 		paramtypes.NewParamSetPair(KeyAuctionDiscountPercent, &p.AuctionDiscountPercent, validateAuctionDiscount),
-		paramtypes.NewParamSetPair(KeyAuctionDurationHours, &p.AuctionDurationHours, validateAuctionDuration),
+		paramtypes.NewParamSetPair(KeyAuctionDurationSeconds, &p.AuctionDurationSeconds, validateAuctionDuration),
 	}
 }
 
@@ -62,7 +62,7 @@ func (p Params) Validate() error {
 	}{
 		{p.LiquidationPenaltyPercent, validateLiquidationPenalty},
 		{p.AuctionDiscountPercent, validateAuctionDiscount},
-		{p.AuctionDurationHours, validateAuctionDuration},
+		{p.AuctionDurationSeconds, validateAuctionDuration},
 	} {
 		if err := v.validator(v.value); err != nil {
 			return err
