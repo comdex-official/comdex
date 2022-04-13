@@ -233,7 +233,7 @@ func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondP
 				userUnbondingTokens.IsUnbondingPoolCoin = &msg.PoolCoin.Amount
 				//Check for mistakes in these values
 				userUnbondingTokens.UnbondingStartTime = ctx.BlockTime()                            //Check for current second value
-				userUnbondingTokens.UnbondingEndTime = k.CalculateUnbondingEndTimectx,ctx.BlockTime()) //Ending Time after the unbonding time will get over
+				userUnbondingTokens.UnbondingEndTime = k.CalculateUnbondingEndTime(ctx,ctx.BlockTime()) //Ending Time after the unbonding time will get over
 				updatedBondedTokens := pool.BondedPoolCoin.Sub(msg.PoolCoin.Amount)
 				pool.BondedPoolCoin = &updatedBondedTokens
 				pool.UserPoolUnbondingTokens = append(pool.UserPoolUnbondingTokens, &userUnbondingTokens)
