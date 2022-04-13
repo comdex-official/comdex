@@ -3,7 +3,7 @@ package keeper
 import (
 	
 	"time"
-
+"fmt"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -122,11 +122,14 @@ func (k *Keeper) CreatePoolForUser(existinguserPoolsData types.UserPoolsData, po
 
 }
 
-func (k *Keeper) CalculateUnbondingEndTime(currentTime time.Time) (endTime time.Time) {
+func (k *Keeper) CalculateUnbondingEndTime(ctx sdk.Context,currentTime time.Time) (endTime time.Time) {
 	start := currentTime
-	// liquidity_params=k.
+	liquidityParams := k.GetParams(ctx)
+	date:=liquidityParams.PoolUnbondingDuration
+	
 
-	endTime = start.AddDate(0, 0, 21)
+	endTime = start.AddDate(0, 0,int(date.Int64()))
+	fmt.Print(endTime)
 	return endTime
 }
 func (k *Keeper) CompletingUnbondingProcess(ctx sdk.Context) {
