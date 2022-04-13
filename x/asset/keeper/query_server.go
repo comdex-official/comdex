@@ -30,7 +30,6 @@ func (q *queryServer) QueryAssets(c context.Context, req *types.QueryAssetsReque
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-
 	var (
 		items []types.Asset
 		ctx   = sdk.UnwrapSDKContext(c)
@@ -118,6 +117,7 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 				AssetOut:         pair.AssetOut,
 				DenomOut:         assetOut.Denom,
 				LiquidationRatio: pair.LiquidationRatio,
+				UnliquidationRatio: pair.UnliquidationRatio,
 			}
 
 			if accumulate {
@@ -167,6 +167,7 @@ func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) 
 		AssetOut:         pair.AssetOut,
 		DenomOut:         assetOut.Denom,
 		LiquidationRatio: pair.LiquidationRatio,
+		UnliquidationRatio: pair.UnliquidationRatio,
 	}
 
 	return &types.QueryPairResponse{

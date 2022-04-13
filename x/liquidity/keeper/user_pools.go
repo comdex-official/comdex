@@ -124,6 +124,8 @@ func (k *Keeper) CreatePoolForUser(existinguserPoolsData types.UserPoolsData, po
 
 func (k *Keeper) CalculateUnbondingEndTime(currentTime time.Time) (endTime time.Time) {
 	start := currentTime
+	// liquidity_params=k.
+
 	endTime = start.AddDate(0, 0, 21)
 	return endTime
 }

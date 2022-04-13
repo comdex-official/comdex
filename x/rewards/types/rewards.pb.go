@@ -137,7 +137,7 @@ func (m *MintingRewards) GetDepositor() github_com_cosmos_cosmos_sdk_types.AccAd
 	if m != nil {
 		return m.Depositor
 	}
-	return nil
+	return ""
 }
 
 func (m *MintingRewards) GetStartTimestamp() time.Time {

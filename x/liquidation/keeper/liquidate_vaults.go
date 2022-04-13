@@ -67,7 +67,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 	}
 
 	k.SetLockedVault(ctx, value)
-	k.SetLockedVaultIDHistory(ctx, lockedVaultId+1)
+	k.SetLockedVaultID(ctx, lockedVaultId+1)
 
 	//Create a new Data Structure with the current Params
 	//Set nil for all the values not available right now
@@ -83,7 +83,7 @@ func (k Keeper) CreateLockedVaultHistoy(ctx sdk.Context, lockedvault types.Locke
 
 	lockedVaultId := k.GetLockedVaultIDHistory(ctx)
 	k.SetLockedVaultHistory(ctx, lockedvault, lockedVaultId)
-	k.SetLockedVaultID(ctx, lockedVaultId+1)
+	k.SetLockedVaultIDHistory(ctx, lockedVaultId+1)
 
 	return nil
 
@@ -106,7 +106,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 
 		auctionParams := k.GetAuctionParams(ctx)
 
-		unliquidatePointPercentage := pair.LiquidationRatio.Add(sdk.MustNewDecFromStr("0.1"))
+		unliquidatePointPercentage := pair.UnliquidationRatio
 
 		auctionDiscount := sdk.MustNewDecFromStr(auctionParams.AuctionDiscountPercent)
 		liquidationPenalty := sdk.MustNewDecFromStr(auctionParams.LiquidationPenaltyPercent)
@@ -198,7 +198,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				continue
 			}
 
-			unliquidatePointPercentage := pair.LiquidationRatio.Add(sdk.MustNewDecFromStr("0.1"))
+			unliquidatePointPercentage := pair.UnliquidationRatio
 
 			assetIn, found := k.GetAsset(ctx, pair.AssetIn)
 			if !found {
@@ -320,7 +320,7 @@ func (k *Keeper) SetLockedVault(ctx sdk.Context, locked_vault types.LockedVault)
 func (k *Keeper) SetLockedVaultHistory(ctx sdk.Context, locked_vault types.LockedVault, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LockedVaultKey(id)
+		key   = types.LockedVaultHistoryKey(id)
 		value = k.cdc.MustMarshal(&locked_vault)
 	)
 	store.Set(key, value)
@@ -412,12 +412,3 @@ func (k *Keeper) UpdateAssetQuantitiesInLockedVault(
 	k.SetLockedVault(ctx, locked_vault)
 	return nil
 }
-
-// func (k *Keeper) AddHistoryVault(ctx sdk.Context, locked_vaults types.LockedVault) {
-// 	var (
-// 		store = k.Store(ctx)
-// 		key   = types.LockedVaultKeyHistory
-// 		value = k.cdc.MustMarshal(&locked_vaults)
-// 	)
-// 	store.Set(key, value)
-// }

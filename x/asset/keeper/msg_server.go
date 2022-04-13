@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	"github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -82,21 +83,31 @@ func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) 
 	if !k.HasAsset(ctx, msg.AssetOut) {
 		return nil, types.ErrorAssetDoesNotExist
 	}
+	if msg.UnliquidationRatio.IsZero() {
+
+		return nil, types.ErrorInvalidUnliquidationRatio
+	}
+
+	if msg.LiquidationRatio.IsZero() {
+		return nil, types.ErrorInvalidLiquidationRatio
+
+	}
 
 	var (
 		id   = k.GetPairID(ctx)
 		pair = types.Pair{
-			Id:               id + 1,
-			AssetIn:          msg.AssetIn,
-			AssetOut:         msg.AssetOut,
-			LiquidationRatio: msg.LiquidationRatio,
+			Id:                 id + 1,
+			AssetIn:            msg.AssetIn,
+			AssetOut:           msg.AssetOut,
+			LiquidationRatio:   msg.LiquidationRatio,
+			UnliquidationRatio: msg.UnliquidationRatio,
 		}
 	)
 
 	k.SetPairID(ctx, pair.Id)
 	k.SetPair(ctx, pair)
-
 	return &types.MsgAddPairResponse{}, nil
+
 }
 
 func (k *msgServer) MsgUpdatePair(c context.Context, msg *types.MsgUpdatePairRequest) (*types.MsgUpdatePairResponse, error) {
@@ -111,6 +122,9 @@ func (k *msgServer) MsgUpdatePair(c context.Context, msg *types.MsgUpdatePairReq
 		pair.LiquidationRatio = msg.LiquidationRatio
 	}
 
+	if !msg.UnliquidationRatio.IsZero() {
+		pair.UnliquidationRatio = msg.UnliquidationRatio
+	}
 	k.SetPair(ctx, pair)
 	return &types.MsgUpdatePairResponse{}, nil
 }
