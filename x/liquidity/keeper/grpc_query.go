@@ -340,7 +340,10 @@ func (k Querier) UserPoolsContribution(c context.Context, req *types.QueryUserPo
 	userDetails, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(req.UserAddress))
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "User not providing liquidity in any pools")
+		// return nil, status.Errorf(codes.NotFound, "User not providing liquidity in any pools")
+		return &types.QueryUserPoolsContributionMsgResponse{
+			UserPoolData: userDetails,
+		}, nil
 	}
 
 	return &types.QueryUserPoolsContributionMsgResponse{
