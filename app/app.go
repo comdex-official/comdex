@@ -105,6 +105,9 @@ import (
 	bandoraclemoduleclient "github.com/comdex-official/comdex/x/bandoracle/client"
 	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
+	"github.com/comdex-official/comdex/x/lend"
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/liquidation"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
@@ -164,8 +167,8 @@ var (
 		vesting.AppModuleBasic{},
 		vault.AppModuleBasic{},
 		asset.AppModuleBasic{},
+		lend.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
-		asset.AppModuleBasic{},
 		market.AppModuleBasic{},
 		bandoraclemodule.AppModuleBasic{},
 		liquidation.AppModuleBasic{},
@@ -231,6 +234,7 @@ type App struct {
 
 	BandoracleKeeper  bandoraclemodulekeeper.Keeper
 	assetKeeper       assetkeeper.Keeper
+	lendKeeper		  lendkeeper.Keeper
 	vaultKeeper       vaultkeeper.Keeper
 	liquidityKeeper   liquiditykeeper.Keeper
 	marketKeeper      marketkeeper.Keeper
@@ -269,7 +273,7 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey,
+			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, lendtypes.StoreKey,
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, liquidationtypes.StoreKey,
 			auctiontypes.StoreKey, wasm.StoreKey, rewardstypes.StoreKey,
 		)
@@ -313,6 +317,7 @@ func New(
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
 	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
 	app.paramsKeeper.Subspace(assettypes.ModuleName)
+	app.paramsKeeper.Subspace(lendtypes.ModuleName)
 	app.paramsKeeper.Subspace(markettypes.ModuleName)
 	app.paramsKeeper.Subspace(bandoraclemoduletypes.ModuleName)
 	app.paramsKeeper.Subspace(liquidationtypes.ModuleName)
@@ -427,6 +432,13 @@ func New(
 		app.keys[assettypes.StoreKey],
 		app.GetSubspace(assettypes.ModuleName),
 		&app.marketKeeper,
+	)
+
+	app.lendKeeper = *lendkeeper.NewKeeper(
+		app.cdc,
+		app.keys[lendtypes.StoreKey],
+		app.keys[lendtypes.StoreKey],
+		app.GetSubspace(lendtypes.ModuleName),
 	)
 	app.vaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
@@ -621,9 +633,9 @@ func New(
 		params.NewAppModule(app.paramsKeeper),
 		transferModule,
 		asset.NewAppModule(app.cdc, app.assetKeeper),
+		lend.NewAppModule(app.cdc, app.lendKeeper, app.accountKeeper, app.bankKeeper),
 		vault.NewAppModule(app.cdc, app.vaultKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
-		asset.NewAppModule(app.cdc, app.assetKeeper),
 		oracleModule,
 		bandoracleModule,
 		liquidation.NewAppModule(app.cdc, app.liquidationKeeper, app.accountKeeper, app.bankKeeper),
@@ -641,7 +653,7 @@ func New(
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, liquidationtypes.ModuleName,
 		auctiontypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName,
-		capabilitytypes.ModuleName, transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName,
+		capabilitytypes.ModuleName, transferModule.Name(), assettypes.ModuleName, lendtypes.ModuleName, vaulttypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName,
 		govtypes.ModuleName, rewardstypes.ModuleName,
 	)
@@ -652,7 +664,7 @@ func New(
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, paramstypes.ModuleName,
 		markettypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
-		assettypes.ModuleName, banktypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, rewardstypes.ModuleName,
+		assettypes.ModuleName, lendtypes.ModuleName, banktypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, rewardstypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -676,6 +688,7 @@ func New(
 		liquiditytypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		assettypes.ModuleName,
+		lendtypes.ModuleName,
 		vaulttypes.ModuleName,
 		bandoraclemoduletypes.ModuleName,
 		markettypes.ModuleName,
@@ -897,6 +910,7 @@ func (app *App) registerUpgradeHandlers() {
 			genutiltypes.ModuleName:     genutil.AppModule{}.ConsensusVersion(),
 			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
+			lendtypes.ModuleName: 		 lend.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
 		}
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
