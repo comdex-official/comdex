@@ -117,6 +117,11 @@ import (
 	"github.com/comdex-official/comdex/x/rewards"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+
+	"github.com/comdex-official/comdex/x/exchange"
+	exchangekeeper "github.com/comdex-official/comdex/x/exchange/keeper"
+	exchangetypes "github.com/comdex-official/comdex/x/exchange/types"
+
 	"github.com/comdex-official/comdex/x/vault"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -171,6 +176,7 @@ var (
 		liquidation.AppModuleBasic{},
 		auction.AppModuleBasic{},
 		rewards.AppModuleBasic{},
+		exchange.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
 )
@@ -237,6 +243,7 @@ type App struct {
 	liquidationKeeper liquidationkeeper.Keeper
 	auctionKeeper     auctionkeeper.Keeper
 	rewardsKeeper     rewardskeeper.Keeper
+	exchangeKeeper    exchangekeeper.Keeper
 	scopedWasmKeeper  capabilitykeeper.ScopedKeeper
 
 	wasmKeeper wasm.Keeper
@@ -271,7 +278,7 @@ func New(
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey,
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, liquidationtypes.StoreKey,
-			auctiontypes.StoreKey, wasm.StoreKey, rewardstypes.StoreKey,
+			auctiontypes.StoreKey, wasm.StoreKey, rewardstypes.StoreKey, exchangetypes.StoreKey,
 		)
 	)
 
@@ -318,6 +325,7 @@ func New(
 	app.paramsKeeper.Subspace(liquidationtypes.ModuleName)
 	app.paramsKeeper.Subspace(auctiontypes.ModuleName)
 	app.paramsKeeper.Subspace(rewardstypes.ModuleName)
+	app.paramsKeeper.Subspace(exchangetypes.ModuleName)
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 
 	// set the BaseApp's parameter store
@@ -517,6 +525,12 @@ func New(
 		&app.marketKeeper,
 	)
 
+	app.exchangeKeeper = *exchangekeeper.NewKeeper(
+		app.cdc,
+		app.keys[assettypes.StoreKey],
+		app.GetSubspace(assettypes.ModuleName),
+	)
+
 	// Create Transfer Keepers
 	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.cdc,
@@ -562,7 +576,8 @@ func New(
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.assetKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
-		AddRoute(rewardstypes.RouterKey, rewards.NewRewardsProposalHandler(app.rewardsKeeper))
+		AddRoute(rewardstypes.RouterKey, rewards.NewRewardsProposalHandler(app.rewardsKeeper)).
+		AddRoute(exchangetypes.RouterKey, exchange.ExchnageProposalHandler(app.exchangeKeeper))
 
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,
@@ -629,6 +644,7 @@ func New(
 		liquidation.NewAppModule(app.cdc, app.liquidationKeeper, app.accountKeeper, app.bankKeeper),
 		auction.NewAppModule(app.cdc, app.auctionKeeper, app.accountKeeper, app.bankKeeper),
 		rewards.NewAppModule(app.cdc, app.rewardsKeeper, app.accountKeeper, app.bankKeeper),
+		exchange.NewAppModule(app.cdc, app.exchangeKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
 	)
 
@@ -643,7 +659,7 @@ func New(
 		auctiontypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName,
 		capabilitytypes.ModuleName, transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName,
-		govtypes.ModuleName, rewardstypes.ModuleName,
+		govtypes.ModuleName, rewardstypes.ModuleName, exchangetypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -653,6 +669,7 @@ func New(
 		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, paramstypes.ModuleName,
 		markettypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
 		assettypes.ModuleName, banktypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, rewardstypes.ModuleName,
+		exchangetypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -682,6 +699,7 @@ func New(
 		liquidationtypes.ModuleName,
 		auctiontypes.ModuleName,
 		rewardstypes.ModuleName,
+		exchangetypes.ModuleName,
 		paramstypes.ModuleName,
 		authvestingtypes.ModuleName,
 		upgradetypes.ModuleName,
@@ -872,6 +890,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		auctiontypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        nil,
+		exchangetypes.ModuleName:       nil,
 		wasm.ModuleName:                {authtypes.Burner},
 	}
 }
