@@ -1,13 +1,52 @@
 syntax = "proto3";
 package comdex.lend.v1beta1;
 
-// this line is used by starport scaffolding # proto/tx/import
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/lend/types";
 
-// Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+  // LendAsset defines a method for lending coins to the ModuleAccount.
+  rpc Lend(MsgLend) returns (MsgLendResponse);
+
+  // WithdrawAsset defines a method for withdrawing previously loaned coins from
+  // the ModuleAccount.
+  rpc Withdraw(MsgWithdraw) returns (MsgWithdrawResponse);
+
+  // BorrowAsset defines a method for borrowing coins from the ModuleAccount.
+  rpc Borrow(MsgBorrow) returns (MsgBorrowResponse);
+
+  // RepayAsset defines a method for repaying borrowed coins to the ModuleAccount.
+  rpc Repay(MsgRepay) returns (MsgRepayResponse);
 }
 
-// this line is used by starport scaffolding # proto/tx/message
+message MsgLend {
+  string                   lender = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgWithdraw {
+  string                   lender = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgBorrow {
+  string                   borrower = 1;
+  cosmos.base.v1beta1.Coin amount   = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgRepay {
+  string                   borrower = 1;
+  cosmos.base.v1beta1.Coin amount   = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgLendResponse {}
+
+message MsgWithdrawResponse {}
+
+message MsgBorrowResponse {}
+
+message MsgRepayResponse {
+  cosmos.base.v1beta1.Coin repaid = 1 [(gogoproto.nullable) = false];
+}
