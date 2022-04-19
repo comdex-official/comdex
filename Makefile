@@ -39,9 +39,9 @@ endif
 
 build:
 ifeq (${OS},Windows_NT)
-	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex.exe ./node
+	go build  ${BUILD_FLAGS} -o build/${GOOS}/${GOARCH}/comdex.exe ./node
 else
-	go build  ${BUILD_FLAGS} -o ${GOBIN}/comdex ./node
+	go build  ${BUILD_FLAGS} -o build/${GOOS}/${GOARCH}/comdex ./node
 endif
 
 release: build
@@ -83,3 +83,5 @@ tools:
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.27.0
 	@go install github.com/goware/modvendor@v0.3.0
 	@go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0
+	@go get gopkg.in/go-playground/assert.v1@v1.2.1
+	@go get gopkg.in/go-playground/validator.v9@v9.29.1
