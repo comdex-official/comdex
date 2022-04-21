@@ -2,34 +2,37 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/comdex-official/comdex/x/lend/expected"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/tendermint/tendermint/libs/log"
 
+	"github.com/comdex-official/comdex/x/lend/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/comdex-official/comdex/x/lend/types"
-	
 )
 
 type (
 	Keeper struct {
-		
-		cdc      	codec.BinaryCodec
-		storeKey 	sdk.StoreKey
-		memKey   	sdk.StoreKey
-		paramstore	paramtypes.Subspace
-		
+		cdc        codec.BinaryCodec
+		storeKey   sdk.StoreKey
+		memKey     sdk.StoreKey
+		paramstore paramtypes.Subspace
+		bank       expected.BankKeeper
+		account    expected.AccountKeeper
 	}
 )
 
 func NewKeeper(
-    cdc codec.BinaryCodec,
-    storeKey,
-    memKey sdk.StoreKey,
+	cdc codec.BinaryCodec,
+	storeKey,
+	memKey sdk.StoreKey,
 	ps paramtypes.Subspace,
-    
-    
+	bank expected.BankKeeper,
+	account expected.AccountKeeper,
+
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -37,15 +40,90 @@ func NewKeeper(
 	}
 
 	return &Keeper{
-		
-		cdc:      	cdc,
-		storeKey: 	storeKey,
-		memKey:   	memKey,
-		paramstore:	ps,
-		
+
+		cdc:        cdc,
+		storeKey:   storeKey,
+		memKey:     memKey,
+		paramstore: ps,
+		bank:       bank,
+		account:    account,
 	}
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+}
+
+func (k Keeper) ModuleBalance(ctx sdk.Context, denom string) sdk.Int {
+	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), denom).Amount
+}
+
+func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, loan sdk.Coin) error {
+	if !k.IsWhitelistedAsset(ctx, loan.Denom) {
+		return sdkerrors.Wrap(types.ErrInvalidAsset, loan.String())
+	}
+	// send token balance to lend module account
+	loanTokens := sdk.NewCoins(loan)
+
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, types.ModuleName, loanTokens); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (k Keeper) WithdrawAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, withdrawal sdk.Coin) error {
+
+	if !k.IsWhitelistedAsset(ctx, withdrawal.Denom) {
+		return sdkerrors.Wrap(types.ErrInvalidAsset, withdrawal.String())
+	}
+
+	// Ensure module account has sufficient unreserved tokens to withdraw
+	reservedAmount := k.GetReserveFunds(ctx, withdrawal.Denom)
+	availableAmount := k.ModuleBalance(ctx, withdrawal.Denom)
+	if withdrawal.Amount.GT(availableAmount.Sub(reservedAmount)) {
+		return sdkerrors.Wrap(types.ErrLendingPoolInsufficient, withdrawal.String())
+	}
+
+	//amountFromWallet := sdk.MinInt(k.bank.SpendableCoins(ctx, lenderAddr).AmountOf(withdrawal.Denom), withdrawal.Amount)
+	//amountFromCollateral := withdrawal.Amount.Sub(amountFromWallet)
+	//amountFromCollateral := withdrawal.Amount
+
+	// send the base assets to lender
+	tokens := sdk.NewCoins(withdrawal)
+
+	if err := k.bank.SendCoinsFromModuleToAccount(ctx, "asset-1", lenderAddr, tokens); err != nil {
+		return err
+	}
+	abc := k.bank.GetBalance(ctx, authtypes.NewModuleAddress("asset-1"), withdrawal.String()).Amount
+	fmt.Println(abc)
+	fmt.Println("abc")
+
+	return nil
+}
+
+func (k Keeper) BorrowAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, loan sdk.Coin) error {
+	if !k.IsWhitelistedAsset(ctx, loan.Denom) {
+		return sdkerrors.Wrap(types.ErrInvalidAsset, loan.String())
+	}
+
+	// send token balance to lend module account
+	loanTokens := sdk.NewCoins(loan)
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, types.ModuleName, loanTokens); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (k Keeper) RepayAsset(ctx sdk.Context, borrowerAddr sdk.AccAddress, payment sdk.Coin) (sdk.Int, error) {
+	if !payment.IsValid() {
+		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrInvalidAsset, payment.String())
+	}
+
+	if !k.IsWhitelistedAsset(ctx, payment.Denom) {
+		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrInvalidAsset, payment.String())
+	}
+
+	return payment.Amount, nil
 }

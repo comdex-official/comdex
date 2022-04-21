@@ -241,7 +241,7 @@ type App struct {
 
 	BandoracleKeeper  bandoraclemodulekeeper.Keeper
 	assetKeeper       assetkeeper.Keeper
-	lendKeeper		  lendkeeper.Keeper
+	lendKeeper        lendkeeper.Keeper
 	vaultKeeper       vaultkeeper.Keeper
 	liquidityKeeper   liquiditykeeper.Keeper
 	marketKeeper      marketkeeper.Keeper
@@ -453,6 +453,8 @@ func New(
 		app.keys[lendtypes.StoreKey],
 		app.keys[lendtypes.StoreKey],
 		app.GetSubspace(lendtypes.ModuleName),
+		app.bankKeeper,
+		app.accountKeeper,
 	)
 	app.vaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
@@ -898,6 +900,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		auctiontypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
@@ -927,7 +930,7 @@ func (app *App) registerUpgradeHandlers() {
 			genutiltypes.ModuleName:     genutil.AppModule{}.ConsensusVersion(),
 			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
-			lendtypes.ModuleName: 		 lend.AppModule{}.ConsensusVersion(),
+			lendtypes.ModuleName:        lend.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
 			wasmtypes.ModuleName:        wasm.AppModule{}.ConsensusVersion(),
 		}
