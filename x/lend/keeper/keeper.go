@@ -63,9 +63,17 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, loan sdk.C
 		return sdkerrors.Wrap(types.ErrInvalidAsset, loan.String())
 	}
 	// send token balance to lend module account
+	// update users lending
+	//TODO:
+	// update reserves
+	// calculate interest rate
 	loanTokens := sdk.NewCoins(loan)
-
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, types.ModuleName, loanTokens); err != nil {
+		return err
+	}
+
+	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, loan.Denom)
+	if err := k.setCollateralAmount(ctx, lenderAddr, currentCollateral.Add(loan)); err != nil {
 		return err
 	}
 
@@ -80,24 +88,25 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, withdr
 
 	// Ensure module account has sufficient unreserved tokens to withdraw
 	reservedAmount := k.GetReserveFunds(ctx, withdrawal.Denom)
+	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, withdrawal.Denom)
 	availableAmount := k.ModuleBalance(ctx, withdrawal.Denom)
+
 	if withdrawal.Amount.GT(availableAmount.Sub(reservedAmount)) {
 		return sdkerrors.Wrap(types.ErrLendingPoolInsufficient, withdrawal.String())
 	}
 
-	//amountFromWallet := sdk.MinInt(k.bank.SpendableCoins(ctx, lenderAddr).AmountOf(withdrawal.Denom), withdrawal.Amount)
-	//amountFromCollateral := withdrawal.Amount.Sub(amountFromWallet)
-	//amountFromCollateral := withdrawal.Amount
-
-	// send the base assets to lender
-	tokens := sdk.NewCoins(withdrawal)
-
-	if err := k.bank.SendCoinsFromModuleToAccount(ctx, "asset-1", lenderAddr, tokens); err != nil {
+	if withdrawal.Amount.GT(currentCollateral.Amount) {
+		return sdkerrors.Wrap(types.ErrInsufficientBalance, withdrawal.String())
+	}
+	// update lenders share after withdraw
+	if err := k.setCollateralAmount(ctx, lenderAddr, currentCollateral.Sub(withdrawal)); err != nil {
 		return err
 	}
-	abc := k.bank.GetBalance(ctx, authtypes.NewModuleAddress("asset-1"), withdrawal.String()).Amount
-	fmt.Println(abc)
-	fmt.Println("abc")
+	// send the base assets to lender
+	tokens := sdk.NewCoins(withdrawal)
+	if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, lenderAddr, tokens); err != nil {
+		return err
+	}
 
 	return nil
 }
