@@ -2,10 +2,15 @@ syntax = "proto3";
 package comdex.lend.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/lend/types";
 
-message Token {
+  // Asset defines the base whitelisted assets which will be used for
+  // borrowing and lending.
+
+message Asset {
   option (gogoproto.equal) = true;
 
   uint64 id = 1;
@@ -37,10 +42,121 @@ message Token {
     (gogoproto.moretags) = "yaml:\"base_borrow_rate\""
   ];
 
-  string rate = 8 [
+  string base_lend_rate = 8 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"base_lend_rate\""
+  ];
+
+  string current_borrow_rate = 9 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"base_borrow_rate\""
+  ];
+
+  string current_lend_rate = 10 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"base_lend_rate\""
+  ];
+
+  // The rate indicates the price of the asset in USD
+  string rate = 11 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"rate\""
   ];
 
+}
+
+  // Lend_Asset defines the lending parameters
+
+message Lend_Asset {
+  uint64 lending_id = 1
+  [(gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"lending_id\""];
+
+  uint64 pair_id = 2 [
+    (gogoproto.customname) = "PairID",
+    (gogoproto.moretags) = "yaml:\"pair_id\""
+  ];
+
+  string owner = 3 [(gogoproto.moretags) = "yaml:\"owner\""];
+
+  string amount_in = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount_in\"",
+    (gogoproto.nullable) = false
+  ];
+
+  string lent_value_usd = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"lent_value_usd\""
+  ];
+
+  google.protobuf.Timestamp lending_time = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"lending_time\""
+  ];
+
+  repeated cosmos.base.v1beta1.Coin interest_rate = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"interest_rate\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+
+}
+
+message Borrow_Asset {
+  uint64 borrowing_id = 1
+  [(gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"borrowing_id\""];
+
+  uint64 pair_id = 2 [
+    (gogoproto.customname) = "PairID",
+    (gogoproto.moretags) = "yaml:\"pair_id\""
+  ];
+
+  string owner = 3 [(gogoproto.moretags) = "yaml:\"owner\""];
+
+  string amount_out = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount_out\"",
+    (gogoproto.nullable) = false
+  ];
+
+  string borrowed_value_usd = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"borrowed_value_usd\""
+  ];
+
+  string current_collateralisation_ratio = 6 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false,
+    (gogoproto.moretags)   = "yaml:\"current_collateralisation_ratio\""
+  ];
+
+  google.protobuf.Timestamp borrowing_time = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"borrowing_time\""
+  ];
+
+  repeated cosmos.base.v1beta1.Coin borrow_rate = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"borrow_rate\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+
+}
+
+message Pair {
+  uint64 id                = 1;
+
+  uint64 asset_1          = 2 [ (gogoproto.moretags) = "yaml:\"asset_1\"" ];
+
+  uint64 asset_2         = 3 [ (gogoproto.moretags) = "yaml:\"asset_2\"" ];
+
+  string module_acc = 4 [(gogoproto.moretags) = "yaml:\"module_acc\""];
 }

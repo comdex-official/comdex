@@ -15,13 +15,11 @@ const (
 	// RouterKey is the message route for slashing
 	RouterKey = ModuleName
 
-    // QuerierRoute defines the module's query routing key
-    QuerierRoute = ModuleName
+	// QuerierRoute defines the module's query routing key
+	QuerierRoute = ModuleName
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_lend"
-
-    
 )
 
 var (
@@ -193,5 +191,12 @@ func DenomFromKey(key, prefix []byte) string {
 }
 
 func KeyPrefix(p string) []byte {
-    return []byte(p)
+	return []byte(p)
+}
+
+func CreateReserveAmountKey(tokenDenom string) []byte {
+	// reserveamountprefix | denom | 0x00
+	key := CreateReserveAmountKeyNoDenom()
+	key = append(key, []byte(tokenDenom)...)
+	return append(key, 0) // append 0 for null-termination
 }
