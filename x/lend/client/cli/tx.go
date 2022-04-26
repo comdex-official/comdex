@@ -156,7 +156,7 @@ func txRepayAsset() *cobra.Command {
 func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-whitelisted-assets [name] [Denom] [Decimals] [Collateral_Weight] [Liquidation_Threshold] [Base_Borrow_Rate] [Base_Lend_Rate]",
-		Args:  cobra.MinimumNArgs(3),
+		Args:  cobra.ExactArgs(7),
 		Short: "Add whitelisted assets",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -178,6 +178,14 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 				return err
 			}
 
+			collateralWeight, err := ParseStringFromString(args[3], ",")
+
+			liquidationThreshold, err := ParseStringFromString(args[4], ",")
+
+			baseBorrowRate, err := ParseStringFromString(args[5], ",")
+
+			baseLendRate, err := ParseStringFromString(args[6], ",")
+
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
 				return err
@@ -192,10 +200,19 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 
 			var assets []types.Asset
 			for i, _ := range names {
+				newcollateralWeigt, _ := sdk.NewDecFromStr(collateralWeight[i])
+				newliquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold[i])
+				newbaseBorrowRate, _ := sdk.NewDecFromStr(baseBorrowRate[i])
+				newbaseLendRate, _ := sdk.NewDecFromStr(baseLendRate[i])
+
 				assets = append(assets, types.Asset{
-					Name:     names[i],
-					Denom:    denoms[i],
-					Decimals: decimals[i],
+					Name:                 names[i],
+					Denom:                denoms[i],
+					Decimals:             decimals[i],
+					CollateralWeight:     newcollateralWeigt,
+					LiquidationThreshold: newliquidationThreshold,
+					BaseBorrowRate:       newbaseBorrowRate,
+					BaseLendRate:         newbaseLendRate,
 				})
 			}
 

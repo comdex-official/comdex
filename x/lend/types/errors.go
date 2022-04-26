@@ -29,4 +29,8 @@ var (
 	ErrLiquidationRewardRatio  = sdkerrors.Register(ModuleName, 1118, "requested liquidation reward not met")
 	ErrorUnknownProposalType   = sdkerrors.Register(ModuleName, 1119, "unknown proposal type")
 	ErrorEmptyProposalAssets   = sdkerrors.Register(ModuleName, 1120, "empty assets in proposal")
+	ErrorAssetDoesNotExist     = sdkerrors.Register(ModuleName, 1121, "asset does not exist")
+	ErrorDuplicateAsset        = sdkerrors.Register(ModuleName, 1122, "duplicate asset")
+	ErrorPairDoesNotExist      = sdkerrors.Register(ModuleName, 1123, "pair does not exist")
+	ErrorUnauthorized          = sdkerrors.Register(ModuleName, 1124, "unauthorized")
 )

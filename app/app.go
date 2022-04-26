@@ -671,7 +671,7 @@ func New(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
-		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, liquidationtypes.ModuleName,
+		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, liquidationtypes.ModuleName, lendtypes.ModuleName,
 		auctiontypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName,
 		capabilitytypes.ModuleName, transferModule.Name(), assettypes.ModuleName, lendtypes.ModuleName, vaulttypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName,

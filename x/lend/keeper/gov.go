@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -23,7 +22,7 @@ func (k Keeper) HandleProposalUpdatePair(ctx sdk.Context, p *types.UpdateWhiteli
 }
 
 func (k *Keeper) AddWhitelistedAssetRecords(ctx sdk.Context, records ...types.Asset) error {
-	/*	for _, msg := range records {
+	for _, msg := range records {
 		if k.HasAssetForDenom(ctx, msg.Denom) {
 			return types.ErrorDuplicateAsset
 		}
@@ -31,10 +30,14 @@ func (k *Keeper) AddWhitelistedAssetRecords(ctx sdk.Context, records ...types.As
 		var (
 			id    = k.GetAssetID(ctx)
 			asset = types.Asset{
-				Id:       id + 1,
-				Name:     msg.Name,
-				Denom:    msg.Denom,
-				Decimals: msg.Decimals,
+				Id:                   id + 1,
+				Name:                 msg.Name,
+				Denom:                msg.Denom,
+				Decimals:             msg.Decimals,
+				CollateralWeight:     msg.CollateralWeight,
+				LiquidationThreshold: msg.LiquidationThreshold,
+				BaseBorrowRate:       msg.BaseBorrowRate,
+				BaseLendRate:         msg.BaseLendRate,
 			}
 		)
 
@@ -42,11 +45,7 @@ func (k *Keeper) AddWhitelistedAssetRecords(ctx sdk.Context, records ...types.As
 		k.SetAsset(ctx, asset)
 		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
 
-	}*/
-	fmt.Println("this works")
-	fmt.Println("this works")
-	fmt.Println("this works")
-	fmt.Println("this works")
+	}
 
 	return nil
 }
