@@ -2,6 +2,8 @@ package lend
 
 import (
 	"fmt"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/pkg/errors"
 
 	"github.com/comdex-official/comdex/x/lend/keeper"
 	"github.com/comdex-official/comdex/x/lend/types"
@@ -38,4 +40,38 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 		}
 	}
+}
+
+func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
+	return func(ctx sdk.Context, content govtypes.Content) error {
+		switch c := content.(type) {
+		case *types.AddWhitelistedAssetsProposal:
+			return handleAddAssetProposal(ctx, k, c)
+		case *types.UpdateWhitelistedAssetProposal:
+			return handleUpdateAssetProposal(ctx, k, c)
+		case *types.AddWhitelistedPairsProposal:
+			return handleAddPairsProposal(ctx, k, c)
+		case *types.UpdateWhitelistedPairProposal:
+			return handleUpdatePairProposal(ctx, k, c)
+
+		default:
+			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
+		}
+	}
+}
+
+func handleAddAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddWhitelistedAssetsProposal) error {
+	return k.HandleProposalAddAsset(ctx, p)
+}
+
+func handleUpdateAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateWhitelistedAssetProposal) error {
+	return k.HandleProposalUpdateAsset(ctx, p)
+}
+
+func handleAddPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddWhitelistedPairsProposal) error {
+	return k.HandleProposalAddPairs(ctx, p)
+}
+
+func handleUpdatePairProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateWhitelistedPairProposal) error {
+	return k.HandleProposalUpdatePair(ctx, p)
 }

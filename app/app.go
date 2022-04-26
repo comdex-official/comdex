@@ -107,6 +107,7 @@ import (
 	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/comdex-official/comdex/x/lend"
+	lendclient "github.com/comdex-official/comdex/x/lend/client"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/liquidation"
@@ -154,6 +155,7 @@ var (
 			append(
 				assetclient.AddAssetsHandler,
 				bandoraclemoduleclient.AddFetchPriceHandler,
+				lendclient.AddWhitelistedAssetsHandler,
 				paramsclient.ProposalHandler,
 				distrclient.ProposalHandler,
 				upgradeclient.ProposalHandler,
@@ -589,6 +591,7 @@ func New(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.assetKeeper)).
+		AddRoute(lendtypes.RouterKey, lend.NewUpdateAssetProposalHandler(app.lendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(rewardstypes.RouterKey, rewards.NewRewardsProposalHandler(app.rewardsKeeper))
 

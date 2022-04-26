@@ -5,6 +5,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -35,12 +37,12 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		txLend(),
-		txWithdraw(),//withdraw collateral partially or fully
+		txWithdraw(), //withdraw collateral partially or fully
 		txBorrowAsset(),
-		txRepayAsset(),//including functionality of both repaying and closing position
+		txRepayAsset(), //including functionality of both repaying and closing position
 	)
 
-	return cmd 
+	return cmd
 }
 
 func txLend() *cobra.Command {
@@ -149,4 +151,83 @@ func txRepayAsset() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 
+}
+
+func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-whitelisted-assets [name] [Denom] [Decimals] [Collateral_Weight] [Liquidation_Threshold] [Base_Borrow_Rate] [Base_Lend_Rate]",
+		Args:  cobra.MinimumNArgs(3),
+		Short: "Add whitelisted assets",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			names, err := ParseStringFromString(args[0], ",")
+			if err != nil {
+				return err
+			}
+			denoms, err := ParseStringFromString(args[1], ",")
+			if err != nil {
+				return err
+			}
+
+			decimals, err := ParseInt64SliceFromString(args[2], ",")
+			if err != nil {
+				return err
+			}
+
+			title, err := cmd.Flags().GetString(cli.FlagTitle)
+			if err != nil {
+				return err
+			}
+
+			description, err := cmd.Flags().GetString(cli.FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			var assets []types.Asset
+			for i, _ := range names {
+				assets = append(assets, types.Asset{
+					Name:     names[i],
+					Denom:    denoms[i],
+					Decimals: decimals[i],
+				})
+			}
+
+			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
+
+			content := types.NewAddWhitelistedAssetsProposal(title, description, assets)
+
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
+	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
+	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	_ = cmd.MarkFlagRequired(cli.FlagTitle)
+	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+
+	return cmd
 }

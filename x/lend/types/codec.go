@@ -2,8 +2,9 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-    cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	// this line is used by starport scaffolding # 1
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
@@ -14,21 +15,26 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgWithdraw{}, "comdex/lend/withdraw", nil)
 	cdc.RegisterConcrete(&MsgBorrow{}, "comdex/lend/borrow", nil)
 	cdc.RegisterConcrete(&MsgRepay{}, "comdex/lend/repay", nil)
+	cdc.RegisterConcrete(&AddWhitelistedAssetsProposal{}, "comdex/lend/add-whitelisted-assets", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
+	registry.RegisterImplementations(
+		(*govtypes.Content)(nil),
+		&AddWhitelistedAssetsProposal{},
+	)
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgLend{},
 		&MsgWithdraw{},
 		&MsgBorrow{},
 		&MsgRepay{},
-		)
+	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
 var (
-	Amino = codec.NewLegacyAmino()
+	Amino     = codec.NewLegacyAmino()
 	ModuleCdc = codec.NewProtoCodec(cdctypes.NewInterfaceRegistry())
 )

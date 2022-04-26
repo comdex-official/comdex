@@ -27,4 +27,6 @@ var (
 	ErrInvalidInteresrScalar   = sdkerrors.Register(ModuleName, 1116, "interest scalar less than one")
 	ErrEmptyAddress            = sdkerrors.Register(ModuleName, 1117, "empty address")
 	ErrLiquidationRewardRatio  = sdkerrors.Register(ModuleName, 1118, "requested liquidation reward not met")
+	ErrorUnknownProposalType   = sdkerrors.Register(ModuleName, 1119, "unknown proposal type")
+	ErrorEmptyProposalAssets   = sdkerrors.Register(ModuleName, 1120, "empty assets in proposal")
 )

@@ -1,0 +1,35 @@
+syntax = "proto3";
+package comdex.lend.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/lend/v1beta1/params.proto";
+import "comdex/lend/v1beta1/lend.proto";
+
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/comdex-official/comdex/x/lend/types";
+
+message AddWhitelistedAssetsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated Asset assets = 3 [(gogoproto.nullable) = false];
+}
+
+
+message UpdateWhitelistedAssetProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  Asset asset = 3 [(gogoproto.nullable) = false];
+}
+
+message AddWhitelistedPairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated Pair pairs = 3 [(gogoproto.nullable) = false];
+}
+
+message UpdateWhitelistedPairProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  Pair pair = 3 [(gogoproto.nullable) = false];
+}
