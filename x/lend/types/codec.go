@@ -17,12 +17,18 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRepay{}, "comdex/lend/repay", nil)
 	cdc.RegisterConcrete(&MsgFundModuleAccounts{}, "comdex/lend/fund-module", nil)
 	cdc.RegisterConcrete(&AddWhitelistedAssetsProposal{}, "comdex/lend/add-whitelisted-assets", nil)
+	cdc.RegisterConcrete(&UpdateWhitelistedAssetProposal{}, "comdex/lend/update-whitelisted-assets", nil)
+	cdc.RegisterConcrete(&AddWhitelistedPairsProposal{},"comdex/lend/add-pairs", nil)
+	cdc.RegisterConcrete(&UpdateWhitelistedPairProposal{},"comdex/lend/update-pairs", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
 		&AddWhitelistedAssetsProposal{},
+		&UpdateWhitelistedAssetProposal{},
+		&AddWhitelistedPairsProposal{},
+		&UpdateWhitelistedPairProposal{},
 	)
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
