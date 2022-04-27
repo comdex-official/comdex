@@ -1,7 +1,11 @@
 package cli
 
 import (
+	"context"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"strconv"
+
 	// "strings"
 
 	"github.com/spf13/cobra"
@@ -25,8 +29,121 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdQueryParams())
+	cmd.AddCommand(queryAssets())
+	cmd.AddCommand(queryAsset())
+	cmd.AddCommand(queryAssetPerDenom())
 	// this line is used by starport scaffolding # 1
 
-	return cmd 
+	return cmd
 }
 
+func queryAssets() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "assets",
+		Short: "Query assets",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryAssets(
+				context.Background(),
+				&types.QueryAssetsRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryAsset() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "asset [id]",
+		Short: "Query an asset",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryAsset(
+				context.Background(),
+				&types.QueryAssetRequest{
+					Id: id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryAssetPerDenom() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "denom [name]",
+		Short: "Query an asset by providing denom",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			denom := args[0]
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryAssetPerDenom(
+				context.Background(),
+				&types.QueryAssetPerDenomRequest{
+					Denom: denom,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
