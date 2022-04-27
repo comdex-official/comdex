@@ -161,7 +161,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 		Args:  cobra.ExactArgs(7),
 		Short: "Add whitelisted assets",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
+			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -198,7 +198,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 				return err
 			}
 
-			from := clientCtx.GetFromAddress()
+			from := ctx.GetFromAddress()
 
 			var assets []types.Asset
 			for i, _ := range names {
@@ -238,7 +238,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 				return err
 			}
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
 

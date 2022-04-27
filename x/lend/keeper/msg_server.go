@@ -7,7 +7,7 @@ import (
 )
 
 type msgServer struct {
-	keeper	Keeper
+	keeper Keeper
 }
 
 // NewMsgServerImpl returns an implementation of the MsgServer interface
@@ -57,7 +57,6 @@ func (m msgServer) Withdraw(goCtx context.Context, withdraw *types.MsgWithdraw) 
 	if err := m.keeper.WithdrawAsset(ctx, lenderAddr, withdraw.Amount); err != nil {
 		return nil, err
 	}
-
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -135,4 +134,32 @@ func (m msgServer) Repay(goCtx context.Context, repay *types.MsgRepay) (*types.M
 	return &types.MsgRepayResponse{
 		Repaid: repaidCoin,
 	}, nil
+}
+
+func (m msgServer) FundModuleAccounts(goCtx context.Context, accounts *types.MsgFundModuleAccounts) (*types.MsgFundModuleAccountsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	lenderAddr, err := sdk.AccAddressFromBech32(accounts.Lender)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := m.keeper.FundModAcc(ctx, accounts.ModuleName, lenderAddr, accounts.Amount); err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeLoanAsset,
+			sdk.NewAttribute(types.EventAttrLender, lenderAddr.String()),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, accounts.Amount.String()),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
+			sdk.NewAttribute(sdk.AttributeKeySender, lenderAddr.String()),
+		),
+	})
+
+	return &types.MsgFundModuleAccountsResponse{}, nil
 }
