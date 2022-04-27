@@ -251,6 +251,36 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 	return cmd
 }
 
+func txFundModuleAccounts() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "fund-module [module-name] [amount]",
+		Short: "Deposit amount to the respective module account",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			moduleName := args[0]
+
+			amount, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgFundModuleAccounts(moduleName, ctx.GetFromAddress(), amount)
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
 func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-whitelisted-asset [id]",
@@ -537,34 +567,5 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
 
-	return cmd
-}
-func txFundModuleAccounts() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "fund-module [module-name] [amount]",
-		Short: "Deposit amount to the respective module account",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			moduleName := args[0]
-
-			amount, err := sdk.ParseCoinNormalized(args[1])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgFundModuleAccounts(moduleName, ctx.GetFromAddress(), amount)
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
