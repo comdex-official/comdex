@@ -8,4 +8,7 @@ import (
 
 var (
 	AddWhitelistedAssetsHandler = govclient.NewProposalHandler(cli.NewCmdSubmitAddWhitelistedAssetsProposal, rest.AddNewWhitelistedAssetsProposalRESTHandler)
+	UpdateWhitelistedAssetHandler = govclient.NewProposalHandler(cli.NewCmdUpdateWhitelistedAssetProposal, rest.UpdateNewAssetProposalRESTHandler)
+	AddWhitelistedPairsProposalHandler = govclient.NewProposalHandler(cli.NewCmdAddWhitelistedPairsProposal, rest.AddNewPairsProposalRESTHandler)
+	UpdateWhitelistedPairProposalHandler = govclient.NewProposalHandler(cli.NewCmdUpdateWhitelistedPairProposal, rest.UpdateNewPairProposalRESTHandler)
 )

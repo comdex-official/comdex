@@ -5,6 +5,19 @@ import (
 	"strings"
 )
 
+const (
+	flagName                 = "name"
+	flagDenom                = "denom"
+	flagDecimal              = "decimal"
+	flagCollateralWeight     = "collateralWeight"
+	flagLiquidationThreshold = "liquidationThreshold"
+	flagBaseBorrowRate       = "baseBorrowRate"
+	flagBaseLendRate         = "baseLendRate"
+	flagAssetOne             = "assetOne"
+	flagAssetTwo             = "assetTwo"
+	flagModuleAcc            = "moduleAcc"
+)
+
 func ParseStringFromString(s string, seperator string) ([]string, error) {
 	var parsedStrings []string
 	for _, s := range strings.Split(s, seperator) {

@@ -9,4 +9,5 @@ import (
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	fmt.Println(k.GetAsset(ctx, 3))
+	fmt.Println(k.GetPairs(ctx))
 }

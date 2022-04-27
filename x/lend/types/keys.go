@@ -35,6 +35,8 @@ var (
 	WhitelistedAssetKeyPrefix         = []byte{0x1}
 	WhitelistedAssetForDenomKeyPrefix = []byte{0x21}
 	WhitelistedRecordKey              = []byte{0x22}
+	PairIDKey                         = []byte{0x03}
+	PairKeyPrefix                     = []byte{0x14}
 )
 
 func AssetKey(id uint64) []byte {
@@ -73,4 +75,8 @@ func CreateReserveAmountKeyNoDenom() []byte {
 	var key []byte
 	key = append(key, KeyPrefixReserveAmount...)
 	return key
+}
+
+func PairKey(id uint64) []byte {
+	return append(PairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }

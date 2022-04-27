@@ -96,6 +96,15 @@ func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
 	return assets
 }
 
+func (k *Keeper) DeleteAssetForDenom(ctx sdk.Context, denom string) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForDenomKey(denom)
+	)
+
+	store.Delete(key)
+}
+
 func (k *Keeper) SetAssetForDenom(ctx sdk.Context, denom string, id uint64) {
 	var (
 		store = k.Store(ctx)
