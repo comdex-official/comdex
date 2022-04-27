@@ -54,8 +54,8 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k Keeper) ModuleBalance(ctx sdk.Context, denom string) sdk.Int {
-	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(types.ModuleName), denom).Amount
+func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int {
+	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(moduleName), denom).Amount
 }
 
 func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, loan sdk.Coin) error {
@@ -89,7 +89,7 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, withdr
 	// Ensure module account has sufficient unreserved tokens to withdraw
 	reservedAmount := k.GetReserveFunds(ctx, withdrawal.Denom)
 	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, withdrawal.Denom)
-	availableAmount := k.ModuleBalance(ctx, withdrawal.Denom)
+	availableAmount := k.ModuleBalance(ctx, types.ModuleName, withdrawal.Denom)
 
 	if withdrawal.Amount.GT(availableAmount.Sub(reservedAmount)) {
 		return sdkerrors.Wrap(types.ErrLendingPoolInsufficient, withdrawal.String())
@@ -135,6 +135,24 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowerAddr sdk.AccAddress, payment
 	}
 
 	return payment.Amount, nil
+}
+
+func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, lenderAddr sdk.AccAddress, payment sdk.Coin) error {
+	if !k.IsWhitelistedAsset(ctx, payment.Denom) {
+		return sdkerrors.Wrap(types.ErrInvalidAsset, payment.String())
+	}
+
+	loanTokens := sdk.NewCoins(payment)
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, moduleName, loanTokens); err != nil {
+		return err
+	}
+
+	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, payment.Denom)
+	if err := k.setCollateralAmount(ctx, lenderAddr, currentCollateral.Add(payment)); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {

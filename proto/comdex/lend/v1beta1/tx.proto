@@ -19,6 +19,9 @@ service Msg {
 
   // RepayAsset defines a method for repaying borrowed coins to the ModuleAccount.
   rpc Repay(MsgRepay) returns (MsgRepayResponse);
+
+  // FundModuleAccounts funds an existing module account
+  rpc FundModuleAccounts(MsgFundModuleAccounts) returns (MsgFundModuleAccountsResponse);
 }
 
 message MsgLend {
@@ -33,12 +36,18 @@ message MsgWithdraw {
 
 message MsgBorrow {
   string                   borrower = 1;
-  cosmos.base.v1beta1.Coin amount   = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
 }
 
 message MsgRepay {
   string                   borrower = 1;
-  cosmos.base.v1beta1.Coin amount   = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgFundModuleAccounts {
+  string                   moduleName = 1;
+  string                   lender = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
 }
 
 message MsgLendResponse {}
@@ -50,3 +59,5 @@ message MsgBorrowResponse {}
 message MsgRepayResponse {
   cosmos.base.v1beta1.Coin repaid = 1 [(gogoproto.nullable) = false];
 }
+
+message MsgFundModuleAccountsResponse {}
