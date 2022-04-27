@@ -135,3 +135,15 @@ func (k *Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (asset types.As
 
 	return k.GetAsset(ctx, id.GetValue())
 }
+
+func (k *Keeper) GetBalancesForModule(ctx sdk.Context, module string) (balances string) {
+	if module != "osmo" && module != "cmdx" && module != "atom" {
+		return "0"
+	}
+	moduleBalances := k.bank.GetAllBalances(ctx, k.account.GetModuleAddress(module))
+	result := moduleBalances.String()
+	if result == "" {
+		return "0"
+	}
+	return result
+}

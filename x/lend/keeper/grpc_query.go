@@ -97,3 +97,19 @@ func (q *queryServer) QueryAssetPerDenom(c context.Context, req *types.QueryAsse
 		Asset: item,
 	}, nil
 }
+
+func (q *queryServer) QueryBalancesPerModule(c context.Context, req *types.QueryBalancesPerModuleRequest) (*types.QueryBalancesPerModuleResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	balances := q.GetBalancesForModule(ctx, req.Module)
+
+	return &types.QueryBalancesPerModuleResponse{
+		Balances: balances,
+	}, nil
+}
