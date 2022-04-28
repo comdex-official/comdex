@@ -51,13 +51,85 @@ func (k *Keeper) AddWhitelistedAssetRecords(ctx sdk.Context, records ...types.As
 }
 
 func (k *Keeper) UpdateWhitelistedAssetRecords(ctx sdk.Context, msg types.Asset) error {
+	asset, found := k.GetAsset(ctx, msg.Id)
+	if !found {
+		return types.ErrorAssetDoesNotExist
+	}
+	if len(msg.Name) > 0 {
+		asset.Name = msg.Name
+	}
+	if len(msg.Denom) > 0 {
+		if k.HasAssetForDenom(ctx, msg.Denom) {
+			return types.ErrorDuplicateAsset
+		}
+		asset.Denom = msg.Denom
+
+		k.DeleteAssetForDenom(ctx, asset.Denom)
+		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+
+	}
+	if msg.Decimals >= 0 {
+		asset.Decimals = msg.Decimals
+	}
+	if !msg.CollateralWeight.IsZero() {
+		asset.CollateralWeight = msg.CollateralWeight
+	}
+	if !msg.LiquidationThreshold.IsZero() {
+		asset.LiquidationThreshold = msg.LiquidationThreshold
+	}
+	if !msg.BaseBorrowRate.IsZero() {
+		asset.BaseBorrowRate = msg.BaseBorrowRate
+	}
+	if !msg.BaseLendRate.IsZero() {
+		asset.BaseLendRate = msg.BaseLendRate
+	}
+	k.SetAsset(ctx, asset)
 	return nil
 }
 
 func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
+	for _, msg := range records {
+		if !k.HasAsset(ctx, msg.Asset_1) {
+			return types.ErrorAssetDoesNotExist
+		}
+		if !k.HasAsset(ctx, msg.Asset_2) {
+			return types.ErrorAssetDoesNotExist
+		}
+
+		var (
+			id   = k.GetPairID(ctx)
+			pair = types.Pair{
+				Id:        id + 1,
+				Asset_1:   msg.Asset_1,
+				Asset_2:   msg.Asset_2,
+				ModuleAcc: msg.ModuleAcc,
+			}
+		)
+
+		k.SetPairID(ctx, pair.Id)
+		k.SetPair(ctx, pair)
+	}
 	return nil
 }
 
 func (k *Keeper) UpdatePairRecords(ctx sdk.Context, msg types.Pair) error {
+
+	pair, found := k.GetPair(ctx, msg.Id)
+	if !found {
+		return types.ErrorPairDoesNotExist
+	}
+
+	if msg.Asset_1 > 0 {
+		pair.Asset_1 = msg.Asset_1
+	}
+
+	if msg.Asset_2 > 0 {
+		pair.Asset_2 = msg.Asset_2
+	}
+
+	if len(msg.ModuleAcc) > 0 {
+		pair.ModuleAcc = msg.ModuleAcc
+	}
+	k.SetPair(ctx, pair)
 	return nil
 }
