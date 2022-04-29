@@ -32,6 +32,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(queryAssets())
 	cmd.AddCommand(queryAsset())
 	cmd.AddCommand(queryAssetPerDenom())
+	cmd.AddCommand(queryBalancesPerModule())
 	// this line is used by starport scaffolding # 1
 
 	return cmd
@@ -133,6 +134,43 @@ func queryAssetPerDenom() *cobra.Command {
 				context.Background(),
 				&types.QueryAssetPerDenomRequest{
 					Denom: denom,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryBalancesPerModule() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "module [name]",
+		Short: "Query balance by providing module name",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			module := args[0]
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryBalancesPerModule(
+				context.Background(),
+				&types.QueryBalancesPerModuleRequest{
+					Module: module,
 				},
 			)
 			if err != nil {

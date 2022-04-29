@@ -7,6 +7,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/lend/v1beta1/lend.proto";
 import "comdex/lend/v1beta1/params.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/lend/types";
 option (gogoproto.equal_all)           = false;
@@ -55,6 +56,17 @@ message QueryAssetPerDenomResponse {
   [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"asset\""];
 }
 
+message QueryBalancesPerModuleRequest {
+  string module = 1;
+}
+
+message QueryBalancesPerModuleResponse {
+  // balances is the balances of all the coins.
+  repeated cosmos.base.v1beta1.Coin balances = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"balances\""];
+}
+
+
 service QueryService {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdexofficial/comdex/lend/params";
@@ -67,6 +79,9 @@ service QueryService {
   }
   rpc QueryAssetPerDenom(QueryAssetPerDenomRequest) returns (QueryAssetPerDenomResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/denom/{denom}";
+  }
+  rpc QueryBalancesPerModule(QueryBalancesPerModuleRequest) returns (QueryBalancesPerModuleResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/balances/module/{module}";
   }
 }
 

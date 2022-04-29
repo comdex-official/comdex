@@ -34,4 +34,7 @@ var (
 	ErrorPairDoesNotExist      = sdkerrors.Register(ModuleName, 1123, "pair does not exist")
 	ErrorUnauthorized          = sdkerrors.Register(ModuleName, 1124, "unauthorized")
 	ErrBadOfferCoinAmount      = sdkerrors.Register(ModuleName, 1125, "invalid offer coin amount")
+	ErrEmptyRequest            = sdkerrors.Register(ModuleName, 1126, "empty request")
+	ErrAssetNotFound           = sdkerrors.Register(ModuleName, 1127, "asset not found")
+	ErrInvalidModule           = sdkerrors.Register(ModuleName, 1128, "module not found")
 )
