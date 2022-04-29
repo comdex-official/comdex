@@ -37,6 +37,7 @@ var (
 	WhitelistedRecordKey              = []byte{0x22}
 	PairIDKey                         = []byte{0x03}
 	PairKeyPrefix                     = []byte{0x14}
+	LendHistoryPrefix                 = []byte{0x15}
 )
 
 func AssetKey(id uint64) []byte {
@@ -79,4 +80,8 @@ func CreateReserveAmountKeyNoDenom() []byte {
 
 func PairKey(id uint64) []byte {
 	return append(PairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func LendUserHistoryKey(id uint64) []byte {
+	return append(LendHistoryPrefix, sdk.Uint64ToBigEndian(id)...)
 }

@@ -33,4 +33,5 @@ var (
 	ErrorDuplicateAsset        = sdkerrors.Register(ModuleName, 1122, "duplicate asset")
 	ErrorPairDoesNotExist      = sdkerrors.Register(ModuleName, 1123, "pair does not exist")
 	ErrorUnauthorized          = sdkerrors.Register(ModuleName, 1124, "unauthorized")
+	ErrBadOfferCoinAmount      = sdkerrors.Register(ModuleName, 1125, "invalid offer coin amount")
 )

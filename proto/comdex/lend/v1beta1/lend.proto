@@ -160,3 +160,9 @@ message Pair {
 
   string module_acc = 4 [(gogoproto.moretags) = "yaml:\"module_acc\""];
 }
+
+message LendHistory {
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.moretags) = "yaml:\"amount\""];
+
+}

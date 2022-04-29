@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/comdex-official/comdex/x/lend/expected"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -12,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 type (
@@ -58,10 +61,26 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(moduleName), denom).Amount
 }
 
-func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, loan sdk.Coin) error {
+func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, PairId uint64, loan sdk.Coin) error {
 	if !k.IsWhitelistedAsset(ctx, loan.Denom) {
 		return sdkerrors.Wrap(types.ErrInvalidAsset, loan.String())
 	}
+
+	pair, found := k.GetPair(ctx, PairId)
+	if !found {
+		return sdkerrors.Wrap(types.ErrorPairDoesNotExist, strconv.Itoa(int(PairId)))
+	}
+	asset1, _ := k.GetAsset(ctx, pair.Asset_1)
+	asset2, _ := k.GetAsset(ctx, pair.Asset_2)
+
+	if loan.Denom != asset1.Denom && loan.Denom != asset2.Denom {
+		return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, loan.Denom)
+	}
+
+	userLendId := k.GetUserLendIDHistory(ctx)
+	k.SetUserLendHistory(ctx, lenderAddr, loan, userLendId)
+	k.SetUserLendIDHistory(ctx, userLendId+1)
+
 	// send token balance to lend module account
 	// update users lending
 	//TODO:
@@ -157,4 +176,64 @@ func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, lenderAddr sdk.Ac
 
 func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
+}
+
+func (k *Keeper) SetUserLendIDHistory(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendHistoryPrefix
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+	store.Set(key, value)
+}
+
+
+func (k *Keeper) SetUserLendHistory(ctx sdk.Context, lenderAddr sdk.AccAddress, loan sdk.Coin, id uint64) {
+	
+	user_lend := types.LendHistory{
+		Owner: lenderAddr.String(),
+		Amount: &loan,
+	}
+	var (
+		store = k.Store(ctx)
+		key   = types.LendUserHistoryKey(id)
+		value = k.cdc.MustMarshal(&user_lend)
+	)
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetUserLendHistory(ctx sdk.Context, id uint64) (user_lend types.LendHistory, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendUserHistoryKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return user_lend, false
+	}
+
+	k.cdc.MustUnmarshal(value, &user_lend)
+	return user_lend, true
+}
+
+func (k *Keeper) GetUserLendIDHistory(ctx sdk.Context) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendHistoryPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return 0
+	}
+
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
 }

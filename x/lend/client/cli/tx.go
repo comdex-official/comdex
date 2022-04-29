@@ -49,21 +49,26 @@ func GetTxCmd() *cobra.Command {
 
 func txLend() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lend [amount]",
+		Use:   "lend [pair] [amount]",
 		Short: "lend a whitelisted asset",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			asset, err := sdk.ParseCoinNormalized(args[0])
+			pair, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgLend(ctx.GetFromAddress(), asset)
+			asset, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgLend(ctx.GetFromAddress(), pair, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},

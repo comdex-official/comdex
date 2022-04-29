@@ -26,7 +26,7 @@ func (m msgServer) Lend(goCtx context.Context, lend *types.MsgLend) (*types.MsgL
 		return nil, err
 	}
 
-	if err := m.keeper.LendAsset(ctx, lenderAddr, lend.Amount); err != nil {
+	if err := m.keeper.LendAsset(ctx, lenderAddr, lend.PairId, lend.Amount); err != nil {
 		return nil, err
 	}
 
