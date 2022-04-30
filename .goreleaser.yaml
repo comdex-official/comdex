@@ -1,0 +1,13 @@
+archives:
+  - format: binary
+builds:
+  - goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - arm64
+      - amd64
+before:
+  hooks:
+    - go generate ./...
