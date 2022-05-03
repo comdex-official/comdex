@@ -22,14 +22,16 @@ var (
 
 // Message types for the liquidity module
 const (
-	TypeMsgCreatePair      = "create_pair"
-	TypeMsgCreatePool      = "create_pool"
-	TypeMsgDeposit         = "deposit"
-	TypeMsgWithdraw        = "withdraw"
-	TypeMsgLimitOrder      = "limit_order"
-	TypeMsgMarketOrder     = "market_order"
-	TypeMsgCancelOrder     = "cancel_order"
-	TypeMsgCancelAllOrders = "cancel_all_orders"
+	TypeMsgCreatePair       = "create_pair"
+	TypeMsgCreatePool       = "create_pool"
+	TypeMsgDeposit          = "deposit"
+	TypeMsgWithdraw         = "withdraw"
+	TypeMsgLimitOrder       = "limit_order"
+	TypeMsgMarketOrder      = "market_order"
+	TypeMsgCancelOrder      = "cancel_order"
+	TypeMsgCancelAllOrders  = "cancel_all_orders"
+	TypeMsgBondPoolTokens   = "bond_pool_tokens"
+	TypeMsgUnbondPoolTokens = "unbond_pool_tokens"
 )
 
 // NewMsgCreatePair returns a new MsgCreatePair.
@@ -517,6 +519,110 @@ func (msg MsgCancelAllOrders) GetSigners() []sdk.AccAddress {
 
 func (msg MsgCancelAllOrders) GetOrderer() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Orderer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+// NewMsgBondPoolTokens creates a new MsgBondPoolTokens.
+
+func NewMsgBondPoolTokens(
+	userAddress sdk.AccAddress,
+	poolID uint64,
+	poolCoin sdk.Coin,
+) *MsgBondPoolTokens {
+	return &MsgBondPoolTokens{
+		UserAddress: userAddress.String(),
+		PoolId:      poolID,
+		PoolCoin:    poolCoin,
+	}
+}
+
+func (msg MsgBondPoolTokens) Route() string { return RouterKey }
+
+func (msg MsgBondPoolTokens) Type() string { return TypeMsgBondPoolTokens }
+
+func (msg MsgBondPoolTokens) ValidateBasic() error {
+
+	if _, err := sdk.AccAddressFromBech32(msg.UserAddress); err != nil {
+		return ErrInvalidUserAddress
+	}
+	if err := msg.PoolCoin.Validate(); err != nil {
+		return err
+	}
+	if !msg.PoolCoin.IsPositive() {
+		return ErrBadPoolCoinAmount
+	}
+	return nil
+}
+
+func (msg MsgBondPoolTokens) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgBondPoolTokens) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.UserAddress)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgBondPoolTokens) GetBondPoolTokensRequester() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.UserAddress)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+// NewMsgUnbondPoolTokens creates a new MsgUnbondPoolTokens.
+
+func NewMsgUnbondPoolTokens(
+	userAddress sdk.AccAddress,
+	poolID uint64,
+	poolCoin sdk.Coin,
+) *MsgUnbondPoolTokens {
+	return &MsgUnbondPoolTokens{
+		UserAddress: userAddress.String(),
+		PoolId:      poolID,
+		PoolCoin:    poolCoin,
+	}
+}
+
+func (msg MsgUnbondPoolTokens) Route() string { return RouterKey }
+
+func (msg MsgUnbondPoolTokens) Type() string { return TypeMsgUnbondPoolTokens }
+
+func (msg MsgUnbondPoolTokens) ValidateBasic() error {
+
+	if _, err := sdk.AccAddressFromBech32(msg.UserAddress); err != nil {
+		return ErrInvalidUserAddress
+	}
+	if err := msg.PoolCoin.Validate(); err != nil {
+		return err
+	}
+	if !msg.PoolCoin.IsPositive() {
+		return ErrBadPoolCoinAmount
+	}
+	return nil
+}
+
+func (msg MsgUnbondPoolTokens) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgUnbondPoolTokens) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.UserAddress)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgUnbondPoolTokens) GetUnbondPoolTokensRequester() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.UserAddress)
 	if err != nil {
 		panic(err)
 	}

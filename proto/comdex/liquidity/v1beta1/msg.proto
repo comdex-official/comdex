@@ -34,6 +34,12 @@ service Msg {
 
   // CancelAllOrders defines a method for cancelling all orders
   rpc CancelAllOrders(MsgCancelAllOrders) returns (MsgCancelAllOrdersResponse);
+
+  // Bond pool coins
+  rpc BondPoolTokens(MsgBondPoolTokens) returns (MsgBondPoolTokensResponse);
+
+  // Unbond pool coins
+  rpc UnbondPoolTokens(MsgUnbondPoolTokens) returns (MsgUnbondPoolTokensResponse);
 }
 
 // MsgCreatePair defines an SDK message for creating a pair.
@@ -180,3 +186,36 @@ message MsgCancelAllOrders {
 
 // MsgCancelAllOrdersResponse defines the Msg/CancelAllOrders response type.
 message MsgCancelAllOrdersResponse {}
+
+message MsgBondPoolTokens{
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string user_address = 1 [ (gogoproto.moretags) = "yaml:\"user_address\""
+    ];
+  // id of the target pool
+  uint64 pool_id = 2 [(gogoproto.moretags) = "yaml:\"pool_id\"", (gogoproto.jsontag) = "pool_id"
+   ];
+  cosmos.base.v1beta1.Coin pool_coin = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"pool_coin\""
+    ];
+
+}
+message MsgUnbondPoolTokens{
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string user_address = 1 [ (gogoproto.moretags) = "yaml:\"user_address\""
+  ];
+  // id of the target pool
+  uint64 pool_id = 2 [(gogoproto.moretags) = "yaml:\"pool_id\"", (gogoproto.jsontag) = "pool_id"
+    ];
+  cosmos.base.v1beta1.Coin pool_coin = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"pool_coin\""
+   ];
+
+}
+message MsgBondPoolTokensResponse {}
+message MsgUnbondPoolTokensResponse {}

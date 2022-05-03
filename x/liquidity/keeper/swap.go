@@ -468,3 +468,53 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 
 	return nil
 }
+
+func (k *Keeper) GetIndividualUserPoolsData(ctx sdk.Context, address sdk.AccAddress) (userPoolsData types.UserPoolsData, found bool) {
+
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.UserPoolDataKey(address)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return userPoolsData, false
+	}
+
+	k.cdc.MustUnmarshal(value, &userPoolsData)
+
+	return userPoolsData, true
+}
+
+//For a specific user , to check if a certain pool data exists in the data structre
+func (k *Keeper) GetUserPoolsContributionData(userPoolsData types.UserPoolsData, poolId uint64) (found bool) {
+
+	for _, pool := range userPoolsData.UserPoolWiseData {
+		if pool.PoolId == poolId {
+			return true
+		} else {
+			continue
+		}
+	}
+	return false
+}
+
+func (k *Keeper) SetIndividualUserPoolsData(ctx sdk.Context, userPoolsData types.UserPoolsData) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.UserPoolDataKey(sdk.AccAddress(userPoolsData.UserAddress))
+		value = k.cdc.MustMarshal(&userPoolsData)
+	)
+	store.Set(key, value)
+}
+
+func (k *Keeper) CalculateUnbondingEndTime(ctx sdk.Context,currentTime time.Time) (endTime time.Time) {
+	start := currentTime
+	liquidityParams := k.GetParams(ctx)
+	date:=liquidityParams.PoolUnbondingDuration
+	
+
+	endTime = start.AddDate(0, 0,int(date.Int64()))
+	fmt.Print(endTime)
+	return endTime
+}

@@ -107,3 +107,85 @@ func (m msgServer) CancelAllOrders(goCtx context.Context, msg *types.MsgCancelAl
 
 	return &types.MsgCancelAllOrdersResponse{}, nil
 }
+
+func (k msgServer) BondPoolTokens(goCtx context.Context, msg *types.MsgBondPoolTokens) (*types.MsgBondPoolTokensResponse, error) {
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	//IF user has provided liquidity to any given pool
+	userPoolsData, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.UserAddress))
+	if !found {
+		return nil, types.ErrUserNotHavingLiquidityInPools
+	}
+	//If user has provided liquidity to the pool he has entered
+	poolExists := k.GetUserPoolsContributionData(userPoolsData, msg.PoolId)
+	if !poolExists {
+		return nil, types.ErrUserNotHavingLiquidityInCurrentPool
+	}
+	for _, pool := range userPoolsData.UserPoolWiseData {
+
+		if pool.PoolId == msg.PoolId {
+			//Check if that amount of  unbonded token exists ,
+			//If exists , then bond user tokens.
+			//Remove from unbonded section
+			if pool.UnbondedPoolCoin.GTE(msg.PoolCoin.Amount) {
+				updatedBondedTokens := msg.PoolCoin.Amount
+				updatedUnBondedTokens := pool.UnbondedPoolCoin.Sub(msg.PoolCoin.Amount)
+				pool.BondedPoolCoin = &updatedBondedTokens
+				pool.UnbondedPoolCoin = &updatedUnBondedTokens
+
+			} else {
+				return nil, types.ErrNotEnoughCoinsForBonding
+			}
+
+		} else {
+			continue
+		}
+	}
+	k.SetIndividualUserPoolsData(ctx, userPoolsData)
+
+	return &types.MsgBondPoolTokensResponse{}, nil
+}
+
+func (k msgServer) UnbondPoolTokens(goCtx context.Context, msg *types.MsgUnbondPoolTokens) (*types.MsgUnbondPoolTokensResponse, error) {
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	//If user has provided liquidity to any pool
+	userPoolsData, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.UserAddress))
+	if !found {
+		return nil, types.ErrUserNotHavingLiquidityInPools
+	}
+	//If user has provided liquidity to the pool he has entered
+	poolExists := k.GetUserPoolsContributionData(userPoolsData, msg.PoolId)
+	if !poolExists {
+		return nil, types.ErrUserNotHavingLiquidityInCurrentPool
+	}
+	for _, pool := range userPoolsData.UserPoolWiseData {
+
+		if pool.PoolId == msg.PoolId {
+			//Check if that amount of  bonded token exists,
+			//If exists , then unbond user tokens.
+			//Remove from bonded section
+			if pool.BondedPoolCoin.GTE(msg.PoolCoin.Amount) {
+				var userUnbondingTokens types.UserPoolUnbondingTokens
+				userUnbondingTokens.IsUnbondingPoolCoin = &msg.PoolCoin.Amount
+				//Check for mistakes in these values
+				userUnbondingTokens.UnbondingStartTime = ctx.BlockTime()                            //Check for current second value
+				userUnbondingTokens.UnbondingEndTime = k.CalculateUnbondingEndTime(ctx,ctx.BlockTime()) //Ending Time after the unbonding time will get over
+				updatedBondedTokens := pool.BondedPoolCoin.Sub(msg.PoolCoin.Amount)
+				pool.BondedPoolCoin = &updatedBondedTokens
+				pool.UserPoolUnbondingTokens = append(pool.UserPoolUnbondingTokens, &userUnbondingTokens)
+
+			} else {
+				return nil, types.ErrNotEnoughCoinsForUnBonding
+			}
+
+		} else {
+			continue
+		}
+	}
+
+	k.SetIndividualUserPoolsData(ctx, userPoolsData)
+
+	return &types.MsgUnbondPoolTokensResponse{}, nil
+}

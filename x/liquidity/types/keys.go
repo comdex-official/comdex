@@ -28,6 +28,7 @@ var (
 	PairKeyPrefix               = []byte{0xa5}
 	PairIndexKeyPrefix          = []byte{0xa6}
 	PairsByDenomsIndexKeyPrefix = []byte{0xa7}
+	UserPoolAddressData         = []byte{0xa8}
 
 	PoolKeyPrefix                      = []byte{0xab}
 	PoolByReserveAddressIndexKeyPrefix = []byte{0xac}
@@ -49,6 +50,10 @@ func GetPairKey(pairId uint64) []byte {
 // GetPairIndexKey returns the index key to get a pair by denoms.
 func GetPairIndexKey(baseCoinDenom, quoteCoinDenom string) []byte {
 	return append(append(PairIndexKeyPrefix, LengthPrefixString(baseCoinDenom)...), LengthPrefixString(quoteCoinDenom)...)
+}
+
+func UserPoolDataKey(userAccountAddress sdk.AccAddress) []byte {
+	return append(UserPoolAddressData  ,address.MustLengthPrefix(userAccountAddress.Bytes())...)
 }
 
 // GetPairsByDenomsIndexKey returns the index key to lookup pairs with given denoms.

@@ -29,6 +29,7 @@ var (
 	DefaultDepositExtraGas          = sdk.Gas(60000)
 	DefaultWithdrawExtraGas         = sdk.Gas(64000)
 	DefaultOrderExtraGas            = sdk.Gas(37000)
+	DefaultPoolUnbondingDuration    = sdk.NewInt(21)
 )
 
 // General constants
@@ -59,6 +60,7 @@ var (
 	KeyDepositExtraGas          = []byte("DepositExtraGas")
 	KeyWithdrawExtraGas         = []byte("WithdrawExtraGas")
 	KeyOrderExtraGas            = []byte("OrderExtraGas")
+	KeyPoolUnbondingDuration    = []byte("PoolUnbondingDuration")
 )
 
 var _ paramstypes.ParamSet = (*Params)(nil)
@@ -85,6 +87,7 @@ func DefaultParams() Params {
 		DepositExtraGas:          DefaultDepositExtraGas,
 		WithdrawExtraGas:         DefaultWithdrawExtraGas,
 		OrderExtraGas:            DefaultOrderExtraGas,
+		PoolUnbondingDuration:    DefaultPoolUnbondingDuration,
 	}
 }
 
@@ -106,6 +109,7 @@ func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeyDepositExtraGas, &params.DepositExtraGas, validateExtraGas),
 		paramstypes.NewParamSetPair(KeyWithdrawExtraGas, &params.WithdrawExtraGas, validateExtraGas),
 		paramstypes.NewParamSetPair(KeyOrderExtraGas, &params.OrderExtraGas, validateExtraGas),
+		paramstypes.NewParamSetPair(KeyPoolUnbondingDuration, &params.PoolUnbondingDuration, validatePoolUnbondingDuration),
 	}
 }
 
@@ -130,6 +134,7 @@ func (params Params) Validate() error {
 		{params.DepositExtraGas, validateExtraGas},
 		{params.WithdrawExtraGas, validateExtraGas},
 		{params.OrderExtraGas, validateExtraGas},
+		{params.PoolUnbondingDuration, validatePoolUnbondingDuration},
 	} {
 		if err := field.validateFunc(field.val); err != nil {
 			return err
@@ -300,5 +305,17 @@ func validateExtraGas(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
+	return nil
+}
+
+func validatePoolUnbondingDuration(i interface{}) error {
+	v, ok := i.(sdk.Int)
+	if !ok{
+		return fmt.Errorf("invalid parameter type: %T", i)
+
+	}
+	if v.IsZero() {
+		return fmt.Errorf("Unbonding duration cannot be 0 day: %d", v)
+	}
 	return nil
 }
