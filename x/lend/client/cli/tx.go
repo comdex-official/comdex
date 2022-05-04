@@ -49,7 +49,7 @@ func GetTxCmd() *cobra.Command {
 
 func txLend() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lend [pair] [amount]",
+		Use:   "lend [Pair_ID] [Amount]",
 		Short: "lend a whitelisted asset",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -81,7 +81,7 @@ func txLend() *cobra.Command {
 
 func txWithdraw() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw [amount]",
+		Use:   "withdraw [Amount]",
 		Short: "withdraw lent asset",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -108,7 +108,7 @@ func txWithdraw() *cobra.Command {
 
 func txBorrowAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "borrow [amount]",
+		Use:   "borrow [Amount]",
 		Short: "borrow a whitelisted asset",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -162,8 +162,8 @@ func txRepayAsset() *cobra.Command {
 
 func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-whitelisted-assets [name] [Denom] [Decimals] [Collateral_Weight] [Liquidation_Threshold] [Base_Borrow_Rate] [Base_Lend_Rate]",
-		Args:  cobra.ExactArgs(7),
+		Use:   "add-whitelisted-assets [Name] [Denom] [Decimals] [Collateral_Weight] [Liquidation_Threshold] [Is_Bridged_Asset]",
+		Args:  cobra.ExactArgs(6),
 		Short: "Add whitelisted assets",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -189,9 +189,10 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 
 			liquidationThreshold, err := ParseStringFromString(args[4], ",")
 
-			baseBorrowRate, err := ParseStringFromString(args[5], ",")
-
-			baseLendRate, err := ParseStringFromString(args[6], ",")
+			isBridgedAsset, err := ParseStringFromString(args[5], ",")
+			if err != nil {
+				return err
+			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
@@ -209,8 +210,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 			for i, _ := range names {
 				newcollateralWeigt, _ := sdk.NewDecFromStr(collateralWeight[i])
 				newliquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold[i])
-				newbaseBorrowRate, _ := sdk.NewDecFromStr(baseBorrowRate[i])
-				newbaseLendRate, _ := sdk.NewDecFromStr(baseLendRate[i])
+				newisBridgedAsset := ParseBoolFromString(isBridgedAsset[i])
 
 				assets = append(assets, types.Asset{
 					Name:                 names[i],
@@ -218,8 +218,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 					Decimals:             decimals[i],
 					CollateralWeight:     newcollateralWeigt,
 					LiquidationThreshold: newliquidationThreshold,
-					BaseBorrowRate:       newbaseBorrowRate,
-					BaseLendRate:         newbaseLendRate,
+					IsBridgedAsset:       newisBridgedAsset,
 				})
 			}
 
@@ -258,7 +257,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 
 func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-whitelisted-asset [id]",
+		Use:   "update-whitelisted-asset [ID]",
 		Args:  cobra.ExactArgs(1),
 		Short: "Update whitelisted assets",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -296,18 +295,6 @@ func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 			}
 			newliquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold)
 
-			baseBorrowRate, err := cmd.Flags().GetString(flagBaseBorrowRate)
-			if err != nil {
-				return err
-			}
-			newbaseBorrowRate, _ := sdk.NewDecFromStr(baseBorrowRate)
-
-			baseLendRate, err := cmd.Flags().GetString(flagBaseLendRate)
-			if err != nil {
-				return err
-			}
-			newbaseLendRate, _ := sdk.NewDecFromStr(baseLendRate)
-
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
 				return err
@@ -318,6 +305,13 @@ func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 				return err
 			}
 
+			isBridgedAsset, err := cmd.Flags().GetString(flagIsBridgedAsset)
+			if err != nil {
+				return err
+			}
+
+			newisBridgedAsset := ParseBoolFromString(isBridgedAsset)
+
 			from := clientCtx.GetFromAddress()
 
 			asset := types.Asset{
@@ -327,8 +321,7 @@ func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 				Decimals:             decimal,
 				CollateralWeight:     newcollateralWeight,
 				LiquidationThreshold: newliquidationThreshold,
-				BaseBorrowRate:       newbaseBorrowRate,
-				BaseLendRate:         newbaseLendRate,
+				IsBridgedAsset:       newisBridgedAsset,
 			}
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
@@ -365,6 +358,8 @@ func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 	cmd.Flags().String(flagLiquidationThreshold, "", "liquidationThreshold")
 	cmd.Flags().String(flagBaseBorrowRate, "", "baseBorrowRate")
 	cmd.Flags().String(flagBaseLendRate, "", "baseLendRate")
+	cmd.Flags().String(flagIsBridgedAsset, "", "isBridgedAsset")
+
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
 
@@ -373,9 +368,9 @@ func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 
 func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-asset-pairs [asset-1] [asset-2] [module-accnt]",
+		Use:   "add-asset-pairs [Asset-1] [Asset-2] [Module-Account] [Base_Borrow_Rate_Asset1] [Base_Borrow_Rate_Asset2] [Base_Lend_Rate_Asset1] [Base_Lend_Rate_Asset2]",
 		Short: "Add pairs",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(7),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -394,16 +389,30 @@ func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 
 			moduleAccnt, err := ParseStringFromString(args[2], ",")
 
+			baseborrowrateasset1, err := ParseStringFromString(args[3], ",")
+			baseborrowrateasset2, err := ParseStringFromString(args[4], ",")
+			baselendrateasset1, err := ParseStringFromString(args[5], ",")
+			baselendrateasset2, err := ParseStringFromString(args[6], ",")
+
 			if err != nil {
 				return err
 			}
 
 			var pairs []types.Pair
 			for i, _ := range assetOne {
+
+				newbaseborrowrateasset1, _ := sdk.NewDecFromStr(baseborrowrateasset1[i])
+				newbaseborrowrateasset2, _ := sdk.NewDecFromStr(baseborrowrateasset2[i])
+				newbaselendrateasset1, _ := sdk.NewDecFromStr(baselendrateasset1[i])
+				newbaselendrateasset2, _ := sdk.NewDecFromStr(baselendrateasset2[i])
 				pairs = append(pairs, types.Pair{
-					Asset_1:   assetOne[i],
-					Asset_2:   assetTwo[i],
-					ModuleAcc: moduleAccnt[i],
+					Asset_1:               assetOne[i],
+					Asset_2:               assetTwo[i],
+					ModuleAcc:             moduleAccnt[i],
+					BaseBorrowRateAsset_1: newbaseborrowrateasset1,
+					BaseBorrowRateAsset_2: newbaseborrowrateasset2,
+					BaseLendRateAsset_1:   newbaselendrateasset1,
+					BaseLendRateAsset_2:   newbaselendrateasset2,
 				})
 			}
 
@@ -488,12 +497,39 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			baseborrowrateasset1, err := cmd.Flags().GetString(flagbaseborrowrateasset1)
+			if err != nil {
+				return err
+			}
+			newbaseborrowrateasset1, err := sdk.NewDecFromStr(baseborrowrateasset1)
+
+			baseborrowrateasset2, err := cmd.Flags().GetString(flagbaseborrowrateasset2)
+			if err != nil {
+				return err
+			}
+			newbaseborrowrateasset2, err := sdk.NewDecFromStr(baseborrowrateasset2)
+
+			baselendrateasset1, err := cmd.Flags().GetString(flagbaselendrateasset1)
+			if err != nil {
+				return err
+			}
+			newbaselendrateasset1, err := sdk.NewDecFromStr(baselendrateasset1)
+
+			baselendrateasset2, err := cmd.Flags().GetString(flagbaselendrateasset2)
+			if err != nil {
+				return err
+			}
+			newbaselendrateasset2, err := sdk.NewDecFromStr(baselendrateasset2)
 
 			pair := types.Pair{
-				Id:        id,
-				Asset_1:   newassetOne,
-				Asset_2:   newassetTwo,
-				ModuleAcc: moduleAcc,
+				Id:                    id,
+				Asset_1:               newassetOne,
+				Asset_2:               newassetTwo,
+				ModuleAcc:             moduleAcc,
+				BaseBorrowRateAsset_1: newbaseborrowrateasset1,
+				BaseBorrowRateAsset_2: newbaseborrowrateasset2,
+				BaseLendRateAsset_1:   newbaselendrateasset1,
+				BaseLendRateAsset_2:   newbaselendrateasset2,
 			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
@@ -538,12 +574,16 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 	cmd.Flags().String(flagAssetOne, "", "assetOne")
 	cmd.Flags().String(flagAssetTwo, "", "assetTwo")
 	cmd.Flags().String(flagModuleAcc, "", "moduleAcc")
+	cmd.Flags().String(flagbaseborrowrateasset1, "", "baseborrowrateasset1")
+	cmd.Flags().String(flagbaseborrowrateasset2, "", "baseborrowrateasset2")
+	cmd.Flags().String(flagbaselendrateasset1, "", "baselendrateasset1")
+	cmd.Flags().String(flagbaselendrateasset1, "", "baselendrateasset1")
 
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
 
 	return cmd
-} 
+}
 
 func txFundModuleAccounts() *cobra.Command {
 	cmd := &cobra.Command{

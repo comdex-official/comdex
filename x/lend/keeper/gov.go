@@ -36,8 +36,7 @@ func (k *Keeper) AddWhitelistedAssetRecords(ctx sdk.Context, records ...types.As
 				Decimals:             msg.Decimals,
 				CollateralWeight:     msg.CollateralWeight,
 				LiquidationThreshold: msg.LiquidationThreshold,
-				BaseBorrowRate:       msg.BaseBorrowRate,
-				BaseLendRate:         msg.BaseLendRate,
+				IsBridgedAsset:       msg.IsBridgedAsset,
 			}
 		)
 
@@ -77,12 +76,7 @@ func (k *Keeper) UpdateWhitelistedAssetRecords(ctx sdk.Context, msg types.Asset)
 	if !msg.LiquidationThreshold.IsZero() {
 		asset.LiquidationThreshold = msg.LiquidationThreshold
 	}
-	if !msg.BaseBorrowRate.IsZero() {
-		asset.BaseBorrowRate = msg.BaseBorrowRate
-	}
-	if !msg.BaseLendRate.IsZero() {
-		asset.BaseLendRate = msg.BaseLendRate
-	}
+
 	k.SetAsset(ctx, asset)
 	return nil
 }
@@ -99,10 +93,14 @@ func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
 		var (
 			id   = k.GetPairID(ctx)
 			pair = types.Pair{
-				Id:        id + 1,
-				Asset_1:   msg.Asset_1,
-				Asset_2:   msg.Asset_2,
-				ModuleAcc: msg.ModuleAcc,
+				Id:                    id + 1,
+				Asset_1:               msg.Asset_1,
+				Asset_2:               msg.Asset_2,
+				ModuleAcc:             msg.ModuleAcc,
+				BaseBorrowRateAsset_1: msg.BaseBorrowRateAsset_1,
+				BaseLendRateAsset_1:   msg.BaseLendRateAsset_1,
+				BaseBorrowRateAsset_2: msg.BaseBorrowRateAsset_2,
+				BaseLendRateAsset_2:   msg.BaseLendRateAsset_2,
 			}
 		)
 
