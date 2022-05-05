@@ -577,3 +577,19 @@ func (k *Keeper) UpdateUnbondedTokensUserPoolData(userPoolsData types.UserPoolsD
 	return updatedUserPoolsData
 
 }
+
+//To get all users pool contribution data
+func (k *Keeper) GetAllUsersPoolsData(ctx sdk.Context) (usersPoolDataArray []types.UserPoolsData) {
+
+	userContribution := k.GetUserAddresses(ctx)
+	for _, userAddress := range userContribution.UserAddresses {
+		individualUserData, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(userAddress))
+		if !found {
+			continue
+		}
+		usersPoolDataArray = append(usersPoolDataArray, individualUserData)
+
+	}
+
+	return usersPoolDataArray
+}

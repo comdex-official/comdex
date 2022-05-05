@@ -181,6 +181,22 @@ message PoolResponse {
   uint64 last_withdraw_request_id = 7;
 }
 
+message QueryUserPoolsContributionMsgRequest{
+  string user_address=1;
+}
+message QueryUserPoolsContributionMsgResponse{
+  UserPoolsData userPoolData = 1 [(gogoproto.nullable) = false];  
+}
+
+message QueryAllUsersPoolsContributionMsgRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllUsersPoolsContributionMsgResponse{
+  repeated UserPoolsData userPoolData = 1 [(gogoproto.nullable) = false];
+  // cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 
 // Query defines the gRPC querier service.
 service Query {
@@ -252,5 +268,16 @@ service Query {
   // OrdersByOrderer returns orders made by an orderer.
   rpc OrdersByOrderer(QueryOrdersByOrdererRequest) returns (QueryOrdersResponse) {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{orderer}";
+  }
+
+  // Get the user data regarding contribution in pool
+  rpc UserPoolsContribution(QueryUserPoolsContributionMsgRequest) returns (QueryUserPoolsContributionMsgResponse) {
+  option (google.api.http).get = "/cosmos/liquidity/v1beta1/userPoolsContribution/{user_address}";
+ 
+  }
+// Get all  users data regarding contribution in pool
+  rpc AllUserPoolsContribution(QueryAllUsersPoolsContributionMsgRequest) returns (QueryAllUsersPoolsContributionMsgResponse) {
+  option (google.api.http).get = "/cosmos/liquidity/v1beta1/usersPoolsContribution";
+ 
   }
 }
