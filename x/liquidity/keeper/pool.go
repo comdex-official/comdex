@@ -146,6 +146,48 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 		return types.Pool{}, err
 	}
 
+	userDetails, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.Creator))
+	userContribution := k.GetUserAddresses(ctx)
+	foundTheUser := false
+	///If user is depositing for the first time on the platform
+	for _, userAdd := range userContribution.UserAddresses {
+		if userAdd == msg.Creator {
+			foundTheUser = true
+			break
+
+		} else {
+			continue
+		}
+
+	}
+	if !foundTheUser {
+		userContribution.UserAddresses = append(userContribution.UserAddresses, msg.Creator)
+		k.SetUserAddresses(ctx, userContribution)
+	}
+	if !found {
+		fmt.Print("No existing data found of the user")
+		//Set new Data of the user
+		//----------------Refactor this to a new function and get a seperate function---------------
+		var newUser types.UserPoolsData
+		var userPoolsData types.UserPools
+		bondedPoolToken := sdk.ZeroInt()
+		newUser.UserAddress = msg.Creator
+		userPoolsData.PoolId = uint64(msg.PairId)
+		userPoolsData.BondedPoolCoin = &bondedPoolToken
+		userPoolsData.UnbondedPoolCoin = &poolCoin.Amount
+
+		newUser.UserPoolWiseData = append(newUser.UserPoolWiseData, &userPoolsData)
+		k.SetIndividualUserPoolsData(ctx, newUser)
+	} else {
+
+		// User data exists, but this is a new pool user is interacting with right now
+		//Create a new pool for user in the array
+		updatedUserPoolDetails := k.CreatePoolForUser(userDetails, uint64(msg.PairId), poolCoin.Amount)
+		k.SetIndividualUserPoolsData(ctx, updatedUserPoolDetails)
+		fmt.Print("Created user details for a  new pool", updatedUserPoolDetails)
+
+	}
+
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCreatePool,
@@ -257,6 +299,32 @@ func (k Keeper) Withdraw(ctx sdk.Context, msg *types.MsgWithdraw) (types.Withdra
 
 	params := k.GetParams(ctx)
 	ctx.GasMeter().ConsumeGas(params.WithdrawExtraGas, "WithdrawExtraGas")
+
+	//Checking if pool coin is less than equal to withdraw unbond coins.
+	userDetails, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.Withdrawer))
+
+	if !found {
+		return req, types.ErrUserNotHavingLiquidityInPools
+	} else {
+
+		for _, poolData := range userDetails.UserPoolWiseData {
+			if poolData.PoolId == msg.PoolId {
+				if poolData.UnbondedPoolCoin.GTE(msg.PoolCoin.Amount) {
+					updatedUnbondedTokens := poolData.UnbondedPoolCoin.Sub(msg.PoolCoin.Amount)
+					poolData.UnbondedPoolCoin = &updatedUnbondedTokens
+					fmt.Println("Checking updated data----1", poolData.UnbondedPoolCoin)
+					break
+				} else {
+					return req, types.ErrNotEnoughUnbondedCoins
+				}
+			} else {
+				continue
+			}
+		}
+
+	}
+
+	k.SetIndividualUserPoolsData(ctx, userDetails)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(

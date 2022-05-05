@@ -296,3 +296,8 @@ message UserPoolUnbondingTokens{
     (gogoproto.moretags) = "yaml:\"unbonding_end_time\""
   ];
 }
+
+message AllUserAddressesArray{
+
+  repeated string user_addresses = 1 [(gogoproto.moretags) = "yaml:\"user_addresses\""];
+}

@@ -518,3 +518,62 @@ func (k *Keeper) CalculateUnbondingEndTime(ctx sdk.Context,currentTime time.Time
 	fmt.Print(endTime)
 	return endTime
 }
+
+//get all users addresses
+func (k *Keeper) GetUserAddresses(ctx sdk.Context) (usersAddresses types.AllUserAddressesArray) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.UsersAddressesArrayKey(1)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return usersAddresses
+	}
+
+	k.cdc.MustUnmarshal(value, &usersAddresses)
+	return usersAddresses
+}
+
+//set to all useraddresses
+func (k *Keeper) SetUserAddresses(ctx sdk.Context, usersAddresses types.AllUserAddressesArray) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.UsersAddressesArrayKey(1)
+		value = k.cdc.MustMarshal(&usersAddresses)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) CreatePoolForUser(existinguserPoolsData types.UserPoolsData, poolId uint64, unbondedTokens sdk.Int) (updatedUserPoolsData types.UserPoolsData) {
+	var userPoolsData types.UserPools
+
+	bondedPoolToken := sdk.ZeroInt()
+	userPoolsData.PoolId = poolId
+	userPoolsData.BondedPoolCoin = &bondedPoolToken
+	userPoolsData.UnbondedPoolCoin = &unbondedTokens
+	existinguserPoolsData.UserPoolWiseData = append(existinguserPoolsData.UserPoolWiseData, &userPoolsData)
+	updatedUserPoolsData = existinguserPoolsData
+	return updatedUserPoolsData
+
+}
+
+func (k *Keeper) UpdateUnbondedTokensUserPoolData(userPoolsData types.UserPoolsData, poolId uint64, unbondedTokens sdk.Int) (updatedUserPoolsData types.UserPoolsData) {
+	for _, poolData := range userPoolsData.UserPoolWiseData {
+		if poolData.PoolId == poolId {
+			updatedTokens := poolData.UnbondedPoolCoin.Add(unbondedTokens)
+			
+			poolData.UnbondedPoolCoin = &updatedTokens
+
+
+			// fmt.Println(reflect.TypeOf(poolData.UnbondedPoolCoin));
+		}
+
+	}
+
+	updatedUserPoolsData = userPoolsData
+	
+	return updatedUserPoolsData
+
+}

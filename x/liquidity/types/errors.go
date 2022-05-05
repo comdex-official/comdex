@@ -30,4 +30,5 @@ var (
 	ErrUserNotHavingLiquidityInCurrentPool = sdkerrors.Register(ModuleName, 22, "user adddress not providing liquidity in current pool")
 	ErrNotEnoughCoinsForBonding            = sdkerrors.Register(ModuleName, 23, "User does not have enough unbonded coins for bonding process")
 	ErrNotEnoughCoinsForUnBonding          = sdkerrors.Register(ModuleName, 24, "User does not have enough bonded coins for unbonding process")
+	ErrNotEnoughUnbondedCoins              = sdkerrors.Register(ModuleName, 25, "User does not have enough unbonded coins for withdrawl process")
 )
