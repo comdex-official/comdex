@@ -251,6 +251,75 @@ func (k Keeper) Deposit(ctx sdk.Context, msg *types.MsgDeposit) (types.DepositRe
 	params := k.GetParams(ctx)
 	ctx.GasMeter().ConsumeGas(params.DepositExtraGas, "DepositExtraGas")
 
+	ps := sdk.MaxInt(
+		amm.InitialPoolCoinSupply(msg.DepositCoins[0].Amount, msg.DepositCoins[1].Amount),
+		params.MinInitialPoolCoinSupply,
+	)
+	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, ps)
+	if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(poolCoin)); err != nil {
+		return types.DepositRequest{}, err
+	}
+	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(msg.Depositor), sdk.NewCoins(poolCoin)); err != nil {
+		return types.DepositRequest{}, err
+	}
+
+	userDetails, found := k.GetIndividualUserPoolsData(ctx, sdk.AccAddress(msg.Depositor))
+	userContribution := k.GetUserAddresses(ctx)
+	foundTheUser := false
+	///If user is depositing for the first time on the platform
+	for _, userAdd := range userContribution.UserAddresses {
+		if userAdd == msg.Depositor {
+			foundTheUser = true
+			break
+
+		} else {
+			continue
+		}
+
+	}
+	if !foundTheUser {
+		userContribution.UserAddresses = append(userContribution.UserAddresses, msg.Depositor)
+		k.SetUserAddresses(ctx, userContribution)
+	}
+	if !found {
+		fmt.Print("No existing data found of the user")
+		//Set new Data of the user
+		//----------------Refactor this to a new function and get a seperate function---------------
+		var newUser types.UserPoolsData
+		var userPoolsData types.UserPools
+		bondedPoolToken := sdk.ZeroInt()
+		newUser.UserAddress = msg.Depositor
+		userPoolsData.PoolId = uint64(msg.PoolId)
+		userPoolsData.BondedPoolCoin = &bondedPoolToken
+		userPoolsData.UnbondedPoolCoin = &poolCoin.Amount
+
+		newUser.UserPoolWiseData = append(newUser.UserPoolWiseData, &userPoolsData)
+		k.SetIndividualUserPoolsData(ctx, newUser)
+	} else {
+
+		//This means user data exists
+			//Now we need to find the pool the are executing deposits,
+			//1. adding liquidity to a pool , where they have already provided liquidity
+			//2. adding liquidity to a new pool ,
+			found := k.GetUserPoolsContributionData(userDetails, msg.PoolId)
+			if found {
+				//User has interacted with this pool earliar
+				//Update the params in the existitng pool
+				updatedUserPoolDetails := k.UpdateUnbondedTokensUserPoolData(userDetails, msg.PoolId, poolCoin.Amount)
+				k.SetIndividualUserPoolsData(ctx, updatedUserPoolDetails)
+				fmt.Print("Added to the existing pool data for user", updatedUserPoolDetails)
+
+			} else {
+				// User data exists, but this is a new pool user is interacting with right now
+				//Create a new pool for user in the array
+				updatedUserPoolDetails := k.CreatePoolForUser(userDetails, msg.PoolId, poolCoin.Amount)
+				k.SetIndividualUserPoolsData(ctx, updatedUserPoolDetails)
+				fmt.Print("Created user details for a  new pool", updatedUserPoolDetails)
+
+			}
+
+	}
+
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeDeposit,
