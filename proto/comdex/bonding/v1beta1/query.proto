@@ -82,11 +82,11 @@ service Query {
         "/comdex/bonding/v1beta1/locked_by_id/{lock_id}";
   }
 
-  // Returns synthetic lockups by native lockup id
-  rpc SyntheticLockupsByLockupID(SyntheticLockupsByLockupIDRequest)
-      returns (SyntheticLockupsByLockupIDResponse) {
+  // Returns synthetic bondings by native bonding id
+  rpc SyntheticBondingsByBondingID(SyntheticBondingsByBondingIDRequest)
+      returns (SyntheticBondingsByBondingIDResponse) {
     option (google.api.http).get =
-        "/comdex/bonding/v1beta1/synthetic_lockups_by_lock_id/{lock_id}";
+        "/comdex/bonding/v1beta1/synthetic_bondings_by_lock_id/{lock_id}";
   }
 
   // Returns account locked records with longer duration
@@ -226,8 +226,8 @@ message LockedDenomResponse {
 message LockedRequest { uint64 lock_id = 1; };
 message LockedResponse { PeriodLock lock = 1; };
 
-message SyntheticLockupsByLockupIDRequest { uint64 lock_id = 1; }
-message SyntheticLockupsByLockupIDResponse {
+message SyntheticBondingsByBondingIDRequest { uint64 lock_id = 1; }
+message SyntheticBondingsByBondingIDResponse {
   repeated SyntheticLock synthetic_locks = 1 [ (gogoproto.nullable) = false ];
 }
 

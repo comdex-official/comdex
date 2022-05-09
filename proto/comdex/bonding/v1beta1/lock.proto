@@ -36,14 +36,14 @@ enum LockQueryType {
 
   // Queries for locks that are longer than a certain duration
   ByDuration = 0;
-  // Queries for lockups that started before a specific time
+  // Queries for bondings that started before a specific time
   ByTime = 1;
 }
 
 message QueryCondition {
   // type of lock query, ByLockDuration | ByLockTime
   LockQueryType lock_query_type = 1;
-  // What token denomination are we looking for lockups of
+  // What token denomination are we looking for bondings of
   string denom = 2;
   // valid when query condition is ByDuration
   google.protobuf.Duration duration = 3 [
@@ -59,7 +59,7 @@ message QueryCondition {
   ];
 }
 
-// SyntheticLock is a single unit of synthetic lockup
+// SyntheticLock is a single unit of synthetic bonding
 // TODO: Change this to have
 // * underlying_lock_id
 // * synthetic_coin
@@ -72,12 +72,12 @@ message QueryCondition {
 // EVENTUALLY
 // we make a "constrained_coin" field, which is what the current "coins" field
 // is. Constrained coin field can be a #post-v7 feature, since we aren't
-// allowing partial unlocks of synthetic lockups.
+// allowing partial unlocks of synthetic bondings.
 message SyntheticLock {
-  // underlying native lockup id for this synthetic lockup
+  // underlying native bonding id for this synthetic bonding
   uint64 underlying_lock_id = 1;
   string synth_denom = 2;
-  // used for unbonding synthetic lockups, for active synthetic lockups, this
+  // used for unbonding synthetic bondings, for active synthetic bondings, this
   // value is set to uninitialized value
   google.protobuf.Timestamp end_time = 3 [
     (gogoproto.stdtime) = true,
