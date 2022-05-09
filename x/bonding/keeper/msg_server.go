@@ -25,40 +25,33 @@ var _ types.MsgServer = msgServer{}
 
 func (server msgServer) LockTokens(goCtx context.Context, msg *types.MsgLockTokens) (*types.MsgLockTokensResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	fmt.Println("on line 28....")
 
 	// we only allow locks with one denom for now
 	if msg.Coins.Len() != 1 {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest,
 			fmt.Sprintf("Bondings can only have one denom per lockID, got %v", msg.Coins))
 	}
-	fmt.Println("on line 35....")
 
 	owner, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("on line 41....")
 
 	if len(msg.Coins) == 1 {
 		locks := server.keeper.GetAccountLockedDurationNotUnlockingOnly(ctx, owner, msg.Coins[0].Denom, msg.Duration)
 		// if existing lock with same duration and denom exists, just add there
 		if len(locks) > 0 {
-			fmt.Println("on line 44....")
 			lock := locks[0]
 			if lock.Coins.Len() != 1 {
 				return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 			}
-			fmt.Println("on line 49....")
 			if lock.Owner != owner.String() {
 				return nil, types.ErrNotLockOwner
 			}
-			fmt.Println("on line 53....")
 			_, err = server.keeper.AddTokensToLockByID(ctx, lock.ID, msg.Coins)
 			if err != nil {
 				return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 			}
-			fmt.Println("on line 58....")
 
 			ctx.EventManager().EmitEvents(sdk.Events{
 				sdk.NewEvent(
@@ -76,7 +69,6 @@ func (server msgServer) LockTokens(goCtx context.Context, msg *types.MsgLockToke
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 	}
-	fmt.Println("on line 76....")
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.TypeEvtLockTokens,

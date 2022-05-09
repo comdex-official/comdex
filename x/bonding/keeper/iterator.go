@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/comdex-official/comdex/x/bonding/types"
@@ -167,7 +166,6 @@ func (k Keeper) AccountLockIteratorDurationDenom(ctx sdk.Context, isUnlocking bo
 }
 
 func (k Keeper) getLocksFromIterator(ctx sdk.Context, iterator db.Iterator) []types.PeriodLock {
-	fmt.Println("in getLocksFromIterator, ...line 170")
 	locks := []types.PeriodLock{}
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -178,7 +176,6 @@ func (k Keeper) getLocksFromIterator(ctx sdk.Context, iterator db.Iterator) []ty
 		}
 		locks = append(locks, *lock)
 	}
-	fmt.Println("in getLocksFromIterator, ...line 181")
 	return locks
 }
 
