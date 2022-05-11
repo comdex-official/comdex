@@ -1,0 +1,51 @@
+syntax = "proto3";
+package comdex.locking.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/comdex-official/comdex/x/locking/types";
+
+message MsgLockTokens {
+
+  string owner = 1 [ 
+      (gogoproto.moretags) = "yaml:\"owner\"" 
+  ];
+  google.protobuf.Duration duration = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true,
+    (gogoproto.jsontag) = "duration,omitempty",
+    (gogoproto.moretags) = "yaml:\"duration\""
+  ];
+  cosmos.base.v1beta1.Coin coin = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+}
+
+message MsgLockTokensResponse {}
+
+
+message MsgBeginUnlockingTokens {
+
+  string owner = 1 [ 
+      (gogoproto.moretags) = "yaml:\"owner\"" 
+  ];
+  uint64 lock_id = 2 [ 
+      (gogoproto.moretags) = "yaml:\"lock_id\"" 
+  ];
+  cosmos.base.v1beta1.Coin coin = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+}
+
+message MsgBeginUnlockingTokensResponse {}
+
+service Msg {
+  rpc LockTokens(MsgLockTokens) returns (MsgLockTokensResponse);
+  rpc BeginUnlockTokens(MsgBeginUnlockingTokens) returns (MsgBeginUnlockingTokensResponse);
+}
