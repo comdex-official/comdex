@@ -98,7 +98,6 @@ func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) 
 			Id:               id + 1,
 			AssetIn:          msg.AssetIn,
 			AssetOut:         msg.AssetOut,
-			LiquidationRatio: msg.LiquidationRatio,
 		}
 	)
 
@@ -106,23 +105,4 @@ func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) 
 	k.SetPair(ctx, pair)
 
 	return &types.MsgAddPairResponse{}, nil
-}
-
-func (k *msgServer) MsgUpdatePair(c context.Context, msg *types.MsgUpdatePairRequest) (*types.MsgUpdatePairResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.Admin(ctx) {
-		return nil, types.ErrorUnauthorized
-	}
-
-	pair, found := k.GetPair(ctx, msg.Id)
-	if !found {
-		return nil, types.ErrorPairDoesNotExist
-	}
-
-	if !msg.LiquidationRatio.IsZero() {
-		pair.LiquidationRatio = msg.LiquidationRatio
-	}
-
-	k.SetPair(ctx, pair)
-	return &types.MsgUpdatePairResponse{}, nil
 }

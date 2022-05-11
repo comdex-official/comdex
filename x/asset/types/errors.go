@@ -26,4 +26,5 @@ var (
 
 var (
 	ErrorUnknownProposalType = errors.Register(ModuleName, 401, "unknown proposal type")
+	ErrorEmptyProposalAssets = errors.Register(ModuleName, 402, "empty assets in proposal")
 )
