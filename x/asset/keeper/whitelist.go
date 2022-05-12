@@ -133,7 +133,7 @@ func (k *Keeper) AddWhitelistedAssetRecords(ctx sdk.Context, records ...types.Ex
 		if !k.HasAsset(ctx, msg.AssetId) {
 			return types.ErrorAssetDoesNotExist
 		}
-		if k.HasWhitelistAsset(ctx, msg.AssetId) {
+		if k.HasWhitelistAsset(ctx, msg.Id) {
 			return  types.ErrorDuplicateAsset
 		}
 
@@ -157,9 +157,6 @@ func (k *Keeper) AddWhitelistedAssetRecords(ctx sdk.Context, records ...types.Ex
 }
 
 func (k *Keeper) UpdateWhitelistedAssetRecords(ctx sdk.Context, msg types.ExtendedAsset) error {
-	if !k.HasWhitelistAsset(ctx, msg.AssetId) {
-		return  types.ErrorAssetDoesNotExist
-	}
 	asset, found := k.GetWhitelistAsset(ctx, msg.Id)
 	if !found {
 		return types.ErrorAssetDoesNotExist
@@ -186,11 +183,16 @@ func (k *Keeper) AddWhitelistedPairsRecords(ctx sdk.Context, records ...types.Ex
 		if !found {
 			return types.ErrorPairDoesNotExist
 		}
+		_, got := k.GetWhitelistPair(ctx, msg.Id)
+		if got{
+			return types.ErrorDuplicatePair
+		}
 
 		var (
 			id   = k.GetwhitelistPairID(ctx)
 			pair = types.ExtendedPairLend{
-				PairId:                id,
+				Id: 				   id+1,
+				PairId:                msg.PairId,
 				ModuleAcc:             msg.ModuleAcc,
 				BaseBorrowRateAsset_1: msg.BaseBorrowRateAsset_1,
 				BaseLendRateAsset_1:   msg.BaseLendRateAsset_1,
@@ -207,12 +209,10 @@ func (k *Keeper) AddWhitelistedPairsRecords(ctx sdk.Context, records ...types.Ex
 
 func (k *Keeper) UpdateWhitelistedPairRecords(ctx sdk.Context, msg types.ExtendedPairLend) error {
 
-	_, found := k.GetPair(ctx, msg.PairId)
+	pair, found := k.GetWhitelistPair(ctx, msg.Id)
 	if !found {
 		return types.ErrorPairDoesNotExist
 	}
-
-	pair, found := k.GetWhitelistPair(ctx,msg.Id)
 
 	if len(msg.ModuleAcc) > 0 {
 		pair.ModuleAcc = msg.ModuleAcc

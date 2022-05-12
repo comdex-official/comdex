@@ -536,7 +536,7 @@ func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 
 func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-lend-asset-pair [pair_id]",
+		Use:   "update-lend-asset-pair [len_pair_id]",
 		Short: "Update a lend asset pair",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -590,7 +590,7 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 			}
 
 			pair := types.ExtendedPairLend{
-				PairId:                    id,
+				Id:                    id,
 				ModuleAcc:             moduleAcc,
 				BaseBorrowRateAsset_1: newbaseborrowrateasset1,
 				BaseBorrowRateAsset_2: newbaseborrowrateasset2,

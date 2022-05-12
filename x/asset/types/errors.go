@@ -17,7 +17,8 @@ var (
 	ErrorAssetDoesNotExist          = errors.Register(ModuleName, 201, "asset does not exist")
 	ErrorDuplicateAsset             = errors.Register(ModuleName, 202, "duplicate asset")
 	ErrorPairDoesNotExist           = errors.Register(ModuleName, 203, "pair does not exist")
-	ErrorUnauthorized               = errors.Register(ModuleName, 204, "unauthorized")
+	ErrorDuplicatePair             = errors.Register(ModuleName, 204, "duplicate pair")
+	ErrorUnauthorized               = errors.Register(ModuleName, 205, "unauthorized")
 )
 
 var (
