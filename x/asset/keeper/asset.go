@@ -146,3 +146,80 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 
 	return k.oracle.GetPriceForMarket(ctx, market.Symbol)
 }
+
+func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error {
+	for _, msg := range records {
+		if k.HasAssetForDenom(ctx, msg.Denom) {
+			return types.ErrorDuplicateAsset
+		}
+
+		var (
+			id    = k.GetAssetID(ctx)
+			asset = types.Asset{
+				Id:       id + 1,
+				Name:     msg.Name,
+				Denom:    msg.Denom,
+				Decimals: msg.Decimals,
+			}
+		)
+
+		k.SetAssetID(ctx, asset.Id)
+		k.SetAsset(ctx, asset)
+		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+
+	}
+
+	return nil
+}
+
+func (k *Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
+	asset, found := k.GetAsset(ctx, msg.Id)
+	if !found {
+		return types.ErrorAssetDoesNotExist
+	}
+
+	if msg.Name != "" {
+		asset.Name = msg.Name
+	}
+	if msg.Denom != "" {
+		if k.HasAssetForDenom(ctx, msg.Denom) {
+			return types.ErrorDuplicateAsset
+		}
+
+		asset.Denom = msg.Denom
+
+		k.DeleteAssetForDenom(ctx, asset.Denom)
+		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+	}
+	if msg.Decimals >= 0 {
+		asset.Decimals = msg.Decimals
+	}
+
+	k.SetAsset(ctx, asset)
+	return nil
+
+}
+
+func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
+	for _, msg := range records {
+		if !k.HasAsset(ctx, msg.AssetIn) {
+			return  types.ErrorAssetDoesNotExist
+		}
+		if !k.HasAsset(ctx, msg.AssetOut) {
+			return types.ErrorAssetDoesNotExist
+		}
+
+		var (
+			id   = k.GetPairID(ctx)
+			pair = types.Pair{
+				Id:               id + 1,
+				AssetIn:          msg.AssetIn,
+				AssetOut:         msg.AssetOut,
+			}
+		)
+
+		k.SetPairID(ctx, pair.Id)
+		k.SetPair(ctx, pair)
+	}
+	return  nil
+}

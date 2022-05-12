@@ -10,8 +10,8 @@ func NewGenesisState(assets []Asset, pairs []Pair, params Params) *GenesisState 
 
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
-		nil,
-		nil,
+		[]Asset{},
+		[]Pair{},
 		DefaultParams(),
 	)
 }
