@@ -104,6 +104,10 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity"
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
+
+	"github.com/comdex-official/comdex/x/locking"
+	lockingkeeper "github.com/comdex-official/comdex/x/locking/keeper"
+	lockingtypes "github.com/comdex-official/comdex/x/locking/types"
 )
 
 const (
@@ -148,6 +152,7 @@ var (
 		asset.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		wasm.AppModuleBasic{},
+		locking.AppModuleBasic{},
 	)
 )
 
@@ -209,6 +214,7 @@ type App struct {
 	vaultKeeper     vaultkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
 	oracleKeeper    oraclekeeper.Keeper
+	lockingKeeper   lockingkeeper.Keeper
 
 	wasmKeeper wasm.Keeper
 	// the module manager
@@ -240,7 +246,7 @@ func New(
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
-			wasm.StoreKey, authzkeeper.StoreKey,
+			wasm.StoreKey, authzkeeper.StoreKey, lockingtypes.StoreKey,
 		)
 	)
 
@@ -284,6 +290,7 @@ func New(
 	app.paramsKeeper.Subspace(assettypes.ModuleName)
 	app.paramsKeeper.Subspace(oracletypes.ModuleName)
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
+	app.paramsKeeper.Subspace(lockingtypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -496,6 +503,14 @@ func New(
 		govRouter,
 	)
 
+	app.lockingKeeper = lockingkeeper.NewKeeper(
+		app.cdc,
+		app.keys[lockingtypes.StoreKey],
+		app.GetSubspace(lockingtypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+	)
+
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -529,6 +544,7 @@ func New(
 		asset.NewAppModule(app.cdc, app.assetKeeper),
 		oracle.NewAppModule(app.cdc, app.oracleKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
+		locking.NewAppModule(app.cdc, app.lockingKeeper, app.accountKeeper, app.bankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -541,6 +557,7 @@ func New(
 		crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
 		authz.ModuleName, oracletypes.ModuleName, transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName, liquiditytypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
+		lockingtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -548,7 +565,7 @@ func New(
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, liquiditytypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
 		paramstypes.ModuleName, oracletypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
-		assettypes.ModuleName, banktypes.ModuleName,
+		assettypes.ModuleName, banktypes.ModuleName, lockingtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -579,6 +596,7 @@ func New(
 		vesting.AppModuleBasic{}.Name(),
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
+		lockingtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
@@ -759,6 +777,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
+		lockingtypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 	}
 }
 func (app *App) registerUpgradeHandlers() {
