@@ -1,0 +1,93 @@
+syntax = "proto3";
+package comdex.vault.v1beta1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package            = "github.com/comdex-official/comdex/x/vault/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message VaultInfo{
+  uint64 id = 1;
+  uint64 pair_id = 2 [
+    (gogoproto.customname) = "PairID",
+    (gogoproto.moretags)   = "yaml:\"pair_id\""
+  ];
+  string owner     = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+
+  cosmos.base.v1beta1.Coin collateral = 4 [
+    (gogoproto.moretags) = "yaml:\"collateral\"",
+    (gogoproto.nullable) = false
+  ];
+
+  cosmos.base.v1beta1.Coin debt = 5 [
+    (gogoproto.moretags) = "yaml:\"debt\"",
+    (gogoproto.nullable) = false
+  ];
+
+  string collateralization_ratio = 6 [
+    (gogoproto.moretags) = "yaml:\"collateralization_ratio\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryVaultRequest {
+  uint64 id = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+}
+
+message QueryVaultResponse {
+  VaultInfo vaultInfo = 1[
+    (gogoproto.customname) = "VaultInfo",
+    (gogoproto.moretags)   = "yaml:\"vaultInfo\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message QueryVaultsRequest {
+  string owner    = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryVaultsResponse {
+  repeated VaultInfo vaultsInfo = 1 [
+    (gogoproto.customname) = "VaultsInfo",
+    (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
+    (gogoproto.nullable)   = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryAllVaultsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryAllVaultsResponse {
+  repeated VaultInfo vaultsInfo = 1 [
+    (gogoproto.customname) = "VaultsInfo",
+    (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
+    (gogoproto.nullable)   = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+service QueryService {
+  rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
+  };
+
+  rpc QueryVaults(QueryVaultsRequest) returns (QueryVaultsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{owner}";
+  };
+
+  rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults";
+  };
+}
