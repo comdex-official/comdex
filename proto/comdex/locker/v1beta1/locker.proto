@@ -1,0 +1,97 @@
+syntax = "proto3";
+package comdex.locker.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package            = "github.com/comdex-official/comdex/x/locker/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+//locker_id will be the key which will be derived from the LockerLookUpTable
+message Locker {
+  string locker_id = 1 [
+      (gogoproto.moretags) = "yaml:\"locker_id\""
+  ];
+  string depositor = 2 [
+      (gogoproto.moretags) = "yaml:\"depositor\""
+  ];
+  string deposited_amount = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"deposited_amount\"",
+    (gogoproto.nullable)   = false
+  ]; 
+
+  string returns_accumulated = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"returns_accumulated\"",
+    (gogoproto.nullable)   = false
+  ];
+  string net_balance = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"net_balance\"",
+    (gogoproto.nullable)   = false
+  ];
+  google.protobuf.Timestamp created_at = 6 [
+      (gogoproto.nullable) = false,
+      (gogoproto.stdtime) = true,
+      (gogoproto.moretags)   = "yaml:\"created_at\""
+  ];
+
+  uint64 asset_deposit_id =7[
+      (gogoproto.moretags)   = "yaml:\"asset_deposit_id\""
+  ];
+  bool is_locked = 8 [
+    (gogoproto.moretags)   = "yaml:\"is_locked\"",
+    (gogoproto.nullable)   = false
+  ]; 
+}
+
+//Key is user address
+message UserLockerAssetMapping {
+  string owner = 1 [
+      (gogoproto.moretags) = "yaml:\"owner\""
+  ];
+  repeated LockerToAppMapping  locker_app_mapping = 2 [
+  (gogoproto.moretags) = "yaml:\"locker_app_mapping\""
+  ];
+}
+
+//This is used inside the UserLockerAssetMapping
+message LockerToAppMapping {
+ uint64 app_mapping_id = 1;
+ repeated string locker_id =2 [
+ (gogoproto.moretags) = "yaml:\"locker_id\""];
+}
+
+
+
+
+//Key is app id
+message LockerLookupTable {
+  uint64 app_mapping_id = 1[    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
+  ];
+  repeated TokenToLockerMapping lockers = 2 [
+      (gogoproto.moretags) = "yaml:\"user_vault_ids\""
+  ];
+}
+message TokenToLockerMapping {
+ uint64 asset_id = 1;
+
+ repeated string locker_ids =2 [
+ (gogoproto.moretags) = "yaml:\"addresses\""
+  ];
+  uint64 counter = 3;
+  string deposited_amount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"deposited_amount\"",
+    (gogoproto.nullable)   = false
+  ]; 
+}
+
+
+
+// message LockerStatistics {
+  
+//   map<string, uint64> locked_assets = 2 [
+//     (gogoproto.moretags) = "yaml:\"locked_assets\""
+//   ];
+// }

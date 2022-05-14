@@ -1,3 +1,4 @@
+
 syntax = "proto3";
 package comdex.vault.v1beta1;
 

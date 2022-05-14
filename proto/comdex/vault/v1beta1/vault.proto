@@ -9,7 +9,14 @@ option go_package            = "github.com/comdex-official/comdex/x/vault/types"
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+//app_vault_type_id will be the key for  the KVStore for this value.
 message Vault {
+<<<<<<< HEAD
+  string app_vault_type_id  = 1 ;
+  uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\"" ];
+  string owner   = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  string amount_in = 4 [
+=======
   uint64 Id = 1 ;
   string app_vault_type_id = 2 
       [ (gogoproto.customname) = "AppVaultTypeId", (gogoproto.moretags) = "yaml:\"app_vault_type_id\"" ];
@@ -104,6 +111,7 @@ message StableMintVault {
   (gogoproto.moretags) = "yaml:\"id\""
   ];
   string amount_in = 2 [
+>>>>>>> 79a106edf0988a3fb2e86b533ea35a4dec301663
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount_in\"",
     (gogoproto.nullable)   = false
@@ -113,6 +121,32 @@ message StableMintVault {
     (gogoproto.moretags)   = "yaml:\"amount_out\"",
     (gogoproto.nullable)   = false
   ];
+<<<<<<< HEAD
+  google.protobuf.Timestamp created_at = 6 [
+      (gogoproto.nullable) = false,
+      (gogoproto.stdtime) = true,
+      (gogoproto.moretags)   = "yaml:\"created_at\""
+  ];
+  string interest_accumulated  = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.moretags)   = "yaml:\"interest_accrued\""
+  ];
+  string closing_fee_accumulated  = 9 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.moretags)   = "yaml:\"closing_fee_accumulated\""
+  ];
+}
+
+//User address will be key for this KV store Vaule
+message UserVaultIDMapping {
+
+
+}
+
+
+
+//pair to vault mapping
+=======
   uint64 app_mapping_id = 4 [ (gogoproto.moretags) = "yaml:\"product_mapping_id\"" ];
   uint64 extended_pair_id = 5 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
   google.protobuf.Timestamp created_at = 6 [
@@ -156,3 +190,4 @@ message ExtendedPairVaultMapping {
   repeated string app_vault_type_ids = 2 [ (gogoproto.moretags) = "yaml:\"app_vault_type_ids\"" ];
   uint64 Token_minted =3 [ (gogoproto.moretags) = "yaml:\"Token_minted\"" ];
 }
+>>>>>>> 79a106edf0988a3fb2e86b533ea35a4dec301663

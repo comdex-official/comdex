@@ -1,0 +1,17 @@
+syntax = "proto3";
+package comdex.locker.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/locker/v1beta1/locker.proto";
+
+option go_package            = "github.com/comdex-official/comdex/x/locker/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message GenesisState {
+  repeated Locker lockers = 1 [
+    (gogoproto.customname) = "Lockers",
+    (gogoproto.moretags)   = "yaml:\"lockers\"",
+    (gogoproto.nullable)   = false
+  ];
+}

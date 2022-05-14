@@ -1,0 +1,106 @@
+syntax = "proto3";
+package comdex.locker.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package            = "github.com/comdex-official/comdex/x/locker/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+
+//For CLI Command & Proposals 
+service MsgService {
+
+  rpc MsgAddWhiteListedAsset(MsgAddWhiteListedAssetRequest) returns (MsgAddWhiteListedAssetResponse);
+  rpc MsgCreateLocker(MsgCreateLockerRequest) returns (MsgCreateLockerResponse);
+  rpc MsgDepositAsset(MsgDepositAssetRequest) returns (MsgDepositAssetResponse);
+  rpc MsgWithdrawAsset(MsgWithdrawAssetRequest) returns (MsgWithdrawAssetResponse);
+}
+
+message MsgCreateLockerRequest{
+
+  string depositor = 1 [ (gogoproto.moretags) = "yaml:\"depositor\"" ];
+
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  uint64 asset_id  = 3 [
+    (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"asset_id\"" 
+  ];
+  uint64 app_mapping_id = 4 [
+    (gogoproto.customname) = "AppMappingId",
+    (gogoproto.moretags)   = "yaml:\"app_mapping_id\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+
+message MsgCreateLockerResponse{}
+
+
+
+
+
+
+message MsgAddWhiteListedAssetRequest {
+
+  uint64 app_mapping_id = 1 [
+    (gogoproto.customname) = "AppMappingId",
+    (gogoproto.moretags)   = "yaml:\"app_mapping_id\"",
+    (gogoproto.nullable)   = false
+  ];
+  uint64 asset_id = 2 [
+    (gogoproto.customname) = "AssetId",
+    (gogoproto.moretags)   = "yaml:\"asset_id\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+
+message MsgAddWhiteListedAssetResponse {}
+
+message MsgDepositAssetRequest {
+  string depositor = 1 [ (gogoproto.moretags) = "yaml:\"depositor\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string amount = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  uint64 asset_id  = 4 [
+    (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"asset_id\"" 
+  ];
+  uint64 app_mapping_id = 5 [
+    (gogoproto.customname) = "AppMappingId",
+    (gogoproto.moretags)   = "yaml:\"app_mapping_id\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgDepositAssetResponse {}
+
+message MsgWithdrawAssetRequest {
+  string depositor = 1 [ (gogoproto.moretags) = "yaml:\"depositor\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string amount = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  uint64 asset_id  = 4 [
+    (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"asset_id\"" 
+  ];
+  uint64 app_mapping_id = 5 [
+    (gogoproto.customname) = "AppMappingId",
+    (gogoproto.moretags)   = "yaml:\"app_mapping_id\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgWithdrawAssetResponse {
+
+}
