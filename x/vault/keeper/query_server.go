@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -45,9 +46,9 @@ func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVault
 				return false, err
 			}
 
-			pair, found := q.GetPair(ctx, item.PairID)
+			pair, found := q.GetPair(ctx, item.ExtendedPairVaultID)
 			if !found {
-				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.PairID)
+				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.ExtendedPairVaultID)
 			}
 
 			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
@@ -66,8 +67,8 @@ func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVault
 			}
 
 			vaultInfo := types.VaultInfo{
-				Id:                     item.ID,
-				PairID:                 item.PairID,
+				Id:                     item.Id,
+				PairID:                 item.ExtendedPairVaultID,
 				Owner:                  item.Owner,
 				Collateral:             sdk.NewCoin(assetIn.Denom, item.AmountIn),
 				Debt:                   sdk.NewCoin(assetOut.Denom, item.AmountOut),
@@ -111,9 +112,9 @@ func (q *queryServer) QueryVaults(c context.Context, req *types.QueryVaultsReque
 				return false, err
 			}
 
-			pair, found := q.GetPair(ctx, item.PairID)
+			pair, found := q.GetPair(ctx, item.ExtendedPairVaultID)
 			if !found {
-				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.PairID)
+				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.ExtendedPairVaultID)
 			}
 
 			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
@@ -132,8 +133,8 @@ func (q *queryServer) QueryVaults(c context.Context, req *types.QueryVaultsReque
 			}
 
 			vaultInfo := types.VaultInfo{
-				Id:                     item.ID,
-				PairID:                 item.PairID,
+				Id:                     item.Id,
+				PairID:                 item.ExtendedPairVaultID,
 				Owner:                  item.Owner,
 				Collateral:             sdk.NewCoin(assetIn.Denom, item.AmountIn),
 				Debt:                   sdk.NewCoin(assetOut.Denom, item.AmountOut),
@@ -167,14 +168,14 @@ func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	vault, found := q.GetVault(ctx, req.Id)
+	vault, found := q.GetVault(ctx, strconv.Itoa(req.Id))
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "vault does not exist for id %d", req.Id)
 	}
 
-	pair, found := q.GetPair(ctx, vault.PairID)
+	pair, found := q.GetPair(ctx, vault.ExtendedPairVaultID)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", vault.PairID)
+		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", vault.ExtendedPairVaultID)
 	}
 
 	assetIn, found := q.GetAsset(ctx, pair.AssetIn)
@@ -193,8 +194,8 @@ func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest
 	}
 	return &types.QueryVaultResponse{
 		VaultInfo: types.VaultInfo{
-			Id:                     vault.ID,
-			PairID:                 vault.PairID,
+			Id:                     vault.Id,
+			PairID:                 vault.ExtendedPairVaultID,
 			Owner:                  vault.Owner,
 			Collateral:             sdk.NewCoin(assetIn.Denom, vault.AmountIn),
 			Debt:                   sdk.NewCoin(assetOut.Denom, vault.AmountOut),

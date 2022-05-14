@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -24,30 +25,60 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 
 func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	
+	//checks if extended pair exists
+	pairs, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	if !found{
+		return nil, types.ErrorPairDoesNotExist
+	}
 
+	//getting appMappingId from ExtendedPairVaultId
+	appMappingId := pairs.AppMappingId;
+
+	//checking if appMappingId for appMappingId in ExtendedPairVault
+	if (appMappingId != msg.AppMappingId) {
+		return nil, types.ErrorAppIstoExtendedAppId
+	}
+	
 	from, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	if k.HasVaultForAddressByPair(ctx, from, msg.PairID) {
+	//check for duplicate vault
+	if k.HasVaultForAddressByPair(ctx, from, msg.ExtendedPairVaultID) {
 		return nil, types.ErrorDuplicateVault
 	}
 
-	pair, found := k.GetPair(ctx, msg.PairID)
-	if !found {
-		return nil, types.ErrorPairDoesNotExist
+	// check for isPsmPair
+	if pairs.IsPsmPair {
+		return nil, types.ErrorCannotCreateStableSwapVault
 	}
+	
+	//we will get appp id & extendedVaultId
+	//check if app id is same as extended pair vault id
+	//if same. call the typeappmapping to get short name
+	//use the short name to query vaultLookup table
+	//if no key exists then use the vault lookup table struct to create 1 with default params(empty values , counter 0)
 
-	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-	if !found {
-		return nil, types.ErrorAssetDoesNotExist
-	}
+	//set that in vault lookup store
+	//now create vault using a culmination of shortName+lastcountervalue+1
+	//create vault
+	//save that vault id & counter new value in the lookup store 
 
-	assetOut, found := k.GetAsset(ctx, pair.AssetOut)
-	if !found {
-		return nil, types.ErrorAssetDoesNotExist
+
+	//get shortName for App
+	app, _ := k.GetApp(ctx, appMappingId)
+	sName :=app.ShortName
+
+	value, Notfound := k.GetCounterID(ctx, appMappingId)
+	if Notfound{
+		count := 0
+		k.SetCounterID(ctx, appMappingId, uint64(count))
+	}else{
+		k.SetCounterID(ctx, appMappingId, value)
 	}
+	
 
 	if err := k.VerifyCollaterlizationRatio(ctx, msg.AmountIn, assetIn, msg.AmountOut, assetOut); err != nil {
 		return nil, err
@@ -64,19 +95,26 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	}
 
 	var (
-		id  = k.GetID(ctx)
+		// id, _  = k.GetCounterID(ctx, appMappingId)
+		NewAppVaultTypeId = sName + strconv.Itoa(int(value +1))
 		vault = types.Vault{
-			ID:        id + 1,
-			PairID:    msg.PairID,
+			AppVaultTypeId:        NewAppVaultTypeId,
+			ExtendedPairVaultID:    msg.ExtendedPairVaultID,
 			Owner:     msg.From,
 			AmountIn:  msg.AmountIn,
 			AmountOut: msg.AmountOut,
 		}
 	)
 
-	k.SetID(ctx, id+1)
-	k.SetVault(ctx, vault)
-	k.SetVaultForAddressByPair(ctx, from, vault.PairID, vault.ID)
+	lookupVault := types.LookupTableVault {
+		AppMappingId: appMappingId,
+		Counter: value,
+	}
+	lookupVault.AppVaultIds = append(lookupVault.AppVaultIds, NewAppVaultTypeId)
+
+	k.SetLookupTableVault(ctx, lookupVault, appMappingId)
+	k.SetVault(ctx, vault, sName)
+	k.SetVaultForAddressByPair(ctx, from, vault.ExtendedPairVaultID, vault.Id)
 
 	return &types.MsgCreateResponse{}, nil
 }

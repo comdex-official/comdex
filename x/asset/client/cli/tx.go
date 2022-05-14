@@ -648,3 +648,237 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 
 	return cmd
 }
+
+func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-app-mapping [name] [short_name]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Add app mapping",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			names, err := ParseStringFromString(args[0], ",")
+			if err != nil {
+				return err
+			}
+			short_name, err := ParseStringFromString(args[1], ",")
+			if err != nil {
+				return err
+			}
+
+			title, err := cmd.Flags().GetString(cli.FlagTitle)
+			if err != nil {
+				return err
+			}
+
+			description, err := cmd.Flags().GetString(cli.FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			var aMap []types.AppMapping
+			for i := range names {
+				aMap = append(aMap, types.AppMapping{
+					Name:     names[i],
+					ShortName:    short_name[i],
+				})
+			}
+
+			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
+
+			content := types.NewAddAppMapingProposa(title, description, aMap)
+
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
+	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
+	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	_ = cmd.MarkFlagRequired(cli.FlagTitle)
+	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+
+	return cmd
+}
+
+func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-pairs-vault [app_mapping_id] [pair_id] [liquidation_ratio] [unliquidation_ratio] [stability_fee] [closing_fee] [liquidation_penalty] [creation_fee] [is_vault_active] [debt_cieling] [debt_floor] [is_psm_pair] [min_cr] [asset_out_oracle_price] [assset_out_price]",
+		Args:  cobra.ExactArgs(15),
+		Short: "Add pairs vault",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			app_mapping_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			pair_id, err := ParseUint64SliceFromString(args[1], ",")
+			if err != nil {
+				return err
+			}
+
+			liquidation_ratio, err := ParseStringFromString(args[2], ",")
+			if err != nil {
+				return err
+			}
+
+			unliquidation_ratio, err := ParseStringFromString(args[3], ",")
+			if err != nil {
+				return err
+			}
+
+			stability_fee, err := ParseStringFromString(args[4], ",")
+			if err != nil {
+				return err
+			}
+			
+			closing_fee, err := ParseStringFromString(args[5], ",")
+			if err != nil {
+				return err
+			}
+
+			liquidation_penalty, err := ParseStringFromString(args[6], ",")
+			if err != nil {
+				return err
+			}
+
+			creation_fee, err := ParseStringFromString(args[7], ",")
+			if err != nil {
+				return err
+			}
+
+			is_vault_active, err := ParseStringFromString(args[8], ",")
+			if err != nil {
+				return err
+			}
+
+			debt_cieling, err := ParseStringFromString(args[9], ",")
+			if err != nil {
+				return err
+			}
+
+			debt_floor, err := ParseStringFromString(args[10], ",")
+			if err != nil {
+				return err
+			}
+
+			is_psm_pair, err := ParseStringFromString(args[11], ",")
+			if err != nil {
+				return err
+			}
+
+			min_cr, err := ParseStringFromString(args[11], ",")
+			if err != nil {
+				return err
+			}
+
+			asset_out_oracle_price, err := ParseStringFromString(args[12], ",")
+			if err != nil {
+				return err
+			}
+
+			assset_out_price, err := ParseStringFromString(args[13], ",")
+			if err != nil {
+				return err
+			}
+
+			title, err := cmd.Flags().GetString(cli.FlagTitle)
+			if err != nil {
+				return err
+			}
+
+			description, err := cmd.Flags().GetString(cli.FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			var pairs []types.ExtendedPairVault
+			for i := range pair_id {
+				newliquidation_ratio, _ := sdk.NewDecFromStr(liquidation_ratio[i])
+				newunliquidation_ratio, _ := sdk.NewDecFromStr(unliquidation_ratio[i])
+				newstability_fee, _ := sdk.NewDecFromStr(stability_fee[i])
+				newclosing_fee, _ := sdk.NewDecFromStr(closing_fee[i])
+				newliquidation_penalty, _ := sdk.NewDecFromStr(liquidation_penalty[i])
+				newmin_cr, _ := sdk.NewDecFromStr(min_cr[i])
+				newis_vault_active := ParseBoolFromString(is_vault_active[i])
+				newis_psm_pair := ParseBoolFromString(is_psm_pair[i])
+				newasset_out_oracle_price := ParseBoolFromString(asset_out_oracle_price[i])
+				pairs = append(pairs, types.ExtendedPairVault{
+					AppMappingId: app_mapping_id,
+					PairId: pair_id[i],
+					LiquidationRatio: newliquidation_ratio,
+					UnliquidationRatio: newunliquidation_ratio,
+					StabilityFee: newstability_fee,
+					ClosingFee: newclosing_fee,
+					LiquidationPenalty: newliquidation_penalty,
+					CreationFee: creation_fee[i],
+					IsVaultActive: newis_vault_active,
+					DebtCieling: debt_cieling[i],
+					DebtFloor: debt_floor[i],
+					IsPsmPair: newis_psm_pair,
+					MinCr: newmin_cr,
+					AssetOutOraclePrice: newasset_out_oracle_price,
+					AsssetOutPrice: assset_out_price[i],
+				})
+			}
+
+			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
+
+			content := types.NewAddExtendedPairsVaultProposa(title, description, pairs)
+
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
+	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
+	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	_ = cmd.MarkFlagRequired(cli.FlagTitle)
+	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+
+	return cmd
+}
