@@ -10,16 +10,17 @@ option (gogoproto.goproto_getters_all) = false;
 
 message MsgCreateRequest {
   string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 pair_id = 2 [
-    (gogoproto.customname) = "PairID",
-    (gogoproto.moretags)   = "yaml:\"pair_id\""
+  uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.customname) = "ExtendedPairVaultID",
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string amount_in = 3 [
+  string amount_in = 4 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount_in\"",
     (gogoproto.nullable)   = false
   ];
-  string amount_out = 4 [
+  string amount_out = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount_out\"",
     (gogoproto.nullable)   = false

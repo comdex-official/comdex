@@ -38,31 +38,36 @@ func GetTxCmd() *cobra.Command {
 
 func txCreate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create [pair_id] [amount_in] [amount_out]",
+		Use:   "create [app_mapping_id] [extended_pair_vault_id] [amount_in] [amount_out]",
 		Short: "create a new vault",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			pairId, err := strconv.ParseUint(args[0], 10, 64)
+			app_mapping_id, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			amountIn, ok := sdk.NewIntFromString(args[1])
+			extended_pair_vault_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			amountIn, ok := sdk.NewIntFromString(args[2])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
 
-			amountOut, ok := sdk.NewIntFromString(args[2])
+			amountOut, ok := sdk.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmountOut
 			}
 
-			msg := types.NewMsgCreateRequest(ctx.FromAddress, pairId, amountIn, amountOut)
+			msg := types.NewMsgCreateRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amountIn, amountOut)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

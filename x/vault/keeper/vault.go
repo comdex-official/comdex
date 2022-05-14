@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"strconv"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
@@ -8,13 +9,13 @@ import (
 	"github.com/comdex-official/comdex/x/vault/types"
 )
 
-func (k *Keeper) SetID(ctx sdk.Context, id uint64) {
+func (k *Keeper) SetCounterID(ctx sdk.Context, AppId uint64, counter uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.IDKey
+		key   = types.LookupTableVaultKey(AppId)
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
-				Value: id,
+				Value: counter + 1,
 			},
 		)
 	)
@@ -22,34 +23,36 @@ func (k *Keeper) SetID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetID(ctx sdk.Context) uint64 {
+func (k *Keeper) GetCounterID(ctx sdk.Context, AppId uint64) (uint64, bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.IDKey
+		key   = types.LookupTableVaultKey(AppId)
 		value = store.Get(key)
 	)
 
 	if value == nil {
-		return 0
+		return 0 , false
 	}
 
 	var id protobuftypes.UInt64Value
 	k.cdc.MustUnmarshal(value, &id)
 
-	return id.GetValue()
+
+	return id.GetValue(), true
 }
 
-func (k *Keeper) SetVault(ctx sdk.Context, vault types.Vault) {
+func (k *Keeper) SetVault(ctx sdk.Context, vault types.Vault, sName string) {
 	var (
+		Id = sName + strconv.Itoa(int(vault.Id))
 		store = k.Store(ctx)
-		key   = types.VaultKey(vault.ID)
+		key   = types.VaultKey(Id)
 		value = k.cdc.MustMarshal(&vault)
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetVault(ctx sdk.Context, id uint64) (vault types.Vault, found bool) {
+func (k *Keeper) GetVault(ctx sdk.Context, id string) (vault types.Vault, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.VaultKey(id)
@@ -64,7 +67,7 @@ func (k *Keeper) GetVault(ctx sdk.Context, id uint64) (vault types.Vault, found 
 	return vault, true
 }
 
-func (k *Keeper) DeleteVault(ctx sdk.Context, id uint64) {
+func (k *Keeper) DeleteVault(ctx sdk.Context, id string) {
 	var (
 		store = k.Store(ctx)
 		key   = types.VaultKey(id)
@@ -90,10 +93,10 @@ func (k *Keeper) GetVaults(ctx sdk.Context) (vaults []types.Vault) {
 	return vaults
 }
 
-func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID, id uint64) {
+func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, ExtendedPairVaultID uint64, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.VaultForAddressByPair(address, pairID)
+		key   = types.VaultForAddressByPair(address, ExtendedPairVaultID)
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -104,10 +107,10 @@ func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddres
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
+func (k *Keeper) HasVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, ExtendedPairVaultID uint64) bool {
 	var (
 		store = k.Store(ctx)
-		key   = types.VaultForAddressByPair(address, pairID)
+		key   = types.VaultForAddressByPair(address, ExtendedPairVaultID)
 	)
 
 	return store.Has(key)
@@ -163,4 +166,31 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 	}
 
 	return totalIn.Quo(totalOut), nil
+}
+
+func (k *Keeper) SetLookupTableVault(ctx sdk.Context, vault types.LookupTableVault, app_id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.CounterVaultKey(app_id)
+		value = k.cdc.MustMarshal(&vault)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetLookupTableVault(ctx sdk.Context, AppId uint64) (vaults []types.LookupTableVault) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.VaultKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var vault types.LookupTableVault
+		k.cdc.MustUnmarshal(iter.Value(), &vault)
+		vaults = append(vaults, vault)
+	}
+
+	return vaults
 }

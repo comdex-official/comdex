@@ -10,6 +10,7 @@ var (
 	ErrorInvalidAmountOut = errors.Register(ModuleName, 103, "invalid amount_out")
 	ErrorInvalidFrom      = errors.Register(ModuleName, 104, "invalid from")
 	ErrorInvalidID        = errors.Register(ModuleName, 105, "invalid id")
+	ErrorAppIstoExtendedAppId        = errors.Register(ModuleName, 106, "app id does not match with extended pair app id")
 )
 
 var (
@@ -24,4 +25,9 @@ var (
 
 var (
 	ErrorUnknownMsgType = errors.Register(ModuleName, 301, "unknown message type")
+)
+
+var (
+	ErrorCannotCreateStableSwapVault   = errors.Register(ModuleName, 401, "Cannot Create Stable Swap Vault")
+	ErrorIdnotFound  = errors.Register(ModuleName, 402, "not found")
 )

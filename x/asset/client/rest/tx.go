@@ -139,5 +139,18 @@ func UpdateNewPairsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	}
 }
 
+func AddNewAppMappingProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add-new-app-mapping",
+		Handler:  AddNewAssetsRESTHandler(clientCtx),
+	}
+}
+
+func AddExtendedPairsVaultProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add-new-pairs-vault",
+		Handler:  AddNewAssetsRESTHandler(clientCtx),
+	}
+}
 
 

@@ -19,6 +19,7 @@ var (
 	ErrorPairDoesNotExist           = errors.Register(ModuleName, 203, "pair does not exist")
 	ErrorDuplicatePair             = errors.Register(ModuleName, 204, "duplicate pair")
 	ErrorUnauthorized               = errors.Register(ModuleName, 205, "unauthorized")
+	ErrorDuplicateApp             = errors.Register(ModuleName, 206, "duplicate app")
 )
 
 var (
@@ -28,4 +29,5 @@ var (
 var (
 	ErrorUnknownProposalType = errors.Register(ModuleName, 401, "unknown proposal type")
 	ErrorEmptyProposalAssets = errors.Register(ModuleName, 402, "empty assets in proposal")
+	ErrorUnknownAppType = errors.Register(ModuleName, 403, "unknown app type")
 )

@@ -53,3 +53,11 @@ func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool) {
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	return k.oracle.GetPriceForAsset(ctx, id)
 }
+
+func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppMapping, bool) {
+	return k.asset.GetApp(ctx, id)
+}
+
+func (k *Keeper) GetPairsVault(ctx sdk.Context, pairID uint64) (assettypes.ExtendedPairVault, bool) {
+	return k.asset.GetPairsVault(ctx, pairID)
+}

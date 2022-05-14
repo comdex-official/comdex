@@ -23,20 +23,30 @@ var (
 )
 
 var (
-	IDKey                        = []byte{0x00}
+	IDKey                          = []byte{0x00}
 	VaultKeyPrefix                 = []byte{0x10}
 	VaultForAddressByPairKeyPrefix = []byte{0x20}
+	LookupTableVaultPrefix         = []byte{0x30}
+	CounterVaultKeyPrefix = []byte{0x30}
 )
 
-func VaultKey(id uint64) []byte {
-	return append(VaultKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func VaultKey(AppVaultTypeId string) []byte {
+	return append(VaultKeyPrefix, []byte(AppVaultTypeId)...)
 }
 
-func VaultForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
+func VaultForAddressByPair(address sdk.AccAddress, ExtendedPairVaultID uint64) []byte {
 	v := append(VaultForAddressByPairKeyPrefix, address.Bytes()...)
 	if len(v) != 1+20 {
 		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+20))
 	}
 
-	return append(v, sdk.Uint64ToBigEndian(pairID)...)
+	return append(v, sdk.Uint64ToBigEndian(ExtendedPairVaultID)...)
+}
+
+func LookupTableVaultKey(AppId uint64) []byte {
+	return append(LookupTableVaultPrefix, sdk.Uint64ToBigEndian(AppId)...)
+}
+
+func CounterVaultKey(AppId uint64) []byte {
+	return append(CounterVaultKeyPrefix, sdk.Uint64ToBigEndian(AppId)...)
 }

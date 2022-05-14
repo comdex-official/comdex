@@ -8,10 +8,7 @@ import (
 )
 
 func (m *Vault) Validate() error {
-	if m.ID == 0 {
-		return fmt.Errorf("id cannot be empty")
-	}
-	if m.PairID == 0 {
+	if m.ExtendedPairVaultID == 0 {
 		return fmt.Errorf("pair_id cannot be empty")
 	}
 	if m.Owner == "" {

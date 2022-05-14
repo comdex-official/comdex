@@ -47,6 +47,10 @@ func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return handleAddWhitelistedPairsProposal(ctx, k, c)
 		case *types.UpdateWhitelistedPairProposal:
 			return handleUpdateWhitelistedPairProposal(ctx, k, c)
+		case *types.AddAppMappingProposal:
+			return handleAddAppMappingProposal(ctx, k, c)
+		case *types.AddExtendedPairsVaultProposal:
+			return handleExtendedPairsVaultProposal(ctx, k, c)
 
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
@@ -80,4 +84,12 @@ func handleAddWhitelistedPairsProposal(ctx sdk.Context, k keeper.Keeper, p *type
 
 func handleUpdateWhitelistedPairProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateWhitelistedPairProposal) error {
 	return k.HandleUpdateWhitelistedPairRecords(ctx, p)
+}
+
+func handleAddAppMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAppMappingProposal) error {
+	return k.HandleAddAppMappingRecords(ctx, p)
+}
+
+func handleExtendedPairsVaultProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddExtendedPairsVaultProposal) error {
+	return k.HandleAddExtendedPairsVaultRecords(ctx, p)
 }
