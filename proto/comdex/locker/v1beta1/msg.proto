@@ -1,97 +1,106 @@
 syntax = "proto3";
-package comdex.vault.v1beta1;
+package comdex.locker.v1beta1;
 
 import "gogoproto/gogo.proto";
 
-option go_package            = "github.com/comdex-official/comdex/x/vault/types";
+option go_package            = "github.com/comdex-official/comdex/x/locker/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message MsgCreateRequest {
-  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 pair_id = 2 [
-    (gogoproto.customname) = "PairID",
-    (gogoproto.moretags)   = "yaml:\"pair_id\""
-  ];
-  string amount_in = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount_in\"",
-    (gogoproto.nullable)   = false
-  ];
-  string amount_out = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount_out\"",
-    (gogoproto.nullable)   = false
-  ];
-}
 
-message MsgCreateResponse {}
-
-message MsgDepositRequest {
-  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 id   = 2
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  string amount = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount\"",
-    (gogoproto.nullable)   = false
-  ];
-}
-
-message MsgDepositResponse {}
-
-message MsgWithdrawRequest {
-  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 id   = 2
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  string amount = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount\"",
-    (gogoproto.nullable)   = false
-  ];
-}
-
-message MsgWithdrawResponse {}
-
-message MsgDrawRequest {
-  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 id   = 2
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  string amount = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount\"",
-    (gogoproto.nullable)   = false
-  ];
-}
-
-message MsgDrawResponse {}
-
-message MsgRepayRequest {
-  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 id   = 2
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  string amount = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount\"",
-    (gogoproto.nullable)   = false
-  ];
-}
-
-message MsgRepayResponse {}
-
-message MsgCloseRequest {
-  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 id   = 2
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-}
-
-message MsgCloseResponse {}
-
+//For CLI Command & Proposals 
 service MsgService {
-  rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
-  rpc MsgDeposit(MsgDepositRequest) returns (MsgDepositResponse);
-  rpc MsgWithdraw(MsgWithdrawRequest) returns (MsgWithdrawResponse);
-  rpc MsgDraw(MsgDrawRequest) returns (MsgDrawResponse);
-  rpc MsgRepay(MsgRepayRequest) returns (MsgRepayResponse);
-  rpc MsgClose(MsgCloseRequest) returns (MsgCloseResponse);
+
+  rpc MsgAddWhiteListedAsset(MsgAddWhiteListedAssetRequest) returns (MsgAddWhiteListedAssetResponse);
+  rpc MsgCreateLocker(MsgCreateLockerRequest) returns (MsgCreateLockerResponse);
+  rpc MsgDepositAsset(MsgDepositAssetRequest) returns (MsgDepositAssetResponse);
+  rpc MsgWithdrawAsset(MsgWithdrawAssetRequest) returns (MsgWithdrawAssetResponse);
+}
+
+message MsgCreateLockerRequest{
+
+  string depositor = 1 [ (gogoproto.moretags) = "yaml:\"depositor\"" ];
+
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  uint64 asset_id  = 3 [
+    (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"asset_id\"" 
+  ];
+  uint64 app_mapping_id = 4 [
+    (gogoproto.customname) = "AppMappingId",
+    (gogoproto.moretags)   = "yaml:\"app_mapping_id\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+
+message MsgCreateLockerResponse{}
+
+
+
+
+
+
+message MsgAddWhiteListedAssetRequest {
+
+  uint64 app_mapping_id = 1 [
+    (gogoproto.customname) = "AppMappingId",
+    (gogoproto.moretags)   = "yaml:\"app_mapping_id\"",
+    (gogoproto.nullable)   = false
+  ];
+  uint64 asset_id = 2 [
+    (gogoproto.customname) = "AssetId",
+    (gogoproto.moretags)   = "yaml:\"asset_id\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+
+message MsgAddWhiteListedAssetResponse {}
+
+message MsgDepositAssetRequest {
+  string depositor = 1 [ (gogoproto.moretags) = "yaml:\"depositor\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string amount = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  uint64 asset_id  = 4 [
+    (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"asset_id\"" 
+  ];
+  uint64 app_mapping_id = 5 [
+    (gogoproto.customname) = "AppMappingId",
+    (gogoproto.moretags)   = "yaml:\"app_mapping_id\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgDepositAssetResponse {}
+
+message MsgWithdrawAssetRequest {
+  string depositor = 1 [ (gogoproto.moretags) = "yaml:\"depositor\"" ];
+  uint64 id   = 2
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string amount = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  uint64 asset_id  = 4 [
+    (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"asset_id\"" 
+  ];
+  uint64 app_mapping_id = 5 [
+    (gogoproto.customname) = "AppMappingId",
+    (gogoproto.moretags)   = "yaml:\"app_mapping_id\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgWithdrawAssetResponse {
+
 }

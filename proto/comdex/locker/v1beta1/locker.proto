@@ -1,25 +1,33 @@
 syntax = "proto3";
-package comdex.vault.v1beta1;
+package comdex.locker.v1beta1;
 
 import "gogoproto/gogo.proto";
 
-option go_package            = "github.com/comdex-official/comdex/x/vault/types";
+option go_package            = "github.com/comdex-official/comdex/x/locker/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
-
-//app_vault_type_id will be the key for  the KVStore for this value.
-message Vault {
-  string app_vault_type_id  = 1 ;
-  uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\"" ];
-  string owner   = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-  string amount_in = 4 [
+//locker_id will be the key which will be derived from the LockerLookUpTable
+message Locker {
+  string locker_id = 1 [
+      (gogoproto.moretags) = "yaml:\"locker_id\""
+  ];
+  string depositor = 2 [
+      (gogoproto.moretags) = "yaml:\"depositor\""
+  ];
+  string deposited_amount = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount_in\"",
+    (gogoproto.moretags)   = "yaml:\"deposited_amount\"",
+    (gogoproto.nullable)   = false
+  ]; 
+
+  string returns_accumulated = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"returns_accumulated\"",
     (gogoproto.nullable)   = false
   ];
-  string amount_out = 5 [
+  string net_balance = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount_out\"",
+    (gogoproto.moretags)   = "yaml:\"net_balance\"",
     (gogoproto.nullable)   = false
   ];
   google.protobuf.Timestamp created_at = 6 [
@@ -27,22 +35,63 @@ message Vault {
       (gogoproto.stdtime) = true,
       (gogoproto.moretags)   = "yaml:\"created_at\""
   ];
-  string interest_accumulated  = 7 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.moretags)   = "yaml:\"interest_accrued\""
+
+  uint64 asset_deposit_id =7[
+      (gogoproto.moretags)   = "yaml:\"asset_deposit_id\""
   ];
-  string closing_fee_accumulated  = 9 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.moretags)   = "yaml:\"closing_fee_accumulated\""
+  bool is_locked = 8 [
+    (gogoproto.moretags)   = "yaml:\"is_locked\"",
+    (gogoproto.nullable)   = false
+  ]; 
+}
+
+//Key is user address
+message UserLockerAssetMapping {
+  string owner = 1 [
+      (gogoproto.moretags) = "yaml:\"owner\""
+  ];
+  repeated LockerToAppMapping  locker_app_mapping = 2 [
+  (gogoproto.moretags) = "yaml:\"locker_app_mapping\""
   ];
 }
 
-//User address will be key for this KV store Vaule
-message UserVaultIDMapping {
-
-
+//This is used inside the UserLockerAssetMapping
+message LockerToAppMapping {
+ uint64 app_mapping_id = 1;
+ repeated string locker_id =2 [
+ (gogoproto.moretags) = "yaml:\"locker_id\""];
 }
 
 
 
-//pair to vault mapping
+
+//Key is app id
+message LockerLookupTable {
+  uint64 app_mapping_id = 1[    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
+  ];
+  repeated TokenToLockerMapping lockers = 2 [
+      (gogoproto.moretags) = "yaml:\"user_vault_ids\""
+  ];
+}
+message TokenToLockerMapping {
+ uint64 asset_id = 1;
+
+ repeated string locker_ids =2 [
+ (gogoproto.moretags) = "yaml:\"addresses\""
+  ];
+  uint64 counter = 3;
+  string deposited_amount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"deposited_amount\"",
+    (gogoproto.nullable)   = false
+  ]; 
+}
+
+
+
+// message LockerStatistics {
+  
+//   map<string, uint64> locked_assets = 2 [
+//     (gogoproto.moretags) = "yaml:\"locked_assets\""
+//   ];
+// }
