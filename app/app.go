@@ -91,6 +91,9 @@ import (
 	assetclient "github.com/comdex-official/comdex/x/asset/client"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/collector"
+	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	"github.com/comdex-official/comdex/x/oracle"
 	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
 	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
@@ -147,7 +150,7 @@ var (
 		vault.AppModuleBasic{},
 		asset.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
-		asset.AppModuleBasic{},
+		collector.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
@@ -208,6 +211,7 @@ type App struct {
 	scopedWasmKeeper        capabilitykeeper.ScopedKeeper
 
 	assetKeeper     assetkeeper.Keeper
+	collectorKeeper collectorkeeper.Keeper
 	vaultKeeper     vaultkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
 	oracleKeeper    oraclekeeper.Keeper
@@ -241,7 +245,7 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
+			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, oracletypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey,
 		)
 	)
@@ -284,6 +288,7 @@ func New(
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
 	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
 	app.paramsKeeper.Subspace(assettypes.ModuleName)
+	app.paramsKeeper.Subspace(collectortypes.ModuleName)
 	app.paramsKeeper.Subspace(oracletypes.ModuleName)
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 
@@ -430,6 +435,14 @@ func New(
 		app.GetSubspace(assettypes.ModuleName),
 		&app.oracleKeeper,
 	)
+
+	app.collectorKeeper = *collectorkeeper.NewKeeper(
+		app.cdc,
+		app.keys[collectortypes.StoreKey],
+		app.keys[collectortypes.MemStoreKey],
+		app.GetSubspace(collectortypes.ModuleName),
+	)
+
 	app.vaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
 		app.keys[vaulttypes.StoreKey],
@@ -480,7 +493,7 @@ func New(
 		wasmOpts...,
 	)
 
-		// register the proposal types
+	// register the proposal types
 	govRouter := govtypes.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
@@ -488,7 +501,6 @@ func New(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.assetKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
-
 
 	app.ibcKeeper.SetRouter(ibcRouter)
 	app.govKeeper = govkeeper.NewKeeper(
@@ -530,7 +542,7 @@ func New(
 		asset.NewAppModule(app.cdc, app.assetKeeper),
 		vault.NewAppModule(app.cdc, app.vaultKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
-		asset.NewAppModule(app.cdc, app.assetKeeper),
+		collector.NewAppModule(app.cdc, app.collectorKeeper, app.accountKeeper, app.bankKeeper),
 		oracle.NewAppModule(app.cdc, app.oracleKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
 	)
@@ -543,7 +555,7 @@ func New(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 		crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
-		authz.ModuleName, oracletypes.ModuleName, transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName,
+		authz.ModuleName, oracletypes.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
@@ -552,7 +564,7 @@ func New(
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
 		paramstypes.ModuleName, oracletypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
-		assettypes.ModuleName, banktypes.ModuleName,
+		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -576,6 +588,7 @@ func New(
 		liquiditytypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		assettypes.ModuleName,
+		collectortypes.ModuleName,
 		vaulttypes.ModuleName,
 		oracletypes.StoreKey,
 		wasmtypes.ModuleName,
@@ -760,6 +773,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		collectortypes.ModuleName:      {authtypes.Burner, authtypes.Staking},
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
@@ -787,6 +801,7 @@ func (app *App) registerUpgradeHandlers() {
 			genutiltypes.ModuleName:     genutil.AppModule{}.ConsensusVersion(),
 			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
+			collectortypes.ModuleName:   collector.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
 			wasmtypes.ModuleName:        wasm.AppModule{}.ConsensusVersion(),
 		}
