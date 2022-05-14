@@ -1,0 +1,12 @@
+syntax = "proto3";
+package comdex.incentives.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/incentives/v1beta1/params.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/incentives/types";
+
+// GenesisState defines the incentives module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

@@ -108,6 +108,10 @@ import (
 	"github.com/comdex-official/comdex/x/locking"
 	lockingkeeper "github.com/comdex-official/comdex/x/locking/keeper"
 	lockingtypes "github.com/comdex-official/comdex/x/locking/types"
+
+	"github.com/comdex-official/comdex/x/incentives"
+	incentiveskeeper "github.com/comdex-official/comdex/x/incentives/keeper"
+	incentivestypes "github.com/comdex-official/comdex/x/incentives/types"
 )
 
 const (
@@ -153,6 +157,7 @@ var (
 		oracle.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 		locking.AppModuleBasic{},
+		incentives.AppModuleBasic{},
 	)
 )
 
@@ -210,11 +215,12 @@ type App struct {
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
 	scopedWasmKeeper        capabilitykeeper.ScopedKeeper
 
-	assetKeeper     assetkeeper.Keeper
-	vaultKeeper     vaultkeeper.Keeper
-	liquidityKeeper liquiditykeeper.Keeper
-	oracleKeeper    oraclekeeper.Keeper
-	lockingKeeper   lockingkeeper.Keeper
+	assetKeeper      assetkeeper.Keeper
+	vaultKeeper      vaultkeeper.Keeper
+	liquidityKeeper  liquiditykeeper.Keeper
+	oracleKeeper     oraclekeeper.Keeper
+	lockingKeeper    lockingkeeper.Keeper
+	incentivesKeeper incentiveskeeper.Keeper
 
 	wasmKeeper wasm.Keeper
 	// the module manager
@@ -246,7 +252,7 @@ func New(
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
-			wasm.StoreKey, authzkeeper.StoreKey, lockingtypes.StoreKey,
+			wasm.StoreKey, authzkeeper.StoreKey, lockingtypes.StoreKey, incentivestypes.StoreKey,
 		)
 	)
 
@@ -291,6 +297,7 @@ func New(
 	app.paramsKeeper.Subspace(oracletypes.ModuleName)
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 	app.paramsKeeper.Subspace(lockingtypes.ModuleName)
+	app.paramsKeeper.Subspace(incentivestypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -511,6 +518,14 @@ func New(
 		app.bankKeeper,
 	)
 
+	app.incentivesKeeper = incentiveskeeper.NewKeeper(
+		app.cdc,
+		app.keys[incentivestypes.StoreKey],
+		app.GetSubspace(incentivestypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+	)
+
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -545,6 +560,7 @@ func New(
 		oracle.NewAppModule(app.cdc, app.oracleKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
 		locking.NewAppModule(app.cdc, app.lockingKeeper, app.accountKeeper, app.bankKeeper),
+		incentives.NewAppModule(app.cdc, app.incentivesKeeper, app.accountKeeper, app.bankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -557,7 +573,7 @@ func New(
 		crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
 		authz.ModuleName, oracletypes.ModuleName, transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName, liquiditytypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
-		lockingtypes.ModuleName,
+		lockingtypes.ModuleName, incentivestypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -565,7 +581,7 @@ func New(
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, liquiditytypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
 		paramstypes.ModuleName, oracletypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
-		assettypes.ModuleName, banktypes.ModuleName, lockingtypes.ModuleName,
+		assettypes.ModuleName, banktypes.ModuleName, lockingtypes.ModuleName, incentivestypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -597,6 +613,7 @@ func New(
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
 		lockingtypes.ModuleName,
+		incentivestypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
@@ -778,6 +795,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
 		lockingtypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		incentivestypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 	}
 }
 func (app *App) registerUpgradeHandlers() {
