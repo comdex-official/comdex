@@ -95,6 +95,9 @@ import (
 	collectorclient "github.com/comdex-official/comdex/x/collector/client"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	"github.com/comdex-official/comdex/x/lend"
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/oracle"
 	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
 	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
@@ -154,6 +157,7 @@ var (
 		liquidity.AppModuleBasic{},
 		collector.AppModuleBasic{},
 		oracle.AppModuleBasic{},
+		lend.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
 )
@@ -217,6 +221,7 @@ type App struct {
 	vaultKeeper     vaultkeeper.Keeper
 	liquidityKeeper liquiditykeeper.Keeper
 	oracleKeeper    oraclekeeper.Keeper
+	lendKeeper      lendkeeper.Keeper
 
 	wasmKeeper wasm.Keeper
 	// the module manager
@@ -248,7 +253,7 @@ func New(
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, oracletypes.StoreKey,
-			wasm.StoreKey, authzkeeper.StoreKey,
+			lendtypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
 		)
 	)
 
@@ -292,6 +297,7 @@ func New(
 	app.paramsKeeper.Subspace(assettypes.ModuleName)
 	app.paramsKeeper.Subspace(collectortypes.ModuleName)
 	app.paramsKeeper.Subspace(oracletypes.ModuleName)
+	app.paramsKeeper.Subspace(lendtypes.ModuleName)
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 
 	// set the BaseApp's parameter store
@@ -445,6 +451,15 @@ func New(
 		app.GetSubspace(collectortypes.ModuleName),
 	)
 
+	app.lendKeeper = *lendkeeper.NewKeeper(
+		app.cdc,
+		app.keys[lendtypes.StoreKey],
+		app.keys[lendtypes.StoreKey],
+		app.GetSubspace(lendtypes.ModuleName),
+		app.bankKeeper,
+		app.accountKeeper,
+	)
+
 	app.vaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
 		app.keys[vaulttypes.StoreKey],
@@ -547,6 +562,7 @@ func New(
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
 		collector.NewAppModule(app.cdc, app.collectorKeeper, app.accountKeeper, app.bankKeeper),
 		oracle.NewAppModule(app.cdc, app.oracleKeeper),
+		lend.NewAppModule(app.cdc, app.lendKeeper, app.accountKeeper, app.bankKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
 	)
 
@@ -559,13 +575,13 @@ func New(
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 		crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
 		authz.ModuleName, oracletypes.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName,
-		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
+		lendtypes.ModuleName, vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, minttypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
-		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
+		vaulttypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
 		paramstypes.ModuleName, oracletypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
 		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName,
 	)
@@ -594,6 +610,7 @@ func New(
 		collectortypes.ModuleName,
 		vaulttypes.ModuleName,
 		oracletypes.StoreKey,
+		lendtypes.ModuleName,
 		wasmtypes.ModuleName,
 		authz.ModuleName,
 		vesting.AppModuleBasic{}.Name(),
@@ -778,6 +795,10 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		collectortypes.ModuleName:      {authtypes.Burner, authtypes.Staking},
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
 	}
@@ -806,6 +827,7 @@ func (app *App) registerUpgradeHandlers() {
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
 			collectortypes.ModuleName:   collector.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
+			lendtypes.ModuleName:        lend.AppModule{}.ConsensusVersion(),
 			wasmtypes.ModuleName:        wasm.AppModule{}.ConsensusVersion(),
 		}
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
