@@ -18,27 +18,21 @@ message Lend_Asset {
 
   string owner = 3 [(gogoproto.moretags) = "yaml:\"owner\""];
 
-  string amount_in = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags) = "yaml:\"amount_in\"",
-    (gogoproto.nullable) = false
-  ];
-
-  string lent_value_usd = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+  cosmos.base.v1beta1.Coin amount_in = 4 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"lent_value_usd\""
+    (gogoproto.moretags) = "yaml:\"amount_in\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 
-  google.protobuf.Timestamp lending_time = 6 [
+  google.protobuf.Timestamp lending_time = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"lending_time\""
   ];
 
-  repeated cosmos.base.v1beta1.Coin interest_rate = 7 [
+  cosmos.base.v1beta1.Coin reward = 6 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"interest_rate\"",
+    (gogoproto.moretags) = "yaml:\"reward\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 

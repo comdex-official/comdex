@@ -458,6 +458,7 @@ func New(
 		app.GetSubspace(lendtypes.ModuleName),
 		app.bankKeeper,
 		app.accountKeeper,
+		&app.assetKeeper,
 	)
 
 	app.vaultKeeper = vaultkeeper.NewKeeper(

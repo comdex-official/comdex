@@ -6,9 +6,6 @@ import (
 )
 
 const (
-	flagName                 = "name"
-	flagDenom                = "denom"
-	flagDecimal              = "decimal"
 	flagCollateralWeight     = "collateralWeight"
 	flagLiquidationThreshold = "liquidationThreshold"
 	flagBaseBorrowRate       = "baseBorrowRate"

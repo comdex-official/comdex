@@ -1,7 +1,7 @@
-package lend
+package asset
 
 import (
-	"github.com/comdex-official/comdex/x/lend/keeper"
+	"github.com/comdex-official/comdex/x/asset/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )

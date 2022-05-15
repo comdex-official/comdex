@@ -22,6 +22,7 @@ type (
 		paramstore paramtypes.Subspace
 		bank       expected.BankKeeper
 		account    expected.AccountKeeper
+		asset      expected.AssetKeeper
 	}
 )
 
@@ -32,6 +33,7 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 	bank expected.BankKeeper,
 	account expected.AccountKeeper,
+	asset expected.AssetKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -47,6 +49,7 @@ func NewKeeper(
 		paramstore: ps,
 		bank:       bank,
 		account:    account,
+		asset:      asset,
 	}
 }
 
@@ -58,22 +61,64 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(moduleName), denom).Amount
 }
 
-func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, loan sdk.Coin) error {
-	// send token balance to lend module account
-	// update users lending
-	//TODO:
-	// update reserves
-	// calculate interest rate
-	loanTokens := sdk.NewCoins(loan)
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, types.ModuleName, loanTokens); err != nil {
+func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, pairID uint64, lent sdk.Coin) error {
+	lentTokens := sdk.NewCoins(lent)
+
+	ExtPairID, _ := k.asset.GetWhitelistPair(ctx, pairID)
+
+	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, lent.Denom)
+	if err := k.setCollateralAmount(ctx, lenderAddr, currentCollateral.Add(lent)); err != nil {
+		return err
+	}
+	basePair, found := k.asset.GetPair(ctx, ExtPairID.PairId)
+	if found != true {
+		return types.ErrorPairDoesNotExist
+	}
+
+	Asset, found := k.asset.GetAsset(ctx, basePair.AssetIn)
+	if found != true {
+		return types.ErrorAssetDoesNotExist
+	}
+
+	if Asset.Denom != lent.Denom {
+		return types.ErrInvalidAsset
+	}
+
+	cToken, err := k.ExchangeToken(ctx, lent, Asset.Name)
+	if err != nil {
 		return err
 	}
 
-	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, loan.Denom)
-	if err := k.setCollateralAmount(ctx, lenderAddr, currentCollateral.Add(loan)); err != nil {
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, ExtPairID.ModuleAcc, lentTokens); err != nil {
+		return err
+	}
+	// mint c/Token and set new total cToken supply
+
+	cTokens := sdk.NewCoins(cToken)
+	if err = k.bank.MintCoins(ctx, ExtPairID.ModuleAcc, cTokens); err != nil {
+		return err
+	}
+	if err = k.setCTokenSupply(ctx, k.GetCTokenSupply(ctx, cToken.Denom).Add(cToken)); err != nil {
 		return err
 	}
 
+	err = k.bank.SendCoinsFromModuleToAccount(ctx, ExtPairID.ModuleAcc, lenderAddr, cTokens)
+	if err != nil {
+		return err
+	}
+
+	Id := k.GetLendID(ctx)
+	lendPositon := types.Lend_Asset{
+		ID:          Id + 1,
+		PairID:      pairID,
+		Owner:       lenderAddr.String(),
+		AmountIn:    lent,
+		LendingTime: ctx.BlockTime(),
+		Reward:      sdk.NewCoin("cCMDX", sdk.NewInt(0)),
+	}
+
+	k.SetLendID(ctx, lendPositon.ID)
+	k.SetLend(ctx, lendPositon)
 	return nil
 }
 

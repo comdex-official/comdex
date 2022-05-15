@@ -21,6 +21,7 @@ service Msg {
 message MsgLend {
   string                   lender = 1;
   cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+  uint64                  pair_id = 3;
 }
 
 message MsgWithdraw {

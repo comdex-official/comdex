@@ -25,22 +25,27 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_lend"
+
+	CTokenPrefix = "c/"
 )
 
 var (
-	KeyPrefixCollateralAmount         = []byte{0x04}
-	KeyPrefixReserveAmount            = []byte{0x05}
-	WhitelistedAssetIDKey             = []byte{0x01}
-	WhitelistedPairIDKey              = []byte{0x03}
-	WhitelistedAssetKeyPrefix         = []byte{0x1}
-	WhitelistedAssetForDenomKeyPrefix = []byte{0x21}
-	WhitelistedRecordKey              = []byte{0x22}
-	PairIDKey                         = []byte{0x03}
-	PairKeyPrefix                     = []byte{0x14}
+	KeyPrefixCollateralAmount         = []byte{0x01}
+	KeyPrefixReserveAmount            = []byte{0x02}
+	WhitelistedAssetIDKey             = []byte{0x03}
+	WhitelistedPairIDKey              = []byte{0x04}
+	LendKeyPrefix                     = []byte{0x05}
+	WhitelistedAssetForDenomKeyPrefix = []byte{0x06}
+	WhitelistedRecordKey              = []byte{0x07}
+	PairIDKey                         = []byte{0x08}
+	PairKeyPrefix                     = []byte{0x09}
+	LendIDKey                         = []byte{0x10}
+	KeyPrefixRegisteredToken          = []byte{0x11}
+	KeyPrefixCtokenSupply             = []byte{0x12}
 )
 
-func AssetKey(id uint64) []byte {
-	return append(WhitelistedAssetKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func LendKey(id uint64) []byte {
+	return append(LendKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func AssetForDenomKey(denom string) []byte {
@@ -79,4 +84,19 @@ func CreateReserveAmountKeyNoDenom() []byte {
 
 func PairKey(id uint64) []byte {
 	return append(PairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func CreateRegisteredTokenKey(baseTokenDenom string) []byte {
+	var key []byte
+	key = append(key, KeyPrefixRegisteredToken...)
+	key = append(key, []byte(baseTokenDenom)...)
+	return append(key, 0) // append 0 for null-termination
+}
+
+func CreateCTokenSupplyKey(uTokenDenom string) []byte {
+	// supplyprefix | denom | 0x00
+	var key []byte
+	key = append(key, KeyPrefixCtokenSupply...)
+	key = append(key, []byte(uTokenDenom)...)
+	return append(key, 0) // append 0 for null-termination
 }
