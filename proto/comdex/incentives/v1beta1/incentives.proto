@@ -1,0 +1,6 @@
+syntax = "proto3";
+package comdex.incentives.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/incentives/types";

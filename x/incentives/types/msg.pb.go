@@ -7,18 +7,26 @@ import (
 	context "context"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-sdk/types"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
+	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	_ "google.golang.org/protobuf/types/known/durationpb"
+	io "io"
 	math "math"
+	math_bits "math/bits"
+	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -26,25 +34,198 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type MsgCreateGauge struct {
+	From            string                                  `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	GaugeTypeId     uint64                                  `protobuf:"varint,2,opt,name=gauge_type_id,json=gaugeTypeId,proto3" json:"gauge_type_id,omitempty"`
+	TriggerDuration time.Duration                           `protobuf:"bytes,3,opt,name=trigger_duration,json=triggerDuration,proto3,stdduration" json:"trigger_duration,omitempty" yaml:"trigger_duration"`
+	DepositAmount   github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,4,opt,name=deposit_amount,json=depositAmount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"deposit_amount"`
+	TotalTriggers   uint64                                  `protobuf:"varint,5,opt,name=total_triggers,json=totalTriggers,proto3" json:"total_triggers,omitempty"`
+	// Types that are valid to be assigned to Kind:
+	//	*MsgCreateGauge_LiquidityMetaData
+	Kind isMsgCreateGauge_Kind `protobuf_oneof:"kind"`
+}
+
+func (m *MsgCreateGauge) Reset()         { *m = MsgCreateGauge{} }
+func (m *MsgCreateGauge) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateGauge) ProtoMessage()    {}
+func (*MsgCreateGauge) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e73bd04a95faef16, []int{0}
+}
+func (m *MsgCreateGauge) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCreateGauge) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCreateGauge.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCreateGauge) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateGauge.Merge(m, src)
+}
+func (m *MsgCreateGauge) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCreateGauge) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateGauge.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCreateGauge proto.InternalMessageInfo
+
+type isMsgCreateGauge_Kind interface {
+	isMsgCreateGauge_Kind()
+	MarshalTo([]byte) (int, error)
+	Size() int
+}
+
+type MsgCreateGauge_LiquidityMetaData struct {
+	LiquidityMetaData *LiquidtyGaugeMetaData `protobuf:"bytes,6,opt,name=liquidity_meta_data,json=liquidityMetaData,proto3,oneof" json:"liquidity_meta_data,omitempty"`
+}
+
+func (*MsgCreateGauge_LiquidityMetaData) isMsgCreateGauge_Kind() {}
+
+func (m *MsgCreateGauge) GetKind() isMsgCreateGauge_Kind {
+	if m != nil {
+		return m.Kind
+	}
+	return nil
+}
+
+func (m *MsgCreateGauge) GetFrom() string {
+	if m != nil {
+		return m.From
+	}
+	return ""
+}
+
+func (m *MsgCreateGauge) GetGaugeTypeId() uint64 {
+	if m != nil {
+		return m.GaugeTypeId
+	}
+	return 0
+}
+
+func (m *MsgCreateGauge) GetTriggerDuration() time.Duration {
+	if m != nil {
+		return m.TriggerDuration
+	}
+	return 0
+}
+
+func (m *MsgCreateGauge) GetDepositAmount() github_com_cosmos_cosmos_sdk_types.Coin {
+	if m != nil {
+		return m.DepositAmount
+	}
+	return github_com_cosmos_cosmos_sdk_types.Coin{}
+}
+
+func (m *MsgCreateGauge) GetTotalTriggers() uint64 {
+	if m != nil {
+		return m.TotalTriggers
+	}
+	return 0
+}
+
+func (m *MsgCreateGauge) GetLiquidityMetaData() *LiquidtyGaugeMetaData {
+	if x, ok := m.GetKind().(*MsgCreateGauge_LiquidityMetaData); ok {
+		return x.LiquidityMetaData
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*MsgCreateGauge) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*MsgCreateGauge_LiquidityMetaData)(nil),
+	}
+}
+
+type MsgCreateGaugeResponse struct {
+}
+
+func (m *MsgCreateGaugeResponse) Reset()         { *m = MsgCreateGaugeResponse{} }
+func (m *MsgCreateGaugeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateGaugeResponse) ProtoMessage()    {}
+func (*MsgCreateGaugeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e73bd04a95faef16, []int{1}
+}
+func (m *MsgCreateGaugeResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCreateGaugeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCreateGaugeResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCreateGaugeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateGaugeResponse.Merge(m, src)
+}
+func (m *MsgCreateGaugeResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCreateGaugeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateGaugeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCreateGaugeResponse proto.InternalMessageInfo
+
+func init() {
+	proto.RegisterType((*MsgCreateGauge)(nil), "comdex.incentives.v1beta1.MsgCreateGauge")
+	proto.RegisterType((*MsgCreateGaugeResponse)(nil), "comdex.incentives.v1beta1.MsgCreateGaugeResponse")
+}
+
 func init() {
 	proto.RegisterFile("comdex/incentives/v1beta1/msg.proto", fileDescriptor_e73bd04a95faef16)
 }
 
 var fileDescriptor_e73bd04a95faef16 = []byte{
-	// 199 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x8f, 0xbf, 0xae, 0x82, 0x30,
-	0x14, 0x87, 0x21, 0x37, 0xf7, 0x0e, 0x8c, 0x37, 0x2e, 0x32, 0x74, 0x71, 0xb6, 0x27, 0xa8, 0x4f,
-	0xe0, 0xae, 0x0f, 0xe0, 0xd6, 0x96, 0x52, 0x9b, 0x50, 0x0e, 0xe1, 0x14, 0xa2, 0x6f, 0xe1, 0x63,
-	0x39, 0x32, 0x3a, 0x1a, 0x78, 0x11, 0x23, 0xa0, 0xc6, 0xed, 0xfc, 0xf2, 0x7d, 0xe7, 0x5f, 0xb4,
-	0x50, 0xe8, 0x52, 0x7d, 0x02, 0x5b, 0x28, 0x5d, 0x78, 0xdb, 0x68, 0x82, 0x26, 0x91, 0xda, 0x8b,
-	0x04, 0x1c, 0x19, 0x5e, 0x56, 0xe8, 0xf1, 0x7f, 0x3e, 0x4a, 0xfc, 0x23, 0xf1, 0x49, 0x8a, 0x67,
-	0x06, 0x0d, 0x0e, 0x16, 0x3c, 0xab, 0xb1, 0x21, 0x66, 0x06, 0xd1, 0xe4, 0x1a, 0x86, 0x24, 0xeb,
-	0x0c, 0xd2, 0xba, 0x12, 0xde, 0x62, 0xf1, 0xe2, 0x0a, 0xc9, 0x21, 0x81, 0x14, 0xa4, 0xdf, 0xfb,
-	0x14, 0xda, 0x89, 0xaf, 0x7e, 0xa3, 0x9f, 0x1d, 0x99, 0xed, 0xfe, 0xda, 0xb1, 0xb0, 0xed, 0x58,
-	0x78, 0xef, 0x58, 0x78, 0xe9, 0x59, 0xd0, 0xf6, 0x2c, 0xb8, 0xf5, 0x2c, 0x38, 0x6c, 0x8c, 0xf5,
-	0xc7, 0x5a, 0x72, 0x85, 0x0e, 0xc6, 0xe3, 0x96, 0x98, 0x65, 0x56, 0x59, 0x91, 0x4f, 0x19, 0xbe,
-	0x7e, 0xf2, 0xe7, 0x52, 0x93, 0xfc, 0x1b, 0xa6, 0xaf, 0x1f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x8b,
-	0xbf, 0xc6, 0x03, 0xf5, 0x00, 0x00, 0x00,
+	// 519 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0x31, 0x6f, 0xd3, 0x40,
+	0x14, 0x8e, 0x69, 0x88, 0xc4, 0x45, 0x49, 0xc1, 0x20, 0x70, 0x33, 0xd8, 0x91, 0xab, 0x8a, 0x20,
+	0xd1, 0x3b, 0x52, 0x98, 0xd8, 0x9a, 0x56, 0x02, 0x24, 0xc2, 0x60, 0x75, 0x62, 0xb1, 0xce, 0xf6,
+	0xe5, 0x38, 0x25, 0xf6, 0xb9, 0xbe, 0xe7, 0x0a, 0xff, 0x02, 0x56, 0x46, 0x7e, 0x52, 0xc7, 0x8e,
+	0x4c, 0x01, 0x25, 0x13, 0x8c, 0x1d, 0x99, 0x90, 0xcf, 0x76, 0x21, 0x95, 0x8a, 0x98, 0xec, 0xfb,
+	0xde, 0xf7, 0xde, 0xfb, 0xde, 0xf7, 0x1e, 0xda, 0x0d, 0x65, 0x1c, 0xb1, 0x8f, 0x44, 0x24, 0x21,
+	0x4b, 0x40, 0x9c, 0x31, 0x45, 0xce, 0xc6, 0x01, 0x03, 0x3a, 0x26, 0xb1, 0xe2, 0x38, 0xcd, 0x24,
+	0x48, 0x73, 0xa7, 0x22, 0xe1, 0x3f, 0x24, 0x5c, 0x93, 0x06, 0x0f, 0xb8, 0xe4, 0x52, 0xb3, 0x48,
+	0xf9, 0x57, 0x25, 0x0c, 0x6c, 0x2e, 0x25, 0x5f, 0x30, 0xa2, 0x5f, 0x41, 0x3e, 0x23, 0x51, 0x9e,
+	0x51, 0x10, 0x32, 0x69, 0xe2, 0xa1, 0x54, 0xb1, 0x54, 0x24, 0xa0, 0x8a, 0x5d, 0xf5, 0x0b, 0xa5,
+	0x68, 0xe2, 0x7b, 0x37, 0xab, 0xe2, 0x34, 0xe7, 0xac, 0xa2, 0xb9, 0x3f, 0xb6, 0x50, 0x7f, 0xaa,
+	0xf8, 0x51, 0xc6, 0x28, 0xb0, 0x57, 0x65, 0xc0, 0xdc, 0x45, 0xed, 0x59, 0x26, 0x63, 0xcb, 0x18,
+	0x1a, 0xa3, 0x3b, 0x93, 0xed, 0xcb, 0xa5, 0xd3, 0x2d, 0x68, 0xbc, 0x78, 0xe9, 0x96, 0xa8, 0xeb,
+	0xe9, 0xa0, 0xe9, 0xa2, 0x9e, 0x2e, 0xe3, 0x43, 0x91, 0x32, 0x5f, 0x44, 0xd6, 0xad, 0xa1, 0x31,
+	0x6a, 0x7b, 0x5d, 0x0d, 0x9e, 0x14, 0x29, 0x7b, 0x13, 0x99, 0x9f, 0x0c, 0x74, 0x17, 0x32, 0xc1,
+	0x39, 0xcb, 0xfc, 0x46, 0xbd, 0xb5, 0x35, 0x34, 0x46, 0xdd, 0x83, 0x1d, 0x5c, 0x8d, 0x87, 0x9b,
+	0xf1, 0xf0, 0x71, 0x4d, 0x98, 0x1c, 0x9e, 0x2f, 0x9d, 0xd6, 0xcf, 0xa5, 0x33, 0xb8, 0x9e, 0xfa,
+	0x54, 0xc6, 0x02, 0x58, 0x9c, 0x42, 0x71, 0xb9, 0x74, 0x1e, 0x55, 0x92, 0xae, 0x73, 0xdc, 0x2f,
+	0xdf, 0x1c, 0xc3, 0xdb, 0xae, 0xe1, 0xa6, 0xa6, 0x79, 0x8a, 0xfa, 0x11, 0x4b, 0xa5, 0x12, 0xe0,
+	0xd3, 0x58, 0xe6, 0x09, 0x58, 0xed, 0x5a, 0x46, 0xe5, 0x22, 0x2e, 0x5d, 0x6c, 0x16, 0x82, 0x8f,
+	0xa4, 0x48, 0x26, 0xa4, 0x94, 0xf1, 0x6b, 0xe9, 0x3c, 0xe6, 0x02, 0x3e, 0xe4, 0x01, 0x0e, 0x65,
+	0x4c, 0x6a, 0xcb, 0xab, 0xcf, 0xbe, 0x8a, 0xe6, 0xa4, 0x9c, 0x5e, 0xe9, 0x04, 0xaf, 0x57, 0x77,
+	0x38, 0xd4, 0x0d, 0xcc, 0x3d, 0xd4, 0x07, 0x09, 0x74, 0xe1, 0xd7, 0x5a, 0x94, 0x75, 0x5b, 0x3b,
+	0xd4, 0xd3, 0xe8, 0x49, 0x0d, 0x9a, 0x01, 0xba, 0xbf, 0x10, 0xa7, 0xb9, 0x88, 0x04, 0x14, 0x7e,
+	0xcc, 0x80, 0xfa, 0x11, 0x05, 0x6a, 0x75, 0xb4, 0xbc, 0x67, 0xf8, 0xc6, 0xab, 0xc1, 0x6f, 0x75,
+	0x16, 0x14, 0x7a, 0x67, 0x53, 0x06, 0xf4, 0x98, 0x02, 0x7d, 0xdd, 0xf2, 0xee, 0x5d, 0x95, 0x6b,
+	0xc0, 0x49, 0x07, 0xb5, 0xe7, 0x22, 0x89, 0x5c, 0x0b, 0x3d, 0xdc, 0x5c, 0xb5, 0xc7, 0x54, 0x2a,
+	0x13, 0xc5, 0x0e, 0x32, 0xb4, 0x35, 0x55, 0xdc, 0x9c, 0xa3, 0xee, 0xdf, 0x87, 0xf0, 0xe4, 0x1f,
+	0xed, 0x37, 0x0b, 0x0d, 0xc6, 0xff, 0x4d, 0x6d, 0x7a, 0x4e, 0xde, 0x9d, 0xaf, 0x6c, 0xe3, 0x62,
+	0x65, 0x1b, 0xdf, 0x57, 0xb6, 0xf1, 0x79, 0x6d, 0xb7, 0x2e, 0xd6, 0x76, 0xeb, 0xeb, 0xda, 0x6e,
+	0xbd, 0x7f, 0xb1, 0x61, 0x79, 0x59, 0x76, 0x5f, 0xce, 0x66, 0x22, 0x14, 0x74, 0x51, 0xbf, 0xc9,
+	0xc6, 0x5d, 0xeb, 0x25, 0x04, 0x1d, 0x7d, 0x4a, 0xcf, 0x7f, 0x07, 0x00, 0x00, 0xff, 0xff, 0xfd,
+	0x03, 0x8e, 0xdb, 0x8f, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -59,6 +240,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	CreateGauge(ctx context.Context, in *MsgCreateGauge, opts ...grpc.CallOption) (*MsgCreateGaugeResponse, error)
 }
 
 type msgClient struct {
@@ -69,22 +251,590 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
+func (c *msgClient) CreateGauge(ctx context.Context, in *MsgCreateGauge, opts ...grpc.CallOption) (*MsgCreateGaugeResponse, error) {
+	out := new(MsgCreateGaugeResponse)
+	err := c.cc.Invoke(ctx, "/comdex.incentives.v1beta1.Msg/CreateGauge", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	CreateGauge(context.Context, *MsgCreateGauge) (*MsgCreateGaugeResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
+func (*UnimplementedMsgServer) CreateGauge(ctx context.Context, req *MsgCreateGauge) (*MsgCreateGaugeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGauge not implemented")
+}
+
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
+}
+
+func _Msg_CreateGauge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateGauge)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateGauge(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.incentives.v1beta1.Msg/CreateGauge",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateGauge(ctx, req.(*MsgCreateGauge))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "comdex.incentives.v1beta1.Msg",
 	HandlerType: (*MsgServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams:     []grpc.StreamDesc{},
-	Metadata:    "comdex/incentives/v1beta1/msg.proto",
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateGauge",
+			Handler:    _Msg_CreateGauge_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "comdex/incentives/v1beta1/msg.proto",
 }
+
+func (m *MsgCreateGauge) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateGauge) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateGauge) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Kind != nil {
+		{
+			size := m.Kind.Size()
+			i -= size
+			if _, err := m.Kind.MarshalTo(dAtA[i:]); err != nil {
+				return 0, err
+			}
+		}
+	}
+	if m.TotalTriggers != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.TotalTriggers))
+		i--
+		dAtA[i] = 0x28
+	}
+	{
+		size, err := m.DepositAmount.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintMsg(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x22
+	n2, err2 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.TriggerDuration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.TriggerDuration):])
+	if err2 != nil {
+		return 0, err2
+	}
+	i -= n2
+	i = encodeVarintMsg(dAtA, i, uint64(n2))
+	i--
+	dAtA[i] = 0x1a
+	if m.GaugeTypeId != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.GaugeTypeId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgCreateGauge_LiquidityMetaData) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateGauge_LiquidityMetaData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LiquidityMetaData != nil {
+		{
+			size, err := m.LiquidityMetaData.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintMsg(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x32
+	}
+	return len(dAtA) - i, nil
+}
+func (m *MsgCreateGaugeResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateGaugeResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateGaugeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func encodeVarintMsg(dAtA []byte, offset int, v uint64) int {
+	offset -= sovMsg(v)
+	base := offset
+	for v >= 1<<7 {
+		dAtA[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	dAtA[offset] = uint8(v)
+	return base
+}
+func (m *MsgCreateGauge) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
+	}
+	if m.GaugeTypeId != 0 {
+		n += 1 + sovMsg(uint64(m.GaugeTypeId))
+	}
+	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.TriggerDuration)
+	n += 1 + l + sovMsg(uint64(l))
+	l = m.DepositAmount.Size()
+	n += 1 + l + sovMsg(uint64(l))
+	if m.TotalTriggers != 0 {
+		n += 1 + sovMsg(uint64(m.TotalTriggers))
+	}
+	if m.Kind != nil {
+		n += m.Kind.Size()
+	}
+	return n
+}
+
+func (m *MsgCreateGauge_LiquidityMetaData) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LiquidityMetaData != nil {
+		l = m.LiquidityMetaData.Size()
+		n += 1 + l + sovMsg(uint64(l))
+	}
+	return n
+}
+func (m *MsgCreateGaugeResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func sovMsg(x uint64) (n int) {
+	return (math_bits.Len64(x|1) + 6) / 7
+}
+func sozMsg(x uint64) (n int) {
+	return sovMsg(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *MsgCreateGauge) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateGauge: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateGauge: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GaugeTypeId", wireType)
+			}
+			m.GaugeTypeId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GaugeTypeId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TriggerDuration", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.TriggerDuration, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DepositAmount", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.DepositAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalTriggers", wireType)
+			}
+			m.TotalTriggers = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.TotalTriggers |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LiquidityMetaData", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &LiquidtyGaugeMetaData{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Kind = &MsgCreateGauge_LiquidityMetaData{v}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMsg(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgCreateGaugeResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateGaugeResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateGaugeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMsg(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipMsg(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
+	iNdEx := 0
+	depth := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if dAtA[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+		case 1:
+			iNdEx += 8
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if length < 0 {
+				return 0, ErrInvalidLengthMsg
+			}
+			iNdEx += length
+		case 3:
+			depth++
+		case 4:
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupMsg
+			}
+			depth--
+		case 5:
+			iNdEx += 4
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthMsg
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
+	}
+	return 0, io.ErrUnexpectedEOF
+}
+
+var (
+	ErrInvalidLengthMsg        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowMsg          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupMsg = fmt.Errorf("proto: unexpected end of group")
+)

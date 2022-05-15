@@ -18,8 +18,9 @@ type Keeper struct {
 	storeKey   sdk.StoreKey
 	paramSpace paramtypes.Subspace
 
-	accountKeeper expected.AccountKeeper
-	bankKeeper    expected.BankKeeper
+	accountKeeper   expected.AccountKeeper
+	bankKeeper      expected.BankKeeper
+	liquidityKeeper expected.LiquidityKeeper
 }
 
 // NewKeeper creates a new liquidity Keeper instance.
@@ -29,17 +30,19 @@ func NewKeeper(
 	paramSpace paramtypes.Subspace,
 	accountKeeper expected.AccountKeeper,
 	bankKeeper expected.BankKeeper,
+	liquidityKeeper expected.LiquidityKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
 	}
 
 	return Keeper{
-		cdc:           cdc,
-		storeKey:      storeKey,
-		paramSpace:    paramSpace,
-		accountKeeper: accountKeeper,
-		bankKeeper:    bankKeeper,
+		cdc:             cdc,
+		storeKey:        storeKey,
+		paramSpace:      paramSpace,
+		accountKeeper:   accountKeeper,
+		bankKeeper:      bankKeeper,
+		liquidityKeeper: liquidityKeeper,
 	}
 }
 

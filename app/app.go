@@ -524,6 +524,7 @@ func New(
 		app.GetSubspace(incentivestypes.ModuleName),
 		app.accountKeeper,
 		app.bankKeeper,
+		app.liquidityKeeper,
 	)
 
 	/****  Module Options ****/

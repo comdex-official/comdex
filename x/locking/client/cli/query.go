@@ -312,6 +312,6 @@ $ %s query %s unlockings
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "locks")
+	flags.AddPaginationFlagsToCmd(cmd, "unlockings")
 	return cmd
 }

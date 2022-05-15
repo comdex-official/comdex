@@ -9,7 +9,8 @@ import (
 
 // constants.
 const (
-	TypeMsgLockTokens = "lock_tokens"
+	TypeMsgLockTokens  = "lock_tokens"
+	TypeMsgBeginUnlock = "begin_unlock"
 )
 
 var _ sdk.Msg = &MsgLockTokens{}
@@ -43,6 +44,8 @@ func (m MsgLockTokens) GetSigners() []sdk.AccAddress {
 	owner, _ := sdk.AccAddressFromBech32(m.Owner)
 	return []sdk.AccAddress{owner}
 }
+
+var _ sdk.Msg = &MsgBeginUnlockingTokens{}
 
 // NewMsgLockTokens creates a message to lock tokens.
 func NewMsgBeginUnlockingTokens(owner sdk.AccAddress, lockId uint64, coin sdk.Coin) *MsgBeginUnlockingTokens {

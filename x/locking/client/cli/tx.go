@@ -98,9 +98,9 @@ func NewBeginUnlockByIDCmd() *cobra.Command {
 
 			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
-			id, err := strconv.Atoi(args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return err
+				return fmt.Errorf("parse lock-id id: %w", err)
 			}
 
 			unlockingCoin, err := sdk.ParseCoinNormalized(args[1])
