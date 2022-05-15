@@ -804,7 +804,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 	}
 }
 func (app *App) registerUpgradeHandlers() {
-	app.upgradeKeeper.SetUpgradeHandler("v0.1.3", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
+	app.upgradeKeeper.SetUpgradeHandler("v0.1.2", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 		// 1st-time running in-store migrations, using 1 as fromVersion to
 		// avoid running InitGenesis.
 		fromVM := map[string]uint64{
@@ -842,7 +842,7 @@ func (app *App) registerUpgradeHandlers() {
 	if err != nil {
 		panic(err)
 	}
-	if upgradeInfo.Name == "v0.1.3" && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+	if upgradeInfo.Name == "v0.1.2" && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{}
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
