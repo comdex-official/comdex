@@ -72,8 +72,24 @@ func NewCreateGaugeCmd() *cobra.Command {
 				return fmt.Errorf("parse gauge-type-id: %w", err)
 			}
 
+			startTime := time.Time{}
+			timeStr, err := cmd.Flags().GetString(FlagStartTime)
+			if err != nil {
+				return err
+			}
+			if timeStr == "" { // empty start time
+				return fmt.Errorf("%s cannot be empty string", FlagStartTime)
+			} else if timeUnix, err := strconv.ParseInt(timeStr, 10, 64); err == nil { // unix time
+				startTime = time.Unix(timeUnix, 0)
+			} else if timeRFC, err := time.Parse(time.RFC3339, timeStr); err == nil { // RFC time
+				startTime = timeRFC
+			} else { // invalid input
+				return errors.New("invalid start time format")
+			}
+
 			msg := types.NewMsgCreateGauge(
 				clientCtx.GetFromAddress(),
+				startTime,
 				gaugeTypeId,
 				triggerDuration,
 				depositAmount,
@@ -95,6 +111,7 @@ func NewCreateGaugeCmd() *cobra.Command {
 
 	cmd.Flags().AddFlagSet(FlagSetCreateGauge())
 	flags.AddTxFlagsToCmd(cmd)
+	_ = cmd.MarkFlagRequired(FlagStartTime)
 	return cmd
 }
 
@@ -128,21 +145,6 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 		}
 	}
 
-	startTime := time.Time{}
-	timeStr, err := cmd.Flags().GetString(FlagStartTime)
-	if err != nil {
-		return types.MsgCreateGauge_LiquidityMetaData{}, err
-	}
-	if timeStr == "" { // empty start time
-		return types.MsgCreateGauge_LiquidityMetaData{}, fmt.Errorf("%s required but not specified", FlagStartTime)
-	} else if timeUnix, err := strconv.ParseInt(timeStr, 10, 64); err == nil { // unix time
-		startTime = time.Unix(timeUnix, 0)
-	} else if timeRFC, err := time.Parse(time.RFC3339, timeStr); err == nil { // RFC time
-		startTime = timeRFC
-	} else { // invalid input
-		return types.MsgCreateGauge_LiquidityMetaData{}, errors.New("invalid start time format")
-	}
-
 	lockDuration, err := cmd.Flags().GetDuration(FlagLockDuration)
 	if err != nil {
 		return types.MsgCreateGauge_LiquidityMetaData{}, err
@@ -152,7 +154,6 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 			PoolId:       poolId,
 			IsMasterPool: isMasterPool,
 			ChildPoolIds: childPoolIds,
-			StartTime:    startTime,
 			LockDuration: lockDuration,
 		},
 	}

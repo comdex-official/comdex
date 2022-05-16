@@ -12,11 +12,6 @@ message LiquidtyGaugeMetaData {
   uint64 pool_id = 1;
   bool is_master_pool = 2;
   repeated uint64 child_pool_ids = 3;
-  google.protobuf.Timestamp start_time = 4 [
-    (gogoproto.stdtime) = true,
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"start_time\""
-  ];
   google.protobuf.Duration lock_duration = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true,
@@ -35,26 +30,31 @@ message Gauge {
       (gogoproto.nullable) = false,
       (gogoproto.moretags) = "yaml:\"created_at\""
     ];
-    uint64 gauge_type_id = 4;
-    google.protobuf.Duration trigger_duration = 5 [
+    google.protobuf.Timestamp start_time = 4 [
+      (gogoproto.stdtime) = true,
+      (gogoproto.nullable) = false,
+      (gogoproto.moretags) = "yaml:\"start_time\""
+    ];
+    uint64 gauge_type_id = 5;
+    google.protobuf.Duration trigger_duration = 6 [
       (gogoproto.nullable) = false,
       (gogoproto.stdduration) = true,
       (gogoproto.jsontag) = "trigger_duration,omitempty",
       (gogoproto.moretags) = "yaml:\"trigger_duration\""
     ];
-    cosmos.base.v1beta1.Coin deposit_amount = 6 [
+    cosmos.base.v1beta1.Coin deposit_amount = 7 [
         (gogoproto.nullable) = false,
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
-    uint64 total_triggers = 7;
-    uint64 triggered_count = 8;
-    cosmos.base.v1beta1.Coin distributed_amount = 9 [
+    uint64 total_triggers = 8;
+    uint64 triggered_count = 9;
+    cosmos.base.v1beta1.Coin distributed_amount = 10 [
         (gogoproto.nullable) = false,
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
-    bool is_active = 10;
+    bool is_active = 11;
     oneof kind {
-      LiquidtyGaugeMetaData liquidity_meta_data = 11;
+      LiquidtyGaugeMetaData liquidity_meta_data = 12;
     }
 }
 

@@ -17,6 +17,7 @@ var _ sdk.Msg = &MsgCreateGauge{}
 // NewMsgCreateGauge creates a message to add a new gauge.
 func NewMsgCreateGauge(
 	from sdk.AccAddress,
+	startTime time.Time,
 	gaugeTypeId uint64,
 	triggerDuration time.Duration,
 	depositAmount sdk.Coin,
@@ -24,6 +25,7 @@ func NewMsgCreateGauge(
 ) *MsgCreateGauge {
 	return &MsgCreateGauge{
 		From:            from.String(),
+		StartTime:       startTime,
 		GaugeTypeId:     gaugeTypeId,
 		TriggerDuration: triggerDuration,
 		DepositAmount:   depositAmount,

@@ -30,13 +30,15 @@ func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCrea
 	if msg.DepositAmount.Amount.IsNegative() || msg.DepositAmount.Amount.IsZero() {
 		return types.ErrInvalidDepositAmount
 	}
+
+	if msg.StartTime.Before(ctx.BlockTime()) {
+		return types.ErrInvalidGaugeStartTime
+	}
+
 	return nil
 }
 
 func (k Keeper) ValidateMsgCreateGauge_LiquidityMetaData(ctx sdk.Context, kind *types.MsgCreateGauge_LiquidityMetaData) error {
-	if !kind.LiquidityMetaData.StartTime.After(ctx.BlockTime()) {
-		return types.ErrLiquidityGaugeStartTime
-	}
 	if kind.LiquidityMetaData.LockDuration <= 0 {
 		return types.ErrInvalidDuration
 	}
@@ -62,6 +64,7 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gaug
 		Id:                k.GetGaugeID(ctx) + 1,
 		From:              msg.From,
 		CreatedAt:         ctx.BlockTime(),
+		StartTime:         msg.StartTime,
 		GaugeTypeId:       msg.GaugeTypeId,
 		TriggerDuration:   msg.TriggerDuration,
 		DepositAmount:     msg.DepositAmount,
@@ -84,7 +87,6 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gaug
 				PoolId:       extraData.LiquidityMetaData.PoolId,
 				IsMasterPool: extraData.LiquidityMetaData.IsMasterPool,
 				ChildPoolIds: extraData.LiquidityMetaData.ChildPoolIds,
-				StartTime:    extraData.LiquidityMetaData.StartTime,
 				LockDuration: extraData.LiquidityMetaData.LockDuration,
 			},
 		}
@@ -100,7 +102,7 @@ func (k Keeper) NewGaugeIdsByDuration(ctx sdk.Context, duration time.Duration) t
 	}
 }
 
-func (k Keeper) CreateOrUpdateGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration time.Duration, newGaugeId uint64) error {
+func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerDuration time.Duration, newGaugeId uint64) (types.GaugeByTriggerDuration, error) {
 
 	gaugeIdsByTriggerDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, triggerDuration)
 
@@ -116,11 +118,8 @@ func (k Keeper) CreateOrUpdateGaugeIdsByTriggerDuration(ctx sdk.Context, trigger
 	}
 
 	if gaugeIdAlreadyExists {
-		return sdkerrors.Wrap(types.ErrInvalidGaugeId, fmt.Sprintf("gauge id already exists in map : %d", newGaugeId))
+		return types.GaugeByTriggerDuration{}, sdkerrors.Wrap(types.ErrInvalidGaugeId, fmt.Sprintf("gauge id already exists in map : %d", newGaugeId))
 	}
-
 	gaugeIdsByTriggerDuration.GaugeIds = append(gaugeIdsByTriggerDuration.GaugeIds, newGaugeId)
-	k.SetGaugeIdsByTriggerDuration(ctx, gaugeIdsByTriggerDuration)
-
-	return nil
+	return gaugeIdsByTriggerDuration, nil
 }
