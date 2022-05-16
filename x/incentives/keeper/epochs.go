@@ -34,6 +34,13 @@ func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
 			continue
 		}
 
+		// In case of chain halt/stop
+		if epoch.CurrentEpochStartTime.Add(epoch.Duration * 2).Before(ctx.BlockTime()) {
+			epoch.CurrentEpochStartTime = ctx.BlockTime()
+			k.SetEpochInfoByDuration(ctx, epoch)
+			continue
+		}
+
 		shouldTrigger := ctx.BlockTime().After(epoch.CurrentEpochStartTime.Add(epoch.Duration))
 		if shouldTrigger {
 			logger.Info(fmt.Sprintf("Starting new epoch with duration %d and epoch number %d", &epoch.Duration, epoch.CurrentEpoch))
