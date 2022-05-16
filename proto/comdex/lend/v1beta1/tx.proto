@@ -19,7 +19,7 @@ service Msg {
 }
 
 message MsgLend {
-  string                   lender = 1;
+  string                   lender = 1 [(gogoproto.moretags) = "yaml:\"lender\""];
   cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
   uint64                  pair_id = 3;
 }
@@ -27,6 +27,12 @@ message MsgLend {
 message MsgWithdraw {
   string                   lender = 1;
   cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgDepositLend {
+  string from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  uint64 id = 2 [(gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\""];
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
 }
 
 message MsgFundModuleAccounts {
@@ -38,5 +44,7 @@ message MsgFundModuleAccounts {
 message MsgLendResponse {}
 
 message MsgWithdrawResponse {}
+
+message MsgDepositResponse {}
 
 message MsgFundModuleAccountsResponse {}

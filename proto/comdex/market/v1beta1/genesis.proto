@@ -1,0 +1,16 @@
+syntax = "proto3";
+package comdex.market.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/market/v1beta1/market.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/market/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message GenesisState {
+    repeated Market markets = 1 [
+        (gogoproto.moretags) = "yaml:\"markets\"",
+        (gogoproto.nullable) = false
+    ];
+}

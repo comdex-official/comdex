@@ -1,0 +1,17 @@
+syntax = "proto3";
+package comdex.market.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/market/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message Market {
+string symbol    = 1 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+uint64 script_id = 2 [
+(gogoproto.customname) = "ScriptID",
+(gogoproto.moretags)   = "yaml:\"script_id\""
+];
+uint64 rates = 3;
+}

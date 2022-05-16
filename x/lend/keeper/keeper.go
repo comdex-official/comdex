@@ -62,6 +62,15 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 }
 
 func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, pairID uint64, lent sdk.Coin) error {
+
+	/*if k.GetOracleValidationResult(ctx) == false{
+		return nil, types.ErrorOraclePriceExpired
+	}*/
+
+	if k.HasLendForAddressByPair(ctx, lenderAddr, pairID) {
+		return types.ErrorDuplicateLend
+	}
+
 	lentTokens := sdk.NewCoins(lent)
 
 	ExtPairID, _ := k.asset.GetWhitelistPair(ctx, pairID)
@@ -119,8 +128,53 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, pairID uin
 
 	k.SetLendID(ctx, lendPositon.ID)
 	k.SetLend(ctx, lendPositon)
+	k.SetLendForAddressByPair(ctx, lenderAddr, pairID, lendPositon.ID)
+
 	return nil
 }
+
+/*func (k Keeper) DepositLendAsset(c context.Context, msg *types.MsgDepositLend) (*types.MsgDepositResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	//if k.GetOracleValidationResult(ctx) == false{
+	//	return nil, types.ErrorOraclePriceExpired
+	//}
+
+	from, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	lend, found := k.GetLend(ctx, msg.ID)
+	if !found {
+		return nil, types.ErrorLendDoesNotExist
+	}
+	if msg.From != lend.Owner {
+		return nil, types.ErrorUnauthorized
+	}
+
+	pair, found := k.GetPair(ctx, lend.PairID)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	lend.AmountIn = lend.AmountIn.Add(msg.Amount)
+	if !lend.AmountIn.IsPositive() {
+		return nil, types.ErrorUnauthorized
+	}
+
+	if err := k.SendCoinFromAccountToModule(ctx, from, pair.mo, sdk.NewCoin(assetIn.Denom, msg.Amount.Amount)); err != nil {
+		return nil, err
+	}
+
+	k.SetLend(ctx, lend)
+	return &types.MsgDepositResponse{}, nil
+}*/
 
 func (k Keeper) WithdrawAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, withdrawal sdk.Coin) error {
 

@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 )
@@ -42,6 +43,7 @@ var (
 	LendIDKey                         = []byte{0x10}
 	KeyPrefixRegisteredToken          = []byte{0x11}
 	KeyPrefixCtokenSupply             = []byte{0x12}
+	LendForAddressByPairKeyPrefix     = []byte{0x13}
 )
 
 func LendKey(id uint64) []byte {
@@ -99,4 +101,13 @@ func CreateCTokenSupplyKey(uTokenDenom string) []byte {
 	key = append(key, KeyPrefixCtokenSupply...)
 	key = append(key, []byte(uTokenDenom)...)
 	return append(key, 0) // append 0 for null-termination
+}
+
+func LendForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
+	v := append(LendForAddressByPairKeyPrefix, address.Bytes()...)
+	if len(v) != 1+20 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+20))
+	}
+
+	return append(v, sdk.Uint64ToBigEndian(pairID)...)
 }

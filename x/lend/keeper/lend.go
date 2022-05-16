@@ -103,7 +103,7 @@ func (k *Keeper) GetLend(ctx sdk.Context, id uint64) (asset types.Lend_Asset, fo
 	return asset, true
 }
 
-func (k *Keeper) GetLendss(ctx sdk.Context) (lends []types.Lend_Asset) {
+func (k *Keeper) GetLends(ctx sdk.Context) (lends []types.Lend_Asset) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.LendKeyPrefix)
@@ -118,4 +118,27 @@ func (k *Keeper) GetLendss(ctx sdk.Context) (lends []types.Lend_Asset) {
 	}
 
 	return lends
+}
+
+func (k *Keeper) SetLendForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendForAddressByPair(address, pairID)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) HasLendForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendForAddressByPair(address, pairID)
+	)
+
+	return store.Has(key)
 }
