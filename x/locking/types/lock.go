@@ -7,12 +7,13 @@ import (
 )
 
 // NewLock returns a new instance of lock.
-func NewLock(id uint64, owner sdk.AccAddress, duration time.Duration, coin sdk.Coin) Lock {
+func NewLock(ctx sdk.Context, id uint64, owner sdk.AccAddress, duration time.Duration, coin sdk.Coin) Lock {
 	return Lock{
-		Id:       id,
-		Owner:    owner.String(),
-		Duration: duration,
-		Coin:     coin,
+		Id:        id,
+		Owner:     owner.String(),
+		CreatedAt: ctx.BlockTime(),
+		Duration:  duration,
+		Coin:      coin,
 	}
 }
 

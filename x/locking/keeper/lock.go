@@ -53,7 +53,7 @@ func (k Keeper) NewLockTokens(ctx sdk.Context, owner sdk.AccAddress, duration ti
 	lastLockId := k.GetLockID(ctx)
 
 	lockId := lastLockId + 1
-	lock := types.NewLock(lockId, owner, duration, coin)
+	lock := types.NewLock(ctx, lockId, owner, duration, coin)
 
 	k.SetLockID(ctx, lockId)
 	k.SetLock(ctx, lock)
