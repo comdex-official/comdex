@@ -6,11 +6,11 @@ package comdex.locker.v1beta1;
 // import "google/api/annotations.proto";
 // import "cosmos/base/v1beta1/coin.proto";
 
-// option go_package            = "github.com/comdex-official/comdex/x/vault/types";
+option go_package            = "github.com/comdex-official/comdex/x/locker/types";
 // option (gogoproto.equal_all) = false;
 // option (gogoproto.goproto_getters_all) = false;
 
-// service QueryService {
+service QueryService {
 //   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
 //     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
 //   };
@@ -22,7 +22,7 @@ package comdex.locker.v1beta1;
 //   rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
 //     option (google.api.http).get = "/comdex/vault/v1beta1/vaults";
 //   };
-// }
+}
 
 // message VaultInfo{
 //   uint64 id = 1;

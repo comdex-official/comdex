@@ -102,7 +102,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		return nil, err
 	}
 
-	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetDetailOUT.Denom, (msg.AmountOut-(sdk.Int(pairs.CreationFee)/100))*msg.AmountOut)); err != nil {
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, from, sdk.NewCoin(assetDetailOUT.Denom, msg.AmountOut)); err != nil {
 		return nil, err
 	}
 
