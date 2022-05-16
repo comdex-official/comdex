@@ -91,15 +91,28 @@ import (
 	assetclient "github.com/comdex-official/comdex/x/asset/client"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/oracle"
-	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
-	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
-	"github.com/comdex-official/comdex/x/vault"
-	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	"github.com/comdex-official/comdex/x/locker"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	"github.com/comdex-official/comdex/x/collector"
+	collectorclient "github.com/comdex-official/comdex/x/collector/client"
+	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	"github.com/comdex-official/comdex/x/lend"
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+
+	bandoraclemodule "github.com/comdex-official/comdex/x/bandoracle"
+	bandoraclemoduleclient "github.com/comdex-official/comdex/x/bandoracle/client"
+	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
+	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
+
+	"github.com/comdex-official/comdex/x/market"
+	marketkeeper "github.com/comdex-official/comdex/x/market/keeper"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
+	"github.com/comdex-official/comdex/x/vault"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -132,6 +145,8 @@ var (
 		gov.NewAppModuleBasic(
 			append(
 				assetclient.AddAssetsHandler,
+				bandoraclemoduleclient.AddFetchPriceHandler,
+				collectorclient.AddLookupTableParamsHandlers,
 				paramsclient.ProposalHandler,
 				distrclient.ProposalHandler,
 				upgradeclient.ProposalHandler,
@@ -149,10 +164,12 @@ var (
 		vesting.AppModuleBasic{},
 		vault.AppModuleBasic{},
 		asset.AppModuleBasic{},
+		lend.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
-		asset.AppModuleBasic{},
-		oracle.AppModuleBasic{},
+		market.AppModuleBasic{},
 		locker.AppModuleBasic{},
+		bandoraclemodule.AppModuleBasic{},
+		collector.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
 )
@@ -209,13 +226,18 @@ type App struct {
 	// make scoped keepers public for test purposes
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
-	scopedWasmKeeper        capabilitykeeper.ScopedKeeper
+	scopedIBCOracleKeeper   capabilitykeeper.ScopedKeeper
+	scopedBandoracleKeeper  capabilitykeeper.ScopedKeeper
 
-	assetKeeper     assetkeeper.Keeper
-	vaultKeeper     vaultkeeper.Keeper
-	liquidityKeeper liquiditykeeper.Keeper
-	oracleKeeper    oraclekeeper.Keeper
+	BandoracleKeeper bandoraclemodulekeeper.Keeper
+	assetKeeper      assetkeeper.Keeper
+	collectorKeeper  collectorkeeper.Keeper
+	vaultKeeper      vaultkeeper.Keeper
+	liquidityKeeper  liquiditykeeper.Keeper
+	marketKeeper     marketkeeper.Keeper
 	lockerKeeper    lockerkeeper.Keeper
+	lendKeeper       lendkeeper.Keeper
+	scopedWasmKeeper capabilitykeeper.ScopedKeeper
 
 	wasmKeeper wasm.Keeper
 	// the module manager
@@ -238,6 +260,7 @@ func New(
 	wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
+	appCodec := encoding.Marshaler
 	var (
 		tkeys = sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 		mkeys = sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -246,8 +269,8 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,lockertypes.StoreKey,
-			wasm.StoreKey, authzkeeper.StoreKey,
+			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey,
+			lendtypes.StoreKey, markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
 		)
 	)
 
@@ -289,8 +312,11 @@ func New(
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
 	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
 	app.paramsKeeper.Subspace(assettypes.ModuleName)
-	app.paramsKeeper.Subspace(oracletypes.ModuleName)
+	app.paramsKeeper.Subspace(collectortypes.ModuleName)
+	app.paramsKeeper.Subspace(lendtypes.ModuleName)
+	app.paramsKeeper.Subspace(markettypes.ModuleName)
 	app.paramsKeeper.Subspace(lockertypes.ModuleName)
+	app.paramsKeeper.Subspace(bandoraclemoduletypes.ModuleName)
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 
 	// set the BaseApp's parameter store
@@ -309,9 +335,10 @@ func New(
 
 	// grant capabilities for the ibc and ibc-transfer modules
 	var (
-		scopedIBCKeeper      = app.capabilityKeeper.ScopeToModule(ibchost.ModuleName)
-		scopedTransferKeeper = app.capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
-		scopedWasmKeeper     = app.capabilityKeeper.ScopeToModule(wasm.ModuleName)
+		scopedIBCKeeper       = app.capabilityKeeper.ScopeToModule(ibchost.ModuleName)
+		scopedTransferKeeper  = app.capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+		scopedIBCOracleKeeper = app.capabilityKeeper.ScopeToModule(markettypes.ModuleName)
+		scopedWasmKeeper      = app.capabilityKeeper.ScopeToModule(wasm.ModuleName)
 	)
 
 	// add keepers
@@ -401,6 +428,80 @@ func New(
 		scopedIBCKeeper,
 	)
 
+	app.assetKeeper = assetkeeper.NewKeeper(
+		app.cdc,
+		app.keys[assettypes.StoreKey],
+		app.GetSubspace(assettypes.ModuleName),
+		&app.marketKeeper,
+	)
+
+	app.lendKeeper = *lendkeeper.NewKeeper(
+		app.cdc,
+		app.keys[lendtypes.StoreKey],
+		app.keys[lendtypes.StoreKey],
+		app.GetSubspace(lendtypes.ModuleName),
+		app.bankKeeper,
+		app.accountKeeper,
+		&app.assetKeeper,
+	)
+
+	app.vaultKeeper = vaultkeeper.NewKeeper(
+		app.cdc,
+		app.keys[vaulttypes.StoreKey],
+		app.bankKeeper,
+		&app.assetKeeper,
+		&app.marketKeeper,
+	)
+
+	app.liquidityKeeper = liquiditykeeper.NewKeeper(
+		app.cdc,
+		app.keys[liquiditytypes.StoreKey],
+		app.GetSubspace(liquiditytypes.ModuleName),
+		app.bankKeeper,
+		app.accountKeeper,
+		app.distrKeeper,
+	)
+
+	scopedBandoracleKeeper := app.capabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
+	app.scopedBandoracleKeeper = scopedBandoracleKeeper
+
+	app.BandoracleKeeper = bandoraclemodulekeeper.NewKeeper(
+		appCodec,
+		keys[bandoraclemoduletypes.StoreKey],
+		keys[bandoraclemoduletypes.MemStoreKey],
+		app.GetSubspace(bandoraclemoduletypes.ModuleName),
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		scopedBandoracleKeeper,
+		&app.marketKeeper,
+		app.assetKeeper,
+	)
+	bandoracleModule := bandoraclemodule.NewAppModule(
+		appCodec,
+		app.BandoracleKeeper,
+		app.accountKeeper,
+		app.bankKeeper,
+		app.scopedBandoracleKeeper,
+		&app.ibcKeeper.PortKeeper,
+		app.ibcKeeper.ChannelKeeper,
+	)
+
+	app.marketKeeper = *marketkeeper.NewKeeper(
+		app.cdc,
+		app.keys[markettypes.StoreKey],
+		app.GetSubspace(markettypes.ModuleName),
+		scopedIBCOracleKeeper,
+		app.assetKeeper,
+		&app.BandoracleKeeper,
+	)
+
+	app.collectorKeeper = *collectorkeeper.NewKeeper(
+		app.cdc,
+		app.keys[collectortypes.StoreKey],
+		app.keys[collectortypes.MemStoreKey],
+		app.GetSubspace(collectortypes.ModuleName),
+	)
+
 	// Create Transfer Keepers
 	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.cdc,
@@ -413,62 +514,14 @@ func New(
 		scopedTransferKeeper,
 	)
 
-	var (
-		evidenceRouter = evidencetypes.NewRouter()
-		ibcRouter      = ibcporttypes.NewRouter()
-		transferModule = ibctransfer.NewAppModule(app.ibcTransferKeeper)
-	)
-
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-
-	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
-	app.evidenceKeeper = *evidencekeeper.NewKeeper(
-		app.cdc,
-		app.keys[evidencetypes.StoreKey],
-		&app.stakingKeeper,
-		app.slashingKeeper,
-	)
-	app.evidenceKeeper.SetRouter(evidenceRouter)
-
-	app.assetKeeper = assetkeeper.NewKeeper(
-		app.cdc,
-		app.keys[assettypes.StoreKey],
-		app.GetSubspace(assettypes.ModuleName),
-		&app.oracleKeeper,
-	)
-	app.vaultKeeper = vaultkeeper.NewKeeper(
-		app.cdc,
-		app.keys[vaulttypes.StoreKey],
-		app.bankKeeper,
-		&app.assetKeeper,
-		&app.oracleKeeper,
-	)
-
-	app.liquidityKeeper = liquiditykeeper.NewKeeper(
-		app.cdc,
-		app.keys[liquiditytypes.StoreKey],
-		app.GetSubspace(liquiditytypes.ModuleName),
-		app.bankKeeper,
-		app.accountKeeper,
-		app.distrKeeper,
-	)
-
-	app.oracleKeeper = *oraclekeeper.NewKeeper(
-		app.cdc,
-		app.keys[oracletypes.StoreKey],
-		app.GetSubspace(oracletypes.ModuleName),
-		app.ibcKeeper.ChannelKeeper,
-		&app.ibcKeeper.PortKeeper,
-		app.scopedIBCKeeper,
-		app.assetKeeper,
-	)
 	app.lockerKeeper = lockerkeeper.NewKeeper(
 		app.cdc,
 		app.keys[lockertypes.StoreKey],
 		app.bankKeeper,
 		&app.assetKeeper,
-		&app.oracleKeeper,
+		&app.marketKeeper,
 	)
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
 	supportedFeatures := "iterator,staking,stargate"
@@ -493,17 +546,16 @@ func New(
 		wasmOpts...,
 	)
 
-		// register the proposal types
+	// register the proposal types
 	govRouter := govtypes.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.assetKeeper)).
+		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.collectorKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
 
-
-	app.ibcKeeper.SetRouter(ibcRouter)
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,
 		app.keys[govtypes.StoreKey],
@@ -513,6 +565,27 @@ func New(
 		&stakingKeeper,
 		govRouter,
 	)
+
+	var (
+		evidenceRouter = evidencetypes.NewRouter()
+		ibcRouter      = ibcporttypes.NewRouter()
+		transferModule = ibctransfer.NewAppModule(app.ibcTransferKeeper)
+		oracleModule   = market.NewAppModule(app.cdc, app.marketKeeper)
+	)
+
+	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
+	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandoracleModule)
+	app.ibcKeeper.SetRouter(ibcRouter)
+
+	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
+	app.evidenceKeeper = *evidencekeeper.NewKeeper(
+		app.cdc,
+		app.keys[evidencetypes.StoreKey],
+		&app.stakingKeeper,
+		app.slashingKeeper,
+	)
+	app.evidenceKeeper.SetRouter(evidenceRouter)
+
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -543,9 +616,11 @@ func New(
 		asset.NewAppModule(app.cdc, app.assetKeeper),
 		vault.NewAppModule(app.cdc, app.vaultKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
-		asset.NewAppModule(app.cdc, app.assetKeeper),
-		oracle.NewAppModule(app.cdc, app.oracleKeeper),
+		oracleModule,
+		bandoracleModule,
 		locker.NewAppModule(app.cdc, app.lockerKeeper, app.accountKeeper, app.bankKeeper),
+		collector.NewAppModule(app.cdc, app.collectorKeeper, app.accountKeeper, app.bankKeeper),
+		lend.NewAppModule(app.cdc, app.lendKeeper, app.accountKeeper, app.bankKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
 	)
 
@@ -556,17 +631,18 @@ func New(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
-		crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
-		authz.ModuleName, oracletypes.ModuleName,lockertypes.ModuleName, transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName,
-		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
+		bandoraclemoduletypes.ModuleName, markettypes.ModuleName,lockertypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
+		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName,
+		lendtypes.ModuleName, vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
-		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, minttypes.ModuleName,
+		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName,
+		minttypes.ModuleName, bandoraclemoduletypes.ModuleName, markettypes.ModuleName, lockertypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
-		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
-		paramstypes.ModuleName, oracletypes.ModuleName, lockertypes.ModuleName,capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
-		assettypes.ModuleName, banktypes.ModuleName,
+		vaulttypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
+		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
+		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -590,8 +666,11 @@ func New(
 		liquiditytypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		assettypes.ModuleName,
+		collectortypes.ModuleName,
+		lendtypes.ModuleName,
 		vaulttypes.ModuleName,
-		oracletypes.StoreKey,
+		bandoraclemoduletypes.ModuleName,
+		markettypes.ModuleName,
 		lockertypes.StoreKey,
 		wasmtypes.ModuleName,
 		authz.ModuleName,
@@ -647,6 +726,8 @@ func New(
 
 	app.scopedIBCKeeper = scopedIBCKeeper
 	app.scopedIBCTransferKeeper = scopedTransferKeeper
+	app.scopedIBCOracleKeeper = scopedIBCOracleKeeper
+
 	app.scopedWasmKeeper = scopedWasmKeeper
 	return app
 }
@@ -775,9 +856,14 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		collectortypes.ModuleName:      {authtypes.Burner, authtypes.Staking},
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		lockertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
 	}
 }
@@ -803,8 +889,10 @@ func (app *App) registerUpgradeHandlers() {
 			genutiltypes.ModuleName:     genutil.AppModule{}.ConsensusVersion(),
 			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
+			collectortypes.ModuleName:   collector.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
-			lockertypes.ModuleName:       locker.AppModule{}.ConsensusVersion(),
+			lendtypes.ModuleName:        lend.AppModule{}.ConsensusVersion(),
+			lockertypes.ModuleName:      locker.AppModule{}.ConsensusVersion(),
 			wasmtypes.ModuleName:        wasm.AppModule{}.ConsensusVersion(),
 		}
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)

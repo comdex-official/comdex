@@ -20,6 +20,6 @@ type AssetKeeper interface {
 	GetApp(ctx sdk.Context,id uint64) (assettypes.AppMapping, bool)
 }
 
-type OracleKeeper interface {
+type MarketKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }

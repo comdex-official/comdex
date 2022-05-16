@@ -1,0 +1,50 @@
+syntax = "proto3";
+package comdex.lend.v1beta1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/lend/types";
+
+service Msg {
+  // LendAsset defines a method for lending coins to the ModuleAccount.
+  rpc Lend(MsgLend) returns (MsgLendResponse);
+
+  // WithdrawAsset defines a method for withdrawing previously loaned coins from
+  // the ModuleAccount.
+  rpc Withdraw(MsgWithdraw) returns (MsgWithdrawResponse);
+
+  // FundModuleAccounts funds an existing module account
+  rpc FundModuleAccounts(MsgFundModuleAccounts) returns (MsgFundModuleAccountsResponse);
+}
+
+message MsgLend {
+  string                   lender = 1 [(gogoproto.moretags) = "yaml:\"lender\""];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+  uint64                  pair_id = 3;
+}
+
+message MsgWithdraw {
+  string                   lender = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgDepositLend {
+  string from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  uint64 id = 2 [(gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\""];
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgFundModuleAccounts {
+  string                   moduleName = 1;
+  string                   lender = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgLendResponse {}
+
+message MsgWithdrawResponse {}
+
+message MsgDepositResponse {}
+
+message MsgFundModuleAccountsResponse {}

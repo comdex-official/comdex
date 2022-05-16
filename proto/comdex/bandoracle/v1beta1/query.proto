@@ -1,0 +1,44 @@
+syntax = "proto3";
+package comdex.bandoracle.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "comdex/bandoracle/v1beta1/fetch_price.proto";
+import "comdex/bandoracle/v1beta1/params.proto";
+
+
+option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/comdex/bandoracle/v1beta1/params";
+  }
+
+  rpc FetchPriceResult(QueryFetchPriceRequest) returns (QueryFetchPriceResponse) {
+    option (google.api.http).get = "/comdex/bandoracle/v1beta1/fetch_price_result/{request_id}";
+  }
+
+  rpc LastFetchPriceId(QueryLastFetchPriceIdRequest) returns (QueryLastFetchPriceIdResponse) {
+    option (google.api.http).get = "/comdex/bandoracle/v1beta1/last_fetch_price_id";
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [
+    (gogoproto.moretags) = "yaml:\"params\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryFetchPriceRequest {int64 request_id = 1;}
+
+message QueryFetchPriceResponse {
+  FetchPriceResult result = 1;
+}
+
+message QueryLastFetchPriceIdRequest {}
+
+message QueryLastFetchPriceIdResponse {int64 request_id = 1;}
+

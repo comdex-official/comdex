@@ -13,10 +13,10 @@ type Keeper struct {
 	cdc    codec.BinaryCodec
 	key    sdk.StoreKey
 	params paramstypes.Subspace
-	oracle expected.OracleKeeper
+	oracle expected.MarketKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, oracle expected.OracleKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, oracle expected.MarketKeeper) Keeper {
 	if !params.HasKeyTable() {
 		params = params.WithKeyTable(assettypes.ParamKeyTable())
 	}
