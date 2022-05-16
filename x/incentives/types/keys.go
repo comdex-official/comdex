@@ -24,9 +24,10 @@ const (
 )
 
 var (
-	EpochInfoByDurationKeyPrefix = []byte{0x00011}
-	GaugeIdKey                   = []byte{0x00012}
-	GaugeKeyPrefix               = []byte{0x00013}
+	EpochInfoByDurationKeyPrefix       = []byte{0x00011}
+	GaugeIdKey                         = []byte{0x00012}
+	GaugeKeyPrefix                     = []byte{0x00013}
+	GaugeIdsByTriggerDurationKeyPrefix = []byte{0x00014}
 )
 
 func GetEpochInfoByDurationKey(duration time.Duration) []byte {
@@ -35,4 +36,8 @@ func GetEpochInfoByDurationKey(duration time.Duration) []byte {
 
 func GetGaugeKey(id uint64) []byte {
 	return append(GaugeKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func GetGaugeIdsByTriggerDurationKey(duration time.Duration) []byte {
+	return append(GaugeIdsByTriggerDurationKeyPrefix, sdk.Uint64ToBigEndian(uint64(duration))...)
 }

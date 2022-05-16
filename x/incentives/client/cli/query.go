@@ -31,6 +31,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		NewQueryEpochInfoByDurationCmd(),
 		NewQueryAllEpochsInfoCmd(),
 		NewQueryAllGaugesCmd(),
+		NewQueryGaugeByIdCmd(),
+		NewQueryGaugeByDurationCmd(),
 	)
 	return cmd
 }
@@ -79,7 +81,7 @@ func NewQueryEpochInfoByDurationCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query epoch by duration.
 Example:
-$ %s query %s epoch-by-duration 24h
+$ %s query %s epoch-by-duration 600
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -91,7 +93,7 @@ $ %s query %s epoch-by-duration 24h
 			}
 			seconds, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("parse gauge-type-id: %w", err)
+				return fmt.Errorf("parse seconds: %w", err)
 			}
 
 			queryClient := types.NewQueryClient(ctx)
@@ -188,5 +190,85 @@ $ %s query %s gauges
 	}
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "gauges")
+	return cmd
+}
+
+func NewQueryGaugeByIdCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gauge [id]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Query gauge by id",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query gauge by id.
+Example:
+$ %s query %s gauge 1
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			gaugeId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse id: %w", err)
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryGaugeById(
+				context.Background(),
+				&types.QueryGaugeByIdRequest{
+					GaugeId: gaugeId,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func NewQueryGaugeByDurationCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gauges-by-duration [seconds]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Query gauges by duration",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query gauge by duration.
+Example:
+$ %s query %s gauges-by-duration 600
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			seconds, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse seconds: %w", err)
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryGaugeByDuration(
+				context.Background(),
+				&types.QueryGaugesByDurationRequest{
+					DurationSeconds: seconds,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }

@@ -125,3 +125,25 @@ func (k *Keeper) GetAllGauges(ctx sdk.Context) (gauges []types.Gauge) {
 	}
 	return gauges
 }
+
+func (k *Keeper) SetGaugeIdsByTriggerDuration(ctx sdk.Context, gaugesByTriggerDuration types.GaugeByTriggerDuration) {
+	var (
+		store = k.Store(ctx)
+		key   = types.GetGaugeIdsByTriggerDurationKey(gaugesByTriggerDuration.TriggerDuration)
+		value = k.cdc.MustMarshal(&gaugesByTriggerDuration)
+	)
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration time.Duration) (gaugeIdsByTriggerDuration types.GaugeByTriggerDuration, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.GetGaugeIdsByTriggerDurationKey(triggerDuration)
+		value = store.Get(key)
+	)
+	if value == nil {
+		return gaugeIdsByTriggerDuration, false
+	}
+	k.cdc.MustUnmarshal(value, &gaugeIdsByTriggerDuration)
+	return gaugeIdsByTriggerDuration, true
+}

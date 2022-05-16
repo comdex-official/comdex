@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/comdex-official/comdex/x/incentives/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -42,8 +41,11 @@ func (m msgServer) CreateGauge(goCtx context.Context, msg *types.MsgCreateGauge)
 	_, found := m.Keeper.GetEpochInfoByDuration(ctx, newGauge.TriggerDuration)
 	if !found {
 		newEpochInfo := m.Keeper.NewEpochInfo(ctx, newGauge.TriggerDuration)
-		fmt.Println(newEpochInfo)
 		m.Keeper.SetEpochInfoByDuration(ctx, newEpochInfo)
+	}
+	err = m.Keeper.CreateOrUpdateGaugeIdsByTriggerDuration(ctx, newGauge.TriggerDuration, newGauge.Id)
+	if err != nil {
+		return nil, err
 	}
 	m.Keeper.SetGaugeID(ctx, newGauge.Id)
 	m.Keeper.SetGauge(ctx, newGauge)

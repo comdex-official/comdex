@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/comdex-official/comdex/x/incentives/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -90,4 +91,36 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gaug
 		newGauge.Kind = liquidityGaugeType
 	}
 	return newGauge, nil
+}
+
+func (k Keeper) NewGaugeIdsByDuration(ctx sdk.Context, duration time.Duration) types.GaugeByTriggerDuration {
+	return types.GaugeByTriggerDuration{
+		TriggerDuration: duration,
+		GaugeIds:        []uint64{},
+	}
+}
+
+func (k Keeper) CreateOrUpdateGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration time.Duration, newGaugeId uint64) error {
+
+	gaugeIdsByTriggerDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, triggerDuration)
+
+	if !found {
+		gaugeIdsByTriggerDuration = k.NewGaugeIdsByDuration(ctx, triggerDuration)
+	}
+	gaugeIdAlreadyExists := false
+
+	for _, gaugeId := range gaugeIdsByTriggerDuration.GaugeIds {
+		if gaugeId == newGaugeId {
+			gaugeIdAlreadyExists = true
+		}
+	}
+
+	if gaugeIdAlreadyExists {
+		return sdkerrors.Wrap(types.ErrInvalidGaugeId, fmt.Sprintf("gauge id already exists in map : %d", newGaugeId))
+	}
+
+	gaugeIdsByTriggerDuration.GaugeIds = append(gaugeIdsByTriggerDuration.GaugeIds, newGaugeId)
+	k.SetGaugeIdsByTriggerDuration(ctx, gaugeIdsByTriggerDuration)
+
+	return nil
 }

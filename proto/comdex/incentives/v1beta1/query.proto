@@ -7,7 +7,6 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "comdex/incentives/v1beta1/params.proto";
 import "comdex/incentives/v1beta1/gauge.proto";
 import "comdex/incentives/v1beta1/epochs.proto";
-import "google/protobuf/duration.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/incentives/types";
 option (gogoproto.equal_all)           = false;
@@ -57,6 +56,24 @@ message QueryAllGaugesResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
+// GAUGE BY ID
+message QueryGaugeByIdRequest {
+  uint64 gauge_id = 1;
+}
+message QueryGaugeByIdResponse {
+  Gauge gauge = 1
+    [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"gauge\"" ];
+}
+
+// GAUGE BY TRIIGER DURATION
+message QueryGaugesByDurationRequest {
+  uint64 duration_seconds = 1;
+}
+message QueryGaugeByDurationResponse {
+  repeated Gauge gauges = 1
+    [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"gauges\"" ];
+}
+
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/incentives/v1beta1/params";
@@ -69,5 +86,11 @@ service Query {
   }
   rpc QueryAllGauges(QueryAllGaugesRequest) returns (QueryAllGaugesResponse) {
     option (google.api.http).get = "/comdex/incentives/v1beta1/gauges";
+  }
+  rpc QueryGaugeById(QueryGaugeByIdRequest) returns (QueryGaugeByIdResponse) {
+    option (google.api.http).get = "/comdex/incentives/v1beta1/gauge/{gauge_id}";
+  }
+  rpc QueryGaugeByDuration(QueryGaugesByDurationRequest) returns (QueryGaugeByDurationResponse) {
+    option (google.api.http).get = "/comdex/incentives/v1beta1/gauge_duration/{duration_seconds}";
   }
 }

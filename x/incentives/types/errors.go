@@ -15,4 +15,5 @@ var (
 	ErrInvalidDuration         = sdkerrors.Register(ModuleName, 3, "duration should be positive")
 	ErrInvalidDepositAmount    = sdkerrors.Register(ModuleName, 4, "deposit amount should be positive")
 	ErrInvalidPoolId           = sdkerrors.Register(ModuleName, 5, "invalid pool id")
+	ErrInvalidGaugeId          = sdkerrors.Register(ModuleName, 6, "invalid gauge id")
 )
