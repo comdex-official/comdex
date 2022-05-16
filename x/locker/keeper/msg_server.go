@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"time"
+	"strconv"
 
 	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -74,7 +75,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 			//Creating locker instance
 			var userLocker types.Locker
 			counter := lookup_table_data.Counter + 1
-			userLocker.LockerId = app_mapping.ShortName + string(counter)
+			userLocker.LockerId = app_mapping.ShortName + strconv.FormatUint(asset.Id,10)
 			userLocker.Depositor = msg.Depositor
 			userLocker.AssetDepositId = asset.Id
 			userLocker.CreatedAt = time.Now()
@@ -250,7 +251,7 @@ func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddW
 
 		var locker types.LockerProductAssetMapping
 		locker.AppMappingId = app_mapping.Id
-		locker.AssetIds = append(locker.AssetIds, string(asset.Id))
+		locker.AssetIds = append(locker.AssetIds, asset.Id)
 		k.SetLockerProductAssetMapping(ctx, locker)
 
 		//Also Create a LockerLookup table Instance and set it with the new asset id
@@ -277,7 +278,7 @@ func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddW
 
 		// Since it does not exists , push the asset id to the LockerProductAssetMapping
 
-		locker_product_asset_mapping.AssetIds = append(locker_product_asset_mapping.AssetIds, string(asset.Id))
+		locker_product_asset_mapping.AssetIds = append(locker_product_asset_mapping.AssetIds, asset.Id)
 		k.SetLockerProductAssetMapping(ctx, locker_product_asset_mapping)
 
 		//append  the asset in LockerLookup table and set it

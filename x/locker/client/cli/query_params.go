@@ -1,22 +1,35 @@
 package cli
 
-/*
-func CmdQueryParams() *cobra.Command {
+import (
+	"context"
+
+	"github.com/comdex-official/comdex/x/locker/types"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/spf13/cobra"
+)
+
+func queryParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",
-		Short: "shows the parameters of the module",
-		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-
-			queryClient := types.NewQueryClient(clientCtx)
-
-			res, err := queryClient.Params(context.Background(), &types.QueryParamsRequest{})
+		Short: "Query module parameters",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryParams(
+				context.Background(),
+				&types.QueryParamsRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
 		},
 	}
 
@@ -24,4 +37,3 @@ func CmdQueryParams() *cobra.Command {
 
 	return cmd
 }
-*/

@@ -272,7 +272,7 @@ var xxx_messageInfo_TokenToLockerMapping proto.InternalMessageInfo
 //Key is app_mapping_id
 type LockerProductAssetMapping struct {
 	AppMappingId uint64   `protobuf:"varint,1,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"owner"`
-	AssetIds     []string `protobuf:"bytes,2,rep,name=asset_ids,json=assetIds,proto3" json:"asset_ids,omitempty" yaml:"asset_ids"`
+	AssetIds     []uint64 `protobuf:"varint,2,rep,packed,name=asset_ids,json=assetIds,proto3" json:"asset_ids,omitempty" yaml:"asset_ids"`
 }
 
 func (m *LockerProductAssetMapping) Reset()         { *m = LockerProductAssetMapping{} }
@@ -323,7 +323,7 @@ func init() {
 }
 
 var fileDescriptor_5cf8d15809df39ec = []byte{
-	// 817 bytes of a gzipped FileDescriptorProto
+	// 819 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x55, 0x4f, 0x6f, 0xe3, 0x44,
 	0x14, 0x8f, 0xbb, 0xd9, 0x36, 0x99, 0xae, 0x76, 0xd3, 0xa1, 0xcb, 0xba, 0x85, 0xb5, 0xa3, 0x11,
 	0x5a, 0x05, 0xa1, 0xb5, 0x49, 0x57, 0xe2, 0xc0, 0x05, 0x25, 0x5a, 0x0e, 0x91, 0x8a, 0x84, 0x46,
@@ -370,12 +370,12 @@ var fileDescriptor_5cf8d15809df39ec = []byte{
 	0xb7, 0x1e, 0x95, 0xf4, 0x7a, 0x23, 0x4d, 0xee, 0xbc, 0x91, 0x9e, 0x34, 0x96, 0x6e, 0x8d, 0x87,
 	0xf0, 0xa3, 0xda, 0x34, 0x52, 0x96, 0x9f, 0x0c, 0x70, 0xa2, 0xee, 0xf5, 0x65, 0xca, 0xfc, 0xcc,
 	0x13, 0x8d, 0x97, 0xf8, 0xc9, 0x1b, 0x3a, 0xb7, 0xfd, 0x24, 0x9b, 0x0d, 0x1b, 0x82, 0x6e, 0xa5,
-	0xcd, 0xae, 0xfb, 0x57, 0x2e, 0x84, 0x3b, 0x5a, 0x32, 0x3e, 0xc6, 0x57, 0x7f, 0x5b, 0xad, 0x9f,
-	0x57, 0x56, 0xeb, 0x6a, 0x65, 0x19, 0xd7, 0x2b, 0xcb, 0xf8, 0x6b, 0x65, 0x19, 0xaf, 0x6f, 0xac,
-	0xd6, 0xf5, 0x8d, 0xd5, 0xfa, 0xed, 0xc6, 0x6a, 0x7d, 0xf3, 0x71, 0xe3, 0xfa, 0x65, 0xfb, 0x9f,
-	0xb3, 0x8b, 0x8b, 0xc0, 0x0b, 0x48, 0xa8, 0xcf, 0x6e, 0xfd, 0x6f, 0x29, 0xc5, 0x98, 0xef, 0xcb,
-	0xe5, 0xfa, 0xe2, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x4e, 0x62, 0xdd, 0x27, 0x4b, 0x07, 0x00,
-	0x00,
+	0x8d, 0xba, 0x7f, 0xbb, 0x71, 0xff, 0xca, 0x85, 0x70, 0x47, 0x4b, 0xc6, 0xc7, 0xf8, 0xea, 0x6f,
+	0xab, 0xf5, 0xf3, 0xca, 0x6a, 0x5d, 0xad, 0x2c, 0xe3, 0x7a, 0x65, 0x19, 0x7f, 0xad, 0x2c, 0xe3,
+	0xf5, 0x8d, 0xd5, 0xba, 0xbe, 0xb1, 0x5a, 0xbf, 0xdd, 0x58, 0xad, 0x6f, 0x3e, 0x6e, 0x5c, 0xbf,
+	0x6c, 0xff, 0x73, 0x76, 0x71, 0x11, 0x78, 0x01, 0x09, 0xf5, 0xd9, 0xad, 0xff, 0x2d, 0xa5, 0x18,
+	0xf3, 0x7d, 0xb9, 0x5c, 0x5f, 0xfc, 0x1b, 0x00, 0x00, 0xff, 0xff, 0x76, 0x91, 0xb7, 0x11, 0x4b,
+	0x07, 0x00, 0x00,
 }
 
 func (m *Locker) Marshal() (dAtA []byte, err error) {
@@ -699,13 +699,22 @@ func (m *LockerProductAssetMapping) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	var l int
 	_ = l
 	if len(m.AssetIds) > 0 {
-		for iNdEx := len(m.AssetIds) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.AssetIds[iNdEx])
-			copy(dAtA[i:], m.AssetIds[iNdEx])
-			i = encodeVarintLocker(dAtA, i, uint64(len(m.AssetIds[iNdEx])))
-			i--
-			dAtA[i] = 0x12
+		dAtA3 := make([]byte, len(m.AssetIds)*10)
+		var j2 int
+		for _, num := range m.AssetIds {
+			for num >= 1<<7 {
+				dAtA3[j2] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j2++
+			}
+			dAtA3[j2] = uint8(num)
+			j2++
 		}
+		i -= j2
+		copy(dAtA[i:], dAtA3[:j2])
+		i = encodeVarintLocker(dAtA, i, uint64(j2))
+		i--
+		dAtA[i] = 0x12
 	}
 	if m.AppMappingId != 0 {
 		i = encodeVarintLocker(dAtA, i, uint64(m.AppMappingId))
@@ -862,10 +871,11 @@ func (m *LockerProductAssetMapping) Size() (n int) {
 		n += 1 + sovLocker(uint64(m.AppMappingId))
 	}
 	if len(m.AssetIds) > 0 {
-		for _, s := range m.AssetIds {
-			l = len(s)
-			n += 1 + l + sovLocker(uint64(l))
+		l = 0
+		for _, e := range m.AssetIds {
+			l += sovLocker(uint64(e))
 		}
+		n += 1 + sovLocker(uint64(l)) + l
 	}
 	return n
 }
@@ -1775,37 +1785,81 @@ func (m *LockerProductAssetMapping) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AssetIds", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLocker
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLocker
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
 				}
-				if iNdEx >= l {
+				m.AssetIds = append(m.AssetIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLocker
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthLocker
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthLocker
+				}
+				if postIndex > l {
 					return io.ErrUnexpectedEOF
 				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
 				}
+				elementCount = count
+				if elementCount != 0 && len(m.AssetIds) == 0 {
+					m.AssetIds = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowLocker
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.AssetIds = append(m.AssetIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetIds", wireType)
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthLocker
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthLocker
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AssetIds = append(m.AssetIds, string(dAtA[iNdEx:postIndex]))
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipLocker(dAtA[iNdEx:])

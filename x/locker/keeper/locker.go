@@ -70,7 +70,7 @@ func (k *Keeper) CheckLockerProductAssetMapping(ctx sdk.Context, assetId uint64,
 
 	for _, id := range lockerProductMapping.AssetIds {
 
-		if id == string(assetId) {
+		if id == assetId {
 			return true
 		} else {
 			continue

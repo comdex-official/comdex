@@ -9,20 +9,23 @@ import (
 
 	"github.com/comdex-official/comdex/x/locker/expected"
 	"github.com/comdex-official/comdex/x/locker/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type Keeper struct {
 	cdc    codec.BinaryCodec
 	key    sdk.StoreKey
+	paramstore paramtypes.Subspace
 	bank   expected.BankKeeper
 	asset  expected.AssetKeeper
-	oracle expected.MarketKeeper
+	oracle expected.OracleKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.MarketKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, ps paramtypes.Subspace, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.OracleKeeper) Keeper {
 	return Keeper{
 		cdc:    cdc,
 		key:    key,
+		paramstore: ps,
 		bank:   bank,
 		asset:  asset,
 		oracle: oracle,

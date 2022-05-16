@@ -87,6 +87,9 @@ func txDepositAssetLocker() *cobra.Command {
 			}
 
 			lockerId := args[0]
+			if len(lockerId) == 0 {
+				return err
+			}
 			amount, ok := sdk.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmountIn
@@ -126,6 +129,9 @@ func txWithdrawAssetLocker() *cobra.Command {
 			}
 
 			lockerId := args[0]
+			if len(lockerId) == 0 {
+				return err
+			}
 			amount, ok := sdk.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmountIn
@@ -140,7 +146,7 @@ func txWithdrawAssetLocker() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgwithdrawAssetRequest(ctx.FromAddress, lockerId, amount, assetId, appMappingId)
+			msg := types.NewMsgWithdrawAssetRequest(ctx.FromAddress, lockerId, amount, assetId, appMappingId)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

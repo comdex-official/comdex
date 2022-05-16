@@ -104,7 +104,7 @@ message LockerProductAssetMapping {
       (gogoproto.moretags) = "yaml:\"owner\""
   ];
   
-  repeated string asset_ids  = 2 [
+  repeated uint64 asset_ids  = 2 [
       (gogoproto.moretags) = "yaml:\"asset_ids\""
   ];
 }

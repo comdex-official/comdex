@@ -517,6 +517,7 @@ func New(
 	app.lockerKeeper = lockerkeeper.NewKeeper(
 		app.cdc,
 		app.keys[lockertypes.StoreKey],
+		app.GetSubspace(liquiditytypes.ModuleName),
 		app.bankKeeper,
 		&app.assetKeeper,
 		&app.marketKeeper,

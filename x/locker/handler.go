@@ -2,10 +2,10 @@ package locker
 
 import (
 
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/comdex-official/comdex/x/locker/keeper"
 	"github.com/comdex-official/comdex/x/locker/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // NewHandler ...
@@ -30,7 +30,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := server.MsgWithdrawAsset(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
-			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
+			return nil, sdkerrors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
 		}
 	}
 }
