@@ -131,8 +131,16 @@ func (k *Keeper) VerifyCollaterlizationRatio(
 	assetIn assettypes.Asset,
 	amountOut sdk.Int,
 	assetOut assettypes.Asset,
+	liquidationRatio sdk.Dec,
 ) error {
+	collaterlizationRatio, err := k.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
+	if err != nil {
+		return err
+	}
 
+	if collaterlizationRatio.LT(liquidationRatio) {
+		return types.ErrorInvalidCollateralizationRatio
+	}
 
 	return nil
 }
@@ -193,4 +201,95 @@ func (k *Keeper) GetLookupTableVault(ctx sdk.Context, AppId uint64) (vaults []ty
 	}
 
 	return vaults
+}
+
+func (k *Keeper) SetUserVaultIdMapping(ctx sdk.Context, vault types.UserVaultIdMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserVaultIdMappingKey(vault.Owner)
+		value = k.cdc.MustMarshal(&vault)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) SetPairVaultMapping(ctx sdk.Context, vault types.PairToVaultMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.PairIDKey(vault.PairId)
+		value = k.cdc.MustMarshal(&vault)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) SetExtendedPairMapping(ctx sdk.Context, vault types.AppExtendedPairVaultMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExtendedIDKey(vault.AppId)
+		value = k.cdc.MustMarshal(&vault)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) SetExtendedVaultPairMapping(ctx sdk.Context, vault types.ExtendedPairVaultMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExtendedIDKey(vault.ExtendedPairId)
+		value = k.cdc.MustMarshal(&vault)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetExtendedVaultPairMapping(ctx sdk.Context, vault types.ExtendedPairVaultMapping) (uint64, bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExtendedIDKey(vault.ExtendedPairId)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return 0 , false
+	}
+
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+
+	return id.GetValue(), true
+}
+
+
+func (k *Keeper) SetTokenMintedID(ctx sdk.Context, ExtendedPairVaultID uint64, TokenMinted sdk.Int) {
+	var (
+		store = k.Store(ctx)
+		key   = types.TokenMintedIDKey(ExtendedPairVaultID)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value:TokenMinted.Uint64(),
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetTokenMintedID(ctx sdk.Context, ExtendedPairVaultID uint64) (sdk.Int, bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.TokenMintedIDKey(ExtendedPairVaultID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return sdk.ZeroInt() , false
+	}
+
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+
+	return sdk.NewIntFromUint64(id.GetValue()), true
 }

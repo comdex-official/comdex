@@ -107,9 +107,11 @@ func (m *MsgCreateResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgCreateResponse proto.InternalMessageInfo
 
 type MsgDepositRequest struct {
-	From   string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	ID     uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	Amount github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
+	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	ExtendedPairVaultID uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
+	ID                  string                                 `protobuf:"bytes,4,opt,name=userVaultid,proto3" json:"userVaultid,omitempty" yaml:"userVaultid"`
+	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
 }
 
 func (m *MsgDepositRequest) Reset()         { *m = MsgDepositRequest{} }
@@ -182,9 +184,11 @@ func (m *MsgDepositResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgDepositResponse proto.InternalMessageInfo
 
 type MsgWithdrawRequest struct {
-	From   string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	ID     uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	Amount github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
+	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	ExtendedPairVaultID uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
+	ID                  string                                 `protobuf:"bytes,4,opt,name=userVaultid,proto3" json:"userVaultid,omitempty" yaml:"userVaultid"`
+	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
 }
 
 func (m *MsgWithdrawRequest) Reset()         { *m = MsgWithdrawRequest{} }
@@ -257,9 +261,11 @@ func (m *MsgWithdrawResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgWithdrawResponse proto.InternalMessageInfo
 
 type MsgDrawRequest struct {
-	From   string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	ID     uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	Amount github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
+	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	ExtendedPairVaultID uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
+	ID                  string                                 `protobuf:"bytes,4,opt,name=userVaultid,proto3" json:"userVaultid,omitempty" yaml:"userVaultid"`
+	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
 }
 
 func (m *MsgDrawRequest) Reset()         { *m = MsgDrawRequest{} }
@@ -332,9 +338,11 @@ func (m *MsgDrawResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgDrawResponse proto.InternalMessageInfo
 
 type MsgRepayRequest struct {
-	From   string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	ID     uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	Amount github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
+	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	ExtendedPairVaultID uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
+	ID                  string                                 `protobuf:"bytes,4,opt,name=userVaultid,proto3" json:"userVaultid,omitempty" yaml:"userVaultid"`
+	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
 }
 
 func (m *MsgRepayRequest) Reset()         { *m = MsgRepayRequest{} }
@@ -407,8 +415,10 @@ func (m *MsgRepayResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgRepayResponse proto.InternalMessageInfo
 
 type MsgCloseRequest struct {
-	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	ID   uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	From                string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppMappingId        uint64 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	ExtendedPairVaultID uint64 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
+	ID                  string `protobuf:"bytes,4,opt,name=userVaultid,proto3" json:"userVaultid,omitempty" yaml:"userVaultid"`
 }
 
 func (m *MsgCloseRequest) Reset()         { *m = MsgCloseRequest{} }
@@ -498,49 +508,50 @@ func init() {
 func init() { proto.RegisterFile("comdex/vault/v1beta1/msg.proto", fileDescriptor_e4c9b9e09f1eadb4) }
 
 var fileDescriptor_e4c9b9e09f1eadb4 = []byte{
-	// 657 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x56, 0xcf, 0x4f, 0xd4, 0x4e,
-	0x14, 0xdf, 0x2e, 0xfb, 0xe5, 0xcb, 0x0e, 0xca, 0x8f, 0x59, 0x30, 0xeb, 0x26, 0xb6, 0xa4, 0x28,
-	0xe2, 0x81, 0x36, 0xe8, 0xc5, 0x78, 0x21, 0x59, 0xf0, 0xb0, 0x07, 0xa2, 0xd6, 0x04, 0xe2, 0x8f,
-	0xa4, 0x99, 0xdd, 0x0e, 0x65, 0xe2, 0xb6, 0x33, 0x76, 0xa6, 0x08, 0xff, 0x85, 0x7f, 0x86, 0x07,
-	0x6f, 0x1a, 0x3d, 0x79, 0xe7, 0xc8, 0xd1, 0x78, 0x68, 0xb4, 0xfc, 0x07, 0xfb, 0x17, 0x98, 0x4e,
-	0x07, 0xd2, 0x22, 0xcb, 0x4a, 0xe2, 0x85, 0x53, 0xdb, 0xf7, 0x3e, 0xef, 0xf3, 0xde, 0xa7, 0xef,
-	0xbd, 0xc9, 0x00, 0xbd, 0x47, 0x03, 0x0f, 0xef, 0xdb, 0x7b, 0x28, 0xee, 0x0b, 0x7b, 0x6f, 0xb5,
-	0x8b, 0x05, 0x5a, 0xb5, 0x03, 0xee, 0x5b, 0x2c, 0xa2, 0x82, 0xc2, 0xb9, 0xdc, 0x6f, 0x49, 0xbf,
-	0xa5, 0xfc, 0xad, 0x39, 0x9f, 0xfa, 0x54, 0x02, 0xec, 0xec, 0x2d, 0xc7, 0x9a, 0x1f, 0xc7, 0xc0,
-	0xcc, 0x26, 0xf7, 0xd7, 0x23, 0x8c, 0x04, 0x76, 0xf0, 0xdb, 0x18, 0x73, 0x01, 0x17, 0x41, 0x6d,
-	0x27, 0xa2, 0x41, 0x53, 0x5b, 0xd0, 0x96, 0xeb, 0xed, 0xe9, 0x41, 0x62, 0x4c, 0x1e, 0xa0, 0xa0,
-	0xff, 0xc8, 0xcc, 0xac, 0xa6, 0x23, 0x9d, 0x70, 0x0d, 0x4c, 0x21, 0xc6, 0xdc, 0x00, 0x31, 0x46,
-	0x42, 0xdf, 0x25, 0x5e, 0xb3, 0xba, 0xa0, 0x2d, 0xd7, 0xda, 0x37, 0x07, 0x89, 0x31, 0x9f, 0xc3,
-	0xcb, 0x7e, 0xd3, 0xb9, 0x86, 0x18, 0xdb, 0xcc, 0xbf, 0x3b, 0x1e, 0x0c, 0xc0, 0x0d, 0xbc, 0x2f,
-	0x70, 0xe8, 0x61, 0xcf, 0x65, 0x88, 0x44, 0xae, 0xac, 0x37, 0x23, 0x1a, 0x93, 0x44, 0x0f, 0xd3,
-	0xc4, 0x68, 0x3c, 0x56, 0x88, 0xa7, 0x88, 0x44, 0x5b, 0x99, 0xbf, 0xb3, 0x31, 0x48, 0x8c, 0x5b,
-	0x39, 0xff, 0xf9, 0xe1, 0xa6, 0xd3, 0xc0, 0x7f, 0x44, 0x79, 0xd0, 0x05, 0x75, 0x14, 0xd0, 0x38,
-	0x14, 0x2e, 0x09, 0x9b, 0x35, 0xa9, 0xac, 0x7d, 0x98, 0x18, 0x95, 0x1f, 0x89, 0xb1, 0xe4, 0x13,
-	0xb1, 0x1b, 0x77, 0xad, 0x1e, 0x0d, 0xec, 0x1e, 0xe5, 0x01, 0xe5, 0xea, 0xb1, 0xc2, 0xbd, 0x37,
-	0xb6, 0x38, 0x60, 0x98, 0x5b, 0x9d, 0x50, 0x0c, 0x12, 0x63, 0x46, 0x09, 0x3b, 0x21, 0x32, 0x9d,
-	0x89, 0xfc, 0xbd, 0x13, 0xc2, 0x2e, 0x00, 0xca, 0x4e, 0x63, 0xd1, 0xfc, 0x4f, 0x66, 0x58, 0xbf,
-	0x74, 0x86, 0xd9, 0x52, 0x06, 0x1a, 0x0b, 0xd3, 0x51, 0x75, 0x3f, 0x89, 0x85, 0xd9, 0x00, 0xb3,
-	0x85, 0x6e, 0x71, 0x46, 0x43, 0x8e, 0xcd, 0x2f, 0x9a, 0xb4, 0x6e, 0x60, 0x46, 0x39, 0x11, 0x97,
-	0x6a, 0xe2, 0x22, 0xa8, 0x9e, 0x36, 0xae, 0x91, 0x26, 0x46, 0x55, 0xfe, 0xde, 0x7a, 0x0e, 0xcc,
-	0x7e, 0x65, 0x95, 0x78, 0x70, 0x1b, 0x8c, 0xe7, 0x15, 0xc8, 0xc6, 0xd4, 0xdb, 0x6b, 0x97, 0x16,
-	0x75, 0xbd, 0x28, 0xca, 0x74, 0x14, 0x9d, 0x39, 0x07, 0x60, 0xb1, 0x6e, 0x25, 0xe7, 0xab, 0x26,
-	0xcd, 0xdb, 0x44, 0xec, 0x7a, 0x11, 0x7a, 0x77, 0x85, 0xf4, 0xcc, 0x83, 0x46, 0xa9, 0x70, 0x25,
-	0xe8, 0x93, 0x06, 0xa6, 0x32, 0x9d, 0x57, 0x4b, 0xcc, 0x2c, 0x98, 0x3e, 0x2d, 0x5a, 0x09, 0xf9,
-	0xac, 0x49, 0x9b, 0x83, 0x19, 0x3a, 0xb8, 0x42, 0x4a, 0xa0, 0x3c, 0xe2, 0x54, 0xd5, 0x4a, 0xca,
-	0x2b, 0xa9, 0x64, 0xbd, 0x4f, 0x39, 0xfe, 0xe7, 0x4a, 0x54, 0x42, 0x45, 0x9e, 0x27, 0xbc, 0xff,
-	0xad, 0x06, 0xc0, 0x26, 0xf7, 0x9f, 0xe3, 0x68, 0x8f, 0xf4, 0x30, 0x7c, 0x0d, 0xea, 0xa7, 0x8b,
-	0x0c, 0x97, 0xac, 0xf3, 0x4e, 0x6c, 0xeb, 0xec, 0xb9, 0xdc, 0xba, 0x3b, 0x12, 0x97, 0x27, 0x83,
-	0xae, 0xcc, 0xa5, 0x16, 0x0b, 0x0e, 0x0f, 0x2b, 0x1f, 0x19, 0xad, 0xe5, 0xd1, 0x40, 0x95, 0xa0,
-	0x0b, 0x26, 0x0b, 0x93, 0x0e, 0x87, 0x07, 0x9e, 0xd9, 0xe2, 0xd6, 0xbd, 0xbf, 0x40, 0xaa, 0x1c,
-	0x5b, 0xe0, 0x7f, 0x35, 0x80, 0xf0, 0xf6, 0xf0, 0xc2, 0x0a, 0xdc, 0x77, 0x46, 0xa0, 0x14, 0xef,
-	0x0b, 0x30, 0x71, 0x32, 0x0e, 0x70, 0x78, 0x48, 0x71, 0xc8, 0x5b, 0x4b, 0xa3, 0x60, 0x25, 0x6a,
-	0xd9, 0xf8, 0x0b, 0xa8, 0x8b, 0x53, 0x77, 0x01, 0x75, 0x69, 0x7e, 0xda, 0xcf, 0x0e, 0x7f, 0xe9,
-	0x95, 0x0f, 0xa9, 0x5e, 0x39, 0x4c, 0x75, 0xed, 0x28, 0xd5, 0xb5, 0x9f, 0xa9, 0xae, 0xbd, 0x3f,
-	0xd6, 0x2b, 0x47, 0xc7, 0x7a, 0xe5, 0xfb, 0xb1, 0x5e, 0x79, 0x69, 0x97, 0xf6, 0x24, 0xe3, 0x5c,
-	0xa1, 0x3b, 0x3b, 0xa4, 0x47, 0x50, 0x5f, 0x7d, 0xdb, 0x27, 0x77, 0x06, 0xb9, 0x34, 0xdd, 0x71,
-	0x79, 0x05, 0x78, 0xf0, 0x3b, 0x00, 0x00, 0xff, 0xff, 0x19, 0xc8, 0x0a, 0xbe, 0x50, 0x08, 0x00,
-	0x00,
+	// 675 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x97, 0x4d, 0x6f, 0xd3, 0x30,
+	0x18, 0xc7, 0xfb, 0xc6, 0xd8, 0x3c, 0xd8, 0x8b, 0xbb, 0xa1, 0x52, 0x41, 0x32, 0x05, 0x18, 0xe3,
+	0xb0, 0x44, 0x83, 0x0b, 0xe2, 0xc0, 0xa4, 0x6e, 0x1c, 0x7a, 0x98, 0x80, 0x20, 0x6d, 0x02, 0x21,
+	0x45, 0x6e, 0xe3, 0x65, 0x11, 0x4d, 0x6c, 0x62, 0x67, 0x6c, 0x47, 0xf8, 0x04, 0x7c, 0x0a, 0xc4,
+	0x81, 0xaf, 0xc0, 0x7d, 0xc7, 0x1d, 0x11, 0x87, 0x08, 0xba, 0x6f, 0xd0, 0x0f, 0x00, 0x28, 0xb6,
+	0x37, 0x25, 0x63, 0x5d, 0xd9, 0xa9, 0x12, 0xea, 0xa9, 0x89, 0x9f, 0xff, 0xf3, 0x7f, 0x1c, 0xff,
+	0x12, 0xfb, 0x29, 0xd0, 0xda, 0x24, 0x70, 0xf1, 0x9e, 0xb5, 0x8b, 0xe2, 0x0e, 0xb7, 0x76, 0x57,
+	0x5a, 0x98, 0xa3, 0x15, 0x2b, 0x60, 0x9e, 0x49, 0x23, 0xc2, 0x09, 0x9c, 0x93, 0x71, 0x53, 0xc4,
+	0x4d, 0x15, 0xaf, 0xcf, 0x79, 0xc4, 0x23, 0x42, 0x60, 0xa5, 0x57, 0x52, 0x6b, 0x7c, 0x29, 0x83,
+	0x99, 0x0d, 0xe6, 0xad, 0x45, 0x18, 0x71, 0x6c, 0xe3, 0xb7, 0x31, 0x66, 0x1c, 0xde, 0x02, 0x95,
+	0xed, 0x88, 0x04, 0xb5, 0xe2, 0x42, 0x71, 0x69, 0xa2, 0x31, 0xdd, 0x4b, 0xf4, 0xc9, 0x7d, 0x14,
+	0x74, 0x1e, 0x19, 0xe9, 0xa8, 0x61, 0x8b, 0x20, 0x5c, 0x05, 0x53, 0x88, 0x52, 0x27, 0x40, 0x94,
+	0xfa, 0xa1, 0xe7, 0xf8, 0x6e, 0xad, 0xb4, 0x50, 0x5c, 0xaa, 0x34, 0xae, 0xf7, 0x12, 0x7d, 0x5e,
+	0xca, 0xf3, 0x71, 0xc3, 0xbe, 0x82, 0x28, 0xdd, 0x90, 0xf7, 0x4d, 0x17, 0x06, 0xe0, 0x1a, 0xde,
+	0xe3, 0x38, 0x74, 0xb1, 0xeb, 0x50, 0xe4, 0x47, 0x8e, 0x98, 0x6f, 0x6a, 0x54, 0x16, 0x46, 0x0f,
+	0xbb, 0x89, 0x5e, 0x7d, 0xa2, 0x14, 0xcf, 0x90, 0x1f, 0x6d, 0xa6, 0xf1, 0xe6, 0x7a, 0x2f, 0xd1,
+	0x6f, 0x4a, 0xff, 0xb3, 0xd3, 0x0d, 0xbb, 0x8a, 0xff, 0xca, 0x72, 0xa1, 0x03, 0x26, 0x50, 0x40,
+	0xe2, 0x90, 0x3b, 0x7e, 0x58, 0xab, 0x88, 0x27, 0x6b, 0x1c, 0x24, 0x7a, 0xe1, 0x7b, 0xa2, 0x2f,
+	0x7a, 0x3e, 0xdf, 0x89, 0x5b, 0x66, 0x9b, 0x04, 0x56, 0x9b, 0xb0, 0x80, 0x30, 0xf5, 0xb3, 0xcc,
+	0xdc, 0x37, 0x16, 0xdf, 0xa7, 0x98, 0x99, 0xcd, 0x90, 0xf7, 0x12, 0x7d, 0x46, 0x3d, 0xd8, 0xb1,
+	0x91, 0x61, 0x8f, 0xcb, 0xeb, 0x66, 0x08, 0x5b, 0x00, 0xa8, 0x71, 0x12, 0xf3, 0xda, 0x25, 0x51,
+	0x61, 0xed, 0xc2, 0x15, 0x66, 0x73, 0x15, 0x48, 0xcc, 0x0d, 0x5b, 0xcd, 0xfb, 0x69, 0xcc, 0x8d,
+	0x2a, 0x98, 0xcd, 0xd0, 0x62, 0x94, 0x84, 0x0c, 0x1b, 0xef, 0xcb, 0x62, 0x74, 0x1d, 0x53, 0xc2,
+	0x7c, 0xfe, 0x5f, 0x43, 0x7c, 0x0c, 0x26, 0x63, 0x86, 0xe5, 0xad, 0xef, 0x2a, 0x8c, 0x37, 0xba,
+	0x89, 0x5e, 0x12, 0x96, 0x50, 0x5a, 0x66, 0x24, 0x86, 0x9d, 0x4d, 0x80, 0x5b, 0x60, 0x4c, 0x2e,
+	0xa6, 0xe2, 0xb3, 0x7a, 0x61, 0x3e, 0x57, 0xb3, 0x7c, 0x0c, 0x5b, 0xd9, 0x19, 0x73, 0x00, 0x66,
+	0x11, 0x28, 0x32, 0x1f, 0xca, 0x62, 0x78, 0xcb, 0xe7, 0x3b, 0x6e, 0x84, 0xde, 0x8d, 0xd0, 0x0c,
+	0x03, 0xcd, 0x3c, 0xa8, 0xe6, 0x18, 0x28, 0x36, 0xbf, 0x4a, 0x60, 0x2a, 0x45, 0x36, 0xe2, 0x32,
+	0x24, 0x2e, 0xb3, 0x60, 0xfa, 0x64, 0xfd, 0x15, 0x93, 0xdf, 0x25, 0x31, 0x66, 0x63, 0x8a, 0xf6,
+	0x47, 0x50, 0x86, 0x01, 0x05, 0x8a, 0x76, 0x40, 0x01, 0x50, 0x54, 0x3e, 0x49, 0x2a, 0x6b, 0x1d,
+	0xc2, 0xf0, 0x88, 0x4a, 0x7f, 0x2a, 0x6a, 0xf1, 0xd4, 0x3a, 0xc9, 0xc5, 0xbb, 0xff, 0xb5, 0x02,
+	0xc0, 0x06, 0xf3, 0x5e, 0xe0, 0x68, 0xd7, 0x6f, 0x63, 0xf8, 0x1a, 0x4c, 0x9c, 0x1c, 0xe0, 0x70,
+	0xd1, 0x3c, 0xab, 0x53, 0x33, 0x4f, 0xf7, 0x63, 0xf5, 0xbb, 0x03, 0x75, 0xb2, 0x18, 0x74, 0x44,
+	0x2d, 0x75, 0x0a, 0xc1, 0xfe, 0x69, 0xf9, 0x56, 0xa1, 0xbe, 0x34, 0x58, 0xa8, 0x0a, 0xb4, 0xc0,
+	0x64, 0x66, 0x2f, 0x85, 0xfd, 0x13, 0x4f, 0x1d, 0x79, 0xf5, 0x7b, 0xff, 0xa0, 0x54, 0x35, 0x36,
+	0xc1, 0x65, 0xb5, 0x2f, 0xc0, 0xdb, 0xfd, 0x27, 0x96, 0xf1, 0xbe, 0x33, 0x40, 0xa5, 0x7c, 0x5f,
+	0x82, 0xf1, 0xe3, 0x57, 0x1b, 0xf6, 0x4f, 0xc9, 0xee, 0x3d, 0xf5, 0xc5, 0x41, 0xb2, 0x9c, 0xb5,
+	0x00, 0x7f, 0x8e, 0x75, 0xf6, 0x03, 0x3a, 0xc7, 0x3a, 0xf7, 0xfe, 0x34, 0x9e, 0x1f, 0xfc, 0xd4,
+	0x0a, 0x9f, 0xbb, 0x5a, 0xe1, 0xa0, 0xab, 0x15, 0x0f, 0xbb, 0x5a, 0xf1, 0x47, 0x57, 0x2b, 0x7e,
+	0x3c, 0xd2, 0x0a, 0x87, 0x47, 0x5a, 0xe1, 0xdb, 0x91, 0x56, 0x78, 0x65, 0xe5, 0xbe, 0xf9, 0xd4,
+	0x73, 0x99, 0x6c, 0x6f, 0xfb, 0x6d, 0x1f, 0x75, 0xd4, 0xbd, 0x75, 0xfc, 0x5f, 0x41, 0x6c, 0x00,
+	0xad, 0x31, 0xd1, 0xfa, 0x3f, 0xf8, 0x13, 0x00, 0x00, 0xff, 0xff, 0x43, 0x14, 0xe0, 0xcf, 0x48,
+	0x0c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -915,9 +926,21 @@ func (m *MsgDepositRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintMsg(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x1a
-	if m.ID != 0 {
-		i = encodeVarintMsg(dAtA, i, uint64(m.ID))
+	dAtA[i] = 0x2a
+	if len(m.ID) > 0 {
+		i -= len(m.ID)
+		copy(dAtA[i:], m.ID)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.ID)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ExtendedPairVaultID != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.ExtendedPairVaultID))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.AppMappingId != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.AppMappingId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -983,9 +1006,21 @@ func (m *MsgWithdrawRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintMsg(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x1a
-	if m.ID != 0 {
-		i = encodeVarintMsg(dAtA, i, uint64(m.ID))
+	dAtA[i] = 0x2a
+	if len(m.ID) > 0 {
+		i -= len(m.ID)
+		copy(dAtA[i:], m.ID)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.ID)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ExtendedPairVaultID != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.ExtendedPairVaultID))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.AppMappingId != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.AppMappingId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1051,9 +1086,21 @@ func (m *MsgDrawRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintMsg(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x1a
-	if m.ID != 0 {
-		i = encodeVarintMsg(dAtA, i, uint64(m.ID))
+	dAtA[i] = 0x2a
+	if len(m.ID) > 0 {
+		i -= len(m.ID)
+		copy(dAtA[i:], m.ID)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.ID)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ExtendedPairVaultID != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.ExtendedPairVaultID))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.AppMappingId != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.AppMappingId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1119,9 +1166,21 @@ func (m *MsgRepayRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintMsg(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x1a
-	if m.ID != 0 {
-		i = encodeVarintMsg(dAtA, i, uint64(m.ID))
+	dAtA[i] = 0x2a
+	if len(m.ID) > 0 {
+		i -= len(m.ID)
+		copy(dAtA[i:], m.ID)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.ID)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ExtendedPairVaultID != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.ExtendedPairVaultID))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.AppMappingId != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.AppMappingId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1178,8 +1237,20 @@ func (m *MsgCloseRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.ID != 0 {
-		i = encodeVarintMsg(dAtA, i, uint64(m.ID))
+	if len(m.ID) > 0 {
+		i -= len(m.ID)
+		copy(dAtA[i:], m.ID)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.ID)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ExtendedPairVaultID != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.ExtendedPairVaultID))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.AppMappingId != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.AppMappingId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1269,8 +1340,15 @@ func (m *MsgDepositRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovMsg(uint64(l))
 	}
-	if m.ID != 0 {
-		n += 1 + sovMsg(uint64(m.ID))
+	if m.AppMappingId != 0 {
+		n += 1 + sovMsg(uint64(m.AppMappingId))
+	}
+	if m.ExtendedPairVaultID != 0 {
+		n += 1 + sovMsg(uint64(m.ExtendedPairVaultID))
+	}
+	l = len(m.ID)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovMsg(uint64(l))
@@ -1296,8 +1374,15 @@ func (m *MsgWithdrawRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovMsg(uint64(l))
 	}
-	if m.ID != 0 {
-		n += 1 + sovMsg(uint64(m.ID))
+	if m.AppMappingId != 0 {
+		n += 1 + sovMsg(uint64(m.AppMappingId))
+	}
+	if m.ExtendedPairVaultID != 0 {
+		n += 1 + sovMsg(uint64(m.ExtendedPairVaultID))
+	}
+	l = len(m.ID)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovMsg(uint64(l))
@@ -1323,8 +1408,15 @@ func (m *MsgDrawRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovMsg(uint64(l))
 	}
-	if m.ID != 0 {
-		n += 1 + sovMsg(uint64(m.ID))
+	if m.AppMappingId != 0 {
+		n += 1 + sovMsg(uint64(m.AppMappingId))
+	}
+	if m.ExtendedPairVaultID != 0 {
+		n += 1 + sovMsg(uint64(m.ExtendedPairVaultID))
+	}
+	l = len(m.ID)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovMsg(uint64(l))
@@ -1350,8 +1442,15 @@ func (m *MsgRepayRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovMsg(uint64(l))
 	}
-	if m.ID != 0 {
-		n += 1 + sovMsg(uint64(m.ID))
+	if m.AppMappingId != 0 {
+		n += 1 + sovMsg(uint64(m.AppMappingId))
+	}
+	if m.ExtendedPairVaultID != 0 {
+		n += 1 + sovMsg(uint64(m.ExtendedPairVaultID))
+	}
+	l = len(m.ID)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovMsg(uint64(l))
@@ -1377,8 +1476,15 @@ func (m *MsgCloseRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovMsg(uint64(l))
 	}
-	if m.ID != 0 {
-		n += 1 + sovMsg(uint64(m.ID))
+	if m.AppMappingId != 0 {
+		n += 1 + sovMsg(uint64(m.AppMappingId))
+	}
+	if m.ExtendedPairVaultID != 0 {
+		n += 1 + sovMsg(uint64(m.ExtendedPairVaultID))
+	}
+	l = len(m.ID)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
 	}
 	return n
 }
@@ -1699,9 +1805,9 @@ func (m *MsgDepositRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
 			}
-			m.ID = 0
+			m.AppMappingId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMsg
@@ -1711,12 +1817,63 @@ func (m *MsgDepositRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ID |= uint64(b&0x7F) << shift
+				m.AppMappingId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendedPairVaultID", wireType)
+			}
+			m.ExtendedPairVaultID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExtendedPairVaultID |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
@@ -1884,9 +2041,9 @@ func (m *MsgWithdrawRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
 			}
-			m.ID = 0
+			m.AppMappingId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMsg
@@ -1896,12 +2053,63 @@ func (m *MsgWithdrawRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ID |= uint64(b&0x7F) << shift
+				m.AppMappingId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendedPairVaultID", wireType)
+			}
+			m.ExtendedPairVaultID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExtendedPairVaultID |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
@@ -2069,9 +2277,9 @@ func (m *MsgDrawRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
 			}
-			m.ID = 0
+			m.AppMappingId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMsg
@@ -2081,12 +2289,63 @@ func (m *MsgDrawRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ID |= uint64(b&0x7F) << shift
+				m.AppMappingId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendedPairVaultID", wireType)
+			}
+			m.ExtendedPairVaultID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExtendedPairVaultID |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
@@ -2254,9 +2513,9 @@ func (m *MsgRepayRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
 			}
-			m.ID = 0
+			m.AppMappingId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMsg
@@ -2266,12 +2525,63 @@ func (m *MsgRepayRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ID |= uint64(b&0x7F) << shift
+				m.AppMappingId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendedPairVaultID", wireType)
+			}
+			m.ExtendedPairVaultID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExtendedPairVaultID |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
@@ -2439,9 +2749,9 @@ func (m *MsgCloseRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
 			}
-			m.ID = 0
+			m.AppMappingId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMsg
@@ -2451,11 +2761,62 @@ func (m *MsgCloseRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ID |= uint64(b&0x7F) << shift
+				m.AppMappingId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendedPairVaultID", wireType)
+			}
+			m.ExtendedPairVaultID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExtendedPairVaultID |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMsg(dAtA[iNdEx:])

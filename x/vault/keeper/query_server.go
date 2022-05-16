@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -168,7 +167,7 @@ func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	vault, found := q.GetVault(ctx, strconv.Itoa(req.Id))
+	vault, found := q.GetVault(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "vault does not exist for id %d", req.Id)
 	}

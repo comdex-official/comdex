@@ -29,5 +29,6 @@ var (
 
 var (
 	ErrorCannotCreateStableSwapVault   = errors.Register(ModuleName, 401, "Cannot Create Stable Swap Vault")
-	ErrorIdnotFound  = errors.Register(ModuleName, 402, "not found")
+	ErrorAmtGreaterDebt  = errors.Register(ModuleName, 402, "amt should be > debt floor")
+	ErrorIdnotFound  = errors.Register(ModuleName, 403, "not found")
 )

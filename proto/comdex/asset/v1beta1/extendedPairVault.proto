@@ -22,12 +22,12 @@ message ExtendedPairVault {
       (gogoproto.moretags)   = "yaml:\"unliquidation_ratio\""
     ];
     string stability_fee        = 6 [ 
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"stability_fee\"" 
     ];
     string closing_fee          = 7 [ 
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"closing_fee\"" 
     ];
@@ -37,10 +37,21 @@ message ExtendedPairVault {
       (gogoproto.nullable) = false,
       (gogoproto.moretags) = "yaml:\"liquidation_penanlty\"" 
     ];
-    string creation_fee         = 9[ (gogoproto.moretags) = "yaml:\"creation_fee\"" ];
+    string creation_fee         = 9[ 
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"creation_fee\"" ];
+    
     bool is_vault_active        = 10[ (gogoproto.moretags) = "yaml:\"active_flag\"" ];
-    string debt_cieling         = 11[ (gogoproto.moretags) = "yaml:\"debt_cieling\"" ];
-    string debt_floor           = 12[ (gogoproto.moretags) = "yaml:\"debt_floor\"" ];
+    string debt_cieling         = 11[ 
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"debt_cieling\"" ];
+    string debt_floor           = 12 [ 
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"debt_floor\""
+    ];
     bool is_psm_pair            = 13[ (gogoproto.moretags) = "yaml:\"is_psm_pair\"" ];
     
     string min_cr               = 14 [ 
@@ -51,6 +62,9 @@ message ExtendedPairVault {
 
     string pair_name            = 15 [ (gogoproto.moretags) = "yaml:\"pair_name\"" ];
     bool asset_out_oracle_price = 16 [ (gogoproto.moretags) = "yaml:\"asset_out_oracle\"" ];
-    string assset_out_price     = 17 [ (gogoproto.moretags) = "yaml:\"assset_out_price\"" ];
-  
+    string assset_out_price     = 17 [ 
+      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"assset_out_price\"" ];
+
   }

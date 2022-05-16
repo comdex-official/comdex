@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
@@ -75,10 +74,7 @@ func QueryVault() *cobra.Command {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
+			id := args[0]
 
 			queryClient := types.NewQueryServiceClient(ctx)
 

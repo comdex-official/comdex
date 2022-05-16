@@ -724,8 +724,8 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 
 func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-pairs-vault [app_mapping_id] [pair_id] [liquidation_ratio] [unliquidation_ratio] [stability_fee] [closing_fee] [liquidation_penalty] [creation_fee] [is_vault_active] [debt_cieling] [debt_floor] [is_psm_pair] [min_cr] [asset_out_oracle_price] [assset_out_price]",
-		Args:  cobra.ExactArgs(15),
+		Use:   "add-pairs-vault [app_mapping_id] [pair_id] [liquidation_ratio] [unliquidation_ratio] [stability_fee] [closing_fee] [liquidation_penalty] [creation_fee] [is_vault_active] [debt_cieling] [debt_floor] [is_psm_pair] [min_cr] [pair_name] [asset_out_oracle_price] [assset_out_price]",
+		Args:  cobra.ExactArgs(16),
 		Short: "Add pairs vault",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -793,17 +793,22 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				return err
 			}
 
-			min_cr, err := ParseStringFromString(args[11], ",")
+			min_cr, err := ParseStringFromString(args[12], ",")
 			if err != nil {
 				return err
 			}
 
-			asset_out_oracle_price, err := ParseStringFromString(args[12], ",")
+			pair_name, err := ParseStringFromString(args[13], ",")
+			if err != nil {
+				return err
+			}
+			
+			asset_out_oracle_price, err := ParseStringFromString(args[14], ",")
 			if err != nil {
 				return err
 			}
 
-			assset_out_price, err := ParseStringFromString(args[13], ",")
+			assset_out_price, err := ParseStringFromString(args[15], ",")
 			if err != nil {
 				return err
 			}
@@ -827,10 +832,14 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				newstability_fee, _ := sdk.NewDecFromStr(stability_fee[i])
 				newclosing_fee, _ := sdk.NewDecFromStr(closing_fee[i])
 				newliquidation_penalty, _ := sdk.NewDecFromStr(liquidation_penalty[i])
+				newcreation_fee, _ := sdk.NewDecFromStr(creation_fee[i])
 				newmin_cr, _ := sdk.NewDecFromStr(min_cr[i])
 				newis_vault_active := ParseBoolFromString(is_vault_active[i])
+				debt_cieling,_ := sdk.NewIntFromString(debt_cieling[i])
+				debt_floor,_ := sdk.NewIntFromString(debt_floor[i])
 				newis_psm_pair := ParseBoolFromString(is_psm_pair[i])
 				newasset_out_oracle_price := ParseBoolFromString(asset_out_oracle_price[i])
+				newassset_out_price, _ := sdk.NewDecFromStr(assset_out_price[i])
 				pairs = append(pairs, types.ExtendedPairVault{
 					AppMappingId: app_mapping_id,
 					PairId: pair_id[i],
@@ -839,14 +848,15 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 					StabilityFee: newstability_fee,
 					ClosingFee: newclosing_fee,
 					LiquidationPenalty: newliquidation_penalty,
-					CreationFee: creation_fee[i],
+					CreationFee: newcreation_fee,
 					IsVaultActive: newis_vault_active,
-					DebtCieling: debt_cieling[i],
-					DebtFloor: debt_floor[i],
+					DebtCieling: debt_cieling,
+					DebtFloor: debt_floor,
 					IsPsmPair: newis_psm_pair,
 					MinCr: newmin_cr,
+					PairName: pair_name[i],
 					AssetOutOraclePrice: newasset_out_oracle_price,
-					AsssetOutPrice: assset_out_price[i],
+					AsssetOutPrice: newassset_out_price,
 				})
 			}
 

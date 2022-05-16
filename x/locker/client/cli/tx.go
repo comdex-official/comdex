@@ -11,13 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/vault/types"
+	"github.com/comdex-official/comdex/x/locker/types"
 )
-
-
-
-
-
 
 // GetTxCmd returns the transaction commands for this module
 func GetTxCmd() *cobra.Command {
@@ -30,10 +25,10 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		txAddWhiteListedAsset(),
+		txAddWhiteListedAssetLocker(),
 		txCreateLocker(),
-		txDepositAsset(),
-		txWithdrawAsset(),
+		txDepositAssetLocker(),
+		txWithdrawAssetLocker(),
 	)
 
 	return cmd
@@ -64,8 +59,7 @@ func txCreateLocker() *cobra.Command {
 				return types.ErrorInvalidAmountIn
 			}
 
-			
-			msg := types.NewMsgCreateRequest(ctx.FromAddress, appMappingId, assetId, amount)
+			msg := types.NewMsgCreateLockerRequest(ctx.FromAddress, amount, assetId, appMappingId)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -80,10 +74,88 @@ func txCreateLocker() *cobra.Command {
 
 }
 
-func txDeposit() *cobra.Command {
+func txDepositAssetLocker() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit [id] [amount]",
-		Short: "creates a new deposit",
+		Use:   "deposit-locker [locker_id] [amount] [asset_id] [app_mapping_id] ",
+		Short: "deposit to a locker",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			lockerId := args[0]
+			amount, ok := sdk.NewIntFromString(args[1])
+			if !ok {
+				return types.ErrorInvalidAmountIn
+			}
+			assetId, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			appMappingId, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgDepositAssetRequest(ctx.FromAddress, lockerId, amount, assetId, appMappingId)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func txWithdrawAssetLocker() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "withdraw-locker [locker_id] [amount] [asset_id] [app_mapping_id] ",
+		Short: "dwithdraw from a locker",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			lockerId := args[0]
+			amount, ok := sdk.NewIntFromString(args[1])
+			if !ok {
+				return types.ErrorInvalidAmountIn
+			}
+			assetId, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			appMappingId, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgwithdrawAssetRequest(ctx.FromAddress, lockerId, amount, assetId, appMappingId)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func txAddWhiteListedAssetLocker() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "whitelist-asset-locker [app_mapping_id][asset_id] ",
+		Short: "dwithdraw from a locker",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -92,17 +164,16 @@ func txDeposit() *cobra.Command {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			appMappingId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[1])
-			if !ok {
-				return types.ErrorInvalidAmount
-			}
-
-			msg := types.NewMsgDepositRequest(ctx.FromAddress, id, amount)
+			msg := types.NewMsgAddWhiteListedAssetRequest(ctx.FromAddress, appMappingId, assetId)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -113,38 +184,3 @@ func txDeposit() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
-
-func txWithdraw() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "withdraw [id] [amount]",
-		Short: "create a new withdraw",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			amount, ok := sdk.NewIntFromString(args[1])
-			if !ok {
-				return types.ErrorInvalidAmount
-			}
-
-			msg := types.NewMsgWithdrawRequest(ctx.FromAddress, id, amount)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
-}
-

@@ -7,6 +7,8 @@ import "google/api/annotations.proto";
 import "comdex/asset/v1beta1/asset.proto";
 import "comdex/asset/v1beta1/pair.proto";
 import "comdex/asset/v1beta1/params.proto";
+import "comdex/asset/v1beta1/appMapping.proto";
+import "comdex/asset/v1beta1/extendedPairVault.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all)           = false;
@@ -41,11 +43,6 @@ message PairInfo{
   string denom_in          = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
   uint64 asset_out         = 4 [ (gogoproto.moretags) = "yaml:\"asset_out\"" ];
   string denom_out         = 5 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
-  string liquidation_ratio = 6 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false,
-    (gogoproto.moretags)   = "yaml:\"liquidation_ratio\""
-  ];
 }
 
 message QueryPairsRequest {
@@ -78,6 +75,46 @@ message QueryParamsResponse {
   ];
 }
 
+message QueryAppRequest {
+  uint64 id = 1;
+}
+
+message QueryAppResponse {
+  AppMapping app = 1 [
+    (gogoproto.moretags) = "yaml:\"app\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryAppsRequest {}
+
+message QueryAppsResponse {
+  repeated AppMapping apps = 1 [
+    (gogoproto.moretags) = "yaml:\"apps\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryPairVaultRequest {
+  uint64 id = 1;
+}
+
+message QueryPairVaultResponse {
+  ExtendedPairVault pairVault = 1 [
+    (gogoproto.moretags) = "yaml:\"pairVault\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryPairVaultsRequest {}
+
+message QueryPairVaultsResponse {
+  repeated ExtendedPairVault pairVault = 1 [
+    (gogoproto.moretags) = "yaml:\"pairVault\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
 service QueryService {
   rpc QueryAssets(QueryAssetsRequest) returns (QueryAssetsResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/assets";
@@ -94,4 +131,17 @@ service QueryService {
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/params";
   }
+  rpc QueryAppsMapings(QueryAppsRequest) returns (QueryAppsResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/apps";
+  }
+  rpc QueryAppMapings(QueryAppRequest) returns (QueryAppResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/app/{id}";
+  }
+  rpc QueryPairVault(QueryPairVaultRequest) returns (QueryPairVaultResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/pairVault/{id}";
+  }
+  rpc QueryPairVaults(QueryPairVaultsRequest) returns (QueryPairVaultsResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/pairVaults";
+  }
+
 }

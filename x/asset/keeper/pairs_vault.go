@@ -63,6 +63,26 @@ func (k *Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs types.Extended
 	return pairs, true
 }
 
+func (k *Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault, found bool) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.PairsVaultKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var app types.ExtendedPairVault
+		k.cdc.MustUnmarshal(iter.Value(), &app)
+		apps = append(apps, app)
+	}
+	if apps == nil {
+		return nil, false
+	}
+
+	return apps, true
+}
+
 func (k *Keeper) SetPairsVaultForPairId(ctx sdk.Context, pairId uint64, id uint64) {
 	var (
 		store = k.Store(ctx)
@@ -95,6 +115,10 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 		if !found {
 			return types.ErrorUnknownAppType
 		}
+		_, gotit := k.GetPair(ctx, msg.PairId)
+		if !gotit{
+			return types.ErrorPairDoesNotExist
+		}
 
 		if k.HasPairsVaultForPairId(ctx, msg.PairId) {
 			return types.ErrorDuplicatePair
@@ -117,6 +141,7 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 				DebtFloor: msg.DebtFloor,
 				IsPsmPair: msg.IsPsmPair,
 				MinCr: msg.MinCr,
+				PairName: msg.PairName,
 				AssetOutOraclePrice: msg.AssetOutOraclePrice,
 				AsssetOutPrice: msg.AsssetOutPrice,
 			}

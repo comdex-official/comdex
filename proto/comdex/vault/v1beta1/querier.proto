@@ -36,7 +36,7 @@ message VaultInfo{
 }
 
 message QueryVaultRequest {
-  uint64 id = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string id = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
 }
 
 message QueryVaultResponse {

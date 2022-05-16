@@ -11,16 +11,33 @@ import (
 
 // NewHandler ...
 func NewHandler(k keeper.Keeper) sdk.Handler {
-	// this line is used by starport scaffolding # handler/msgServer
+
+	server := keeper.NewMsgServiceServer(k)
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		// this line is used by starport scaffolding # 1
+		case *types.MsgCreateLockerRequest:
+			res, err := server.MsgCreateLocker(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgAddWhiteListedAssetRequest:
+			res, err := server.MsgDeposit(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgDepositAssetRequest:
+			res, err := server.MsgWithdraw(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgWithdrawAssetRequest:
+			res, err := server.MsgWithdraw(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
-			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
 		}
 	}
 }
+
+
+
+
+
+

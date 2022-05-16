@@ -20,6 +20,10 @@ func GetQueryCmd() *cobra.Command {
 		queryPair(),
 		queryPairs(),
 		queryParams(),
+		queryAppMapings(),
+		queryPairVault(),
+		queryPairVaults(),
+		queryAppsMapings(),
 	)
 
 	return cmd

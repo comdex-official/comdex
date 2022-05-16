@@ -84,9 +84,9 @@ func txCreate() *cobra.Command {
 
 func txDeposit() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit [id] [amount]",
+		Use:   "deposit [app_mapping_id] [extended_pair_vault_id] [userVaultid] [amount]",
 		Short: "creates a new deposit",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientTxContext(cmd)
@@ -94,17 +94,23 @@ func txDeposit() *cobra.Command {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			app_mapping_id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[1])
+			extended_pair_vault_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			userVaultid := args[2]
+
+			amount, ok := sdk.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
 
-			msg := types.NewMsgDepositRequest(ctx.FromAddress, id, amount)
+			msg := types.NewMsgDepositRequest(ctx.FromAddress, app_mapping_id, extended_pair_vault_id, userVaultid, amount)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -118,7 +124,7 @@ func txDeposit() *cobra.Command {
 
 func txWithdraw() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw [id] [amount]",
+		Use:   "withdraw [app_mapping_id] [extended_pair_vault_id] [userVaultid] [amount]",
 		Short: "create a new withdraw",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -128,17 +134,23 @@ func txWithdraw() *cobra.Command {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			app_mapping_id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[1])
+			extended_pair_vault_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			userVaultid := args[2]
+
+			amount, ok := sdk.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
 
-			msg := types.NewMsgWithdrawRequest(ctx.FromAddress, id, amount)
+			msg := types.NewMsgWithdrawRequest(ctx.FromAddress, app_mapping_id, extended_pair_vault_id, userVaultid, amount)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -152,7 +164,7 @@ func txWithdraw() *cobra.Command {
 
 func txDrawDebt() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "draw [id] [amount]",
+		Use:   "draw [app_mapping_id] [extended_pair_vault_id] [userVaultid] [amount]",
 		Short: "draw debt",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -162,17 +174,23 @@ func txDrawDebt() *cobra.Command {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			app_mapping_id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[1])
+			extended_pair_vault_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			userVaultid := args[2]
+
+			amount, ok := sdk.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
 
-			msg := types.NewMsgDrawRequest(ctx.FromAddress, id, amount)
+			msg := types.NewMsgDrawRequest(ctx.FromAddress, app_mapping_id, extended_pair_vault_id, userVaultid, amount)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -185,7 +203,7 @@ func txDrawDebt() *cobra.Command {
 
 func txRepayDebt() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "repay [id] [amount]",
+		Use:   "repay [app_mapping_id] [extended_pair_vault_id] [userVaultid] [amount]",
 		Short: "repay debt",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -195,17 +213,23 @@ func txRepayDebt() *cobra.Command {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			app_mapping_id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[1])
+			extended_pair_vault_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			userVaultid := args[2]
+
+			amount, ok := sdk.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
 
-			msg := types.NewMsgRepayRequest(ctx.FromAddress, id, amount)
+			msg := types.NewMsgRepayRequest(ctx.FromAddress, app_mapping_id, extended_pair_vault_id, userVaultid, amount)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -218,7 +242,7 @@ func txRepayDebt() *cobra.Command {
 
 func txClose() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "close [id]",
+		Use:   "close [app_mapping_id] [extended_pair_vault_id] [userVaultid]",
 		Short: "close",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -228,12 +252,18 @@ func txClose() *cobra.Command {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			app_mapping_id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgLiquidateRequest(ctx.FromAddress, id)
+			extended_pair_vault_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			userVaultid := args[2]
+
+			msg := types.NewMsgLiquidateRequest(ctx.FromAddress, app_mapping_id, extended_pair_vault_id, userVaultid)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

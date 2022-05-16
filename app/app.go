@@ -545,7 +545,7 @@ func New(
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
 		asset.NewAppModule(app.cdc, app.assetKeeper),
 		oracle.NewAppModule(app.cdc, app.oracleKeeper),
-		locker.NewAppModule(app.cdc, app.lockerKeeper),
+		locker.NewAppModule(app.cdc, app.lockerKeeper, app.accountKeeper, app.bankKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
 	)
 

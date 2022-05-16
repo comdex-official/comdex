@@ -64,6 +64,26 @@ func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppMapping, found
 	return app, true
 }
 
+func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppMapping, found bool) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AppKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var app types.AppMapping
+		k.cdc.MustUnmarshal(iter.Value(), &app)
+		apps = append(apps, app)
+	}
+	if apps == nil {
+		return nil, true
+	}
+
+	return apps, false
+}
+
 func (k *Keeper) SetAppForShortName(ctx sdk.Context, shortName string, id uint64) {
 	var (
 		store = k.Store(ctx)
