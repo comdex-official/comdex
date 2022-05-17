@@ -1,4 +1,3 @@
-
 package keeper
 
 import (
@@ -48,5 +47,157 @@ func (q *queryServer) QueryLockerInfo(c context.Context, req *types.QueryLockerI
 
 	return &types.QueryLockerInfoResponse{
 		LockerInfo: item,
+	}, nil
+}
+
+func (q *queryServer) QueryLockersByProductToAssetID(c context.Context, request *types.QueryLockersByProductToAssetIDRequest) (*types.QueryLockersByProductToAssetIDResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+	//ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	return &types.QueryLockersByProductToAssetIDResponse{
+		LockerInfo: nil,
+	}, nil
+}
+
+func (q *queryServer) QueryLockerInfoByProductID(c context.Context, request *types.QueryLockerInfoByProductIDRequest) (*types.QueryLockerInfoByProductIDResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+	//ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	return &types.QueryLockerInfoByProductIDResponse{
+		LockerInfo: nil,
+	}, nil
+
+}
+
+func (q *queryServer) QueryTotalDepositByAssetID(c context.Context, request *types.QueryTotalDepositByAssetIDRequest) (*types.QueryTotalDepositByAssetIDResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+	//ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	return &types.QueryTotalDepositByAssetIDResponse{
+		TotalDeposit: 0,
+	}, nil
+}
+
+func (q *queryServer) QueryTotalDepositByProductAssetID(c context.Context, request *types.QueryTotalDepositByProductAssetIDRequest) (*types.QueryTotalDepositByProductAssetIDResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+	//ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	return &types.QueryTotalDepositByProductAssetIDResponse{
+		TotalDeposit: 0,
+	}, nil
+}
+
+func (q *queryServer) QueryOwnerLockerByProductID(ctx context.Context, request *types.QueryOwnerLockerByProductIDRequest) (*types.QueryOwnerLockerByProductIDResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+	//ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	return &types.QueryOwnerLockerByProductIDResponse{
+		LockerInfo: nil,
+	}, nil
+}
+
+func (q *queryServer) QueryOwnerLockerByProductToAssetID(ctx context.Context, request *types.QueryOwnerLockerByProductToAssetIDRequest) (*types.QueryOwnerLockerByProductToAssetIDResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+	//ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	return &types.QueryOwnerLockerByProductToAssetIDResponse{
+		LockerInfo: nil,
+	}, nil
+}
+
+func (q *queryServer) QueryLockerCountByProductID(ctx context.Context, request *types.QueryLockerCountByProductIDRequest) (*types.QueryLockerCountByProductIDResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+	//ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	return &types.QueryLockerCountByProductIDResponse{
+		TotalCount: 0,
+	}, nil
+
+}
+
+func (q *queryServer) QueryLockerCountByProductToAssetID(ctx context.Context, request *types.QueryLockerCountByProductToAssetIDRequest) (*types.QueryLockerCountByProductToAssetIDResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+	//ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	return &types.QueryLockerCountByProductToAssetIDResponse{
+		TotalCount: 0,
+	}, nil
+}
+
+func (q *queryServer) QueryWhiteListedAssetIDsByProductID(ctx context.Context, request *types.QueryWhiteListedAssetIDsByProductIDRequest) (*types.QueryWhiteListedAssetIDsByProductIDResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+	//ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	return &types.QueryWhiteListedAssetIDsByProductIDResponse{
+		AssetIds: nil,
+	}, nil
+}
+
+func (q *queryServer) QueryWhiteListedAssetByAllProduct(ctx context.Context, request *types.QueryWhiteListedAssetByAllProductRequest) (*types.QueryWhiteListedAssetByAllProductResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+	//ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	return &types.QueryWhiteListedAssetByAllProductResponse{
+		Asset: nil,
 	}, nil
 }

@@ -27,9 +27,18 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(
 		queryParams(),
 		queryLockedVault(),
+		queryLockerByProductAssetID(),
+		queryLockerByProductID(),
+		queryTotalDepositByAssetID(),
+		queryTotalDepositByProductToAssetID(),
+		queryOwnerLockerByProductID(),
+		queryOwnerLockerByProductToAssetID(),
+		queryTotalLockerByProductID(),
+		queryTotalLockerByProductToAssetID(),
+		queryWhiteListedAssetIDsByProductID(),
+		queryWhiteListedAssetByAllProduct(),
 	)
 	// this line is used by starport scaffolding # 1
 
-	return cmd 
+	return cmd
 }
-
