@@ -124,7 +124,7 @@ message QueryOwnerLockerByProductIDRequest {
 }
 
 message QueryOwnerLockerByProductIDResponse {
-  Locker lockerInfo = 1[
+  repeated Locker lockerInfo = 1[
     (gogoproto.customname) = "LockerInfo",
     (gogoproto.moretags)   = "yaml:\"lockerInfo\"",
     (gogoproto.nullable)   = false
@@ -138,7 +138,7 @@ message QueryOwnerLockerByProductToAssetIDRequest {
 }
 
 message QueryOwnerLockerByProductToAssetIDResponse {
-  Locker lockerInfo = 1[
+  repeated Locker lockerInfo = 1[
     (gogoproto.customname) = "LockerInfo",
     (gogoproto.moretags)   = "yaml:\"lockerInfo\"",
     (gogoproto.nullable)   = false
