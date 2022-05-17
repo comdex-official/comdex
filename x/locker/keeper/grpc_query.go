@@ -60,10 +60,31 @@ func (q *queryServer) QueryLockersByProductToAssetID(c context.Context, request 
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	q.GetApp(ctx, request.ProductId)
+	app, found := q.GetApp(ctx, request.ProductId)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.ProductId)
+	}
+
+	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
+	}
+
+	var lockerInfos []types.Locker
+	for _, locker := range lockerLookupData.Lockers {
+
+		if request.AssetId == locker.AssetId {
+			for _, lockerID := range locker.LockerIds {
+				locker, _ := q.GetLocker(ctx, lockerID)
+				lockerInfos = append(lockerInfos, locker)
+			}
+		}
+	}
 
 	return &types.QueryLockersByProductToAssetIDResponse{
-		LockerInfo: nil,
+		LockerInfo: lockerInfos,
 	}, nil
 }
 
