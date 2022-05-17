@@ -335,23 +335,19 @@ func queryWhiteListedAssetIDsByProductID() *cobra.Command {
 
 func queryWhiteListedAssetByAllProduct() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "whitelisted-asset-all-product [product_id]",
+		Use:   "whitelisted-asset-all-product",
 		Short: "query white listed asset all product",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
-
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryWhiteListedAssetByAllProduct(
 				context.Background(),
-				&types.QueryWhiteListedAssetByAllProductRequest{
-					ProductId: productId,
-				},
+				&types.QueryWhiteListedAssetByAllProductRequest{},
 			)
 			if err != nil {
 				return err

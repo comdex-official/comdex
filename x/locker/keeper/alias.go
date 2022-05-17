@@ -58,3 +58,6 @@ func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppMapping, bool
 	return k.asset.GetApp(ctx, id)
 }
 
+func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool) {
+	return k.asset.GetApps(ctx)
+}

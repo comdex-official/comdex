@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
@@ -324,32 +324,65 @@ func (q *queryServer) QueryLockerCountByProductToAssetID(c context.Context, requ
 	}, nil
 }
 
-func (q *queryServer) QueryWhiteListedAssetIDsByProductID(ctx context.Context, request *types.QueryWhiteListedAssetIDsByProductIDRequest) (*types.QueryWhiteListedAssetIDsByProductIDResponse, error) {
+func (q *queryServer) QueryWhiteListedAssetIDsByProductID(c context.Context, request *types.QueryWhiteListedAssetIDsByProductIDRequest) (*types.QueryWhiteListedAssetIDsByProductIDResponse, error) {
 
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
-	//ctx = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 
+	app, found := q.GetApp(ctx, request.ProductId)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.ProductId)
+	}
+
+	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
+	}
+
+	var assetIds []uint64
+	for _, locker := range lockerLookupData.Lockers {
+		assetIds = append(assetIds, locker.AssetId)
+	}
+
 	return &types.QueryWhiteListedAssetIDsByProductIDResponse{
-		AssetIds: nil,
+		AssetIds: assetIds,
 	}, nil
 }
 
-func (q *queryServer) QueryWhiteListedAssetByAllProduct(ctx context.Context, request *types.QueryWhiteListedAssetByAllProductRequest) (*types.QueryWhiteListedAssetByAllProductResponse, error) {
+func (q *queryServer) QueryWhiteListedAssetByAllProduct(c context.Context, request *types.QueryWhiteListedAssetByAllProductRequest) (*types.QueryWhiteListedAssetByAllProductResponse, error) {
 
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
-	//ctx = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
+	apps, found := q.asset.GetApps(ctx)
 
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "ano apps exist")
+	}
+
+	var assets []assettypes.Asset
+	for _, app := range apps {
+
+		appData, _ := q.GetLockerProductAssetMapping(ctx, app.Id)
+		for _, assetId := range appData.AssetIds {
+			asset, assetFound := q.asset.GetAsset(ctx, assetId)
+			if assetFound {
+				assets = append(assets, asset)
+			}
+		}
+	}
 	return &types.QueryWhiteListedAssetByAllProductResponse{
-		Asset: nil,
+		Asset: assets,
 	}, nil
 }
