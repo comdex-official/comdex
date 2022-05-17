@@ -77,8 +77,8 @@ func (q *queryServer) QueryLockersByProductToAssetID(c context.Context, request 
 
 		if request.AssetId == locker.AssetId {
 			for _, lockerID := range locker.LockerIds {
-				locker, _ := q.GetLocker(ctx, lockerID)
-				lockerInfos = append(lockerInfos, locker)
+				locker1, _ := q.GetLocker(ctx, lockerID)
+				lockerInfos = append(lockerInfos, locker1)
 			}
 		}
 	}
@@ -95,11 +95,30 @@ func (q *queryServer) QueryLockerInfoByProductID(c context.Context, request *typ
 	}
 
 	var (
-	//ctx = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 
+	app, found := q.GetApp(ctx, request.ProductId)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.ProductId)
+	}
+
+	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
+	}
+
+	var lockerInfos []types.Locker
+	for _, locker := range lockerLookupData.Lockers {
+		for _, lockerID := range locker.LockerIds {
+			locker1, _ := q.GetLocker(ctx, lockerID)
+			lockerInfos = append(lockerInfos, locker1)
+		}
+	}
 	return &types.QueryLockerInfoByProductIDResponse{
-		LockerInfo: nil,
+		LockerInfo: lockerInfos,
 	}, nil
 
 }
@@ -111,8 +130,10 @@ func (q *queryServer) QueryTotalDepositByAssetID(c context.Context, request *typ
 	}
 
 	var (
-	//ctx = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
+
+	q.GetAsset(ctx, request.AssetId)
 
 	return &types.QueryTotalDepositByAssetIDResponse{
 		TotalDeposit: 0,
@@ -126,11 +147,30 @@ func (q *queryServer) QueryTotalDepositByProductAssetID(c context.Context, reque
 	}
 
 	var (
-	//ctx = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 
+	app, found := q.GetApp(ctx, request.ProductId)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.ProductId)
+	}
+
+	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
+	}
+
+	var totalDeposit uint64
+	for _, locker := range lockerLookupData.Lockers {
+
+		if request.AssetId == locker.AssetId {
+			totalDeposit += locker.DepositedAmount.Uint64()
+		}
+	}
 	return &types.QueryTotalDepositByProductAssetIDResponse{
-		TotalDeposit: 0,
+		TotalDeposit: totalDeposit,
 	}, nil
 }
 
