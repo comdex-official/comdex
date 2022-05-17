@@ -61,7 +61,7 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(moduleName), denom).Amount
 }
 
-func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, pairID uint64, lent sdk.Coin) error {
+func (k Keeper) LendAsset(ctx sdk.Context, appLendTypeId string, lenderAddr sdk.AccAddress, pairID uint64, lent sdk.Coin) error {
 
 	/*if k.GetOracleValidationResult(ctx) == false{
 		return nil, types.ErrorOraclePriceExpired
@@ -118,12 +118,13 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, pairID uin
 
 	Id := k.GetLendID(ctx)
 	lendPositon := types.Lend_Asset{
-		ID:          Id + 1,
-		PairID:      pairID,
-		Owner:       lenderAddr.String(),
-		AmountIn:    lent,
-		LendingTime: ctx.BlockTime(),
-		Reward:      sdk.NewCoin("cCMDX", sdk.NewInt(0)),
+		ID:            Id + 1,
+		AppLendTypeId: appLendTypeId,
+		PairID:        pairID,
+		Owner:         lenderAddr.String(),
+		AmountIn:      lent,
+		LendingTime:   ctx.BlockTime(),
+		Reward:        sdk.NewCoin("cCMDX", sdk.NewInt(0)),
 	}
 
 	k.SetLendID(ctx, lendPositon.ID)

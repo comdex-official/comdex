@@ -20,8 +20,9 @@ service Msg {
 
 message MsgLend {
   string                   lender = 1 [(gogoproto.moretags) = "yaml:\"lender\""];
-  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
-  uint64                  pair_id = 3;
+  string            appLendTypeId = 2[(gogoproto.moretags) = "yaml:\"appLendTypeId\""];
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+  uint64                  pair_id = 4;
 }
 
 message MsgWithdraw {
