@@ -76,8 +76,8 @@ message QueryLockerInfoResponse {
 }
 
 message QueryLockersByProductToAssetIDRequest {
-  string product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  string asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
 }
 
 message QueryLockersByProductToAssetIDResponse {
@@ -89,7 +89,7 @@ message QueryLockersByProductToAssetIDResponse {
 }
 
 message QueryLockerInfoByProductIDRequest {
-  string product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
 }
 
 message QueryLockerInfoByProductIDResponse {
@@ -101,7 +101,7 @@ message QueryLockerInfoByProductIDResponse {
 }
 
 message QueryTotalDepositByAssetIDRequest {
-  string asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
 }
 
 message QueryTotalDepositByAssetIDResponse {
@@ -109,8 +109,8 @@ message QueryTotalDepositByAssetIDResponse {
 }
 
 message QueryTotalDepositByProductAssetIDRequest {
-  string product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  string asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
   string owner = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 }
 
@@ -119,7 +119,7 @@ message QueryTotalDepositByProductAssetIDResponse {
 }
 
 message QueryOwnerLockerByProductIDRequest {
-  string product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
   string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 }
 
@@ -132,8 +132,8 @@ message QueryOwnerLockerByProductIDResponse {
 }
 
 message QueryOwnerLockerByProductToAssetIDRequest {
-  string product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  string asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
   string owner = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 }
 
@@ -146,7 +146,7 @@ message QueryOwnerLockerByProductToAssetIDResponse {
 }
 
 message QueryLockerCountByProductIDRequest {
-  string product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
 }
 
 message QueryLockerCountByProductIDResponse {
@@ -154,8 +154,8 @@ message QueryLockerCountByProductIDResponse {
 }
 
 message QueryLockerCountByProductToAssetIDRequest {
-  string product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  string asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
 }
 
 message QueryLockerCountByProductToAssetIDResponse {
@@ -163,7 +163,7 @@ message QueryLockerCountByProductToAssetIDResponse {
 }
 
 message QueryWhiteListedAssetIDsByProductIDRequest {
-  string product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
 }
 
 message QueryWhiteListedAssetIDsByProductIDResponse {
@@ -171,7 +171,7 @@ message QueryWhiteListedAssetIDsByProductIDResponse {
 }
 
 message QueryWhiteListedAssetByAllProductRequest {
-  string product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
 }
 
 message QueryWhiteListedAssetByAllProductResponse {

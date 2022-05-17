@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/comdex-official/comdex/x/locker/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -48,8 +49,11 @@ func queryLockerByProductAssetID() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			productId := args[0]
-			assetId := args[1]
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
+
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
+
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryLockersByProductToAssetID(
 				context.Background(),
@@ -79,7 +83,9 @@ func queryLockerByProductID() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			productId := args[0]
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
+
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryLockerInfoByProductID(
 				context.Background(),
@@ -108,7 +114,9 @@ func queryTotalDepositByAssetID() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			assetId := args[0]
+
+			assetId, err := strconv.ParseUint(args[0], 10, 64)
+
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryTotalDepositByAssetID(
 				context.Background(),
@@ -137,8 +145,10 @@ func queryTotalDepositByProductToAssetID() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			productId := args[0]
-			assetId := args[1]
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
+
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
 
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryTotalDepositByProductAssetID(
@@ -170,7 +180,8 @@ func queryOwnerLockerByProductID() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			productId := args[0]
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
 
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryOwnerLockerByProductID(
@@ -201,8 +212,10 @@ func queryOwnerLockerByProductToAssetID() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			productId := args[0]
-			assetId := args[1]
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
+
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
 
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryOwnerLockerByProductToAssetID(
@@ -234,7 +247,8 @@ func queryTotalLockerByProductID() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			productId := args[0]
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
 
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryLockerCountByProductID(
@@ -264,8 +278,10 @@ func queryTotalLockerByProductToAssetID() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			productId := args[0]
-			assetId := args[1]
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
+
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
 
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryLockerCountByProductToAssetID(
@@ -296,7 +312,8 @@ func queryWhiteListedAssetIDsByProductID() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			productId := args[0]
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
 
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryWhiteListedAssetIDsByProductID(
@@ -327,7 +344,7 @@ func queryWhiteListedAssetByAllProduct() *cobra.Command {
 				return err
 			}
 
-			productId := args[0]
+			productId, err := strconv.ParseUint(args[0], 10, 64)
 
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryWhiteListedAssetByAllProduct(

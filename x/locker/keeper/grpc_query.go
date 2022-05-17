@@ -57,8 +57,10 @@ func (q *queryServer) QueryLockersByProductToAssetID(c context.Context, request 
 	}
 
 	var (
-	//ctx = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
+
+	q.GetApp(ctx, request.ProductId)
 
 	return &types.QueryLockersByProductToAssetIDResponse{
 		LockerInfo: nil,

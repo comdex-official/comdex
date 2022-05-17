@@ -105,8 +105,8 @@ func (m *QueryLockerInfoResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryLockerInfoResponse proto.InternalMessageInfo
 
 type QueryLockersByProductToAssetIDRequest struct {
-	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
-	AssetId   string `protobuf:"bytes,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	AssetId   uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
 func (m *QueryLockersByProductToAssetIDRequest) Reset()         { *m = QueryLockersByProductToAssetIDRequest{} }
@@ -182,7 +182,7 @@ func (m *QueryLockersByProductToAssetIDResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryLockersByProductToAssetIDResponse proto.InternalMessageInfo
 
 type QueryLockerInfoByProductIDRequest struct {
-	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
 }
 
 func (m *QueryLockerInfoByProductIDRequest) Reset()         { *m = QueryLockerInfoByProductIDRequest{} }
@@ -256,7 +256,7 @@ func (m *QueryLockerInfoByProductIDResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryLockerInfoByProductIDResponse proto.InternalMessageInfo
 
 type QueryTotalDepositByAssetIDRequest struct {
-	AssetId string `protobuf:"bytes,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	AssetId uint64 `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
 func (m *QueryTotalDepositByAssetIDRequest) Reset()         { *m = QueryTotalDepositByAssetIDRequest{} }
@@ -330,8 +330,8 @@ func (m *QueryTotalDepositByAssetIDResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryTotalDepositByAssetIDResponse proto.InternalMessageInfo
 
 type QueryTotalDepositByProductAssetIDRequest struct {
-	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
-	AssetId   string `protobuf:"bytes,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	AssetId   uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 	Owner     string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 }
 
@@ -412,7 +412,7 @@ func (m *QueryTotalDepositByProductAssetIDResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryTotalDepositByProductAssetIDResponse proto.InternalMessageInfo
 
 type QueryOwnerLockerByProductIDRequest struct {
-	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
 	Owner     string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 }
 
@@ -487,8 +487,8 @@ func (m *QueryOwnerLockerByProductIDResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryOwnerLockerByProductIDResponse proto.InternalMessageInfo
 
 type QueryOwnerLockerByProductToAssetIDRequest struct {
-	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
-	AssetId   string `protobuf:"bytes,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	AssetId   uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 	Owner     string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 }
 
@@ -571,7 +571,7 @@ func (m *QueryOwnerLockerByProductToAssetIDResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryOwnerLockerByProductToAssetIDResponse proto.InternalMessageInfo
 
 type QueryLockerCountByProductIDRequest struct {
-	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
 }
 
 func (m *QueryLockerCountByProductIDRequest) Reset()         { *m = QueryLockerCountByProductIDRequest{} }
@@ -645,8 +645,8 @@ func (m *QueryLockerCountByProductIDResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryLockerCountByProductIDResponse proto.InternalMessageInfo
 
 type QueryLockerCountByProductToAssetIDRequest struct {
-	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
-	AssetId   string `protobuf:"bytes,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	AssetId   uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
 func (m *QueryLockerCountByProductToAssetIDRequest) Reset() {
@@ -728,7 +728,7 @@ func (m *QueryLockerCountByProductToAssetIDResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryLockerCountByProductToAssetIDResponse proto.InternalMessageInfo
 
 type QueryWhiteListedAssetIDsByProductIDRequest struct {
-	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
 }
 
 func (m *QueryWhiteListedAssetIDsByProductIDRequest) Reset() {
@@ -810,7 +810,7 @@ func (m *QueryWhiteListedAssetIDsByProductIDResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryWhiteListedAssetIDsByProductIDResponse proto.InternalMessageInfo
 
 type QueryWhiteListedAssetByAllProductRequest struct {
-	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
 }
 
 func (m *QueryWhiteListedAssetByAllProductRequest) Reset() {
@@ -994,7 +994,7 @@ func init() {
 }
 
 var fileDescriptor_fafe32203df2356d = []byte{
-	// 1169 bytes of a gzipped FileDescriptorProto
+	// 1170 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x58, 0x4f, 0x6f, 0x1b, 0x45,
 	0x14, 0xf7, 0xb8, 0x7f, 0x68, 0x26, 0x89, 0x0a, 0xd3, 0x06, 0xaa, 0x0d, 0xb1, 0xcb, 0x44, 0xfd,
 	0x93, 0xa2, 0x7a, 0x69, 0x0b, 0xa2, 0xa4, 0x54, 0x24, 0x6e, 0x54, 0x6a, 0xe4, 0x92, 0x74, 0x13,
@@ -1015,60 +1015,60 @@ var fileDescriptor_fafe32203df2356d = []byte{
 	0xa9, 0x54, 0x68, 0x79, 0x52, 0xc2, 0x3d, 0x7d, 0x6e, 0xa3, 0x99, 0x8c, 0xb5, 0x9a, 0x49, 0x1c,
 	0xc0, 0xb5, 0x9b, 0xc9, 0xd7, 0x44, 0xcc, 0x00, 0x8c, 0x1a, 0x3d, 0xc8, 0xf4, 0x09, 0xc2, 0x67,
 	0x7a, 0x72, 0x70, 0xd3, 0x8d, 0xa5, 0x1a, 0xb3, 0xea, 0x05, 0x6f, 0x85, 0xcd, 0x77, 0x38, 0x66,
-	0x16, 0x7c, 0x32, 0xef, 0x62, 0x5c, 0x15, 0x47, 0xb9, 0x2e, 0xa9, 0x89, 0x20, 0x40, 0x70, 0x46,
-	0x8d, 0x11, 0xf8, 0x92, 0xb1, 0x48, 0x0a, 0x1f, 0xe3, 0xb5, 0xea, 0xf8, 0xc4, 0xb9, 0xcf, 0x89,
-	0x76, 0x33, 0x79, 0x5c, 0xf8, 0xf8, 0x27, 0xd4, 0x78, 0x85, 0x7f, 0xcc, 0x58, 0xf4, 0x29, 0xc2,
-	0x67, 0x87, 0xe5, 0x13, 0x51, 0xa2, 0x43, 0x2f, 0xa9, 0x44, 0x77, 0xf1, 0x5b, 0x03, 0x5d, 0xea,
-	0x26, 0xb5, 0xcb, 0xea, 0xd0, 0xef, 0x11, 0xa6, 0x32, 0xec, 0x7d, 0x66, 0xba, 0x0c, 0x4c, 0x57,
-	0x98, 0x67, 0x96, 0x17, 0xec, 0x2a, 0x73, 0x1d, 0x2f, 0xdd, 0x18, 0x98, 0x83, 0xde, 0x8e, 0x22,
-	0x85, 0x8e, 0x66, 0x80, 0x62, 0x04, 0x28, 0x50, 0x9c, 0xc6, 0xe3, 0x5e, 0xc7, 0x20, 0x67, 0x09,
-	0x0b, 0x0e, 0x7d, 0xd8, 0x18, 0xf3, 0x7a, 0xbc, 0xe8, 0xaf, 0x08, 0x9f, 0x0f, 0xc1, 0x82, 0x82,
-	0x1d, 0xc4, 0xbc, 0x92, 0xb3, 0xf8, 0x08, 0x7b, 0x54, 0xb1, 0x6b, 0xa7, 0x0e, 0x71, 0xe3, 0x57,
-	0xdb, 0xcd, 0xe4, 0x98, 0x30, 0xe6, 0x8f, 0xa9, 0x21, 0x8e, 0xe9, 0x12, 0x9e, 0x51, 0xc8, 0x7c,
-	0x3b, 0xc5, 0x78, 0xec, 0xcf, 0xce, 0x62, 0x27, 0x00, 0xb4, 0x7d, 0x8f, 0x06, 0x33, 0xa0, 0x15,
-	0x97, 0xd3, 0x7a, 0x82, 0xf0, 0xb4, 0x34, 0x89, 0x7d, 0x5e, 0x67, 0xbf, 0x21, 0xa8, 0x73, 0x58,
-	0x3e, 0x07, 0xb3, 0xd2, 0x94, 0x47, 0xe4, 0x27, 0x84, 0x2f, 0xa8, 0xe4, 0xbe, 0xcf, 0x25, 0xbd,
-	0xd7, 0xb7, 0xa2, 0x6e, 0xb0, 0x7a, 0xc5, 0xdb, 0xb3, 0xfd, 0x77, 0x13, 0xa6, 0x27, 0x0a, 0x1b,
-	0xa8, 0x26, 0xf1, 0xa8, 0xb8, 0x0f, 0x85, 0x8e, 0x05, 0xdc, 0x06, 0xcc, 0x1f, 0x71, 0x1f, 0xfa,
-	0x83, 0xdf, 0xf6, 0x30, 0xa0, 0x03, 0x7a, 0x93, 0xdd, 0x86, 0x6e, 0x0e, 0x49, 0x49, 0x95, 0x62,
-	0x1e, 0xe0, 0x3e, 0xbf, 0xef, 0x78, 0x76, 0xd6, 0x71, 0x3d, 0xdb, 0x02, 0x0c, 0x77, 0xcf, 0xda,
-	0xf1, 0x09, 0x7e, 0x5b, 0x29, 0x06, 0xe4, 0x3c, 0x89, 0x47, 0x7c, 0xde, 0x2e, 0x7f, 0x2b, 0x1d,
-	0x36, 0x8e, 0x01, 0x7b, 0x97, 0x7e, 0x01, 0xab, 0x7a, 0x10, 0x2b, 0xdd, 0x98, 0x2f, 0x97, 0x01,
-	0x6b, 0x77, 0xd9, 0xd6, 0xa1, 0xe7, 0xf2, 0x08, 0x90, 0xeb, 0x2d, 0x7c, 0x84, 0xa7, 0x06, 0x6f,
-	0xcf, 0x49, 0xff, 0xa2, 0x08, 0x21, 0xe7, 0xdf, 0x13, 0xe1, 0x3f, 0xd1, 0xb9, 0x26, 0xed, 0x66,
-	0x72, 0xbc, 0xa7, 0xb7, 0x2e, 0x35, 0x04, 0x00, 0x3d, 0x89, 0x09, 0x0f, 0xbb, 0xc4, 0x55, 0x22,
-	0x50, 0xa0, 0x05, 0x7c, 0xa2, 0xef, 0x29, 0x84, 0xcd, 0xe2, 0xa3, 0x42, 0x4d, 0x0e, 0xb9, 0xa0,
-	0xc2, 0x6d, 0x30, 0xb2, 0x70, 0xa5, 0x06, 0x60, 0x5c, 0xfe, 0x76, 0x02, 0x8f, 0xf1, 0x28, 0xcb,
-	0x76, 0xed, 0xa1, 0x53, 0xb0, 0xc9, 0xcf, 0x08, 0x1f, 0x1f, 0xd0, 0x0f, 0xe4, 0x62, 0x44, 0x88,
-	0x70, 0x8d, 0xaa, 0xa5, 0x54, 0xcd, 0x05, 0x23, 0xaa, 0x3f, 0x7e, 0xfe, 0xcf, 0x8f, 0xf1, 0x19,
-	0x72, 0x4e, 0x97, 0x09, 0xec, 0x9c, 0x53, 0x29, 0x32, 0x7d, 0xcd, 0xb1, 0xd6, 0xc9, 0xbf, 0x08,
-	0x27, 0xe4, 0x8a, 0x8e, 0x7c, 0x38, 0x3c, 0x87, 0x68, 0x61, 0xaa, 0x5d, 0xdf, 0xa1, 0x37, 0x10,
-	0xca, 0x72, 0x42, 0x37, 0xc9, 0x82, 0x94, 0x90, 0xcb, 0x19, 0xe5, 0xfc, 0x79, 0xd7, 0xd7, 0x82,
-	0xa1, 0x5c, 0xd7, 0xd7, 0xfc, 0xc7, 0xeb, 0xe4, 0x77, 0x84, 0xb5, 0x68, 0x45, 0x47, 0xae, 0xaa,
-	0x55, 0x7b, 0xeb, 0x8d, 0xd6, 0x3e, 0xd8, 0x81, 0x27, 0x30, 0xbc, 0xc1, 0x19, 0x5e, 0x27, 0xd7,
-	0x54, 0x18, 0x06, 0xbc, 0xfa, 0x38, 0x92, 0xe7, 0x3e, 0xb1, 0x50, 0x1d, 0x27, 0x27, 0x26, 0xd3,
-	0x93, 0x72, 0x62, 0x52, 0xd1, 0x48, 0xe7, 0x38, 0xb1, 0x59, 0x72, 0x35, 0x82, 0x58, 0x9f, 0x88,
-	0xea, 0xe9, 0x5d, 0xd0, 0xae, 0x17, 0x28, 0x54, 0xf2, 0xf6, 0xeb, 0x32, 0xf2, 0x91, 0x7a, 0x8a,
-	0xa1, 0x5a, 0x54, 0x9b, 0xdb, 0x39, 0x00, 0x50, 0xfd, 0x8c, 0x53, 0x5d, 0x24, 0xb7, 0x95, 0xa8,
-	0xfa, 0x8d, 0x1b, 0x3a, 0xae, 0x4d, 0x84, 0x27, 0x25, 0xfa, 0x8d, 0x48, 0x9b, 0x23, 0x15, 0x9e,
-	0xda, 0xec, 0x4e, 0x5c, 0x81, 0xed, 0x2d, 0xce, 0x36, 0x4d, 0xe6, 0x22, 0xd8, 0x72, 0xc1, 0x94,
-	0xeb, 0x59, 0x35, 0x91, 0x63, 0xfb, 0x4d, 0x5c, 0xa2, 0x92, 0x83, 0x0d, 0x34, 0xb7, 0xdd, 0x64,
-	0xb7, 0x6c, 0xa1, 0xf9, 0x5d, 0x20, 0x00, 0xeb, 0xbb, 0x9c, 0xf5, 0x32, 0xb9, 0xb3, 0x6d, 0xd6,
-	0x43, 0xfb, 0xfc, 0xa7, 0xdf, 0xe7, 0x70, 0xa5, 0x45, 0x14, 0xb6, 0x4b, 0x84, 0xf2, 0x93, 0xf7,
-	0x59, 0x2e, 0xec, 0x86, 0x6e, 0x26, 0x31, 0xd5, 0xc0, 0x38, 0xaa, 0xc5, 0xff, 0x21, 0x89, 0x42,
-	0x55, 0x6c, 0xb1, 0x8a, 0x6e, 0x94, 0xb7, 0x58, 0x49, 0xe6, 0xd1, 0x15, 0x4e, 0xf8, 0x53, 0x92,
-	0xdd, 0x0e, 0xe1, 0xa1, 0xdd, 0x7d, 0xe1, 0xff, 0x0a, 0x93, 0x0b, 0x37, 0x22, 0x25, 0xa0, 0x24,
-	0x2c, 0xb5, 0xf4, 0x6e, 0x20, 0xa0, 0x08, 0x8b, 0xbc, 0x08, 0x19, 0xf2, 0x71, 0x44, 0x11, 0x1e,
-	0x75, 0x60, 0xca, 0x1c, 0xa6, 0xcb, 0xdd, 0xcd, 0xe5, 0x1b, 0x91, 0x13, 0xb0, 0xe9, 0x6f, 0x71,
-	0x99, 0x14, 0x94, 0x6f, 0x71, 0x05, 0x99, 0x2a, 0xdf, 0xe2, 0x2a, 0x2a, 0x94, 0x5e, 0xe3, 0xcc,
-	0xdf, 0x23, 0x57, 0x94, 0x99, 0x07, 0x34, 0xc9, 0x77, 0x08, 0x8f, 0xf6, 0x68, 0x4c, 0x32, 0x23,
-	0x4b, 0xa7, 0x4f, 0x9d, 0x6a, 0x17, 0x54, 0x4c, 0x21, 0xc7, 0x33, 0x3c, 0xc7, 0x24, 0x99, 0xd2,
-	0x65, 0xff, 0x8e, 0xa6, 0x8d, 0x8d, 0xbf, 0x13, 0xb1, 0x5f, 0x5a, 0x89, 0xd8, 0x46, 0x2b, 0x81,
-	0x9e, 0xb5, 0x12, 0xe8, 0xaf, 0x56, 0x02, 0x3d, 0xdd, 0x4c, 0xc4, 0x9e, 0x6d, 0x26, 0x62, 0x7f,
-	0x6c, 0x26, 0x62, 0xf7, 0xde, 0x29, 0x39, 0xde, 0xfd, 0x7a, 0xbe, 0x13, 0x1a, 0xa0, 0x2e, 0xb2,
-	0x62, 0xd1, 0x29, 0x38, 0x66, 0xd9, 0x87, 0xee, 0x82, 0x7b, 0x8d, 0xaa, 0xed, 0xe6, 0x8f, 0xf2,
-	0x3f, 0x54, 0xaf, 0xfc, 0x1f, 0x00, 0x00, 0xff, 0xff, 0x61, 0xa4, 0xf9, 0x68, 0x2c, 0x16, 0x00,
-	0x00,
+	0x16, 0x7c, 0x32, 0xef, 0x62, 0x5c, 0x15, 0x47, 0x39, 0x20, 0x75, 0x38, 0x3d, 0x11, 0x04, 0x08,
+	0xce, 0xa8, 0x31, 0x02, 0x5f, 0x32, 0x16, 0x49, 0xe1, 0x63, 0xbc, 0x56, 0x1d, 0x9f, 0x38, 0xf7,
+	0x39, 0xd1, 0x6e, 0x26, 0x8f, 0x0b, 0x1f, 0xff, 0x84, 0x1a, 0xaf, 0xf0, 0x8f, 0x19, 0x8b, 0x3e,
+	0x45, 0xf8, 0xec, 0xb0, 0x7c, 0x22, 0x4a, 0x74, 0xe8, 0x25, 0x95, 0xe8, 0x2e, 0x7e, 0x6b, 0xa0,
+	0x4b, 0xdd, 0xa4, 0x76, 0x59, 0x1d, 0xfa, 0x3d, 0xc2, 0x54, 0x86, 0xbd, 0xcf, 0x4c, 0x97, 0x81,
+	0xe9, 0x0a, 0xf3, 0xcc, 0xf2, 0x82, 0x5d, 0x65, 0xae, 0xe3, 0xa5, 0x1b, 0x03, 0x73, 0xd0, 0xdb,
+	0x51, 0xa4, 0xd0, 0xd1, 0x0c, 0x50, 0x8c, 0x00, 0x05, 0x8a, 0xd3, 0x78, 0xdc, 0xeb, 0x18, 0xe4,
+	0x2c, 0x61, 0x21, 0xa0, 0x8d, 0x31, 0xaf, 0xc7, 0x8b, 0xfe, 0x8a, 0xf0, 0xf9, 0x10, 0x2c, 0x28,
+	0xd8, 0x41, 0xcc, 0x2b, 0x39, 0x8b, 0x8f, 0xb0, 0x47, 0x15, 0xbb, 0x76, 0xea, 0x10, 0xbf, 0xe5,
+	0xaf, 0xb6, 0x9b, 0xc9, 0x31, 0x61, 0xcc, 0x1f, 0x53, 0x43, 0x1c, 0xd3, 0x25, 0x3c, 0xa3, 0x90,
+	0xf9, 0x76, 0x8a, 0xf1, 0xd8, 0x9f, 0x9d, 0xc5, 0x4e, 0x00, 0x68, 0xfb, 0x1e, 0x0d, 0x66, 0x40,
+	0x2b, 0x2e, 0xa7, 0xf5, 0x04, 0xe1, 0x69, 0x69, 0x12, 0xfb, 0xbc, 0xce, 0x7e, 0x43, 0x50, 0xe7,
+	0xb0, 0x7c, 0x0e, 0x66, 0xa5, 0x29, 0x8f, 0xc8, 0x4f, 0x08, 0x5f, 0x50, 0xc9, 0x7d, 0x9f, 0x4b,
+	0x7a, 0xaf, 0x6f, 0x45, 0xdd, 0x60, 0xf5, 0x8a, 0xb7, 0x67, 0xfb, 0xef, 0x26, 0x4c, 0x4f, 0x14,
+	0x36, 0x50, 0x4d, 0xe2, 0x51, 0x71, 0x1f, 0x0a, 0x1d, 0x0b, 0xb8, 0x0d, 0x98, 0x3f, 0xe2, 0x3e,
+	0xf4, 0x07, 0xbf, 0xed, 0x61, 0x40, 0x07, 0xf4, 0x26, 0xbb, 0x0d, 0xdd, 0x1c, 0x92, 0x92, 0x2a,
+	0xc5, 0x3c, 0xc0, 0x7d, 0x7e, 0xdf, 0xf1, 0xec, 0xac, 0xe3, 0x7a, 0xb6, 0x05, 0x18, 0xee, 0x9e,
+	0xb5, 0xe3, 0x13, 0xfc, 0xb6, 0x52, 0x0c, 0xc8, 0x79, 0x12, 0x8f, 0xf8, 0xbc, 0x5d, 0xfe, 0x56,
+	0x3a, 0x6c, 0x1c, 0x03, 0xf6, 0x2e, 0xfd, 0x02, 0x56, 0xf5, 0x20, 0x56, 0xba, 0x31, 0x5f, 0x2e,
+	0x03, 0xd6, 0xee, 0xb2, 0xad, 0x43, 0xcf, 0xe5, 0x11, 0x20, 0xd7, 0x5b, 0xf8, 0x08, 0x4f, 0x0d,
+	0xde, 0x9e, 0x93, 0xfe, 0x45, 0x11, 0x42, 0xce, 0xbf, 0x27, 0xc2, 0x7f, 0xa2, 0x73, 0x4d, 0xda,
+	0xcd, 0xe4, 0x78, 0x4f, 0x6f, 0x5d, 0x6a, 0x08, 0x00, 0x7a, 0x12, 0x13, 0x1e, 0x76, 0x89, 0xab,
+	0x44, 0xa0, 0x40, 0x0b, 0xf8, 0x44, 0xdf, 0x53, 0x08, 0x9b, 0xc5, 0x47, 0x85, 0x9a, 0x1c, 0x72,
+	0x41, 0x85, 0xdb, 0x60, 0x64, 0xe1, 0x4a, 0x0d, 0xc0, 0xb8, 0xfc, 0xed, 0x04, 0x1e, 0xe3, 0x51,
+	0x96, 0xed, 0xda, 0x43, 0xa7, 0x60, 0x93, 0x9f, 0x11, 0x3e, 0x3e, 0xa0, 0x1f, 0xc8, 0xc5, 0x88,
+	0x10, 0xe1, 0x1a, 0x55, 0x4b, 0xa9, 0x9a, 0x0b, 0x46, 0x54, 0x7f, 0xfc, 0xfc, 0x9f, 0x1f, 0xe3,
+	0x33, 0xe4, 0x9c, 0x2e, 0x13, 0xd8, 0x39, 0xa7, 0x52, 0x64, 0xfa, 0x9a, 0x63, 0xad, 0x93, 0x7f,
+	0x11, 0x4e, 0xc8, 0x15, 0x1d, 0xf9, 0x70, 0x78, 0x0e, 0xd1, 0xc2, 0x54, 0xbb, 0xbe, 0x43, 0x6f,
+	0x20, 0x94, 0xe5, 0x84, 0x6e, 0x92, 0x05, 0x29, 0x21, 0x97, 0x33, 0xca, 0xf9, 0xf3, 0xae, 0xaf,
+	0x05, 0x43, 0xb9, 0xae, 0xaf, 0xf9, 0x8f, 0xd7, 0xc9, 0xef, 0x08, 0x6b, 0xd1, 0x8a, 0x8e, 0x5c,
+	0x55, 0xab, 0xf6, 0xd6, 0x1b, 0xad, 0x7d, 0xb0, 0x03, 0x4f, 0x60, 0x78, 0x83, 0x33, 0xbc, 0x4e,
+	0xae, 0xa9, 0x30, 0x0c, 0x78, 0xf5, 0x71, 0x24, 0xcf, 0x7d, 0x62, 0xa1, 0x3a, 0x4e, 0x4e, 0x4c,
+	0xa6, 0x27, 0xe5, 0xc4, 0xa4, 0xa2, 0x91, 0xce, 0x71, 0x62, 0xb3, 0xe4, 0x6a, 0x04, 0xb1, 0x3e,
+	0x11, 0xd5, 0xd3, 0xbb, 0xa0, 0x5d, 0x2f, 0x50, 0xa8, 0xe4, 0xed, 0xd7, 0x65, 0xe4, 0x23, 0xf5,
+	0x14, 0x43, 0xb5, 0xa8, 0x36, 0xb7, 0x73, 0x00, 0xa0, 0xfa, 0x19, 0xa7, 0xba, 0x48, 0x6e, 0x2b,
+	0x51, 0xf5, 0x1b, 0x37, 0x74, 0x5c, 0x9b, 0x08, 0x4f, 0x4a, 0xf4, 0x1b, 0x91, 0x36, 0x47, 0x2a,
+	0x3c, 0xb5, 0xd9, 0x9d, 0xb8, 0x02, 0xdb, 0x5b, 0x9c, 0x6d, 0x9a, 0xcc, 0x45, 0xb0, 0xe5, 0x82,
+	0x29, 0xd7, 0xb3, 0x6a, 0x22, 0xc7, 0xf6, 0x9b, 0xb8, 0x44, 0x25, 0x07, 0x1b, 0x68, 0x6e, 0xbb,
+	0xc9, 0x6e, 0xd9, 0x42, 0xf3, 0xbb, 0x40, 0x00, 0xd6, 0x77, 0x39, 0xeb, 0x65, 0x72, 0x67, 0xdb,
+	0xac, 0x87, 0xf6, 0xf9, 0x4f, 0xbf, 0xcf, 0xe1, 0x4a, 0x8b, 0x28, 0x6c, 0x97, 0x08, 0xe5, 0x27,
+	0xef, 0xb3, 0x5c, 0xd8, 0x0d, 0xdd, 0x4c, 0x62, 0xaa, 0x81, 0x71, 0x54, 0x8b, 0xff, 0x43, 0x12,
+	0x85, 0xaa, 0xd8, 0x62, 0x15, 0xdd, 0x28, 0x6f, 0xb1, 0x92, 0xcc, 0xa3, 0x2b, 0x9c, 0xf0, 0xa7,
+	0x24, 0xbb, 0x1d, 0xc2, 0x43, 0xbb, 0xfb, 0xc2, 0xff, 0x15, 0x26, 0x17, 0x6e, 0x44, 0x4a, 0x40,
+	0x49, 0x58, 0x6a, 0xe9, 0xdd, 0x40, 0x40, 0x11, 0x16, 0x79, 0x11, 0x32, 0xe4, 0xe3, 0x88, 0x22,
+	0x3c, 0xea, 0xc0, 0x94, 0x39, 0x4c, 0x97, 0xbb, 0x9b, 0xcb, 0x37, 0x22, 0x27, 0x60, 0xd3, 0xdf,
+	0xe2, 0x32, 0x29, 0x28, 0xdf, 0xe2, 0x0a, 0x32, 0x55, 0xbe, 0xc5, 0x55, 0x54, 0x28, 0xbd, 0xc6,
+	0x99, 0xbf, 0x47, 0xae, 0x28, 0x33, 0x0f, 0x68, 0x92, 0xef, 0x10, 0x1e, 0xed, 0xd1, 0x98, 0x64,
+	0x46, 0x96, 0x4e, 0x9f, 0x3a, 0xd5, 0x2e, 0xa8, 0x98, 0x42, 0x8e, 0x67, 0x78, 0x8e, 0x49, 0x32,
+	0xa5, 0xcb, 0xfe, 0x1d, 0x4d, 0x1b, 0x1b, 0x7f, 0x27, 0x62, 0xbf, 0xb4, 0x12, 0xb1, 0x8d, 0x56,
+	0x02, 0x3d, 0x6b, 0x25, 0xd0, 0x5f, 0xad, 0x04, 0x7a, 0xba, 0x99, 0x88, 0x3d, 0xdb, 0x4c, 0xc4,
+	0xfe, 0xd8, 0x4c, 0xc4, 0xee, 0xbd, 0x53, 0x72, 0xbc, 0xfb, 0xf5, 0x7c, 0x27, 0x34, 0x40, 0x5d,
+	0x64, 0xc5, 0xa2, 0x53, 0x70, 0xcc, 0xb2, 0x0f, 0xdd, 0x05, 0xf7, 0x1a, 0x55, 0xdb, 0xcd, 0x1f,
+	0xe5, 0x7f, 0xa8, 0x5e, 0xf9, 0x3f, 0x00, 0x00, 0xff, 0xff, 0x1d, 0x7c, 0xda, 0x30, 0x2c, 0x16,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1630,19 +1630,15 @@ func (m *QueryLockersByProductToAssetIDRequest) MarshalToSizedBuffer(dAtA []byte
 	_ = i
 	var l int
 	_ = l
-	if len(m.AssetId) > 0 {
-		i -= len(m.AssetId)
-		copy(dAtA[i:], m.AssetId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.AssetId)))
+	if m.AssetId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.AssetId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
-	if len(m.ProductId) > 0 {
-		i -= len(m.ProductId)
-		copy(dAtA[i:], m.ProductId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.ProductId)))
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1704,12 +1700,10 @@ func (m *QueryLockerInfoByProductIDRequest) MarshalToSizedBuffer(dAtA []byte) (i
 	_ = i
 	var l int
 	_ = l
-	if len(m.ProductId) > 0 {
-		i -= len(m.ProductId)
-		copy(dAtA[i:], m.ProductId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.ProductId)))
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1771,12 +1765,10 @@ func (m *QueryTotalDepositByAssetIDRequest) MarshalToSizedBuffer(dAtA []byte) (i
 	_ = i
 	var l int
 	_ = l
-	if len(m.AssetId) > 0 {
-		i -= len(m.AssetId)
-		copy(dAtA[i:], m.AssetId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.AssetId)))
+	if m.AssetId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.AssetId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1836,19 +1828,15 @@ func (m *QueryTotalDepositByProductAssetIDRequest) MarshalToSizedBuffer(dAtA []b
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.AssetId) > 0 {
-		i -= len(m.AssetId)
-		copy(dAtA[i:], m.AssetId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.AssetId)))
+	if m.AssetId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.AssetId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
-	if len(m.ProductId) > 0 {
-		i -= len(m.ProductId)
-		copy(dAtA[i:], m.ProductId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.ProductId)))
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1908,12 +1896,10 @@ func (m *QueryOwnerLockerByProductIDRequest) MarshalToSizedBuffer(dAtA []byte) (
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.ProductId) > 0 {
-		i -= len(m.ProductId)
-		copy(dAtA[i:], m.ProductId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.ProductId)))
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1978,19 +1964,15 @@ func (m *QueryOwnerLockerByProductToAssetIDRequest) MarshalToSizedBuffer(dAtA []
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.AssetId) > 0 {
-		i -= len(m.AssetId)
-		copy(dAtA[i:], m.AssetId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.AssetId)))
+	if m.AssetId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.AssetId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
-	if len(m.ProductId) > 0 {
-		i -= len(m.ProductId)
-		copy(dAtA[i:], m.ProductId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.ProductId)))
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -2048,12 +2030,10 @@ func (m *QueryLockerCountByProductIDRequest) MarshalToSizedBuffer(dAtA []byte) (
 	_ = i
 	var l int
 	_ = l
-	if len(m.ProductId) > 0 {
-		i -= len(m.ProductId)
-		copy(dAtA[i:], m.ProductId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.ProductId)))
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -2106,19 +2086,15 @@ func (m *QueryLockerCountByProductToAssetIDRequest) MarshalToSizedBuffer(dAtA []
 	_ = i
 	var l int
 	_ = l
-	if len(m.AssetId) > 0 {
-		i -= len(m.AssetId)
-		copy(dAtA[i:], m.AssetId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.AssetId)))
+	if m.AssetId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.AssetId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
-	if len(m.ProductId) > 0 {
-		i -= len(m.ProductId)
-		copy(dAtA[i:], m.ProductId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.ProductId)))
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -2171,12 +2147,10 @@ func (m *QueryWhiteListedAssetIDsByProductIDRequest) MarshalToSizedBuffer(dAtA [
 	_ = i
 	var l int
 	_ = l
-	if len(m.ProductId) > 0 {
-		i -= len(m.ProductId)
-		copy(dAtA[i:], m.ProductId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.ProductId)))
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -2242,12 +2216,10 @@ func (m *QueryWhiteListedAssetByAllProductRequest) MarshalToSizedBuffer(dAtA []b
 	_ = i
 	var l int
 	_ = l
-	if len(m.ProductId) > 0 {
-		i -= len(m.ProductId)
-		copy(dAtA[i:], m.ProductId)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.ProductId)))
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -2386,13 +2358,11 @@ func (m *QueryLockersByProductToAssetIDRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.ProductId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
 	}
-	l = len(m.AssetId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.AssetId != 0 {
+		n += 1 + sovQuerier(uint64(m.AssetId))
 	}
 	return n
 }
@@ -2418,9 +2388,8 @@ func (m *QueryLockerInfoByProductIDRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.ProductId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
 	}
 	return n
 }
@@ -2446,9 +2415,8 @@ func (m *QueryTotalDepositByAssetIDRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.AssetId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.AssetId != 0 {
+		n += 1 + sovQuerier(uint64(m.AssetId))
 	}
 	return n
 }
@@ -2471,13 +2439,11 @@ func (m *QueryTotalDepositByProductAssetIDRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.ProductId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
 	}
-	l = len(m.AssetId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.AssetId != 0 {
+		n += 1 + sovQuerier(uint64(m.AssetId))
 	}
 	l = len(m.Owner)
 	if l > 0 {
@@ -2504,9 +2470,8 @@ func (m *QueryOwnerLockerByProductIDRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.ProductId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
 	}
 	l = len(m.Owner)
 	if l > 0 {
@@ -2532,13 +2497,11 @@ func (m *QueryOwnerLockerByProductToAssetIDRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.ProductId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
 	}
-	l = len(m.AssetId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.AssetId != 0 {
+		n += 1 + sovQuerier(uint64(m.AssetId))
 	}
 	l = len(m.Owner)
 	if l > 0 {
@@ -2564,9 +2527,8 @@ func (m *QueryLockerCountByProductIDRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.ProductId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
 	}
 	return n
 }
@@ -2589,13 +2551,11 @@ func (m *QueryLockerCountByProductToAssetIDRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.ProductId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
 	}
-	l = len(m.AssetId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.AssetId != 0 {
+		n += 1 + sovQuerier(uint64(m.AssetId))
 	}
 	return n
 }
@@ -2618,9 +2578,8 @@ func (m *QueryWhiteListedAssetIDsByProductIDRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.ProductId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
 	}
 	return n
 }
@@ -2647,9 +2606,8 @@ func (m *QueryWhiteListedAssetByAllProductRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.ProductId)
-	if l > 0 {
-		n += 1 + l + sovQuerier(uint64(l))
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
 	}
 	return n
 }
@@ -2890,10 +2848,10 @@ func (m *QueryLockersByProductToAssetIDRequest) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
 			}
-			var stringLen uint64
+			m.ProductId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -2903,29 +2861,16 @@ func (m *QueryLockersByProductToAssetIDRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ProductId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProductId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
-			var stringLen uint64
+			m.AssetId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -2935,24 +2880,11 @@ func (m *QueryLockersByProductToAssetIDRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.AssetId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AssetId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuerier(dAtA[iNdEx:])
@@ -3088,10 +3020,10 @@ func (m *QueryLockerInfoByProductIDRequest) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
 			}
-			var stringLen uint64
+			m.ProductId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -3101,24 +3033,11 @@ func (m *QueryLockerInfoByProductIDRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ProductId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProductId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuerier(dAtA[iNdEx:])
@@ -3254,10 +3173,10 @@ func (m *QueryTotalDepositByAssetIDRequest) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
-			var stringLen uint64
+			m.AssetId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -3267,24 +3186,11 @@ func (m *QueryTotalDepositByAssetIDRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.AssetId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AssetId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuerier(dAtA[iNdEx:])
@@ -3405,10 +3311,10 @@ func (m *QueryTotalDepositByProductAssetIDRequest) Unmarshal(dAtA []byte) error 
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
 			}
-			var stringLen uint64
+			m.ProductId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -3418,29 +3324,16 @@ func (m *QueryTotalDepositByProductAssetIDRequest) Unmarshal(dAtA []byte) error 
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ProductId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProductId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
-			var stringLen uint64
+			m.AssetId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -3450,24 +3343,11 @@ func (m *QueryTotalDepositByProductAssetIDRequest) Unmarshal(dAtA []byte) error 
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.AssetId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AssetId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
@@ -3620,10 +3500,10 @@ func (m *QueryOwnerLockerByProductIDRequest) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
 			}
-			var stringLen uint64
+			m.ProductId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -3633,24 +3513,11 @@ func (m *QueryOwnerLockerByProductIDRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ProductId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProductId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
@@ -3817,10 +3684,10 @@ func (m *QueryOwnerLockerByProductToAssetIDRequest) Unmarshal(dAtA []byte) error
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
 			}
-			var stringLen uint64
+			m.ProductId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -3830,29 +3697,16 @@ func (m *QueryOwnerLockerByProductToAssetIDRequest) Unmarshal(dAtA []byte) error
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ProductId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProductId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
-			var stringLen uint64
+			m.AssetId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -3862,24 +3716,11 @@ func (m *QueryOwnerLockerByProductToAssetIDRequest) Unmarshal(dAtA []byte) error
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.AssetId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AssetId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
@@ -4046,10 +3887,10 @@ func (m *QueryLockerCountByProductIDRequest) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
 			}
-			var stringLen uint64
+			m.ProductId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -4059,24 +3900,11 @@ func (m *QueryLockerCountByProductIDRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ProductId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProductId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuerier(dAtA[iNdEx:])
@@ -4197,10 +4025,10 @@ func (m *QueryLockerCountByProductToAssetIDRequest) Unmarshal(dAtA []byte) error
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
 			}
-			var stringLen uint64
+			m.ProductId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -4210,29 +4038,16 @@ func (m *QueryLockerCountByProductToAssetIDRequest) Unmarshal(dAtA []byte) error
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ProductId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProductId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
-			var stringLen uint64
+			m.AssetId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -4242,24 +4057,11 @@ func (m *QueryLockerCountByProductToAssetIDRequest) Unmarshal(dAtA []byte) error
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.AssetId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AssetId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuerier(dAtA[iNdEx:])
@@ -4380,10 +4182,10 @@ func (m *QueryWhiteListedAssetIDsByProductIDRequest) Unmarshal(dAtA []byte) erro
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
 			}
-			var stringLen uint64
+			m.ProductId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -4393,24 +4195,11 @@ func (m *QueryWhiteListedAssetIDsByProductIDRequest) Unmarshal(dAtA []byte) erro
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ProductId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProductId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuerier(dAtA[iNdEx:])
@@ -4588,10 +4377,10 @@ func (m *QueryWhiteListedAssetByAllProductRequest) Unmarshal(dAtA []byte) error 
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
 			}
-			var stringLen uint64
+			m.ProductId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -4601,24 +4390,11 @@ func (m *QueryWhiteListedAssetByAllProductRequest) Unmarshal(dAtA []byte) error 
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ProductId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProductId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuerier(dAtA[iNdEx:])

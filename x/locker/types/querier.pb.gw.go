@@ -103,7 +103,7 @@ func request_QueryService_QueryLockersByProductToAssetID_0(ctx context.Context, 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -114,7 +114,7 @@ func request_QueryService_QueryLockersByProductToAssetID_0(ctx context.Context, 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.AssetId, err = runtime.String(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
@@ -141,7 +141,7 @@ func local_request_QueryService_QueryLockersByProductToAssetID_0(ctx context.Con
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -152,7 +152,7 @@ func local_request_QueryService_QueryLockersByProductToAssetID_0(ctx context.Con
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.AssetId, err = runtime.String(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
@@ -179,7 +179,7 @@ func request_QueryService_QueryLockerInfoByProductID_0(ctx context.Context, mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -206,7 +206,7 @@ func local_request_QueryService_QueryLockerInfoByProductID_0(ctx context.Context
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -233,7 +233,7 @@ func request_QueryService_QueryTotalDepositByAssetID_0(ctx context.Context, mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.AssetId, err = runtime.String(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
@@ -260,7 +260,7 @@ func local_request_QueryService_QueryTotalDepositByAssetID_0(ctx context.Context
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.AssetId, err = runtime.String(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
@@ -291,7 +291,7 @@ func request_QueryService_QueryTotalDepositByProductAssetID_0(ctx context.Contex
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -302,7 +302,7 @@ func request_QueryService_QueryTotalDepositByProductAssetID_0(ctx context.Contex
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.AssetId, err = runtime.String(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
@@ -336,7 +336,7 @@ func local_request_QueryService_QueryTotalDepositByProductAssetID_0(ctx context.
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -347,7 +347,7 @@ func local_request_QueryService_QueryTotalDepositByProductAssetID_0(ctx context.
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.AssetId, err = runtime.String(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
@@ -385,7 +385,7 @@ func request_QueryService_QueryOwnerLockerByProductID_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -419,7 +419,7 @@ func local_request_QueryService_QueryOwnerLockerByProductID_0(ctx context.Contex
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -457,7 +457,7 @@ func request_QueryService_QueryOwnerLockerByProductToAssetID_0(ctx context.Conte
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -468,7 +468,7 @@ func request_QueryService_QueryOwnerLockerByProductToAssetID_0(ctx context.Conte
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.AssetId, err = runtime.String(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
@@ -502,7 +502,7 @@ func local_request_QueryService_QueryOwnerLockerByProductToAssetID_0(ctx context
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -513,7 +513,7 @@ func local_request_QueryService_QueryOwnerLockerByProductToAssetID_0(ctx context
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.AssetId, err = runtime.String(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
@@ -547,7 +547,7 @@ func request_QueryService_QueryLockerCountByProductID_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -574,7 +574,7 @@ func local_request_QueryService_QueryLockerCountByProductID_0(ctx context.Contex
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -601,7 +601,7 @@ func request_QueryService_QueryLockerCountByProductToAssetID_0(ctx context.Conte
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -612,7 +612,7 @@ func request_QueryService_QueryLockerCountByProductToAssetID_0(ctx context.Conte
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.AssetId, err = runtime.String(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
@@ -639,7 +639,7 @@ func local_request_QueryService_QueryLockerCountByProductToAssetID_0(ctx context
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -650,7 +650,7 @@ func local_request_QueryService_QueryLockerCountByProductToAssetID_0(ctx context
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.AssetId, err = runtime.String(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
@@ -677,7 +677,7 @@ func request_QueryService_QueryWhiteListedAssetIDsByProductID_0(ctx context.Cont
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
@@ -704,7 +704,7 @@ func local_request_QueryService_QueryWhiteListedAssetIDsByProductID_0(ctx contex
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
 	}
 
-	protoReq.ProductId, err = runtime.String(val)
+	protoReq.ProductId, err = runtime.Uint64(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)

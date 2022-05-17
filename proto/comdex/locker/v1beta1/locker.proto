@@ -73,9 +73,6 @@ message AssetToLockerMapping{
     (gogoproto.moretags) = "yaml:\"locker_id\""];
    }
 
-
-
-
 //Key is app_mapping_id
 message LockerLookupTable {
   uint64 app_mapping_id = 1[    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
