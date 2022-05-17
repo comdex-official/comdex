@@ -379,3 +379,25 @@ func MustUnmarshalOrder(cdc codec.BinaryCodec, value []byte) Order {
 	}
 	return msg
 }
+
+// MustMarshaPoolLiquidityProvidersData returns the PoolLiquidityProvidersData bytes.
+// It throws panic if it fails.
+func MustMarshaPoolLiquidityProvidersData(cdc codec.BinaryCodec, liquidityProvidersData PoolLiquidityProvidersData) []byte {
+	return cdc.MustMarshal(&liquidityProvidersData)
+}
+
+// UnmarshalPoolLiquidityProvidersData returns the PoolLiquidityProvidersData from bytes.
+func UnmarshalPoolLiquidityProvidersData(cdc codec.BinaryCodec, value []byte) (liquidityProvidersData PoolLiquidityProvidersData, err error) {
+	err = cdc.Unmarshal(value, &liquidityProvidersData)
+	return liquidityProvidersData, err
+}
+
+// MustUnmarshalPoolLiquidityProvidersData returns the PoolLiquidityProvidersData from bytes.
+// It throws panic if it fails.
+func MustUnmarshalPoolLiquidityProvidersData(cdc codec.BinaryCodec, value []byte) PoolLiquidityProvidersData {
+	msg, err := UnmarshalPoolLiquidityProvidersData(cdc, value)
+	if err != nil {
+		panic(err)
+	}
+	return msg
+}

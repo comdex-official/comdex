@@ -244,3 +244,31 @@ enum AddressType {
   // the default 20 bytes length address type.
   ADDRESS_TYPE_20_BYTES = 1 [(gogoproto.enumvalue_customname) = "AddressType20Bytes"];
 }
+
+// DATA COLLECTION FOR REWARD CALCULATIONS
+
+message DepositsMade {
+  repeated cosmos.base.v1beta1.Coin coins = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+}
+
+message QueuedLiquidityProvider {
+  string address = 1;
+  repeated cosmos.base.v1beta1.Coin supply_provided = 2;
+  google.protobuf.Timestamp created_at = 3 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"created_at\""
+  ];
+}
+
+message PoolLiquidityProvidersData {
+  uint64 pool_id = 1;
+  repeated uint64 bonded_lock_ids = 2 [ 
+      (gogoproto.moretags) = "yaml:\"bonded_lock_ids\"" 
+  ];
+  map<string, DepositsMade> liquidity_providers = 3;
+  repeated QueuedLiquidityProvider queued_liquidity_providers = 4;
+}

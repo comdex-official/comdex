@@ -531,3 +531,21 @@ func (k Keeper) DeleteOrderIndex(ctx sdk.Context, order types.Order) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.GetOrderIndexKey(order.GetOrderer(), order.PairId, order.Id))
 }
+
+// GetPoolLiquidityProvidersData returns the liquidity providers data by pool id.
+func (k Keeper) GetPoolLiquidityProvidersData(ctx sdk.Context, poolId uint64) (liquidityProvidersData types.PoolLiquidityProvidersData, found bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetPoolLiquidityProvidersDataKey(poolId))
+	if bz == nil {
+		return
+	}
+	liquidityProvidersData = types.MustUnmarshalPoolLiquidityProvidersData(k.cdc, bz)
+	return liquidityProvidersData, true
+}
+
+// SetPoolLiquidityProvidersData sets the liquidity providers data by pool id.
+func (k Keeper) SetPoolLiquidityProvidersData(ctx sdk.Context, liquidityProvidersData types.PoolLiquidityProvidersData) {
+	store := ctx.KVStore(k.storeKey)
+	bz := types.MustMarshaPoolLiquidityProvidersData(k.cdc, liquidityProvidersData)
+	store.Set(types.GetPoolLiquidityProvidersDataKey(liquidityProvidersData.PoolId), bz)
+}

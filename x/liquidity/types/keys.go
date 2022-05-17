@@ -39,6 +39,8 @@ var (
 	WithdrawRequestIndexKeyPrefix = []byte{0xb5}
 	OrderKeyPrefix                = []byte{0xb2}
 	OrderIndexKeyPrefix           = []byte{0xb3}
+
+	PoolLiquidityProvidersDataKeyPrefix = []byte{0xb4}
 )
 
 // GetPairKey returns the store key to retrieve pair object from the pair id.
@@ -125,6 +127,11 @@ func GetWithdrawRequestIndexKeyPrefix(depositor sdk.AccAddress) []byte {
 // GetOrderKey returns the store key to retrieve order object from the pair id and request id.
 func GetOrderKey(pairId, id uint64) []byte {
 	return append(append(OrderKeyPrefix, sdk.Uint64ToBigEndian(pairId)...), sdk.Uint64ToBigEndian(id)...)
+}
+
+// GetPoolLiquidityProvidersDataKeyPrefix returns the store key to retrieve liquidity providers data from the pool id.
+func GetPoolLiquidityProvidersDataKey(poolId uint64) []byte {
+	return append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(poolId)...)
 }
 
 // GetOrdersByPairKeyPrefix returns the store key to iterate orders by pair.
