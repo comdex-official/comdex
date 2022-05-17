@@ -35,4 +35,5 @@ var (
 	ErrorUnauthorized          = sdkerrors.Register(ModuleName, 1124, "unauthorized")
 	ErrorDuplicateLend         = sdkerrors.Register(ModuleName, 1125, "duplicate Lend")
 	ErrorLendDoesNotExist      = sdkerrors.Register(ModuleName, 1126, "Lend does not exists")
+	ErrorDuplicateLendPair     = sdkerrors.Register(ModuleName, 1127, "duplicate lend pair")
 )

@@ -44,6 +44,8 @@ var (
 	KeyPrefixRegisteredToken          = []byte{0x11}
 	KeyPrefixCtokenSupply             = []byte{0x12}
 	LendForAddressByPairKeyPrefix     = []byte{0x13}
+	LendPairKeyPrefix                 = []byte{0x14}
+	LendPairIDKey                     = []byte{0x15}
 )
 
 func LendKey(id uint64) []byte {
@@ -110,4 +112,8 @@ func LendForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
 	}
 
 	return append(v, sdk.Uint64ToBigEndian(pairID)...)
+}
+
+func LendPairKey(id uint64) []byte {
+	return append(LendPairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
