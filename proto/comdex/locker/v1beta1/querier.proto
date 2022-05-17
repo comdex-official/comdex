@@ -174,9 +174,17 @@ message QueryWhiteListedAssetByAllProductRequest {
 }
 
 message QueryWhiteListedAssetByAllProductResponse {
-  uint64  product_id = 1;
 
-  repeated comdex.asset.v1beta1.Asset asset = 2 [
+  repeated ProductToAllAsset productToAllAsset = 1 [
+    (gogoproto.moretags) = "yaml:\"productToAllAsset\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message ProductToAllAsset {
+
+  uint64  product_id = 1;
+  repeated comdex.asset.v1beta1.Asset assets = 2 [
     (gogoproto.moretags) = "yaml:\"assets\"",
     (gogoproto.nullable) = false
   ];

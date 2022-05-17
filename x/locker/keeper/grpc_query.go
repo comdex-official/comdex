@@ -371,18 +371,26 @@ func (q *queryServer) QueryWhiteListedAssetByAllProduct(c context.Context, reque
 		return nil, status.Errorf(codes.NotFound, "ano apps exist")
 	}
 
-	var assets []assettypes.Asset
-	for _, app := range apps {
+	var productToAll []types.ProductToAllAsset
 
+	for _, app := range apps {
+		var product types.ProductToAllAsset
+		var assets []assettypes.Asset
 		appData, _ := q.GetLockerProductAssetMapping(ctx, app.Id)
 		for _, assetId := range appData.AssetIds {
 			asset, assetFound := q.asset.GetAsset(ctx, assetId)
 			if assetFound {
 				assets = append(assets, asset)
 			}
+			product = types.ProductToAllAsset{
+				ProductId: appData.AppMappingId,
+				Assets:    assets,
+			}
 		}
+
+		productToAll = append(productToAll, product)
 	}
 	return &types.QueryWhiteListedAssetByAllProductResponse{
-		Asset: assets,
+		ProductToAllAsset: productToAll,
 	}, nil
 }
