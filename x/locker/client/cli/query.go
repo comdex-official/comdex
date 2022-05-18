@@ -172,9 +172,9 @@ func queryTotalDepositByProductToAssetID() *cobra.Command {
 
 func queryOwnerLockerByProductID() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "owner-locker-by-product-id [product_id]",
+		Use:   "owner-locker-by-product-id [product_id] [owner]",
 		Short: "owner locker by product id",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -182,13 +182,14 @@ func queryOwnerLockerByProductID() *cobra.Command {
 			}
 
 			productId, err := strconv.ParseUint(args[0], 10, 64)
+			owner := args[1]
 
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryOwnerLockerByProductID(
 				context.Background(),
 				&types.QueryOwnerLockerByProductIDRequest{
 					ProductId: productId,
-					Owner:     ctx.GetFromAddress().String(),
+					Owner:     owner,
 				},
 			)
 			if err != nil {
@@ -204,9 +205,9 @@ func queryOwnerLockerByProductID() *cobra.Command {
 
 func queryOwnerLockerByProductToAssetID() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "owner-locker-by-product-to-asset-id [product_id] [asset_id]",
+		Use:   "owner-locker-by-product-to-asset-id [product_id] [asset_id] [owner]",
 		Short: "owner locker by product to asset id",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -217,13 +218,15 @@ func queryOwnerLockerByProductToAssetID() *cobra.Command {
 
 			assetId, err := strconv.ParseUint(args[1], 10, 64)
 
+			owner := args[2]
+
 			queryClient := types.NewQueryServiceClient(ctx)
 			res, err := queryClient.QueryOwnerLockerByProductToAssetID(
 				context.Background(),
 				&types.QueryOwnerLockerByProductToAssetIDRequest{
 					ProductId: productId,
 					AssetId:   assetId,
-					Owner:     ctx.GetFromAddress().String(),
+					Owner:     owner,
 				},
 			)
 			if err != nil {
