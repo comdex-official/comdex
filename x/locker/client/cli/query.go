@@ -43,7 +43,7 @@ func queryLockerByProductAssetID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "lockers-by-product-asset-id [product_id] [asset_id]",
 		Short: "Query all lockers by product and asset id",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

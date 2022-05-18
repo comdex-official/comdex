@@ -2,8 +2,8 @@ package keeper
 
 import (
 	"context"
-	"time"
 	"strconv"
+	"time"
 
 	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -75,7 +75,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 			//Creating locker instance
 			var userLocker types.Locker
 			counter := lookup_table_data.Counter + 1
-			userLocker.LockerId = app_mapping.ShortName + strconv.FormatUint(asset.Id,10)
+			userLocker.LockerId = app_mapping.ShortName + strconv.FormatUint(counter, 10)
 			userLocker.Depositor = msg.Depositor
 			userLocker.AssetDepositId = asset.Id
 			userLocker.CreatedAt = time.Now()
