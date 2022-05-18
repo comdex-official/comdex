@@ -48,7 +48,6 @@ func (k *Keeper) SetApp(ctx sdk.Context, app types.AppMapping) {
 	store.Set(key, value)
 }
 
-
 func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppMapping, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -78,10 +77,10 @@ func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppMapping, found bool) 
 		apps = append(apps, app)
 	}
 	if apps == nil {
-		return nil, true
+		return nil, false
 	}
 
-	return apps, false
+	return apps, true
 }
 
 func (k *Keeper) SetAppForShortName(ctx sdk.Context, shortName string, id uint64) {
@@ -114,11 +113,11 @@ func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMappi
 		}
 
 		var (
-			id    = k.GetAppID(ctx)
+			id  = k.GetAppID(ctx)
 			app = types.AppMapping{
-				Id:       id + 1,
-				Name:     msg.Name,
-				ShortName:    msg.ShortName,
+				Id:        id + 1,
+				Name:      msg.Name,
+				ShortName: msg.ShortName,
 			}
 		)
 
