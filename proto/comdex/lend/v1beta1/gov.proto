@@ -2,8 +2,6 @@ syntax = "proto3";
 package comdex.lend.v1beta1;
 
 import "gogoproto/gogo.proto";
-import "google/protobuf/timestamp.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "comdex/lend/v1beta1/lend.proto";
 
 

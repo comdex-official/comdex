@@ -41,9 +41,6 @@ func (k *Keeper) UpdateLendPairRecords(ctx sdk.Context, msg types.Extended_Pair)
 		return types.ErrorPairDoesNotExist
 	}
 
-	if len(msg.ModuleAcc) > 0 {
-		pair.ModuleAcc = msg.ModuleAcc
-	}
 	if !msg.BaseBorrowRateAssetIn.IsZero() {
 		pair.BaseBorrowRateAssetIn = msg.BaseBorrowRateAssetIn
 	}

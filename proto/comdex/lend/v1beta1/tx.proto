@@ -14,25 +14,52 @@ service Msg {
   // the ModuleAccount.
   rpc Withdraw(MsgWithdraw) returns (MsgWithdrawResponse);
 
+  rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
+
+  rpc Borrow(MsgBorrow) returns (MsgBorrowResponse);
+
+  rpc Draw(MsgDraw) returns (MsgDrawResponse);
+
+  rpc Repay(MsgRepay) returns (MsgRepayResponse);
+
   // FundModuleAccounts funds an existing module account
   rpc FundModuleAccounts(MsgFundModuleAccounts) returns (MsgFundModuleAccountsResponse);
 }
 
 message MsgLend {
-  string                   lender = 1 [(gogoproto.moretags) = "yaml:\"lender\""];
-  string            appLendTypeId = 2[(gogoproto.moretags) = "yaml:\"appLendTypeId\""];
-  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
-  uint64                  pair_id = 4;
+  string                   lender = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+  uint64                  pair_id = 3;
 }
 
 message MsgWithdraw {
-  string                   lender = 1;
-  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+  string                   lender = 1[(gogoproto.moretags) = "yaml:\"from\""];
+  uint64                  lend_id = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+
 }
 
-message MsgDepositLend {
-  string from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
-  uint64 id = 2 [(gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\""];
+message MsgDeposit {
+  string                     from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  uint64                  lend_id = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgBorrow {
+  string                   borrower = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+  uint64                  pair_id = 3;
+}
+
+message MsgDraw {
+  string                 borrower = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  uint64                borrow_id = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgRepay {
+  string                 borrower = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  uint64                borrow_id = 2;
   cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
 }
 
@@ -47,5 +74,11 @@ message MsgLendResponse {}
 message MsgWithdrawResponse {}
 
 message MsgDepositResponse {}
+
+message MsgBorrowResponse {}
+
+message MsgDrawResponse {}
+
+message MsgRepayResponse {}
 
 message MsgFundModuleAccountsResponse {}

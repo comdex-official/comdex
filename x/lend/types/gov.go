@@ -30,14 +30,6 @@ func NewAddLendPairsProposal(title, description string, pairs []Extended_Pair) g
 	}
 }
 
-func (p *LendPairsProposal) GetTitle() string {
-	return p.Title
-}
-
-func (p *LendPairsProposal) GetDescription() string {
-	return p.Description
-}
-
 func (p *LendPairsProposal) ProposalRoute() string { return RouterKey }
 
 func (p *LendPairsProposal) ProposalType() string { return ProposalAddLendPairs }
@@ -67,14 +59,6 @@ func NewUpdateLendPairProposal(title, description string, pair Extended_Pair) go
 		Description: description,
 		Pair:        pair,
 	}
-}
-
-func (p *UpdatePairProposal) GetTitle() string {
-	return p.Title
-}
-
-func (p *UpdatePairProposal) GetDescription() string {
-	return p.Description
 }
 
 func (p *UpdatePairProposal) ProposalRoute() string { return RouterKey }

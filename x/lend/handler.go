@@ -27,6 +27,22 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := server.Withdraw(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
+		case *types.MsgDeposit:
+			res, err := server.Deposit(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgBorrow:
+			res, err := server.Borrow(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgDraw:
+			res, err := server.Draw(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgRepay:
+			res, err := server.Repay(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
 		case *types.MsgFundModuleAccounts:
 			res, err := server.FundModuleAccounts(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

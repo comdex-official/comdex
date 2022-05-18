@@ -3,7 +3,6 @@ package keeper
 import (
 	"fmt"
 	"github.com/comdex-official/comdex/x/lend/expected"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -61,7 +60,7 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(moduleName), denom).Amount
 }
 
-func (k Keeper) LendAsset(ctx sdk.Context, appLendTypeId string, lenderAddr sdk.AccAddress, pairID uint64, lent sdk.Coin) error {
+func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, pairID uint64, lent sdk.Coin) error {
 
 	/*if k.GetOracleValidationResult(ctx) == false{
 		return nil, types.ErrorOraclePriceExpired
@@ -73,18 +72,17 @@ func (k Keeper) LendAsset(ctx sdk.Context, appLendTypeId string, lenderAddr sdk.
 
 	lentTokens := sdk.NewCoins(lent)
 
-	ExtPairID, _ := k.asset.GetWhitelistPair(ctx, pairID)
+	LendPairID, found := k.GetLendPair(ctx, pairID)
+	if found != true {
+		return types.ErrorPairDoesNotExist
+	}
 
 	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, lent.Denom)
 	if err := k.setCollateralAmount(ctx, lenderAddr, currentCollateral.Add(lent)); err != nil {
 		return err
 	}
-	basePair, found := k.asset.GetPair(ctx, ExtPairID.PairId)
-	if found != true {
-		return types.ErrorPairDoesNotExist
-	}
 
-	Asset, found := k.asset.GetAsset(ctx, basePair.AssetIn)
+	Asset, found := k.asset.GetAsset(ctx, LendPairID.AssetIn)
 	if found != true {
 		return types.ErrorAssetDoesNotExist
 	}
@@ -98,33 +96,32 @@ func (k Keeper) LendAsset(ctx sdk.Context, appLendTypeId string, lenderAddr sdk.
 		return err
 	}
 
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, ExtPairID.ModuleAcc, lentTokens); err != nil {
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, LendPairID.ModuleAcc, lentTokens); err != nil {
 		return err
 	}
 	// mint c/Token and set new total cToken supply
 
 	cTokens := sdk.NewCoins(cToken)
-	if err = k.bank.MintCoins(ctx, ExtPairID.ModuleAcc, cTokens); err != nil {
+	if err = k.bank.MintCoins(ctx, LendPairID.ModuleAcc, cTokens); err != nil {
 		return err
 	}
 	if err = k.setCTokenSupply(ctx, k.GetCTokenSupply(ctx, cToken.Denom).Add(cToken)); err != nil {
 		return err
 	}
 
-	err = k.bank.SendCoinsFromModuleToAccount(ctx, ExtPairID.ModuleAcc, lenderAddr, cTokens)
+	err = k.bank.SendCoinsFromModuleToAccount(ctx, LendPairID.ModuleAcc, lenderAddr, cTokens)
 	if err != nil {
 		return err
 	}
 
 	Id := k.GetLendID(ctx)
 	lendPositon := types.Lend_Asset{
-		ID:            Id + 1,
-		AppLendTypeId: appLendTypeId,
-		PairID:        pairID,
-		Owner:         lenderAddr.String(),
-		AmountIn:      lent,
-		LendingTime:   ctx.BlockTime(),
-		Reward:        sdk.NewCoin("cCMDX", sdk.NewInt(0)),
+		ID:          Id + 1,
+		PairID:      pairID,
+		Owner:       lenderAddr.String(),
+		AmountIn:    lent,
+		LendingTime: ctx.BlockTime(),
+		Reward:      sdk.NewCoin("cCMDX", sdk.NewInt(0)),
 	}
 
 	k.SetLendID(ctx, lendPositon.ID)
@@ -134,73 +131,73 @@ func (k Keeper) LendAsset(ctx sdk.Context, appLendTypeId string, lenderAddr sdk.
 	return nil
 }
 
-/*func (k Keeper) DepositLendAsset(c context.Context, msg *types.MsgDepositLend) (*types.MsgDepositResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
+func (k Keeper) DepositAsset(ctx sdk.Context, lendID uint64, lenderAddr sdk.AccAddress, deposit sdk.Coin) error {
 
 	//if k.GetOracleValidationResult(ctx) == false{
 	//	return nil, types.ErrorOraclePriceExpired
 	//}
 
-	from, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
+	lend, found := k.GetLend(ctx, lendID)
+	if !found {
+		return types.ErrorLendDoesNotExist
+	}
+	if lenderAddr.String() != lend.Owner {
+		return types.ErrorUnauthorized
 	}
 
-	lend, found := k.GetLend(ctx, msg.ID)
+	pair, _ := k.GetLendPair(ctx, lend.PairID)
 	if !found {
-		return nil, types.ErrorLendDoesNotExist
-	}
-	if msg.From != lend.Owner {
-		return nil, types.ErrorUnauthorized
-	}
-
-	pair, found := k.GetPair(ctx, lend.PairID)
-	if !found {
-		return nil, types.ErrorPairDoesNotExist
+		return types.ErrorPairDoesNotExist
 	}
 
 	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
 	if !found {
-		return nil, types.ErrorAssetDoesNotExist
+		return types.ErrorAssetDoesNotExist
 	}
 
-	lend.AmountIn = lend.AmountIn.Add(msg.Amount)
+	lend.AmountIn = lend.AmountIn.Add(deposit)
 	if !lend.AmountIn.IsPositive() {
-		return nil, types.ErrorUnauthorized
+		return types.ErrorUnauthorized
 	}
 
-	if err := k.SendCoinFromAccountToModule(ctx, from, pair.mo, sdk.NewCoin(assetIn.Denom, msg.Amount.Amount)); err != nil {
-		return nil, err
+	if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, pair.ModuleAcc, sdk.NewCoin(assetIn.Denom, deposit.Amount)); err != nil {
+		return err
 	}
+
+	cToken, err := k.ExchangeToken(ctx, deposit, assetIn.Name)
+	if err != nil {
+		return err
+	}
+
+	cTokens := sdk.NewCoins(cToken)
+	if err = k.bank.MintCoins(ctx, pair.ModuleAcc, cTokens); err != nil {
+		return err
+	}
+	if err = k.setCTokenSupply(ctx, k.GetCTokenSupply(ctx, cToken.Denom).Add(cToken)); err != nil {
+		return err
+	}
+
+	lend.AmountOut = lend.AmountOut.Add(cToken)
+
+	err = k.bank.SendCoinsFromModuleToAccount(ctx, pair.ModuleAcc, lenderAddr, cTokens)
 
 	k.SetLend(ctx, lend)
-	return &types.MsgDepositResponse{}, nil
-}*/
+	return nil
+}
 
-func (k Keeper) WithdrawAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, withdrawal sdk.Coin) error {
+func (k Keeper) WithdrawAsset(ctx sdk.Context, lendID uint64, lenderAddr sdk.AccAddress, withdrawal sdk.Coin) error {
+	return nil
+}
 
-	// Ensure module account has sufficient unreserved tokens to withdraw
-	reservedAmount := k.GetReserveFunds(ctx, withdrawal.Denom)
-	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, withdrawal.Denom)
-	availableAmount := k.ModuleBalance(ctx, types.ModuleName, withdrawal.Denom)
+func (k Keeper) BorrowAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, borrow sdk.Coin) error {
+	return nil
+}
 
-	if withdrawal.Amount.GT(availableAmount.Sub(reservedAmount)) {
-		return sdkerrors.Wrap(types.ErrLendingPoolInsufficient, withdrawal.String())
-	}
+func (k Keeper) DrawAsset(ctx sdk.Context, borrowID uint64, lenderAddr sdk.AccAddress, draw sdk.Coin) error {
+	return nil
+}
 
-	if withdrawal.Amount.GT(currentCollateral.Amount) {
-		return sdkerrors.Wrap(types.ErrInsufficientBalance, withdrawal.String())
-	}
-	// update lenders share after withdraw
-	if err := k.setCollateralAmount(ctx, lenderAddr, currentCollateral.Sub(withdrawal)); err != nil {
-		return err
-	}
-	// send the base assets to lender
-	tokens := sdk.NewCoins(withdrawal)
-	if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, lenderAddr, tokens); err != nil {
-		return err
-	}
-
+func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, lenderAddr sdk.AccAddress, repay sdk.Coin) error {
 	return nil
 }
 

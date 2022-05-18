@@ -39,6 +39,10 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(
 		txLend(),
 		txWithdraw(), //withdraw collateral partially or fully
+		txDeposit(),
+		txBorrow(),
+		txDraw(),
+		txRepay(),
 		txFundModuleAccounts(),
 	)
 
@@ -47,25 +51,24 @@ func GetTxCmd() *cobra.Command {
 
 func txLend() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lend [app_lend_typeId] [pair_ID] [amount]",
+		Use:   "lend [pair_ID] [amount]",
 		Short: "lend a whitelisted asset",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			appLendTypeId := args[0]
-			pair_ID, err := sdk.ParseUint(args[1])
+			pair_ID, err := sdk.ParseUint(args[0])
 			pairID := pair_ID.Uint64()
 
-			amount, err := sdk.ParseCoinNormalized(args[2])
+			amount, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgLend(ctx.GetFromAddress(), appLendTypeId, pairID, amount)
+			msg := types.NewMsgLend(ctx.GetFromAddress(), pairID, amount)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -78,21 +81,144 @@ func txLend() *cobra.Command {
 
 func txWithdraw() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw [amount]",
+		Use:   "withdraw [lend_ID]  [amount]",
 		Short: "withdraw lent asset",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			asset, err := sdk.ParseCoinNormalized(args[0])
+			lend_ID, err := sdk.ParseUint(args[0])
+			lendID := lend_ID.Uint64()
+
+			asset, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgWithdraw(ctx.GetFromAddress(), asset)
+			msg := types.NewMsgWithdraw(ctx.GetFromAddress(), lendID, asset)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
+func txDeposit() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "deposit [lend_ID] [amount]",
+		Short: "deposit on a lent position",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			lend_ID, err := sdk.ParseUint(args[0])
+			lendID := lend_ID.Uint64()
+
+			asset, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgDeposit(ctx.GetFromAddress(), lendID, asset)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
+func txBorrow() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "borrow [pair_ID] [amount]",
+		Short: "borrow against a lent position",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pair_ID, err := sdk.ParseUint(args[0])
+			pairID := pair_ID.Uint64()
+
+			amount, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgBorrow(ctx.GetFromAddress(), pairID, amount)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
+func txDraw() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "draw [borrow_ID] [amount]",
+		Short: "draw for your borrowed asset",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			borrow_ID, err := sdk.ParseUint(args[0])
+			borrowID := borrow_ID.Uint64()
+
+			amount, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgDraw(ctx.GetFromAddress(), borrowID, amount)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
+func txRepay() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "repay [borrow_ID] [amount]",
+		Short: "repay for your borrowed asset",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			borrow_ID, err := sdk.ParseUint(args[0])
+			borrowID := borrow_ID.Uint64()
+
+			amount, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgRepay(ctx.GetFromAddress(), borrowID, amount)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
