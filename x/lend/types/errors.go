@@ -36,4 +36,5 @@ var (
 	ErrorDuplicateLend         = sdkerrors.Register(ModuleName, 1125, "duplicate Lend")
 	ErrorLendDoesNotExist      = sdkerrors.Register(ModuleName, 1126, "Lend does not exists")
 	ErrorDuplicateLendPair     = sdkerrors.Register(ModuleName, 1127, "duplicate lend pair")
+	ErrorInvalidAmount         = sdkerrors.Register(ModuleName, 1128, "invalid amount")
 )

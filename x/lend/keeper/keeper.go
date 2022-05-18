@@ -186,6 +186,44 @@ func (k Keeper) DepositAsset(ctx sdk.Context, lendID uint64, lenderAddr sdk.AccA
 }
 
 func (k Keeper) WithdrawAsset(ctx sdk.Context, lendID uint64, lenderAddr sdk.AccAddress, withdrawal sdk.Coin) error {
+
+	lend, found := k.GetLend(ctx, lendID)
+	if !found {
+		return types.ErrorLendDoesNotExist
+	}
+	if lenderAddr.String() != lend.Owner {
+		return types.ErrorUnauthorized
+	}
+
+	pair, found := k.GetLendPair(ctx, lendID)
+	if !found {
+		return types.ErrorPairDoesNotExist
+	}
+
+	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+	if !found {
+		return types.ErrorAssetDoesNotExist
+	}
+
+	/*assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+	if !found {
+		return types.ErrorAssetDoesNotExist
+	}*/
+
+	lend.AmountIn = lend.AmountIn.Sub(withdrawal)
+	if !lend.AmountIn.IsPositive() {
+		return types.ErrorInvalidAmount
+	}
+
+	/*if err := k.VerifyCollaterlizationRatio(ctx, lend.AmountIn, assetIn, lend.AmountOut, assetOut); err != nil {
+		return err
+	}*/
+
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, lenderAddr, sdk.NewCoin(assetIn.Denom, withdrawal.Amount)); err != nil {
+		return err
+	}
+
+	k.SetLend(ctx, lend)
 	return nil
 }
 
