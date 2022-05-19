@@ -147,3 +147,19 @@ func (k *Keeper) GetGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration t
 	k.cdc.MustUnmarshal(value, &gaugeIdsByTriggerDuration)
 	return gaugeIdsByTriggerDuration, true
 }
+
+func (k *Keeper) GetAllGaugesByGaugeTypeId(ctx sdk.Context, gaugeTypeId uint64) (gauges []types.Gauge) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GaugeKeyPrefix)
+	)
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		var gauge types.Gauge
+		k.cdc.MustUnmarshal(iter.Value(), &gauge)
+		if gauge.GaugeTypeId == gaugeTypeId {
+			gauges = append(gauges, gauge)
+		}
+	}
+	return gauges
+}

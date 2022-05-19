@@ -1,6 +1,7 @@
 package expected
 
 import (
+	incentivestypes "github.com/comdex-official/comdex/x/incentives/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -24,4 +25,8 @@ type BankKeeper interface {
 	SendCoins(ctx sdk.Context, fromAddr, toAddr sdk.AccAddress, amt sdk.Coins) error
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	InputOutputCoins(ctx sdk.Context, inputs []banktypes.Input, outputs []banktypes.Output) error
+}
+
+type IncentivesKeeper interface {
+	GetAllGaugesByGaugeTypeId(ctx sdk.Context, gaugeTypeId uint64) (gauges []incentivestypes.Gauge)
 }

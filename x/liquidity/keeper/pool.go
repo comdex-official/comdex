@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	incentivestypes "github.com/comdex-official/comdex/x/incentives/types"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
@@ -146,6 +148,14 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, creator, sdk.NewCoins(poolCoin)); err != nil {
 		return types.Pool{}, err
 	}
+
+	k.CreateOrUpdatePoolLiquidityProvidersData(
+		ctx,
+		pool.Id,
+		msg.GetCreator(),
+		msg.DepositCoins,
+		true,
+	)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -474,7 +484,7 @@ func (k Keeper) CreateOrUpdatePoolLiquidityProvidersData(
 	ctx sdk.Context,
 	poolId uint64,
 	address sdk.AccAddress,
-	supplyCoins []sdk.Coin,
+	actionCoins []sdk.Coin,
 	isDeposit bool,
 ) error {
 	liquidityProvidersData, found := k.GetPoolLiquidityProvidersData(ctx, poolId)
@@ -494,10 +504,8 @@ func (k Keeper) CreateOrUpdatePoolLiquidityProvidersData(
 
 	if isDeposit {
 
-		sortedSupplyCoins := SortCoinArrayByDenom(supplyCoins)
-
 		supplyProvided := []*sdk.Coin{}
-		for _, coin := range sortedSupplyCoins {
+		for _, coin := range actionCoins {
 			coin := coin // avoiding reuse of the same value, and replaceing it with new variable
 			supplyProvided = append(supplyProvided, &coin)
 		}
@@ -522,15 +530,15 @@ func (k Keeper) CreateOrUpdatePoolLiquidityProvidersData(
 		for queryIndex, queuedLiquidityProvider := range sortedQueuedLiquidityProviders {
 			if queuedLiquidityProvider.Address == address.String() {
 
-				for sindex, scoin := range supplyCoins {
+				for sindex, scoin := range actionCoins {
 					for qindex, qcoin := range queuedLiquidityProvider.SupplyProvided {
 						if scoin.Denom == qcoin.Denom && !scoin.Amount.IsZero() {
 							if scoin.Amount.GTE(qcoin.Amount) {
-								supplyCoins[sindex].Amount = supplyCoins[sindex].Amount.Sub(qcoin.Amount)
+								actionCoins[sindex].Amount = actionCoins[sindex].Amount.Sub(qcoin.Amount)
 								sortedQueuedLiquidityProviders[queryIndex].SupplyProvided[qindex].Amount = sdk.NewInt(0)
 							} else {
-								sortedQueuedLiquidityProviders[queryIndex].SupplyProvided[qindex].Amount = sortedQueuedLiquidityProviders[queryIndex].SupplyProvided[qindex].Amount.Sub(supplyCoins[sindex].Amount)
-								supplyCoins[sindex].Amount = sdk.NewInt(0)
+								sortedQueuedLiquidityProviders[queryIndex].SupplyProvided[qindex].Amount = sortedQueuedLiquidityProviders[queryIndex].SupplyProvided[qindex].Amount.Sub(actionCoins[sindex].Amount)
+								actionCoins[sindex].Amount = sdk.NewInt(0)
 							}
 						}
 					}
@@ -547,7 +555,7 @@ func (k Keeper) CreateOrUpdatePoolLiquidityProvidersData(
 				}
 
 				withdrawCoinFullfilled := true
-				for _, wcoin := range supplyCoins {
+				for _, wcoin := range actionCoins {
 					if !wcoin.Amount.IsZero() {
 						withdrawCoinFullfilled = false
 					}
@@ -564,7 +572,7 @@ func (k Keeper) CreateOrUpdatePoolLiquidityProvidersData(
 		liquidityProvidersData.QueuedLiquidityProviders = updatedQueuedLiquidityProviders
 
 		coinWithdrawingFullfilled := true
-		for _, balanceData := range supplyCoins {
+		for _, balanceData := range actionCoins {
 			if !balanceData.Amount.IsZero() {
 				coinWithdrawingFullfilled = false
 			}
@@ -573,16 +581,86 @@ func (k Keeper) CreateOrUpdatePoolLiquidityProvidersData(
 		if !coinWithdrawingFullfilled {
 			if liquidityProvidersData.LiquidityProviders[address.String()] != nil {
 				providedSupply := liquidityProvidersData.LiquidityProviders[address.String()].Coins
-				sortedDenomProvidedSupply := SortCoinArrayByDenom(providedSupply)
-				for index, coin := range sortedDenomProvidedSupply {
-					if coin.Amount.GTE(supplyCoins[index].Amount) {
-						coin.Amount = coin.Amount.Sub(supplyCoins[index].Amount)
+
+				for _, actionCoin := range actionCoins {
+					for psIndex, psCoin := range providedSupply {
+						if psCoin.Denom == actionCoin.Denom {
+							if actionCoin.Amount.GTE(psCoin.Amount) {
+								liquidityProvidersData.LiquidityProviders[address.String()].Coins[psIndex].Amount = sdk.NewInt(0)
+							} else {
+								liquidityProvidersData.LiquidityProviders[address.String()].Coins[psIndex].Amount = liquidityProvidersData.LiquidityProviders[address.String()].Coins[psIndex].Amount.Sub(actionCoin.Amount)
+							}
+						}
 					}
 				}
-				liquidityProvidersData.LiquidityProviders[address.String()].Coins = sortedDenomProvidedSupply
 			}
 		}
 		k.SetPoolLiquidityProvidersData(ctx, liquidityProvidersData)
 	}
 	return nil
+}
+
+func (k Keeper) GetMinimumEpochDurationFromPoolId(ctx sdk.Context, poolId uint64, gauges []incentivestypes.Gauge) time.Duration {
+	var minEpochDuration time.Duration
+	for _, gauge := range gauges {
+		switch kind := gauge.Kind.(type) {
+		case *incentivestypes.Gauge_LiquidityMetaData:
+			if kind.LiquidityMetaData.PoolId == poolId {
+				if minEpochDuration == time.Duration(0) {
+					minEpochDuration = gauge.TriggerDuration
+				} else if gauge.TriggerDuration < minEpochDuration {
+					minEpochDuration = gauge.TriggerDuration
+				}
+			}
+		}
+	}
+	if minEpochDuration == time.Duration(0) {
+		minEpochDuration = time.Second * 86400 // if no gauge for given pool, making 24h as default vaule
+	}
+	return minEpochDuration
+}
+
+func (k Keeper) ProcessQueuedLiquidityProviders(ctx sdk.Context) {
+	availablePools := k.GetAllPools(ctx)
+	availableLiquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeId(ctx, incentivestypes.LiquidityGaugeTypeId)
+
+	for _, pool := range availablePools {
+		poolLpData, found := k.GetPoolLiquidityProvidersData(ctx, pool.Id)
+		minEpochDuration := k.GetMinimumEpochDurationFromPoolId(ctx, pool.Id, availableLiquidityGauges)
+
+		if !found {
+			continue
+		}
+		queuedDepositRequests := poolLpData.QueuedLiquidityProviders
+		updatedQueue := []*types.QueuedLiquidityProvider{}
+		for _, queuedLp := range queuedDepositRequests {
+			if ctx.BlockTime().Before(queuedLp.CreatedAt.Add(minEpochDuration)) {
+				updatedQueue = append(updatedQueue, queuedLp)
+			} else {
+				suppliedCoins := []sdk.Coin{}
+				for _, coin := range queuedLp.SupplyProvided {
+					suppliedCoins = append(suppliedCoins, sdk.NewCoin(coin.Denom, coin.Amount))
+				}
+				if poolLpData.LiquidityProviders[queuedLp.Address] == nil {
+					if len(poolLpData.LiquidityProviders) == 0 {
+						poolLpData.LiquidityProviders = make(map[string]*types.DepositsMade)
+					}
+					newDeposit := new(types.DepositsMade)
+					newDeposit.Coins = suppliedCoins
+					poolLpData.LiquidityProviders[queuedLp.Address] = newDeposit
+				} else {
+					for _, coin := range suppliedCoins {
+						for lpedIndex, lpedCoin := range poolLpData.LiquidityProviders[queuedLp.Address].Coins {
+							if coin.Denom == lpedCoin.Denom {
+								poolLpData.LiquidityProviders[queuedLp.Address].Coins[lpedIndex].Amount = poolLpData.LiquidityProviders[queuedLp.Address].Coins[lpedIndex].Amount.Add(coin.Amount)
+								break
+							}
+						}
+					}
+				}
+			}
+		}
+		poolLpData.QueuedLiquidityProviders = updatedQueue
+		k.SetPoolLiquidityProvidersData(ctx, poolLpData)
+	}
 }

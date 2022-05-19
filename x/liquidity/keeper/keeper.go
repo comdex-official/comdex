@@ -20,6 +20,8 @@ type Keeper struct {
 
 	accountKeeper expected.AccountKeeper
 	bankKeeper    expected.BankKeeper
+
+	incentivesKeeper expected.IncentivesKeeper
 }
 
 // NewKeeper creates a new liquidity Keeper instance.
@@ -29,17 +31,19 @@ func NewKeeper(
 	paramSpace paramstypes.Subspace,
 	accountKeeper expected.AccountKeeper,
 	bankKeeper expected.BankKeeper,
+	incentivesKeeper expected.IncentivesKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
 	}
 
 	return Keeper{
-		cdc:           cdc,
-		storeKey:      storeKey,
-		paramSpace:    paramSpace,
-		accountKeeper: accountKeeper,
-		bankKeeper:    bankKeeper,
+		cdc:              cdc,
+		storeKey:         storeKey,
+		paramSpace:       paramSpace,
+		accountKeeper:    accountKeeper,
+		bankKeeper:       bankKeeper,
+		incentivesKeeper: incentivesKeeper,
 	}
 }
 

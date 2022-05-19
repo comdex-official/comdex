@@ -464,6 +464,7 @@ func New(
 		app.GetSubspace(liquiditytypes.ModuleName),
 		app.accountKeeper,
 		app.bankKeeper,
+		&app.incentivesKeeper,
 	)
 
 	app.oracleKeeper = *oraclekeeper.NewKeeper(
