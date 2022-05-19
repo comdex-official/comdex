@@ -64,3 +64,7 @@ func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found boo
 func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found bool) {
 	return k.asset.GetAsset(ctx, id)
 }
+
+func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
+	return k.oracle.GetPriceForAsset(ctx, id)
+}

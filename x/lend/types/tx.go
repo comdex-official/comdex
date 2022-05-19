@@ -110,11 +110,12 @@ func (msg *MsgDeposit) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgBorrow(borrower sdk.AccAddress, pairID uint64, amount sdk.Coin) *MsgBorrow {
+func NewMsgBorrow(borrower sdk.AccAddress, pairID uint64, amountIn, amountOut sdk.Coin) *MsgBorrow {
 	return &MsgBorrow{
-		Borrower: borrower.String(),
-		Amount:   amount,
-		PairId:   pairID,
+		Borrower:  borrower.String(),
+		AmountIn:  amountIn,
+		AmountOut: amountOut,
+		LendId:    pairID,
 	}
 }
 
@@ -127,10 +128,9 @@ func (msg *MsgBorrow) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
+	if asset := msg.GetAmountIn(); !asset.IsValid() {
 		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
 	}
-
 	return nil
 }
 

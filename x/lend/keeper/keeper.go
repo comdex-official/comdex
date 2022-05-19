@@ -22,6 +22,7 @@ type (
 		bank       expected.BankKeeper
 		account    expected.AccountKeeper
 		asset      expected.AssetKeeper
+		oracle     expected.Marketkeeper
 	}
 )
 
@@ -33,6 +34,7 @@ func NewKeeper(
 	bank expected.BankKeeper,
 	account expected.AccountKeeper,
 	asset expected.AssetKeeper,
+	oracle expected.Marketkeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -49,6 +51,7 @@ func NewKeeper(
 		bank:       bank,
 		account:    account,
 		asset:      asset,
+		oracle:     oracle,
 	}
 }
 
@@ -188,9 +191,9 @@ func (k Keeper) DepositAsset(ctx sdk.Context, lendID uint64, lenderAddr sdk.AccA
 func (k Keeper) WithdrawAsset(ctx sdk.Context, lendID uint64, lenderAddr sdk.AccAddress, withdrawal sdk.Coin) error {
 
 	lend, found := k.GetLend(ctx, lendID)
-	if !found {
+	/*if !found {
 		return types.ErrorLendDoesNotExist
-	}
+	}*/
 	if lenderAddr.String() != lend.Owner {
 		return types.ErrorUnauthorized
 	}
@@ -227,7 +230,54 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, lendID uint64, lenderAddr sdk.Acc
 	return nil
 }
 
-func (k Keeper) BorrowAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, borrow sdk.Coin) error {
+func (k Keeper) BorrowAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, lendID uint64, amountIn, amountOut sdk.Coin) error {
+
+	lend, found := k.GetLend(ctx, lendID)
+	if found != true {
+		return types.ErrorLendDoesNotExist
+	}
+
+	LendPair, found := k.GetLendPair(ctx, lend.PairID)
+	if found != true {
+		return types.ErrorPairDoesNotExist
+	}
+
+	AssetIn, found := k.asset.GetAsset(ctx, LendPair.AssetIn)
+	if found != true {
+		return types.ErrorAssetDoesNotExist
+	}
+
+	AssetOut, found := k.asset.GetAsset(ctx, LendPair.AssetOut)
+	if found != true {
+		return types.ErrorAssetDoesNotExist
+	}
+
+	if AssetOut.Denom != amountOut.Denom {
+		return types.ErrInvalidAsset
+	}
+
+	if err := k.VerifyCollaterlizationRatio(ctx, amountIn.Amount, AssetIn, amountOut.Amount, AssetOut, LendPair.LiquidationRatio); err != nil {
+		return err
+	}
+
+	if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, LendPair.ModuleAcc, sdk.NewCoin(lend.AmountOut.Denom, amountIn.Amount)); err != nil {
+		return err
+	}
+
+	//check if amountout(denom) <= moduleBalance.sub.reserveAmount(denom) balance in the respective module account
+
+	moduleBalance := k.ModuleBalance(ctx, LendPair.ModuleAcc, AssetOut.Denom)
+
+	if amountOut.Amount.GTE(moduleBalance) {
+		return types.ErrInsufficientBalance
+	}
+
+	if err := k.SendCoinFromModuleToAccount(ctx, LendPair.ModuleAcc, lenderAddr, sdk.NewCoin(AssetOut.Denom, amountOut.Amount)); err != nil {
+		return err
+	}
+
+	//:TODO calculations and mapping
+
 	return nil
 }
 

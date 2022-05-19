@@ -46,9 +46,10 @@ message MsgDeposit {
 }
 
 message MsgBorrow {
-  string                   borrower = 1 [(gogoproto.moretags) = "yaml:\"from\""];
-  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
-  uint64                  pair_id = 3;
+  string                    borrower = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  cosmos.base.v1beta1.Coin  amountIn = 2 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amountOut = 3 [(gogoproto.nullable) = false];
+  uint64                     lend_id = 4;
 }
 
 message MsgDraw {

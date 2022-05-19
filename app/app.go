@@ -440,6 +440,7 @@ func New(
 		app.bankKeeper,
 		app.accountKeeper,
 		&app.assetKeeper,
+		&app.marketKeeper,
 	)
 
 	app.vaultKeeper = vaultkeeper.NewKeeper(

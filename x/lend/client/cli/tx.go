@@ -141,24 +141,29 @@ func txDeposit() *cobra.Command {
 
 func txBorrow() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "borrow [pair_ID] [amount]",
+		Use:   "borrow [lend_ID] [amount_in] [amount_out]",
 		Short: "borrow against a lent position",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			pair_ID, err := sdk.ParseUint(args[0])
-			pairID := pair_ID.Uint64()
+			lendId, err := sdk.ParseUint(args[0])
+			newLendID := lendId.Uint64()
 
-			amount, err := sdk.ParseCoinNormalized(args[1])
+			amountIn, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgBorrow(ctx.GetFromAddress(), pairID, amount)
+			amountOut, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgBorrow(ctx.GetFromAddress(), newLendID, amountIn, amountOut)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},

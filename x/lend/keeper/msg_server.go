@@ -110,7 +110,7 @@ func (m msgServer) Borrow(goCtx context.Context, borrow *types.MsgBorrow) (*type
 		return nil, err
 	}
 
-	if err := m.keeper.BorrowAsset(ctx, lenderAddr, borrow.Amount); err != nil {
+	if err := m.keeper.BorrowAsset(ctx, lenderAddr, borrow.LendId, borrow.AmountIn, borrow.AmountOut); err != nil {
 		return nil, err
 	}
 
@@ -118,7 +118,7 @@ func (m msgServer) Borrow(goCtx context.Context, borrow *types.MsgBorrow) (*type
 		sdk.NewEvent(
 			types.EventTypeWithdrawLoanedAsset,
 			sdk.NewAttribute(types.EventAttrLender, lenderAddr.String()),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, borrow.Amount.String()),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, borrow.AmountIn.String()),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,

@@ -39,3 +39,7 @@ type AssetKeeper interface {
 	GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found bool)
 	GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found bool)
 }
+
+type Marketkeeper interface {
+	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+}
