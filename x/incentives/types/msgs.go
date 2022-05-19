@@ -57,6 +57,10 @@ func (m MsgCreateGauge) ValidateBasic() error {
 		return fmt.Errorf("invalid coin amount: %d < 0", m.DepositAmount.Amount)
 	}
 
+	if m.DepositAmount.Amount.LT(sdk.NewIntFromUint64(m.TotalTriggers)) {
+		return fmt.Errorf("deposit amount : %d smaller than total triggers %d", m.DepositAmount.Amount, m.TotalTriggers)
+	}
+
 	return nil
 }
 

@@ -36,7 +36,16 @@ func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
 
 		// In case of chain halt/stop
 		if epoch.CurrentEpochStartTime.Add(epoch.Duration * 2).Before(ctx.BlockTime()) {
-			epoch.CurrentEpochStartTime = ctx.BlockTime()
+			missedEpochs := 2
+			for {
+				if epoch.CurrentEpochStartTime.Add(epoch.Duration * time.Duration(missedEpochs)).Before(ctx.BlockTime()) {
+					missedEpochs += 1
+				} else {
+					epoch.CurrentEpochStartTime = epoch.CurrentEpochStartTime.Add(epoch.Duration * time.Duration(missedEpochs-1))
+					break
+				}
+			}
+
 			k.SetEpochInfoByDuration(ctx, epoch)
 			continue
 		}
@@ -44,7 +53,7 @@ func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
 		shouldTrigger := ctx.BlockTime().After(epoch.CurrentEpochStartTime.Add(epoch.Duration))
 		if shouldTrigger {
 			logger.Info(fmt.Sprintf("Starting new epoch with duration %d and epoch number %d", &epoch.Duration, epoch.CurrentEpoch))
-			fmt.Println("Triggering epoch", ctx.BlockTime())
+			k.InitateGaugesForDuration(ctx, epoch.Duration)
 			epoch.CurrentEpoch += 1
 			epoch.CurrentEpochStartTime = epoch.CurrentEpochStartTime.Add(epoch.Duration)
 			epoch.CurrentEpochStartHeight = ctx.BlockHeight()

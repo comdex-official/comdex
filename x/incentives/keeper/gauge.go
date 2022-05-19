@@ -31,6 +31,10 @@ func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCrea
 		return types.ErrInvalidDepositAmount
 	}
 
+	if msg.DepositAmount.Amount.LT(sdk.NewIntFromUint64(msg.TotalTriggers)) {
+		return types.ErrDepositSmallThanEpoch
+	}
+
 	if msg.StartTime.Before(ctx.BlockTime()) {
 		return types.ErrInvalidGaugeStartTime
 	}
@@ -69,6 +73,7 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gaug
 		TriggerDuration:   msg.TriggerDuration,
 		DepositAmount:     msg.DepositAmount,
 		TotalTriggers:     msg.TotalTriggers,
+		TriggeredCount:    0,
 		DistributedAmount: sdk.NewCoin(msg.DepositAmount.Denom, sdk.NewInt(0)),
 		IsActive:          true,
 		Kind:              nil,
@@ -118,8 +123,53 @@ func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerD
 	}
 
 	if gaugeIdAlreadyExists {
-		return types.GaugeByTriggerDuration{}, sdkerrors.Wrap(types.ErrInvalidGaugeId, fmt.Sprintf("gauge id already exists in map : %d", newGaugeId))
+		return types.GaugeByTriggerDuration{}, sdkerrors.Wrapf(types.ErrInvalidGaugeId, "gauge id already exists in map : %d", newGaugeId)
 	}
 	gaugeIdsByTriggerDuration.GaugeIds = append(gaugeIdsByTriggerDuration.GaugeIds, newGaugeId)
 	return gaugeIdsByTriggerDuration, nil
+}
+
+func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.Duration) error {
+	gaugesForDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, triggerDuration)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrNoGaugeForDuration, "duration : %d", triggerDuration)
+	}
+
+	for _, gaugeId := range gaugesForDuration.GaugeIds {
+		gauge, found := k.GetGaugeById(ctx, gaugeId)
+		if !found {
+			continue
+		}
+		if ctx.BlockTime().Before(gauge.StartTime) || !gauge.IsActive {
+			continue
+		}
+
+		if gauge.TriggeredCount == gauge.TotalTriggers {
+			gauge.IsActive = false
+			k.SetGauge(ctx, gauge)
+			continue
+		}
+
+		depositAmountSplitsByEpochs := SplitTotalAmountPerEpoch(gauge.DepositAmount.Amount.Uint64(), gauge.TotalTriggers)
+		amountToDistribute := depositAmountSplitsByEpochs[gauge.TriggeredCount]
+		availableDeposits := gauge.DepositAmount.Amount.Sub(gauge.DistributedAmount.Amount)
+
+		// just in case (exception handelled), but this will never pass
+		if availableDeposits.LT(sdk.NewIntFromUint64(amountToDistribute)) {
+			continue
+		}
+
+		ongoingEpochCount := gauge.TriggeredCount + 1
+		coinToDistribute := sdk.NewCoin(gauge.DepositAmount.Denom, sdk.NewIntFromUint64(amountToDistribute))
+
+		coinsDistributed, err := k.BeginRewardDistributions(ctx, gauge, coinToDistribute, ongoingEpochCount, triggerDuration)
+		if err != nil {
+			return err
+		}
+		gauge.TriggeredCount = ongoingEpochCount
+		gauge.DistributedAmount.Amount = gauge.DistributedAmount.Amount.Add(coinsDistributed.Amount)
+		k.SetGauge(ctx, gauge)
+	}
+
+	return nil
 }

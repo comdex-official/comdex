@@ -1,14 +1,15 @@
 package expected
 
 import (
+	"github.com/comdex-official/comdex/x/incentives/types"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) types.AccountI
+	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
 	// Methods imported from account should be defined here
 }
 
@@ -21,4 +22,5 @@ type BankKeeper interface {
 
 type LiquidityKeeper interface {
 	GetPool(ctx sdk.Context, id uint64) (pool liquiditytypes.Pool, found bool)
+	GetFarmingRewardsData(ctx sdk.Context, liquidityGaugeData types.LiquidtyGaugeMetaData) []types.RewardDistributionDataCollector
 }

@@ -14,4 +14,6 @@ var (
 	ErrInvalidDepositAmount  = sdkerrors.Register(ModuleName, 5, "deposit amount should be positive")
 	ErrInvalidPoolId         = sdkerrors.Register(ModuleName, 6, "invalid pool id")
 	ErrInvalidGaugeId        = sdkerrors.Register(ModuleName, 7, "invalid gauge id")
+	ErrNoGaugeForDuration    = sdkerrors.Register(ModuleName, 8, "no gauges found for given duration")
+	ErrDepositSmallThanEpoch = sdkerrors.Register(ModuleName, 9, "deposit amount smaller than total epochs/triggers")
 )
