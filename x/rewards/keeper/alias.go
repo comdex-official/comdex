@@ -1,0 +1,19 @@
+package keeper
+
+import (
+	collecortypes "github.com/comdex-official/comdex/x/collector/types"
+	"github.com/comdex-official/comdex/x/locker/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingId uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
+	return k.locker.GetLockerProductAssetMapping(ctx, appMappingId)
+}
+
+func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, app_id uint64) (appAssetCollectorData collecortypes.AppIdToAssetCollectorMapping, found bool) {
+	return k.collector.GetAppidToAssetCollectorMapping(ctx, app_id)
+}
+
+func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collectorLookup collecortypes.CollectorLookup, found bool) {
+	return k.collector.GetCollectorLookupTable(ctx, app_id)
+}

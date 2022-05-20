@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/comdex-official/comdex/x/rewards/expected"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -17,6 +18,8 @@ type (
 		storeKey   sdk.StoreKey
 		memKey     sdk.StoreKey
 		paramstore paramtypes.Subspace
+		locker     expected.LockerKeeper
+		collector  expected.CollectorKeeper
 	}
 )
 
@@ -25,6 +28,8 @@ func NewKeeper(
 	storeKey,
 	memKey sdk.StoreKey,
 	ps paramtypes.Subspace,
+	locker expected.LockerKeeper,
+	collector expected.CollectorKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -38,6 +43,8 @@ func NewKeeper(
 		storeKey:   storeKey,
 		memKey:     memKey,
 		paramstore: ps,
+		locker:     locker,
+		collector:  collector,
 	}
 }
 
@@ -45,7 +52,23 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
+func uint64InSlice(a uint64, list []uint64) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
 func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingId uint64, assetId []uint64) error {
+	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, appMappingId)
+	for i := range assetId {
+		found := uint64InSlice(assetId[i], lockerAssets.AssetIds)
+		if !found {
+			return types.ErrAssetIdDoesNotExist
+		}
+	}
 
 	internalRewards := types.InternalRewards{
 		App_mapping_ID: appMappingId,

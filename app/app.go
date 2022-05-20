@@ -508,12 +508,15 @@ func New(
 		app.keys[collectortypes.StoreKey],
 		app.keys[collectortypes.MemStoreKey],
 		app.GetSubspace(collectortypes.ModuleName),
+		&app.lockerKeeper,
+		&app.collectorKeeper,
 	)
 
 	app.collectorKeeper = *collectorkeeper.NewKeeper(
 		app.cdc,
 		app.keys[collectortypes.StoreKey],
 		app.keys[collectortypes.MemStoreKey],
+		&app.assetKeeper,
 		app.GetSubspace(collectortypes.ModuleName),
 	)
 
