@@ -1,5 +1,9 @@
 package types
 
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "collector"
@@ -18,9 +22,28 @@ const (
 )
 
 var (
-	MsgLookupTableRecordsDataKey = []byte{0x02}
+	AddCollectorLookupKey = [] byte{0x01}
+	AppidToAssetCollectorMappingPrefix = []byte{0x03}
+	AppIdToAuctionMappingForAssetPrefix = []byte{0x04}
+	CollectorForDenomKeyPrefix = []byte{0x05}
 )
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)
+}
+
+
+func CollectorLookupTableMappingKey(app_id uint64) []byte {
+	return append(AddCollectorLookupKey, sdk.Uint64ToBigEndian(app_id)...)
+}
+
+func AppidToAssetCollectorMappingKey(app_id uint64) []byte {
+	return append(AppidToAssetCollectorMappingPrefix, sdk.Uint64ToBigEndian(app_id)...)
+}
+func AppIdToAuctionMappingForAssetKey(app_id uint64) []byte {
+	return append(AppIdToAuctionMappingForAssetPrefix, sdk.Uint64ToBigEndian(app_id)...)
+}
+
+func CollectorForDenomKey(app_id uint64) []byte {
+	return append(CollectorForDenomKeyPrefix, sdk.Uint64ToBigEndian(app_id)...)
 }

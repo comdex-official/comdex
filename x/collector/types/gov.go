@@ -17,7 +17,7 @@ var (
 	_ govtypes.Content = &LookupTableParams{}
 )
 
-func NewLookupTableParamsProposal(title, description string, lookupTableData []AccumulatorLookupTable) govtypes.Content {
+func NewLookupTableParamsProposal(title, description string, lookupTableData []CollectorLookupTable) govtypes.Content {
 	return &LookupTableParams{
 		Title:           title,
 		Description:     description,

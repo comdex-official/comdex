@@ -41,28 +41,37 @@ func GetTxCmd() *cobra.Command {
 
 func NewCmdLookupTableParams() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "collector-lookup-params [accumulator_token_denom] [secondary_token_denom] [surplus_threshold] [debt_threshold] [locker_saving_rate]",
-		Args:  cobra.ExactArgs(5),
+		Use:   "collector-lookup-params [app-id] [collector_denom] [secondary_denom] [surplus_threshold] [debt_threshold] [locker_saving_rate] [lot_size]",
+		Args:  cobra.ExactArgs(7),
 		Short: "Set collector lookup params for collector module",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			accumulatorTokenDenom, err := ParseStringFromString(args[0], ",")
+			appId, err := ParseUint64SliceFromString(args[0], ",")
 			if err != nil {
 				return err
 			}
-			secondaryTokenDenom, err := ParseStringFromString(args[1], ",")
+
+			collector_denom, err := ParseStringFromString(args[1], ",")
 			if err != nil {
 				return err
 			}
-			surplusThreshold, err := ParseUint64SliceFromString(args[2], ",")
+			secondary_denom, err := ParseStringFromString(args[2], ",")
 			if err != nil {
 				return err
 			}
-			debtThreshold, err := ParseUint64SliceFromString(args[3], ",")
+			surplusThreshold, err := ParseUint64SliceFromString(args[3], ",")
 			if err != nil {
 				return err
 			}
-			lockerSavingRate, err := ParseUint64SliceFromString(args[4], ",")
+			debtThreshold, err := ParseUint64SliceFromString(args[4], ",")
+			if err != nil {
+				return err
+			}
+			lockerSavingRate, err := ParseUint64SliceFromString(args[5], ",")
+			if err != nil {
+				return err
+			}
+			lot_size, err := ParseUint64SliceFromString(args[6], ",")
 			if err != nil {
 				return err
 			}
@@ -72,14 +81,16 @@ func NewCmdLookupTableParams() *cobra.Command {
 				return err
 			}
 
-			var LookupTableRecords []types.AccumulatorLookupTable
-			for i := range accumulatorTokenDenom {
-				LookupTableRecords = append(LookupTableRecords, types.AccumulatorLookupTable{
-					accumulatorTokenDenom[i],
-					secondaryTokenDenom[i],
-					surplusThreshold[i],
-					debtThreshold[i],
-					lockerSavingRate[i],
+			var LookupTableRecords []types.CollectorLookupTable
+			for i := range appId {
+				LookupTableRecords = append(LookupTableRecords, types.CollectorLookupTable{
+					AppId: appId[i],
+					CollectorDenom: collector_denom[i],
+					SecondaryDenom: secondary_denom[i],
+					SurplusThreshold: surplusThreshold[i],
+					DebtThreshold: debtThreshold[i],
+					LockerSavingRate: lockerSavingRate[i],
+					LotSize: lot_size[i],
 				})
 			}
 

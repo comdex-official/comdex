@@ -25,26 +25,28 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type Accumulator struct {
-	AccumulatedStabilityFee  github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,1,opt,name=accumulated_stability_fee,json=accumulatedStabilityFee,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"accumulated_stability_fee" yaml:"auctioned_collateral"`
-	AccumulatedClosingFee    github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,2,opt,name=accumulated_closing_fee,json=accumulatedClosingFee,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"accumulated_closing_fee" yaml:"auctioned_collateral"`
-	AccumulatedOpeningFee    github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,3,opt,name=accumulated_opening_fee,json=accumulatedOpeningFee,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"accumulated_opening_fee" yaml:"auctioned_collateral"`
-	NetFeesAcccumulated      github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,4,opt,name=net_fees_acccumulated,json=netFeesAcccumulated,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"net_fees_acccumulated" yaml:"auctioned_collateral"`
-	LockerRewardsAccumulated github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,5,opt,name=locker_rewards_accumulated,json=lockerRewardsAccumulated,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"locker_rewards_accumulated" yaml:"auctioned_collateral"`
+type CollectorData struct {
+	CollectedStabilityFee github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=collected_stability_fee,json=collectedStabilityFee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"collected_stability_fee" yaml:"collected_stability_fee"`
+	CollectedClosingFee   github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=collected_closing_fee,json=collectedClosingFee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"collected_closing_fee" yaml:"collected_closing_fee"`
+	CollectedOpeningFee   github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=collected_opening_fee,json=collectedOpeningFee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"collected_opening_fee" yaml:"collected_opening_fee"`
+	// stability + closing + opening
+	NetFeesCollected github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=net_fees_collected,json=netFeesCollected,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"net_fees_collected" yaml:"net_fees_collected"`
+	// from liquidation
+	LiquidationRewardsCollected github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=liquidation_rewards_collected,json=liquidationRewardsCollected,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"liquidation_rewards_collected" yaml:"liquidation_rewards_collected"`
 }
 
-func (m *Accumulator) Reset()         { *m = Accumulator{} }
-func (m *Accumulator) String() string { return proto.CompactTextString(m) }
-func (*Accumulator) ProtoMessage()    {}
-func (*Accumulator) Descriptor() ([]byte, []int) {
+func (m *CollectorData) Reset()         { *m = CollectorData{} }
+func (m *CollectorData) String() string { return proto.CompactTextString(m) }
+func (*CollectorData) ProtoMessage()    {}
+func (*CollectorData) Descriptor() ([]byte, []int) {
 	return fileDescriptor_f18765a8dff2a43b, []int{0}
 }
-func (m *Accumulator) XXX_Unmarshal(b []byte) error {
+func (m *CollectorData) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Accumulator) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *CollectorData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Accumulator.Marshal(b, m, deterministic)
+		return xxx_messageInfo_CollectorData.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -54,73 +56,35 @@ func (m *Accumulator) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *Accumulator) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Accumulator.Merge(m, src)
+func (m *CollectorData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CollectorData.Merge(m, src)
 }
-func (m *Accumulator) XXX_Size() int {
+func (m *CollectorData) XXX_Size() int {
 	return m.Size()
 }
-func (m *Accumulator) XXX_DiscardUnknown() {
-	xxx_messageInfo_Accumulator.DiscardUnknown(m)
+func (m *CollectorData) XXX_DiscardUnknown() {
+	xxx_messageInfo_CollectorData.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Accumulator proto.InternalMessageInfo
+var xxx_messageInfo_CollectorData proto.InternalMessageInfo
 
-func (m *Accumulator) GetAccumulatedStabilityFee() github_com_cosmos_cosmos_sdk_types.Coin {
-	if m != nil {
-		return m.AccumulatedStabilityFee
-	}
-	return github_com_cosmos_cosmos_sdk_types.Coin{}
+type AppIdToAssetCollectorMapping struct {
+	AppId          uint64                      `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetCollector []*AssetIdCollectorMappping `protobuf:"bytes,2,rep,name=asset_collector,json=assetCollector,proto3" json:"asset_collector,omitempty" yaml:"asset_collector"`
 }
 
-func (m *Accumulator) GetAccumulatedClosingFee() github_com_cosmos_cosmos_sdk_types.Coin {
-	if m != nil {
-		return m.AccumulatedClosingFee
-	}
-	return github_com_cosmos_cosmos_sdk_types.Coin{}
-}
-
-func (m *Accumulator) GetAccumulatedOpeningFee() github_com_cosmos_cosmos_sdk_types.Coin {
-	if m != nil {
-		return m.AccumulatedOpeningFee
-	}
-	return github_com_cosmos_cosmos_sdk_types.Coin{}
-}
-
-func (m *Accumulator) GetNetFeesAcccumulated() github_com_cosmos_cosmos_sdk_types.Coin {
-	if m != nil {
-		return m.NetFeesAcccumulated
-	}
-	return github_com_cosmos_cosmos_sdk_types.Coin{}
-}
-
-func (m *Accumulator) GetLockerRewardsAccumulated() github_com_cosmos_cosmos_sdk_types.Coin {
-	if m != nil {
-		return m.LockerRewardsAccumulated
-	}
-	return github_com_cosmos_cosmos_sdk_types.Coin{}
-}
-
-type AccumulatorLookupTable struct {
-	AccumulatorTokenDenom string `protobuf:"bytes,1,opt,name=accumulator_token_denom,json=accumulatorTokenDenom,proto3" json:"accumulator_token_denom,omitempty" yaml:"accumulator_token_denom"`
-	SecondaryTokenDenom   string `protobuf:"bytes,2,opt,name=secondary_token_denom,json=secondaryTokenDenom,proto3" json:"secondary_token_denom,omitempty" yaml:"secondary_token_denom"`
-	SurplusThreshold      uint64 `protobuf:"varint,3,opt,name=surplus_threshold,json=surplusThreshold,proto3" json:"surplus_threshold,omitempty" yaml:"surplus_threshold"`
-	DebtThreshold         uint64 `protobuf:"varint,4,opt,name=debt_threshold,json=debtThreshold,proto3" json:"debt_threshold,omitempty" yaml:"debt_threshold"`
-	LockerSavingRate      uint64 `protobuf:"varint,5,opt,name=locker_saving_rate,json=lockerSavingRate,proto3" json:"locker_saving_rate,omitempty" yaml:"locker_saving_rate"`
-}
-
-func (m *AccumulatorLookupTable) Reset()         { *m = AccumulatorLookupTable{} }
-func (m *AccumulatorLookupTable) String() string { return proto.CompactTextString(m) }
-func (*AccumulatorLookupTable) ProtoMessage()    {}
-func (*AccumulatorLookupTable) Descriptor() ([]byte, []int) {
+func (m *AppIdToAssetCollectorMapping) Reset()         { *m = AppIdToAssetCollectorMapping{} }
+func (m *AppIdToAssetCollectorMapping) String() string { return proto.CompactTextString(m) }
+func (*AppIdToAssetCollectorMapping) ProtoMessage()    {}
+func (*AppIdToAssetCollectorMapping) Descriptor() ([]byte, []int) {
 	return fileDescriptor_f18765a8dff2a43b, []int{1}
 }
-func (m *AccumulatorLookupTable) XXX_Unmarshal(b []byte) error {
+func (m *AppIdToAssetCollectorMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *AccumulatorLookupTable) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AppIdToAssetCollectorMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_AccumulatorLookupTable.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AppIdToAssetCollectorMapping.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -130,56 +94,385 @@ func (m *AccumulatorLookupTable) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *AccumulatorLookupTable) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AccumulatorLookupTable.Merge(m, src)
+func (m *AppIdToAssetCollectorMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AppIdToAssetCollectorMapping.Merge(m, src)
 }
-func (m *AccumulatorLookupTable) XXX_Size() int {
+func (m *AppIdToAssetCollectorMapping) XXX_Size() int {
 	return m.Size()
 }
-func (m *AccumulatorLookupTable) XXX_DiscardUnknown() {
-	xxx_messageInfo_AccumulatorLookupTable.DiscardUnknown(m)
+func (m *AppIdToAssetCollectorMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_AppIdToAssetCollectorMapping.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AccumulatorLookupTable proto.InternalMessageInfo
+var xxx_messageInfo_AppIdToAssetCollectorMapping proto.InternalMessageInfo
 
-func (m *AccumulatorLookupTable) GetAccumulatorTokenDenom() string {
+func (m *AppIdToAssetCollectorMapping) GetAppId() uint64 {
 	if m != nil {
-		return m.AccumulatorTokenDenom
+		return m.AppId
+	}
+	return 0
+}
+
+func (m *AppIdToAssetCollectorMapping) GetAssetCollector() []*AssetIdCollectorMappping {
+	if m != nil {
+		return m.AssetCollector
+	}
+	return nil
+}
+
+type AssetIdCollectorMappping struct {
+	AssetId   uint64         `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	Collector *CollectorData `protobuf:"bytes,2,opt,name=collector,proto3" json:"collector,omitempty" yaml:"collector"`
+}
+
+func (m *AssetIdCollectorMappping) Reset()         { *m = AssetIdCollectorMappping{} }
+func (m *AssetIdCollectorMappping) String() string { return proto.CompactTextString(m) }
+func (*AssetIdCollectorMappping) ProtoMessage()    {}
+func (*AssetIdCollectorMappping) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f18765a8dff2a43b, []int{2}
+}
+func (m *AssetIdCollectorMappping) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AssetIdCollectorMappping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AssetIdCollectorMappping.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AssetIdCollectorMappping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AssetIdCollectorMappping.Merge(m, src)
+}
+func (m *AssetIdCollectorMappping) XXX_Size() int {
+	return m.Size()
+}
+func (m *AssetIdCollectorMappping) XXX_DiscardUnknown() {
+	xxx_messageInfo_AssetIdCollectorMappping.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AssetIdCollectorMappping proto.InternalMessageInfo
+
+func (m *AssetIdCollectorMappping) GetAssetId() uint64 {
+	if m != nil {
+		return m.AssetId
+	}
+	return 0
+}
+
+func (m *AssetIdCollectorMappping) GetCollector() *CollectorData {
+	if m != nil {
+		return m.Collector
+	}
+	return nil
+}
+
+type CollectorLookupTable struct {
+	AppId            uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	CollectorDenom   string `protobuf:"bytes,2,opt,name=collector_denom,json=collectorDenom,proto3" json:"collector_denom,omitempty" yaml:"collector_denom"`
+	SecondaryDenom   string `protobuf:"bytes,3,opt,name=secondary_denom,json=secondaryDenom,proto3" json:"secondary_denom,omitempty" yaml:"secondary_denom"`
+	SurplusThreshold uint64 `protobuf:"varint,4,opt,name=surplus_threshold,json=surplusThreshold,proto3" json:"surplus_threshold,omitempty" yaml:"surplus_threshold"`
+	DebtThreshold    uint64 `protobuf:"varint,5,opt,name=debt_threshold,json=debtThreshold,proto3" json:"debt_threshold,omitempty" yaml:"debt_threshold"`
+	LockerSavingRate uint64 `protobuf:"varint,6,opt,name=locker_saving_rate,json=lockerSavingRate,proto3" json:"locker_saving_rate,omitempty" yaml:"locker_saving_rate"`
+	LotSize          uint64 `protobuf:"varint,7,opt,name=lot_size,json=lotSize,proto3" json:"lot_size,omitempty" yaml:"lot_size"`
+}
+
+func (m *CollectorLookupTable) Reset()         { *m = CollectorLookupTable{} }
+func (m *CollectorLookupTable) String() string { return proto.CompactTextString(m) }
+func (*CollectorLookupTable) ProtoMessage()    {}
+func (*CollectorLookupTable) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f18765a8dff2a43b, []int{3}
+}
+func (m *CollectorLookupTable) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CollectorLookupTable) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CollectorLookupTable.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CollectorLookupTable) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CollectorLookupTable.Merge(m, src)
+}
+func (m *CollectorLookupTable) XXX_Size() int {
+	return m.Size()
+}
+func (m *CollectorLookupTable) XXX_DiscardUnknown() {
+	xxx_messageInfo_CollectorLookupTable.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CollectorLookupTable proto.InternalMessageInfo
+
+func (m *CollectorLookupTable) GetAppId() uint64 {
+	if m != nil {
+		return m.AppId
+	}
+	return 0
+}
+
+func (m *CollectorLookupTable) GetCollectorDenom() string {
+	if m != nil {
+		return m.CollectorDenom
 	}
 	return ""
 }
 
-func (m *AccumulatorLookupTable) GetSecondaryTokenDenom() string {
+func (m *CollectorLookupTable) GetSecondaryDenom() string {
 	if m != nil {
-		return m.SecondaryTokenDenom
+		return m.SecondaryDenom
 	}
 	return ""
 }
 
-func (m *AccumulatorLookupTable) GetSurplusThreshold() uint64 {
+func (m *CollectorLookupTable) GetSurplusThreshold() uint64 {
 	if m != nil {
 		return m.SurplusThreshold
 	}
 	return 0
 }
 
-func (m *AccumulatorLookupTable) GetDebtThreshold() uint64 {
+func (m *CollectorLookupTable) GetDebtThreshold() uint64 {
 	if m != nil {
 		return m.DebtThreshold
 	}
 	return 0
 }
 
-func (m *AccumulatorLookupTable) GetLockerSavingRate() uint64 {
+func (m *CollectorLookupTable) GetLockerSavingRate() uint64 {
 	if m != nil {
 		return m.LockerSavingRate
 	}
 	return 0
 }
 
+func (m *CollectorLookupTable) GetLotSize() uint64 {
+	if m != nil {
+		return m.LotSize
+	}
+	return 0
+}
+
+type CollectorLookup struct {
+	AssetrateInfo []*CollectorLookupTable `protobuf:"bytes,1,rep,name=assetrate_info,json=assetrateInfo,proto3" json:"assetrate_info,omitempty" yaml:"assetrate_info"`
+}
+
+func (m *CollectorLookup) Reset()         { *m = CollectorLookup{} }
+func (m *CollectorLookup) String() string { return proto.CompactTextString(m) }
+func (*CollectorLookup) ProtoMessage()    {}
+func (*CollectorLookup) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f18765a8dff2a43b, []int{4}
+}
+func (m *CollectorLookup) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CollectorLookup) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CollectorLookup.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CollectorLookup) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CollectorLookup.Merge(m, src)
+}
+func (m *CollectorLookup) XXX_Size() int {
+	return m.Size()
+}
+func (m *CollectorLookup) XXX_DiscardUnknown() {
+	xxx_messageInfo_CollectorLookup.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CollectorLookup proto.InternalMessageInfo
+
+func (m *CollectorLookup) GetAssetrateInfo() []*CollectorLookupTable {
+	if m != nil {
+		return m.AssetrateInfo
+	}
+	return nil
+}
+
+type AppToDenomsMapping struct {
+	AppId       uint64   `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetDenoms []string `protobuf:"bytes,2,rep,name=asset_denoms,json=assetDenoms,proto3" json:"asset_denoms,omitempty" yaml:"asset_denoms"`
+}
+
+func (m *AppToDenomsMapping) Reset()         { *m = AppToDenomsMapping{} }
+func (m *AppToDenomsMapping) String() string { return proto.CompactTextString(m) }
+func (*AppToDenomsMapping) ProtoMessage()    {}
+func (*AppToDenomsMapping) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f18765a8dff2a43b, []int{5}
+}
+func (m *AppToDenomsMapping) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AppToDenomsMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AppToDenomsMapping.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AppToDenomsMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AppToDenomsMapping.Merge(m, src)
+}
+func (m *AppToDenomsMapping) XXX_Size() int {
+	return m.Size()
+}
+func (m *AppToDenomsMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_AppToDenomsMapping.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AppToDenomsMapping proto.InternalMessageInfo
+
+func (m *AppToDenomsMapping) GetAppId() uint64 {
+	if m != nil {
+		return m.AppId
+	}
+	return 0
+}
+
+func (m *AppToDenomsMapping) GetAssetDenoms() []string {
+	if m != nil {
+		return m.AssetDenoms
+	}
+	return nil
+}
+
+type HistoricalAuction struct {
+	AppId          uint64                   `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetToAuction []*AssetToAuctionMapping `protobuf:"bytes,2,rep,name=asset_to_auction,json=assetToAuction,proto3" json:"asset_to_auction,omitempty" yaml:"asset_to_auction"`
+}
+
+func (m *HistoricalAuction) Reset()         { *m = HistoricalAuction{} }
+func (m *HistoricalAuction) String() string { return proto.CompactTextString(m) }
+func (*HistoricalAuction) ProtoMessage()    {}
+func (*HistoricalAuction) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f18765a8dff2a43b, []int{6}
+}
+func (m *HistoricalAuction) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *HistoricalAuction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_HistoricalAuction.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *HistoricalAuction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_HistoricalAuction.Merge(m, src)
+}
+func (m *HistoricalAuction) XXX_Size() int {
+	return m.Size()
+}
+func (m *HistoricalAuction) XXX_DiscardUnknown() {
+	xxx_messageInfo_HistoricalAuction.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_HistoricalAuction proto.InternalMessageInfo
+
+func (m *HistoricalAuction) GetAppId() uint64 {
+	if m != nil {
+		return m.AppId
+	}
+	return 0
+}
+
+func (m *HistoricalAuction) GetAssetToAuction() []*AssetToAuctionMapping {
+	if m != nil {
+		return m.AssetToAuction
+	}
+	return nil
+}
+
+type AssetToAuctionMapping struct {
+	AuctionId   uint64   `protobuf:"varint,1,opt,name=auctionId,proto3" json:"auctionId,omitempty" yaml:"auctionId"`
+	AssetDenoms []string `protobuf:"bytes,2,rep,name=asset_denoms,json=assetDenoms,proto3" json:"asset_denoms,omitempty" yaml:"asset_denoms"`
+}
+
+func (m *AssetToAuctionMapping) Reset()         { *m = AssetToAuctionMapping{} }
+func (m *AssetToAuctionMapping) String() string { return proto.CompactTextString(m) }
+func (*AssetToAuctionMapping) ProtoMessage()    {}
+func (*AssetToAuctionMapping) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f18765a8dff2a43b, []int{7}
+}
+func (m *AssetToAuctionMapping) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AssetToAuctionMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AssetToAuctionMapping.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AssetToAuctionMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AssetToAuctionMapping.Merge(m, src)
+}
+func (m *AssetToAuctionMapping) XXX_Size() int {
+	return m.Size()
+}
+func (m *AssetToAuctionMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_AssetToAuctionMapping.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AssetToAuctionMapping proto.InternalMessageInfo
+
+func (m *AssetToAuctionMapping) GetAuctionId() uint64 {
+	if m != nil {
+		return m.AuctionId
+	}
+	return 0
+}
+
+func (m *AssetToAuctionMapping) GetAssetDenoms() []string {
+	if m != nil {
+		return m.AssetDenoms
+	}
+	return nil
+}
+
 func init() {
-	proto.RegisterType((*Accumulator)(nil), "comdex.collector.v1beta1.Accumulator")
-	proto.RegisterType((*AccumulatorLookupTable)(nil), "comdex.collector.v1beta1.AccumulatorLookupTable")
+	proto.RegisterType((*CollectorData)(nil), "comdex.collector.v1beta1.CollectorData")
+	proto.RegisterType((*AppIdToAssetCollectorMapping)(nil), "comdex.collector.v1beta1.AppIdToAssetCollectorMapping")
+	proto.RegisterType((*AssetIdCollectorMappping)(nil), "comdex.collector.v1beta1.AssetIdCollectorMappping")
+	proto.RegisterType((*CollectorLookupTable)(nil), "comdex.collector.v1beta1.CollectorLookupTable")
+	proto.RegisterType((*CollectorLookup)(nil), "comdex.collector.v1beta1.CollectorLookup")
+	proto.RegisterType((*AppToDenomsMapping)(nil), "comdex.collector.v1beta1.AppToDenomsMapping")
+	proto.RegisterType((*HistoricalAuction)(nil), "comdex.collector.v1beta1.HistoricalAuction")
+	proto.RegisterType((*AssetToAuctionMapping)(nil), "comdex.collector.v1beta1.AssetToAuctionMapping")
 }
 
 func init() {
@@ -187,46 +480,66 @@ func init() {
 }
 
 var fileDescriptor_f18765a8dff2a43b = []byte{
-	// 572 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x94, 0xcd, 0x6e, 0xd3, 0x4c,
-	0x14, 0x86, 0xe3, 0x36, 0x5f, 0xa5, 0xcf, 0x15, 0xa8, 0xb8, 0x04, 0x92, 0x52, 0xec, 0xca, 0x1b,
-	0xba, 0xa9, 0xad, 0xd2, 0x1d, 0x2b, 0x9a, 0xa2, 0x4a, 0x88, 0x3f, 0xc9, 0xcd, 0xaa, 0x1b, 0x6b,
-	0x3c, 0x3e, 0x4d, 0xad, 0x8c, 0x7d, 0xa2, 0x99, 0x71, 0x21, 0x77, 0xc1, 0x0d, 0xb0, 0x40, 0x02,
-	0x71, 0x29, 0x74, 0xd9, 0x25, 0x2b, 0x0b, 0xb5, 0x77, 0xe0, 0x25, 0x2b, 0xe4, 0x19, 0xa7, 0x71,
-	0x20, 0xeb, 0xb0, 0x4a, 0xfc, 0x9e, 0x57, 0x8f, 0x1f, 0xc9, 0x67, 0xc6, 0xdc, 0xa5, 0x98, 0xc6,
-	0xf0, 0xc1, 0xa7, 0xc8, 0x18, 0x50, 0x89, 0xdc, 0xbf, 0xd8, 0x8f, 0x40, 0x92, 0xfd, 0x59, 0xe2,
-	0x8d, 0x39, 0x4a, 0xb4, 0xba, 0xba, 0xe9, 0xcd, 0xf2, 0xba, 0xb9, 0x75, 0x7f, 0x88, 0x43, 0x54,
-	0x25, 0xbf, 0xfa, 0xa7, 0xfb, 0x5b, 0x36, 0x45, 0x91, 0xa2, 0xf0, 0x23, 0x22, 0xa0, 0x01, 0x4d,
-	0x32, 0x3d, 0x77, 0xbf, 0xaf, 0x99, 0xeb, 0x87, 0x94, 0xe6, 0x69, 0xce, 0x88, 0x44, 0x6e, 0x7d,
-	0x35, 0xcc, 0x1e, 0x99, 0x3e, 0x43, 0x1c, 0x0a, 0x49, 0xa2, 0x84, 0x25, 0x72, 0x12, 0x9e, 0x01,
-	0x74, 0x8d, 0x1d, 0x63, 0x77, 0xfd, 0x69, 0xcf, 0xd3, 0x50, 0xaf, 0x82, 0x4e, 0xdf, 0xef, 0x1d,
-	0x61, 0x92, 0xf5, 0xdf, 0x5e, 0x16, 0x4e, 0xab, 0x2c, 0x9c, 0x47, 0x13, 0x92, 0xb2, 0x67, 0x2e,
-	0xc9, 0xa9, 0x4c, 0x30, 0x83, 0x38, 0xac, 0x7c, 0x89, 0x04, 0x4e, 0x98, 0xfb, 0xab, 0x70, 0x9e,
-	0x0c, 0x13, 0x79, 0x9e, 0x47, 0x1e, 0xc5, 0xd4, 0xaf, 0x05, 0xf5, 0xcf, 0x9e, 0x88, 0x47, 0xbe,
-	0x9c, 0x8c, 0x41, 0x28, 0x5e, 0xf0, 0xb0, 0xe1, 0x72, 0x32, 0x55, 0x39, 0x06, 0xb0, 0x3e, 0x1b,
-	0x66, 0x73, 0x16, 0x52, 0x86, 0x22, 0xc9, 0x86, 0xca, 0x72, 0x65, 0xd9, 0x96, 0x9d, 0x86, 0xc9,
-	0x91, 0x16, 0x59, 0xe4, 0x88, 0x63, 0xc8, 0xa6, 0x8e, 0xab, 0xff, 0xd2, 0xf1, 0x9d, 0x16, 0xa9,
-	0x1c, 0x3f, 0x19, 0x66, 0x27, 0x03, 0x59, 0x39, 0x89, 0x90, 0xd0, 0x59, 0xa7, 0xdb, 0x5e, 0xb6,
-	0xe1, 0x66, 0x06, 0xf2, 0x18, 0x40, 0x1c, 0x36, 0x2c, 0xac, 0x6f, 0x86, 0xb9, 0xc5, 0x90, 0x8e,
-	0x80, 0x87, 0x1c, 0xde, 0x13, 0x1e, 0x2b, 0xcb, 0x5b, 0xc9, 0xff, 0x96, 0x2d, 0xd9, 0xd5, 0x32,
-	0x81, 0x76, 0x39, 0x9c, 0xa9, 0xb8, 0x5f, 0x56, 0xcd, 0x07, 0x8d, 0x93, 0xf4, 0x1a, 0x71, 0x94,
-	0x8f, 0x07, 0x24, 0x62, 0x60, 0x9d, 0x36, 0xf6, 0x00, 0x79, 0x28, 0x71, 0x04, 0x59, 0x18, 0x43,
-	0x86, 0xa9, 0x3a, 0x51, 0xff, 0xf7, 0xdd, 0xb2, 0x70, 0xec, 0xda, 0x70, 0x71, 0xd1, 0x6d, 0x7c,
-	0x40, 0xe4, 0x83, 0x6a, 0xf0, 0xa2, 0xca, 0xad, 0x81, 0xd9, 0x11, 0x40, 0x31, 0x8b, 0x09, 0x9f,
-	0xcc, 0x91, 0x57, 0x14, 0x79, 0xa7, 0x2c, 0x9c, 0x6d, 0x4d, 0x5e, 0x58, 0x73, 0x83, 0xcd, 0xdb,
-	0xbc, 0x41, 0x7d, 0x69, 0xde, 0x13, 0x39, 0x1f, 0xb3, 0x5c, 0x84, 0xf2, 0x9c, 0x83, 0x38, 0x47,
-	0x16, 0xab, 0x9d, 0x6d, 0xf7, 0xb7, 0xcb, 0xc2, 0xe9, 0xd6, 0xc4, 0x3f, 0x2b, 0x6e, 0xb0, 0x51,
-	0x67, 0x83, 0x69, 0x64, 0x3d, 0x37, 0xef, 0xc6, 0x10, 0xc9, 0x06, 0xa7, 0xad, 0x38, 0xbd, 0xb2,
-	0x70, 0x3a, 0x9a, 0x33, 0x3f, 0x77, 0x83, 0x3b, 0x55, 0x30, 0x23, 0xbc, 0x32, 0xad, 0x7a, 0x05,
-	0x04, 0xb9, 0xa8, 0x0e, 0x10, 0x27, 0x12, 0xd4, 0xa7, 0x6f, 0xf7, 0x1f, 0x97, 0x85, 0xd3, 0xd3,
-	0x94, 0xbf, 0x3b, 0x6e, 0xb0, 0xa1, 0xc3, 0x13, 0x95, 0x05, 0x44, 0x42, 0xff, 0xcd, 0xe5, 0xb5,
-	0x6d, 0x5c, 0x5d, 0xdb, 0xc6, 0xcf, 0x6b, 0xdb, 0xf8, 0x78, 0x63, 0xb7, 0xae, 0x6e, 0xec, 0xd6,
-	0x8f, 0x1b, 0xbb, 0x75, 0x7a, 0x30, 0xb7, 0x03, 0xd5, 0x2d, 0xbb, 0x87, 0x67, 0x67, 0x09, 0x4d,
-	0x08, 0xab, 0x9f, 0xfd, 0xe6, 0x0d, 0xad, 0x96, 0x22, 0x5a, 0x53, 0xd7, 0xe8, 0xc1, 0xef, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0x4a, 0xe2, 0x84, 0x4c, 0xc2, 0x05, 0x00, 0x00,
+	// 887 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x96, 0x3d, 0x73, 0xdc, 0x44,
+	0x18, 0xc7, 0xad, 0xf8, 0x0d, 0xaf, 0xb1, 0x7d, 0x96, 0x6d, 0xac, 0x38, 0xce, 0x29, 0xb3, 0xc3,
+	0xc0, 0x35, 0xb9, 0x9b, 0x38, 0x5d, 0x2a, 0x2c, 0x67, 0x32, 0xdc, 0x84, 0x00, 0xb3, 0xbe, 0xa1,
+	0x80, 0x42, 0xb3, 0x27, 0xad, 0xcf, 0x3b, 0xd6, 0x69, 0x85, 0x76, 0xcf, 0xe1, 0x52, 0x42, 0x01,
+	0x25, 0x35, 0x5f, 0x80, 0x4f, 0x40, 0x47, 0x43, 0x97, 0x32, 0x05, 0x05, 0x43, 0xa1, 0x61, 0xec,
+	0x6f, 0xa0, 0x4f, 0xc0, 0xec, 0xae, 0x5e, 0x56, 0x67, 0x0c, 0xdc, 0x40, 0x75, 0xa7, 0xff, 0xf3,
+	0xec, 0xef, 0xf9, 0x6b, 0xf5, 0x3c, 0x2b, 0x81, 0x4e, 0xc0, 0xc6, 0x21, 0xf9, 0xaa, 0x17, 0xb0,
+	0x28, 0x22, 0x81, 0x60, 0x69, 0xef, 0xf2, 0xd1, 0x90, 0x08, 0xfc, 0xa8, 0x56, 0xba, 0x49, 0xca,
+	0x04, 0xb3, 0x1d, 0x9d, 0xd9, 0xad, 0xf5, 0x22, 0xf3, 0x60, 0x77, 0xc4, 0x46, 0x4c, 0x25, 0xf5,
+	0xe4, 0x3f, 0x9d, 0x7f, 0xd0, 0x0e, 0x18, 0x1f, 0x33, 0xde, 0x1b, 0x62, 0x4e, 0x0c, 0x28, 0x8d,
+	0x75, 0x1c, 0xfe, 0xbc, 0x0c, 0x36, 0x4e, 0x4a, 0xd6, 0x53, 0x2c, 0xb0, 0xfd, 0x9d, 0x05, 0xf6,
+	0x0b, 0x3a, 0x09, 0x7d, 0x2e, 0xf0, 0x90, 0x46, 0x54, 0x4c, 0xfd, 0x33, 0x42, 0x1c, 0xeb, 0x81,
+	0xd5, 0x59, 0xf3, 0x3e, 0x7d, 0x9d, 0xb9, 0x0b, 0xbf, 0x67, 0xee, 0x7b, 0x23, 0x2a, 0xce, 0x27,
+	0xc3, 0x6e, 0xc0, 0xc6, 0xbd, 0xa2, 0x8c, 0xfe, 0x79, 0xc8, 0xc3, 0x8b, 0x9e, 0x98, 0x26, 0x84,
+	0x77, 0xfb, 0xb1, 0xc8, 0x33, 0xb7, 0x3d, 0xc5, 0xe3, 0xe8, 0x09, 0xbc, 0x05, 0x0b, 0xd1, 0x5e,
+	0x15, 0x39, 0x2d, 0x03, 0xcf, 0x08, 0xb1, 0xbf, 0xb6, 0x40, 0x1d, 0xf1, 0x83, 0x88, 0x71, 0x1a,
+	0x8f, 0x94, 0x91, 0x3b, 0xca, 0xc8, 0xc7, 0x73, 0x1b, 0x39, 0x9c, 0x35, 0x62, 0x40, 0x21, 0xda,
+	0xa9, 0xf4, 0x13, 0x2d, 0xdf, 0x34, 0xc1, 0x12, 0x12, 0x97, 0x26, 0x16, 0xff, 0x2f, 0x13, 0x06,
+	0xd4, 0x34, 0xf1, 0x89, 0x96, 0xa5, 0x89, 0x29, 0xb0, 0x63, 0x22, 0x64, 0x02, 0xf7, 0xab, 0xb8,
+	0xb3, 0xa4, 0x0c, 0x3c, 0x9f, 0xdb, 0xc0, 0x5d, 0x6d, 0xe0, 0x26, 0x11, 0xa2, 0x56, 0x4c, 0xc4,
+	0x33, 0x42, 0xf8, 0x49, 0x29, 0xd9, 0x3f, 0x58, 0xe0, 0x7e, 0x44, 0xbf, 0x9c, 0xd0, 0x10, 0x0b,
+	0xca, 0x62, 0x3f, 0x25, 0x2f, 0x71, 0x1a, 0x9a, 0x36, 0x96, 0x95, 0x8d, 0xcf, 0xe6, 0xb6, 0xf1,
+	0xae, 0xb6, 0xf1, 0xb7, 0x70, 0x88, 0xee, 0x19, 0x71, 0xa4, 0xc3, 0x95, 0x39, 0xf8, 0x8b, 0x05,
+	0x0e, 0x8f, 0x93, 0xa4, 0x1f, 0x0e, 0xd8, 0x31, 0xe7, 0x44, 0x54, 0xad, 0xfc, 0x02, 0x27, 0x09,
+	0x8d, 0x47, 0x76, 0x07, 0xac, 0xe0, 0x24, 0xf1, 0x69, 0xa8, 0x7a, 0x77, 0xc9, 0xdb, 0xce, 0x33,
+	0x77, 0x43, 0xd7, 0xd5, 0x3a, 0x44, 0xcb, 0x58, 0x02, 0xec, 0x97, 0x60, 0x0b, 0x4b, 0x84, 0x5f,
+	0x8d, 0x96, 0x73, 0xe7, 0xc1, 0x62, 0x67, 0xfd, 0xe8, 0xa8, 0x7b, 0xdb, 0xcc, 0x75, 0x55, 0xcd,
+	0x7e, 0xd8, 0xa8, 0x2a, 0xcb, 0x7a, 0x07, 0x79, 0xe6, 0xbe, 0x53, 0x94, 0x69, 0x42, 0x21, 0xda,
+	0xc4, 0x0d, 0xa7, 0xf0, 0x47, 0x0b, 0x38, 0xb7, 0x81, 0xec, 0x2e, 0x78, 0x4b, 0x03, 0xaa, 0x3b,
+	0xd8, 0xc9, 0x33, 0x77, 0xcb, 0x44, 0xcb, 0x7b, 0x58, 0xc5, 0x1a, 0x60, 0x7f, 0x01, 0xd6, 0x4c,
+	0xff, 0x56, 0x67, 0xfd, 0xe8, 0xfd, 0xdb, 0xfd, 0x37, 0x26, 0xdf, 0xdb, 0xcd, 0x33, 0xb7, 0xd5,
+	0xe8, 0x4d, 0x69, 0xb7, 0xe6, 0xc1, 0x5f, 0x17, 0xc1, 0x6e, 0xb5, 0xe4, 0x23, 0xc6, 0x2e, 0x26,
+	0xc9, 0x00, 0x0f, 0x23, 0x32, 0xc7, 0x2e, 0x9f, 0x80, 0xad, 0x8a, 0xe7, 0x87, 0x24, 0x66, 0xe3,
+	0x62, 0x96, 0x8d, 0x1d, 0x9b, 0x49, 0x80, 0x68, 0xb3, 0x52, 0x9e, 0x4a, 0x41, 0x42, 0x38, 0x09,
+	0x58, 0x1c, 0xe2, 0x74, 0x5a, 0x40, 0x16, 0x67, 0x21, 0x33, 0x09, 0x10, 0x6d, 0x56, 0x8a, 0x86,
+	0xf4, 0xc1, 0x36, 0x9f, 0xa4, 0x49, 0x34, 0xe1, 0xbe, 0x38, 0x4f, 0x09, 0x3f, 0x67, 0x91, 0x9e,
+	0xa8, 0x25, 0xef, 0x30, 0xcf, 0x5c, 0xa7, 0xc0, 0xcc, 0xa6, 0x40, 0xd4, 0x2a, 0xb4, 0x41, 0x29,
+	0xd9, 0x1f, 0x80, 0xcd, 0x90, 0x0c, 0x85, 0xc1, 0x59, 0x56, 0x9c, 0xbb, 0x79, 0xe6, 0xee, 0x69,
+	0x4e, 0x33, 0x0e, 0xd1, 0x86, 0x14, 0x6a, 0xc2, 0x73, 0x60, 0x47, 0x2c, 0xb8, 0x20, 0xa9, 0xcf,
+	0xf1, 0xa5, 0x3c, 0x0a, 0x52, 0x2c, 0x88, 0xb3, 0xa2, 0x28, 0xf7, 0xeb, 0x89, 0xbd, 0x99, 0x03,
+	0x51, 0x4b, 0x8b, 0xa7, 0x4a, 0x43, 0x58, 0x10, 0xd9, 0x33, 0x11, 0x13, 0x3e, 0xa7, 0xaf, 0x88,
+	0xb3, 0x3a, 0xdb, 0x33, 0x65, 0x04, 0xa2, 0xd5, 0x88, 0x89, 0x53, 0xf9, 0xef, 0x1b, 0x0b, 0x6c,
+	0xcd, 0x3c, 0x56, 0x3b, 0x01, 0xba, 0x4d, 0x65, 0x0d, 0x9f, 0xc6, 0x67, 0xcc, 0xb1, 0xd4, 0x30,
+	0x74, 0xff, 0x45, 0x33, 0x19, 0x9d, 0x61, 0x6e, 0x41, 0x93, 0x07, 0xd1, 0x46, 0x25, 0xf4, 0xe5,
+	0xf5, 0x2b, 0x60, 0x1f, 0x27, 0xc9, 0x80, 0xa9, 0xa7, 0xc3, 0xe7, 0x9f, 0xdf, 0x27, 0xe0, 0x6d,
+	0x3d, 0x0f, 0xea, 0x79, 0x73, 0x35, 0xbc, 0x6b, 0xde, 0x7e, 0x9e, 0xb9, 0x3b, 0xe6, 0xb4, 0xe8,
+	0x28, 0x44, 0xeb, 0xea, 0x52, 0x17, 0x83, 0x3f, 0x59, 0x60, 0xfb, 0x43, 0xca, 0x05, 0x4b, 0x69,
+	0x80, 0xa3, 0xe3, 0x49, 0x20, 0x0f, 0x9b, 0x39, 0x6a, 0x5f, 0x82, 0x96, 0xa6, 0x0b, 0xe6, 0x63,
+	0xbd, 0xba, 0x38, 0x3c, 0x7a, 0xff, 0x70, 0x78, 0x0c, 0x58, 0x51, 0xad, 0xb8, 0x61, 0xef, 0x5e,
+	0x9e, 0xb9, 0xfb, 0xa6, 0xe1, 0x1a, 0x59, 0x1e, 0x1d, 0xd5, 0x1a, 0xf8, 0xad, 0x05, 0xf6, 0xfe,
+	0x12, 0x63, 0x1f, 0x81, 0xb5, 0x62, 0x55, 0xbf, 0xb4, 0x6f, 0x8c, 0x77, 0x15, 0x82, 0xa8, 0x4e,
+	0xfb, 0x2f, 0x3b, 0xe8, 0xbd, 0x78, 0x7d, 0xd5, 0xb6, 0xde, 0x5c, 0xb5, 0xad, 0x3f, 0xae, 0xda,
+	0xd6, 0xf7, 0xd7, 0xed, 0x85, 0x37, 0xd7, 0xed, 0x85, 0xdf, 0xae, 0xdb, 0x0b, 0x9f, 0x3f, 0x6e,
+	0xbc, 0x0f, 0xe4, 0x5e, 0x3c, 0x64, 0x67, 0x67, 0x34, 0xa0, 0x38, 0x2a, 0xae, 0x7b, 0xe6, 0x87,
+	0x8f, 0x7a, 0x41, 0x0c, 0x57, 0xd4, 0xd7, 0xc9, 0xe3, 0x3f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x44,
+	0xd6, 0xa6, 0xe7, 0x19, 0x09, 0x00, 0x00,
 }
 
-func (m *Accumulator) Marshal() (dAtA []byte, err error) {
+func (m *CollectorData) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -236,62 +549,62 @@ func (m *Accumulator) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Accumulator) MarshalTo(dAtA []byte) (int, error) {
+func (m *CollectorData) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Accumulator) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *CollectorData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.LockerRewardsAccumulated.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
+		size := m.LiquidationRewardsCollected.Size()
+		i -= size
+		if _, err := m.LiquidationRewardsCollected.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
-		i -= size
 		i = encodeVarintCollector(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x2a
 	{
-		size, err := m.NetFeesAcccumulated.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
+		size := m.NetFeesCollected.Size()
+		i -= size
+		if _, err := m.NetFeesCollected.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
-		i -= size
 		i = encodeVarintCollector(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x22
 	{
-		size, err := m.AccumulatedOpeningFee.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
+		size := m.CollectedOpeningFee.Size()
+		i -= size
+		if _, err := m.CollectedOpeningFee.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
-		i -= size
 		i = encodeVarintCollector(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x1a
 	{
-		size, err := m.AccumulatedClosingFee.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
+		size := m.CollectedClosingFee.Size()
+		i -= size
+		if _, err := m.CollectedClosingFee.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
-		i -= size
 		i = encodeVarintCollector(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x12
 	{
-		size, err := m.AccumulatedStabilityFee.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
+		size := m.CollectedStabilityFee.Size()
+		i -= size
+		if _, err := m.CollectedStabilityFee.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
-		i -= size
 		i = encodeVarintCollector(dAtA, i, uint64(size))
 	}
 	i--
@@ -299,7 +612,7 @@ func (m *Accumulator) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *AccumulatorLookupTable) Marshal() (dAtA []byte, err error) {
+func (m *AppIdToAssetCollectorMapping) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -309,44 +622,289 @@ func (m *AccumulatorLookupTable) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AccumulatorLookupTable) MarshalTo(dAtA []byte) (int, error) {
+func (m *AppIdToAssetCollectorMapping) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AccumulatorLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AppIdToAssetCollectorMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if len(m.AssetCollector) > 0 {
+		for iNdEx := len(m.AssetCollector) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AssetCollector[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintCollector(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if m.AppId != 0 {
+		i = encodeVarintCollector(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AssetIdCollectorMappping) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AssetIdCollectorMappping) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AssetIdCollectorMappping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Collector != nil {
+		{
+			size, err := m.Collector.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintCollector(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.AssetId != 0 {
+		i = encodeVarintCollector(dAtA, i, uint64(m.AssetId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *CollectorLookupTable) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CollectorLookupTable) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CollectorLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.LotSize != 0 {
+		i = encodeVarintCollector(dAtA, i, uint64(m.LotSize))
+		i--
+		dAtA[i] = 0x38
+	}
 	if m.LockerSavingRate != 0 {
 		i = encodeVarintCollector(dAtA, i, uint64(m.LockerSavingRate))
 		i--
-		dAtA[i] = 0x28
+		dAtA[i] = 0x30
 	}
 	if m.DebtThreshold != 0 {
 		i = encodeVarintCollector(dAtA, i, uint64(m.DebtThreshold))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x28
 	}
 	if m.SurplusThreshold != 0 {
 		i = encodeVarintCollector(dAtA, i, uint64(m.SurplusThreshold))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x20
 	}
-	if len(m.SecondaryTokenDenom) > 0 {
-		i -= len(m.SecondaryTokenDenom)
-		copy(dAtA[i:], m.SecondaryTokenDenom)
-		i = encodeVarintCollector(dAtA, i, uint64(len(m.SecondaryTokenDenom)))
+	if len(m.SecondaryDenom) > 0 {
+		i -= len(m.SecondaryDenom)
+		copy(dAtA[i:], m.SecondaryDenom)
+		i = encodeVarintCollector(dAtA, i, uint64(len(m.SecondaryDenom)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.CollectorDenom) > 0 {
+		i -= len(m.CollectorDenom)
+		copy(dAtA[i:], m.CollectorDenom)
+		i = encodeVarintCollector(dAtA, i, uint64(len(m.CollectorDenom)))
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.AccumulatorTokenDenom) > 0 {
-		i -= len(m.AccumulatorTokenDenom)
-		copy(dAtA[i:], m.AccumulatorTokenDenom)
-		i = encodeVarintCollector(dAtA, i, uint64(len(m.AccumulatorTokenDenom)))
+	if m.AppId != 0 {
+		i = encodeVarintCollector(dAtA, i, uint64(m.AppId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *CollectorLookup) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CollectorLookup) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CollectorLookup) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AssetrateInfo) > 0 {
+		for iNdEx := len(m.AssetrateInfo) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AssetrateInfo[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintCollector(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AppToDenomsMapping) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AppToDenomsMapping) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AppToDenomsMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AssetDenoms) > 0 {
+		for iNdEx := len(m.AssetDenoms) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.AssetDenoms[iNdEx])
+			copy(dAtA[i:], m.AssetDenoms[iNdEx])
+			i = encodeVarintCollector(dAtA, i, uint64(len(m.AssetDenoms[iNdEx])))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if m.AppId != 0 {
+		i = encodeVarintCollector(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *HistoricalAuction) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *HistoricalAuction) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *HistoricalAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AssetToAuction) > 0 {
+		for iNdEx := len(m.AssetToAuction) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AssetToAuction[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintCollector(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if m.AppId != 0 {
+		i = encodeVarintCollector(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AssetToAuctionMapping) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AssetToAuctionMapping) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AssetToAuctionMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AssetDenoms) > 0 {
+		for iNdEx := len(m.AssetDenoms) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.AssetDenoms[iNdEx])
+			copy(dAtA[i:], m.AssetDenoms[iNdEx])
+			i = encodeVarintCollector(dAtA, i, uint64(len(m.AssetDenoms[iNdEx])))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if m.AuctionId != 0 {
+		i = encodeVarintCollector(dAtA, i, uint64(m.AuctionId))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -362,36 +920,73 @@ func encodeVarintCollector(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Accumulator) Size() (n int) {
+func (m *CollectorData) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.AccumulatedStabilityFee.Size()
+	l = m.CollectedStabilityFee.Size()
 	n += 1 + l + sovCollector(uint64(l))
-	l = m.AccumulatedClosingFee.Size()
+	l = m.CollectedClosingFee.Size()
 	n += 1 + l + sovCollector(uint64(l))
-	l = m.AccumulatedOpeningFee.Size()
+	l = m.CollectedOpeningFee.Size()
 	n += 1 + l + sovCollector(uint64(l))
-	l = m.NetFeesAcccumulated.Size()
+	l = m.NetFeesCollected.Size()
 	n += 1 + l + sovCollector(uint64(l))
-	l = m.LockerRewardsAccumulated.Size()
+	l = m.LiquidationRewardsCollected.Size()
 	n += 1 + l + sovCollector(uint64(l))
 	return n
 }
 
-func (m *AccumulatorLookupTable) Size() (n int) {
+func (m *AppIdToAssetCollectorMapping) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.AccumulatorTokenDenom)
+	if m.AppId != 0 {
+		n += 1 + sovCollector(uint64(m.AppId))
+	}
+	if len(m.AssetCollector) > 0 {
+		for _, e := range m.AssetCollector {
+			l = e.Size()
+			n += 1 + l + sovCollector(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *AssetIdCollectorMappping) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AssetId != 0 {
+		n += 1 + sovCollector(uint64(m.AssetId))
+	}
+	if m.Collector != nil {
+		l = m.Collector.Size()
+		n += 1 + l + sovCollector(uint64(l))
+	}
+	return n
+}
+
+func (m *CollectorLookupTable) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AppId != 0 {
+		n += 1 + sovCollector(uint64(m.AppId))
+	}
+	l = len(m.CollectorDenom)
 	if l > 0 {
 		n += 1 + l + sovCollector(uint64(l))
 	}
-	l = len(m.SecondaryTokenDenom)
+	l = len(m.SecondaryDenom)
 	if l > 0 {
 		n += 1 + l + sovCollector(uint64(l))
 	}
@@ -404,6 +999,78 @@ func (m *AccumulatorLookupTable) Size() (n int) {
 	if m.LockerSavingRate != 0 {
 		n += 1 + sovCollector(uint64(m.LockerSavingRate))
 	}
+	if m.LotSize != 0 {
+		n += 1 + sovCollector(uint64(m.LotSize))
+	}
+	return n
+}
+
+func (m *CollectorLookup) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.AssetrateInfo) > 0 {
+		for _, e := range m.AssetrateInfo {
+			l = e.Size()
+			n += 1 + l + sovCollector(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *AppToDenomsMapping) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AppId != 0 {
+		n += 1 + sovCollector(uint64(m.AppId))
+	}
+	if len(m.AssetDenoms) > 0 {
+		for _, s := range m.AssetDenoms {
+			l = len(s)
+			n += 1 + l + sovCollector(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *HistoricalAuction) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AppId != 0 {
+		n += 1 + sovCollector(uint64(m.AppId))
+	}
+	if len(m.AssetToAuction) > 0 {
+		for _, e := range m.AssetToAuction {
+			l = e.Size()
+			n += 1 + l + sovCollector(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *AssetToAuctionMapping) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AuctionId != 0 {
+		n += 1 + sovCollector(uint64(m.AuctionId))
+	}
+	if len(m.AssetDenoms) > 0 {
+		for _, s := range m.AssetDenoms {
+			l = len(s)
+			n += 1 + l + sovCollector(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -413,7 +1080,7 @@ func sovCollector(x uint64) (n int) {
 func sozCollector(x uint64) (n int) {
 	return sovCollector(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *Accumulator) Unmarshal(dAtA []byte) error {
+func (m *CollectorData) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -436,17 +1103,17 @@ func (m *Accumulator) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Accumulator: wiretype end group for non-group")
+			return fmt.Errorf("proto: CollectorData: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Accumulator: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: CollectorData: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AccumulatedStabilityFee", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CollectedStabilityFee", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowCollector
@@ -456,30 +1123,31 @@ func (m *Accumulator) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthCollector
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthCollector
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.AccumulatedStabilityFee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.CollectedStabilityFee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AccumulatedClosingFee", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CollectedClosingFee", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowCollector
@@ -489,30 +1157,31 @@ func (m *Accumulator) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthCollector
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthCollector
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.AccumulatedClosingFee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.CollectedClosingFee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AccumulatedOpeningFee", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CollectedOpeningFee", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowCollector
@@ -522,30 +1191,31 @@ func (m *Accumulator) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthCollector
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthCollector
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.AccumulatedOpeningFee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.CollectedOpeningFee.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NetFeesAcccumulated", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NetFeesCollected", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowCollector
@@ -555,30 +1225,31 @@ func (m *Accumulator) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthCollector
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthCollector
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.NetFeesAcccumulated.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.NetFeesCollected.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LockerRewardsAccumulated", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field LiquidationRewardsCollected", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowCollector
@@ -588,22 +1259,23 @@ func (m *Accumulator) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthCollector
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthCollector
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.LockerRewardsAccumulated.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.LiquidationRewardsCollected.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -628,7 +1300,7 @@ func (m *Accumulator) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *AccumulatorLookupTable) Unmarshal(dAtA []byte) error {
+func (m *AppIdToAssetCollectorMapping) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -651,17 +1323,17 @@ func (m *AccumulatorLookupTable) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: AccumulatorLookupTable: wiretype end group for non-group")
+			return fmt.Errorf("proto: AppIdToAssetCollectorMapping: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AccumulatorLookupTable: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AppIdToAssetCollectorMapping: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AccumulatorTokenDenom", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			var stringLen uint64
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowCollector
@@ -671,27 +1343,222 @@ func (m *AccumulatorLookupTable) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthCollector
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthCollector
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AccumulatorTokenDenom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryTokenDenom", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetCollector", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCollector
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetCollector = append(m.AssetCollector, &AssetIdCollectorMappping{})
+			if err := m.AssetCollector[len(m.AssetCollector)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCollector(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AssetIdCollectorMappping) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCollector
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AssetIdCollectorMappping: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AssetIdCollectorMappping: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
+			}
+			m.AssetId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Collector", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCollector
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Collector == nil {
+				m.Collector = &CollectorData{}
+			}
+			if err := m.Collector.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCollector(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CollectorLookupTable) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCollector
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CollectorLookupTable: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CollectorLookupTable: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CollectorDenom", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -719,9 +1586,41 @@ func (m *AccumulatorLookupTable) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.SecondaryTokenDenom = string(dAtA[iNdEx:postIndex])
+			m.CollectorDenom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthCollector
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SecondaryDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SurplusThreshold", wireType)
 			}
@@ -740,7 +1639,7 @@ func (m *AccumulatorLookupTable) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 4:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DebtThreshold", wireType)
 			}
@@ -759,7 +1658,7 @@ func (m *AccumulatorLookupTable) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 5:
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field LockerSavingRate", wireType)
 			}
@@ -778,6 +1677,414 @@ func (m *AccumulatorLookupTable) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LotSize", wireType)
+			}
+			m.LotSize = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.LotSize |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCollector(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CollectorLookup) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCollector
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CollectorLookup: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CollectorLookup: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetrateInfo", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCollector
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetrateInfo = append(m.AssetrateInfo, &CollectorLookupTable{})
+			if err := m.AssetrateInfo[len(m.AssetrateInfo)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCollector(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AppToDenomsMapping) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCollector
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AppToDenomsMapping: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AppToDenomsMapping: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetDenoms", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthCollector
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetDenoms = append(m.AssetDenoms, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCollector(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *HistoricalAuction) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCollector
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: HistoricalAuction: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: HistoricalAuction: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetToAuction", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCollector
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetToAuction = append(m.AssetToAuction, &AssetToAuctionMapping{})
+			if err := m.AssetToAuction[len(m.AssetToAuction)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCollector(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AssetToAuctionMapping) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCollector
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AssetToAuctionMapping: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AssetToAuctionMapping: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionId", wireType)
+			}
+			m.AuctionId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AuctionId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetDenoms", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCollector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthCollector
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCollector
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetDenoms = append(m.AssetDenoms, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipCollector(dAtA[iNdEx:])

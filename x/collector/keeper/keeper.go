@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/comdex-official/comdex/x/collector/expected"
 	"github.com/comdex-official/comdex/x/collector/types"
 	
 )
@@ -19,6 +20,7 @@ type (
 		storeKey 	sdk.StoreKey
 		memKey   	sdk.StoreKey
 		paramstore	paramtypes.Subspace
+		asset       expected.AssetKeeper
 		
 	}
 )
@@ -27,6 +29,7 @@ func NewKeeper(
     cdc codec.BinaryCodec,
     storeKey,
     memKey sdk.StoreKey,
+	asset expected.AssetKeeper,
 	ps paramtypes.Subspace,
     
     
@@ -41,6 +44,7 @@ func NewKeeper(
 		cdc:      	cdc,
 		storeKey: 	storeKey,
 		memKey:   	memKey,
+		asset:  asset,
 		paramstore:	ps,
 		
 	}

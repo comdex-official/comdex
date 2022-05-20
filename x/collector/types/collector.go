@@ -1,13 +1,15 @@
 package types
 
-func NewMsgLookupTableRecords(
-	AccumulatorTokenDenom, SecondaryTokenDenom string, SurplusThreshold, DebtThreshold, LockerSavingRate uint64,
-) *AccumulatorLookupTable {
-	return &AccumulatorLookupTable{
-		AccumulatorTokenDenom: AccumulatorTokenDenom,
-		SecondaryTokenDenom:   SecondaryTokenDenom,
-		SurplusThreshold:      SurplusThreshold,
-		DebtThreshold:         DebtThreshold,
-		LockerSavingRate:      LockerSavingRate,
-	}
-}
+// func NewMsgLookupTableRecords(
+// 	AppId uint64, CollectorDenom, SecondaryDenom string, SurplusThreshold, DebtThreshold, LockerSavingRate, lotSize uint64,
+// ) *CollectorLookupTable {
+// 	return &CollectorLookupTable{
+// 		AppId: AppId,
+// 		CollectorDenom: CollectorDenom,
+// 		SecondaryDenom:   SecondaryDenom,
+// 		SurplusThreshold:      SurplusThreshold,
+// 		DebtThreshold:         DebtThreshold,
+// 		LockerSavingRate:      LockerSavingRate,
+// 		LotSize: lotSize,
+// 	}
+// }
