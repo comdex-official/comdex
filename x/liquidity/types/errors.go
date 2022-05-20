@@ -24,4 +24,7 @@ var (
 	ErrDuplicatePairId           = sdkerrors.Register(ModuleName, 16, "duplicate pair id presents in the pair id list")
 	ErrTooSmallOrder             = sdkerrors.Register(ModuleName, 17, "too small order")
 	ErrTooLargePool              = sdkerrors.Register(ModuleName, 18, "too large pool")
+	ErrInvalidPoolId             = sdkerrors.Register(ModuleName, 19, "invalid pool id")
+	ErrNoSoftLockPresent         = sdkerrors.Register(ModuleName, 20, "no soft lock created for given pool")
+	ErrInvalidUnlockAmount       = sdkerrors.Register(ModuleName, 21, "invalid soft unlock amount")
 )

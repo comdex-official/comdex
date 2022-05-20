@@ -522,3 +522,109 @@ func (msg MsgCancelAllOrders) GetOrderer() sdk.AccAddress {
 	}
 	return addr
 }
+
+// NewMsgSoftLock creates a new MsgTokensSoftLock.
+func NewMsgSoftLock(
+	depositor sdk.AccAddress,
+	poolId uint64,
+	softLockCoin sdk.Coin,
+) *MsgTokensSoftLock {
+	return &MsgTokensSoftLock{
+		Depositor:    depositor.String(),
+		PoolId:       poolId,
+		SoftLockCoin: softLockCoin,
+	}
+}
+
+func (msg MsgTokensSoftLock) Route() string { return RouterKey }
+
+func (msg MsgTokensSoftLock) Type() string { return TypeMsgWithdraw }
+
+func (msg MsgTokensSoftLock) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Depositor); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid withdrawer address: %v", err)
+	}
+	if msg.PoolId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pool id must not be 0")
+	}
+	if err := msg.SoftLockCoin.Validate(); err != nil {
+		return err
+	}
+	if !msg.SoftLockCoin.IsPositive() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "coin must be positive")
+	}
+	return nil
+}
+
+func (msg MsgTokensSoftLock) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgTokensSoftLock) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgTokensSoftLock) GetWithdrawer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+// NewMsgSoftUnlock creates a new MsgTokensSoftUnlock.
+func NewMsgSoftUnlock(
+	depositor sdk.AccAddress,
+	poolId uint64,
+	softUnlockCoin sdk.Coin,
+) *MsgTokensSoftUnlock {
+	return &MsgTokensSoftUnlock{
+		Depositor:      depositor.String(),
+		PoolId:         poolId,
+		SoftUnlockCoin: softUnlockCoin,
+	}
+}
+
+func (msg MsgTokensSoftUnlock) Route() string { return RouterKey }
+
+func (msg MsgTokensSoftUnlock) Type() string { return TypeMsgWithdraw }
+
+func (msg MsgTokensSoftUnlock) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Depositor); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid withdrawer address: %v", err)
+	}
+	if msg.PoolId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pool id must not be 0")
+	}
+	if err := msg.SoftUnlockCoin.Validate(); err != nil {
+		return err
+	}
+	if !msg.SoftUnlockCoin.IsPositive() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "coin must be positive")
+	}
+	return nil
+}
+
+func (msg MsgTokensSoftUnlock) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgTokensSoftUnlock) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgTokensSoftUnlock) GetWithdrawer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}

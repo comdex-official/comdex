@@ -107,3 +107,24 @@ func (m msgServer) CancelAllOrders(goCtx context.Context, msg *types.MsgCancelAl
 
 	return &types.MsgCancelAllOrdersResponse{}, nil
 }
+
+func (m msgServer) TokensSoftLock(goCtx context.Context, msg *types.MsgTokensSoftLock) (*types.MsgTokensSoftLockResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if err := m.Keeper.SoftLockTokens(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgTokensSoftLockResponse{}, nil
+}
+
+func (m msgServer) TokensSoftUnlock(goCtx context.Context, msg *types.MsgTokensSoftUnlock) (*types.MsgTokensSoftUnlockResponse, error) {
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if err := m.Keeper.SoftUnlockTokens(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgTokensSoftUnlockResponse{}, nil
+}

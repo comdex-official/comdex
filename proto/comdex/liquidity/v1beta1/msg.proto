@@ -34,6 +34,13 @@ service Msg {
 
   // CancelAllOrders defines a method for cancelling all orders
   rpc CancelAllOrders(MsgCancelAllOrders) returns (MsgCancelAllOrdersResponse);
+
+  // TokensSoftLock defines a method to soft lock the token, for incentivization
+  rpc TokensSoftLock(MsgTokensSoftLock) returns (MsgTokensSoftLockResponse);
+
+  // TokensSoftUnlock defines a method to unlock the soft locked token, for incentivization
+  rpc TokensSoftUnlock(MsgTokensSoftUnlock) returns (MsgTokensSoftUnlockResponse);
+
 }
 
 // MsgCreatePair defines an SDK message for creating a pair.
@@ -180,3 +187,43 @@ message MsgCancelAllOrders {
 
 // MsgCancelAllOrdersResponse defines the Msg/CancelAllOrders response type.
 message MsgCancelAllOrdersResponse {}
+
+
+// MsgSoftLock defines a SDK message for staking coins for incentivisation.
+message MsgTokensSoftLock {
+  option (gogoproto.goproto_getters) = false;
+
+  // depositor defines the bech32-encoded address of the farmer
+  string depositor = 1;
+  uint64 pool_id = 2;
+
+  // soft_lock_coin specifies coins to stake
+  cosmos.base.v1beta1.Coin soft_lock_coin = 3 [
+    (gogoproto.moretags)     = "yaml:\"soft_lock_coin\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable)     = false
+  ];
+}
+
+// MsgSoftLockResponse  defines the Msg/MsgSoftLockResponse response type.
+message MsgTokensSoftLockResponse {}
+
+// MsgSoftUnlock defines a SDK message for performing unstaking of coins from the
+// farming plan.
+message MsgTokensSoftUnlock {
+  option (gogoproto.goproto_getters) = false;
+
+  // depositor defines the bech32-encoded address of the farmer
+  string depositor = 1;
+  uint64 pool_id = 2;
+
+  // soft_unlock_coin specifies coins to stake
+  cosmos.base.v1beta1.Coin soft_unlock_coin = 3 [
+    (gogoproto.moretags)     = "yaml:\"soft_unlock_coin\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable)     = false
+  ];
+}
+
+// MsgSoftUnlockResponse defines the Msg/MsgSoftUnlockResponse response type.
+message MsgTokensSoftUnlockResponse {}

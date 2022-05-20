@@ -35,6 +35,8 @@ func GetTxCmd() *cobra.Command {
 		NewMarketOrderCmd(),
 		NewCancelOrderCmd(),
 		NewCancelAllOrdersCmd(),
+		NewSoftLockTokensCmd(),
+		NewSoftUnlockTokensCmd(),
 	)
 
 	return cmd
@@ -435,6 +437,94 @@ $ %s tx %s cancel-all-orders 1,3 --from mykey
 			}
 
 			msg := types.NewMsgCancelAllOrders(clientCtx.GetFromAddress(), pairIds)
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewSoftLockTokensCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "soft-lock [pool-id] [pool-coin]",
+		Args:  cobra.ExactArgs(2),
+		Short: "soft-lock coins from the specified liquidity pool, to start earning rewards",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`soft-lock coins from the specified liquidity pool,  to start earning rewards
+Example:
+$ %s tx %s soft-lock 1 10000pool1 --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			softLockCoin, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgSoftLock(
+				clientCtx.GetFromAddress(),
+				poolId,
+				softLockCoin,
+			)
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewSoftUnlockTokensCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "soft-unlock [pool-id] [pool-coin]",
+		Args:  cobra.ExactArgs(2),
+		Short: "soft-unlock coins from the specified liquidity pool, to stop receiving rewards",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`soft-unlock coins from the specified liquidity pool,  to stop receiving rewards
+Example:
+$ %s tx %s soft-unlock 1 10000pool1 --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			softUnlockCoin, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgSoftUnlock(
+				clientCtx.GetFromAddress(),
+				poolId,
+				softUnlockCoin,
+			)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
