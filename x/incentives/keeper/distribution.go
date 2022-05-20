@@ -10,17 +10,18 @@ import (
 
 func (k Keeper) GetRewardDistributionData(
 	ctx sdk.Context, gauge types.Gauge, coinToDistribute sdk.Coin, epochCount uint64, epochDuration time.Duration,
-) []types.RewardDistributionDataCollector {
+) ([]types.RewardDistributionDataCollector, error) {
 	gaugeType := gauge.Kind
 
 	var rewardDistributionData = []types.RewardDistributionDataCollector{}
+	var err error = nil
 
 	switch gaugeExtraData := gaugeType.(type) {
 	case *types.Gauge_LiquidityMetaData:
-		rewardDistributionData = k.liquidityKeeper.GetFarmingRewardsData(ctx, *gaugeExtraData.LiquidityMetaData)
+		rewardDistributionData, err = k.liquidityKeeper.GetFarmingRewardsData(ctx, *gaugeExtraData.LiquidityMetaData)
 	}
 
-	return rewardDistributionData
+	return rewardDistributionData, err
 }
 
 func (k Keeper) doDistributionSends(ctx sdk.Context, distrs *types.DistributionInfo) error {
@@ -54,7 +55,11 @@ func (k Keeper) doDistributionSends(ctx sdk.Context, distrs *types.DistributionI
 func (k Keeper) BeginRewardDistributions(
 	ctx sdk.Context, gauge types.Gauge, coinToDistribute sdk.Coin, epochCount uint64, epochDuration time.Duration,
 ) (sdk.Coin, error) {
-	rewardDistributionData := k.GetRewardDistributionData(ctx, gauge, coinToDistribute, epochCount, epochDuration)
+
+	rewardDistributionData, err := k.GetRewardDistributionData(ctx, gauge, coinToDistribute, epochCount, epochDuration)
+	if err != nil {
+		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), err
+	}
 
 	newDistributionInfo := types.DistributionInfo{
 		Addresses: []sdk.AccAddress{},
@@ -69,7 +74,7 @@ func (k Keeper) BeginRewardDistributions(
 		totalDistributionCoinsCalculated.Amount = totalDistributionCoinsCalculated.Amount.Add(distrData.RewardCoin.Amount)
 	}
 
-	err := k.doDistributionSends(ctx, &newDistributionInfo)
+	err = k.doDistributionSends(ctx, &newDistributionInfo)
 	if err != nil {
 		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), err
 	}

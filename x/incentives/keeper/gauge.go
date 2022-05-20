@@ -130,6 +130,7 @@ func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerD
 }
 
 func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.Duration) error {
+	logger := k.Logger(ctx)
 	gaugesForDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, triggerDuration)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrNoGaugeForDuration, "duration : %d", triggerDuration)
@@ -164,7 +165,8 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 
 		coinsDistributed, err := k.BeginRewardDistributions(ctx, gauge, coinToDistribute, ongoingEpochCount, triggerDuration)
 		if err != nil {
-			return err
+			logger.Info(fmt.Sprintf("error occured while reward distribution in BeginRewardDistributions, err : %s", err))
+			continue
 		}
 		gauge.TriggeredCount = ongoingEpochCount
 		gauge.DistributedAmount.Amount = gauge.DistributedAmount.Amount.Add(coinsDistributed.Amount)

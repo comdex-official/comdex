@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"sort"
 	"time"
 
@@ -10,8 +11,15 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, liquidityGaugeData incentivestypes.LiquidtyGaugeMetaData) []incentivestypes.RewardDistributionDataCollector {
-	return []incentivestypes.RewardDistributionDataCollector{}
+func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, liquidityGaugeData incentivestypes.LiquidtyGaugeMetaData) ([]incentivestypes.RewardDistributionDataCollector, error) {
+
+	liquidityProvidersDataForPool, found := k.GetPoolLiquidityProvidersData(ctx, liquidityGaugeData.PoolId)
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrLPDataNotExistsForPool, "data not found for pool id %d", liquidityGaugeData.PoolId)
+	}
+	fmt.Println(liquidityProvidersDataForPool)
+
+	return []incentivestypes.RewardDistributionDataCollector{}, nil
 }
 
 func (k Keeper) ValidateMsgTokensSoftLock(ctx sdk.Context, msg *types.MsgTokensSoftLock) (sdk.AccAddress, error) {

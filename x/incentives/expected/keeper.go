@@ -22,5 +22,5 @@ type BankKeeper interface {
 
 type LiquidityKeeper interface {
 	GetPool(ctx sdk.Context, id uint64) (pool liquiditytypes.Pool, found bool)
-	GetFarmingRewardsData(ctx sdk.Context, liquidityGaugeData types.LiquidtyGaugeMetaData) []types.RewardDistributionDataCollector
+	GetFarmingRewardsData(ctx sdk.Context, liquidityGaugeData types.LiquidtyGaugeMetaData) ([]types.RewardDistributionDataCollector, error)
 }

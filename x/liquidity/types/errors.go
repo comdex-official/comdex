@@ -27,4 +27,5 @@ var (
 	ErrInvalidPoolId             = sdkerrors.Register(ModuleName, 19, "invalid pool id")
 	ErrNoSoftLockPresent         = sdkerrors.Register(ModuleName, 20, "no soft lock created for given pool")
 	ErrInvalidUnlockAmount       = sdkerrors.Register(ModuleName, 21, "invalid soft unlock amount")
+	ErrLPDataNotExistsForPool    = sdkerrors.Register(ModuleName, 22, "liquidity providers data does not exists for givn pool id")
 )
