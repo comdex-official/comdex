@@ -95,17 +95,12 @@ func txRemoveWhitelistAsset() *cobra.Command {
 				return err
 			}
 
-			asset_Id, err := ParseUint64SliceFromString(args[1], ",")
+			asset_Id, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			var newAssetId []uint64
-			for i := range asset_Id {
-				newAssetId = append(newAssetId, asset_Id[i])
-			}
-
-			msg := types.NewMsgRemoveWhitelistAsset(app_mapping_Id, ctx.GetFromAddress(), newAssetId)
+			msg := types.NewMsgRemoveWhitelistAsset(app_mapping_Id, ctx.GetFromAddress(), asset_Id)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},

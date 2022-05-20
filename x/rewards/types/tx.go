@@ -36,7 +36,7 @@ func (m *WhitelistAsset) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgRemoveWhitelistAsset(appMappingId uint64, from sdk.AccAddress, assetId []uint64) *RemoveWhitelistAsset {
+func NewMsgRemoveWhitelistAsset(appMappingId uint64, from sdk.AccAddress, assetId uint64) *RemoveWhitelistAsset {
 	return &RemoveWhitelistAsset{
 		AppMappingId: appMappingId,
 		From:         from.String(),
