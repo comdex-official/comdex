@@ -7,5 +7,5 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
-	k.TriggerAuction(ctx)
+	//k.TriggerAuction(ctx)
 }

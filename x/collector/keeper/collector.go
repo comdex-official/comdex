@@ -3,18 +3,17 @@ package keeper
 import (
 	"github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 )
 
-func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collector types.CollectorData)(error) {
+func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collector types.CollectorData) error {
 
 	if !k.HasAsset(ctx, asset_id) {
 		return types.ErrorAssetDoesNotExist
 	}
-	
+
 	collectorData, found := k.GetAppidToAssetCollectorMapping(ctx, appId)
-	
-	if !found{
+
+	if !found {
 		//create a new instance of AppId To AssetCollectorMapping
 		var collectorNewData types.AppIdToAssetCollectorMapping
 		collectorNewData.AppId = appId
@@ -28,7 +27,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collec
 		newCollector.CollectedOpeningFee = collector.CollectedOpeningFee
 		newCollector.CollectedStabilityFee = collector.CollectedStabilityFee
 		newCollector.LiquidationRewardsCollected = collector.LiquidationRewardsCollected
-		newCollector.NetFeesCollected =  newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
+		newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
 		newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 		assetIdCollect.Collector= &newCollector
 		
@@ -36,27 +35,27 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collec
 	
 
 		k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
-	}else{
+	} else {
 
 		var check = 0 // makes it 1 if assetId does not exists for appId
 
 		for _, data := range collectorData.AssetCollector {
 
-			if data.AssetId != asset_id{ //if does not exist then create a new instance
-				check ++
+			if data.AssetId != asset_id { //if does not exist then create a new instance
+				check++
 				var collectorNewData types.AppIdToAssetCollectorMapping
 				collectorNewData.AppId = appId
-		
+
 				var assetIdCollect types.AssetIdCollectorMappping
 				assetIdCollect.AssetId = asset_id
-		
+
 				var newCollector types.CollectorData
-		
+
 				newCollector.CollectedClosingFee = collector.CollectedClosingFee
 				newCollector.CollectedOpeningFee = collector.CollectedOpeningFee
 				newCollector.CollectedStabilityFee = collector.CollectedStabilityFee
 				newCollector.LiquidationRewardsCollected = collector.LiquidationRewardsCollected
-				newCollector.NetFeesCollected =  newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
+				newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
 				newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 				assetIdCollect.Collector= &newCollector
 				
@@ -74,17 +73,17 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collec
 		if check == 0 {
 			var collectorNewData types.AppIdToAssetCollectorMapping
 			collectorNewData.AppId = appId
-	
+
 			var assetIdCollect types.AssetIdCollectorMappping
 			assetIdCollect.AssetId = asset_id
-	
+
 			var newCollector types.CollectorData
-	
+
 			newCollector.CollectedClosingFee = collector.CollectedClosingFee
 			newCollector.CollectedOpeningFee = collector.CollectedOpeningFee
 			newCollector.CollectedStabilityFee = collector.CollectedStabilityFee
 			newCollector.LiquidationRewardsCollected = collector.LiquidationRewardsCollected
-			newCollector.NetFeesCollected =  newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
+			newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
 			newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 			assetIdCollect.Collector= &newCollector
 			
@@ -125,43 +124,41 @@ func (k *Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, app_id uint64)
 	return appAssetCollectorData, true
 }
 
-
 //////////////////////////////111111111111111111111
-
 
 func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.CollectorLookupTable) error {
 	for _, msg := range records {
-		if !k.HasAssetForDenom(ctx, msg.CollectorDenom){
+		if !k.HasAssetForDenom(ctx, msg.CollectorDenom) {
 			return types.ErrorAssetDoesNotExist
 		}
-		if !k.HasAssetForDenom(ctx, msg.SecondaryDenom){
+		if !k.HasAssetForDenom(ctx, msg.SecondaryDenom) {
 			return types.ErrorAssetDoesNotExist
 		}
-		if msg.CollectorDenom == msg.SecondaryDenom{
+		if msg.CollectorDenom == msg.SecondaryDenom {
 			return types.ErrorDuplicateAssetDenoms
 		}
-		appDenom, found :=k.GetAppToDenomsMapping(ctx, msg.AppId)
-		if found{
+		appDenom, found := k.GetAppToDenomsMapping(ctx, msg.AppId)
+		if found {
 			//check if assetdenom already exists
 			var check = 0
 			for _, data := range appDenom.AssetDenoms {
-				if data == msg.CollectorDenom{
+				if data == msg.CollectorDenom {
 					check++
 				}
 			}
-			if check > 0{
+			if check > 0 {
 				return types.ErrorDuplicateCollectorDenomForApp
 			}
 			// if denom is new then append
 			appDenom.AssetDenoms = append(appDenom.AssetDenoms, msg.CollectorDenom)
-			k.SetAppToDenomsMapping(ctx,msg.AppId,appDenom)
+			k.SetAppToDenomsMapping(ctx, msg.AppId, appDenom)
 
-		}else{
+		} else {
 			//initialize the mappping
 			var appDenomNew types.AppToDenomsMapping
 			appDenomNew.AppId = msg.AppId
 			appDenomNew.AssetDenoms = append(appDenomNew.AssetDenoms, msg.CollectorDenom)
-			k.SetAppToDenomsMapping(ctx,msg.AppId,appDenomNew)
+			k.SetAppToDenomsMapping(ctx, msg.AppId, appDenomNew)
 		}
 		
 			var Collector = types.CollectorLookupTable{
@@ -181,11 +178,10 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 			
 		var(
 			store = ctx.KVStore(k.storeKey)
-			key = types.CollectorLookupTableMappingKey(msg.AppId)
+			key   = types.CollectorLookupTableMappingKey(msg.AppId)
 			value = k.cdc.MustMarshal(&accmLookup)
 		)
-		
-		
+
 		store.Set(key, value)
 	}
 	return nil
@@ -217,6 +213,7 @@ func (k *Keeper) SetAppToDenomsMapping(ctx sdk.Context, app_id uint64, appToDeno
 
 	store.Set(key, value)
 }
+
 // get denoms for appId in Collector LookupTable
 func (k *Keeper) GetAppToDenomsMapping(ctx sdk.Context, AppId uint64) (appToDenom types.AppToDenomsMapping, found bool) {
 	var (
