@@ -2,6 +2,9 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -31,6 +34,84 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	// this line is used by starport scaffolding # 1
+	cmd.AddCommand(
+		txWhitelistAsset(),
+		txRemoveWhitelistAsset(),
+	)
 
-	return cmd 
+	return cmd
+}
+
+func txWhitelistAsset() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "whitelist-asset [app_mapping_Id] [asset_Id]",
+		Short: "Add Whitelisted assetId for Locker savings rewards",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			app_mapping_Id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			asset_Id, err := ParseUint64SliceFromString(args[1], ",")
+			if err != nil {
+				return err
+			}
+
+			var newAssetId []uint64
+			for i := range asset_Id {
+				newAssetId = append(newAssetId, asset_Id[i])
+			}
+
+			msg := types.NewMsgWhitelistAsset(app_mapping_Id, ctx.GetFromAddress(), newAssetId)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
+func txRemoveWhitelistAsset() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "remove-whitelist-asset [app_mapping_Id] [asset_Id]",
+		Short: "Remove Whitelisted assetId for Locker savings rewards",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			app_mapping_Id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			asset_Id, err := ParseUint64SliceFromString(args[1], ",")
+			if err != nil {
+				return err
+			}
+
+			var newAssetId []uint64
+			for i := range asset_Id {
+				newAssetId = append(newAssetId, asset_Id[i])
+			}
+
+			msg := types.NewMsgRemoveWhitelistAsset(app_mapping_Id, ctx.GetFromAddress(), newAssetId)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
 }

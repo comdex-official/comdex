@@ -44,3 +44,23 @@ func NewKeeper(
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
+
+func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingId uint64, assetId []uint64) error {
+
+	internalRewards := types.InternalRewards{
+		App_mapping_ID: appMappingId,
+		Asset_ID:       assetId,
+	}
+
+	k.SetReward(ctx, internalRewards)
+	return nil
+}
+
+func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingId uint64, assetId []uint64) error {
+
+	return nil
+}
+
+func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
+	return ctx.KVStore(k.storeKey)
+}

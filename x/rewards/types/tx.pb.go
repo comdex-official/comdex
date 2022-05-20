@@ -6,10 +6,15 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
+	io "io"
 	math "math"
+	math_bits "math/bits"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -23,19 +28,232 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type WhitelistAsset struct {
+	AppMappingId uint64   `protobuf:"varint,1,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	From         string   `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AssetId      []uint64 `protobuf:"varint,3,rep,packed,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+}
+
+func (m *WhitelistAsset) Reset()         { *m = WhitelistAsset{} }
+func (m *WhitelistAsset) String() string { return proto.CompactTextString(m) }
+func (*WhitelistAsset) ProtoMessage()    {}
+func (*WhitelistAsset) Descriptor() ([]byte, []int) {
+	return fileDescriptor_99c3f80c2e1e4c11, []int{0}
+}
+func (m *WhitelistAsset) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *WhitelistAsset) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_WhitelistAsset.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *WhitelistAsset) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WhitelistAsset.Merge(m, src)
+}
+func (m *WhitelistAsset) XXX_Size() int {
+	return m.Size()
+}
+func (m *WhitelistAsset) XXX_DiscardUnknown() {
+	xxx_messageInfo_WhitelistAsset.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WhitelistAsset proto.InternalMessageInfo
+
+func (m *WhitelistAsset) GetAppMappingId() uint64 {
+	if m != nil {
+		return m.AppMappingId
+	}
+	return 0
+}
+
+func (m *WhitelistAsset) GetFrom() string {
+	if m != nil {
+		return m.From
+	}
+	return ""
+}
+
+func (m *WhitelistAsset) GetAssetId() []uint64 {
+	if m != nil {
+		return m.AssetId
+	}
+	return nil
+}
+
+type RemoveWhitelistAsset struct {
+	AppMappingId uint64   `protobuf:"varint,1,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	From         string   `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AssetId      []uint64 `protobuf:"varint,3,rep,packed,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+}
+
+func (m *RemoveWhitelistAsset) Reset()         { *m = RemoveWhitelistAsset{} }
+func (m *RemoveWhitelistAsset) String() string { return proto.CompactTextString(m) }
+func (*RemoveWhitelistAsset) ProtoMessage()    {}
+func (*RemoveWhitelistAsset) Descriptor() ([]byte, []int) {
+	return fileDescriptor_99c3f80c2e1e4c11, []int{1}
+}
+func (m *RemoveWhitelistAsset) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *RemoveWhitelistAsset) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_RemoveWhitelistAsset.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *RemoveWhitelistAsset) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoveWhitelistAsset.Merge(m, src)
+}
+func (m *RemoveWhitelistAsset) XXX_Size() int {
+	return m.Size()
+}
+func (m *RemoveWhitelistAsset) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoveWhitelistAsset.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoveWhitelistAsset proto.InternalMessageInfo
+
+func (m *RemoveWhitelistAsset) GetAppMappingId() uint64 {
+	if m != nil {
+		return m.AppMappingId
+	}
+	return 0
+}
+
+func (m *RemoveWhitelistAsset) GetFrom() string {
+	if m != nil {
+		return m.From
+	}
+	return ""
+}
+
+func (m *RemoveWhitelistAsset) GetAssetId() []uint64 {
+	if m != nil {
+		return m.AssetId
+	}
+	return nil
+}
+
+type MsgWhitelistAssetResponse struct {
+}
+
+func (m *MsgWhitelistAssetResponse) Reset()         { *m = MsgWhitelistAssetResponse{} }
+func (m *MsgWhitelistAssetResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgWhitelistAssetResponse) ProtoMessage()    {}
+func (*MsgWhitelistAssetResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_99c3f80c2e1e4c11, []int{2}
+}
+func (m *MsgWhitelistAssetResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgWhitelistAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgWhitelistAssetResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgWhitelistAssetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgWhitelistAssetResponse.Merge(m, src)
+}
+func (m *MsgWhitelistAssetResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgWhitelistAssetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgWhitelistAssetResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgWhitelistAssetResponse proto.InternalMessageInfo
+
+type MsgRemoveWhitelistAssetResponse struct {
+}
+
+func (m *MsgRemoveWhitelistAssetResponse) Reset()         { *m = MsgRemoveWhitelistAssetResponse{} }
+func (m *MsgRemoveWhitelistAssetResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveWhitelistAssetResponse) ProtoMessage()    {}
+func (*MsgRemoveWhitelistAssetResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_99c3f80c2e1e4c11, []int{3}
+}
+func (m *MsgRemoveWhitelistAssetResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRemoveWhitelistAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRemoveWhitelistAssetResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRemoveWhitelistAssetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveWhitelistAssetResponse.Merge(m, src)
+}
+func (m *MsgRemoveWhitelistAssetResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRemoveWhitelistAssetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveWhitelistAssetResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRemoveWhitelistAssetResponse proto.InternalMessageInfo
+
+func init() {
+	proto.RegisterType((*WhitelistAsset)(nil), "comdex.rewards.v1beta1.WhitelistAsset")
+	proto.RegisterType((*RemoveWhitelistAsset)(nil), "comdex.rewards.v1beta1.RemoveWhitelistAsset")
+	proto.RegisterType((*MsgWhitelistAssetResponse)(nil), "comdex.rewards.v1beta1.MsgWhitelistAssetResponse")
+	proto.RegisterType((*MsgRemoveWhitelistAssetResponse)(nil), "comdex.rewards.v1beta1.MsgRemoveWhitelistAssetResponse")
+}
+
 func init() { proto.RegisterFile("comdex/rewards/v1beta1/tx.proto", fileDescriptor_99c3f80c2e1e4c11) }
 
 var fileDescriptor_99c3f80c2e1e4c11 = []byte{
-	// 141 bytes of a gzipped FileDescriptorProto
+	// 365 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x4f, 0xce, 0xcf, 0x4d,
 	0x49, 0xad, 0xd0, 0x2f, 0x4a, 0x2d, 0x4f, 0x2c, 0x4a, 0x29, 0xd6, 0x2f, 0x33, 0x4c, 0x4a, 0x2d,
 	0x49, 0x34, 0xd4, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x83, 0x28, 0xd0,
-	0x83, 0x2a, 0xd0, 0x83, 0x2a, 0x30, 0x62, 0xe5, 0x62, 0xf6, 0x2d, 0x4e, 0x77, 0xf2, 0x3e, 0xf1,
-	0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8,
-	0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0xc3, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24,
-	0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0x88, 0x19, 0xba, 0xf9, 0x69, 0x69, 0x99, 0xc9, 0x99, 0x89, 0x39,
-	0x50, 0xbe, 0x3e, 0xc2, 0xda, 0x92, 0xca, 0x82, 0xd4, 0xe2, 0x24, 0x36, 0xb0, 0x95, 0xc6, 0x80,
-	0x00, 0x00, 0x00, 0xff, 0xff, 0x04, 0xcf, 0x4a, 0x0c, 0x95, 0x00, 0x00, 0x00,
+	0x83, 0x2a, 0xd0, 0x83, 0x2a, 0x90, 0x12, 0x49, 0xcf, 0x4f, 0xcf, 0x07, 0x2b, 0xd1, 0x07, 0xb1,
+	0x20, 0xaa, 0x95, 0x96, 0x31, 0x72, 0xf1, 0x85, 0x67, 0x64, 0x96, 0xa4, 0xe6, 0x64, 0x16, 0x97,
+	0x38, 0x16, 0x17, 0xa7, 0x96, 0x08, 0xd9, 0x73, 0xf1, 0x25, 0x16, 0x14, 0xc4, 0xe7, 0x26, 0x16,
+	0x14, 0x64, 0xe6, 0xa5, 0xc7, 0x67, 0xa6, 0x48, 0x30, 0x2a, 0x30, 0x6a, 0xb0, 0x38, 0x49, 0x7e,
+	0xba, 0x27, 0x2f, 0x5a, 0x99, 0x98, 0x9b, 0x63, 0xa5, 0x84, 0x2a, 0xaf, 0x14, 0xc4, 0x93, 0x58,
+	0x50, 0xe0, 0x0b, 0xe1, 0x7b, 0xa6, 0x08, 0x29, 0x73, 0xb1, 0xa4, 0x15, 0xe5, 0xe7, 0x4a, 0x30,
+	0x29, 0x30, 0x6a, 0x70, 0x3a, 0xf1, 0x7f, 0xba, 0x27, 0xcf, 0x0d, 0xd1, 0x06, 0x12, 0x55, 0x0a,
+	0x02, 0x4b, 0x0a, 0xe9, 0x71, 0x71, 0x24, 0x82, 0xac, 0x03, 0x99, 0xcf, 0xac, 0xc0, 0xac, 0xc1,
+	0xe2, 0x24, 0xfc, 0xe9, 0x9e, 0x3c, 0x3f, 0xd4, 0x7c, 0xa8, 0x8c, 0x52, 0x10, 0x3b, 0x98, 0xe9,
+	0x99, 0xa2, 0xb4, 0x86, 0x91, 0x4b, 0x24, 0x28, 0x35, 0x37, 0xbf, 0x2c, 0x75, 0x48, 0x38, 0x57,
+	0x9a, 0x4b, 0xd2, 0xb7, 0x38, 0x1d, 0xd5, 0xa9, 0x41, 0xa9, 0xc5, 0x05, 0xf9, 0x79, 0xc5, 0xa9,
+	0x4a, 0x8a, 0x5c, 0xf2, 0xbe, 0xc5, 0xe9, 0xd8, 0x7c, 0x03, 0x53, 0x62, 0xf4, 0x9c, 0x91, 0x8b,
+	0xd9, 0xb7, 0x38, 0x5d, 0x28, 0x8d, 0x8b, 0x13, 0xae, 0x42, 0x48, 0x4d, 0x0f, 0x7b, 0xdc, 0xea,
+	0xa1, 0x1a, 0x22, 0x65, 0x88, 0x4b, 0x1d, 0x4e, 0x27, 0x09, 0x55, 0x70, 0xf1, 0xa3, 0xb9, 0x47,
+	0x48, 0x07, 0x97, 0x29, 0xd8, 0x1c, 0x2e, 0x65, 0x8e, 0xc7, 0x4e, 0x7c, 0x3e, 0x75, 0xf2, 0x3e,
+	0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63,
+	0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0xc3, 0xf4, 0xcc, 0x92, 0x8c, 0xd2,
+	0x24, 0x90, 0xc1, 0xfa, 0x10, 0xc3, 0x75, 0xf3, 0xd3, 0xd2, 0x32, 0x93, 0x33, 0x13, 0x73, 0xa0,
+	0x7c, 0x7d, 0x44, 0x3e, 0x28, 0xa9, 0x2c, 0x48, 0x2d, 0x4e, 0x62, 0x03, 0xa7, 0x6a, 0x63, 0x40,
+	0x00, 0x00, 0x00, 0xff, 0xff, 0x76, 0xef, 0xa7, 0x6a, 0x26, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -50,6 +268,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	Whitelist(ctx context.Context, in *WhitelistAsset, opts ...grpc.CallOption) (*MsgWhitelistAssetResponse, error)
+	RemoveWhitelist(ctx context.Context, in *RemoveWhitelistAsset, opts ...grpc.CallOption) (*MsgRemoveWhitelistAssetResponse, error)
 }
 
 type msgClient struct {
@@ -60,22 +280,866 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
+func (c *msgClient) Whitelist(ctx context.Context, in *WhitelistAsset, opts ...grpc.CallOption) (*MsgWhitelistAssetResponse, error) {
+	out := new(MsgWhitelistAssetResponse)
+	err := c.cc.Invoke(ctx, "/comdex.rewards.v1beta1.Msg/Whitelist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RemoveWhitelist(ctx context.Context, in *RemoveWhitelistAsset, opts ...grpc.CallOption) (*MsgRemoveWhitelistAssetResponse, error) {
+	out := new(MsgRemoveWhitelistAssetResponse)
+	err := c.cc.Invoke(ctx, "/comdex.rewards.v1beta1.Msg/RemoveWhitelist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	Whitelist(context.Context, *WhitelistAsset) (*MsgWhitelistAssetResponse, error)
+	RemoveWhitelist(context.Context, *RemoveWhitelistAsset) (*MsgRemoveWhitelistAssetResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
+func (*UnimplementedMsgServer) Whitelist(ctx context.Context, req *WhitelistAsset) (*MsgWhitelistAssetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Whitelist not implemented")
+}
+func (*UnimplementedMsgServer) RemoveWhitelist(ctx context.Context, req *RemoveWhitelistAsset) (*MsgRemoveWhitelistAssetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveWhitelist not implemented")
+}
+
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
+}
+
+func _Msg_Whitelist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WhitelistAsset)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).Whitelist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.rewards.v1beta1.Msg/Whitelist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).Whitelist(ctx, req.(*WhitelistAsset))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RemoveWhitelist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveWhitelistAsset)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RemoveWhitelist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.rewards.v1beta1.Msg/RemoveWhitelist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RemoveWhitelist(ctx, req.(*RemoveWhitelistAsset))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "comdex.rewards.v1beta1.Msg",
 	HandlerType: (*MsgServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams:     []grpc.StreamDesc{},
-	Metadata:    "comdex/rewards/v1beta1/tx.proto",
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Whitelist",
+			Handler:    _Msg_Whitelist_Handler,
+		},
+		{
+			MethodName: "RemoveWhitelist",
+			Handler:    _Msg_RemoveWhitelist_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "comdex/rewards/v1beta1/tx.proto",
 }
+
+func (m *WhitelistAsset) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *WhitelistAsset) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *WhitelistAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AssetId) > 0 {
+		dAtA2 := make([]byte, len(m.AssetId)*10)
+		var j1 int
+		for _, num := range m.AssetId {
+			for num >= 1<<7 {
+				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j1++
+			}
+			dAtA2[j1] = uint8(num)
+			j1++
+		}
+		i -= j1
+		copy(dAtA[i:], dAtA2[:j1])
+		i = encodeVarintTx(dAtA, i, uint64(j1))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.AppMappingId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *RemoveWhitelistAsset) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *RemoveWhitelistAsset) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *RemoveWhitelistAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AssetId) > 0 {
+		dAtA4 := make([]byte, len(m.AssetId)*10)
+		var j3 int
+		for _, num := range m.AssetId {
+			for num >= 1<<7 {
+				dAtA4[j3] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j3++
+			}
+			dAtA4[j3] = uint8(num)
+			j3++
+		}
+		i -= j3
+		copy(dAtA[i:], dAtA4[:j3])
+		i = encodeVarintTx(dAtA, i, uint64(j3))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.AppMappingId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgWhitelistAssetResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgWhitelistAssetResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgWhitelistAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRemoveWhitelistAssetResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRemoveWhitelistAssetResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRemoveWhitelistAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
+	offset -= sovTx(v)
+	base := offset
+	for v >= 1<<7 {
+		dAtA[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	dAtA[offset] = uint8(v)
+	return base
+}
+func (m *WhitelistAsset) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AppMappingId != 0 {
+		n += 1 + sovTx(uint64(m.AppMappingId))
+	}
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.AssetId) > 0 {
+		l = 0
+		for _, e := range m.AssetId {
+			l += sovTx(uint64(e))
+		}
+		n += 1 + sovTx(uint64(l)) + l
+	}
+	return n
+}
+
+func (m *RemoveWhitelistAsset) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AppMappingId != 0 {
+		n += 1 + sovTx(uint64(m.AppMappingId))
+	}
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.AssetId) > 0 {
+		l = 0
+		for _, e := range m.AssetId {
+			l += sovTx(uint64(e))
+		}
+		n += 1 + sovTx(uint64(l)) + l
+	}
+	return n
+}
+
+func (m *MsgWhitelistAssetResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgRemoveWhitelistAssetResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func sovTx(x uint64) (n int) {
+	return (math_bits.Len64(x|1) + 6) / 7
+}
+func sozTx(x uint64) (n int) {
+	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *WhitelistAsset) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: WhitelistAsset: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: WhitelistAsset: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+			}
+			m.AppMappingId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppMappingId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowTx
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.AssetId = append(m.AssetId, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowTx
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthTx
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthTx
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.AssetId) == 0 {
+					m.AssetId = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowTx
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.AssetId = append(m.AssetId, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *RemoveWhitelistAsset) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RemoveWhitelistAsset: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RemoveWhitelistAsset: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+			}
+			m.AppMappingId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppMappingId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowTx
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.AssetId = append(m.AssetId, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowTx
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthTx
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthTx
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.AssetId) == 0 {
+					m.AssetId = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowTx
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.AssetId = append(m.AssetId, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgWhitelistAssetResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgWhitelistAssetResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgWhitelistAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRemoveWhitelistAssetResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRemoveWhitelistAssetResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRemoveWhitelistAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipTx(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
+	iNdEx := 0
+	depth := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if dAtA[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+		case 1:
+			iNdEx += 8
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if length < 0 {
+				return 0, ErrInvalidLengthTx
+			}
+			iNdEx += length
+		case 3:
+			depth++
+		case 4:
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupTx
+			}
+			depth--
+		case 5:
+			iNdEx += 4
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthTx
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
+	}
+	return 0, io.ErrUnexpectedEOF
+}
+
+var (
+	ErrInvalidLengthTx        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowTx          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupTx = fmt.Errorf("proto: unexpected end of group")
+)

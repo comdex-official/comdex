@@ -1,13 +1,43 @@
 syntax = "proto3";
 package comdex.rewards.v1beta1;
 
-// this line is used by starport scaffolding # proto/tx/import
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 
-// Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+  rpc Whitelist(WhitelistAsset) returns (MsgWhitelistAssetResponse);
+  rpc RemoveWhitelist(RemoveWhitelistAsset) returns (MsgRemoveWhitelistAssetResponse);
 }
 
-// this line is used by starport scaffolding # proto/tx/message
+message WhitelistAsset {
+  uint64 app_mapping_id   = 1 [
+    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
+  ];
+
+  string from    = 2 [
+    (gogoproto.moretags) = "yaml:\"from\""
+  ];
+
+  repeated uint64 asset_id = 3 [
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+}
+
+message RemoveWhitelistAsset {
+  uint64 app_mapping_id   = 1 [
+    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
+  ];
+
+  string from    = 2 [
+    (gogoproto.moretags) = "yaml:\"from\""
+  ];
+
+  repeated uint64 asset_id = 3 [
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+}
+
+message MsgWhitelistAssetResponse {}
+
+message MsgRemoveWhitelistAssetResponse {}
