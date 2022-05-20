@@ -18,7 +18,7 @@ func (k Keeper) GetRewardDistributionData(
 
 	switch gaugeExtraData := gaugeType.(type) {
 	case *types.Gauge_LiquidityMetaData:
-		rewardDistributionData, err = k.liquidityKeeper.GetFarmingRewardsData(ctx, *gaugeExtraData.LiquidityMetaData)
+		rewardDistributionData, err = k.liquidityKeeper.GetFarmingRewardsData(ctx, coinToDistribute, *gaugeExtraData.LiquidityMetaData)
 	}
 
 	return rewardDistributionData, err

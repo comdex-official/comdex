@@ -11,7 +11,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, liquidityGaugeData incentivestypes.LiquidtyGaugeMetaData) ([]incentivestypes.RewardDistributionDataCollector, error) {
+func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinToDistribute sdk.Coin, liquidityGaugeData incentivestypes.LiquidtyGaugeMetaData) ([]incentivestypes.RewardDistributionDataCollector, error) {
 
 	liquidityProvidersDataForPool, found := k.GetPoolLiquidityProvidersData(ctx, liquidityGaugeData.PoolId)
 	if !found {
