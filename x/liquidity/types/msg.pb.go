@@ -689,7 +689,7 @@ func (m *MsgCancelAllOrdersResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCancelAllOrdersResponse proto.InternalMessageInfo
 
-// MsgSoftLock defines a SDK message for staking coins for incentivisation.
+// MsgTokensSoftLock defines a SDK message for soft locking coins (i.e without bonding) for incentivisation.
 type MsgTokensSoftLock struct {
 	// depositor defines the bech32-encoded address of the farmer
 	Depositor string `protobuf:"bytes,1,opt,name=depositor,proto3" json:"depositor,omitempty"`
@@ -731,7 +731,7 @@ func (m *MsgTokensSoftLock) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgTokensSoftLock proto.InternalMessageInfo
 
-// MsgSoftLockResponse  defines the Msg/MsgSoftLockResponse response type.
+// MsgTokensSoftLockResponse  defines the Msg/MsgTokensSoftLockResponse response type.
 type MsgTokensSoftLockResponse struct {
 }
 
@@ -768,8 +768,7 @@ func (m *MsgTokensSoftLockResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgTokensSoftLockResponse proto.InternalMessageInfo
 
-// MsgSoftUnlock defines a SDK message for performing unstaking of coins from the
-// farming plan.
+// MsgTokensSoftUnlock defines a SDK message for performing unlocking of the soft locked coins
 type MsgTokensSoftUnlock struct {
 	// depositor defines the bech32-encoded address of the farmer
 	Depositor string `protobuf:"bytes,1,opt,name=depositor,proto3" json:"depositor,omitempty"`
@@ -811,7 +810,7 @@ func (m *MsgTokensSoftUnlock) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgTokensSoftUnlock proto.InternalMessageInfo
 
-// MsgSoftUnlockResponse defines the Msg/MsgSoftUnlockResponse response type.
+// MsgTokensSoftUnlockResponse defines the Msg/MsgTokensSoftUnlockResponse response type.
 type MsgTokensSoftUnlockResponse struct {
 }
 

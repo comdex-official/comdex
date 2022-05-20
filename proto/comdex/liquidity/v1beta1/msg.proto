@@ -189,7 +189,7 @@ message MsgCancelAllOrders {
 message MsgCancelAllOrdersResponse {}
 
 
-// MsgSoftLock defines a SDK message for staking coins for incentivisation.
+// MsgTokensSoftLock defines a SDK message for soft locking coins (i.e without bonding) for incentivisation.
 message MsgTokensSoftLock {
   option (gogoproto.goproto_getters) = false;
 
@@ -205,11 +205,10 @@ message MsgTokensSoftLock {
   ];
 }
 
-// MsgSoftLockResponse  defines the Msg/MsgSoftLockResponse response type.
+// MsgTokensSoftLockResponse  defines the Msg/MsgTokensSoftLockResponse response type.
 message MsgTokensSoftLockResponse {}
 
-// MsgSoftUnlock defines a SDK message for performing unstaking of coins from the
-// farming plan.
+// MsgTokensSoftUnlock defines a SDK message for performing unlocking of the soft locked coins
 message MsgTokensSoftUnlock {
   option (gogoproto.goproto_getters) = false;
 
@@ -225,5 +224,5 @@ message MsgTokensSoftUnlock {
   ];
 }
 
-// MsgSoftUnlockResponse defines the Msg/MsgSoftUnlockResponse response type.
+// MsgTokensSoftUnlockResponse defines the Msg/MsgTokensSoftUnlockResponse response type.
 message MsgTokensSoftUnlockResponse {}
