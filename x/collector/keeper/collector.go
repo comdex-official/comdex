@@ -202,6 +202,38 @@ func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collec
 	return collectorLookup, true
 }
 
+func (k *Keeper) GetCollectorLookupByAsset(ctx sdk.Context, app_id, asset_id uint64) (collectorLookup types.CollectorLookup, found bool) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.CollectorLookupTableMappingKey(app_id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return collectorLookup, false
+	}
+
+	k.cdc.MustUnmarshal(value, &collectorLookup)
+
+	var newCollectorLoopkup types.CollectorLookup
+	var assetRateInfo types.CollectorLookupTable
+	for _, msg := range collectorLookup.AssetrateInfo {
+		if msg.CollectorAssetId == asset_id {
+			newCollectorLoopkup.AppId = msg.AppId
+			assetRateInfo.AppId = msg.AppId
+			assetRateInfo.CollectorAssetId = msg.CollectorAssetId
+			assetRateInfo.SecondaryAssetId = msg.SecondaryAssetId
+			assetRateInfo.SurplusThreshold = msg.SurplusThreshold
+			assetRateInfo.DebtThreshold = msg.DebtThreshold
+			assetRateInfo.LockerSavingRate = msg.LockerSavingRate
+			assetRateInfo.LotSize = msg.LotSize
+			assetRateInfo.BidFactor = msg.BidFactor
+			newCollectorLoopkup.AssetrateInfo = append(newCollectorLoopkup.AssetrateInfo, &assetRateInfo)
+		}
+	}
+	return newCollectorLoopkup, true
+}
+
 // set denoms for appId in Collector LookupTable
 func (k *Keeper) SetAppToDenomsMapping(ctx sdk.Context, app_id uint64, appToDenom types.AppToDenomsMapping) {
 	var (
@@ -257,4 +289,42 @@ func (k *Keeper) GetAppIdToAuctionMappingForAsset(ctx sdk.Context, app_id uint64
 
 	k.cdc.MustUnmarshal(value, &appAssetAuctionData)
 	return appAssetAuctionData, true
+}
+
+////////////////////////////////////333333333333333
+
+func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.AppIdToAuctionLookupTable) error {
+	for _, msg := range records {
+		var appAuction = types.AppIdToAuctionLookupTable{
+			AppId: msg.AppId,
+			SurplusAuction: msg.SurplusAuction,
+			DebtAuction: msg.DebtAuction,
+
+		}
+		var (
+			store = ctx.KVStore(k.storeKey)
+			key   = types.AppIdToAuctionMappingKey(msg.AppId)
+			value = k.cdc.MustMarshal(&appAuction)
+		)
+
+	store.Set(key, value)
+
+	}
+	return nil
+}
+
+
+func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.AppIdToAuctionLookupTable, found bool) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.AppIdToAuctionMappingKey(app_id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return appIdToAuctionData, false
+	}
+
+	k.cdc.MustUnmarshal(value, &appIdToAuctionData)
+	return appIdToAuctionData, true
 }

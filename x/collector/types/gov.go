@@ -37,3 +37,24 @@ func (p *LookupTableParams) ValidateBasic() error {
 	}
 	return nil
 }
+
+func NewAuctionLookupTableProposal(title, description string, appIdToAuctionLookup []AppIdToAuctionLookupTable) govtypes.Content {
+	return &AuctionControlByAppIdProposal{
+		Title:           title,
+		Description:     description,
+		AppIdToAuctionLookup: appIdToAuctionLookup,
+	}
+}
+
+func (p *AuctionControlByAppIdProposal) ProposalRoute() string { return RouterKey }
+
+func (p *AuctionControlByAppIdProposal) ProposalType() string { return ProposalLookupTableParams }
+
+func (p *AuctionControlByAppIdProposal) ValidateBasic() error {
+
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -2,7 +2,6 @@ syntax = "proto3";
 package comdex.collector.v1beta1;
 
 import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
 
 
 // this line is used by starport scaffolding # genesis/proto/import
@@ -60,7 +59,9 @@ message CollectorLookupTable {
   (gogoproto.moretags) = "yaml:\"surplus_threshold\""];
   uint64 debt_threshold = 5 [
   (gogoproto.moretags) = "yaml:\"debt_threshold\""];
-  uint64 locker_saving_rate = 6 [(gogoproto.moretags) = "yaml:\"locker_saving_rate\""];
+  string locker_saving_rate = 6 [
+  (gogoproto.moretags) = "yaml:\"locker_saving_rate\"",
+  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
   uint64 lot_size = 7 [
   (gogoproto.moretags) = "yaml:\"lot_size\""];
   string bid_factor = 8 [
@@ -93,3 +94,9 @@ message AssetToAuctionMapping {
 }
 
 ////////////////////////////////////////////////////////33333333333333
+
+message AppIdToAuctionLookupTable {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  bool surplus_auction = 2 [(gogoproto.moretags) = "yaml:\"surplus_auction\""];
+  bool debt_auction = 3 [(gogoproto.moretags) = "yaml:\"debt_auction\""];
+}

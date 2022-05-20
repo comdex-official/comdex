@@ -31,6 +31,8 @@ func NewLookupTableParamsHandlers(k keeper.Keeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *types.LookupTableParams:
 			return handleLookupTableParamsProposal(ctx, k, c)
+		case *types.AuctionControlByAppIdProposal:
+			return HandleProposalLookupAppToAuction(ctx, k, c)
 
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
@@ -40,4 +42,9 @@ func NewLookupTableParamsHandlers(k keeper.Keeper) govtypes.Handler {
 
 func handleLookupTableParamsProposal(ctx sdk.Context, k keeper.Keeper, p *types.LookupTableParams) error {
 	return k.HandleProposalLookupTableParams(ctx, p)
+}
+
+
+func HandleProposalLookupAppToAuction(ctx sdk.Context, k keeper.Keeper, p *types.AuctionControlByAppIdProposal) error {
+	return k.HandleProposalLookupAppToAuction(ctx, p)
 }
