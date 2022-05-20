@@ -32,7 +32,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collec
 		newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 		assetIdCollect.Collector= &newCollector
 		
-		append(collectorNewData.AssetCollector, assetIdCollect)
+		collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
 	
 
 		k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
@@ -60,7 +60,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collec
 				newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 				assetIdCollect.Collector= &newCollector
 				
-				append(collectorNewData.AssetCollector, assetIdCollect)
+				collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
 			
 		
 				k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
@@ -88,7 +88,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collec
 			newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 			assetIdCollect.Collector= &newCollector
 			
-			append(collectorNewData.AssetCollector, assetIdCollect)
+			collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
 	
 			
 			k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
@@ -172,8 +172,11 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 				DebtThreshold: msg.DebtThreshold,
 				LockerSavingRate: msg.LockerSavingRate,
 				LotSize: msg.LotSize,
+				BidFactor: msg.BidFactor,
 			}
+			assetInfo, found := k.GetAssetForDenom(ctx, msg.CollectorDenom)
 			accmLookup, found := k.GetCollectorLookupTable(ctx, msg.AppId)
+			accmLookup.AssetId = assetInfo.Id
 			accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, &Collector)
 			
 		var(

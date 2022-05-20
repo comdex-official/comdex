@@ -41,8 +41,8 @@ func GetTxCmd() *cobra.Command {
 
 func NewCmdLookupTableParams() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "collector-lookup-params [app-id] [collector_denom] [secondary_denom] [surplus_threshold] [debt_threshold] [locker_saving_rate] [lot_size]",
-		Args:  cobra.ExactArgs(7),
+		Use:   "collector-lookup-params [app-id] [collector_denom] [secondary_denom] [surplus_threshold] [debt_threshold] [locker_saving_rate] [lot_size] [bid_factor]",
+		Args:  cobra.ExactArgs(8),
 		Short: "Set collector lookup params for collector module",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -75,6 +75,10 @@ func NewCmdLookupTableParams() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			bid_factor, err := ParseStringFromString(args[7], ",")
+			if err != nil {
+				return err
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -83,6 +87,7 @@ func NewCmdLookupTableParams() *cobra.Command {
 
 			var LookupTableRecords []types.CollectorLookupTable
 			for i := range appId {
+				newbid_factor, _ := sdk.NewDecFromStr(bid_factor[i])
 				LookupTableRecords = append(LookupTableRecords, types.CollectorLookupTable{
 					AppId: appId[i],
 					CollectorDenom: collector_denom[i],
@@ -91,6 +96,7 @@ func NewCmdLookupTableParams() *cobra.Command {
 					DebtThreshold: debtThreshold[i],
 					LockerSavingRate: lockerSavingRate[i],
 					LotSize: lot_size[i],
+					BidFactor: &newbid_factor,
 				})
 			}
 

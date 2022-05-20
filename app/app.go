@@ -514,6 +514,7 @@ func New(
 		app.cdc,
 		app.keys[collectortypes.StoreKey],
 		app.keys[collectortypes.MemStoreKey],
+		&app.assetKeeper,
 		app.GetSubspace(collectortypes.ModuleName),
 	)
 

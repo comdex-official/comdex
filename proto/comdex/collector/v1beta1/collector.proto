@@ -63,10 +63,15 @@ message CollectorLookupTable {
   uint64 locker_saving_rate = 6 [(gogoproto.moretags) = "yaml:\"locker_saving_rate\""];
   uint64 lot_size = 7 [
   (gogoproto.moretags) = "yaml:\"lot_size\""];
+  string bid_factor = 8 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.moretags)   = "yaml:\"bid_factor\""
+  ];
 }
 
 message CollectorLookup { 
-  repeated CollectorLookupTable assetrate_info = 1 [(gogoproto.moretags) = "yaml:\"assetrate_info\""];
+  uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  repeated CollectorLookupTable assetrate_info = 2 [(gogoproto.moretags) = "yaml:\"assetrate_info\""];
 }
 
 message AppToDenomsMapping {

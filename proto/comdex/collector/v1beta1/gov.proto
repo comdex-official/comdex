@@ -13,3 +13,11 @@ message LookupTableParams {
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
   repeated CollectorLookupTable lookupTableData = 3 [(gogoproto.nullable) = false];
 }
+
+message ActionOnAuctionsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  uint64 app_id = 3 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  string surplus_auction = 4 [(gogoproto.moretags) = "yaml:\"surplus_auction\""];
+  string debt_auction = 5 [(gogoproto.moretags) = "yaml:\"debt_auction\""];
+}
