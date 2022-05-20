@@ -128,21 +128,21 @@ func (k *Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, app_id uint64)
 
 func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.CollectorLookupTable) error {
 	for _, msg := range records {
-		if !k.HasAssetForDenom(ctx, msg.CollectorDenom) {
+		if !k.HasAsset(ctx, msg.CollectorAssetId) {
 			return types.ErrorAssetDoesNotExist
 		}
-		if !k.HasAssetForDenom(ctx, msg.SecondaryDenom) {
+		if !k.HasAsset(ctx, msg.SecondaryAssetId) {
 			return types.ErrorAssetDoesNotExist
 		}
-		if msg.CollectorDenom == msg.SecondaryDenom {
+		if msg.CollectorAssetId == msg.SecondaryAssetId {
 			return types.ErrorDuplicateAssetDenoms
 		}
 		appDenom, found := k.GetAppToDenomsMapping(ctx, msg.AppId)
 		if found {
 			//check if assetdenom already exists
 			var check = 0
-			for _, data := range appDenom.AssetDenoms {
-				if data == msg.CollectorDenom {
+			for _, data := range appDenom.AssetIds {
+				if data == msg.CollectorAssetId {
 					check++
 				}
 			}
@@ -150,30 +150,29 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 				return types.ErrorDuplicateCollectorDenomForApp
 			}
 			// if denom is new then append
-			appDenom.AssetDenoms = append(appDenom.AssetDenoms, msg.CollectorDenom)
+			appDenom.AssetIds = append(appDenom.AssetIds, msg.CollectorAssetId)
 			k.SetAppToDenomsMapping(ctx, msg.AppId, appDenom)
 
 		} else {
 			//initialize the mappping
 			var appDenomNew types.AppToDenomsMapping
 			appDenomNew.AppId = msg.AppId
-			appDenomNew.AssetDenoms = append(appDenomNew.AssetDenoms, msg.CollectorDenom)
+			appDenomNew.AssetIds = append(appDenomNew.AssetIds, msg.CollectorAssetId)
 			k.SetAppToDenomsMapping(ctx, msg.AppId, appDenomNew)
 		}
 		
 			var Collector = types.CollectorLookupTable{
 				AppId: msg.AppId,
-				CollectorDenom: msg.CollectorDenom,
-				SecondaryDenom: msg.SecondaryDenom,
+				CollectorAssetId: msg.CollectorAssetId,
+				SecondaryAssetId: msg.SecondaryAssetId,
 				SurplusThreshold: msg.SurplusThreshold,
 				DebtThreshold: msg.DebtThreshold,
 				LockerSavingRate: msg.LockerSavingRate,
 				LotSize: msg.LotSize,
 				BidFactor: msg.BidFactor,
 			}
-			assetInfo, found := k.GetAssetForDenom(ctx, msg.CollectorDenom)
-			accmLookup, found := k.GetCollectorLookupTable(ctx, msg.AppId)
-			accmLookup.AssetId = assetInfo.Id
+			accmLookup, _ := k.GetCollectorLookupTable(ctx, msg.AppId)
+			accmLookup.AppId = msg.AppId
 			accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, &Collector)
 			
 		var(

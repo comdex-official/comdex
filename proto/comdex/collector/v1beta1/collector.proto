@@ -54,8 +54,8 @@ message AssetIdCollectorMappping {
 
 message CollectorLookupTable {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-  string collector_denom = 2 [(gogoproto.moretags) = "yaml:\"collector_denom\""];
-  string secondary_denom = 3 [(gogoproto.moretags) = "yaml:\"secondary_denom\""];
+  uint64 collector_asset_id = 2 [(gogoproto.moretags) = "yaml:\"collector_asset_id\""];
+  uint64 secondary_asset_id = 3 [(gogoproto.moretags) = "yaml:\"secondary_asset_id\""];
   uint64 surplus_threshold = 4 [
   (gogoproto.moretags) = "yaml:\"surplus_threshold\""];
   uint64 debt_threshold = 5 [
@@ -70,13 +70,13 @@ message CollectorLookupTable {
 }
 
 message CollectorLookup { 
-  uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
   repeated CollectorLookupTable assetrate_info = 2 [(gogoproto.moretags) = "yaml:\"assetrate_info\""];
 }
 
 message AppToDenomsMapping {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-  repeated string asset_denoms = 2 [(gogoproto.moretags) = "yaml:\"asset_denoms\""];
+  repeated uint64 asset_ids = 2 [(gogoproto.moretags) = "yaml:\"asset_ids\""];
 }
 
 /////////////////////////////////////////////////////////2222222222222
