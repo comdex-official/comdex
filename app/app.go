@@ -540,6 +540,7 @@ func New(
 		app.bankKeeper,
 		&app.assetKeeper,
 		&app.marketKeeper,
+		&app.collectorKeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")
