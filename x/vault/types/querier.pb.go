@@ -74,22 +74,25 @@ func (m *VaultInfo) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_VaultInfo proto.InternalMessageInfo
 
-type QueryVaultRequest struct {
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+type QueryVaultOfOwnerByPairRequest struct {
+	ProductId      uint64             `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	Owner          string             `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+	ExtendedPairId uint64             `protobuf:"varint,3,opt,name=extended_pair_id,json=extendedPairId,proto3" json:"extended_pair_id,omitempty" yaml:"extended_pair_id"`
+	Pagination     *query.PageRequest `protobuf:"bytes,4,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryVaultRequest) Reset()         { *m = QueryVaultRequest{} }
-func (m *QueryVaultRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryVaultRequest) ProtoMessage()    {}
-func (*QueryVaultRequest) Descriptor() ([]byte, []int) {
+func (m *QueryVaultOfOwnerByPairRequest) Reset()         { *m = QueryVaultOfOwnerByPairRequest{} }
+func (m *QueryVaultOfOwnerByPairRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryVaultOfOwnerByPairRequest) ProtoMessage()    {}
+func (*QueryVaultOfOwnerByPairRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3453303216b6f983, []int{1}
 }
-func (m *QueryVaultRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryVaultOfOwnerByPairRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryVaultRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryVaultOfOwnerByPairRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryVaultRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryVaultOfOwnerByPairRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -99,34 +102,34 @@ func (m *QueryVaultRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *QueryVaultRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryVaultRequest.Merge(m, src)
+func (m *QueryVaultOfOwnerByPairRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVaultOfOwnerByPairRequest.Merge(m, src)
 }
-func (m *QueryVaultRequest) XXX_Size() int {
+func (m *QueryVaultOfOwnerByPairRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryVaultRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryVaultRequest.DiscardUnknown(m)
+func (m *QueryVaultOfOwnerByPairRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVaultOfOwnerByPairRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryVaultRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryVaultOfOwnerByPairRequest proto.InternalMessageInfo
 
-type QueryVaultResponse struct {
-	VaultInfo VaultInfo `protobuf:"bytes,1,opt,name=vaultInfo,proto3" json:"vaultInfo" yaml:"vaultInfo"`
+type QueryVaultOfOwnerByPairResponse struct {
+	Vault_Id string `protobuf:"bytes,1,opt,name=vault_Id,json=vaultId,proto3" json:"vault_Id,omitempty" yaml:"vault_Id"`
 }
 
-func (m *QueryVaultResponse) Reset()         { *m = QueryVaultResponse{} }
-func (m *QueryVaultResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryVaultResponse) ProtoMessage()    {}
-func (*QueryVaultResponse) Descriptor() ([]byte, []int) {
+func (m *QueryVaultOfOwnerByPairResponse) Reset()         { *m = QueryVaultOfOwnerByPairResponse{} }
+func (m *QueryVaultOfOwnerByPairResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryVaultOfOwnerByPairResponse) ProtoMessage()    {}
+func (*QueryVaultOfOwnerByPairResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3453303216b6f983, []int{2}
 }
-func (m *QueryVaultResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryVaultOfOwnerByPairResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryVaultResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryVaultOfOwnerByPairResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryVaultResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryVaultOfOwnerByPairResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -136,110 +139,110 @@ func (m *QueryVaultResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *QueryVaultResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryVaultResponse.Merge(m, src)
+func (m *QueryVaultOfOwnerByPairResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVaultOfOwnerByPairResponse.Merge(m, src)
 }
-func (m *QueryVaultResponse) XXX_Size() int {
+func (m *QueryVaultOfOwnerByPairResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryVaultResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryVaultResponse.DiscardUnknown(m)
+func (m *QueryVaultOfOwnerByPairResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVaultOfOwnerByPairResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryVaultResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryVaultOfOwnerByPairResponse proto.InternalMessageInfo
 
-type QueryVaultsRequest struct {
+type QueryVaultByProductRequest struct {
+	ProductId  uint64             `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryVaultByProductRequest) Reset()         { *m = QueryVaultByProductRequest{} }
+func (m *QueryVaultByProductRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryVaultByProductRequest) ProtoMessage()    {}
+func (*QueryVaultByProductRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{3}
+}
+func (m *QueryVaultByProductRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryVaultByProductRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryVaultByProductRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryVaultByProductRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVaultByProductRequest.Merge(m, src)
+}
+func (m *QueryVaultByProductRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryVaultByProductRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVaultByProductRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryVaultByProductRequest proto.InternalMessageInfo
+
+type QueryVaultByProductResponse struct {
+	Vault_Ids []string `protobuf:"bytes,1,rep,name=vault_Ids,json=vaultIds,proto3" json:"vault_Ids,omitempty" yaml:"vault_Ids"`
+}
+
+func (m *QueryVaultByProductResponse) Reset()         { *m = QueryVaultByProductResponse{} }
+func (m *QueryVaultByProductResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryVaultByProductResponse) ProtoMessage()    {}
+func (*QueryVaultByProductResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{4}
+}
+func (m *QueryVaultByProductResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryVaultByProductResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryVaultByProductResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryVaultByProductResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVaultByProductResponse.Merge(m, src)
+}
+func (m *QueryVaultByProductResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryVaultByProductResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVaultByProductResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryVaultByProductResponse proto.InternalMessageInfo
+
+type QueryAllVaultByProductsRequest struct {
 	Owner      string             `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryVaultsRequest) Reset()         { *m = QueryVaultsRequest{} }
-func (m *QueryVaultsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryVaultsRequest) ProtoMessage()    {}
-func (*QueryVaultsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3453303216b6f983, []int{3}
-}
-func (m *QueryVaultsRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryVaultsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryVaultsRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryVaultsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryVaultsRequest.Merge(m, src)
-}
-func (m *QueryVaultsRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryVaultsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryVaultsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryVaultsRequest proto.InternalMessageInfo
-
-type QueryVaultsResponse struct {
-	VaultsInfo []VaultInfo         `protobuf:"bytes,1,rep,name=vaultsInfo,proto3" json:"vaultsInfo" yaml:"vaultsInfo"`
-	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
-}
-
-func (m *QueryVaultsResponse) Reset()         { *m = QueryVaultsResponse{} }
-func (m *QueryVaultsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryVaultsResponse) ProtoMessage()    {}
-func (*QueryVaultsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3453303216b6f983, []int{4}
-}
-func (m *QueryVaultsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryVaultsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryVaultsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryVaultsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryVaultsResponse.Merge(m, src)
-}
-func (m *QueryVaultsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryVaultsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryVaultsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryVaultsResponse proto.InternalMessageInfo
-
-type QueryAllVaultsRequest struct {
-	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
-}
-
-func (m *QueryAllVaultsRequest) Reset()         { *m = QueryAllVaultsRequest{} }
-func (m *QueryAllVaultsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllVaultsRequest) ProtoMessage()    {}
-func (*QueryAllVaultsRequest) Descriptor() ([]byte, []int) {
+func (m *QueryAllVaultByProductsRequest) Reset()         { *m = QueryAllVaultByProductsRequest{} }
+func (m *QueryAllVaultByProductsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllVaultByProductsRequest) ProtoMessage()    {}
+func (*QueryAllVaultByProductsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3453303216b6f983, []int{5}
 }
-func (m *QueryAllVaultsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllVaultByProductsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllVaultsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllVaultByProductsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllVaultsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllVaultByProductsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -249,35 +252,34 @@ func (m *QueryAllVaultsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *QueryAllVaultsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllVaultsRequest.Merge(m, src)
+func (m *QueryAllVaultByProductsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllVaultByProductsRequest.Merge(m, src)
 }
-func (m *QueryAllVaultsRequest) XXX_Size() int {
+func (m *QueryAllVaultByProductsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllVaultsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllVaultsRequest.DiscardUnknown(m)
+func (m *QueryAllVaultByProductsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllVaultByProductsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllVaultsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllVaultByProductsRequest proto.InternalMessageInfo
 
-type QueryAllVaultsResponse struct {
-	VaultsInfo []VaultInfo         `protobuf:"bytes,1,rep,name=vaultsInfo,proto3" json:"vaultsInfo" yaml:"vaultsInfo"`
-	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+type QueryAllVaultByProductsResponse struct {
+	Vault_Ids []string `protobuf:"bytes,1,rep,name=vault_Ids,json=vaultIds,proto3" json:"vault_Ids,omitempty" yaml:"vault_Ids"`
 }
 
-func (m *QueryAllVaultsResponse) Reset()         { *m = QueryAllVaultsResponse{} }
-func (m *QueryAllVaultsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAllVaultsResponse) ProtoMessage()    {}
-func (*QueryAllVaultsResponse) Descriptor() ([]byte, []int) {
+func (m *QueryAllVaultByProductsResponse) Reset()         { *m = QueryAllVaultByProductsResponse{} }
+func (m *QueryAllVaultByProductsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllVaultByProductsResponse) ProtoMessage()    {}
+func (*QueryAllVaultByProductsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3453303216b6f983, []int{6}
 }
-func (m *QueryAllVaultsResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllVaultByProductsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllVaultsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllVaultByProductsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllVaultsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllVaultByProductsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -287,26 +289,509 @@ func (m *QueryAllVaultsResponse) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *QueryAllVaultsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllVaultsResponse.Merge(m, src)
+func (m *QueryAllVaultByProductsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllVaultByProductsResponse.Merge(m, src)
 }
-func (m *QueryAllVaultsResponse) XXX_Size() int {
+func (m *QueryAllVaultByProductsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllVaultsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllVaultsResponse.DiscardUnknown(m)
+func (m *QueryAllVaultByProductsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllVaultByProductsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllVaultsResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllVaultByProductsResponse proto.InternalMessageInfo
+
+type QueryTokenMintedAllProductsByPairRequest struct {
+	ProductId      uint64             `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	ExtendedPairId uint64             `protobuf:"varint,2,opt,name=extended_pair_id,json=extendedPairId,proto3" json:"extended_pair_id,omitempty" yaml:"extended_pair_id"`
+	Pagination     *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryTokenMintedAllProductsByPairRequest) Reset() {
+	*m = QueryTokenMintedAllProductsByPairRequest{}
+}
+func (m *QueryTokenMintedAllProductsByPairRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenMintedAllProductsByPairRequest) ProtoMessage()    {}
+func (*QueryTokenMintedAllProductsByPairRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{7}
+}
+func (m *QueryTokenMintedAllProductsByPairRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTokenMintedAllProductsByPairRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTokenMintedAllProductsByPairRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTokenMintedAllProductsByPairRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenMintedAllProductsByPairRequest.Merge(m, src)
+}
+func (m *QueryTokenMintedAllProductsByPairRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTokenMintedAllProductsByPairRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenMintedAllProductsByPairRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTokenMintedAllProductsByPairRequest proto.InternalMessageInfo
+
+type QueryTokenMintedAllProductsByPairResponse struct {
+	Token_Minted *github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=token_Minted,json=tokenMinted,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"token_Minted,omitempty" yaml:"token_Minted"`
+}
+
+func (m *QueryTokenMintedAllProductsByPairResponse) Reset() {
+	*m = QueryTokenMintedAllProductsByPairResponse{}
+}
+func (m *QueryTokenMintedAllProductsByPairResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryTokenMintedAllProductsByPairResponse) ProtoMessage() {}
+func (*QueryTokenMintedAllProductsByPairResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{8}
+}
+func (m *QueryTokenMintedAllProductsByPairResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTokenMintedAllProductsByPairResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTokenMintedAllProductsByPairResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTokenMintedAllProductsByPairResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenMintedAllProductsByPairResponse.Merge(m, src)
+}
+func (m *QueryTokenMintedAllProductsByPairResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTokenMintedAllProductsByPairResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenMintedAllProductsByPairResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTokenMintedAllProductsByPairResponse proto.InternalMessageInfo
+
+type QueryTokenMintedAllProductsRequest struct {
+	ProductId  uint64             `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryTokenMintedAllProductsRequest) Reset()         { *m = QueryTokenMintedAllProductsRequest{} }
+func (m *QueryTokenMintedAllProductsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenMintedAllProductsRequest) ProtoMessage()    {}
+func (*QueryTokenMintedAllProductsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{9}
+}
+func (m *QueryTokenMintedAllProductsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTokenMintedAllProductsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTokenMintedAllProductsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTokenMintedAllProductsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenMintedAllProductsRequest.Merge(m, src)
+}
+func (m *QueryTokenMintedAllProductsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTokenMintedAllProductsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenMintedAllProductsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTokenMintedAllProductsRequest proto.InternalMessageInfo
+
+type QueryTokenMintedAllProductsResponse struct {
+	Token_Minted *github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=token_Minted,json=tokenMinted,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"token_Minted,omitempty" yaml:"token_Minted"`
+}
+
+func (m *QueryTokenMintedAllProductsResponse) Reset()         { *m = QueryTokenMintedAllProductsResponse{} }
+func (m *QueryTokenMintedAllProductsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenMintedAllProductsResponse) ProtoMessage()    {}
+func (*QueryTokenMintedAllProductsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{10}
+}
+func (m *QueryTokenMintedAllProductsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTokenMintedAllProductsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTokenMintedAllProductsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTokenMintedAllProductsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenMintedAllProductsResponse.Merge(m, src)
+}
+func (m *QueryTokenMintedAllProductsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTokenMintedAllProductsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenMintedAllProductsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTokenMintedAllProductsResponse proto.InternalMessageInfo
+
+type QueryVaultCountByProductRequest struct {
+	ProductId  uint64             `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryVaultCountByProductRequest) Reset()         { *m = QueryVaultCountByProductRequest{} }
+func (m *QueryVaultCountByProductRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryVaultCountByProductRequest) ProtoMessage()    {}
+func (*QueryVaultCountByProductRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{11}
+}
+func (m *QueryVaultCountByProductRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryVaultCountByProductRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryVaultCountByProductRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryVaultCountByProductRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVaultCountByProductRequest.Merge(m, src)
+}
+func (m *QueryVaultCountByProductRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryVaultCountByProductRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVaultCountByProductRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryVaultCountByProductRequest proto.InternalMessageInfo
+
+type QueryVaultCountByProductResponse struct {
+	VaultCount uint64 `protobuf:"varint,1,opt,name=vault_count,json=vaultCount,proto3" json:"vault_count,omitempty" yaml:"vault_count"`
+}
+
+func (m *QueryVaultCountByProductResponse) Reset()         { *m = QueryVaultCountByProductResponse{} }
+func (m *QueryVaultCountByProductResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryVaultCountByProductResponse) ProtoMessage()    {}
+func (*QueryVaultCountByProductResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{12}
+}
+func (m *QueryVaultCountByProductResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryVaultCountByProductResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryVaultCountByProductResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryVaultCountByProductResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVaultCountByProductResponse.Merge(m, src)
+}
+func (m *QueryVaultCountByProductResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryVaultCountByProductResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVaultCountByProductResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryVaultCountByProductResponse proto.InternalMessageInfo
+
+type QueryVaultCountByProductAndPairRequest struct {
+	ProductId      uint64             `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	ExtendedPairId uint64             `protobuf:"varint,2,opt,name=extended_pair_id,json=extendedPairId,proto3" json:"extended_pair_id,omitempty" yaml:"extended_pair_id"`
+	Pagination     *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryVaultCountByProductAndPairRequest) Reset() {
+	*m = QueryVaultCountByProductAndPairRequest{}
+}
+func (m *QueryVaultCountByProductAndPairRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryVaultCountByProductAndPairRequest) ProtoMessage()    {}
+func (*QueryVaultCountByProductAndPairRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{13}
+}
+func (m *QueryVaultCountByProductAndPairRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryVaultCountByProductAndPairRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryVaultCountByProductAndPairRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryVaultCountByProductAndPairRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVaultCountByProductAndPairRequest.Merge(m, src)
+}
+func (m *QueryVaultCountByProductAndPairRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryVaultCountByProductAndPairRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVaultCountByProductAndPairRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryVaultCountByProductAndPairRequest proto.InternalMessageInfo
+
+type QueryVaultCountByProductAndPairResponse struct {
+	VaultCount uint64 `protobuf:"varint,1,opt,name=vault_count,json=vaultCount,proto3" json:"vault_count,omitempty" yaml:"vault_count"`
+}
+
+func (m *QueryVaultCountByProductAndPairResponse) Reset() {
+	*m = QueryVaultCountByProductAndPairResponse{}
+}
+func (m *QueryVaultCountByProductAndPairResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryVaultCountByProductAndPairResponse) ProtoMessage()    {}
+func (*QueryVaultCountByProductAndPairResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{14}
+}
+func (m *QueryVaultCountByProductAndPairResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryVaultCountByProductAndPairResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryVaultCountByProductAndPairResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryVaultCountByProductAndPairResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryVaultCountByProductAndPairResponse.Merge(m, src)
+}
+func (m *QueryVaultCountByProductAndPairResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryVaultCountByProductAndPairResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryVaultCountByProductAndPairResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryVaultCountByProductAndPairResponse proto.InternalMessageInfo
+
+type QueryTotalValueLockedByProductExtendedPairRequest struct {
+	ProductId      uint64             `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	ExtendedPairId uint64             `protobuf:"varint,2,opt,name=extended_pair_id,json=extendedPairId,proto3" json:"extended_pair_id,omitempty" yaml:"extended_pair_id"`
+	Pagination     *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) Reset() {
+	*m = QueryTotalValueLockedByProductExtendedPairRequest{}
+}
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryTotalValueLockedByProductExtendedPairRequest) ProtoMessage() {}
+func (*QueryTotalValueLockedByProductExtendedPairRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{15}
+}
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTotalValueLockedByProductExtendedPairRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalValueLockedByProductExtendedPairRequest.Merge(m, src)
+}
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalValueLockedByProductExtendedPairRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTotalValueLockedByProductExtendedPairRequest proto.InternalMessageInfo
+
+type QueryTotalValueLockedByProductExtendedPairResponse struct {
+	ValueLocked *github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=value_locked,json=valueLocked,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"value_locked,omitempty"`
+}
+
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) Reset() {
+	*m = QueryTotalValueLockedByProductExtendedPairResponse{}
+}
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryTotalValueLockedByProductExtendedPairResponse) ProtoMessage() {}
+func (*QueryTotalValueLockedByProductExtendedPairResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{16}
+}
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTotalValueLockedByProductExtendedPairResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalValueLockedByProductExtendedPairResponse.Merge(m, src)
+}
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalValueLockedByProductExtendedPairResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTotalValueLockedByProductExtendedPairResponse proto.InternalMessageInfo
+
+type QueryExtendedPairIDByProductRequest struct {
+	ProductId  uint64             `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryExtendedPairIDByProductRequest) Reset()         { *m = QueryExtendedPairIDByProductRequest{} }
+func (m *QueryExtendedPairIDByProductRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryExtendedPairIDByProductRequest) ProtoMessage()    {}
+func (*QueryExtendedPairIDByProductRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{17}
+}
+func (m *QueryExtendedPairIDByProductRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryExtendedPairIDByProductRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryExtendedPairIDByProductRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryExtendedPairIDByProductRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryExtendedPairIDByProductRequest.Merge(m, src)
+}
+func (m *QueryExtendedPairIDByProductRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryExtendedPairIDByProductRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryExtendedPairIDByProductRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryExtendedPairIDByProductRequest proto.InternalMessageInfo
+
+type QueryExtendedPairIDByProductResponse struct {
+	PairId []uint64 `protobuf:"varint,1,rep,packed,name=pair_id,json=pairId,proto3" json:"pair_id,omitempty" yaml:"extended_pair_id"`
+}
+
+func (m *QueryExtendedPairIDByProductResponse) Reset()         { *m = QueryExtendedPairIDByProductResponse{} }
+func (m *QueryExtendedPairIDByProductResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryExtendedPairIDByProductResponse) ProtoMessage()    {}
+func (*QueryExtendedPairIDByProductResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3453303216b6f983, []int{18}
+}
+func (m *QueryExtendedPairIDByProductResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryExtendedPairIDByProductResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryExtendedPairIDByProductResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryExtendedPairIDByProductResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryExtendedPairIDByProductResponse.Merge(m, src)
+}
+func (m *QueryExtendedPairIDByProductResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryExtendedPairIDByProductResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryExtendedPairIDByProductResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryExtendedPairIDByProductResponse proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*VaultInfo)(nil), "comdex.vault.v1beta1.VaultInfo")
-	proto.RegisterType((*QueryVaultRequest)(nil), "comdex.vault.v1beta1.QueryVaultRequest")
-	proto.RegisterType((*QueryVaultResponse)(nil), "comdex.vault.v1beta1.QueryVaultResponse")
-	proto.RegisterType((*QueryVaultsRequest)(nil), "comdex.vault.v1beta1.QueryVaultsRequest")
-	proto.RegisterType((*QueryVaultsResponse)(nil), "comdex.vault.v1beta1.QueryVaultsResponse")
-	proto.RegisterType((*QueryAllVaultsRequest)(nil), "comdex.vault.v1beta1.QueryAllVaultsRequest")
-	proto.RegisterType((*QueryAllVaultsResponse)(nil), "comdex.vault.v1beta1.QueryAllVaultsResponse")
+	proto.RegisterType((*QueryVaultOfOwnerByPairRequest)(nil), "comdex.vault.v1beta1.QueryVaultOfOwnerByPairRequest")
+	proto.RegisterType((*QueryVaultOfOwnerByPairResponse)(nil), "comdex.vault.v1beta1.QueryVaultOfOwnerByPairResponse")
+	proto.RegisterType((*QueryVaultByProductRequest)(nil), "comdex.vault.v1beta1.QueryVaultByProductRequest")
+	proto.RegisterType((*QueryVaultByProductResponse)(nil), "comdex.vault.v1beta1.QueryVaultByProductResponse")
+	proto.RegisterType((*QueryAllVaultByProductsRequest)(nil), "comdex.vault.v1beta1.QueryAllVaultByProductsRequest")
+	proto.RegisterType((*QueryAllVaultByProductsResponse)(nil), "comdex.vault.v1beta1.QueryAllVaultByProductsResponse")
+	proto.RegisterType((*QueryTokenMintedAllProductsByPairRequest)(nil), "comdex.vault.v1beta1.QueryTokenMintedAllProductsByPairRequest")
+	proto.RegisterType((*QueryTokenMintedAllProductsByPairResponse)(nil), "comdex.vault.v1beta1.QueryTokenMintedAllProductsByPairResponse")
+	proto.RegisterType((*QueryTokenMintedAllProductsRequest)(nil), "comdex.vault.v1beta1.QueryTokenMintedAllProductsRequest")
+	proto.RegisterType((*QueryTokenMintedAllProductsResponse)(nil), "comdex.vault.v1beta1.QueryTokenMintedAllProductsResponse")
+	proto.RegisterType((*QueryVaultCountByProductRequest)(nil), "comdex.vault.v1beta1.QueryVaultCountByProductRequest")
+	proto.RegisterType((*QueryVaultCountByProductResponse)(nil), "comdex.vault.v1beta1.QueryVaultCountByProductResponse")
+	proto.RegisterType((*QueryVaultCountByProductAndPairRequest)(nil), "comdex.vault.v1beta1.QueryVaultCountByProductAndPairRequest")
+	proto.RegisterType((*QueryVaultCountByProductAndPairResponse)(nil), "comdex.vault.v1beta1.QueryVaultCountByProductAndPairResponse")
+	proto.RegisterType((*QueryTotalValueLockedByProductExtendedPairRequest)(nil), "comdex.vault.v1beta1.QueryTotalValueLockedByProductExtendedPairRequest")
+	proto.RegisterType((*QueryTotalValueLockedByProductExtendedPairResponse)(nil), "comdex.vault.v1beta1.QueryTotalValueLockedByProductExtendedPairResponse")
+	proto.RegisterType((*QueryExtendedPairIDByProductRequest)(nil), "comdex.vault.v1beta1.QueryExtendedPairIDByProductRequest")
+	proto.RegisterType((*QueryExtendedPairIDByProductResponse)(nil), "comdex.vault.v1beta1.QueryExtendedPairIDByProductResponse")
 }
 
 func init() {
@@ -314,55 +799,88 @@ func init() {
 }
 
 var fileDescriptor_3453303216b6f983 = []byte{
-	// 758 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x95, 0xbf, 0x6f, 0xd3, 0x40,
-	0x14, 0xc7, 0x73, 0x49, 0x1b, 0x94, 0x4b, 0xa9, 0xda, 0xeb, 0x0f, 0xd2, 0xa8, 0xd8, 0xe5, 0x28,
-	0x69, 0x0a, 0xad, 0xad, 0x06, 0xb1, 0xb0, 0x61, 0xba, 0x74, 0x6b, 0x0d, 0xea, 0x80, 0x04, 0xd5,
-	0xc5, 0xbe, 0xa6, 0x27, 0x1c, 0x5f, 0x6a, 0x3b, 0x81, 0x16, 0x75, 0x61, 0x83, 0xa9, 0x88, 0x91,
-	0x85, 0x91, 0xbf, 0x83, 0xa9, 0x63, 0x25, 0x16, 0xc4, 0x60, 0x20, 0xe5, 0x2f, 0xc8, 0x5f, 0x80,
-	0x7c, 0x76, 0xe2, 0xa4, 0x8d, 0x92, 0x0c, 0x4c, 0x4c, 0xb6, 0x7c, 0xef, 0x7d, 0xde, 0xf7, 0xbd,
-	0xf7, 0xb5, 0x0d, 0xb1, 0xc1, 0xab, 0x26, 0x7d, 0xad, 0x36, 0x48, 0xdd, 0xf2, 0xd4, 0xc6, 0x46,
-	0x99, 0x7a, 0x64, 0x43, 0x3d, 0xac, 0x53, 0x87, 0x51, 0x47, 0xa9, 0x39, 0xdc, 0xe3, 0x68, 0x36,
-	0x8c, 0x51, 0x44, 0x8c, 0x12, 0xc5, 0xe4, 0xef, 0x1a, 0xdc, 0xad, 0x72, 0x57, 0x2d, 0x13, 0x97,
-	0x8a, 0x84, 0xa3, 0x4e, 0x7a, 0x8d, 0x54, 0x98, 0x4d, 0x3c, 0xc6, 0xed, 0x90, 0x90, 0x9f, 0xad,
-	0xf0, 0x0a, 0x17, 0xb7, 0x6a, 0x70, 0x17, 0x3d, 0x5d, 0xac, 0x70, 0x5e, 0xb1, 0xa8, 0x4a, 0x6a,
-	0x4c, 0x25, 0xb6, 0xcd, 0x3d, 0x91, 0xe2, 0x46, 0xa7, 0x52, 0x37, 0xbf, 0x4d, 0x36, 0x38, 0x8b,
-	0x98, 0xf8, 0x73, 0x0a, 0x66, 0x76, 0x03, 0x45, 0x5b, 0xf6, 0x3e, 0x47, 0x93, 0x30, 0xc9, 0xcc,
-	0x1c, 0x58, 0x02, 0xc5, 0x31, 0x3d, 0xc9, 0x4c, 0xf4, 0x00, 0x5e, 0xab, 0x11, 0xe6, 0xec, 0x31,
-	0x33, 0x97, 0x0c, 0x1e, 0x6a, 0x8b, 0x4d, 0x5f, 0x4e, 0x6f, 0x13, 0xe6, 0x6c, 0x6d, 0xb6, 0x7c,
-	0x79, 0xf2, 0x88, 0x54, 0xad, 0x87, 0x38, 0x0a, 0xc1, 0x7a, 0x3a, 0xb8, 0xdb, 0x32, 0x51, 0x01,
-	0x8e, 0xf3, 0x57, 0x36, 0x75, 0x72, 0xa9, 0x25, 0x50, 0xcc, 0x68, 0x53, 0x2d, 0x5f, 0x9e, 0x08,
-	0x43, 0xc5, 0x63, 0xac, 0x87, 0xc7, 0xe8, 0x29, 0x84, 0x06, 0xb7, 0x2c, 0xe2, 0x51, 0x87, 0x58,
-	0xb9, 0xb1, 0x25, 0x50, 0xcc, 0x96, 0x16, 0x94, 0x50, 0xb1, 0x12, 0x28, 0x6e, 0x8f, 0x49, 0x79,
-	0xcc, 0x99, 0xad, 0x2d, 0x9c, 0xf9, 0x72, 0xa2, 0xe5, 0xcb, 0xd3, 0x21, 0x2b, 0x4e, 0xc5, 0x7a,
-	0x17, 0x07, 0x69, 0x70, 0xcc, 0xa4, 0x65, 0x2f, 0x37, 0x3e, 0x8c, 0x37, 0x13, 0xf1, 0xb2, 0x21,
-	0x2f, 0x48, 0xc2, 0xba, 0xc8, 0x45, 0xef, 0x00, 0xbc, 0x11, 0x23, 0xd9, 0xb1, 0x98, 0xe9, 0x9e,
-	0x13, 0x5c, 0x72, 0x69, 0xd1, 0xd4, 0x76, 0x90, 0xfc, 0xc3, 0x97, 0x0b, 0x15, 0xe6, 0x1d, 0xd4,
-	0xcb, 0x8a, 0xc1, 0xab, 0x6a, 0x34, 0xeb, 0xf0, 0xb2, 0xee, 0x9a, 0x2f, 0x55, 0xef, 0xa8, 0x46,
-	0x5d, 0x65, 0x93, 0x1a, 0x2d, 0x5f, 0x96, 0x2e, 0xcb, 0xee, 0xc1, 0x62, 0x7d, 0xfe, 0xca, 0x89,
-	0x2e, 0x0e, 0x4a, 0x70, 0x7a, 0x27, 0x30, 0x86, 0x58, 0x93, 0x4e, 0x0f, 0xeb, 0xd4, 0xf5, 0xd0,
-	0xcd, 0xce, 0xa6, 0x32, 0xda, 0xf5, 0x96, 0x2f, 0x67, 0x42, 0x78, 0xb0, 0x85, 0x24, 0x33, 0xf1,
-	0x31, 0x44, 0xdd, 0x39, 0x6e, 0x8d, 0xdb, 0x2e, 0x45, 0x26, 0xcc, 0x34, 0xda, 0xbb, 0x16, 0xb9,
-	0xd9, 0x92, 0xac, 0xf4, 0xb3, 0xa5, 0xd2, 0xb1, 0x84, 0x76, 0x27, 0xe8, 0xb3, 0xe9, 0xcb, 0xb1,
-	0x4b, 0x5a, 0xbe, 0x3c, 0x15, 0x56, 0xeb, 0xc0, 0xb0, 0x1e, 0x83, 0xf1, 0x27, 0xd0, 0x5d, 0xdc,
-	0x6d, 0x2b, 0xee, 0x98, 0x02, 0x0c, 0x36, 0xc5, 0x73, 0x08, 0x63, 0xe7, 0x0b, 0xdb, 0x65, 0x4b,
-	0x85, 0x9e, 0x25, 0x8a, 0xd7, 0xa4, 0x23, 0x75, 0x9b, 0x54, 0x68, 0x54, 0x43, 0x9b, 0x8b, 0xdd,
-	0x11, 0x33, 0xb0, 0xde, 0x05, 0xc4, 0x3f, 0x01, 0x9c, 0xe9, 0x51, 0x17, 0xcd, 0xe6, 0x00, 0x42,
-	0xd1, 0x82, 0x1b, 0x0d, 0x27, 0x35, 0xca, 0x70, 0x56, 0xa2, 0xe1, 0xc0, 0xdd, 0x4e, 0x6a, 0xac,
-	0x20, 0xc6, 0x61, 0xbd, 0x8b, 0x8d, 0x5e, 0xf4, 0x69, 0x70, 0x65, 0x68, 0x83, 0xa1, 0xcc, 0x51,
-	0x3a, 0x6c, 0xc0, 0x39, 0xd1, 0xe0, 0x23, 0xcb, 0xea, 0xdd, 0x40, 0xef, 0x64, 0xc1, 0xbf, 0x9e,
-	0x6c, 0x13, 0xc0, 0xf9, 0xcb, 0x85, 0xff, 0xb7, 0xe1, 0x96, 0xbe, 0xa6, 0xe0, 0x84, 0x68, 0xf2,
-	0x09, 0x75, 0x1a, 0xcc, 0xa0, 0xe8, 0x3d, 0x80, 0x30, 0xf6, 0x13, 0x5a, 0xe9, 0xdf, 0xd5, 0x95,
-	0x17, 0x38, 0x5f, 0x1c, 0x1e, 0x18, 0xaa, 0xc2, 0xab, 0x6f, 0xbf, 0xfd, 0xf9, 0x98, 0xbc, 0x8d,
-	0x6e, 0xa9, 0x7d, 0xff, 0x32, 0x61, 0xf3, 0xea, 0x1b, 0x66, 0x9e, 0xa0, 0x53, 0x00, 0xb3, 0x5d,
-	0xe6, 0x46, 0x43, 0x8b, 0xb4, 0xbd, 0x91, 0x5f, 0x1d, 0x21, 0x32, 0xd2, 0xb3, 0x26, 0xf4, 0x14,
-	0xd0, 0xf2, 0x60, 0x3d, 0xe2, 0x6d, 0x3e, 0x41, 0x1f, 0x00, 0x9c, 0xec, 0x75, 0x05, 0xba, 0x37,
-	0xa0, 0xd6, 0x65, 0xd3, 0xe6, 0xd7, 0x46, 0x0b, 0x8e, 0xb4, 0x2d, 0x0b, 0x6d, 0x12, 0x5a, 0x1c,
-	0xa4, 0x4d, 0xdb, 0x39, 0xfb, 0x2d, 0x25, 0xbe, 0x34, 0xa5, 0xc4, 0x59, 0x53, 0x02, 0xe7, 0x4d,
-	0x09, 0xfc, 0x6a, 0x4a, 0xe0, 0xf4, 0x42, 0x4a, 0x9c, 0x5f, 0x48, 0x89, 0xef, 0x17, 0x52, 0xe2,
-	0x99, 0xda, 0xf3, 0x55, 0x0f, 0x48, 0xeb, 0x7c, 0x7f, 0x9f, 0x19, 0x8c, 0x58, 0x6d, 0x72, 0x9b,
-	0x2d, 0x3e, 0xf1, 0xe5, 0xb4, 0xf8, 0x9d, 0xde, 0xff, 0x1b, 0x00, 0x00, 0xff, 0xff, 0xf7, 0x87,
-	0x89, 0xff, 0x0a, 0x08, 0x00, 0x00,
+	// 1290 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe4, 0x58, 0xcf, 0x6f, 0x1b, 0x45,
+	0x14, 0xf6, 0x6c, 0xd2, 0xb4, 0x9e, 0x44, 0x21, 0x4c, 0x42, 0xe3, 0xba, 0x91, 0x37, 0x0c, 0x28,
+	0x84, 0x48, 0xf6, 0x36, 0x21, 0x2d, 0x25, 0xa4, 0xa0, 0x38, 0xa9, 0xc0, 0x52, 0x7f, 0x38, 0x4b,
+	0x14, 0xa1, 0xf2, 0xc3, 0x5a, 0x7b, 0x27, 0x66, 0x95, 0xcd, 0x8e, 0xbb, 0xbb, 0x36, 0x35, 0x51,
+	0x2e, 0x80, 0x90, 0x10, 0x07, 0x8a, 0x38, 0x72, 0xe1, 0x80, 0x04, 0x57, 0x2e, 0x08, 0x38, 0x71,
+	0xcc, 0x05, 0xa9, 0x12, 0x07, 0x50, 0x85, 0x56, 0x90, 0xf0, 0x17, 0xf8, 0x8c, 0x10, 0xda, 0xd9,
+	0x59, 0xdb, 0x9b, 0xd8, 0x6b, 0x3b, 0x09, 0xa8, 0x55, 0x4f, 0x59, 0xef, 0xbc, 0xf7, 0xcd, 0xfb,
+	0xbe, 0xf7, 0xde, 0xec, 0x9b, 0x40, 0x5c, 0xa0, 0x5b, 0x2a, 0xb9, 0x23, 0x55, 0x94, 0xb2, 0x6e,
+	0x4b, 0x95, 0xd9, 0x3c, 0xb1, 0x95, 0x59, 0xe9, 0x76, 0x99, 0x98, 0x1a, 0x31, 0x53, 0x25, 0x93,
+	0xda, 0x14, 0x8d, 0x79, 0x36, 0x29, 0x66, 0x93, 0xe2, 0x36, 0xf1, 0x99, 0x02, 0xb5, 0xb6, 0xa8,
+	0x25, 0xe5, 0x15, 0x8b, 0x30, 0x87, 0x6a, 0xdd, 0xbd, 0xa4, 0x14, 0x35, 0x43, 0xb1, 0x35, 0x6a,
+	0x78, 0x08, 0xf1, 0xb1, 0x22, 0x2d, 0x52, 0xf6, 0x28, 0xb9, 0x4f, 0xfc, 0xed, 0x44, 0x91, 0xd2,
+	0xa2, 0x4e, 0x24, 0xa5, 0xa4, 0x49, 0x8a, 0x61, 0x50, 0x9b, 0xb9, 0x58, 0x7c, 0x35, 0xd1, 0x8c,
+	0xef, 0x23, 0x17, 0xa8, 0xc6, 0x31, 0xf1, 0x97, 0x7d, 0x30, 0xba, 0xee, 0x46, 0x94, 0x31, 0x36,
+	0x28, 0x1a, 0x86, 0x82, 0xa6, 0xc6, 0xc0, 0x24, 0x98, 0xee, 0x97, 0x05, 0x4d, 0x45, 0x17, 0xe1,
+	0xe9, 0x92, 0xa2, 0x99, 0x39, 0x4d, 0x8d, 0x09, 0xee, 0xcb, 0xf4, 0xc4, 0x9e, 0x23, 0x0e, 0x64,
+	0x15, 0xcd, 0xcc, 0xac, 0xd4, 0x1c, 0x71, 0xb8, 0xaa, 0x6c, 0xe9, 0x0b, 0x98, 0x9b, 0x60, 0x79,
+	0xc0, 0x7d, 0xca, 0xa8, 0x68, 0x0a, 0x9e, 0xa2, 0xef, 0x1a, 0xc4, 0x8c, 0xf5, 0x4d, 0x82, 0xe9,
+	0x68, 0x7a, 0xa4, 0xe6, 0x88, 0x43, 0x9e, 0x29, 0x7b, 0x8d, 0x65, 0x6f, 0x19, 0xad, 0x41, 0x58,
+	0xa0, 0xba, 0xae, 0xd8, 0xc4, 0x54, 0xf4, 0x58, 0xff, 0x24, 0x98, 0x1e, 0x9c, 0x3b, 0x97, 0xf2,
+	0x22, 0x4e, 0xb9, 0x11, 0xfb, 0x32, 0xa5, 0x96, 0xa9, 0x66, 0xa4, 0xcf, 0xed, 0x3a, 0x62, 0xa4,
+	0xe6, 0x88, 0x8f, 0x7b, 0x58, 0x0d, 0x57, 0x2c, 0x37, 0xe1, 0xa0, 0x34, 0xec, 0x57, 0x49, 0xde,
+	0x8e, 0x9d, 0xea, 0x84, 0x37, 0xca, 0xf1, 0x06, 0x3d, 0x3c, 0xd7, 0x09, 0xcb, 0xcc, 0x17, 0x7d,
+	0x0c, 0xe0, 0x78, 0x03, 0x52, 0x7b, 0x8f, 0x69, 0x9a, 0x33, 0xdd, 0x3f, 0xb1, 0x01, 0x46, 0x2a,
+	0xeb, 0x3a, 0xdf, 0x77, 0xc4, 0xa9, 0xa2, 0x66, 0xbf, 0x53, 0xce, 0xa7, 0x0a, 0x74, 0x4b, 0xe2,
+	0x5a, 0x7b, 0x7f, 0x92, 0x96, 0xba, 0x29, 0xd9, 0xd5, 0x12, 0xb1, 0x52, 0x2b, 0xa4, 0x50, 0x73,
+	0xc4, 0xc4, 0xc1, 0xb0, 0x03, 0xb0, 0x58, 0x3e, 0x7b, 0x68, 0x45, 0x66, 0x0b, 0x5f, 0x09, 0x30,
+	0xb1, 0xea, 0x56, 0x06, 0xcb, 0xd3, 0xcd, 0x8d, 0x9b, 0xae, 0x76, 0xe9, 0xaa, 0x9b, 0x05, 0x99,
+	0xdc, 0x2e, 0x13, 0xcb, 0x46, 0xf3, 0x10, 0x96, 0x4c, 0xaa, 0x96, 0x0b, 0x76, 0xce, 0xcf, 0x5f,
+	0xfa, 0x89, 0x86, 0x52, 0x8d, 0x35, 0x2c, 0x47, 0xf9, 0x8f, 0xe6, 0x34, 0x09, 0xe1, 0x69, 0xba,
+	0x0a, 0x47, 0xc8, 0x1d, 0x9b, 0x18, 0x2a, 0x51, 0x73, 0x7e, 0x39, 0xf4, 0xb1, 0x3d, 0xce, 0xd7,
+	0x1c, 0x71, 0xdc, 0x73, 0x39, 0x68, 0x81, 0xe5, 0x61, 0xff, 0x55, 0xd6, 0xab, 0x8a, 0xb7, 0x20,
+	0x6c, 0x94, 0x34, 0xcf, 0xf6, 0x54, 0x20, 0x3b, 0xac, 0xfe, 0xeb, 0x39, 0xca, 0x2a, 0x45, 0xc2,
+	0x09, 0x06, 0xc8, 0xd4, 0x31, 0xb0, 0xdc, 0x04, 0x88, 0x57, 0xa1, 0xd8, 0x56, 0x25, 0xab, 0x44,
+	0x0d, 0x8b, 0xa0, 0x14, 0x3c, 0xc3, 0xba, 0x2f, 0x97, 0xf1, 0x44, 0x8a, 0xa6, 0x47, 0x6b, 0x8e,
+	0xf8, 0x98, 0x87, 0xeb, 0xaf, 0x60, 0xf9, 0x34, 0x7b, 0xcc, 0xa8, 0xf8, 0x5b, 0x00, 0xe3, 0x0d,
+	0xcc, 0x74, 0x35, 0xeb, 0x49, 0x77, 0x3c, 0xd5, 0x83, 0x32, 0x08, 0x27, 0x2d, 0x43, 0x16, 0x9e,
+	0x6f, 0x19, 0x32, 0x97, 0x60, 0x16, 0x46, 0x7d, 0xa2, 0x56, 0x0c, 0x4c, 0xf6, 0x4d, 0x47, 0xd3,
+	0x63, 0x35, 0x47, 0x1c, 0x09, 0x6a, 0x60, 0x61, 0xf9, 0x0c, 0x17, 0xc1, 0xc2, 0x5f, 0x03, 0x5e,
+	0x7f, 0x4b, 0xba, 0x1e, 0x44, 0xb5, 0x7c, 0x25, 0xea, 0x95, 0x04, 0xc2, 0x2b, 0xe9, 0x3f, 0xe6,
+	0xbe, 0xc6, 0x4b, 0xa0, 0x55, 0xa0, 0x47, 0xe7, 0xff, 0x91, 0x00, 0xa7, 0x19, 0xec, 0x1a, 0xdd,
+	0x24, 0xc6, 0x75, 0xcd, 0xb0, 0x89, 0xba, 0xa4, 0xeb, 0x3e, 0xf4, 0x49, 0x74, 0x62, 0xab, 0x0e,
+	0x13, 0x8e, 0xdb, 0x61, 0x7d, 0x27, 0x2d, 0xef, 0x67, 0x00, 0x3e, 0xdb, 0x85, 0x10, 0x5c, 0x69,
+	0x15, 0x0e, 0xd9, 0xae, 0x5d, 0xce, 0x33, 0xe4, 0xa5, 0xb1, 0xd4, 0xe5, 0x91, 0x99, 0x31, 0xec,
+	0x9a, 0x23, 0x8e, 0x7a, 0x01, 0x35, 0xe3, 0x60, 0x79, 0xd0, 0x6e, 0x6c, 0x8f, 0x7f, 0x00, 0x10,
+	0x87, 0xc4, 0xf4, 0x40, 0xb7, 0xea, 0x27, 0x00, 0x3e, 0x15, 0x1a, 0xfb, 0xff, 0xaa, 0xe4, 0x77,
+	0xa0, 0xf9, 0x00, 0x5d, 0xa6, 0x65, 0xe3, 0x21, 0x39, 0xf1, 0xde, 0x80, 0x93, 0xed, 0xe3, 0xe6,
+	0x12, 0x3e, 0x0f, 0x07, 0xbd, 0xde, 0x2e, 0xb8, 0xeb, 0x3c, 0xf2, 0xb3, 0x35, 0x47, 0x44, 0xcd,
+	0x8d, 0xcf, 0x16, 0xb1, 0x0c, 0x2b, 0x75, 0x24, 0xfc, 0xa1, 0x00, 0xa7, 0xda, 0xa1, 0x2f, 0x19,
+	0xea, 0xa3, 0xd2, 0xfa, 0x79, 0xf8, 0x4c, 0x47, 0x15, 0x8e, 0x2b, 0xf5, 0xa7, 0x02, 0x9c, 0xe5,
+	0xed, 0x60, 0x2b, 0xfa, 0xba, 0xa2, 0x97, 0xc9, 0x35, 0x5a, 0xd8, 0x24, 0x6a, 0x7d, 0xab, 0xab,
+	0x4d, 0x9c, 0x1f, 0x05, 0xd5, 0x3f, 0x00, 0x70, 0xae, 0x17, 0x45, 0x78, 0x06, 0xae, 0xc3, 0xa1,
+	0x8a, 0x6b, 0x9b, 0xd3, 0x99, 0x31, 0x3f, 0x2f, 0x66, 0xba, 0x3f, 0x2f, 0xe4, 0xc1, 0x4a, 0x63,
+	0x2f, 0xfc, 0xa3, 0x7f, 0x4c, 0x35, 0x6f, 0x96, 0x59, 0x79, 0x38, 0x0e, 0x87, 0x37, 0xe1, 0xd3,
+	0xe1, 0xb1, 0x73, 0xcd, 0xe6, 0x1b, 0x37, 0x1d, 0x77, 0x2a, 0xe8, 0x50, 0x07, 0xfc, 0xa2, 0x33,
+	0x77, 0x77, 0x04, 0x0e, 0x31, 0xf8, 0xd7, 0x88, 0x59, 0xd1, 0x0a, 0x04, 0xfd, 0x0e, 0xe0, 0x78,
+	0x9b, 0x29, 0x14, 0xcd, 0xa7, 0x5a, 0xdd, 0x00, 0x53, 0xe1, 0xa3, 0x7d, 0xfc, 0x62, 0x8f, 0x5e,
+	0x1e, 0x1f, 0xbc, 0xf6, 0xfe, 0x2f, 0x7f, 0x7d, 0x2e, 0xdc, 0x40, 0xd7, 0xa4, 0x96, 0x57, 0x53,
+	0xf6, 0x2b, 0x49, 0x37, 0x92, 0x6c, 0x2e, 0x93, 0xb6, 0x1b, 0xc9, 0xd9, 0x91, 0xb6, 0xd9, 0xbb,
+	0x1d, 0x69, 0xfb, 0x20, 0xef, 0x1d, 0xf4, 0x3d, 0x80, 0xa3, 0x2d, 0xa6, 0x4b, 0x74, 0xa1, 0x53,
+	0x90, 0x07, 0x8b, 0x25, 0x3e, 0xdb, 0x83, 0x07, 0xa7, 0xb4, 0xc8, 0x28, 0x5d, 0x42, 0xf3, 0x21,
+	0x94, 0xac, 0x64, 0xbe, 0x9a, 0xe4, 0x64, 0x02, 0xac, 0xd0, 0x4f, 0x7e, 0x66, 0x0e, 0x0f, 0x87,
+	0xa1, 0x99, 0x69, 0x3b, 0xf4, 0x86, 0x66, 0xa6, 0xfd, 0x04, 0x8a, 0x2f, 0x33, 0x1a, 0x73, 0xe8,
+	0x42, 0x97, 0x34, 0x2c, 0x3f, 0x21, 0xe8, 0x6f, 0x00, 0x9f, 0xec, 0x38, 0x7f, 0xa1, 0x97, 0x42,
+	0xc2, 0xea, 0x62, 0x82, 0x8d, 0xbf, 0x7c, 0x64, 0x7f, 0x4e, 0x70, 0x9d, 0x11, 0xcc, 0xa2, 0x1b,
+	0xad, 0x09, 0xb2, 0x99, 0x23, 0xb9, 0xc5, 0x40, 0x82, 0x34, 0x03, 0x45, 0x78, 0xb8, 0xf8, 0x7e,
+	0x05, 0xfc, 0x6a, 0xd3, 0x3a, 0x0a, 0x74, 0xb9, 0xe7, 0xc0, 0x7d, 0xca, 0x2f, 0x1c, 0xc1, 0x93,
+	0x93, 0x5d, 0x66, 0x64, 0xaf, 0xa0, 0x17, 0x8f, 0x41, 0x16, 0xfd, 0x0c, 0x60, 0xac, 0xdd, 0xe7,
+	0x15, 0x75, 0x3c, 0x00, 0x5a, 0x8e, 0x6a, 0xf1, 0x4b, 0xbd, 0xba, 0x71, 0x42, 0x69, 0x46, 0x68,
+	0x11, 0x2d, 0x84, 0x1d, 0x1c, 0xec, 0xeb, 0xdd, 0x9e, 0xcf, 0x3f, 0x21, 0xa3, 0x24, 0x1f, 0x17,
+	0xd0, 0x62, 0x6f, 0xf1, 0x05, 0x67, 0xad, 0xf8, 0x95, 0x23, 0x7a, 0x73, 0x92, 0x6f, 0x33, 0x92,
+	0xaf, 0xa3, 0xf5, 0x9e, 0x48, 0x26, 0x15, 0x43, 0x4d, 0xba, 0xe5, 0xd8, 0xb1, 0x54, 0xbf, 0x10,
+	0xe0, 0x4c, 0xf7, 0x1f, 0x6e, 0xf4, 0x4a, 0x68, 0xfd, 0x75, 0x3f, 0x0c, 0xc5, 0x5f, 0x3d, 0x3e,
+	0x10, 0x57, 0xe8, 0x16, 0x53, 0x68, 0x0d, 0xc9, 0xed, 0x14, 0xd2, 0xcb, 0x24, 0xe9, 0xcd, 0x17,
+	0x4d, 0x12, 0x75, 0xa7, 0xce, 0x7d, 0x00, 0x27, 0xc2, 0x3e, 0xca, 0x28, 0xac, 0x1f, 0xc3, 0x87,
+	0x90, 0xf8, 0xc2, 0x51, 0x5c, 0xbb, 0xeb, 0x65, 0x97, 0x88, 0x69, 0x28, 0x3a, 0x23, 0xd9, 0xee,
+	0x3b, 0x93, 0x5e, 0xdd, 0xfd, 0x33, 0x11, 0xf9, 0x66, 0x2f, 0x11, 0xd9, 0xdd, 0x4b, 0x80, 0x7b,
+	0x7b, 0x09, 0xf0, 0xc7, 0x5e, 0x02, 0xdc, 0xdd, 0x4f, 0x44, 0xee, 0xed, 0x27, 0x22, 0xbf, 0xed,
+	0x27, 0x22, 0xb7, 0xa4, 0xc0, 0x10, 0xe6, 0x6e, 0x94, 0xa4, 0x1b, 0x1b, 0x5a, 0x41, 0x53, 0x74,
+	0x7f, 0x63, 0x7f, 0x6b, 0x36, 0x91, 0xe5, 0x07, 0xd8, 0xbf, 0x6a, 0x9f, 0xfb, 0x37, 0x00, 0x00,
+	0xff, 0xff, 0x00, 0x4d, 0x8e, 0xf6, 0x66, 0x16, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -377,9 +895,15 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryServiceClient interface {
-	QueryVault(ctx context.Context, in *QueryVaultRequest, opts ...grpc.CallOption) (*QueryVaultResponse, error)
-	QueryVaults(ctx context.Context, in *QueryVaultsRequest, opts ...grpc.CallOption) (*QueryVaultsResponse, error)
-	QueryAllVaults(ctx context.Context, in *QueryAllVaultsRequest, opts ...grpc.CallOption) (*QueryAllVaultsResponse, error)
+	QueryVaultOfOwnerByPair(ctx context.Context, in *QueryVaultOfOwnerByPairRequest, opts ...grpc.CallOption) (*QueryVaultOfOwnerByPairResponse, error)
+	QueryVaultByProduct(ctx context.Context, in *QueryVaultByProductRequest, opts ...grpc.CallOption) (*QueryVaultByProductResponse, error)
+	QueryAllVaultByProducts(ctx context.Context, in *QueryAllVaultByProductsRequest, opts ...grpc.CallOption) (*QueryAllVaultByProductsResponse, error)
+	QueryTokenMintedAllProductsByPair(ctx context.Context, in *QueryTokenMintedAllProductsByPairRequest, opts ...grpc.CallOption) (*QueryTokenMintedAllProductsByPairResponse, error)
+	QueryTokenMintedAllProducts(ctx context.Context, in *QueryTokenMintedAllProductsRequest, opts ...grpc.CallOption) (*QueryTokenMintedAllProductsResponse, error)
+	QueryVaultCountByProduct(ctx context.Context, in *QueryVaultCountByProductRequest, opts ...grpc.CallOption) (*QueryVaultCountByProductResponse, error)
+	QueryVaultCountByProductAndPair(ctx context.Context, in *QueryVaultCountByProductAndPairRequest, opts ...grpc.CallOption) (*QueryVaultCountByProductAndPairResponse, error)
+	QueryTotalValueLockedByProductExtendedPair(ctx context.Context, in *QueryTotalValueLockedByProductExtendedPairRequest, opts ...grpc.CallOption) (*QueryTotalValueLockedByProductExtendedPairResponse, error)
+	QueryExtendedPairIDByProduct(ctx context.Context, in *QueryExtendedPairIDByProductRequest, opts ...grpc.CallOption) (*QueryExtendedPairIDByProductResponse, error)
 }
 
 type queryServiceClient struct {
@@ -390,27 +914,81 @@ func NewQueryServiceClient(cc grpc1.ClientConn) QueryServiceClient {
 	return &queryServiceClient{cc}
 }
 
-func (c *queryServiceClient) QueryVault(ctx context.Context, in *QueryVaultRequest, opts ...grpc.CallOption) (*QueryVaultResponse, error) {
-	out := new(QueryVaultResponse)
-	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryVault", in, out, opts...)
+func (c *queryServiceClient) QueryVaultOfOwnerByPair(ctx context.Context, in *QueryVaultOfOwnerByPairRequest, opts ...grpc.CallOption) (*QueryVaultOfOwnerByPairResponse, error) {
+	out := new(QueryVaultOfOwnerByPairResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryVaultOfOwnerByPair", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryServiceClient) QueryVaults(ctx context.Context, in *QueryVaultsRequest, opts ...grpc.CallOption) (*QueryVaultsResponse, error) {
-	out := new(QueryVaultsResponse)
-	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryVaults", in, out, opts...)
+func (c *queryServiceClient) QueryVaultByProduct(ctx context.Context, in *QueryVaultByProductRequest, opts ...grpc.CallOption) (*QueryVaultByProductResponse, error) {
+	out := new(QueryVaultByProductResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryVaultByProduct", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryServiceClient) QueryAllVaults(ctx context.Context, in *QueryAllVaultsRequest, opts ...grpc.CallOption) (*QueryAllVaultsResponse, error) {
-	out := new(QueryAllVaultsResponse)
-	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryAllVaults", in, out, opts...)
+func (c *queryServiceClient) QueryAllVaultByProducts(ctx context.Context, in *QueryAllVaultByProductsRequest, opts ...grpc.CallOption) (*QueryAllVaultByProductsResponse, error) {
+	out := new(QueryAllVaultByProductsResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryAllVaultByProducts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryServiceClient) QueryTokenMintedAllProductsByPair(ctx context.Context, in *QueryTokenMintedAllProductsByPairRequest, opts ...grpc.CallOption) (*QueryTokenMintedAllProductsByPairResponse, error) {
+	out := new(QueryTokenMintedAllProductsByPairResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryTokenMintedAllProductsByPair", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryServiceClient) QueryTokenMintedAllProducts(ctx context.Context, in *QueryTokenMintedAllProductsRequest, opts ...grpc.CallOption) (*QueryTokenMintedAllProductsResponse, error) {
+	out := new(QueryTokenMintedAllProductsResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryTokenMintedAllProducts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryServiceClient) QueryVaultCountByProduct(ctx context.Context, in *QueryVaultCountByProductRequest, opts ...grpc.CallOption) (*QueryVaultCountByProductResponse, error) {
+	out := new(QueryVaultCountByProductResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryVaultCountByProduct", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryServiceClient) QueryVaultCountByProductAndPair(ctx context.Context, in *QueryVaultCountByProductAndPairRequest, opts ...grpc.CallOption) (*QueryVaultCountByProductAndPairResponse, error) {
+	out := new(QueryVaultCountByProductAndPairResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryVaultCountByProductAndPair", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryServiceClient) QueryTotalValueLockedByProductExtendedPair(ctx context.Context, in *QueryTotalValueLockedByProductExtendedPairRequest, opts ...grpc.CallOption) (*QueryTotalValueLockedByProductExtendedPairResponse, error) {
+	out := new(QueryTotalValueLockedByProductExtendedPairResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryTotalValueLockedByProductExtendedPair", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryServiceClient) QueryExtendedPairIDByProduct(ctx context.Context, in *QueryExtendedPairIDByProductRequest, opts ...grpc.CallOption) (*QueryExtendedPairIDByProductResponse, error) {
+	out := new(QueryExtendedPairIDByProductResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.QueryService/QueryExtendedPairIDByProduct", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -419,79 +997,211 @@ func (c *queryServiceClient) QueryAllVaults(ctx context.Context, in *QueryAllVau
 
 // QueryServiceServer is the server API for QueryService service.
 type QueryServiceServer interface {
-	QueryVault(context.Context, *QueryVaultRequest) (*QueryVaultResponse, error)
-	QueryVaults(context.Context, *QueryVaultsRequest) (*QueryVaultsResponse, error)
-	QueryAllVaults(context.Context, *QueryAllVaultsRequest) (*QueryAllVaultsResponse, error)
+	QueryVaultOfOwnerByPair(context.Context, *QueryVaultOfOwnerByPairRequest) (*QueryVaultOfOwnerByPairResponse, error)
+	QueryVaultByProduct(context.Context, *QueryVaultByProductRequest) (*QueryVaultByProductResponse, error)
+	QueryAllVaultByProducts(context.Context, *QueryAllVaultByProductsRequest) (*QueryAllVaultByProductsResponse, error)
+	QueryTokenMintedAllProductsByPair(context.Context, *QueryTokenMintedAllProductsByPairRequest) (*QueryTokenMintedAllProductsByPairResponse, error)
+	QueryTokenMintedAllProducts(context.Context, *QueryTokenMintedAllProductsRequest) (*QueryTokenMintedAllProductsResponse, error)
+	QueryVaultCountByProduct(context.Context, *QueryVaultCountByProductRequest) (*QueryVaultCountByProductResponse, error)
+	QueryVaultCountByProductAndPair(context.Context, *QueryVaultCountByProductAndPairRequest) (*QueryVaultCountByProductAndPairResponse, error)
+	QueryTotalValueLockedByProductExtendedPair(context.Context, *QueryTotalValueLockedByProductExtendedPairRequest) (*QueryTotalValueLockedByProductExtendedPairResponse, error)
+	QueryExtendedPairIDByProduct(context.Context, *QueryExtendedPairIDByProductRequest) (*QueryExtendedPairIDByProductResponse, error)
 }
 
 // UnimplementedQueryServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServiceServer struct {
 }
 
-func (*UnimplementedQueryServiceServer) QueryVault(ctx context.Context, req *QueryVaultRequest) (*QueryVaultResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryVault not implemented")
+func (*UnimplementedQueryServiceServer) QueryVaultOfOwnerByPair(ctx context.Context, req *QueryVaultOfOwnerByPairRequest) (*QueryVaultOfOwnerByPairResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryVaultOfOwnerByPair not implemented")
 }
-func (*UnimplementedQueryServiceServer) QueryVaults(ctx context.Context, req *QueryVaultsRequest) (*QueryVaultsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryVaults not implemented")
+func (*UnimplementedQueryServiceServer) QueryVaultByProduct(ctx context.Context, req *QueryVaultByProductRequest) (*QueryVaultByProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryVaultByProduct not implemented")
 }
-func (*UnimplementedQueryServiceServer) QueryAllVaults(ctx context.Context, req *QueryAllVaultsRequest) (*QueryAllVaultsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryAllVaults not implemented")
+func (*UnimplementedQueryServiceServer) QueryAllVaultByProducts(ctx context.Context, req *QueryAllVaultByProductsRequest) (*QueryAllVaultByProductsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAllVaultByProducts not implemented")
+}
+func (*UnimplementedQueryServiceServer) QueryTokenMintedAllProductsByPair(ctx context.Context, req *QueryTokenMintedAllProductsByPairRequest) (*QueryTokenMintedAllProductsByPairResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTokenMintedAllProductsByPair not implemented")
+}
+func (*UnimplementedQueryServiceServer) QueryTokenMintedAllProducts(ctx context.Context, req *QueryTokenMintedAllProductsRequest) (*QueryTokenMintedAllProductsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTokenMintedAllProducts not implemented")
+}
+func (*UnimplementedQueryServiceServer) QueryVaultCountByProduct(ctx context.Context, req *QueryVaultCountByProductRequest) (*QueryVaultCountByProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryVaultCountByProduct not implemented")
+}
+func (*UnimplementedQueryServiceServer) QueryVaultCountByProductAndPair(ctx context.Context, req *QueryVaultCountByProductAndPairRequest) (*QueryVaultCountByProductAndPairResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryVaultCountByProductAndPair not implemented")
+}
+func (*UnimplementedQueryServiceServer) QueryTotalValueLockedByProductExtendedPair(ctx context.Context, req *QueryTotalValueLockedByProductExtendedPairRequest) (*QueryTotalValueLockedByProductExtendedPairResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTotalValueLockedByProductExtendedPair not implemented")
+}
+func (*UnimplementedQueryServiceServer) QueryExtendedPairIDByProduct(ctx context.Context, req *QueryExtendedPairIDByProductRequest) (*QueryExtendedPairIDByProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryExtendedPairIDByProduct not implemented")
 }
 
 func RegisterQueryServiceServer(s grpc1.Server, srv QueryServiceServer) {
 	s.RegisterService(&_QueryService_serviceDesc, srv)
 }
 
-func _QueryService_QueryVault_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryVaultRequest)
+func _QueryService_QueryVaultOfOwnerByPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVaultOfOwnerByPairRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).QueryVault(ctx, in)
+		return srv.(QueryServiceServer).QueryVaultOfOwnerByPair(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryVault",
+		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryVaultOfOwnerByPair",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).QueryVault(ctx, req.(*QueryVaultRequest))
+		return srv.(QueryServiceServer).QueryVaultOfOwnerByPair(ctx, req.(*QueryVaultOfOwnerByPairRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_QueryVaults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryVaultsRequest)
+func _QueryService_QueryVaultByProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVaultByProductRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).QueryVaults(ctx, in)
+		return srv.(QueryServiceServer).QueryVaultByProduct(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryVaults",
+		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryVaultByProduct",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).QueryVaults(ctx, req.(*QueryVaultsRequest))
+		return srv.(QueryServiceServer).QueryVaultByProduct(ctx, req.(*QueryVaultByProductRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_QueryAllVaults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllVaultsRequest)
+func _QueryService_QueryAllVaultByProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllVaultByProductsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).QueryAllVaults(ctx, in)
+		return srv.(QueryServiceServer).QueryAllVaultByProducts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryAllVaults",
+		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryAllVaultByProducts",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).QueryAllVaults(ctx, req.(*QueryAllVaultsRequest))
+		return srv.(QueryServiceServer).QueryAllVaultByProducts(ctx, req.(*QueryAllVaultByProductsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryService_QueryTokenMintedAllProductsByPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTokenMintedAllProductsByPairRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QueryTokenMintedAllProductsByPair(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryTokenMintedAllProductsByPair",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QueryTokenMintedAllProductsByPair(ctx, req.(*QueryTokenMintedAllProductsByPairRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryService_QueryTokenMintedAllProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTokenMintedAllProductsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QueryTokenMintedAllProducts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryTokenMintedAllProducts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QueryTokenMintedAllProducts(ctx, req.(*QueryTokenMintedAllProductsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryService_QueryVaultCountByProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVaultCountByProductRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QueryVaultCountByProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryVaultCountByProduct",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QueryVaultCountByProduct(ctx, req.(*QueryVaultCountByProductRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryService_QueryVaultCountByProductAndPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVaultCountByProductAndPairRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QueryVaultCountByProductAndPair(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryVaultCountByProductAndPair",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QueryVaultCountByProductAndPair(ctx, req.(*QueryVaultCountByProductAndPairRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryService_QueryTotalValueLockedByProductExtendedPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTotalValueLockedByProductExtendedPairRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QueryTotalValueLockedByProductExtendedPair(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryTotalValueLockedByProductExtendedPair",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QueryTotalValueLockedByProductExtendedPair(ctx, req.(*QueryTotalValueLockedByProductExtendedPairRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryService_QueryExtendedPairIDByProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryExtendedPairIDByProductRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QueryExtendedPairIDByProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.vault.v1beta1.QueryService/QueryExtendedPairIDByProduct",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QueryExtendedPairIDByProduct(ctx, req.(*QueryExtendedPairIDByProductRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -501,16 +1211,40 @@ var _QueryService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "QueryVault",
-			Handler:    _QueryService_QueryVault_Handler,
+			MethodName: "QueryVaultOfOwnerByPair",
+			Handler:    _QueryService_QueryVaultOfOwnerByPair_Handler,
 		},
 		{
-			MethodName: "QueryVaults",
-			Handler:    _QueryService_QueryVaults_Handler,
+			MethodName: "QueryVaultByProduct",
+			Handler:    _QueryService_QueryVaultByProduct_Handler,
 		},
 		{
-			MethodName: "QueryAllVaults",
-			Handler:    _QueryService_QueryAllVaults_Handler,
+			MethodName: "QueryAllVaultByProducts",
+			Handler:    _QueryService_QueryAllVaultByProducts_Handler,
+		},
+		{
+			MethodName: "QueryTokenMintedAllProductsByPair",
+			Handler:    _QueryService_QueryTokenMintedAllProductsByPair_Handler,
+		},
+		{
+			MethodName: "QueryTokenMintedAllProducts",
+			Handler:    _QueryService_QueryTokenMintedAllProducts_Handler,
+		},
+		{
+			MethodName: "QueryVaultCountByProduct",
+			Handler:    _QueryService_QueryVaultCountByProduct_Handler,
+		},
+		{
+			MethodName: "QueryVaultCountByProductAndPair",
+			Handler:    _QueryService_QueryVaultCountByProductAndPair_Handler,
+		},
+		{
+			MethodName: "QueryTotalValueLockedByProductExtendedPair",
+			Handler:    _QueryService_QueryTotalValueLockedByProductExtendedPair_Handler,
+		},
+		{
+			MethodName: "QueryExtendedPairIDByProduct",
+			Handler:    _QueryService_QueryExtendedPairIDByProduct_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -587,7 +1321,7 @@ func (m *VaultInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryVaultRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryVaultOfOwnerByPairRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -597,27 +1331,79 @@ func (m *QueryVaultRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryVaultRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryVaultOfOwnerByPairRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryVaultRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryVaultOfOwnerByPairRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Id) > 0 {
-		i -= len(m.Id)
-		copy(dAtA[i:], m.Id)
-		i = encodeVarintQuerier(dAtA, i, uint64(len(m.Id)))
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.ExtendedPairId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ExtendedPairId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintQuerier(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryVaultOfOwnerByPairResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryVaultOfOwnerByPairResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryVaultOfOwnerByPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Vault_Id) > 0 {
+		i -= len(m.Vault_Id)
+		copy(dAtA[i:], m.Vault_Id)
+		i = encodeVarintQuerier(dAtA, i, uint64(len(m.Vault_Id)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryVaultResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryVaultByProductRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -627,30 +1413,37 @@ func (m *QueryVaultResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryVaultResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryVaultByProductRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryVaultResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryVaultByProductRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	{
-		size, err := m.VaultInfo.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
 		}
-		i -= size
-		i = encodeVarintQuerier(dAtA, i, uint64(size))
+		i--
+		dAtA[i] = 0x12
 	}
-	i--
-	dAtA[i] = 0xa
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
+		i--
+		dAtA[i] = 0x8
+	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryVaultsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryVaultByProductResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -660,12 +1453,44 @@ func (m *QueryVaultsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryVaultsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryVaultByProductResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryVaultsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryVaultByProductResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Vault_Ids) > 0 {
+		for iNdEx := len(m.Vault_Ids) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Vault_Ids[iNdEx])
+			copy(dAtA[i:], m.Vault_Ids[iNdEx])
+			i = encodeVarintQuerier(dAtA, i, uint64(len(m.Vault_Ids[iNdEx])))
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllVaultByProductsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllVaultByProductsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllVaultByProductsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -692,7 +1517,7 @@ func (m *QueryVaultsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryVaultsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllVaultByProductsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -702,12 +1527,44 @@ func (m *QueryVaultsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryVaultsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllVaultByProductsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryVaultsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllVaultByProductsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Vault_Ids) > 0 {
+		for iNdEx := len(m.Vault_Ids) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Vault_Ids[iNdEx])
+			copy(dAtA[i:], m.Vault_Ids[iNdEx])
+			i = encodeVarintQuerier(dAtA, i, uint64(len(m.Vault_Ids[iNdEx])))
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryTokenMintedAllProductsByPairRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTokenMintedAllProductsByPairRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTokenMintedAllProductsByPairRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -722,26 +1579,22 @@ func (m *QueryVaultsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i = encodeVarintQuerier(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x1a
 	}
-	if len(m.VaultsInfo) > 0 {
-		for iNdEx := len(m.VaultsInfo) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.VaultsInfo[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuerier(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
+	if m.ExtendedPairId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ExtendedPairId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllVaultsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryTokenMintedAllProductsByPairResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -751,23 +1604,23 @@ func (m *QueryAllVaultsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllVaultsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedAllProductsByPairResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllVaultsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedAllProductsByPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Pagination != nil {
+	if m.Token_Minted != nil {
 		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
+			size := m.Token_Minted.Size()
+			i -= size
+			if _, err := m.Token_Minted.MarshalTo(dAtA[i:]); err != nil {
 				return 0, err
 			}
-			i -= size
 			i = encodeVarintQuerier(dAtA, i, uint64(size))
 		}
 		i--
@@ -776,7 +1629,7 @@ func (m *QueryAllVaultsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllVaultsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryTokenMintedAllProductsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -786,12 +1639,12 @@ func (m *QueryAllVaultsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllVaultsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedAllProductsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllVaultsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedAllProductsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -808,19 +1661,347 @@ func (m *QueryAllVaultsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.VaultsInfo) > 0 {
-		for iNdEx := len(m.VaultsInfo) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.VaultsInfo[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuerier(dAtA, i, uint64(size))
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryTokenMintedAllProductsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTokenMintedAllProductsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTokenMintedAllProductsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Token_Minted != nil {
+		{
+			size := m.Token_Minted.Size()
+			i -= size
+			if _, err := m.Token_Minted.MarshalTo(dAtA[i:]); err != nil {
+				return 0, err
 			}
-			i--
-			dAtA[i] = 0xa
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryVaultCountByProductRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryVaultCountByProductRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryVaultCountByProductRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryVaultCountByProductResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryVaultCountByProductResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryVaultCountByProductResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.VaultCount != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.VaultCount))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryVaultCountByProductAndPairRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryVaultCountByProductAndPairRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryVaultCountByProductAndPairRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.ExtendedPairId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ExtendedPairId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryVaultCountByProductAndPairResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryVaultCountByProductAndPairResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryVaultCountByProductAndPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.VaultCount != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.VaultCount))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.ExtendedPairId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ExtendedPairId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ValueLocked != nil {
+		{
+			size := m.ValueLocked.Size()
+			i -= size
+			if _, err := m.ValueLocked.MarshalTo(dAtA[i:]); err != nil {
+				return 0, err
+			}
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryExtendedPairIDByProductRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryExtendedPairIDByProductRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryExtendedPairIDByProductRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.ProductId != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.ProductId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryExtendedPairIDByProductResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryExtendedPairIDByProductResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryExtendedPairIDByProductResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PairId) > 0 {
+		dAtA13 := make([]byte, len(m.PairId)*10)
+		var j12 int
+		for _, num := range m.PairId {
+			for num >= 1<<7 {
+				dAtA13[j12] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j12++
+			}
+			dAtA13[j12] = uint8(num)
+			j12++
+		}
+		i -= j12
+		copy(dAtA[i:], dAtA13[:j12])
+		i = encodeVarintQuerier(dAtA, i, uint64(j12))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -861,31 +2042,74 @@ func (m *VaultInfo) Size() (n int) {
 	return n
 }
 
-func (m *QueryVaultRequest) Size() (n int) {
+func (m *QueryVaultOfOwnerByPairRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Id)
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
+	}
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	if m.ExtendedPairId != 0 {
+		n += 1 + sovQuerier(uint64(m.ExtendedPairId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryVaultOfOwnerByPairResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Vault_Id)
 	if l > 0 {
 		n += 1 + l + sovQuerier(uint64(l))
 	}
 	return n
 }
 
-func (m *QueryVaultResponse) Size() (n int) {
+func (m *QueryVaultByProductRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.VaultInfo.Size()
-	n += 1 + l + sovQuerier(uint64(l))
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
 	return n
 }
 
-func (m *QueryVaultsRequest) Size() (n int) {
+func (m *QueryVaultByProductResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Vault_Ids) > 0 {
+		for _, s := range m.Vault_Ids {
+			l = len(s)
+			n += 1 + l + sovQuerier(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *QueryAllVaultByProductsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -902,17 +2126,32 @@ func (m *QueryVaultsRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryVaultsResponse) Size() (n int) {
+func (m *QueryAllVaultByProductsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.VaultsInfo) > 0 {
-		for _, e := range m.VaultsInfo {
-			l = e.Size()
+	if len(m.Vault_Ids) > 0 {
+		for _, s := range m.Vault_Ids {
+			l = len(s)
 			n += 1 + l + sovQuerier(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *QueryTokenMintedAllProductsByPairRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
+	}
+	if m.ExtendedPairId != 0 {
+		n += 1 + sovQuerier(uint64(m.ExtendedPairId))
 	}
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
@@ -921,12 +2160,28 @@ func (m *QueryVaultsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllVaultsRequest) Size() (n int) {
+func (m *QueryTokenMintedAllProductsByPairResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
+	if m.Token_Minted != nil {
+		l = m.Token_Minted.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryTokenMintedAllProductsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
+	}
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
 		n += 1 + l + sovQuerier(uint64(l))
@@ -934,21 +2189,138 @@ func (m *QueryAllVaultsRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllVaultsResponse) Size() (n int) {
+func (m *QueryTokenMintedAllProductsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.VaultsInfo) > 0 {
-		for _, e := range m.VaultsInfo {
-			l = e.Size()
-			n += 1 + l + sovQuerier(uint64(l))
-		}
+	if m.Token_Minted != nil {
+		l = m.Token_Minted.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryVaultCountByProductRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
 	}
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
 		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryVaultCountByProductResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.VaultCount != 0 {
+		n += 1 + sovQuerier(uint64(m.VaultCount))
+	}
+	return n
+}
+
+func (m *QueryVaultCountByProductAndPairRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
+	}
+	if m.ExtendedPairId != 0 {
+		n += 1 + sovQuerier(uint64(m.ExtendedPairId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryVaultCountByProductAndPairResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.VaultCount != 0 {
+		n += 1 + sovQuerier(uint64(m.VaultCount))
+	}
+	return n
+}
+
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
+	}
+	if m.ExtendedPairId != 0 {
+		n += 1 + sovQuerier(uint64(m.ExtendedPairId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ValueLocked != nil {
+		l = m.ValueLocked.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryExtendedPairIDByProductRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ProductId != 0 {
+		n += 1 + sovQuerier(uint64(m.ProductId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryExtendedPairIDByProductResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.PairId) > 0 {
+		l = 0
+		for _, e := range m.PairId {
+			l += sovQuerier(uint64(e))
+		}
+		n += 1 + sovQuerier(uint64(l)) + l
 	}
 	return n
 }
@@ -1179,7 +2551,7 @@ func (m *VaultInfo) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryVaultRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryVaultOfOwnerByPairRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1202,15 +2574,34 @@ func (m *QueryVaultRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryVaultRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryVaultOfOwnerByPairRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryVaultRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryVaultOfOwnerByPairRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+			}
+			m.ProductId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProductId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1238,61 +2629,30 @@ func (m *QueryVaultRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Id = string(dAtA[iNdEx:postIndex])
+			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuerier(dAtA[iNdEx:])
-			if err != nil {
-				return err
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendedPairId", wireType)
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuerier
+			m.ExtendedPairId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExtendedPairId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
 			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryVaultResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuerier
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryVaultResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryVaultResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
+		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultInfo", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1319,7 +2679,10 @@ func (m *QueryVaultResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.VaultInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1344,7 +2707,7 @@ func (m *QueryVaultResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryVaultsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryVaultOfOwnerByPairResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1367,10 +2730,279 @@ func (m *QueryVaultsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryVaultsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryVaultOfOwnerByPairResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryVaultsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryVaultOfOwnerByPairResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Vault_Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Vault_Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryVaultByProductRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryVaultByProductRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryVaultByProductRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+			}
+			m.ProductId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProductId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryVaultByProductResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryVaultByProductResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryVaultByProductResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Vault_Ids", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Vault_Ids = append(m.Vault_Ids, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllVaultByProductsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllVaultByProductsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllVaultByProductsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1462,7 +3094,7 @@ func (m *QueryVaultsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryVaultsResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryAllVaultByProductsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1485,17 +3117,17 @@ func (m *QueryVaultsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryVaultsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllVaultByProductsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryVaultsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllVaultByProductsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultsInfo", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Vault_Ids", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -1505,61 +3137,23 @@ func (m *QueryVaultsResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthQuerier
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthQuerier
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.VaultsInfo = append(m.VaultsInfo, VaultInfo{})
-			if err := m.VaultsInfo[len(m.VaultsInfo)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuerier
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuerier
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageResponse{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
+			m.Vault_Ids = append(m.Vault_Ids, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1582,7 +3176,7 @@ func (m *QueryVaultsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllVaultsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryTokenMintedAllProductsByPairRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1605,13 +3199,51 @@ func (m *QueryAllVaultsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllVaultsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTokenMintedAllProductsByPairRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllVaultsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTokenMintedAllProductsByPairRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+			}
+			m.ProductId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProductId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendedPairId", wireType)
+			}
+			m.ExtendedPairId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExtendedPairId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
 			}
@@ -1668,7 +3300,7 @@ func (m *QueryAllVaultsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllVaultsResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryTokenMintedAllProductsByPairResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1691,17 +3323,17 @@ func (m *QueryAllVaultsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllVaultsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTokenMintedAllProductsByPairResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllVaultsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTokenMintedAllProductsByPairResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultsInfo", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Token_Minted", wireType)
 			}
-			var msglen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuerier
@@ -1711,26 +3343,97 @@ func (m *QueryAllVaultsResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthQuerier
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthQuerier
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.VaultsInfo = append(m.VaultsInfo, VaultInfo{})
-			if err := m.VaultsInfo[len(m.VaultsInfo)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			var v github_com_cosmos_cosmos_sdk_types.Int
+			m.Token_Minted = &v
+			if err := m.Token_Minted.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTokenMintedAllProductsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTokenMintedAllProductsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTokenMintedAllProductsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+			}
+			m.ProductId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProductId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
@@ -1761,12 +3464,906 @@ func (m *QueryAllVaultsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Pagination == nil {
-				m.Pagination = &query.PageResponse{}
+				m.Pagination = &query.PageRequest{}
 			}
 			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTokenMintedAllProductsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTokenMintedAllProductsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTokenMintedAllProductsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Token_Minted", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var v github_com_cosmos_cosmos_sdk_types.Int
+			m.Token_Minted = &v
+			if err := m.Token_Minted.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryVaultCountByProductRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryVaultCountByProductRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryVaultCountByProductRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+			}
+			m.ProductId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProductId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryVaultCountByProductResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryVaultCountByProductResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryVaultCountByProductResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultCount", wireType)
+			}
+			m.VaultCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.VaultCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryVaultCountByProductAndPairRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryVaultCountByProductAndPairRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryVaultCountByProductAndPairRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+			}
+			m.ProductId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProductId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendedPairId", wireType)
+			}
+			m.ExtendedPairId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExtendedPairId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryVaultCountByProductAndPairResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryVaultCountByProductAndPairResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryVaultCountByProductAndPairResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultCount", wireType)
+			}
+			m.VaultCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.VaultCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTotalValueLockedByProductExtendedPairRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTotalValueLockedByProductExtendedPairRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTotalValueLockedByProductExtendedPairRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+			}
+			m.ProductId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProductId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendedPairId", wireType)
+			}
+			m.ExtendedPairId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExtendedPairId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTotalValueLockedByProductExtendedPairResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTotalValueLockedByProductExtendedPairResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTotalValueLockedByProductExtendedPairResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ValueLocked", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var v github_com_cosmos_cosmos_sdk_types.Int
+			m.ValueLocked = &v
+			if err := m.ValueLocked.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryExtendedPairIDByProductRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryExtendedPairIDByProductRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryExtendedPairIDByProductRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+			}
+			m.ProductId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProductId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryExtendedPairIDByProductResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryExtendedPairIDByProductResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryExtendedPairIDByProductResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowQuerier
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.PairId = append(m.PairId, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowQuerier
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthQuerier
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthQuerier
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.PairId) == 0 {
+					m.PairId = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowQuerier
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.PairId = append(m.PairId, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field PairId", wireType)
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuerier(dAtA[iNdEx:])
