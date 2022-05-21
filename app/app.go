@@ -2,6 +2,9 @@ package app
 
 import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	"github.com/comdex-official/comdex/x/liquidation"
+	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -177,6 +180,7 @@ var (
 		locker.AppModuleBasic{},
 		bandoraclemodule.AppModuleBasic{},
 		collector.AppModuleBasic{},
+		liquidation.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
 )
@@ -236,16 +240,17 @@ type App struct {
 	scopedIBCOracleKeeper   capabilitykeeper.ScopedKeeper
 	scopedBandoracleKeeper  capabilitykeeper.ScopedKeeper
 
-	BandoracleKeeper bandoraclemodulekeeper.Keeper
-	assetKeeper      assetkeeper.Keeper
-	collectorKeeper  collectorkeeper.Keeper
-	vaultKeeper      vaultkeeper.Keeper
-	liquidityKeeper  liquiditykeeper.Keeper
-	marketKeeper     marketkeeper.Keeper
-	rewardskeeper    rewardskeeper.Keeper
-	lockerKeeper     lockerkeeper.Keeper
-	lendKeeper       lendkeeper.Keeper
-	scopedWasmKeeper capabilitykeeper.ScopedKeeper
+	BandoracleKeeper  bandoraclemodulekeeper.Keeper
+	assetKeeper       assetkeeper.Keeper
+	collectorKeeper   collectorkeeper.Keeper
+	vaultKeeper       vaultkeeper.Keeper
+	liquidityKeeper   liquiditykeeper.Keeper
+	marketKeeper      marketkeeper.Keeper
+	liquidationKeeper liquidationkeeper.Keeper
+	rewardskeeper     rewardskeeper.Keeper
+	lockerKeeper      lockerkeeper.Keeper
+	lendKeeper        lendkeeper.Keeper
+	scopedWasmKeeper  capabilitykeeper.ScopedKeeper
 
 	wasmKeeper wasm.Keeper
 	// the module manager
@@ -277,7 +282,7 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey,
+			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			lendtypes.StoreKey, markettypes.StoreKey, rewardstypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
 		)
 	)
@@ -323,6 +328,7 @@ func New(
 	app.paramsKeeper.Subspace(collectortypes.ModuleName)
 	app.paramsKeeper.Subspace(lendtypes.ModuleName)
 	app.paramsKeeper.Subspace(markettypes.ModuleName)
+	app.paramsKeeper.Subspace(liquidationtypes.ModuleName)
 	app.paramsKeeper.Subspace(rewardstypes.ModuleName)
 	app.paramsKeeper.Subspace(lockertypes.ModuleName)
 	app.paramsKeeper.Subspace(bandoraclemoduletypes.ModuleName)
@@ -504,6 +510,18 @@ func New(
 		&app.BandoracleKeeper,
 	)
 
+	app.liquidationKeeper = *liquidationkeeper.NewKeeper(
+		app.cdc,
+		keys[liquidationtypes.StoreKey],
+		keys[liquidationtypes.MemStoreKey],
+		app.GetSubspace(liquidationtypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+		&app.assetKeeper,
+		&app.vaultKeeper,
+		&app.marketKeeper,
+	)
+
 	app.rewardskeeper = *rewardskeeper.NewKeeper(
 		app.cdc,
 		app.keys[collectortypes.StoreKey],
@@ -638,6 +656,7 @@ func New(
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
 		oracleModule,
 		bandoracleModule,
+		liquidation.NewAppModule(app.cdc, app.liquidationKeeper, app.accountKeeper, app.bankKeeper),
 		locker.NewAppModule(app.cdc, app.lockerKeeper, app.accountKeeper, app.bankKeeper),
 		collector.NewAppModule(app.cdc, app.collectorKeeper, app.accountKeeper, app.bankKeeper),
 		rewards.NewAppModule(app.cdc, app.rewardskeeper, app.accountKeeper, app.bankKeeper),
@@ -653,7 +672,7 @@ func New(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, rewardstypes.ModuleName, lockertypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
-		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName,
+		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName,
 		lendtypes.ModuleName, vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
@@ -661,7 +680,7 @@ func New(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName,
 		minttypes.ModuleName, bandoraclemoduletypes.ModuleName, markettypes.ModuleName, rewardstypes.ModuleName, lockertypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
-		vaulttypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
+		vaulttypes.ModuleName, liquidationtypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
 		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
 		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName,
 	)
@@ -692,6 +711,7 @@ func New(
 		vaulttypes.ModuleName,
 		bandoraclemoduletypes.ModuleName,
 		markettypes.ModuleName,
+		liquidationtypes.ModuleName,
 		rewardstypes.ModuleName,
 		lockertypes.StoreKey,
 		wasmtypes.ModuleName,
@@ -884,6 +904,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
+		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
