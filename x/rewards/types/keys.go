@@ -17,10 +17,13 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_rewards"
+
+	SecondsPerYear = 31536000
 )
 
 var (
-	RewardsKeyPrefix = []byte{0x05}
+	RewardsKeyPrefix          = []byte{0x05}
+	KeyPrefixLastInterestTime = []byte{0x06}
 )
 
 func RewardsKey(id uint64) []byte {
@@ -29,4 +32,10 @@ func RewardsKey(id uint64) []byte {
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)
+}
+
+func CreateLastInterestTimeKey() []byte {
+	var key []byte
+	key = append(key, KeyPrefixLastInterestTime...)
+	return key
 }

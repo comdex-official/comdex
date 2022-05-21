@@ -10,4 +10,5 @@ import (
 var (
 	ErrSample              = sdkerrors.Register(ModuleName, 1100, "sample error")
 	ErrAssetIdDoesNotExist = sdkerrors.Register(ModuleName, 1101, "Asset Id does not exist in locker for App_Mapping")
+	ErrNegativeTimeElapsed = sdkerrors.Register(ModuleName, 1102, "negative time elapsed since last interest time")
 )

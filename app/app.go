@@ -152,6 +152,7 @@ var (
 				assetclient.AddAssetsHandler,
 				bandoraclemoduleclient.AddFetchPriceHandler,
 				collectorclient.AddLookupTableParamsHandlers,
+				collectorclient.AddAuctionControlParamsHandler,
 				paramsclient.ProposalHandler,
 				distrclient.ProposalHandler,
 				upgradeclient.ProposalHandler,

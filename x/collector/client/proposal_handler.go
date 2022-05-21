@@ -8,9 +8,6 @@ import (
 )
 
 var (
-	AddLookupTableParamsHandlers  = []govclient.ProposalHandler{
-		govclient.NewProposalHandler(cli.NewCmdLookupTableParams, rest.NewCmdLookupTableParamsRESTHandler),
-		govclient.NewProposalHandler(cli.NewCmdAuctionControlProposal, rest.NewCmdAuctionTableAppRESTHandler),
-
-	}
+	AddLookupTableParamsHandlers   = govclient.NewProposalHandler(cli.NewCmdLookupTableParams, rest.NewCmdLookupTableParamsRESTHandler)
+	AddAuctionControlParamsHandler = govclient.NewProposalHandler(cli.NewCmdAuctionControlProposal, rest.NewCmdAuctionTableAppRESTHandler)
 )
