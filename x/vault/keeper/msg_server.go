@@ -88,7 +88,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	}
 	//Call CheckAppExtendedPairVaultMapping function to get counter - it also initialised the kv store if app_mapping_id does not exists, or extended_pair_vault_id does not exists.
 
-	counter_val, token_minted_statistics := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
+	counter_val, token_minted_statistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
 
 	//Check debt Floor
 	if !msg.AmountOut.GTE(extended_pair_vault.DebtFloor) {
@@ -457,7 +457,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 	totaldebt := userVault.AmountOut.Add(*userVault.InterestAccumulated)
 	totaldebt = totaldebt.Add(*userVault.ClosingFeeAccumulated)
 
-	_, token_minted_statistics := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
+	_, token_minted_statistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
 
 	//Check Debt Ceil
 	current_minted_statistics := token_minted_statistics.Add(msg.Amount)
@@ -547,6 +547,10 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
 	if msg.Amount.LTE(sdk.NewInt(0)) {
+		return nil, types.ErrorInvalidAmount
+	}
+	userVault.AmountOut = userVault.AmountOut.Sub(msg.Amount)
+	if !userVault.AmountOut.IsPositive() {
 		return nil, types.ErrorInvalidAmount
 	}
 
@@ -698,4 +702,347 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 	k.DeleteVault(ctx, userVault.Id)
 
 	return &types.MsgCloseResponse{}, nil
+}
+
+func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateStableMintRequest) (*types.MsgCreateStableMintResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	//Checking if extended pair exists
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	if !found {
+		return nil, types.ErrorExtendedPairVaultDoesNotExists
+	}
+	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+	assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+	assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+	//Checking if app_mapping_id exists
+	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+
+	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
+	if app_mapping.Id != extended_pair_vault.AppMappingId {
+		return nil, types.ErrorAppMappingIdMismatch
+	}
+
+	//Converting user address for bank transaction
+	depositor_address, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	// Checking if this is a stableMint pair or not  -- stableMintPair == psmPair
+	if !extended_pair_vault.IsPsmPair {
+		return nil, types.ErrorCannotCreateStableMintVault
+	}
+	//Checking
+	if !extended_pair_vault.IsVaultActive {
+		return nil, types.ErrorVaultCreationInactive
+
+	}
+	//Call CheckAppExtendedPairVaultMapping function to get counter - it also initialised the kv store if app_mapping_id does not exists, or extended_pair_vault_id does not exists.
+
+	counter_val, token_minted_statistics, lenOfVault := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
+
+	if lenOfVault >= 1 {
+		return nil, types.ErrorStableMintVaultAlreadyCreated
+
+	}
+
+	//Check Debt Ceil
+	current_minted_statistics := token_minted_statistics.Add(msg.Amount)
+
+	if current_minted_statistics.GTE(extended_pair_vault.DebtCeiling) {
+		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
+	}
+
+	//Take amount from user
+	if err := k.SendCoinFromAccountToModule(ctx, depositor_address, types.ModuleName, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
+		return nil, err
+	}
+	//Mint Tokens for user
+
+	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
+		return nil, err
+	}
+	if extended_pair_vault.CreationFee.IsZero() {
+
+		//Send Rest to user
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
+			return nil, err
+		}
+
+	} else {
+		//If not zero deduct send to collector//////////
+		//
+		//			COLLECTOR FUNCTION
+		//
+		//
+		/////////////////////////////////////////////////
+
+		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.CreationFee))).Quo(sdk.NewInt(100))
+
+		// and send the rest to the user
+		amountToUser := msg.Amount.Sub(collectorShare)
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
+			return nil, err
+		}
+
+	}
+	//Create Mint Vault
+
+	var stableVault types.StableMintVault
+	updated_counter := counter_val + 1
+
+	stableVault.Id = app_mapping.ShortName + strconv.FormatUint(updated_counter, 10)
+	stableVault.AmountIn = msg.Amount
+	stableVault.AmountOut = msg.Amount
+	stableVault.AppMappingId = app_mapping.Id
+	stableVault.CreatedAt = time.Now()
+	stableVault.ExtendedPairVaultID = extended_pair_vault.Id
+	k.SetStableMintVault(ctx, stableVault)
+	//update Locker Data 	//Update Amount
+	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(ctx, updated_counter, stableVault)
+
+	return &types.MsgCreateStableMintResponse{}, nil
+}
+
+func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDepositStableMintRequest) (*types.MsgDepositStableMintResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	depositor_address, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	//checks if extended pair exists
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	if !found {
+		return nil, types.ErrorExtendedPairVaultDoesNotExists
+	}
+	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+	assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+	assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	//Checking if app_mapping_id exists
+	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+	//Checking if vault acccess disabled
+	if !extended_pair_vault.IsVaultActive {
+		return nil, types.ErrorVaultInactive
+
+	}
+	if !extended_pair_vault.IsPsmPair {
+		return nil, types.ErrorCannotCreateStableMintVault
+	}
+	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
+	if app_mapping.Id != extended_pair_vault.AppMappingId {
+		return nil, types.ErrorAppMappingIdMismatch
+	}
+
+	stableVault, found := k.GetStableMintVault(ctx, msg.StableVaultID)
+	if !found {
+		return nil, types.ErrorVaultDoesNotExist
+	}
+	if app_mapping.Id != stableVault.AppMappingId {
+		return nil, types.ErrorInvalidAppMappingData
+	}
+	if extended_pair_vault.Id != stableVault.ExtendedPairVaultID {
+		return nil, types.ErrorInvalidExtendedPairMappingData
+	}
+
+	stableVault.AmountIn = stableVault.AmountIn.Add(msg.Amount)
+	if !stableVault.AmountIn.IsPositive() {
+		return nil, types.ErrorInvalidAmount
+	}
+	_, token_minted_statistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
+
+	//Check Debt Ceil
+	current_minted_statistics := token_minted_statistics.Add(msg.Amount)
+
+	if current_minted_statistics.GTE(extended_pair_vault.DebtCeiling) {
+		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
+	}
+
+	//Take amount from user
+	if err := k.SendCoinFromAccountToModule(ctx, depositor_address, types.ModuleName, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
+		return nil, err
+	}
+	//Mint Tokens for user
+
+	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
+		return nil, err
+	}
+	if extended_pair_vault.CreationFee.IsZero() {
+
+		//Send Rest to user
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
+			return nil, err
+		}
+
+	} else {
+		//If not zero deduct send to collector//////////
+		//
+		//			COLLECTOR FUNCTION
+		//
+		//
+		/////////////////////////////////////////////////
+
+		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.CreationFee))).Quo(sdk.NewInt(100))
+
+		// and send the rest to the user
+		amountToUser := msg.Amount.Sub(collectorShare)
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
+			return nil, err
+		}
+
+	}
+	stableVault.AmountIn = stableVault.AmountIn.Add(msg.Amount)
+	stableVault.AmountOut = stableVault.AmountOut.Add(msg.Amount)
+
+	k.SetStableMintVault(ctx, stableVault)
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, app_mapping.Id)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, stableVault.AmountIn, true)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, stableVault.AmountOut, true)
+
+	return &types.MsgDepositStableMintResponse{}, nil
+}
+
+func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdrawStableMintRequest) (*types.MsgWithdrawStableMintResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	depositor_address, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	//checks if extended pair exists
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	if !found {
+		return nil, types.ErrorExtendedPairVaultDoesNotExists
+	}
+	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	if !found {
+		return nil, types.ErrorPairDoesNotExist
+	}
+	assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+	assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+
+	//Checking if app_mapping_id exists
+	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+	//Checking if vault acccess disabled
+	if !extended_pair_vault.IsVaultActive {
+		return nil, types.ErrorVaultInactive
+
+	}
+	if !extended_pair_vault.IsPsmPair {
+		return nil, types.ErrorCannotCreateStableMintVault
+	}
+	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
+	if app_mapping.Id != extended_pair_vault.AppMappingId {
+		return nil, types.ErrorAppMappingIdMismatch
+	}
+
+	stableVault, found := k.GetStableMintVault(ctx, msg.StableVaultID)
+	if !found {
+		return nil, types.ErrorVaultDoesNotExist
+	}
+	if app_mapping.Id != stableVault.AppMappingId {
+		return nil, types.ErrorInvalidAppMappingData
+	}
+	if extended_pair_vault.Id != stableVault.ExtendedPairVaultID {
+		return nil, types.ErrorInvalidExtendedPairMappingData
+	}
+
+	stableVault.AmountIn = stableVault.AmountIn.Sub(msg.Amount)
+	if !stableVault.AmountIn.IsPositive() {
+		return nil, types.ErrorInvalidAmount
+
+	}
+	var  updatedAmount sdk.Int
+	//Take amount from user
+	if err := k.SendCoinFromAccountToModule(ctx, depositor_address, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
+		return nil, err
+	}
+
+	if extended_pair_vault.CreationFee.IsZero() {
+
+		//BurnTokens for user
+		if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
+			return nil, err
+		}
+
+		//Send Rest to user
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
+			return nil, err
+		}
+		updatedAmount=msg.Amount
+
+	} else {
+		//If not zero deduct send to collector//////////
+		//
+		//			COLLECTOR FUNCTION
+		//
+		//
+		/////////////////////////////////////////////////
+
+		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.CreationFee))).Quo(sdk.NewInt(100))
+
+		upatedAmount := msg.Amount.Sub(collectorShare)
+
+
+
+		//BurnTokens for user
+		if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, upatedAmount)); err != nil {
+			return nil, err
+		}
+		
+
+		// and send the rest to the user
+
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetInData.Denom, upatedAmount)); err != nil {
+			return nil, err
+		}
+
+	}
+
+	stableVault.AmountIn = stableVault.AmountIn.Sub(updatedAmount)
+	stableVault.AmountOut = stableVault.AmountOut.Sub(updatedAmount)
+
+	k.SetStableMintVault(ctx, stableVault)
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, app_mapping.Id)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, stableVault.AmountIn, false)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, stableVault.AmountOut, false)
+
+	return &types.MsgWithdrawStableMintResponse{}, nil
 }

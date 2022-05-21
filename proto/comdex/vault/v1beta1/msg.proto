@@ -114,6 +114,72 @@ message MsgCloseRequest {
 
 message MsgCloseResponse {}
 
+
+message MsgCreateStableMintRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.customname) = "ExtendedPairVaultID",
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  string amount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"Amount\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message  MsgCreateStableMintResponse{}
+
+
+message MsgDepositStableMintRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.customname) = "ExtendedPairVaultID",
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  string amount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  string stableVaultid   = 5
+  [ (gogoproto.customname) = "StableVaultID", (gogoproto.moretags) = "yaml:\"stableVaultid\"" ];
+}
+
+
+
+message  MsgDepositStableMintResponse{}
+
+
+
+message MsgWithdrawStableMintRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.customname) = "ExtendedPairVaultID",
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  string amount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  string stableVaultid   = 5
+  [ (gogoproto.customname) = "StableVaultID", (gogoproto.moretags) = "yaml:\"stableVaultid\"" ];
+}
+
+
+
+message  MsgWithdrawStableMintResponse{}
+
+
+
+
+
+
+
 service MsgService {
   rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
   rpc MsgDeposit(MsgDepositRequest) returns (MsgDepositResponse);
@@ -121,4 +187,7 @@ service MsgService {
   rpc MsgDraw(MsgDrawRequest) returns (MsgDrawResponse);
   rpc MsgRepay(MsgRepayRequest) returns (MsgRepayResponse);
   rpc MsgClose(MsgCloseRequest) returns (MsgCloseResponse);
+  rpc MsgCreateStableMint(MsgCreateStableMintRequest) returns (MsgCreateStableMintResponse);
+  rpc MsgDepositStableMint(MsgDepositStableMintRequest) returns (MsgDepositStableMintResponse);
+  rpc MsgWithdrawStableMint(MsgWithdrawStableMintRequest) returns (MsgWithdrawStableMintResponse);
 }

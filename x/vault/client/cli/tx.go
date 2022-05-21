@@ -273,3 +273,133 @@ func txClose() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
+
+
+func txCreateStableMint() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] ",
+		Short: "create a new stable mint vault",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			app_mapping_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extended_pair_vault_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			amount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidAmountIn
+			}
+
+			
+
+			msg := types.NewMsgCreateStableMintRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amount)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
+func txDepositStableMint() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "deposit-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] ",
+		Short: "deposit to stable mint vault",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			app_mapping_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extended_pair_vault_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			amount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidAmountIn
+			}
+
+			
+
+			msg := types.NewMsgDepositStableMintRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amount)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
+func txWithdrawStableMint() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "withdraw-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] ",
+		Short: "withdraw from stable mint vault",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			app_mapping_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extended_pair_vault_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			amount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidAmountIn
+			}
+
+			
+
+			msg := types.NewMsgWithdrawStableMintRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amount)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}

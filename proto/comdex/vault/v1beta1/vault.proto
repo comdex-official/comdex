@@ -105,7 +105,9 @@ message StableMintVault {
     (gogoproto.nullable)   = false
   ];
   uint64 app_mapping_id = 4 [ (gogoproto.moretags) = "yaml:\"product_mapping_id\"" ];
-  uint64 extended_pair_id = 5 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+  uint64 extended_pair_vault_id = 5 [
+    (gogoproto.customname) = "ExtendedPairVaultID",
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""];
   google.protobuf.Timestamp created_at = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,

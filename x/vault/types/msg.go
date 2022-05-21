@@ -12,6 +12,10 @@ var (
 	_ sdk.Msg = (*MsgDrawRequest)(nil)
 	_ sdk.Msg = (*MsgRepayRequest)(nil)
 	_ sdk.Msg = (*MsgCloseRequest)(nil)
+	_ sdk.Msg = (*MsgCreateStableMintRequest)(nil)
+	_ sdk.Msg = (*MsgDepositStableMintRequest)(nil)
+	_ sdk.Msg = (*MsgWithdrawStableMintRequest)(nil)
+
 )
 
 func NewMsgCreateRequest(from sdk.AccAddress, app_mapping_id uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) *MsgCreateRequest {
@@ -326,6 +330,167 @@ func (m *MsgCloseRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgCloseRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+
+func NewMsgCreateStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int) *MsgCreateStableMintRequest {
+	return &MsgCreateStableMintRequest{
+		From:                from.String(),
+		AppMappingId:        app_mapping_id,
+		ExtendedPairVaultID: extended_pair_vault_id,
+		Amount: amount,
+		
+	}
+}
+
+func (m *MsgCreateStableMintRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgCreateStableMintRequest) Type() string {
+	return TypeMsgLiquidateRequest
+}
+
+func (m *MsgCreateStableMintRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+	if m.Amount.IsNil() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be nil")
+	}
+	if m.Amount.IsNegative() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be negative")
+	}
+	if m.Amount.IsZero() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be zero")
+	}
+
+	
+
+	return nil
+}
+
+func (m *MsgCreateStableMintRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgCreateStableMintRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgDepositStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int) *MsgDepositStableMintRequest {
+	return &MsgDepositStableMintRequest{
+		From:                from.String(),
+		AppMappingId:        app_mapping_id,
+		ExtendedPairVaultID: extended_pair_vault_id,
+		Amount: amount,
+		
+	}
+}
+
+func (m *MsgDepositStableMintRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgDepositStableMintRequest) Type() string {
+	return TypeMsgLiquidateRequest
+}
+
+func (m *MsgDepositStableMintRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+	if m.Amount.IsNil() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be nil")
+	}
+	if m.Amount.IsNegative() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be negative")
+	}
+	if m.Amount.IsZero() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be zero")
+	}
+
+	
+
+	return nil
+}
+
+func (m *MsgDepositStableMintRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgDepositStableMintRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+
+func NewMsgWithdrawStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int) *MsgWithdrawStableMintRequest {
+	return &MsgWithdrawStableMintRequest{
+		From:                from.String(),
+		AppMappingId:        app_mapping_id,
+		ExtendedPairVaultID: extended_pair_vault_id,
+		Amount: amount,
+		
+	}
+}
+
+func (m *MsgWithdrawStableMintRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgWithdrawStableMintRequest) Type() string {
+	return TypeMsgLiquidateRequest
+}
+
+func (m *MsgWithdrawStableMintRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+	if m.Amount.IsNil() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be nil")
+	}
+	if m.Amount.IsNegative() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be negative")
+	}
+	if m.Amount.IsZero() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be zero")
+	}
+
+	
+
+	return nil
+}
+
+func (m *MsgWithdrawStableMintRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgWithdrawStableMintRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
