@@ -33,3 +33,7 @@ func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appMappingId uint64) (lock
 func (k Keeper) GetCollectorLookupByAsset(ctx sdk.Context, app_id, asset_id uint64) (collectorLookup collecortypes.CollectorLookup, found bool) {
 	return k.collector.GetCollectorLookupByAsset(ctx, app_id, asset_id)
 }
+
+func (k Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
+	k.locker.UpdateLocker(ctx, locker)
+}

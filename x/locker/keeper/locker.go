@@ -209,6 +209,18 @@ func (k *Keeper) GetLocker(ctx sdk.Context, lockerId string) (locker types.Locke
 	return locker, true
 }
 
+func (k *Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
+
+	var (
+		store = k.Store(ctx)
+		key   = types.LockerKey(locker.LockerId)
+		value = k.cdc.MustMarshal(&locker)
+	)
+
+	store.Set(key, value)
+
+}
+
 //Target
 //user sends create request
 //it comdes to the function and check if user data exists or not. if not create locker
