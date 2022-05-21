@@ -461,4 +461,22 @@ func (q *queryServer) QueryExtendedPairIDByProduct(c context.Context, req *types
 	return &types.QueryExtendedPairIDByProductResponse{
 		PairId: pairIds,
 	}, nil
+} 
+
+func (q *queryServer) QueryStableVaultInfo(c context.Context, req *types.QueryStableVaultInfoRequest) (*types.QueryStableVaultInfoResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var( 
+		ctx   = sdk.UnwrapSDKContext(c)
+	)
+		stableMintData, found := q.GetStableMintVault(ctx, req.StableVaultId)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "stable mint data not exist for id %d", req.StableVaultId)
+		}
+	
+
+	return &types.QueryStableVaultInfoResponse{
+		StableMintVault: &stableMintData,
+	}, nil
 }

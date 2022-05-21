@@ -5,6 +5,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "comdex/vault/v1beta1/vault.proto";
 
 option go_package            = "github.com/comdex-official/comdex/x/vault/types";
 option (gogoproto.equal_all) = false;
@@ -180,6 +181,14 @@ message QueryExtendedPairIDByProductResponse {
   repeated uint64 pair_id = 1 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
 }
 
+message QueryStableVaultInfoRequest {
+  string stable_vault_id = 1 [ (gogoproto.moretags) = "yaml:\"stable_vault_id\"" ];
+}
+
+message QueryStableVaultInfoResponse {
+  StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
+}
+
 
 service QueryService {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
@@ -228,5 +237,9 @@ service QueryService {
 
   rpc QueryExtendedPairIDByProduct(QueryExtendedPairIDByProductRequest) returns (QueryExtendedPairIDByProductResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/external-pair-by-product/{product_id}";
+  };
+
+  rpc QueryStableVaultInfo(QueryStableVaultInfoRequest) returns (QueryStableVaultInfoResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-id/{stable_vault_id}";
   };
 }

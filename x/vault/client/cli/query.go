@@ -34,6 +34,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryTokenMintedAllProducts(),
 		QueryTotalValueLockedByProductExtendedPair(),
 		QueryExtendedPairIDByProduct(),
+		QueryStableVaultInfo(),
 		
 	)
 
@@ -429,7 +430,7 @@ func QueryVaultCountByProductAndPair() *cobra.Command {
 func QueryTotalValueLockedByProductExtendedPair() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "value-locked-by-product-extended-pair [product_id] [extended_pair_id]",
-		Short: "vaulue locked by product extended pair",
+		Short: "value locked by product extended pair",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -473,7 +474,7 @@ func QueryTotalValueLockedByProductExtendedPair() *cobra.Command {
 func QueryExtendedPairIDByProduct() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "extended-pair-by-product [product_id]",
-		Short: "vaulue locked by product in extended pair",
+		Short: "value locked by product in extended pair",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -496,6 +497,35 @@ func QueryExtendedPairIDByProduct() *cobra.Command {
 			res, err := queryClient.QueryExtendedPairIDByProduct(cmd.Context(), &types.QueryExtendedPairIDByProductRequest{
 				ProductId: productId,
 				Pagination: pagination,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryStableVaultInfo() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "stable-vault-by-id [stable_vault_id]",
+		Short: "get stable vault by id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryStableVaultInfo(cmd.Context(), &types.QueryStableVaultInfoRequest{
+				StableVaultId: args[0],
 			})
 
 			if err != nil {
