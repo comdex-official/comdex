@@ -11,6 +11,7 @@ type BankKeeper interface {
 	MintCoins(ctx sdk.Context, name string, coins sdk.Coins) error
 	SendCoinsFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
 	SendCoinsFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
+	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error
 	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
 }
 
@@ -23,4 +24,8 @@ type AssetKeeper interface {
 
 type Marketkeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+}
+
+type CollectorKeeper interface {
+	UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error
 }

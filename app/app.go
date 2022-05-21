@@ -457,6 +457,7 @@ func New(
 	app.vaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
 		app.keys[vaulttypes.StoreKey],
+		app.GetSubspace(collectortypes.ModuleName),
 		app.bankKeeper,
 		&app.assetKeeper,
 		&app.marketKeeper,

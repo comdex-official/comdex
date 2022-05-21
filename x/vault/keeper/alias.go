@@ -37,6 +37,14 @@ func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, addre
 
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
+func (k *Keeper) SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
+	if coin.IsZero() {
+		return nil
+	}
+
+	return k.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
+
+}
 
 func (k *Keeper) SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins {
 	return k.bank.SpendableCoins(ctx, address)
@@ -60,4 +68,8 @@ func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppMapping, bool
 
 func (k *Keeper) GetPairsVault(ctx sdk.Context, pairID uint64) (assettypes.ExtendedPairVault, bool) {
 	return k.asset.GetPairsVault(ctx, pairID)
+}
+
+func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error {
+	return k.collector.UpdateCollector(ctx, appId, asset_id, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected)
 }
