@@ -11,4 +11,5 @@ type AssetKeeper interface {
 	HasAssetForDenom(ctx sdk.Context, id string) (bool)
 	HasAsset(ctx sdk.Context, id uint64) (bool)
 	GetAssetForDenom(ctx sdk.Context, denom string) (types.Asset, bool)
+	GetApp(ctx sdk.Context, id uint64) (types.AppMapping, bool)
 }

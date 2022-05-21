@@ -61,3 +61,7 @@ func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppMapping, bool
 func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool) {
 	return k.asset.GetApps(ctx)
 }
+
+func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error {
+	return k.collector.UpdateCollector(ctx, appId, asset_id,CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected)
+}

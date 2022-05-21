@@ -15,3 +15,7 @@ func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
 func (k *Keeper) GetAssetForDenom(ctx sdk.Context, id string) (types.Asset, bool) {
 	return k.asset.GetAssetForDenom(ctx, id)
 }
+
+func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (types.AppMapping, bool) {
+	return k.asset.GetApp(ctx, id)
+}

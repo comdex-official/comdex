@@ -35,17 +35,17 @@ message VaultInfo{
   ];
 }
 
-// message QueryVaultRequest {
-//   string id = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
-// }
+message QueryVaultRequest {
+  string id = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+}
 
-// message QueryVaultResponse {
-//   VaultInfo vaultInfo = 1[
-//     (gogoproto.customname) = "VaultInfo",
-//     (gogoproto.moretags)   = "yaml:\"vaultInfo\"",
-//     (gogoproto.nullable)   = false
-//   ];
-// }
+message QueryVaultResponse {
+  repeated VaultInfo vaultInfo = 1[
+    (gogoproto.customname) = "VaultInfo",
+    (gogoproto.moretags)   = "yaml:\"vaultInfo\"",
+    (gogoproto.nullable)   = false
+  ];
+}
 
 // message QueryVaultsRequest {
 //   string owner    = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
@@ -182,11 +182,11 @@ message QueryExtendedPairIDByProductResponse {
 
 
 service QueryService {
-  // rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
-  //   option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
-  // };
+  rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
+  };
 
-  // rpc QueryVaults(QueryVaultsRequest) returns (QueryVaultsResponse) {
+  // rpc QueryVault(QueryVaultsRequest) returns (QueryVaultsResponse) {
   //   option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{owner}";
   // };
 
@@ -195,11 +195,11 @@ service QueryService {
   // };
 
   rpc QueryVaultOfOwnerByPair(QueryVaultOfOwnerByPairRequest) returns (QueryVaultOfOwnerByPairResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vault-of-owner/{product_id}/{owner}/{extended_pair_id}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/vault-of-owner-by-pair/{product_id}/{owner}/{extended_pair_id}";
   };
 
   rpc QueryVaultByProduct(QueryVaultByProductRequest) returns (QueryVaultByProductResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-product/{product_id}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-of-owner-by-product/{product_id}";
   };
 
   rpc QueryAllVaultByProducts(QueryAllVaultByProductsRequest) returns (QueryAllVaultByProductsResponse) {
@@ -207,7 +207,7 @@ service QueryService {
   };
 
   rpc QueryTokenMintedAllProductsByPair(QueryTokenMintedAllProductsByPairRequest) returns (QueryTokenMintedAllProductsByPairResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/token-minted-by-products/{product_id}/{extended_pair_id}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/token-minted-by-products-extended-pair/{product_id}/{extended_pair_id}";
   };
 
   rpc QueryTokenMintedAllProducts(QueryTokenMintedAllProductsRequest) returns (QueryTokenMintedAllProductsResponse) {
@@ -229,5 +229,4 @@ service QueryService {
   rpc QueryExtendedPairIDByProduct(QueryExtendedPairIDByProductRequest) returns (QueryExtendedPairIDByProductResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/external-pair-by-product/{product_id}";
   };
-
 }

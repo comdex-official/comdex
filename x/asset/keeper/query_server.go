@@ -238,3 +238,23 @@ func (q *queryServer) QueryPairVaults(c context.Context, _ *types.QueryPairVault
 		PairVault: pairVaults,
 	}, nil
 }
+
+func (q *queryServer) QueryProductToExtendedPair(c context.Context, req *types.QueryProductToExtendedPairRequest) (*types.QueryProductToExtendedPairResponse, error) {
+	var (
+		ctx               = sdk.UnwrapSDKContext(c)
+		pairVaults, found = q.GetPairsVaults(ctx)
+	)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
+	}
+	var pairVaultsData[] *types.ExtendedPairVault
+	for _, data := range pairVaults{
+		if (data.AppMappingId == req.ProductId){
+			pairVaultsData = append(pairVaultsData, &data)
+		}
+	} 
+
+	return &types.QueryProductToExtendedPairResponse{
+		ExtendedPair: pairVaultsData,
+	}, nil
+}

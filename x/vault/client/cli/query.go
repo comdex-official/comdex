@@ -23,7 +23,7 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		// QueryAllVaults(),
-		// QueryVault(),
+		QueryVault(),
 		// QueryVaults(),
 		QueryVaultOfOwnerByPair(),
 		QueryVaultByProduct(),
@@ -73,40 +73,40 @@ func GetQueryCmd() *cobra.Command {
 // 	return cmd
 // }
 
-// func QueryVault() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "vault [id]",
-// 		Short: "vault's information",
-// 		Args:  cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
+func QueryVault() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vault [id]",
+		Short: "vault's information",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
 
-// 			ctx, err := client.GetClientQueryContext(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			id := args[0]
+			id := args[0]
 
-// 			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-// 			res, err := queryClient.QueryVault(cmd.Context(), &types.QueryVaultRequest{
-// 				Id: id,
-// 			})
+			res, err := queryClient.QueryVault(cmd.Context(), &types.QueryVaultRequest{
+				Id: id,
+			})
 
-// 			if err != nil {
-// 				return err
-// 			}
-// 			return ctx.PrintProto(res)
-// 		},
-// 	}
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
-// 	return cmd
-// }
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
 
 func QueryVaultOfOwnerByPair() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vault-of-owner [product_id] [owner] [extended_pair_id]",
+		Use:   "vault-of-owner-by-pair [product_id] [owner] [extended_pair_id]",
 		Short: "vaults list for an individual account",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -187,7 +187,7 @@ func QueryVaultOfOwnerByPair() *cobra.Command {
 
 func QueryVaultByProduct() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vaults-by-product [product_id]",
+		Use:   "vaults-of-owner-by-product [product_id]",
 		Short: "vaults list for a product",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -262,7 +262,7 @@ func QueryAllVaultByProducts() *cobra.Command {
 
 func QueryTokenMintedAllProductsByPair() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "token-minted-by-products [product_id] [extended_pair_id]",
+		Use:   "token-minted-by-products-extended-pair [product_id] [extended_pair_id]",
 		Short: "token minted by products and extended pair",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -385,7 +385,7 @@ func QueryVaultCountByProduct() *cobra.Command {
 func QueryVaultCountByProductAndPair() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vault-count-by-products-and-pair [product_id] [extended_pair_id]",
-		Short: "vault count by products",
+		Short: "vault count by products and extended pair",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -428,8 +428,8 @@ func QueryVaultCountByProductAndPair() *cobra.Command {
 
 func QueryTotalValueLockedByProductExtendedPair() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "value-locked-by-product-pair [product_id] [extended_pair_id]",
-		Short: "vaulue locked by product pair",
+		Use:   "value-locked-by-product-extended-pair [product_id] [extended_pair_id]",
+		Short: "vaulue locked by product extended pair",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -473,7 +473,7 @@ func QueryTotalValueLockedByProductExtendedPair() *cobra.Command {
 func QueryExtendedPairIDByProduct() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "extended-pair-by-product [product_id]",
-		Short: "vaulue locked by product pair",
+		Short: "vaulue locked by product in extended pair",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
