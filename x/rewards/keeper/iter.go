@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -24,10 +25,25 @@ func (k Keeper) Iterate(ctx sdk.Context, appMappingId uint64, assetIds []uint64)
 					for w := range lockerIds {
 						locker, _ := k.GetLocker(ctx, lockerIds[w])
 						balance := locker.NetBalance
-						_, err := k.CalculateRewards(ctx, balance, *j.LockerSavingRate)
+						rewards, err := k.CalculateRewards(ctx, balance, *j.LockerSavingRate)
 						if err != nil {
 							return nil
 						}
+						// update the lock position
+						returnsAcc := locker.ReturnsAccumulated
+						updatedReturnsAcc := rewards.Add(returnsAcc)
+						netBalance := locker.NetBalance.Add(rewards)
+						updatedLocker := lockertypes.Locker{
+							LockerId:           locker.LockerId,
+							Depositor:          locker.Depositor,
+							ReturnsAccumulated: updatedReturnsAcc,
+							NetBalance:         netBalance,
+							CreatedAt:          locker.CreatedAt,
+							AssetDepositId:     locker.AssetDepositId,
+							IsLocked:           locker.IsLocked,
+							AppMappingId:       locker.AppMappingId,
+						}
+						k.UpdateLocker(ctx, updatedLocker)
 					}
 				}
 			}

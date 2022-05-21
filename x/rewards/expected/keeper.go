@@ -10,6 +10,7 @@ type LockerKeeper interface {
 	GetLockerProductAssetMapping(ctx sdk.Context, appMappingId uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool)
 	GetLocker(ctx sdk.Context, lockerId string) (locker types.Locker, found bool)
 	GetLockerLookupTable(ctx sdk.Context, appMappingId uint64) (lockerLookupData types.LockerLookupTable, found bool)
+	UpdateLocker(ctx sdk.Context, locker types.Locker)
 }
 
 type CollectorKeeper interface {
