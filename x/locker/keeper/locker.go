@@ -169,6 +169,18 @@ func (k *Keeper) CheckUserAppToAssetMapping(ctx sdk.Context, userLockerAssetData
 	return locker_id, false
 
 }
+func (k *Keeper) CheckUserToAppMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping, appMappingId uint64) (found bool) {
+	for _, locker_app_mapping := range userLockerAssetData.LockerAppMapping {
+
+		if locker_app_mapping.AppMappingId == appMappingId {
+			return true
+
+		}
+
+	}
+	return false
+
+}
 
 func (k *Keeper) SetLocker(ctx sdk.Context, locker types.Locker) {
 

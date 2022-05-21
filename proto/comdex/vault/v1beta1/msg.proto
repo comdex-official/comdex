@@ -37,7 +37,7 @@ message MsgDepositRequest {
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string userVaultid   = 4
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
+      [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -55,7 +55,7 @@ message MsgWithdrawRequest {
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string userVaultid   = 4
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
+      [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -73,7 +73,7 @@ message MsgDrawRequest {
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string userVaultid   = 4
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
+      [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -91,7 +91,7 @@ message MsgRepayRequest {
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string userVaultid   = 4
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
+      [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -109,7 +109,7 @@ message MsgCloseRequest {
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string userVaultid   = 4
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
+      [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
 }
 
 message MsgCloseResponse {}

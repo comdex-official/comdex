@@ -3,7 +3,7 @@ package comdex.vault.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "cosmos/base/v1beta1/coin.proto";
+// import "cosmos/base/v1beta1/coin.proto";
 
 option go_package            = "github.com/comdex-official/comdex/x/vault/types";
 option (gogoproto.equal_all) = false;
@@ -11,13 +11,15 @@ option (gogoproto.goproto_getters_all) = false;
 
 //app_vault_type_id will be the key for  the KVStore for this value.
 message Vault {
-  uint64 Id = 1 ;
-  string app_vault_type_id = 2 
-      [ (gogoproto.customname) = "AppVaultTypeId", (gogoproto.moretags) = "yaml:\"app_vault_type_id\"" ];
+  string id = 1 ;
+  uint64 app_mapping_id = 2
+      [(gogoproto.customname) = "AppMappingId",
+      (gogoproto.moretags) = "yaml:\"app_vault_type_id\"" ];
+
   uint64 extended_pair_vault_id = 3 [
     (gogoproto.customname) = "ExtendedPairVaultID",
-    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
-  ];
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""];
+
   string owner     = 4 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
   string amount_in = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -38,67 +40,55 @@ message Vault {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"interest_accrued\""
   ];
-  string opening_fee_accumulated  = 9 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"opening_fee_accumulated\""
-  ];
-  string closing_fee_accumulated  = 10 [
+  string closing_fee_accumulated  = 9 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"closing_fee_accumulated\""
   ];
-
-  string rewards_accumulated  = 11 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"rewards_accumulated\""
-  ];
 }
 
-
-message UserVaultIdMapping {
-  string owner = 1 [
+//user_address is the key
+message UserVaultAssetMapping {
+    string owner = 1 [
     (gogoproto.moretags) = "yaml:\"owner\""
-  ];
-
-  repeated VaultToAppMapping  user_vault_ids = 2 [
+    ];
+  
+    repeated VaultToAppMapping  user_vault_app = 2 [
     (gogoproto.moretags) = "yaml:\"user_vault_ids\""
-  ];
+    ];
 }
 
 message VaultToAppMapping {
-  uint64 app_mapping_id = 1[
-  (gogoproto.moretags) = "yaml:\"app_mapping_id\""
-  ];
-  repeated string app_vault_type_id =2 [
-    (gogoproto.moretags) = "yaml:\"addresses\""
-  ];
+    uint64 app_mapping_id = 1;
+    repeated ExtendedPairToVaultMapping user_extended_pair_vault =2 [
+    (gogoproto.moretags) = "yaml:\"extended_pair_to_vault_mapping\""
+    ];
 }
-
-message TokenMintingStatisics {
-  repeated TokenStatistics tokens_minted=1 [
-    (gogoproto.moretags) = "yaml:\"tokens_minted\""
-  ];
-}
-//This message will be saved in the KV store with key being the product type (0/1)
+message ExtendedPairToVaultMapping {
+    uint64 extended_pair_id = 1;
+    string vault_id =2 [
+    (gogoproto.moretags) = "yaml:\"vault_id\""];
+   
+    }
 
 
-message TokenStatistics {
-  string collateral_denom = 1 [
-    (gogoproto.moretags) = "yaml:\"collateral_denom\""
-  ];
-  map<string, uint64> minted_assets = 2 [
-    (gogoproto.moretags) = "yaml:\"minted_assets\""
-  ];
-}
+  //app_id is the key
+  message AppExtendedPairVaultMapping {
+    uint64 app_mapping_id = 1 ; 
+    uint64 counter=2;
+    repeated ExtendedPairVaultMapping extended_pair_vaults = 3 [ (gogoproto.moretags) = "yaml:\"extended_pair_vault\"" ];
+  }
+  
+  message ExtendedPairVaultMapping
+  {
+    uint64 extended_pair_id = 1 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+    repeated string vault_ids = 2 [ (gogoproto.moretags) = "yaml:\"app_vault_type_ids\"" ];
+    string token_minted_amount =3[ 
+      (gogoproto.moretags) = "yaml:\"token_minted_amount\"" ,
+      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"];
+    string collateral_locked_amount=4[ (gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
+           (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+  }
 
-message LookupTableVault {
-  uint64 app_mapping_id = 1 [
-    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
-  ];
-  repeated string app_vault_ids = 2 [
-    (gogoproto.moretags) = "yaml:\"app_vault_ids\""
-  ];
-  uint64 counter = 3 [ (gogoproto.moretags) = "yaml:\"counter\"" ];
-}
 
 message StableMintVault {
   string id = 1[
@@ -123,37 +113,10 @@ message StableMintVault {
   ];
 }
 
-message StableMintVaultLookUp {
-
-  string app_name = 1 ; 
-  repeated StableMintVaultPair vault_pair = 2 [ (gogoproto.moretags) = "yaml:\"vault_pair\"" ];
-}
-message StableMintVaultPair 
-{
-  uint64 stable_swap_vault_id = 1 [ (gogoproto.moretags) = "yaml:\"stable_swap_vault_id\"" ];
-  uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
-}
-message PairToVaultMapping {
-
-  uint64 pair_id = 1 ; 
-  repeated ExtendedPairVaultMap extendedpair_vault = 2 [ (gogoproto.moretags) = "yaml:\"extendedpair_vault\"" ];
-}
-message ExtendedPairVaultMap 
-{
-  repeated string app_vault_type_ids = 1 [ (gogoproto.moretags) = "yaml:\"app_vault_type_ids\"" ];
-  uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
-}
-
-message AppExtendedPairVaultMapping {
-
-  uint64 app_id = 1 ; 
-  repeated ExtendedPairVaultMap extendedpair_vault = 2 [ (gogoproto.moretags) = "yaml:\"extendedpair_vault\"" ];
-}
+//StableMintVault will use the Lookup table of the vault itself for consistency
 
 
-message ExtendedPairVaultMapping {
-
-  uint64 extended_pair_id = 1 ; 
-  repeated string app_vault_type_ids = 2 [ (gogoproto.moretags) = "yaml:\"app_vault_type_ids\"" ];
-  uint64 Token_minted = 3 [ (gogoproto.moretags) = "yaml:\"Token_minted\"" ];
-}
+// front end needs to know which all extended pairs have reached the the debt ceiling- write a query command.
+//Collateral Locked ExtendedPair Vault Wise
+//Collateral Locked Product Wise
+//Collateral Locked Across all Projects

@@ -16,11 +16,11 @@ var (
 
 func NewMsgCreateRequest(from sdk.AccAddress, app_mapping_id uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) *MsgCreateRequest {
 	return &MsgCreateRequest{
-		From:      from.String(),
-		AppMappingId: app_mapping_id,
-		ExtendedPairVaultID:    extendedPairVaultID,
-		AmountIn: amountIn,
-		AmountOut: amountIn,
+		From:                from.String(),
+		AppMappingId:        app_mapping_id,
+		ExtendedPairVaultID: extendedPairVaultID,
+		AmountIn:            amountIn,
+		AmountOut:           amountIn,
 	}
 }
 
@@ -76,11 +76,11 @@ func (m *MsgCreateRequest) GetSigners() []sdk.AccAddress {
 
 func NewMsgDepositRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, userVaultid string, amount sdk.Int) *MsgDepositRequest {
 	return &MsgDepositRequest{
-		From:   from.String(),
-		AppMappingId: app_mapping_id,
+		From:                from.String(),
+		AppMappingId:        app_mapping_id,
 		ExtendedPairVaultID: extended_pair_vault_id,
-		ID: userVaultid,
-		Amount: amount,
+		UserVaultID:         userVaultid,
+		Amount:              amount,
 	}
 }
 
@@ -99,7 +99,7 @@ func (m *MsgDepositRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.ID) == 0 {
+	if len(m.UserVaultID) == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 	if m.Amount.IsNil() {
@@ -130,11 +130,11 @@ func (m *MsgDepositRequest) GetSigners() []sdk.AccAddress {
 
 func NewMsgWithdrawRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, userVaultid string, amount sdk.Int) *MsgWithdrawRequest {
 	return &MsgWithdrawRequest{
-		From:   from.String(),
-		AppMappingId: app_mapping_id,
+		From:                from.String(),
+		AppMappingId:        app_mapping_id,
 		ExtendedPairVaultID: extended_pair_vault_id,
-		ID: userVaultid,
-		Amount: amount,
+		UserVaultID:         userVaultid,
+		Amount:              amount,
 	}
 }
 
@@ -153,7 +153,7 @@ func (m *MsgWithdrawRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.ID) == 0  {
+	if len(m.UserVaultID) == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
 	}
 	if m.Amount.IsNil() {
@@ -184,11 +184,11 @@ func (m *MsgWithdrawRequest) GetSigners() []sdk.AccAddress {
 
 func NewMsgDrawRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, userVaultid string, amount sdk.Int) *MsgDrawRequest {
 	return &MsgDrawRequest{
-		From:   from.String(),
-		AppMappingId: app_mapping_id,
+		From:                from.String(),
+		AppMappingId:        app_mapping_id,
 		ExtendedPairVaultID: extended_pair_vault_id,
-		ID: userVaultid,
-		Amount: amount,
+		UserVaultID:         userVaultid,
+		Amount:              amount,
 	}
 }
 
@@ -207,7 +207,7 @@ func (m *MsgDrawRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.ID) == 0 {
+	if len(m.UserVaultID) == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 	if m.Amount.IsNil() {
@@ -238,11 +238,11 @@ func (m *MsgDrawRequest) GetSigners() []sdk.AccAddress {
 
 func NewMsgRepayRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, userVaultid string, amount sdk.Int) *MsgRepayRequest {
 	return &MsgRepayRequest{
-		From:   from.String(),
-		AppMappingId: app_mapping_id,
+		From:                from.String(),
+		AppMappingId:        app_mapping_id,
 		ExtendedPairVaultID: extended_pair_vault_id,
-		ID: userVaultid,
-		Amount: amount,
+		UserVaultID:         userVaultid,
+		Amount:              amount,
 	}
 }
 
@@ -261,7 +261,7 @@ func (m *MsgRepayRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.ID) == 0 {
+	if len(m.UserVaultID) == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 	if m.Amount.IsNil() {
@@ -292,10 +292,10 @@ func (m *MsgRepayRequest) GetSigners() []sdk.AccAddress {
 
 func NewMsgLiquidateRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, userVaultid string) *MsgCloseRequest {
 	return &MsgCloseRequest{
-		From:   from.String(),
-		AppMappingId: app_mapping_id,
+		From:                from.String(),
+		AppMappingId:        app_mapping_id,
 		ExtendedPairVaultID: extended_pair_vault_id,
-		ID: userVaultid,
+		UserVaultID:         userVaultid,
 	}
 }
 
@@ -314,7 +314,7 @@ func (m *MsgCloseRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.ID) == 0 {
+	if len(m.UserVaultID) == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 

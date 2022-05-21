@@ -35,7 +35,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if user mapping exists
-	//if does then check app to asset mapping has any locker key
+	//if it does then check app to asset mapping has any locker key
 	//if it does throw error
 	user_locker_asset_mapping, user_exists := k.GetUserLockerAssetMapping(ctx, msg.Depositor)
 
@@ -85,19 +85,65 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 			userLocker.AppMappingId = app_mapping.Id
 			k.SetLocker(ctx, userLocker)
 
-			//Creating user mapping data
-			var user_mapping_data types.UserLockerAssetMapping
-			var user_app_data types.LockerToAppMapping
-			var user_asset_data types.AssetToLockerMapping
+			//Creating user mapping data *************wrong approach
 
-			user_asset_data.AssetId = asset.Id
-			user_asset_data.LockerId = userLocker.LockerId
-			user_app_data.AppMappingId = app_mapping.Id
-			user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, &user_asset_data)
-			user_mapping_data.Owner = msg.Depositor
-			user_mapping_data.LockerAppMapping = append(user_mapping_data.LockerAppMapping, &user_app_data)
+			//Checking if user data exits in mapping by user address
+			//if not - create a new set
+			user_locker_asset_mapping_data, user_exists := k.GetUserLockerAssetMapping(ctx, msg.Depositor)
+			if !user_exists {
+				//UserData does not exists
+				//Create a new instance
+				var user_mapping_data types.UserLockerAssetMapping
+				var user_app_data types.LockerToAppMapping
+				var user_asset_data types.AssetToLockerMapping
 
-			k.SetUserLockerAssetMapping(ctx, user_mapping_data)
+				user_asset_data.AssetId = asset.Id
+				user_asset_data.LockerId = userLocker.LockerId
+				user_app_data.AppMappingId = app_mapping.Id
+				user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, &user_asset_data)
+				user_mapping_data.Owner = msg.Depositor
+				user_mapping_data.LockerAppMapping = append(user_mapping_data.LockerAppMapping, &user_app_data)
+
+				k.SetUserLockerAssetMapping(ctx, user_mapping_data)
+			} else {
+				///Check if user app_mapping data exits
+
+				app_exists := k.CheckUserToAppMapping(ctx, user_locker_asset_mapping_data, app_mapping.Id)
+				if app_exists {
+
+					//User has the app_mapping added
+					//So only need to add the locker id with asset
+					var user_asset_data types.AssetToLockerMapping
+					user_asset_data.AssetId = asset.Id
+					user_asset_data.LockerId = userLocker.LockerId
+
+					for _, appData := range user_locker_asset_mapping_data.LockerAppMapping {
+						if appData.AppMappingId == app_mapping.Id {
+
+							appData.UserAssetLocker = append(appData.UserAssetLocker, &user_asset_data)
+						}
+
+					}
+					k.SetUserLockerAssetMapping(ctx, user_locker_asset_mapping_data)
+
+				} else {
+					//Will need to create new app and add it to the user
+					var user_asset_data types.AssetToLockerMapping
+					var user_app_data types.LockerToAppMapping
+
+					user_asset_data.AssetId = asset.Id
+					user_asset_data.LockerId = userLocker.LockerId
+					user_app_data.AppMappingId=app_mapping.Id
+					user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, &user_asset_data)
+					user_locker_asset_mapping_data.LockerAppMapping = append(user_locker_asset_mapping_data.LockerAppMapping, &user_app_data)
+					k.SetUserLockerAssetMapping(ctx, user_locker_asset_mapping_data)
+
+
+
+				}
+
+			}
+
 
 			//Update LockerMapping Values
 

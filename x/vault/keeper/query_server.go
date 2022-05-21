@@ -1,204 +1,204 @@
 package keeper
 
-import (
-	"context"
+// import (
+// 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+// 	"github.com/cosmos/cosmos-sdk/store/prefix"
+// 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	"github.com/cosmos/cosmos-sdk/types/query"
+// 	"google.golang.org/grpc/codes"
+// 	"google.golang.org/grpc/status"
 
-	"github.com/comdex-official/comdex/x/vault/types"
-)
+// 	"github.com/comdex-official/comdex/x/vault/types"
+// )
 
-var (
-	_ types.QueryServiceServer = (*queryServer)(nil)
-)
+// var (
+// 	_ types.QueryServiceServer = (*queryServer)(nil)
+// )
 
-type queryServer struct {
-	Keeper
-}
+// type queryServer struct {
+// 	Keeper
+// }
 
-func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
-	return &queryServer{
-		Keeper: k,
-	}
-}
+// func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+// 	return &queryServer{
+// 		Keeper: k,
+// 	}
+// }
 
-func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVaultsRequest) (*types.QueryAllVaultsResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-	}
+// func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVaultsRequest) (*types.QueryAllVaultsResponse, error) {
+// 	if req == nil {
+// 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+// 	}
 
-	var (
-		items []types.VaultInfo
-		ctx   = sdk.UnwrapSDKContext(c)
-	)
+// 	var (
+// 		items []types.VaultInfo
+// 		ctx   = sdk.UnwrapSDKContext(c)
+// 	)
 
-	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.VaultKeyPrefix),
-		req.Pagination,
-		func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.Vault
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
+// 	pagination, err := query.FilteredPaginate(
+// 		prefix.NewStore(q.Store(ctx), types.VaultKeyPrefix),
+// 		req.Pagination,
+// 		func(_, value []byte, accumulate bool) (bool, error) {
+// 			var item types.Vault
+// 			if err := q.cdc.Unmarshal(value, &item); err != nil {
+// 				return false, err
+// 			}
 
-			pair, found := q.GetPair(ctx, item.ExtendedPairVaultID)
-			if !found {
-				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.ExtendedPairVaultID)
-			}
+// 			pair, found := q.GetPair(ctx, item.ExtendedPairVaultID)
+// 			if !found {
+// 				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.ExtendedPairVaultID)
+// 			}
 
-			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
-			if !found {
-				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
-			}
+// 			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
+// 			if !found {
+// 				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
+// 			}
 
-			assetOut, found := q.GetAsset(ctx, pair.AssetOut)
-			if !found {
-				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
-			}
+// 			assetOut, found := q.GetAsset(ctx, pair.AssetOut)
+// 			if !found {
+// 				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
+// 			}
 
-			collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, item.AmountIn, assetIn, item.AmountOut, assetOut)
-			if err != nil {
-				return false, err
-			}
+// 			collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, item.AmountIn, assetIn, item.AmountOut, assetOut)
+// 			if err != nil {
+// 				return false, err
+// 			}
 
-			vaultInfo := types.VaultInfo{
-				Id:                     item.Id,
-				PairID:                 item.ExtendedPairVaultID,
-				Owner:                  item.Owner,
-				Collateral:             sdk.NewCoin(assetIn.Denom, item.AmountIn),
-				Debt:                   sdk.NewCoin(assetOut.Denom, item.AmountOut),
-				CollateralizationRatio: collateralizationRatio,
-			}
+// 			vaultInfo := types.VaultInfo{
+// 				Id:                     item.Id,
+// 				PairID:                 item.ExtendedPairVaultID,
+// 				Owner:                  item.Owner,
+// 				Collateral:             sdk.NewCoin(assetIn.Denom, item.AmountIn),
+// 				Debt:                   sdk.NewCoin(assetOut.Denom, item.AmountOut),
+// 				CollateralizationRatio: collateralizationRatio,
+// 			}
 
-			if accumulate {
-				items = append(items, vaultInfo)
-			}
+// 			if accumulate {
+// 				items = append(items, vaultInfo)
+// 			}
 
-			return true, nil
-		},
-	)
+// 			return true, nil
+// 		},
+// 	)
 
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
+// 	if err != nil {
+// 		return nil, status.Error(codes.Internal, err.Error())
+// 	}
 
-	return &types.QueryAllVaultsResponse{
-		VaultsInfo: items,
-		Pagination: pagination,
-	}, nil
-}
+// 	return &types.QueryAllVaultsResponse{
+// 		VaultsInfo: items,
+// 		Pagination: pagination,
+// 	}, nil
+// }
 
-func (q *queryServer) QueryVaults(c context.Context, req *types.QueryVaultsRequest) (*types.QueryVaultsResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-	}
+// func (q *queryServer) QueryVaults(c context.Context, req *types.QueryVaultsRequest) (*types.QueryVaultsResponse, error) {
+// 	if req == nil {
+// 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+// 	}
 
-	var (
-		items []types.VaultInfo
-		ctx   = sdk.UnwrapSDKContext(c)
-	)
+// 	var (
+// 		items []types.VaultInfo
+// 		ctx   = sdk.UnwrapSDKContext(c)
+// 	)
 
-	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.VaultKeyPrefix),
-		req.Pagination,
-		func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.Vault
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
+// 	pagination, err := query.FilteredPaginate(
+// 		prefix.NewStore(q.Store(ctx), types.VaultKeyPrefix),
+// 		req.Pagination,
+// 		func(_, value []byte, accumulate bool) (bool, error) {
+// 			var item types.Vault
+// 			if err := q.cdc.Unmarshal(value, &item); err != nil {
+// 				return false, err
+// 			}
 
-			pair, found := q.GetPair(ctx, item.ExtendedPairVaultID)
-			if !found {
-				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.ExtendedPairVaultID)
-			}
+// 			pair, found := q.GetPair(ctx, item.ExtendedPairVaultID)
+// 			if !found {
+// 				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.ExtendedPairVaultID)
+// 			}
 
-			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
-			if !found {
-				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
-			}
+// 			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
+// 			if !found {
+// 				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
+// 			}
 
-			assetOut, found := q.GetAsset(ctx, pair.AssetOut)
-			if !found {
-				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
-			}
+// 			assetOut, found := q.GetAsset(ctx, pair.AssetOut)
+// 			if !found {
+// 				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
+// 			}
 
-			collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, item.AmountIn, assetIn, item.AmountOut, assetOut)
-			if err != nil {
-				return false, err
-			}
+// 			collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, item.AmountIn, assetIn, item.AmountOut, assetOut)
+// 			if err != nil {
+// 				return false, err
+// 			}
 
-			vaultInfo := types.VaultInfo{
-				Id:                     item.Id,
-				PairID:                 item.ExtendedPairVaultID,
-				Owner:                  item.Owner,
-				Collateral:             sdk.NewCoin(assetIn.Denom, item.AmountIn),
-				Debt:                   sdk.NewCoin(assetOut.Denom, item.AmountOut),
-				CollateralizationRatio: collateralizationRatio,
-			}
+// 			vaultInfo := types.VaultInfo{
+// 				Id:                     item.Id,
+// 				PairID:                 item.ExtendedPairVaultID,
+// 				Owner:                  item.Owner,
+// 				Collateral:             sdk.NewCoin(assetIn.Denom, item.AmountIn),
+// 				Debt:                   sdk.NewCoin(assetOut.Denom, item.AmountOut),
+// 				CollateralizationRatio: collateralizationRatio,
+// 			}
 
-			if accumulate {
-				items = append(items, vaultInfo)
-			}
+// 			if accumulate {
+// 				items = append(items, vaultInfo)
+// 			}
 
-			return true, nil
-		},
-	)
+// 			return true, nil
+// 		},
+// 	)
 
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
+// 	if err != nil {
+// 		return nil, status.Error(codes.Internal, err.Error())
+// 	}
 
-	return &types.QueryVaultsResponse{
-		VaultsInfo: items,
-		Pagination: pagination,
-	}, nil
-}
+// 	return &types.QueryVaultsResponse{
+// 		VaultsInfo: items,
+// 		Pagination: pagination,
+// 	}, nil
+// }
 
-func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest) (*types.QueryVaultResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-	}
+// func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest) (*types.QueryVaultResponse, error) {
+// 	if req == nil {
+// 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+// 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+// 	var (
+// 		ctx = sdk.UnwrapSDKContext(c)
+// 	)
 
-	vault, found := q.GetVault(ctx, req.Id)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "vault does not exist for id %d", req.Id)
-	}
+// 	vault, found := q.GetVault(ctx, req.Id)
+// 	if !found {
+// 		return nil, status.Errorf(codes.NotFound, "vault does not exist for id %d", req.Id)
+// 	}
 
-	pair, found := q.GetPair(ctx, vault.ExtendedPairVaultID)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", vault.ExtendedPairVaultID)
-	}
+// 	pair, found := q.GetPair(ctx, vault.ExtendedPairVaultID)
+// 	if !found {
+// 		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", vault.ExtendedPairVaultID)
+// 	}
 
-	assetIn, found := q.GetAsset(ctx, pair.AssetIn)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
-	}
+// 	assetIn, found := q.GetAsset(ctx, pair.AssetIn)
+// 	if !found {
+// 		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
+// 	}
 
-	assetOut, found := q.GetAsset(ctx, pair.AssetOut)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
-	}
+// 	assetOut, found := q.GetAsset(ctx, pair.AssetOut)
+// 	if !found {
+// 		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
+// 	}
 
-	collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.AmountIn, assetIn, vault.AmountOut, assetOut)
-	if err != nil {
-		return nil, err
-	}
-	return &types.QueryVaultResponse{
-		VaultInfo: types.VaultInfo{
-			Id:                     vault.Id,
-			PairID:                 vault.ExtendedPairVaultID,
-			Owner:                  vault.Owner,
-			Collateral:             sdk.NewCoin(assetIn.Denom, vault.AmountIn),
-			Debt:                   sdk.NewCoin(assetOut.Denom, vault.AmountOut),
-			CollateralizationRatio: collateralizationRatio,
-		},
-	}, nil
-}
+// 	collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.AmountIn, assetIn, vault.AmountOut, assetOut)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return &types.QueryVaultResponse{
+// 		VaultInfo: types.VaultInfo{
+// 			Id:                     vault.Id,
+// 			PairID:                 vault.ExtendedPairVaultID,
+// 			Owner:                  vault.Owner,
+// 			Collateral:             sdk.NewCoin(assetIn.Denom, vault.AmountIn),
+// 			Debt:                   sdk.NewCoin(assetOut.Denom, vault.AmountOut),
+// 			CollateralizationRatio: collateralizationRatio,
+// 		},
+// 	}, nil
+// }
