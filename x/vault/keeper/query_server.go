@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strconv"
 
 	// "github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -92,72 +93,55 @@ func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
 // 	}, nil
 // }
 
-// func (q *queryServer) QueryVaults(c context.Context, req *types.QueryVaultsRequest) (*types.QueryVaultsResponse, error) {
-// 	if req == nil {
-// 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-// 	}
+func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest) (*types.QueryVaultResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
 
-// 	var (
-// 		items []types.VaultInfo
-// 		ctx   = sdk.UnwrapSDKContext(c)
-// 	)
+	var (
+		items []types.VaultInfo
+		ctx   = sdk.UnwrapSDKContext(c)
+	)
+			var item types.Vault
 
-// 	pagination, err := query.FilteredPaginate(
-// 		prefix.NewStore(q.Store(ctx), types.VaultKeyPrefix),
-// 		req.Pagination,
-// 		func(_, value []byte, accumulate bool) (bool, error) {
-// 			var item types.Vault
-// 			if err := q.cdc.Unmarshal(value, &item); err != nil {
-// 				return false, err
-// 			}
+			pair, found := q.GetPair(ctx, item.ExtendedPairVaultID)
+			if !found {
+				return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.ExtendedPairVaultID)
+			}
 
-// 			pair, found := q.GetPair(ctx, item.ExtendedPairVaultID)
-// 			if !found {
-// 				return false, status.Errorf(codes.NotFound, "pair does not exist for id %d", item.ExtendedPairVaultID)
-// 			}
+			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
+			if !found {
+				return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
+			}
 
-// 			assetIn, found := q.GetAsset(ctx, pair.AssetIn)
-// 			if !found {
-// 				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
-// 			}
+			assetOut, found := q.GetAsset(ctx, pair.AssetOut)
+			if !found {
+				return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
+			}
 
-// 			assetOut, found := q.GetAsset(ctx, pair.AssetOut)
-// 			if !found {
-// 				return false, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
-// 			}
+			collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx,pair.Id, item.AmountIn, item.AmountOut)
+			if err != nil {
+				return nil, err
+			}
+			newItemId, err := strconv.ParseUint(item.Id, 10, 64)
+			vaultInfo := types.VaultInfo{
+				Id:                     newItemId,
+				PairID:                 item.ExtendedPairVaultID,
+				Owner:                  item.Owner,
+				Collateral:             sdk.NewCoin(assetIn.Denom, item.AmountIn),
+				Debt:                   sdk.NewCoin(assetOut.Denom, item.AmountOut),
+				CollateralizationRatio: collateralizationRatio,
+			}
+			items = append(items, vaultInfo)
 
-// 			collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx,pair.Id, item.AmountIn, item.AmountOut)
-// 			if err != nil {
-// 				return false, err
-// 			}
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
-// 			vaultInfo := types.VaultInfo{
-// 				Id:                     item.Id,
-// 				PairID:                 item.ExtendedPairVaultID,
-// 				Owner:                  item.Owner,
-// 				Collateral:             sdk.NewCoin(assetIn.Denom, item.AmountIn),
-// 				Debt:                   sdk.NewCoin(assetOut.Denom, item.AmountOut),
-// 				CollateralizationRatio: collateralizationRatio,
-// 			}
-
-// 			if accumulate {
-// 				items = append(items, vaultInfo)
-// 			}
-
-// 			return true, nil
-// 		},
-// 	)
-
-// 	if err != nil {
-// 		return nil, status.Error(codes.Internal, err.Error())
-// 	}
-
-// 	return &types.QueryVaultsResponse{
-// 		VaultsInfo: items,
-// 		Pagination: pagination,
-// 	}, nil
-// }
-
+	return &types.QueryVaultResponse{
+		VaultInfo: items,
+	}, nil
+}
 // func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest) (*types.QueryVaultResponse, error) {
 // 	if req == nil {
 // 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")

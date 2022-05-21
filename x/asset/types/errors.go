@@ -20,6 +20,7 @@ var (
 	ErrorDuplicatePair             = errors.Register(ModuleName, 204, "duplicate pair")
 	ErrorUnauthorized               = errors.Register(ModuleName, 205, "unauthorized")
 	ErrorDuplicateApp             = errors.Register(ModuleName, 206, "duplicate app")
+	ErrorPairNameForID             = errors.Register(ModuleName, 207, "has pair name for id")
 )
 
 var (
