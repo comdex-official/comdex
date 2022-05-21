@@ -83,29 +83,29 @@ func (k *Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault
 	return apps, true
 }
 
-func (k *Keeper) SetPairsVaultForPairId(ctx sdk.Context, pairId uint64, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.PairsForPairIdKey(pairId)
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: id,
-			},
-		)
-	)
+// func (k *Keeper) SetPairsVaultForPairId(ctx sdk.Context, pairId uint64, id uint64) {
+// 	var (
+// 		store = k.Store(ctx)
+// 		key   = types.PairsForPairIdKey(pairId)
+// 		value = k.cdc.MustMarshal(
+// 			&protobuftypes.UInt64Value{
+// 				Value: id,
+// 			},
+// 		)
+// 	)
 
-	store.Set(key, value)
-}
+// 	store.Set(key, value)
+// }
 
-// checks if extended pair exists for a given asset pair ID
-func (k *Keeper) HasPairsVaultForPairId(ctx sdk.Context, PairId uint64) bool {
-	var (
-		store = k.Store(ctx)
-		key   = types.PairsForPairIdKey(PairId)
-	)
+// // checks if extended pair exists for a given asset pair ID
+// func (k *Keeper) HasPairsVaultForPairId(ctx sdk.Context, PairId uint64) bool {
+// 	var (
+// 		store = k.Store(ctx)
+// 		key   = types.PairsForPairIdKey(PairId)
+// 	)
 
-	return store.Has(key)
-}
+// 	return store.Has(key)
+// }
 
 func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.ExtendedPairVault) error {
 
@@ -120,13 +120,18 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 			return types.ErrorPairDoesNotExist
 		}
 
-		if k.HasPairsVaultForPairId(ctx, msg.PairId) {
-			return types.ErrorDuplicatePair
-		}
+			var id    = k.GetPairsVaultID(ctx)
 
-		var (
-			id    = k.GetPairsVaultID(ctx)
-			app = types.ExtendedPairVault{
+			extendedPairVault, found := k.GetPairsVaults(ctx)
+			if !found{
+				return types.ErrorExtendedPairDoesNotExist
+			}
+			for _, data := range extendedPairVault{
+				if (data.PairName == msg.PairName) && (data.AppMappingId == msg.AppMappingId) {
+					return types.ErrorPairNameForID
+				}
+			}
+			var app = types.ExtendedPairVault{
 				Id:       id + 1,
 				AppMappingId: msg.AppMappingId,
 				PairId: msg.PairId,
@@ -145,13 +150,9 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 				AssetOutOraclePrice: msg.AssetOutOraclePrice,
 				AsssetOutPrice: msg.AsssetOutPrice,
 			}
-		)
 
 		k.SetPairsVaultID(ctx, app.Id)
 		k.SetPairsVault(ctx, app)
-		k.SetPairsVaultForPairId(ctx, app.PairId, app.Id)
-
 	}
-
 	return nil
 }

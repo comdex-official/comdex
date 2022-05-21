@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 
+	// "github.com/comdex-official/comdex/x/collector"
 	"github.com/comdex-official/comdex/x/locker/expected"
 	"github.com/comdex-official/comdex/x/locker/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -19,9 +20,10 @@ type Keeper struct {
 	bank   expected.BankKeeper
 	asset  expected.AssetKeeper
 	oracle expected.OracleKeeper
+	collector expected.CollectorKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, ps paramtypes.Subspace, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.OracleKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, ps paramtypes.Subspace, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.OracleKeeper, collector expected.CollectorKeeper) Keeper {
 	return Keeper{
 		cdc:    cdc,
 		key:    key,
@@ -29,6 +31,7 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, ps paramtypes.Subspace, 
 		bank:   bank,
 		asset:  asset,
 		oracle: oracle,
+		collector: collector,
 	}
 }
 

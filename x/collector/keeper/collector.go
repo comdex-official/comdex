@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collector types.CollectorData) error {
+func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error {
 
 	if !k.HasAsset(ctx, asset_id) {
 		return types.ErrorAssetDoesNotExist
@@ -23,10 +23,10 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collec
 
 		var newCollector types.CollectorData
 
-		newCollector.CollectedClosingFee = collector.CollectedClosingFee
-		newCollector.CollectedOpeningFee = collector.CollectedOpeningFee
-		newCollector.CollectedStabilityFee = collector.CollectedStabilityFee
-		newCollector.LiquidationRewardsCollected = collector.LiquidationRewardsCollected
+		newCollector.CollectedClosingFee = CollectedClosingFee
+		newCollector.CollectedOpeningFee = CollectedOpeningFee
+		newCollector.CollectedStabilityFee = CollectedStabilityFee
+		newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
 		newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
 		newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 		assetIdCollect.Collector= &newCollector
@@ -51,10 +51,10 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collec
 
 				var newCollector types.CollectorData
 
-				newCollector.CollectedClosingFee = collector.CollectedClosingFee
-				newCollector.CollectedOpeningFee = collector.CollectedOpeningFee
-				newCollector.CollectedStabilityFee = collector.CollectedStabilityFee
-				newCollector.LiquidationRewardsCollected = collector.LiquidationRewardsCollected
+				newCollector.CollectedClosingFee = CollectedClosingFee
+				newCollector.CollectedOpeningFee = CollectedOpeningFee
+				newCollector.CollectedStabilityFee = CollectedStabilityFee
+				newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
 				newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
 				newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 				assetIdCollect.Collector= &newCollector
@@ -79,10 +79,10 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, collec
 
 			var newCollector types.CollectorData
 
-			newCollector.CollectedClosingFee = collector.CollectedClosingFee
-			newCollector.CollectedOpeningFee = collector.CollectedOpeningFee
-			newCollector.CollectedStabilityFee = collector.CollectedStabilityFee
-			newCollector.LiquidationRewardsCollected = collector.LiquidationRewardsCollected
+			newCollector.CollectedClosingFee = CollectedClosingFee
+			newCollector.CollectedOpeningFee = CollectedOpeningFee
+			newCollector.CollectedStabilityFee = CollectedStabilityFee
+			newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
 			newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
 			newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 			assetIdCollect.Collector= &newCollector

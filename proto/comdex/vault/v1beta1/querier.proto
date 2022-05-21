@@ -40,54 +40,193 @@ message QueryVaultRequest {
 }
 
 message QueryVaultResponse {
-  VaultInfo vaultInfo = 1[
+  repeated VaultInfo vaultInfo = 1[
     (gogoproto.customname) = "VaultInfo",
     (gogoproto.moretags)   = "yaml:\"vaultInfo\"",
     (gogoproto.nullable)   = false
   ];
 }
 
-message QueryVaultsRequest {
-  string owner    = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+// message QueryVaultsRequest {
+//   string owner    = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+//   cosmos.base.query.v1beta1.PageRequest pagination = 2
+//       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+// }
+
+// message QueryVaultsResponse {
+//   repeated VaultInfo vaultsInfo = 1 [
+//     (gogoproto.customname) = "VaultsInfo",
+//     (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
+//     (gogoproto.nullable)   = false
+//   ];
+//   cosmos.base.query.v1beta1.PageResponse pagination = 2
+//       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+// }
+
+// message QueryAllVaultsRequest {
+//   cosmos.base.query.v1beta1.PageRequest pagination = 1
+//       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+// }
+
+// message QueryAllVaultsResponse {
+//   repeated VaultInfo vaultsInfo = 1 [
+//     (gogoproto.customname) = "VaultsInfo",
+//     (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
+//     (gogoproto.nullable)   = false
+//   ];
+//   cosmos.base.query.v1beta1.PageResponse pagination = 2
+//       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+// }
+
+message QueryVaultOfOwnerByPairRequest {
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  uint64 extended_pair_id = 3 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryVaultOfOwnerByPairResponse {
+  string vault_Id = 1 [ (gogoproto.moretags) = "yaml:\"vault_Id\"" ];
+}
+
+message QueryVaultByProductRequest {
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
   cosmos.base.query.v1beta1.PageRequest pagination = 2
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryVaultsResponse {
-  repeated VaultInfo vaultsInfo = 1 [
-    (gogoproto.customname) = "VaultsInfo",
-    (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
-    (gogoproto.nullable)   = false
-  ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2
+message QueryVaultByProductResponse {
+  repeated string vault_Ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_Ids\"" ];
+}
+
+message QueryAllVaultByProductsRequest {
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryAllVaultsRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1
+message QueryAllVaultByProductsResponse {
+  repeated string vault_Ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_Ids\"" ];
+}
+
+message QueryTokenMintedAllProductsByPairRequest {
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryAllVaultsResponse {
-  repeated VaultInfo vaultsInfo = 1 [
-    (gogoproto.customname) = "VaultsInfo",
-    (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
-    (gogoproto.nullable)   = false
-  ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2
+message QueryTokenMintedAllProductsByPairResponse {
+  string token_Minted = 1 [ 
+  (gogoproto.moretags) = "yaml:\"token_Minted\"",
+  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+}
+
+message QueryTokenMintedAllProductsRequest {
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
+
+message QueryTokenMintedAllProductsResponse {
+  string token_Minted = 1 [ 
+  (gogoproto.moretags) = "yaml:\"token_Minted\"",
+  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+}
+
+message QueryVaultCountByProductRequest {
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryVaultCountByProductResponse {
+  uint64 vault_count = 1 [ 
+  (gogoproto.moretags) = "yaml:\"vault_count\""];
+}
+
+message QueryVaultCountByProductAndPairRequest {
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryVaultCountByProductAndPairResponse {
+  uint64 vault_count = 1 [ 
+  (gogoproto.moretags) = "yaml:\"vault_count\""];
+}
+
+message QueryTotalValueLockedByProductExtendedPairRequest {
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryTotalValueLockedByProductExtendedPairResponse {
+  string value_locked = 1 [ 
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+}
+
+message QueryExtendedPairIDByProductRequest {
+  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryExtendedPairIDByProductResponse {
+  repeated uint64 pair_id = 1 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+}
+
 
 service QueryService {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
   };
 
-  rpc QueryVaults(QueryVaultsRequest) returns (QueryVaultsResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{owner}";
+  // rpc QueryVault(QueryVaultsRequest) returns (QueryVaultsResponse) {
+  //   option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{owner}";
+  // };
+
+  // rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
+  //   option (google.api.http).get = "/comdex/vault/v1beta1/vaults";
+  // };
+
+  rpc QueryVaultOfOwnerByPair(QueryVaultOfOwnerByPairRequest) returns (QueryVaultOfOwnerByPairResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vault-of-owner-by-pair/{product_id}/{owner}/{extended_pair_id}";
   };
 
-  rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vaults";
+  rpc QueryVaultByProduct(QueryVaultByProductRequest) returns (QueryVaultByProductResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-of-owner-by-product/{product_id}";
+  };
+
+  rpc QueryAllVaultByProducts(QueryAllVaultByProductsRequest) returns (QueryAllVaultByProductsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-products/{owner}";
+  };
+
+  rpc QueryTokenMintedAllProductsByPair(QueryTokenMintedAllProductsByPairRequest) returns (QueryTokenMintedAllProductsByPairResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/token-minted-by-products-extended-pair/{product_id}/{extended_pair_id}";
+  };
+
+  rpc QueryTokenMintedAllProducts(QueryTokenMintedAllProductsRequest) returns (QueryTokenMintedAllProductsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/token-minted-by-products/{product_id}";
+  };
+
+  rpc QueryVaultCountByProduct(QueryVaultCountByProductRequest) returns (QueryVaultCountByProductResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vault-count-by-products/{product_id}";
+  };
+
+  rpc QueryVaultCountByProductAndPair(QueryVaultCountByProductAndPairRequest) returns (QueryVaultCountByProductAndPairResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vault-count-by-products-and-pair/{product_id}/{extended_pair_id}";
+  };
+
+  rpc QueryTotalValueLockedByProductExtendedPair(QueryTotalValueLockedByProductExtendedPairRequest) returns (QueryTotalValueLockedByProductExtendedPairResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/value-locked-by-product-pair/{product_id}/{extended_pair_id}";
+  };
+
+  rpc QueryExtendedPairIDByProduct(QueryExtendedPairIDByProductRequest) returns (QueryExtendedPairIDByProductResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/external-pair-by-product/{product_id}";
   };
 }

@@ -17,6 +17,28 @@ var (
 
 	// ErrorUnauthorized                  = errors.Register(ModuleName, 203, "unauthorized")
 	// ErrorDuplicateVault                = errors.Register(ModuleName, 204, "duplicate vault")
+<<<<<<< HEAD
+=======
+	
+	ErrorExtendedPairVaultDoesNotExists= errors.Register(ModuleName, 201, "Extended pair vault does not exists for the given id")
+	ErrorAppMappingDoesNotExist= errors.Register(ModuleName, 202, "App Mapping Id does not exists")
+	ErrorAppMappingIdMismatch= errors.Register(ModuleName, 203, "App Mapping Id mismatch, use the correct App Mapping ID in request")
+	ErrorVaultCreationInactive=errors.Register(ModuleName, 204, "Vault Creation Inactive")
+	ErrorUserVaultAlreadyExists=errors.Register(ModuleName, 205, "User vault already exists for teh given extended pair vault id ")
+	ErrorAmountOutLessThanDebtFloor=errors.Register(ModuleName, 206, "Amount Out is less than Debt Floor")
+	ErrorAmountOutGreaterThanDebtCeiling=errors.Register(ModuleName, 207, "Amount Out is greater than Debt Ceiling")
+	ErrorPairDoesNotExist              = errors.Register(ModuleName, 208, "Pair does not exists")
+    ErrorAssetDoesNotExist             = errors.Register(ModuleName, 209, "Asset does not exists")
+	ErrorPriceDoesNotExist             = errors.Register(ModuleName, 210, "Price does not exist")
+	ErrorInvalidCollateralizationRatio = errors.Register(ModuleName, 211, "Invalid collateralization ratio")
+	ErrorVaultDoesNotExist             = errors.Register(ModuleName, 212, "Vault does not exist")
+	ErrVaultAccessUnauthorised		=errors.Register(ModuleName, 213, "Unauthorized user for the tx")
+	ErrorInvalidAppMappingData		=errors.Register(ModuleName, 214, "Invalid App Mapping data sent as compared to data exists in vault")
+	ErrorInvalidExtendedPairMappingData = errors.Register(ModuleName, 215, "Invalid Extended Pair Vault Mapping data sent as compared to data exists in vault")
+	ErrorVaultInactive=errors.Register(ModuleName, 216, "Vault tx Inactive")
+
+
+>>>>>>> b411749087838e69e0da824108fa29c947b81b9c
 
 	ErrorExtendedPairVaultDoesNotExists  = errors.Register(ModuleName, 201, "Extended pair vault does not exists for the given id")
 	ErrorAppMappingDoesNotExist          = errors.Register(ModuleName, 202, "App Mapping Id does not exists")

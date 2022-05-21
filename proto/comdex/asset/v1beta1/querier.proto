@@ -115,6 +115,14 @@ message QueryPairVaultsResponse {
   ];
 }
 
+message QueryProductToExtendedPairRequest {
+  uint64 product_id = 1 [(gogoproto.moretags) = "yaml:\"product_id\""];
+}
+
+message QueryProductToExtendedPairResponse {
+  repeated ExtendedPairVault extended_pair =1 [(gogoproto.moretags) = "yaml:\"extended_pair\""];
+}
+
 service QueryService {
   rpc QueryAssets(QueryAssetsRequest) returns (QueryAssetsResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/assets";
@@ -142,6 +150,9 @@ service QueryService {
   }
   rpc QueryPairVaults(QueryPairVaultsRequest) returns (QueryPairVaultsResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/pairVaults";
+  }
+  rpc QueryProductToExtendedPair(QueryProductToExtendedPairRequest) returns (QueryProductToExtendedPairResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/product_to_extended_pair/{product_id}";
   }
 
 }
