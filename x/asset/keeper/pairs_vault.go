@@ -120,14 +120,16 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 			return types.ErrorPairDoesNotExist
 		}
 
-		// if k.HasPairsVaultForPairId(ctx, msg.PairId) {
-		// 	return types.ErrorDuplicatePair
-		// }
-
-		
 			var id    = k.GetPairsVaultID(ctx)
-			if k.HasPairNameForPairVaultId(ctx, id){
-				return types.ErrorPairNameForID
+
+			extendedPairVault, found := k.GetPairsVaults(ctx)
+			if !found{
+				return types.ErrorExtendedPairDoesNotExist
+			}
+			for _, data := range extendedPairVault{
+				if (data.PairName == msg.PairName) && (data.AppMappingId == msg.AppMappingId) {
+					return types.ErrorPairNameForID
+				}
 			}
 			var app = types.ExtendedPairVault{
 				Id:       id + 1,
@@ -151,33 +153,6 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 
 		k.SetPairsVaultID(ctx, app.Id)
 		k.SetPairsVault(ctx, app)
-		// k.SetPairsVaultForPairId(ctx, app.PairId, app.Id)
-		k.SetPairNameForPairVaultId(ctx, msg.PairName, id )
-
 	}
-
 	return nil
-}
-
-func (k *Keeper) SetPairNameForPairVaultId(ctx sdk.Context, pairName string, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.PairsForPairIdKey(id)
-		value = k.cdc.MustMarshal(
-			&protobuftypes.StringValue{
-				Value: pairName,
-			},
-		)
-	)
-
-	store.Set(key, value)
-}
-
-func (k *Keeper) HasPairNameForPairVaultId(ctx sdk.Context, Id uint64) bool {
-	var (
-		store = k.Store(ctx)
-		key   = types.PairsForPairIdKey(Id)
-	)
-
-	return store.Has(key)
 }

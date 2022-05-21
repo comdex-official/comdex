@@ -57,7 +57,7 @@ func AssetForShortNameKey(shortName string) []byte {
 	return append(AppForShortNamePrefix, []byte(shortName)...)
 }
 
-func PairsForPairIdKey(pairId uint64) []byte {
+func PairsForAppIdKey(pairId uint64) []byte {
 	return append(PairsForPairIdPrefix, sdk.Uint64ToBigEndian(pairId)...)
 }
 
