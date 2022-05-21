@@ -98,7 +98,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	//Check Debt Ceil
 	current_minted_statistics := token_minted_statistics.Add(msg.AmountOut)
 
-	if current_minted_statistics.GTE(extended_pair_vault.DebtCieling) {
+	if current_minted_statistics.GTE(extended_pair_vault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
 
@@ -462,7 +462,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 	//Check Debt Ceil
 	current_minted_statistics := token_minted_statistics.Add(msg.Amount)
 
-	if current_minted_statistics.GTE(extended_pair_vault.DebtCieling) {
+	if current_minted_statistics.GTE(extended_pair_vault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
 

@@ -35,7 +35,7 @@ type ExtendedPairVault struct {
 	LiquidationPenalty  github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,8,opt,name=liquidation_penalty,json=liquidationPenalty,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_penalty" yaml:"liquidation_penanlty"`
 	CreationFee         github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,9,opt,name=creation_fee,json=creationFee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"creation_fee" yaml:"creation_fee"`
 	IsVaultActive       bool                                   `protobuf:"varint,10,opt,name=is_vault_active,json=isVaultActive,proto3" json:"is_vault_active,omitempty" yaml:"active_flag"`
-	DebtCieling         github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,11,opt,name=debt_cieling,json=debtCieling,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"debt_cieling" yaml:"debt_cieling"`
+	DebtCeiling         github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,11,opt,name=debt_ceiling,json=debtCeiling,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"debt_ceiling" yaml:"debt_ceiling"`
 	DebtFloor           github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,12,opt,name=debt_floor,json=debtFloor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"debt_floor" yaml:"debt_floor"`
 	IsPsmPair           bool                                   `protobuf:"varint,13,opt,name=is_psm_pair,json=isPsmPair,proto3" json:"is_psm_pair,omitempty" yaml:"is_psm_pair"`
 	MinCr               github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,14,opt,name=min_cr,json=minCr,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"min_cr" yaml:"min_cr"`
@@ -116,7 +116,7 @@ var fileDescriptor_23dd38fcddb231cd = []byte{
 	0x63, 0xde, 0x67, 0x4a, 0x0b, 0xe1, 0xd2, 0x9d, 0xa9, 0x3a, 0x7d, 0x01, 0xd6, 0x99, 0x70, 0x2f,
 	0xd5, 0xf9, 0x71, 0x89, 0x27, 0xd9, 0x25, 0xb5, 0xc0, 0x76, 0x7e, 0x67, 0xad, 0xb3, 0xf1, 0xb0,
 	0x4c, 0xc6, 0xef, 0x0e, 0x02, 0x32, 0x44, 0xb8, 0xc2, 0x84, 0x3e, 0x6d, 0x2f, 0xb5, 0x53, 0x55,
-	0xea, 0xd3, 0xbe, 0x74, 0x3d, 0x46, 0x03, 0x16, 0x0d, 0xad, 0x52, 0xe6, 0x4a, 0xbb, 0x91, 0x7c,
+	0xea, 0xd3, 0xbe, 0x74, 0x3d, 0xca, 0x02, 0x16, 0x0d, 0xad, 0x52, 0xe6, 0x4a, 0xbb, 0x91, 0x7c,
 	0xa8, 0x34, 0xad, 0x85, 0x70, 0x49, 0x99, 0x07, 0xc6, 0x82, 0x7d, 0x00, 0x74, 0x74, 0x10, 0x70,
 	0x9e, 0x58, 0x65, 0xcd, 0x39, 0xc8, 0xcc, 0xa9, 0xa7, 0x38, 0x5a, 0x09, 0xe1, 0xa2, 0x32, 0x8e,
 	0xd5, 0x18, 0x3e, 0x03, 0x25, 0x26, 0xdc, 0x58, 0x84, 0xae, 0x3a, 0xd4, 0x56, 0xe5, 0xf1, 0x4a,
@@ -131,8 +131,8 @@ var fileDescriptor_23dd38fcddb231cd = []byte{
 	0xda, 0x79, 0x7b, 0xfd, 0xd3, 0xce, 0x7d, 0x99, 0xda, 0xb9, 0xeb, 0xa9, 0x9d, 0xbf, 0x99, 0xda,
 	0xf9, 0x1f, 0x53, 0x3b, 0xff, 0xf9, 0xd6, 0xce, 0xdd, 0xdc, 0xda, 0xb9, 0xaf, 0xb7, 0x76, 0xee,
 	0x9d, 0xb3, 0x00, 0x55, 0x4f, 0xc7, 0x2e, 0x1f, 0x0c, 0x98, 0xc7, 0x48, 0x30, 0xb7, 0x9d, 0xbb,
-	0xa7, 0x47, 0x57, 0xd0, 0x2f, 0xe8, 0xb7, 0xe3, 0xff, 0x5f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x03,
-	0x2e, 0x94, 0xea, 0x97, 0x06, 0x00, 0x00,
+	0xa7, 0x47, 0x57, 0xd0, 0x2f, 0xe8, 0xb7, 0xe3, 0xff, 0x5f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xfe,
+	0x11, 0xd6, 0xd7, 0x97, 0x06, 0x00, 0x00,
 }
 
 func (m *ExtendedPairVault) Marshal() (dAtA []byte, err error) {
@@ -217,9 +217,9 @@ func (m *ExtendedPairVault) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x62
 	{
-		size := m.DebtCieling.Size()
+		size := m.DebtCeiling.Size()
 		i -= size
-		if _, err := m.DebtCieling.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.DebtCeiling.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintExtendedPairVault(dAtA, i, uint64(size))
@@ -355,7 +355,7 @@ func (m *ExtendedPairVault) Size() (n int) {
 	if m.IsVaultActive {
 		n += 2
 	}
-	l = m.DebtCieling.Size()
+	l = m.DebtCeiling.Size()
 	n += 1 + l + sovExtendedPairVault(uint64(l))
 	l = m.DebtFloor.Size()
 	n += 1 + l + sovExtendedPairVault(uint64(l))
@@ -694,7 +694,7 @@ func (m *ExtendedPairVault) Unmarshal(dAtA []byte) error {
 			m.IsVaultActive = bool(v != 0)
 		case 11:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DebtCieling", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DebtCeiling", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -722,7 +722,7 @@ func (m *ExtendedPairVault) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.DebtCieling.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.DebtCeiling.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -137,7 +137,7 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 				LiquidationPenalty: msg.LiquidationPenalty,
 				CreationFee: msg.CreationFee,
 				IsVaultActive: msg.IsVaultActive,
-				DebtCieling: msg.DebtCieling,
+				DebtCeiling: msg.DebtCeiling,
 				DebtFloor: msg.DebtFloor,
 				IsPsmPair: msg.IsPsmPair,
 				MinCr: msg.MinCr,

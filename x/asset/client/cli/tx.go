@@ -835,7 +835,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				newcreation_fee, _ := sdk.NewDecFromStr(creation_fee[i])
 				newmin_cr, _ := sdk.NewDecFromStr(min_cr[i])
 				newis_vault_active := ParseBoolFromString(is_vault_active[i])
-				debt_cieling,_ := sdk.NewIntFromString(debt_cieling[i])
+				debt_ceiling,_ := sdk.NewIntFromString(debt_cieling[i])
 				debt_floor,_ := sdk.NewIntFromString(debt_floor[i])
 				newis_psm_pair := ParseBoolFromString(is_psm_pair[i])
 				newasset_out_oracle_price := ParseBoolFromString(asset_out_oracle_price[i])
@@ -850,7 +850,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 					LiquidationPenalty: newliquidation_penalty,
 					CreationFee: newcreation_fee,
 					IsVaultActive: newis_vault_active,
-					DebtCieling: debt_cieling,
+					DebtCeiling: debt_ceiling,
 					DebtFloor: debt_floor,
 					IsPsmPair: newis_psm_pair,
 					MinCr: newmin_cr,

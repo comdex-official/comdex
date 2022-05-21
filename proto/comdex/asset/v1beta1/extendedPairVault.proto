@@ -43,10 +43,10 @@ message ExtendedPairVault {
     (gogoproto.moretags) = "yaml:\"creation_fee\"" ];
     
     bool is_vault_active        = 10[ (gogoproto.moretags) = "yaml:\"active_flag\"" ];
-    string debt_cieling         = 11[ 
+    string debt_ceiling         = 11[ 
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"debt_cieling\"" ];
+    (gogoproto.moretags) = "yaml:\"debt_ceiling\"" ];
     string debt_floor           = 12 [ 
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false,
