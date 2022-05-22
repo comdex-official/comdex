@@ -372,7 +372,7 @@ func (q *queryServer) QueryExtendedPairIDByProduct(c context.Context, req *types
 	
 
 	return &types.QueryExtendedPairIDByProductResponse{
-		PairId: pairIds,
+		ExtendedPairIds: pairIds,
 	}, nil
 } 
 

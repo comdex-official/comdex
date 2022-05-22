@@ -176,7 +176,7 @@ message QueryExtendedPairIDByProductRequest {
 }
 
 message QueryExtendedPairIDByProductResponse {
-  repeated uint64 pair_id = 1 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+  repeated uint64 extended_pair_ids = 1 [ (gogoproto.moretags) = "yaml:\"extended_pair_ids\"" ];
 }
 
 message QueryStableVaultInfoRequest {
@@ -223,11 +223,11 @@ service QueryService {
   };
 
   rpc QueryVaultByProduct(QueryVaultByProductRequest) returns (QueryVaultByProductResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-of-owner-by-product/{product_id}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-product/{product_id}";
   };
 
   rpc QueryAllVaultByProducts(QueryAllVaultByProductsRequest) returns (QueryAllVaultByProductsResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-products/{owner}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-owner/{owner}";
   };
 
   rpc QueryTokenMintedAllProductsByPair(QueryTokenMintedAllProductsByPairRequest) returns (QueryTokenMintedAllProductsByPairResponse) {

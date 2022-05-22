@@ -190,7 +190,7 @@ func QueryVaultOfOwnerByPair() *cobra.Command {
 
 func QueryVaultByProduct() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vaults-of-owner-by-product [product_id]",
+		Use:   "vaults-by-product [product_id]",
 		Short: "vaults list for a product",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -229,7 +229,7 @@ func QueryVaultByProduct() *cobra.Command {
 
 func QueryAllVaultByProducts() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vaults-by-products [owner]",
+		Use:   "vaults-by-owner [owner]",
 		Short: "vaults list for a product by owner",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -283,7 +283,7 @@ func QueryTokenMintedAllProductsByPair() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			extended_pair_id, err := strconv.ParseUint(args[0], 10, 64)
+			extended_pair_id, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -389,7 +389,7 @@ func QueryVaultCountByProductAndPair() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vault-count-by-products-and-pair [product_id] [extended_pair_id]",
 		Short: "vault count by products and extended pair",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			pagination, err := client.ReadPageRequest(cmd.Flags())
@@ -405,7 +405,7 @@ func QueryVaultCountByProductAndPair() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			extended_pair_id, err := strconv.ParseUint(args[0], 10, 64)
+			extended_pair_id, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -449,7 +449,7 @@ func QueryTotalValueLockedByProductExtendedPair() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			extended_pair_id, err := strconv.ParseUint(args[0], 10, 64)
+			extended_pair_id, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -589,7 +589,7 @@ func QueryStableVaultByProductExtendedPair() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			extended_pair_id, err := strconv.ParseUint(args[0], 10, 64)
+			extended_pair_id, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
