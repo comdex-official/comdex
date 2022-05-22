@@ -537,4 +537,33 @@ func QueryStableVaultInfo() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
-}
+} 
+
+// func QueryAllStableVaults() *cobra.Command {
+// 	cmd := &cobra.Command{
+// 		Use:   "stable-vault-by-product [app_id]",
+// 		Short: "get stable vault by product",
+// 		Args:  cobra.ExactArgs(1),
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+
+// 			ctx, err := client.GetClientQueryContext(cmd)
+// 			if err != nil {
+// 				return err
+// 			}
+
+// 			queryClient := types.NewQueryServiceClient(ctx)
+
+// 			res, err := queryClient.QueryAllStableVaults(cmd.Context(), &types.QueryAllStableVaultsRequest{
+// 				StableVaultId: args[0],
+// 			})
+
+// 			if err != nil {
+// 				return err
+// 			}
+// 			return ctx.PrintProto(res)
+// 		},
+// 	}
+
+// 	flags.AddQueryFlagsToCmd(cmd)
+// 	return cmd
+// }

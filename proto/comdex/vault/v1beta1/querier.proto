@@ -189,6 +189,14 @@ message QueryStableVaultInfoResponse {
   StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
 }
 
+// message QueryAllStableVaultsRequest {
+//   string app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+// }
+
+// message QueryAllStableVaultsResponse {
+//   repeated StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
+// }
+
 
 service QueryService {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
@@ -242,4 +250,8 @@ service QueryService {
   rpc QueryStableVaultInfo(QueryStableVaultInfoRequest) returns (QueryStableVaultInfoResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-id/{stable_vault_id}";
   };
+
+  // rpc QueryAllStableVaults(QueryAllStableVaultsRequest) returns (QueryAllStableVaultsResponse) {
+  //   option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-product/{app_id}";
+  // };
 }

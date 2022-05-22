@@ -122,13 +122,13 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 
 			var id    = k.GetPairsVaultID(ctx)
 
-			extendedPairVault, found := k.GetPairsVaults(ctx)
-			if !found{
-				return types.ErrorExtendedPairDoesNotExist
-			}
+			extendedPairVault, _ := k.GetPairsVaults(ctx)
+
+			if len(extendedPairVault) > 0 {
 			for _, data := range extendedPairVault{
 				if (data.PairName == msg.PairName) && (data.AppMappingId == msg.AppMappingId) {
-					return types.ErrorPairNameForID
+						return types.ErrorPairNameForID
+					}
 				}
 			}
 			var app = types.ExtendedPairVault{
