@@ -104,37 +104,6 @@ func queryLockerByProductID() *cobra.Command {
 	return cmd
 }
 
-func queryTotalDepositByAssetID() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "total-deposit-per-asset [asset_id]",
-		Short: "total deposit per asset id",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			assetId, err := strconv.ParseUint(args[0], 10, 64)
-
-			queryClient := types.NewQueryServiceClient(ctx)
-			res, err := queryClient.QueryTotalDepositByAssetID(
-				context.Background(),
-				&types.QueryTotalDepositByAssetIDRequest{
-					AssetId: assetId,
-				},
-			)
-			if err != nil {
-				return err
-			}
-			return ctx.PrintProto(res)
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
-
-	return cmd
-}
-
 func queryTotalDepositByProductToAssetID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "total-deposit-per-product-asset [product_id] [asset_id]",
@@ -189,6 +158,37 @@ func queryOwnerLockerByProductID() *cobra.Command {
 				context.Background(),
 				&types.QueryOwnerLockerByProductIDRequest{
 					ProductId: productId,
+					Owner:     owner,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryOwnerLockerOfAllProduct() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "owner-locker-by-product-id [owner]",
+		Short: "owner locker by all product",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			owner := args[0]
+
+			queryClient := types.NewQueryServiceClient(ctx)
+			res, err := queryClient.QueryOwnerLockerOfAllProduct(
+				context.Background(),
+				&types.QueryOwnerLockerOfAllProductRequest{
 					Owner:     owner,
 				},
 			)
