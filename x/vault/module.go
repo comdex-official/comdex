@@ -109,7 +109,7 @@ func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { retu
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
 	types.RegisterMsgServiceServer(configurator.QueryServer(), keeper.NewMsgServiceServer(a.k))
-	// types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.k))
+	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.k))
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abcitypes.RequestBeginBlock) {}
