@@ -77,6 +77,22 @@ message QueryAllVaultsResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
+message QueryAllVaultsByAppAndExtendedPairRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryAllVaultsByAppAndExtendedPairResponse {
+  repeated Vault vault = 1 [
+    (gogoproto.moretags)   = "yaml:\"vault\"",
+    (gogoproto.nullable)   = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
 message QueryVaultOfOwnerByPairRequest {
   uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
   string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
@@ -99,13 +115,13 @@ message QueryVaultByProductResponse {
   repeated string vault_Ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_Ids\"" ];
 }
 
-message QueryAllVaultByProductsRequest {
+message QueryAllVaultByOwnerRequest {
   string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
   cosmos.base.query.v1beta1.PageRequest pagination = 2
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryAllVaultByProductsResponse {
+message QueryAllVaultByOwnerResponse {
   repeated string vault_Ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_Ids\"" ];
 }
 
@@ -217,6 +233,9 @@ service QueryService {
   rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults";
   };
+  rpc QueryAllVaultsByAppAndExtendedPair(QueryAllVaultsByAppAndExtendedPairRequest) returns (QueryAllVaultsByAppAndExtendedPairResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-app-and-extended-pair/{app_id}/{extended_pair_id}";
+  };
 
   rpc QueryVaultOfOwnerByPair(QueryVaultOfOwnerByPairRequest) returns (QueryVaultOfOwnerByPairResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vault-of-owner-by-pair/{product_id}/{owner}/{extended_pair_id}";
@@ -226,7 +245,7 @@ service QueryService {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-product/{product_id}";
   };
 
-  rpc QueryAllVaultByProducts(QueryAllVaultByProductsRequest) returns (QueryAllVaultByProductsResponse) {
+  rpc QueryAllVaultByOwner(QueryAllVaultByOwnerRequest) returns (QueryAllVaultByOwnerResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-owner/{owner}";
   };
 
