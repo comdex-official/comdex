@@ -60,7 +60,6 @@ func (k Keeper) BeginRewardDistributions(
 ) (sdk.Coin, error) {
 
 	rewardDistributionData, err := k.GetRewardDistributionData(ctx, gauge, coinToDistribute, epochCount, epochDuration)
-	fmt.Println("rewardDistributionData...", rewardDistributionData)
 	if err != nil {
 		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), err
 	}
