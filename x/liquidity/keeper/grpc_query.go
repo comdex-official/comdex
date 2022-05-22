@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	incentivestypes "github.com/comdex-official/comdex/x/incentives/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -524,4 +525,63 @@ func (k Querier) OrdersByOrderer(c context.Context, req *types.QueryOrdersByOrde
 	}
 
 	return &types.QueryOrdersResponse{Orders: orders, Pagination: pageRes}, nil
+}
+
+// SoftLock returns softlocks created by an depositor in specific pool.
+func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*types.QuerySoftLockResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	depositor, err := sdk.AccAddressFromBech32(req.Depositor)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "orderer address %s is invalid", req.Depositor)
+	}
+
+	poolId := req.PoolId
+
+	pool, found := k.GetPool(ctx, poolId)
+	if !found {
+		return nil, types.ErrInvalidPoolId
+	}
+
+	lpData, found := k.GetPoolLiquidityProvidersData(ctx, poolId)
+	if !found {
+		return nil, types.ErrLPDataNotExistsForPool
+	}
+
+	availableLiquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeId(ctx, incentivestypes.LiquidityGaugeTypeId)
+	minEpochDuration := k.GetMinimumEpochDurationFromPoolId(ctx, poolId, availableLiquidityGauges)
+
+	queuedCoins := []types.QueuedPoolCoin{}
+	for _, queuedRequest := range lpData.QueuedLiquidityProviders {
+		if queuedRequest.Address == depositor.String() {
+			poolCoin := sdk.Coin{}
+			for _, coin := range queuedRequest.SupplyProvided {
+				if coin.Denom == pool.PoolCoinDenom {
+					poolCoin = *coin
+					break
+				}
+			}
+			queuedCoins = append(queuedCoins, types.QueuedPoolCoin{
+				PoolCoin: poolCoin,
+				DequeAt:  queuedRequest.CreatedAt.Add(minEpochDuration),
+			})
+		}
+	}
+
+	activePoolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0))
+	activeCoins, found := lpData.LiquidityProviders[depositor.String()]
+	if found {
+		for _, coin := range activeCoins.Coins {
+			if coin.Denom == pool.PoolCoinDenom {
+				activePoolCoin = coin
+				break
+			}
+		}
+	}
+
+	return &types.QuerySoftLockResponse{ActivePoolCoin: activePoolCoin, QueuedPoolCoin: queuedCoins}, nil
 }

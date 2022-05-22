@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "comdex/liquidity/v1beta1/liquidity.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/liquidity/types";
 
@@ -181,6 +182,37 @@ message PoolResponse {
   uint64 last_withdraw_request_id = 7;
 }
 
+// QuerySoftLockRequest is request type for the Query/SoftLock RPC method.
+message QuerySoftLockRequest {
+  uint64 pool_id = 1;
+  string depositor = 2;
+}
+
+message QueuedPoolCoin {
+  cosmos.base.v1beta1.Coin pool_coin = 1 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.nullable) = false
+  ];
+  google.protobuf.Timestamp deque_at = 2 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"deque_at\""
+  ];
+  
+}
+
+// QuerySoftLockResponse is response type for the Query/SoftLock RPC method.
+message QuerySoftLockResponse {
+  cosmos.base.v1beta1.Coin active_pool_coin = 1 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.nullable) = false
+  ];
+  repeated QueuedPoolCoin queued_pool_coin = 2 [
+    (gogoproto.nullable) = false
+  ];
+  
+}
+
 
 // Query defines the gRPC querier service.
 service Query {
@@ -252,5 +284,10 @@ service Query {
   // OrdersByOrderer returns orders made by an orderer.
   rpc OrdersByOrderer(QueryOrdersByOrdererRequest) returns (QueryOrdersResponse) {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{orderer}";
+  }
+
+  // SoftLock returns deposited poolcoin for farming .
+  rpc SoftLock(QuerySoftLockRequest) returns (QuerySoftLockResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/softlock/{pool_id}/{depositor}";
   }
 }

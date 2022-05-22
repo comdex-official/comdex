@@ -36,6 +36,7 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryWithdrawRequestCmd(),
 		NewQueryOrdersCmd(),
 		NewQueryOrderCmd(),
+		NewQuerySoftLockCmd(),
 	)
 
 	return cmd
@@ -627,6 +628,52 @@ $ %s query %s order 1 1
 				&types.QueryOrderRequest{
 					PairId: pairId,
 					Id:     id,
+				})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQuerySoftLockCmd implements the soft lock query command.
+func NewQuerySoftLockCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "soft-lock [pool-id] [depositor]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Query details of the soft-lock",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query details of the soft-lock in specific pool for adddress.
+Example:
+$ %s query %s soft-lock 1 comdex1ed6zea6ppj29vkzk8f867rsauu65lq2p75jc3u
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.SoftLock(
+				cmd.Context(),
+				&types.QuerySoftLockRequest{
+					PoolId:    poolId,
+					Depositor: args[1],
 				})
 			if err != nil {
 				return err
