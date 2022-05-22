@@ -31,6 +31,9 @@ func GetTxCmd() *cobra.Command {
 		txDrawDebt(),
 		txRepayDebt(),
 		txClose(),
+		txCreateStableMint(),
+		txDepositStableMint(),
+		txWithdrawStableMint(),
 	)
 
 	return cmd
@@ -126,7 +129,7 @@ func txWithdraw() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "withdraw [app_mapping_id] [extended_pair_vault_id] [userVaultid] [amount]",
 		Short: "create a new withdraw",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientTxContext(cmd)
@@ -166,7 +169,7 @@ func txDrawDebt() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "draw [app_mapping_id] [extended_pair_vault_id] [userVaultid] [amount]",
 		Short: "draw debt",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientTxContext(cmd)
@@ -205,7 +208,7 @@ func txRepayDebt() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "repay [app_mapping_id] [extended_pair_vault_id] [userVaultid] [amount]",
 		Short: "repay debt",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientTxContext(cmd)
@@ -244,7 +247,7 @@ func txClose() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "close [app_mapping_id] [extended_pair_vault_id] [userVaultid]",
 		Short: "close",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientTxContext(cmd)
@@ -279,14 +282,14 @@ func txCreateStableMint() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] ",
 		Short: "create a new stable mint vault",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			app_mapping_id, err := strconv.ParseUint(args[1], 10, 64)
+			app_mapping_id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -322,14 +325,14 @@ func txDepositStableMint() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deposit-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] ",
 		Short: "deposit to stable mint vault",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			app_mapping_id, err := strconv.ParseUint(args[1], 10, 64)
+			app_mapping_id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -365,14 +368,14 @@ func txWithdrawStableMint() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "withdraw-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] ",
 		Short: "withdraw from stable mint vault",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			app_mapping_id, err := strconv.ParseUint(args[1], 10, 64)
+			app_mapping_id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
