@@ -37,6 +37,8 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(
 		txWhitelistAsset(),
 		txRemoveWhitelistAsset(),
+		txWhitelistAppIdVault(),
+		txRemoveWhitelistAppIdVault(),
 	)
 
 	return cmd
@@ -101,6 +103,66 @@ func txRemoveWhitelistAsset() *cobra.Command {
 			}
 
 			msg := types.NewMsgRemoveWhitelistAsset(app_mapping_Id, ctx.GetFromAddress(), asset_Id)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
+func txWhitelistAppIdVault() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "whitelist-app-id-vault-interest [app_mapping_Id]",
+		Short: "na",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appMappingId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgWhitelistAppIdVault(
+				appMappingId,
+				ctx.GetFromAddress(),
+			)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
+func txRemoveWhitelistAppIdVault() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "remove-whitelist-app-id-vault-interest [app_mapping_Id] ",
+		Short: "na",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appMappingId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgRemoveWhitelistAppIdVault(
+				appMappingId,
+				ctx.GetFromAddress(),
+			)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},

@@ -46,3 +46,28 @@ func (k *Keeper) GetRewards(ctx sdk.Context) (lends []types.InternalRewards) {
 
 	return lends
 }
+
+func (k *Keeper) SetAppId(ctx sdk.Context, AppIds types.WhitelistedAppIdsVault) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AppIdsVaultKeyPrefix
+		value = k.cdc.MustMarshal(&AppIds)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetAppIds(ctx sdk.Context) (appIds types.WhitelistedAppIdsVault) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AppIdsVaultKeyPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return appIds
+	}
+
+	k.cdc.MustUnmarshal(value, &appIds)
+	return appIds
+}

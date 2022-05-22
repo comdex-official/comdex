@@ -69,3 +69,69 @@ func (m *RemoveWhitelistAsset) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+func NewMsgWhitelistAppIdVault(appMappingId uint64, from sdk.AccAddress) *WhitelistAppIdVault {
+	return &WhitelistAppIdVault{
+		AppMappingId: appMappingId,
+		From:         from.String(),
+	}
+}
+
+func (m *WhitelistAppIdVault) Route() string {
+	return RouterKey
+}
+
+func (m *WhitelistAppIdVault) Type() string {
+	return ModuleName
+}
+
+func (m *WhitelistAppIdVault) ValidateBasic() error {
+
+	return nil
+}
+
+func (m *WhitelistAppIdVault) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *WhitelistAppIdVault) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgRemoveWhitelistAppIdVault(appMappingId uint64, from sdk.AccAddress) *RemoveWhitelistAppIdVault {
+	return &RemoveWhitelistAppIdVault{
+		AppMappingId: appMappingId,
+		From:         from.String(),
+	}
+}
+
+func (m *RemoveWhitelistAppIdVault) Route() string {
+	return RouterKey
+}
+
+func (m *RemoveWhitelistAppIdVault) Type() string {
+	return ModuleName
+}
+
+func (m *RemoveWhitelistAppIdVault) ValidateBasic() error {
+
+	return nil
+}
+
+func (m *RemoveWhitelistAppIdVault) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *RemoveWhitelistAppIdVault) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
