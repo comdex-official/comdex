@@ -269,7 +269,7 @@ func (k Keeper) ValidateMsgTokensSoftLock(ctx sdk.Context, msg *types.MsgTokensS
 	}
 
 	if msg.SoftLockCoin.Denom != pool.PoolCoinDenom {
-		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", &pool.PoolCoinDenom, msg.SoftLockCoin.Denom)
+		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.SoftLockCoin.Denom)
 	}
 	return depositor, nil
 }
