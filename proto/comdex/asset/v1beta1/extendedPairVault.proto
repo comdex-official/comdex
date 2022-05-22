@@ -62,9 +62,7 @@ message ExtendedPairVault {
 
     string pair_name            = 15 [ (gogoproto.moretags) = "yaml:\"pair_name\"" ];
     bool asset_out_oracle_price = 16 [ (gogoproto.moretags) = "yaml:\"asset_out_oracle\"" ];
-    string assset_out_price     = 17 [ 
-      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable) = false,
+    uint64 assset_out_price     = 17 [ 
     (gogoproto.moretags) = "yaml:\"assset_out_price\"" ];
 
   }

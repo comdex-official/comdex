@@ -530,6 +530,8 @@ func New(
 		app.GetSubspace(collectortypes.ModuleName),
 		&app.lockerKeeper,
 		&app.collectorKeeper,
+		&app.vaultKeeper,
+		&app.assetKeeper,
 	)
 
 	app.collectorKeeper = *collectorkeeper.NewKeeper(

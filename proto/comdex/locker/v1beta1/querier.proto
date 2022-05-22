@@ -26,9 +26,6 @@ service QueryService {
     option (google.api.http).get = "/comdex/locker/v1beta1/lockers_info_product_id/{product_id}";
   };
 
-  rpc QueryTotalDepositByAssetID(QueryTotalDepositByAssetIDRequest) returns (QueryTotalDepositByAssetIDResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/total_deposit_asset_id/{asset_id}";
-  };
 
  rpc QueryTotalDepositByProductAssetID(QueryTotalDepositByProductAssetIDRequest) returns (QueryTotalDepositByProductAssetIDResponse) {
     option (google.api.http).get = "/comdex/locker/v1beta1/total_deposit_product_asset_id/{product_id}/{asset_id}";
@@ -36,6 +33,10 @@ service QueryService {
 
   rpc QueryOwnerLockerByProductID(QueryOwnerLockerByProductIDRequest) returns (QueryOwnerLockerByProductIDResponse) {
     option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_info_product_id/{product_id}";
+  };
+
+  rpc QueryOwnerLockerOfAllProduct(QueryOwnerLockerOfAllProductRequest) returns (QueryOwnerLockerOfAllProductResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_info_by_all_product/{owner}";
   };
 
  rpc QueryOwnerLockerByProductToAssetID(QueryOwnerLockerByProductToAssetIDRequest) returns (QueryOwnerLockerByProductToAssetIDResponse) {
@@ -81,11 +82,7 @@ message QueryLockersByProductToAssetIDRequest {
 }
 
 message QueryLockersByProductToAssetIDResponse {
-  repeated Locker lockerInfo = 1[
-    (gogoproto.customname) = "LockerInfo",
-    (gogoproto.moretags)   = "yaml:\"lockerInfo\"",
-    (gogoproto.nullable)   = false
-  ];
+  repeated string locker_ids = 1 [ (gogoproto.moretags) = "yaml:\"locker_ids\"" ];
 }
 
 message QueryLockerInfoByProductIDRequest {
@@ -93,19 +90,7 @@ message QueryLockerInfoByProductIDRequest {
 }
 
 message QueryLockerInfoByProductIDResponse {
-  repeated Locker lockerInfo = 1[
-    (gogoproto.customname) = "LockerInfo",
-    (gogoproto.moretags)   = "yaml:\"lockerInfo\"",
-    (gogoproto.nullable)   = false
-  ];
-}
-
-message QueryTotalDepositByAssetIDRequest {
-  uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
-}
-
-message QueryTotalDepositByAssetIDResponse {
-  uint64 total_deposit = 1;
+  repeated string locker_ids = 1 [ (gogoproto.moretags) = "yaml:\"locker_ids\"" ];
 }
 
 message QueryTotalDepositByProductAssetIDRequest {
@@ -124,11 +109,15 @@ message QueryOwnerLockerByProductIDRequest {
 }
 
 message QueryOwnerLockerByProductIDResponse {
-  repeated Locker lockerInfo = 1[
-    (gogoproto.customname) = "LockerInfo",
-    (gogoproto.moretags)   = "yaml:\"lockerInfo\"",
-    (gogoproto.nullable)   = false
-  ];
+  repeated string locker_ids = 1 [ (gogoproto.moretags) = "yaml:\"locker_ids\"" ];
+}
+
+message QueryOwnerLockerOfAllProductRequest {
+  string owner = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+}
+
+message QueryOwnerLockerOfAllProductResponse {
+  repeated string locker_ids = 1 [ (gogoproto.moretags) = "yaml:\"locker_ids\"" ];
 }
 
 message QueryOwnerLockerByProductToAssetIDRequest {

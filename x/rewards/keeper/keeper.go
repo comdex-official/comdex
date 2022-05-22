@@ -20,6 +20,8 @@ type (
 		paramstore paramtypes.Subspace
 		locker     expected.LockerKeeper
 		collector  expected.CollectorKeeper
+		vault      expected.VaultKeeper
+		asset      expected.AssetKeeper
 	}
 )
 
@@ -30,6 +32,8 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 	locker expected.LockerKeeper,
 	collector expected.CollectorKeeper,
+	vault expected.VaultKeeper,
+	asset expected.AssetKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -45,6 +49,8 @@ func NewKeeper(
 		paramstore: ps,
 		locker:     locker,
 		collector:  collector,
+		vault:      vault,
+		asset:      asset,
 	}
 }
 
@@ -99,6 +105,40 @@ func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingId uint64, asset
 		Asset_ID:       newAssetIds,
 	}
 	k.SetReward(ctx, newRewards)
+	return nil
+}
+
+func (k Keeper) WhitelistAppIdVault(ctx sdk.Context, appMappingId uint64) error {
+	found := uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults)
+	if found {
+		return types.ErrAppIdExists
+	}
+	WhitelistedAppIds := append(k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults, appMappingId)
+	UpdatedWhitelistedAppIds := types.WhitelistedAppIdsVault{
+		WhitelistedAppMappingIdsVaults: WhitelistedAppIds,
+	}
+	k.SetAppId(ctx, UpdatedWhitelistedAppIds)
+	return nil
+}
+
+func (k Keeper) RemoveWhitelistAppIdVault(ctx sdk.Context, appMappingId uint64) error {
+	WhitelistedAppIds := k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults
+	found := uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults)
+	if !found {
+		return types.ErrAppIdDoesNotExists
+	}
+	var newAppIds []uint64
+	for i := range WhitelistedAppIds {
+		if appMappingId != WhitelistedAppIds[i] {
+			newAppId := WhitelistedAppIds[i]
+			newAppIds = append(newAppIds, newAppId)
+		}
+	}
+	UpdatedWhitelistedAppIds := types.WhitelistedAppIdsVault{
+		WhitelistedAppMappingIdsVaults: newAppIds,
+	}
+
+	k.SetAppId(ctx, UpdatedWhitelistedAppIds)
 	return nil
 }
 

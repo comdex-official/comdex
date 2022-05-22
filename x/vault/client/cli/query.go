@@ -22,7 +22,7 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		// QueryAllVaults(),
+		QueryAllVaults(),
 		QueryVault(),
 		// QueryVaults(),
 		QueryVaultOfOwnerByPair(),
@@ -43,38 +43,38 @@ func GetQueryCmd() *cobra.Command {
 	return cmd
 }
 
-// func QueryAllVaults() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "vaults",
-// 		Short: "list of all vaults available",
-// 		RunE: func(cmd *cobra.Command, args []string) error {
+func QueryAllVaults() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vaults",
+		Short: "list of all vaults available",
+		RunE: func(cmd *cobra.Command, args []string) error {
 
-// 			pagination, err := client.ReadPageRequest(cmd.Flags())
-// 			if err != nil {
-// 				return err
-// 			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
-// 			ctx, err := client.GetClientQueryContext(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-// 			res, err := queryClient.QueryAllVaults(cmd.Context(), &types.QueryAllVaultsRequest{
-// 				Pagination: pagination,
-// 			})
+			res, err := queryClient.QueryAllVaults(cmd.Context(), &types.QueryAllVaultsRequest{
+				Pagination: pagination,
+			})
 
-// 			if err != nil {
-// 				return err
-// 			}
-// 			return ctx.PrintProto(res)
-// 		},
-// 	}
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
-// 	return cmd
-// }
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
 
 func QueryVault() *cobra.Command {
 	cmd := &cobra.Command{

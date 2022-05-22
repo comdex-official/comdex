@@ -72,19 +72,14 @@ func (q *queryServer) QueryLockersByProductToAssetID(c context.Context, request 
 		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
 	}
 
-	var lockerInfos []types.Locker
+	var lockerIds []string
 	for _, locker := range lockerLookupData.Lockers {
-
 		if request.AssetId == locker.AssetId {
-			for _, lockerID := range locker.LockerIds {
-				locker1, _ := q.GetLocker(ctx, lockerID)
-				lockerInfos = append(lockerInfos, locker1)
-			}
+			lockerIds = append(lockerIds, locker.LockerIds...)
 		}
 	}
-
 	return &types.QueryLockersByProductToAssetIDResponse{
-		LockerInfo: lockerInfos,
+		LockerIds: lockerIds,
 	}, nil
 }
 
@@ -110,34 +105,14 @@ func (q *queryServer) QueryLockerInfoByProductID(c context.Context, request *typ
 		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
 	}
 
-	var lockerInfos []types.Locker
+	var lockerIds []string
 	for _, locker := range lockerLookupData.Lockers {
-		for _, lockerID := range locker.LockerIds {
-			locker1, _ := q.GetLocker(ctx, lockerID)
-			lockerInfos = append(lockerInfos, locker1)
-		}
+		lockerIds = locker.LockerIds
 	}
 	return &types.QueryLockerInfoByProductIDResponse{
-		LockerInfo: lockerInfos,
+		LockerIds: lockerIds,
 	}, nil
 
-}
-
-func (q *queryServer) QueryTotalDepositByAssetID(c context.Context, request *types.QueryTotalDepositByAssetIDRequest) (*types.QueryTotalDepositByAssetIDResponse, error) {
-
-	if request == nil {
-		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-	}
-
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
-
-	q.GetAsset(ctx, request.AssetId)
-
-	return &types.QueryTotalDepositByAssetIDResponse{
-		TotalDeposit: 0,
-	}, nil
 }
 
 func (q *queryServer) QueryTotalDepositByProductAssetID(c context.Context, request *types.QueryTotalDepositByProductAssetIDRequest) (*types.QueryTotalDepositByProductAssetIDResponse, error) {
@@ -190,22 +165,45 @@ func (q *queryServer) QueryOwnerLockerByProductID(c context.Context, request *ty
 		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.ProductId)
 	}
 
-	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
+	lockerLookupData, _ := q.GetLockerLookupTable(ctx, app.Id)
 
-	var lockerInfos []types.Locker
+	var lockerIds []string
 	for _, locker := range lockerLookupData.Lockers {
 
 		for _, lockerID := range locker.LockerIds {
 			locker1, _ := q.GetLocker(ctx, lockerID)
 			if request.Owner == locker1.Depositor {
-				lockerInfos = append(lockerInfos, locker1)
+				lockerIds = append(lockerIds, locker1.LockerId)
 			}
 		}
-
 	}
 
 	return &types.QueryOwnerLockerByProductIDResponse{
-		LockerInfo: lockerInfos,
+		LockerIds: lockerIds,
+	}, nil
+}
+
+func (q *queryServer) QueryOwnerLockerOfAllProduct(c context.Context, request *types.QueryOwnerLockerOfAllProductRequest) (*types.QueryOwnerLockerOfAllProductResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	userlockerLookupData, _ := q.GetUserLockerAssetMapping(ctx, request.Owner)
+
+	var lockerIds []string
+	for _, locker := range userlockerLookupData.LockerAppMapping {
+		for _, data := range locker.UserAssetLocker{
+			lockerIds = append(lockerIds, data.LockerId)
+		}
+	}
+
+	return &types.QueryOwnerLockerOfAllProductResponse{
+		LockerIds: lockerIds,
 	}, nil
 }
 

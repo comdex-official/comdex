@@ -41,9 +41,8 @@ message QueryVaultRequest {
 }
 
 message QueryVaultResponse {
-  repeated VaultInfo vaultInfo = 1[
-    (gogoproto.customname) = "VaultInfo",
-    (gogoproto.moretags)   = "yaml:\"vaultInfo\"",
+  Vault vault = 1[
+    (gogoproto.moretags)   = "yaml:\"vault\"",
     (gogoproto.nullable)   = false
   ];
 }
@@ -64,20 +63,19 @@ message QueryVaultResponse {
 //       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 // }
 
-// message QueryAllVaultsRequest {
-//   cosmos.base.query.v1beta1.PageRequest pagination = 1
-//       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
-// }
+message QueryAllVaultsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
 
-// message QueryAllVaultsResponse {
-//   repeated VaultInfo vaultsInfo = 1 [
-//     (gogoproto.customname) = "VaultsInfo",
-//     (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
-//     (gogoproto.nullable)   = false
-//   ];
-//   cosmos.base.query.v1beta1.PageResponse pagination = 2
-//       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
-// }
+message QueryAllVaultsResponse {
+  repeated Vault vault = 1 [
+    (gogoproto.moretags)   = "yaml:\"vault\"",
+    (gogoproto.nullable)   = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
 
 message QueryVaultOfOwnerByPairRequest {
   uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
@@ -216,9 +214,9 @@ service QueryService {
   //   option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{owner}";
   // };
 
-  // rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
-  //   option (google.api.http).get = "/comdex/vault/v1beta1/vaults";
-  // };
+  rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaults";
+  };
 
   rpc QueryVaultOfOwnerByPair(QueryVaultOfOwnerByPairRequest) returns (QueryVaultOfOwnerByPairResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vault-of-owner-by-pair/{product_id}/{owner}/{extended_pair_id}";

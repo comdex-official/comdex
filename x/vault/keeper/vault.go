@@ -237,7 +237,7 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 		}
 	} else {
 		//If oracle Price is not required for the assetOut
-		assetOutPrice = extended_pair_vault.AsssetOutPrice.BigInt().Uint64()
+		assetOutPrice = extended_pair_vault.AsssetOutPrice
 
 	}
 
