@@ -8,6 +8,8 @@ option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 service Msg {
   rpc Whitelist(WhitelistAsset) returns (MsgWhitelistAssetResponse);
   rpc RemoveWhitelist(RemoveWhitelistAsset) returns (MsgRemoveWhitelistAssetResponse);
+  rpc WhitelistAppVault(WhitelistAppIdVault) returns (MsgWhitelistAppIdVaultResponse);
+  rpc RemoveWhitelistAppVault(RemoveWhitelistAppIdVault) returns (MsgRemoveWhitelistAppIdVaultResponse);
 }
 
 message WhitelistAsset {
@@ -41,3 +43,27 @@ message RemoveWhitelistAsset {
 message MsgWhitelistAssetResponse {}
 
 message MsgRemoveWhitelistAssetResponse {}
+
+message WhitelistAppIdVault {
+  uint64 app_mapping_id   = 1 [
+    (gogoproto.moretags) = "yaml:\"app_mapping_id_vault\""
+  ];
+
+  string from    = 2 [
+    (gogoproto.moretags) = "yaml:\"from\""
+  ];
+}
+
+message RemoveWhitelistAppIdVault {
+  uint64 app_mapping_id   = 1 [
+    (gogoproto.moretags) = "yaml:\"app_mapping_id_vault\""
+  ];
+
+  string from    = 2 [
+    (gogoproto.moretags) = "yaml:\"from\""
+  ];
+}
+
+message MsgWhitelistAppIdVaultResponse {}
+
+message MsgRemoveWhitelistAppIdVaultResponse {}

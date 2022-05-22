@@ -76,3 +76,8 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, LockerSavingsR
 
 	return sdk.Int(newAmount), nil
 }
+
+func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64, assetIds []uint64) error {
+
+	return nil
+}

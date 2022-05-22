@@ -24,6 +24,7 @@ const (
 var (
 	RewardsKeyPrefix          = []byte{0x05}
 	KeyPrefixLastInterestTime = []byte{0x06}
+	AppIdsVaultKeyPrefix      = []byte{0x12}
 )
 
 func RewardsKey(id uint64) []byte {

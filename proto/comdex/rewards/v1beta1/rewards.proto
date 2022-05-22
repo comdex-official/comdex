@@ -19,3 +19,9 @@ message Internal_rewards{
 }
 
 message external_rewards{}
+
+message WhitelistedAppIdsVault{
+  repeated uint64 whitelisted_app_mapping_ids_vaults = 1 [
+    (gogoproto.moretags) = "yaml:\"whitelisted_app_mapping_ids_vaults\""
+  ];
+}

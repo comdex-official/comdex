@@ -12,6 +12,8 @@ import (
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&WhitelistAsset{}, "comdex/rewards/whitelistAsset", nil)
 	cdc.RegisterConcrete(&RemoveWhitelistAsset{}, "comdex/rewards/removeWhitelistAsset", nil)
+	cdc.RegisterConcrete(&WhitelistAppIdVault{}, "comdex/rewards/whitelistAppIdVault", nil)
+	cdc.RegisterConcrete(&RemoveWhitelistAppIdVault{}, "comdex/rewards/removeWhitelistAppIdVault", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -20,6 +22,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		(*sdk.Msg)(nil),
 		&WhitelistAsset{},
 		&RemoveWhitelistAsset{},
+		&WhitelistAppIdVault{},
+		&RemoveWhitelistAppIdVault{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
