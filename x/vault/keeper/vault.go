@@ -3,6 +3,8 @@ package keeper
 import (
 
 	// assettypes "github.com/comdex-official/comdex/x/asset/types"
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	// protobuftypes "github.com/gogo/protobuf/types"
 
@@ -174,7 +176,6 @@ func (k *Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Contex
 
 }
 
-
 func (k *Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(ctx sdk.Context, counter uint64, vaultData types.StableMintVault) {
 
 	app_extended_pair_vault_data, _ := k.GetAppExtendedPairVaultMapping(ctx, vaultData.AppMappingId)
@@ -197,11 +198,6 @@ func (k *Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault
 	k.SetAppExtendedPairVaultMapping(ctx, app_extended_pair_vault_data)
 
 }
-
-
-
-
-
 
 //Calculate Collaterlization Ratio
 func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultId uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
@@ -227,11 +223,15 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 	if !found {
 		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 	}
+	fmt.Println(assetInPrice, "price of asset ")
 	var assetOutPrice uint64
 
 	if extended_pair_vault.AssetOutOraclePrice {
+		fmt.Println(extended_pair_vault.AssetOutOraclePrice, "value bool price required")
 		//If oracle Price required for the assetOut
 		assetOutPrice, found = k.GetPriceForAsset(ctx, assetOutData.Id)
+		fmt.Println(assetOutPrice, "should be what is set dollar ")
+
 		if !found {
 			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 		}
@@ -250,6 +250,11 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 	if totalOut.LTE(sdk.ZeroDec()) {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountOut
 	}
+	fmt.Println(amountIn, "amountIn")
+	fmt.Println(amountOut, "amountout")
+	fmt.Println(totalIn.Quo(totalOut))
+	fmt.Println(totalIn)
+	fmt.Println(totalOut)
 
 	return totalIn.Quo(totalOut), nil
 

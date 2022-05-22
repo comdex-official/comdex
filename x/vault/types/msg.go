@@ -24,7 +24,7 @@ func NewMsgCreateRequest(from sdk.AccAddress, app_mapping_id uint64, extendedPai
 		AppMappingId:        app_mapping_id,
 		ExtendedPairVaultID: extendedPairVaultID,
 		AmountIn:            amountIn,
-		AmountOut:           amountIn,
+		AmountOut:           amountOut,
 	}
 }
 
