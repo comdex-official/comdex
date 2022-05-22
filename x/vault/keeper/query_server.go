@@ -481,21 +481,42 @@ func (q *queryServer) QueryStableVaultInfo(c context.Context, req *types.QuerySt
 	}, nil
 }
 
-// func (q *queryServer) QueryAllStableVaults(c context.Context, req *types.QueryAllStableVaultsRequest) (*types.QueryStableVaultInfoResponse, error) {
-// 	if req == nil {
-// 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-// 	}
-// 	var( 
-// 		ctx   = sdk.UnwrapSDKContext(c)
-// 		stableMintData[] types.StableMintVault
-// 	)
-// 		stableMintData, found := q.GetStableMintVault(ctx, req.StableVaultId)
-// 		if !found {
-// 			return nil, status.Errorf(codes.NotFound, "stable mint data not exist for id %d", req.StableVaultId)
-// 		}
+func (q *queryServer) QueryAllStableVaults(c context.Context, req *types.QueryAllStableVaultsRequest) (*types.QueryAllStableVaultsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var( 
+		ctx   = sdk.UnwrapSDKContext(c)
+		stableMintData[] *types.StableMintVault
+	)
+		stableMint := q.GetStableMintVaults(ctx)
+		for _ ,data := range stableMint{
+			if data.AppMappingId == req.AppId {
+				stableMintData = append(stableMintData, &data)
+			}
+		} 
 	
+	return &types.QueryAllStableVaultsResponse{
+		StableMintVault: stableMintData,
+	}, nil
+}
 
-// 	return &types.QueryAllStableVaultsResponse{
-// 		StableMintVault: stableMintData,
-// 	}, nil
-// }
+func (q *queryServer) QueryStableVaultByProductExtendedPair(c context.Context, req *types.QueryStableVaultByProductExtendedPairRequest) (*types.QueryStableVaultByProductExtendedPairResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var( 
+		ctx   = sdk.UnwrapSDKContext(c)
+		stableMintData types.StableMintVault
+	)
+		stableMint := q.GetStableMintVaults(ctx)
+		for _ ,data := range stableMint{
+			if data.AppMappingId == req.AppId && data.ExtendedPairVaultID == req.ExtendedPairId{
+				stableMintData = data
+			}
+		} 
+	
+	return &types.QueryStableVaultByProductExtendedPairResponse{
+		StableMintVault: &stableMintData,
+	}, nil
+}

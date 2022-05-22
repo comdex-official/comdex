@@ -35,6 +35,8 @@ func GetQueryCmd() *cobra.Command {
 		QueryTotalValueLockedByProductExtendedPair(),
 		QueryExtendedPairIDByProduct(),
 		QueryStableVaultInfo(),
+		QueryAllStableVaults(),
+		QueryStableVaultByProductExtendedPair(),
 		
 	)
 
@@ -539,31 +541,73 @@ func QueryStableVaultInfo() *cobra.Command {
 	return cmd
 } 
 
-// func QueryAllStableVaults() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "stable-vault-by-product [app_id]",
-// 		Short: "get stable vault by product",
-// 		Args:  cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
+func QueryAllStableVaults() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "stable-vault-by-product [app_id]",
+		Short: "get stable vault by product",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
 
-// 			ctx, err := client.GetClientQueryContext(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
 
-// 			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-// 			res, err := queryClient.QueryAllStableVaults(cmd.Context(), &types.QueryAllStableVaultsRequest{
-// 				StableVaultId: args[0],
-// 			})
+			res, err := queryClient.QueryAllStableVaults(cmd.Context(), &types.QueryAllStableVaultsRequest{
+				AppId: app_id,
+			})
 
-// 			if err != nil {
-// 				return err
-// 			}
-// 			return ctx.PrintProto(res)
-// 		},
-// 	}
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
-// 	return cmd
-// }
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryStableVaultByProductExtendedPair() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "stable-vault-by-product-extendedPair [app_id] [extended_pair_id]",
+		Short: "get stable vault by product and extended pair",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			extended_pair_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryStableVaultByProductExtendedPair(cmd.Context(), &types.QueryStableVaultByProductExtendedPairRequest{
+				AppId: app_id,
+				ExtendedPairId: extended_pair_id,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}

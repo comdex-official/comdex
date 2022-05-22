@@ -447,3 +447,20 @@ func (k *Keeper) GetStableMintVault(ctx sdk.Context, id string) (stableVault typ
 	k.cdc.MustUnmarshal(value, &stableVault)
 	return stableVault, true
 }
+
+func (k *Keeper) GetStableMintVaults(ctx sdk.Context) (stableVaults []types.StableMintVault) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.StableMintVaultKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var stableVault types.StableMintVault
+		k.cdc.MustUnmarshal(iter.Value(), &stableVault)
+		stableVaults = append(stableVaults, stableVault)
+	}
+
+	return stableVaults
+}

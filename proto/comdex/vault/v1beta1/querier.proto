@@ -189,13 +189,22 @@ message QueryStableVaultInfoResponse {
   StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
 }
 
-// message QueryAllStableVaultsRequest {
-//   string app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
-// }
+message QueryAllStableVaultsRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+}
 
-// message QueryAllStableVaultsResponse {
-//   repeated StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
-// }
+message QueryAllStableVaultsResponse {
+  repeated StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
+}
+
+message QueryStableVaultByProductExtendedPairRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+}
+
+message QueryStableVaultByProductExtendedPairResponse {
+  StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
+}
 
 
 service QueryService {
@@ -251,7 +260,11 @@ service QueryService {
     option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-id/{stable_vault_id}";
   };
 
-  // rpc QueryAllStableVaults(QueryAllStableVaultsRequest) returns (QueryAllStableVaultsResponse) {
-  //   option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-product/{app_id}";
-  // };
+  rpc QueryAllStableVaults(QueryAllStableVaultsRequest) returns (QueryAllStableVaultsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-product/{app_id}";
+  };
+
+  rpc QueryStableVaultByProductExtendedPair(QueryStableVaultByProductExtendedPairRequest) returns (QueryStableVaultByProductExtendedPairResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-product-extendedPair/{app_id}/{extended_pair_id}";
+  };
 }
