@@ -2,22 +2,257 @@ package keeper
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"time"
 
 	incentivestypes "github.com/comdex-official/comdex/x/incentives/types"
+	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinToDistribute sdk.Coin, liquidityGaugeData incentivestypes.LiquidtyGaugeMetaData) ([]incentivestypes.RewardDistributionDataCollector, error) {
+func (k Keeper) GetAMMPoolInterfaceObject(ctx sdk.Context, poolId uint64) (*types.Pool, *types.Pair, *amm.BasicPool, error) {
+	pool, _ := k.GetPool(ctx, poolId)
+	if pool.Disabled {
+		return nil, nil, nil, sdkerrors.Wrapf(types.ErrDisabledPool, "pool %d is disabled", poolId)
+	}
+
+	pair, _ := k.GetPair(ctx, pool.PairId)
+	rx, ry := k.getPoolBalances(ctx, pool, pair)
+	ps := k.GetPoolCoinSupply(ctx, pool)
+	ammPool := amm.NewBasicPool(rx.Amount, ry.Amount, ps)
+	if ammPool.IsDepleted() {
+		return nil, nil, nil, sdkerrors.Wrapf(types.ErrDepletedPool, "pool %d is depleted", poolId)
+	}
+	return &pool, &pair, ammPool, nil
+}
+
+func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error) {
+
+	// ammPool.Withdraw implemets the actual logic for pool token ratio calculation
+	x, y := ammPool.Withdraw(poolCoin.Amount, sdk.NewDec(0))
+	if x.IsZero() && y.IsZero() {
+		return sdk.NewInt(0), sdk.NewInt(0), types.ErrCalculatedPoolAmountIsZero
+	}
+	return x, y, nil
+}
+
+func oracle(denom string) (uint64, bool) {
+	if denom == "ucmdx" {
+		return 2000000, true
+	} else if denom == "ucgold" {
+		return 1800000000, true
+	} else if denom == "ucsilver" {
+		return 25000000, true
+	} else if denom == "ucoil" {
+		return 120000000, true
+	}
+	return 0, false
+}
+
+func (k Keeper) GetOraclePrices(ctx sdk.Context, quoteCoinDenom, baseCoinDenom string) (sdk.Dec, string, error) {
+	oraclePrice, found := oracle(quoteCoinDenom) // for quote coin
+	denom := quoteCoinDenom
+	if !found {
+		oraclePrice, found = oracle(baseCoinDenom) // for base coin
+		denom = baseCoinDenom
+		if !found {
+			return sdk.NewDec(0), "", types.ErrOraclePricesNotFound
+		}
+	}
+	// considering oracle prices in 10^6
+	return sdk.NewDec(int64(oraclePrice)).Quo(sdk.NewDec(1000000)), denom, nil
+}
+
+func (k Keeper) CalculateLiquidityAddedValue(
+	ctx sdk.Context,
+	quoteCoinPoolBalance, baseCoinPoolBalance sdk.Coin,
+	quoteCoin, baseCoin sdk.Coin,
+	oraclePrice sdk.Dec,
+	oraclePriceDenom string,
+) sdk.Dec {
+
+	poolSupplyX := sdk.NewDecFromInt(quoteCoinPoolBalance.Amount)
+	poolSupplyY := sdk.NewDecFromInt(baseCoinPoolBalance.Amount)
+
+	baseCoinPoolPrice := sdk.NewDec(0)
+	quoteCoinPoolPrice := sdk.NewDec(0)
+	if oraclePriceDenom == quoteCoin.Denom {
+		baseCoinPoolPrice = poolSupplyX.Quo(poolSupplyY).Mul(oraclePrice)
+		quoteCoinPoolPrice = poolSupplyY.Quo(poolSupplyX).Mul(baseCoinPoolPrice)
+	} else {
+		quoteCoinPoolPrice = poolSupplyY.Quo(poolSupplyX).Mul(oraclePrice)
+		baseCoinPoolPrice = poolSupplyX.Quo(poolSupplyY).Mul(quoteCoinPoolPrice)
+	}
+
+	supplyX := sdk.NewDecFromInt(quoteCoin.Amount)
+	supplyY := sdk.NewDecFromInt(baseCoin.Amount)
+
+	// returns actual $value of quoteCoin + baseCoin (value returned in 10^-6, i.e 1000000=1$)
+	return supplyX.Mul(quoteCoinPoolPrice).Add(supplyY.Mul(baseCoinPoolPrice)).Quo(sdk.NewDec(1000000))
+}
+
+func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, poolIds []uint64, masterPoolSupplyAddresses []sdk.AccAddress) map[string]sdk.Dec {
+	poolSupplyData := make(map[string]sdk.Dec)
+
+	for _, poolId := range poolIds {
+		liquidityProvidersDataForPool, found := k.GetPoolLiquidityProvidersData(ctx, poolId)
+		if !found {
+			continue
+		}
+
+		pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, poolId)
+		if err != nil {
+			continue
+		}
+
+		oraclePrice, denom, err := k.GetOraclePrices(ctx, pair.QuoteCoinDenom, pair.BaseCoinDenom)
+		if err != nil {
+			continue
+		}
+
+		quoteCoinPoolBalance, baseCoinPoolBalance := k.getPoolBalances(ctx, *pool, *pair)
+
+		for _, address := range masterPoolSupplyAddresses {
+			supplyData, found := liquidityProvidersDataForPool.LiquidityProviders[address.String()]
+			if !found {
+				continue
+			}
+			depositedCoins := supplyData.Coins
+			for _, coin := range depositedCoins {
+				if coin.Denom == pool.PoolCoinDenom {
+					x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, coin)
+					if err != nil {
+						continue
+					}
+					quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
+					baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
+					value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
+					_, found := poolSupplyData[address.String()]
+					if !found {
+						poolSupplyData[address.String()] = value
+					} else {
+						poolSupplyData[address.String()] = poolSupplyData[address.String()].Add(value)
+					}
+				}
+			}
+		}
+	}
+	return poolSupplyData
+}
+
+func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coin, liquidityGaugeData incentivestypes.LiquidtyGaugeMetaData) ([]incentivestypes.RewardDistributionDataCollector, error) {
 
 	liquidityProvidersDataForPool, found := k.GetPoolLiquidityProvidersData(ctx, liquidityGaugeData.PoolId)
 	if !found {
 		return nil, sdkerrors.Wrapf(types.ErrLPDataNotExistsForPool, "data not found for pool id %d", liquidityGaugeData.PoolId)
 	}
-	fmt.Println(liquidityProvidersDataForPool)
+
+	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, liquidityGaugeData.PoolId)
+	if err != nil {
+		return nil, err
+	}
+
+	oraclePrice, denom, err := k.GetOraclePrices(ctx, pair.QuoteCoinDenom, pair.BaseCoinDenom)
+	if err != nil {
+		return nil, err
+	}
+
+	quoteCoinPoolBalance, baseCoinPoolBalance := k.getPoolBalances(ctx, *pool, *pair)
+
+	// Logic for master pool mechanism
+	if liquidityGaugeData.IsMasterPool {
+
+		masterPoolSupplyAddresses := []sdk.AccAddress{}
+		masterPoolSupplies := []sdk.Dec{}
+		childPoolSupplies := []sdk.Dec{}
+		minMasterChildPoolSupplies := []sdk.Dec{}
+
+		for address, depositedCoins := range liquidityProvidersDataForPool.LiquidityProviders {
+			addr, err := sdk.AccAddressFromBech32(address)
+			if err != nil {
+				continue
+			}
+			for _, coin := range depositedCoins.Coins {
+				if coin.Denom == pool.PoolCoinDenom {
+					x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, coin)
+					if err != nil {
+						continue
+					}
+					quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
+					baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
+					value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
+					masterPoolSupplyAddresses = append(masterPoolSupplyAddresses, addr)
+					masterPoolSupplies = append(masterPoolSupplies, sdk.Dec(value))
+				}
+			}
+		}
+
+		childPoolIds := []uint64{}
+		if len(liquidityGaugeData.ChildPoolIds) == 0 {
+			pools := k.GetAllPools(ctx)
+			for _, pool := range pools {
+				if pool.Id != liquidityGaugeData.PoolId {
+					childPoolIds = append(childPoolIds, pool.Id)
+				}
+			}
+		} else {
+			// sanitization
+			for _, poolId := range liquidityGaugeData.ChildPoolIds {
+				if poolId != liquidityGaugeData.PoolId {
+					childPoolIds = append(childPoolIds, poolId)
+				}
+			}
+		}
+
+		chilPoolSuppliesData := k.GetAggregatedChildPoolContributions(ctx, childPoolIds, masterPoolSupplyAddresses)
+
+		for _, accAddress := range masterPoolSupplyAddresses {
+			aggregatedSupplyValue, found := chilPoolSuppliesData[accAddress.String()]
+			if !found {
+				childPoolSupplies = append(childPoolSupplies, sdk.NewDec(0))
+			} else {
+				childPoolSupplies = append(childPoolSupplies, aggregatedSupplyValue)
+			}
+		}
+
+		if len(masterPoolSupplyAddresses) != len(masterPoolSupplies) || len(masterPoolSupplyAddresses) != len(childPoolSupplies) {
+			return nil, types.ErrSupplyValueCalculationInvalid
+		}
+
+		totalRewardEligibleSupply := sdk.NewDec(0)
+		for i := 0; i < len(masterPoolSupplyAddresses); i++ {
+			minSupply := sdk.Dec{}
+			if masterPoolSupplies[i].LTE(childPoolSupplies[i]) {
+				minSupply = masterPoolSupplies[i]
+			} else {
+				minSupply = childPoolSupplies[i]
+			}
+			totalRewardEligibleSupply = totalRewardEligibleSupply.Add(minSupply)
+			minMasterChildPoolSupplies = append(minMasterChildPoolSupplies, minSupply)
+		}
+
+		multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
+
+		rewardData := []incentivestypes.RewardDistributionDataCollector{}
+		for index, address := range masterPoolSupplyAddresses {
+			if !minMasterChildPoolSupplies[index].IsZero() {
+				calculatedReward := int64(math.Floor(minMasterChildPoolSupplies[index].Mul(multiplier).MustFloat64()))
+				newData := new(incentivestypes.RewardDistributionDataCollector)
+				newData.RewardReceiver = address
+				newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
+				rewardData = append(rewardData, *newData)
+			}
+		}
+
+		return rewardData, nil
+	} else {
+		// Logic for exteranl rewards or non masterpool gauges
+		// TODO : write logic for external reward calculation
+		fmt.Println() // to avoid editor warnings for empty block
+	}
 
 	return []incentivestypes.RewardDistributionDataCollector{}, nil
 }

@@ -74,6 +74,10 @@ func (k Keeper) BeginRewardDistributions(
 		totalDistributionCoinsCalculated.Amount = totalDistributionCoinsCalculated.Amount.Add(distrData.RewardCoin.Amount)
 	}
 
+	if totalDistributionCoinsCalculated.Amount.GT(coinToDistribute.Amount) {
+		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), types.ErrInvalidCalculatedAMount
+	}
+
 	err = k.doDistributionSends(ctx, &newDistributionInfo)
 	if err != nil {
 		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), err
