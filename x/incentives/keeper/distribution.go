@@ -24,7 +24,7 @@ func (k Keeper) GetRewardDistributionData(
 	return rewardDistributionData, err
 }
 
-func (k Keeper) doDistributionSends(ctx sdk.Context, distrs *types.DistributionInfo) error {
+func (k Keeper) doDistributionSends(ctx sdk.Context, gaugeTypeId uint64, distrs *types.DistributionInfo) error {
 	logger := k.Logger(ctx)
 	numIDs := len(distrs.Addresses)
 	logger.Info(fmt.Sprintf("Beginning reward distribution to %d users", numIDs))
@@ -45,6 +45,7 @@ func (k Keeper) doDistributionSends(ctx sdk.Context, distrs *types.DistributionI
 				types.TypeEvtDistribution,
 				sdk.NewAttribute(types.AttributeReceiver, distrs.Addresses[id].String()),
 				sdk.NewAttribute(types.AttributeAmount, distrs.Coins[id].String()),
+				sdk.NewAttribute(types.AttributeGaugeTypeId, fmt.Sprintf("%v", gaugeTypeId)),
 			),
 		})
 	}
@@ -78,7 +79,7 @@ func (k Keeper) BeginRewardDistributions(
 		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), types.ErrInvalidCalculatedAMount
 	}
 
-	err = k.doDistributionSends(ctx, &newDistributionInfo)
+	err = k.doDistributionSends(ctx, gauge.GaugeTypeId, &newDistributionInfo)
 	if err != nil {
 		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), err
 	}

@@ -152,6 +152,10 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 		}
 
 		depositAmountSplitsByEpochs := SplitTotalAmountPerEpoch(gauge.DepositAmount.Amount.Uint64(), gauge.TotalTriggers)
+		if len(depositAmountSplitsByEpochs) <= int(gauge.TriggeredCount) {
+			logger.Info("triggered counts are higher than total trigger splits, exceptions avoided")
+			continue
+		}
 		amountToDistribute := depositAmountSplitsByEpochs[gauge.TriggeredCount]
 		availableDeposits := gauge.DepositAmount.Amount.Sub(gauge.DistributedAmount.Amount)
 

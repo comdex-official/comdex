@@ -4,6 +4,7 @@ package types
 const (
 	TypeEvtDistribution = "distribution"
 
-	AttributeReceiver = "receiver"
-	AttributeAmount   = "amount"
+	AttributeReceiver    = "receiver"
+	AttributeAmount      = "amount"
+	AttributeGaugeTypeId = "gauge_type_id"
 )
