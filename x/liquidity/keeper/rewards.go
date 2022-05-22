@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"math"
 	"sort"
 	"time"
@@ -53,6 +52,7 @@ func oracle(denom string) (uint64, bool) {
 }
 
 func (k Keeper) GetOraclePrices(ctx sdk.Context, quoteCoinDenom, baseCoinDenom string) (sdk.Dec, string, error) {
+	// TODO : Use market module to get the prices
 	oraclePrice, found := oracle(quoteCoinDenom) // for quote coin
 	denom := quoteCoinDenom
 	if !found {
@@ -162,33 +162,34 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 
 	quoteCoinPoolBalance, baseCoinPoolBalance := k.getPoolBalances(ctx, *pool, *pair)
 
+	lpAddresses := []sdk.AccAddress{}
+	lpSupplies := []sdk.Dec{}
+
+	for address, depositedCoins := range liquidityProvidersDataForPool.LiquidityProviders {
+		addr, err := sdk.AccAddressFromBech32(address)
+		if err != nil {
+			continue
+		}
+		for _, coin := range depositedCoins.Coins {
+			if coin.Denom == pool.PoolCoinDenom {
+				x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, coin)
+				if err != nil {
+					continue
+				}
+				quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
+				baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
+				value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
+				lpAddresses = append(lpAddresses, addr)
+				lpSupplies = append(lpSupplies, sdk.Dec(value))
+			}
+		}
+	}
+
 	// Logic for master pool mechanism
 	if liquidityGaugeData.IsMasterPool {
 
-		masterPoolSupplyAddresses := []sdk.AccAddress{}
-		masterPoolSupplies := []sdk.Dec{}
 		childPoolSupplies := []sdk.Dec{}
 		minMasterChildPoolSupplies := []sdk.Dec{}
-
-		for address, depositedCoins := range liquidityProvidersDataForPool.LiquidityProviders {
-			addr, err := sdk.AccAddressFromBech32(address)
-			if err != nil {
-				continue
-			}
-			for _, coin := range depositedCoins.Coins {
-				if coin.Denom == pool.PoolCoinDenom {
-					x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, coin)
-					if err != nil {
-						continue
-					}
-					quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
-					baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
-					value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
-					masterPoolSupplyAddresses = append(masterPoolSupplyAddresses, addr)
-					masterPoolSupplies = append(masterPoolSupplies, sdk.Dec(value))
-				}
-			}
-		}
 
 		childPoolIds := []uint64{}
 		if len(liquidityGaugeData.ChildPoolIds) == 0 {
@@ -207,9 +208,9 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 			}
 		}
 
-		chilPoolSuppliesData := k.GetAggregatedChildPoolContributions(ctx, childPoolIds, masterPoolSupplyAddresses)
+		chilPoolSuppliesData := k.GetAggregatedChildPoolContributions(ctx, childPoolIds, lpAddresses)
 
-		for _, accAddress := range masterPoolSupplyAddresses {
+		for _, accAddress := range lpAddresses {
 			aggregatedSupplyValue, found := chilPoolSuppliesData[accAddress.String()]
 			if !found {
 				childPoolSupplies = append(childPoolSupplies, sdk.NewDec(0))
@@ -218,15 +219,15 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 			}
 		}
 
-		if len(masterPoolSupplyAddresses) != len(masterPoolSupplies) || len(masterPoolSupplyAddresses) != len(childPoolSupplies) {
+		if len(lpAddresses) != len(lpSupplies) || len(lpAddresses) != len(childPoolSupplies) {
 			return nil, types.ErrSupplyValueCalculationInvalid
 		}
 
 		totalRewardEligibleSupply := sdk.NewDec(0)
-		for i := 0; i < len(masterPoolSupplyAddresses); i++ {
+		for i := 0; i < len(lpAddresses); i++ {
 			minSupply := sdk.Dec{}
-			if masterPoolSupplies[i].LTE(childPoolSupplies[i]) {
-				minSupply = masterPoolSupplies[i]
+			if lpSupplies[i].LTE(childPoolSupplies[i]) {
+				minSupply = lpSupplies[i]
 			} else {
 				minSupply = childPoolSupplies[i]
 			}
@@ -237,7 +238,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 		multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
 
 		rewardData := []incentivestypes.RewardDistributionDataCollector{}
-		for index, address := range masterPoolSupplyAddresses {
+		for index, address := range lpAddresses {
 			if !minMasterChildPoolSupplies[index].IsZero() {
 				calculatedReward := int64(math.Floor(minMasterChildPoolSupplies[index].Mul(multiplier).MustFloat64()))
 				newData := new(incentivestypes.RewardDistributionDataCollector)
@@ -249,12 +250,24 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 
 		return rewardData, nil
 	} else {
-		// Logic for exteranl rewards or non masterpool gauges
-		// TODO : write logic for external reward calculation
-		fmt.Println() // to avoid editor warnings for empty block
-	}
+		// Logic for non master pool gauges (external rewards)
+		totalRewardEligibleSupply := sdk.NewDec(0)
+		for _, supply := range lpSupplies {
+			totalRewardEligibleSupply = totalRewardEligibleSupply.Add(supply)
+		}
+		multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
 
-	return []incentivestypes.RewardDistributionDataCollector{}, nil
+		rewardData := []incentivestypes.RewardDistributionDataCollector{}
+		for index, address := range lpAddresses {
+			calculatedReward := int64(math.Floor(lpSupplies[index].Mul(multiplier).MustFloat64()))
+			newData := new(incentivestypes.RewardDistributionDataCollector)
+			newData.RewardReceiver = address
+			newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
+			rewardData = append(rewardData, *newData)
+		}
+
+		return rewardData, nil
+	}
 }
 
 func (k Keeper) ValidateMsgTokensSoftLock(ctx sdk.Context, msg *types.MsgTokensSoftLock) (sdk.AccAddress, error) {
