@@ -25,6 +25,7 @@ func GetQueryCmd() *cobra.Command {
 		queryPairVaults(),
 		queryAppsMapings(),
 		queryProductToExtendedPair(),
+		queryExtendedPairPsmPairWise(),
 	)
 
 	return cmd

@@ -363,3 +363,41 @@ func queryProductToExtendedPair() *cobra.Command {
 
 	return cmd
 }
+
+func queryExtendedPairPsmPairWise() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extended-pair-psm-pair-wise [product_id]",
+		Short: "Query all extended pairs psm pair wise in a product",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			product_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryExtendedPairPsmPairWise(
+				context.Background(),
+				&types.QueryExtendedPairPsmPairWiseRequest{
+					ProductId: product_id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}

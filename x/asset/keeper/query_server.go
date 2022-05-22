@@ -257,4 +257,24 @@ func (q *queryServer) QueryProductToExtendedPair(c context.Context, req *types.Q
 	return &types.QueryProductToExtendedPairResponse{
 		ExtendedPair: pairVaultsData,
 	}, nil
+} 
+
+func (q *queryServer) QueryExtendedPairPsmPairWise(c context.Context, req *types.QueryExtendedPairPsmPairWiseRequest) (*types.QueryExtendedPairPsmPairWiseResponse, error) {
+	var (
+		ctx               = sdk.UnwrapSDKContext(c)
+		pairVaults, found = q.GetPairsVaults(ctx)
+		pairVault []uint64
+	)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
+	}
+	for _, data := range pairVaults{
+		if (data.AppMappingId == req.ProductId && data.IsPsmPair){
+			pairVault = append(pairVault, data.Id)
+		}
+	} 
+
+	return &types.QueryExtendedPairPsmPairWiseResponse{
+		ExtendedPairsId: pairVault,
+	}, nil
 }

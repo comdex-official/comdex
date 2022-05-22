@@ -21,6 +21,7 @@ func (k *msgServer) TriggerAuction(ctx sdk.Context, appid uint64) {
 
 	_, _ = k.GetAppidToAssetCollectorMapping(ctx, appid)
 	_, _ = k.GetCollectorLookupTable(ctx, appid)
+	// k.AppIdToAuctionLookupTable
 
 	// check for app_id in both get calls
 	// match asset id's in both
