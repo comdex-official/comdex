@@ -808,7 +808,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				return err
 			}
 
-			assset_out_price, err := ParseStringFromString(args[15], ",")
+			assset_out_price, err := ParseUint64SliceFromString(args[15], ",")
 			if err != nil {
 				return err
 			}
@@ -839,7 +839,6 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				debt_floor,_ := sdk.NewIntFromString(debt_floor[i])
 				newis_psm_pair := ParseBoolFromString(is_psm_pair[i])
 				newasset_out_oracle_price := ParseBoolFromString(asset_out_oracle_price[i])
-				newassset_out_price, _ := sdk.NewDecFromStr(assset_out_price[i])
 				pairs = append(pairs, types.ExtendedPairVault{
 					AppMappingId: app_mapping_id,
 					PairId: pair_id[i],
@@ -856,7 +855,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 					MinCr: newmin_cr,
 					PairName: pair_name[i],
 					AssetOutOraclePrice: newasset_out_oracle_price,
-					AsssetOutPrice: newassset_out_price,
+					AsssetOutPrice: assset_out_price[i],
 				})
 			}
 
