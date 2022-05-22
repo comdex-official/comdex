@@ -235,16 +235,17 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 			minMasterChildPoolSupplies = append(minMasterChildPoolSupplies, minSupply)
 		}
 
-		multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
-
 		rewardData := []incentivestypes.RewardDistributionDataCollector{}
-		for index, address := range lpAddresses {
-			if !minMasterChildPoolSupplies[index].IsZero() {
-				calculatedReward := int64(math.Floor(minMasterChildPoolSupplies[index].Mul(multiplier).MustFloat64()))
-				newData := new(incentivestypes.RewardDistributionDataCollector)
-				newData.RewardReceiver = address
-				newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
-				rewardData = append(rewardData, *newData)
+		if !totalRewardEligibleSupply.IsZero() {
+			multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
+			for index, address := range lpAddresses {
+				if !minMasterChildPoolSupplies[index].IsZero() {
+					calculatedReward := int64(math.Floor(minMasterChildPoolSupplies[index].Mul(multiplier).MustFloat64()))
+					newData := new(incentivestypes.RewardDistributionDataCollector)
+					newData.RewardReceiver = address
+					newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
+					rewardData = append(rewardData, *newData)
+				}
 			}
 		}
 
@@ -255,15 +256,17 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 		for _, supply := range lpSupplies {
 			totalRewardEligibleSupply = totalRewardEligibleSupply.Add(supply)
 		}
-		multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
 
 		rewardData := []incentivestypes.RewardDistributionDataCollector{}
-		for index, address := range lpAddresses {
-			calculatedReward := int64(math.Floor(lpSupplies[index].Mul(multiplier).MustFloat64()))
-			newData := new(incentivestypes.RewardDistributionDataCollector)
-			newData.RewardReceiver = address
-			newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
-			rewardData = append(rewardData, *newData)
+		if !totalRewardEligibleSupply.IsZero() {
+			multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
+			for index, address := range lpAddresses {
+				calculatedReward := int64(math.Floor(lpSupplies[index].Mul(multiplier).MustFloat64()))
+				newData := new(incentivestypes.RewardDistributionDataCollector)
+				newData.RewardReceiver = address
+				newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
+				rewardData = append(rewardData, *newData)
+			}
 		}
 
 		return rewardData, nil
@@ -444,7 +447,7 @@ func (k Keeper) GetMinimumEpochDurationFromPoolId(ctx sdk.Context, poolId uint64
 	for _, gauge := range gauges {
 		switch kind := gauge.Kind.(type) {
 		case *incentivestypes.Gauge_LiquidityMetaData:
-			if kind.LiquidityMetaData.PoolId == poolId {
+			if kind.LiquidityMetaData.PoolId == poolId && gauge.IsActive {
 				if minEpochDuration == time.Duration(0) {
 					minEpochDuration = gauge.TriggerDuration
 				} else if gauge.TriggerDuration < minEpochDuration {
@@ -454,7 +457,7 @@ func (k Keeper) GetMinimumEpochDurationFromPoolId(ctx sdk.Context, poolId uint64
 		}
 	}
 	if minEpochDuration == time.Duration(0) {
-		minEpochDuration = time.Second * 86400 // if no gauge for given pool, making 24h as default vaule
+		minEpochDuration = time.Second * 60 // if no gauge for given pool, making 24h as default vaule
 	}
 	return minEpochDuration
 }

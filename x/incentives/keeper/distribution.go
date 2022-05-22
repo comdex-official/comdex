@@ -36,7 +36,9 @@ func (k Keeper) doDistributionSends(ctx sdk.Context, gaugeTypeId uint64, distrs 
 			address,
 			distrs.Coins[i],
 		)
-		logger.Info(fmt.Sprintf("error occured while reward distribution, err : %s", err))
+		if err != nil {
+			logger.Info(fmt.Sprintf("error occured while reward distribution, err : %v", err))
+		}
 	}
 	logger.Info("Finished sending, now creating reward distribution events")
 	for id := 0; id < numIDs; id++ {
@@ -49,7 +51,7 @@ func (k Keeper) doDistributionSends(ctx sdk.Context, gaugeTypeId uint64, distrs 
 			),
 		})
 	}
-	logger.Info(fmt.Sprintf("Finished Distributing to %d users", numIDs))
+	logger.Info(fmt.Sprintf("Finished distributing to %d users", numIDs))
 	return nil
 }
 
@@ -58,6 +60,7 @@ func (k Keeper) BeginRewardDistributions(
 ) (sdk.Coin, error) {
 
 	rewardDistributionData, err := k.GetRewardDistributionData(ctx, gauge, coinToDistribute, epochCount, epochDuration)
+	fmt.Println("rewardDistributionData...", rewardDistributionData)
 	if err != nil {
 		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), err
 	}
