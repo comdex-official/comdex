@@ -119,7 +119,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		return nil, err
 	}
 
-	fmt.Println("1st msg.AmountOut", msg.AmountOut )
+	fmt.Println("1st msg.AmountOut", msg.AmountOut)
 
 	//Calculating Closing Fee
 	//----Done inside the vault-----//
@@ -137,8 +137,8 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		//If not zero deduct send to collector//////////
 
 		collectorShare := (msg.AmountOut.Mul(sdk.Int(extended_pair_vault.CreationFee))).Quo(sdk.Int(sdk.OneDec()))
-		fmt.Println(collectorShare,"collectorShare")
-		fmt.Println(sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare)),"sdk.Interpretation")
+		fmt.Println(collectorShare, "collectorShare")
+		fmt.Println(sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare)), "sdk.Interpretation")
 		fmt.Println("ctx", ctx)
 
 		k.collector.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
@@ -163,9 +163,11 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	new_vault.Id = app_mapping.ShortName + strconv.FormatUint(updated_counter, 10)
 	new_vault.AmountIn = msg.AmountIn
 
-	closingFeeVal := (sdk.Dec(msg.AmountOut).Mul((extended_pair_vault.ClosingFee)))
+	// closingFeeVal := (sdk.Dec(msg.AmountOut).Mul((extended_pair_vault.ClosingFee)))
 
-	new_vault.ClosingFeeAccumulated = (*sdk.Int)(&closingFeeVal)
+	closingFeeVal := msg.AmountOut.Mul(sdk.Int(extended_pair_vault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
+
+	new_vault.ClosingFeeAccumulated = &closingFeeVal
 	new_vault.AmountOut = msg.AmountOut
 	new_vault.AppMappingId = app_mapping.Id
 	new_vault.InterestAccumulated = &zero_val
@@ -799,7 +801,7 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	} else {
 		//If not zero deduct send to collector//////////
 		//			COLLECTOR FUNCTION
-		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.CreationFee)))
+		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.CreationFee))).Quo(sdk.Int(sdk.OneDec()))
 		k.collector.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 			return nil, err
@@ -921,7 +923,7 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 		//
 		/////////////////////////////////////////////////
 
-		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.CreationFee)))
+		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.CreationFee))).Quo(sdk.Int(sdk.OneDec()))
 		k.collector.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 			return nil, err
@@ -1031,10 +1033,10 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 		//
 		/////////////////////////////////////////////////
 
-		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.CreationFee)))
+		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.CreationFee))).Quo(sdk.Int(sdk.OneDec()))
 		k.collector.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
-		if err :=k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
-		return nil, err
+		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
+			return nil, err
 		}
 
 		updatedAmount := msg.Amount.Sub(collectorShare)
