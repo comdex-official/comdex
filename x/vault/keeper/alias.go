@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -37,12 +39,12 @@ func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, addre
 
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
-func (k *Keeper) SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
+func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
 		return nil
 	}
-
-	return k.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
+	fmt.Println("going in")
+	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 
 }
 
