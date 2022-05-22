@@ -21,6 +21,7 @@ type (
 		locker     expected.LockerKeeper
 		collector  expected.CollectorKeeper
 		vault      expected.VaultKeeper
+		asset      expected.AssetKeeper
 	}
 )
 
@@ -32,6 +33,7 @@ func NewKeeper(
 	locker expected.LockerKeeper,
 	collector expected.CollectorKeeper,
 	vault expected.VaultKeeper,
+	asset expected.AssetKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -48,6 +50,7 @@ func NewKeeper(
 		locker:     locker,
 		collector:  collector,
 		vault:      vault,
+		asset:      asset,
 	}
 }
 

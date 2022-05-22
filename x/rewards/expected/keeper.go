@@ -1,12 +1,16 @@
 package expected
 
 import (
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collecortypes "github.com/comdex-official/comdex/x/collector/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type AssetKeeper interface {
+	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
+}
 type LockerKeeper interface {
 	GetLockerProductAssetMapping(ctx sdk.Context, appMappingId uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool)
 	GetLocker(ctx sdk.Context, lockerId string) (locker types.Locker, found bool)
@@ -31,4 +35,5 @@ type VaultKeeper interface {
 	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool)
 	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairId uint64, userAddress string, appMappingId uint64)
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairId uint64, userVaultId string, appMappingId uint64)
+	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
 }

@@ -77,7 +77,24 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, LockerSavingsR
 	return sdk.Int(newAmount), nil
 }
 
-func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64, assetIds []uint64) error {
+func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
+	extVaultMapping, _ := k.GetAppExtendedPairVaultMapping(ctx, appMappingId)
+	for _, v := range extVaultMapping.ExtendedPairVaults {
+		vaultIds := v.VaultIds
+		for j, _ := range vaultIds {
+			vault, _ := k.GetVault(ctx, vaultIds[j])
+			ExtPairVault, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
+			StabilityFee := ExtPairVault.StabilityFee
 
+			if StabilityFee != sdk.ZeroDec() {
+				interest, _ := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
+				intAcc := vault.InterestAccumulated
+				updatedIntAcc := (intAcc).Add(interest)
+				vault.InterestAccumulated = &updatedIntAcc
+				//update vault
+				k.SetVault(ctx, vault)
+			}
+		}
+	}
 	return nil
 }
