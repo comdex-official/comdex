@@ -467,3 +467,59 @@ func (q *queryServer) QueryStableVaultByProductExtendedPair(c context.Context, r
 		StableMintVault: &stableMintData,
 	}, nil
 }
+
+func (q *queryServer) QueryExtendedPairVaultMappingByAppAndExtendedPairId(c context.Context, req *types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) (*types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var( 
+		ctx   = sdk.UnwrapSDKContext(c)
+		extendedpairIdData types.ExtendedPairVaultMapping
+	)
+		_, found := q.GetApp(ctx, req.AppId)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
+		}
+
+		appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.AppId)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.AppId)
+		}
+		for _, data := range appExtendedPairVaultData.ExtendedPairVaults{
+			if data.ExtendedPairId == req.ExtendedPairId{
+				extendedpairIdData = *data
+			}
+		}
+	
+
+	return &types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse{
+		ExtendedPairVaultMapping: &extendedpairIdData,
+	}, nil
+} 
+
+func (q *queryServer) QueryExtendedPairVaultMappingByApp(c context.Context, req *types.QueryExtendedPairVaultMappingByAppRequest) (*types.QueryExtendedPairVaultMappingByAppResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var( 
+		ctx   = sdk.UnwrapSDKContext(c)
+		pairIds []*types.ExtendedPairVaultMapping
+	)
+		_, found := q.GetApp(ctx, req.AppId)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
+		}
+
+		appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.AppId)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.AppId)
+		}
+		for _, data := range appExtendedPairVaultData.ExtendedPairVaults{
+				pairIds = append(pairIds, data)
+		}
+	
+
+	return &types.QueryExtendedPairVaultMappingByAppResponse{
+		ExtendedPairVaultMapping: pairIds,
+	}, nil
+} 

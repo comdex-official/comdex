@@ -220,6 +220,23 @@ message QueryStableVaultByProductExtendedPairResponse {
   StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
 }
 
+message QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
+}
+
+message QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse {
+ ExtendedPairVaultMapping extendedPairVaultMapping = 1 [ (gogoproto.moretags) = "yaml:\"extendedPairVaultMapping\"" ];
+}
+
+message QueryExtendedPairVaultMappingByAppRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+}
+
+message QueryExtendedPairVaultMappingByAppResponse {
+ repeated ExtendedPairVaultMapping extendedPairVaultMapping = 1 [ (gogoproto.moretags) = "yaml:\"extendedPairVaultMapping\"" ];
+}
+
 
 service QueryService {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
@@ -283,5 +300,13 @@ service QueryService {
 
   rpc QueryStableVaultByProductExtendedPair(QueryStableVaultByProductExtendedPairRequest) returns (QueryStableVaultByProductExtendedPairResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-product-extendedPair/{app_id}/{extended_pair_id}";
+  };
+  
+  rpc QueryExtendedPairVaultMappingByAppAndExtendedPairId(QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) returns (QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPair-VaultMapping-By-App-ExtendedPairId/{app_id}/{extended_pair_id}";
+  };
+
+  rpc QueryExtendedPairVaultMappingByApp(QueryExtendedPairVaultMappingByAppRequest) returns (QueryExtendedPairVaultMappingByAppResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPair-VaultMapping-By-App/{app_id}";
   };
 }
