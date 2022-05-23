@@ -560,8 +560,10 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 	if msg.Amount.LTE(sdk.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
 	}
-	userVault.AmountOut = userVault.AmountOut.Sub(msg.Amount)
-	if !userVault.AmountOut.IsPositive() {
+
+	
+	newAmount:= userVault.AmountOut.Sub(msg.Amount)
+	if !newAmount.IsPositive() {
 		return nil, types.ErrorInvalidAmount
 	}
 
@@ -583,8 +585,13 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		k.SetVault(ctx, userVault)
 
 	} else {
+		fmt.Println(msg.Amount, "msg.Amount")
+		fmt.Println("uservault amount data 1", userVault.AmountOut)
 		updatedUserSentAmountAfterFeesDeduction := msg.Amount.Sub(*userVault.InterestAccumulated)
+		fmt.Println(updatedUserSentAmountAfterFeesDeduction, "updatedUserSentAmountAfterFeesDeduction")
+		fmt.Println("uservault amount data 2", userVault.AmountOut)
 		updatedUserDebt := userVault.AmountOut.Sub(updatedUserSentAmountAfterFeesDeduction)
+		fmt.Println(updatedUserDebt, "updatedUserDebt")
 
 		// //If user's closing fees is a bigger amount than the debt floor, user will not close the debt floor
 		// totalUpdatedDebt:=updatedUserDebt.Add(*userVault.ClosingFeeAccumulated)
@@ -593,6 +600,9 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		// }
 
 		if !updatedUserDebt.GTE(extended_pair_vault.DebtFloor) {
+			fmt.Println(updatedUserDebt.GTE(extended_pair_vault.DebtFloor), "updatedUserDebt.GTE(extended_pair_vault.DebtFloor)")
+			fmt.Println(extended_pair_vault.DebtFloor, "extended_pair_vault.DebtFloor")
+
 			return nil, types.ErrorAmountOutLessThanDebtFloor
 		}
 		if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
@@ -885,9 +895,9 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 	if extended_pair_vault.Id != stableVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
-
-	stableVault.AmountIn = stableVault.AmountIn.Add(msg.Amount)
-	if !stableVault.AmountIn.IsPositive() {
+	
+	stableAmountIn:=  stableVault.AmountIn.Add(msg.Amount)
+	if !stableAmountIn.IsPositive() {
 		return nil, types.ErrorInvalidAmount
 	}
 	_, token_minted_statistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
@@ -1001,8 +1011,8 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
 
-	stableVault.AmountIn = stableVault.AmountIn.Sub(msg.Amount)
-	if !stableVault.AmountIn.IsPositive() {
+	stableAmountIn := stableVault.AmountIn.Sub(msg.Amount)
+	if !stableAmountIn.IsPositive() {
 		return nil, types.ErrorInvalidAmount
 
 	}
