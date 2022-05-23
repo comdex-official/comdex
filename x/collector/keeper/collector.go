@@ -328,3 +328,37 @@ func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, app_id uint64) (appIdT
 	k.cdc.MustUnmarshal(value, &appIdToAuctionData)
 	return appIdToAuctionData, true
 }
+
+func (k *Keeper) SetCollectorAuctionLookupTable(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {
+	for _, msg := range records {
+
+		var appAuction = types.CollectorAuctionLookupTable{
+			AppId: msg.AppId,
+			AssetIdToAuctionLookup: msg.AssetIdToAuctionLookup,
+		}
+		var (
+			store = ctx.KVStore(k.storeKey)
+			key   = types.CollectorAuctionLookupKey(msg.AppId)
+			value = k.cdc.MustMarshal(&appAuction)
+		)
+
+	store.Set(key, value)
+
+	}
+	return nil
+}
+
+func (k *Keeper) GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.CollectorAuctionLookupTable, found bool) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.CollectorAuctionLookupKey(app_id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return appIdToAuctionData, false
+	}
+
+	k.cdc.MustUnmarshal(value, &appIdToAuctionData)
+	return appIdToAuctionData, true
+}

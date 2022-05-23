@@ -69,9 +69,9 @@ func QueryCollectorLookupByProduct() *cobra.Command {
 
 func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "collector-lookup-by-product-by-asset [app-id] [asset-id]",
+		Use:   "collector-lookup-by-product-and-asset [app-id] [asset-id]",
 		Short: "collector lookup for a product by asset id",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -82,7 +82,7 @@ func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			assetId, err := strconv.ParseUint(args[0], 10, 64)
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
