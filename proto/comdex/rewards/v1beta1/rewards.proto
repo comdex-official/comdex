@@ -33,7 +33,7 @@ message Locker_external_rewards{
     (gogoproto.moretags) = "yaml:\"total_rewards\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
-  uint64 duration_days = 5 [
+  int64 duration_days = 5 [
     (gogoproto.moretags) = "yaml:\"duration_days\""
   ];
   bool is_active = 6 [
@@ -57,7 +57,7 @@ message Locker_external_rewards{
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"end_timestamp\""
   ];
-  uint64 min_lockup_time_seconds = 11 [
+  int64 min_lockup_time_seconds = 11 [
     (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
   ];
 }
@@ -77,7 +77,7 @@ message Vault_external_rewards{
     (gogoproto.moretags) = "yaml:\"total_rewards\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
-  uint64 duration_days = 5 [
+  int64 duration_days = 5 [
     (gogoproto.moretags) = "yaml:\"duration_days\""
   ];
   bool is_active = 6 [
@@ -101,7 +101,7 @@ message Vault_external_rewards{
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"end_timestamp\""
   ];
-  uint64 min_lockup_time_seconds = 11 [
+  int64 min_lockup_time_seconds = 11 [
     (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
   ];
 }

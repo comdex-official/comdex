@@ -201,12 +201,12 @@ func txActivateExternalRewardsLockers() *cobra.Command {
 				return err
 			}
 
-			duration_days, err := strconv.ParseUint(args[3], 10, 64)
+			duration_days, err := strconv.ParseInt(args[3], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			min_lockup_time_seconds, err := strconv.ParseUint(args[4], 10, 64)
+			min_lockup_time_seconds, err := strconv.ParseInt(args[4], 10, 64)
 			if err != nil {
 				return err
 			}

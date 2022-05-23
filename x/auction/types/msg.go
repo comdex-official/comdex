@@ -41,3 +41,61 @@ func (m *MsgPlaceBidRequest) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+func NewMsgPlaceDebtBid(from sdk.AccAddress, auctionID uint64, bid, amt sdk.Coin) *MsgPlaceDebtBidRequest {
+	return &MsgPlaceDebtBidRequest{
+		Bidder:            from.String(),
+		AuctionId:         auctionID,
+		Bid:               bid,
+		ExpectedUserToken: amt,
+	}
+}
+
+func (m *MsgPlaceDebtBidRequest) ValidateBasic() error {
+	if m.AuctionId == 0 {
+		return errors.New("auction id cannot be zero")
+	}
+	_, err := sdk.AccAddressFromBech32(m.Bidder)
+	if err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
+	}
+	return nil
+}
+
+func (m *MsgPlaceDebtBidRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.Bidder)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgPlaceDutchBid(from sdk.AccAddress, auctionID uint64, amt sdk.Coin, max sdk.Dec) *MsgPlaceDutchBidRequest {
+	return &MsgPlaceDutchBidRequest{
+		Bidder:    from.String(),
+		AuctionId: auctionID,
+		Amount:    amt,
+		Max:       max,
+	}
+}
+
+func (m *MsgPlaceDutchBidRequest) ValidateBasic() error {
+	if m.AuctionId == 0 {
+		return errors.New("auction id cannot be zero")
+	}
+	_, err := sdk.AccAddressFromBech32(m.Bidder)
+	if err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
+	}
+	return nil
+}
+
+func (m *MsgPlaceDutchBidRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.Bidder)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}

@@ -136,7 +136,7 @@ func (m *RemoveWhitelistAppIdVault) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgActivateExternalRewardsLockers(appMappingId uint64, AssetId uint64, TotalRewards sdk.Coin, DurationDays, MinLockupTimeSeconds uint64, from sdk.AccAddress) *ActivateExternalRewardsLockers {
+func NewMsgActivateExternalRewardsLockers(appMappingId uint64, AssetId uint64, TotalRewards sdk.Coin, DurationDays, MinLockupTimeSeconds int64, from sdk.AccAddress) *ActivateExternalRewardsLockers {
 	return &ActivateExternalRewardsLockers{
 		AppMappingId:         appMappingId,
 		AssetId:              AssetId,

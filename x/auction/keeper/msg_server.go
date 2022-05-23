@@ -11,6 +11,16 @@ type msgServer struct {
 	Keeper
 }
 
+func (k msgServer) MsgPlaceDebtBid(ctx context.Context, request *types.MsgPlaceDebtBidRequest) (*types.MsgPlaceDebtBidResponse, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (k msgServer) MsgPlaceDutchBid(ctx context.Context, request *types.MsgPlaceDutchBidRequest) (*types.MsgPlaceDutchBidResponse, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 	return &msgServer{Keeper: keeper}
 }
@@ -30,6 +40,7 @@ func (k msgServer) MsgPlaceBid(goCtx context.Context, msg *types.MsgPlaceBidRequ
 	return &types.MsgPlaceBidResponse{}, nil
 }
 
+/*
 func (k msgServer) MsgPlaceDebtBid(goCtx context.Context, msg *types.MsgPlaceDebtBidRequest) (*types.MsgPlaceDebtBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
@@ -55,3 +66,4 @@ func (k msgServer) MsgPlaceDutchBid(goCtx context.Context, msg *types.MsgPlaceDu
 	}
 	return &types.MsgPlaceDutchBidResponse{}, nil
 }
+*/

@@ -83,13 +83,13 @@ message ActivateExternalRewardsLockers {
     (gogoproto.moretags) = "yaml:\"total_rewards\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
-  uint64 duration_days = 4 [
+  int64 duration_days = 4 [
     (gogoproto.moretags) = "yaml:\"duration_days\""
   ];
   string depositor = 5 [
     (gogoproto.moretags) = "yaml:\"depositor\""
   ];
-  uint64 min_lockup_time_seconds = 6 [
+  int64 min_lockup_time_seconds = 6 [
     (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
   ];
 }
@@ -108,13 +108,13 @@ message ActivateExternalRewardsVault {
     (gogoproto.moretags) = "yaml:\"total_rewards\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
-  uint64 duration_days = 4 [
+  int64 duration_days = 4 [
     (gogoproto.moretags) = "yaml:\"duration_days\""
   ];
   string depositor = 5 [
     (gogoproto.moretags) = "yaml:\"depositor\""
   ];
-  uint64 min_lockup_time_seconds = 6 [
+  int64 min_lockup_time_seconds = 6 [
     (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
   ];
 }
