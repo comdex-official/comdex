@@ -23,6 +23,10 @@ const AuctionStartNoBids uint64 = 0
 const AuctionGoingOn uint64 = 1
 const AuctionEnded uint64 = 2
 
+const NoAuction uint64 = 0
+const StartedSurplusAuction uint64 = 1
+const StartedDebtAuction uint64 = 2
+
 var (
 	CollateralAuctionIdKey     = []byte{0x01}
 	CollateralAuctionKeyPrefix = []byte{0x11}

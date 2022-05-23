@@ -17,7 +17,7 @@ message QueryAuctionRequest {
 }
 
 message QueryAuctionResponse {
-  CollateralAuction auction = 1
+  SurplusAuction auction = 1
       [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction\"" ];
 }
 
@@ -27,7 +27,7 @@ message QueryAuctionsRequest {
 }
 
 message QueryAuctionsResponse {
-  repeated CollateralAuction auctions = 1 [
+  repeated SurplusAuction auctions = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"auctions\""
   ];

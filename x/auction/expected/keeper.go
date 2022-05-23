@@ -36,6 +36,7 @@ type LiquidationKeeper interface {
 type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
+	GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool)
 }
 
 type VaultKeeper interface {
@@ -54,4 +55,6 @@ type CollectorKeeper interface {
 	UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error
 	SetCollectorLookupTable(ctx sdk.Context, records ...types.CollectorLookupTable) error
 	GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collectorLookup types.CollectorLookup, found bool)
+	SetCollectorAuctionLookupTable(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error
+	GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.CollectorAuctionLookupTable, found bool)
 }

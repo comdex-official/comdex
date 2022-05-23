@@ -29,10 +29,9 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, Collec
 		newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
 		newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
 		newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
-		assetIdCollect.Collector= &newCollector
-		
+		assetIdCollect.Collector = &newCollector
+
 		collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
-	
 
 		k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
 	} else {
@@ -57,11 +56,10 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, Collec
 				newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
 				newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
 				newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
-				assetIdCollect.Collector= &newCollector
-				
+				assetIdCollect.Collector = &newCollector
+
 				collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
-			
-		
+
 				k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
 
 				return nil
@@ -85,11 +83,10 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, Collec
 			newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
 			newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
 			newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
-			assetIdCollect.Collector= &newCollector
-			
+			assetIdCollect.Collector = &newCollector
+
 			collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
-	
-			
+
 			k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
 		}
 	}
@@ -160,22 +157,22 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 			appDenomNew.AssetIds = append(appDenomNew.AssetIds, msg.CollectorAssetId)
 			k.SetAppToDenomsMapping(ctx, msg.AppId, appDenomNew)
 		}
-		
-			var Collector = types.CollectorLookupTable{
-				AppId: msg.AppId,
-				CollectorAssetId: msg.CollectorAssetId,
-				SecondaryAssetId: msg.SecondaryAssetId,
-				SurplusThreshold: msg.SurplusThreshold,
-				DebtThreshold: msg.DebtThreshold,
-				LockerSavingRate: msg.LockerSavingRate,
-				LotSize: msg.LotSize,
-				BidFactor: msg.BidFactor,
-			}
-			accmLookup, _ := k.GetCollectorLookupTable(ctx, msg.AppId)
-			accmLookup.AppId = msg.AppId
-			accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, &Collector)
-			
-		var(
+
+		var Collector = types.CollectorLookupTable{
+			AppId:            msg.AppId,
+			CollectorAssetId: msg.CollectorAssetId,
+			SecondaryAssetId: msg.SecondaryAssetId,
+			SurplusThreshold: msg.SurplusThreshold,
+			DebtThreshold:    msg.DebtThreshold,
+			LockerSavingRate: msg.LockerSavingRate,
+			LotSize:          msg.LotSize,
+			BidFactor:        msg.BidFactor,
+		}
+		accmLookup, _ := k.GetCollectorLookupTable(ctx, msg.AppId)
+		accmLookup.AppId = msg.AppId
+		accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, &Collector)
+
+		var (
 			store = ctx.KVStore(k.storeKey)
 			key   = types.CollectorLookupTableMappingKey(msg.AppId)
 			value = k.cdc.MustMarshal(&accmLookup)
@@ -296,10 +293,9 @@ func (k *Keeper) GetAppIdToAuctionMappingForAsset(ctx sdk.Context, app_id uint64
 func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.AppIdToAuctionLookupTable) error {
 	for _, msg := range records {
 		var appAuction = types.AppIdToAuctionLookupTable{
-			AppId: msg.AppId,
+			AppId:          msg.AppId,
 			SurplusAuction: msg.SurplusAuction,
-			DebtAuction: msg.DebtAuction,
-
+			DebtAuction:    msg.DebtAuction,
 		}
 		var (
 			store = ctx.KVStore(k.storeKey)
@@ -307,12 +303,11 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.AppId
 			value = k.cdc.MustMarshal(&appAuction)
 		)
 
-	store.Set(key, value)
+		store.Set(key, value)
 
 	}
 	return nil
 }
-
 
 func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.AppIdToAuctionLookupTable, found bool) {
 	var (
@@ -333,7 +328,7 @@ func (k *Keeper) SetCollectorAuctionLookupTable(ctx sdk.Context, records ...type
 	for _, msg := range records {
 
 		var appAuction = types.CollectorAuctionLookupTable{
-			AppId: msg.AppId,
+			AppId:                  msg.AppId,
 			AssetIdToAuctionLookup: msg.AssetIdToAuctionLookup,
 		}
 		var (
@@ -342,7 +337,7 @@ func (k *Keeper) SetCollectorAuctionLookupTable(ctx sdk.Context, records ...type
 			value = k.cdc.MustMarshal(&appAuction)
 		)
 
-	store.Set(key, value)
+		store.Set(key, value)
 
 	}
 	return nil

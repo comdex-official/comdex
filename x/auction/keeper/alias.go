@@ -100,3 +100,15 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collectorLookup types.CollectorLookup, found bool) {
 	return k.collector.GetCollectorLookupTable(ctx, app_id)
 }
+
+func (k *Keeper) SetCollectorAuctionLookupTable(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {
+	return k.collector.SetCollectorAuctionLookupTable(ctx, records...)
+}
+
+func (k *Keeper) GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.CollectorAuctionLookupTable, found bool) {
+	return k.collector.GetCollectorAuctionLookupTable(ctx, app_id)
+}
+
+func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool) {
+	return k.asset.GetApps(ctx)
+}
