@@ -84,16 +84,15 @@ func (m *InternalRewards) GetAsset_ID() []uint64 {
 type LockerExternalRewards struct {
 	Id                   uint64                                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 	AppMappingId         uint64                                  `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
-	AssetId              []uint64                                `protobuf:"varint,3,rep,packed,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	LockerId             string                                  `protobuf:"bytes,4,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
-	TotalRewards         github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,5,opt,name=total_rewards,json=totalRewards,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"total_rewards" yaml:"total_rewards"`
-	DurationDays         uint64                                  `protobuf:"varint,6,opt,name=duration_days,json=durationDays,proto3" json:"duration_days,omitempty" yaml:"duration_days"`
-	IsActive             bool                                    `protobuf:"varint,7,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty" yaml:"is_active"`
-	AvailableRewards     github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,8,opt,name=available_rewards,json=availableRewards,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"available_rewards" yaml:"available_rewards"`
-	Depositor            string                                  `protobuf:"bytes,9,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
-	StartTimestamp       time.Time                               `protobuf:"bytes,10,opt,name=start_timestamp,json=startTimestamp,proto3,stdtime" json:"start_timestamp" yaml:"start_timestamp"`
-	EndTimestamp         time.Time                               `protobuf:"bytes,11,opt,name=end_timestamp,json=endTimestamp,proto3,stdtime" json:"end_timestamp" yaml:"end_timestamp"`
-	MinLockupTimeSeconds uint64                                  `protobuf:"varint,12,opt,name=min_lockup_time_seconds,json=minLockupTimeSeconds,proto3" json:"min_lockup_time_seconds,omitempty" yaml:"min_lockup_time_seconds"`
+	AssetId              uint64                                  `protobuf:"varint,3,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	TotalRewards         github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,4,opt,name=total_rewards,json=totalRewards,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"total_rewards" yaml:"total_rewards"`
+	DurationDays         uint64                                  `protobuf:"varint,5,opt,name=duration_days,json=durationDays,proto3" json:"duration_days,omitempty" yaml:"duration_days"`
+	IsActive             bool                                    `protobuf:"varint,6,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty" yaml:"is_active"`
+	AvailableRewards     github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,7,opt,name=available_rewards,json=availableRewards,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"available_rewards" yaml:"available_rewards"`
+	Depositor            string                                  `protobuf:"bytes,8,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
+	StartTimestamp       time.Time                               `protobuf:"bytes,9,opt,name=start_timestamp,json=startTimestamp,proto3,stdtime" json:"start_timestamp" yaml:"start_timestamp"`
+	EndTimestamp         time.Time                               `protobuf:"bytes,10,opt,name=end_timestamp,json=endTimestamp,proto3,stdtime" json:"end_timestamp" yaml:"end_timestamp"`
+	MinLockupTimeSeconds uint64                                  `protobuf:"varint,11,opt,name=min_lockup_time_seconds,json=minLockupTimeSeconds,proto3" json:"min_lockup_time_seconds,omitempty" yaml:"min_lockup_time_seconds"`
 }
 
 func (m *LockerExternalRewards) Reset()         { *m = LockerExternalRewards{} }
@@ -143,18 +142,11 @@ func (m *LockerExternalRewards) GetAppMappingId() uint64 {
 	return 0
 }
 
-func (m *LockerExternalRewards) GetAssetId() []uint64 {
+func (m *LockerExternalRewards) GetAssetId() uint64 {
 	if m != nil {
 		return m.AssetId
 	}
-	return nil
-}
-
-func (m *LockerExternalRewards) GetLockerId() string {
-	if m != nil {
-		return m.LockerId
-	}
-	return ""
+	return 0
 }
 
 func (m *LockerExternalRewards) GetTotalRewards() github_com_cosmos_cosmos_sdk_types.Coin {
@@ -216,16 +208,15 @@ func (m *LockerExternalRewards) GetMinLockupTimeSeconds() uint64 {
 type VaultExternalRewards struct {
 	Id                   uint64                                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 	AppMappingId         uint64                                  `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
-	AssetId              []uint64                                `protobuf:"varint,3,rep,packed,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	LockerId             string                                  `protobuf:"bytes,4,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
-	TotalRewards         github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,5,opt,name=total_rewards,json=totalRewards,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"total_rewards" yaml:"total_rewards"`
-	DurationDays         uint64                                  `protobuf:"varint,6,opt,name=duration_days,json=durationDays,proto3" json:"duration_days,omitempty" yaml:"duration_days"`
-	IsActive             bool                                    `protobuf:"varint,7,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty" yaml:"is_active"`
-	AvailableRewards     github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,8,opt,name=available_rewards,json=availableRewards,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"available_rewards" yaml:"available_rewards"`
-	Depositor            string                                  `protobuf:"bytes,9,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
-	StartTimestamp       time.Time                               `protobuf:"bytes,10,opt,name=start_timestamp,json=startTimestamp,proto3,stdtime" json:"start_timestamp" yaml:"start_timestamp"`
-	EndTimestamp         time.Time                               `protobuf:"bytes,11,opt,name=end_timestamp,json=endTimestamp,proto3,stdtime" json:"end_timestamp" yaml:"end_timestamp"`
-	MinLockupTimeSeconds uint64                                  `protobuf:"varint,12,opt,name=min_lockup_time_seconds,json=minLockupTimeSeconds,proto3" json:"min_lockup_time_seconds,omitempty" yaml:"min_lockup_time_seconds"`
+	AssetId              uint64                                  `protobuf:"varint,3,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	TotalRewards         github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,4,opt,name=total_rewards,json=totalRewards,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"total_rewards" yaml:"total_rewards"`
+	DurationDays         uint64                                  `protobuf:"varint,5,opt,name=duration_days,json=durationDays,proto3" json:"duration_days,omitempty" yaml:"duration_days"`
+	IsActive             bool                                    `protobuf:"varint,6,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty" yaml:"is_active"`
+	AvailableRewards     github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,7,opt,name=available_rewards,json=availableRewards,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"available_rewards" yaml:"available_rewards"`
+	Depositor            string                                  `protobuf:"bytes,8,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
+	StartTimestamp       time.Time                               `protobuf:"bytes,9,opt,name=start_timestamp,json=startTimestamp,proto3,stdtime" json:"start_timestamp" yaml:"start_timestamp"`
+	EndTimestamp         time.Time                               `protobuf:"bytes,10,opt,name=end_timestamp,json=endTimestamp,proto3,stdtime" json:"end_timestamp" yaml:"end_timestamp"`
+	MinLockupTimeSeconds uint64                                  `protobuf:"varint,11,opt,name=min_lockup_time_seconds,json=minLockupTimeSeconds,proto3" json:"min_lockup_time_seconds,omitempty" yaml:"min_lockup_time_seconds"`
 }
 
 func (m *VaultExternalRewards) Reset()         { *m = VaultExternalRewards{} }
@@ -275,18 +266,11 @@ func (m *VaultExternalRewards) GetAppMappingId() uint64 {
 	return 0
 }
 
-func (m *VaultExternalRewards) GetAssetId() []uint64 {
+func (m *VaultExternalRewards) GetAssetId() uint64 {
 	if m != nil {
 		return m.AssetId
 	}
-	return nil
-}
-
-func (m *VaultExternalRewards) GetLockerId() string {
-	if m != nil {
-		return m.LockerId
-	}
-	return ""
+	return 0
 }
 
 func (m *VaultExternalRewards) GetTotalRewards() github_com_cosmos_cosmos_sdk_types.Coin {
@@ -401,55 +385,54 @@ func init() {
 }
 
 var fileDescriptor_d29f449503627a2b = []byte{
-	// 762 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x56, 0xc1, 0x6e, 0xeb, 0x44,
-	0x14, 0x8d, 0xf3, 0xca, 0x4b, 0x32, 0x2f, 0xe9, 0x2b, 0x26, 0xe4, 0xb9, 0x95, 0xb0, 0xa3, 0x11,
-	0x12, 0x41, 0xa8, 0xb6, 0x52, 0x76, 0x95, 0x10, 0x4a, 0x88, 0x84, 0xa2, 0x96, 0x05, 0x06, 0x81,
-	0x60, 0x63, 0x4d, 0x3c, 0xd3, 0x74, 0x54, 0xdb, 0x63, 0x79, 0x26, 0x69, 0xf3, 0x05, 0x6c, 0x2b,
-	0xf5, 0x0b, 0xf8, 0x9b, 0xb2, 0xeb, 0x92, 0x95, 0x41, 0xe9, 0x1f, 0x64, 0xc9, 0x0a, 0x79, 0xc6,
-	0x76, 0xea, 0x08, 0x54, 0xb1, 0x44, 0xea, 0xca, 0x33, 0x73, 0xcf, 0x3d, 0xf7, 0xdc, 0x99, 0x7b,
-	0x24, 0x83, 0x8f, 0x7d, 0x16, 0x62, 0x72, 0xe3, 0x24, 0xe4, 0x1a, 0x25, 0x98, 0x3b, 0xcb, 0xe1,
-	0x8c, 0x08, 0x34, 0x2c, 0xf6, 0x76, 0x9c, 0x30, 0xc1, 0xf4, 0x9e, 0x42, 0xd9, 0xc5, 0x69, 0x8e,
-	0x3a, 0xea, 0xce, 0xd9, 0x9c, 0x49, 0x88, 0x93, 0xad, 0x14, 0xfa, 0xc8, 0x9a, 0x33, 0x36, 0x0f,
-	0x88, 0x23, 0x77, 0xb3, 0xc5, 0x85, 0x23, 0x68, 0x48, 0xb8, 0x40, 0x61, 0x9c, 0x03, 0x4c, 0x9f,
-	0xf1, 0x90, 0x71, 0x67, 0x86, 0x38, 0x29, 0x2b, 0xfa, 0x8c, 0x46, 0x2a, 0x0e, 0x7f, 0xd5, 0xc0,
-	0xc1, 0x34, 0x12, 0x24, 0x89, 0x50, 0xe0, 0xe5, 0x35, 0xf5, 0x6f, 0xc1, 0x3e, 0x8a, 0x63, 0x2f,
-	0x44, 0x71, 0x4c, 0xa3, 0xb9, 0x37, 0x9d, 0x18, 0x5a, 0x5f, 0x1b, 0xec, 0x8d, 0x3f, 0x5b, 0xa7,
-	0xd6, 0xfe, 0xa8, 0x12, 0xd9, 0xa4, 0xd6, 0x87, 0x2b, 0x14, 0x06, 0xa7, 0xb0, 0x9a, 0x01, 0xdd,
-	0x36, 0x8a, 0xe3, 0x6f, 0xd4, 0x7e, 0x3a, 0xd1, 0x4f, 0x41, 0x13, 0x71, 0x4e, 0x44, 0x46, 0x56,
-	0xef, 0xbf, 0x1a, 0xec, 0x8d, 0xad, 0x75, 0x6a, 0x35, 0x47, 0xf9, 0xd9, 0x26, 0xb5, 0xde, 0xe6,
-	0x34, 0xf9, 0x09, 0x74, 0x1b, 0x72, 0x39, 0x9d, 0xc0, 0xdf, 0x1a, 0xe0, 0xdd, 0x39, 0xf3, 0xaf,
-	0x48, 0xe2, 0x91, 0x9b, 0x1d, 0xa9, 0x1f, 0x81, 0x3a, 0xc5, 0xb9, 0xbc, 0xce, 0x26, 0xb5, 0x5a,
-	0x8a, 0x85, 0x62, 0xe8, 0xd6, 0x29, 0xd6, 0xbf, 0xac, 0x76, 0x42, 0xb1, 0x51, 0x97, 0xd0, 0xc3,
-	0x7f, 0xd6, 0x9d, 0xa5, 0x3d, 0xd5, 0x8d, 0x75, 0xbb, 0xd0, 0x4d, 0xb1, 0xf1, 0x4a, 0xea, 0xfe,
-	0x60, 0x57, 0x6b, 0x96, 0x94, 0x6b, 0xc5, 0xfa, 0x10, 0xb4, 0x02, 0x25, 0x95, 0x62, 0x63, 0xaf,
-	0xaf, 0x0d, 0x5a, 0xe3, 0xee, 0x26, 0xb5, 0x0e, 0x54, 0x42, 0x19, 0x82, 0x6e, 0x53, 0xad, 0xa7,
-	0x58, 0xff, 0x45, 0x03, 0x1d, 0xc1, 0xc4, 0xb6, 0x29, 0xe3, 0xbd, 0xbe, 0x36, 0x78, 0x73, 0x72,
-	0x68, 0xab, 0xb7, 0xb3, 0xb3, 0xb7, 0x2b, 0xe6, 0xc0, 0xfe, 0x8a, 0xd1, 0x68, 0xfc, 0xf5, 0x7d,
-	0x6a, 0xd5, 0x36, 0xa9, 0xd5, 0x55, 0xb4, 0x95, 0x6c, 0xf8, 0x57, 0x6a, 0x7d, 0x32, 0xa7, 0xe2,
-	0x72, 0x31, 0xb3, 0x7d, 0x16, 0x3a, 0xf9, 0x00, 0xa8, 0xcf, 0x31, 0xc7, 0x57, 0x8e, 0x58, 0xc5,
-	0x84, 0x4b, 0x22, 0xb7, 0x2d, 0x53, 0xdd, 0xfc, 0x32, 0xbf, 0x00, 0x1d, 0xbc, 0x48, 0x90, 0xa0,
-	0x2c, 0xf2, 0x30, 0x5a, 0x71, 0xe3, 0xb5, 0xbc, 0x2c, 0x63, 0x5b, 0xa9, 0x12, 0x86, 0x6e, 0xbb,
-	0xd8, 0x4f, 0xd0, 0x8a, 0x67, 0xbd, 0x53, 0xee, 0x21, 0x5f, 0xd0, 0x25, 0x31, 0x1a, 0x7d, 0x6d,
-	0xd0, 0x7c, 0xda, 0x7b, 0x19, 0x82, 0x6e, 0x93, 0xf2, 0x91, 0x5c, 0xea, 0x77, 0x1a, 0x78, 0x1f,
-	0x2d, 0x11, 0x0d, 0xd0, 0x2c, 0x20, 0x65, 0xff, 0xcd, 0xe7, 0xfa, 0x3f, 0xcb, 0xfb, 0x37, 0xf2,
-	0x77, 0xd8, 0x65, 0xf8, 0x4f, 0x77, 0x70, 0x50, 0xa6, 0x17, 0xf7, 0x70, 0x02, 0x5a, 0x98, 0xc4,
-	0x8c, 0x53, 0xc1, 0x12, 0xa3, 0xb5, 0xfb, 0x88, 0x65, 0x08, 0xba, 0x5b, 0x98, 0x3e, 0x07, 0x6f,
-	0xb9, 0x40, 0x89, 0xf0, 0x4a, 0x07, 0x1a, 0x40, 0xb6, 0x71, 0x64, 0x2b, 0x8f, 0xda, 0x85, 0x47,
-	0xed, 0xef, 0x0b, 0xc4, 0x18, 0xe6, 0x7d, 0xf4, 0x14, 0xf3, 0x0e, 0x01, 0xbc, 0xfd, 0xc3, 0xd2,
-	0xdc, 0x7d, 0x79, 0x5a, 0xe6, 0xe8, 0x08, 0x74, 0x48, 0x84, 0x9f, 0x94, 0x79, 0xf3, 0x6c, 0x99,
-	0x7e, 0x75, 0x5c, 0x2a, 0xe9, 0xaa, 0x48, 0x9b, 0x44, 0x78, 0x5b, 0xe2, 0x27, 0xf0, 0x2e, 0xa4,
-	0x91, 0x97, 0x4d, 0xe8, 0x22, 0x96, 0x50, 0x8f, 0x13, 0x9f, 0x45, 0x98, 0x1b, 0x6d, 0x39, 0x11,
-	0x70, 0x93, 0x5a, 0xa6, 0x22, 0xfb, 0x17, 0x20, 0x74, 0xbb, 0x21, 0x8d, 0xce, 0x65, 0x20, 0x23,
-	0xfe, 0x2e, 0x3f, 0xbe, 0x6f, 0x80, 0xde, 0x0f, 0x68, 0x11, 0x88, 0x17, 0x2b, 0xbf, 0x58, 0xf9,
-	0xc5, 0xca, 0xff, 0x67, 0x2b, 0xdf, 0x69, 0xa0, 0xf7, 0xe3, 0x25, 0x15, 0x24, 0xa0, 0x5c, 0x10,
-	0x3c, 0x8a, 0xe3, 0x29, 0xe6, 0xd2, 0xdb, 0xfa, 0x0a, 0xc0, 0xeb, 0x6d, 0xc4, 0xab, 0xfa, 0x92,
-	0x7b, 0xcb, 0x0c, 0xc4, 0x0d, 0x4d, 0x9a, 0xf0, 0x78, 0x93, 0x5a, 0x9f, 0x2a, 0x01, 0xcf, 0xe7,
-	0x40, 0xd7, 0xbc, 0xae, 0x94, 0x2c, 0xed, 0xad, 0x2a, 0xf3, 0xf1, 0xd9, 0xfd, 0xda, 0xd4, 0x1e,
-	0xd6, 0xa6, 0xf6, 0xe7, 0xda, 0xd4, 0x6e, 0x1f, 0xcd, 0xda, 0xc3, 0xa3, 0x59, 0xfb, 0xfd, 0xd1,
-	0xac, 0xfd, 0x3c, 0xac, 0x4c, 0x51, 0xf6, 0x93, 0x75, 0xcc, 0x2e, 0x2e, 0xa8, 0x4f, 0x51, 0x90,
-	0xef, 0x9d, 0xed, 0xcf, 0x99, 0x1c, 0xaa, 0xd9, 0x6b, 0xf9, 0x02, 0x9f, 0xff, 0x1d, 0x00, 0x00,
-	0xff, 0xff, 0xe7, 0x1b, 0x6a, 0x12, 0xbb, 0x09, 0x00, 0x00,
+	// 747 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x56, 0x41, 0x6f, 0xf3, 0x34,
+	0x18, 0x6e, 0xfa, 0x8d, 0xaf, 0xad, 0xd7, 0x6e, 0x23, 0x94, 0x2e, 0x9b, 0x44, 0x52, 0x59, 0x48,
+	0x14, 0xa1, 0x25, 0xea, 0xb8, 0x4d, 0x42, 0xa8, 0xa5, 0x12, 0xaa, 0x36, 0x0e, 0x04, 0x04, 0x82,
+	0x4b, 0xe4, 0xc6, 0x5e, 0x67, 0x2d, 0x89, 0xa3, 0xd8, 0xed, 0xd6, 0x5f, 0xc0, 0x75, 0xd2, 0x04,
+	0x77, 0xfe, 0xcd, 0x8e, 0x3b, 0x72, 0x0a, 0xa8, 0xfb, 0x07, 0x3d, 0x72, 0x42, 0x71, 0x9c, 0x76,
+	0xa9, 0x40, 0x13, 0xb7, 0xef, 0xb0, 0x53, 0x6d, 0xbf, 0xcf, 0xfb, 0xbc, 0xcf, 0xeb, 0xd7, 0x8f,
+	0x1a, 0xf0, 0xb1, 0xcf, 0x42, 0x4c, 0x6e, 0x9d, 0x84, 0xdc, 0xa0, 0x04, 0x73, 0x67, 0xde, 0x9f,
+	0x10, 0x81, 0xfa, 0xc5, 0xde, 0x8e, 0x13, 0x26, 0x98, 0xde, 0xc9, 0x51, 0x76, 0x71, 0xaa, 0x50,
+	0xc7, 0xed, 0x29, 0x9b, 0x32, 0x09, 0x71, 0xb2, 0x55, 0x8e, 0x3e, 0xb6, 0xa6, 0x8c, 0x4d, 0x03,
+	0xe2, 0xc8, 0xdd, 0x64, 0x76, 0xe9, 0x08, 0x1a, 0x12, 0x2e, 0x50, 0x18, 0x2b, 0x80, 0xe9, 0x33,
+	0x1e, 0x32, 0xee, 0x4c, 0x10, 0x27, 0xeb, 0x8a, 0x3e, 0xa3, 0x51, 0x1e, 0x87, 0xbf, 0x6b, 0xe0,
+	0x60, 0x1c, 0x09, 0x92, 0x44, 0x28, 0xf0, 0x54, 0x4d, 0xfd, 0x5b, 0xb0, 0x87, 0xe2, 0xd8, 0x0b,
+	0x51, 0x1c, 0xd3, 0x68, 0xea, 0x8d, 0x47, 0x86, 0xd6, 0xd5, 0x7a, 0x3b, 0xc3, 0xcf, 0x96, 0xa9,
+	0xb5, 0x37, 0x28, 0x45, 0x56, 0xa9, 0xf5, 0xe1, 0x02, 0x85, 0xc1, 0x19, 0x2c, 0x67, 0x40, 0xb7,
+	0x89, 0xe2, 0xf8, 0x9b, 0x7c, 0x3f, 0x1e, 0xe9, 0x67, 0xa0, 0x8e, 0x38, 0x27, 0x22, 0x23, 0xab,
+	0x76, 0xdf, 0xf4, 0x76, 0x86, 0xd6, 0x32, 0xb5, 0xea, 0x03, 0x75, 0xb6, 0x4a, 0xad, 0x7d, 0x45,
+	0xa3, 0x4e, 0xa0, 0x5b, 0x93, 0xcb, 0xf1, 0x08, 0xfe, 0x56, 0x03, 0x87, 0x17, 0xcc, 0xbf, 0x26,
+	0x89, 0x47, 0x6e, 0xb7, 0xa4, 0x7e, 0x04, 0xaa, 0x14, 0x2b, 0x79, 0xad, 0x55, 0x6a, 0x35, 0x72,
+	0x16, 0x8a, 0xa1, 0x5b, 0xa5, 0x58, 0xff, 0xb2, 0xdc, 0x09, 0xc5, 0x46, 0x55, 0x42, 0x8f, 0xfe,
+	0x5d, 0x77, 0x96, 0xf6, 0x5c, 0x37, 0xd6, 0xed, 0x42, 0x37, 0xc5, 0xc6, 0x1b, 0x99, 0xfa, 0xc1,
+	0xb6, 0xd6, 0x2c, 0x49, 0x69, 0xc5, 0xfa, 0x2f, 0x1a, 0x68, 0x09, 0x26, 0x36, 0x0a, 0x8d, 0x9d,
+	0xae, 0xd6, 0xdb, 0x3d, 0x3d, 0xb2, 0xf3, 0x41, 0xd8, 0xd9, 0x20, 0x8a, 0xa1, 0xda, 0x5f, 0x31,
+	0x1a, 0x0d, 0xbf, 0x7e, 0x48, 0xad, 0xca, 0x2a, 0xb5, 0xda, 0x39, 0x69, 0x29, 0x1b, 0xfe, 0x9d,
+	0x5a, 0x9f, 0x4c, 0xa9, 0xb8, 0x9a, 0x4d, 0x6c, 0x9f, 0x85, 0x8e, 0x9a, 0x66, 0xfe, 0x73, 0xc2,
+	0xf1, 0xb5, 0x23, 0x16, 0x31, 0xe1, 0x92, 0xc8, 0x6d, 0xca, 0x54, 0x57, 0xdd, 0xcc, 0x17, 0xa0,
+	0x85, 0x67, 0x09, 0x12, 0x94, 0x45, 0x1e, 0x46, 0x0b, 0x6e, 0xbc, 0x27, 0xe5, 0x1b, 0x9b, 0x4a,
+	0xa5, 0x30, 0x74, 0x9b, 0xc5, 0x7e, 0x84, 0x16, 0x5c, 0xef, 0x83, 0x06, 0xe5, 0x1e, 0xf2, 0x05,
+	0x9d, 0x13, 0xe3, 0x6d, 0x57, 0xeb, 0xd5, 0x87, 0xed, 0x55, 0x6a, 0x1d, 0xa8, 0xfb, 0x2d, 0x42,
+	0xd0, 0xad, 0x53, 0x3e, 0x90, 0x4b, 0xfd, 0x5e, 0x03, 0xef, 0xa3, 0x39, 0xa2, 0x01, 0x9a, 0x04,
+	0x64, 0xdd, 0x7f, 0xed, 0xa5, 0xfe, 0xcf, 0x55, 0xff, 0x86, 0xba, 0xd4, 0x6d, 0x86, 0xff, 0x75,
+	0x07, 0x07, 0xeb, 0xf4, 0xe2, 0x1e, 0x4e, 0x41, 0x03, 0x93, 0x98, 0x71, 0x2a, 0x58, 0x62, 0xd4,
+	0xbb, 0x5a, 0xaf, 0xf1, 0xbc, 0x91, 0x75, 0x08, 0xba, 0x1b, 0x98, 0x3e, 0x05, 0xfb, 0x5c, 0xa0,
+	0x44, 0x78, 0x6b, 0x3b, 0x19, 0x0d, 0xd9, 0xc6, 0xb1, 0x9d, 0x1b, 0xce, 0x2e, 0x0c, 0x67, 0x7f,
+	0x5f, 0x20, 0x86, 0x50, 0xf5, 0xd1, 0xc9, 0x99, 0xb7, 0x08, 0xe0, 0xdd, 0x9f, 0x96, 0xe6, 0xee,
+	0xc9, 0xd3, 0x75, 0x8e, 0x8e, 0x40, 0x8b, 0x44, 0xf8, 0x59, 0x19, 0xf0, 0x62, 0x99, 0x6e, 0xf9,
+	0xb9, 0x94, 0xd2, 0xf3, 0x22, 0x4d, 0x12, 0xe1, 0x4d, 0x89, 0x9f, 0xc0, 0x61, 0x48, 0x23, 0x2f,
+	0x60, 0xfe, 0xf5, 0x2c, 0x96, 0x50, 0x8f, 0x13, 0x9f, 0x45, 0x98, 0x1b, 0xbb, 0xf2, 0x45, 0xc0,
+	0x55, 0x6a, 0x99, 0x39, 0xd9, 0x7f, 0x00, 0xa1, 0xdb, 0x0e, 0x69, 0x74, 0x21, 0x03, 0x19, 0xf1,
+	0x77, 0xea, 0xf8, 0xd7, 0x1a, 0xe8, 0xfc, 0x80, 0x66, 0x81, 0x78, 0xf5, 0xe5, 0xab, 0x2f, 0x5f,
+	0x7d, 0xf9, 0xce, 0xf8, 0xf2, 0x5e, 0x03, 0x9d, 0x1f, 0xaf, 0xa8, 0x20, 0x01, 0xe5, 0x82, 0xe0,
+	0x41, 0x1c, 0x8f, 0x31, 0x97, 0x46, 0xd5, 0x17, 0x00, 0xde, 0x6c, 0x22, 0x5e, 0xd9, 0x64, 0xdc,
+	0x9b, 0x67, 0x20, 0x6e, 0x68, 0xf2, 0x1f, 0xfa, 0x64, 0x95, 0x5a, 0x9f, 0xe6, 0x02, 0x5e, 0xce,
+	0x81, 0xae, 0x79, 0x53, 0x2a, 0xb9, 0xf6, 0x6a, 0x5e, 0x99, 0x0f, 0xcf, 0x1f, 0x96, 0xa6, 0xf6,
+	0xb8, 0x34, 0xb5, 0xbf, 0x96, 0xa6, 0x76, 0xf7, 0x64, 0x56, 0x1e, 0x9f, 0xcc, 0xca, 0x1f, 0x4f,
+	0x66, 0xe5, 0xe7, 0x7e, 0xe9, 0x15, 0x65, 0x9f, 0x3f, 0x27, 0xec, 0xf2, 0x92, 0xfa, 0x14, 0x05,
+	0x6a, 0xef, 0x6c, 0x3e, 0x9b, 0xe4, 0xa3, 0x9a, 0xbc, 0x95, 0x13, 0xf8, 0xfc, 0x9f, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0x55, 0x32, 0xdd, 0x64, 0x55, 0x09, 0x00, 0x00,
 }
 
 func (m *InternalRewards) Marshal() (dAtA []byte, err error) {
@@ -521,7 +504,7 @@ func (m *LockerExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.MinLockupTimeSeconds != 0 {
 		i = encodeVarintRewards(dAtA, i, uint64(m.MinLockupTimeSeconds))
 		i--
-		dAtA[i] = 0x60
+		dAtA[i] = 0x58
 	}
 	n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp):])
 	if err3 != nil {
@@ -530,7 +513,7 @@ func (m *LockerExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i -= n3
 	i = encodeVarintRewards(dAtA, i, uint64(n3))
 	i--
-	dAtA[i] = 0x5a
+	dAtA[i] = 0x52
 	n4, err4 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp):])
 	if err4 != nil {
 		return 0, err4
@@ -538,13 +521,13 @@ func (m *LockerExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i -= n4
 	i = encodeVarintRewards(dAtA, i, uint64(n4))
 	i--
-	dAtA[i] = 0x52
+	dAtA[i] = 0x4a
 	if len(m.Depositor) > 0 {
 		i -= len(m.Depositor)
 		copy(dAtA[i:], m.Depositor)
 		i = encodeVarintRewards(dAtA, i, uint64(len(m.Depositor)))
 		i--
-		dAtA[i] = 0x4a
+		dAtA[i] = 0x42
 	}
 	{
 		size, err := m.AvailableRewards.MarshalToSizedBuffer(dAtA[:i])
@@ -555,7 +538,7 @@ func (m *LockerExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintRewards(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x42
+	dAtA[i] = 0x3a
 	if m.IsActive {
 		i--
 		if m.IsActive {
@@ -564,12 +547,12 @@ func (m *LockerExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x38
+		dAtA[i] = 0x30
 	}
 	if m.DurationDays != 0 {
 		i = encodeVarintRewards(dAtA, i, uint64(m.DurationDays))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x28
 	}
 	{
 		size, err := m.TotalRewards.MarshalToSizedBuffer(dAtA[:i])
@@ -580,31 +563,11 @@ func (m *LockerExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintRewards(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x2a
-	if len(m.LockerId) > 0 {
-		i -= len(m.LockerId)
-		copy(dAtA[i:], m.LockerId)
-		i = encodeVarintRewards(dAtA, i, uint64(len(m.LockerId)))
+	dAtA[i] = 0x22
+	if m.AssetId != 0 {
+		i = encodeVarintRewards(dAtA, i, uint64(m.AssetId))
 		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.AssetId) > 0 {
-		dAtA8 := make([]byte, len(m.AssetId)*10)
-		var j7 int
-		for _, num := range m.AssetId {
-			for num >= 1<<7 {
-				dAtA8[j7] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j7++
-			}
-			dAtA8[j7] = uint8(num)
-			j7++
-		}
-		i -= j7
-		copy(dAtA[i:], dAtA8[:j7])
-		i = encodeVarintRewards(dAtA, i, uint64(j7))
-		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x18
 	}
 	if m.AppMappingId != 0 {
 		i = encodeVarintRewards(dAtA, i, uint64(m.AppMappingId))
@@ -642,30 +605,30 @@ func (m *VaultExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.MinLockupTimeSeconds != 0 {
 		i = encodeVarintRewards(dAtA, i, uint64(m.MinLockupTimeSeconds))
 		i--
-		dAtA[i] = 0x60
+		dAtA[i] = 0x58
 	}
-	n9, err9 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp):])
-	if err9 != nil {
-		return 0, err9
+	n7, err7 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp):])
+	if err7 != nil {
+		return 0, err7
 	}
-	i -= n9
-	i = encodeVarintRewards(dAtA, i, uint64(n9))
-	i--
-	dAtA[i] = 0x5a
-	n10, err10 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp):])
-	if err10 != nil {
-		return 0, err10
-	}
-	i -= n10
-	i = encodeVarintRewards(dAtA, i, uint64(n10))
+	i -= n7
+	i = encodeVarintRewards(dAtA, i, uint64(n7))
 	i--
 	dAtA[i] = 0x52
+	n8, err8 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp):])
+	if err8 != nil {
+		return 0, err8
+	}
+	i -= n8
+	i = encodeVarintRewards(dAtA, i, uint64(n8))
+	i--
+	dAtA[i] = 0x4a
 	if len(m.Depositor) > 0 {
 		i -= len(m.Depositor)
 		copy(dAtA[i:], m.Depositor)
 		i = encodeVarintRewards(dAtA, i, uint64(len(m.Depositor)))
 		i--
-		dAtA[i] = 0x4a
+		dAtA[i] = 0x42
 	}
 	{
 		size, err := m.AvailableRewards.MarshalToSizedBuffer(dAtA[:i])
@@ -676,7 +639,7 @@ func (m *VaultExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintRewards(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x42
+	dAtA[i] = 0x3a
 	if m.IsActive {
 		i--
 		if m.IsActive {
@@ -685,12 +648,12 @@ func (m *VaultExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x38
+		dAtA[i] = 0x30
 	}
 	if m.DurationDays != 0 {
 		i = encodeVarintRewards(dAtA, i, uint64(m.DurationDays))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x28
 	}
 	{
 		size, err := m.TotalRewards.MarshalToSizedBuffer(dAtA[:i])
@@ -701,31 +664,11 @@ func (m *VaultExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintRewards(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x2a
-	if len(m.LockerId) > 0 {
-		i -= len(m.LockerId)
-		copy(dAtA[i:], m.LockerId)
-		i = encodeVarintRewards(dAtA, i, uint64(len(m.LockerId)))
+	dAtA[i] = 0x22
+	if m.AssetId != 0 {
+		i = encodeVarintRewards(dAtA, i, uint64(m.AssetId))
 		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.AssetId) > 0 {
-		dAtA14 := make([]byte, len(m.AssetId)*10)
-		var j13 int
-		for _, num := range m.AssetId {
-			for num >= 1<<7 {
-				dAtA14[j13] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j13++
-			}
-			dAtA14[j13] = uint8(num)
-			j13++
-		}
-		i -= j13
-		copy(dAtA[i:], dAtA14[:j13])
-		i = encodeVarintRewards(dAtA, i, uint64(j13))
-		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x18
 	}
 	if m.AppMappingId != 0 {
 		i = encodeVarintRewards(dAtA, i, uint64(m.AppMappingId))
@@ -761,20 +704,20 @@ func (m *WhitelistedAppIdsVault) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	var l int
 	_ = l
 	if len(m.WhitelistedAppMappingIdsVaults) > 0 {
-		dAtA16 := make([]byte, len(m.WhitelistedAppMappingIdsVaults)*10)
-		var j15 int
+		dAtA12 := make([]byte, len(m.WhitelistedAppMappingIdsVaults)*10)
+		var j11 int
 		for _, num := range m.WhitelistedAppMappingIdsVaults {
 			for num >= 1<<7 {
-				dAtA16[j15] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA12[j11] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j15++
+				j11++
 			}
-			dAtA16[j15] = uint8(num)
-			j15++
+			dAtA12[j11] = uint8(num)
+			j11++
 		}
-		i -= j15
-		copy(dAtA[i:], dAtA16[:j15])
-		i = encodeVarintRewards(dAtA, i, uint64(j15))
+		i -= j11
+		copy(dAtA[i:], dAtA12[:j11])
+		i = encodeVarintRewards(dAtA, i, uint64(j11))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -823,16 +766,8 @@ func (m *LockerExternalRewards) Size() (n int) {
 	if m.AppMappingId != 0 {
 		n += 1 + sovRewards(uint64(m.AppMappingId))
 	}
-	if len(m.AssetId) > 0 {
-		l = 0
-		for _, e := range m.AssetId {
-			l += sovRewards(uint64(e))
-		}
-		n += 1 + sovRewards(uint64(l)) + l
-	}
-	l = len(m.LockerId)
-	if l > 0 {
-		n += 1 + l + sovRewards(uint64(l))
+	if m.AssetId != 0 {
+		n += 1 + sovRewards(uint64(m.AssetId))
 	}
 	l = m.TotalRewards.Size()
 	n += 1 + l + sovRewards(uint64(l))
@@ -870,16 +805,8 @@ func (m *VaultExternalRewards) Size() (n int) {
 	if m.AppMappingId != 0 {
 		n += 1 + sovRewards(uint64(m.AppMappingId))
 	}
-	if len(m.AssetId) > 0 {
-		l = 0
-		for _, e := range m.AssetId {
-			l += sovRewards(uint64(e))
-		}
-		n += 1 + sovRewards(uint64(l)) + l
-	}
-	l = len(m.LockerId)
-	if l > 0 {
-		n += 1 + l + sovRewards(uint64(l))
+	if m.AssetId != 0 {
+		n += 1 + sovRewards(uint64(m.AssetId))
 	}
 	l = m.TotalRewards.Size()
 	n += 1 + l + sovRewards(uint64(l))
@@ -1140,86 +1067,10 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 3:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowRewards
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.AssetId = append(m.AssetId, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowRewards
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthRewards
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthRewards
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
-				}
-				elementCount = count
-				if elementCount != 0 && len(m.AssetId) == 0 {
-					m.AssetId = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowRewards
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.AssetId = append(m.AssetId, v)
-				}
-			} else {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LockerId", wireType)
-			}
-			var stringLen uint64
+			m.AssetId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowRewards
@@ -1229,25 +1080,12 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.AssetId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthRewards
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthRewards
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.LockerId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TotalRewards", wireType)
 			}
@@ -1280,7 +1118,7 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 6:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DurationDays", wireType)
 			}
@@ -1299,7 +1137,7 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 7:
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field IsActive", wireType)
 			}
@@ -1319,7 +1157,7 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.IsActive = bool(v != 0)
-		case 8:
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AvailableRewards", wireType)
 			}
@@ -1352,7 +1190,7 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 9:
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Depositor", wireType)
 			}
@@ -1384,7 +1222,7 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 			}
 			m.Depositor = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 10:
+		case 9:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StartTimestamp", wireType)
 			}
@@ -1417,7 +1255,7 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 11:
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EndTimestamp", wireType)
 			}
@@ -1450,7 +1288,7 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 12:
+		case 11:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MinLockupTimeSeconds", wireType)
 			}
@@ -1558,86 +1396,10 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 3:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowRewards
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.AssetId = append(m.AssetId, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowRewards
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthRewards
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthRewards
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
-				}
-				elementCount = count
-				if elementCount != 0 && len(m.AssetId) == 0 {
-					m.AssetId = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowRewards
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.AssetId = append(m.AssetId, v)
-				}
-			} else {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LockerId", wireType)
-			}
-			var stringLen uint64
+			m.AssetId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowRewards
@@ -1647,25 +1409,12 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.AssetId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthRewards
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthRewards
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.LockerId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TotalRewards", wireType)
 			}
@@ -1698,7 +1447,7 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 6:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DurationDays", wireType)
 			}
@@ -1717,7 +1466,7 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 7:
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field IsActive", wireType)
 			}
@@ -1737,7 +1486,7 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.IsActive = bool(v != 0)
-		case 8:
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AvailableRewards", wireType)
 			}
@@ -1770,7 +1519,7 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 9:
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Depositor", wireType)
 			}
@@ -1802,7 +1551,7 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 			}
 			m.Depositor = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 10:
+		case 9:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StartTimestamp", wireType)
 			}
@@ -1835,7 +1584,7 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 11:
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EndTimestamp", wireType)
 			}
@@ -1868,7 +1617,7 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 12:
+		case 11:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MinLockupTimeSeconds", wireType)
 			}

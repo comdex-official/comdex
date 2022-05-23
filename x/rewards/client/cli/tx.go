@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"strconv"
 	"time"
 
@@ -39,6 +40,7 @@ func GetTxCmd() *cobra.Command {
 		txRemoveWhitelistAsset(),
 		txWhitelistAppIdVault(),
 		txRemoveWhitelistAppIdVault(),
+		txActivateExternalRewardsLockers(),
 	)
 
 	return cmd
@@ -171,4 +173,57 @@ func txRemoveWhitelistAppIdVault() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 
+}
+
+func txActivateExternalRewardsLockers() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "activate-external-rewards-locker [app_mapping_Id] [asset_id] [total_rewards] [duration_days] [min_lockup_time_seconds]",
+		Short: "activate external rewards for locker",
+		Args:  cobra.ExactArgs(5),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appMappingId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			asset_Id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			total_rewards, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			duration_days, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			min_lockup_time_seconds, err := strconv.ParseUint(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgActivateExternalRewardsLockers(
+				appMappingId,
+				asset_Id,
+				total_rewards,
+				duration_days,
+				min_lockup_time_seconds,
+				ctx.GetFromAddress(),
+			)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

@@ -135,3 +135,40 @@ func (m *RemoveWhitelistAppIdVault) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+func NewMsgActivateExternalRewardsLockers(appMappingId uint64, AssetId uint64, TotalRewards sdk.Coin, DurationDays, MinLockupTimeSeconds uint64, from sdk.AccAddress) *ActivateExternalRewardsLockers {
+	return &ActivateExternalRewardsLockers{
+		AppMappingId:         appMappingId,
+		AssetId:              AssetId,
+		TotalRewards:         TotalRewards,
+		DurationDays:         DurationDays,
+		MinLockupTimeSeconds: MinLockupTimeSeconds,
+		Depositor:            from.String(),
+	}
+}
+
+func (m *ActivateExternalRewardsLockers) Route() string {
+	return RouterKey
+}
+
+func (m *ActivateExternalRewardsLockers) Type() string {
+	return ModuleName
+}
+
+func (m *ActivateExternalRewardsLockers) ValidateBasic() error {
+
+	return nil
+}
+
+func (m *ActivateExternalRewardsLockers) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *ActivateExternalRewardsLockers) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.Depositor)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
