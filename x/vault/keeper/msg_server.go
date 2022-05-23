@@ -135,7 +135,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 
 	} else {
 		//If not zero deduct send to collector//////////
-
+		//one approach could be 
 		collectorShare := (msg.AmountOut.Mul(sdk.Int(extended_pair_vault.CreationFee))).Quo(sdk.Int(sdk.OneDec()))
 		fmt.Println(collectorShare, "collectorShare")
 		fmt.Println(sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare)), "sdk.Interpretation")
