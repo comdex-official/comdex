@@ -93,13 +93,13 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAuctionDiscountPercent, &p.AuctionDiscountPercent, validateAuctionDiscount),
 		paramtypes.NewParamSetPair(KeyAuctionDurationSeconds, &p.AuctionDurationSeconds, validateAuctionDuration),
 		paramtypes.NewParamSetPair(KeyDebtMintTokenDecreasePercentage, &p.DebtMintTokenDecreasePercentage, validatePercentage),
-		paramtypes.NewParamSetPair(KeyBuffer, &p.Buffer, nil),
-		paramtypes.NewParamSetPair(KeyCusp, &p.Cusp, nil),
-		paramtypes.NewParamSetPair(KeyTau, &p.Tau, nil),
-		paramtypes.NewParamSetPair(KeyDutchDecreasePercentage, &p.DutchDecreasePercentage, nil),
-		paramtypes.NewParamSetPair(KeyChost, &p.Chost, nil),
-		paramtypes.NewParamSetPair(KeyStep, &p.Step, nil),
-		paramtypes.NewParamSetPair(KeyPriceFunctionType, &p.PriceFunctionType, nil),
+		paramtypes.NewParamSetPair(KeyBuffer, &p.Buffer, validateBuffer),
+		paramtypes.NewParamSetPair(KeyCusp, &p.Cusp, validateCusp),
+		paramtypes.NewParamSetPair(KeyTau, &p.Tau, validateTau),
+		paramtypes.NewParamSetPair(KeyDutchDecreasePercentage, &p.DutchDecreasePercentage, validateDutchDecreasePercentage),
+		paramtypes.NewParamSetPair(KeyChost, &p.Chost, validateChost),
+		paramtypes.NewParamSetPair(KeyStep, &p.Step, validateStep),
+		paramtypes.NewParamSetPair(KeyPriceFunctionType, &p.PriceFunctionType, validatePriceFunctionType),
 	}
 }
 
@@ -112,6 +112,14 @@ func (p Params) Validate() error {
 		{p.LiquidationPenaltyPercent, validateLiquidationPenalty},
 		{p.AuctionDiscountPercent, validateAuctionDiscount},
 		{p.AuctionDurationSeconds, validateAuctionDuration},
+		{p.DebtMintTokenDecreasePercentage, validatePercentage},
+		{p.Buffer, validateBuffer},
+		{p.Cusp, validateCusp},
+		{p.Tau, validateTau},
+		{p.DutchDecreasePercentage, validateDutchDecreasePercentage},
+		{p.Chost, validateChost},
+		{p.Step, validateStep},
+		{p.PriceFunctionType, validatePriceFunctionType},
 	} {
 		if err := v.validator(v.value); err != nil {
 			return err
@@ -171,6 +179,87 @@ func validatePercentage(i interface{}) error {
 	u, _ := sdk.NewDecFromStr("0.01")
 	if q.LT(u) {
 		return fmt.Errorf("decrease percentage cannot be less than 1 percent")
+	}
+	return nil
+}
+
+func validateBuffer(i interface{}) error {
+	q, ok := i.(sdk.Dec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	u, _ := sdk.NewDecFromStr("1")
+	if q.LTE(u) {
+		return fmt.Errorf("buffer cannot be less than 1")
+	}
+	return nil
+}
+
+func validateCusp(i interface{}) error {
+	q, ok := i.(sdk.Dec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	u, _ := sdk.NewDecFromStr("0.01")
+	if q.LT(u) {
+		return fmt.Errorf("cusp cannot be less than 0.01")
+	}
+	return nil
+}
+
+func validateDutchDecreasePercentage(i interface{}) error {
+	q, ok := i.(sdk.Dec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	u, _ := sdk.NewDecFromStr("0.5")
+	if q.GT(u) {
+		return fmt.Errorf("dutch decrease percentage cannot be less than 10.5")
+	}
+	return nil
+}
+
+func validateChost(i interface{}) error {
+	q, ok := i.(sdk.Dec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	u, _ := sdk.NewDecFromStr("1")
+	if q.LT(u) {
+		return fmt.Errorf("chost cannot be less than 1 ")
+	}
+	return nil
+}
+
+func validatePriceFunctionType(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	if v < 0 {
+		return fmt.Errorf("price function type cannot be less than 0")
+	}
+	return nil
+}
+
+func validateTau(i interface{}) error {
+	v, ok := i.(sdk.Int)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	if v.LT(sdk.NewInt(1)) {
+		return fmt.Errorf("tau cannot be less than 1 second")
+	}
+	return nil
+}
+
+func validateStep(i interface{}) error {
+	v, ok := i.(sdk.Int)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	if v.LT(sdk.NewInt(1)) {
+		return fmt.Errorf("step cannot be less than 1")
 	}
 	return nil
 }
