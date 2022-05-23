@@ -5,6 +5,8 @@ import (
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+	"strconv"
+	"time"
 )
 
 func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
@@ -19,17 +21,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				vault, _ := k.GetVault(ctx, vaultIds[l])
 
 				extPair, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
-				/*pair, _ := k.GetPair(ctx, extPair.PairId)
 
-				assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-				if !found {
-					continue
-				}
-
-				assetOut, found := k.GetAsset(ctx, pair.AssetOut)
-				if !found {
-					continue
-				}*/
 				liqRatio := extPair.LiquidationRatio
 				collateralitzationRatio, err := k.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
 				if err != nil {
@@ -42,8 +34,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 						continue
 					}
 					k.DeleteVault(ctx, vault.Id)
-					//k.UpdateUserVaultIdMapping(ctx, vault.Owner, vault.Id, false)
-					//k.UpdateCollateralVaultIdMapping(ctx, assetIn.Denom, assetOut.Denom, vault.Id, false)
+					k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, vault.ExtendedPairVaultID, vault.Id, appIds[i])
 				}
 			}
 		}
@@ -53,13 +44,13 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 
 func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, collateralizationRatio sdk.Dec, appId uint64) error {
 
-	k.GetLockedVaultIDbyApp(ctx, appId)
+	lockedVaultId := k.GetLockedVaultIDbyApp(ctx, appId)
 
-	/*var value = types.LockedVault{
+	var value = types.LockedVault{
 		LockedVaultId:                lockedVaultId,
-		AppVaultTypeId:               string(appId),
-		OriginalVaultId:              (vault.Id),
-		PairId:                       vault.PairID,
+		AppVaultTypeId:               strconv.FormatUint(appId, 10),
+		OriginalVaultId:              vault.Id,
+		PairId:                       vault.ExtendedPairVaultID,
 		Owner:                        vault.Owner,
 		AmountIn:                     vault.AmountIn,
 		AmountOut:                    vault.AmountOut,
@@ -74,14 +65,13 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 	}
 
 	k.SetLockedVault(ctx, value)
-	k.SetLockedVaultID(ctx, lockedVaultId+1)*/
+	k.SetLockedVaultIDbyApp(ctx, lockedVaultId+1)
 
 	//Create a new Data Structure with the current Params
 	//Set nil for all the values not available right now
 	//New function will loop over locked vaults to set all values so that they can be auctioned, seperately
 	//Auction will then use the selloff amount set by lockedvault function to update params .
 	//Unliquidate will take place after all the events trigger.
-	//
 	return nil
 
 }
@@ -186,6 +176,7 @@ func (k Keeper) CreateLockedVaultHistoy(ctx sdk.Context, lockedvault types.Locke
 	return nil
 }
 */
+
 /*func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 	lockedVaults := k.GetLockedVaults(ctx)
 	if len(lockedVaults) == 0 {
