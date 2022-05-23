@@ -2,7 +2,6 @@ package keeper
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -67,23 +66,23 @@ func (k *Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool)
 	return k.liquidation.SetFlagIsAuctionComplete(ctx, id, flag)
 }
 
-func (k *Keeper) UpdateAssetQuantitiesInLockedVault(ctx sdk.Context, collateral_auction auctiontypes.CollateralAuction, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) error {
-	return k.liquidation.UpdateAssetQuantitiesInLockedVault(ctx, collateral_auction, amountIn, assetIn, amountOut, assetOut)
-}
+//func (k *Keeper) UpdateAssetQuantitiesInLockedVault(ctx sdk.Context, collateral_auction auctiontypes.CollateralAuction, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) error {
+//	return k.liquidation.UpdateAssetQuantitiesInLockedVault(ctx, collateral_auction, amountIn, assetIn, amountOut, assetOut)
+//}
 
-func (k *Keeper) CalculateCollaterlizationRatio(
-	ctx sdk.Context,
-	amountIn sdk.Int,
-	assetIn assettypes.Asset,
-	amountOut sdk.Int,
-	assetOut assettypes.Asset,
-) (sdk.Dec, error) {
-	return k.vault.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
-}
-
-func (k *Keeper) BurnCAssets(ctx sdk.Context, moduleName string, collateralDenom string, denom string, amount sdk.Int) error {
-	return k.vault.BurnCAssets(ctx, moduleName, collateralDenom, denom, amount)
-}
+//func (k *Keeper) CalculateCollaterlizationRatio(
+//	ctx sdk.Context,
+//	amountIn sdk.Int,
+//	assetIn assettypes.Asset,
+//	amountOut sdk.Int,
+//	assetOut assettypes.Asset,
+//) (sdk.Dec, error) {
+//	return k.vault.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
+//}
+//
+//func (k *Keeper) BurnCAssets(ctx sdk.Context, moduleName string, collateralDenom string, denom string, amount sdk.Int) error {
+//	return k.vault.BurnCAssets(ctx, moduleName, collateralDenom, denom, amount)
+//}
 
 func (k *Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, app_id uint64) (appAssetCollectorData types.AppIdToAssetCollectorMapping, found bool) {
 	return k.collector.GetAppidToAssetCollectorMapping(ctx, app_id)

@@ -23,7 +23,7 @@ func (k msgServer) MsgPlaceBid(goCtx context.Context, msg *types.MsgPlaceBidRequ
 	if err != nil {
 		return nil, err
 	}
-	err = k.PlaceBid(ctx, msg.AuctionId, bidder, msg.Amount)
+	err = k.PlaceSurplusBid(ctx, msg.AuctionId, bidder, msg.Amount)
 	if err != nil {
 		return nil, err
 	}

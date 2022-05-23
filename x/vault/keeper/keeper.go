@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -20,13 +19,24 @@ type Keeper struct {
 	collector expected.CollectorKeeper
 }
 
+//
+//func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error) {
+//	//TODO implement me
+//	panic("implement me")
+//}
+
+//func (k *Keeper) BurnCAssets(ctx sdk.Context, moduleName string, collateralDenom string, denom string, amount sdk.Int) error {
+//	//TODO implement me
+//	panic("implement me")
+//}
+
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.Marketkeeper, collector expected.CollectorKeeper) Keeper {
 	return Keeper{
-		cdc:    cdc,
-		key:    key,
-		bank:   bank,
-		asset:  asset,
-		oracle: oracle,
+		cdc:       cdc,
+		key:       key,
+		bank:      bank,
+		asset:     asset,
+		oracle:    oracle,
 		collector: collector,
 	}
 }

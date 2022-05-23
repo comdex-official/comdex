@@ -87,7 +87,7 @@ func (k Keeper) CreateSurplusAndDebtAuctions(ctx sdk.Context) error {
 		for _, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
 			if assetToAuction.IsSurplusAuction || assetToAuction.IsDebtAuction {
 				if !assetToAuction.IsAuctionActive {
-					status := k.checkStatusOfNetFeesCollectedAndStartAuction(ctx, appId.Id, assetToAuction.AssetId, assetToAuction)
+					status := k.checkStatusOfNetFeesCollectedAndStartAuction(ctx, appId.Id, assetToAuction.AssetId, *assetToAuction)
 					if status == auctiontypes.StartedDebtAuction {
 						assetToAuction.IsAuctionActive = true
 					} else if status == auctiontypes.StartedSurplusAuction {

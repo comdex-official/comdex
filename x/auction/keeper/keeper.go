@@ -20,10 +20,10 @@ type (
 		paramstore  paramtypes.Subspace
 		account     expected.AccountKeeper
 		bank        expected.BankKeeper
-		asset       expected.AssetKeeper
-		vault       expected.VaultKeeper
 		market      expected.MarketKeeper
 		liquidation expected.LiquidationKeeper
+		asset       expected.AssetKeeper
+		vault       expected.VaultKeeper
 		collector   expected.CollectorKeeper
 	}
 )
@@ -35,10 +35,11 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 	account expected.AccountKeeper,
 	bank expected.BankKeeper,
-	asset expected.AssetKeeper,
-	vault expected.VaultKeeper,
 	market expected.MarketKeeper,
 	liquidation expected.LiquidationKeeper,
+	asset expected.AssetKeeper,
+	vault expected.VaultKeeper,
+	collector expected.CollectorKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -54,10 +55,11 @@ func NewKeeper(
 		paramstore:  ps,
 		account:     account,
 		bank:        bank,
-		asset:       asset,
-		vault:       vault,
 		market:      market,
 		liquidation: liquidation,
+		asset:       asset,
+		vault:       vault,
+		collector:   collector,
 	}
 }
 

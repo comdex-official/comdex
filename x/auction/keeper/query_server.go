@@ -43,7 +43,7 @@ func (q *queryServer) QueryAuction(c context.Context, req *types.QueryAuctionReq
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetCollateralAuction(ctx, req.Id)
+	item, found := q.GetSurplusAuction(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "auction does not exist for id %d", req.Id)
 	}
@@ -59,7 +59,7 @@ func (q *queryServer) QueryAuctions(c context.Context, req *types.QueryAuctionsR
 	}
 
 	var (
-		items []types.CollateralAuction
+		items []types.SurplusAuction
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
@@ -67,7 +67,7 @@ func (q *queryServer) QueryAuctions(c context.Context, req *types.QueryAuctionsR
 		prefix.NewStore(q.Store(ctx), types.CollateralAuctionKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.CollateralAuction
+			var item types.SurplusAuction
 			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
@@ -99,7 +99,7 @@ func (q *queryServer) QueryBiddings(c context.Context, req *types.QueryBiddingsR
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetUserBiddings(ctx, req.Bidder)
+	item, found := q.GetSurplusUserBiddings(ctx, req.Bidder)
 	if !found {
 		return &types.QueryBiddingsResponse{
 			Bidder:   req.Bidder,
@@ -109,7 +109,7 @@ func (q *queryServer) QueryBiddings(c context.Context, req *types.QueryBiddingsR
 
 	userBiddings := []types.Biddings{}
 	for _, biddingId := range item.BiddingIds {
-		bidding, found := q.GetBidding(ctx, biddingId)
+		bidding, found := q.GetSurplusBidding(ctx, biddingId)
 		if !found {
 			continue
 		}
