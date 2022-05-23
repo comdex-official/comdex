@@ -7,6 +7,7 @@ import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "comdex/liquidity/v1beta1/liquidity.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/liquidity/types";
 
@@ -213,6 +214,54 @@ message QuerySoftLockResponse {
   
 }
 
+// QueryDeserializePoolCoinRequest is request type for the Query/DeserializePoolCoin RPC method.
+message QueryDeserializePoolCoinRequest {
+  uint64 pool_id = 1;
+  uint64 pool_coin_amount = 2;
+}
+
+// QueryDeserializePoolCoinResponse is response type for the Query/DeserializePoolCoin RPC method.
+message QueryDeserializePoolCoinResponse {
+  repeated cosmos.base.v1beta1.Coin coins = 1 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", 
+    (gogoproto.nullable) = false
+  ];
+}
+
+// QueryPoolsIncentivesRequest is request type for the Query/PoolsIncentives RPC method.
+message QueryPoolsIncentivesRequest {}
+
+message PoolIncentive {
+  uint64 pool_id = 1;
+  bool master_pool = 2;
+  repeated uint64 child_pool_ids = 3;
+  cosmos.base.v1beta1.Coin total_rewards = 4 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin distributed_rewards = 5 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.nullable) = false
+  ];
+  uint64 total_epochs = 6;
+  uint64 filled_epochs = 7;
+  google.protobuf.Duration epoch_duration = 8 [
+      (gogoproto.nullable) = false,
+      (gogoproto.stdduration) = true,
+      (gogoproto.jsontag) = "epoch_duration,omitempty",
+      (gogoproto.moretags) = "yaml:\"epoch_duration\""
+    ];
+  google.protobuf.Timestamp next_distribution = 9 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"next_distribution\""
+  ];
+}
+
+// QueryPoolIncentivesResponse is response type for the Query/PoolsIncentives RPC method.
+message QueryPoolIncentivesResponse {
+  repeated PoolIncentive pool_incentives = 1;
+}
 
 // Query defines the gRPC querier service.
 service Query {
@@ -289,5 +338,15 @@ service Query {
   // SoftLock returns deposited poolcoin for farming .
   rpc SoftLock(QuerySoftLockRequest) returns (QuerySoftLockResponse) {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/softlock/{pool_id}/{depositor}";
+  }
+
+  // DeserializePoolCoin splits poolcoin into the actual provided pool assets .
+  rpc DeserializePoolCoin(QueryDeserializePoolCoinRequest) returns (QueryDeserializePoolCoinResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/deserialize/{pool_id}/{pool_coin_amount}";
+  }
+
+  // PoolIncentives provides insights about available pool incentives.
+  rpc PoolIncentives(QueryPoolsIncentivesRequest) returns (QueryPoolIncentivesResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pool_incentives";
   }
 }

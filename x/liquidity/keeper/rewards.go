@@ -13,7 +13,10 @@ import (
 )
 
 func (k Keeper) GetAMMPoolInterfaceObject(ctx sdk.Context, poolId uint64) (*types.Pool, *types.Pair, *amm.BasicPool, error) {
-	pool, _ := k.GetPool(ctx, poolId)
+	pool, found := k.GetPool(ctx, poolId)
+	if !found {
+		return nil, nil, nil, sdkerrors.Wrapf(types.ErrInvalidPoolId, "pool %d is invalid", poolId)
+	}
 	if pool.Disabled {
 		return nil, nil, nil, sdkerrors.Wrapf(types.ErrDisabledPool, "pool %d is disabled", poolId)
 	}
@@ -147,7 +150,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 
 	liquidityProvidersDataForPool, found := k.GetPoolLiquidityProvidersData(ctx, liquidityGaugeData.PoolId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrLPDataNotExistsForPool, "data not found for pool id %d", liquidityGaugeData.PoolId)
+		return []incentivestypes.RewardDistributionDataCollector{}, nil
 	}
 
 	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, liquidityGaugeData.PoolId)

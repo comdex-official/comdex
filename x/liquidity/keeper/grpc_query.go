@@ -585,3 +585,77 @@ func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*
 
 	return &types.QuerySoftLockResponse{ActivePoolCoin: activePoolCoin, QueuedPoolCoin: queuedCoins}, nil
 }
+
+// DeserializePoolCoin splits poolcoin amount into actual assets provided by depositor.
+func (k Querier) DeserializePoolCoin(c context.Context, req *types.QueryDeserializePoolCoinRequest) (*types.QueryDeserializePoolCoinResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, req.PoolId)
+	if err != nil {
+		return nil, err
+	}
+	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(int64(req.PoolCoinAmount)))
+	x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
+	if err != nil {
+		return nil, err
+	}
+	quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
+	baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
+
+	return &types.QueryDeserializePoolCoinResponse{Coins: []sdk.Coin{quoteCoin, baseCoin}}, nil
+}
+
+// PoolIncentives provides insights about available pool incentives.
+func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentivesRequest) (*types.QueryPoolIncentivesResponse, error) {
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	liquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeId(ctx, incentivestypes.LiquidityGaugeTypeId)
+
+	poolIncentives := []*types.PoolIncentive{}
+
+	for _, gauge := range liquidityGauges {
+		if ctx.BlockTime().Before(gauge.StartTime) || !gauge.IsActive {
+			continue
+		}
+		if gauge.TriggeredCount == gauge.TotalTriggers {
+			continue
+		}
+		epochInfo, found := k.incentivesKeeper.GetEpochInfoByDuration(ctx, gauge.TriggerDuration)
+		if !found {
+			continue
+		}
+		childPoolIds := []uint64{}
+		if len(gauge.GetLiquidityMetaData().ChildPoolIds) == 0 {
+			pools := k.GetAllPools(ctx)
+			for _, pool := range pools {
+				if pool.Id != gauge.GetLiquidityMetaData().PoolId {
+					childPoolIds = append(childPoolIds, pool.Id)
+				}
+			}
+		} else {
+			for _, poolId := range gauge.GetLiquidityMetaData().ChildPoolIds {
+				if poolId != gauge.GetLiquidityMetaData().PoolId {
+					childPoolIds = append(childPoolIds, poolId)
+				}
+			}
+		}
+		poolIncentives = append(poolIncentives, &types.PoolIncentive{
+			PoolId:             gauge.GetLiquidityMetaData().PoolId,
+			MasterPool:         gauge.GetLiquidityMetaData().GetIsMasterPool(),
+			ChildPoolIds:       childPoolIds,
+			TotalRewards:       gauge.DepositAmount,
+			DistributedRewards: gauge.DistributedAmount,
+			TotalEpochs:        gauge.TotalTriggers,
+			FilledEpochs:       gauge.TriggeredCount,
+			EpochDuration:      gauge.TriggerDuration,
+			NextDistribution:   epochInfo.CurrentEpochStartTime.Add(epochInfo.Duration),
+		})
+	}
+
+	return &types.QueryPoolIncentivesResponse{PoolIncentives: poolIncentives}, nil
+}

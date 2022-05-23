@@ -37,6 +37,8 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryOrdersCmd(),
 		NewQueryOrderCmd(),
 		NewQuerySoftLockCmd(),
+		NewQueryDeserializePoolCoinCmd(),
+		NewQueryPoolIncentivesCmd(),
 	)
 
 	return cmd
@@ -675,6 +677,95 @@ $ %s query %s soft-lock 1 comdex1ed6zea6ppj29vkzk8f867rsauu65lq2p75jc3u
 					PoolId:    poolId,
 					Depositor: args[1],
 				})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQuerySoftLockCmd implements the soft lock query command.
+func NewQueryDeserializePoolCoinCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "deserialize [pool-id] [pool-coin-amount]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Deserialize pool coins into the pool assets",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Deserialize pool coins into pool assets.
+Example:
+$ %s query %s deserialize 1 123400000
+> {coins : [1000000ucmdx, 4000000ucmst]}
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			poolCoinAmount, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.DeserializePoolCoin(
+				cmd.Context(),
+				&types.QueryDeserializePoolCoinRequest{
+					PoolId:         poolId,
+					PoolCoinAmount: poolCoinAmount,
+				})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQueryPoolIncentivesCmd implements the pool-incentives query command.
+func NewQueryPoolIncentivesCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "pool-incentives",
+		Args:  cobra.NoArgs,
+		Short: "Query pool incentives",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query Pool Incentives
+Example:
+$ %s query %s pool-incentives
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.PoolIncentives(
+				cmd.Context(),
+				&types.QueryPoolsIncentivesRequest{})
 			if err != nil {
 				return err
 			}

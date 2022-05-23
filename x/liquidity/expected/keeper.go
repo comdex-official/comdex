@@ -1,6 +1,8 @@
 package expected
 
 import (
+	"time"
+
 	incentivestypes "github.com/comdex-official/comdex/x/incentives/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -30,4 +32,5 @@ type BankKeeper interface {
 
 type IncentivesKeeper interface {
 	GetAllGaugesByGaugeTypeId(ctx sdk.Context, gaugeTypeId uint64) (gauges []incentivestypes.Gauge)
+	GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration) (epochInfo incentivestypes.EpochInfo, found bool)
 }
