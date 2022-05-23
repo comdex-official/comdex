@@ -112,6 +112,14 @@ func (p Params) Validate() error {
 		{p.LiquidationPenaltyPercent, validateLiquidationPenalty},
 		{p.AuctionDiscountPercent, validateAuctionDiscount},
 		{p.AuctionDurationSeconds, validateAuctionDuration},
+		{p.DebtMintTokenDecreasePercentage, validatePercentage},
+		{p.Buffer, validateBuffer},
+		{p.Cusp, validateCusp},
+		{p.Tau, validateTau},
+		{p.DutchDecreasePercentage, validateDutchDecreasePercentage},
+		{p.Chost, validateChost},
+		{p.Step, validateStep},
+		{p.PriceFunctionType, validatePriceFunctionType},
 	} {
 		if err := v.validator(v.value); err != nil {
 			return err
@@ -181,8 +189,8 @@ func validateBuffer(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	u, _ := sdk.NewDecFromStr("1")
-	if q.GT(u) {
-		return fmt.Errorf("decrease percentage cannot be less than 1 percent")
+	if q.LTE(u) {
+		return fmt.Errorf("buffer cannot be less than 1")
 	}
 	return nil
 }
@@ -192,9 +200,9 @@ func validateCusp(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-	u, _ := sdk.NewDecFromStr("1")
+	u, _ := sdk.NewDecFromStr("0.01")
 	if q.LT(u) {
-		return fmt.Errorf("decrease percentage cannot be less than 1 percent")
+		return fmt.Errorf("cusp cannot be less than 0.01")
 	}
 	return nil
 }
@@ -204,9 +212,9 @@ func validateDutchDecreasePercentage(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-	u, _ := sdk.NewDecFromStr("50")
+	u, _ := sdk.NewDecFromStr("0.5")
 	if q.GT(u) {
-		return fmt.Errorf("decrease percentage cannot be less than 1 percent")
+		return fmt.Errorf("dutch decrease percentage cannot be less than 10.5")
 	}
 	return nil
 }
@@ -218,7 +226,7 @@ func validateChost(i interface{}) error {
 	}
 	u, _ := sdk.NewDecFromStr("1")
 	if q.LT(u) {
-		return fmt.Errorf("decrease percentage cannot be less than 1 percent")
+		return fmt.Errorf("chost cannot be less than 1 ")
 	}
 	return nil
 }
@@ -229,7 +237,7 @@ func validatePriceFunctionType(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	if v < 0 {
-		return fmt.Errorf("auction duration cannot be less than 1 hour")
+		return fmt.Errorf("price function type cannot be less than 0")
 	}
 	return nil
 }
@@ -240,7 +248,7 @@ func validateTau(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	if v.LT(sdk.NewInt(1)) {
-		return fmt.Errorf("auction duration cannot be less than 1 hour")
+		return fmt.Errorf("tau cannot be less than 1 second")
 	}
 	return nil
 }
@@ -250,8 +258,8 @@ func validateStep(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-	if v.LT(sdk.NewInt(0)) {
-		return fmt.Errorf("auction duration cannot be less than 1 hour")
+	if v.LT(sdk.NewInt(1)) {
+		return fmt.Errorf("step cannot be less than 1")
 	}
 	return nil
 }
