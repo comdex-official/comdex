@@ -36,6 +36,24 @@ func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVault
 	return &types.QueryAllVaultsResponse{
 		Vault: vaults,
 	}, nil
+} 
+
+func (q *queryServer) QueryAllVaultsByProduct(c context.Context, req *types.QueryAllVaultsByProductRequest) (*types.QueryAllVaultsByProductResponse, error) {
+
+	var (
+		ctx   = sdk.UnwrapSDKContext(c)
+		productvaults []types.Vault
+	)
+	vaults := q.GetVaults(ctx)
+	for _, data := range vaults{
+		if data.AppMappingId == req.AppId {
+			productvaults = append(productvaults, data)
+		}
+	}
+	
+	return &types.QueryAllVaultsByProductResponse{
+		Vault: productvaults,
+	}, nil
 }
 
 func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest) (*types.QueryVaultResponse, error) {
