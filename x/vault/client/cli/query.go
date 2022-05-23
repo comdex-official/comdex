@@ -23,6 +23,7 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		QueryAllVaults(),
+		QueryAllVaultsByProduct(),
 		QueryVault(),
 		QueryAllVaultsByAppAndExtendedPair(),
 		// QueryVaults(),
@@ -66,6 +67,39 @@ func QueryAllVaults() *cobra.Command {
 
 			res, err := queryClient.QueryAllVaults(cmd.Context(), &types.QueryAllVaultsRequest{
 				Pagination: pagination,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryAllVaultsByProduct() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vaults-by-product [app_id]",
+		Short: "list of all vaults available in a product",
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryAllVaultsByProduct(cmd.Context(), &types.QueryAllVaultsByProductRequest{
+				AppId: app_id,
 			})
 
 			if err != nil {
