@@ -52,8 +52,9 @@ func (k Keeper) Iterate(ctx sdk.Context, appMappingId uint64, assetIds []uint64)
 	return nil
 }
 
-func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, LockerSavingsRate sdk.Dec) (sdk.Int, error) {
+func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (sdk.Int, error) {
 
+	LockerSavingsRate := lsr.Quo(sdk.OneDec())
 	currentTime := ctx.BlockTime().Unix()
 
 	prevInterestTime := k.GetLastInterestTime(ctx)
