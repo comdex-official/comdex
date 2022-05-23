@@ -3,6 +3,8 @@ package keeper
 import (
 	"fmt"
 	"github.com/comdex-official/comdex/x/rewards/expected"
+	"strconv"
+	"time"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -144,4 +146,40 @@ func (k Keeper) RemoveWhitelistAppIdVault(ctx sdk.Context, appMappingId uint64) 
 
 func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
+}
+
+func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, AssetId uint64, TotalRewards sdk.Coin, DurationDays uint64, Depositor string, MinLockupTimeSeconds uint64) error {
+	Id := k.GetExternalRewardsLockersId(ctx)
+	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, AppMappingId)
+
+	found := uint64InSlice(AssetId, lockerAssets.AssetIds)
+	if !found {
+		return types.ErrAssetIdDoesNotExist
+	}
+	extRewards := k.GetExternalRewardsLockers(ctx)
+	for _, v := range extRewards {
+		if v.AppMappingId == AppMappingId && v.AssetId == AssetId {
+			return types.ErrAssetIdDoesNotExist
+		}
+	}
+	timeIn, _ := time.ParseDuration(strconv.FormatUint(MinLockupTimeSeconds, 10))
+	endTime := ctx.BlockTime().Add(timeIn)
+
+	msg := types.LockerExternalRewards{
+		Id:                   Id + 1,
+		AppMappingId:         AppMappingId,
+		AssetId:              AssetId,
+		TotalRewards:         TotalRewards,
+		DurationDays:         DurationDays,
+		IsActive:             false,
+		AvailableRewards:     TotalRewards,
+		Depositor:            Depositor,
+		StartTimestamp:       ctx.BlockTime(),
+		EndTimestamp:         endTime,
+		MinLockupTimeSeconds: MinLockupTimeSeconds,
+	}
+	k.SetExternalRewardsLockers(ctx, msg)
+	k.SetExternalRewardsLockersId(ctx, msg.Id)
+	fmt.Println(msg)
+	return nil
 }

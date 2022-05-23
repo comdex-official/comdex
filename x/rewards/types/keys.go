@@ -22,9 +22,11 @@ const (
 )
 
 var (
-	RewardsKeyPrefix          = []byte{0x05}
-	KeyPrefixLastInterestTime = []byte{0x06}
-	AppIdsVaultKeyPrefix      = []byte{0x12}
+	RewardsKeyPrefix               = []byte{0x05}
+	KeyPrefixLastInterestTime      = []byte{0x06}
+	AppIdsVaultKeyPrefix           = []byte{0x12}
+	ExternalRewardsLockerKeyPrefix = []byte{0x13}
+	ExtRewardsLockerIDKey          = []byte{0x14}
 )
 
 func RewardsKey(id uint64) []byte {
@@ -39,4 +41,8 @@ func CreateLastInterestTimeKey() []byte {
 	var key []byte
 	key = append(key, KeyPrefixLastInterestTime...)
 	return key
+}
+
+func ExternalRewardsLockerMappingKey(appMappingID uint64) []byte {
+	return append(ExternalRewardsLockerKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
 }

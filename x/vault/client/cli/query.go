@@ -23,6 +23,7 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		QueryAllVaults(),
+		QueryAllVaultsByProduct(),
 		QueryVault(),
 		QueryAllVaultsByAppAndExtendedPair(),
 		// QueryVaults(),
@@ -38,6 +39,8 @@ func GetQueryCmd() *cobra.Command {
 		QueryStableVaultInfo(),
 		QueryAllStableVaults(),
 		QueryStableVaultByProductExtendedPair(),
+		QueryExtendedPairVaultMappingByApp(),
+		QueryExtendedPairVaultMappingByAppAndExtendedPairId(),
 		
 	)
 
@@ -64,6 +67,39 @@ func QueryAllVaults() *cobra.Command {
 
 			res, err := queryClient.QueryAllVaults(cmd.Context(), &types.QueryAllVaultsRequest{
 				Pagination: pagination,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryAllVaultsByProduct() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vaults-by-product [app_id]",
+		Short: "list of all vaults available in a product",
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryAllVaultsByProduct(cmd.Context(), &types.QueryAllVaultsByProductRequest{
+				AppId: app_id,
 			})
 
 			if err != nil {
@@ -643,6 +679,77 @@ func QueryStableVaultByProductExtendedPair() *cobra.Command {
 			queryClient := types.NewQueryServiceClient(ctx)
 
 			res, err := queryClient.QueryStableVaultByProductExtendedPair(cmd.Context(), &types.QueryStableVaultByProductExtendedPairRequest{
+				AppId: app_id,
+				ExtendedPairId: extended_pair_id,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryExtendedPairVaultMappingByApp() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extendedPair-VaultMapping-By-App [app_id]",
+		Short: "get ExtendedPair Vault Mapping By App",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryExtendedPairVaultMappingByApp(cmd.Context(), &types.QueryExtendedPairVaultMappingByAppRequest{
+				AppId: app_id,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryExtendedPairVaultMappingByAppAndExtendedPairId() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extendedPair-VaultMapping-By-App-ExtendedPairId [app_id] [extended_pair_id]",
+		Short: "get ExtendedPair Vault Mapping By App And ExtendedPairId",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			extended_pair_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryExtendedPairVaultMappingByAppAndExtendedPairId(cmd.Context(), &types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest{
 				AppId: app_id,
 				ExtendedPairId: extended_pair_id,
 			})

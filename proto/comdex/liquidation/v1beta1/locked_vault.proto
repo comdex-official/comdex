@@ -15,7 +15,7 @@ message LockedVault {
 
   string app_vault_type_id = 2 ;
 
-  uint64 vault_id = 3 [
+  string original_vault_id = 3 [
     (gogoproto.customname) = "OriginalVaultId",
     (gogoproto.moretags) = "yaml:\"id\""];
 
