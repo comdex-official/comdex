@@ -2,7 +2,7 @@ package keeper_test
 
 import (
 	"encoding/binary"
-	"github.com/comdex-official/comdex/x/liquidity"
+	// "github.com/comdex-official/comdex/x/liquidity"
 	"github.com/stretchr/testify/suite"
 	"testing"
 
