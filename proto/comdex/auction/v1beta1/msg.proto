@@ -9,13 +9,13 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 
-message MsgPlaceBidRequest {  
+message MsgPlaceSurplusBidRequest {
     uint64 auction_id = 1;
     string bidder = 2;
     cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
 }
 
-message MsgPlaceBidResponse {}
+message MsgPlaceSurplusBidResponse {}
 
 message MsgPlaceDebtBidRequest {
     uint64 auction_id = 1;
@@ -39,7 +39,7 @@ message MsgPlaceDutchBidRequest {
 message MsgPlaceDutchBidResponse {}
 
 service MsgService {
-    rpc MsgPlaceBid(MsgPlaceBidRequest) returns (MsgPlaceBidResponse);
+    rpc MsgPlaceSurplusBid(MsgPlaceSurplusBidRequest) returns (MsgPlaceSurplusBidResponse);
     rpc MsgPlaceDebtBid(MsgPlaceDebtBidRequest) returns (MsgPlaceDebtBidResponse);
     rpc MsgPlaceDutchBid(MsgPlaceDutchBidRequest) returns (MsgPlaceDutchBidResponse);
 }
