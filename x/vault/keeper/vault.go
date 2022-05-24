@@ -128,17 +128,8 @@ func (k *Keeper) VerifyCollaterlizationRatio(
 	assetIn assettypes.Asset,
 	amountOut sdk.Int,
 	assetOut assettypes.Asset,
-	liquidationRatio sdk.Dec,
 ) error {
 
-	collaterlizationRatio, err := k.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
-	if err != nil {
-		return err
-	}
-
-	if collaterlizationRatio.LT(liquidationRatio) {
-		return types.ErrorInvalidCollateralizationRatio
-	}
 
 	return nil
 }

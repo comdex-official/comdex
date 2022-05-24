@@ -12,9 +12,9 @@ const (
 )
 
 func (m *Asset) Validate() error {
-	if m.Id == 0 {
-		return fmt.Errorf("id cannot be zero")
-	}
+	// if m.Id == 0 {
+	// 	return fmt.Errorf("id cannot be zero")
+	// }
 	if m.Name == "" {
 		return fmt.Errorf("name cannot be empty")
 	}
