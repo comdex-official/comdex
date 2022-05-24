@@ -1,21 +1,22 @@
 package cli
 
 import (
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/spf13/cobra"
-	"strconv"
 
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
 func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-assets [name] [Denom] [Decimals]",
-		Args:  cobra.ExactArgs(3),
+		Use:   "add-assets [name] [Denom] [Decimals] [isOnchain]",
+		Args:  cobra.ExactArgs(4),
 		Short: "Submit assets",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -37,6 +38,11 @@ func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 				return err
 			}
 
+			isOnchain, err := ParseStringFromString(args[3], ",")
+			if err != nil {
+				return err
+			}
+
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
 				return err
@@ -51,10 +57,12 @@ func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 
 			var assets []types.Asset
 			for i := range names {
+				newIsOnChain := ParseBoolFromString(isOnchain[i])
 				assets = append(assets, types.Asset{
-					Name:     names[i],
-					Denom:    denoms[i],
-					Decimals: decimals[i],
+					Name:      names[i],
+					Denom:     denoms[i],
+					Decimals:  decimals[i],
+					IsOnchain: newIsOnChain,
 				})
 			}
 
@@ -135,9 +143,9 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 			from := clientCtx.GetFromAddress()
 
 			asset := types.Asset{
-				Id: id,
-				Name: name,
-				Denom: denom,
+				Id:       id,
+				Name:     name,
+				Denom:    denom,
 				Decimals: decimals,
 			}
 
@@ -201,8 +209,8 @@ func NewCmdSubmitAddPairsProposal() *cobra.Command {
 			var pairs []types.Pair
 			for i := range assetIn {
 				pairs = append(pairs, types.Pair{
-					AssetIn:            assetIn[i],
-					AssetOut:           assetOut[i],
+					AssetIn:  assetIn[i],
+					AssetOut: assetOut[i],
 				})
 			}
 
@@ -301,7 +309,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 				newisBridgedAsset := ParseBoolFromString(isBridgedAsset[i])
 
 				assets = append(assets, types.ExtendedAsset{
-					AssetId:                 asset_id[i],
+					AssetId:              asset_id[i],
 					CollateralWeight:     newcollateralWeigt,
 					LiquidationThreshold: newliquidationThreshold,
 					IsBridgedAsset:       newisBridgedAsset,
@@ -449,7 +457,6 @@ func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 				return err
 			}
 
-
 			moduleAccnt, err := ParseStringFromString(args[1], ",")
 			if err != nil {
 				return err
@@ -480,7 +487,7 @@ func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 				newbaselendrateasset1, _ := sdk.NewDecFromStr(baselendrateasset1[i])
 				newbaselendrateasset2, _ := sdk.NewDecFromStr(baselendrateasset2[i])
 				pairs = append(pairs, types.ExtendedPairLend{
-					PairId:               pair_id[i],
+					PairId:                pair_id[i],
 					ModuleAcc:             moduleAccnt[i],
 					BaseBorrowRateAsset_1: newbaseborrowrateasset1,
 					BaseBorrowRateAsset_2: newbaseborrowrateasset2,
@@ -660,14 +667,9 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 				return err
 			}
 
-			names, err := ParseStringFromString(args[0], ",")
-			if err != nil {
-				return err
-			}
-			short_name, err := ParseStringFromString(args[1], ",")
-			if err != nil {
-				return err
-			}
+			name := args[0]
+
+			short_name := args[1]
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
@@ -682,12 +684,13 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 			from := clientCtx.GetFromAddress()
 
 			var aMap []types.AppMapping
-			for i := range names {
-				aMap = append(aMap, types.AppMapping{
-					Name:     names[i],
-					ShortName:    short_name[i],
-				})
-			}
+			var bMap []*types.MintGenesisToken
+
+			aMap = append(aMap, types.AppMapping{
+				Name:             name,
+				ShortName:        short_name,
+				MintGenesisToken: bMap,
+			})
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
 			if err != nil {
@@ -701,6 +704,96 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 			content := types.NewAddAppMapingProposa(title, description, aMap)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
+	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
+	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	_ = cmd.MarkFlagRequired(cli.FlagTitle)
+	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+
+	return cmd
+}
+
+func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-asset-mapping [app_id] [asset_id] [genesis_supply] [isgovToken]",
+		Args:  cobra.ExactArgs(4),
+		Short: "Add asset mapping",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			asset_id, err := ParseUint64SliceFromString(args[1], ",")
+			if err != nil {
+				return err
+			}
+			genesis_supply, err := ParseUint64SliceFromString(args[2], ",")
+			if err != nil {
+				return err
+			}
+			isgovToken, err := ParseStringFromString(args[3], ",")
+			if err != nil {
+				return err
+			}
+
+			title, err := cmd.Flags().GetString(cli.FlagTitle)
+			if err != nil {
+				return err
+			}
+
+			description, err := cmd.Flags().GetString(cli.FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			var aMap []types.AppMapping
+			var bMap []*types.MintGenesisToken
+			for i := range asset_id {
+				newisgovToken := ParseBoolFromString(isgovToken[i])
+				var cmap types.MintGenesisToken
+
+				cmap.AssetId = asset_id[i]
+				cmap.GenesisSupply = genesis_supply[i]
+				cmap.IsgovToken = newisgovToken
+				cmap.Sender = clientCtx.FromAddress.String()
+
+				bMap = append(bMap, &cmap)
+			}
+			aMap = append(aMap, types.AppMapping{
+				Id:               app_id,
+				MintGenesisToken: bMap,
+			})
+
+			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
+
+			content := types.NewAddAssetMapingProposa(title, description, aMap)
+
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
 			if err != nil {
 				return err
 			}
@@ -757,7 +850,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			
+
 			closing_fee, err := ParseStringFromString(args[5], ",")
 			if err != nil {
 				return err
@@ -802,7 +895,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			
+
 			asset_out_oracle_price, err := ParseStringFromString(args[14], ",")
 			if err != nil {
 				return err
@@ -835,27 +928,27 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				newcreation_fee, _ := sdk.NewDecFromStr(creation_fee[i])
 				newmin_cr, _ := sdk.NewDecFromStr(min_cr[i])
 				newis_vault_active := ParseBoolFromString(is_vault_active[i])
-				debt_ceiling,_ := sdk.NewIntFromString(debt_cieling[i])
-				debt_floor,_ := sdk.NewIntFromString(debt_floor[i])
+				debt_ceiling, _ := sdk.NewIntFromString(debt_cieling[i])
+				debt_floor, _ := sdk.NewIntFromString(debt_floor[i])
 				newis_psm_pair := ParseBoolFromString(is_psm_pair[i])
 				newasset_out_oracle_price := ParseBoolFromString(asset_out_oracle_price[i])
 				pairs = append(pairs, types.ExtendedPairVault{
-					AppMappingId: app_mapping_id,
-					PairId: pair_id[i],
-					LiquidationRatio: newliquidation_ratio,
-					UnliquidationRatio: newunliquidation_ratio,
-					StabilityFee: newstability_fee,
-					ClosingFee: newclosing_fee,
-					LiquidationPenalty: newliquidation_penalty,
-					CreationFee: newcreation_fee,
-					IsVaultActive: newis_vault_active,
-					DebtCeiling: debt_ceiling,
-					DebtFloor: debt_floor,
-					IsPsmPair: newis_psm_pair,
-					MinCr: newmin_cr,
-					PairName: pair_name[i],
+					AppMappingId:        app_mapping_id,
+					PairId:              pair_id[i],
+					LiquidationRatio:    newliquidation_ratio,
+					UnliquidationRatio:  newunliquidation_ratio,
+					StabilityFee:        newstability_fee,
+					ClosingFee:          newclosing_fee,
+					LiquidationPenalty:  newliquidation_penalty,
+					CreationFee:         newcreation_fee,
+					IsVaultActive:       newis_vault_active,
+					DebtCeiling:         debt_ceiling,
+					DebtFloor:           debt_floor,
+					IsPsmPair:           newis_psm_pair,
+					MinCr:               newmin_cr,
+					PairName:            pair_name[i],
 					AssetOutOraclePrice: newasset_out_oracle_price,
-					AsssetOutPrice: assset_out_price[i],
+					AsssetOutPrice:      assset_out_price[i],
 				})
 			}
 

@@ -23,6 +23,7 @@ var (
 	ErrorPairNameForID            = errors.Register(ModuleName, 207, "already has pair name for id in this app")
 	ErrorExtendedPairDoesNotExist = errors.Register(ModuleName, 208, "extended pair does not exist")
 	AppIdsDoesntExist             = errors.Register(ModuleName, 209, "app ids does not exist")
+	ErrorAssetAlreadyExistinApp   = errors.Register(ModuleName, 210, "asset already exist in App")
 )
 
 var (
