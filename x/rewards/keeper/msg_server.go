@@ -56,8 +56,11 @@ func (m msgServer) RemoveWhitelistAppVault(goCtx context.Context, msg *types.Rem
 
 func (m msgServer) ExternalRewardsLockers(goCtx context.Context, msg *types.ActivateExternalRewardsLockers) (*types.ActivateExternalRewardsLockersResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	if err := m.Keeper.ActExternalRewardsLockers(ctx, msg.AppMappingId, msg.AssetId, msg.TotalRewards, msg.DurationDays, msg.Depositor, msg.MinLockupTimeSeconds); err != nil {
+	Depositor, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		return nil, err
+	}
+	if err := m.Keeper.ActExternalRewardsLockers(ctx, msg.AppMappingId, msg.AssetId, msg.TotalRewards, msg.DurationDays, Depositor, msg.MinLockupTimeSeconds); err != nil {
 		return nil, err
 	}
 	return &types.ActivateExternalRewardsLockersResponse{}, nil

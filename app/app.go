@@ -553,6 +553,7 @@ func New(
 		&app.collectorKeeper,
 		&app.vaultKeeper,
 		&app.assetKeeper,
+		app.bankKeeper,
 	)
 
 	app.collectorKeeper = *collectorkeeper.NewKeeper(

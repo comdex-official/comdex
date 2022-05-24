@@ -8,18 +8,18 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgPlaceBidRequest)(nil)
+	_ sdk.Msg = (*MsgPlaceSurplusBidRequest)(nil)
 )
 
-func NewMsgPlaceBid(from sdk.AccAddress, auctionID uint64, amt sdk.Coin) *MsgPlaceBidRequest {
-	return &MsgPlaceBidRequest{
+func NewMsgPlaceSurplusBid(from sdk.AccAddress, auctionID uint64, amt sdk.Coin) *MsgPlaceSurplusBidRequest {
+	return &MsgPlaceSurplusBidRequest{
 		Bidder:    from.String(),
 		AuctionId: auctionID,
 		Amount:    amt,
 	}
 }
 
-func (m *MsgPlaceBidRequest) ValidateBasic() error {
+func (m *MsgPlaceSurplusBidRequest) ValidateBasic() error {
 	if m.AuctionId == 0 {
 		return errors.New("auction id cannot be zero")
 	}
@@ -33,7 +33,7 @@ func (m *MsgPlaceBidRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgPlaceBidRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgPlaceSurplusBidRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.Bidder)
 	if err != nil {
 		panic(err)

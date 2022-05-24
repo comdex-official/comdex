@@ -23,6 +23,7 @@ type (
 		collector  expected.CollectorKeeper
 		vault      expected.VaultKeeper
 		asset      expected.AssetKeeper
+		bank       expected.BankKeeper
 	}
 )
 
@@ -35,6 +36,7 @@ func NewKeeper(
 	collector expected.CollectorKeeper,
 	vault expected.VaultKeeper,
 	asset expected.AssetKeeper,
+	bank expected.BankKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -52,6 +54,7 @@ func NewKeeper(
 		collector:  collector,
 		vault:      vault,
 		asset:      asset,
+		bank:       bank,
 	}
 }
 
@@ -147,9 +150,9 @@ func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
 
-func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, AssetId uint64, TotalRewards sdk.Coin, DurationDays int64, Depositor string, MinLockupTimeSeconds int64) error {
+func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, AssetId uint64, TotalRewards sdk.Coin, DurationDays int64, Depositor sdk.AccAddress, MinLockupTimeSeconds int64) error {
 	Id := k.GetExternalRewardsLockersId(ctx)
-	/*lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, AppMappingId)
+	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, AppMappingId)
 
 	found := uint64InSlice(AssetId, lockerAssets.AssetIds)
 	if !found {
@@ -160,13 +163,9 @@ func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, 
 		if v.AppMappingId == AppMappingId && v.AssetId == AssetId {
 			return types.ErrAssetIdDoesNotExist
 		}
-	}*/
-	//timeIn, _ := time.ParseDuration(strconv.FormatUint(MinLockupTimeSeconds, 10))
+	}
 
-	endTime := ctx.BlockTime().Add(time.Second * time.Duration(DurationDays))
-
-	fmt.Println("endtime", endTime)
-	fmt.Println("currentTime", ctx.BlockTime())
+	endTime := ctx.BlockTime().Add(time.Second * time.Duration(DurationDays*86400))
 
 	msg := types.LockerExternalRewards{
 		Id:                   Id + 1,
@@ -174,15 +173,19 @@ func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, 
 		AssetId:              AssetId,
 		TotalRewards:         TotalRewards,
 		DurationDays:         DurationDays,
-		IsActive:             false,
+		IsActive:             true,
 		AvailableRewards:     TotalRewards,
-		Depositor:            Depositor,
+		Depositor:            Depositor.String(),
 		StartTimestamp:       ctx.BlockTime(),
 		EndTimestamp:         endTime,
 		MinLockupTimeSeconds: MinLockupTimeSeconds,
 	}
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, Depositor, types.ModuleName, sdk.NewCoins(sdk.Coin{Amount: TotalRewards.Amount, Denom: TotalRewards.Denom})); err != nil {
+		return err
+	}
+
 	k.SetExternalRewardsLockers(ctx, msg)
 	k.SetExternalRewardsLockersId(ctx, msg.Id)
-	fmt.Println(msg)
+	k.SetEpochTime(ctx, AppMappingId, ctx.BlockTime().Unix()+84600)
 	return nil
 }
