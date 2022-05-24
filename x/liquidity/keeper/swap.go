@@ -425,8 +425,8 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 		}
 	}
 	params := k.GetParams(ctx)
-	dustCollectorAddr, _ := sdk.AccAddressFromBech32(params.DustCollectorAddress)
-	bulkOp.QueueSendCoins(pair.GetEscrowAddress(), dustCollectorAddr, sdk.NewCoins(sdk.NewCoin(pair.QuoteCoinDenom, quoteCoinDust)))
+	swapFeeCollectorAddr, _ := sdk.AccAddressFromBech32(params.SwapFeeCollectorAddress)
+	bulkOp.QueueSendCoins(pair.GetEscrowAddress(), swapFeeCollectorAddr, sdk.NewCoins(sdk.NewCoin(pair.QuoteCoinDenom, quoteCoinDust)))
 	if err := bulkOp.Run(ctx, k.bankKeeper); err != nil {
 		return err
 	}

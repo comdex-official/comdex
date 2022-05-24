@@ -17,7 +17,7 @@ message Params {
 
   string fee_collector_address = 3;
 
-  string dust_collector_address = 4;
+  string swap_fee_collector_address = 4;
 
   string min_initial_pool_coin_supply = 5
       [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];

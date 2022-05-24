@@ -8,8 +8,8 @@ The `liquidity` module contains the following parameters:
 |--------------------------|--------------------|-------------------------------------------------------------------|
 | BatchSize                | uint32             | 1                                                                 |
 | TickPrecision            | uint32             | 3                                                                 |
-| FeeCollectorAddress      | string             | cre1zdew6yxyw92z373yqp756e0x4rvd2het37j0a2wjp7fj48eevxvq303p8d    |
-| DustCollectorAddress     | string             | cre1suads2mkd027cmfphmk9fpuwcct4d8ys02frk8e64hluswfwfj0s4xymnj    |
+| FeeCollectorAddress      | string             | comdex1zdew6yxyw92z373yqp756e0x4rvd2het37j0a2wjp7fj48eevxvqfhdatg |
+| SwapFeeCollectorAddress  | string             | comdex1suads2mkd027cmfphmk9fpuwcct4d8ys02frk8e64hluswfwfj0sd7c8lh |
 | MinInitialPoolCoinSupply | string (sdk.Int)   | "1000000000000"                                                   |
 | PairCreationFee          | string (sdk.Coins) | [{"denom":"stake","amount":"1000000"}]                            |
 | PoolCreationFee          | string (sdk.Coins) | [{"denom":"stake","amount":"1000000"}]                            |
@@ -31,16 +31,16 @@ A BatchSize of 1 means that one batch consists of one block.
 
 Because our DEX adopts tick system, we have to set tick precision which
 determines the gap between ticks.
-Default TickPrecision of 3 means that the price will be displayed from
-the highest digit to the last 3 digits.
+Default TickPrecision of 6 means that the price will be displayed from
+the highest digit to the last 6 digits.
 
 ## FeeCollectorAddress
 
 Account address for fee collecting module
 
-## DustCollectorAddress
+## SwapFeeCollectorAddress
 
-Account address for dust collecting.
+Account address for dust and swap fee collection.
 Dust means a small amount of tokens that cannot be avoided during the
 order matching process.
 

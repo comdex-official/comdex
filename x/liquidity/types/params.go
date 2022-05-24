@@ -11,17 +11,17 @@ import (
 // Liquidity params default values
 const (
 	DefaultBatchSize        uint32 = 1
-	DefaultTickPrecision    uint32 = 3
+	DefaultTickPrecision    uint32 = 6
 	DefaultMaxOrderLifespan        = 24 * time.Hour
 )
 
 // Liquidity params default values
 var (
 	DefaultFeeCollectorAddress      = DeriveAddress(AddressType32Bytes, ModuleName, "FeeCollector")
-	DefaultDustCollectorAddress     = DeriveAddress(AddressType32Bytes, ModuleName, "DustCollector")
+	DefaultSwapFeeCollectorAddress  = DeriveAddress(AddressType32Bytes, ModuleName, "SwapFeeCollector")
 	DefaultMinInitialPoolCoinSupply = sdk.NewInt(1_000_000_000_000)
-	DefaultPairCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
-	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
+	DefaultPairCreationFee          = sdk.NewCoins(sdk.NewInt64Coin("ucmdx", 200_000_000))
+	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin("ucmdx", 200_000_000))
 	DefaultMinInitialDepositAmount  = sdk.NewInt(1000000)
 	DefaultMaxPriceLimitRatio       = sdk.NewDecWithPrec(1, 1) // 10%
 	DefaultSwapFeeRate              = sdk.ZeroDec()
@@ -47,7 +47,7 @@ var (
 	KeyBatchSize                = []byte("BatchSize")
 	KeyTickPrecision            = []byte("TickPrecision")
 	KeyFeeCollectorAddress      = []byte("FeeCollectorAddress")
-	KeyDustCollectorAddress     = []byte("DustCollectorAddress")
+	KeySwapFeeCollectorAddress  = []byte("SwapFeeCollectorAddress")
 	KeyMinInitialPoolCoinSupply = []byte("MinInitialPoolCoinSupply")
 	KeyPairCreationFee          = []byte("PairCreationFee")
 	KeyPoolCreationFee          = []byte("PoolCreationFee")
@@ -73,7 +73,7 @@ func DefaultParams() Params {
 		BatchSize:                DefaultBatchSize,
 		TickPrecision:            DefaultTickPrecision,
 		FeeCollectorAddress:      DefaultFeeCollectorAddress.String(),
-		DustCollectorAddress:     DefaultDustCollectorAddress.String(),
+		SwapFeeCollectorAddress:  DefaultSwapFeeCollectorAddress.String(),
 		MinInitialPoolCoinSupply: DefaultMinInitialPoolCoinSupply,
 		PairCreationFee:          DefaultPairCreationFee,
 		PoolCreationFee:          DefaultPoolCreationFee,
@@ -94,7 +94,7 @@ func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeyBatchSize, &params.BatchSize, validateBatchSize),
 		paramstypes.NewParamSetPair(KeyTickPrecision, &params.TickPrecision, validateTickPrecision),
 		paramstypes.NewParamSetPair(KeyFeeCollectorAddress, &params.FeeCollectorAddress, validateFeeCollectorAddress),
-		paramstypes.NewParamSetPair(KeyDustCollectorAddress, &params.DustCollectorAddress, validateDustCollectorAddress),
+		paramstypes.NewParamSetPair(KeySwapFeeCollectorAddress, &params.SwapFeeCollectorAddress, validateSwapFeeCollectorAddress),
 		paramstypes.NewParamSetPair(KeyMinInitialPoolCoinSupply, &params.MinInitialPoolCoinSupply, validateMinInitialPoolCoinSupply),
 		paramstypes.NewParamSetPair(KeyPairCreationFee, &params.PairCreationFee, validatePairCreationFee),
 		paramstypes.NewParamSetPair(KeyPoolCreationFee, &params.PoolCreationFee, validatePoolCreationFee),
@@ -118,7 +118,7 @@ func (params Params) Validate() error {
 		{params.BatchSize, validateBatchSize},
 		{params.TickPrecision, validateTickPrecision},
 		{params.FeeCollectorAddress, validateFeeCollectorAddress},
-		{params.DustCollectorAddress, validateDustCollectorAddress},
+		{params.SwapFeeCollectorAddress, validateSwapFeeCollectorAddress},
 		{params.MinInitialPoolCoinSupply, validateMinInitialPoolCoinSupply},
 		{params.PairCreationFee, validatePairCreationFee},
 		{params.PoolCreationFee, validatePoolCreationFee},
@@ -173,14 +173,14 @@ func validateFeeCollectorAddress(i interface{}) error {
 	return nil
 }
 
-func validateDustCollectorAddress(i interface{}) error {
+func validateSwapFeeCollectorAddress(i interface{}) error {
 	v, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	if _, err := sdk.AccAddressFromBech32(v); err != nil {
-		return fmt.Errorf("invalid dust collector address: %w", err)
+		return fmt.Errorf("invalid swap fee collector address: %w", err)
 	}
 
 	return nil
