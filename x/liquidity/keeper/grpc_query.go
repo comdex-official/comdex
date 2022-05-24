@@ -550,7 +550,7 @@ func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*
 
 	lpData, found := k.GetPoolLiquidityProvidersData(ctx, poolId)
 	if !found {
-		return nil, types.ErrLPDataNotExistsForPool
+		return &types.QuerySoftLockResponse{ActivePoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)), QueuedPoolCoin: []types.QueuedPoolCoin{}}, nil
 	}
 
 	availableLiquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeId(ctx, incentivestypes.LiquidityGaugeTypeId)
