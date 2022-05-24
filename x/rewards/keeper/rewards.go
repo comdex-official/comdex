@@ -142,3 +142,63 @@ func (k *Keeper) GetExternalRewardsLockersId(ctx sdk.Context) uint64 {
 
 	return id.GetValue()
 }
+
+/*func (k *Keeper) SetExternalRewardsLockersCounter(ctx sdk.Context, AppId uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExternalRewardsLockersCounter(AppId)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: AppId,
+			},
+		)
+	)
+
+	store.Set(key, value)
+
+}
+
+func (k *Keeper) GetExternalRewardsLockersCounter(ctx sdk.Context, Id uint64) (count uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExternalRewardsLockersCounter(Id)
+		value = store.Get(key)
+	)
+	if value == nil {
+		return count
+	}
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+	return id.GetValue()
+}*/
+
+func (k *Keeper) SetExternalRewardsLockersCounter(ctx sdk.Context, appId uint64, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForDenomKey(appId)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetExternalRewardsLockersCounter(ctx sdk.Context, appId uint64) (asset uint64, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForDenomKey(appId)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return asset, false
+	}
+
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue(), true
+}
