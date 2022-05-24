@@ -23,4 +23,9 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 			return
 		}
 	}
+	err := k.DistributeExtRewardCollector(ctx)
+	if err != nil {
+		return
+	}
+
 }

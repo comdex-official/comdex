@@ -29,6 +29,7 @@ var (
 	ExtRewardsLockerIDKey                 = []byte{0x14}
 	ExternalRewardsLockerCounterKeyPrefix = []byte{0x15}
 	AssetForDenomKeyPrefix                = []byte{0x16}
+	EpochForLockerKeyPrefix               = []byte{0x17}
 )
 
 func RewardsKey(id uint64) []byte {
@@ -55,4 +56,8 @@ func ExternalRewardsLockersCounter(appMappingID uint64) []byte {
 
 func AssetForDenomKey(denom uint64) []byte {
 	return append(AssetForDenomKeyPrefix, sdk.Uint64ToBigEndian(denom)...)
+}
+
+func EpochForLockerKey(denom uint64) []byte {
+	return append(EpochForLockerKeyPrefix, sdk.Uint64ToBigEndian(denom)...)
 }

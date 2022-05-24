@@ -152,12 +152,12 @@ func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 
 func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, AssetId uint64, TotalRewards sdk.Coin, DurationDays int64, Depositor sdk.AccAddress, MinLockupTimeSeconds int64) error {
 	Id := k.GetExternalRewardsLockersId(ctx)
-	/*	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, AppMappingId)
+	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, AppMappingId)
 
-		found := uint64InSlice(AssetId, lockerAssets.AssetIds)
-		if !found {
-			return types.ErrAssetIdDoesNotExist
-		}*/
+	found := uint64InSlice(AssetId, lockerAssets.AssetIds)
+	if !found {
+		return types.ErrAssetIdDoesNotExist
+	}
 	extRewards := k.GetExternalRewardsLockers(ctx)
 	for _, v := range extRewards {
 		if v.AppMappingId == AppMappingId && v.AssetId == AssetId {
@@ -186,6 +186,6 @@ func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, 
 
 	k.SetExternalRewardsLockers(ctx, msg)
 	k.SetExternalRewardsLockersId(ctx, msg.Id)
-	fmt.Println(msg)
+	k.SetEpochTime(ctx, AppMappingId, ctx.BlockTime().Unix()+84600)
 	return nil
 }
