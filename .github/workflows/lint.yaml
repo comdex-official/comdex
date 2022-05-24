@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - feature/exchange
 jobs:
   golangci:
     name: golangci-lint
