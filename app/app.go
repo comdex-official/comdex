@@ -121,6 +121,10 @@ import (
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 
+	"github.com/comdex-official/comdex/x/tokenmint"
+	tokenmintkeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
+
 	"github.com/comdex-official/comdex/x/vault"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -185,6 +189,7 @@ var (
 		collector.AppModuleBasic{},
 		liquidation.AppModuleBasic{},
 		auction.AppModuleBasic{},
+		tokenmint.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
 )
@@ -256,6 +261,7 @@ type App struct {
 	lendKeeper        lendkeeper.Keeper
 	scopedWasmKeeper  capabilitykeeper.ScopedKeeper
 	auctionKeeper     auctionkeeper.Keeper
+	tokenmintKeeper   tokenmintkeeper.Keeper
 
 	wasmKeeper wasm.Keeper
 	// the module manager
@@ -289,7 +295,7 @@ func New(
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			lendtypes.StoreKey, markettypes.StoreKey, rewardstypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
-			auctiontypes.StoreKey,
+			auctiontypes.StoreKey,tokenminttypes.StoreKey,
 		)
 	)
 
@@ -340,6 +346,8 @@ func New(
 	app.paramsKeeper.Subspace(bandoraclemoduletypes.ModuleName)
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 	app.paramsKeeper.Subspace(auctiontypes.ModuleName)
+	app.paramsKeeper.Subspace(tokenminttypes.ModuleName)
+
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -484,6 +492,14 @@ func New(
 		app.accountKeeper,
 		app.distrKeeper,
 	)
+	app.tokenmintKeeper = tokenmintkeeper.NewKeeper(
+		app.cdc,
+		app.keys[tokenminttypes.StoreKey],
+		app.bankKeeper,
+		&app.assetKeeper,
+	)
+
+
 
 	scopedBandoracleKeeper := app.capabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
 	app.scopedBandoracleKeeper = scopedBandoracleKeeper
@@ -689,6 +705,7 @@ func New(
 		lend.NewAppModule(app.cdc, app.lendKeeper, app.accountKeeper, app.bankKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
 		auction.NewAppModule(app.cdc, app.auctionKeeper, app.accountKeeper, app.bankKeeper),
+		tokenmint.NewAppModule(app.cdc, app.tokenmintKeeper, app.accountKeeper, app.bankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -699,7 +716,7 @@ func New(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, rewardstypes.ModuleName, lockertypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
-		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName,
+		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		lendtypes.ModuleName, vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
@@ -707,7 +724,7 @@ func New(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName,
 		minttypes.ModuleName, bandoraclemoduletypes.ModuleName, markettypes.ModuleName, rewardstypes.ModuleName, lockertypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
-		vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
+		vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
 		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
 		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName,
 	)
@@ -736,6 +753,7 @@ func New(
 		collectortypes.ModuleName,
 		lendtypes.ModuleName,
 		vaulttypes.ModuleName,
+		tokenminttypes.ModuleName,
 		bandoraclemoduletypes.ModuleName,
 		markettypes.ModuleName,
 		liquidationtypes.ModuleName,
@@ -929,6 +947,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		collectortypes.ModuleName:      {authtypes.Burner, authtypes.Staking},
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
+		tokenminttypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},

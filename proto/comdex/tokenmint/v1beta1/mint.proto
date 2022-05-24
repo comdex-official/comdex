@@ -1,0 +1,38 @@
+syntax = "proto3";
+package comdex.tokenmint.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+// import "cosmos/base/v1beta1/coin.proto";
+
+option go_package            = "github.com/comdex-official/comdex/x/tokenmint/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+//app_vault_type_id will be the key for  the KVStore for this value.
+message TokenMint {
+  uint64 app_mapping_id = 1
+      [(gogoproto.customname) = "AppMappingId",
+      (gogoproto.moretags) = "yaml:\"app_vault_type_id\"" ];
+   repeated MintedTokens minted_tokens= 2   [ (gogoproto.moretags) = "yaml:\"minted_tokens\"" ];
+  
+}
+
+message MintedTokens{
+    uint64 asset_id =1  [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+    string genesis_supply = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"genesis_supply\"",
+    (gogoproto.nullable)   = false
+  ];
+  google.protobuf.Timestamp created_at = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags)   = "yaml:\"created_at\""
+  ];
+  string current_supply = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"current_supply\"",
+    (gogoproto.nullable)   = false
+  ];
+}
