@@ -10,6 +10,7 @@ import (
 	incentivestypes "github.com/comdex-official/comdex/x/incentives/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/comdex-official/comdex/x/liquidity/types"
@@ -658,4 +659,20 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 	}
 
 	return &types.QueryPoolIncentivesResponse{PoolIncentives: poolIncentives}, nil
+}
+
+// FarmedPoolCoin returns the total pool coin in soft-lock.
+func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoinRequest) (*types.QueryFarmedPoolCoinResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	pool, found := k.GetPool(ctx, req.PoolId)
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolId, "pool id %d is invalid", req.PoolId)
+	}
+	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
+	softLockedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
+
+	return &types.QueryFarmedPoolCoinResponse{Coin: softLockedCoins}, nil
 }

@@ -39,6 +39,7 @@ func GetQueryCmd() *cobra.Command {
 		NewQuerySoftLockCmd(),
 		NewQueryDeserializePoolCoinCmd(),
 		NewQueryPoolIncentivesCmd(),
+		NewQueryFarmedPoolCoinCmd(),
 	)
 
 	return cmd
@@ -766,6 +767,51 @@ $ %s query %s pool-incentives
 			res, err := queryClient.PoolIncentives(
 				cmd.Context(),
 				&types.QueryPoolsIncentivesRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQueryFarmedPoolCoinCmd implements the farmed-coin query command.
+func NewQueryFarmedPoolCoinCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "farmed-coin [pool-id]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Query total coins being farmed (in soft-lock)",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query total coins being farmed (in soft-lock).
+Example:
+$ %s query %s farmed-coin 1
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.FarmedPoolCoin(
+				cmd.Context(),
+				&types.QueryFarmedPoolCoinRequest{
+					PoolId: poolId,
+				})
 			if err != nil {
 				return err
 			}

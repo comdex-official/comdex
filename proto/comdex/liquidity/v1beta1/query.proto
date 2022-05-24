@@ -263,6 +263,17 @@ message QueryPoolIncentivesResponse {
   repeated PoolIncentive pool_incentives = 1;
 }
 
+message QueryFarmedPoolCoinRequest {
+  uint64 pool_id = 1;
+}
+
+message QueryFarmedPoolCoinResponse {
+  cosmos.base.v1beta1.Coin coin = 1 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.nullable) = false
+  ];
+}
+
 // Query defines the gRPC querier service.
 service Query {
   // Params returns parameters of the module.
@@ -348,5 +359,10 @@ service Query {
   // PoolIncentives provides insights about available pool incentives.
   rpc PoolIncentives(QueryPoolsIncentivesRequest) returns (QueryPoolIncentivesResponse) {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/pool_incentives";
+  }
+
+  // FarmedPoolCoin returns the total coin in the soft-lock.
+  rpc FarmedPoolCoin(QueryFarmedPoolCoinRequest) returns (QueryFarmedPoolCoinResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/farmed_coin/{pool_id}";
   }
 }
