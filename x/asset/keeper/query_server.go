@@ -117,7 +117,6 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 				DenomIn:          assetIn.Denom,
 				AssetOut:         pair.AssetOut,
 				DenomOut:         assetOut.Denom,
-				LiquidationRatio: pair.LiquidationRatio,
 			}
 
 			if accumulate {
@@ -166,7 +165,6 @@ func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) 
 		DenomIn:          assetIn.Denom,
 		AssetOut:         pair.AssetOut,
 		DenomOut:         assetOut.Denom,
-		LiquidationRatio: pair.LiquidationRatio,
 	}
 
 	return &types.QueryPairResponse{

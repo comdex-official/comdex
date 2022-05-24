@@ -20,10 +20,19 @@ var (
 	PairKeyPrefix     = []byte{0x14}
 
 	AssetForDenomKeyPrefix  = []byte{0x21}
+
+	WhitelistAssetIDKey    = []byte{0x31}
+	WhitelistAssetKeyPrefix    = []byte{0x32}
+	WhitelistPairIDKey     = []byte{0x33}
+	WhitelistPairKeyPrefix     = []byte{0x34}
 )
 
 func AssetKey(id uint64) []byte {
 	return append(AssetKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func WhitelistAssetKey(id uint64) []byte {
+	return append(WhitelistAssetKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func AssetForDenomKey(denom string) []byte {
@@ -32,4 +41,8 @@ func AssetForDenomKey(denom string) []byte {
 
 func PairKey(id uint64) []byte {
 	return append(PairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func WhitelistPairKey(id uint64) []byte {
+	return append(WhitelistPairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
