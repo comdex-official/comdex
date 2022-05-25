@@ -15,9 +15,8 @@ message AppMapping {
 }
 
 message MintGenesisToken {
-    uint64 asset_id = 1;
-    uint64 genesis_supply = 2;
-    bool isgovToken = 3;
-    string sender = 4;
+    uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+    string genesis_supply = 2[(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"];
+    bool isgovToken = 3 [ (gogoproto.moretags) = "yaml:\"isgovToken\"" ];
+    string sender = 4 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
 }
-// base gov ----- mint asset-----------app mapping id, asset id , 

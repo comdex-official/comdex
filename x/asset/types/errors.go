@@ -11,6 +11,9 @@ var (
 	ErrorInvalidID               = errors.Register(ModuleName, 104, "invalid id")
 	ErrorInvalidLiquidationRatio = errors.Register(ModuleName, 105, "invalid liquidation ratio")
 	ErrorInvalidName             = errors.Register(ModuleName, 106, "invalid name")
+	ErrorInvalidDebtFloor        = errors.Register(ModuleName, 107, "invalid Debt Floor")
+	ErrorInvalidDebtCeiling      = errors.Register(ModuleName, 108, "invalid Debt Ceiling")
+	ErrorInvalidGenesisSupply    = errors.Register(ModuleName, 109, "invalid Genesis Supply")
 )
 
 var (
@@ -24,6 +27,10 @@ var (
 	ErrorExtendedPairDoesNotExist = errors.Register(ModuleName, 208, "extended pair does not exist")
 	AppIdsDoesntExist             = errors.Register(ModuleName, 209, "app ids does not exist")
 	ErrorAssetAlreadyExistinApp   = errors.Register(ModuleName, 210, "asset already exist in App")
+	ErrorAssetIsOnChain          = errors.Register(ModuleName, 211, "asset has been marked on chain")
+	ErrorDebtFloorIsGreaterThanDebtCeiling   = errors.Register(ModuleName, 212, "Debt Floor Is Greater Than Debt Ceiling")
+	ErrorGenesisTokenExistForApp          = errors.Register(ModuleName, 213, "Genesis Token already Exist For App")
+	ErrorGenesisCantBeZero          = errors.Register(ModuleName, 214, "genesis Cant Be Zero ")
 )
 
 var (
