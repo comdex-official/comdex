@@ -74,7 +74,6 @@ func txCreate() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txDeposit() *cobra.Command {
@@ -83,7 +82,6 @@ func txDeposit() *cobra.Command {
 		Short: "creates a new deposit",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
