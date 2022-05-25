@@ -152,7 +152,7 @@ func (q *queryServer) QueryAllVaultsByAppAndExtendedPair(c context.Context, req 
 }
 
 
-func (q *queryServer) QueryVaultOfOwnerByPair(c context.Context, req *types.QueryVaultOfOwnerByPairRequest) (*types.QueryVaultOfOwnerByPairResponse, error) {
+func (q *queryServer) QueryVaultOfOwnerByExtendedPair(c context.Context, req *types.QueryVaultOfOwnerByExtendedPairRequest) (*types.QueryVaultOfOwnerByExtendedPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -191,7 +191,7 @@ func (q *queryServer) QueryVaultOfOwnerByPair(c context.Context, req *types.Quer
 				}
 			}
 
-	return &types.QueryVaultOfOwnerByPairResponse{
+	return &types.QueryVaultOfOwnerByExtendedPairResponse{
 		Vault_Id: vault_id,
 	}, nil
 }

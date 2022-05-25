@@ -1,11 +1,6 @@
 package keeper
 
 import (
-<<<<<<< HEAD
-	"fmt"
-
-=======
->>>>>>> 394fefd550310c2dae2b25c9005c3e4843bd47ff
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -256,7 +251,7 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 			minter.AssetId = data.AssetId
 			minter.GenesisSupply = data.GenesisSupply
 			minter.IsgovToken = data.IsgovToken
-			minter.Sender = data.Sender
+			minter.Recipient = data.Recipient
 			mintGenesis = append(mintGenesis, &minter)
 
 		}

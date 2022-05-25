@@ -93,7 +93,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(assetDataInApp.Sender), sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(assetDataInApp.Recipient), sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
 
@@ -117,7 +117,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(assetDataInApp.Sender), sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(assetDataInApp.Recipient), sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
 

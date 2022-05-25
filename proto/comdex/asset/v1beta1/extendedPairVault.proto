@@ -16,53 +16,48 @@ message ExtendedPairVault {
       (gogoproto.nullable) = false,
       (gogoproto.moretags)   = "yaml:\"liquidation_ratio\""
     ];
-    string unliquidation_ratio  = 5 [
-      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-      (gogoproto.nullable) = false,
-      (gogoproto.moretags)   = "yaml:\"unliquidation_ratio\""
-    ];
-    string stability_fee        = 6 [ 
+    string stability_fee        = 5 [ 
       (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"stability_fee\"" 
     ];
-    string closing_fee          = 7 [ 
+    string closing_fee          = 6 [ 
       (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"closing_fee\"" 
     ];
 
-    string liquidation_penalty  = 8 [ 
+    string liquidation_penalty  = 7 [ 
       (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
       (gogoproto.nullable) = false,
       (gogoproto.moretags) = "yaml:\"liquidation_penanlty\"" 
     ];
-    string creation_fee         = 9[ 
+    string draw_down_fee         = 8 [ 
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"creation_fee\"" ];
+    (gogoproto.moretags) = "yaml:\"draw_down_fee\"" ];
     
-    bool is_vault_active        = 10[ (gogoproto.moretags) = "yaml:\"active_flag\"" ];
-    string debt_ceiling         = 11[ 
+    bool is_vault_active        = 9 [ (gogoproto.moretags) = "yaml:\"active_flag\"" ];
+    string debt_ceiling         = 10[ 
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"debt_ceiling\"" ];
-    string debt_floor           = 12 [ 
+    string debt_floor           = 11 [ 
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"debt_floor\""
     ];
-    bool is_psm_pair            = 13[ (gogoproto.moretags) = "yaml:\"is_psm_pair\"" ];
+    bool is_psm_pair            = 12[ (gogoproto.moretags) = "yaml:\"is_psm_pair\"" ];
     
-    string min_cr               = 14 [ 
+    string min_cr               = 13 [ 
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"min_cr\"" 
     ];
 
-    string pair_name            = 15 [ (gogoproto.moretags) = "yaml:\"pair_name\"" ];
-    bool asset_out_oracle_price = 16 [ (gogoproto.moretags) = "yaml:\"asset_out_oracle\"" ];
-    uint64 assset_out_price     = 17 [ 
+    string pair_name            = 14 [ (gogoproto.moretags) = "yaml:\"pair_name\"" ];
+    bool asset_out_oracle_price = 15 [ (gogoproto.moretags) = "yaml:\"asset_out_oracle\"" ];
+    uint64 assset_out_price     = 16 [ 
     (gogoproto.moretags) = "yaml:\"assset_out_price\"" ];
 
   }

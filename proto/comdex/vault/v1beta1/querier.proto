@@ -106,7 +106,7 @@ message QueryAllVaultsByAppAndExtendedPairResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryVaultOfOwnerByPairRequest {
+message QueryVaultOfOwnerByExtendedPairRequest {
   uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
   string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
   uint64 extended_pair_id = 3 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
@@ -114,7 +114,7 @@ message QueryVaultOfOwnerByPairRequest {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryVaultOfOwnerByPairResponse {
+message QueryVaultOfOwnerByExtendedPairResponse {
   string vault_Id = 1 [ (gogoproto.moretags) = "yaml:\"vault_Id\"" ];
 }
 
@@ -270,12 +270,12 @@ service QueryService {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-app-and-extended-pair/{app_id}/{extended_pair_id}";
   };
 
-  rpc QueryVaultOfOwnerByPair(QueryVaultOfOwnerByPairRequest) returns (QueryVaultOfOwnerByPairResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vault-of-owner-by-pair/{product_id}/{owner}/{extended_pair_id}";
+  rpc QueryVaultOfOwnerByExtendedPair(QueryVaultOfOwnerByExtendedPairRequest) returns (QueryVaultOfOwnerByExtendedPairResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vault-of-owner-by-extended-pair/{product_id}/{owner}/{extended_pair_id}";
   };
 
   rpc QueryVaultByProduct(QueryVaultByProductRequest) returns (QueryVaultByProductResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-product/{product_id}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairvaults-by-product/{product_id}";
   };
 
   rpc QueryAllVaultByOwner(QueryAllVaultByOwnerRequest) returns (QueryAllVaultByOwnerResponse) {
@@ -319,10 +319,10 @@ service QueryService {
   };
   
   rpc QueryExtendedPairVaultMappingByAppAndExtendedPairId(QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) returns (QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPair-VaultMapping-By-App-ExtendedPairId/{app_id}/{extended_pair_id}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairVault-by-product-and-ExtendedPairId/{app_id}/{extended_pair_id}";
   };
 
   rpc QueryExtendedPairVaultMappingByApp(QueryExtendedPairVaultMappingByAppRequest) returns (QueryExtendedPairVaultMappingByAppResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPair-VaultMapping-By-App/{app_id}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairVault-by-product/{app_id}";
   };
 }

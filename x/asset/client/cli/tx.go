@@ -739,7 +739,7 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 
 func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-asset-mapping [app_id] [asset_id] [genesis_supply] [isgovToken] [sender]",
+		Use:   "add-asset-mapping [app_id] [asset_id] [genesis_supply] [isgovToken] [recipient]",
 		Args:  cobra.ExactArgs(5),
 		Short: "Add asset mapping",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -765,7 +765,7 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			sender, err := ParseStringFromString(args[4], ",")
+			recipient, err := ParseStringFromString(args[4], ",")
 			if err != nil {
 				return err
 			}
@@ -785,7 +785,7 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 			for i := range asset_id {
 				newisgovToken := ParseBoolFromString(isgovToken[i])
 				newgenesis_supply, ok := sdk.NewIntFromString(genesis_supply[i])
-				address, err := sdk.AccAddressFromBech32(sender[i])
+				address, err := sdk.AccAddressFromBech32(recipient[i])
 				if err != nil {
 					panic(err)
 				}
@@ -797,7 +797,7 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 				cmap.AssetId = asset_id[i]
 				cmap.GenesisSupply = &newgenesis_supply
 				cmap.IsgovToken = newisgovToken
-				cmap.Sender = address.String()
+				cmap.Recipient = address.String()
 
 				bMap = append(bMap, &cmap)
 			}
@@ -841,8 +841,8 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 
 func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-pairs-vault [app_mapping_id] [pair_id] [liquidation_ratio] [unliquidation_ratio] [stability_fee] [closing_fee] [liquidation_penalty] [creation_fee] [is_vault_active] [debt_cieling] [debt_floor] [is_psm_pair] [min_cr] [pair_name] [asset_out_oracle_price] [assset_out_price]",
-		Args:  cobra.ExactArgs(16),
+		Use:   "add-pairs-vault [app_mapping_id] [pair_id] [liquidation_ratio] [stability_fee] [closing_fee] [liquidation_penalty] [draw_down_fee] [is_vault_active] [debt_cieling] [debt_floor] [is_psm_pair] [min_cr] [pair_name] [asset_out_oracle_price] [assset_out_price]",
+		Args:  cobra.ExactArgs(15),
 		Short: "Add pairs vault",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -865,67 +865,63 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				return err
 			}
 
-			unliquidation_ratio, err := ParseStringFromString(args[3], ",")
+
+			stability_fee, err := ParseStringFromString(args[3], ",")
 			if err != nil {
 				return err
 			}
 
-			stability_fee, err := ParseStringFromString(args[4], ",")
+			closing_fee, err := ParseStringFromString(args[4], ",")
 			if err != nil {
 				return err
 			}
 
-			closing_fee, err := ParseStringFromString(args[5], ",")
+			liquidation_penalty, err := ParseStringFromString(args[5], ",")
 			if err != nil {
 				return err
 			}
 
-			liquidation_penalty, err := ParseStringFromString(args[6], ",")
+			draw_down_fee, err := ParseStringFromString(args[6], ",")
 			if err != nil {
 				return err
 			}
 
-			creation_fee, err := ParseStringFromString(args[7], ",")
+			is_vault_active, err := ParseStringFromString(args[7], ",")
 			if err != nil {
 				return err
 			}
 
-			is_vault_active, err := ParseStringFromString(args[8], ",")
+			debt_cieling, err := ParseStringFromString(args[8], ",")
 			if err != nil {
 				return err
 			}
 
-			debt_cieling, err := ParseStringFromString(args[9], ",")
+			debt_floor, err := ParseStringFromString(args[9], ",")
 			if err != nil {
 				return err
 			}
 
-			debt_floor, err := ParseStringFromString(args[10], ",")
+			is_psm_pair, err := ParseStringFromString(args[10], ",")
 			if err != nil {
 				return err
 			}
 
-			is_psm_pair, err := ParseStringFromString(args[11], ",")
+			min_cr, err := ParseStringFromString(args[11], ",")
 			if err != nil {
 				return err
 			}
 
-			min_cr, err := ParseStringFromString(args[12], ",")
+			pair_name, err := ParseStringFromString(args[12], ",")
 			if err != nil {
 				return err
 			}
 
-			pair_name, err := ParseStringFromString(args[13], ",")
+			asset_out_oracle_price, err := ParseStringFromString(args[13], ",")
 			if err != nil {
 				return err
 			}
 
-			asset_out_oracle_price, err := ParseStringFromString(args[14], ",")
-			if err != nil {
-				return err
-			}
-
-			assset_out_price, err := ParseUint64SliceFromString(args[15], ",")
+			assset_out_price, err := ParseUint64SliceFromString(args[14], ",")
 			if err != nil {
 				return err
 			}
@@ -948,10 +944,6 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				newunliquidation_ratio, err := sdk.NewDecFromStr(unliquidation_ratio[i])
-				if err != nil {
-					return err
-				}
 				newstability_fee, err := sdk.NewDecFromStr(stability_fee[i])
 				if err != nil {
 					return err
@@ -964,7 +956,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				newcreation_fee, err := sdk.NewDecFromStr(creation_fee[i])
+				new_draw_down_fee, err := sdk.NewDecFromStr(draw_down_fee[i])
 				if err != nil {
 					return err
 				}
@@ -990,11 +982,10 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 					AppMappingId:        app_mapping_id,
 					PairId:              pair_id[i],
 					LiquidationRatio:    newliquidation_ratio,
-					UnliquidationRatio:  newunliquidation_ratio,
 					StabilityFee:        newstability_fee,
 					ClosingFee:          newclosing_fee,
 					LiquidationPenalty:  newliquidation_penalty,
-					CreationFee:         newcreation_fee,
+					DrawDownFee:         new_draw_down_fee,
 					IsVaultActive:       newis_vault_active,
 					DebtCeiling:         debt_ceiling,
 					DebtFloor:           debt_floor,
