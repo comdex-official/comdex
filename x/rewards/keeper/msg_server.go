@@ -65,3 +65,15 @@ func (m msgServer) ExternalRewardsLockers(goCtx context.Context, msg *types.Acti
 	}
 	return &types.ActivateExternalRewardsLockersResponse{}, nil
 }
+
+func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.ActivateExternalRewardsVault) (*types.ActivateExternalRewardsVaultResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	Depositor, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		return nil, err
+	}
+	if err := m.Keeper.ActExternalRewardsVaults(ctx, msg.AppMappingId, msg.Extended_Pair_Id, msg.TotalRewards, msg.DurationDays, Depositor, msg.MinLockupTimeSeconds); err != nil {
+		return nil, err
+	}
+	return &types.ActivateExternalRewardsVaultResponse{}, nil
+}

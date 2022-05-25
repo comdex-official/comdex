@@ -103,16 +103,17 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 func (k Keeper) DistributeExtRewardCollector(ctx sdk.Context) error {
 	extRewards := k.GetExternalRewardsLockers(ctx)
 	for i, v := range extRewards {
-		epochTime, _ := k.GetEpochTime(ctx, extRewards[i].AppMappingId)
-		et := epochTime
+		epochTime, _ := k.GetEpochTime(ctx, v.EpochId)
+		et := epochTime.StartingTime
 		timeNow := ctx.BlockTime().Unix()
 
-		if et > timeNow {
+		if et < timeNow {
 
 			if extRewards[i].IsActive == true {
-				count, _ := k.GetExternalRewardsLockersCounter(ctx, extRewards[i].Id)
+				//count, _ := k.GetExternalRewardsLockersCounter(ctx, extRewards[i].Id)
+				epoch, _ := k.GetEpochTime(ctx, v.EpochId)
 
-				if count < uint64(extRewards[i].DurationDays) {
+				if epoch.Count < uint64(extRewards[i].DurationDays) {
 					lockerLookup, _ := k.GetLockerLookupTable(ctx, v.AppMappingId)
 					for _, u := range lockerLookup.Lockers {
 						if u.AssetId == v.AssetId {
@@ -125,11 +126,13 @@ func (k Keeper) DistributeExtRewardCollector(ctx sdk.Context) error {
 								Duration := k.GetExternalRewardsLocker(ctx, v.Id).DurationDays
 								rewardsPerEpoch := (totalRewards.Amount).Quo(sdk.NewInt(Duration))
 								dailyRewards := userShare.Mul(rewardsPerEpoch)
-								err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, locker.Depositor, sdk.NewCoins(sdk.NewCoin(totalRewards.Denom, dailyRewards)))
+								user, _ := sdk.AccAddressFromBech32(locker.Depositor)
+								err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(totalRewards.Denom, dailyRewards))
 								if err != nil {
 									return err
 								}
-								k.SetExternalRewardsLockersCounter(ctx, extRewards[i].Id, count+1)
+								epoch.Count = epoch.Count + 1
+								k.SetEpochTime(ctx, epoch)
 							}
 						}
 					}
@@ -138,8 +141,56 @@ func (k Keeper) DistributeExtRewardCollector(ctx sdk.Context) error {
 					k.SetExternalRewardsLockers(ctx, extRewards[i])
 				}
 			}
+			epoch := types.EpochTime{
+				StartingTime: et + 84600,
+			}
+			k.SetEpochTime(ctx, epoch)
 		}
-		k.SetEpochTime(ctx, extRewards[i].AppMappingId, et+84600)
+
 	}
+	return nil
+}
+
+func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
+	extRewards := k.GetExternalRewardVaults(ctx)
+	for i, v := range extRewards {
+		epochTime, _ := k.GetEpochTime(ctx, v.EpochId)
+		et := epochTime.StartingTime
+		timeNow := ctx.BlockTime().Unix()
+
+		if et < timeNow {
+			if extRewards[i].IsActive == true {
+				epoch, _ := k.GetEpochTime(ctx, v.EpochId)
+				if epoch.Count < uint64(extRewards[i].DurationDays) {
+					appExtPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, v.AppMappingId)
+					for _, u := range appExtPairVaultData.ExtendedPairVaults {
+						for _, w := range u.VaultIds {
+							totalRewards := v.TotalRewards
+							userVault, _ := k.GetVault(ctx, w)
+							userShare := userVault.AmountOut.Quo(*u.CollateralLockedAmount)
+							Duration := v.DurationDays
+							rewardsPerEpoch := (totalRewards.Amount).Quo(sdk.NewInt(Duration))
+							dailyRewards := userShare.Mul(rewardsPerEpoch)
+							user, _ := sdk.AccAddressFromBech32(userVault.Owner)
+							err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(totalRewards.Denom, dailyRewards))
+							if err != nil {
+								return err
+							}
+							epoch.Count = epoch.Count + 1
+							k.SetEpochTime(ctx, epoch)
+						}
+					}
+				} else {
+					extRewards[i].IsActive = false
+					k.SetExternalRewardVault(ctx, extRewards[i])
+				}
+			}
+			epoch := types.EpochTime{
+				StartingTime: et + 84600,
+			}
+			k.SetEpochTime(ctx, epoch)
+		}
+	}
+
 	return nil
 }
