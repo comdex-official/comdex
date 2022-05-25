@@ -268,6 +268,7 @@ type App struct {
 }
 
 // New returns a reference to an initialized App.
+//nolint
 func New(
 	logger log.Logger,
 	db tmdb.DB,
