@@ -26,6 +26,7 @@ var (
 	AssetForDenomKeyPrefix  = []byte{0x21}
 	AppForShortNamePrefix  = []byte{0x22}
 	AppForNamePrefix  = []byte{0x23}
+	GensisForAppPrefix  = []byte{0x24}
 
 	WhitelistAssetIDKey    = []byte{0x31}
 	WhitelistAssetKeyPrefix    = []byte{0x32}
@@ -58,6 +59,10 @@ func AssetForShortNameKey(shortName string) []byte {
 }
 func AssetForNameKey(Name string) []byte {
 	return append(AppForNamePrefix, []byte(Name)...)
+}
+
+func GensisForApp(appId uint64) []byte {
+	return append(GensisForAppPrefix, sdk.Uint64ToBigEndian(appId)...)
 }
 
 func PairKey(id uint64) []byte {

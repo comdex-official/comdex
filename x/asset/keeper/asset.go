@@ -212,6 +212,12 @@ func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
 		if(msg.AssetIn == msg.AssetOut){
 			return types.ErrorDuplicateAsset
 		}
+		pairs := k.GetPairs(ctx)
+		for _,data := range pairs{
+			if data.AssetIn == msg.AssetIn && data.AssetOut == msg.AssetOut {
+				return types.ErrorDuplicatePair
+			}
+		}
 
 		var (
 			id   = k.GetPairID(ctx)

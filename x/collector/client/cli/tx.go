@@ -88,8 +88,14 @@ func NewCmdLookupTableParams() *cobra.Command {
 
 			var LookupTableRecords []types.CollectorLookupTable
 			for i := range appId {
-				newbid_factor, _ := sdk.NewDecFromStr(bid_factor[i])
-				newlockerSavingRate, _ := sdk.NewDecFromStr(lockerSavingRate[i])
+				newbid_factor, err := sdk.NewDecFromStr(bid_factor[i])
+				if err != nil {
+					return err
+				}
+				newlockerSavingRate, err := sdk.NewDecFromStr(lockerSavingRate[i])
+				if err != nil {
+					return err
+				}
 				LookupTableRecords = append(LookupTableRecords, types.CollectorLookupTable{
 					AppId: appId[i],
 					CollectorAssetId: collector_asset_id[i],

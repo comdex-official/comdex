@@ -20,4 +20,3 @@ message MintGenesisToken {
     bool isgovToken = 3 [ (gogoproto.moretags) = "yaml:\"isgovToken\"" ];
     string sender = 4 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
 }
-// base gov ----- mint asset-----------app mapping id, asset id , 
