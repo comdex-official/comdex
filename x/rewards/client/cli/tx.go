@@ -41,6 +41,7 @@ func GetTxCmd() *cobra.Command {
 		txWhitelistAppIdVault(),
 		txRemoveWhitelistAppIdVault(),
 		txActivateExternalRewardsLockers(),
+		txActivateExternalVaultsLockers(),
 	)
 
 	return cmd
@@ -214,6 +215,59 @@ func txActivateExternalRewardsLockers() *cobra.Command {
 			msg := types.NewMsgActivateExternalRewardsLockers(
 				appMappingId,
 				asset_Id,
+				total_rewards,
+				duration_days,
+				min_lockup_time_seconds,
+				ctx.GetFromAddress(),
+			)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func txActivateExternalVaultsLockers() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "activate-external-rewards-vault [app_mapping_Id] [extended_pair_id] [total_rewards] [duration_days] [min_lockup_time_seconds]",
+		Short: "activate external reward for vault extended_pair_id",
+		Args:  cobra.ExactArgs(5),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appMappingId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extended_pair_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			total_rewards, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			duration_days, err := strconv.ParseInt(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			min_lockup_time_seconds, err := strconv.ParseInt(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgActivateExternalVaultLockers(
+				appMappingId,
+				extended_pair_id,
 				total_rewards,
 				duration_days,
 				min_lockup_time_seconds,

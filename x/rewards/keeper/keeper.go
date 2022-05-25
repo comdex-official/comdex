@@ -152,9 +152,12 @@ func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 
 func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, AssetId uint64, TotalRewards sdk.Coin, DurationDays int64, Depositor sdk.AccAddress, MinLockupTimeSeconds int64) error {
 	Id := k.GetExternalRewardsLockersId(ctx)
-	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, AppMappingId)
+	lockerAssets, found := k.GetLockerProductAssetMapping(ctx, AppMappingId)
+	if !found {
+		return types.ErrAssetIdDoesNotExist
+	}
 
-	found := uint64InSlice(AssetId, lockerAssets.AssetIds)
+	found = uint64InSlice(AssetId, lockerAssets.AssetIds)
 	if !found {
 		return types.ErrAssetIdDoesNotExist
 	}
@@ -166,6 +169,13 @@ func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, 
 	}
 
 	endTime := ctx.BlockTime().Add(time.Second * time.Duration(DurationDays*86400))
+
+	epochId := k.GetEpochTimeId(ctx)
+	epoch := types.EpochTime{
+		Id:           epochId,
+		AppMappingId: AppMappingId,
+		StartingTime: ctx.BlockTime().Unix() + 84600,
+	}
 
 	msg := types.LockerExternalRewards{
 		Id:                   Id + 1,
@@ -179,13 +189,63 @@ func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, 
 		StartTimestamp:       ctx.BlockTime(),
 		EndTimestamp:         endTime,
 		MinLockupTimeSeconds: MinLockupTimeSeconds,
+		EpochId:              epochId,
 	}
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, Depositor, types.ModuleName, sdk.NewCoins(sdk.Coin{Amount: TotalRewards.Amount, Denom: TotalRewards.Denom})); err != nil {
 		return err
 	}
 
+	k.SetEpochTimeId(ctx, epochId+1)
 	k.SetExternalRewardsLockers(ctx, msg)
 	k.SetExternalRewardsLockersId(ctx, msg.Id)
-	k.SetEpochTime(ctx, AppMappingId, ctx.BlockTime().Unix()+84600)
+	k.SetEpochTime(ctx, epoch)
+	return nil
+}
+
+func (k Keeper) ActExternalRewardsVaults(ctx sdk.Context, AppMappingId uint64, Extended_Pair_Id uint64, TotalRewards sdk.Coin, DurationDays int64, Depositor sdk.AccAddress, MinLockupTimeSeconds int64) error {
+	Id := k.GetExternalRewardsVaultId(ctx)
+
+	appExtPairVaultData, found := k.GetAppExtendedPairVaultMapping(ctx, AppMappingId)
+	if !found {
+		return types.ErrAssetIdDoesNotExist
+	}
+	extPairVault := appExtPairVaultData.ExtendedPairVaults
+	for _, v := range extPairVault {
+		if Extended_Pair_Id != v.ExtendedPairId {
+			return types.ErrAssetIdDoesNotExist
+		}
+	}
+
+	endTime := ctx.BlockTime().Add(time.Second * time.Duration(DurationDays*86400))
+
+	epochId := k.GetEpochTimeId(ctx)
+	epoch := types.EpochTime{
+		Id:           epochId,
+		AppMappingId: AppMappingId,
+		StartingTime: ctx.BlockTime().Unix() + 84600,
+	}
+
+	msg := types.VaultExternalRewards{
+		Id:                   Id + 1,
+		AppMappingId:         AppMappingId,
+		Extended_Pair_Id:     Extended_Pair_Id,
+		TotalRewards:         TotalRewards,
+		DurationDays:         DurationDays,
+		IsActive:             true,
+		AvailableRewards:     TotalRewards,
+		Depositor:            Depositor.String(),
+		StartTimestamp:       ctx.BlockTime(),
+		EndTimestamp:         endTime,
+		MinLockupTimeSeconds: MinLockupTimeSeconds,
+		EpochId:              epochId,
+	}
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, Depositor, types.ModuleName, sdk.NewCoins(sdk.Coin{Amount: TotalRewards.Amount, Denom: TotalRewards.Denom})); err != nil {
+		return err
+	}
+
+	k.SetEpochTimeId(ctx, epochId+1)
+	k.SetExternalRewardVault(ctx, msg)
+	k.SetExternalRewardsVaultId(ctx, msg.Id)
+	k.SetEpochTime(ctx, epoch)
 	return nil
 }
