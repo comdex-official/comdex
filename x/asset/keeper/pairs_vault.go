@@ -131,6 +131,9 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 					}
 				}
 			}
+			if msg.DebtFloor.GTE(msg.DebtCeiling) {
+				return types.ErrorDebtFloorIsGreaterThanDebtCeiling
+			}
 			var app = types.ExtendedPairVault{
 				Id:       id + 1,
 				AppMappingId: msg.AppMappingId,

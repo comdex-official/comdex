@@ -118,7 +118,7 @@ func txRemoveWhitelistAsset() *cobra.Command {
 func txWhitelistAppIdVault() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "whitelist-app-id-vault-interest [app_mapping_Id]",
-		Short: "na",
+		Short: "whitelist app id vault interest",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -148,7 +148,7 @@ func txWhitelistAppIdVault() *cobra.Command {
 func txRemoveWhitelistAppIdVault() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "remove-whitelist-app-id-vault-interest [app_mapping_Id] ",
-		Short: "na",
+		Short: "remove whitelist app id vault interest",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)

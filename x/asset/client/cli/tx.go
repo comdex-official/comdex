@@ -304,8 +304,14 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 
 			var assets []types.ExtendedAsset
 			for i := range asset_id {
-				newcollateralWeigt, _ := sdk.NewDecFromStr(collateralWeight[i])
-				newliquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold[i])
+				newcollateralWeigt, err := sdk.NewDecFromStr(collateralWeight[i])
+				if err != nil {
+					return err
+				}
+				newliquidationThreshold, err := sdk.NewDecFromStr(liquidationThreshold[i])
+				if err != nil {
+					return err
+				}
 				newisBridgedAsset := ParseBoolFromString(isBridgedAsset[i])
 
 				assets = append(assets, types.ExtendedAsset{
@@ -368,13 +374,19 @@ func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			newcollateralWeight, _ := sdk.NewDecFromStr(collateralWeight)
+			newcollateralWeight, err := sdk.NewDecFromStr(collateralWeight)
+			if err != nil {
+				return err
+			}
 
 			liquidationThreshold, err := cmd.Flags().GetString(flagLiquidationThreshold)
 			if err != nil {
 				return err
 			}
-			newliquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold)
+			newliquidationThreshold, err := sdk.NewDecFromStr(liquidationThreshold)
+			if err != nil {
+				return err
+			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
@@ -727,8 +739,8 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 
 func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-asset-mapping [app_id] [asset_id] [genesis_supply] [isgovToken]",
-		Args:  cobra.ExactArgs(4),
+		Use:   "add-asset-mapping [app_id] [asset_id] [genesis_supply] [isgovToken] [sender]",
+		Args:  cobra.ExactArgs(5),
 		Short: "Add asset mapping",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -745,11 +757,15 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			genesis_supply, err := ParseUint64SliceFromString(args[2], ",")
+			genesis_supply, err := ParseStringFromString(args[2], ",")
 			if err != nil {
 				return err
 			}
 			isgovToken, err := ParseStringFromString(args[3], ",")
+			if err != nil {
+				return err
+			}
+			sender, err := ParseStringFromString(args[4], ",")
 			if err != nil {
 				return err
 			}
@@ -768,12 +784,20 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 			var bMap []*types.MintGenesisToken
 			for i := range asset_id {
 				newisgovToken := ParseBoolFromString(isgovToken[i])
+				newgenesis_supply, ok := sdk.NewIntFromString(genesis_supply[i])
+				address, err := sdk.AccAddressFromBech32(sender[i])
+				if err != nil {
+					panic(err)
+				}
+				if !ok {
+					return types.ErrorInvalidGenesisSupply
+				}
 				var cmap types.MintGenesisToken
 
 				cmap.AssetId = asset_id[i]
-				cmap.GenesisSupply = genesis_supply[i]
+				cmap.GenesisSupply = &newgenesis_supply
 				cmap.IsgovToken = newisgovToken
-				cmap.Sender = clientCtx.FromAddress.String()
+				cmap.Sender = address.String()
 
 				bMap = append(bMap, &cmap)
 			}
@@ -920,16 +944,46 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 
 			var pairs []types.ExtendedPairVault
 			for i := range pair_id {
-				newliquidation_ratio, _ := sdk.NewDecFromStr(liquidation_ratio[i])
-				newunliquidation_ratio, _ := sdk.NewDecFromStr(unliquidation_ratio[i])
-				newstability_fee, _ := sdk.NewDecFromStr(stability_fee[i])
-				newclosing_fee, _ := sdk.NewDecFromStr(closing_fee[i])
-				newliquidation_penalty, _ := sdk.NewDecFromStr(liquidation_penalty[i])
-				newcreation_fee, _ := sdk.NewDecFromStr(creation_fee[i])
-				newmin_cr, _ := sdk.NewDecFromStr(min_cr[i])
+				newliquidation_ratio, err := sdk.NewDecFromStr(liquidation_ratio[i])
+				if err != nil {
+					return err
+				}
+				newunliquidation_ratio, err := sdk.NewDecFromStr(unliquidation_ratio[i])
+				if err != nil {
+					return err
+				}
+				newstability_fee, err := sdk.NewDecFromStr(stability_fee[i])
+				if err != nil {
+					return err
+				}
+				newclosing_fee, err := sdk.NewDecFromStr(closing_fee[i])
+				if err != nil {
+					return err
+				}
+				newliquidation_penalty, err := sdk.NewDecFromStr(liquidation_penalty[i])
+				if err != nil {
+					return err
+				}
+				newcreation_fee, err := sdk.NewDecFromStr(creation_fee[i])
+				if err != nil {
+					return err
+				}
+				newmin_cr, err := sdk.NewDecFromStr(min_cr[i])
+				if err != nil {
+					return err
+				}
 				newis_vault_active := ParseBoolFromString(is_vault_active[i])
-				debt_ceiling, _ := sdk.NewIntFromString(debt_cieling[i])
-				debt_floor, _ := sdk.NewIntFromString(debt_floor[i])
+				if err != nil {
+					return err
+				}
+				debt_ceiling, ok := sdk.NewIntFromString(debt_cieling[i])
+				if !ok {
+					return types.ErrorInvalidDebtCeiling
+				}
+				debt_floor, ok:= sdk.NewIntFromString(debt_floor[i])
+				if !ok {
+					return types.ErrorInvalidDebtFloor
+				}
 				newis_psm_pair := ParseBoolFromString(is_psm_pair[i])
 				newasset_out_oracle_price := ParseBoolFromString(asset_out_oracle_price[i])
 				pairs = append(pairs, types.ExtendedPairVault{

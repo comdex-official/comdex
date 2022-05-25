@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -156,6 +155,37 @@ func (k *Keeper) HasAppForName(ctx sdk.Context, Name string) bool {
 	return store.Has(key)
 }
 
+func (k *Keeper) SetGenesisTokenForApp(ctx sdk.Context, appId uint64, assetId uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.GensisForApp(appId)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: assetId,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetGenesisTokenForApp(ctx sdk.Context, appId uint64) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = types.GensisForApp(appId)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return 0
+	}
+
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}
+
 func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMapping) error {
 	for _, msg := range records {
 		if k.HasAppForShortName(ctx, msg.ShortName) {
@@ -195,12 +225,28 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 		var mintGenesis []*types.MintGenesisToken
 
 		for _, data := range msg.MintGenesisToken {
-			if !k.HasAsset(ctx, data.AssetId) {
+
+			assetData, found := k.GetAsset(ctx, data.AssetId)
+			if !found{
 				return types.ErrorAssetDoesNotExist
 			}
-			found := k.CheckIfAssetIsaddedToAppMapping(ctx, data.AssetId)
-			if !found {
+			if assetData.IsOnchain{
+				return types.ErrorAssetIsOnChain
+			}
+			hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
+			if hasAsset != 0{
+				return types.ErrorGenesisTokenExistForApp
+			}
+
+			checkfound := k.CheckIfAssetIsaddedToAppMapping(ctx, data.AssetId)
+			if !checkfound {
 				return types.ErrorAssetAlreadyExistinApp
+			}
+			if data.IsgovToken {
+				k.SetGenesisTokenForApp(ctx, msg.Id ,data.AssetId)
+			}
+			if data.GenesisSupply.IsZero() {
+				return types.ErrorGenesisCantBeZero
 			}
 		}
 		for _, data := range msg.MintGenesisToken {
@@ -210,9 +256,6 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 			minter.IsgovToken = data.IsgovToken
 			minter.Sender = data.Sender
 			mintGenesis = append(mintGenesis, &minter)
-			fmt.Println("data", data)
-			fmt.Println("data", data)
-			fmt.Println("data sender", data.Sender)
 
 		}
 
