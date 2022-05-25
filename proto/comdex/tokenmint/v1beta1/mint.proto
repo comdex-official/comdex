@@ -10,7 +10,7 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 //app_vault_type_id will be the key for  the KVStore for this value.
-message TokenMint {
+message TokenMint{
   uint64 app_mapping_id = 1
       [(gogoproto.customname) = "AppMappingId",
       (gogoproto.moretags) = "yaml:\"app_vault_type_id\"" ];

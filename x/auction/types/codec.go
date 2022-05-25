@@ -8,7 +8,7 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgPlaceBidRequest{}, "comdex/auction/bid", nil)
+	cdc.RegisterConcrete(&MsgPlaceSurplusBidRequest{}, "comdex/auction/bid", nil)
 	cdc.RegisterConcrete(&MsgPlaceDebtBidRequest{}, "comdex/auction/debt", nil)
 	cdc.RegisterConcrete(&MsgPlaceDutchBidRequest{}, "comdex/auction/dutch", nil)
 }
@@ -19,7 +19,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgPlaceBidRequest{},
+		&MsgPlaceSurplusBidRequest{},
 		&MsgPlaceDebtBidRequest{},
 		&MsgPlaceDutchBidRequest{},
 	)

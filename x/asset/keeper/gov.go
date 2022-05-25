@@ -37,6 +37,9 @@ func (k Keeper) HandleUpdateWhitelistedPairRecords(ctx sdk.Context, p *types.Upd
 func (k Keeper) HandleAddAppMappingRecords(ctx sdk.Context, p *types.AddAppMappingProposal) error {
 	return k.AddAppMappingRecords(ctx, p.App...)
 }
+func (k Keeper) HandleAddAssetMappingRecords(ctx sdk.Context, p *types.AddAssetMappingProposal) error {
+	return k.AddAssetMappingRecords(ctx, p.App...)
+}
 
 func (k Keeper) HandleAddExtendedPairsVaultRecords(ctx sdk.Context, p *types.AddExtendedPairsVaultProposal) error {
 	return k.AddExtendedPairsVaultRecords(ctx, p.Pairs... )

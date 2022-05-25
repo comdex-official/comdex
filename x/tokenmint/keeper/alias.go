@@ -52,22 +52,14 @@ func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
 	return k.asset.GetAsset(ctx, id)
 }
 
-func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool) {
-	return k.asset.GetPair(ctx, id)
-}
-
-func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	return k.oracle.GetPriceForAsset(ctx, id)
-}
-
 func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppMapping, bool) {
 	return k.asset.GetApp(ctx, id)
 }
 
-func (k *Keeper) GetPairsVault(ctx sdk.Context, pairID uint64) (assettypes.ExtendedPairVault, bool) {
-	return k.asset.GetPairsVault(ctx, pairID)
+func (k *Keeper) GetApps(ctx sdk.Context) ([]assettypes.AppMapping, bool) {
+	return k.asset.GetApps(ctx)
 }
 
-func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error {
-	return k.collector.UpdateCollector(ctx, appId, asset_id, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected)
+func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64) (assettypes.MintGenesisToken, bool) {
+	return k.asset.GetMintGenesisTokenData(ctx, appId, assetId)
 }

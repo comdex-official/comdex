@@ -145,6 +145,12 @@ func AddNewAppMappingProposalRESTHandler(clientCtx client.Context) govrest.Propo
 		Handler:  AddNewAssetsRESTHandler(clientCtx),
 	}
 }
+func AddNewAssetMappingProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add-update-new-asset-mapping",
+		Handler:  AddNewAssetsRESTHandler(clientCtx),
+	}
+}
 
 func AddExtendedPairsVaultProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{

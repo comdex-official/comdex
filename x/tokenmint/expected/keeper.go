@@ -2,7 +2,7 @@ package expected
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	// assettypes "github.com/comdex-official/comdex/x/asset/types"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 )
 
 type BankKeeper interface {
@@ -19,4 +19,8 @@ type BankKeeper interface {
 }
 
 type AssetKeeper interface {
+	GetApp(ctx sdk.Context, id uint64) (assettypes.AppMapping, bool)
+	GetApps(ctx sdk.Context) ([]assettypes.AppMapping, bool)
+	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
+	GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64) (assettypes.MintGenesisToken,bool)
 }

@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -83,10 +85,47 @@ func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppMapping, found bool) 
 	return apps, true
 }
 
+func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64) (mintData types.MintGenesisToken, found bool) {
+	appsData, _ := k.GetApp(ctx, appId)
+
+	for _, data := range appsData.MintGenesisToken {
+		if data.AssetId == assetId {
+			return *data, true
+		}
+	}
+	return mintData, false
+
+}
+
+func (k *Keeper) CheckIfAssetIsaddedToAppMapping(ctx sdk.Context, assetId uint64) bool {
+	apps, _ := k.GetApps(ctx)
+	for _, data := range apps {
+		for _, inData := range data.MintGenesisToken {
+			if inData.AssetId == assetId {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func (k *Keeper) SetAppForShortName(ctx sdk.Context, shortName string, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetForShortNameKey(shortName)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+func (k *Keeper) SetAppForName(ctx sdk.Context, Name string, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForNameKey(Name)
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -106,24 +145,85 @@ func (k *Keeper) HasAppForShortName(ctx sdk.Context, shortName string) bool {
 	return store.Has(key)
 }
 
+func (k *Keeper) HasAppForName(ctx sdk.Context, Name string) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForNameKey(Name)
+	)
+
+	return store.Has(key)
+}
+
 func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMapping) error {
 	for _, msg := range records {
 		if k.HasAppForShortName(ctx, msg.ShortName) {
+			return types.ErrorDuplicateApp
+		}
+		if k.HasAppForName(ctx, msg.ShortName) {
 			return types.ErrorDuplicateApp
 		}
 
 		var (
 			id  = k.GetAppID(ctx)
 			app = types.AppMapping{
-				Id:        id + 1,
-				Name:      msg.Name,
-				ShortName: msg.ShortName,
+				Id:               id + 1,
+				Name:             msg.Name,
+				ShortName:        msg.ShortName,
+				MintGenesisToken: msg.MintGenesisToken,
 			}
 		)
 
 		k.SetAppID(ctx, app.Id)
 		k.SetApp(ctx, app)
 		k.SetAppForShortName(ctx, app.ShortName, app.Id)
+		k.SetAppForName(ctx, app.Name, app.Id)
+
+	}
+
+	return nil
+}
+
+func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMapping) error {
+	for _, msg := range records {
+
+		appdata, found := k.GetApp(ctx, msg.Id)
+		if !found {
+			return types.AppIdsDoesntExist
+		}
+		var mintGenesis []*types.MintGenesisToken
+
+		for _, data := range msg.MintGenesisToken {
+			if !k.HasAsset(ctx, data.AssetId) {
+				return types.ErrorAssetDoesNotExist
+			}
+			found := k.CheckIfAssetIsaddedToAppMapping(ctx, data.AssetId)
+			if !found {
+				return types.ErrorAssetAlreadyExistinApp
+			}
+		}
+		for _, data := range msg.MintGenesisToken {
+			var minter types.MintGenesisToken
+			minter.AssetId = data.AssetId
+			minter.GenesisSupply = data.GenesisSupply
+			minter.IsgovToken = data.IsgovToken
+			minter.Sender = data.Sender
+			mintGenesis = append(mintGenesis, &minter)
+			fmt.Println("data", data)
+			fmt.Println("data", data)
+			fmt.Println("data sender", data.Sender)
+
+		}
+
+		var (
+			app = types.AppMapping{
+				Id:               msg.Id,
+				Name:             appdata.Name,
+				ShortName:        appdata.ShortName,
+				MintGenesisToken: mintGenesis,
+			}
+		)
+
+		k.SetApp(ctx, app)
 
 	}
 

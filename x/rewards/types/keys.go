@@ -22,11 +22,14 @@ const (
 )
 
 var (
-	RewardsKeyPrefix               = []byte{0x05}
-	KeyPrefixLastInterestTime      = []byte{0x06}
-	AppIdsVaultKeyPrefix           = []byte{0x12}
-	ExternalRewardsLockerKeyPrefix = []byte{0x13}
-	ExtRewardsLockerIDKey          = []byte{0x14}
+	RewardsKeyPrefix                      = []byte{0x05}
+	KeyPrefixLastInterestTime             = []byte{0x06}
+	AppIdsVaultKeyPrefix                  = []byte{0x12}
+	ExternalRewardsLockerKeyPrefix        = []byte{0x13}
+	ExtRewardsLockerIDKey                 = []byte{0x14}
+	ExternalRewardsLockerCounterKeyPrefix = []byte{0x15}
+	AssetForDenomKeyPrefix                = []byte{0x16}
+	EpochForLockerKeyPrefix               = []byte{0x17}
 )
 
 func RewardsKey(id uint64) []byte {
@@ -45,4 +48,16 @@ func CreateLastInterestTimeKey() []byte {
 
 func ExternalRewardsLockerMappingKey(appMappingID uint64) []byte {
 	return append(ExternalRewardsLockerKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
+}
+
+func ExternalRewardsLockersCounter(appMappingID uint64) []byte {
+	return append(ExternalRewardsLockerCounterKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
+}
+
+func AssetForDenomKey(denom uint64) []byte {
+	return append(AssetForDenomKeyPrefix, sdk.Uint64ToBigEndian(denom)...)
+}
+
+func EpochForLockerKey(denom uint64) []byte {
+	return append(EpochForLockerKeyPrefix, sdk.Uint64ToBigEndian(denom)...)
 }

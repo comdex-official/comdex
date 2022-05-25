@@ -16,9 +16,15 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		queryParams(),
-		queryAuction(),
-		queryAuctions(),
-		queryBiddings(),
+		querySurplusAuction(),
+		querySurplusAuctions(),
+		querySurplusBiddings(),
+		queryDebtAuction(),
+		queryDebtAuctions(),
+		queryDebtBiddings(),
+		queryDutchAuction(),
+		queryDutchAuctions(),
+		queryDutchBiddings(),
 	)
 
 	return cmd
@@ -34,7 +40,9 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		txPlaceBid(),
+		txPlaceSurplusBid(),
+		txPlaceDebtBid(),
+		txPlaceDutchBid(),
 	)
 
 	return cmd

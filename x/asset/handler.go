@@ -49,6 +49,8 @@ func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return handleUpdateWhitelistedPairProposal(ctx, k, c)
 		case *types.AddAppMappingProposal:
 			return handleAddAppMappingProposal(ctx, k, c)
+		case *types.AddAssetMappingProposal:
+			return handleAddAssetMappingProposal(ctx, k, c)
 		case *types.AddExtendedPairsVaultProposal:
 			return handleExtendedPairsVaultProposal(ctx, k, c)
 
@@ -88,6 +90,9 @@ func handleUpdateWhitelistedPairProposal(ctx sdk.Context, k keeper.Keeper, p *ty
 
 func handleAddAppMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAppMappingProposal) error {
 	return k.HandleAddAppMappingRecords(ctx, p)
+}
+func handleAddAssetMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetMappingProposal) error {
+	return k.HandleAddAssetMappingRecords(ctx, p)
 }
 
 func handleExtendedPairsVaultProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddExtendedPairsVaultProposal) error {

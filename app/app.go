@@ -496,8 +496,8 @@ func New(
 		app.cdc,
 		app.keys[tokenminttypes.StoreKey],
 		app.bankKeeper,
-		&app.assetKeeper,
-	)
+		&app.tokenmintKeeper,
+		)
 
 
 
@@ -569,6 +569,7 @@ func New(
 		&app.collectorKeeper,
 		&app.vaultKeeper,
 		&app.assetKeeper,
+		app.bankKeeper,
 	)
 
 	app.collectorKeeper = *collectorkeeper.NewKeeper(
@@ -986,6 +987,7 @@ func (app *App) registerUpgradeHandlers() {
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
 			lendtypes.ModuleName:        lend.AppModule{}.ConsensusVersion(),
 			lockertypes.ModuleName:      locker.AppModule{}.ConsensusVersion(),
+			tokenminttypes.ModuleName:   tokenmint.AppModule{}.ConsensusVersion(),
 			wasmtypes.ModuleName:        wasm.AppModule{}.ConsensusVersion(),
 		}
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)

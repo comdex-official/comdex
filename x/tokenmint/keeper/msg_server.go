@@ -70,21 +70,66 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	
-	mintData,found:=k.GetTokenMint(ctx,msg.AppMappingId)
+	assetData, found := k.GetAsset(ctx, msg.AssetId)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+	appMappingData, found := k.GetApp(ctx, msg.AppMappingId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExists
+	}
+	//Checking if asset exists in the app
+
+	assetDataInApp, found := k.GetMintGenesisTokenData(ctx, appMappingData.Id, assetData.Id)
+	if !found {
+		return nil, types.ErrorAssetNotWhiteListedForGenesisMinting
+	}
+
+	mintData, found := k.GetTokenMint(ctx, msg.AppMappingId)
 	if !found {
 		var newTokenMintappData types.MintedTokens
 		var appData types.TokenMint
 
-		newTokenMintappData.AssetId=msg.AssetId
-		newTokenMintappData.CreatedAt=time.Now()
-		newTokenMintappData.
-		
-	}else{
+		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+			return nil, err
+		}
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(assetDataInApp.Sender), sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+			return nil, err
+		}
+
+		newTokenMintappData.AssetId = msg.AssetId
+		newTokenMintappData.CreatedAt = time.Now()
+		newTokenMintappData.GenesisSupply = *assetDataInApp.GenesisSupply
+		newTokenMintappData.CurrentSupply = newTokenMintappData.GenesisSupply
+
+		appData.AppMappingId = appMappingData.Id
+		appData.MintedTokens = append(appData.MintedTokens, &newTokenMintappData)
+
+		k.SetTokenMint(ctx, appData)
+
+	} else {
+		//AppData in TokenMint exists
+		_, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingData.Id, assetData.Id)
+		if found {
+			return nil, types.ErrorGensisMintingForTokenalreadyDone
+		}
+
+		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+			return nil, err
+		}
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(assetDataInApp.Sender), sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+			return nil, err
+		}
+
+		var newTokenMintappData types.MintedTokens
+		newTokenMintappData.AssetId = msg.AssetId
+		newTokenMintappData.CreatedAt = time.Now()
+		newTokenMintappData.GenesisSupply = *assetDataInApp.GenesisSupply
+		newTokenMintappData.CurrentSupply = newTokenMintappData.GenesisSupply
+		mintData.MintedTokens = append(mintData.MintedTokens, &newTokenMintappData)
+		k.SetTokenMint(ctx, mintData)
 
 	}
-
-
 
 	return &types.MsgMintNewTokensResponse{}, nil
 

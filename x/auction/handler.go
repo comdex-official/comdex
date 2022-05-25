@@ -14,8 +14,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgPlaceBidRequest:
-			res, err := server.MsgPlaceBid(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgPlaceSurplusBidRequest:
+			res, err := server.MsgPlaceSurplusBid(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		case *types.MsgPlaceDebtBidRequest:

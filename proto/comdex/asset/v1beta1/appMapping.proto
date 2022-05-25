@@ -11,4 +11,13 @@ message AppMapping {
     uint64 id      = 1;
     string name    = 2 [ (gogoproto.moretags) = "yaml:\"name\"" ];
     string short_name   = 3 [ (gogoproto.moretags) = "yaml:\"short_name\"" ];
+    repeated MintGenesisToken mint_genesis_token = 4 [ (gogoproto.moretags) = "yaml:\"mint_genesis_token\"" ];
 }
+
+message MintGenesisToken {
+    uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+    string genesis_supply = 2[(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"];
+    bool isgovToken = 3 [ (gogoproto.moretags) = "yaml:\"isgovToken\"" ];
+    string sender = 4 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+}
+// base gov ----- mint asset-----------app mapping id, asset id , 

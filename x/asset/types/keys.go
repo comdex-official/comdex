@@ -25,7 +25,7 @@ var (
 
 	AssetForDenomKeyPrefix  = []byte{0x21}
 	AppForShortNamePrefix  = []byte{0x22}
-	PairsForPairIdPrefix  = []byte{0x22}
+	AppForNamePrefix  = []byte{0x23}
 
 	WhitelistAssetIDKey    = []byte{0x31}
 	WhitelistAssetKeyPrefix    = []byte{0x32}
@@ -56,9 +56,8 @@ func AssetForDenomKey(denom string) []byte {
 func AssetForShortNameKey(shortName string) []byte {
 	return append(AppForShortNamePrefix, []byte(shortName)...)
 }
-
-func PairsForAppIdKey(pairId uint64) []byte {
-	return append(PairsForPairIdPrefix, sdk.Uint64ToBigEndian(pairId)...)
+func AssetForNameKey(Name string) []byte {
+	return append(AppForNamePrefix, []byte(Name)...)
 }
 
 func PairKey(id uint64) []byte {
