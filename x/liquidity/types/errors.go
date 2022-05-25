@@ -6,7 +6,7 @@ import (
 
 // DONTCOVER
 
-// x/liquidity module sentinel errors
+// x/liquidity module sentinel errors.
 var (
 	ErrInsufficientDepositAmount     = sdkerrors.Register(ModuleName, 2, "insufficient deposit amount")
 	ErrPairAlreadyExists             = sdkerrors.Register(ModuleName, 3, "pair already exists")
@@ -21,10 +21,10 @@ var (
 	ErrWrongPair                     = sdkerrors.Register(ModuleName, 13, "wrong denom pair")
 	ErrSameBatch                     = sdkerrors.Register(ModuleName, 14, "cannot cancel an order within the same batch")
 	ErrAlreadyCanceled               = sdkerrors.Register(ModuleName, 15, "the order is already canceled")
-	ErrDuplicatePairId               = sdkerrors.Register(ModuleName, 16, "duplicate pair id presents in the pair id list")
+	ErrDuplicatePairID               = sdkerrors.Register(ModuleName, 16, "duplicate pair id presents in the pair id list")
 	ErrTooSmallOrder                 = sdkerrors.Register(ModuleName, 17, "too small order")
 	ErrTooLargePool                  = sdkerrors.Register(ModuleName, 18, "too large pool")
-	ErrInvalidPoolId                 = sdkerrors.Register(ModuleName, 19, "invalid pool id")
+	ErrInvalidPoolID                 = sdkerrors.Register(ModuleName, 19, "invalid pool id")
 	ErrNoSoftLockPresent             = sdkerrors.Register(ModuleName, 20, "no soft lock created for given pool")
 	ErrInvalidUnlockAmount           = sdkerrors.Register(ModuleName, 21, "invalid soft unlock amount")
 	ErrLPDataNotExistsForPool        = sdkerrors.Register(ModuleName, 22, "liquidity providers data does not exists for givn pool id")

@@ -70,8 +70,8 @@ func (k Querier) Pools(c context.Context, req *types.QueryPoolsRequest) (*types.
 	default:
 		keyPrefix = types.GetPoolsByPairIndexKeyPrefix(req.PairId)
 		poolGetter = func(key, _ []byte) types.Pool {
-			poolId := types.ParsePoolsByPairIndexKey(append(keyPrefix, key...))
-			pool, _ := k.GetPool(ctx, poolId)
+			poolID := types.ParsePoolsByPairIndexKey(append(keyPrefix, key...))
+			pool, _ := k.GetPool(ctx, poolID)
 			return pool
 		}
 		pair, _ := k.GetPair(ctx, req.PairId)
@@ -196,13 +196,13 @@ func (k Querier) PoolByPoolCoinDenom(c context.Context, req *types.QueryPoolByPo
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	poolId, err := types.ParsePoolCoinDenom(req.PoolCoinDenom)
+	poolID, err := types.ParsePoolCoinDenom(req.PoolCoinDenom)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to parse pool coin denom: %v", err)
 	}
-	pool, found := k.GetPool(ctx, poolId)
+	pool, found := k.GetPool(ctx, poolID)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "pool %d doesn't exist", poolId)
+		return nil, status.Errorf(codes.NotFound, "pool %d doesn't exist", poolID)
 	}
 
 	rx, ry := k.GetPoolBalances(ctx, pool)
@@ -249,15 +249,15 @@ func (k Querier) Pairs(c context.Context, req *types.QueryPairsRequest) (*types.
 	case 1:
 		keyPrefix = types.GetPairsByDenomIndexKeyPrefix(req.Denoms[0])
 		pairGetter = func(key, _ []byte) types.Pair {
-			_, _, pairId := types.ParsePairsByDenomsIndexKey(append(keyPrefix, key...))
-			pair, _ := k.GetPair(ctx, pairId)
+			_, _, pairID := types.ParsePairsByDenomsIndexKey(append(keyPrefix, key...))
+			pair, _ := k.GetPair(ctx, pairID)
 			return pair
 		}
 	case 2:
 		keyPrefix = types.GetPairsByDenomsIndexKeyPrefix(req.Denoms[0], req.Denoms[1])
 		pairGetter = func(key, _ []byte) types.Pair {
-			_, _, pairId := types.ParsePairsByDenomsIndexKey(append(keyPrefix, key...))
-			pair, _ := k.GetPair(ctx, pairId)
+			_, _, pairID := types.ParsePairsByDenomsIndexKey(append(keyPrefix, key...))
+			pair, _ := k.GetPair(ctx, pairID)
 			return pair
 		}
 	}
@@ -508,12 +508,12 @@ func (k Querier) OrdersByOrderer(c context.Context, req *types.QueryOrdersByOrde
 	orderStore := prefix.NewStore(store, keyPrefix)
 	var orders []types.Order
 	pageRes, err := query.FilteredPaginate(orderStore, req.Pagination, func(key, value []byte, accumulate bool) (bool, error) {
-		_, pairId, orderId := types.ParseOrderIndexKey(append(keyPrefix, key...))
-		if req.PairId != 0 && pairId != req.PairId {
+		_, pairID, orderID := types.ParseOrderIndexKey(append(keyPrefix, key...))
+		if req.PairId != 0 && pairID != req.PairId {
 			return false, nil
 		}
 
-		order, _ := k.GetOrder(ctx, pairId, orderId)
+		order, _ := k.GetOrder(ctx, pairID, orderID)
 
 		if accumulate {
 			orders = append(orders, order)
@@ -541,20 +541,20 @@ func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*
 		return nil, status.Errorf(codes.InvalidArgument, "orderer address %s is invalid", req.Depositor)
 	}
 
-	poolId := req.PoolId
+	poolID := req.PoolId
 
-	pool, found := k.GetPool(ctx, poolId)
+	pool, found := k.GetPool(ctx, poolID)
 	if !found {
-		return nil, types.ErrInvalidPoolId
+		return nil, types.ErrInvalidPoolID
 	}
 
-	lpData, found := k.GetPoolLiquidityProvidersData(ctx, poolId)
+	lpData, found := k.GetPoolLiquidityProvidersData(ctx, poolID)
 	if !found {
 		return &types.QuerySoftLockResponse{ActivePoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)), QueuedPoolCoin: []types.QueuedPoolCoin{}}, nil
 	}
 
 	availableLiquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeID(ctx, incentivestypes.LiquidityGaugeTypeID)
-	minEpochDuration := k.GetMinimumEpochDurationFromPoolId(ctx, poolId, availableLiquidityGauges)
+	minEpochDuration := k.GetMinimumEpochDurationFromPoolID(ctx, poolID, availableLiquidityGauges)
 
 	queuedCoins := []types.QueuedPoolCoin{}
 	for _, queuedRequest := range lpData.QueuedLiquidityProviders {
@@ -612,7 +612,6 @@ func (k Querier) DeserializePoolCoin(c context.Context, req *types.QueryDeserial
 
 // PoolIncentives provides insights about available pool incentives.
 func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentivesRequest) (*types.QueryPoolIncentivesResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(c)
 
 	liquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeID(ctx, incentivestypes.LiquidityGaugeTypeID)
@@ -639,9 +638,9 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 				}
 			}
 		} else {
-			for _, poolId := range gauge.GetLiquidityMetaData().ChildPoolIds {
-				if poolId != gauge.GetLiquidityMetaData().PoolId {
-					childPoolIds = append(childPoolIds, poolId)
+			for _, poolID := range gauge.GetLiquidityMetaData().ChildPoolIds {
+				if poolID != gauge.GetLiquidityMetaData().PoolId {
+					childPoolIds = append(childPoolIds, poolID)
 				}
 			}
 		}
@@ -669,7 +668,7 @@ func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoi
 	ctx := sdk.UnwrapSDKContext(c)
 	pool, found := k.GetPool(ctx, req.PoolId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolId, "pool id %d is invalid", req.PoolId)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "pool id %d is invalid", req.PoolId)
 	}
 	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
 	softLockedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)

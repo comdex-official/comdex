@@ -179,7 +179,6 @@ func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 }
 
 func (m *Params) Validate() error {
-
 	if err := m.IBC.Validate(); err != nil {
 		return errors.Wrapf(err, "invalid ibc params")
 	}

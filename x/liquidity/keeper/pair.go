@@ -10,14 +10,14 @@ import (
 )
 
 // getNextPairIdWithUpdate increments pair id by one and set it.
-func (k Keeper) getNextPairIdWithUpdate(ctx sdk.Context) uint64 {
-	id := k.GetLastPairId(ctx) + 1
-	k.SetLastPairId(ctx, id)
+func (k Keeper) getNextPairIDWithUpdate(ctx sdk.Context) uint64 {
+	id := k.GetLastPairID(ctx) + 1
+	k.SetLastPairID(ctx, id)
 	return id
 }
 
 // getNextOrderIdWithUpdate increments the pair's last order id and returns it.
-func (k Keeper) getNextOrderIdWithUpdate(ctx sdk.Context, pair types.Pair) uint64 {
+func (k Keeper) getNextOrderIDWithUpdate(ctx sdk.Context, pair types.Pair) uint64 {
 	id := pair.LastOrderId + 1
 	pair.LastOrderId = id
 	k.SetPair(ctx, pair)
@@ -46,7 +46,7 @@ func (k Keeper) CreatePair(ctx sdk.Context, msg *types.MsgCreatePair) (types.Pai
 		return types.Pair{}, sdkerrors.Wrap(err, "insufficient pair creation fee")
 	}
 
-	id := k.getNextPairIdWithUpdate(ctx)
+	id := k.getNextPairIDWithUpdate(ctx)
 	pair := types.NewPair(id, msg.BaseCoinDenom, msg.QuoteCoinDenom)
 	k.SetPair(ctx, pair)
 	k.SetPairIndex(ctx, pair.BaseCoinDenom, pair.QuoteCoinDenom, pair.Id)
@@ -59,7 +59,7 @@ func (k Keeper) CreatePair(ctx sdk.Context, msg *types.MsgCreatePair) (types.Pai
 			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
 			sdk.NewAttribute(types.AttributeKeyBaseCoinDenom, msg.BaseCoinDenom),
 			sdk.NewAttribute(types.AttributeKeyQuoteCoinDenom, msg.QuoteCoinDenom),
-			sdk.NewAttribute(types.AttributeKeyPairId, strconv.FormatUint(pair.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(pair.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyEscrowAddress, pair.EscrowAddress),
 		),
 	})

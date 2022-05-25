@@ -175,7 +175,7 @@ func (ob *OrderBook) FullString(tickPrec int) string {
 // String returns a compact string representation of the order book.
 // String includes a tick only when there is at least one order on it.
 func (ob *OrderBook) String() string {
-	var prices []sdk.Dec
+	prices := make([]sdk.Dec, 0, len(append(ob.buys, ob.sells...)))
 	for _, tick := range append(ob.buys, ob.sells...) {
 		prices = append(prices, tick.price)
 	}
@@ -212,7 +212,7 @@ func (ticks *orderBookTicks) add(order Order) {
 }
 
 func (ticks orderBookTicks) orders() []Order {
-	var orders []Order
+	orders := make([]Order, 0, len(ticks))
 	for _, tick := range ticks {
 		orders = append(orders, tick.orders...)
 	}
@@ -227,6 +227,7 @@ func (ticks orderBookTicks) ordersAt(price sdk.Dec) []Order {
 	return ticks[i].orders
 }
 
+//nolint
 func (ticks orderBookTicks) highestPrice() (sdk.Dec, int, bool) {
 	if len(ticks) == 0 {
 		return sdk.Dec{}, 0, false
@@ -239,6 +240,7 @@ func (ticks orderBookTicks) highestPrice() (sdk.Dec, int, bool) {
 	return sdk.Dec{}, 0, false
 }
 
+//nolint
 func (ticks orderBookTicks) lowestPrice() (sdk.Dec, int, bool) {
 	if len(ticks) == 0 {
 		return sdk.Dec{}, 0, false

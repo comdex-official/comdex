@@ -14,7 +14,12 @@ var (
 	_ sdk.Msg = (*MsgCloseRequest)(nil)
 )
 
-func NewMsgCreateRequest(from sdk.AccAddress, pairID uint64, amountIn, amountOut sdk.Int) *MsgCreateRequest {
+func NewMsgCreateRequest(
+	//nolint
+	from sdk.AccAddress,
+	pairID uint64,
+	amountIn,
+	amountOut sdk.Int) *MsgCreateRequest {
 	return &MsgCreateRequest{
 		From:      from.String(),
 		PairID:    pairID,
@@ -73,7 +78,12 @@ func (m *MsgCreateRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgDepositRequest(from sdk.AccAddress, id uint64, amount sdk.Int) *MsgDepositRequest {
+func NewMsgDepositRequest(
+	//nolint
+	from sdk.AccAddress,
+	id uint64,
+	amount sdk.Int,
+) *MsgDepositRequest {
 	return &MsgDepositRequest{
 		From:   from.String(),
 		ID:     id,
@@ -125,7 +135,12 @@ func (m *MsgDepositRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgWithdrawRequest(from sdk.AccAddress, id uint64, amount sdk.Int) *MsgWithdrawRequest {
+func NewMsgWithdrawRequest(
+	//nolint
+	from sdk.AccAddress,
+	id uint64,
+	amount sdk.Int,
+) *MsgWithdrawRequest {
 	return &MsgWithdrawRequest{
 		From:   from.String(),
 		ID:     id,
@@ -177,7 +192,12 @@ func (m *MsgWithdrawRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgDrawRequest(from sdk.AccAddress, id uint64, amount sdk.Int) *MsgDrawRequest {
+func NewMsgDrawRequest(
+	//nolint
+	from sdk.AccAddress,
+	id uint64,
+	amount sdk.Int,
+) *MsgDrawRequest {
 	return &MsgDrawRequest{
 		From:   from.String(),
 		ID:     id,
@@ -229,7 +249,12 @@ func (m *MsgDrawRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgRepayRequest(from sdk.AccAddress, id uint64, amount sdk.Int) *MsgRepayRequest {
+func NewMsgRepayRequest(
+	//nolint
+	from sdk.AccAddress,
+	id uint64,
+	amount sdk.Int,
+) *MsgRepayRequest {
 	return &MsgRepayRequest{
 		From:   from.String(),
 		ID:     id,
@@ -281,7 +306,11 @@ func (m *MsgRepayRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgLiquidateRequest(from sdk.AccAddress, id uint64) *MsgCloseRequest {
+func NewMsgLiquidateRequest(
+	//nolint
+	from sdk.AccAddress,
+	id uint64,
+) *MsgCloseRequest {
 	return &MsgCloseRequest{
 		From: from.String(),
 		ID:   id,

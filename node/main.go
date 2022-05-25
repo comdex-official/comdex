@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-
 	comdex.SetAccountAddressPrefixes()
 
 	root, _ := nodecmd.NewRootCmd()

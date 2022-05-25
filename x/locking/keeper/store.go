@@ -11,7 +11,7 @@ import (
 func (k *Keeper) GetLockID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.LockIdKey
+		key   = types.LockIDKey
 		value = store.Get(key)
 	)
 	if value == nil {
@@ -25,7 +25,7 @@ func (k *Keeper) GetLockID(ctx sdk.Context) uint64 {
 func (k *Keeper) SetLockID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LockIdKey
+		key   = types.LockIDKey
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -52,7 +52,7 @@ func (k *Keeper) DeleteLock(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) GetLockById(ctx sdk.Context, id uint64) (lock types.Lock, found bool) {
+func (k *Keeper) GetLockByID(ctx sdk.Context, id uint64) (lock types.Lock, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetLockKey(id)
@@ -92,7 +92,7 @@ func (k *Keeper) GetLockByOwner(ctx sdk.Context, owner string) (lockByOwner type
 func (k *Keeper) GetUnlockingID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.UnlockingIdKey
+		key   = types.UnlockingIDKey
 		value = store.Get(key)
 	)
 	if value == nil {
@@ -106,7 +106,7 @@ func (k *Keeper) GetUnlockingID(ctx sdk.Context) uint64 {
 func (k *Keeper) SetUnlockingID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.UnlockingIdKey
+		key   = types.UnlockingIDKey
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -133,7 +133,7 @@ func (k *Keeper) DeleteUnlocking(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) GetUnlockingById(ctx sdk.Context, id uint64) (unlock types.Unlocking, found bool) {
+func (k *Keeper) GetUnlockingByID(ctx sdk.Context, id uint64) (unlock types.Unlocking, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetUnlockKey(id)

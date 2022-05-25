@@ -9,13 +9,13 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
-// AccountKeeper is the expected account keeper
+// AccountKeeper is the expected account keeper.
 type AccountKeeper interface {
 	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
 	GetModuleAddress(moduleName string) sdk.AccAddress
 }
 
-// BankKeeper is the expected bank keeper
+// BankKeeper is the expected bank keeper.
 type BankKeeper interface {
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
@@ -31,6 +31,6 @@ type BankKeeper interface {
 }
 
 type IncentivesKeeper interface {
-	GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeId uint64) (gauges []incentivestypes.Gauge)
+	GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeID uint64) (gauges []incentivestypes.Gauge)
 	GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration) (epochInfo incentivestypes.EpochInfo, found bool)
 }

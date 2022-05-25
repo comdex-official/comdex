@@ -22,7 +22,13 @@ func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 	return k.bank.MintCoins(ctx, name, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coin sdk.Coin) error {
+func (k *Keeper) SendCoinFromAccountToModule(
+	ctx sdk.Context,
+	//nolint
+	address sdk.AccAddress,
+	name string,
+	coin sdk.Coin,
+) error {
 	if coin.IsZero() {
 		return nil
 	}
@@ -30,7 +36,13 @@ func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAdd
 	return k.bank.SendCoinsFromAccountToModule(ctx, address, name, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coin sdk.Coin) error {
+func (k *Keeper) SendCoinFromModuleToAccount(
+	ctx sdk.Context,
+	name string,
+	//nolint
+	address sdk.AccAddress,
+	coin sdk.Coin,
+) error {
 	if coin.IsZero() {
 		return nil
 	}

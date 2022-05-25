@@ -74,7 +74,7 @@ func (q *queryServer) QueryMarket(c context.Context, req *types.QueryMarketReque
 
 	item, found := q.GetMarket(ctx, req.Symbol)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "market does not exist for symbol %d", req.Symbol)
+		return nil, status.Errorf(codes.NotFound, "market does not exist for symbol %s", req.Symbol)
 	}
 
 	return &types.QueryMarketResponse{

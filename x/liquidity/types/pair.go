@@ -56,11 +56,11 @@ func (pair Pair) Validate() error {
 }
 
 // PairEscrowAddress returns a unique address of the pair's escrow.
-func PairEscrowAddress(pairId uint64) sdk.AccAddress {
+func PairEscrowAddress(pairID uint64) sdk.AccAddress {
 	return DeriveAddress(
 		AddressType32Bytes,
 		ModuleName,
-		strings.Join([]string{PairEscrowAddressPrefix, strconv.FormatUint(pairId, 10)}, ModuleAddressNameSplitter))
+		strings.Join([]string{PairEscrowAddressPrefix, strconv.FormatUint(pairID, 10)}, ModuleAddressNameSplitter))
 }
 
 // MustMarshalPair returns the pair bytes.

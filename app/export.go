@@ -17,7 +17,6 @@ import (
 func (a *App) ExportAppStateAndValidators(
 	forZeroHeight bool, jailAllowedAddrs []string,
 ) (servertypes.ExportedApp, error) {
-
 	// as if they could withdraw from the start of the next block
 	ctx := a.NewContext(true, tmprototypes.Header{Height: a.LastBlockHeight()})
 

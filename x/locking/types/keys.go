@@ -22,8 +22,8 @@ const (
 )
 
 var (
-	LockIdKey       = []byte{0x01}
-	UnlockingIdKey  = []byte{0x02}
+	LockIDKey       = []byte{0x01}
+	UnlockingIDKey  = []byte{0x02}
 	LockKeyPrefix   = []byte{0x03}
 	UnlockKeyPrefix = []byte{0x04}
 

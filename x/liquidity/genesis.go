@@ -14,8 +14,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		panic(err)
 	}
 	k.SetParams(ctx, genState.Params)
-	k.SetLastPairId(ctx, genState.LastPairId)
-	k.SetLastPoolId(ctx, genState.LastPoolId)
+	k.SetLastPairID(ctx, genState.LastPairId)
+	k.SetLastPoolID(ctx, genState.LastPoolId)
 	for _, pair := range genState.Pairs {
 		k.SetPair(ctx, pair)
 		k.SetPairIndex(ctx, pair.BaseCoinDenom, pair.QuoteCoinDenom, pair.Id)
@@ -45,8 +45,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return &types.GenesisState{
 		Params:           k.GetParams(ctx),
-		LastPairId:       k.GetLastPairId(ctx),
-		LastPoolId:       k.GetLastPoolId(ctx),
+		LastPairId:       k.GetLastPairID(ctx),
+		LastPoolId:       k.GetLastPoolID(ctx),
 		Pairs:            k.GetAllPairs(ctx),
 		Pools:            k.GetAllPools(ctx),
 		DepositRequests:  k.GetAllDepositRequests(ctx),

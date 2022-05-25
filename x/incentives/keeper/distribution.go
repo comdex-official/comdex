@@ -60,7 +60,6 @@ func (k Keeper) doDistributionSends(ctx sdk.Context, gaugeTypeID uint64, distrs 
 func (k Keeper) BeginRewardDistributions(
 	ctx sdk.Context, gauge types.Gauge, coinToDistribute sdk.Coin, epochCount uint64, epochDuration time.Duration,
 ) (sdk.Coin, error) {
-
 	rewardDistributionData, err := k.GetRewardDistributionData(ctx, gauge, coinToDistribute, epochCount, epochDuration)
 	if err != nil {
 		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), err

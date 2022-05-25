@@ -20,7 +20,7 @@ var (
 	_ sdk.Msg = (*MsgCancelAllOrders)(nil)
 )
 
-// Message types for the liquidity module
+// Message types for the liquidity module.
 const (
 	TypeMsgCreatePair      = "create_pair"
 	TypeMsgCreatePool      = "create_pool"
@@ -33,7 +33,11 @@ const (
 )
 
 // NewMsgCreatePair returns a new MsgCreatePair.
-func NewMsgCreatePair(creator sdk.AccAddress, baseCoinDenom, quoteCoinDenom string) *MsgCreatePair {
+func NewMsgCreatePair(
+	//nolint
+	creator sdk.AccAddress,
+	baseCoinDenom, quoteCoinDenom string,
+) *MsgCreatePair {
 	return &MsgCreatePair{
 		Creator:        creator.String(),
 		BaseCoinDenom:  baseCoinDenom,
@@ -80,13 +84,14 @@ func (msg MsgCreatePair) GetCreator() sdk.AccAddress {
 
 // NewMsgCreatePool creates a new MsgCreatePool.
 func NewMsgCreatePool(
+	//nolint
 	creator sdk.AccAddress,
-	pairId uint64,
+	pairID uint64,
 	depositCoins sdk.Coins,
 ) *MsgCreatePool {
 	return &MsgCreatePool{
 		Creator:      creator.String(),
-		PairId:       pairId,
+		PairId:       pairID,
 		DepositCoins: depositCoins,
 	}
 }
@@ -138,13 +143,14 @@ func (msg MsgCreatePool) GetCreator() sdk.AccAddress {
 
 // NewMsgDeposit creates a new MsgDeposit.
 func NewMsgDeposit(
+	//nolint
 	depositor sdk.AccAddress,
-	poolId uint64,
+	poolID uint64,
 	depositCoins sdk.Coins,
 ) *MsgDeposit {
 	return &MsgDeposit{
 		Depositor:    depositor.String(),
-		PoolId:       poolId,
+		PoolId:       poolID,
 		DepositCoins: depositCoins,
 	}
 }
@@ -191,13 +197,14 @@ func (msg MsgDeposit) GetDepositor() sdk.AccAddress {
 
 // NewMsgWithdraw creates a new MsgWithdraw.
 func NewMsgWithdraw(
+	//nolint
 	withdrawer sdk.AccAddress,
-	poolId uint64,
+	poolID uint64,
 	poolCoin sdk.Coin,
 ) *MsgWithdraw {
 	return &MsgWithdraw{
 		Withdrawer: withdrawer.String(),
-		PoolId:     poolId,
+		PoolId:     poolID,
 		PoolCoin:   poolCoin,
 	}
 }
@@ -244,8 +251,9 @@ func (msg MsgWithdraw) GetWithdrawer() sdk.AccAddress {
 
 // NewMsgLimitOrder creates a new MsgLimitOrder.
 func NewMsgLimitOrder(
+	//nolint
 	orderer sdk.AccAddress,
-	pairId uint64,
+	pairID uint64,
 	dir OrderDirection,
 	offerCoin sdk.Coin,
 	demandCoinDenom string,
@@ -255,7 +263,7 @@ func NewMsgLimitOrder(
 ) *MsgLimitOrder {
 	return &MsgLimitOrder{
 		Orderer:         orderer.String(),
-		PairId:          pairId,
+		PairId:          pairID,
 		Direction:       dir,
 		OfferCoin:       offerCoin,
 		DemandCoinDenom: demandCoinDenom,
@@ -341,8 +349,9 @@ func (msg MsgLimitOrder) GetOrderer() sdk.AccAddress {
 
 // NewMsgMarketOrder creates a new MsgMarketOrder.
 func NewMsgMarketOrder(
+	//nolint
 	orderer sdk.AccAddress,
-	pairId uint64,
+	pairID uint64,
 	dir OrderDirection,
 	offerCoin sdk.Coin,
 	demandCoinDenom string,
@@ -351,7 +360,7 @@ func NewMsgMarketOrder(
 ) *MsgMarketOrder {
 	return &MsgMarketOrder{
 		Orderer:         orderer.String(),
-		PairId:          pairId,
+		PairId:          pairID,
 		Direction:       dir,
 		OfferCoin:       offerCoin,
 		DemandCoinDenom: demandCoinDenom,
@@ -423,13 +432,14 @@ func (msg MsgMarketOrder) GetOrderer() sdk.AccAddress {
 
 // NewMsgCancelOrder creates a new MsgCancelOrder.
 func NewMsgCancelOrder(
+	//nolint
 	orderer sdk.AccAddress,
-	pairId uint64,
-	orderId uint64,
+	pairID uint64,
+	orderID uint64,
 ) *MsgCancelOrder {
 	return &MsgCancelOrder{
-		OrderId: orderId,
-		PairId:  pairId,
+		OrderId: orderID,
+		PairId:  pairID,
 		Orderer: orderer.String(),
 	}
 }
@@ -473,12 +483,13 @@ func (msg MsgCancelOrder) GetOrderer() sdk.AccAddress {
 
 // NewMsgCancelAllOrders creates a new MsgCancelAllOrders.
 func NewMsgCancelAllOrders(
+	//nolint
 	orderer sdk.AccAddress,
-	pairIds []uint64,
+	pairIDs []uint64,
 ) *MsgCancelAllOrders {
 	return &MsgCancelAllOrders{
 		Orderer: orderer.String(),
-		PairIds: pairIds,
+		PairIds: pairIDs,
 	}
 }
 
@@ -490,15 +501,15 @@ func (msg MsgCancelAllOrders) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Orderer); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid orderer address: %v", err)
 	}
-	pairIdSet := map[uint64]struct{}{}
-	for _, pairId := range msg.PairIds {
-		if pairId == 0 {
+	pairIDSet := map[uint64]struct{}{}
+	for _, pairID := range msg.PairIds {
+		if pairID == 0 {
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pair id must not be 0")
 		}
-		if _, ok := pairIdSet[pairId]; ok {
-			return ErrDuplicatePairId
+		if _, ok := pairIDSet[pairID]; ok {
+			return ErrDuplicatePairID
 		}
-		pairIdSet[pairId] = struct{}{}
+		pairIDSet[pairID] = struct{}{}
 	}
 	return nil
 }
@@ -525,13 +536,14 @@ func (msg MsgCancelAllOrders) GetOrderer() sdk.AccAddress {
 
 // NewMsgSoftLock creates a new MsgTokensSoftLock.
 func NewMsgSoftLock(
+	//nolint
 	depositor sdk.AccAddress,
-	poolId uint64,
+	poolID uint64,
 	softLockCoin sdk.Coin,
 ) *MsgTokensSoftLock {
 	return &MsgTokensSoftLock{
 		Depositor:    depositor.String(),
-		PoolId:       poolId,
+		PoolId:       poolID,
 		SoftLockCoin: softLockCoin,
 	}
 }
@@ -578,13 +590,14 @@ func (msg MsgTokensSoftLock) GetWithdrawer() sdk.AccAddress {
 
 // NewMsgSoftUnlock creates a new MsgTokensSoftUnlock.
 func NewMsgSoftUnlock(
+	//nolint
 	depositor sdk.AccAddress,
-	poolId uint64,
+	poolID uint64,
 	softUnlockCoin sdk.Coin,
 ) *MsgTokensSoftUnlock {
 	return &MsgTokensSoftUnlock{
 		Depositor:      depositor.String(),
-		PoolId:         poolId,
+		PoolId:         poolID,
 		SoftUnlockCoin: softUnlockCoin,
 	}
 }

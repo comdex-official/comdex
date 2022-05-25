@@ -8,14 +8,14 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// Liquidity params default values
+// Liquidity params default values.
 const (
 	DefaultLockingDuration = 24 * time.Hour
 )
 
 // Liquidity params default values
 
-// Put general constants here
+// Put general constants here.
 const ()
 
 var (
@@ -71,7 +71,7 @@ func validateLockingDuration(i interface{}) error {
 }
 
 // String implements the Stringer interface.
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
+func (params Params) String() string {
+	out, _ := yaml.Marshal(params)
 	return string(out)
 }

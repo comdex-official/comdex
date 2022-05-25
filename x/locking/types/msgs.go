@@ -16,7 +16,12 @@ const (
 var _ sdk.Msg = &MsgLockTokens{}
 
 // NewMsgLockTokens creates a message to lock tokens.
-func NewMsgLockTokens(owner sdk.AccAddress, duration time.Duration, coin sdk.Coin) *MsgLockTokens {
+func NewMsgLockTokens(
+	//nolint
+	owner sdk.AccAddress,
+	duration time.Duration,
+	coin sdk.Coin,
+) *MsgLockTokens {
 	return &MsgLockTokens{
 		Owner:    owner.String(),
 		Duration: duration,
@@ -48,10 +53,15 @@ func (m MsgLockTokens) GetSigners() []sdk.AccAddress {
 var _ sdk.Msg = &MsgBeginUnlockingTokens{}
 
 // NewMsgLockTokens creates a message to lock tokens.
-func NewMsgBeginUnlockingTokens(owner sdk.AccAddress, lockId uint64, coin sdk.Coin) *MsgBeginUnlockingTokens {
+func NewMsgBeginUnlockingTokens(
+	//nolint
+	owner sdk.AccAddress,
+	lockID uint64,
+	coin sdk.Coin,
+) *MsgBeginUnlockingTokens {
 	return &MsgBeginUnlockingTokens{
 		Owner:  owner.String(),
-		LockId: lockId,
+		LockId: lockID,
 		Coin:   coin,
 	}
 }

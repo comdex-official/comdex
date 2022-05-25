@@ -35,7 +35,6 @@ func init() {
 
 	govtypes.RegisterProposalType(ProposalUpdateWhitelistedPair)
 	govtypes.RegisterProposalTypeCodec(&UpdateWhitelistedPairProposal{}, "comdex/UpdateWhitelistedPairProposal")
-
 }
 
 var (
@@ -67,7 +66,6 @@ func (p *AddAssetsProposal) ProposalRoute() string { return RouterKey }
 func (p *AddAssetsProposal) ProposalType() string { return ProposalAddAssets }
 
 func (p *AddAssetsProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -106,7 +104,6 @@ func (p *UpdateAssetProposal) ProposalRoute() string { return RouterKey }
 func (p *UpdateAssetProposal) ProposalType() string { return ProposalUpdateAsset }
 
 func (p *UpdateAssetProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -140,7 +137,6 @@ func (p *AddPairsProposal) ProposalRoute() string { return RouterKey }
 func (p *AddPairsProposal) ProposalType() string { return ProposalAddPairs }
 
 func (p *AddPairsProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -178,9 +174,7 @@ func (p *AddWhitelistedAssetsProposal) ProposalRoute() string { return RouterKey
 
 func (p *AddWhitelistedAssetsProposal) ProposalType() string { return ProposalAddWhitelistedAssets }
 
-
 func (p *AddWhitelistedAssetsProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -219,7 +213,6 @@ func (p *UpdateWhitelistedAssetProposal) ProposalRoute() string { return RouterK
 func (p *UpdateWhitelistedAssetProposal) ProposalType() string { return ProposalUpdateWhitelistedAsset }
 
 func (p *UpdateWhitelistedAssetProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -253,9 +246,7 @@ func (p *AddWhitelistedPairsProposal) ProposalRoute() string { return RouterKey 
 
 func (p *AddWhitelistedPairsProposal) ProposalType() string { return ProposalAddWhitelistedPairs }
 
-
 func (p *AddWhitelistedPairsProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -294,7 +285,6 @@ func (p *UpdateWhitelistedPairProposal) ProposalRoute() string { return RouterKe
 func (p *UpdateWhitelistedPairProposal) ProposalType() string { return ProposalUpdateWhitelistedPair }
 
 func (p *UpdateWhitelistedPairProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err

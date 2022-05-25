@@ -90,7 +90,12 @@ func (k *Keeper) GetVaults(ctx sdk.Context) (vaults []types.Vault) {
 	return vaults
 }
 
-func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID, id uint64) {
+func (k *Keeper) SetVaultForAddressByPair(
+	ctx sdk.Context,
+	//nolint
+	address sdk.AccAddress,
+	pairID, id uint64,
+) {
 	var (
 		store = k.Store(ctx)
 		key   = types.VaultForAddressByPair(address, pairID)
@@ -104,7 +109,12 @@ func (k *Keeper) SetVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddres
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
+func (k *Keeper) HasVaultForAddressByPair(
+	ctx sdk.Context,
+	//nolint
+	address sdk.AccAddress,
+	pairID uint64,
+) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.VaultForAddressByPair(address, pairID)
@@ -113,7 +123,12 @@ func (k *Keeper) HasVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddres
 	return store.Has(key)
 }
 
-func (k *Keeper) DeleteVaultForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
+func (k *Keeper) DeleteVaultForAddressByPair(
+	ctx sdk.Context,
+	//nolint
+	address sdk.AccAddress,
+	pairID uint64,
+) {
 	var (
 		store = k.Store(ctx)
 		key   = types.VaultForAddressByPair(address, pairID)
@@ -129,8 +144,6 @@ func (k *Keeper) VerifyCollaterlizationRatio(
 	amountOut sdk.Int,
 	assetOut assettypes.Asset,
 ) error {
-
-
 	return nil
 }
 
@@ -141,7 +154,6 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 	amountOut sdk.Int,
 	assetOut assettypes.Asset,
 ) (sdk.Dec, error) {
-
 	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist

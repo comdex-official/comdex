@@ -14,7 +14,13 @@ var (
 	_ sdk.Msg = (*MsgFetchPriceRequest)(nil)
 )
 
-func NewMsgAddMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64, assetID uint64) *MsgAddMarketRequest {
+func NewMsgAddMarketRequest(
+	//nolint
+	from sdk.AccAddress,
+	symbol string,
+	scriptID uint64,
+	assetID uint64,
+) *MsgAddMarketRequest {
 	return &MsgAddMarketRequest{
 		From:     from.String(),
 		Symbol:   symbol,
@@ -52,7 +58,12 @@ func (m *MsgAddMarketRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64) *MsgUpdateMarketRequest {
+func NewMsgUpdateMarketRequest(
+	//nolint
+	from sdk.AccAddress,
+	symbol string,
+	scriptID uint64,
+) *MsgUpdateMarketRequest {
 	return &MsgUpdateMarketRequest{
 		From:     from.String(),
 		Symbol:   symbol,
@@ -85,7 +96,12 @@ func (m *MsgUpdateMarketRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgRemoveMarketForAssetRequest(from sdk.AccAddress, id uint64, symbol string) *MsgRemoveMarketForAssetRequest {
+func NewMsgRemoveMarketForAssetRequest(
+	//nolint
+	from sdk.AccAddress,
+	id uint64,
+	symbol string,
+) *MsgRemoveMarketForAssetRequest {
 	return &MsgRemoveMarketForAssetRequest{
 		From:   from.String(),
 		Id:     id,
@@ -123,6 +139,7 @@ func (m *MsgRemoveMarketForAssetRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgFetchPriceRequest(
+	//nolint
 	from sdk.AccAddress,
 	sourcePort, sourceChannel string,
 	timeoutHeight ibcclienttypes.Height,

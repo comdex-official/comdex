@@ -12,15 +12,15 @@ import (
 )
 
 // getNextPoolIdWithUpdate increments pool id by one and set it.
-func (k Keeper) getNextPoolIdWithUpdate(ctx sdk.Context) uint64 {
-	id := k.GetLastPoolId(ctx) + 1
-	k.SetLastPoolId(ctx, id)
+func (k Keeper) getNextPoolIDWithUpdate(ctx sdk.Context) uint64 {
+	id := k.GetLastPoolID(ctx) + 1
+	k.SetLastPoolID(ctx, id)
 	return id
 }
 
 // getNextDepositRequestIdWithUpdate increments the pool's last deposit request
 // id and returns it.
-func (k Keeper) getNextDepositRequestIdWithUpdate(ctx sdk.Context, pool types.Pool) uint64 {
+func (k Keeper) getNextDepositRequestIDWithUpdate(ctx sdk.Context, pool types.Pool) uint64 {
 	id := pool.LastDepositRequestId + 1
 	pool.LastDepositRequestId = id
 	k.SetPool(ctx, pool)
@@ -29,7 +29,7 @@ func (k Keeper) getNextDepositRequestIdWithUpdate(ctx sdk.Context, pool types.Po
 
 // getNextWithdrawRequestIdWithUpdate increments the pool's last withdraw
 // request id and returns it.
-func (k Keeper) getNextWithdrawRequestIdWithUpdate(ctx sdk.Context, pool types.Pool) uint64 {
+func (k Keeper) getNextWithdrawRequestIDWithUpdate(ctx sdk.Context, pool types.Pool) uint64 {
 	id := pool.LastWithdrawRequestId + 1
 	pool.LastWithdrawRequestId = id
 	k.SetPool(ctx, pool)
@@ -113,8 +113,8 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 	pair, _ := k.GetPair(ctx, msg.PairId)
 
 	// Create and save the new pool object.
-	poolId := k.getNextPoolIdWithUpdate(ctx)
-	pool := types.NewPool(poolId, pair.Id)
+	poolID := k.getNextPoolIDWithUpdate(ctx)
+	pool := types.NewPool(poolID, pair.Id)
 	k.SetPool(ctx, pool)
 	k.SetPoolByReserveIndex(ctx, pool)
 	k.SetPoolsByPairIndex(ctx, pool)
@@ -150,9 +150,9 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 		sdk.NewEvent(
 			types.EventTypeCreatePool,
 			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
-			sdk.NewAttribute(types.AttributeKeyPairId, strconv.FormatUint(msg.PairId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(msg.PairId, 10)),
 			sdk.NewAttribute(types.AttributeKeyDepositCoins, msg.DepositCoins.String()),
-			sdk.NewAttribute(types.AttributeKeyPoolId, strconv.FormatUint(pool.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(pool.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyReserveAddress, pool.ReserveAddress),
 			sdk.NewAttribute(types.AttributeKeyMintedPoolCoin, poolCoin.String()),
 		),
@@ -201,8 +201,8 @@ func (k Keeper) Deposit(ctx sdk.Context, msg *types.MsgDeposit) (types.DepositRe
 	}
 
 	pool, _ := k.GetPool(ctx, msg.PoolId)
-	requestId := k.getNextDepositRequestIdWithUpdate(ctx, pool)
-	req := types.NewDepositRequest(msg, pool, requestId, ctx.BlockHeight())
+	requestID := k.getNextDepositRequestIDWithUpdate(ctx, pool)
+	req := types.NewDepositRequest(msg, pool, requestID, ctx.BlockHeight())
 	k.SetDepositRequest(ctx, req)
 	k.SetDepositRequestIndex(ctx, req)
 
@@ -213,9 +213,9 @@ func (k Keeper) Deposit(ctx sdk.Context, msg *types.MsgDeposit) (types.DepositRe
 		sdk.NewEvent(
 			types.EventTypeDeposit,
 			sdk.NewAttribute(types.AttributeKeyDepositor, msg.Depositor),
-			sdk.NewAttribute(types.AttributeKeyPoolId, strconv.FormatUint(pool.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(pool.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyDepositCoins, msg.DepositCoins.String()),
-			sdk.NewAttribute(types.AttributeKeyRequestId, strconv.FormatUint(req.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyRequestID, strconv.FormatUint(req.Id, 10)),
 		),
 	})
 
@@ -250,8 +250,8 @@ func (k Keeper) Withdraw(ctx sdk.Context, msg *types.MsgWithdraw) (types.Withdra
 		return types.WithdrawRequest{}, err
 	}
 
-	requestId := k.getNextWithdrawRequestIdWithUpdate(ctx, pool)
-	req := types.NewWithdrawRequest(msg, requestId, ctx.BlockHeight())
+	requestID := k.getNextWithdrawRequestIDWithUpdate(ctx, pool)
+	req := types.NewWithdrawRequest(msg, requestID, ctx.BlockHeight())
 	k.SetWithdrawRequest(ctx, req)
 	k.SetWithdrawRequestIndex(ctx, req)
 
@@ -262,9 +262,9 @@ func (k Keeper) Withdraw(ctx sdk.Context, msg *types.MsgWithdraw) (types.Withdra
 		sdk.NewEvent(
 			types.EventTypeWithdraw,
 			sdk.NewAttribute(types.AttributeKeyWithdrawer, msg.Withdrawer),
-			sdk.NewAttribute(types.AttributeKeyPoolId, strconv.FormatUint(pool.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(pool.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyPoolCoin, msg.PoolCoin.String()),
-			sdk.NewAttribute(types.AttributeKeyRequestId, strconv.FormatUint(req.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyRequestID, strconv.FormatUint(req.Id, 10)),
 		),
 	})
 
@@ -343,9 +343,9 @@ func (k Keeper) FinishDepositRequest(ctx sdk.Context, req types.DepositRequest, 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeDepositResult,
-			sdk.NewAttribute(types.AttributeKeyRequestId, strconv.FormatUint(req.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyRequestID, strconv.FormatUint(req.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyDepositor, req.Depositor),
-			sdk.NewAttribute(types.AttributeKeyPoolId, strconv.FormatUint(req.PoolId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(req.PoolId, 10)),
 			sdk.NewAttribute(types.AttributeKeyDepositCoins, req.DepositCoins.String()),
 			sdk.NewAttribute(types.AttributeKeyAcceptedCoins, req.AcceptedCoins.String()),
 			sdk.NewAttribute(types.AttributeKeyRefundedCoins, refundingCoins.String()),
@@ -433,9 +433,9 @@ func (k Keeper) FinishWithdrawRequest(ctx sdk.Context, req types.WithdrawRequest
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeWithdrawalResult,
-			sdk.NewAttribute(types.AttributeKeyRequestId, strconv.FormatUint(req.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyRequestID, strconv.FormatUint(req.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyWithdrawer, req.Withdrawer),
-			sdk.NewAttribute(types.AttributeKeyPoolId, strconv.FormatUint(req.PoolId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(req.PoolId, 10)),
 			sdk.NewAttribute(types.AttributeKeyPoolCoin, req.PoolCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyRefundedCoins, refundingCoins.String()),
 			sdk.NewAttribute(types.AttributeKeyWithdrawnCoins, req.WithdrawnCoins.String()),

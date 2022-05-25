@@ -115,7 +115,6 @@ func txWithdraw() *cobra.Command {
 		Short: "create a new withdraw",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -149,7 +148,6 @@ func txDrawDebt() *cobra.Command {
 		Short: "draw debt",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -182,7 +180,6 @@ func txRepayDebt() *cobra.Command {
 		Short: "repay debt",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -215,7 +212,6 @@ func txClose() *cobra.Command {
 		Short: "close",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err

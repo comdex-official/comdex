@@ -78,9 +78,9 @@ func (m msgServer) BeginUnlockTokens(goCtx context.Context, msg *types.MsgBeginU
 		return nil, err
 	}
 
-	lock, found := m.Keeper.GetLockById(ctx, msg.LockId)
+	lock, found := m.Keeper.GetLockByID(ctx, msg.LockId)
 	if !found {
-		return nil, types.ErrInvalidLockId
+		return nil, types.ErrInvalidLockID
 	}
 
 	if lock.Owner != owner.String() {
@@ -100,13 +100,14 @@ func (m msgServer) BeginUnlockTokens(goCtx context.Context, msg *types.MsgBeginU
 	if msg.Coin.Amount.LT(lock.Coin.Amount) {
 		isLockUpdate = true
 	}
+	//nolint
 	m.Keeper.UpdateOrDeleteLock(ctx, isLockUpdate, lock.Id, msg.Coin)
-	unlockId, _ := m.Keeper.NewBeginUnlockTokens(ctx, owner, lock, msg.Coin)
+	unlockID, _ := m.Keeper.NewBeginUnlockTokens(ctx, owner, lock, msg.Coin)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.TypeEvtBeginUnlock,
-			sdk.NewAttribute(types.AttributeUnlockID, strconv.Itoa(int(unlockId))),
+			sdk.NewAttribute(types.AttributeUnlockID, strconv.Itoa(int(unlockID))),
 			sdk.NewAttribute(types.AttributeLockOwner, lock.Owner),
 			sdk.NewAttribute(types.AttributeUnLockAmount, msg.Coin.String()),
 			sdk.NewAttribute(types.AttributeLockDuration, lock.Duration.String()),

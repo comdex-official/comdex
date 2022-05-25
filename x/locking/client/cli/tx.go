@@ -20,7 +20,7 @@ var (
 	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
 )
 
-// GetTxCmd returns the transaction commands for this module
+// GetTxCmd returns the transaction commands for this module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -110,7 +110,7 @@ func NewBeginUnlockByIDCmd() *cobra.Command {
 
 			msg := types.NewMsgBeginUnlockingTokens(
 				clientCtx.GetFromAddress(),
-				uint64(id),
+				id,
 				unlockingCoin,
 			)
 

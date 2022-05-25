@@ -128,7 +128,6 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins, gas uint64
 	}
 
 	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
-
 }
 
 // GenAndDeliverTxWithFees generates a transaction with given fee and delivers it.

@@ -11,11 +11,17 @@ var (
 	_ sdk.Msg = (*MsgAddPairRequest)(nil)
 )
 
-func NewMsgAddPairRequest(from sdk.AccAddress, assetIn, assetOut uint64, liquidationRatio sdk.Dec) *MsgAddPairRequest {
+func NewMsgAddPairRequest(
+	//nolint
+	from sdk.AccAddress,
+	assetIn,
+	assetOut uint64,
+	liquidationRatio sdk.Dec,
+) *MsgAddPairRequest {
 	return &MsgAddPairRequest{
-		From:             from.String(),
-		AssetIn:          assetIn,
-		AssetOut:         assetOut,
+		From:     from.String(),
+		AssetIn:  assetIn,
+		AssetOut: assetOut,
 	}
 }
 
@@ -45,7 +51,12 @@ func (m *MsgAddPairRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgAddAssetRequest(from sdk.AccAddress, name, denom string, decimals int64) *MsgAddAssetRequest {
+func NewMsgAddAssetRequest(
+	//nolint
+	from sdk.AccAddress,
+	name, denom string,
+	decimals int64,
+) *MsgAddAssetRequest {
 	return &MsgAddAssetRequest{
 		From:     from.String(),
 		Name:     name,
@@ -89,7 +100,13 @@ func (m *MsgAddAssetRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateAssetRequest(from sdk.AccAddress, id uint64, name, denom string, decimals int64) *MsgUpdateAssetRequest {
+func NewMsgUpdateAssetRequest(
+	//nolint
+	from sdk.AccAddress,
+	id uint64,
+	name, denom string,
+	decimals int64,
+) *MsgUpdateAssetRequest {
 	return &MsgUpdateAssetRequest{
 		From:     from.String(),
 		Id:       id,

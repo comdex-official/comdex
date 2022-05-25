@@ -18,12 +18,11 @@ func (k Keeper) HandleProposalAddPairs(ctx sdk.Context, p *types.AddPairsProposa
 }
 
 func (k Keeper) HandleAddWhitelistedAssetRecords(ctx sdk.Context, p *types.AddWhitelistedAssetsProposal) error {
-	return k.AddWhitelistedAssetRecords(ctx, p.Assets... )
+	return k.AddWhitelistedAssetRecords(ctx, p.Assets...)
 }
 
 func (k Keeper) HandleUpdateWhitelistedAssetRecords(ctx sdk.Context, p *types.UpdateWhitelistedAssetProposal) error {
-	return k.UpdateWhitelistedAssetRecords(ctx, p.Asset )
-
+	return k.UpdateWhitelistedAssetRecords(ctx, p.Asset)
 }
 
 func (k Keeper) HandleAddWhitelistedPairsRecords(ctx sdk.Context, p *types.AddWhitelistedPairsProposal) error {

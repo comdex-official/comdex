@@ -27,7 +27,7 @@ func (k Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 	return &types.QueryParamsResponse{Params: params}, nil
 }
 
-func (k Querier) QueryLockById(c context.Context, req *types.QueryLockByIdRequest) (*types.QueryLockByIdResponse, error) {
+func (k Querier) QueryLockByID(c context.Context, req *types.QueryLockByIdRequest) (*types.QueryLockByIdResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -36,7 +36,7 @@ func (k Querier) QueryLockById(c context.Context, req *types.QueryLockByIdReques
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := k.GetLockById(ctx, req.Id)
+	item, found := k.GetLockByID(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "lock does not exist for id %d", req.Id)
 	}
@@ -61,8 +61,8 @@ func (k Querier) QueryLocksByOwner(c context.Context, req *types.QueryLocksByOwn
 	}
 
 	locksByOwner := []types.Lock{}
-	for _, lockId := range lockIdsByOwner.LockIds {
-		lock, _ := k.GetLockById(ctx, lockId)
+	for _, lockID := range lockIdsByOwner.LockIds {
+		lock, _ := k.GetLockByID(ctx, lockID)
 		locksByOwner = append(locksByOwner, lock)
 	}
 
@@ -108,7 +108,7 @@ func (k Querier) QueryAllLocks(c context.Context, req *types.QueryAllLocksReques
 	}, nil
 }
 
-func (k Querier) QueryUnlockingById(c context.Context, req *types.QueryUnlockingByIdRequest) (*types.QueryUnlockingByIdResponse, error) {
+func (k Querier) QueryUnlockingByID(c context.Context, req *types.QueryUnlockingByIdRequest) (*types.QueryUnlockingByIdResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -117,7 +117,7 @@ func (k Querier) QueryUnlockingById(c context.Context, req *types.QueryUnlocking
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := k.GetUnlockingById(ctx, req.Id)
+	item, found := k.GetUnlockingByID(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "unlocking does not exist for id %d", req.Id)
 	}
@@ -142,8 +142,8 @@ func (k Querier) QueryUnlockingsByOwner(c context.Context, req *types.QueryUnloc
 	}
 
 	unlockingsByOwner := []types.Unlocking{}
-	for _, lockId := range unlockIdsByOwner.UnlockingIds {
-		lock, _ := k.GetUnlockingById(ctx, lockId)
+	for _, lockID := range unlockIdsByOwner.UnlockingIds {
+		lock, _ := k.GetUnlockingByID(ctx, lockID)
 		unlockingsByOwner = append(unlockingsByOwner, lock)
 	}
 

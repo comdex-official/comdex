@@ -2,7 +2,8 @@ package types
 
 // event types.
 const (
-	TypeEvtLockTokens      = "lock_tokens"
+	TypeEvtLockTokens = "lock_tokens"
+	//nolint
 	TypeEvtAddTokensToLock = "add_tokens_to_lock"
 	TypeEvtBeginUnlock     = "begin_unlock"
 

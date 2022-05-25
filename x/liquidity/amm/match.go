@@ -8,7 +8,11 @@ import (
 
 // FindMatchPrice returns the best match price for given order sources.
 // If there is no matchable orders, found will be false.
-func FindMatchPrice(os OrderSource, tickPrec int) (matchPrice sdk.Dec, found bool) {
+func FindMatchPrice(
+	//nolint
+	os OrderSource,
+	tickPrec int,
+) (matchPrice sdk.Dec, found bool) {
 	highestBuyPrice, found := os.HighestBuyPrice()
 	if !found {
 		return sdk.Dec{}, false

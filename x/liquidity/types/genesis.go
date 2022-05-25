@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// DefaultGenesis returns the default Capability genesis state
+// DefaultGenesis returns the default Capability genesis state.
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		Params:           DefaultParams(),

@@ -8,14 +8,14 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-// Liquidity params default values
+// Liquidity params default values.
 const (
 	DefaultBatchSize        uint32 = 1
 	DefaultTickPrecision    uint32 = 6
 	DefaultMaxOrderLifespan        = 24 * time.Hour
 )
 
-// Liquidity params default values
+// Liquidity params default values.
 var (
 	DefaultFeeCollectorAddress      = DeriveAddress(AddressType32Bytes, ModuleName, "FeeCollector")
 	DefaultSwapFeeCollectorAddress  = DeriveAddress(AddressType32Bytes, ModuleName, "SwapFeeCollector")
@@ -31,7 +31,7 @@ var (
 	DefaultOrderExtraGas            = sdk.Gas(37000)
 )
 
-// General constants
+// General constants.
 const (
 	PoolReserveAddressPrefix  = "PoolReserveAddress"
 	PairEscrowAddressPrefix   = "PairEscrowAddress"

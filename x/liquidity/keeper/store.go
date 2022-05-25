@@ -9,9 +9,9 @@ import (
 )
 
 // GetLastPairId returns the last pair id.
-func (k Keeper) GetLastPairId(ctx sdk.Context) (id uint64) {
+func (k Keeper) GetLastPairID(ctx sdk.Context) (id uint64) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.LastPairIdKey)
+	bz := store.Get(types.LastPairIDKey)
 	if bz == nil {
 		id = 0 // initialize the pair id
 	} else {
@@ -23,10 +23,10 @@ func (k Keeper) GetLastPairId(ctx sdk.Context) (id uint64) {
 }
 
 // SetLastPairId stores the last pair id.
-func (k Keeper) SetLastPairId(ctx sdk.Context, id uint64) {
+func (k Keeper) SetLastPairID(ctx sdk.Context, id uint64) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&gogotypes.UInt64Value{Value: id})
-	store.Set(types.LastPairIdKey, bz)
+	store.Set(types.LastPairIDKey, bz)
 }
 
 // GetPair returns pair object for the given pair id.
@@ -61,16 +61,16 @@ func (k Keeper) SetPair(ctx sdk.Context, pair types.Pair) {
 }
 
 // SetPairIndex stores a pair index.
-func (k Keeper) SetPairIndex(ctx sdk.Context, baseCoinDenom, quoteCoinDenom string, pairId uint64) {
+func (k Keeper) SetPairIndex(ctx sdk.Context, baseCoinDenom, quoteCoinDenom string, pairID uint64) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshal(&gogotypes.UInt64Value{Value: pairId})
+	bz := k.cdc.MustMarshal(&gogotypes.UInt64Value{Value: pairID})
 	store.Set(types.GetPairIndexKey(baseCoinDenom, quoteCoinDenom), bz)
 }
 
 // SetPairLookupIndex stores a pair lookup index for given denoms.
-func (k Keeper) SetPairLookupIndex(ctx sdk.Context, denomA string, denomB string, pairId uint64) {
+func (k Keeper) SetPairLookupIndex(ctx sdk.Context, denomA string, denomB string, pairID uint64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.GetPairsByDenomsIndexKey(denomA, denomB, pairId), []byte{})
+	store.Set(types.GetPairsByDenomsIndexKey(denomA, denomB, pairID), []byte{})
 }
 
 // IterateAllPairs iterates over all the stored pairs and performs a callback function.
@@ -103,9 +103,9 @@ func (k Keeper) GetAllPairs(ctx sdk.Context) (pairs []types.Pair) {
 }
 
 // GetLastPoolId returns the last pool id.
-func (k Keeper) GetLastPoolId(ctx sdk.Context) (id uint64) {
+func (k Keeper) GetLastPoolID(ctx sdk.Context) (id uint64) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.LastPoolIdKey)
+	bz := store.Get(types.LastPoolIDKey)
 	if bz == nil {
 		id = 0 // initialize the pool id
 	} else {
@@ -117,10 +117,10 @@ func (k Keeper) GetLastPoolId(ctx sdk.Context) (id uint64) {
 }
 
 // SetLastPoolId stores the last pool id.
-func (k Keeper) SetLastPoolId(ctx sdk.Context, id uint64) {
+func (k Keeper) SetLastPoolID(ctx sdk.Context, id uint64) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&gogotypes.UInt64Value{Value: id})
-	store.Set(types.LastPoolIdKey, bz)
+	store.Set(types.LastPoolIDKey, bz)
 }
 
 // GetPool returns pool object for the given pool id.
@@ -143,8 +143,8 @@ func (k Keeper) GetPoolByReserveAddress(ctx sdk.Context, reserveAddr sdk.AccAddr
 	}
 	var val gogotypes.UInt64Value
 	k.cdc.MustUnmarshal(bz, &val)
-	poolId := val.GetValue()
-	return k.GetPool(ctx, poolId)
+	poolID := val.GetValue()
+	return k.GetPool(ctx, poolID)
 }
 
 // SetPool stores the particular pool.
@@ -188,13 +188,13 @@ func (k Keeper) IterateAllPools(ctx sdk.Context, cb func(pool types.Pool) (stop 
 
 // IteratePoolsByPair iterates over all the stored pools by the pair and performs a callback function.
 // Stops iteration when callback returns true.
-func (k Keeper) IteratePoolsByPair(ctx sdk.Context, pairId uint64, cb func(pool types.Pool) (stop bool, err error)) error {
+func (k Keeper) IteratePoolsByPair(ctx sdk.Context, pairID uint64, cb func(pool types.Pool) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetPoolsByPairIndexKeyPrefix(pairId))
+	iter := sdk.KVStorePrefixIterator(store, types.GetPoolsByPairIndexKeyPrefix(pairID))
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		poolId := types.ParsePoolsByPairIndexKey(iter.Key())
-		pool, _ := k.GetPool(ctx, poolId)
+		poolID := types.ParsePoolsByPairIndexKey(iter.Key())
+		pool, _ := k.GetPool(ctx, poolID)
 		stop, err := cb(pool)
 		if err != nil {
 			return err
@@ -217,8 +217,8 @@ func (k Keeper) GetAllPools(ctx sdk.Context) (pools []types.Pool) {
 }
 
 // GetPoolsByPair returns pools within the pair.
-func (k Keeper) GetPoolsByPair(ctx sdk.Context, pairId uint64) (pools []types.Pool) {
-	_ = k.IteratePoolsByPair(ctx, pairId, func(pool types.Pool) (stop bool, err error) {
+func (k Keeper) GetPoolsByPair(ctx sdk.Context, pairID uint64) (pools []types.Pool) {
+	_ = k.IteratePoolsByPair(ctx, pairID, func(pool types.Pool) (stop bool, err error) {
 		pools = append(pools, pool)
 		return false, nil
 	})
@@ -226,9 +226,9 @@ func (k Keeper) GetPoolsByPair(ctx sdk.Context, pairId uint64) (pools []types.Po
 }
 
 // GetDepositRequest returns the particular deposit request.
-func (k Keeper) GetDepositRequest(ctx sdk.Context, poolId, id uint64) (req types.DepositRequest, found bool) {
+func (k Keeper) GetDepositRequest(ctx sdk.Context, poolID, id uint64) (req types.DepositRequest, found bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetDepositRequestKey(poolId, id))
+	bz := store.Get(types.GetDepositRequestKey(poolID, id))
 	if bz == nil {
 		return
 	}
@@ -269,13 +269,18 @@ func (k Keeper) IterateAllDepositRequests(ctx sdk.Context, cb func(req types.Dep
 
 // IterateDepositRequestsByDepositor iterates through deposit requests in the
 // store by a depositor and call cb on each order.
-func (k Keeper) IterateDepositRequestsByDepositor(ctx sdk.Context, depositor sdk.AccAddress, cb func(req types.DepositRequest) (stop bool, err error)) error {
+func (k Keeper) IterateDepositRequestsByDepositor(
+	ctx sdk.Context,
+	//nolint
+	depositor sdk.AccAddress,
+	cb func(req types.DepositRequest) (stop bool, err error),
+) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetDepositRequestIndexKeyPrefix(depositor))
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		_, poolId, reqId := types.ParseDepositRequestIndexKey(iter.Key())
-		req, _ := k.GetDepositRequest(ctx, poolId, reqId)
+		_, poolID, reqID := types.ParseDepositRequestIndexKey(iter.Key())
+		req, _ := k.GetDepositRequest(ctx, poolID, reqID)
 		stop, err := cb(req)
 		if err != nil {
 			return err
@@ -319,9 +324,9 @@ func (k Keeper) DeleteDepositRequestIndex(ctx sdk.Context, req types.DepositRequ
 }
 
 // GetWithdrawRequest returns the particular withdraw request.
-func (k Keeper) GetWithdrawRequest(ctx sdk.Context, poolId, id uint64) (req types.WithdrawRequest, found bool) {
+func (k Keeper) GetWithdrawRequest(ctx sdk.Context, poolID, id uint64) (req types.WithdrawRequest, found bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetWithdrawRequestKey(poolId, id))
+	bz := store.Get(types.GetWithdrawRequestKey(poolID, id))
 	if bz == nil {
 		return
 	}
@@ -362,13 +367,18 @@ func (k Keeper) IterateAllWithdrawRequests(ctx sdk.Context, cb func(req types.Wi
 
 // IterateWithdrawRequestsByWithdrawer iterates through withdraw requests in the
 // store by a withdrawer and call cb on each order.
-func (k Keeper) IterateWithdrawRequestsByWithdrawer(ctx sdk.Context, withdrawer sdk.AccAddress, cb func(req types.WithdrawRequest) (stop bool, err error)) error {
+func (k Keeper) IterateWithdrawRequestsByWithdrawer(
+	ctx sdk.Context,
+	//nolint
+	withdrawer sdk.AccAddress,
+	cb func(req types.WithdrawRequest) (stop bool, err error),
+) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetWithdrawRequestIndexKeyPrefix(withdrawer))
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		_, poolId, reqId := types.ParseWithdrawRequestIndexKey(iter.Key())
-		req, _ := k.GetWithdrawRequest(ctx, poolId, reqId)
+		_, poolID, reqID := types.ParseWithdrawRequestIndexKey(iter.Key())
+		req, _ := k.GetWithdrawRequest(ctx, poolID, reqID)
 		stop, err := cb(req)
 		if err != nil {
 			return err
@@ -412,9 +422,9 @@ func (k Keeper) DeleteWithdrawRequestIndex(ctx sdk.Context, req types.WithdrawRe
 }
 
 // GetOrder returns the particular order.
-func (k Keeper) GetOrder(ctx sdk.Context, pairId, id uint64) (order types.Order, found bool) {
+func (k Keeper) GetOrder(ctx sdk.Context, pairID, id uint64) (order types.Order, found bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetOrderKey(pairId, id))
+	bz := store.Get(types.GetOrderKey(pairID, id))
 	if bz == nil {
 		return
 	}
@@ -455,9 +465,9 @@ func (k Keeper) IterateAllOrders(ctx sdk.Context, cb func(order types.Order) (st
 
 // IterateOrdersByPair iterates through all the orders within the pair
 // and call cb for each order.
-func (k Keeper) IterateOrdersByPair(ctx sdk.Context, pairId uint64, cb func(order types.Order) (stop bool, err error)) error {
+func (k Keeper) IterateOrdersByPair(ctx sdk.Context, pairID uint64, cb func(order types.Order) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetOrdersByPairKeyPrefix(pairId))
+	iter := sdk.KVStorePrefixIterator(store, types.GetOrdersByPairKeyPrefix(pairID))
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		order := types.MustUnmarshalOrder(k.cdc, iter.Value())
@@ -474,13 +484,18 @@ func (k Keeper) IterateOrdersByPair(ctx sdk.Context, pairId uint64, cb func(orde
 
 // IterateOrdersByOrderer iterates through orders in the store by an orderer
 // and call cb on each order.
-func (k Keeper) IterateOrdersByOrderer(ctx sdk.Context, orderer sdk.AccAddress, cb func(order types.Order) (stop bool, err error)) error {
+func (k Keeper) IterateOrdersByOrderer(
+	ctx sdk.Context,
+	//nolint
+	orderer sdk.AccAddress,
+	cb func(order types.Order) (stop bool, err error),
+) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetOrderIndexKeyPrefix(orderer))
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		_, pairId, orderId := types.ParseOrderIndexKey(iter.Key())
-		order, _ := k.GetOrder(ctx, pairId, orderId)
+		_, pairID, orderID := types.ParseOrderIndexKey(iter.Key())
+		order, _ := k.GetOrder(ctx, pairID, orderID)
 		stop, err := cb(order)
 		if err != nil {
 			return err
@@ -503,8 +518,8 @@ func (k Keeper) GetAllOrders(ctx sdk.Context) (orders []types.Order) {
 }
 
 // GetOrdersByPair returns orders within the pair.
-func (k Keeper) GetOrdersByPair(ctx sdk.Context, pairId uint64) (orders []types.Order) {
-	_ = k.IterateOrdersByPair(ctx, pairId, func(order types.Order) (stop bool, err error) {
+func (k Keeper) GetOrdersByPair(ctx sdk.Context, pairID uint64) (orders []types.Order) {
+	_ = k.IterateOrdersByPair(ctx, pairID, func(order types.Order) (stop bool, err error) {
 		orders = append(orders, order)
 		return false, nil
 	})
@@ -533,9 +548,9 @@ func (k Keeper) DeleteOrderIndex(ctx sdk.Context, order types.Order) {
 }
 
 // GetPoolLiquidityProvidersData returns the liquidity providers data by pool id.
-func (k Keeper) GetPoolLiquidityProvidersData(ctx sdk.Context, poolId uint64) (liquidityProvidersData types.PoolLiquidityProvidersData, found bool) {
+func (k Keeper) GetPoolLiquidityProvidersData(ctx sdk.Context, poolID uint64) (liquidityProvidersData types.PoolLiquidityProvidersData, found bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetPoolLiquidityProvidersDataKey(poolId))
+	bz := store.Get(types.GetPoolLiquidityProvidersDataKey(poolID))
 	if bz == nil {
 		return
 	}

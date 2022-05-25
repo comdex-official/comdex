@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	FlagPairId         = "pair-id"
+	FlagPairID         = "pair-id"
 	FlagDisabled       = "disabled"
 	FlagPoolCoinDenom  = "pool-coin-denom"
 	FlagReserveAddress = "reserve-address"
@@ -18,7 +18,7 @@ const (
 func flagSetPools() *flag.FlagSet {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 
-	fs.String(FlagPairId, "", "The pair id")
+	fs.String(FlagPairID, "", "The pair id")
 	fs.String(FlagDisabled, "", "Whether the pool is disabled or not")
 
 	return fs
@@ -44,7 +44,7 @@ func flagSetPairs() *flag.FlagSet {
 func flagSetOrders() *flag.FlagSet {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 
-	fs.String(FlagPairId, "", "The pair id")
+	fs.String(FlagPairID, "", "The pair id")
 
 	return fs
 }

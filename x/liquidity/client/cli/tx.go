@@ -16,7 +16,7 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
-// GetTxCmd returns the transaction commands for the module
+// GetTxCmd returns the transaction commands for the module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -94,7 +94,7 @@ $ %s tx %s create-pool 1 1000000000uatom,50000000000stake --from mykey
 				return err
 			}
 
-			pairId, err := strconv.ParseUint(args[0], 10, 64)
+			pairID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse pair id: %w", err)
 			}
@@ -104,7 +104,7 @@ $ %s tx %s create-pool 1 1000000000uatom,50000000000stake --from mykey
 				return fmt.Errorf("invalid deposit coints: %w", err)
 			}
 
-			msg := types.NewMsgCreatePool(clientCtx.GetFromAddress(), pairId, depositCoins)
+			msg := types.NewMsgCreatePool(clientCtx.GetFromAddress(), pairID, depositCoins)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -134,7 +134,7 @@ $ %s tx %s deposit 1 1000000000uatom,50000000000stake --from mykey
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("invalid pool id: %w", err)
 			}
@@ -144,7 +144,7 @@ $ %s tx %s deposit 1 1000000000uatom,50000000000stake --from mykey
 				return fmt.Errorf("invalid deposit coins: %w", err)
 			}
 
-			msg := types.NewMsgDeposit(clientCtx.GetFromAddress(), poolId, depositCoins)
+			msg := types.NewMsgDeposit(clientCtx.GetFromAddress(), poolID, depositCoins)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -174,7 +174,7 @@ $ %s tx %s withdraw 1 10000pool1 --from mykey
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -186,7 +186,7 @@ $ %s tx %s withdraw 1 10000pool1 --from mykey
 
 			msg := types.NewMsgWithdraw(
 				clientCtx.GetFromAddress(),
-				poolId,
+				poolID,
 				poolCoin,
 			)
 
@@ -231,7 +231,7 @@ $ %s tx %s limit-order 1 s 10000uatom stake 2.0 10000 --order-lifespan=10m --fro
 				return err
 			}
 
-			pairId, err := strconv.ParseUint(args[0], 10, 64)
+			pairID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse pair id: %w", err)
 			}
@@ -265,7 +265,7 @@ $ %s tx %s limit-order 1 s 10000uatom stake 2.0 10000 --order-lifespan=10m --fro
 
 			msg := types.NewMsgLimitOrder(
 				clientCtx.GetFromAddress(),
-				pairId,
+				pairID,
 				dir,
 				offerCoin,
 				demandCoinDenom,
@@ -315,7 +315,7 @@ $ %s tx %s market-order 1 s 10000uatom stake 10000 --order-lifespan=10m --from m
 				return err
 			}
 
-			pairId, err := strconv.ParseUint(args[0], 10, 64)
+			pairID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse pair id: %w", err)
 			}
@@ -344,7 +344,7 @@ $ %s tx %s market-order 1 s 10000uatom stake 10000 --order-lifespan=10m --from m
 
 			msg := types.NewMsgMarketOrder(
 				clientCtx.GetFromAddress(),
-				pairId,
+				pairID,
 				dir,
 				offerCoin,
 				demandCoinDenom,
@@ -381,20 +381,20 @@ $ %s tx %s cancel-order 1 1 --from mykey
 				return err
 			}
 
-			pairId, err := strconv.ParseUint(args[0], 10, 64)
+			pairID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			orderId, err := strconv.ParseUint(args[1], 10, 64)
+			orderID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			msg := types.NewMsgCancelOrder(
 				clientCtx.GetFromAddress(),
-				pairId,
-				orderId,
+				pairID,
+				orderID,
 			)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
@@ -427,16 +427,16 @@ $ %s tx %s cancel-all-orders 1,3 --from mykey
 				return err
 			}
 
-			var pairIds []uint64
-			for _, pairIdStr := range strings.Split(args[0], ",") {
-				pairId, err := strconv.ParseUint(pairIdStr, 10, 64)
+			var pairIDs []uint64
+			for _, pairIDStr := range strings.Split(args[0], ",") {
+				pairID, err := strconv.ParseUint(pairIDStr, 10, 64)
 				if err != nil {
 					return fmt.Errorf("parse pair id: %w", err)
 				}
-				pairIds = append(pairIds, pairId)
+				pairIDs = append(pairIDs, pairID)
 			}
 
-			msg := types.NewMsgCancelAllOrders(clientCtx.GetFromAddress(), pairIds)
+			msg := types.NewMsgCancelAllOrders(clientCtx.GetFromAddress(), pairIDs)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -466,7 +466,7 @@ $ %s tx %s soft-lock 1 10000pool1 --from mykey
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -478,7 +478,7 @@ $ %s tx %s soft-lock 1 10000pool1 --from mykey
 
 			msg := types.NewMsgSoftLock(
 				clientCtx.GetFromAddress(),
-				poolId,
+				poolID,
 				softLockCoin,
 			)
 
@@ -510,7 +510,7 @@ $ %s tx %s soft-unlock 1 10000pool1 --from mykey
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -522,7 +522,7 @@ $ %s tx %s soft-unlock 1 10000pool1 --from mykey
 
 			msg := types.NewMsgSoftUnlock(
 				clientCtx.GetFromAddress(),
-				poolId,
+				poolID,
 				softUnlockCoin,
 			)
 

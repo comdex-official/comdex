@@ -3,6 +3,9 @@ package oracle
 import (
 	"context"
 	"encoding/json"
+	"math"
+	"math/rand"
+
 	bandpacket "github.com/bandprotocol/bandchain-packet/packet"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
@@ -10,8 +13,6 @@ import (
 	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibcexported "github.com/cosmos/ibc-go/v2/modules/core/exported"
-	"math"
-	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -42,7 +43,11 @@ func (a AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
-func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
+func NewAppModule(
+	//nolint
+	cdc codec.Codec,
+	keeper keeper.Keeper,
+) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
@@ -285,6 +290,7 @@ func (a AppModule) NegotiateAppVersion(ctx sdk.Context,
 	portID string,
 	counterparty ibcchanneltypes.Counterparty,
 	proposedVersion string) (version string, err error) {
+	//nolint
 	//TODO implement me
 	panic("implement me")
 }

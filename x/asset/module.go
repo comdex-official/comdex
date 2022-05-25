@@ -29,7 +29,11 @@ var (
 
 type AppModuleBasic struct{ cdc codec.BinaryCodec }
 
-func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
+func NewAppModule(
+	//nolint
+	cdc codec.Codec,
+	keeper keeper.Keeper,
+) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
@@ -79,6 +83,7 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
+	//nolint
 	cdc    codec.JSONCodec
 	keeper keeper.Keeper
 }

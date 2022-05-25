@@ -21,7 +21,7 @@ import (
 	"github.com/comdex-official/comdex/x/locking/types"
 )
 
-// GetQueryCmd returns the cli query commands for this module
+// GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd(queryRoute string) *cobra.Command {
 	// Group locking queries under a subcommand
 	cmd := &cobra.Command{
@@ -34,9 +34,9 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(
 		NewQueryParamsCmd(),
-		NewQueryLockByIdCmd(),
+		NewQueryLockByIDCmd(),
 		NewQueryLockByOwnerCmd(),
-		NewQueryUnlockingByIdCmd(),
+		NewQueryUnlockingByIDCmd(),
 		NewQueryUnlockingByOwnerCmd(),
 		NewQueryAllLocksCmd(),
 		NewQueryAllUnlockingsCmd(),
@@ -80,7 +80,7 @@ $ %s query %s params
 	return cmd
 }
 
-func NewQueryLockByIdCmd() *cobra.Command {
+func NewQueryLockByIDCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "lock-by-id [id]",
 		Args:  cobra.ExactArgs(1),
@@ -103,7 +103,7 @@ $ %s query %s lock-by-id 1
 				return err
 			}
 			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.QueryLockById(
+			res, err := queryClient.QueryLockByID(
 				context.Background(),
 				&types.QueryLockByIdRequest{
 					Id: id,
@@ -198,7 +198,7 @@ $ %s query %s locks
 	return cmd
 }
 
-func NewQueryUnlockingByIdCmd() *cobra.Command {
+func NewQueryUnlockingByIDCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "unlocking-by-id [id]",
 		Args:  cobra.ExactArgs(1),
@@ -221,7 +221,7 @@ $ %s query %s unlocking-by-id 1
 				return err
 			}
 			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.QueryUnlockingById(
+			res, err := queryClient.QueryUnlockingByID(
 				context.Background(),
 				&types.QueryUnlockingByIdRequest{
 					Id: id,

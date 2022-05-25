@@ -77,7 +77,6 @@ import (
 	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
 	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	ibctypes "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 	"github.com/spf13/cast"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
@@ -124,14 +123,16 @@ const (
 )
 
 var (
-	// If EnableSpecificWasmProposals is "", and this is "true", then enable all x/wasm proposals.
+	//WasmProposalsEnabled - If EnableSpecificWasmProposals is "", and this is "true", then enable all x/wasm proposals
 	// If EnableSpecificWasmProposals is "", and this is not "true", then disable all x/wasm proposals.
 	WasmProposalsEnabled = "true"
-	// If set to non-empty string it must be comma-separated list of values that are all a subset
+
+	// EnableSpecificWasmProposals -  If set to non-empty string it must be comma-separated list of values that are all a subset
 	// of "EnableAllProposals" (takes precedence over WasmProposalsEnabled)
 	// https://github.com/CosmWasm/wasmd/blob/02a54d33ff2c064f3539ae12d75d027d9c665f05/x/wasm/internal/types/proposal.go#L28-L34
 	EnableSpecificWasmProposals = ""
-	// use this for clarity in argument list
+
+	// EmptyWasmOpts - use this for clarity in argument list
 	EmptyWasmOpts []wasm.Option
 )
 
@@ -317,6 +318,7 @@ func New(
 		app.tkeys[paramstypes.TStoreKey],
 	)
 
+	//nolint
 	//TODO: refactor this code
 	app.paramsKeeper.Subspace(authtypes.ModuleName)
 	app.paramsKeeper.Subspace(banktypes.ModuleName)
@@ -525,7 +527,7 @@ func New(
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")
-	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
+	wasmConfig, _ := wasm.ReadWasmConfig(appOptions)
 	supportedFeatures := "iterator,staking,stargate"
 
 	app.wasmKeeper = wasmkeeper.NewKeeper(
@@ -714,20 +716,20 @@ func New(
 	return app
 }
 
-// Name returns the name of the App
+// Name returns the name of the App.
 func (a *App) Name() string { return a.BaseApp.Name() }
 
-// BeginBlocker application updates every begin block
+// BeginBlocker application updates every begin block.
 func (a *App) BeginBlocker(ctx sdk.Context, req abcitypes.RequestBeginBlock) abcitypes.ResponseBeginBlock {
 	return a.mm.BeginBlock(ctx, req)
 }
 
-// EndBlocker application updates every end block
+// EndBlocker application updates every end block.
 func (a *App) EndBlocker(ctx sdk.Context, req abcitypes.RequestEndBlock) abcitypes.ResponseEndBlock {
 	return a.mm.EndBlock(ctx, req)
 }
 
-// InitChainer application update at chain initialization
+// InitChainer application update at chain initialization.
 func (a *App) InitChainer(ctx sdk.Context, req abcitypes.RequestInitChain) abcitypes.ResponseInitChain {
 	var state GenesisState
 	if err := tmjson.Unmarshal(req.AppStateBytes, &state); err != nil {
@@ -737,7 +739,6 @@ func (a *App) InitChainer(ctx sdk.Context, req abcitypes.RequestInitChain) abcit
 	return a.mm.InitGenesis(ctx, a.cdc, state)
 }
 
-// LoadHeight loads a particular height
 func (a *App) LoadHeight(height int64) error {
 	return a.LoadVersion(height)
 }
@@ -768,7 +769,7 @@ func (a *App) AppCodec() codec.BinaryCodec {
 	return a.cdc
 }
 
-// InterfaceRegistry returns Gaia's InterfaceRegistry
+// InterfaceRegistry returns Gaia's InterfaceRegistry.
 func (a *App) InterfaceRegistry() codectypes.InterfaceRegistry {
 	return a.interfaceRegistry
 }
@@ -845,8 +846,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		incentivestypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 	}
 }
-func (app *App) registerUpgradeHandlers() {
-	app.upgradeKeeper.SetUpgradeHandler("v0.1.2", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
+func (a *App) registerUpgradeHandlers() {
+	a.upgradeKeeper.SetUpgradeHandler("v0.1.2", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 		// 1st-time running in-store migrations, using 1 as fromVersion to
 		// avoid running InitGenesis.
 		fromVM := map[string]uint64{
@@ -863,30 +864,30 @@ func (app *App) registerUpgradeHandlers() {
 			stakingtypes.ModuleName:     staking.AppModule{}.ConsensusVersion(),
 			upgradetypes.ModuleName:     upgrade.AppModule{}.ConsensusVersion(),
 			vestingtypes.ModuleName:     vesting.AppModule{}.ConsensusVersion(),
-			ibctypes.ModuleName:         ibc.AppModule{}.ConsensusVersion(),
+			ibchost.ModuleName:          ibc.AppModule{}.ConsensusVersion(),
 			genutiltypes.ModuleName:     genutil.AppModule{}.ConsensusVersion(),
 			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
 			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
 		}
-		newVM, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
+		newVM, err := a.mm.RunMigrations(ctx, a.configurator, fromVM)
 		if err != nil {
 			return newVM, err
 		}
 		//wasm
-		wasmParams := app.wasmKeeper.GetParams(ctx)
+		wasmParams := a.wasmKeeper.GetParams(ctx)
 		wasmParams.CodeUploadAccess = wasmtypes.AllowNobody
-		app.wasmKeeper.SetParams(ctx, wasmParams)
+		a.wasmKeeper.SetParams(ctx, wasmParams)
 		return newVM, err
 	})
 
-	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
+	upgradeInfo, err := a.upgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(err)
 	}
-	if upgradeInfo.Name == "v0.1.2" && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+	if upgradeInfo.Name == "v0.1.2" && !a.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{}
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+		a.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 	}
 }

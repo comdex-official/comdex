@@ -112,11 +112,11 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 			}
 
 			pairInfo := types.PairInfo{
-				Id:               pair.Id,
-				AssetIn:          pair.AssetIn,
-				DenomIn:          assetIn.Denom,
-				AssetOut:         pair.AssetOut,
-				DenomOut:         assetOut.Denom,
+				Id:       pair.Id,
+				AssetIn:  pair.AssetIn,
+				DenomIn:  assetIn.Denom,
+				AssetOut: pair.AssetOut,
+				DenomOut: assetOut.Denom,
 			}
 
 			if accumulate {
@@ -160,11 +160,11 @@ func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) 
 	}
 
 	pairInfo := types.PairInfo{
-		Id:               pair.Id,
-		AssetIn:          pair.AssetIn,
-		DenomIn:          assetIn.Denom,
-		AssetOut:         pair.AssetOut,
-		DenomOut:         assetOut.Denom,
+		Id:       pair.Id,
+		AssetIn:  pair.AssetIn,
+		DenomIn:  assetIn.Denom,
+		AssetOut: pair.AssetOut,
+		DenomOut: assetOut.Denom,
 	}
 
 	return &types.QueryPairResponse{

@@ -13,18 +13,18 @@ const (
 )
 
 var (
-	AssetIDKey    = []byte{0x01}
-	PairIDKey     = []byte{0x03}
+	AssetIDKey = []byte{0x01}
+	PairIDKey  = []byte{0x03}
 
-	AssetKeyPrefix    = []byte{0x11}
-	PairKeyPrefix     = []byte{0x14}
+	AssetKeyPrefix = []byte{0x11}
+	PairKeyPrefix  = []byte{0x14}
 
-	AssetForDenomKeyPrefix  = []byte{0x21}
+	AssetForDenomKeyPrefix = []byte{0x21}
 
-	WhitelistAssetIDKey    = []byte{0x31}
-	WhitelistAssetKeyPrefix    = []byte{0x32}
-	WhitelistPairIDKey     = []byte{0x33}
-	WhitelistPairKeyPrefix     = []byte{0x34}
+	WhitelistAssetIDKey     = []byte{0x31}
+	WhitelistAssetKeyPrefix = []byte{0x32}
+	WhitelistPairIDKey      = []byte{0x33}
+	WhitelistPairKeyPrefix  = []byte{0x34}
 )
 
 func AssetKey(id uint64) []byte {

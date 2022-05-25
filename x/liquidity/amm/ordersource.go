@@ -71,7 +71,7 @@ func (os *mergedOrderSource) SellAmountUnder(price sdk.Dec) sdk.Int {
 }
 
 func (os *mergedOrderSource) BuyOrdersOver(price sdk.Dec) []Order {
-	var orders []Order
+	orders := make([]Order, 0, len(os.sources))
 	for _, source := range os.sources {
 		orders = append(orders, source.BuyOrdersOver(price)...)
 	}
@@ -79,7 +79,7 @@ func (os *mergedOrderSource) BuyOrdersOver(price sdk.Dec) []Order {
 }
 
 func (os *mergedOrderSource) SellOrdersUnder(price sdk.Dec) []Order {
-	var orders []Order
+	orders := make([]Order, 0, len(os.sources))
 	for _, source := range os.sources {
 		orders = append(orders, source.SellOrdersUnder(price)...)
 	}

@@ -25,7 +25,11 @@ func NewBulkSendCoinsOperation() *BulkSendCoinsOperation {
 }
 
 // QueueSendCoins queues a BankKeeper.SendCoins operation for later execution.
-func (op *BulkSendCoinsOperation) QueueSendCoins(fromAddr, toAddr sdk.AccAddress, amt sdk.Coins) {
+func (op *BulkSendCoinsOperation) QueueSendCoins(
+	//nolint
+	fromAddr, toAddr sdk.AccAddress,
+	amt sdk.Coins,
+) {
 	if amt.IsValid() && !amt.IsZero() {
 		op.Inputs = append(op.Inputs, banktypes.NewInput(fromAddr, amt))
 		op.Outputs = append(op.Outputs, banktypes.NewOutput(toAddr, amt))

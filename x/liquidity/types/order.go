@@ -41,7 +41,7 @@ func SortOrders(orders []amm.Order, cmp PriceComparator) {
 		case *UserOrder:
 			switch orderB := orders[j].(type) {
 			case *UserOrder:
-				return orderA.OrderId < orderB.OrderId
+				return orderA.OrderID < orderB.OrderID
 			case *PoolOrder:
 				return false
 			}
@@ -50,7 +50,7 @@ func SortOrders(orders []amm.Order, cmp PriceComparator) {
 			case *UserOrder:
 				return true
 			case *PoolOrder:
-				return orderA.PoolId < orderB.PoolId
+				return orderA.PoolID < orderB.PoolID
 			}
 		}
 		panic(fmt.Sprintf("unknown order types: (%T, %T)", orders[i], orders[j]))
@@ -66,7 +66,7 @@ func SortOrders(orders []amm.Order, cmp PriceComparator) {
 // UserOrder is the user order type.
 type UserOrder struct {
 	*amm.BaseOrder
-	OrderId uint64
+	OrderID uint64
 	Orderer sdk.AccAddress
 }
 
@@ -91,7 +91,7 @@ func NewUserOrder(order Order) *UserOrder {
 	}
 	return &UserOrder{
 		BaseOrder: amm.NewBaseOrder(dir, order.Price, amt, order.RemainingOfferCoin, order.ReceivedCoin.Denom),
-		OrderId:   order.Id,
+		OrderID:   order.Id,
 		Orderer:   order.GetOrderer(),
 	}
 }
@@ -99,18 +99,25 @@ func NewUserOrder(order Order) *UserOrder {
 // PoolOrder is the pool order type.
 type PoolOrder struct {
 	*amm.BaseOrder
-	PoolId         uint64
+	PoolID         uint64
 	ReserveAddress sdk.AccAddress
 	OfferCoin      sdk.Coin
 }
 
 // NewPoolOrder returns a new pool order.
 func NewPoolOrder(
-	poolId uint64, reserveAddr sdk.AccAddress, dir amm.OrderDirection, price sdk.Dec, amt sdk.Int,
-	offerCoin sdk.Coin, demandCoinDenom string) *PoolOrder {
+	poolID uint64,
+	//nolint
+	reserveAddr sdk.AccAddress,
+	dir amm.OrderDirection,
+	price sdk.Dec,
+	amt sdk.Int,
+	offerCoin sdk.Coin,
+	demandCoinDenom string,
+) *PoolOrder {
 	return &PoolOrder{
 		BaseOrder:      amm.NewBaseOrder(dir, price, amt, offerCoin, demandCoinDenom),
-		PoolId:         poolId,
+		PoolID:         poolID,
 		ReserveAddress: reserveAddr,
 		OfferCoin:      offerCoin,
 	}

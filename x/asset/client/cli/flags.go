@@ -1,25 +1,26 @@
 package cli
 
 import (
-	"strings"
 	"strconv"
+	"strings"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 )
 
 const (
-	flagLiquidationRatio       = "liquidation-ratio"
-	flagName                   = "name"
-	flagDenom                  = "denom"
-	flagDecimals               = "decimals"
-	flagCollateralWeight       = "collateralWeight"
-	flagLiquidationThreshold   = "liquidationThreshold"
-	flagIsBridgedAsset         = "isBridgedAsset"
-	flagbaseborrowrateasset1   = "baseBorrowRate1"
-	flagbaseborrowrateasset2   = "baseBorrowRate2"
-	flagbaselendrateasset1     = "baseLendRate1"
-	flagbaselendrateasset2     = "baseLendRate2"
-	flagModuleAcc              = "moduleAcc"
+	flagLiquidationRatio     = "liquidation-ratio"
+	flagName                 = "name"
+	flagDenom                = "denom"
+	flagDecimals             = "decimals"
+	flagCollateralWeight     = "collateralWeight"
+	flagLiquidationThreshold = "liquidationThreshold"
+	flagIsBridgedAsset       = "isBridgedAsset"
+	flagbaseborrowrateasset1 = "baseBorrowRate1"
+	flagbaseborrowrateasset2 = "baseBorrowRate2"
+	flagbaselendrateasset1   = "baseLendRate1"
+	flagbaselendrateasset2   = "baseLendRate2"
+	flagModuleAcc            = "moduleAcc"
 )
 
 func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
@@ -31,9 +32,10 @@ func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
 	return sdk.NewDecFromStr(s)
 }
 
-func ParseStringFromString(s string, seperator string) ([]string, error) {
-	var parsedStrings []string
-	for _, s := range strings.Split(s, seperator) {
+func ParseStringFromString(s string, separator string) ([]string, error) {
+	stringsSlice := strings.Split(s, separator)
+	parsedStrings := make([]string, 0, len(stringsSlice))
+	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 
 		parsedStrings = append(parsedStrings, s)
@@ -42,7 +44,6 @@ func ParseStringFromString(s string, seperator string) ([]string, error) {
 }
 
 func ParseBoolFromString(s string) bool {
-
 	switch s {
 	case "1":
 		return true
@@ -51,9 +52,10 @@ func ParseBoolFromString(s string) bool {
 	}
 }
 
-func ParseInt64SliceFromString(s string, seperator string) ([]int64, error) {
-	var parsedInts []int64
-	for _, s := range strings.Split(s, seperator) {
+func ParseInt64SliceFromString(s string, separator string) ([]int64, error) {
+	stringsSlice := strings.Split(s, separator)
+	parsedInts := make([]int64, 0, len(stringsSlice))
+	for _, s := range stringsSlice {
 		s = strings.TrimSpace(s)
 
 		parsed, err := strconv.ParseInt(s, 10, 64)
@@ -65,9 +67,10 @@ func ParseInt64SliceFromString(s string, seperator string) ([]int64, error) {
 	return parsedInts, nil
 }
 
-func ParseUint64SliceFromString(s string, seperator string) ([]uint64, error) {
-	var parsedInts []uint64
-	for _, s := range strings.Split(s, seperator) {
+func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
+	stringsSlice := strings.Split(s, separator)
+	parsedInts := make([]uint64, 0, len(stringsSlice))
+	for _, s := range stringsSlice {
 		s = strings.TrimSpace(s)
 
 		parsed, err := strconv.ParseUint(s, 10, 64)

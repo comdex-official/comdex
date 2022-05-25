@@ -87,7 +87,7 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/locking/v1beta1/params";
   }
-  rpc QueryLockById(QueryLockByIdRequest) returns (QueryLockByIdResponse) {
+  rpc QueryLockByID(QueryLockByIdRequest) returns (QueryLockByIdResponse) {
     option (google.api.http).get = "/comdex/locking/v1beta1/lock_id/{id}";
   }
   rpc QueryLocksByOwner(QueryLocksByOwnerRequest) returns (QueryLocksByOwnerResponse) {
@@ -96,7 +96,7 @@ service Query {
   rpc QueryAllLocks(QueryAllLocksRequest) returns (QueryAllLocksResponse) {
     option (google.api.http).get = "/comdex/locking/v1beta1/locks";
   }
-  rpc QueryUnlockingById(QueryUnlockingByIdRequest) returns (QueryUnlockingByIdResponse) {
+  rpc QueryUnlockingByID(QueryUnlockingByIdRequest) returns (QueryUnlockingByIdResponse) {
     option (google.api.http).get = "/comdex/locking/v1beta1/unlocking_id/{id}";
   }
   rpc QueryUnlockingsByOwner(QueryUnlockingsByOwnerRequest) returns (QueryUnlockingsByOwnerResponse) {

@@ -23,6 +23,7 @@ func (k Keeper) ExecuteRequests(ctx sdk.Context) {
 				return false, err
 			}
 		} else if types.IsTooSmallOrderAmount(order.OpenAmount, order.Price) {
+			//nolint
 			// TODO: should we introduce new order status for this type of expiration?
 			if err := k.FinishOrder(ctx, order, types.OrderStatusExpired); err != nil {
 				return false, err

@@ -25,7 +25,6 @@ type UpdateNewAssetRequest struct{}
 type AddNewPairsRequest struct{}
 type UpdateNewPairRequest struct{}
 
-
 func AddNewAssetsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-new-assets",
@@ -138,6 +137,3 @@ func UpdateNewPairsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 		}
 	}
 }
-
-
-

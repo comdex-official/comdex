@@ -90,9 +90,9 @@ func (k Keeper) LimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder) (types.Ord
 		return types.Order{}, err
 	}
 
-	requestId := k.getNextOrderIdWithUpdate(ctx, pair)
+	requestID := k.getNextOrderIDWithUpdate(ctx, pair)
 	expireAt := ctx.BlockTime().Add(msg.OrderLifespan)
-	order := types.NewOrderForLimitOrder(msg, requestId, pair, offerCoin, price, expireAt, ctx.BlockHeight())
+	order := types.NewOrderForLimitOrder(msg, requestID, pair, offerCoin, price, expireAt, ctx.BlockHeight())
 	k.SetOrder(ctx, order)
 	k.SetOrderIndex(ctx, order)
 
@@ -103,14 +103,14 @@ func (k Keeper) LimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder) (types.Ord
 		sdk.NewEvent(
 			types.EventTypeLimitOrder,
 			sdk.NewAttribute(types.AttributeKeyOrderer, msg.Orderer),
-			sdk.NewAttribute(types.AttributeKeyPairId, strconv.FormatUint(msg.PairId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(msg.PairId, 10)),
 			sdk.NewAttribute(types.AttributeKeyOrderDirection, msg.Direction.String()),
 			sdk.NewAttribute(types.AttributeKeyOfferCoin, offerCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyDemandCoinDenom, msg.DemandCoinDenom),
 			sdk.NewAttribute(types.AttributeKeyPrice, price.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msg.Amount.String()),
-			sdk.NewAttribute(types.AttributeKeyOrderId, strconv.FormatUint(order.Id, 10)),
-			sdk.NewAttribute(types.AttributeKeyBatchId, strconv.FormatUint(order.BatchId, 10)),
+			sdk.NewAttribute(types.AttributeKeyOrderID, strconv.FormatUint(order.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyBatchID, strconv.FormatUint(order.BatchId, 10)),
 			sdk.NewAttribute(types.AttributeKeyExpireAt, order.ExpireAt.Format(time.RFC3339)),
 			sdk.NewAttribute(types.AttributeKeyRefundedCoins, refundedCoin.String()),
 		),
@@ -185,9 +185,9 @@ func (k Keeper) MarketOrder(ctx sdk.Context, msg *types.MsgMarketOrder) (types.O
 		return types.Order{}, err
 	}
 
-	requestId := k.getNextOrderIdWithUpdate(ctx, pair)
+	requestID := k.getNextOrderIDWithUpdate(ctx, pair)
 	expireAt := ctx.BlockTime().Add(msg.OrderLifespan)
-	order := types.NewOrderForMarketOrder(msg, requestId, pair, offerCoin, price, expireAt, ctx.BlockHeight())
+	order := types.NewOrderForMarketOrder(msg, requestID, pair, offerCoin, price, expireAt, ctx.BlockHeight())
 	k.SetOrder(ctx, order)
 	k.SetOrderIndex(ctx, order)
 
@@ -198,14 +198,14 @@ func (k Keeper) MarketOrder(ctx sdk.Context, msg *types.MsgMarketOrder) (types.O
 		sdk.NewEvent(
 			types.EventTypeMarketOrder,
 			sdk.NewAttribute(types.AttributeKeyOrderer, msg.Orderer),
-			sdk.NewAttribute(types.AttributeKeyPairId, strconv.FormatUint(msg.PairId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(msg.PairId, 10)),
 			sdk.NewAttribute(types.AttributeKeyOrderDirection, msg.Direction.String()),
 			sdk.NewAttribute(types.AttributeKeyOfferCoin, msg.OfferCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyDemandCoinDenom, msg.DemandCoinDenom),
 			sdk.NewAttribute(types.AttributeKeyPrice, price.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msg.Amount.String()),
-			sdk.NewAttribute(types.AttributeKeyOrderId, strconv.FormatUint(order.Id, 10)),
-			sdk.NewAttribute(types.AttributeKeyBatchId, strconv.FormatUint(order.BatchId, 10)),
+			sdk.NewAttribute(types.AttributeKeyOrderID, strconv.FormatUint(order.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyBatchID, strconv.FormatUint(order.BatchId, 10)),
 			sdk.NewAttribute(types.AttributeKeyExpireAt, order.ExpireAt.Format(time.RFC3339)),
 			sdk.NewAttribute(types.AttributeKeyRefundedCoins, refundedCoin.String()),
 		),
@@ -250,8 +250,8 @@ func (k Keeper) CancelOrder(ctx sdk.Context, msg *types.MsgCancelOrder) error {
 		sdk.NewEvent(
 			types.EventTypeCancelOrder,
 			sdk.NewAttribute(types.AttributeKeyOrderer, msg.Orderer),
-			sdk.NewAttribute(types.AttributeKeyPairId, strconv.FormatUint(msg.PairId, 10)),
-			sdk.NewAttribute(types.AttributeKeyOrderId, strconv.FormatUint(msg.OrderId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(msg.PairId, 10)),
+			sdk.NewAttribute(types.AttributeKeyOrderID, strconv.FormatUint(msg.OrderId, 10)),
 		),
 	})
 
@@ -261,6 +261,7 @@ func (k Keeper) CancelOrder(ctx sdk.Context, msg *types.MsgCancelOrder) error {
 // CancelAllOrders handles types.MsgCancelAllOrders and cancels all orders.
 func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) error {
 	var canceledOrderIds []string
+	//nolint
 	cb := func(pair types.Pair, order types.Order) (stop bool, err error) {
 		if order.Orderer == msg.Orderer && order.Status != types.OrderStatusCanceled && order.BatchId < pair.CurrentBatchId {
 			if err := k.FinishOrder(ctx, order, types.OrderStatusCanceled); err != nil {
@@ -271,7 +272,7 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 		return false, nil
 	}
 
-	var pairIds []string
+	var pairIDs []string
 	if len(msg.PairIds) == 0 {
 		pairMap := map[uint64]types.Pair{}
 		if err := k.IterateAllOrders(ctx, func(order types.Order) (stop bool, err error) {
@@ -285,13 +286,13 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 			return err
 		}
 	} else {
-		for _, pairId := range msg.PairIds {
-			pairIds = append(pairIds, strconv.FormatUint(pairId, 10))
-			pair, found := k.GetPair(ctx, pairId)
+		for _, pairID := range msg.PairIds {
+			pairIDs = append(pairIDs, strconv.FormatUint(pairID, 10))
+			pair, found := k.GetPair(ctx, pairID)
 			if !found {
-				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", pairId)
+				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", pairID)
 			}
-			if err := k.IterateOrdersByPair(ctx, pairId, func(req types.Order) (stop bool, err error) {
+			if err := k.IterateOrdersByPair(ctx, pairID, func(req types.Order) (stop bool, err error) {
 				return cb(pair, req)
 			}); err != nil {
 				return err
@@ -303,7 +304,7 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 		sdk.NewEvent(
 			types.EventTypeCancelAllOrders,
 			sdk.NewAttribute(types.AttributeKeyOrderer, msg.Orderer),
-			sdk.NewAttribute(types.AttributeKeyPairIds, strings.Join(pairIds, ",")),
+			sdk.NewAttribute(types.AttributeKeyPairIds, strings.Join(pairIDs, ",")),
 			sdk.NewAttribute(types.AttributeKeyCanceledOrderIds, strings.Join(canceledOrderIds, ",")),
 		),
 	})
@@ -340,7 +341,7 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 		return err
 	}
 
-	if skip { // TODO: update this when there are more than one pools
+	if skip { //nolint TODO: update this when there are more than one pools
 		return nil
 	}
 
@@ -381,6 +382,7 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 	pair.CurrentBatchId++
 	k.SetPair(ctx, pair)
 
+	//nolint
 	// TODO: emit an event?
 	return nil
 }
@@ -406,7 +408,7 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 		}
 		switch order := order.(type) {
 		case *types.UserOrder:
-			o, _ := k.GetOrder(ctx, pair.Id, order.OrderId)
+			o, _ := k.GetOrder(ctx, pair.Id, order.OrderID)
 			o.OpenAmount = o.OpenAmount.Sub(order.Amount.Sub(order.OpenAmount))
 			o.RemainingOfferCoin = o.RemainingOfferCoin.Sub(order.OfferCoin.Sub(order.RemainingOfferCoin))
 			o.ReceivedCoin = o.ReceivedCoin.Add(order.ReceivedDemandCoin)
@@ -417,6 +419,7 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 			} else {
 				o.SetStatus(types.OrderStatusPartiallyMatched)
 				k.SetOrder(ctx, o)
+				// nolint
 				// TODO: emit an event?
 			}
 			bulkOp.QueueSendCoins(pair.GetEscrowAddress(), order.Orderer, sdk.NewCoins(order.ReceivedDemandCoin))
@@ -451,10 +454,11 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeOrderResult,
-			sdk.NewAttribute(types.AttributeKeyRequestId, strconv.FormatUint(order.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyRequestID, strconv.FormatUint(order.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyOrderer, order.Orderer),
-			sdk.NewAttribute(types.AttributeKeyPairId, strconv.FormatUint(order.PairId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(order.PairId, 10)),
 			sdk.NewAttribute(types.AttributeKeyOrderDirection, order.Direction.String()),
+			//nolint
 			// TODO: include these attributes?
 			//sdk.NewAttribute(types.AttributeKeyOfferCoin, order.OfferCoin.String()),
 			//sdk.NewAttribute(types.AttributeKeyAmount, order.Amount.String()),

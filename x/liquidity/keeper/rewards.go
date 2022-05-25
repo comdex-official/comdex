@@ -12,13 +12,13 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) GetAMMPoolInterfaceObject(ctx sdk.Context, poolId uint64) (*types.Pool, *types.Pair, *amm.BasicPool, error) {
-	pool, found := k.GetPool(ctx, poolId)
+func (k Keeper) GetAMMPoolInterfaceObject(ctx sdk.Context, poolID uint64) (*types.Pool, *types.Pair, *amm.BasicPool, error) {
+	pool, found := k.GetPool(ctx, poolID)
 	if !found {
-		return nil, nil, nil, sdkerrors.Wrapf(types.ErrInvalidPoolId, "pool %d is invalid", poolId)
+		return nil, nil, nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "pool %d is invalid", poolID)
 	}
 	if pool.Disabled {
-		return nil, nil, nil, sdkerrors.Wrapf(types.ErrDisabledPool, "pool %d is disabled", poolId)
+		return nil, nil, nil, sdkerrors.Wrapf(types.ErrDisabledPool, "pool %d is disabled", poolID)
 	}
 
 	pair, _ := k.GetPair(ctx, pool.PairId)
@@ -26,13 +26,12 @@ func (k Keeper) GetAMMPoolInterfaceObject(ctx sdk.Context, poolId uint64) (*type
 	ps := k.GetPoolCoinSupply(ctx, pool)
 	ammPool := amm.NewBasicPool(rx.Amount, ry.Amount, ps)
 	if ammPool.IsDepleted() {
-		return nil, nil, nil, sdkerrors.Wrapf(types.ErrDepletedPool, "pool %d is depleted", poolId)
+		return nil, nil, nil, sdkerrors.Wrapf(types.ErrDepletedPool, "pool %d is depleted", poolID)
 	}
 	return &pool, &pair, ammPool, nil
 }
 
 func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error) {
-
 	// ammPool.Withdraw implemets the actual logic for pool token ratio calculation
 	x, y := ammPool.Withdraw(poolCoin.Amount, sdk.NewDec(0))
 	if x.IsZero() && y.IsZero() {
@@ -55,7 +54,7 @@ func oracle(denom string) (uint64, bool) {
 }
 
 func (k Keeper) GetOraclePrices(ctx sdk.Context, quoteCoinDenom, baseCoinDenom string) (sdk.Dec, string, error) {
-	// TODO : Use market module to get the prices
+	//nolint TODO : Use market module to get the prices
 	oraclePrice, found := oracle(quoteCoinDenom) // for quote coin
 	denom := quoteCoinDenom
 	if !found {
@@ -76,7 +75,6 @@ func (k Keeper) CalculateLiquidityAddedValue(
 	oraclePrice sdk.Dec,
 	oraclePriceDenom string,
 ) sdk.Dec {
-
 	poolSupplyX := sdk.NewDecFromInt(quoteCoinPoolBalance.Amount)
 	poolSupplyY := sdk.NewDecFromInt(baseCoinPoolBalance.Amount)
 
@@ -100,13 +98,13 @@ func (k Keeper) CalculateLiquidityAddedValue(
 func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, poolIds []uint64, masterPoolSupplyAddresses []sdk.AccAddress) map[string]sdk.Dec {
 	poolSupplyData := make(map[string]sdk.Dec)
 
-	for _, poolId := range poolIds {
-		liquidityProvidersDataForPool, found := k.GetPoolLiquidityProvidersData(ctx, poolId)
+	for _, poolID := range poolIds {
+		liquidityProvidersDataForPool, found := k.GetPoolLiquidityProvidersData(ctx, poolID)
 		if !found {
 			continue
 		}
 
-		pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, poolId)
+		pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, poolID)
 		if err != nil {
 			continue
 		}
@@ -147,7 +145,6 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, poolIds []u
 }
 
 func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coin, liquidityGaugeData incentivestypes.LiquidtyGaugeMetaData) ([]incentivestypes.RewardDistributionDataCollector, error) {
-
 	liquidityProvidersDataForPool, found := k.GetPoolLiquidityProvidersData(ctx, liquidityGaugeData.PoolId)
 	if !found {
 		return []incentivestypes.RewardDistributionDataCollector{}, nil
@@ -183,14 +180,13 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 				baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
 				value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
 				lpAddresses = append(lpAddresses, addr)
-				lpSupplies = append(lpSupplies, sdk.Dec(value))
+				lpSupplies = append(lpSupplies, value)
 			}
 		}
 	}
 
 	// Logic for master pool mechanism
 	if liquidityGaugeData.IsMasterPool {
-
 		childPoolSupplies := []sdk.Dec{}
 		minMasterChildPoolSupplies := []sdk.Dec{}
 
@@ -204,9 +200,9 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 			}
 		} else {
 			// sanitization
-			for _, poolId := range liquidityGaugeData.ChildPoolIds {
-				if poolId != liquidityGaugeData.PoolId {
-					childPoolIds = append(childPoolIds, poolId)
+			for _, poolID := range liquidityGaugeData.ChildPoolIds {
+				if poolID != liquidityGaugeData.PoolId {
+					childPoolIds = append(childPoolIds, poolID)
 				}
 			}
 		}
@@ -228,7 +224,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 
 		totalRewardEligibleSupply := sdk.NewDec(0)
 		for i := 0; i < len(lpAddresses); i++ {
-			minSupply := sdk.Dec{}
+			var minSupply sdk.Dec
 			if lpSupplies[i].LTE(childPoolSupplies[i]) {
 				minSupply = lpSupplies[i]
 			} else {
@@ -253,27 +249,26 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, coinsToDistribute sdk.Coi
 		}
 
 		return rewardData, nil
-	} else {
-		// Logic for non master pool gauges (external rewards)
-		totalRewardEligibleSupply := sdk.NewDec(0)
-		for _, supply := range lpSupplies {
-			totalRewardEligibleSupply = totalRewardEligibleSupply.Add(supply)
-		}
-
-		rewardData := []incentivestypes.RewardDistributionDataCollector{}
-		if !totalRewardEligibleSupply.IsZero() {
-			multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
-			for index, address := range lpAddresses {
-				calculatedReward := int64(math.Floor(lpSupplies[index].Mul(multiplier).MustFloat64()))
-				newData := new(incentivestypes.RewardDistributionDataCollector)
-				newData.RewardReceiver = address
-				newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
-				rewardData = append(rewardData, *newData)
-			}
-		}
-
-		return rewardData, nil
 	}
+	// Logic for non master pool gauges (external rewards)
+	totalRewardEligibleSupply := sdk.NewDec(0)
+	for _, supply := range lpSupplies {
+		totalRewardEligibleSupply = totalRewardEligibleSupply.Add(supply)
+	}
+
+	rewardData := []incentivestypes.RewardDistributionDataCollector{}
+	if !totalRewardEligibleSupply.IsZero() {
+		multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
+		for index, address := range lpAddresses {
+			calculatedReward := int64(math.Floor(lpSupplies[index].Mul(multiplier).MustFloat64()))
+			newData := new(incentivestypes.RewardDistributionDataCollector)
+			newData.RewardReceiver = address
+			newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
+			rewardData = append(rewardData, *newData)
+		}
+	}
+
+	return rewardData, nil
 }
 
 func (k Keeper) ValidateMsgTokensSoftLock(ctx sdk.Context, msg *types.MsgTokensSoftLock) (sdk.AccAddress, error) {
@@ -284,7 +279,7 @@ func (k Keeper) ValidateMsgTokensSoftLock(ctx sdk.Context, msg *types.MsgTokensS
 
 	pool, found := k.GetPool(ctx, msg.PoolId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolId, "no pool exists with id : %d", msg.PoolId)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
 	}
 
 	if msg.SoftLockCoin.Denom != pool.PoolCoinDenom {
@@ -335,11 +330,11 @@ func (k Keeper) ValidateMsgTokensSoftUnlock(ctx sdk.Context, msg *types.MsgToken
 
 	pool, found := k.GetPool(ctx, msg.PoolId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolId, "no pool exists with id : %d", msg.PoolId)
+		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
 	}
 
 	if msg.SoftUnlockCoin.Denom != pool.PoolCoinDenom {
-		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", &pool.PoolCoinDenom, msg.SoftUnlockCoin.Denom)
+		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.SoftUnlockCoin.Denom)
 	}
 	return depositor, nil
 }
@@ -445,12 +440,12 @@ func (k Keeper) SoftUnlockTokens(ctx sdk.Context, msg *types.MsgTokensSoftUnlock
 	return nil
 }
 
-func (k Keeper) GetMinimumEpochDurationFromPoolId(ctx sdk.Context, poolId uint64, gauges []incentivestypes.Gauge) time.Duration {
+func (k Keeper) GetMinimumEpochDurationFromPoolID(ctx sdk.Context, poolID uint64, gauges []incentivestypes.Gauge) time.Duration {
 	var minEpochDuration time.Duration
 	for _, gauge := range gauges {
 		switch kind := gauge.Kind.(type) {
 		case *incentivestypes.Gauge_LiquidityMetaData:
-			if kind.LiquidityMetaData.PoolId == poolId && gauge.IsActive {
+			if kind.LiquidityMetaData.PoolId == poolID && gauge.IsActive {
 				if minEpochDuration == time.Duration(0) {
 					minEpochDuration = gauge.TriggerDuration
 				} else if gauge.TriggerDuration < minEpochDuration {
@@ -471,7 +466,7 @@ func (k Keeper) ProcessQueuedLiquidityProviders(ctx sdk.Context) {
 
 	for _, pool := range availablePools {
 		poolLpData, found := k.GetPoolLiquidityProvidersData(ctx, pool.Id)
-		minEpochDuration := k.GetMinimumEpochDurationFromPoolId(ctx, pool.Id, availableLiquidityGauges)
+		minEpochDuration := k.GetMinimumEpochDurationFromPoolID(ctx, pool.Id, availableLiquidityGauges)
 
 		if !found {
 			continue

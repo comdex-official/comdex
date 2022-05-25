@@ -119,7 +119,6 @@ func (m msgServer) TokensSoftLock(goCtx context.Context, msg *types.MsgTokensSof
 }
 
 func (m msgServer) TokensSoftUnlock(goCtx context.Context, msg *types.MsgTokensSoftUnlock) (*types.MsgTokensSoftUnlockResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	if err := m.Keeper.SoftUnlockTokens(ctx, msg); err != nil {

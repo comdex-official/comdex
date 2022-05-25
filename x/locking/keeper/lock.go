@@ -7,8 +7,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) GetAccountWithSameLockDurationAndDenom(ctx sdk.Context, owner sdk.AccAddress, denom string, duration time.Duration) []types.Lock {
-
+func (k Keeper) GetAccountWithSameLockDurationAndDenom(
+	ctx sdk.Context,
+	//nolint
+	owner sdk.AccAddress,
+	denom string,
+	duration time.Duration,
+) []types.Lock {
 	locks := []types.Lock{}
 
 	locksByOwner, found := k.GetLockByOwner(ctx, owner.String())
@@ -16,8 +21,8 @@ func (k Keeper) GetAccountWithSameLockDurationAndDenom(ctx sdk.Context, owner sd
 		return locks
 	}
 
-	for _, lockId := range locksByOwner.LockIds {
-		lock, found := k.GetLockById(ctx, lockId)
+	for _, lockID := range locksByOwner.LockIds {
+		lock, found := k.GetLockByID(ctx, lockID)
 		if !found {
 			continue
 		}
@@ -32,9 +37,9 @@ func (k Keeper) GetAccountWithSameLockDurationAndDenom(ctx sdk.Context, owner sd
 // AddTokensToLock locks more tokens into a bonding
 // This also saves the lock to the store.
 func (k Keeper) AddTokensToLockByID(ctx sdk.Context, lockID uint64, coin sdk.Coin) (*types.Lock, error) {
-	lock, found := k.GetLockById(ctx, lockID)
+	lock, found := k.GetLockByID(ctx, lockID)
 	if !found {
-		return nil, types.ErrInvalidLockId
+		return nil, types.ErrInvalidLockID
 	}
 	owner, _ := sdk.AccAddressFromBech32(lock.Owner)
 	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, owner, types.ModuleName, sdk.NewCoins(coin)); err != nil {
@@ -45,17 +50,23 @@ func (k Keeper) AddTokensToLockByID(ctx sdk.Context, lockID uint64, coin sdk.Coi
 	return &lock, nil
 }
 
-// Create New Lock
-func (k Keeper) NewLockTokens(ctx sdk.Context, owner sdk.AccAddress, duration time.Duration, coin sdk.Coin) (*types.Lock, error) {
+// Create New Lock.
+func (k Keeper) NewLockTokens(
+	ctx sdk.Context,
+	//nolint
+	owner sdk.AccAddress,
+	duration time.Duration,
+	coin sdk.Coin,
+) (*types.Lock, error) {
 	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, owner, types.ModuleName, sdk.NewCoins(coin)); err != nil {
 		return nil, err
 	}
-	lastLockId := k.GetLockID(ctx)
+	lastLockID := k.GetLockID(ctx)
 
-	lockId := lastLockId + 1
-	lock := types.NewLock(ctx, lockId, owner, duration, coin)
+	lockID := lastLockID + 1
+	lock := types.NewLock(ctx, lockID, owner, duration, coin)
 
-	k.SetLockID(ctx, lockId)
+	k.SetLockID(ctx, lockID)
 	k.SetLock(ctx, lock)
 
 	locksByOwner, found := k.GetLockByOwner(ctx, owner.String())
@@ -70,10 +81,10 @@ func (k Keeper) NewLockTokens(ctx sdk.Context, owner sdk.AccAddress, duration ti
 	return &lock, nil
 }
 
-func (k Keeper) UpdateOrDeleteLock(ctx sdk.Context, isUpdate bool, lockId uint64, unlockCoin sdk.Coin) error {
-	lock, found := k.GetLockById(ctx, lockId)
+func (k Keeper) UpdateOrDeleteLock(ctx sdk.Context, isUpdate bool, lockID uint64, unlockCoin sdk.Coin) error {
+	lock, found := k.GetLockByID(ctx, lockID)
 	if !found {
-		return types.ErrInvalidLockId
+		return types.ErrInvalidLockID
 	}
 
 	// Update lock if tokens are being unlocked partially
@@ -90,9 +101,9 @@ func (k Keeper) UpdateOrDeleteLock(ctx sdk.Context, isUpdate bool, lockId uint64
 	k.DeleteLock(ctx, lock.Id)
 	lockByOwner, _ := k.GetLockByOwner(ctx, lock.Owner)
 	updatedLockIds := []uint64{}
-	for _, lId := range lockByOwner.LockIds {
-		if lId != lock.Id {
-			updatedLockIds = append(updatedLockIds, lId)
+	for _, lID := range lockByOwner.LockIds {
+		if lID != lock.Id {
+			updatedLockIds = append(updatedLockIds, lID)
 		}
 	}
 	lockByOwner.LockIds = updatedLockIds
@@ -100,12 +111,18 @@ func (k Keeper) UpdateOrDeleteLock(ctx sdk.Context, isUpdate bool, lockId uint64
 	return nil
 }
 
-func (k Keeper) NewBeginUnlockTokens(ctx sdk.Context, owner sdk.AccAddress, lock types.Lock, unlockCoin sdk.Coin) (uint64, error) {
-	lastUnlockId := k.GetUnlockingID(ctx)
-	unlockId := lastUnlockId + 1
+func (k Keeper) NewBeginUnlockTokens(
+	ctx sdk.Context,
+	//nolint
+	owner sdk.AccAddress,
+	lock types.Lock,
+	unlockCoin sdk.Coin,
+) (uint64, error) {
+	lastUnlockID := k.GetUnlockingID(ctx)
+	unlockID := lastUnlockID + 1
 
 	newUnlockingTokens := types.NewUnlock(
-		unlockId,
+		unlockID,
 		owner,
 		lock.Duration,
 		ctx.BlockTime().Add(lock.Duration),
@@ -119,21 +136,21 @@ func (k Keeper) NewBeginUnlockTokens(ctx sdk.Context, owner sdk.AccAddress, lock
 			UnlockingIds: []uint64{},
 		}
 	}
-	unlockingByOwner.UnlockingIds = append(unlockingByOwner.UnlockingIds, unlockId)
+	unlockingByOwner.UnlockingIds = append(unlockingByOwner.UnlockingIds, unlockID)
 
-	k.SetUnlockingID(ctx, unlockId)
+	k.SetUnlockingID(ctx, unlockID)
 	k.SetUnlocking(ctx, newUnlockingTokens)
 	k.SetUnlockByOwner(ctx, unlockingByOwner)
-	return unlockId, nil
+	return unlockID, nil
 }
 
-func (k Keeper) UpdateUnlockingByOwner(ctx sdk.Context, owner string, maturedUnlockId uint64) {
+func (k Keeper) UpdateUnlockingByOwner(ctx sdk.Context, owner string, maturedUnlockID uint64) {
 	unlocksByOwner, found := k.GetUnlockByOwner(ctx, owner)
 	if found {
 		updatedUnlockingIds := []uint64{}
-		for _, unlockId := range unlocksByOwner.UnlockingIds {
-			if unlockId != maturedUnlockId {
-				updatedUnlockingIds = append(updatedUnlockingIds, unlockId)
+		for _, unlockID := range unlocksByOwner.UnlockingIds {
+			if unlockID != maturedUnlockID {
+				updatedUnlockingIds = append(updatedUnlockingIds, unlockID)
 			}
 		}
 		unlocksByOwner.UnlockingIds = updatedUnlockingIds

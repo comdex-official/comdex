@@ -1,13 +1,14 @@
 package cli
 
 import (
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/spf13/cobra"
-	"strconv"
 
 	"github.com/comdex-official/comdex/x/asset/types"
 )
@@ -135,9 +136,9 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 			from := clientCtx.GetFromAddress()
 
 			asset := types.Asset{
-				Id: id,
-				Name: name,
-				Denom: denom,
+				Id:       id,
+				Name:     name,
+				Denom:    denom,
 				Decimals: decimals,
 			}
 
@@ -201,8 +202,8 @@ func NewCmdSubmitAddPairsProposal() *cobra.Command {
 			var pairs []types.Pair
 			for i := range assetIn {
 				pairs = append(pairs, types.Pair{
-					AssetIn:            assetIn[i],
-					AssetOut:           assetOut[i],
+					AssetIn:  assetIn[i],
+					AssetOut: assetOut[i],
 				})
 			}
 
@@ -262,7 +263,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 				return err
 			}
 
-			asset_id, err := ParseUint64SliceFromString(args[0], ",")
+			assetID, err := ParseUint64SliceFromString(args[0], ",")
 			if err != nil {
 				return err
 			}
@@ -295,13 +296,13 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 			from := ctx.GetFromAddress()
 
 			var assets []types.ExtendedAsset
-			for i := range asset_id {
+			for i := range assetID {
 				newcollateralWeigt, _ := sdk.NewDecFromStr(collateralWeight[i])
 				newliquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold[i])
 				newisBridgedAsset := ParseBoolFromString(isBridgedAsset[i])
 
 				assets = append(assets, types.ExtendedAsset{
-					AssetId:                 asset_id[i],
+					AssetId:              assetID[i],
 					CollateralWeight:     newcollateralWeigt,
 					LiquidationThreshold: newliquidationThreshold,
 					IsBridgedAsset:       newisBridgedAsset,
@@ -444,11 +445,10 @@ func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 				return err
 			}
 
-			pair_id, err := ParseUint64SliceFromString(args[0], ",")
+			pairID, err := ParseUint64SliceFromString(args[0], ",")
 			if err != nil {
 				return err
 			}
-
 
 			moduleAccnt, err := ParseStringFromString(args[1], ",")
 			if err != nil {
@@ -473,14 +473,13 @@ func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 			}
 
 			var pairs []types.ExtendedPairLend
-			for i := range pair_id {
-
+			for i := range pairID {
 				newbaseborrowrateasset1, _ := sdk.NewDecFromStr(baseborrowrateasset1[i])
 				newbaseborrowrateasset2, _ := sdk.NewDecFromStr(baseborrowrateasset2[i])
 				newbaselendrateasset1, _ := sdk.NewDecFromStr(baselendrateasset1[i])
 				newbaselendrateasset2, _ := sdk.NewDecFromStr(baselendrateasset2[i])
 				pairs = append(pairs, types.ExtendedPairLend{
-					PairId:               pair_id[i],
+					PairId:                pairID[i],
 					ModuleAcc:             moduleAccnt[i],
 					BaseBorrowRateAsset_1: newbaseborrowrateasset1,
 					BaseBorrowRateAsset_2: newbaseborrowrateasset2,

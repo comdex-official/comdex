@@ -14,7 +14,7 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
-// GetQueryCmd returns the cli query commands for this module
+// GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -151,7 +151,7 @@ $ %s query %s pair 1
 				return err
 			}
 
-			pairId, err := strconv.ParseUint(args[0], 10, 64)
+			pairID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -159,7 +159,7 @@ $ %s query %s pair 1
 			queryClient := types.NewQueryClient(clientCtx)
 
 			res, err := queryClient.Pair(cmd.Context(), &types.QueryPairRequest{
-				PairId: pairId,
+				PairId: pairID,
 			})
 			if err != nil {
 				return err
@@ -203,12 +203,12 @@ $ %s query %s pools --disabled=true
 				return err
 			}
 
-			var pairId uint64
+			var pairID uint64
 
-			pairIdStr, _ := cmd.Flags().GetString(FlagPairId)
-			if pairIdStr != "" {
+			pairIDStr, _ := cmd.Flags().GetString(FlagPairID)
+			if pairIDStr != "" {
 				var err error
-				pairId, err = strconv.ParseUint(pairIdStr, 10, 64)
+				pairID, err = strconv.ParseUint(pairIDStr, 10, 64)
 				if err != nil {
 					return fmt.Errorf("parse pair id flag: %w", err)
 				}
@@ -222,7 +222,7 @@ $ %s query %s pools --disabled=true
 
 			queryClient := types.NewQueryClient(clientCtx)
 			res, err := queryClient.Pools(cmd.Context(), &types.QueryPoolsRequest{
-				PairId:     pairId,
+				PairId:     pairID,
 				Disabled:   disabledStr,
 				Pagination: pageReq,
 			})
@@ -264,27 +264,27 @@ $ %s query %s pool --reserve-address=cre1...
 				return err
 			}
 
-			var poolId *uint64
+			var poolID *uint64
 			if len(args) > 0 {
 				id, err := strconv.ParseUint(args[0], 10, 64)
 				if err != nil {
 					return fmt.Errorf("parse pool id: %w", err)
 				}
-				poolId = &id
+				poolID = &id
 			}
 			poolCoinDenom, _ := cmd.Flags().GetString(FlagPoolCoinDenom)
 			reserveAddr, _ := cmd.Flags().GetString(FlagReserveAddress)
 
-			if !excConditions(poolId != nil, poolCoinDenom != "", reserveAddr != "") {
+			if !excConditions(poolID != nil, poolCoinDenom != "", reserveAddr != "") {
 				return fmt.Errorf("invalid request")
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
 			var res *types.QueryPoolResponse
 			switch {
-			case poolId != nil:
+			case poolID != nil:
 				res, err = queryClient.Pool(cmd.Context(), &types.QueryPoolRequest{
-					PoolId: *poolId,
+					PoolId: *poolID,
 				})
 			case poolCoinDenom != "":
 				res, err = queryClient.PoolByPoolCoinDenom(
@@ -338,7 +338,7 @@ $ %s query %s deposit-requests 1
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -348,7 +348,7 @@ $ %s query %s deposit-requests 1
 			res, err := queryClient.DepositRequests(
 				cmd.Context(),
 				&types.QueryDepositRequestsRequest{
-					PoolId:     poolId,
+					PoolId:     poolID,
 					Pagination: pageReq,
 				})
 			if err != nil {
@@ -384,7 +384,7 @@ $ %s query %s deposit-requests 1 1
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -399,7 +399,7 @@ $ %s query %s deposit-requests 1 1
 			res, err := queryClient.DepositRequest(
 				cmd.Context(),
 				&types.QueryDepositRequestRequest{
-					PoolId: poolId,
+					PoolId: poolID,
 					Id:     id,
 				})
 			if err != nil {
@@ -440,7 +440,7 @@ $ %s query %s withdraw-requests 1
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -450,7 +450,7 @@ $ %s query %s withdraw-requests 1
 			res, err := queryClient.WithdrawRequests(
 				cmd.Context(),
 				&types.QueryWithdrawRequestsRequest{
-					PoolId:     poolId,
+					PoolId:     poolID,
 					Pagination: pageReq,
 				})
 			if err != nil {
@@ -486,7 +486,7 @@ $ %s query %s withdraw-requests 1 1
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -501,7 +501,7 @@ $ %s query %s withdraw-requests 1 1
 			res, err := queryClient.WithdrawRequest(
 				cmd.Context(),
 				&types.QueryWithdrawRequestRequest{
-					PoolId: poolId,
+					PoolId: poolID,
 					Id:     id,
 				})
 			if err != nil {
@@ -551,15 +551,15 @@ $ %s query %s orders --pair-id=1
 				orderer = &args[0]
 			}
 
-			var pairId uint64
-			pairIdStr, _ := cmd.Flags().GetString(FlagPairId)
-			if pairIdStr != "" {
-				pairId, err = strconv.ParseUint(pairIdStr, 10, 64)
+			var pairID uint64
+			pairIDStr, _ := cmd.Flags().GetString(FlagPairID)
+			if pairIDStr != "" {
+				pairID, err = strconv.ParseUint(pairIDStr, 10, 64)
 				if err != nil {
 					return fmt.Errorf("parse pair id: %w", err)
 				}
 			}
-			if orderer == nil && pairId == 0 {
+			if orderer == nil && pairID == 0 {
 				return fmt.Errorf("either orderer or pair-id must be specified")
 			}
 
@@ -568,7 +568,7 @@ $ %s query %s orders --pair-id=1
 			var res *types.QueryOrdersResponse
 			if orderer == nil {
 				res, err = queryClient.Orders(cmd.Context(), &types.QueryOrdersRequest{
-					PairId:     pairId,
+					PairId:     pairID,
 					Pagination: pageReq,
 				})
 			} else {
@@ -576,7 +576,7 @@ $ %s query %s orders --pair-id=1
 					cmd.Context(),
 					&types.QueryOrdersByOrdererRequest{
 						Orderer:    *orderer,
-						PairId:     pairId,
+						PairId:     pairID,
 						Pagination: pageReq,
 					})
 			}
@@ -614,7 +614,7 @@ $ %s query %s order 1 1
 				return err
 			}
 
-			pairId, err := strconv.ParseUint(args[0], 10, 64)
+			pairID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -629,7 +629,7 @@ $ %s query %s order 1 1
 			res, err := queryClient.Order(
 				cmd.Context(),
 				&types.QueryOrderRequest{
-					PairId: pairId,
+					PairId: pairID,
 					Id:     id,
 				})
 			if err != nil {
@@ -665,7 +665,7 @@ $ %s query %s soft-lock 1 comdex1ed6zea6ppj29vkzk8f867rsauu65lq2p75jc3u
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -675,7 +675,7 @@ $ %s query %s soft-lock 1 comdex1ed6zea6ppj29vkzk8f867rsauu65lq2p75jc3u
 			res, err := queryClient.SoftLock(
 				cmd.Context(),
 				&types.QuerySoftLockRequest{
-					PoolId:    poolId,
+					PoolId:    poolID,
 					Depositor: args[1],
 				})
 			if err != nil {
@@ -712,7 +712,7 @@ $ %s query %s deserialize 1 123400000
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -726,7 +726,7 @@ $ %s query %s deserialize 1 123400000
 			res, err := queryClient.DeserializePoolCoin(
 				cmd.Context(),
 				&types.QueryDeserializePoolCoinRequest{
-					PoolId:         poolId,
+					PoolId:         poolID,
 					PoolCoinAmount: poolCoinAmount,
 				})
 			if err != nil {
@@ -800,7 +800,7 @@ $ %s query %s farmed-coin 1
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -810,7 +810,7 @@ $ %s query %s farmed-coin 1
 			res, err := queryClient.FarmedPoolCoin(
 				cmd.Context(),
 				&types.QueryFarmedPoolCoinRequest{
-					PoolId: poolId,
+					PoolId: poolID,
 				})
 			if err != nil {
 				return err

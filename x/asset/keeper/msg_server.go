@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	"github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -95,9 +96,9 @@ func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) 
 	var (
 		id   = k.GetPairID(ctx)
 		pair = types.Pair{
-			Id:               id + 1,
-			AssetIn:          msg.AssetIn,
-			AssetOut:         msg.AssetOut,
+			Id:       id + 1,
+			AssetIn:  msg.AssetIn,
+			AssetOut: msg.AssetOut,
 		}
 	)
 
