@@ -35,7 +35,6 @@ func QueryAllVaults() *cobra.Command {
 		Use:   "vaults",
 		Short: "list of all vaults available",
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -69,7 +68,6 @@ func QueryVault() *cobra.Command {
 		Short: "vault's information",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -103,7 +101,6 @@ func QueryVaults() *cobra.Command {
 		Short: "vaults list for an individual account",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err

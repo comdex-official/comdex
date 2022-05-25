@@ -602,7 +602,7 @@ func (k Querier) DeserializePoolCoin(c context.Context, req *types.QueryDeserial
 	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(int64(req.PoolCoinAmount)))
 	x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
 	if err != nil {
-		return nil, err
+		return &types.QueryDeserializePoolCoinResponse{Coins: []sdk.Coin{sdk.NewCoin(pair.QuoteCoinDenom, sdk.NewInt(0)), sdk.NewCoin(pair.BaseCoinDenom, sdk.NewInt(0))}}, nil
 	}
 	quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
 	baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)

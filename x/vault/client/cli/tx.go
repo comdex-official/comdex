@@ -14,7 +14,7 @@ import (
 	"github.com/comdex-official/comdex/x/vault/types"
 )
 
-// GetTxCmd returns the transaction commands for this module
+// GetTxCmd returns the transaction commands for this module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -47,7 +47,7 @@ func txCreate() *cobra.Command {
 				return err
 			}
 
-			pairId, err := strconv.ParseUint(args[0], 10, 64)
+			pairID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -62,7 +62,7 @@ func txCreate() *cobra.Command {
 				return types.ErrorInvalidAmountOut
 			}
 
-			msg := types.NewMsgCreateRequest(ctx.FromAddress, pairId, amountIn, amountOut)
+			msg := types.NewMsgCreateRequest(ctx.FromAddress, pairID, amountIn, amountOut)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

@@ -7,11 +7,11 @@ import (
 )
 
 const (
-	flagLiquidationRatio       = "liquidation-ratio"
-	flagScriptID               = "script-id"
-	flagName                   = "name"
-	flagDenom                  = "denom"
-	flagDecimals               = "decimals"
+	flagLiquidationRatio = "liquidation-ratio"
+	flagScriptID         = "script-id"
+	// flagName                   = "name"
+	// flagDenom                  = "denom"
+	// flagDecimals               = "decimals"
 	flagPacketTimeoutHeight    = "packet-timeout-height"
 	flagPacketTimeoutTimestamp = "packet-timeout-timestamp"
 	flagAbsoluteTimeouts       = "absolute-timeouts"
