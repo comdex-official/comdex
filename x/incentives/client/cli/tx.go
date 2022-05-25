@@ -13,16 +13,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 
-	// "github.com/cosmos/cosmos-sdk/client/flags"
+	// "github.com/cosmos/cosmos-sdk/client/flags".
 	"github.com/comdex-official/comdex/x/incentives/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-var (
-	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
-)
+// var (
+// 	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
+// )
 
-// GetTxCmd returns the transaction commands for this module
+// GetTxCmd returns the transaction commands for this module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -38,7 +38,7 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
-// NewLockTokensCmd lock tokens into bonding pool from user's account.
+// NewCreateGaugeCmd implemets create-gauge cli transaction command.
 func NewCreateGaugeCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-gauge [gauge-type-id] [trigger-duration] [deposit-amount] [total-triggers]",
@@ -52,7 +52,7 @@ func NewCreateGaugeCmd() *cobra.Command {
 
 			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
-			gaugeTypeId, err := strconv.ParseUint(args[0], 10, 64)
+			gaugeTypeID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse gauge-type-id: %w", err)
 			}
@@ -72,7 +72,7 @@ func NewCreateGaugeCmd() *cobra.Command {
 				return fmt.Errorf("parse gauge-type-id: %w", err)
 			}
 
-			startTime := time.Time{}
+			var startTime time.Time
 			timeStr, err := cmd.Flags().GetString(FlagStartTime)
 			if err != nil {
 				return err
@@ -90,14 +90,14 @@ func NewCreateGaugeCmd() *cobra.Command {
 			msg := types.NewMsgCreateGauge(
 				clientCtx.GetFromAddress(),
 				startTime,
-				gaugeTypeId,
+				gaugeTypeID,
 				triggerDuration,
 				depositAmount,
 				totalTriggers,
 			)
 
 			switch msg.GaugeTypeId {
-			case types.LiquidityGaugeTypeId:
+			case types.LiquidityGaugeTypeID:
 				gaugeExtraData, err := NewBuildLiquidityGaugeExtraData(cmd)
 				if err != nil {
 					return err
@@ -115,13 +115,14 @@ func NewCreateGaugeCmd() *cobra.Command {
 	return cmd
 }
 
+// NewBuildLiquidityGaugeExtraData sanitizes cli input data for MsgCreateGauge_LiquidityMetaData.
 func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_LiquidityMetaData, error) {
-	poolId, err := cmd.Flags().GetUint64(FlagPoolId)
+	poolID, err := cmd.Flags().GetUint64(FlagPoolID)
 	if err != nil {
 		return types.MsgCreateGauge_LiquidityMetaData{}, err
 	}
-	if poolId == 0 {
-		return types.MsgCreateGauge_LiquidityMetaData{}, fmt.Errorf("%s required but not specified / pool-id cannot be 0", FlagPoolId)
+	if poolID == 0 {
+		return types.MsgCreateGauge_LiquidityMetaData{}, fmt.Errorf("%s required but not specified / pool-id cannot be 0", FlagPoolID)
 	}
 
 	isMasterPool, err := cmd.Flags().GetBool(FlagIsMasterPool)
@@ -136,12 +137,12 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 	childPoolIds := []uint64{}
 	if childPoolIdsCombined != "" {
 		childPoolIdsStrs := strings.Split(childPoolIdsCombined, ",")
-		for _, poolIdStr := range childPoolIdsStrs {
-			poolId, err := strconv.ParseUint(poolIdStr, 10, 64)
+		for _, poolIDStr := range childPoolIdsStrs {
+			poolID, err := strconv.ParseUint(poolIDStr, 10, 64)
 			if err != nil {
 				return types.MsgCreateGauge_LiquidityMetaData{}, err
 			}
-			childPoolIds = append(childPoolIds, poolId)
+			childPoolIds = append(childPoolIds, poolID)
 		}
 	}
 
@@ -151,7 +152,7 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 	}
 	liquidityGaugeExtraData := types.MsgCreateGauge_LiquidityMetaData{
 		LiquidityMetaData: &types.LiquidtyGaugeMetaData{
-			PoolId:       poolId,
+			PoolId:       poolID,
 			IsMasterPool: isMasterPool,
 			ChildPoolIds: childPoolIds,
 			LockDuration: lockDuration,

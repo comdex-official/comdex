@@ -28,6 +28,7 @@ func (k Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 	return &types.QueryParamsResponse{Params: params}, nil
 }
 
+// QueryEpochInfoByDuration queries the epoch info for the given duration of seconds.
 func (k Querier) QueryEpochInfoByDuration(c context.Context, req *types.QueryEpochInfoByDurationRequest) (*types.QueryEpochInfoByDurationResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -45,6 +46,7 @@ func (k Querier) QueryEpochInfoByDuration(c context.Context, req *types.QueryEpo
 	}, nil
 }
 
+// QueryAllEpochsInfo queries all the epochs available.
 func (k Querier) QueryAllEpochsInfo(c context.Context, req *types.QueryAllEpochsInfoRequest) (*types.QueryAllEpochsInfoResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -82,6 +84,7 @@ func (k Querier) QueryAllEpochsInfo(c context.Context, req *types.QueryAllEpochs
 	}, nil
 }
 
+// QueryAllGauges queries all the gauges available.
 func (k Querier) QueryAllGauges(c context.Context, req *types.QueryAllGaugesRequest) (*types.QueryAllGaugesResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -119,14 +122,15 @@ func (k Querier) QueryAllGauges(c context.Context, req *types.QueryAllGaugesRequ
 	}, nil
 }
 
-func (k Querier) QueryGaugeById(c context.Context, req *types.QueryGaugeByIdRequest) (*types.QueryGaugeByIdResponse, error) {
+// QueryGaugeByID queries a gauge by specific ID.
+func (k Querier) QueryGaugeByID(c context.Context, req *types.QueryGaugeByIdRequest) (*types.QueryGaugeByIdResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-	item, found := k.Keeper.GetGaugeById(ctx, req.GaugeId)
+	item, found := k.Keeper.GetGaugeByID(ctx, req.GaugeId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "gauge does not exist for given id %d", req.GaugeId)
 	}
@@ -136,6 +140,7 @@ func (k Querier) QueryGaugeById(c context.Context, req *types.QueryGaugeByIdRequ
 	}, nil
 }
 
+// QueryGaugeByDuration queries gauges for the given duration.
 func (k Querier) QueryGaugeByDuration(c context.Context, req *types.QueryGaugesByDurationRequest) (*types.QueryGaugeByDurationResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -150,8 +155,8 @@ func (k Querier) QueryGaugeByDuration(c context.Context, req *types.QueryGaugesB
 
 	var gauges = []types.Gauge{}
 
-	for _, gaugeId := range gaugsIdsByTriggerDuration.GaugeIds {
-		gauge, found := k.Keeper.GetGaugeById(ctx, gaugeId)
+	for _, gaugeID := range gaugsIdsByTriggerDuration.GaugeIds {
+		gauge, found := k.Keeper.GetGaugeByID(ctx, gaugeID)
 		if !found {
 			continue
 		}

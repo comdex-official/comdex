@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// NewEpochInfo return new EpochInfo object.
 func (k Keeper) NewEpochInfo(ctx sdk.Context, duration time.Duration) types.EpochInfo {
 	return types.EpochInfo{
 		StartTime:               time.Time{},
@@ -18,13 +19,13 @@ func (k Keeper) NewEpochInfo(ctx sdk.Context, duration time.Duration) types.Epoc
 	}
 }
 
+// TriggerAndUpdateEpochInfos updated the existing epoch and initiates the task if it is to be triggered.
 func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
 	logger := k.Logger(ctx)
 
 	epochInfos := k.GetAllEpochInfos(ctx)
 
 	for _, epoch := range epochInfos {
-
 		isFreshNewEpoch := epoch.StartTime == time.Time{} && epoch.CurrentEpoch == 0
 
 		if isFreshNewEpoch {
@@ -39,7 +40,7 @@ func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
 			missedEpochs := 2
 			for {
 				if epoch.CurrentEpochStartTime.Add(epoch.Duration * time.Duration(missedEpochs)).Before(ctx.BlockTime()) {
-					missedEpochs += 1
+					missedEpochs++
 				} else {
 					epoch.CurrentEpochStartTime = epoch.CurrentEpochStartTime.Add(epoch.Duration * time.Duration(missedEpochs-1))
 					break
@@ -53,13 +54,15 @@ func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
 		shouldTrigger := ctx.BlockTime().After(epoch.CurrentEpochStartTime.Add(epoch.Duration))
 		if shouldTrigger {
 			logger.Info(fmt.Sprintf("Starting new epoch with duration %d and epoch number %d", &epoch.Duration, epoch.CurrentEpoch))
-			k.InitateGaugesForDuration(ctx, epoch.Duration)
-			epoch.CurrentEpoch += 1
+			err := k.InitateGaugesForDuration(ctx, epoch.Duration)
+			if err != nil {
+				logger.Info(fmt.Sprintf("err occurred in epoch trigger : %v", err))
+			}
+			epoch.CurrentEpoch++
 			epoch.CurrentEpochStartTime = epoch.CurrentEpochStartTime.Add(epoch.Duration)
 			epoch.CurrentEpochStartHeight = ctx.BlockHeight()
 
 			k.SetEpochInfoByDuration(ctx, epoch)
 		}
 	}
-
 }

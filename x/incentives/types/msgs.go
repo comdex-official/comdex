@@ -18,7 +18,7 @@ var _ sdk.Msg = &MsgCreateGauge{}
 func NewMsgCreateGauge(
 	from sdk.AccAddress,
 	startTime time.Time,
-	gaugeTypeId uint64,
+	gaugeTypeID uint64,
 	triggerDuration time.Duration,
 	depositAmount sdk.Coin,
 	totalTriggers uint64,
@@ -26,7 +26,7 @@ func NewMsgCreateGauge(
 	return &MsgCreateGauge{
 		From:            from.String(),
 		StartTime:       startTime,
-		GaugeTypeId:     gaugeTypeId,
+		GaugeTypeId:     gaugeTypeID,
 		TriggerDuration: triggerDuration,
 		DepositAmount:   depositAmount,
 		TotalTriggers:   totalTriggers,
@@ -34,18 +34,22 @@ func NewMsgCreateGauge(
 	}
 }
 
+// Route Implements MsgCreateGauge.
 func (m MsgCreateGauge) Route() string { return RouterKey }
-func (m MsgCreateGauge) Type() string  { return TypeMsgCreateGauge }
-func (m MsgCreateGauge) ValidateBasic() error {
 
-	isValidGaugeTypeId := false
-	for _, gaugeTypeId := range ValidGaugeTypeIds {
-		if gaugeTypeId == m.GaugeTypeId {
-			isValidGaugeTypeId = true
+// Type Implements MsgCreateGauge.
+func (m MsgCreateGauge) Type() string { return TypeMsgCreateGauge }
+
+// ValidateBasic Implements baic validations for MsgCreateGauge.
+func (m MsgCreateGauge) ValidateBasic() error {
+	isValidGaugeTypeID := false
+	for _, gaugeTypeID := range ValidGaugeTypeIds {
+		if gaugeTypeID == m.GaugeTypeId {
+			isValidGaugeTypeID = true
 			break
 		}
 	}
-	if !isValidGaugeTypeId {
+	if !isValidGaugeTypeID {
 		err := fmt.Sprintf("gauge-type-id %d is invalid, available gauge type ids are %v", m.GaugeTypeId, ValidGaugeTypeIds)
 		return fmt.Errorf(err)
 	}
@@ -64,10 +68,12 @@ func (m MsgCreateGauge) ValidateBasic() error {
 	return nil
 }
 
+// GetSignBytes Implements MsgCreateGauge.
 func (m MsgCreateGauge) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// GetSigners Implements MsgCreateGauge.
 func (m MsgCreateGauge) GetSigners() []sdk.AccAddress {
 	owner, _ := sdk.AccAddressFromBech32(m.From)
 	return []sdk.AccAddress{owner}

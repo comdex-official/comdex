@@ -11,16 +11,16 @@ import (
 
 // ValidateMsgCreateCreateGauge validates types.MsgCreateGauge.
 func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCreateGauge) error {
-	isValidGaugeTypeId := false
-	for _, gaugeTypeId := range types.ValidGaugeTypeIds {
-		if gaugeTypeId == msg.GaugeTypeId {
-			isValidGaugeTypeId = true
+	isValidGaugeTypeID := false
+	for _, gaugeTypeID := range types.ValidGaugeTypeIds {
+		if gaugeTypeID == msg.GaugeTypeId {
+			isValidGaugeTypeID = true
 			break
 		}
 	}
 
-	if !isValidGaugeTypeId {
-		return types.ErrInvalidGaugeTypeId
+	if !isValidGaugeTypeID {
+		return types.ErrInvalidGaugeTypeID
 	}
 
 	if msg.TriggerDuration <= 0 {
@@ -42,27 +42,29 @@ func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCrea
 	return nil
 }
 
-func (k Keeper) ValidateMsgCreateGauge_LiquidityMetaData(ctx sdk.Context, kind *types.MsgCreateGauge_LiquidityMetaData) error {
+// ValidateMsgCreateGaugeLiquidityMetaData validates types.MsgCreateGauge_LiquidityMetaData.
+func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, kind *types.MsgCreateGauge_LiquidityMetaData) error {
 	if kind.LiquidityMetaData.LockDuration <= 0 {
 		return types.ErrInvalidDuration
 	}
 
 	_, found := k.liquidityKeeper.GetPool(ctx, kind.LiquidityMetaData.PoolId)
 	if !found {
-		return types.ErrInvalidPoolId
+		return types.ErrInvalidPoolID
 	}
 
 	childPoolIds := kind.LiquidityMetaData.ChildPoolIds
-	for _, poolId := range childPoolIds {
-		_, found := k.liquidityKeeper.GetPool(ctx, poolId)
+	for _, poolID := range childPoolIds {
+		_, found := k.liquidityKeeper.GetPool(ctx, poolID)
 		if !found {
-			return sdkerrors.Wrap(types.ErrInvalidPoolId, fmt.Sprintf("invalid child pool id : %d", poolId))
+			return sdkerrors.Wrap(types.ErrInvalidPoolID, fmt.Sprintf("invalid child pool id : %d", poolID))
 		}
 	}
 
 	return nil
 }
 
+// NewGauge returns the new Gauge object.
 func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gauge, error) {
 	newGauge := types.Gauge{
 		Id:                k.GetGaugeID(ctx) + 1,
@@ -82,7 +84,7 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gaug
 	switch extraData := msg.Kind.(type) {
 	case *types.MsgCreateGauge_LiquidityMetaData:
 
-		err := k.ValidateMsgCreateGauge_LiquidityMetaData(ctx, extraData)
+		err := k.ValidateMsgCreateGaugeLiquidityMetaData(ctx, extraData)
 		if err != nil {
 			return types.Gauge{}, err
 		}
@@ -100,6 +102,7 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gaug
 	return newGauge, nil
 }
 
+// NewGaugeIdsByDuration return new GaugeByTriggerDuration.
 func (k Keeper) NewGaugeIdsByDuration(ctx sdk.Context, duration time.Duration) types.GaugeByTriggerDuration {
 	return types.GaugeByTriggerDuration{
 		TriggerDuration: duration,
@@ -107,28 +110,29 @@ func (k Keeper) NewGaugeIdsByDuration(ctx sdk.Context, duration time.Duration) t
 	}
 }
 
-func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerDuration time.Duration, newGaugeId uint64) (types.GaugeByTriggerDuration, error) {
-
+// GetUpdatedGaugeIdsByTriggerDurationObj returns gauge id by duration.
+func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerDuration time.Duration, newGaugeID uint64) (types.GaugeByTriggerDuration, error) {
 	gaugeIdsByTriggerDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, triggerDuration)
 
 	if !found {
 		gaugeIdsByTriggerDuration = k.NewGaugeIdsByDuration(ctx, triggerDuration)
 	}
-	gaugeIdAlreadyExists := false
+	gaugeIDAlreadyExists := false
 
-	for _, gaugeId := range gaugeIdsByTriggerDuration.GaugeIds {
-		if gaugeId == newGaugeId {
-			gaugeIdAlreadyExists = true
+	for _, gaugeID := range gaugeIdsByTriggerDuration.GaugeIds {
+		if gaugeID == newGaugeID {
+			gaugeIDAlreadyExists = true
 		}
 	}
 
-	if gaugeIdAlreadyExists {
-		return types.GaugeByTriggerDuration{}, sdkerrors.Wrapf(types.ErrInvalidGaugeId, "gauge id already exists in map : %d", newGaugeId)
+	if gaugeIDAlreadyExists {
+		return types.GaugeByTriggerDuration{}, sdkerrors.Wrapf(types.ErrInvalidGaugeID, "gauge id already exists in map : %d", newGaugeID)
 	}
-	gaugeIdsByTriggerDuration.GaugeIds = append(gaugeIdsByTriggerDuration.GaugeIds, newGaugeId)
+	gaugeIdsByTriggerDuration.GaugeIds = append(gaugeIdsByTriggerDuration.GaugeIds, newGaugeID)
 	return gaugeIdsByTriggerDuration, nil
 }
 
+// InitateGaugesForDuration triggers the gauge in the event of triggerDuration.
 func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.Duration) error {
 	logger := k.Logger(ctx)
 	gaugesForDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, triggerDuration)
@@ -136,8 +140,8 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 		return sdkerrors.Wrapf(types.ErrNoGaugeForDuration, "duration : %d", triggerDuration)
 	}
 
-	for _, gaugeId := range gaugesForDuration.GaugeIds {
-		gauge, found := k.GetGaugeById(ctx, gaugeId)
+	for _, gaugeID := range gaugesForDuration.GaugeIds {
+		gauge, found := k.GetGaugeByID(ctx, gaugeID)
 		if !found {
 			continue
 		}
@@ -169,7 +173,7 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 
 		coinsDistributed, err := k.BeginRewardDistributions(ctx, gauge, coinToDistribute, ongoingEpochCount, triggerDuration)
 		if err != nil {
-			logger.Info(fmt.Sprintf("error occured while reward distribution in BeginRewardDistributions, err : %s", err))
+			logger.Info(fmt.Sprintf("error occurred while reward distribution in BeginRewardDistributions, err : %s", err))
 			continue
 		}
 		gauge.TriggeredCount = ongoingEpochCount

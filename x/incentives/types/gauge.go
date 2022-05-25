@@ -1,10 +1,12 @@
 package types
 
-// should be unique
+// should be unique.
 const (
-	LiquidityGaugeTypeId = 1
+	LiquidityGaugeTypeID = 1
 )
 
+// ValidGaugeTypeIds stores all the gauge types ids
+// It is used while message validations.
 var ValidGaugeTypeIds = []uint64{
-	LiquidityGaugeTypeId,
+	LiquidityGaugeTypeID,
 }

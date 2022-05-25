@@ -87,7 +87,7 @@ service Query {
   rpc QueryAllGauges(QueryAllGaugesRequest) returns (QueryAllGaugesResponse) {
     option (google.api.http).get = "/comdex/incentives/v1beta1/gauges";
   }
-  rpc QueryGaugeById(QueryGaugeByIdRequest) returns (QueryGaugeByIdResponse) {
+  rpc QueryGaugeByID(QueryGaugeByIdRequest) returns (QueryGaugeByIdResponse) {
     option (google.api.http).get = "/comdex/incentives/v1beta1/gauge/{gauge_id}";
   }
   rpc QueryGaugeByDuration(QueryGaugesByDurationRequest) returns (QueryGaugeByDurationResponse) {

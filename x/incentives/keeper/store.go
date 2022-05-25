@@ -9,6 +9,8 @@ import (
 )
 
 // EPOCHES
+
+// SetEpochInfoByDuration sets EpochInfo with epoch duration as a key.
 func (k *Keeper) SetEpochInfoByDuration(ctx sdk.Context, epochInfo types.EpochInfo) {
 	var (
 		store = k.Store(ctx)
@@ -18,6 +20,7 @@ func (k *Keeper) SetEpochInfoByDuration(ctx sdk.Context, epochInfo types.EpochIn
 	store.Set(key, value)
 }
 
+// GetEpochInfoByDuration gets EpochInfo by epoch duration.
 func (k *Keeper) GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration) (epochInfo types.EpochInfo, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -31,6 +34,7 @@ func (k *Keeper) GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration)
 	return epochInfo, true
 }
 
+// DeleteEpochInfoByDuration deletes the EpochInfo using epoch duration.
 func (k *Keeper) DeleteEpochInfoByDuration(ctx sdk.Context, duration time.Duration) {
 	var (
 		store = k.Store(ctx)
@@ -39,6 +43,7 @@ func (k *Keeper) DeleteEpochInfoByDuration(ctx sdk.Context, duration time.Durati
 	store.Delete(key)
 }
 
+// GetAllEpochInfos returns all the EpochInfo.
 func (k *Keeper) GetAllEpochInfos(ctx sdk.Context) (epochInfos []types.EpochInfo) {
 	var (
 		store = k.Store(ctx)
@@ -55,10 +60,11 @@ func (k *Keeper) GetAllEpochInfos(ctx sdk.Context) (epochInfos []types.EpochInfo
 
 // GAUGES
 
+// GetGaugeID return gauge by id.
 func (k *Keeper) GetGaugeID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.GaugeIdKey
+		key   = types.GaugeIDKey
 		value = store.Get(key)
 	)
 	if value == nil {
@@ -69,10 +75,11 @@ func (k *Keeper) GetGaugeID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
+// SetGaugeID sets id for the gauge.
 func (k *Keeper) SetGaugeID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.GaugeIdKey
+		key   = types.GaugeIDKey
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -82,6 +89,7 @@ func (k *Keeper) SetGaugeID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
+// SetGauge sets gauge with Id as a key.
 func (k *Keeper) SetGauge(ctx sdk.Context, gauge types.Gauge) {
 	var (
 		store = k.Store(ctx)
@@ -91,6 +99,7 @@ func (k *Keeper) SetGauge(ctx sdk.Context, gauge types.Gauge) {
 	store.Set(key, value)
 }
 
+// DeleteGauge deletes the gauge.
 func (k *Keeper) DeleteGauge(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
@@ -99,7 +108,8 @@ func (k *Keeper) DeleteGauge(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) GetGaugeById(ctx sdk.Context, id uint64) (gauge types.Gauge, found bool) {
+// GetGaugeByID returns gauge by id.
+func (k *Keeper) GetGaugeByID(ctx sdk.Context, id uint64) (gauge types.Gauge, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetGaugeKey(id)
@@ -112,6 +122,7 @@ func (k *Keeper) GetGaugeById(ctx sdk.Context, id uint64) (gauge types.Gauge, fo
 	return gauge, true
 }
 
+// GetAllGauges returns all the gauges from store.
 func (k *Keeper) GetAllGauges(ctx sdk.Context) (gauges []types.Gauge) {
 	var (
 		store = k.Store(ctx)
@@ -126,6 +137,7 @@ func (k *Keeper) GetAllGauges(ctx sdk.Context) (gauges []types.Gauge) {
 	return gauges
 }
 
+// SetGaugeIdsByTriggerDuration sets a gauge ids by the trigger duration.
 func (k *Keeper) SetGaugeIdsByTriggerDuration(ctx sdk.Context, gaugesByTriggerDuration types.GaugeByTriggerDuration) {
 	var (
 		store = k.Store(ctx)
@@ -135,6 +147,7 @@ func (k *Keeper) SetGaugeIdsByTriggerDuration(ctx sdk.Context, gaugesByTriggerDu
 	store.Set(key, value)
 }
 
+// GetGaugeIdsByTriggerDuration returns all the gauges for the given durtion.
 func (k *Keeper) GetGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration time.Duration) (gaugeIdsByTriggerDuration types.GaugeByTriggerDuration, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -148,7 +161,8 @@ func (k *Keeper) GetGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration t
 	return gaugeIdsByTriggerDuration, true
 }
 
-func (k *Keeper) GetAllGaugesByGaugeTypeId(ctx sdk.Context, gaugeTypeId uint64) (gauges []types.Gauge) {
+// GetAllGaugesByGaugeTypeID returns all the gauges with given gaugeTypeId.
+func (k *Keeper) GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeID uint64) (gauges []types.Gauge) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.GaugeKeyPrefix)
@@ -157,7 +171,7 @@ func (k *Keeper) GetAllGaugesByGaugeTypeId(ctx sdk.Context, gaugeTypeId uint64) 
 	for ; iter.Valid(); iter.Next() {
 		var gauge types.Gauge
 		k.cdc.MustUnmarshal(iter.Value(), &gauge)
-		if gauge.GaugeTypeId == gaugeTypeId {
+		if gauge.GaugeTypeId == gaugeTypeID {
 			gauges = append(gauges, gauge)
 		}
 	}

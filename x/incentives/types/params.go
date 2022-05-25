@@ -6,6 +6,7 @@ import (
 
 var _ paramstypes.ParamSet = (*Params)(nil)
 
+// ParamKeyTable for incentives module.
 func ParamKeyTable() paramstypes.KeyTable {
 	return paramstypes.NewKeyTable().RegisterParamSet(&Params{})
 }

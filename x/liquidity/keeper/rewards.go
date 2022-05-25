@@ -467,7 +467,7 @@ func (k Keeper) GetMinimumEpochDurationFromPoolId(ctx sdk.Context, poolId uint64
 
 func (k Keeper) ProcessQueuedLiquidityProviders(ctx sdk.Context) {
 	availablePools := k.GetAllPools(ctx)
-	availableLiquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeId(ctx, incentivestypes.LiquidityGaugeTypeId)
+	availableLiquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeID(ctx, incentivestypes.LiquidityGaugeTypeID)
 
 	for _, pool := range availablePools {
 		poolLpData, found := k.GetPoolLiquidityProvidersData(ctx, pool.Id)

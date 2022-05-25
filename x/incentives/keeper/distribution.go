@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// GetRewardDistributionData returns the reward distribution data.
 func (k Keeper) GetRewardDistributionData(
 	ctx sdk.Context, gauge types.Gauge, coinToDistribute sdk.Coin, epochCount uint64, epochDuration time.Duration,
 ) ([]types.RewardDistributionDataCollector, error) {
@@ -24,7 +25,8 @@ func (k Keeper) GetRewardDistributionData(
 	return rewardDistributionData, err
 }
 
-func (k Keeper) doDistributionSends(ctx sdk.Context, gaugeTypeId uint64, distrs *types.DistributionInfo) error {
+// doDistributionSends initiates reward transfer from module account to wallet address.
+func (k Keeper) doDistributionSends(ctx sdk.Context, gaugeTypeID uint64, distrs *types.DistributionInfo) {
 	logger := k.Logger(ctx)
 	numIDs := len(distrs.Addresses)
 	logger.Info(fmt.Sprintf("Beginning reward distribution to %d users", numIDs))
@@ -37,7 +39,7 @@ func (k Keeper) doDistributionSends(ctx sdk.Context, gaugeTypeId uint64, distrs 
 			distrs.Coins[i],
 		)
 		if err != nil {
-			logger.Info(fmt.Sprintf("error occured while reward distribution, err : %v", err))
+			logger.Info(fmt.Sprintf("error occurred while reward distribution, err : %v", err))
 		}
 	}
 	logger.Info("Finished sending, now creating reward distribution events")
@@ -47,14 +49,14 @@ func (k Keeper) doDistributionSends(ctx sdk.Context, gaugeTypeId uint64, distrs 
 				types.TypeEvtDistribution,
 				sdk.NewAttribute(types.AttributeReceiver, distrs.Addresses[id].String()),
 				sdk.NewAttribute(types.AttributeAmount, distrs.Coins[id].String()),
-				sdk.NewAttribute(types.AttributeGaugeTypeId, fmt.Sprintf("%v", gaugeTypeId)),
+				sdk.NewAttribute(types.AttributeGaugeTypeID, fmt.Sprintf("%v", gaugeTypeID)),
 			),
 		})
 	}
 	logger.Info(fmt.Sprintf("Finished distributing to %d users", numIDs))
-	return nil
 }
 
+// BeginRewardDistributions collects the reward data and initiates reward distribution.
 func (k Keeper) BeginRewardDistributions(
 	ctx sdk.Context, gauge types.Gauge, coinToDistribute sdk.Coin, epochCount uint64, epochDuration time.Duration,
 ) (sdk.Coin, error) {
@@ -81,10 +83,7 @@ func (k Keeper) BeginRewardDistributions(
 		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), types.ErrInvalidCalculatedAMount
 	}
 
-	err = k.doDistributionSends(ctx, gauge.GaugeTypeId, &newDistributionInfo)
-	if err != nil {
-		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), err
-	}
+	k.doDistributionSends(ctx, gauge.GaugeTypeId, &newDistributionInfo)
 
 	return totalDistributionCoinsCalculated, nil
 }

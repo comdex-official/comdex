@@ -12,7 +12,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-//  Keeper of the liquidity store.
+// Keeper of the incentives module store.
 type Keeper struct {
 	cdc        codec.BinaryCodec
 	storeKey   sdk.StoreKey
@@ -51,6 +51,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
+// Store returns kv store for module.
 func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
 }

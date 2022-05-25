@@ -15,7 +15,7 @@ import (
 	"github.com/comdex-official/comdex/x/incentives/types"
 )
 
-// GetQueryCmd returns the cli query commands for this module
+// GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd(queryRoute string) *cobra.Command {
 	// Group incentives queries under a subcommand
 	cmd := &cobra.Command{
@@ -31,7 +31,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		NewQueryEpochInfoByDurationCmd(),
 		NewQueryAllEpochsInfoCmd(),
 		NewQueryAllGaugesCmd(),
-		NewQueryGaugeByIdCmd(),
+		NewQueryGaugeByIDCmd(),
 		NewQueryGaugeByDurationCmd(),
 	)
 	return cmd
@@ -73,6 +73,7 @@ $ %s query %s params
 	return cmd
 }
 
+// NewQueryEpochInfoByDurationCmd implements the epoch-by-duration query command.
 func NewQueryEpochInfoByDurationCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "epoch-by-duration [seconds]",
@@ -113,6 +114,7 @@ $ %s query %s epoch-by-duration 600
 	return cmd
 }
 
+// NewQueryAllEpochsInfoCmd implements the epochs query command.
 func NewQueryAllEpochsInfoCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "epochs",
@@ -153,6 +155,7 @@ $ %s query %s gauges
 	return cmd
 }
 
+// NewQueryAllGaugesCmd implements the gauges query command.
 func NewQueryAllGaugesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gauges",
@@ -193,7 +196,8 @@ $ %s query %s gauges
 	return cmd
 }
 
-func NewQueryGaugeByIdCmd() *cobra.Command {
+// NewQueryGaugeByIDCmd implements the gauge query command.
+func NewQueryGaugeByIDCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gauge [id]",
 		Args:  cobra.ExactArgs(1),
@@ -211,16 +215,16 @@ $ %s query %s gauge 1
 			if err != nil {
 				return err
 			}
-			gaugeId, err := strconv.ParseUint(args[0], 10, 64)
+			gaugeID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse id: %w", err)
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.QueryGaugeById(
+			res, err := queryClient.QueryGaugeByID(
 				context.Background(),
 				&types.QueryGaugeByIdRequest{
-					GaugeId: gaugeId,
+					GaugeId: gaugeID,
 				},
 			)
 			if err != nil {
@@ -233,6 +237,7 @@ $ %s query %s gauge 1
 	return cmd
 }
 
+// NewQueryGaugeByDurationCmd implements the gauges-by-duration query command.
 func NewQueryGaugeByDurationCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gauges-by-duration [seconds]",

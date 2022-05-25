@@ -31,6 +31,6 @@ type BankKeeper interface {
 }
 
 type IncentivesKeeper interface {
-	GetAllGaugesByGaugeTypeId(ctx sdk.Context, gaugeTypeId uint64) (gauges []incentivestypes.Gauge)
+	GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeId uint64) (gauges []incentivestypes.Gauge)
 	GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration) (epochInfo incentivestypes.EpochInfo, found bool)
 }

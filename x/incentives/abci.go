@@ -10,9 +10,11 @@ import (
 	"github.com/comdex-official/comdex/x/incentives/types"
 )
 
+// BeginBlocker for incentives module.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 	k.TriggerAndUpdateEpochInfos(ctx)
 }
 
+// EndBlocker for incentives module.
 func EndBlocker(ctx sdk.Context, k keeper.Keeper) {}

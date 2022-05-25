@@ -553,7 +553,7 @@ func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*
 		return &types.QuerySoftLockResponse{ActivePoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)), QueuedPoolCoin: []types.QueuedPoolCoin{}}, nil
 	}
 
-	availableLiquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeId(ctx, incentivestypes.LiquidityGaugeTypeId)
+	availableLiquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeID(ctx, incentivestypes.LiquidityGaugeTypeID)
 	minEpochDuration := k.GetMinimumEpochDurationFromPoolId(ctx, poolId, availableLiquidityGauges)
 
 	queuedCoins := []types.QueuedPoolCoin{}
@@ -615,7 +615,7 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	liquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeId(ctx, incentivestypes.LiquidityGaugeTypeId)
+	liquidityGauges := k.incentivesKeeper.GetAllGaugesByGaugeTypeID(ctx, incentivestypes.LiquidityGaugeTypeID)
 
 	poolIncentives := []*types.PoolIncentive{}
 
