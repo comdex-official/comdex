@@ -5,16 +5,21 @@ import (
 )
 
 const (
-	ProposalLookupTableParams = "LookupTableParams"
+	ProposalLookupTableParams  = "LookupTableParams"
+	ProposalAuctionTableParams = "AuctionTableParams"
 )
 
 func init() {
 	govtypes.RegisterProposalType(ProposalLookupTableParams)
 	govtypes.RegisterProposalTypeCodec(&LookupTableParams{}, "comdex/LookupTableParams")
+
+	govtypes.RegisterProposalType(ProposalAuctionTableParams)
+	govtypes.RegisterProposalTypeCodec(&AuctionControlByAppIdProposal{}, "comdex/AuctionControlByAppIdProposal")
 }
 
 var (
 	_ govtypes.Content = &LookupTableParams{}
+	_ govtypes.Content = &AuctionControlByAppIdProposal{}
 )
 
 func NewLookupTableParamsProposal(title, description string, lookupTableData []CollectorLookupTable) govtypes.Content {
@@ -38,17 +43,17 @@ func (p *LookupTableParams) ValidateBasic() error {
 	return nil
 }
 
-func NewAuctionLookupTableProposal(title, description string, appIdToAuctionLookup []AppIdToAuctionLookupTable) govtypes.Content {
+func NewAuctionLookupTableProposal(title, description string, collectorAuctionLookupTable CollectorAuctionLookupTable) govtypes.Content {
 	return &AuctionControlByAppIdProposal{
-		Title:           title,
-		Description:     description,
-		AppIdToAuctionLookup: appIdToAuctionLookup,
+		Title:                       title,
+		Description:                 description,
+		CollectorAuctionLookupTable: collectorAuctionLookupTable,
 	}
 }
 
 func (p *AuctionControlByAppIdProposal) ProposalRoute() string { return RouterKey }
 
-func (p *AuctionControlByAppIdProposal) ProposalType() string { return ProposalLookupTableParams }
+func (p *AuctionControlByAppIdProposal) ProposalType() string { return ProposalAuctionTableParams }
 
 func (p *AuctionControlByAppIdProposal) ValidateBasic() error {
 

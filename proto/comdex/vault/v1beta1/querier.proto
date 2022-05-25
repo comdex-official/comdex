@@ -250,6 +250,35 @@ message QueryExtendedPairVaultMappingByAppResponse {
  repeated ExtendedPairVaultMapping extendedPairVaultMapping = 1 [ (gogoproto.moretags) = "yaml:\"extendedPairVaultMapping\"" ];
 }
 
+message QueryExtendedPairVaultMappingByOwnerAndAppRequest {
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  uint64 app_id = 2 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+}
+
+message QueryExtendedPairVaultMappingByOwnerAndAppResponse {
+ repeated ExtendedPairToVaultMapping extendedPairtoVaultMapping = 1 [ (gogoproto.moretags) = "yaml:\"extendedPairtoVaultMapping\"" ];
+}
+
+message QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairIDRequest {
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  uint64 app_id = 2 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 extended_pair = 3 [ (gogoproto.moretags) = "yaml:\"extended_pair\"" ];
+
+}
+
+message QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairIDResponse {
+string vaultId = 1 [ (gogoproto.moretags) = "yaml:\"vaultId\"" ];
+}
+
+message QueryTVLlockedByAppRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+
+}
+
+message QueryTVLlockedByAppResponse {
+repeated TvlLockedDataMap tvldata = 1 [ (gogoproto.moretags) = "yaml:\"tvldata\"" ];
+}
+
 
 service QueryService {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
@@ -324,5 +353,17 @@ service QueryService {
 
   rpc QueryExtendedPairVaultMappingByApp(QueryExtendedPairVaultMappingByAppRequest) returns (QueryExtendedPairVaultMappingByAppResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairVault-by-product/{app_id}";
+  };
+
+  rpc QueryExtendedPairVaultMappingByOwnerAndApp(QueryExtendedPairVaultMappingByOwnerAndAppRequest) returns (QueryExtendedPairVaultMappingByOwnerAndAppResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairVault-by-owner-and-product/{owner}/{app_id}";
+  };
+
+  rpc QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID(QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairIDRequest) returns (QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairIDResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairVault-by-owner-product-extendedPair/{owner}/{app_id}/{extended_pair}";
+  };
+
+  rpc QueryTVLlockedByApp(QueryTVLlockedByAppRequest) returns (QueryTVLlockedByAppResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/tvl-locked-by-app/{app_id}";
   };
 }

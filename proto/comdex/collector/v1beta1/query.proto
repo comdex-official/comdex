@@ -10,11 +10,17 @@ import "comdex/collector/v1beta1/collector.proto";
 option go_package = "github.com/comdex-official/comdex/x/collector/types";
 
 // Query defines the gRPC querier service.
-service Query {
+service QueryService {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex-official/comdex/collector/params";
   }
+  rpc QueryCollectorLookupByProduct(QueryCollectorLookupByProductRequest) returns (QueryCollectorLookupByProductResponse) {
+    option (google.api.http).get = "/comdex/collector/v1beta1/collector-lookup-by-product/{app_id}";
+  };
+  rpc QueryCollectorLookupByProductAndAsset(QueryCollectorLookupByProductAndAssetRequest) returns (QueryCollectorLookupByProductAndAssetResponse) {
+    option (google.api.http).get = "/comdex/collector/v1beta1/collector-lookup-by-product-and-asset/{app_id}/{asset_id}";
+  };
   // this line is used by starport scaffolding # 2
 }
 
@@ -43,13 +49,4 @@ message QueryCollectorLookupByProductAndAssetRequest {
 message QueryCollectorLookupByProductAndAssetResponse {
   CollectorLookupTable collectorLookup = 1 [ (gogoproto.moretags) = "yaml:\"collectorLookup\"" ];
 
-}
-
-service QueryService {
-  rpc QueryCollectorLookupByProduct(QueryCollectorLookupByProductRequest) returns (QueryCollectorLookupByProductResponse) {
-    option (google.api.http).get = "/comdex/collector/v1beta1/collector-lookup-by-product/{app_id}";
-  };
-  rpc QueryCollectorLookupByProductAndAsset(QueryCollectorLookupByProductAndAssetRequest) returns (QueryCollectorLookupByProductAndAssetResponse) {
-    option (google.api.http).get = "/comdex/collector/v1beta1/collector-lookup-by-product-and-asset/{app_id}/{asset_id}";
-  };
 }

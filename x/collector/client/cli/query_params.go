@@ -3,10 +3,10 @@ package cli
 import (
 	"context"
 
+	"github.com/comdex-official/comdex/x/collector/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-	"github.com/comdex-official/comdex/x/collector/types"
 )
 
 func CmdQueryParams() *cobra.Command {
@@ -17,7 +17,7 @@ func CmdQueryParams() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := types.NewQueryServiceClient(clientCtx)
 
 			res, err := queryClient.Params(context.Background(), &types.QueryParamsRequest{})
 			if err != nil {

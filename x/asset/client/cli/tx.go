@@ -494,10 +494,22 @@ func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 			var pairs []types.ExtendedPairLend
 			for i := range pair_id {
 
-				newbaseborrowrateasset1, _ := sdk.NewDecFromStr(baseborrowrateasset1[i])
-				newbaseborrowrateasset2, _ := sdk.NewDecFromStr(baseborrowrateasset2[i])
-				newbaselendrateasset1, _ := sdk.NewDecFromStr(baselendrateasset1[i])
-				newbaselendrateasset2, _ := sdk.NewDecFromStr(baselendrateasset2[i])
+				newbaseborrowrateasset1, err := sdk.NewDecFromStr(baseborrowrateasset1[i])
+				if err != nil {
+					return err
+				}
+				newbaseborrowrateasset2, err := sdk.NewDecFromStr(baseborrowrateasset2[i])
+				if err != nil {
+					return err
+				}
+				newbaselendrateasset1, err := sdk.NewDecFromStr(baselendrateasset1[i])
+				if err != nil {
+					return err
+				}
+				newbaselendrateasset2, err := sdk.NewDecFromStr(baselendrateasset2[i])
+				if err != nil {
+					return err
+				}
 				pairs = append(pairs, types.ExtendedPairLend{
 					PairId:                pair_id[i],
 					ModuleAcc:             moduleAccnt[i],

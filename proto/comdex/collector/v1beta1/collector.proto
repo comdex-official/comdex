@@ -95,11 +95,6 @@ message AssetToAuctionMapping {
 
 ////////////////////////////////////////////////////////33333333333333
 
-message AppIdToAuctionLookupTable {
-  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-  bool surplus_auction = 2 [(gogoproto.moretags) = "yaml:\"surplus_auction\""];
-  bool debt_auction = 3 [(gogoproto.moretags) = "yaml:\"debt_auction\""];
-}
 
 message CollectorAuctionLookupTable {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];

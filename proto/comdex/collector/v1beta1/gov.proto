@@ -17,5 +17,5 @@ message LookupTableParams {
 message AuctionControlByAppIdProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  repeated AppIdToAuctionLookupTable appIdToAuctionLookup = 3 [(gogoproto.nullable) = false];
+  CollectorAuctionLookupTable collectorAuctionLookupTable = 3 [(gogoproto.nullable) = false];
 }

@@ -2,11 +2,11 @@ package cli
 
 import (
 	"fmt"
-	"strconv"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -97,14 +97,14 @@ func NewCmdLookupTableParams() *cobra.Command {
 					return err
 				}
 				LookupTableRecords = append(LookupTableRecords, types.CollectorLookupTable{
-					AppId: appId[i],
+					AppId:            appId[i],
 					CollectorAssetId: collector_asset_id[i],
 					SecondaryAssetId: secondary_asset_id[i],
 					SurplusThreshold: surplusThreshold[i],
-					DebtThreshold: debtThreshold[i],
+					DebtThreshold:    debtThreshold[i],
 					LockerSavingRate: &newlockerSavingRate,
-					LotSize: lot_size[i],
-					BidFactor: &newbid_factor,
+					LotSize:          lot_size[i],
+					BidFactor:        &newbid_factor,
 				})
 			}
 
@@ -154,21 +154,26 @@ func NewCmdLookupTableParams() *cobra.Command {
 
 func NewCmdAuctionControlProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auction-control [app-id] [surplus_auction] [debt_auction]",
-		Args:  cobra.ExactArgs(3),
+		Use:   "auction-control [app-id] [asset_id] [surplus_auction] [debt_auction]",
+		Args:  cobra.ExactArgs(4),
 		Short: "Set auction control",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			appId, err := ParseUint64SliceFromString(args[0], ",")
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			surplus_auction, err := ParseStringFromString(args[1], ",")
+			asset_id, err := ParseUint64SliceFromString(args[1], ",")
 			if err != nil {
 				return err
 			}
-			debt_auction, err := ParseStringFromString(args[2], ",")
+
+			surplus_auction, err := ParseStringFromString(args[2], ",")
+			if err != nil {
+				return err
+			}
+			debt_auction, err := ParseStringFromString(args[3], ",")
 			if err != nil {
 				return err
 			}
@@ -178,8 +183,8 @@ func NewCmdAuctionControlProposal() *cobra.Command {
 				return err
 			}
 
-			var AuctionToAppTableRecords []types.AppIdToAuctionLookupTable
-			for i := range appId {
+			var collectorAuctionLookupRecords types.CollectorAuctionLookupTable
+			for i := range asset_id {
 				newSurplusAuction, err := strconv.ParseBool(surplus_auction[i])
 				if err != nil {
 					return err
@@ -188,11 +193,12 @@ func NewCmdAuctionControlProposal() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				AuctionToAppTableRecords = append(AuctionToAppTableRecords, types.AppIdToAuctionLookupTable{
-					AppId: appId[i],
-					SurplusAuction: newSurplusAuction,
-					DebtAuction: newDebtAuction,
-				})
+				collectorAuctionLookupRecords.AppId = app_id
+				var AssetIdToAuctionLookup types.AssetIdToAuctionLookupTable
+				AssetIdToAuctionLookup.AssetId = asset_id[i]
+				AssetIdToAuctionLookup.IsSurplusAuction = newSurplusAuction
+				AssetIdToAuctionLookup.IsDebtAuction = newDebtAuction
+				collectorAuctionLookupRecords.AssetIdToAuctionLookup = append(collectorAuctionLookupRecords.AssetIdToAuctionLookup, &AssetIdToAuctionLookup)
 			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
@@ -216,7 +222,7 @@ func NewCmdAuctionControlProposal() *cobra.Command {
 				return err
 			}
 
-			content := types.NewAuctionLookupTableProposal(title, description, AuctionToAppTableRecords)
+			content := types.NewAuctionLookupTableProposal(title, description, collectorAuctionLookupRecords)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {

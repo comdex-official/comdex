@@ -61,7 +61,20 @@ service QueryService {
 
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/locker/v1beta1/params";
-  }
+  };
+
+  rpc QueryLockerLookupTableByApp(QueryLockerLookupTableByAppRequest) returns (QueryLockerLookupTableByAppResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/locker-lookup-by-app/{app_id}";
+  };
+
+  rpc QueryLockerLookupTableByAppAndAssetId(QueryLockerLookupTableByAppAndAssetIdRequest) returns (QueryLockerLookupTableByAppAndAssetIdResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/locker-lookup-by-app-and-assetId/{app_id}/{asset_id}";
+  };
+
+  rpc QueryLockerTotalDepositedByApp(QueryLockerTotalDepositedByAppRequest) returns (QueryLockerTotalDepositedByAppResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/locker-deposited-by-app/{app_id}";
+  };
+
 }
 
 message QueryLockerInfoRequest {
@@ -186,4 +199,29 @@ message QueryParamsResponse {
     (gogoproto.moretags) = "yaml:\"params\"",
     (gogoproto.nullable) = false
   ];
+}
+
+message QueryLockerLookupTableByAppRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+}
+
+message QueryLockerLookupTableByAppResponse {
+  repeated TokenToLockerMapping tokenToLockerMapping = 1 [ (gogoproto.moretags) = "yaml:\"tokenToLockerMapping\"" ];
+}
+
+message QueryLockerLookupTableByAppAndAssetIdRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+}
+
+message QueryLockerLookupTableByAppAndAssetIdResponse {
+  TokenToLockerMapping tokenToLockerMapping = 1 [ (gogoproto.moretags) = "yaml:\"tokenToLockerMapping\"" ];
+}
+
+message QueryLockerTotalDepositedByAppRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+}
+
+message QueryLockerTotalDepositedByAppResponse {
+ repeated LockedDepositedAmountDataMap lockedDepositedAmountDataMap =1 [ (gogoproto.moretags) = "yaml:\"lockedDepositedAmountDataMap\"" ];
 }

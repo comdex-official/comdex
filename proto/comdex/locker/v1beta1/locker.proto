@@ -105,6 +105,13 @@ message LockerProductAssetMapping {
       (gogoproto.moretags) = "yaml:\"asset_ids\""
   ];
 }
+
+message LockedDepositedAmountDataMap
+{
+  uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  string DepositedAmount= 2 [ (gogoproto.moretags) = "yaml:\"DepositedAmount\"",
+         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+}
 // message LockerStatistics {
   
 //   map<string, uint64> locked_assets = 2 [

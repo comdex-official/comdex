@@ -10,5 +10,6 @@ func (k Keeper) HandleProposalLookupTableParams(ctx sdk.Context, p *types.Lookup
 }
 
 func (k Keeper) HandleProposalLookupAppToAuction(ctx sdk.Context, p *types.AuctionControlByAppIdProposal) error {
-	return k.SetAuctionMappingForApp(ctx, p.AppIdToAuctionLookup...)
+	return k.SetAuctionMappingForApp(ctx, p.CollectorAuctionLookupTable)
 }
+ 

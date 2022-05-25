@@ -290,17 +290,15 @@ func (k *Keeper) GetAppIdToAuctionMappingForAsset(ctx sdk.Context, app_id uint64
 
 ////////////////////////////////////333333333333333
 
-func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.AppIdToAuctionLookupTable) error {
+func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {
 	for _, msg := range records {
-		var appAuction = types.AppIdToAuctionLookupTable{
-			AppId:          msg.AppId,
-			SurplusAuction: msg.SurplusAuction,
-			DebtAuction:    msg.DebtAuction,
-		}
+		var collectorAuctionLookup types.CollectorAuctionLookupTable
+		collectorAuctionLookup.AppId = msg.AppId
+		collectorAuctionLookup.AssetIdToAuctionLookup = msg.AssetIdToAuctionLookup
 		var (
 			store = ctx.KVStore(k.storeKey)
 			key   = types.AppIdToAuctionMappingKey(msg.AppId)
-			value = k.cdc.MustMarshal(&appAuction)
+			value = k.cdc.MustMarshal(&collectorAuctionLookup)
 		)
 
 		store.Set(key, value)
@@ -309,7 +307,7 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.AppId
 	return nil
 }
 
-func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.AppIdToAuctionLookupTable, found bool) {
+func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, app_id uint64) (collectorAuctionLookupTable types.CollectorAuctionLookupTable, found bool) {
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.AppIdToAuctionMappingKey(app_id)
@@ -317,11 +315,11 @@ func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, app_id uint64) (appIdT
 	)
 
 	if value == nil {
-		return appIdToAuctionData, false
+		return collectorAuctionLookupTable, false
 	}
 
-	k.cdc.MustUnmarshal(value, &appIdToAuctionData)
-	return appIdToAuctionData, true
+	k.cdc.MustUnmarshal(value, &collectorAuctionLookupTable)
+	return collectorAuctionLookupTable, true
 }
 
 func (k *Keeper) SetCollectorAuctionLookupTable(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {

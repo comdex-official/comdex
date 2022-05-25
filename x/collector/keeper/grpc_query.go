@@ -26,19 +26,18 @@ func (q *queryServer) QueryCollectorLookupByProduct(c context.Context, req *type
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var( 
-		ctx   = sdk.UnwrapSDKContext(c)
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
 	)
-		_, found := q.GetApp(ctx, req.AppId)
-		if !found {
-			return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
-		}
+	_, found := q.GetApp(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
+	}
 
-		collectorLookupData, found := q.GetCollectorLookupTable(ctx, req.AppId)
-		if !found {
-			return nil, status.Errorf(codes.NotFound, "Lookup table does not exist for product id %d", req.AppId)
-		}
-	
+	collectorLookupData, found := q.GetCollectorLookupTable(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Lookup table does not exist for product id %d", req.AppId)
+	}
 
 	return &types.QueryCollectorLookupByProductResponse{
 		CollectorLookup: collectorLookupData.AssetrateInfo,
@@ -49,28 +48,37 @@ func (q *queryServer) QueryCollectorLookupByProductAndAsset(c context.Context, r
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var( 
-		ctx   = sdk.UnwrapSDKContext(c)
+	var (
+		ctx           = sdk.UnwrapSDKContext(c)
 		collectorData types.CollectorLookupTable
 	)
-		_, found := q.GetApp(ctx, req.AppId)
-		if !found {
-			return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
-		}
+	_, found := q.GetApp(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
+	}
 
-		collectorLookupData, found := q.GetCollectorLookupByAsset(ctx, req.AppId, req.AssetId)
-		if !found {
-			return nil, status.Errorf(codes.NotFound, "Lookup table does not exist for product id %d", req.AppId)
-		}
+	collectorLookupData, found := q.GetCollectorLookupByAsset(ctx, req.AppId, req.AssetId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Lookup table does not exist for product id %d", req.AppId)
+	}
 
-		for _, data := range collectorLookupData.AssetrateInfo{
-			if data.CollectorAssetId == req.AssetId {
-				collectorData = *data
-			}
+	for _, data := range collectorLookupData.AssetrateInfo {
+		if data.CollectorAssetId == req.AssetId {
+			collectorData = *data
 		}
-	
+	}
 
 	return &types.QueryCollectorLookupByProductAndAssetResponse{
 		CollectorLookup: &collectorData,
 	}, nil
+}
+
+func (k Keeper) QueryCollectorLookupByProduct(ctx context.Context, request *types.QueryCollectorLookupByProductRequest) (*types.QueryCollectorLookupByProductResponse, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (k Keeper) QueryCollectorLookupByProductAndAsset(ctx context.Context, request *types.QueryCollectorLookupByProductAndAssetRequest) (*types.QueryCollectorLookupByProductAndAssetResponse, error) {
+	//TODO implement me
+	panic("implement me")
 }
