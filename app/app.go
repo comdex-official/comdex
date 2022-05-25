@@ -496,7 +496,7 @@ func New(
 		app.cdc,
 		app.keys[tokenminttypes.StoreKey],
 		app.bankKeeper,
-		&app.tokenmintKeeper,
+		&app.assetKeeper,
 		)
 
 
