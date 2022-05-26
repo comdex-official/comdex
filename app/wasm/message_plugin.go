@@ -33,7 +33,7 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		// leave everything else for the wrapped version
 		var contractMsg wasmbindings.ComdexMessages
 		if err := json.Unmarshal(msg.Custom, &contractMsg); err != nil {
-			return nil, nil, sdkerrors.Wrap(err, "osmosis msg")
+			return nil, nil, sdkerrors.Wrap(err, "comdex msg error")
 		}
 		if contractMsg.WhiteListAssetLocker != nil {
 			return m.whitelistAssetLocker(ctx, contractAddr, contractMsg.WhiteListAssetLocker)
