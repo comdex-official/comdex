@@ -198,6 +198,7 @@ var (
 		liquidation.AppModuleBasic{},
 		auction.AppModuleBasic{},
 		tokenmint.AppModuleBasic{},
+		esm.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
 )
@@ -356,6 +357,7 @@ func New(
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 	app.paramsKeeper.Subspace(auctiontypes.ModuleName)
 	app.paramsKeeper.Subspace(tokenminttypes.ModuleName)
+	app.paramsKeeper.Subspace(esmtypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -653,6 +655,7 @@ func New(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.assetKeeper)).
 		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.collectorKeeper)).
+		AddRoute(esmtypes.RouterKey, esm.NewToggleEsmHandlers(app.esmkeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
 
@@ -721,6 +724,7 @@ func New(
 		liquidation.NewAppModule(app.cdc, app.liquidationKeeper, app.accountKeeper, app.bankKeeper),
 		locker.NewAppModule(app.cdc, app.lockerKeeper, app.accountKeeper, app.bankKeeper),
 		collector.NewAppModule(app.cdc, app.collectorKeeper, app.accountKeeper, app.bankKeeper),
+		esm.NewAppModule(app.cdc, app.esmkeeper, app.accountKeeper, app.bankKeeper),
 		rewards.NewAppModule(app.cdc, app.rewardskeeper, app.accountKeeper, app.bankKeeper),
 		lend.NewAppModule(app.cdc, app.lendKeeper, app.accountKeeper, app.bankKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
@@ -780,6 +784,7 @@ func New(
 		auctiontypes.ModuleName,
 		rewardstypes.ModuleName,
 		lockertypes.StoreKey,
+		esmtypes.StoreKey,
 		wasmtypes.ModuleName,
 		authz.ModuleName,
 		vesting.AppModuleBasic{}.Name(),
