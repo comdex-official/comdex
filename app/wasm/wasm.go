@@ -3,6 +3,7 @@ package wasm
 import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	locker2 "github.com/comdex-official/comdex/app/wasm/bindings/locker"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 )
 
@@ -11,7 +12,7 @@ func RegisterCustomPlugins(
 ) []wasmkeeper.Option {
 
 	messengerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
-		CustomMessageDecorator(locker),
+		locker2.CustomMessageDecorator(locker),
 	)
 
 	return []wasm.Option{
