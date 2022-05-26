@@ -36,6 +36,7 @@ type VaultKeeper interface {
 	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLookupData types.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool)
 	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairId uint64, userAddress string, appMappingId uint64)
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairId uint64, userVaultId string, appMappingId uint64)
+	SetVault(ctx sdk.Context, vault types.Vault)
 }
 
 type MarketKeeper interface {

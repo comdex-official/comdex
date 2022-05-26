@@ -303,7 +303,7 @@ func New(
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			lendtypes.StoreKey, markettypes.StoreKey, rewardstypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
-			auctiontypes.StoreKey,tokenminttypes.StoreKey,esmtypes.StoreKey,
+			auctiontypes.StoreKey, tokenminttypes.StoreKey, esmtypes.StoreKey,
 		)
 	)
 
@@ -356,7 +356,6 @@ func New(
 	app.paramsKeeper.Subspace(auctiontypes.ModuleName)
 	app.paramsKeeper.Subspace(tokenminttypes.ModuleName)
 	app.paramsKeeper.Subspace(esmtypes.ModuleName)
-
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -508,9 +507,7 @@ func New(
 		app.bankKeeper,
 		&app.assetKeeper,
 		&app.esmkeeper,
-		)
-
-
+	)
 
 	scopedBandoracleKeeper := app.capabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
 	app.scopedBandoracleKeeper = scopedBandoracleKeeper
@@ -555,6 +552,7 @@ func New(
 		&app.assetKeeper,
 		&app.vaultKeeper,
 		&app.marketKeeper,
+		&app.auctionKeeper,
 	)
 
 	app.auctionKeeper = *auctionkeeper.NewKeeper(
@@ -970,7 +968,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		collectortypes.ModuleName:      {authtypes.Burner, authtypes.Staking},
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
-		tokenminttypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
+		tokenminttypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
@@ -979,7 +977,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
-		esmtypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+		esmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
 	}
 }

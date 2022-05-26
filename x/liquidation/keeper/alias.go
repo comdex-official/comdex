@@ -87,3 +87,7 @@ func (k *Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.Ext
 func (k *Keeper) GetAuctionParams(ctx sdk.Context) auctiontypes.Params {
 	return k.auction.GetParams(ctx)
 }
+
+func (k *Keeper) SetVault(ctx sdk.Context, vault types.Vault) {
+	k.vault.SetVault(ctx, vault)
+}
