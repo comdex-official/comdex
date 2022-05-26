@@ -1,7 +1,7 @@
 package bindings
 
 type ComdexMessages struct {
-	WhiteListAssetLocker *WhiteListAssetLocker `json:"mint_tokens,omitempty"`
+	WhiteListAssetLocker *WhiteListAssetLocker `json:"white-list-asset-locker,omitempty"`
 }
 
 type WhiteListAssetLocker struct {
