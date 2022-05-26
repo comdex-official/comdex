@@ -131,6 +131,7 @@ import (
 
 	"github.com/comdex-official/comdex/x/esm"
 	esmclient "github.com/comdex-official/comdex/x/esm/client"
+	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
@@ -269,6 +270,7 @@ type App struct {
 	scopedWasmKeeper  capabilitykeeper.ScopedKeeper
 	auctionKeeper     auctionkeeper.Keeper
 	tokenmintKeeper   tokenmintkeeper.Keeper
+	esmkeeper         esmkeeper.Keeper
 
 	wasmKeeper wasm.Keeper
 	// the module manager
@@ -302,7 +304,7 @@ func New(
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			lendtypes.StoreKey, markettypes.StoreKey, rewardstypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
-			auctiontypes.StoreKey, tokenminttypes.StoreKey,
+			auctiontypes.StoreKey, tokenminttypes.StoreKey, esmtypes.StoreKey,
 		)
 	)
 
@@ -587,6 +589,13 @@ func New(
 		app.GetSubspace(collectortypes.ModuleName),
 	)
 
+	app.esmkeeper = *esmkeeper.NewKeeper(
+		app.cdc,
+		app.keys[esmtypes.StoreKey],
+		app.keys[esmtypes.MemStoreKey],
+		app.GetSubspace(esmtypes.ModuleName),
+	)
+
 	// Create Transfer Keepers
 	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.cdc,
@@ -727,7 +736,7 @@ func New(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, rewardstypes.ModuleName, lockertypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
-		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
+		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, esmtypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		lendtypes.ModuleName, vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
@@ -737,7 +746,7 @@ func New(
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
 		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
-		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName,
+		assettypes.ModuleName, collectortypes.ModuleName, esmtypes.ModuleName, banktypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
