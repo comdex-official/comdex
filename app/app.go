@@ -134,6 +134,8 @@ import (
 
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
+
+	cwasm "github.com/comdex-official/comdex/app/wasm"
 )
 
 const (
@@ -295,7 +297,7 @@ func New(
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			lendtypes.StoreKey, markettypes.StoreKey, rewardstypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
-			auctiontypes.StoreKey,tokenminttypes.StoreKey,
+			auctiontypes.StoreKey, tokenminttypes.StoreKey,
 		)
 	)
 
@@ -347,7 +349,6 @@ func New(
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 	app.paramsKeeper.Subspace(auctiontypes.ModuleName)
 	app.paramsKeeper.Subspace(tokenminttypes.ModuleName)
-
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -497,9 +498,7 @@ func New(
 		app.keys[tokenminttypes.StoreKey],
 		app.bankKeeper,
 		&app.assetKeeper,
-		)
-
-
+	)
 
 	scopedBandoracleKeeper := app.capabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
 	app.scopedBandoracleKeeper = scopedBandoracleKeeper
@@ -604,7 +603,9 @@ func New(
 
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
-	supportedFeatures := "iterator,staking,stargate"
+	supportedFeatures := "iterator,staking,stargate,comdex"
+
+	wasmOpts = append(cwasm.RegisterCustomPlugins(app.lockerKeeper), wasmOpts...)
 
 	app.wasmKeeper = wasmkeeper.NewKeeper(
 		app.cdc,
@@ -948,7 +949,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		collectortypes.ModuleName:      {authtypes.Burner, authtypes.Staking},
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
-		tokenminttypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
+		tokenminttypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
