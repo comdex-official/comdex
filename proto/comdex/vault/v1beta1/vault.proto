@@ -89,7 +89,6 @@ message ExtendedPairToVaultMapping {
            (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
   }
 
-
 message StableMintVault {
   string id = 1[
   (gogoproto.moretags) = "yaml:\"id\""
@@ -114,6 +113,11 @@ message StableMintVault {
     (gogoproto.moretags)   = "yaml:\"created_at\""
   ];
 }
+
+
+
+
+
 
 //StableMintVault will use the Lookup table of the vault itself for consistency
 
