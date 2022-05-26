@@ -2,6 +2,7 @@ package keeper
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -81,4 +82,12 @@ func (k *Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, e
 
 func (k *Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool) {
 	return k.asset.GetPairsVault(ctx, id)
+}
+
+func (k *Keeper) GetAuctionParams(ctx sdk.Context) auctiontypes.Params {
+	return k.auction.GetParams(ctx)
+}
+
+func (k *Keeper) SetVault(ctx sdk.Context, vault types.Vault) {
+	k.vault.SetVault(ctx, vault)
 }

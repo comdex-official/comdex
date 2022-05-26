@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 func (k *Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
@@ -62,4 +63,7 @@ func (k *Keeper) GetApps(ctx sdk.Context) ([]assettypes.AppMapping, bool) {
 
 func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64) (assettypes.MintGenesisToken, bool) {
 	return k.asset.GetMintGenesisTokenData(ctx, appId, assetId)
+}
+func (k *Keeper) GetTriggerEsm(ctx sdk.Context, appId uint64) (esmtypes.EsmActive, bool) {
+	return k.esm.GetTriggerEsm(ctx, appId)
 }

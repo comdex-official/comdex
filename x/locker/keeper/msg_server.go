@@ -26,6 +26,10 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLockerRequest) (*types.MsgCreateLockerResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
+	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
+	if esmData.LockerStop && found{
+		return nil, types.ErrorEmergencyShutdownIsActive
+	}
 	asset, found := k.GetAsset(ctx, msg.AssetID)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
@@ -173,6 +177,10 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	//Update Locker Data
 
 	ctx := sdk.UnwrapSDKContext(c)
+	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
+	if esmData.LockerStop && found{
+		return nil, types.ErrorEmergencyShutdownIsActive
+	}
 	asset, found := k.GetAsset(ctx, msg.AssetID)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
@@ -226,6 +234,10 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
+	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
+	if esmData.LockerStop && found{
+		return nil, types.ErrorEmergencyShutdownIsActive
+	}
 	asset, found := k.GetAsset(ctx, msg.AssetID)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
@@ -282,6 +294,10 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 
 func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
+	if esmData.LockerStop && found{
+		return nil, types.ErrorEmergencyShutdownIsActive
+	}
 	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist

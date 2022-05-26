@@ -219,7 +219,7 @@ func (q *queryServer) QueryLockedVaultsPair(c context.Context, req *types.QueryL
 				return false, err
 			}
 
-			if accumulate && item.PairId == req.PairId {
+			if accumulate && item.ExtendedPairId == req.PairId {
 				items = append(items, item)
 			}
 

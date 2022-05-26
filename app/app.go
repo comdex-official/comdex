@@ -129,6 +129,10 @@ import (
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 
+	"github.com/comdex-official/comdex/x/esm"
+	esmclient "github.com/comdex-official/comdex/x/esm/client"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
@@ -165,6 +169,7 @@ var (
 				bandoraclemoduleclient.AddFetchPriceHandler,
 				collectorclient.AddLookupTableParamsHandlers,
 				collectorclient.AddAuctionControlParamsHandler,
+				esmclient.ToggleEsmHandler,
 				paramsclient.ProposalHandler,
 				distrclient.ProposalHandler,
 				upgradeclient.ProposalHandler,
@@ -483,6 +488,7 @@ func New(
 		&app.assetKeeper,
 		&app.marketKeeper,
 		&app.collectorKeeper,
+		&app.esmkeeper,
 	)
 
 	app.liquidityKeeper = liquiditykeeper.NewKeeper(
@@ -498,6 +504,7 @@ func New(
 		app.keys[tokenminttypes.StoreKey],
 		app.bankKeeper,
 		&app.assetKeeper,
+		&app.esmkeeper,
 	)
 
 	scopedBandoracleKeeper := app.capabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
@@ -543,6 +550,7 @@ func New(
 		&app.assetKeeper,
 		&app.vaultKeeper,
 		&app.marketKeeper,
+		&app.auctionKeeper,
 	)
 
 	app.auctionKeeper = *auctionkeeper.NewKeeper(
@@ -599,6 +607,7 @@ func New(
 		&app.assetKeeper,
 		&app.marketKeeper,
 		&app.collectorKeeper,
+		&app.esmkeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -958,6 +967,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+		esmtypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
 	}
 }
@@ -989,6 +999,7 @@ func (app *App) registerUpgradeHandlers() {
 			lendtypes.ModuleName:        lend.AppModule{}.ConsensusVersion(),
 			lockertypes.ModuleName:      locker.AppModule{}.ConsensusVersion(),
 			tokenminttypes.ModuleName:   tokenmint.AppModule{}.ConsensusVersion(),
+			esmtypes.ModuleName:         esm.AppModule{}.ConsensusVersion(),
 			wasmtypes.ModuleName:        wasm.AppModule{}.ConsensusVersion(),
 		}
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)

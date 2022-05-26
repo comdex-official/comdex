@@ -22,6 +22,7 @@ type Keeper struct {
 	vault      expected.VaultKeeper
 	asset      expected.AssetKeeper
 	market     expected.MarketKeeper
+	auction    expected.AuctionKeeper
 }
 
 func NewKeeper(
@@ -34,6 +35,7 @@ func NewKeeper(
 	asset expected.AssetKeeper,
 	vault expected.VaultKeeper,
 	market expected.MarketKeeper,
+	auction expected.AuctionKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -52,6 +54,7 @@ func NewKeeper(
 		asset:      asset,
 		vault:      vault,
 		market:     market,
+		auction:    auction,
 	}
 }
 

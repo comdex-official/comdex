@@ -46,3 +46,7 @@ var (
 	ErrorAmtGreaterDebt              = errors.Register(ModuleName, 402, "amt should be > debt floor")
 	ErrorIdnotFound                  = errors.Register(ModuleName, 403, "not found")
 )
+
+var (
+	ErrorEmergencyShutdownIsActive  = errors.Register(ModuleName, 501, "Error Emergency Shutdown Is Active for this App")
+)

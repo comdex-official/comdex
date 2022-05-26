@@ -14,11 +14,12 @@ const (
 )
 
 var (
-	LockedVaultIdKey               = []byte{0x01}
-	LockedVaultKeyPrefix           = []byte{0x11}
-	LockedVaultKeyHistory          = []byte{0x12}
-	AppIdsKeyPrefix                = []byte{0x12}
-	AppLockedVaultMappingKeyPrefix = []byte{0x13}
+	LockedVaultIdKey                 = []byte{0x01}
+	LockedVaultKeyPrefix             = []byte{0x11}
+	LockedVaultKeyHistory            = []byte{0x12}
+	AppIdsKeyPrefix                  = []byte{0x12}
+	AppLockedVaultMappingKeyPrefix   = []byte{0x13}
+	AppIDLockedVaultMappingKeyPrefix = []byte{0x14}
 )
 
 func LockedVaultKey(id uint64) []byte {
@@ -34,4 +35,8 @@ func AppIdsKey(id uint64) []byte {
 
 func AppLockedVaultMappingKey(appMappingID uint64) []byte {
 	return append(AppLockedVaultMappingKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
+}
+
+func AppIDLockedVaultMappingKey(appMappingID uint64) []byte {
+	return append(AppIDLockedVaultMappingKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
 }
