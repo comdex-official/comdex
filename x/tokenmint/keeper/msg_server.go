@@ -69,7 +69,10 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTokensRequest) (*types.MsgMintNewTokensResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
-
+	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
+	if esmData.MintingStop && found{
+		return nil, types.ErrorEmergencyShutdownIsActive
+	}
 	assetData, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist

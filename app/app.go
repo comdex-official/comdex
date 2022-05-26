@@ -129,6 +129,11 @@ import (
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 
+	"github.com/comdex-official/comdex/x/esm"
+	esmclient "github.com/comdex-official/comdex/x/esm/client"
+	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
@@ -163,6 +168,7 @@ var (
 				bandoraclemoduleclient.AddFetchPriceHandler,
 				collectorclient.AddLookupTableParamsHandlers,
 				collectorclient.AddAuctionControlParamsHandler,
+				esmclient.ToggleEsmHandler,
 				paramsclient.ProposalHandler,
 				distrclient.ProposalHandler,
 				upgradeclient.ProposalHandler,
@@ -190,6 +196,7 @@ var (
 		liquidation.AppModuleBasic{},
 		auction.AppModuleBasic{},
 		tokenmint.AppModuleBasic{},
+		esm.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
 )
@@ -262,6 +269,7 @@ type App struct {
 	scopedWasmKeeper  capabilitykeeper.ScopedKeeper
 	auctionKeeper     auctionkeeper.Keeper
 	tokenmintKeeper   tokenmintkeeper.Keeper
+	esmkeeper         esmkeeper.Keeper
 
 	wasmKeeper wasm.Keeper
 	// the module manager
@@ -295,7 +303,7 @@ func New(
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			lendtypes.StoreKey, markettypes.StoreKey, rewardstypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
-			auctiontypes.StoreKey,tokenminttypes.StoreKey,
+			auctiontypes.StoreKey,tokenminttypes.StoreKey,esmtypes.StoreKey,
 		)
 	)
 
@@ -347,6 +355,7 @@ func New(
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 	app.paramsKeeper.Subspace(auctiontypes.ModuleName)
 	app.paramsKeeper.Subspace(tokenminttypes.ModuleName)
+	app.paramsKeeper.Subspace(esmtypes.ModuleName)
 
 
 	// set the BaseApp's parameter store
@@ -482,6 +491,7 @@ func New(
 		&app.assetKeeper,
 		&app.marketKeeper,
 		&app.collectorKeeper,
+		&app.esmkeeper,
 	)
 
 	app.liquidityKeeper = liquiditykeeper.NewKeeper(
@@ -497,6 +507,7 @@ func New(
 		app.keys[tokenminttypes.StoreKey],
 		app.bankKeeper,
 		&app.assetKeeper,
+		&app.esmkeeper,
 		)
 
 
@@ -580,6 +591,13 @@ func New(
 		app.GetSubspace(collectortypes.ModuleName),
 	)
 
+	app.esmkeeper = *esmkeeper.NewKeeper(
+		app.cdc,
+		app.keys[esmtypes.StoreKey],
+		app.keys[esmtypes.MemStoreKey],
+		app.GetSubspace(esmtypes.ModuleName),
+	)
+
 	// Create Transfer Keepers
 	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.cdc,
@@ -600,6 +618,7 @@ func New(
 		&app.assetKeeper,
 		&app.marketKeeper,
 		&app.collectorKeeper,
+		&app.esmkeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -634,6 +653,7 @@ func New(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.assetKeeper)).
 		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.collectorKeeper)).
+		AddRoute(esmtypes.RouterKey, esm.NewToggleEsmHandlers(app.esmkeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
 
@@ -702,6 +722,7 @@ func New(
 		liquidation.NewAppModule(app.cdc, app.liquidationKeeper, app.accountKeeper, app.bankKeeper),
 		locker.NewAppModule(app.cdc, app.lockerKeeper, app.accountKeeper, app.bankKeeper),
 		collector.NewAppModule(app.cdc, app.collectorKeeper, app.accountKeeper, app.bankKeeper),
+		esm.NewAppModule(app.cdc, app.esmkeeper, app.accountKeeper, app.bankKeeper),
 		rewards.NewAppModule(app.cdc, app.rewardskeeper, app.accountKeeper, app.bankKeeper),
 		lend.NewAppModule(app.cdc, app.lendKeeper, app.accountKeeper, app.bankKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
@@ -717,7 +738,7 @@ func New(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
 		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, rewardstypes.ModuleName, lockertypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
-		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
+		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, esmtypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		lendtypes.ModuleName, vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
@@ -727,7 +748,7 @@ func New(
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
 		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
-		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName,
+		assettypes.ModuleName, collectortypes.ModuleName, esmtypes.ModuleName, banktypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -761,6 +782,7 @@ func New(
 		auctiontypes.ModuleName,
 		rewardstypes.ModuleName,
 		lockertypes.StoreKey,
+		esmtypes.StoreKey,
 		wasmtypes.ModuleName,
 		authz.ModuleName,
 		vesting.AppModuleBasic{}.Name(),
@@ -957,6 +979,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+		esmtypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
 	}
 }
@@ -988,6 +1011,7 @@ func (app *App) registerUpgradeHandlers() {
 			lendtypes.ModuleName:        lend.AppModule{}.ConsensusVersion(),
 			lockertypes.ModuleName:      locker.AppModule{}.ConsensusVersion(),
 			tokenminttypes.ModuleName:   tokenmint.AppModule{}.ConsensusVersion(),
+			esmtypes.ModuleName:         esm.AppModule{}.ConsensusVersion(),
 			wasmtypes.ModuleName:        wasm.AppModule{}.ConsensusVersion(),
 		}
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)

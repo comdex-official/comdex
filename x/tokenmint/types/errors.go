@@ -25,3 +25,7 @@ var (
 	ErrorBuringMakesSupplyLessThanZero=errors.Register(ModuleName, 205, "Burning request recudes the the supply to 0 or less than 0 tokens")
 	ErrorMintDataNotFound   = errors.Register(ModuleName, 206, "minted data not found")
 )
+
+var (
+	ErrorEmergencyShutdownIsActive  = errors.Register(ModuleName, 301, "Error Emergency Shutdown Is Active for this App")
+)

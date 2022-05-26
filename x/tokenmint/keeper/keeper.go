@@ -15,17 +15,19 @@ type Keeper struct {
 	key       sdk.StoreKey
 	bank      expected.BankKeeper
 	asset     expected.AssetKeeper
+	esm       expected.EsmKeeper
 
 }
 
 
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, esm expected.EsmKeeper) Keeper {
 	return Keeper{
 		cdc:       cdc,
 		key:       key,
 		bank:      bank,
 		asset:     asset,
+		esm:       esm,
 
 	}
 }
