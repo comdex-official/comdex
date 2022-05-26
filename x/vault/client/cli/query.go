@@ -87,6 +87,7 @@ func QueryAllVaultsByProduct() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vaults-by-product [app_id]",
 		Short: "list of all vaults available in a product",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 

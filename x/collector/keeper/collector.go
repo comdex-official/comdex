@@ -2,8 +2,34 @@ package keeper
 
 import (
 	"github.com/comdex-official/comdex/x/collector/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	protobuftypes "github.com/gogo/protobuf/types"
 )
+
+func (k *Keeper) GetAmountFromCollector(ctx sdk.Context, appId, asset_id uint64, amount sdk.Int) (sdk.Int, error) {
+	netfeeData, found := k.GetNetFeeCollectedData(ctx, appId)
+	var returnedFee sdk.Int
+	if !found {
+		return returnedFee, types.ErrorDataDoesNotExists
+	}
+
+	for _, data := range netfeeData.AssetIdToFeeCollected {
+		if data.AssetId == asset_id {
+			if !(data.NetFeesCollected.Sub(amount).GT(sdk.ZeroInt())) {
+				return returnedFee, types.ErrorRequestedAmtExceedsCollectedFee
+			} else {
+				asset,_:= k.GetAsset(ctx, asset_id)
+				if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, data.NetFeesCollected.Sub(amount)))); err != nil {
+					return returnedFee, err
+				}
+				k.SetNetFeeCollectedData(ctx, appId, asset_id, data.NetFeesCollected.Sub(amount))
+			}
+		}
+
+	}
+	return returnedFee, nil
+}
 
 func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error {
 
@@ -27,8 +53,6 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, Collec
 		newCollector.CollectedOpeningFee = CollectedOpeningFee
 		newCollector.CollectedStabilityFee = CollectedStabilityFee
 		newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
-		newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
-		newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 		assetIdCollect.Collector = &newCollector
 
 		collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
@@ -54,8 +78,6 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, Collec
 				newCollector.CollectedOpeningFee = CollectedOpeningFee
 				newCollector.CollectedStabilityFee = CollectedStabilityFee
 				newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
-				newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
-				newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 				assetIdCollect.Collector = &newCollector
 
 				collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
@@ -81,8 +103,6 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, Collec
 			newCollector.CollectedOpeningFee = CollectedOpeningFee
 			newCollector.CollectedStabilityFee = CollectedStabilityFee
 			newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
-			newCollector.NetFeesCollected = newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee)
-			newCollector.NetFeesCollected = newCollector.NetFeesCollected.Add(newCollector.CollectedStabilityFee)
 			assetIdCollect.Collector = &newCollector
 
 			collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
@@ -354,4 +374,69 @@ func (k *Keeper) GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) 
 
 	k.cdc.MustUnmarshal(value, &appIdToAuctionData)
 	return appIdToAuctionData, true
+}
+
+///////////////////
+
+func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error {
+
+	collectorData, found := k.GetAppidToAssetCollectorMapping(ctx, app_id)
+	if !found {
+		return types.ErrorDataDoesNotExists
+	}
+	var netcollected types.NetFeeCollectedData
+	var assetCollected types.AssetIdToFeeCollected
+	netcollected.AppId = app_id
+
+	var netcollectedfee sdk.Int
+	for _, data := range collectorData.AssetCollector {
+		if data.AssetId == asset_id {
+			assetCollected.AssetId = asset_id
+			netcollectedfee = data.Collector.CollectedClosingFee.Add(data.Collector.CollectedOpeningFee).Add(data.Collector.CollectedStabilityFee).Add(fee)
+		}
+	}
+	assetCollected.NetFeesCollected = &netcollectedfee
+	netcollected.AssetIdToFeeCollected = append(netcollected.AssetIdToFeeCollected, &assetCollected)
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.NetFeeCollectedDataKey(app_id)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.Int64Value{
+				Value: netcollectedfee.Int64(),
+			},
+		)
+	)
+
+	store.Set(key, value)
+
+	return nil
+}
+
+func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData types.NetFeeCollectedData, found bool) {
+
+	collectorData, found := k.GetAppidToAssetCollectorMapping(ctx, app_id)
+	if !found {
+		return netFeeData, false
+	}
+	var assetCollector types.AssetIdCollectorMappping
+	for _, data := range collectorData.AssetCollector {
+
+		assetCollector.AssetId = data.AssetId
+		assetCollector.Collector = data.Collector
+
+	}
+	collectorData.AssetCollector = append(collectorData.AssetCollector, &assetCollector)
+
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.NetFeeCollectedDataKey(app_id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return netFeeData, false
+	}
+
+	k.cdc.MustUnmarshal(value, &netFeeData)
+	return netFeeData, true
 }

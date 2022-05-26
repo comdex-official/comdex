@@ -19,3 +19,14 @@ func (k *Keeper) GetAssetForDenom(ctx sdk.Context, id string) (types.Asset, bool
 func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (types.AppMapping, bool) {
 	return k.asset.GetApp(ctx, id)
 }
+
+func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (types.Asset, bool) {
+	return k.asset.GetAsset(ctx, id)
+}
+
+func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
+	if coin.IsZero() {
+		return nil
+	}
+	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
+}

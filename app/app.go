@@ -589,6 +589,7 @@ func New(
 		app.keys[collectortypes.MemStoreKey],
 		&app.assetKeeper,
 		app.GetSubspace(collectortypes.ModuleName),
+		app.bankKeeper,
 	)
 
 	app.esmkeeper = *esmkeeper.NewKeeper(

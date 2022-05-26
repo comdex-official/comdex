@@ -18,56 +18,56 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartAuction(ctx sdk.Context, ap
 	for _, assetCollector := range assetsCollectorDataUnderAppId.AssetCollector {
 		if assetCollector.AssetId == assetId {
 			//collectorLookupTable has surplusThreshhold for all assets
-			collectorLookupTable, found := k.GetCollectorLookupTable(ctx, appId)
-			if !found {
-				return auctiontypes.NoAuction
-			}
-			for _, collector := range collectorLookupTable.AssetrateInfo {
-				if collector.CollectorAssetId == assetId {
-					// can extract both surplusThreshhold and netFeesCollected
-					if assetCollector.Collector.NetFeesCollected.LTE(sdk.NewIntFromUint64(collector.DebtThreshold-collector.LotSize)) && assetToAuction.IsDebtAuction {
-						//TODO START DEBT AUCTION .  LOTSIZE AS MINTED FOR SECONDARY ASSET and ACCEPT Collector assetid from user
-						outflowAsset, found1 := k.asset.GetAsset(ctx, collector.SecondaryAssetId)
-						inflowAsset, found2 := k.asset.GetAsset(ctx, collector.CollectorAssetId)
-						if !found1 || !found2 {
-							return auctiontypes.NoAuction
-						}
-						outflowToken := sdk.NewCoin(outflowAsset.Denom, sdk.NewInt(int64(collector.LotSize)))
-						outflowTokenPrice, found3 := k.market.GetPriceForAsset(ctx, assetId)
-						inflowTokenPrice, found4 := k.market.GetPriceForAsset(ctx, collector.SecondaryAssetId)
-						if !found3 || !found4 {
-							return auctiontypes.NoAuction
-						}
-						inflowTokenAmount := outflowToken.Amount.Mul(sdk.NewInt(int64(outflowTokenPrice)).Quo(sdk.NewInt(int64(inflowTokenPrice))))
-						inflowToken := sdk.NewCoin(inflowAsset.Denom, inflowTokenAmount)
-						//Mint the tokens when collector module sends tokens to user
-						k.StartDebtAuction(ctx, outflowToken, inflowToken, appId, assetId)
-						return auctiontypes.StartedDebtAuction
-					} else if assetCollector.Collector.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold+collector.LotSize)) && assetToAuction.IsDebtAuction {
-						//TODO START SURPLUS AUCTION .  WITH COLLECTOR ASSET ID AS token given to user of lot size and secondary asset received from user and burnt and bid factor
-						outflowAsset, found1 := k.asset.GetAsset(ctx, collector.CollectorAssetId)
-						inflowAsset, found2 := k.asset.GetAsset(ctx, collector.SecondaryAssetId)
-						if !found1 || !found2 {
-							return auctiontypes.NoAuction
-						}
-						outflowToken := sdk.NewCoin(outflowAsset.Denom, sdk.NewInt(int64(collector.LotSize)))
-						outflowTokenPrice, found3 := k.market.GetPriceForAsset(ctx, assetId)
-						inflowTokenPrice, found4 := k.market.GetPriceForAsset(ctx, collector.SecondaryAssetId)
-						if !found3 || !found4 {
-							return auctiontypes.NoAuction
-						}
-						inflowTokenAmount := outflowToken.Amount.Mul(sdk.NewInt(int64(outflowTokenPrice)).Quo(sdk.NewInt(int64(inflowTokenPrice))))
-						inflowToken := sdk.NewCoin(inflowAsset.Denom, inflowTokenAmount)
-						//Transfer balance from collector module to auction module
-						k.bank.SendCoinsFromModuleToModule(ctx, collectortypes.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(outflowToken))
-						k.StartSurplusAuction(ctx, outflowToken, inflowToken, *collector.BidFactor, appId, assetId)
-						// TODO store netfeesaccumulated
-						return auctiontypes.StartedSurplusAuction
-					} else {
-						return auctiontypes.NoAuction
-					}
-				}
-			}
+			// collectorLookupTable, found := k.GetCollectorLookupTable(ctx, appId)
+			// if !found {
+			// 	return auctiontypes.NoAuction
+			// }
+			// for _, collector := range collectorLookupTable.AssetrateInfo {
+			// 	if collector.CollectorAssetId == assetId {
+			// 		// can extract both surplusThreshhold and netFeesCollected
+			// 		if assetCollector.Collector.NetFeesCollected.LTE(sdk.NewIntFromUint64(collector.DebtThreshold-collector.LotSize)) && assetToAuction.IsDebtAuction {
+			// 			//TODO START DEBT AUCTION .  LOTSIZE AS MINTED FOR SECONDARY ASSET and ACCEPT Collector assetid from user
+			// 			outflowAsset, found1 := k.asset.GetAsset(ctx, collector.SecondaryAssetId)
+			// 			inflowAsset, found2 := k.asset.GetAsset(ctx, collector.CollectorAssetId)
+			// 			if !found1 || !found2 {
+			// 				return auctiontypes.NoAuction
+			// 			}
+			// 			outflowToken := sdk.NewCoin(outflowAsset.Denom, sdk.NewInt(int64(collector.LotSize)))
+			// 			outflowTokenPrice, found3 := k.market.GetPriceForAsset(ctx, assetId)
+			// 			inflowTokenPrice, found4 := k.market.GetPriceForAsset(ctx, collector.SecondaryAssetId)
+			// 			if !found3 || !found4 {
+			// 				return auctiontypes.NoAuction
+			// 			}
+			// 			inflowTokenAmount := outflowToken.Amount.Mul(sdk.NewInt(int64(outflowTokenPrice)).Quo(sdk.NewInt(int64(inflowTokenPrice))))
+			// 			inflowToken := sdk.NewCoin(inflowAsset.Denom, inflowTokenAmount)
+			// 			//Mint the tokens when collector module sends tokens to user
+			// 			k.StartDebtAuction(ctx, outflowToken, inflowToken, appId, assetId)
+			// 			return auctiontypes.StartedDebtAuction
+			// 		} else if assetCollector.Collector.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold+collector.LotSize)) && assetToAuction.IsDebtAuction {
+			// 			//TODO START SURPLUS AUCTION .  WITH COLLECTOR ASSET ID AS token given to user of lot size and secondary asset received from user and burnt and bid factor
+			// 			outflowAsset, found1 := k.asset.GetAsset(ctx, collector.CollectorAssetId)
+			// 			inflowAsset, found2 := k.asset.GetAsset(ctx, collector.SecondaryAssetId)
+			// 			if !found1 || !found2 {
+			// 				return auctiontypes.NoAuction
+			// 			}
+			// 			outflowToken := sdk.NewCoin(outflowAsset.Denom, sdk.NewInt(int64(collector.LotSize)))
+			// 			outflowTokenPrice, found3 := k.market.GetPriceForAsset(ctx, assetId)
+			// 			inflowTokenPrice, found4 := k.market.GetPriceForAsset(ctx, collector.SecondaryAssetId)
+			// 			if !found3 || !found4 {
+			// 				return auctiontypes.NoAuction
+			// 			}
+			// 			inflowTokenAmount := outflowToken.Amount.Mul(sdk.NewInt(int64(outflowTokenPrice)).Quo(sdk.NewInt(int64(inflowTokenPrice))))
+			// 			inflowToken := sdk.NewCoin(inflowAsset.Denom, inflowTokenAmount)
+			// 			//Transfer balance from collector module to auction module
+			// 			k.bank.SendCoinsFromModuleToModule(ctx, collectortypes.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(outflowToken))
+			// 			k.StartSurplusAuction(ctx, outflowToken, inflowToken, *collector.BidFactor, appId, assetId)
+			// 			// TODO store netfeesaccumulated
+			// 			return auctiontypes.StartedSurplusAuction
+			// 		} else {
+			// 			return auctiontypes.NoAuction
+			// 		}
+			// 	}
+			// }
 		}
 	}
 	return auctiontypes.NoAuction
