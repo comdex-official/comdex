@@ -5,6 +5,6 @@ type ComdexMessages struct {
 }
 
 type WhiteListAssetLocker struct {
-	AppMapId uint64 `json:"app_map_id"`
-	AssetId  uint64 `json:"asset_id"`
+	AppMappingId uint64 `json:"app_mapping_id"`
+	AssetId      uint64 `json:"asset_id"`
 }
