@@ -569,6 +569,7 @@ func New(
 		&app.assetKeeper,
 		&app.vaultKeeper,
 		&app.collectorKeeper,
+		&app.tokenmintKeeper,
 	)
 
 	app.rewardskeeper = *rewardskeeper.NewKeeper(
