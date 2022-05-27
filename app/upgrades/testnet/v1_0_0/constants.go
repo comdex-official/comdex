@@ -1,7 +1,7 @@
 package v1_0_0
 
 const (
-	UpgradeName   = "mod_delete"
+	UpgradeName   = "v1.0.0"
 	UpgradeHeight = 3376737
 	UpgradeInfo   = `'{
 		"binaries": {
