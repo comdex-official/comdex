@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
@@ -11,64 +13,76 @@ import (
 )
 
 func (k Keeper) checkStatusOfNetFeesCollectedAndStartAuction(ctx sdk.Context, appId, assetId uint64, assetToAuction collectortypes.AssetIdToAuctionLookupTable) (status uint64) {
-	assetsCollectorDataUnderAppId, found := k.GetAppidToAssetCollectorMapping(ctx, appId)
+	assetsCollectorDataUnderAppId, found := k.GetCollectorLookupTable(ctx, appId)
 	if !found {
 		return
 	}
-	//assetCollector has netFeesCollected
-	for _, assetCollector := range assetsCollectorDataUnderAppId.AssetCollector {
-		if assetCollector.AssetId == assetId {
+	//traverse this to access appId , collector asset id , surplus threshhold , debt threshhold
+	for _, collector := range assetsCollectorDataUnderAppId.AssetrateInfo {
+		if collector.CollectorAssetId == assetId {
 			//collectorLookupTable has surplusThreshhold for all assets
-			// collectorLookupTable, found := k.GetCollectorLookupTable(ctx, appId)
-			// if !found {
-			// 	return auctiontypes.NoAuction
-			// }
-			// for _, collector := range collectorLookupTable.AssetrateInfo {
-			// 	if collector.CollectorAssetId == assetId {
-			// 		// can extract both surplusThreshhold and netFeesCollected
-			// 		if assetCollector.Collector.NetFeesCollected.LTE(sdk.NewIntFromUint64(collector.DebtThreshold-collector.LotSize)) && assetToAuction.IsDebtAuction {
-			// 			//TODO START DEBT AUCTION .  LOTSIZE AS MINTED FOR SECONDARY ASSET and ACCEPT Collector assetid from user
-			// 			outflowAsset, found1 := k.asset.GetAsset(ctx, collector.SecondaryAssetId)
-			// 			inflowAsset, found2 := k.asset.GetAsset(ctx, collector.CollectorAssetId)
-			// 			if !found1 || !found2 {
-			// 				return auctiontypes.NoAuction
-			// 			}
-			// 			outflowToken := sdk.NewCoin(outflowAsset.Denom, sdk.NewInt(int64(collector.LotSize)))
-			// 			outflowTokenPrice, found3 := k.market.GetPriceForAsset(ctx, assetId)
-			// 			inflowTokenPrice, found4 := k.market.GetPriceForAsset(ctx, collector.SecondaryAssetId)
-			// 			if !found3 || !found4 {
-			// 				return auctiontypes.NoAuction
-			// 			}
-			// 			inflowTokenAmount := outflowToken.Amount.Mul(sdk.NewInt(int64(outflowTokenPrice)).Quo(sdk.NewInt(int64(inflowTokenPrice))))
-			// 			inflowToken := sdk.NewCoin(inflowAsset.Denom, inflowTokenAmount)
-			// 			//Mint the tokens when collector module sends tokens to user
-			// 			k.StartDebtAuction(ctx, outflowToken, inflowToken, appId, assetId)
-			// 			return auctiontypes.StartedDebtAuction
-			// 		} else if assetCollector.Collector.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold+collector.LotSize)) && assetToAuction.IsDebtAuction {
-			// 			//TODO START SURPLUS AUCTION .  WITH COLLECTOR ASSET ID AS token given to user of lot size and secondary asset received from user and burnt and bid factor
-			// 			outflowAsset, found1 := k.asset.GetAsset(ctx, collector.CollectorAssetId)
-			// 			inflowAsset, found2 := k.asset.GetAsset(ctx, collector.SecondaryAssetId)
-			// 			if !found1 || !found2 {
-			// 				return auctiontypes.NoAuction
-			// 			}
-			// 			outflowToken := sdk.NewCoin(outflowAsset.Denom, sdk.NewInt(int64(collector.LotSize)))
-			// 			outflowTokenPrice, found3 := k.market.GetPriceForAsset(ctx, assetId)
-			// 			inflowTokenPrice, found4 := k.market.GetPriceForAsset(ctx, collector.SecondaryAssetId)
-			// 			if !found3 || !found4 {
-			// 				return auctiontypes.NoAuction
-			// 			}
-			// 			inflowTokenAmount := outflowToken.Amount.Mul(sdk.NewInt(int64(outflowTokenPrice)).Quo(sdk.NewInt(int64(inflowTokenPrice))))
-			// 			inflowToken := sdk.NewCoin(inflowAsset.Denom, inflowTokenAmount)
-			// 			//Transfer balance from collector module to auction module
-			// 			k.bank.SendCoinsFromModuleToModule(ctx, collectortypes.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(outflowToken))
-			// 			k.StartSurplusAuction(ctx, outflowToken, inflowToken, *collector.BidFactor, appId, assetId)
-			// 			// TODO store netfeesaccumulated
-			// 			return auctiontypes.StartedSurplusAuction
-			// 		} else {
-			// 			return auctiontypes.NoAuction
-			// 		}
-			// 	}
-			// }
+
+			NetFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appId)
+			if !found {
+				return auctiontypes.NoAuction
+			}
+			//traverse this to access appId , collector asset id , netfees collected
+			for _, AssetIdToFeeCollected := range NetFeeCollectedData.AssetIdToFeeCollected {
+				if AssetIdToFeeCollected.AssetId == assetId {
+					// if netfees <= debt threshhold -lotsize the start debt auction with lot size and debt auction is allowed true
+					if AssetIdToFeeCollected.NetFeesCollected.LTE(sdk.NewIntFromUint64(collector.DebtThreshold-collector.LotSize)) && assetToAuction.IsDebtAuction {
+						// START DEBT AUCTION .  LOTSIZE AS MINTED FOR SECONDARY ASSET and ACCEPT Collector assetid from user
+						outflowAsset, found1 := k.asset.GetAsset(ctx, collector.SecondaryAssetId)
+						inflowAsset, found2 := k.asset.GetAsset(ctx, collector.CollectorAssetId)
+						if !found1 || !found2 {
+							return auctiontypes.NoAuction
+						}
+						outflowToken := sdk.NewCoin(outflowAsset.Denom, sdk.NewInt(int64(collector.LotSize)))
+						outflowTokenPrice, found3 := k.market.GetPriceForAsset(ctx, assetId)
+						inflowTokenPrice, found4 := k.market.GetPriceForAsset(ctx, collector.SecondaryAssetId)
+						if !found3 || !found4 {
+							return auctiontypes.NoAuction
+						}
+						inflowTokenAmount := outflowToken.Amount.Mul(sdk.NewInt(int64(outflowTokenPrice)).Quo(sdk.NewInt(int64(inflowTokenPrice))))
+						inflowToken := sdk.NewCoin(inflowAsset.Denom, inflowTokenAmount)
+						//Mint the tokens when collector module sends tokens to user
+						err := k.StartDebtAuction(ctx, outflowToken, inflowToken, appId, assetId)
+						if err != nil {
+							break
+						}
+						return auctiontypes.StartedDebtAuction
+						// if netfees >= surplus threshhold+lotsize the start surplus auction with lot size and surplus auction is allowed true
+					} else if AssetIdToFeeCollected.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold+collector.LotSize)) && assetToAuction.IsDebtAuction {
+						// START SURPLUS AUCTION .  WITH COLLECTOR ASSET ID AS token given to user of lot size and secondary asset as received from user and burnt , bid factor
+						outflowAsset, found1 := k.asset.GetAsset(ctx, collector.CollectorAssetId)
+						inflowAsset, found2 := k.asset.GetAsset(ctx, collector.SecondaryAssetId)
+						if !found1 || !found2 {
+							return auctiontypes.NoAuction
+						}
+						outflowToken := sdk.NewCoin(outflowAsset.Denom, sdk.NewInt(int64(collector.LotSize)))
+						outflowTokenPrice, found3 := k.market.GetPriceForAsset(ctx, assetId)
+						inflowTokenPrice, found4 := k.market.GetPriceForAsset(ctx, collector.SecondaryAssetId)
+						if !found3 || !found4 {
+							return auctiontypes.NoAuction
+						}
+						inflowTokenAmount := outflowToken.Amount.Mul(sdk.NewInt(int64(outflowTokenPrice)).Quo(sdk.NewInt(int64(inflowTokenPrice))))
+						inflowToken := sdk.NewCoin(inflowAsset.Denom, inflowTokenAmount)
+						//Transfer balance from collector module to auction module
+						_, err := k.collector.GetAmountFromCollector(ctx, appId, assetId, outflowToken.Amount)
+						if err != nil {
+							break
+						}
+						//k.bank.SendCoinsFromModuleToModule(ctx, collectortypes.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(outflowToken))
+						err = k.StartSurplusAuction(ctx, outflowToken, inflowToken, *collector.BidFactor, appId, assetId)
+						if err != nil {
+							break
+						}
+						return auctiontypes.StartedSurplusAuction
+					} else {
+						return auctiontypes.NoAuction
+					}
+				}
+			}
 		}
 	}
 	return auctiontypes.NoAuction
@@ -93,6 +107,8 @@ func (k Keeper) CreateSurplusAndDebtAuctions(ctx sdk.Context) error {
 						assetToAuction.IsAuctionActive = true
 					} else if status == auctiontypes.StartedSurplusAuction {
 						assetToAuction.IsAuctionActive = true
+					} else {
+						continue
 					}
 					err := k.SetCollectorAuctionLookupTable(ctx, auctionLookupTable)
 					if err == nil {
@@ -132,10 +148,11 @@ func (k Keeper) CloseAndRestartSurplusAuctions(ctx sdk.Context) error {
 		k.CloseDebtAuctions(ctx, appId.Id)
 		k.RestartDutchAuctions(ctx, appId.Id)
 		k.CreateSurplusAndDebtAuctions(ctx)
+		k.CreateNewDutchAuctions(ctx)
 	}
 	return nil
 }
-func (k Keeper) CreateNewAuctions(ctx sdk.Context) {
+func (k Keeper) CreateNewDutchAuctions(ctx sdk.Context) {
 	lockedVaults := k.GetLockedVaults(ctx)
 	for _, lockedVault := range lockedVaults {
 		pair, found := k.GetPair(ctx, lockedVault.ExtendedPairId)
@@ -156,7 +173,7 @@ func (k Keeper) CreateNewAuctions(ctx sdk.Context) {
 		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())
 
 		if !lockedVault.IsAuctionInProgress {
-			k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppMappingId, assetIn.Id, assetOut.Id)
+			k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppMappingId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner)
 		}
 	}
 }
@@ -173,7 +190,7 @@ func (k Keeper) CloseSurplusAuctions(ctx sdk.Context, appId uint64) {
 	}
 }
 
-//TODO get all app ids and call RestartDutchAuctions with app id
+// get all app ids and call RestartDutchAuctions with app id
 func (k Keeper) CloseDebtAuctions(ctx sdk.Context, appId uint64) {
 	debtAuctions := k.GetDebtAuctions(ctx, appId)
 	for _, debtAuction := range debtAuctions {
@@ -186,16 +203,19 @@ func (k Keeper) CloseDebtAuctions(ctx sdk.Context, appId uint64) {
 	}
 }
 
-//TODO get all app ids and call RestartDutchAuctions with app id
+//get all app ids and call RestartDutchAuctions with app id
 func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) {
 	dutchAuctions := k.GetDutchAuctions(ctx, appId)
 	auctionParams := k.GetParams(ctx)
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
-		//TODO get price of dai from market module and set it in InflowTokenCurrentPrice of auction
-
-		inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
-		dutchAuction.InflowTokenCurrentPrice = inFlowTokenCurrentPrice
+		inFlowTokenCurrentPrice, found := k.market.GetPriceForAsset(ctx, dutchAuction.AssetInId)
+		if !found {
+			fmt.Println("not able fetch price from oracle")
+			return
+		}
+		//inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
+		dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
 		tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
 		dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
 		seconds := sdk.NewInt(int64(dur.Seconds()))
@@ -205,12 +225,16 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) {
 		//check if auction need to be restarted
 		if ctx.BlockTime().After(dutchAuction.EndTime) || outFlowTokenCurrentPrice.LT(dutchAuction.OutflowTokenEndPrice) {
 			//SET initial price fetched from market module and also end price , start time , end time
-			//TODO get price of outflowtoken from market module
-			outFlowTokenCurrentPrice := sdk.MustNewDecFromStr("10")
+			//outFlowTokenCurrentPrice := sdk.NewIntFromUint64(10)
+			outFlowTokenCurrentPrice, found := k.market.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
+			if !found {
+				fmt.Println("not able fetch price from oracle")
+				return
+			}
 			timeNow := ctx.BlockTime()
 			dutchAuction.StartTime = timeNow
 			dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
-			outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(outFlowTokenCurrentPrice, auctionParams.Buffer)
+			outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(outFlowTokenCurrentPrice), auctionParams.Buffer)
 			outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
 			dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
 			dutchAuction.OutflowTokenEndPrice = outFlowTokenEndPrice
@@ -284,16 +308,28 @@ func (k Keeper) StartDutchAuction(
 	inFlowToken sdk.Coin,
 	appId uint64,
 	assetInId, assetOutId uint64,
+	lockedVaultId uint64,
+	lockedVaultOwner string,
 ) error {
 
 	auctionParams := k.GetParams(ctx)
-	//TODO need to get real price instead of hard coding
-	//TODO calculate target amount of dai to collect
+	//need to get real price instead of hard coding
+	//calculate target amount of cmst to collect
+	inFlowTokenPrice, found1 := k.market.GetPriceForAsset(ctx, assetInId)
+	outFlowTokenPrice, found2 := k.market.GetPriceForAsset(ctx, assetOutId)
 
-	outFlowTokenPrice := sdk.MustNewDecFromStr("100")
-	inFlowTokenPrice := sdk.MustNewDecFromStr("1")
-	outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(outFlowTokenPrice, auctionParams.Buffer)
+	if !(found1 && found2) {
+		return auctiontypes.ErrorInvalidBidId
+	}
+	//outFlowTokenPrice := sdk.MustNewDecFromStr("100")
+	//inFlowTokenPrice := sdk.MustNewDecFromStr("1")
+
+	outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(outFlowTokenPrice), auctionParams.Buffer)
 	outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
+	vaultOwner, err := sdk.AccAddressFromBech32(lockedVaultOwner)
+	if err != nil {
+		return err
+	}
 	timeNow := ctx.BlockTime()
 	auction := auctiontypes.DutchAuction{
 		OutflowTokenInitAmount:    outFlowToken,
@@ -303,18 +339,23 @@ func (k Keeper) StartDutchAuction(
 		OutflowTokenInitialPrice:  outFlowTokenInitialPrice,
 		OutflowTokenCurrentPrice:  outFlowTokenInitialPrice,
 		OutflowTokenEndPrice:      outFlowTokenEndPrice,
-		InflowTokenCurrentPrice:   inFlowTokenPrice,
+		InflowTokenCurrentPrice:   sdk.NewDecFromInt(sdk.NewIntFromUint64(inFlowTokenPrice)),
 		StartTime:                 timeNow,
 		EndTime:                   timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
 		AuctionStatus:             auctiontypes.AuctionStartNoBids,
 		BiddingIds:                []*auctiontypes.BidOwnerMapping{},
 		AuctionMappingId:          auctionParams.DutchId,
 		AppId:                     appId,
+		AssetInId:                 assetInId,
+		AssetOutId:                assetOutId,
+		LockedVaultId:             lockedVaultId,
+		VaultOwner:                vaultOwner,
 	}
 
 	auction.AuctionId = k.GetAuctionID(ctx) + 1
 	k.SetAuctionID(ctx, auction.AuctionId)
 	k.SetDutchAuction(ctx, auction)
+	k.SetFlagIsAuctionInProgress(ctx, lockedVaultId, true)
 	return nil
 }
 
@@ -338,20 +379,22 @@ func (k Keeper) CloseSurplusAuction(
 		bidding.BiddingStatus = auctiontypes.SuccessBiddingStatus
 		k.SetSurplusUserBidding(ctx, bidding)
 		//burn tokens by sending bid tokens from auction to tokenmint module and then call burn function
-		//err = k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, tokenminttypes.ModuleName, sdk.NewCoins(highestBidReceived))
-		//if err != nil {
-		//	fmt.Println(err)
-		//	return err
-		//}
-		//err = k.tokenmint.BurnTokensForApp(ctx, surplusAuction.AppId, surplusAuction.AssetId, highestBidReceived.Amount)
-		//if err != nil {
-		//	fmt.Println(err)
-		//	return err
-		//}
-		err = k.bank.BurnCoins(ctx, auctiontypes.ModuleName, sdk.NewCoins(highestBidReceived))
+		err = k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, tokenminttypes.ModuleName, sdk.NewCoins(highestBidReceived))
 		if err != nil {
-			return auctiontypes.ErrorInvalidBurn
+			fmt.Println(err)
+			return err
 		}
+		err = k.tokenmint.BurnTokensForApp(ctx, surplusAuction.AppId, surplusAuction.AssetId, highestBidReceived.Amount)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		//following 4 lines used for testing purpose
+		//err = k.bank.BurnCoins(ctx, auctiontypes.ModuleName, sdk.NewCoins(highestBidReceived))
+		//if err != nil {
+		//	return auctiontypes.ErrorInvalidBurn
+		//}
+
 		for _, biddingId := range surplusAuction.BiddingIds {
 			bidding, found := k.GetSurplusUserBidding(ctx, biddingId.BidOwner, surplusAuction.AppId, biddingId.BidId)
 			if !found {
@@ -359,10 +402,14 @@ func (k Keeper) CloseSurplusAuction(
 			}
 			bidding.AuctionStatus = auctiontypes.ClosedAuctionStatus
 			k.SetSurplusUserBidding(ctx, bidding)
+			k.DeleteSurplusUserBidding(ctx, bidding)
+			k.SetHistorySurplusUserBidding(ctx, bidding)
 		}
 	}
 	k.makeFalseForFlags(ctx, surplusAuction.AppId, surplusAuction.AssetId)
 	k.DeleteSurplusAuction(ctx, surplusAuction)
+	k.SetHistorySurplusAuction(ctx, surplusAuction)
+	//store auctions and user bidding in history after they are deleted
 	return nil
 }
 
@@ -373,15 +420,17 @@ func (k Keeper) CloseDebtAuction(
 
 	if debtAuction.AuctionStatus != auctiontypes.AuctionStartNoBids {
 		// ask token mint to mint new tokens for bidder address
-		//err := k.tokenmint.MintNewTokensForApp(ctx, debtAuction.AppId, debtAuction.AssetId, debtAuction.Bidder.String(), debtAuction.CurrentBidAmount.Amount)
-		//if err != nil {
-		//	return err
-		//}
-		err := k.bank.MintCoins(ctx, auctiontypes.ModuleName, sdk.NewCoins(debtAuction.CurrentBidAmount))
-		err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, debtAuction.Bidder, sdk.NewCoins(debtAuction.CurrentBidAmount))
+		err := k.tokenmint.MintNewTokensForApp(ctx, debtAuction.AppId, debtAuction.AssetId, debtAuction.Bidder.String(), debtAuction.CurrentBidAmount.Amount)
 		if err != nil {
 			return err
 		}
+		//following 6 lines used for testing purpose
+		//err := k.bank.MintCoins(ctx, auctiontypes.ModuleName, sdk.NewCoins(debtAuction.CurrentBidAmount))
+		//err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, debtAuction.Bidder, sdk.NewCoins(debtAuction.CurrentBidAmount))
+		//if err != nil {
+		//	return err
+		//}
+
 		bidding, found := k.GetDebtUserBidding(ctx, debtAuction.Bidder.String(), debtAuction.AppId, debtAuction.ActiveBiddingId)
 		if !found {
 			return auctiontypes.ErrorInvalidBidId
@@ -395,14 +444,22 @@ func (k Keeper) CloseDebtAuction(
 			}
 			bidding.AuctionStatus = auctiontypes.ClosedAuctionStatus
 			k.SetDebtUserBidding(ctx, bidding)
+			k.DeleteDebtUserBidding(ctx, bidding)
+			k.SetHistoryDebtUserBidding(ctx, bidding)
 		}
 	}
+	//send to collector module the amount collected in debt auction
 	err := k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(debtAuction.ExpectedUserToken))
+	if err != nil {
+		return err
+	}
+	err = k.SetNetFeeCollectedData(ctx, debtAuction.AuctionId, debtAuction.AssetId, debtAuction.ExpectedUserToken.Amount)
 	if err != nil {
 		return err
 	}
 	k.makeFalseForFlags(ctx, debtAuction.AppId, debtAuction.AssetId)
 	k.DeleteDebtAuction(ctx, debtAuction)
+	k.SetHistoryDebtAuction(ctx, debtAuction)
 	return nil
 }
 
@@ -419,9 +476,14 @@ func (k Keeper) CloseDutchAuction(
 			}
 			bidding.AuctionStatus = auctiontypes.ClosedAuctionStatus
 			k.SetDutchUserBidding(ctx, bidding)
+			k.DeleteDutchUserBidding(ctx, bidding)
+			k.SetHistoryDutchUserBidding(ctx, bidding)
 		}
 	}
+	k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
+	k.SetFlagIsAuctionInProgress(ctx, dutchAuction.LockedVaultId, false)
 	k.DeleteDutchAuction(ctx, dutchAuction)
+	k.SetHistoryDutchAuction(ctx, dutchAuction)
 	return nil
 }
 
@@ -611,15 +673,15 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	slice := sdk.MinInt(bid.Amount, auction.OutflowTokenCurrentAmount.Amount)
 	owe := slice.Mul(outFlowTokenCurrentPrice)
 	tab := auction.InflowTokenCurrentAmount.Amount.Mul(inFlowTokenCurrentPrice)
-	//check if bid is greater than target dai
+	//check if bid is greater than target cmst
 	if owe.GT(tab) {
 		slice = tab.Quo(sdk.NewIntFromBigInt(auction.OutflowTokenCurrentPrice.BigInt()))
 	} else if auction.OutflowTokenCurrentAmount.Amount.Sub(slice).Mul(outFlowTokenCurrentPrice).LT(sdk.NewIntFromBigInt(auctionParams.Chost.BigInt())) {
 		//(outflowtokenavailableamount-slice) in usd < chost in usd
 		//see if user has balance to buy whole collateral
-		user_balance_usd := k.bank.GetBalance(ctx, bidder, bid.Denom).Amount.Mul(outFlowTokenCurrentPrice)
-		collateral_available_usd := auction.OutflowTokenCurrentAmount.Amount.Mul(outFlowTokenCurrentPrice)
-		if user_balance_usd.LT(collateral_available_usd) {
+		userBalanceUsd := k.bank.GetBalance(ctx, bidder, bid.Denom).Amount.Mul(outFlowTokenCurrentPrice)
+		collateralAvailableUsd := auction.OutflowTokenCurrentAmount.Amount.Mul(outFlowTokenCurrentPrice)
+		if userBalanceUsd.LT(collateralAvailableUsd) {
 			return auctiontypes.ErrorDutchinsufficientUserBalance
 		}
 		slice = auction.OutflowTokenCurrentAmount.Amount
@@ -643,15 +705,55 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	auction.BiddingIds = append(auction.BiddingIds, bidIdOwner)
 	auction.OutflowTokenCurrentAmount = auction.OutflowTokenCurrentAmount.Sub(outFlowTokenCoin)
 	auction.InflowTokenCurrentAmount = auction.InflowTokenCurrentAmount.Add(inFlowTokenCoin)
+	//collateral not over but target cmst reached
 	if auction.InflowTokenTargetAmount.IsEqual(inFlowTokenCoin) {
-		//TODO return collateral to vault as target dai reached
+
+		//return collateral to vault owner as target cmst reached and also
+		total := auction.OutflowTokenCurrentAmount
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, auction.VaultOwner, sdk.NewCoins(total))
+		if err != nil {
+			return err
+		}
+		//burn and send target CMST to collector
+		params := k.GetParams(ctx)
+		inFlowAmount := auction.InflowTokenCurrentAmount
+		burnAmount := k.getBurnAmountAmount(inFlowAmount.Amount, params.LiquidationPenaltyPercent)
+		err = k.tokenmint.BurnTokensForApp(ctx, auction.AppId, auction.AssetInId, burnAmount)
+		if err != nil {
+			return err
+		}
+		penaltyAmount := inFlowAmount.Amount.Sub(burnAmount)
+		err = k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(inFlowAmount.Denom, penaltyAmount)))
+		if err != nil {
+			return err
+		}
+		// call increase function in collector
+		k.SetNetFeeCollectedData(ctx, auction.AppId, auction.AssetInId, penaltyAmount)
 		//remove dutch auction
 		k.CloseDutchAuction(ctx, auction)
 		return nil
 	}
+	//entire collateral sold out
 	if auction.OutflowTokenCurrentAmount.Amount.IsZero() {
+		//burn and send target CMST to collector
+		params := k.GetParams(ctx)
+		inFlowAmount := auction.InflowTokenCurrentAmount
+		burnAmount := k.getBurnAmountAmount(inFlowAmount.Amount, params.LiquidationPenaltyPercent)
+		err = k.tokenmint.BurnTokensForApp(ctx, auction.AppId, auction.AssetInId, burnAmount)
+		if err != nil {
+			return err
+		}
+		penaltyAmount := inFlowAmount.Amount.Sub(burnAmount)
+		err = k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(inFlowAmount.Denom, penaltyAmount)))
+		if err != nil {
+			return err
+		}
+
+		//call increase function in collector
+		k.SetNetFeeCollectedData(ctx, auction.AppId, auction.AssetInId, penaltyAmount)
+
+		//remove dutch auction
 		k.CloseDutchAuction(ctx, auction)
-		//TODO send target dai to the module specified
 		return nil
 	}
 	k.SetDutchAuction(ctx, auction)

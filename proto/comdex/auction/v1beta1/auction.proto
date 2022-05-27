@@ -190,8 +190,18 @@ message DutchAuction {
     uint64 app_id = 15 [
         (gogoproto.moretags) = "yaml:\"app_id\""
     ];
-    uint64 asset_id = 16 [
-        (gogoproto.moretags) = "yaml:\"asset_id\""
+    uint64 asset_in_id = 16 [
+        (gogoproto.moretags) = "yaml:\"asset_in_id\""
+    ];
+    uint64 asset_out_id = 17 [
+        (gogoproto.moretags) = "yaml:\"asset_out_id\""
+    ];
+    uint64 locked_vault_id = 18 [
+        (gogoproto.moretags) = "yaml:\"locked_vault_id\""
+    ];
+    string vault_owner = 19 [
+        (gogoproto.moretags) = "yaml:\"vault_owner\"",
+        (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.AccAddress"
     ];
 }
 

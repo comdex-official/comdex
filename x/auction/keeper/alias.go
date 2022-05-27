@@ -121,3 +121,11 @@ func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, asset
 func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, amount sdk.Int) error {
 	return k.tokenmint.BurnTokensForApp(ctx, appMappingId, assetId, amount)
 }
+
+func (k *Keeper) GetAmountFromCollector(ctx sdk.Context, appId, asset_id uint64, amount sdk.Int) (sdk.Int, error) {
+	return k.collector.GetAmountFromCollector(ctx, appId, asset_id, amount)
+}
+
+func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error {
+	return k.collector.SetNetFeeCollectedData(ctx, app_id, asset_id, fee)
+}

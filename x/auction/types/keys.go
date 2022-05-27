@@ -31,10 +31,12 @@ const DebtString = "debt"
 const DutchString = "dutch"
 
 var (
-	AuctionKeyPrefix  = []byte{0x11}
-	UserKeyPrefix     = []byte{0x12}
-	AuctionIdKey      = []byte{0x13}
-	UserBiddingsIdKey = []byte{0x14}
+	AuctionKeyPrefix        = []byte{0x11}
+	UserKeyPrefix           = []byte{0x12}
+	AuctionIdKey            = []byte{0x13}
+	UserBiddingsIdKey       = []byte{0x14}
+	HistoryAuctionKeyPrefix = []byte{0x15}
+	HistoryUserKeyPrefix    = []byte{0x16}
 )
 
 func AuctionKey(appId uint64, auctionType string, auctionId uint64) []byte {
@@ -43,6 +45,14 @@ func AuctionKey(appId uint64, auctionType string, auctionId uint64) []byte {
 
 func UserKey(bidder string, appId uint64, auctionType string, bidId uint64) []byte {
 	return append(append(append(append(UserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appId)...), auctionType...), sdk.Uint64ToBigEndian(bidId)...)
+}
+
+func HistoryAuctionKey(appId uint64, auctionType string, auctionId uint64) []byte {
+	return append(append(append(HistoryAuctionKeyPrefix, sdk.Uint64ToBigEndian(appId)...), auctionType...), sdk.Uint64ToBigEndian(auctionId)...)
+}
+
+func HistoryUserKey(bidder string, appId uint64, auctionType string, bidId uint64) []byte {
+	return append(append(append(append(HistoryUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appId)...), auctionType...), sdk.Uint64ToBigEndian(bidId)...)
 }
 
 func UserAuctionTypeKey(bidder string, appId uint64, auctionType string) []byte {

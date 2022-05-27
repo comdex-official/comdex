@@ -29,6 +29,7 @@ var (
 	ErrorInvalidDutchPrice            = sdkerrors.Register(ModuleName, 119, "user max price cannot be less than collateral token price")
 	ErrorInvalidBidId                 = sdkerrors.Register(ModuleName, 120, "invalid bid id")
 	ErrorInvalidBurn                  = sdkerrors.Register(ModuleName, 121, "invalid burn")
+	ErrorPrices                       = sdkerrors.Register(ModuleName, 122, "unable to get fetches prices for asset from oracle")
 )
 
 var (
