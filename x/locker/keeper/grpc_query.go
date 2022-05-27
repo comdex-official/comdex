@@ -149,7 +149,7 @@ func (q *queryServer) QueryTotalDepositByProductAssetID(c context.Context, reque
 	}, nil
 }
 
-func (q *queryServer) QueryOwnerLockerByProductID(c context.Context, request *types.QueryOwnerLockerByProductIDRequest) (*types.QueryOwnerLockerByProductIDResponse, error) {
+func (q *queryServer) QueryOwnerLockerByProductIDbyOwner(c context.Context, request *types.QueryOwnerLockerByProductIDbyOwnerRequest) (*types.QueryOwnerLockerByProductIDbyOwnerResponse, error) {
 
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -169,7 +169,6 @@ func (q *queryServer) QueryOwnerLockerByProductID(c context.Context, request *ty
 
 	var lockerIds []string
 	for _, locker := range lockerLookupData.Lockers {
-
 		for _, lockerID := range locker.LockerIds {
 			locker1, _ := q.GetLocker(ctx, lockerID)
 			if request.Owner == locker1.Depositor {
@@ -178,12 +177,12 @@ func (q *queryServer) QueryOwnerLockerByProductID(c context.Context, request *ty
 		}
 	}
 
-	return &types.QueryOwnerLockerByProductIDResponse{
+	return &types.QueryOwnerLockerByProductIDbyOwnerResponse{
 		LockerIds: lockerIds,
 	}, nil
 }
 
-func (q *queryServer) QueryOwnerLockerOfAllProduct(c context.Context, request *types.QueryOwnerLockerOfAllProductRequest) (*types.QueryOwnerLockerOfAllProductResponse, error) {
+func (q *queryServer) QueryOwnerLockerOfAllProductbyOwner(c context.Context, request *types.QueryOwnerLockerOfAllProductbyOwnerRequest) (*types.QueryOwnerLockerOfAllProductbyOwnerResponse, error) {
 
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -192,7 +191,6 @@ func (q *queryServer) QueryOwnerLockerOfAllProduct(c context.Context, request *t
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-
 	userlockerLookupData, _ := q.GetUserLockerAssetMapping(ctx, request.Owner)
 
 	var lockerIds []string
@@ -202,12 +200,12 @@ func (q *queryServer) QueryOwnerLockerOfAllProduct(c context.Context, request *t
 		}
 	}
 
-	return &types.QueryOwnerLockerOfAllProductResponse{
+	return &types.QueryOwnerLockerOfAllProductbyOwnerResponse{
 		LockerIds: lockerIds,
 	}, nil
 }
 
-func (q *queryServer) QueryOwnerLockerByProductToAssetID(c context.Context, request *types.QueryOwnerLockerByProductToAssetIDRequest) (*types.QueryOwnerLockerByProductToAssetIDResponse, error) {
+func (q *queryServer) QueryOwnerLockerByProductToAssetIDbyOwner(c context.Context, request *types.QueryOwnerLockerByProductToAssetIDbyOwnerRequest) (*types.QueryOwnerLockerByProductToAssetIDbyOwnerResponse, error) {
 
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -241,8 +239,7 @@ func (q *queryServer) QueryOwnerLockerByProductToAssetID(c context.Context, requ
 			}
 		}
 	}
-
-	return &types.QueryOwnerLockerByProductToAssetIDResponse{
+	return &types.QueryOwnerLockerByProductToAssetIDbyOwnerResponse{
 		LockerInfo: lockerInfos,
 	}, nil
 }
