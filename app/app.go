@@ -1,12 +1,13 @@
 package app
 
 import (
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"io"
 	"os"
 	"path/filepath"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -26,7 +27,6 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
-	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -74,11 +74,7 @@ import (
 	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
 	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	ibctypes "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
-	"github.com/gravity-devs/liquidity/x/liquidity"
-	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
-	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/spf13/cast"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -87,18 +83,14 @@ import (
 	tmprototypes "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
-	"github.com/comdex-official/comdex/x/asset"
-	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/oracle"
-	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
-	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
-	"github.com/comdex-official/comdex/x/vault"
-	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	"github.com/cosmos/cosmos-sdk/x/authz"
+	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
+	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
+
+	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
 )
 
 const (
@@ -109,7 +101,8 @@ const (
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
-
+	// use this for clarity in argument list
+	EmptyWasmOpts []wasm.Option
 	// ModuleBasics defines the module BasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
@@ -130,16 +123,12 @@ var (
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
+		authzmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		vault.AppModuleBasic{},
-		asset.AppModuleBasic{},
-		liquidity.AppModuleBasic{},
-		asset.AppModuleBasic{},
-		oracle.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 	)
 )
@@ -179,6 +168,7 @@ type App struct {
 	accountKeeper     authkeeper.AccountKeeper
 	freegrantKeeper   freegrantkeeper.Keeper
 	bankKeeper        bankkeeper.Keeper
+	authzKeeper       authzkeeper.Keeper
 	capabilityKeeper  *capabilitykeeper.Keeper
 	stakingKeeper     stakingkeeper.Keeper
 	slashingKeeper    slashingkeeper.Keeper
@@ -196,11 +186,6 @@ type App struct {
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
 	scopedWasmKeeper        capabilitykeeper.ScopedKeeper
-
-	assetKeeper     assetkeeper.Keeper
-	vaultKeeper     vaultkeeper.Keeper
-	liquidityKeeper liquiditykeeper.Keeper
-	oracleKeeper    oraclekeeper.Keeper
 
 	wasmKeeper wasm.Keeper
 	// the module manager
@@ -231,8 +216,7 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, oracletypes.StoreKey,
-			wasm.StoreKey,
+			wasm.StoreKey, authzkeeper.StoreKey,
 		)
 	)
 
@@ -269,12 +253,8 @@ func New(
 	app.paramsKeeper.Subspace(govtypes.ModuleName).
 		WithKeyTable(govtypes.ParamKeyTable())
 	app.paramsKeeper.Subspace(crisistypes.ModuleName)
-	app.paramsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
-	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
-	app.paramsKeeper.Subspace(assettypes.ModuleName)
-	app.paramsKeeper.Subspace(oracletypes.ModuleName)
 	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 
 	// set the BaseApp's parameter store
@@ -351,6 +331,13 @@ func New(
 		app.bankKeeper,
 		authtypes.FeeCollectorName,
 	)
+
+	app.authzKeeper = authzkeeper.NewKeeper(
+		keys[authzkeeper.StoreKey],
+		app.cdc,
+		baseApp.MsgServiceRouter(),
+	)
+
 	app.upgradeKeeper = upgradekeeper.NewKeeper(
 		skipUpgradeHeights,
 		app.keys[upgradetypes.StoreKey],
@@ -358,7 +345,6 @@ func New(
 		homePath,
 		app.BaseApp,
 	)
-	app.registerUpgradeHandlers()
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.stakingKeeper = *stakingKeeper.SetHooks(
@@ -386,16 +372,6 @@ func New(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
 
-	app.govKeeper = govkeeper.NewKeeper(
-		app.cdc,
-		app.keys[govtypes.StoreKey],
-		app.GetSubspace(govtypes.ModuleName),
-		app.accountKeeper,
-		app.bankKeeper,
-		&stakingKeeper,
-		govRouter,
-	)
-
 	// Create Transfer Keepers
 	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.cdc,
@@ -415,7 +391,6 @@ func New(
 	)
 
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-	app.ibcKeeper.SetRouter(ibcRouter)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	app.evidenceKeeper = *evidencekeeper.NewKeeper(
@@ -426,38 +401,6 @@ func New(
 	)
 	app.evidenceKeeper.SetRouter(evidenceRouter)
 
-	app.assetKeeper = assetkeeper.NewKeeper(
-		app.cdc,
-		app.keys[assettypes.StoreKey],
-		app.GetSubspace(assettypes.ModuleName),
-		&app.oracleKeeper,
-	)
-	app.vaultKeeper = vaultkeeper.NewKeeper(
-		app.cdc,
-		app.keys[vaulttypes.StoreKey],
-		app.bankKeeper,
-		&app.assetKeeper,
-		&app.oracleKeeper,
-	)
-
-	app.liquidityKeeper = liquiditykeeper.NewKeeper(
-		app.cdc,
-		app.keys[liquiditytypes.StoreKey],
-		app.GetSubspace(liquiditytypes.ModuleName),
-		app.bankKeeper,
-		app.accountKeeper,
-		app.distrKeeper,
-	)
-
-	app.oracleKeeper = *oraclekeeper.NewKeeper(
-		app.cdc,
-		app.keys[oracletypes.StoreKey],
-		app.GetSubspace(oracletypes.ModuleName),
-		app.ibcKeeper.ChannelKeeper,
-		&app.ibcKeeper.PortKeeper,
-		app.scopedIBCKeeper,
-		app.assetKeeper,
-	)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
 	supportedFeatures := "iterator,staking,stargate"
@@ -480,6 +423,17 @@ func New(
 		wasmConfig,
 		supportedFeatures,
 		wasmOpts...,
+	)
+
+	app.ibcKeeper.SetRouter(ibcRouter)
+	app.govKeeper = govkeeper.NewKeeper(
+		app.cdc,
+		app.keys[govtypes.StoreKey],
+		app.GetSubspace(govtypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+		&stakingKeeper,
+		govRouter,
 	)
 
 	/****  Module Options ****/
@@ -505,14 +459,10 @@ func New(
 		staking.NewAppModule(app.cdc, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
+		authzmodule.NewAppModule(app.cdc, app.authzKeeper, app.accountKeeper, app.bankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.ibcKeeper),
 		params.NewAppModule(app.paramsKeeper),
 		transferModule,
-		asset.NewAppModule(app.cdc, app.assetKeeper),
-		vault.NewAppModule(app.cdc, app.vaultKeeper),
-		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
-		asset.NewAppModule(app.cdc, app.assetKeeper),
-		oracle.NewAppModule(app.cdc, app.oracleKeeper),
 		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
 	)
 
@@ -522,18 +472,18 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
 		crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
-		oracletypes.ModuleName, transferModule.Name(), assettypes.ModuleName, vaulttypes.ModuleName,
+		authz.ModuleName, transferModule.Name(),
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
-		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, minttypes.ModuleName,
+		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, minttypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
-		vaulttypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, paramstypes.ModuleName,
-		oracletypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
-		assettypes.ModuleName, banktypes.ModuleName,
+		wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
+		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
+		banktypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -554,12 +504,9 @@ func New(
 		ibchost.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
-		liquiditytypes.ModuleName,
 		ibctransfertypes.ModuleName,
-		assettypes.ModuleName,
-		vaulttypes.ModuleName,
-		oracletypes.StoreKey,
 		wasmtypes.ModuleName,
+		authz.ModuleName,
 		vesting.AppModuleBasic{}.Name(),
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
@@ -569,6 +516,7 @@ func New(
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encoding.Amino)
 	app.configurator = module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
+	app.registerUpgradeHandlers()
 	// initialize stores
 	app.MountKVStores(app.keys)
 	app.MountTransientStores(app.tkeys)
@@ -740,48 +688,36 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
-		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
 	}
 }
-func (app *App) registerUpgradeHandlers() {
-	app.upgradeKeeper.SetUpgradeHandler("v0.1.0", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-		// 1st-time running in-store migrations, using 1 as fromVersion to
-		// avoid running InitGenesis.
-		fromVM := map[string]uint64{
-			authtypes.ModuleName:        auth.AppModule{}.ConsensusVersion(),
-			banktypes.ModuleName:        bank.AppModule{}.ConsensusVersion(),
-			capabilitytypes.ModuleName:  capability.AppModule{}.ConsensusVersion(),
-			crisistypes.ModuleName:      crisis.AppModule{}.ConsensusVersion(),
-			distrtypes.ModuleName:       distr.AppModule{}.ConsensusVersion(),
-			evidencetypes.ModuleName:    evidence.AppModule{}.ConsensusVersion(),
-			govtypes.ModuleName:         gov.AppModule{}.ConsensusVersion(),
-			minttypes.ModuleName:        mint.AppModule{}.ConsensusVersion(),
-			paramstypes.ModuleName:      params.AppModule{}.ConsensusVersion(),
-			slashingtypes.ModuleName:    slashing.AppModule{}.ConsensusVersion(),
-			stakingtypes.ModuleName:     staking.AppModule{}.ConsensusVersion(),
-			upgradetypes.ModuleName:     upgrade.AppModule{}.ConsensusVersion(),
-			vestingtypes.ModuleName:     vesting.AppModule{}.ConsensusVersion(),
-			ibctypes.ModuleName:         ibc.AppModule{}.ConsensusVersion(),
-			genutiltypes.ModuleName:     genutil.AppModule{}.ConsensusVersion(),
-			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
-			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
-			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
-		}
-		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
-	})
+func (a *App) registerUpgradeHandlers() {
+	a.upgradeKeeper.SetUpgradeHandler(
+		tv1_0_0.UpgradeName,
+		tv1_0_0.CreateUpgradeHandler(a.mm, a.configurator, a.wasmKeeper),
+	)
 
-	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
+	// When a planned update height is reached, the old binary will panic
+	// writing on disk the height and name of the update that triggered it
+	// This will read that value, and execute the preparations for the upgrade.
+	upgradeInfo, err := a.upgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(err)
 	}
-	if upgradeInfo.Name == "v0.1.0" && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{wasmtypes.ModuleName},
-		}
 
+	var storeUpgrades *storetypes.StoreUpgrades
+
+	switch {
+	case upgradeInfo.Name == tv1_0_0.UpgradeName && !a.upgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		// prepare store for v3
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added:   []string{authz.ModuleName},
+			Deleted: []string{"asset", "liquidity", "oracle", "vault"},
+		}
+	}
+
+	if storeUpgrades != nil {
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+		a.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 	}
 }
