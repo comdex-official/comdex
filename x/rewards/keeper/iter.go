@@ -88,10 +88,12 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 			StabilityFee := ExtPairVault.StabilityFee
 
 			if StabilityFee != sdk.ZeroDec() {
+
 				interest, _ := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
 				intAcc := vault.InterestAccumulated
 				updatedIntAcc := (intAcc).Add(interest)
 				vault.InterestAccumulated = &updatedIntAcc
+				vault.AmountOut = vault.AmountOut.Add(interest)
 				//update vault
 				k.SetVault(ctx, vault)
 			}
