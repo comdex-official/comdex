@@ -13,7 +13,7 @@ import (
 
 func querySurplusAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auction [appid] [auction mapping id] [auction id]",
+		Use:   "surplus-auction [appid] [auction mapping id] [auction id]",
 		Short: "Query surplus auction",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -54,8 +54,8 @@ func querySurplusAuction() *cobra.Command {
 
 func querySurplusAuctions() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auctions",
-		Short: "Query surplus auctions",
+		Use:   "all-surplus-auctions",
+		Short: "Query all surplus auctions",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -85,7 +85,7 @@ func querySurplusAuctions() *cobra.Command {
 
 func querySurplusBiddings() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "biddings [bidder]",
+		Use:   "suplus-biddings [bidder]",
 		Short: "Query surplus biddings by bidder address",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -116,7 +116,7 @@ func querySurplusBiddings() *cobra.Command {
 
 func queryDebtAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auction [appid] [auction mapping id] [auction id]",
+		Use:   "debt-auction [appid] [auction mapping id] [auction id]",
 		Short: "Query Debt auction",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -157,7 +157,7 @@ func queryDebtAuction() *cobra.Command {
 
 func queryDebtAuctions() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auctions",
+		Use:   "all-debt-auctions",
 		Short: "Query Debt auctions",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -188,7 +188,7 @@ func queryDebtAuctions() *cobra.Command {
 
 func queryDebtBiddings() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "biddings [bidder]",
+		Use:   "surplus-debt-biddings [bidder]",
 		Short: "Query surplus Debt by bidder address",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -219,7 +219,7 @@ func queryDebtBiddings() *cobra.Command {
 
 func queryDutchAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auction [appid] [auction mapping id] [auction id]",
+		Use:   "dutch-auction [appid] [auction mapping id] [auction id]",
 		Short: "Query Dutch auction",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -260,7 +260,7 @@ func queryDutchAuction() *cobra.Command {
 
 func queryDutchAuctions() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auctions",
+		Use:   "all-dutch-auctions",
 		Short: "Query Dutch auctions",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -291,7 +291,7 @@ func queryDutchAuctions() *cobra.Command {
 
 func queryDutchBiddings() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "biddings [bidder]",
+		Use:   "dutch-biddings [bidder]",
 		Short: "Query Dutch biddings by bidder address",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
