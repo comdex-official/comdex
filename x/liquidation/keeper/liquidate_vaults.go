@@ -243,7 +243,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 					if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
 						k.CreateLockedVaultHistoy(ctx, *lockedVault)
 						//k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
-						//k.SetVault(ctx, lockedVault.ExtendedPairId, lockedVault.Owner, assetIn, lockedVault.AmountIn, assetOut, lockedVault.AmountOut)
+						k.CreteNewVault(ctx, lockedVault.Owner, lockedVault.AppMappingId, lockedVault.ExtendedPairId, lockedVault.AmountIn, lockedVault.AmountOut)
 						k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 
 						//======================================NOTE TO BE CHANGED================================================
