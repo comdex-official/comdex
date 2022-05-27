@@ -11,19 +11,19 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var _ types.QueryServiceServer = (*queryServer)(nil)
+var _ types.QueryServiceServer = (*QueryServer)(nil)
 
-type queryServer struct {
+type QueryServer struct {
 	Keeper
 }
 
 func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
-	return &queryServer{
+	return &QueryServer{
 		Keeper: k,
 	}
 }
 
-func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (q *QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	var (
 		ctx    = sdk.UnwrapSDKContext(c)
 		params = q.GetParams(ctx)
@@ -34,7 +34,7 @@ func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest
 	}, nil
 }
 
-func (q *queryServer) QuerySurplusAuction(c context.Context, req *types.QuerySurplusAuctionRequest) (*types.QuerySurplusAuctionResponse, error) {
+func (q *QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySurplusAuctionRequest) (*types.QuerySurplusAuctionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -43,9 +43,9 @@ func (q *queryServer) QuerySurplusAuction(c context.Context, req *types.QuerySur
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetSurplusAuction(ctx, req.Id)
+	item, found := q.GetSurplusAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "auction does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "auction does not exist for id %d", req.AuctionId)
 	}
 
 	return &types.QuerySurplusAuctionResponse{
@@ -53,7 +53,7 @@ func (q *queryServer) QuerySurplusAuction(c context.Context, req *types.QuerySur
 	}, nil
 }
 
-func (q *queryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySurplusAuctionsRequest) (*types.QuerySurplusAuctionsResponse, error) {
+func (q *QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySurplusAuctionsRequest) (*types.QuerySurplusAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -62,9 +62,9 @@ func (q *queryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySu
 		items []types.SurplusAuction
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
-
+	key := types.AuctionTypeKey(req.AppId, types.SurplusString)
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.CollateralAuctionKeyPrefix),
+		prefix.NewStore(q.Store(ctx), key),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.SurplusAuction
@@ -90,7 +90,7 @@ func (q *queryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySu
 	}, nil
 }
 
-func (q *queryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySurplusBiddingsRequest) (*types.QuerySurplusBiddingsResponse, error) {
+func (q *QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySurplusBiddingsRequest) (*types.QuerySurplusBiddingsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -99,30 +99,21 @@ func (q *queryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySu
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetSurplusUserBiddings(ctx, req.Bidder)
+	item, found := q.GetSurplusUserBiddings(ctx, req.Bidder, req.AppId)
 	if !found {
 		return &types.QuerySurplusBiddingsResponse{
 			Bidder:   req.Bidder,
-			Biddings: []types.Biddings{},
+			Biddings: []types.SurplusBiddings{},
 		}, nil
-	}
-
-	userBiddings := []types.Biddings{}
-	for _, biddingId := range item.BiddingIds {
-		bidding, found := q.GetSurplusBidding(ctx, biddingId)
-		if !found {
-			continue
-		}
-		userBiddings = append(userBiddings, bidding)
 	}
 
 	return &types.QuerySurplusBiddingsResponse{
 		Bidder:   req.Bidder,
-		Biddings: userBiddings,
+		Biddings: item,
 	}, nil
 }
 
-func (q *queryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAuctionRequest) (*types.QueryDebtAuctionResponse, error) {
+func (q *QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAuctionRequest) (*types.QueryDebtAuctionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -131,9 +122,9 @@ func (q *queryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAu
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetDebtAuction(ctx, req.Id)
+	item, found := q.GetDebtAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "auction does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "auction does not exist for id %d", req.AuctionId)
 	}
 
 	return &types.QueryDebtAuctionResponse{
@@ -141,7 +132,7 @@ func (q *queryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAu
 	}, nil
 }
 
-func (q *queryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtAuctionsRequest) (*types.QueryDebtAuctionsResponse, error) {
+func (q *QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtAuctionsRequest) (*types.QueryDebtAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -150,9 +141,9 @@ func (q *queryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtA
 		items []types.DebtAuction
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
-
+	key := types.AuctionTypeKey(req.AppId, types.DebtString)
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.CollateralAuctionKeyPrefix),
+		prefix.NewStore(q.Store(ctx), key),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.DebtAuction
@@ -178,7 +169,7 @@ func (q *queryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtA
 	}, nil
 }
 
-func (q *queryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtBiddingsRequest) (*types.QueryDebtBiddingsResponse, error) {
+func (q *QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtBiddingsRequest) (*types.QueryDebtBiddingsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -187,30 +178,21 @@ func (q *queryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtB
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetDebtUserBiddings(ctx, req.Bidder)
+	item, found := q.GetDebtUserBiddings(ctx, req.Bidder, req.AppId)
 	if !found {
 		return &types.QueryDebtBiddingsResponse{
 			Bidder:   req.Bidder,
-			Biddings: []types.Biddings{},
+			Biddings: []types.DebtBiddings{},
 		}, nil
-	}
-
-	userBiddings := []types.Biddings{}
-	for _, biddingId := range item.BiddingIds {
-		bidding, found := q.GetDebtBidding(ctx, biddingId)
-		if !found {
-			continue
-		}
-		userBiddings = append(userBiddings, bidding)
 	}
 
 	return &types.QueryDebtBiddingsResponse{
 		Bidder:   req.Bidder,
-		Biddings: userBiddings,
+		Biddings: item,
 	}, nil
 }
 
-func (q *queryServer) QueryDutchAuction(c context.Context, req *types.QueryDutchAuctionRequest) (*types.QueryDutchAuctionResponse, error) {
+func (q *QueryServer) QueryDutchAuction(c context.Context, req *types.QueryDutchAuctionRequest) (*types.QueryDutchAuctionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -219,9 +201,9 @@ func (q *queryServer) QueryDutchAuction(c context.Context, req *types.QueryDutch
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetDutchAuction(ctx, req.Id)
+	item, found := q.GetDutchAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "auction does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "auction does not exist for id %d", req.AuctionId)
 	}
 
 	return &types.QueryDutchAuctionResponse{
@@ -229,7 +211,7 @@ func (q *queryServer) QueryDutchAuction(c context.Context, req *types.QueryDutch
 	}, nil
 }
 
-func (q *queryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutchAuctionsRequest) (*types.QueryDutchAuctionsResponse, error) {
+func (q *QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutchAuctionsRequest) (*types.QueryDutchAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -238,9 +220,9 @@ func (q *queryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutc
 		items []types.DutchAuction
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
-
+	key := types.AuctionTypeKey(req.AppId, types.DutchString)
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.CollateralAuctionKeyPrefix),
+		prefix.NewStore(q.Store(ctx), key),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.DutchAuction
@@ -266,7 +248,7 @@ func (q *queryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutc
 	}, nil
 }
 
-func (q *queryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutchBiddingsRequest) (*types.QueryDutchBiddingsResponse, error) {
+func (q *QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutchBiddingsRequest) (*types.QueryDutchBiddingsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -275,7 +257,7 @@ func (q *queryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutc
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetDutchUserBiddings(ctx, req.Bidder)
+	item, found := q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)
 	if !found {
 		return &types.QueryDutchBiddingsResponse{
 			Bidder:   req.Bidder,
@@ -283,17 +265,8 @@ func (q *queryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutc
 		}, nil
 	}
 
-	userBiddings := []types.DutchBiddings{}
-	for _, biddingId := range item.BiddingIds {
-		bidding, found := q.GetDutchBidding(ctx, biddingId)
-		if !found {
-			continue
-		}
-		userBiddings = append(userBiddings, bidding)
-	}
-
 	return &types.QueryDutchBiddingsResponse{
 		Bidder:   req.Bidder,
-		Biddings: userBiddings,
+		Biddings: item,
 	}, nil
 }

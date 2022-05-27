@@ -107,7 +107,17 @@ func (k *Keeper) SetCollectorAuctionLookupTable(ctx sdk.Context, records ...type
 func (k *Keeper) GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.CollectorAuctionLookupTable, found bool) {
 	return k.collector.GetCollectorAuctionLookupTable(ctx, app_id)
 }
-
+func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData types.NetFeeCollectedData, found bool) {
+	return k.collector.GetNetFeeCollectedData(ctx, app_id)
+}
 func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool) {
 	return k.asset.GetApps(ctx)
+}
+
+func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, address string, amount sdk.Int) error {
+	return k.tokenmint.MintNewTokensForApp(ctx, appMappingId, assetId, address, amount)
+}
+
+func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, amount sdk.Int) error {
+	return k.tokenmint.BurnTokensForApp(ctx, appMappingId, assetId, amount)
 }

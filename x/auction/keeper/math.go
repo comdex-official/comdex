@@ -23,7 +23,7 @@ func Sub(a, b sdk.Dec) sdk.Dec {
 }
 
 func (k Keeper) getOutflowTokenInitialPrice(price, buffer sdk.Dec) sdk.Dec {
-	result := Multiply(price, buffer)
+	result := buffer.Mul(price)
 	return result
 }
 

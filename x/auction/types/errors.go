@@ -27,6 +27,8 @@ var (
 	ErrorDutchMoreBidAmount           = sdkerrors.Register(ModuleName, 117, "can not bid more amount")
 	ErrorDutchinsufficientUserBalance = sdkerrors.Register(ModuleName, 118, "user doesnt have balance to buy chost also")
 	ErrorInvalidDutchPrice            = sdkerrors.Register(ModuleName, 119, "user max price cannot be less than collateral token price")
+	ErrorInvalidBidId                 = sdkerrors.Register(ModuleName, 120, "invalid bid id")
+	ErrorInvalidBurn                  = sdkerrors.Register(ModuleName, 121, "invalid burn")
 )
 
 var (

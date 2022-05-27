@@ -13,15 +13,23 @@ import (
 
 func querySurplusAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auction [id]",
+		Use:   "auction [appid] [auction mapping id] [auction id]",
 		Short: "Query surplus auction",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			appId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			auctionMappingId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			auctionId, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -29,7 +37,9 @@ func querySurplusAuction() *cobra.Command {
 			res, err := queryClient.QuerySurplusAuction(
 				context.Background(),
 				&types.QuerySurplusAuctionRequest{
-					Id: id,
+					appId,
+					auctionMappingId,
+					auctionId,
 				},
 			)
 			if err != nil {
@@ -106,15 +116,23 @@ func querySurplusBiddings() *cobra.Command {
 
 func queryDebtAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auction [id]",
+		Use:   "auction [appid] [auction mapping id] [auction id]",
 		Short: "Query Debt auction",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			appId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			auctionMappingId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			auctionId, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -122,7 +140,9 @@ func queryDebtAuction() *cobra.Command {
 			res, err := queryClient.QueryDebtAuction(
 				context.Background(),
 				&types.QueryDebtAuctionRequest{
-					Id: id,
+					appId,
+					auctionMappingId,
+					auctionId,
 				},
 			)
 			if err != nil {
@@ -199,15 +219,23 @@ func queryDebtBiddings() *cobra.Command {
 
 func queryDutchAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auction [id]",
+		Use:   "auction [appid] [auction mapping id] [auction id]",
 		Short: "Query Dutch auction",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			appId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			auctionMappingId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			auctionId, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -215,7 +243,9 @@ func queryDutchAuction() *cobra.Command {
 			res, err := queryClient.QueryDutchAuction(
 				context.Background(),
 				&types.QueryDutchAuctionRequest{
-					Id: id,
+					appId,
+					auctionMappingId,
+					auctionId,
 				},
 			)
 			if err != nil {

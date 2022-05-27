@@ -26,9 +26,9 @@ type MarketKeeper interface {
 }
 
 type LiquidationKeeper interface {
-	GetLockedVaults(ctx sdk.Context) (locked_vaults []liquidationtypes.LockedVault)
 	SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag bool) error
 	SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) error
+	GetLockedVaults(ctx sdk.Context) (locked_vaults []liquidationtypes.LockedVault)
 	//UpdateAssetQuantitiesInLockedVault(ctx sdk.Context, collateral_auction auctiontypes.CollateralAuction, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) error
 }
 
@@ -56,4 +56,10 @@ type CollectorKeeper interface {
 	GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collectorLookup types.CollectorLookup, found bool)
 	SetCollectorAuctionLookupTable(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error
 	GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.CollectorAuctionLookupTable, found bool)
+	GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData types.NetFeeCollectedData, found bool)
+}
+
+type TokenMintKeeper interface {
+	MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, address string, amount sdk.Int) error
+	BurnTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, amount sdk.Int) error
 }
