@@ -1,7 +1,7 @@
 package tokenmint
 
 import (
-	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type TokenMintQuery struct {
@@ -14,5 +14,5 @@ type MintedToken struct {
 }
 
 type MintedTokenResponse struct {
-	MintedTokens tokenminttypes.MintedTokens `json:"total_supply_response"`
+	MintedTokens sdk.Int `json:"total_supply_response"`
 }
