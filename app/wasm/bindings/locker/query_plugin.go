@@ -17,11 +17,9 @@ func CustomQuerier(lockerKeeper *QueryPlugin) func(ctx sdk.Context, request json
 				denom := contractQuery.State.Denom
 				height := contractQuery.State.Height
 				target := contractQuery.State.Target
-				res := State{
-					address,
-					denom,
-					height,
-					target,
+				state, _ := GetState(address, denom, height, target)
+				res := StateResponse{
+					Amount: state,
 				}
 				bz, err := json.Marshal(res)
 				if err != nil {
@@ -30,7 +28,7 @@ func CustomQuerier(lockerKeeper *QueryPlugin) func(ctx sdk.Context, request json
 				return bz, nil
 			}
 		}
-		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown osmosis query variant"}
+		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown locker query variant"}
 	}
 
 }
