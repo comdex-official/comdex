@@ -8,14 +8,20 @@ import (
 )
 
 func RegisterCustomPlugins(
-	locker lockerkeeper.Keeper,
+	locker *lockerkeeper.Keeper,
 ) []wasmkeeper.Option {
+	wasmQueryPlugin := locker2.NewQueryPlugin(locker)
+
+	queryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
+		Custom: locker2.CustomQuerier(wasmQueryPlugin),
+	})
 
 	messengerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
-		locker2.CustomMessageDecorator(locker),
+		locker2.CustomMessageDecorator(*locker),
 	)
 
 	return []wasm.Option{
+		queryPluginOpt,
 		messengerDecoratorOpt,
 	}
 }
