@@ -151,31 +151,31 @@ message QueryParamsResponse {
 
 service QueryService {
   rpc QuerySurplusAuction(QuerySurplusAuctionRequest) returns (QuerySurplusAuctionResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/surplusauction/{auction_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/surplusauction/{app_id}/{auction_mapping_id}/{auction_id}";
   }
   rpc QuerySurplusAuctions(QuerySurplusAuctionsRequest) returns (QuerySurplusAuctionsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/surplusauctions";
+    option (google.api.http).get = "/comdex/auction/v1beta1/surplusauctions/{app_id}";
   }
   rpc QuerySurplusBiddings(QuerySurplusBiddingsRequest) returns (QuerySurplusBiddingsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/surplusbiddings/{bidder}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/surplusbiddings/{bidder}/{app_id}";
   }
   rpc QueryDebtAuction(QueryDebtAuctionRequest) returns (QueryDebtAuctionResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/debtauction/{auction_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/debtauction/{auction_id}/{app_id}/{auction_mapping_id}/{auction_id}";
   }
   rpc QueryDebtAuctions(QueryDebtAuctionsRequest) returns (QueryDebtAuctionsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/debtauctions";
+    option (google.api.http).get = "/comdex/auction/v1beta1/debtauctions/{app_id}";
   }
   rpc QueryDebtBiddings(QueryDebtBiddingsRequest) returns (QueryDebtBiddingsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/debtbiddings/{bidder}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/debtbiddings/{bidder}/{app_id}";
   }
   rpc QueryDutchAuction(QueryDutchAuctionRequest) returns (QueryDutchAuctionResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/dutchauction/{auction_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchauction/{app_id}/{auction_mapping_id}/{auction_id}";
   }
   rpc QueryDutchAuctions(QueryDutchAuctionsRequest) returns (QueryDutchAuctionsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/dutchauctions";
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchauctions/{app_id}";
   }
   rpc QueryDutchBiddings(QueryDutchBiddingsRequest) returns (QueryDutchBiddingsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/dutchbiddings/{bidder}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchbiddings/{bidder}/{app_id}";
   }
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
       option (google.api.http).get = "/comdex/auction/v1beta1/params";
