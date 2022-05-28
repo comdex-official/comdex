@@ -188,7 +188,7 @@ func queryDebtAuctions() *cobra.Command {
 
 func queryDebtBiddings() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "surplus-debt-biddings [bidder]",
+		Use:   "debt-biddings [bidder]",
 		Short: "Query surplus Debt by bidder address",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
