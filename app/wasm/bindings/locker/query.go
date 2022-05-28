@@ -3,7 +3,7 @@ package locker
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 type LockerQuery struct {
-	State *State `json:"balance_at_height,omitempty"`
+	State *State `json:"state,omitempty"`
 }
 
 type State struct {

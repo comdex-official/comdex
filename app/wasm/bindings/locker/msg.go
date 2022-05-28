@@ -1,7 +1,7 @@
 package locker
 
 type LockerMessages struct {
-	WhiteListAssetLocker WhiteListAssetLocker `json:"white-list-asset-locker,omitempty"`
+	WhiteListAssetLocker WhiteListAssetLocker `json:"white_list_asset_locker,omitempty"`
 }
 
 type WhiteListAssetLocker struct {
