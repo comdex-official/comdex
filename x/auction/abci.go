@@ -8,8 +8,8 @@ import (
 
 func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
 	//k.CreateNewAuctions(ctx)
-	err := k.CloseAndRestartSurplusAuctions(ctx)
+	err := k.CloseAndRestartAuctions(ctx)
 	if err != nil {
-
+		return
 	}
 }

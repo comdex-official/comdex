@@ -22,6 +22,11 @@ func Sub(a, b sdk.Dec) sdk.Dec {
 	return a.Sub(b)
 }
 
+func (k Keeper) getInflowTokenTargetAmount(amount, price sdk.Int) sdk.Int {
+	result := amount.Mul(price)
+	return result
+}
+
 func (k Keeper) getOutflowTokenInitialPrice(price sdk.Int, buffer sdk.Dec) sdk.Dec {
 	result := buffer.MulInt(price)
 	return result
@@ -56,8 +61,7 @@ func (k Keeper) getPriceFromContinuousExponentialDecreaseFunction(top, decreaseP
 	return result
 }
 
-func (k Keeper) getBurnAmountAmount(amount sdk.Int, penalty string) sdk.Int {
-	liqPenalty := sdk.MustNewDecFromStr(penalty)
+func (k Keeper) getBurnAmount(amount sdk.Int, liqPenalty sdk.Dec) sdk.Int {
 	liqPenalty = liqPenalty.Add(sdk.NewDec(1))
 	amount1 := sdk.NewDecFromInt(amount)
 	result := amount1.Quo(liqPenalty).Ceil().TruncateInt()

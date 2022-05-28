@@ -28,11 +28,11 @@ var (
 var (
 	DefaultLiquidationPenaltyPercent       = "0.15"
 	DefaultAuctionDiscountPercent          = "0.05"
-	DefaultAuctionDurationSeconds          = uint64(60)
-	DefaultDebtMintTokenDecreasePercentage = sdk.MustNewDecFromStr("0.03")
+	DefaultAuctionDurationSeconds          = uint64(21600)
+	DefaultDebtMintTokenDecreasePercentage = sdk.MustNewDecFromStr("0.01")
 	DefaultBuffer                          = sdk.MustNewDecFromStr("1.2")
 	DefaultCusp                            = sdk.MustNewDecFromStr("0.6")
-	DefaultTau                             = sdk.NewInt(3600)
+	DefaultTau                             = sdk.NewInt(21600)
 	DefaultDutchDecreasePercentage         = sdk.MustNewDecFromStr("0.01")
 	DefaultChost                           = sdk.MustNewDecFromStr("10")
 	DefaultStep                            = sdk.NewInt(360)
