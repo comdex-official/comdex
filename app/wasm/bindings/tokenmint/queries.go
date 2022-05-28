@@ -17,7 +17,7 @@ func NewQueryPlugin(
 	}
 }
 
-func (qp QueryPlugin) GetTokenMint(ctx sdk.Context, appMappingId, assetId uint64) (sdk.Int, error) {
+func (qp QueryPlugin) GetTokenMint(ctx sdk.Context, appMappingId, assetId uint64) (int64, error) {
 	tokenData, err := qp.tokenMintKeeper.GetAssetDataInTokenMintByAppSupply(ctx, appMappingId, assetId)
 	if err != true {
 		return tokenData, nil

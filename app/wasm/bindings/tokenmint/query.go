@@ -1,9 +1,5 @@
 package tokenmint
 
-import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-)
-
 type TokenMintQuery struct {
 	MintedToken *MintedToken `json:"total_supply,omitempty"`
 }
@@ -14,5 +10,5 @@ type MintedToken struct {
 }
 
 type MintedTokenResponse struct {
-	MintedTokens sdk.Int `json:"total_supply_response"`
+	MintedTokens int64 `json:"total_supply_response"`
 }
