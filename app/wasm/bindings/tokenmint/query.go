@@ -10,5 +10,5 @@ type MintedToken struct {
 }
 
 type MintedTokenResponse struct {
-	MintedTokens int64 `json:"total_supply_response"`
+	MintedTokens int64 `json:"current_supply"`
 }
