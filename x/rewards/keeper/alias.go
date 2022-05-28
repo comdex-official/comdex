@@ -28,6 +28,10 @@ func (k Keeper) GetLocker(ctx sdk.Context, lockerId string) (locker types.Locker
 	return k.locker.GetLocker(ctx, lockerId)
 }
 
+func (k Keeper) GetSupply(ctx sdk.Context, denom string) sdk.Coin {
+	return k.bank.GetSupply(ctx, denom)
+}
+
 func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appMappingId uint64) (lockerLookupData types.LockerLookupTable, found bool) {
 	return k.locker.GetLockerLookupTable(ctx, appMappingId)
 }

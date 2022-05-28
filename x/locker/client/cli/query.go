@@ -206,7 +206,7 @@ func queryOwnerLockerOfAllProductbyOwner() *cobra.Command {
 			res, err := queryClient.QueryOwnerLockerOfAllProductbyOwner(
 				context.Background(),
 				&types.QueryOwnerLockerOfAllProductbyOwnerRequest{
-					Owner:     owner,
+					Owner: owner,
 				},
 			)
 			if err != nil {
@@ -456,9 +456,8 @@ func queryLockerLookupTableByAppAndAssetId() *cobra.Command {
 			res, err := queryClient.QueryLockerLookupTableByAppAndAssetId(
 				context.Background(),
 				&types.QueryLockerLookupTableByAppAndAssetIdRequest{
-					AppId: app_id,
+					AppId:   app_id,
 					AssetId: asset_id,
-
 				},
 			)
 			if err != nil {
@@ -493,6 +492,43 @@ func queryLockerTotalDepositedByApp() *cobra.Command {
 				context.Background(),
 				&types.QueryLockerTotalDepositedByAppRequest{
 					AppId: app_id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryState() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "state [address] [denom] [blockheight] [target]",
+		Short: "state of an account at a blockheight",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			address := args[0]
+			denom := args[1]
+			blockheight := args[2]
+			target := args[3]
+
+			queryClient := types.NewQueryServiceClient(ctx)
+			res, err := queryClient.QueryState(
+				context.Background(),
+				&types.QueryStateRequest{
+					Address: address,
+					Denom:   denom,
+					Height:  blockheight,
+					Target:  target,
 				},
 			)
 			if err != nil {

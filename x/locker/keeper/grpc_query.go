@@ -195,7 +195,7 @@ func (q *queryServer) QueryOwnerLockerOfAllProductbyOwner(c context.Context, req
 
 	var lockerIds []string
 	for _, locker := range userlockerLookupData.LockerAppMapping {
-		for _, data := range locker.UserAssetLocker{
+		for _, data := range locker.UserAssetLocker {
 			lockerIds = append(lockerIds, data.LockerId)
 		}
 	}
@@ -390,7 +390,6 @@ func (q *queryServer) QueryWhiteListedAssetByAllProduct(c context.Context, reque
 	}, nil
 }
 
-
 func (q *queryServer) QueryLockerLookupTableByApp(c context.Context, req *types.QueryLockerLookupTableByAppRequest) (*types.QueryLockerLookupTableByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -423,8 +422,8 @@ func (q *queryServer) QueryLockerLookupTableByAppAndAssetId(c context.Context, r
 	}
 	var locker types.TokenToLockerMapping
 
-	for _, data := range item.Lockers{
-		if data.AssetId == req.AssetId{
+	for _, data := range item.Lockers {
+		if data.AssetId == req.AssetId {
 			locker = *data
 		}
 	}
@@ -447,8 +446,8 @@ func (q *queryServer) QueryLockerTotalDepositedByApp(c context.Context, req *typ
 		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
 	}
 	var lockedDepositedAmt []*types.LockedDepositedAmountDataMap
-	
-	for _, data := range item.Lockers{
+
+	for _, data := range item.Lockers {
 		var lockeddata types.LockedDepositedAmountDataMap
 		lockeddata.AssetId = data.AssetId
 		lockeddata.DepositedAmount = &data.DepositedAmount
@@ -458,5 +457,17 @@ func (q *queryServer) QueryLockerTotalDepositedByApp(c context.Context, req *typ
 
 	return &types.QueryLockerTotalDepositedByAppResponse{
 		LockedDepositedAmountDataMap: lockedDepositedAmt,
+	}, nil
+}
+
+func (q *queryServer) QueryState(c context.Context, req *types.QueryStateRequest) (*types.QueryStateResponse, error) {
+
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	qs, _ := queryState(req.Address, req.Denom, req.Height, req.Target)
+	return &types.QueryStateResponse{
+		Amount: *qs,
 	}, nil
 }

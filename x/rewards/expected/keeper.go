@@ -49,4 +49,5 @@ type BankKeeper interface {
 	) error
 
 	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
+	GetSupply(ctx sdk.Context, denom string) sdk.Coin
 }
