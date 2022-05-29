@@ -72,6 +72,11 @@ func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found 
 	return asset, true
 }
 
+func (k *Keeper) GetAssetDenom(ctx sdk.Context, id uint64) string {
+	asset, _ := k.GetAsset(ctx, id)
+	return asset.Denom
+}
+
 func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
 	var (
 		store = k.Store(ctx)
@@ -156,10 +161,10 @@ func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error 
 		var (
 			id    = k.GetAssetID(ctx)
 			asset = types.Asset{
-				Id:       id + 1,
-				Name:     msg.Name,
-				Denom:    msg.Denom,
-				Decimals: msg.Decimals,
+				Id:        id + 1,
+				Name:      msg.Name,
+				Denom:     msg.Denom,
+				Decimals:  msg.Decimals,
 				IsOnchain: msg.IsOnchain,
 			}
 		)
@@ -204,16 +209,16 @@ func (k *Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
 	for _, msg := range records {
 		if !k.HasAsset(ctx, msg.AssetIn) {
-			return  types.ErrorAssetDoesNotExist
+			return types.ErrorAssetDoesNotExist
 		}
 		if !k.HasAsset(ctx, msg.AssetOut) {
 			return types.ErrorAssetDoesNotExist
 		}
-		if(msg.AssetIn == msg.AssetOut){
+		if msg.AssetIn == msg.AssetOut {
 			return types.ErrorDuplicateAsset
 		}
 		pairs := k.GetPairs(ctx)
-		for _,data := range pairs{
+		for _, data := range pairs {
 			if data.AssetIn == msg.AssetIn && data.AssetOut == msg.AssetOut {
 				return types.ErrorDuplicatePair
 			}
@@ -222,14 +227,14 @@ func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
 		var (
 			id   = k.GetPairID(ctx)
 			pair = types.Pair{
-				Id:               id + 1,
-				AssetIn:          msg.AssetIn,
-				AssetOut:         msg.AssetOut,
+				Id:       id + 1,
+				AssetIn:  msg.AssetIn,
+				AssetOut: msg.AssetOut,
 			}
 		)
 
 		k.SetPairID(ctx, pair.Id)
 		k.SetPair(ctx, pair)
 	}
-	return  nil
+	return nil
 }

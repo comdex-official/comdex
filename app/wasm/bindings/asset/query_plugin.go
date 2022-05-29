@@ -26,6 +26,17 @@ func CustomQuerier(assetKeeper *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "App data query response")
 			}
 			return bz, nil
+		} else if contractQuery.AssetData != nil {
+			asset_Id := contractQuery.AssetData.Asset_Id
+			denom, _ := assetKeeper.GetAssetInfo(ctx, asset_Id)
+			res := AssetDataResponse{
+				Denom: denom,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "App data query response")
+			}
+			return bz, nil
 		}
 
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown App Data query variant"}

@@ -24,3 +24,8 @@ func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appMappingId uint64) (int64, i
 	}
 	return MinGovDeposit, GovTimeInSeconds, AssetId, nil
 }
+
+func (qp QueryPlugin) GetAssetInfo(ctx sdk.Context, Id uint64) (string, error) {
+	assetDenom := qp.assetKeeper.GetAssetDenom(ctx, Id)
+	return assetDenom, nil
+}
