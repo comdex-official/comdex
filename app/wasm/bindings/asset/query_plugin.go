@@ -15,9 +15,11 @@ func CustomQuerier(assetKeeper *QueryPlugin) func(ctx sdk.Context, request json.
 		}
 		if contractQuery.AppData != nil {
 			App_Id := contractQuery.AppData.App_Id
-			AppData, _ := assetKeeper.GetAppInfo(ctx, App_Id)
+			MinGovDeposit, GovTimeInSeconds, AssetId, _ := assetKeeper.GetAppInfo(ctx, App_Id)
 			res := AppDataResponse{
-				AppDatas: AppData,
+				MinGovDeposit:    MinGovDeposit,
+				GovTimeInSeconds: GovTimeInSeconds,
+				AssetId:          AssetId,
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {

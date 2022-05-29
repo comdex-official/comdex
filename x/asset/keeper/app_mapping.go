@@ -62,6 +62,19 @@ func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppMapping, found
 	k.cdc.MustUnmarshal(value, &app)
 	return app, true
 }
+func (k *Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint64, error) {
+	appData, _ := k.GetApp(ctx, id)
+	minGovDeposit := appData.MinGovDeposit.Int64()
+	var assetId uint64
+	gen := appData.MintGenesisToken
+	govTimeInSeconds := int64(appData.GovTimeInSeconds)
+	for _, v := range gen {
+		if v.IsgovToken == true {
+			assetId = v.AssetId
+		}
+	}
+	return minGovDeposit, govTimeInSeconds, assetId, nil
+}
 
 func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppMapping, found bool) {
 	var (

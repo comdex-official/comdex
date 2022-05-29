@@ -1,15 +1,15 @@
 package asset
 
-import "github.com/comdex-official/comdex/x/asset/types"
-
 type AppQuery struct {
-	AppData *AppData `json:"app_data,omitempty"`
+	AppData *AppData `json:"get_app,omitempty"`
 }
 
 type AppData struct {
-	App_Id uint64 `json:"app_id"`
+	App_Id uint64 `json:"app_mapping_id"`
 }
 
 type AppDataResponse struct {
-	AppDatas types.AppMapping `json:"app_datas"`
+	MinGovDeposit    int64  `json:"min_gov_deposit"`
+	GovTimeInSeconds int64  `json:"gov_time_in_seconds"`
+	AssetId          uint64 `json:"gov_token_id"` //only when isGovToken true
 }

@@ -2,7 +2,6 @@ package asset
 
 import (
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -18,10 +17,10 @@ func NewQueryPlugin(
 	}
 }
 
-func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appMappingId uint64) (assetTypes.AppMapping, error) {
-	appData, err := qp.assetKeeper.GetApp(ctx, appMappingId)
-	if err != true {
-		return appData, nil
+func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appMappingId uint64) (int64, int64, uint64, error) {
+	MinGovDeposit, GovTimeInSeconds, AssetId, err := qp.assetKeeper.GetAppWasmQuery(ctx, appMappingId)
+	if err != nil {
+		return MinGovDeposit, GovTimeInSeconds, AssetId, nil
 	}
-	return appData, nil
+	return MinGovDeposit, GovTimeInSeconds, AssetId, nil
 }
