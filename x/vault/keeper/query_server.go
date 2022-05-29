@@ -73,50 +73,35 @@ func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest
 		Vault: vault,
 	}, nil
 }
-// func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest) (*types.QueryVaultResponse, error) {
-// 	if req == nil {
-// 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-// 	}
+func (q *queryServer) QueryVaultInfo(c context.Context, req *types.QueryVaultInfoRequest) (*types.QueryVaultInfoResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
 
-// 	var (
-// 		ctx = sdk.UnwrapSDKContext(c)
-// 	)
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
 
-// 	vault, found := q.GetVault(ctx, req.Id)
-// 	if !found {
-// 		return nil, status.Errorf(codes.NotFound, "vault does not exist for id %d", req.Id)
-// 	}
+	vault, found := q.GetVault(ctx, req.Id)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "vault does not exist for id %d", req.Id)
+	}
 
-// 	pair, found := q.GetPair(ctx, vault.ExtendedPairVaultID)
-// 	if !found {
-// 		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", vault.ExtendedPairVaultID)
-// 	}
-
-// 	assetIn, found := q.GetAsset(ctx, pair.AssetIn)
-// 	if !found {
-// 		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetIn)
-// 	}
-
-// 	assetOut, found := q.GetAsset(ctx, pair.AssetOut)
-// 	if !found {
-// 		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", pair.AssetOut)
-// 	}
-
-// 	collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx,pair.Id, item.AmountIn, item.AmountOut)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &types.QueryVaultResponse{
-// 		VaultInfo: types.VaultInfo{
-// 			Id:                     vault.Id,
-// 			PairID:                 vault.ExtendedPairVaultID,
-// 			Owner:                  vault.Owner,
-// 			Collateral:             sdk.NewCoin(assetIn.Denom, vault.AmountIn),
-// 			Debt:                   sdk.NewCoin(assetOut.Denom, vault.AmountOut),
-// 			CollateralizationRatio: collateralizationRatio,
-// 		},
-// 	}, nil
-// }
+	collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx,vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
+	if err != nil {
+		return nil, err
+	}
+	return &types.QueryVaultInfoResponse{
+		VaultsInfo: types.VaultInfo{
+			Id: req.Id,
+			PairID: vault.ExtendedPairVaultID,
+			Owner: vault.Owner,
+			Collateral: vault.AmountIn,
+			Debt: vault.AmountOut,
+			CollateralizationRatio: collateralizationRatio,
+		},
+	}, nil
+}
 
 
 func (q *queryServer) QueryAllVaultsByAppAndExtendedPair(c context.Context, req *types.QueryAllVaultsByAppAndExtendedPairRequest) (*types.QueryAllVaultsByAppAndExtendedPairResponse, error) {
