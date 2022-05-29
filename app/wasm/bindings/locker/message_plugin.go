@@ -67,3 +67,8 @@ func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractA
 	return nil
 
 }
+
+func GetState(addr, denom, blockheight, target string) (sdk.Coin, error) {
+	state, _ := lockerkeeper.QueryState(addr, denom, blockheight, target)
+	return *state, nil
+}

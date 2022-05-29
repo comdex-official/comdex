@@ -232,7 +232,7 @@ func (k *Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
 //if user data exists- check app mapping , from app mapping check asset id . if it does then fail tx.
 // else user locker id  exists use that to create this struct and set it.
 
-func queryState(addr, denom, blockheight, target string) (*sdk.Coin, error) {
+func QueryState(addr, denom, blockheight, target string) (*sdk.Coin, error) {
 	myAddress, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
 		return nil, err

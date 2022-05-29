@@ -25,6 +25,7 @@ type (
 		asset      expected.AssetKeeper
 		bank       expected.BankKeeper
 	}
+	
 )
 
 func NewKeeper(

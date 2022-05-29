@@ -466,7 +466,8 @@ func (q *queryServer) QueryState(c context.Context, req *types.QueryStateRequest
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	qs, _ := queryState(req.Address, req.Denom, req.Height, req.Target)
+	qs, _ := QueryState(req.Address, req.Denom, req.Height, req.Target)
+
 	return &types.QueryStateResponse{
 		Amount: *qs,
 	}, nil
