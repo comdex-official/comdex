@@ -198,6 +198,8 @@ func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMappi
 				Id:               id + 1,
 				Name:             msg.Name,
 				ShortName:        msg.ShortName,
+				MinGovDeposit:    msg.MinGovDeposit,
+				GovTimeInSeconds: msg.GovTimeInSeconds,
 				MintGenesisToken: msg.MintGenesisToken,
 			}
 		)
@@ -241,9 +243,6 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 			}
 			if data.IsgovToken {
 				k.SetGenesisTokenForApp(ctx, msg.Id, data.AssetId)
-			}
-			if data.GenesisSupply.IsZero() {
-				return types.ErrorGenesisCantBeZero
 			}
 		}
 		for _, data := range msg.MintGenesisToken {

@@ -2,6 +2,7 @@ package cli
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -682,8 +683,8 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 
 func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-app-mapping [name] [short_name]",
-		Args:  cobra.ExactArgs(2),
+		Use:   "add-app-mapping [name] [short_name] [min_gov_deposit] [gov_time_in_seconds]",
+		Args:  cobra.ExactArgs(4),
 		Short: "Add app mapping",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -694,6 +695,13 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 			name := args[0]
 
 			short_name := args[1]
+
+			min_gov_deposit := args[2]
+
+			gov_time_in_seconds, err := time.ParseDuration(args[3] + "s")
+			if err != nil {
+				return err
+			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
@@ -709,10 +717,19 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 
 			var aMap []types.AppMapping
 			var bMap []*types.MintGenesisToken
-
+			new_min_gov_deposit, ok := sdk.NewIntFromString(min_gov_deposit)
+			
+			if err != nil {
+				return err
+			}
+			if !ok {
+				return types.ErrorInvalidMinGovSupply
+			}
 			aMap = append(aMap, types.AppMapping{
 				Name:             name,
 				ShortName:        short_name,
+				MinGovDeposit: &new_min_gov_deposit,
+				GovTimeInSeconds: gov_time_in_seconds.Seconds(),
 				MintGenesisToken: bMap,
 			})
 

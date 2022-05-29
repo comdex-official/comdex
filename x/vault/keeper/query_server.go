@@ -360,7 +360,6 @@ func (q *queryServer) QueryVaultCountByProductAndPair(c context.Context, req *ty
 				count = uint64(len(data.VaultIds))
 			}
 		}
-		count = appExtendedPairVaultData.Counter
 
 	return &types.QueryVaultCountByProductAndPairResponse{
 		VaultCount: count,

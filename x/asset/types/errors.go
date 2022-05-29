@@ -14,6 +14,7 @@ var (
 	ErrorInvalidDebtFloor        = errors.Register(ModuleName, 107, "invalid Debt Floor")
 	ErrorInvalidDebtCeiling      = errors.Register(ModuleName, 108, "invalid Debt Ceiling")
 	ErrorInvalidGenesisSupply    = errors.Register(ModuleName, 109, "invalid Genesis Supply")
+	ErrorInvalidMinGovSupply     = errors.Register(ModuleName, 110, "invalid min gov supply")
 )
 
 var (

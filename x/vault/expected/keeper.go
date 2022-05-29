@@ -4,7 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 type BankKeeper interface {
@@ -34,8 +33,4 @@ type Marketkeeper interface {
 
 type CollectorKeeper interface {
 	UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error
-}
-
-type EsmKeeper interface {
-	GetTriggerEsm(ctx sdk.Context, appid uint64) (esmtypes.EsmActive, bool)
 }

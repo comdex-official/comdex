@@ -39,6 +39,3 @@ var (
 	ErrorCannotCreateStableSwapVault   = errors.Register(ModuleName, 401, "Cannot Create Stable Swap Vault")
 	ErrorIdnotFound  = errors.Register(ModuleName, 402, "not found")
 )
-var (
-	ErrorEmergencyShutdownIsActive  = errors.Register(ModuleName, 501, "Error Emergency Shutdown Is Active for this App")
-)
