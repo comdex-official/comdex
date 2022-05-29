@@ -273,6 +273,8 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 				Id:               msg.Id,
 				Name:             appdata.Name,
 				ShortName:        appdata.ShortName,
+				MinGovDeposit: appdata.MinGovDeposit,
+				GovTimeInSeconds: appdata.GovTimeInSeconds,
 				MintGenesisToken: mintGenesis,
 			}
 		)
