@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/comdex-official/comdex/x/auction/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -40,10 +41,15 @@ func (q *QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySur
 	}
 
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx   = sdk.UnwrapSDKContext(c)
+		found bool
+		item  auctiontypes.SurplusAuction
 	)
-
-	item, found := q.GetSurplusAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	if req.History == true {
+		item, found = q.GetHistorySurplusAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	} else {
+		item, found = q.GetSurplusAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	}
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "auction does not exist for id %d", req.AuctionId)
 	}
@@ -61,8 +67,13 @@ func (q *QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySu
 	var (
 		items []types.SurplusAuction
 		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
 	)
-	key := types.AuctionTypeKey(req.AppId, types.SurplusString)
+	if req.History == true {
+		key = types.HistoryAuctionTypeKey(req.AppId, types.SurplusString)
+	} else {
+		key = types.AuctionTypeKey(req.AppId, types.SurplusString)
+	}
 	pagination, err := query.FilteredPaginate(
 		prefix.NewStore(q.Store(ctx), key),
 		req.Pagination,
@@ -96,10 +107,15 @@ func (q *QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySu
 	}
 
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx   = sdk.UnwrapSDKContext(c)
+		found bool
+		item  []auctiontypes.SurplusBiddings
 	)
-
-	item, found := q.GetSurplusUserBiddings(ctx, req.Bidder, req.AppId)
+	if req.History == true {
+		item, found = q.GetHistorySurplusUserBiddings(ctx, req.Bidder, req.AppId)
+	} else {
+		item, found = q.GetSurplusUserBiddings(ctx, req.Bidder, req.AppId)
+	}
 	if !found {
 		return &types.QuerySurplusBiddingsResponse{
 			Bidder:   req.Bidder,
@@ -119,10 +135,15 @@ func (q *QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAu
 	}
 
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx   = sdk.UnwrapSDKContext(c)
+		found bool
+		item  auctiontypes.DebtAuction
 	)
-
-	item, found := q.GetDebtAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	if req.History == true {
+		item, found = q.GetHistoryDebtAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	} else {
+		item, found = q.GetDebtAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	}
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "auction does not exist for id %d", req.AuctionId)
 	}
@@ -140,8 +161,14 @@ func (q *QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtA
 	var (
 		items []types.DebtAuction
 		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
 	)
-	key := types.AuctionTypeKey(req.AppId, types.DebtString)
+	if req.History == true {
+		key = types.HistoryAuctionTypeKey(req.AppId, types.DebtString)
+	} else {
+		key = types.AuctionTypeKey(req.AppId, types.DebtString)
+	}
+
 	pagination, err := query.FilteredPaginate(
 		prefix.NewStore(q.Store(ctx), key),
 		req.Pagination,
@@ -175,10 +202,15 @@ func (q *QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtB
 	}
 
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx   = sdk.UnwrapSDKContext(c)
+		found bool
+		item  []auctiontypes.DebtBiddings
 	)
-
-	item, found := q.GetDebtUserBiddings(ctx, req.Bidder, req.AppId)
+	if req.History == true {
+		item, found = q.GetHistoryDebtUserBiddings(ctx, req.Bidder, req.AppId)
+	} else {
+		item, found = q.GetDebtUserBiddings(ctx, req.Bidder, req.AppId)
+	}
 	if !found {
 		return &types.QueryDebtBiddingsResponse{
 			Bidder:   req.Bidder,
@@ -198,10 +230,15 @@ func (q *QueryServer) QueryDutchAuction(c context.Context, req *types.QueryDutch
 	}
 
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx   = sdk.UnwrapSDKContext(c)
+		found bool
+		item  auctiontypes.DutchAuction
 	)
-
-	item, found := q.GetDutchAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	if req.History == true {
+		item, found = q.GetHistoryDutchAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	} else {
+		item, found = q.GetDutchAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	}
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "auction does not exist for id %d", req.AuctionId)
 	}
@@ -219,8 +256,13 @@ func (q *QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutc
 	var (
 		items []types.DutchAuction
 		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
 	)
-	key := types.AuctionTypeKey(req.AppId, types.DutchString)
+	if req.History == true {
+		key = types.HistoryAuctionTypeKey(req.AppId, types.DutchString)
+	} else {
+		key = types.HistoryAuctionTypeKey(req.AppId, types.DutchString)
+	}
 	pagination, err := query.FilteredPaginate(
 		prefix.NewStore(q.Store(ctx), key),
 		req.Pagination,
@@ -254,10 +296,15 @@ func (q *QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutc
 	}
 
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx   = sdk.UnwrapSDKContext(c)
+		found bool
+		item  []auctiontypes.DutchBiddings
 	)
-
-	item, found := q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)
+	if req.History == true {
+		item, found = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
+	} else {
+		item, found = q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)
+	}
 	if !found {
 		return &types.QueryDutchBiddingsResponse{
 			Bidder:   req.Bidder,

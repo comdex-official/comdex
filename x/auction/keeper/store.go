@@ -153,10 +153,46 @@ func (k *Keeper) GetSurplusAuction(ctx sdk.Context, appId, auctionMappingId, auc
 	return auction, true
 }
 
+func (k *Keeper) GetHistorySurplusAuction(ctx sdk.Context, appId, auctionMappingId, auctionId uint64) (auction auctiontypes.SurplusAuction, found bool) {
+	var (
+		store       = k.Store(ctx)
+		auctionType = k.GetAuctionType(ctx, auctionMappingId)
+		key         = auctiontypes.HistoryAuctionKey(appId, auctionType, auctionId)
+		value       = store.Get(key)
+	)
+	if auctionType == "" {
+		return auction, false
+	}
+	if value == nil {
+		return auction, false
+	}
+
+	k.cdc.MustUnmarshal(value, &auction)
+	return auction, true
+}
+
 func (k *Keeper) GetSurplusAuctions(ctx sdk.Context, appId uint64) (auctions []auctiontypes.SurplusAuction) {
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.AuctionTypeKey(appId, auctiontypes.SurplusString)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var auction auctiontypes.SurplusAuction
+		k.cdc.MustUnmarshal(iter.Value(), &auction)
+		auctions = append(auctions, auction)
+	}
+
+	return auctions
+}
+
+func (k *Keeper) GetHistorySurplusAuctions(ctx sdk.Context, appId uint64) (auctions []auctiontypes.SurplusAuction) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryAuctionTypeKey(appId, auctiontypes.SurplusString)
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -224,10 +260,43 @@ func (k *Keeper) GetSurplusUserBidding(ctx sdk.Context, bidder string, appId, bi
 	return userBidding, true
 }
 
+func (k *Keeper) GetHistorySurplusUserBidding(ctx sdk.Context, bidder string, appId, biddingId uint64) (userBidding auctiontypes.SurplusBiddings, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryUserKey(bidder, appId, auctiontypes.SurplusString, biddingId)
+		value = store.Get(key)
+	)
+	if value == nil {
+		return userBidding, false
+	}
+
+	k.cdc.MustUnmarshal(value, &userBidding)
+
+	return userBidding, true
+}
+
 func (k *Keeper) GetSurplusUserBiddings(ctx sdk.Context, bidder string, appId uint64) (userBiddings []auctiontypes.SurplusBiddings, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.UserAuctionTypeKey(bidder, appId, auctiontypes.SurplusString)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var userBidding auctiontypes.SurplusBiddings
+		k.cdc.MustUnmarshal(iter.Value(), &userBidding)
+		userBiddings = append(userBiddings, userBidding)
+	}
+
+	return userBiddings, true
+}
+
+func (k *Keeper) GetHistorySurplusUserBiddings(ctx sdk.Context, bidder string, appId uint64) (userBiddings []auctiontypes.SurplusBiddings, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryUserAuctionTypeKey(bidder, appId, auctiontypes.SurplusString)
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -299,10 +368,45 @@ func (k *Keeper) GetDebtAuction(ctx sdk.Context, appId, auctionMappingId, auctio
 	return auction, true
 }
 
+func (k *Keeper) GetHistoryDebtAuction(ctx sdk.Context, appId, auctionMappingId, auctionId uint64) (auction auctiontypes.DebtAuction, found bool) {
+	var (
+		store       = k.Store(ctx)
+		auctionType = k.GetAuctionType(ctx, auctionMappingId)
+		key         = auctiontypes.HistoryAuctionKey(appId, auctionType, auctionId)
+		value       = store.Get(key)
+	)
+	if auctionType == "" {
+		return auction, false
+	}
+	if value == nil {
+		return auction, false
+	}
+	k.cdc.MustUnmarshal(value, &auction)
+	return auction, true
+}
+
 func (k *Keeper) GetDebtAuctions(ctx sdk.Context, appId uint64) (auctions []auctiontypes.DebtAuction) {
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.AuctionTypeKey(appId, auctiontypes.DebtString)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var auction auctiontypes.DebtAuction
+		k.cdc.MustUnmarshal(iter.Value(), &auction)
+		auctions = append(auctions, auction)
+	}
+
+	return auctions
+}
+
+func (k *Keeper) GetHistoryDebtAuctions(ctx sdk.Context, appId uint64) (auctions []auctiontypes.DebtAuction) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryAuctionTypeKey(appId, auctiontypes.DebtString)
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -368,10 +472,41 @@ func (k *Keeper) GetDebtUserBidding(ctx sdk.Context, bidder string, appId, biddi
 	return userBidding, true
 }
 
+func (k *Keeper) GetHistoryDebtUserBidding(ctx sdk.Context, bidder string, appId, biddingId uint64) (userBidding auctiontypes.DebtBiddings, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryUserKey(bidder, appId, auctiontypes.DebtString, biddingId)
+		value = store.Get(key)
+	)
+	if value == nil {
+		return userBidding, false
+	}
+	k.cdc.MustUnmarshal(value, &userBidding)
+	return userBidding, true
+}
+
 func (k *Keeper) GetDebtUserBiddings(ctx sdk.Context, bidder string, appId uint64) (userBiddings []auctiontypes.DebtBiddings, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.UserAuctionTypeKey(bidder, appId, auctiontypes.DebtString)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var userBidding auctiontypes.DebtBiddings
+		k.cdc.MustUnmarshal(iter.Value(), &userBidding)
+		userBiddings = append(userBiddings, userBidding)
+	}
+
+	return userBiddings, true
+}
+
+func (k *Keeper) GetHistoryDebtUserBiddings(ctx sdk.Context, bidder string, appId uint64) (userBiddings []auctiontypes.DebtBiddings, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryUserAuctionTypeKey(bidder, appId, auctiontypes.DebtString)
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -444,10 +579,46 @@ func (k *Keeper) GetDutchAuction(ctx sdk.Context, appId, auctionMappingId, aucti
 	return auction, true
 }
 
+func (k *Keeper) GetHistoryDutchAuction(ctx sdk.Context, appId, auctionMappingId, auctionId uint64) (auction auctiontypes.DutchAuction, found bool) {
+	var (
+		store       = k.Store(ctx)
+		auctionType = k.GetAuctionType(ctx, auctionMappingId)
+		key         = auctiontypes.HistoryAuctionKey(appId, auctionType, auctionId)
+		value       = store.Get(key)
+	)
+	if auctionType == "" {
+		return auction, false
+	}
+	if value == nil {
+		return auction, false
+	}
+
+	k.cdc.MustUnmarshal(value, &auction)
+	return auction, true
+}
+
 func (k *Keeper) GetDutchAuctions(ctx sdk.Context, appId uint64) (auctions []auctiontypes.DutchAuction) {
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.AuctionTypeKey(appId, auctiontypes.DutchString)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var auction auctiontypes.DutchAuction
+		k.cdc.MustUnmarshal(iter.Value(), &auction)
+		auctions = append(auctions, auction)
+	}
+
+	return auctions
+}
+
+func (k *Keeper) GetHistoryDutchAuctions(ctx sdk.Context, appId uint64) (auctions []auctiontypes.DutchAuction) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryAuctionTypeKey(appId, auctiontypes.DutchString)
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -516,10 +687,44 @@ func (k *Keeper) GetDutchUserBidding(ctx sdk.Context, bidder string, appId, bidd
 	return userBidding, true
 }
 
+func (k *Keeper) GetHistoryDutchUserBidding(ctx sdk.Context, bidder string, appId, biddingId uint64) (userBidding auctiontypes.DutchBiddings, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryUserKey(bidder, appId, auctiontypes.DutchString, biddingId)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return userBidding, false
+	}
+
+	k.cdc.MustUnmarshal(value, &userBidding)
+
+	return userBidding, true
+}
+
 func (k *Keeper) GetDutchUserBiddings(ctx sdk.Context, bidder string, appId uint64) (userBiddings []auctiontypes.DutchBiddings, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.UserAuctionTypeKey(bidder, appId, auctiontypes.DutchString)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var userBidding auctiontypes.DutchBiddings
+		k.cdc.MustUnmarshal(iter.Value(), &userBidding)
+		userBiddings = append(userBiddings, userBidding)
+	}
+
+	return userBiddings, true
+}
+
+func (k *Keeper) GetHistoryDutchUserBiddings(ctx sdk.Context, bidder string, appId uint64) (userBiddings []auctiontypes.DutchBiddings, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryUserAuctionTypeKey(bidder, appId, auctiontypes.DutchString)
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 

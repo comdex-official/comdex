@@ -12,11 +12,13 @@ option go_package = "github.com/comdex-official/comdex/x/auction/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
+//SURPLUS
+
 message QuerySurplusAuctionRequest {
   uint64 app_id = 1;
   uint64 auction_mapping_id = 2;
   uint64 auction_id = 3;
-
+  bool history = 4;
 }
 
 message QuerySurplusAuctionResponse {
@@ -26,7 +28,8 @@ message QuerySurplusAuctionResponse {
 
 message QuerySurplusAuctionsRequest {
   uint64 app_id = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  bool history = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
@@ -42,6 +45,7 @@ message QuerySurplusAuctionsResponse {
 message QuerySurplusBiddingsRequest {
   string bidder = 1;
   uint64 app_id = 2;
+  bool history = 3;
 }
 
 message QuerySurplusBiddingsResponse {
@@ -52,13 +56,16 @@ message QuerySurplusBiddingsResponse {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"biddings\""
   ];
+
 }
 
+//DEBT
 
 message QueryDebtAuctionRequest {
   uint64 app_id = 1;
   uint64 auction_mapping_id = 2;
   uint64 auction_id = 3;
+  bool history = 4;
 }
 
 message QueryDebtAuctionResponse {
@@ -68,7 +75,8 @@ message QueryDebtAuctionResponse {
 
 message QueryDebtAuctionsRequest {
   uint64 app_id = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  bool history = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
   [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
@@ -84,6 +92,7 @@ message QueryDebtAuctionsResponse {
 message QueryDebtBiddingsRequest {
   string bidder = 1;
   uint64 app_id = 2;
+  bool history = 3;
 }
 
 message QueryDebtBiddingsResponse {
@@ -97,11 +106,13 @@ message QueryDebtBiddingsResponse {
 }
 
 
+//DUTCH
 
 message QueryDutchAuctionRequest {
   uint64 app_id = 1;
   uint64 auction_mapping_id = 2;
   uint64 auction_id = 3;
+  bool history = 4;
 }
 
 message QueryDutchAuctionResponse {
@@ -111,7 +122,8 @@ message QueryDutchAuctionResponse {
 
 message QueryDutchAuctionsRequest {
   uint64 app_id = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  bool history = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
   [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
@@ -127,6 +139,7 @@ message QueryDutchAuctionsResponse {
 message QueryDutchBiddingsRequest {
   string bidder = 1;
   uint64 app_id = 2;
+  bool history = 3;
 }
 
 message QueryDutchBiddingsResponse {
@@ -151,31 +164,31 @@ message QueryParamsResponse {
 
 service QueryService {
   rpc QuerySurplusAuction(QuerySurplusAuctionRequest) returns (QuerySurplusAuctionResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/surplusauction/{app_id}/{auction_mapping_id}/{auction_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/surplusauction/{app_id}/{auction_mapping_id}/{auction_id}/{history}";
   }
   rpc QuerySurplusAuctions(QuerySurplusAuctionsRequest) returns (QuerySurplusAuctionsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/surplusauctions/{app_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/surplusauctions/{app_id}/{history}";
   }
   rpc QuerySurplusBiddings(QuerySurplusBiddingsRequest) returns (QuerySurplusBiddingsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/surplusbiddings/{bidder}/{app_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/surplusbiddings/{bidder}/{app_id}/{history}";
   }
   rpc QueryDebtAuction(QueryDebtAuctionRequest) returns (QueryDebtAuctionResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/debtauction/{auction_id}/{app_id}/{auction_mapping_id}/{auction_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/debtauction/{auction_id}/{app_id}/{auction_mapping_id}/{auction_id}/{history}";
   }
   rpc QueryDebtAuctions(QueryDebtAuctionsRequest) returns (QueryDebtAuctionsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/debtauctions/{app_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/debtauctions/{app_id}/{history}";
   }
   rpc QueryDebtBiddings(QueryDebtBiddingsRequest) returns (QueryDebtBiddingsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/debtbiddings/{bidder}/{app_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/debtbiddings/{bidder}/{app_id}/{history}";
   }
   rpc QueryDutchAuction(QueryDutchAuctionRequest) returns (QueryDutchAuctionResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/dutchauction/{app_id}/{auction_mapping_id}/{auction_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchauction/{app_id}/{auction_mapping_id}/{auction_id}/{history}";
   }
   rpc QueryDutchAuctions(QueryDutchAuctionsRequest) returns (QueryDutchAuctionsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/dutchauctions/{app_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchauctions/{app_id}/{history}";
   }
   rpc QueryDutchBiddings(QueryDutchBiddingsRequest) returns (QueryDutchBiddingsResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/dutchbiddings/{bidder}/{app_id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchbiddings/{bidder}/{app_id}/{history}";
   }
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
       option (google.api.http).get = "/comdex/auction/v1beta1/params";

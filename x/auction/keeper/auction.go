@@ -560,6 +560,7 @@ func (k Keeper) CloseDebtAuction(
 		if err != nil {
 			return err
 		}
+		return auctiontypes.ErrorInvalidBidId
 	}
 	k.makeFalseForFlags(ctx, debtAuction.AppId, debtAuction.AssetId)
 	k.DeleteDebtAuction(ctx, debtAuction)
@@ -726,7 +727,7 @@ func (k Keeper) PlaceDebtBid(ctx sdk.Context, appId, auctionMappingId, auctionId
 	if expectedUserToken.Denom != auction.ExpectedUserToken.Denom {
 		return auctiontypes.ErrorInvalidDebtUserExpectedDenom
 	}
-	if expectedUserToken.Amount.Equal(auction.ExpectedUserToken.Amount) {
+	if !expectedUserToken.Amount.Equal(auction.ExpectedUserToken.Amount) {
 		return auctiontypes.ErrorDebtExpectedUserAmount
 	}
 	if bid.Denom != auction.ExpectedMintedToken.Denom {
