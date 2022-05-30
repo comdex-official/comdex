@@ -7,7 +7,7 @@ option go_package = "github.com/comdex-official/comdex/x/tokenmint/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-service MsgService {
+service Msg {
     
     rpc MsgMintNewTokens(MsgMintNewTokensRequest) returns (MsgMintNewTokensResponse);
 }

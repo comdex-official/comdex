@@ -278,7 +278,7 @@ repeated TvlLockedDataMap tvldata = 1 [ (gogoproto.moretags) = "yaml:\"tvldata\"
 }
 
 
-service QueryService {
+service Query {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
   };

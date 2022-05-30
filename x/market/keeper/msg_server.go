@@ -7,15 +7,14 @@ import (
 )
 
 var (
-	_ types.MsgServiceServer = (*msgServer)(nil)
+	_ types.MsgServer = (*msgServer)(nil)
 )
 
 type msgServer struct {
 	Keeper
 }
 
-
-func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
+func NewMsgServiceServer(keeper Keeper) types.MsgServer {
 	return &msgServer{
 		Keeper: keeper,
 	}
@@ -34,25 +33,25 @@ func (k *msgServer) MsgRemoveMarketForAsset(c context.Context, msg *types.MsgRem
 
 func (k *msgServer) MsgAddMarket(c context.Context, msg *types.MsgAddMarketRequest) (*types.MsgAddMarketResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if !k.HasAsset(ctx, msg.Id){
+	if !k.HasAsset(ctx, msg.Id) {
 		return nil, types.ErrorAssetDoesNotExist
 	}
 	if k.HasMarket(ctx, msg.Symbol) {
 		return nil, types.ErrorDuplicateMarket
 	}
 	k.SetRates(ctx, msg.Symbol)
-	Rates,_ := k.GetRates(ctx, msg.Symbol)
+	Rates, _ := k.GetRates(ctx, msg.Symbol)
 
 	var (
 		market = types.Market{
 			Symbol:   msg.Symbol,
 			ScriptID: msg.ScriptID,
-			Rates: 	  Rates,
+			Rates:    Rates,
 		}
 	)
 	k.SetMarket(ctx, market)
 	ID := k.assetKeeper.GetAssetID(ctx)
-	k.SetMarketForAsset(ctx, ID, msg.Symbol )
+	k.SetMarketForAsset(ctx, ID, msg.Symbol)
 	return &types.MsgAddMarketResponse{}, nil
 }
 
@@ -70,6 +69,6 @@ func (k *msgServer) MsgUpdateMarket(c context.Context, msg *types.MsgUpdateMarke
 
 	k.SetMarket(ctx, market)
 	ID := k.assetKeeper.GetAssetID(ctx)
-	k.SetMarketForAsset(ctx, ID, msg.Symbol )
+	k.SetMarketForAsset(ctx, ID, msg.Symbol)
 	return &types.MsgUpdateMarketResponse{}, nil
 }

@@ -45,7 +45,7 @@ message QueryParamsResponse {
     ];
 }
 
-service QueryService {
+service Query {
     rpc QueryMarkets(QueryMarketsRequest) returns (QueryMarketsResponse) {
         option (google.api.http).get = "/comdex/market/v1beta1/markets";
     }

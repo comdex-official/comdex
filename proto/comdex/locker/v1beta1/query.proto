@@ -13,7 +13,7 @@ option go_package            = "github.com/comdex-official/comdex/x/locker/types
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-service QueryService {
+service Query {
 
   rpc QueryLockerInfo(QueryLockerInfoRequest) returns (QueryLockerInfoResponse) {
     option (google.api.http).get = "/comdex/locker/v1beta1/locker_info/{id}";

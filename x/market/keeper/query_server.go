@@ -13,14 +13,14 @@ import (
 )
 
 var (
-	_ types.QueryServiceServer = (*queryServer)(nil)
+	_ types.QueryServer = (*queryServer)(nil)
 )
 
 type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+func NewQueryServiceServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}

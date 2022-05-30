@@ -29,7 +29,7 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&MsgRemoveMarketForAssetRequest{},
 	)
 
-	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)
+	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 
 }
 

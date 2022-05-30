@@ -37,7 +37,7 @@ func querySurplusAuction() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QuerySurplusAuction(
 				context.Background(),
 				&types.QuerySurplusAuctionRequest{
@@ -79,7 +79,7 @@ func querySurplusAuctions() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QuerySurplusAuctions(
 				context.Background(),
 				&types.QuerySurplusAuctionsRequest{
@@ -121,7 +121,7 @@ func querySurplusBiddings() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QuerySurplusBiddings(
 				context.Background(),
 				&types.QuerySurplusBiddingsRequest{
@@ -166,7 +166,7 @@ func queryDebtAuction() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryDebtAuction(
 				context.Background(),
 				&types.QueryDebtAuctionRequest{
@@ -208,7 +208,7 @@ func queryDebtAuctions() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryDebtAuctions(
 				context.Background(),
 				&types.QueryDebtAuctionsRequest{
@@ -250,7 +250,7 @@ func queryDebtBiddings() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryDebtBiddings(
 				context.Background(),
 				&types.QueryDebtBiddingsRequest{
@@ -295,7 +295,7 @@ func queryDutchAuction() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryDutchAuction(
 				context.Background(),
 				&types.QueryDutchAuctionRequest{
@@ -337,7 +337,7 @@ func queryDutchAuctions() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryDutchAuctions(
 				context.Background(),
 				&types.QueryDutchAuctionsRequest{
@@ -379,7 +379,7 @@ func queryDutchBiddings() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryDutchBiddings(
 				context.Background(),
 				&types.QueryDutchBiddingsRequest{
@@ -408,7 +408,7 @@ func queryParams() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryParams(
 				context.Background(),

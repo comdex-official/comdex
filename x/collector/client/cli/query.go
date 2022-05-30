@@ -26,11 +26,11 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdQueryParams(),
-	QueryCollectorLookupByProduct(),
-	QueryCollectorLookupByProductAndAsset(),)
+		QueryCollectorLookupByProduct(),
+		QueryCollectorLookupByProductAndAsset())
 	// this line is used by starport scaffolding # 1
 
-	return cmd 
+	return cmd
 }
 
 func QueryCollectorLookupByProduct() *cobra.Command {
@@ -49,7 +49,7 @@ func QueryCollectorLookupByProduct() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryCollectorLookupByProduct(cmd.Context(), &types.QueryCollectorLookupByProductRequest{
 				AppId: appId,
@@ -65,7 +65,6 @@ func QueryCollectorLookupByProduct() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }
-
 
 func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
@@ -87,10 +86,10 @@ func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryCollectorLookupByProductAndAsset(cmd.Context(), &types.QueryCollectorLookupByProductAndAssetRequest{
-				AppId: appId,
+				AppId:   appId,
 				AssetId: assetId,
 			})
 

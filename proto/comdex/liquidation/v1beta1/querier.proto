@@ -109,7 +109,7 @@ message QueryAppIdsResponse {
   [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"WhitelistedAppIds\"" ];
 }
 
-service QueryService {
+service Query {
   rpc QueryLockedVault(QueryLockedVaultRequest) returns (QueryLockedVaultResponse) {
     option (google.api.http).get = "/comdex/liquidation/v1beta1/locked_vault/{id}";
   }

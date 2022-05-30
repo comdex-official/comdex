@@ -27,7 +27,7 @@ func queryAsset() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAsset(
 				context.Background(),
@@ -63,7 +63,7 @@ func queryAssets() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAssets(
 				context.Background(),
@@ -101,7 +101,7 @@ func queryPair() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryPair(
 				context.Background(),
@@ -137,7 +137,7 @@ func queryPairs() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryPairs(
 				context.Background(),
@@ -169,7 +169,7 @@ func queryParams() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryParams(
 				context.Background(),
@@ -188,7 +188,7 @@ func queryParams() *cobra.Command {
 	return cmd
 }
 
-func queryAppsMapings() *cobra.Command {
+func queryAppsMappings() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "apps",
 		Short: "Query all Apps",
@@ -198,7 +198,7 @@ func queryAppsMapings() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAppsMapings(
 				context.Background(),
@@ -218,7 +218,6 @@ func queryAppsMapings() *cobra.Command {
 	return cmd
 }
 
-
 func queryAppMapings() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "app [id]",
@@ -235,7 +234,7 @@ func queryAppMapings() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAppMapings(
 				context.Background(),
@@ -257,7 +256,6 @@ func queryAppMapings() *cobra.Command {
 	return cmd
 }
 
-
 func queryPairVault() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pairVault [id]",
@@ -274,7 +272,7 @@ func queryPairVault() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryPairVault(
 				context.Background(),
@@ -306,7 +304,7 @@ func queryPairVaults() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryPairVaults(
 				context.Background(),
@@ -342,7 +340,7 @@ func queryProductToExtendedPair() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryProductToExtendedPair(
 				context.Background(),
@@ -380,7 +378,7 @@ func queryExtendedPairPsmPairWise() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryExtendedPairPsmPairWise(
 				context.Background(),
@@ -418,7 +416,7 @@ func queryTokenGov() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryTokenGov(
 				context.Background(),
@@ -456,7 +454,7 @@ func queryExtendedPairDataPsmPairWise() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryExtendedPairDataPsmPairWise(
 				context.Background(),

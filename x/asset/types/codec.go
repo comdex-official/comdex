@@ -43,7 +43,7 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&MsgAddPairRequest{},
 	)
 
-	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)
+	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
 var (

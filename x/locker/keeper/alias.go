@@ -63,5 +63,12 @@ func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found b
 }
 
 func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error {
-	return k.collector.UpdateCollector(ctx, appId, asset_id,CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected)
+	return k.collector.UpdateCollector(ctx, appId, asset_id, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected)
+}
+
+func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
+	if coin.IsZero() {
+		return nil
+	}
+	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }

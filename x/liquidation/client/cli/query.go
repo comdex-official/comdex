@@ -24,7 +24,7 @@ func queryLockedVault() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockedVault(
 				context.Background(),
 				&types.QueryLockedVaultRequest{
@@ -55,7 +55,7 @@ func queryLockedVaults() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockedVaults(
 				context.Background(),
 				&types.QueryLockedVaultsRequest{
@@ -84,7 +84,7 @@ func queryParams() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryParams(
 				context.Background(),
@@ -115,7 +115,7 @@ func queryLockedVaultsHistory() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockedVaultsHistory(
 				context.Background(),
 				&types.QueryLockedVaultsHistoryRequest{
@@ -151,7 +151,7 @@ func queryUserLockedVaults() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryUserLockedVaults(cmd.Context(), &types.QueryUserLockedVaultsRequest{
 				UserAddress: args[0],
@@ -186,7 +186,7 @@ func queryUserLockedVaultsHistory() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryUserLockedVaultsHistory(cmd.Context(), &types.QueryUserLockedVaultsHistoryRequest{
 				UserAddress: args[0],
@@ -226,7 +226,7 @@ func queryLockedVaultsPair() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryLockedVaultsPair(cmd.Context(), &types.QueryLockedVaultsPairRequest{
 				PairId:     Pair_Id,
@@ -255,7 +255,7 @@ func queryAppIds() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAppIds(cmd.Context(), &types.QueryAppIdsRequest{})
 

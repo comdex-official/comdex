@@ -44,7 +44,6 @@ func GetQueryCmd() *cobra.Command {
 		QueryExtendedPairVaultMappingByOwnerAndApp(),
 		QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID(),
 		QueryTVLlockedByApp(),
-		
 	)
 
 	return cmd
@@ -66,7 +65,7 @@ func QueryAllVaults() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllVaults(cmd.Context(), &types.QueryAllVaultsRequest{
 				Pagination: pagination,
@@ -90,7 +89,6 @@ func QueryAllVaultsByProduct() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -100,7 +98,7 @@ func QueryAllVaultsByProduct() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllVaultsByProduct(cmd.Context(), &types.QueryAllVaultsByProductRequest{
 				AppId: app_id,
@@ -131,7 +129,7 @@ func QueryVault() *cobra.Command {
 
 			id := args[0]
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryVault(cmd.Context(), &types.QueryVaultRequest{
 				Id: id,
@@ -174,13 +172,13 @@ func QueryVaultOfOwnerByExtendedPair() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryVaultOfOwnerByExtendedPair(cmd.Context(), &types.QueryVaultOfOwnerByExtendedPairRequest{
-				ProductId: productId,
-				Owner:      args[1],
+				ProductId:      productId,
+				Owner:          args[1],
 				ExtendedPairId: extendedPairid,
-				Pagination: pagination,
+				Pagination:     pagination,
 			})
 
 			if err != nil {
@@ -220,12 +218,12 @@ func QueryAllVaultsByAppAndExtendedPair() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllVaultsByAppAndExtendedPair(cmd.Context(), &types.QueryAllVaultsByAppAndExtendedPairRequest{
-				AppId: app_id,
+				AppId:          app_id,
 				ExtendedPairId: extended_pair_id,
-				Pagination: pagination,
+				Pagination:     pagination,
 			})
 
 			if err != nil {
@@ -245,14 +243,13 @@ func QueryVaultInfo() *cobra.Command {
 		Short: "vaults list for an id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-		
 
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryVaultInfo(cmd.Context(), &types.QueryVaultInfoRequest{
 				Id: args[0],
@@ -290,10 +287,10 @@ func QueryVaultByProduct() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryVaultByProduct(cmd.Context(), &types.QueryVaultByProductRequest{
-				ProductId: productId,
+				ProductId:  productId,
 				Pagination: pagination,
 			})
 
@@ -325,10 +322,10 @@ func QueryAllVaultByOwner() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllVaultByOwner(cmd.Context(), &types.QueryAllVaultByOwnerRequest{
-				Owner : args[0],
+				Owner:      args[0],
 				Pagination: pagination,
 			})
 
@@ -342,7 +339,6 @@ func QueryAllVaultByOwner() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }
-
 
 func QueryTokenMintedAllProductsByPair() *cobra.Command {
 	cmd := &cobra.Command{
@@ -369,12 +365,12 @@ func QueryTokenMintedAllProductsByPair() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryTokenMintedAllProductsByPair(cmd.Context(), &types.QueryTokenMintedAllProductsByPairRequest{
-				ProductId: productId,
-				ExtendedPairId :extended_pair_id,
-				Pagination: pagination,
+				ProductId:      productId,
+				ExtendedPairId: extended_pair_id,
+				Pagination:     pagination,
 			})
 
 			if err != nil {
@@ -409,10 +405,10 @@ func QueryTokenMintedAllProducts() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryTokenMintedAllProducts(cmd.Context(), &types.QueryTokenMintedAllProductsRequest{
-				ProductId: productId,
+				ProductId:  productId,
 				Pagination: pagination,
 			})
 
@@ -448,10 +444,10 @@ func QueryVaultCountByProduct() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryVaultCountByProduct(cmd.Context(), &types.QueryVaultCountByProductRequest{
-				ProductId: productId,
+				ProductId:  productId,
 				Pagination: pagination,
 			})
 
@@ -491,12 +487,12 @@ func QueryVaultCountByProductAndPair() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryVaultCountByProductAndPair(cmd.Context(), &types.QueryVaultCountByProductAndPairRequest{
-				ProductId: productId,
+				ProductId:      productId,
 				ExtendedPairId: extended_pair_id,
-				Pagination: pagination,
+				Pagination:     pagination,
 			})
 
 			if err != nil {
@@ -535,12 +531,12 @@ func QueryTotalValueLockedByProductExtendedPair() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryTotalValueLockedByProductExtendedPair(cmd.Context(), &types.QueryTotalValueLockedByProductExtendedPairRequest{
-				ProductId: productId,
+				ProductId:      productId,
 				ExtendedPairId: extended_pair_id,
-				Pagination: pagination,
+				Pagination:     pagination,
 			})
 
 			if err != nil {
@@ -575,10 +571,10 @@ func QueryExtendedPairIDByProduct() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryExtendedPairIDByProduct(cmd.Context(), &types.QueryExtendedPairIDByProductRequest{
-				ProductId: productId,
+				ProductId:  productId,
 				Pagination: pagination,
 			})
 
@@ -605,7 +601,7 @@ func QueryStableVaultInfo() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryStableVaultInfo(cmd.Context(), &types.QueryStableVaultInfoRequest{
 				StableVaultId: args[0],
@@ -620,7 +616,7 @@ func QueryStableVaultInfo() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
-} 
+}
 
 func QueryAllStableVaults() *cobra.Command {
 	cmd := &cobra.Command{
@@ -638,7 +634,7 @@ func QueryAllStableVaults() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllStableVaults(cmd.Context(), &types.QueryAllStableVaultsRequest{
 				AppId: app_id,
@@ -675,10 +671,10 @@ func QueryStableVaultByProductExtendedPair() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryStableVaultByProductExtendedPair(cmd.Context(), &types.QueryStableVaultByProductExtendedPairRequest{
-				AppId: app_id,
+				AppId:          app_id,
 				ExtendedPairId: extended_pair_id,
 			})
 
@@ -709,7 +705,7 @@ func QueryExtendedPairVaultMappingByApp() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryExtendedPairVaultMappingByApp(cmd.Context(), &types.QueryExtendedPairVaultMappingByAppRequest{
 				AppId: app_id,
@@ -746,10 +742,10 @@ func QueryExtendedPairVaultMappingByAppAndExtendedPairId() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryExtendedPairVaultMappingByAppAndExtendedPairId(cmd.Context(), &types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest{
-				AppId: app_id,
+				AppId:          app_id,
 				ExtendedPairId: extended_pair_id,
 			})
 
@@ -780,7 +776,7 @@ func QueryExtendedPairVaultMappingByOwnerAndApp() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryExtendedPairVaultMappingByOwnerAndApp(cmd.Context(), &types.QueryExtendedPairVaultMappingByOwnerAndAppRequest{
 				Owner: args[0],
@@ -819,11 +815,11 @@ func QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID() *cobra.Comman
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID(cmd.Context(), &types.QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairIDRequest{
-				Owner: args[0],
-				AppId: app_id,
+				Owner:        args[0],
+				AppId:        app_id,
 				ExtendedPair: extended_pair,
 			})
 
@@ -854,7 +850,7 @@ func QueryTVLlockedByApp() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryTVLlockedByApp(cmd.Context(), &types.QueryTVLlockedByAppRequest{
 				AppId: app_id,

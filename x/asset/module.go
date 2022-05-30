@@ -44,7 +44,9 @@ func (a AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
-func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
+func (a AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	types.RegisterLegacyAminoCodec(cdc)
+}
 
 func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	types.RegisterInterfaces(registry)
@@ -66,7 +68,7 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncoding
 func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
-	_ = types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))
+	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(ctx))
 }
 
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
@@ -112,8 +114,8 @@ func (a AppModule) QuerierRoute() string {
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
-	types.RegisterMsgServiceServer(configurator.MsgServer(), keeper.NewMsgServiceServer(a.keeper))
-	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.keeper))
+	types.RegisterMsgServer(configurator.MsgServer(), keeper.NewMsgServiceServer(a.keeper))
+	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.keeper))
 }
 
 func (a AppModule) BeginBlock(ctx sdk.Context, req abcitypes.RequestBeginBlock) {

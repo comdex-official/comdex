@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	_ types.QueryServiceServer = (*queryServer)(nil)
+	_ types.QueryServer = (*queryServer)(nil)
 )
 
 type queryServer struct {
@@ -74,7 +74,7 @@ func (q queryServer) QueryLend(c context.Context, req *types.QueryLendRequest) (
 	}, nil
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+func NewQueryServiceServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}

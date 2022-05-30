@@ -13,14 +13,14 @@ import (
 )
 
 var (
-	_ types.QueryServiceServer = (*queryServer)(nil)
+	_ types.QueryServer = (*queryServer)(nil)
 )
 
 type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+func NewQueryServiceServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -248,8 +248,8 @@ func (q *queryServer) QueryProductToExtendedPair(c context.Context, req *types.Q
 		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
 	}
 	var pairVaultsData []types.ExtendedPairVault
-	for _, data := range pairVaults{
-		if data.AppMappingId == req.ProductId{
+	for _, data := range pairVaults {
+		if data.AppMappingId == req.ProductId {
 			pairVaultsData = append(pairVaultsData, data)
 		}
 	}
@@ -308,11 +308,11 @@ func (q *queryServer) QueryExtendedPairDataPsmPairWise(c context.Context, req *t
 		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
 	}
 	var pairVaultsData []types.ExtendedPairVault
-	for _, data := range pairVaults{
-		if data.AppMappingId == req.AppId && data.IsPsmPair{
+	for _, data := range pairVaults {
+		if data.AppMappingId == req.AppId && data.IsPsmPair {
 			pairVaultsData = append(pairVaultsData, data)
 		}
-	} 
+	}
 
 	return &types.QueryExtendedPairDataPsmPairWiseResponse{
 		ExtendedPair: pairVaultsData,

@@ -9,7 +9,7 @@ option (gogoproto.goproto_getters_all) = false;
 
 
 //For CLI Command & Proposals 
-service MsgService {
+service Msg {
 
   rpc MsgAddWhiteListedAsset(MsgAddWhiteListedAssetRequest) returns (MsgAddWhiteListedAssetResponse);
   rpc MsgCreateLocker(MsgCreateLockerRequest) returns (MsgCreateLockerResponse);

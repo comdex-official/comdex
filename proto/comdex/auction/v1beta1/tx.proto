@@ -44,7 +44,7 @@ message MsgPlaceDutchBidRequest {
 
 message MsgPlaceDutchBidResponse {}
 
-service MsgService {
+service Msg {
     rpc MsgPlaceSurplusBid(MsgPlaceSurplusBidRequest) returns (MsgPlaceSurplusBidResponse);
     rpc MsgPlaceDebtBid(MsgPlaceDebtBidRequest) returns (MsgPlaceDebtBidResponse);
     rpc MsgPlaceDutchBid(MsgPlaceDutchBidRequest) returns (MsgPlaceDutchBidResponse);

@@ -21,7 +21,7 @@ func queryMarket() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryMarket(
 				context.Background(),
@@ -57,7 +57,7 @@ func queryMarkets() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryMarkets(
 				context.Background(),
@@ -89,7 +89,7 @@ func queryParams() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryParams(
 				context.Background(),
