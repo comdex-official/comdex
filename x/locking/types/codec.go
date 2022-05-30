@@ -11,8 +11,8 @@ import (
 // RegisterLegacyAminoCodec registers the necessary x/liquidity interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgLockTokens{}, "locking/MsgLockTokens", nil)
-	cdc.RegisterConcrete(&MsgBeginUnlockingTokens{}, "liquidity/MsgBeginUnlockingTokens", nil)
+	cdc.RegisterConcrete(&MsgLockTokens{}, "comdex/locking/MsgLockTokens", nil)
+	cdc.RegisterConcrete(&MsgBeginUnlockingTokens{}, "comdex/locking/MsgBeginUnlockingTokens", nil)
 }
 
 // RegisterInterfaces registers the x/liquidity interfaces types with the

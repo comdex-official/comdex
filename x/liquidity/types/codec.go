@@ -11,16 +11,16 @@ import (
 // RegisterLegacyAminoCodec registers the necessary x/liquidity interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreatePair{}, "liquidity/MsgCreatePair", nil)
-	cdc.RegisterConcrete(&MsgCreatePool{}, "liquidity/MsgCreatePool", nil)
-	cdc.RegisterConcrete(&MsgDeposit{}, "liquidity/MsgDeposit", nil)
-	cdc.RegisterConcrete(&MsgWithdraw{}, "liquidity/MsgWithdraw", nil)
-	cdc.RegisterConcrete(&MsgLimitOrder{}, "liquidity/MsgLimitOrder", nil)
-	cdc.RegisterConcrete(&MsgMarketOrder{}, "liquidity/MsgMarketOrder", nil)
-	cdc.RegisterConcrete(&MsgCancelOrder{}, "liquidity/MsgCancelOrder", nil)
-	cdc.RegisterConcrete(&MsgCancelAllOrders{}, "liquidity/MsgCancelAllOrders", nil)
-	cdc.RegisterConcrete(&MsgTokensSoftLock{}, "liquidity/MsgTokensSoftLock", nil)
-	cdc.RegisterConcrete(&MsgTokensSoftUnlock{}, "liquidity/MsgTokensSoftUnlock", nil)
+	cdc.RegisterConcrete(&MsgCreatePair{}, "comdex/liquidity/MsgCreatePair", nil)
+	cdc.RegisterConcrete(&MsgCreatePool{}, "comdex/liquidity/MsgCreatePool", nil)
+	cdc.RegisterConcrete(&MsgDeposit{}, "comdex/liquidity/MsgDeposit", nil)
+	cdc.RegisterConcrete(&MsgWithdraw{}, "comdex/liquidity/MsgWithdraw", nil)
+	cdc.RegisterConcrete(&MsgLimitOrder{}, "comdex/liquidity/MsgLimitOrder", nil)
+	cdc.RegisterConcrete(&MsgMarketOrder{}, "comdex/liquidity/MsgMarketOrder", nil)
+	cdc.RegisterConcrete(&MsgCancelOrder{}, "comdex/liquidity/MsgCancelOrder", nil)
+	cdc.RegisterConcrete(&MsgCancelAllOrders{}, "comdex/liquidity/MsgCancelAllOrders", nil)
+	cdc.RegisterConcrete(&MsgTokensSoftLock{}, "comdex/liquidity/MsgTokensSoftLock", nil)
+	cdc.RegisterConcrete(&MsgTokensSoftUnlock{}, "comdex/liquidity/MsgTokensSoftUnlock", nil)
 }
 
 // RegisterInterfaces registers the x/liquidity interfaces types with the
