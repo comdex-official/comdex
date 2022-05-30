@@ -274,6 +274,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, lockerData.ReturnsAccumulated)); err != nil {
 		return nil, err
 	}
+	lockerData.ReturnsAccumulated = sdk.ZeroInt()
 
 	k.SetLocker(ctx, lockerData)
 
