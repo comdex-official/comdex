@@ -8,7 +8,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) Iterate(ctx sdk.Context, appMappingId uint64, assetIds []uint64) error {
+//IterateLocker does reward calculation for locker
+func (k Keeper) IterateLocker(ctx sdk.Context, appMappingId uint64, assetIds []uint64) error {
 	CollectorAppAsset, _ := k.GetAppToDenomsMapping(ctx, appMappingId)
 	for i := range assetIds {
 		found := uint64InSlice(assetIds[i], CollectorAppAsset.AssetIds)
@@ -52,6 +53,7 @@ func (k Keeper) Iterate(ctx sdk.Context, appMappingId uint64, assetIds []uint64)
 	return nil
 }
 
+//CalculateRewards does per block rewards/interest calculation
 func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (sdk.Int, error) {
 
 	LockerSavingsRate := lsr.Quo(sdk.OneDec())
@@ -78,6 +80,7 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (
 	return sdk.Int(newAmount), nil
 }
 
+//IterateVaults does interest calculation for vaults
 func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 	extVaultMapping, _ := k.GetAppExtendedPairVaultMapping(ctx, appMappingId)
 	for _, v := range extVaultMapping.ExtendedPairVaults {
@@ -102,7 +105,8 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 	return nil
 }
 
-func (k Keeper) DistributeExtRewardCollector(ctx sdk.Context) error {
+//DistributeExtRewardLocker does distribution of external locker rewards
+func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 	extRewards := k.GetExternalRewardsLockers(ctx)
 	for i, v := range extRewards {
 		epochTime, _ := k.GetEpochTime(ctx, v.EpochId)
