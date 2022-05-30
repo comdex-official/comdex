@@ -2,8 +2,9 @@ package keeper
 
 import (
 	"fmt"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 
@@ -649,7 +650,6 @@ func (k Keeper) CloseDutchAuction(
 		return err
 	}
 	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount)
-	k.SetLockedVault(ctx, lockedVault)
 	//set sell of history in locked vault
 	outFlowToken := dutchAuction.OutflowTokenInitAmount.Sub(dutchAuction.OutflowTokenCurrentAmount)
 	sellOfHistory := outFlowToken.String() + dutchAuction.InflowTokenCurrentAmount.String()
@@ -862,7 +862,7 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	if owe.GT(tab) {
 		slice = tab.Quo(auction.OutflowTokenCurrentPrice.Ceil().TruncateInt())
 		inFlowTokenCoin.Amount = auction.InflowTokenTargetAmount.Amount.Sub(auction.InflowTokenCurrentAmount.Amount)
-	} else if auction.OutflowTokenCurrentAmount.Amount.Sub(slice).Mul(outFlowTokenCurrentPrice).LT(auctionParams.Chost.Ceil().TruncateInt()) {
+	} else if auction.OutflowTokenCurrentAmount.Amount.ToDec().Sub(slice.ToDec()).Mul(outFlowTokenCurrentPrice.ToDec()).TruncateInt().LT(auctionParams.Chost.Ceil().TruncateInt()) {
 		//(outflowtokenavailableamount-slice) in usd < chost in usd
 		//see if user has balance to buy whole collateral
 		userBalanceUsd := k.bank.GetBalance(ctx, bidder, bid.Denom).Amount.Mul(outFlowTokenCurrentPrice)
