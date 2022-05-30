@@ -58,7 +58,7 @@ message QueryTokenMintedByProductAndAssetResponse {
 
 
 
-service QueryService {
+service Query {
 
   rpc QueryAllTokenMintedForAllProducts(QueryAllTokenMintedForAllProductsRequest) returns (QueryAllTokenMintedForAllProductsResponse) {
     option (google.api.http).get = "/comdex/tokenmint/v1beta1/total-token-minted-all-products";

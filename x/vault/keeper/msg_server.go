@@ -13,14 +13,14 @@ import (
 )
 
 var (
-	_ types.MsgServiceServer = (*msgServer)(nil)
+	_ types.MsgServer = (*msgServer)(nil)
 )
 
 type msgServer struct {
 	Keeper
 }
 
-func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
+func NewMsgServiceServer(keeper Keeper) types.MsgServer {
 	return &msgServer{
 		Keeper: keeper,
 	}

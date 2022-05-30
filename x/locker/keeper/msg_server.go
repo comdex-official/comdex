@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	_ types.MsgServiceServer = (*msgServer)(nil)
+	_ types.MsgServer = (*msgServer)(nil)
 )
 
 type msgServer struct {
 	Keeper
 }
 
-func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
+func NewMsgServiceServer(keeper Keeper) types.MsgServer {
 	return &msgServer{
 		Keeper: keeper,
 	}
@@ -133,17 +133,14 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 
 					user_asset_data.AssetId = asset.Id
 					user_asset_data.LockerId = userLocker.LockerId
-					user_app_data.AppMappingId=app_mapping.Id
+					user_app_data.AppMappingId = app_mapping.Id
 					user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, &user_asset_data)
 					user_locker_asset_mapping_data.LockerAppMapping = append(user_locker_asset_mapping_data.LockerAppMapping, &user_app_data)
 					k.SetUserLockerAssetMapping(ctx, user_locker_asset_mapping_data)
 
-
-
 				}
 
 			}
-
 
 			//Update LockerMapping Values
 

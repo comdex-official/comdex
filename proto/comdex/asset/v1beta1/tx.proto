@@ -35,7 +35,7 @@ message MsgAddPairRequest {
 message MsgAddPairResponse {}
 
 
-service MsgService {
+service Msg {
   rpc MsgAddAsset(MsgAddAssetRequest) returns (MsgAddAssetResponse);
   rpc MsgUpdateAsset(MsgUpdateAssetRequest) returns (MsgUpdateAssetResponse);
   rpc MsgAddPair(MsgAddPairRequest) returns (MsgAddPairResponse);

@@ -8,14 +8,14 @@ import (
 )
 
 var (
-	_ types.QueryServiceServer = (*queryServer)(nil)
+	_ types.QueryServer = (*queryServer)(nil)
 )
 
 type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+func NewQueryServiceServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -24,7 +24,7 @@ func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
 func (q *queryServer) QueryAllTokenMintedForAllProducts(c context.Context, req *types.QueryAllTokenMintedForAllProductsRequest) (*types.QueryAllTokenMintedForAllProductsResponse, error) {
 
 	var (
-		ctx             = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 
 	totalmintedData := q.GetTotalTokenMinted(ctx)

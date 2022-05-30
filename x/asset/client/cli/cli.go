@@ -23,7 +23,7 @@ func GetQueryCmd() *cobra.Command {
 		queryAppMapings(),
 		queryPairVault(),
 		queryPairVaults(),
-		queryAppsMapings(),
+		queryAppsMappings(),
 		queryProductToExtendedPair(),
 		queryExtendedPairPsmPairWise(),
 		queryTokenGov(),

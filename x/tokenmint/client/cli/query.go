@@ -52,7 +52,7 @@ func QueryAllTokenMintedForAllProducts() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllTokenMintedForAllProducts(cmd.Context(), &types.QueryAllTokenMintedForAllProductsRequest{
 				Pagination: pagination,
@@ -90,7 +90,7 @@ func QueryTokenMintedByProduct() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryTokenMintedByProduct(cmd.Context(), &types.QueryTokenMintedByProductRequest{
 				AppId:      appId,
@@ -133,7 +133,7 @@ func QueryTokenMintedByProductAndAsset() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryTokenMintedByProductAndAsset(cmd.Context(), &types.QueryTokenMintedByProductAndAssetRequest{
 				AppId:      appId,

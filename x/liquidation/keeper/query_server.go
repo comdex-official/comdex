@@ -11,13 +11,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var _ types.QueryServiceServer = (*queryServer)(nil)
+var _ types.QueryServer = (*queryServer)(nil)
 
 type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+func NewQueryServiceServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
