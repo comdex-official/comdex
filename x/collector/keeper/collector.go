@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/collector/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
+	"github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 )
@@ -19,7 +19,7 @@ func (k *Keeper) GetAmountFromCollector(ctx sdk.Context, appId, asset_id uint64,
 			if !(data.NetFeesCollected.Sub(amount).GT(sdk.ZeroInt())) {
 				return returnedFee, types.ErrorRequestedAmtExceedsCollectedFee
 			} else {
-				asset,_:= k.GetAsset(ctx, asset_id)
+				asset, _ := k.GetAsset(ctx, asset_id)
 				if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, data.NetFeesCollected.Sub(amount)))); err != nil {
 					return returnedFee, err
 				}
@@ -395,7 +395,7 @@ func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64
 			netcollectedfee = data.Collector.CollectedClosingFee.Add(data.Collector.CollectedOpeningFee).Add(data.Collector.CollectedStabilityFee).Add(fee)
 		}
 	}
-	assetCollected.NetFeesCollected = &netcollectedfee
+	assetCollected.NetFeesCollected = netcollectedfee
 	netcollected.AssetIdToFeeCollected = append(netcollected.AssetIdToFeeCollected, &assetCollected)
 	var (
 		store = ctx.KVStore(k.storeKey)

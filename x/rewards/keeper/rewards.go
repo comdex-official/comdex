@@ -37,7 +37,12 @@ func (k *Keeper) GetRewards(ctx sdk.Context) (lends []types.InternalRewards) {
 		iter  = sdk.KVStorePrefixIterator(store, types.RewardsKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var rewards types.InternalRewards
@@ -101,7 +106,12 @@ func (k *Keeper) GetExternalRewardsLockers(ctx sdk.Context) (LockerExternalRewar
 		iter  = sdk.KVStorePrefixIterator(store, types.ExternalRewardsLockerKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var LockerExternalReward types.LockerExternalRewards
@@ -236,7 +246,12 @@ func (k *Keeper) GetExternalRewardVaults(ctx sdk.Context) (VaultExternalRewards 
 		iter  = sdk.KVStorePrefixIterator(store, types.ExternalRewardsVaultKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var VaultExternalReward types.VaultExternalRewards

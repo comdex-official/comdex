@@ -44,6 +44,16 @@ func (k Keeper) IterateLocker(ctx sdk.Context, appMappingId uint64, assetIds []u
 							IsLocked:           locker.IsLocked,
 							AppMappingId:       locker.AppMappingId,
 						}
+						netfeecollectedData, _ := k.GetNetFeeCollectedData(ctx, locker.AppMappingId)
+						for _, p := range netfeecollectedData.AssetIdToFeeCollected {
+							if p.AssetId == locker.AssetDepositId {
+								updatedNetFee := p.NetFeesCollected.Sub(rewards)
+								err := k.SetNetFeeCollectedData(ctx, locker.AppMappingId, locker.AssetDepositId, updatedNetFee)
+								if err != nil {
+									return err
+								}
+							}
+						}
 						k.UpdateLocker(ctx, updatedLocker)
 					}
 				}
