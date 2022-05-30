@@ -26,19 +26,6 @@ const (
 )
 
 var (
-
-	// EpochInfoByDurationKeyPrefix defines the prefix to store EpochInfo by duration.
-	EpochInfoByDurationKeyPrefix = []byte{0x00011}
-
-	// GaugeIDKey defines key to store the next Gauge ID to be used.
-	GaugeIDKey = []byte{0x00012}
-
-	// GaugeKeyPrefix defines the prefix to store Gauge.
-	GaugeKeyPrefix = []byte{0x00013}
-
-	// GaugeIdsByTriggerDurationKeyPrefix defines the prefix to store GaugeIds by duration.
-	GaugeIdsByTriggerDurationKeyPrefix = []byte{0x00014}
-
 	RewardsKeyPrefix                      = []byte{0x05}
 	KeyPrefixLastInterestTime             = []byte{0x06}
 	AppIdsVaultKeyPrefix                  = []byte{0x12}
@@ -50,6 +37,18 @@ var (
 	ExternalRewardsLockerCounterKeyPrefix = []byte{0x18}
 	AssetForDenomKeyPrefix                = []byte{0x19}
 	EpochForLockerKeyPrefix               = []byte{0x20}
+
+	// EpochInfoByDurationKeyPrefix defines the prefix to store EpochInfo by duration.
+	EpochInfoByDurationKeyPrefix = []byte{0x21}
+
+	// GaugeIDKey defines key to store the next Gauge ID to be used.
+	GaugeIDKey = []byte{0x22}
+
+	// GaugeKeyPrefix defines the prefix to store Gauge.
+	GaugeKeyPrefix = []byte{0x23}
+
+	// GaugeIdsByTriggerDurationKeyPrefix defines the prefix to store GaugeIds by duration.
+	GaugeIdsByTriggerDurationKeyPrefix = []byte{0x24}
 )
 
 // GetEpochInfoByDurationKey returns the indexing key for EpochInfo by duration.
