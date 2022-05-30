@@ -1,6 +1,6 @@
-package locker
+package bindings
 
-type LockerMessages struct {
+type ComdexMessages struct {
 	WhiteListAssetLocker WhiteListAssetLocker `json:"white_list_asset_locker,omitempty"`
 }
 

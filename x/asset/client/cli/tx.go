@@ -718,7 +718,7 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 			var aMap []types.AppMapping
 			var bMap []*types.MintGenesisToken
 			new_min_gov_deposit, ok := sdk.NewIntFromString(min_gov_deposit)
-			
+
 			if err != nil {
 				return err
 			}
@@ -728,7 +728,7 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 			aMap = append(aMap, types.AppMapping{
 				Name:             name,
 				ShortName:        short_name,
-				MinGovDeposit: &new_min_gov_deposit,
+				MinGovDeposit:    new_min_gov_deposit,
 				GovTimeInSeconds: gov_time_in_seconds.Seconds(),
 				MintGenesisToken: bMap,
 			})
@@ -894,7 +894,6 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				return err
 			}
 
-
 			stability_fee, err := ParseStringFromString(args[3], ",")
 			if err != nil {
 				return err
@@ -1001,7 +1000,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				if !ok {
 					return types.ErrorInvalidDebtCeiling
 				}
-				debt_floor, ok:= sdk.NewIntFromString(debt_floor[i])
+				debt_floor, ok := sdk.NewIntFromString(debt_floor[i])
 				if !ok {
 					return types.ErrorInvalidDebtFloor
 				}
