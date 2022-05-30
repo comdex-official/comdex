@@ -261,7 +261,7 @@ func (q *QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutc
 	if req.History == true {
 		key = types.HistoryAuctionTypeKey(req.AppId, types.DutchString)
 	} else {
-		key = types.HistoryAuctionTypeKey(req.AppId, types.DutchString)
+		key = types.AuctionTypeKey(req.AppId, types.DutchString)
 	}
 	pagination, err := query.FilteredPaginate(
 		prefix.NewStore(q.Store(ctx), key),

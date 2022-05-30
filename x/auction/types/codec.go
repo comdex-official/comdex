@@ -8,9 +8,9 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgPlaceSurplusBidRequest{}, "comdex/auction/bid", nil)
-	cdc.RegisterConcrete(&MsgPlaceDebtBidRequest{}, "comdex/auction/debt", nil)
-	cdc.RegisterConcrete(&MsgPlaceDutchBidRequest{}, "comdex/auction/dutch", nil)
+	cdc.RegisterConcrete(&MsgPlaceSurplusBidRequest{}, "comdex/auction/bid-surplus", nil)
+	cdc.RegisterConcrete(&MsgPlaceDebtBidRequest{}, "comdex/auction/bid-debt", nil)
+	cdc.RegisterConcrete(&MsgPlaceDutchBidRequest{}, "comdex/auction/bid-dutch", nil)
 }
 
 func RegisterCodec(cdc *codec.LegacyAmino) {

@@ -48,6 +48,7 @@ import (
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	freegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -71,6 +72,7 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	"github.com/spf13/cast"
 
 	ibctransfer "github.com/cosmos/ibc-go/v3/modules/apps/transfer"
@@ -78,10 +80,13 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
 	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
+	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
 	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -176,6 +181,8 @@ var (
 				distrclient.ProposalHandler,
 				upgradeclient.ProposalHandler,
 				upgradeclient.CancelProposalHandler,
+				ibcclientclient.UpdateClientProposalHandler,
+				ibcclientclient.UpgradeProposalHandler,
 			)...,
 		),
 		params.AppModuleBasic{},
@@ -191,6 +198,7 @@ var (
 		asset.AppModuleBasic{},
 		lend.AppModuleBasic{},
 
+		feegrantmodule.AppModuleBasic{},
 		market.AppModuleBasic{},
 		locker.AppModuleBasic{},
 		bandoraclemodule.AppModuleBasic{},
@@ -276,6 +284,8 @@ type App struct {
 	lockingKeeper     lockingkeeper.Keeper
 	rewardskeeper     rewardskeeper.Keeper
 
+	feeGrantKeeper feegrantkeeper.Keeper
+
 	wasmKeeper wasm.Keeper
 	// the module manager
 	mm *module.Manager
@@ -307,8 +317,9 @@ func New(
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
-			lendtypes.StoreKey, markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
-			auctiontypes.StoreKey, tokenminttypes.StoreKey, liquiditytypes.StoreKey, lockingtypes.StoreKey, rewardstypes.StoreKey,
+			lendtypes.StoreKey, markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
+			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
+			liquiditytypes.StoreKey, lockingtypes.StoreKey, rewardstypes.StoreKey, feegrant.StoreKey,
 		)
 	)
 
@@ -437,6 +448,11 @@ func New(
 		app.bankKeeper,
 		authtypes.FeeCollectorName,
 	)
+
+	app.feeGrantKeeper = feegrantkeeper.NewKeeper(
+		app.cdc,
+		keys[feegrant.StoreKey],
+		app.accountKeeper)
 
 	app.authzKeeper = authzkeeper.NewKeeper(
 		keys[authzkeeper.StoreKey],
@@ -662,6 +678,7 @@ func New(
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.assetKeeper)).
 		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.collectorKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
 
 	app.govKeeper = govkeeper.NewKeeper(
@@ -713,6 +730,7 @@ func New(
 		bank.NewAppModule(app.cdc, app.bankKeeper, app.accountKeeper),
 		capability.NewAppModule(app.cdc, *app.capabilityKeeper),
 		crisis.NewAppModule(&app.crisisKeeper, skipGenesisInvariants),
+		feegrantmodule.NewAppModule(appCodec, app.accountKeeper, app.bankKeeper, app.feeGrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(app.cdc, app.govKeeper, app.accountKeeper, app.bankKeeper),
 		mint.NewAppModule(app.cdc, app.mintKeeper, app.accountKeeper),
 		slashing.NewAppModule(app.cdc, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
@@ -747,17 +765,21 @@ func New(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
-		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, lockertypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
-		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
-		lendtypes.ModuleName, vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
-		liquiditytypes.ModuleName, lockingtypes.ModuleName, rewardstypes.ModuleName,
+		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, lockertypes.ModuleName,
+		crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
+		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName,
+		liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName, lendtypes.ModuleName,
+		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName,
+		govtypes.ModuleName, liquiditytypes.ModuleName, lockingtypes.ModuleName, rewardstypes.ModuleName,
+		feegrant.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
 		minttypes.ModuleName, bandoraclemoduletypes.ModuleName, markettypes.ModuleName, lockertypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
-		vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
+		vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName, lendtypes.ModuleName,
+		wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, feegrant.ModuleName, authz.ModuleName,
 		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
 		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName,
 		liquiditytypes.ModuleName, lockingtypes.ModuleName, rewardstypes.ModuleName,
@@ -794,6 +816,7 @@ func New(
 		auctiontypes.ModuleName,
 		lockertypes.StoreKey,
 		wasmtypes.ModuleName,
+		feegrant.ModuleName,
 		authz.ModuleName,
 		vesting.AppModuleBasic{}.Name(),
 		upgradetypes.ModuleName,

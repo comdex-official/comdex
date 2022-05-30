@@ -242,11 +242,11 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 			if !found {
 				return types.ErrorAssetDoesNotExist
 			}
-			if assetData.IsOnchain {
-				return types.ErrorAssetIsOnChain
+			if !assetData.IsOnchain {
+				return types.ErrorAssetIsOffChain
 			}
 			hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
-			if hasAsset != 0 {
+			if hasAsset != 0 && data.IsgovToken{
 				return types.ErrorGenesisTokenExistForApp
 			}
 

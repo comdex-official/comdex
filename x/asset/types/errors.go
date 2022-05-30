@@ -28,7 +28,7 @@ var (
 	ErrorExtendedPairDoesNotExist = errors.Register(ModuleName, 208, "extended pair does not exist")
 	AppIdsDoesntExist             = errors.Register(ModuleName, 209, "app ids does not exist")
 	ErrorAssetAlreadyExistinApp   = errors.Register(ModuleName, 210, "asset already exist in App")
-	ErrorAssetIsOnChain          = errors.Register(ModuleName, 211, "asset has been marked on chain")
+	ErrorAssetIsOffChain          = errors.Register(ModuleName, 211, "asset has been marked off chain")
 	ErrorDebtFloorIsGreaterThanDebtCeiling   = errors.Register(ModuleName, 212, "Debt Floor Is Greater Than Debt Ceiling")
 	ErrorGenesisTokenExistForApp          = errors.Register(ModuleName, 213, "Genesis Token already Exist For App")
 	ErrorGenesisCantBeZero          = errors.Register(ModuleName, 214, "genesis Cant Be Zero ")
