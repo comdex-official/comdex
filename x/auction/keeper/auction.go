@@ -21,8 +21,8 @@ func (k Keeper) getInflowTokenAmount(ctx sdk.Context, AssetInId, AssetOutId uint
 		return auctiontypes.NoAuction, emptyCoin, emptyCoin
 	}
 	outflowToken = sdk.NewCoin(outflowAsset.Denom, lotSize)
-	outflowTokenPrice, found3 := k.market.GetPriceForAsset(ctx, outflowAsset.Id)
-	inflowTokenPrice, found4 := k.market.GetPriceForAsset(ctx, inflowAsset.Id)
+	outflowTokenPrice, found3 := k.GetPriceForAsset(ctx, outflowAsset.Id)
+	inflowTokenPrice, found4 := k.GetPriceForAsset(ctx, inflowAsset.Id)
 	if !found3 || !found4 {
 		return auctiontypes.NoAuction, emptyCoin, emptyCoin
 	}
@@ -202,7 +202,7 @@ func (k Keeper) CreateNewDutchAuctions(ctx sdk.Context) error {
 		liquidationPenalty := ExtendedPairVault.LiquidationPenalty
 
 		if !lockedVault.IsAuctionInProgress {
-			err := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppMappingId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
+			err := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppMappingId, assetIn.Id, assetOut.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
 			return err
 		}
 
@@ -288,7 +288,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) {
 	auctionParams := k.GetParams(ctx)
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
-		inFlowTokenCurrentPrice, found := k.market.GetPriceForAsset(ctx, dutchAuction.AssetInId)
+		inFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetInId)
 		if !found {
 			fmt.Println("not able fetch price from oracle")
 			return
@@ -305,7 +305,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) {
 		if ctx.BlockTime().After(dutchAuction.EndTime) || outFlowTokenCurrentPrice.LT(dutchAuction.OutflowTokenEndPrice) {
 			//SET initial price fetched from market module and also end price , start time , end time
 			//outFlowTokenCurrentPrice := sdk.NewIntFromUint64(10)
-			outFlowTokenCurrentPrice, found := k.market.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
+			outFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
 			if !found {
 				fmt.Println("not able fetch price from oracle")
 				return
@@ -399,6 +399,8 @@ func (k Keeper) StartDutchAuction(
 	lockedVaultOwner string,
 	liquidationPenalty sdk.Dec,
 ) error {
+	fmt.Println("passed params")
+	fmt.Println(outFlowToken,inFlowToken,appId,assetInId,assetOutId,lockedVaultId,lockedVaultOwner,liquidationPenalty)
 	var (
 		inFlowTokenPrice  uint64
 		outFlowTokenPrice uint64
@@ -409,14 +411,16 @@ func (k Keeper) StartDutchAuction(
 	//need to get real price instead of hard coding
 	//calculate target amount of cmst to collect
 	if auctiontypes.TestFlag != 1 {
-		inFlowTokenPrice, found1 = k.market.GetPriceForAsset(ctx, assetInId)
+		inFlowTokenPrice, found1 = k.GetPriceForAsset(ctx, assetInId)
 		if !found1 {
 			return auctiontypes.ErrorPrices
 		}
-		outFlowTokenPrice, found2 = k.market.GetPriceForAsset(ctx, assetOutId)
+		outFlowTokenPrice, found2 = k.GetPriceForAsset(ctx, assetOutId)
 		if !found2 {
 			return auctiontypes.ErrorPrices
 		}
+		fmt.Println("inflowPrice",inFlowTokenPrice)
+		fmt.Println("outflowPrice",outFlowTokenPrice)
 	} else {
 		outFlowTokenPrice = uint64(2)
 		inFlowTokenPrice = uint64(10)

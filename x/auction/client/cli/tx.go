@@ -14,7 +14,7 @@ import (
 
 func txPlaceSurplusBid() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "bid [auction-id] [bid]",
+		Use:   "bid-surplus [auction-id] [bid]",
 		Short: "Place a bid on an auction",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -46,7 +46,7 @@ func txPlaceSurplusBid() *cobra.Command {
 
 func txPlaceDebtBid() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "bid [auction-id] [bid] [user expected Token]",
+		Use:   "bid-debt [auction-id] [bid] [user expected Token]",
 		Short: "Place a Debt bid on an auction",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -84,7 +84,7 @@ func txPlaceDebtBid() *cobra.Command {
 
 func txPlaceDutchBid() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "bid [auction-id] [amount] [maxamountpercollateraltoken]",
+		Use:   "bid-dutch [auction-id] [amount] [maxamountpercollateraltoken]",
 		Short: "Place a Dutch bid on an auction",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
