@@ -33,6 +33,9 @@ var (
 	ErrorVaultNotFound                      = sdkerrors.Register(ModuleName, 123, "vault not found for given id")
 	ErrorInvalidCollectorAuctionLookupTable = sdkerrors.Register(ModuleName, 124, "CollectorAuctionLookupTable not found for appId")
 	ErrorInvalidLockedVault                 = sdkerrors.Register(ModuleName, 125, "locked vault not found for given id")
+	ErrorInvalidAppIdAssetId                = sdkerrors.Register(ModuleName, 126, "invalid appId assetId")
+	ErrorUnableToMakeFlagsFalse             = sdkerrors.Register(ModuleName, 127, "Unable To Make Flags False after auction closed")
+	ErrorUnableToSetNetfees                 = sdkerrors.Register(ModuleName, 128, "Unable To set net fees collected after auction closed")
 )
 
 var (

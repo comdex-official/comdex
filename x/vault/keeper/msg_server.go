@@ -30,7 +30,6 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-
 	//Checking if extended pair exists
 	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
 	if !found {
@@ -1086,7 +1085,6 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 			return nil, err
 		}
 		k.collector.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
-
 
 		updatedAmount := msg.Amount.Sub(collectorShare)
 

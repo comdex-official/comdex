@@ -22,8 +22,8 @@ func Sub(a, b sdk.Dec) sdk.Dec {
 	return a.Sub(b)
 }
 
-func (k Keeper) getInflowTokenTargetAmount(amount, price sdk.Int) sdk.Int {
-	result := amount.Mul(price)
+func (k Keeper) getInflowTokenTargetAmount(amount, inFlowTokenPrice, outFlowTokenPrice sdk.Int) sdk.Int {
+	result := amount.Mul(outFlowTokenPrice).Quo(inFlowTokenPrice)
 	return result
 }
 
@@ -38,10 +38,10 @@ func (k Keeper) getOutflowTokenEndPrice(price, cusp sdk.Dec) sdk.Dec {
 }
 
 func (k Keeper) getPriceFromLinearDecreaseFunction(top sdk.Dec, tau, dur sdk.Int) sdk.Dec {
-	result1 := (tau.Sub(dur)).Quo(tau)
-	result2 := sdk.NewDecFromInt(result1)
-	result := Multiply(top, result2)
-	return result
+	result1 := tau.Sub(dur)
+	result2 := top.MulInt(result1)
+	result3 := result2.Quo(tau.ToDec())
+	return result3
 }
 
 func (k Keeper) getPriceFromStairStepExponentialDecreaseFunction(top, decreasePercent sdk.Dec, step, dur sdk.Int) sdk.Dec {
