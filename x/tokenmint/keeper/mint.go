@@ -70,6 +70,11 @@ func (k *Keeper) GetAssetDataInTokenMintByApp(ctx sdk.Context, appMappingId uint
 
 func (k *Keeper) GetAssetDataInTokenMintByAppSupply(ctx sdk.Context, appMappingId uint64, assetId uint64) (tokenDataSupply int64, found bool) {
 	tokenData, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingId, assetId)
+
+	if !found {
+
+		return 0, false
+	}
 	return tokenData.CurrentSupply.Int64(), found
 }
 
