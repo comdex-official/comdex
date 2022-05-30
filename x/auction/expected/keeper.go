@@ -26,9 +26,11 @@ type MarketKeeper interface {
 }
 
 type LiquidationKeeper interface {
-	GetLockedVaults(ctx sdk.Context) (locked_vaults []liquidationtypes.LockedVault)
 	SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag bool) error
 	SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) error
+	GetLockedVaults(ctx sdk.Context) (locked_vaults []liquidationtypes.LockedVault)
+	GetLockedVault(ctx sdk.Context, id uint64) (locked_vault liquidationtypes.LockedVault, found bool)
+	SetLockedVault(ctx sdk.Context, locked_vault liquidationtypes.LockedVault)
 	//UpdateAssetQuantitiesInLockedVault(ctx sdk.Context, collateral_auction auctiontypes.CollateralAuction, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) error
 }
 
@@ -36,6 +38,7 @@ type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 	GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool)
+	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
 }
 
 type VaultKeeper interface {
@@ -56,4 +59,12 @@ type CollectorKeeper interface {
 	GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collectorLookup types.CollectorLookup, found bool)
 	SetCollectorAuctionLookupTable(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error
 	GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.CollectorAuctionLookupTable, found bool)
+	GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData types.NetFeeCollectedData, found bool)
+	GetAmountFromCollector(ctx sdk.Context, appId, asset_id uint64, amount sdk.Int) (sdk.Int, error)
+	SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error
+}
+
+type TokenMintKeeper interface {
+	MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, address string, amount sdk.Int) error
+	BurnTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, amount sdk.Int) error
 }

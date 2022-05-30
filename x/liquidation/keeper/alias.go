@@ -91,3 +91,7 @@ func (k *Keeper) GetAuctionParams(ctx sdk.Context) auctiontypes.Params {
 func (k *Keeper) SetVault(ctx sdk.Context, vault types.Vault) {
 	k.vault.SetVault(ctx, vault)
 }
+
+func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, AppMappingId uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
+	return k.vault.CreteNewVault(ctx, From, AppMappingId, ExtendedPairVaultID, AmountIn, AmountOut)
+}

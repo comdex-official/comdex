@@ -30,11 +30,6 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
-	if esmData.VaultStop && found{
-		return nil, types.ErrorEmergencyShutdownIsActive
-	}
-
 	//Checking if extended pair exists
 	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
 	if !found {
@@ -250,10 +245,6 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
-	if esmData.VaultStop && found{
-		return nil, types.ErrorEmergencyShutdownIsActive
-	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -327,10 +318,6 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
-	if esmData.VaultStop && found{
-		return nil, types.ErrorEmergencyShutdownIsActive
-	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -418,10 +405,6 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
-	if esmData.VaultStop && found{
-		return nil, types.ErrorEmergencyShutdownIsActive
-	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -551,10 +534,6 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
-	if esmData.VaultStop && found{
-		return nil, types.ErrorEmergencyShutdownIsActive
-	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -687,10 +666,6 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
-	if esmData.VaultStop && found{
-		return nil, types.ErrorEmergencyShutdownIsActive
-	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -719,11 +694,12 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
-	//Checking if vault acccess disabled
-	if !extended_pair_vault.IsVaultActive {
-		return nil, types.ErrorVaultInactive
+	// //Checking if vault acccess disabled
+	// if !extended_pair_vault.IsVaultActive {
+	// 	return nil, types.ErrorVaultInactive
 
-	}
+	// }
+
 	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
 	if app_mapping.Id != extended_pair_vault.AppMappingId {
 		return nil, types.ErrorAppMappingIdMismatch
@@ -792,10 +768,6 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateStableMintRequest) (*types.MsgCreateStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
-	if esmData.VaultStop && found{
-		return nil, types.ErrorEmergencyShutdownIsActive
-	}
 	//Checking if extended pair exists
 	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
 	if !found {
@@ -908,10 +880,6 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDepositStableMintRequest) (*types.MsgDepositStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
-	if esmData.VaultStop && found{
-		return nil, types.ErrorEmergencyShutdownIsActive
-	}
 	depositor_address, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -1028,10 +996,6 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdrawStableMintRequest) (*types.MsgWithdrawStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
-	if esmData.VaultStop && found{
-		return nil, types.ErrorEmergencyShutdownIsActive
-	}
 	depositor_address, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -1121,7 +1085,6 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 			return nil, err
 		}
 		k.collector.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
-
 
 		updatedAmount := msg.Amount.Sub(collectorShare)
 

@@ -11,7 +11,11 @@ message AppMapping {
     uint64 id      = 1;
     string name    = 2 [ (gogoproto.moretags) = "yaml:\"name\"" ];
     string short_name   = 3 [ (gogoproto.moretags) = "yaml:\"short_name\"" ];
-    repeated MintGenesisToken mint_genesis_token = 4 [ (gogoproto.moretags) = "yaml:\"mint_genesis_token\"" ];
+    string min_gov_deposit = 4 [ (gogoproto.moretags) = "yaml:\"min_gov_deposit\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+    double gov_time_in_seconds = 5 [ (gogoproto.moretags) = "yaml:\"gov_time_in_seconds\""];
+    repeated MintGenesisToken mint_genesis_token = 6 [ (gogoproto.moretags) = "yaml:\"mint_genesis_token\"" ];
 }
 
 message MintGenesisToken {

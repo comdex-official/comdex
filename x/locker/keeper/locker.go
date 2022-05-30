@@ -1,9 +1,14 @@
 package keeper
 
 import (
-
+	"context"
 	// "github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+
 	// "github.com/tendermint/tendermint/libs/log"
 
 	// "github.com/comdex-official/comdex/x/locker/expected"
@@ -226,3 +231,39 @@ func (k *Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
 //it comes to the function and check if user data exists or not. if not create locker
 //if user data exists- check app mapping , from app mapping check asset id . if it does then fail tx.
 // else user locker id  exists use that to create this struct and set it.
+
+func QueryState(addr, denom, blockheight, target string) (*sdk.Coin, error) {
+	
+	myAddress, err := sdk.AccAddressFromBech32(addr)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a connection to the gRPC server.
+	grpcConn, err := grpc.Dial(
+		target,
+		grpc.WithInsecure(),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer grpcConn.Close()
+
+	bankClient := banktypes.NewQueryClient(grpcConn)
+	bankRes, err := bankClient.Balance(
+		context.Background(),
+		&banktypes.QueryBalanceRequest{Address: myAddress.String(), Denom: denom},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var header metadata.MD
+	bankRes, err = bankClient.Balance(
+		metadata.AppendToOutgoingContext(context.Background(), grpctypes.GRPCBlockHeightHeader, blockheight), // Add metadata to request
+		&banktypes.QueryBalanceRequest{Address: myAddress.String(), Denom: denom},
+		grpc.Header(&header),
+	)
+
+	return bankRes.GetBalance(), nil
+}

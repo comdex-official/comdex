@@ -401,3 +401,79 @@ func queryExtendedPairPsmPairWise() *cobra.Command {
 
 	return cmd
 }
+
+func queryTokenGov() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "check_for_token_gov [app_id]",
+		Short: "Query for gov token in a app",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryTokenGov(
+				context.Background(),
+				&types.QueryTokenGovRequest{
+					AppId: app_id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryExtendedPairDataPsmPairWise() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extended-pair-data-psm-pair-wise [app_id]",
+		Short: "Query all extended pairs data psm pair wise in a product",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryExtendedPairDataPsmPairWise(
+				context.Background(),
+				&types.QueryExtendedPairDataPsmPairWiseRequest{
+					AppId: app_id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}

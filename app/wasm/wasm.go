@@ -3,19 +3,28 @@ package wasm
 import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	locker2 "github.com/comdex-official/comdex/app/wasm/bindings/locker"
+	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
+	tokenMintkeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
 )
 
 func RegisterCustomPlugins(
-	locker lockerkeeper.Keeper,
+	locker *lockerkeeper.Keeper,
+	tokenMint *tokenMintkeeper.Keeper,
+	asset *assetkeeper.Keeper,
 ) []wasmkeeper.Option {
 
+	comdexQueryPlugin := NewQueryPlugin(asset, locker, tokenMint)
+
+	appDataqueryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
+		Custom: CustomQuerier(comdexQueryPlugin),
+	})
 	messengerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
-		locker2.CustomMessageDecorator(locker),
+		CustomMessageDecorator(*locker),
 	)
 
 	return []wasm.Option{
+		appDataqueryPluginOpt,
 		messengerDecoratorOpt,
 	}
 }

@@ -53,4 +53,13 @@ message Params {
   uint64 priceFunctionType = 11 [
     (gogoproto.moretags) = "yaml:\"priceFunctionType\""
   ];
+  uint64 surplus_id = 12 [
+    (gogoproto.moretags) = "yaml:\"priceFunctionType\""
+  ];
+  uint64 debt_id = 13 [
+    (gogoproto.moretags) = "yaml:\"priceFunctionType\""
+  ];
+  uint64 dutch_id = 14 [
+    (gogoproto.moretags) = "yaml:\"priceFunctionType\""
+  ];
 }

@@ -4,7 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 func (k *Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
@@ -71,8 +70,4 @@ func (k *Keeper) GetPairsVault(ctx sdk.Context, pairID uint64) (assettypes.Exten
 
 func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error {
 	return k.collector.UpdateCollector(ctx, appId, asset_id, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected)
-}
-
-func (k *Keeper) GetTriggerEsm(ctx sdk.Context, appId uint64) (esmtypes.EsmActive, bool) {
-	return k.esm.GetTriggerEsm(ctx, appId)
 }

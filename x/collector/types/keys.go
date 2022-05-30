@@ -28,6 +28,7 @@ var (
 	AppIdToAuctionMappingPrefix = []byte{0x05}
 	CollectorAuctionLookupPrefix = []byte{0x06}
 	CollectorForDenomKeyPrefix = []byte{0x07}
+	NetFeeCollectedDataPrefix = []byte{0x08}
 )
 
 func KeyPrefix(p string) []byte {
@@ -50,6 +51,9 @@ func AppIdToAuctionMappingKey(app_id uint64) []byte {
 }
 func CollectorAuctionLookupKey(app_id uint64) []byte {
 	return append(CollectorAuctionLookupPrefix, sdk.Uint64ToBigEndian(app_id)...)
+}
+func NetFeeCollectedDataKey(app_id uint64) []byte {
+	return append(NetFeeCollectedDataPrefix, sdk.Uint64ToBigEndian(app_id)...)
 }
 
 func CollectorForDenomKey(app_id uint64) []byte {

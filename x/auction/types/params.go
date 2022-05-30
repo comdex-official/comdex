@@ -20,20 +20,26 @@ var (
 	KeyChost                           = []byte("Chost")
 	KeyStep                            = []byte("Step")
 	KeyPriceFunctionType               = []byte("PriceFunctionType")
+	KeySurplusId                       = []byte("SurplusId")
+	KeyDebtId                          = []byte("DebtId")
+	KeyDutchId                         = []byte("DutchId")
 )
 
 var (
 	DefaultLiquidationPenaltyPercent       = "0.15"
 	DefaultAuctionDiscountPercent          = "0.05"
-	DefaultAuctionDurationSeconds          = uint64(180)
-	DefaultDebtMintTokenDecreasePercentage = sdk.MustNewDecFromStr("0.03")
+	DefaultAuctionDurationSeconds          = uint64(21600)
+	DefaultDebtMintTokenDecreasePercentage = sdk.MustNewDecFromStr("0.01")
 	DefaultBuffer                          = sdk.MustNewDecFromStr("1.2")
-	DefaultCusp                            = sdk.MustNewDecFromStr("0.6")
-	DefaultTau                             = sdk.NewInt(3600)
+	DefaultCusp                            = sdk.MustNewDecFromStr("0.4")
+	DefaultTau                             = sdk.NewInt(21600)
 	DefaultDutchDecreasePercentage         = sdk.MustNewDecFromStr("0.01")
 	DefaultChost                           = sdk.MustNewDecFromStr("10")
 	DefaultStep                            = sdk.NewInt(360)
 	DefaultPriceFunctionType               = uint64(1)
+	DefaultSurplusId                       = uint64(1)
+	DefaultDebtId                          = uint64(2)
+	DefaultDutchId                         = uint64(3)
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
@@ -53,7 +59,7 @@ func NewParams(liquidationPenaltyPercent string,
 	tau sdk.Int,
 	dutchDecreasePercentage sdk.Dec,
 	chost sdk.Dec,
-	step sdk.Int, priceFunctionType uint64) Params {
+	step sdk.Int, priceFunctionType uint64, surplusId uint64, debtId uint64, dutchId uint64) Params {
 	return Params{
 		LiquidationPenaltyPercent:       liquidationPenaltyPercent,
 		AuctionDiscountPercent:          auctionDiscountPercent,
@@ -66,6 +72,9 @@ func NewParams(liquidationPenaltyPercent string,
 		Chost:                           chost,
 		Step:                            step,
 		PriceFunctionType:               priceFunctionType,
+		SurplusId:                       surplusId,
+		DebtId:                          debtId,
+		DutchId:                         dutchId,
 	}
 }
 
@@ -83,6 +92,9 @@ func DefaultParams() Params {
 		DefaultChost,
 		DefaultStep,
 		DefaultPriceFunctionType,
+		DefaultSurplusId,
+		DefaultDebtId,
+		DefaultDutchId,
 	)
 }
 
@@ -100,6 +112,9 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyChost, &p.Chost, validateChost),
 		paramtypes.NewParamSetPair(KeyStep, &p.Step, validateStep),
 		paramtypes.NewParamSetPair(KeyPriceFunctionType, &p.PriceFunctionType, validatePriceFunctionType),
+		paramtypes.NewParamSetPair(KeySurplusId, &p.SurplusId, validateAuctionId),
+		paramtypes.NewParamSetPair(KeyDebtId, &p.DebtId, validateAuctionId),
+		paramtypes.NewParamSetPair(KeyDutchId, &p.DutchId, validateAuctionId),
 	}
 }
 
@@ -120,6 +135,9 @@ func (p Params) Validate() error {
 		{p.Chost, validateChost},
 		{p.Step, validateStep},
 		{p.PriceFunctionType, validatePriceFunctionType},
+		{p.SurplusId, validateAuctionId},
+		{p.DebtId, validateAuctionId},
+		{p.DutchId, validateAuctionId},
 	} {
 		if err := v.validator(v.value); err != nil {
 			return err
@@ -260,6 +278,17 @@ func validateStep(i interface{}) error {
 	}
 	if v.LT(sdk.NewInt(1)) {
 		return fmt.Errorf("step cannot be less than 1")
+	}
+	return nil
+}
+
+func validateAuctionId(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	if v < 0 {
+		return fmt.Errorf("auction id cannot be less than 0")
 	}
 	return nil
 }

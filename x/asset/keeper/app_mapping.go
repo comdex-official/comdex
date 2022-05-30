@@ -62,6 +62,19 @@ func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppMapping, found
 	k.cdc.MustUnmarshal(value, &app)
 	return app, true
 }
+func (k *Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint64, error) {
+	appData, _ := k.GetApp(ctx, id)
+	minGovDeposit := appData.MinGovDeposit.Int64()
+	var assetId uint64
+	gen := appData.MintGenesisToken
+	govTimeInSeconds := int64(appData.GovTimeInSeconds)
+	for _, v := range gen {
+		if v.IsgovToken == true {
+			assetId = v.AssetId
+		}
+	}
+	return minGovDeposit, govTimeInSeconds, assetId, nil
+}
 
 func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppMapping, found bool) {
 	var (
@@ -198,6 +211,8 @@ func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMappi
 				Id:               id + 1,
 				Name:             msg.Name,
 				ShortName:        msg.ShortName,
+				MinGovDeposit:    msg.MinGovDeposit,
+				GovTimeInSeconds: msg.GovTimeInSeconds,
 				MintGenesisToken: msg.MintGenesisToken,
 			}
 		)
@@ -242,9 +257,6 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 			if data.IsgovToken {
 				k.SetGenesisTokenForApp(ctx, msg.Id, data.AssetId)
 			}
-			if data.GenesisSupply.IsZero() {
-				return types.ErrorGenesisCantBeZero
-			}
 		}
 		for _, data := range msg.MintGenesisToken {
 			var minter types.MintGenesisToken
@@ -261,6 +273,8 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 				Id:               msg.Id,
 				Name:             appdata.Name,
 				ShortName:        appdata.ShortName,
+				MinGovDeposit: appdata.MinGovDeposit,
+				GovTimeInSeconds: appdata.GovTimeInSeconds,
 				MintGenesisToken: mintGenesis,
 			}
 		)

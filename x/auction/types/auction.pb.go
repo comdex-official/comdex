@@ -5,7 +5,6 @@ package types
 
 import (
 	fmt "fmt"
-	_ "github.com/comdex-official/comdex/x/asset/types"
 	_ "github.com/cosmos/cosmos-sdk/types"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
@@ -31,18 +30,21 @@ var _ = time.Kitchen
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type SurplusAuction struct {
-	Id              uint64                                        `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	OutflowToken    github_com_cosmos_cosmos_sdk_types.Coin       `protobuf:"bytes,2,opt,name=outflow_token,json=outflowToken,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"outflow_token" yaml:"auctioned_collateral"`
-	InflowToken     github_com_cosmos_cosmos_sdk_types.Coin       `protobuf:"bytes,3,opt,name=inflow_token,json=inflowToken,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"inflow_token" yaml:"inflow_token"`
-	ActiveBiddingId uint64                                        `protobuf:"varint,4,opt,name=active_bidding_id,json=activeBiddingId,proto3" json:"active_bidding_id,omitempty" yaml:"active_bidding_id"`
-	Bidder          github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,5,opt,name=bidder,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"bidder,omitempty" yaml:"owner"`
-	Bid             github_com_cosmos_cosmos_sdk_types.Coin       `protobuf:"bytes,6,opt,name=bid,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"bid" yaml:"bid"`
-	EndTime         time.Time                                     `protobuf:"bytes,7,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time" yaml:"end_time"`
-	BidFactor       github_com_cosmos_cosmos_sdk_types.Dec        `protobuf:"bytes,8,opt,name=bid_factor,json=bidFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"bid_factor" yaml:"bid_factor"`
-	BiddingIds      []uint64                                      `protobuf:"varint,9,rep,packed,name=bidding_ids,json=biddingIds,proto3" json:"bidding_ids,omitempty" yaml:"bidding_ids"`
-	AuctionStatus   uint64                                        `protobuf:"varint,10,opt,name=auction_status,json=auctionStatus,proto3" json:"auction_status,omitempty" yaml:"auction_status"`
-	AppId           uint64                                        `protobuf:"varint,11,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
-	AssetId         uint64                                        `protobuf:"varint,12,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	AuctionId        uint64                                        `protobuf:"varint,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty" yaml:"auction_id"`
+	OutflowToken     github_com_cosmos_cosmos_sdk_types.Coin       `protobuf:"bytes,2,opt,name=outflow_token,json=outflowToken,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"outflow_token" yaml:"auctioned_collateral"`
+	InflowToken      github_com_cosmos_cosmos_sdk_types.Coin       `protobuf:"bytes,3,opt,name=inflow_token,json=inflowToken,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"inflow_token" yaml:"inflow_token"`
+	ActiveBiddingId  uint64                                        `protobuf:"varint,4,opt,name=active_bidding_id,json=activeBiddingId,proto3" json:"active_bidding_id,omitempty" yaml:"active_bidding_id"`
+	Bidder           github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,5,opt,name=bidder,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"bidder,omitempty" yaml:"owner"`
+	Bid              github_com_cosmos_cosmos_sdk_types.Coin       `protobuf:"bytes,6,opt,name=bid,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"bid" yaml:"bid"`
+	EndTime          time.Time                                     `protobuf:"bytes,7,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time" yaml:"end_time"`
+	BidFactor        github_com_cosmos_cosmos_sdk_types.Dec        `protobuf:"bytes,8,opt,name=bid_factor,json=bidFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"bid_factor" yaml:"bid_factor"`
+	BiddingIds       []*BidOwnerMapping                            `protobuf:"bytes,9,rep,name=bidding_ids,json=biddingIds,proto3" json:"bidding_ids,omitempty" yaml:"bidding_ids"`
+	AuctionStatus    uint64                                        `protobuf:"varint,10,opt,name=auction_status,json=auctionStatus,proto3" json:"auction_status,omitempty" yaml:"auction_status"`
+	AppId            uint64                                        `protobuf:"varint,11,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId          uint64                                        `protobuf:"varint,12,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	AuctionMappingId uint64                                        `protobuf:"varint,13,opt,name=auction_mapping_id,json=auctionMappingId,proto3" json:"auction_mapping_id,omitempty" yaml:"auction_mapping_id"`
+	AssetInId        uint64                                        `protobuf:"varint,14,opt,name=asset_in_id,json=assetInId,proto3" json:"asset_in_id,omitempty" yaml:"asset_in_id"`
+	AssetOutId       uint64                                        `protobuf:"varint,15,opt,name=asset_out_id,json=assetOutId,proto3" json:"asset_out_id,omitempty" yaml:"asset_out_id"`
 }
 
 func (m *SurplusAuction) Reset()         { *m = SurplusAuction{} }
@@ -79,7 +81,7 @@ func (m *SurplusAuction) XXX_DiscardUnknown() {
 var xxx_messageInfo_SurplusAuction proto.InternalMessageInfo
 
 type DebtAuction struct {
-	AuctionId           uint64                                        `protobuf:"varint,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty" yaml:"id"`
+	AuctionId           uint64                                        `protobuf:"varint,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty" yaml:"auction_id"`
 	AuctionedToken      github_com_cosmos_cosmos_sdk_types.Coin       `protobuf:"bytes,2,opt,name=auctioned_token,json=auctionedToken,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"auctioned_token" yaml:"auctioned_token"`
 	ExpectedUserToken   github_com_cosmos_cosmos_sdk_types.Coin       `protobuf:"bytes,3,opt,name=expected_user_token,json=expectedUserToken,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"expected_user_token" yaml:"expected_token"`
 	ExpectedMintedToken github_com_cosmos_cosmos_sdk_types.Coin       `protobuf:"bytes,4,opt,name=expected_minted_token,json=expectedMintedToken,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"expected_minted_token" yaml:"expected_token"`
@@ -90,6 +92,11 @@ type DebtAuction struct {
 	AuctionStatus       uint64                                        `protobuf:"varint,9,opt,name=auction_status,json=auctionStatus,proto3" json:"auction_status,omitempty" yaml:"auction_status"`
 	AppId               uint64                                        `protobuf:"varint,10,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	AssetId             uint64                                        `protobuf:"varint,11,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	BiddingIds          []*BidOwnerMapping                            `protobuf:"bytes,12,rep,name=bidding_ids,json=biddingIds,proto3" json:"bidding_ids,omitempty" yaml:"bidding_ids"`
+	AuctionMappingId    uint64                                        `protobuf:"varint,13,opt,name=auction_mapping_id,json=auctionMappingId,proto3" json:"auction_mapping_id,omitempty" yaml:"auction_mapping_id"`
+	BidFactor           github_com_cosmos_cosmos_sdk_types.Dec        `protobuf:"bytes,14,opt,name=bid_factor,json=bidFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"bid_factor" yaml:"bid_factor"`
+	AssetInId           uint64                                        `protobuf:"varint,15,opt,name=asset_in_id,json=assetInId,proto3" json:"asset_in_id,omitempty" yaml:"asset_in_id"`
+	AssetOutId          uint64                                        `protobuf:"varint,16,opt,name=asset_out_id,json=assetOutId,proto3" json:"asset_out_id,omitempty" yaml:"asset_out_id"`
 }
 
 func (m *DebtAuction) Reset()         { *m = DebtAuction{} }
@@ -137,9 +144,15 @@ type DutchAuction struct {
 	InflowTokenCurrentPrice   github_com_cosmos_cosmos_sdk_types.Dec        `protobuf:"bytes,9,opt,name=inflow_token_current_price,json=inflowTokenCurrentPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"inflow_token_current_price" yaml:"inflow_token_current_price"`
 	EndTime                   time.Time                                     `protobuf:"bytes,10,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time" yaml:"end_time"`
 	AuctionStatus             uint64                                        `protobuf:"varint,11,opt,name=auction_status,json=auctionStatus,proto3" json:"auction_status,omitempty" yaml:"auction_status"`
-	InflowTokenAddress        github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,12,opt,name=inflow_token_address,json=inflowTokenAddress,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"inflow_token_address,omitempty" yaml:"inflow_token_address"`
-	OutflowTokenAddress       github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,13,opt,name=outflow_token_address,json=outflowTokenAddress,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"outflow_token_address,omitempty" yaml:"outflow_token_address"`
-	StartTime                 time.Time                                     `protobuf:"bytes,14,opt,name=start_time,json=startTime,proto3,stdtime" json:"start_time" yaml:"start_time"`
+	StartTime                 time.Time                                     `protobuf:"bytes,12,opt,name=start_time,json=startTime,proto3,stdtime" json:"start_time" yaml:"start_time"`
+	BiddingIds                []*BidOwnerMapping                            `protobuf:"bytes,13,rep,name=bidding_ids,json=biddingIds,proto3" json:"bidding_ids,omitempty" yaml:"bidding_ids"`
+	AuctionMappingId          uint64                                        `protobuf:"varint,14,opt,name=auction_mapping_id,json=auctionMappingId,proto3" json:"auction_mapping_id,omitempty" yaml:"auction_mapping_id"`
+	AppId                     uint64                                        `protobuf:"varint,15,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetInId                 uint64                                        `protobuf:"varint,16,opt,name=asset_in_id,json=assetInId,proto3" json:"asset_in_id,omitempty" yaml:"asset_in_id"`
+	AssetOutId                uint64                                        `protobuf:"varint,17,opt,name=asset_out_id,json=assetOutId,proto3" json:"asset_out_id,omitempty" yaml:"asset_out_id"`
+	LockedVaultId             uint64                                        `protobuf:"varint,18,opt,name=locked_vault_id,json=lockedVaultId,proto3" json:"locked_vault_id,omitempty" yaml:"locked_vault_id"`
+	VaultOwner                github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,19,opt,name=vault_owner,json=vaultOwner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"vault_owner,omitempty" yaml:"vault_owner"`
+	LiquidationPenalty        github_com_cosmos_cosmos_sdk_types.Dec        `protobuf:"bytes,20,opt,name=liquidation_penalty,json=liquidationPenalty,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_penalty" yaml:"liquidatin_penalty"`
 }
 
 func (m *DutchAuction) Reset()         { *m = DutchAuction{} }
@@ -175,10 +188,49 @@ func (m *DutchAuction) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DutchAuction proto.InternalMessageInfo
 
+type BidOwnerMapping struct {
+	BidId    uint64 `protobuf:"varint,1,opt,name=bid_id,json=bidId,proto3" json:"bid_id,omitempty"`
+	BidOwner string `protobuf:"bytes,2,opt,name=bid_owner,json=bidOwner,proto3" json:"bid_owner,omitempty"`
+}
+
+func (m *BidOwnerMapping) Reset()         { *m = BidOwnerMapping{} }
+func (m *BidOwnerMapping) String() string { return proto.CompactTextString(m) }
+func (*BidOwnerMapping) ProtoMessage()    {}
+func (*BidOwnerMapping) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4bb9aead25d5fe6c, []int{3}
+}
+func (m *BidOwnerMapping) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BidOwnerMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BidOwnerMapping.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BidOwnerMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BidOwnerMapping.Merge(m, src)
+}
+func (m *BidOwnerMapping) XXX_Size() int {
+	return m.Size()
+}
+func (m *BidOwnerMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_BidOwnerMapping.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BidOwnerMapping proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*SurplusAuction)(nil), "comdex.auction.v1beta1.SurplusAuction")
 	proto.RegisterType((*DebtAuction)(nil), "comdex.auction.v1beta1.DebtAuction")
 	proto.RegisterType((*DutchAuction)(nil), "comdex.auction.v1beta1.DutchAuction")
+	proto.RegisterType((*BidOwnerMapping)(nil), "comdex.auction.v1beta1.bidOwnerMapping")
 }
 
 func init() {
@@ -186,83 +238,94 @@ func init() {
 }
 
 var fileDescriptor_4bb9aead25d5fe6c = []byte{
-	// 1204 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x98, 0x4b, 0x6f, 0xe3, 0x44,
-	0x1c, 0xc0, 0x33, 0x7d, 0xa5, 0x99, 0xb4, 0x29, 0x75, 0x5f, 0xee, 0x63, 0xe3, 0xae, 0x41, 0xd0,
-	0x03, 0x4d, 0x54, 0x40, 0x42, 0x42, 0x42, 0x22, 0x69, 0x59, 0x6d, 0x0e, 0xa0, 0xe2, 0x76, 0x11,
-	0x70, 0xb1, 0x6c, 0xcf, 0x34, 0x3b, 0x6c, 0x62, 0x5b, 0xf6, 0x78, 0x1f, 0x57, 0x04, 0x42, 0x42,
-	0x02, 0x55, 0xda, 0x03, 0x27, 0xee, 0x20, 0x21, 0x21, 0xf1, 0x29, 0x7a, 0xe0, 0xb0, 0x47, 0xc4,
-	0xc1, 0x40, 0x2b, 0xbe, 0x40, 0x8e, 0x9c, 0x90, 0x67, 0xc6, 0x8e, 0x9d, 0xa6, 0x9b, 0xb8, 0x5b,
-	0x71, 0xaa, 0x3d, 0xfe, 0x3f, 0x7e, 0xf3, 0x7f, 0xcd, 0xa4, 0xf0, 0x15, 0xcb, 0xe9, 0x22, 0xfc,
-	0xb8, 0x6e, 0x04, 0x16, 0x25, 0x8e, 0x5d, 0x7f, 0xb8, 0x67, 0x62, 0x6a, 0xec, 0xc5, 0xef, 0x35,
-	0xd7, 0x73, 0xa8, 0x23, 0xad, 0x72, 0xa9, 0x5a, 0xbc, 0x2a, 0xa4, 0x36, 0x96, 0xdb, 0x4e, 0xdb,
-	0x61, 0x22, 0xf5, 0xe8, 0x89, 0x4b, 0x6f, 0x28, 0x6d, 0xc7, 0x69, 0x77, 0x70, 0x9d, 0xbd, 0x99,
-	0xc1, 0x49, 0x9d, 0x92, 0x2e, 0xf6, 0xa9, 0xd1, 0x75, 0x85, 0x40, 0xd5, 0x72, 0xfc, 0xae, 0xe3,
-	0xd7, 0x4d, 0xc3, 0xc7, 0x89, 0x47, 0xcb, 0x21, 0x76, 0x6c, 0x20, 0x86, 0xf2, 0x7d, 0x4c, 0x13,
-	0x01, 0xd7, 0x20, 0x1e, 0x17, 0x50, 0xff, 0x29, 0xc2, 0xca, 0x51, 0xe0, 0xb9, 0x9d, 0xc0, 0x6f,
-	0x70, 0x24, 0xe9, 0x16, 0x9c, 0x20, 0x48, 0x06, 0xdb, 0x60, 0x67, 0xaa, 0x39, 0xdf, 0x0b, 0x95,
-	0xd2, 0x13, 0xa3, 0xdb, 0x79, 0x47, 0x25, 0x48, 0xd5, 0x26, 0x08, 0x92, 0xbe, 0x03, 0x70, 0xde,
-	0x09, 0xe8, 0x49, 0xc7, 0x79, 0xa4, 0x53, 0xe7, 0x01, 0xb6, 0xe5, 0x89, 0x6d, 0xb0, 0x53, 0x7e,
-	0x63, 0xbd, 0xc6, 0x59, 0x6a, 0x11, 0x4b, 0xbc, 0xaf, 0xda, 0xbe, 0x43, 0xec, 0xe6, 0x87, 0x67,
-	0xa1, 0x52, 0xe8, 0x85, 0xca, 0x26, 0xb7, 0x24, 0xf6, 0x8e, 0x91, 0x6e, 0x39, 0x9d, 0x8e, 0x41,
-	0xb1, 0x67, 0x74, 0xd4, 0x7f, 0x43, 0xe5, 0xb5, 0x36, 0xa1, 0xf7, 0x03, 0xb3, 0x66, 0x39, 0xdd,
-	0xba, 0xd8, 0x17, 0xff, 0xb3, 0xeb, 0xa3, 0x07, 0x75, 0xfa, 0xc4, 0xc5, 0x3e, 0xb3, 0xa7, 0xcd,
-	0x09, 0xff, 0xc7, 0x91, 0x7b, 0xe9, 0x4b, 0x00, 0xe7, 0x88, 0x9d, 0xe2, 0x99, 0x1c, 0xc5, 0x73,
-	0x47, 0xf0, 0x2c, 0x89, 0x9d, 0xa5, 0x94, 0x73, 0x71, 0x94, 0xb9, 0x26, 0xc7, 0xb8, 0x0b, 0x17,
-	0x0d, 0x8b, 0x92, 0x87, 0x58, 0x37, 0x09, 0x42, 0xc4, 0x6e, 0xeb, 0x04, 0xc9, 0x53, 0x2c, 0x8a,
-	0x5b, 0xbd, 0x50, 0x91, 0xc5, 0xde, 0x07, 0x45, 0x54, 0x6d, 0x81, 0xaf, 0x35, 0xf9, 0x52, 0x0b,
-	0x49, 0x9f, 0xc2, 0x99, 0xe8, 0x3b, 0xf6, 0xe4, 0xe9, 0x6d, 0xb0, 0x53, 0x6a, 0x36, 0x7a, 0xa1,
-	0x32, 0xc7, 0xd5, 0x9d, 0x47, 0x36, 0xf6, 0x22, 0xc6, 0xdd, 0x31, 0x18, 0x1b, 0x96, 0xd5, 0x40,
-	0xc8, 0xc3, 0xbe, 0xaf, 0x09, 0x83, 0xd2, 0xe7, 0x70, 0xd2, 0x24, 0x48, 0x9e, 0x19, 0x15, 0xa1,
-	0x77, 0x45, 0x84, 0x20, 0x77, 0x6b, 0x12, 0x94, 0x2b, 0x30, 0x91, 0x13, 0x49, 0x83, 0xb3, 0xd8,
-	0x46, 0x7a, 0x54, 0xb2, 0x72, 0x91, 0x39, 0xdc, 0xa8, 0xf1, 0x7a, 0xae, 0xc5, 0xf5, 0x5c, 0x3b,
-	0x8e, 0xeb, 0xb9, 0xb9, 0x29, 0x3c, 0x2e, 0x70, 0x8f, 0xb1, 0xa6, 0x7a, 0xfa, 0xa7, 0x02, 0xb4,
-	0x22, 0xb6, 0x51, 0x24, 0x2a, 0x99, 0x10, 0x9a, 0x04, 0xe9, 0x27, 0x86, 0x45, 0x1d, 0x4f, 0x9e,
-	0x65, 0xe1, 0xd9, 0x8f, 0x34, 0xff, 0x08, 0x95, 0x57, 0xc7, 0xa0, 0x3b, 0xc0, 0x56, 0x2f, 0x54,
-	0x16, 0x93, 0x5d, 0x09, 0x4b, 0xaa, 0x56, 0x32, 0x09, 0xba, 0xc3, 0x9e, 0xa5, 0xb7, 0x61, 0xb9,
-	0x9f, 0x1e, 0x5f, 0x2e, 0x6d, 0x4f, 0xee, 0x4c, 0x35, 0x57, 0x7b, 0xa1, 0x22, 0x25, 0x6a, 0xf1,
-	0x47, 0x55, 0x83, 0x66, 0x9c, 0x36, 0x5f, 0x7a, 0x0f, 0x56, 0x44, 0x69, 0xeb, 0x3e, 0x35, 0x68,
-	0xe0, 0xcb, 0x90, 0xa5, 0x7f, 0xbd, 0x17, 0x2a, 0x2b, 0x99, 0xd2, 0x17, 0xdf, 0x55, 0x6d, 0x5e,
-	0x2c, 0x1c, 0xb1, 0x77, 0x69, 0x07, 0xce, 0x18, 0xae, 0x1b, 0x15, 0x4e, 0x99, 0x69, 0x2e, 0xf6,
-	0x42, 0x65, 0x5e, 0x68, 0xb2, 0x75, 0x55, 0x9b, 0x36, 0x5c, 0xb7, 0x85, 0xa4, 0x1a, 0x9c, 0x65,
-	0x3d, 0x1d, 0xc9, 0xce, 0x31, 0xd9, 0xa5, 0x7e, 0xf0, 0xe2, 0x2f, 0xaa, 0x56, 0x64, 0x8f, 0x2d,
-	0xa4, 0xfe, 0x30, 0x0b, 0xcb, 0x07, 0xd8, 0xa4, 0x71, 0x93, 0xbf, 0x0e, 0x61, 0xcc, 0x72, 0x55,
-	0xb3, 0x97, 0x84, 0x40, 0x0b, 0x49, 0xdf, 0x02, 0xb8, 0xd0, 0xef, 0xda, 0x31, 0xbb, 0xbe, 0x25,
-	0x32, 0xba, 0x3a, 0xd8, 0xf5, 0xf9, 0x1b, 0xad, 0x92, 0x28, 0xf3, 0x5e, 0x7b, 0x0a, 0xe0, 0x12,
-	0x7e, 0xec, 0x62, 0x8b, 0x62, 0xa4, 0x07, 0x3e, 0xf6, 0xc6, 0xed, 0xfc, 0xbb, 0x82, 0x49, 0xa4,
-	0x23, 0xb1, 0x91, 0x1f, 0x69, 0x31, 0xd6, 0xbd, 0xe7, 0x63, 0x8f, 0x53, 0x7d, 0x0f, 0xe0, 0x4a,
-	0x62, 0xb1, 0x4b, 0xec, 0xc4, 0x30, 0x1b, 0x03, 0xff, 0x13, 0x57, 0x12, 0x97, 0x0f, 0x18, 0x00,
-	0x27, 0x4b, 0xb7, 0xe2, 0xf4, 0x0d, 0xb5, 0xe2, 0xd0, 0x79, 0x37, 0xf3, 0x62, 0xf3, 0xae, 0x78,
-	0xd3, 0xf3, 0xee, 0x1b, 0x00, 0x25, 0x2b, 0xf0, 0x3c, 0x6c, 0xd3, 0x88, 0x41, 0x37, 0xba, 0x4e,
-	0x60, 0x53, 0x36, 0x38, 0x9e, 0x9b, 0x8f, 0x86, 0x08, 0x41, 0x85, 0x63, 0x74, 0x89, 0xad, 0xe7,
-	0x9d, 0x81, 0x2f, 0x09, 0xbf, 0x4d, 0x82, 0x1a, 0xcc, 0xeb, 0x90, 0xf9, 0x50, 0xba, 0xf6, 0x7c,
-	0x80, 0x39, 0xe6, 0x43, 0x79, 0x8c, 0xf9, 0xf0, 0x5b, 0x05, 0xce, 0x1d, 0x04, 0xd4, 0xba, 0x1f,
-	0x0f, 0x88, 0xb7, 0x86, 0x0c, 0x88, 0x95, 0xfe, 0xec, 0xec, 0x7f, 0xcb, 0x0c, 0x8a, 0x9f, 0x00,
-	0x5c, 0xcf, 0x5c, 0x0e, 0x74, 0x62, 0x13, 0x1a, 0x87, 0x7d, 0xe4, 0xc8, 0x38, 0x12, 0x61, 0xdf,
-	0x16, 0xd9, 0xbf, 0xca, 0x52, 0xae, 0x44, 0xac, 0xa6, 0x6f, 0x0b, 0x2d, 0x9b, 0x50, 0x91, 0x8e,
-	0x5f, 0x01, 0xdc, 0xca, 0x7a, 0x88, 0x2b, 0x45, 0xe0, 0x8e, 0x9c, 0x26, 0x1f, 0x0b, 0xdc, 0x97,
-	0x87, 0xe1, 0x66, 0x8d, 0xe5, 0x22, 0x5e, 0x4f, 0x13, 0xef, 0x73, 0x3b, 0x02, 0xfa, 0x67, 0x00,
-	0x37, 0xd2, 0xf7, 0x15, 0x9d, 0x1a, 0x5e, 0x1b, 0x27, 0xc8, 0x23, 0x07, 0xcd, 0xb1, 0x40, 0xbe,
-	0x7d, 0xf9, 0xea, 0x93, 0x35, 0x95, 0x0b, 0x78, 0x2d, 0x75, 0x11, 0x3a, 0x66, 0x56, 0x04, 0xee,
-	0x2f, 0x00, 0x6e, 0x66, 0x7c, 0x0c, 0x84, 0x78, 0x7a, 0x14, 0xef, 0x3d, 0xc1, 0xab, 0x0e, 0xe1,
-	0x7d, 0x81, 0x08, 0xcb, 0x29, 0xe0, 0x6c, 0x80, 0x9f, 0x02, 0xb8, 0x79, 0xb9, 0xee, 0x88, 0xd1,
-	0xd1, 0x5d, 0x8f, 0x58, 0x98, 0x4d, 0xb8, 0x12, 0x0f, 0x63, 0xae, 0x3b, 0x87, 0x7a, 0x55, 0x49,
-	0x27, 0xa6, 0x55, 0x4d, 0x1e, 0xac, 0x54, 0x62, 0x74, 0x0e, 0xa3, 0x4f, 0x43, 0xa8, 0xe2, 0xcd,
-	0x73, 0xaa, 0xe2, 0x4d, 0x52, 0x65, 0x4c, 0x0f, 0x50, 0x89, 0x60, 0x71, 0xaa, 0xaf, 0x01, 0x5c,
-	0xcb, 0xaa, 0x46, 0x67, 0x05, 0x27, 0xe2, 0x77, 0xb3, 0xc3, 0xdc, 0x44, 0xd5, 0x61, 0x44, 0x89,
-	0x59, 0x55, 0x5b, 0x4e, 0xd3, 0xbc, 0x6f, 0x23, 0x4e, 0x72, 0x3a, 0xd8, 0x16, 0xd9, 0xf0, 0x94,
-	0x18, 0xcc, 0x51, 0x6e, 0x98, 0xdb, 0xcf, 0xa9, 0x3a, 0xc1, 0xb3, 0x76, 0xb9, 0x92, 0x38, 0x52,
-	0xfa, 0xcc, 0x85, 0x37, 0x74, 0xe6, 0x5e, 0x3e, 0x41, 0xca, 0x39, 0x4f, 0x90, 0x2f, 0x00, 0x5c,
-	0xce, 0x6c, 0xc7, 0xe0, 0x27, 0x26, 0xbb, 0x44, 0x96, 0x9a, 0x87, 0xfd, 0x5f, 0x69, 0xc3, 0xa4,
-	0xae, 0x71, 0x12, 0x4b, 0xa9, 0xf8, 0x88, 0x35, 0xe9, 0x2b, 0x00, 0x57, 0xb2, 0x09, 0x8e, 0x29,
-	0xe6, 0x19, 0xc5, 0x47, 0xbd, 0x50, 0xd9, 0x1a, 0x56, 0x07, 0xd7, 0xc7, 0x58, 0x4a, 0x97, 0x4d,
-	0xcc, 0xf1, 0x09, 0x84, 0x3e, 0x35, 0x3c, 0xca, 0x93, 0x54, 0x19, 0x99, 0xa4, 0x5b, 0x22, 0x49,
-	0xe2, 0x0c, 0xec, 0xeb, 0xf2, 0x34, 0x95, 0xd8, 0x42, 0x24, 0xde, 0x3c, 0x3a, 0xfb, 0xbb, 0x5a,
-	0xf8, 0xf1, 0xbc, 0x5a, 0x38, 0x3b, 0xaf, 0x82, 0x67, 0xe7, 0x55, 0xf0, 0xd7, 0x79, 0x15, 0x9c,
-	0x5e, 0x54, 0x0b, 0xcf, 0x2e, 0xaa, 0x85, 0xdf, 0x2f, 0xaa, 0x85, 0xcf, 0xf6, 0x32, 0xfc, 0xd1,
-	0x8f, 0xf4, 0x5d, 0xe7, 0xe4, 0x84, 0x58, 0xc4, 0xe8, 0x88, 0xf7, 0x7a, 0xff, 0x7f, 0x09, 0x6c,
-	0x3b, 0xe6, 0x0c, 0x43, 0x7a, 0xf3, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xd6, 0x45, 0x7e, 0x68,
-	0x6a, 0x10, 0x00, 0x00,
+	// 1388 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x98, 0x4d, 0x6f, 0xdc, 0x44,
+	0x18, 0xc7, 0x63, 0xda, 0xbc, 0xec, 0xec, 0x66, 0x37, 0x99, 0x34, 0x89, 0x93, 0xb4, 0xeb, 0xd4,
+	0x20, 0x9a, 0x4b, 0x77, 0xd5, 0x82, 0x90, 0x40, 0x42, 0x22, 0xdb, 0x17, 0xba, 0xaa, 0x4a, 0x2b,
+	0x27, 0xad, 0x80, 0x8b, 0xb1, 0x3d, 0x93, 0xed, 0x50, 0xaf, 0x6d, 0xec, 0x71, 0x5f, 0x24, 0x8e,
+	0x48, 0x48, 0x48, 0xa0, 0x4a, 0x3d, 0xf0, 0x15, 0x40, 0x20, 0x21, 0x71, 0xe1, 0x2b, 0xf4, 0xd8,
+	0x23, 0xe2, 0xb0, 0x40, 0x2a, 0xbe, 0xc0, 0x1e, 0x39, 0x21, 0xcf, 0x8c, 0x5f, 0xb3, 0xed, 0xae,
+	0x93, 0xd0, 0x53, 0xec, 0x99, 0x79, 0x9e, 0xe7, 0x37, 0x8f, 0x9f, 0xf9, 0xcf, 0xb3, 0x01, 0x6f,
+	0x58, 0x6e, 0x1f, 0xe1, 0x87, 0x6d, 0x23, 0xb4, 0x28, 0x71, 0x9d, 0xf6, 0xfd, 0x0b, 0x26, 0xa6,
+	0xc6, 0x85, 0xf8, 0xbd, 0xe5, 0xf9, 0x2e, 0x75, 0xe1, 0x0a, 0x5f, 0xd5, 0x8a, 0x47, 0xc5, 0xaa,
+	0xf5, 0x53, 0x3d, 0xb7, 0xe7, 0xb2, 0x25, 0xed, 0xe8, 0x89, 0xaf, 0x5e, 0x57, 0x7a, 0xae, 0xdb,
+	0xb3, 0x71, 0x9b, 0xbd, 0x99, 0xe1, 0x5e, 0x9b, 0x92, 0x3e, 0x0e, 0xa8, 0xd1, 0xf7, 0xc4, 0x82,
+	0xa6, 0xe5, 0x06, 0x7d, 0x37, 0x68, 0x9b, 0x46, 0x80, 0x93, 0x88, 0x96, 0x4b, 0x44, 0x38, 0xf5,
+	0x9f, 0x0a, 0xa8, 0xef, 0x84, 0xbe, 0x67, 0x87, 0xc1, 0x36, 0x8f, 0x08, 0xdf, 0x06, 0x40, 0x04,
+	0xd7, 0x09, 0x92, 0xa5, 0x4d, 0x69, 0xeb, 0x64, 0x67, 0x79, 0x38, 0x50, 0x16, 0x1f, 0x19, 0x7d,
+	0xfb, 0x3d, 0x35, 0x9d, 0x53, 0xb5, 0x8a, 0x78, 0xe9, 0x22, 0xf8, 0x9d, 0x04, 0xe6, 0xdd, 0x90,
+	0xee, 0xd9, 0xee, 0x03, 0x9d, 0xba, 0xf7, 0xb0, 0x23, 0xbf, 0xb6, 0x29, 0x6d, 0x55, 0x2f, 0xae,
+	0xb5, 0x38, 0x41, 0x2b, 0x22, 0x88, 0x77, 0xd3, 0xba, 0xe4, 0x12, 0xa7, 0xf3, 0xd1, 0xd3, 0x81,
+	0x32, 0x35, 0x1c, 0x28, 0x1b, 0x39, 0xc7, 0x18, 0xe9, 0x96, 0x6b, 0xdb, 0x06, 0xc5, 0xbe, 0x61,
+	0xab, 0xff, 0x0e, 0x94, 0x73, 0x3d, 0x42, 0xef, 0x86, 0x66, 0xcb, 0x72, 0xfb, 0x6d, 0xb1, 0x1b,
+	0xfe, 0xe7, 0x7c, 0x80, 0xee, 0xb5, 0xe9, 0x23, 0x0f, 0x07, 0xcc, 0x9f, 0x56, 0x13, 0xf1, 0x77,
+	0xa3, 0xf0, 0xf0, 0x2b, 0x09, 0xd4, 0x88, 0x93, 0xe1, 0x39, 0x31, 0x8e, 0xe7, 0xaa, 0xe0, 0x59,
+	0xe2, 0x3c, 0x59, 0xe3, 0x52, 0x1c, 0x55, 0x6e, 0xc9, 0x31, 0xae, 0x81, 0x45, 0xc3, 0xa2, 0xe4,
+	0x3e, 0xd6, 0x4d, 0x82, 0x10, 0x71, 0x7a, 0x51, 0x52, 0x4f, 0xb2, 0xa4, 0x9e, 0x1e, 0x0e, 0x14,
+	0x59, 0xec, 0xbd, 0xb8, 0x44, 0xd5, 0x1a, 0x7c, 0xac, 0xc3, 0x87, 0xba, 0x08, 0x7e, 0x02, 0x66,
+	0xa2, 0x79, 0xec, 0xcb, 0xd3, 0x9b, 0xd2, 0x56, 0xa5, 0xb3, 0x3d, 0x1c, 0x28, 0x35, 0x6e, 0xee,
+	0x3e, 0x70, 0xb0, 0x1f, 0x31, 0x9e, 0x9f, 0x80, 0x71, 0xdb, 0xb2, 0xb6, 0x11, 0xf2, 0x71, 0x10,
+	0x68, 0xc2, 0x21, 0xfc, 0x1c, 0x9c, 0x30, 0x09, 0x92, 0x67, 0xc6, 0x65, 0xe8, 0x7d, 0x91, 0x21,
+	0xc0, 0xc3, 0x9a, 0x04, 0x95, 0x4a, 0x4c, 0x14, 0x04, 0x6a, 0x60, 0x0e, 0x3b, 0x48, 0x8f, 0x0a,
+	0x55, 0x9e, 0x65, 0x01, 0xd7, 0x5b, 0xbc, 0x8a, 0x5b, 0x71, 0x15, 0xb7, 0x76, 0xe3, 0x2a, 0xee,
+	0x6c, 0x88, 0x88, 0x0d, 0x1e, 0x31, 0xb6, 0x54, 0x1f, 0xff, 0xa9, 0x48, 0xda, 0x2c, 0x76, 0x50,
+	0xb4, 0x14, 0x9a, 0x00, 0x98, 0x04, 0xe9, 0x7b, 0x86, 0x45, 0x5d, 0x5f, 0x9e, 0x63, 0xe9, 0xb9,
+	0x14, 0x59, 0xfe, 0x31, 0x50, 0xde, 0x9c, 0x80, 0xee, 0x32, 0xb6, 0xd2, 0x02, 0x4f, 0x3d, 0xa9,
+	0x5a, 0xc5, 0x24, 0xe8, 0x2a, 0x7b, 0x86, 0x9f, 0x81, 0x6a, 0xfa, 0x79, 0x02, 0xb9, 0xb2, 0x79,
+	0x62, 0xab, 0x7a, 0xf1, 0x5c, 0x6b, 0xf4, 0x71, 0x6d, 0x99, 0x04, 0xdd, 0x8c, 0x3e, 0xca, 0x0d,
+	0xc3, 0xf3, 0x88, 0xd3, 0xeb, 0xac, 0x0c, 0x07, 0x0a, 0x4c, 0xfc, 0xc7, 0x5e, 0x54, 0x0d, 0x98,
+	0xf1, 0xf7, 0x0d, 0xe0, 0x07, 0xa0, 0x1e, 0x1f, 0xae, 0x80, 0x1a, 0x34, 0x0c, 0x64, 0xc0, 0xea,
+	0x64, 0x6d, 0x38, 0x50, 0x96, 0xf3, 0x87, 0x8f, 0xcf, 0xab, 0xda, 0xbc, 0x18, 0xd8, 0x61, 0xef,
+	0x70, 0x0b, 0xcc, 0x18, 0x9e, 0x17, 0x55, 0x58, 0x95, 0x59, 0x2e, 0x0e, 0x07, 0xca, 0xbc, 0xb0,
+	0x64, 0xe3, 0xaa, 0x36, 0x6d, 0x78, 0x5e, 0x17, 0xc1, 0x16, 0x98, 0x33, 0x82, 0x00, 0xd3, 0x68,
+	0x6d, 0x8d, 0xad, 0x5d, 0x4a, 0xb3, 0x1c, 0xcf, 0xa8, 0xda, 0x2c, 0x7b, 0xec, 0x22, 0x78, 0x1d,
+	0xc0, 0x38, 0x76, 0x9f, 0x6f, 0x29, 0xb2, 0x9c, 0x67, 0x96, 0x67, 0x86, 0x03, 0x65, 0x2d, 0xcf,
+	0x97, 0xae, 0x51, 0xb5, 0x05, 0x31, 0x28, 0x52, 0xd1, 0x45, 0xf0, 0x1d, 0x50, 0x15, 0x21, 0x98,
+	0xc4, 0xd4, 0x99, 0x97, 0x4c, 0x86, 0x32, 0x93, 0x91, 0xc6, 0x30, 0x84, 0x48, 0x63, 0xde, 0x05,
+	0x35, 0x3e, 0xe5, 0x86, 0x0c, 0xbc, 0xc1, 0x0c, 0x57, 0xd3, 0x23, 0x9b, 0x9d, 0x55, 0x35, 0xc0,
+	0x5e, 0x6f, 0x86, 0xb4, 0x8b, 0xd4, 0x9f, 0xaa, 0xa0, 0x7a, 0x19, 0x9b, 0xf4, 0x68, 0x22, 0xf7,
+	0xad, 0x04, 0x1a, 0xa9, 0x4c, 0x4d, 0x28, 0x73, 0x5d, 0x51, 0xc2, 0x2b, 0x45, 0x99, 0x2b, 0xaf,
+	0x2c, 0xf5, 0xc4, 0x98, 0x8b, 0xcb, 0x13, 0x09, 0x2c, 0xe1, 0x87, 0x1e, 0xb6, 0x28, 0x46, 0x7a,
+	0x18, 0x60, 0x7f, 0x52, 0xa9, 0xbb, 0x26, 0x98, 0x44, 0x59, 0x25, 0x3e, 0xca, 0x23, 0x2d, 0xc6,
+	0xb6, 0xb7, 0x03, 0xec, 0x73, 0xaa, 0xef, 0x25, 0xb0, 0x9c, 0x78, 0xec, 0x13, 0x27, 0x71, 0xcc,
+	0x74, 0xef, 0x15, 0x71, 0x25, 0x79, 0xb9, 0xc1, 0x00, 0x38, 0x59, 0x56, 0x7b, 0xa6, 0x8f, 0x49,
+	0x7b, 0x46, 0x0a, 0xfc, 0xcc, 0xd1, 0x04, 0x7e, 0xf6, 0xb8, 0x05, 0xfe, 0x1b, 0x09, 0x40, 0x2b,
+	0xf4, 0x7d, 0xec, 0xd0, 0x88, 0x41, 0x37, 0xfa, 0x6e, 0xe8, 0x50, 0xa6, 0x94, 0x2f, 0xfd, 0x1e,
+	0xdb, 0x22, 0x05, 0x75, 0x8e, 0xd1, 0x27, 0x8e, 0x5e, 0x56, 0xf4, 0x17, 0x44, 0xdc, 0x0e, 0x41,
+	0xdb, 0x2c, 0xea, 0x08, 0x9d, 0xab, 0x1c, 0x5a, 0xe7, 0x40, 0x09, 0x9d, 0xab, 0x4e, 0xa0, 0x73,
+	0x05, 0x95, 0xaf, 0x1d, 0xbf, 0xca, 0x1f, 0xab, 0x92, 0xe6, 0x2f, 0xbe, 0xfa, 0xff, 0x72, 0xf1,
+	0x15, 0xd4, 0xba, 0x71, 0x58, 0xb5, 0x5e, 0x98, 0x5c, 0xad, 0x7f, 0x5b, 0x04, 0xb5, 0xcb, 0x21,
+	0xb5, 0xee, 0x1e, 0x4d, 0xae, 0x7f, 0x94, 0xc0, 0x5a, 0xae, 0x27, 0xd5, 0x89, 0x43, 0x68, 0x5c,
+	0xfc, 0x63, 0x85, 0x7b, 0x47, 0x14, 0xff, 0xa6, 0x38, 0x83, 0x2f, 0xf2, 0x54, 0xea, 0x38, 0xac,
+	0x64, 0x9b, 0xd4, 0xae, 0x43, 0xa8, 0x38, 0x14, 0xbf, 0x4a, 0xe0, 0x74, 0x3e, 0x42, 0x7c, 0x5e,
+	0x05, 0xee, 0x58, 0x4d, 0xbf, 0x23, 0x70, 0x5f, 0x1f, 0x85, 0x9b, 0x77, 0x56, 0x8a, 0x78, 0x2d,
+	0x4b, 0x7c, 0x89, 0xfb, 0x11, 0xd0, 0x3f, 0x4b, 0x60, 0x3d, 0xdb, 0x26, 0xeb, 0xd4, 0xf0, 0x7b,
+	0x38, 0x41, 0x1e, 0x2b, 0xf7, 0xbb, 0x02, 0xf9, 0xec, 0xc1, 0x8e, 0x3b, 0xef, 0xaa, 0x14, 0xf0,
+	0x6a, 0xa6, 0xff, 0xde, 0x65, 0x5e, 0x04, 0xee, 0x2f, 0x12, 0xd8, 0xc8, 0xc5, 0x28, 0xa4, 0x78,
+	0x7a, 0x1c, 0xef, 0x6d, 0xc1, 0xab, 0x8e, 0xe0, 0x3d, 0x42, 0x86, 0xe5, 0x0c, 0x70, 0x3e, 0xc1,
+	0x4f, 0x24, 0xb0, 0x71, 0xb0, 0xee, 0x88, 0x61, 0xeb, 0x9e, 0x4f, 0x2c, 0xcc, 0xee, 0x99, 0x0a,
+	0x4f, 0x63, 0xa9, 0x13, 0xaf, 0xbe, 0xa8, 0xa4, 0x13, 0xd7, 0xaa, 0x26, 0x17, 0x2b, 0x95, 0x18,
+	0xf6, 0xad, 0x68, 0x6a, 0x04, 0x55, 0xbc, 0x79, 0x4e, 0x35, 0x7b, 0x9c, 0x54, 0x39, 0xd7, 0x05,
+	0x2a, 0x91, 0x2c, 0x4e, 0xf5, 0xb5, 0x04, 0x56, 0xf3, 0xa6, 0xd1, 0x8d, 0xcd, 0x89, 0xf8, 0x4f,
+	0x82, 0x5b, 0xa5, 0x89, 0x9a, 0xa3, 0x88, 0x12, 0xb7, 0xaa, 0x76, 0x2a, 0x4b, 0x73, 0xc5, 0x41,
+	0x9c, 0xe4, 0x71, 0xf1, 0x58, 0xe4, 0xd3, 0x53, 0x61, 0x30, 0x3b, 0xa5, 0x61, 0xce, 0xbe, 0xa4,
+	0xea, 0x04, 0xcf, 0xea, 0xc1, 0x4a, 0xe2, 0x48, 0xd9, 0xce, 0x07, 0x1c, 0x53, 0xe7, 0x73, 0xf0,
+	0x1e, 0xaf, 0x96, 0xbc, 0xc7, 0x3f, 0x06, 0x20, 0xa0, 0x86, 0x4f, 0x39, 0x57, 0x6d, 0x2c, 0xd7,
+	0x19, 0xc1, 0x25, 0x64, 0x3f, 0xb5, 0xe5, 0x64, 0x15, 0x36, 0xc0, 0xd8, 0x0a, 0xf7, 0xf8, 0xfc,
+	0xab, 0xba, 0xc7, 0xeb, 0x87, 0xbb, 0xc7, 0xd3, 0x86, 0xa6, 0x31, 0xa6, 0xa1, 0x29, 0xdc, 0xc6,
+	0x0b, 0x87, 0xbd, 0x8d, 0x17, 0x27, 0xbe, 0x8d, 0x61, 0x07, 0x34, 0x6c, 0xd7, 0xba, 0x87, 0x91,
+	0x7e, 0xdf, 0x08, 0x6d, 0x66, 0x0d, 0x99, 0xf5, 0x7a, 0xfa, 0xab, 0xa6, 0xb0, 0x40, 0xd5, 0xe6,
+	0xf9, 0xc8, 0x9d, 0x68, 0xa0, 0x8b, 0xe0, 0x5d, 0x50, 0xe5, 0x73, 0xac, 0x93, 0x95, 0x97, 0xd8,
+	0x11, 0xf8, 0x30, 0xc5, 0xce, 0x4c, 0x1e, 0xa2, 0xcd, 0x05, 0xcc, 0x9c, 0x7d, 0x42, 0xf8, 0x25,
+	0x58, 0xb2, 0xc9, 0x17, 0x21, 0x41, 0x06, 0xcb, 0xbb, 0x87, 0x1d, 0xc3, 0xa6, 0x8f, 0xe4, 0x53,
+	0x2c, 0xe2, 0xf5, 0xd2, 0x87, 0x4e, 0x7c, 0xc6, 0xc4, 0x65, 0xe2, 0x51, 0xd5, 0x60, 0x26, 0xce,
+	0x2d, 0x31, 0x78, 0x05, 0x34, 0x0a, 0xc5, 0x04, 0x97, 0x59, 0x5b, 0x9f, 0xf4, 0x2d, 0xda, 0xb4,
+	0x49, 0x50, 0x17, 0xc1, 0x0d, 0x10, 0xf5, 0x58, 0x22, 0x1f, 0x51, 0x2f, 0x52, 0xd1, 0xe6, 0x62,
+	0xd3, 0xce, 0xce, 0xd3, 0xbf, 0x9b, 0x53, 0x3f, 0xec, 0x37, 0xa7, 0x9e, 0xee, 0x37, 0xa5, 0x67,
+	0xfb, 0x4d, 0xe9, 0xaf, 0xfd, 0xa6, 0xf4, 0xf8, 0x79, 0x73, 0xea, 0xd9, 0xf3, 0xe6, 0xd4, 0xef,
+	0xcf, 0x9b, 0x53, 0x9f, 0x5e, 0xc8, 0xed, 0x20, 0xaa, 0xea, 0xf3, 0xee, 0xde, 0x1e, 0xb1, 0x88,
+	0x61, 0x8b, 0xf7, 0x76, 0xfa, 0xaf, 0x46, 0xb6, 0x21, 0x73, 0x86, 0x9d, 0xa8, 0xb7, 0xfe, 0x0b,
+	0x00, 0x00, 0xff, 0xff, 0xb3, 0x2e, 0xfb, 0x48, 0x89, 0x14, 0x00, 0x00,
 }
 
 func (m *SurplusAuction) Marshal() (dAtA []byte, err error) {
@@ -285,6 +348,21 @@ func (m *SurplusAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.AssetOutId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AssetOutId))
+		i--
+		dAtA[i] = 0x78
+	}
+	if m.AssetInId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AssetInId))
+		i--
+		dAtA[i] = 0x70
+	}
+	if m.AuctionMappingId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AuctionMappingId))
+		i--
+		dAtA[i] = 0x68
+	}
 	if m.AssetId != 0 {
 		i = encodeVarintAuction(dAtA, i, uint64(m.AssetId))
 		i--
@@ -301,22 +379,18 @@ func (m *SurplusAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x50
 	}
 	if len(m.BiddingIds) > 0 {
-		dAtA2 := make([]byte, len(m.BiddingIds)*10)
-		var j1 int
-		for _, num := range m.BiddingIds {
-			for num >= 1<<7 {
-				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j1++
+		for iNdEx := len(m.BiddingIds) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.BiddingIds[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintAuction(dAtA, i, uint64(size))
 			}
-			dAtA2[j1] = uint8(num)
-			j1++
+			i--
+			dAtA[i] = 0x4a
 		}
-		i -= j1
-		copy(dAtA[i:], dAtA2[:j1])
-		i = encodeVarintAuction(dAtA, i, uint64(j1))
-		i--
-		dAtA[i] = 0x4a
 	}
 	{
 		size := m.BidFactor.Size()
@@ -328,12 +402,12 @@ func (m *SurplusAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x42
-	n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
-	if err3 != nil {
-		return 0, err3
+	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
+	if err1 != nil {
+		return 0, err1
 	}
-	i -= n3
-	i = encodeVarintAuction(dAtA, i, uint64(n3))
+	i -= n1
+	i = encodeVarintAuction(dAtA, i, uint64(n1))
 	i--
 	dAtA[i] = 0x3a
 	{
@@ -378,8 +452,8 @@ func (m *SurplusAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x12
-	if m.Id != 0 {
-		i = encodeVarintAuction(dAtA, i, uint64(m.Id))
+	if m.AuctionId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AuctionId))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -406,6 +480,47 @@ func (m *DebtAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.AssetOutId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AssetOutId))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.AssetInId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AssetInId))
+		i--
+		dAtA[i] = 0x78
+	}
+	{
+		size := m.BidFactor.Size()
+		i -= size
+		if _, err := m.BidFactor.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintAuction(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x72
+	if m.AuctionMappingId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AuctionMappingId))
+		i--
+		dAtA[i] = 0x68
+	}
+	if len(m.BiddingIds) > 0 {
+		for iNdEx := len(m.BiddingIds) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.BiddingIds[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintAuction(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x62
+		}
+	}
 	if m.AssetId != 0 {
 		i = encodeVarintAuction(dAtA, i, uint64(m.AssetId))
 		i--
@@ -443,12 +558,12 @@ func (m *DebtAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x30
 	}
-	n8, err8 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
-	if err8 != nil {
-		return 0, err8
+	n6, err6 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
+	if err6 != nil {
+		return 0, err6
 	}
-	i -= n8
-	i = encodeVarintAuction(dAtA, i, uint64(n8))
+	i -= n6
+	i = encodeVarintAuction(dAtA, i, uint64(n6))
 	i--
 	dAtA[i] = 0x2a
 	{
@@ -509,39 +624,91 @@ func (m *DutchAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n12, err12 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime):])
-	if err12 != nil {
-		return 0, err12
+	{
+		size := m.LiquidationPenalty.Size()
+		i -= size
+		if _, err := m.LiquidationPenalty.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintAuction(dAtA, i, uint64(size))
 	}
-	i -= n12
-	i = encodeVarintAuction(dAtA, i, uint64(n12))
 	i--
-	dAtA[i] = 0x72
-	if len(m.OutflowTokenAddress) > 0 {
-		i -= len(m.OutflowTokenAddress)
-		copy(dAtA[i:], m.OutflowTokenAddress)
-		i = encodeVarintAuction(dAtA, i, uint64(len(m.OutflowTokenAddress)))
+	dAtA[i] = 0x1
+	i--
+	dAtA[i] = 0xa2
+	if len(m.VaultOwner) > 0 {
+		i -= len(m.VaultOwner)
+		copy(dAtA[i:], m.VaultOwner)
+		i = encodeVarintAuction(dAtA, i, uint64(len(m.VaultOwner)))
 		i--
-		dAtA[i] = 0x6a
-	}
-	if len(m.InflowTokenAddress) > 0 {
-		i -= len(m.InflowTokenAddress)
-		copy(dAtA[i:], m.InflowTokenAddress)
-		i = encodeVarintAuction(dAtA, i, uint64(len(m.InflowTokenAddress)))
+		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x62
+		dAtA[i] = 0x9a
 	}
+	if m.LockedVaultId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.LockedVaultId))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x90
+	}
+	if m.AssetOutId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AssetOutId))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x88
+	}
+	if m.AssetInId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AssetInId))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.AppId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x78
+	}
+	if m.AuctionMappingId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.AuctionMappingId))
+		i--
+		dAtA[i] = 0x70
+	}
+	if len(m.BiddingIds) > 0 {
+		for iNdEx := len(m.BiddingIds) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.BiddingIds[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintAuction(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x6a
+		}
+	}
+	n10, err10 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime):])
+	if err10 != nil {
+		return 0, err10
+	}
+	i -= n10
+	i = encodeVarintAuction(dAtA, i, uint64(n10))
+	i--
+	dAtA[i] = 0x62
 	if m.AuctionStatus != 0 {
 		i = encodeVarintAuction(dAtA, i, uint64(m.AuctionStatus))
 		i--
 		dAtA[i] = 0x58
 	}
-	n13, err13 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
-	if err13 != nil {
-		return 0, err13
+	n11, err11 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
+	if err11 != nil {
+		return 0, err11
 	}
-	i -= n13
-	i = encodeVarintAuction(dAtA, i, uint64(n13))
+	i -= n11
+	i = encodeVarintAuction(dAtA, i, uint64(n11))
 	i--
 	dAtA[i] = 0x52
 	{
@@ -632,6 +799,41 @@ func (m *DutchAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *BidOwnerMapping) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BidOwnerMapping) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BidOwnerMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.BidOwner) > 0 {
+		i -= len(m.BidOwner)
+		copy(dAtA[i:], m.BidOwner)
+		i = encodeVarintAuction(dAtA, i, uint64(len(m.BidOwner)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.BidId != 0 {
+		i = encodeVarintAuction(dAtA, i, uint64(m.BidId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintAuction(dAtA []byte, offset int, v uint64) int {
 	offset -= sovAuction(v)
 	base := offset
@@ -649,8 +851,8 @@ func (m *SurplusAuction) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovAuction(uint64(m.Id))
+	if m.AuctionId != 0 {
+		n += 1 + sovAuction(uint64(m.AuctionId))
 	}
 	l = m.OutflowToken.Size()
 	n += 1 + l + sovAuction(uint64(l))
@@ -670,11 +872,10 @@ func (m *SurplusAuction) Size() (n int) {
 	l = m.BidFactor.Size()
 	n += 1 + l + sovAuction(uint64(l))
 	if len(m.BiddingIds) > 0 {
-		l = 0
 		for _, e := range m.BiddingIds {
-			l += sovAuction(uint64(e))
+			l = e.Size()
+			n += 1 + l + sovAuction(uint64(l))
 		}
-		n += 1 + sovAuction(uint64(l)) + l
 	}
 	if m.AuctionStatus != 0 {
 		n += 1 + sovAuction(uint64(m.AuctionStatus))
@@ -684,6 +885,15 @@ func (m *SurplusAuction) Size() (n int) {
 	}
 	if m.AssetId != 0 {
 		n += 1 + sovAuction(uint64(m.AssetId))
+	}
+	if m.AuctionMappingId != 0 {
+		n += 1 + sovAuction(uint64(m.AuctionMappingId))
+	}
+	if m.AssetInId != 0 {
+		n += 1 + sovAuction(uint64(m.AssetInId))
+	}
+	if m.AssetOutId != 0 {
+		n += 1 + sovAuction(uint64(m.AssetOutId))
 	}
 	return n
 }
@@ -723,6 +933,23 @@ func (m *DebtAuction) Size() (n int) {
 	if m.AssetId != 0 {
 		n += 1 + sovAuction(uint64(m.AssetId))
 	}
+	if len(m.BiddingIds) > 0 {
+		for _, e := range m.BiddingIds {
+			l = e.Size()
+			n += 1 + l + sovAuction(uint64(l))
+		}
+	}
+	if m.AuctionMappingId != 0 {
+		n += 1 + sovAuction(uint64(m.AuctionMappingId))
+	}
+	l = m.BidFactor.Size()
+	n += 1 + l + sovAuction(uint64(l))
+	if m.AssetInId != 0 {
+		n += 1 + sovAuction(uint64(m.AssetInId))
+	}
+	if m.AssetOutId != 0 {
+		n += 2 + sovAuction(uint64(m.AssetOutId))
+	}
 	return n
 }
 
@@ -756,16 +983,51 @@ func (m *DutchAuction) Size() (n int) {
 	if m.AuctionStatus != 0 {
 		n += 1 + sovAuction(uint64(m.AuctionStatus))
 	}
-	l = len(m.InflowTokenAddress)
-	if l > 0 {
-		n += 1 + l + sovAuction(uint64(l))
-	}
-	l = len(m.OutflowTokenAddress)
-	if l > 0 {
-		n += 1 + l + sovAuction(uint64(l))
-	}
 	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime)
 	n += 1 + l + sovAuction(uint64(l))
+	if len(m.BiddingIds) > 0 {
+		for _, e := range m.BiddingIds {
+			l = e.Size()
+			n += 1 + l + sovAuction(uint64(l))
+		}
+	}
+	if m.AuctionMappingId != 0 {
+		n += 1 + sovAuction(uint64(m.AuctionMappingId))
+	}
+	if m.AppId != 0 {
+		n += 1 + sovAuction(uint64(m.AppId))
+	}
+	if m.AssetInId != 0 {
+		n += 2 + sovAuction(uint64(m.AssetInId))
+	}
+	if m.AssetOutId != 0 {
+		n += 2 + sovAuction(uint64(m.AssetOutId))
+	}
+	if m.LockedVaultId != 0 {
+		n += 2 + sovAuction(uint64(m.LockedVaultId))
+	}
+	l = len(m.VaultOwner)
+	if l > 0 {
+		n += 2 + l + sovAuction(uint64(l))
+	}
+	l = m.LiquidationPenalty.Size()
+	n += 2 + l + sovAuction(uint64(l))
+	return n
+}
+
+func (m *BidOwnerMapping) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.BidId != 0 {
+		n += 1 + sovAuction(uint64(m.BidId))
+	}
+	l = len(m.BidOwner)
+	if l > 0 {
+		n += 1 + l + sovAuction(uint64(l))
+	}
 	return n
 }
 
@@ -806,9 +1068,9 @@ func (m *SurplusAuction) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionId", wireType)
 			}
-			m.Id = 0
+			m.AuctionId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowAuction
@@ -818,7 +1080,7 @@ func (m *SurplusAuction) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				m.AuctionId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1041,81 +1303,39 @@ func (m *SurplusAuction) Unmarshal(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 9:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowAuction
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.BiddingIds = append(m.BiddingIds, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowAuction
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthAuction
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthAuction
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
-				}
-				elementCount = count
-				if elementCount != 0 && len(m.BiddingIds) == 0 {
-					m.BiddingIds = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowAuction
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.BiddingIds = append(m.BiddingIds, v)
-				}
-			} else {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BiddingIds", wireType)
 			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAuction
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthAuction
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BiddingIds = append(m.BiddingIds, &BidOwnerMapping{})
+			if err := m.BiddingIds[len(m.BiddingIds)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		case 10:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AuctionStatus", wireType)
@@ -1169,6 +1389,63 @@ func (m *SurplusAuction) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.AssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 13:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionMappingId", wireType)
+			}
+			m.AuctionMappingId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AuctionMappingId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 14:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetInId", wireType)
+			}
+			m.AssetInId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetInId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 15:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutId", wireType)
+			}
+			m.AssetOutId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetOutId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1511,6 +1788,131 @@ func (m *DebtAuction) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.AssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 12:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BiddingIds", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAuction
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthAuction
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BiddingIds = append(m.BiddingIds, &BidOwnerMapping{})
+			if err := m.BiddingIds[len(m.BiddingIds)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 13:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionMappingId", wireType)
+			}
+			m.AuctionMappingId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AuctionMappingId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 14:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BidFactor", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAuction
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAuction
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.BidFactor.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 15:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetInId", wireType)
+			}
+			m.AssetInId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetInId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 16:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutId", wireType)
+			}
+			m.AssetOutId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetOutId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1906,70 +2308,6 @@ func (m *DutchAuction) Unmarshal(dAtA []byte) error {
 			}
 		case 12:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field InflowTokenAddress", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAuction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthAuction
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthAuction
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.InflowTokenAddress = github_com_cosmos_cosmos_sdk_types.AccAddress(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 13:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OutflowTokenAddress", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAuction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthAuction
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthAuction
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.OutflowTokenAddress = github_com_cosmos_cosmos_sdk_types.AccAddress(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 14:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StartTime", wireType)
 			}
 			var msglen int
@@ -2000,6 +2338,302 @@ func (m *DutchAuction) Unmarshal(dAtA []byte) error {
 			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		case 13:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BiddingIds", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAuction
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthAuction
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BiddingIds = append(m.BiddingIds, &BidOwnerMapping{})
+			if err := m.BiddingIds[len(m.BiddingIds)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 14:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionMappingId", wireType)
+			}
+			m.AuctionMappingId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AuctionMappingId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 15:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 16:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetInId", wireType)
+			}
+			m.AssetInId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetInId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 17:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutId", wireType)
+			}
+			m.AssetOutId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetOutId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 18:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LockedVaultId", wireType)
+			}
+			m.LockedVaultId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.LockedVaultId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 19:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultOwner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAuction
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAuction
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.VaultOwner = github_com_cosmos_cosmos_sdk_types.AccAddress(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 20:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LiquidationPenalty", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAuction
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAuction
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.LiquidationPenalty.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAuction(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAuction
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BidOwnerMapping) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAuction
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: bidOwnerMapping: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: bidOwnerMapping: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BidId", wireType)
+			}
+			m.BidId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BidId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BidOwner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAuction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAuction
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAuction
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BidOwner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

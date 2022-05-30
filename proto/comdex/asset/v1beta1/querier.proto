@@ -86,6 +86,14 @@ message QueryAppResponse {
   ];
 }
 
+message QueryTokenGovRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+}
+
+message QueryTokenGovResponse {
+  uint64 gov_asset_id = 1 [(gogoproto.moretags) = "yaml:\"gov_asset_id\""];
+}
+
 message QueryAppsRequest {}
 
 message QueryAppsResponse {
@@ -120,7 +128,10 @@ message QueryProductToExtendedPairRequest {
 }
 
 message QueryProductToExtendedPairResponse {
-  repeated ExtendedPairVault extended_pair =1 [(gogoproto.moretags) = "yaml:\"extended_pair\""];
+  repeated ExtendedPairVault extended_pair =1 [
+    (gogoproto.moretags) = "yaml:\"extended_pair\"",
+    (gogoproto.nullable) = false
+  ];
 }
 
 message QueryExtendedPairPsmPairWiseRequest {
@@ -129,6 +140,17 @@ message QueryExtendedPairPsmPairWiseRequest {
 
 message QueryExtendedPairPsmPairWiseResponse {
   repeated uint64 extended_pairs_id =1 [(gogoproto.moretags) = "yaml:\"extended_pairs_id\""];
+}
+
+message QueryExtendedPairDataPsmPairWiseRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+}
+
+message QueryExtendedPairDataPsmPairWiseResponse {
+  repeated ExtendedPairVault extended_pair =1 [
+    (gogoproto.moretags) = "yaml:\"extended_pair\"",
+    (gogoproto.nullable) = false
+  ];
 }
 
 service QueryService {
@@ -164,6 +186,12 @@ service QueryService {
   }
   rpc QueryExtendedPairPsmPairWise(QueryExtendedPairPsmPairWiseRequest) returns (QueryExtendedPairPsmPairWiseResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_psm_pair_wise/{product_id}";
+  }
+  rpc QueryTokenGov(QueryTokenGovRequest) returns (QueryTokenGovResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/check_for_token_gov/{app_id}";
+  }
+  rpc QueryExtendedPairDataPsmPairWise(QueryExtendedPairDataPsmPairWiseRequest) returns (QueryExtendedPairDataPsmPairWiseResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_psm_wise/{app_id}";
   }
 
 }

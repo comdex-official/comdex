@@ -7,7 +7,7 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
-	/*	err := k.LiquidateVaults(ctx)
+	err := k.LiquidateVaults(ctx)
 		if err != nil {
 			return
 		}
@@ -18,5 +18,5 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 		err = k.UnliquidateLockedVaults(ctx)
 		if err != nil {
 			return
-		}*/
+		}
 }

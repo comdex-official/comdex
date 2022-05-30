@@ -24,13 +24,6 @@ message CollectorData {
     (gogoproto.moretags)   = "yaml:\"collected_opening_fee\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  // stability + closing + opening
-  string net_fees_collected = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags)   = "yaml:\"net_fees_collected\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
-  ];
-  // from liquidation
   string liquidation_rewards_collected = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags)   = "yaml:\"liquidation_rewards_collected\"",
@@ -39,6 +32,19 @@ message CollectorData {
 
 }
 
+message NetFeeCollectedData {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  repeated AssetIdToFeeCollected assetIdToFeeCollected = 2 [(gogoproto.moretags) = "yaml:\"assetIdToFeeCollected\""];
+}
+
+message AssetIdToFeeCollected {
+  uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  string net_fees_collected = 2 [
+    (gogoproto.moretags)   = "yaml:\"net_fees_collected\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+}
 message AppIdToAssetCollectorMapping {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
   repeated AssetIdCollectorMappping asset_collector = 2 [(gogoproto.moretags) = "yaml:\"asset_collector\""];

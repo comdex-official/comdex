@@ -107,7 +107,37 @@ func (k *Keeper) SetCollectorAuctionLookupTable(ctx sdk.Context, records ...type
 func (k *Keeper) GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.CollectorAuctionLookupTable, found bool) {
 	return k.collector.GetCollectorAuctionLookupTable(ctx, app_id)
 }
-
+func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData types.NetFeeCollectedData, found bool) {
+	return k.collector.GetNetFeeCollectedData(ctx, app_id)
+}
 func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool) {
 	return k.asset.GetApps(ctx)
+}
+
+func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, address string, amount sdk.Int) error {
+	return k.tokenmint.MintNewTokensForApp(ctx, appMappingId, assetId, address, amount)
+}
+
+func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, amount sdk.Int) error {
+	return k.tokenmint.BurnTokensForApp(ctx, appMappingId, assetId, amount)
+}
+
+func (k *Keeper) GetAmountFromCollector(ctx sdk.Context, appId, asset_id uint64, amount sdk.Int) (sdk.Int, error) {
+	return k.collector.GetAmountFromCollector(ctx, appId, asset_id, amount)
+}
+
+func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error {
+	return k.collector.SetNetFeeCollectedData(ctx, app_id, asset_id, fee)
+}
+
+func (k *Keeper) GetLockedVault(ctx sdk.Context, id uint64) (locked_vault liquidationtypes.LockedVault, found bool) {
+	return k.liquidation.GetLockedVault(ctx, id)
+}
+
+func (k *Keeper) SetLockedVault(ctx sdk.Context, locked_vault liquidationtypes.LockedVault) {
+	k.liquidation.SetLockedVault(ctx, locked_vault)
+}
+
+func (k *Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool) {
+	return k.asset.GetPairsVault(ctx, id)
 }

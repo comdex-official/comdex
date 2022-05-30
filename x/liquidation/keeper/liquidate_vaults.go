@@ -217,13 +217,13 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 					if !found {
 						continue
 					}
-					/*assetOut, found := k.GetAsset(ctx, pair.AssetOut)
-					if !found {
-						continue
-					}*/
+
 					if lockedVault.AmountOut.IsZero() {
-						k.CreateLockedVaultHistoy(ctx, *lockedVault)
-						//k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
+						err := k.CreateLockedVaultHistoy(ctx, *lockedVault)
+						if err != nil {
+							return err
+						}
+						k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, lockedVault.ExtendedPairId, lockedVault.OriginalVaultId, lockedVault.AppMappingId)
 						k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 						if err := k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
 							continue
@@ -241,9 +241,15 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 						continue
 					}
 					if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
-						k.CreateLockedVaultHistoy(ctx, *lockedVault)
-						//k.DeleteVaultForAddressByPair(ctx, userAddress, lockedVault.PairId)
-						//k.SetVault(ctx, lockedVault.ExtendedPairId, lockedVault.Owner, assetIn, lockedVault.AmountIn, assetOut, lockedVault.AmountOut)
+						err := k.CreateLockedVaultHistoy(ctx, *lockedVault)
+						if err != nil {
+							return err
+						}
+						k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, lockedVault.ExtendedPairId, lockedVault.OriginalVaultId, lockedVault.AppMappingId)
+						err = k.CreteNewVault(ctx, lockedVault.Owner, lockedVault.AppMappingId, lockedVault.ExtendedPairId, lockedVault.AmountIn, lockedVault.AmountOut)
+						if err != nil {
+							return err
+						}
 						k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 
 						//======================================NOTE TO BE CHANGED================================================

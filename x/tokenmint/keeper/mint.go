@@ -68,6 +68,16 @@ func (k *Keeper) GetAssetDataInTokenMintByApp(ctx sdk.Context, appMappingId uint
 	return tokenData, false
 }
 
+func (k *Keeper) GetAssetDataInTokenMintByAppSupply(ctx sdk.Context, appMappingId uint64, assetId uint64) (tokenDataSupply int64, found bool) {
+	tokenData, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingId, assetId)
+
+	if !found {
+
+		return 0, false
+	}
+	return tokenData.CurrentSupply.Int64(), found
+}
+
 func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, address string, amount sdk.Int) error {
 
 	assetData, found := k.GetAsset(ctx, assetId)

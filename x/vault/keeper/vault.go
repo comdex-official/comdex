@@ -4,8 +4,10 @@ import (
 
 	// assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strconv"
+	"time"
+
 	// protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/vault/types"
@@ -468,4 +470,67 @@ func (k *Keeper) GetStableMintVaults(ctx sdk.Context) (stableVaults []types.Stab
 	}
 
 	return stableVaults
+}
+
+func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, AppMappingId uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
+	appMapping, _ := k.GetApp(ctx, AppMappingId)
+	extendedPairVault, _ := k.GetPairsVault(ctx, ExtendedPairVaultID)
+	counterVal, _, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
+
+	zero_val := sdk.ZeroInt()
+	var new_vault types.Vault
+	updated_counter := counterVal + 1
+	new_vault.Id = appMapping.ShortName + strconv.FormatUint(updated_counter, 10)
+	new_vault.AmountIn = AmountIn
+
+	// closingFeeVal := (sdk.Dec(msg.AmountOut).Mul((extended_pair_vault.ClosingFee)))
+
+	closingFeeVal := AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
+
+	new_vault.ClosingFeeAccumulated = &closingFeeVal
+	new_vault.AmountOut = AmountOut
+	new_vault.AppMappingId = appMapping.Id
+	new_vault.InterestAccumulated = &zero_val
+	new_vault.Owner = From
+	new_vault.CreatedAt = time.Now()
+	new_vault.ExtendedPairVaultID = extendedPairVault.Id
+	k.SetVault(ctx, new_vault)
+
+	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updated_counter, new_vault)
+
+	user_vault_extendedPair_mapping_data, user_exists := k.GetUserVaultExtendedPairMapping(ctx, From)
+	if !user_exists {
+		//UserData does not exists
+		//Create a new instance
+		var user_mapping_data types.UserVaultAssetMapping
+		var user_app_data types.VaultToAppMapping
+		var user_extendedPair_data types.ExtendedPairToVaultMapping
+
+		user_extendedPair_data.ExtendedPairId = new_vault.ExtendedPairVaultID
+		user_extendedPair_data.VaultId = new_vault.Id
+		user_app_data.AppMappingId = appMapping.Id
+		user_app_data.UserExtendedPairVault = append(user_app_data.UserExtendedPairVault, &user_extendedPair_data)
+		user_mapping_data.Owner = From
+		user_mapping_data.UserVaultApp = append(user_mapping_data.UserVaultApp, &user_app_data)
+
+		k.SetUserVaultExtendedPairMapping(ctx, user_mapping_data)
+	} else {
+
+		//So only need to add the locker id with asset
+		var user_extendedPair_data types.ExtendedPairToVaultMapping
+		user_extendedPair_data.VaultId = new_vault.Id
+		user_extendedPair_data.ExtendedPairId = new_vault.ExtendedPairVaultID
+
+		for _, appData := range user_vault_extendedPair_mapping_data.UserVaultApp {
+			if appData.AppMappingId == appMapping.Id {
+
+				appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &user_extendedPair_data)
+			}
+
+		}
+		k.SetUserVaultExtendedPairMapping(ctx, user_vault_extendedPair_mapping_data)
+
+	}
+
+	return nil
 }

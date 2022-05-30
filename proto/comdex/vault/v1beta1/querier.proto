@@ -12,20 +12,22 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message VaultInfo{
-  uint64 id = 1;
+  string id = 1;
   uint64 pair_id = 2 [
     (gogoproto.customname) = "PairID",
     (gogoproto.moretags)   = "yaml:\"pair_id\""
   ];
   string owner     = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 
-  cosmos.base.v1beta1.Coin collateral = 4 [
+  string collateral = 4 [
     (gogoproto.moretags) = "yaml:\"collateral\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false
   ];
 
-  cosmos.base.v1beta1.Coin debt = 5 [
+  string debt = 5 [
     (gogoproto.moretags) = "yaml:\"debt\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false
   ];
 
@@ -47,21 +49,17 @@ message QueryVaultResponse {
   ];
 }
 
-// message QueryVaultsRequest {
-//   string owner    = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-//   cosmos.base.query.v1beta1.PageRequest pagination = 2
-//       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
-// }
+message QueryVaultInfoRequest {
+  string id    = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+}
 
-// message QueryVaultsResponse {
-//   repeated VaultInfo vaultsInfo = 1 [
-//     (gogoproto.customname) = "VaultsInfo",
-//     (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
-//     (gogoproto.nullable)   = false
-//   ];
-//   cosmos.base.query.v1beta1.PageResponse pagination = 2
-//       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
-// }
+message QueryVaultInfoResponse {
+  VaultInfo vaultsInfo = 1 [
+    (gogoproto.customname) = "VaultsInfo",
+    (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
+    (gogoproto.nullable)   = false
+  ];
+}
 
 message QueryAllVaultsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
@@ -285,9 +283,9 @@ service QueryService {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
   };
 
-  // rpc QueryVault(QueryVaultsRequest) returns (QueryVaultsResponse) {
-  //   option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{owner}";
-  // };
+  rpc QueryVaultInfo(QueryVaultInfoRequest) returns (QueryVaultInfoResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaultsInfo/{id}";
+  };
 
   rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults";

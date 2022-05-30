@@ -247,10 +247,10 @@ func (q *queryServer) QueryProductToExtendedPair(c context.Context, req *types.Q
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
 	}
-	var pairVaultsData []*types.ExtendedPairVault
-	for _, data := range pairVaults {
-		if data.AppMappingId == req.ProductId {
-			pairVaultsData = append(pairVaultsData, &data)
+	var pairVaultsData []types.ExtendedPairVault
+	for _, data := range pairVaults{
+		if data.AppMappingId == req.ProductId{
+			pairVaultsData = append(pairVaultsData, data)
 		}
 	}
 
@@ -269,12 +269,52 @@ func (q *queryServer) QueryExtendedPairPsmPairWise(c context.Context, req *types
 		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
 	}
 	for _, data := range pairVaults {
-		if data.AppMappingId == req.ProductId && data.IsPsmPair {
+		if (data.AppMappingId == req.ProductId) && (data.IsPsmPair) {
 			pairVault = append(pairVault, data.Id)
 		}
 	}
 
 	return &types.QueryExtendedPairPsmPairWiseResponse{
 		ExtendedPairsId: pairVault,
+	}, nil
+}
+
+func (q *queryServer) QueryTokenGov(c context.Context, req *types.QueryTokenGovRequest) (*types.QueryTokenGovResponse, error) {
+	var (
+		ctx      = sdk.UnwrapSDKContext(c)
+		asset_id uint64
+	)
+	appData, found := q.GetApp(ctx, req.AppId)
+	if !found {
+		return nil, types.AppIdsDoesntExist
+	}
+	for _, data := range appData.MintGenesisToken {
+		if data.IsgovToken {
+			asset_id = data.AssetId
+		}
+	}
+
+	return &types.QueryTokenGovResponse{
+		GovAssetId: asset_id,
+	}, nil
+}
+
+func (q *queryServer) QueryExtendedPairDataPsmPairWise(c context.Context, req *types.QueryExtendedPairDataPsmPairWiseRequest) (*types.QueryExtendedPairDataPsmPairWiseResponse, error) {
+	var (
+		ctx               = sdk.UnwrapSDKContext(c)
+		pairVaults, found = q.GetPairsVaults(ctx)
+	)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
+	}
+	var pairVaultsData []types.ExtendedPairVault
+	for _, data := range pairVaults{
+		if data.AppMappingId == req.AppId && data.IsPsmPair{
+			pairVaultsData = append(pairVaultsData, data)
+		}
+	} 
+
+	return &types.QueryExtendedPairDataPsmPairWiseResponse{
+		ExtendedPair: pairVaultsData,
 	}, nil
 }

@@ -29,10 +29,10 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryLockedVault(),
 		queryLockerByProductAssetID(),
 		queryLockerByProductID(),
-		queryTotalDepositByProductToAssetID(),
-		queryOwnerLockerByProductID(),
-		queryOwnerLockerOfAllProduct(),
-		queryOwnerLockerByProductToAssetID(),
+		queryTotalDepositByProductAssetID(),
+		queryOwnerLockerByProductIDbyOwner(),
+		queryOwnerLockerOfAllProductbyOwner(),
+		queryOwnerLockerByProductToAssetIDbyOwner(),
 		queryTotalLockerByProductID(),
 		queryTotalLockerByProductToAssetID(),
 		queryWhiteListedAssetIDsByProductID(),
@@ -40,6 +40,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryLockerLookupTableByApp(),
 		queryLockerLookupTableByAppAndAssetId(),
 		queryLockerTotalDepositedByApp(),
+		queryState(),
 	)
 	// this line is used by starport scaffolding # 1
 

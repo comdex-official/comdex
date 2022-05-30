@@ -4,15 +4,14 @@ package comdex.auction.v1beta1;
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos/base/v1beta1/coin.proto";
-import "comdex/asset/v1beta1/pair.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/auction/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message SurplusAuction {
-    uint64 id = 1 [
-        (gogoproto.moretags) = "yaml:\"id\""
+    uint64 auction_id = 1 [
+        (gogoproto.moretags) = "yaml:\"auction_id\""
     ];
 
     cosmos.base.v1beta1.Coin outflow_token = 2 [
@@ -51,7 +50,7 @@ message SurplusAuction {
         (gogoproto.moretags)   = "yaml:\"bid_factor\""
     ];
 
-    repeated uint64 bidding_ids = 9[
+    repeated bidOwnerMapping bidding_ids = 9[
         (gogoproto.moretags) = "yaml:\"bidding_ids\""
     ];
 
@@ -64,12 +63,20 @@ message SurplusAuction {
     uint64 asset_id = 12 [
         (gogoproto.moretags) = "yaml:\"asset_id\""
     ];
-
+    uint64 auction_mapping_id = 13 [
+        (gogoproto.moretags) = "yaml:\"auction_mapping_id\""
+    ];
+    uint64 asset_in_id = 14 [
+        (gogoproto.moretags) = "yaml:\"asset_in_id\""
+    ];
+    uint64 asset_out_id = 15 [
+        (gogoproto.moretags) = "yaml:\"asset_out_id\""
+    ];
   }
 
 message DebtAuction {
     uint64 auction_id = 1 [
-        (gogoproto.moretags) = "yaml:\"id\""
+        (gogoproto.moretags) = "yaml:\"auction_id\""
     ];
     cosmos.base.v1beta1.Coin auctioned_token = 2 [
         (gogoproto.nullable) = false,
@@ -111,6 +118,23 @@ message DebtAuction {
     ];
     uint64 asset_id = 11 [
         (gogoproto.moretags) = "yaml:\"asset_id\""
+    ];
+    repeated bidOwnerMapping bidding_ids = 12[
+        (gogoproto.moretags) = "yaml:\"bidding_ids\""
+    ];
+    uint64 auction_mapping_id = 13 [
+        (gogoproto.moretags) = "yaml:\"auction_mapping_id\""
+    ];
+    string bid_factor = 14 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable)   = false,
+        (gogoproto.moretags)   = "yaml:\"bid_factor\""
+    ];
+    uint64 asset_in_id = 15 [
+        (gogoproto.moretags) = "yaml:\"asset_in_id\""
+    ];
+    uint64 asset_out_id = 16 [
+        (gogoproto.moretags) = "yaml:\"asset_out_id\""
     ];
 }
 
@@ -168,19 +192,41 @@ message DutchAuction {
     uint64 auction_status = 11 [
         (gogoproto.moretags) = "yaml:\"auction_status\""
     ];
-    string inflow_token_address = 12 [
-        (gogoproto.moretags) = "yaml:\"inflow_token_address\"",
-        (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.AccAddress"
-    ];
-    string outflow_token_address = 13 [
-        (gogoproto.moretags) = "yaml:\"outflow_token_address\"",
-        (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.AccAddress"
-    ];
-    google.protobuf.Timestamp start_time = 14 [
+    google.protobuf.Timestamp start_time = 12 [
         (gogoproto.nullable) = false,
         (gogoproto.stdtime) = true,
         (gogoproto.moretags)   = "yaml:\"start_time\""
     ];
+    repeated bidOwnerMapping bidding_ids = 13[
+        (gogoproto.moretags) = "yaml:\"bidding_ids\""
+    ];
+    uint64 auction_mapping_id = 14 [
+        (gogoproto.moretags) = "yaml:\"auction_mapping_id\""
+    ];
+    uint64 app_id = 15 [
+        (gogoproto.moretags) = "yaml:\"app_id\""
+    ];
+    uint64 asset_in_id = 16 [
+        (gogoproto.moretags) = "yaml:\"asset_in_id\""
+    ];
+    uint64 asset_out_id = 17 [
+        (gogoproto.moretags) = "yaml:\"asset_out_id\""
+    ];
+    uint64 locked_vault_id = 18 [
+        (gogoproto.moretags) = "yaml:\"locked_vault_id\""
+    ];
+    string vault_owner = 19 [
+        (gogoproto.moretags) = "yaml:\"vault_owner\"",
+        (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.AccAddress"
+    ];
+    string liquidation_penalty = 20 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable)   = false,
+        (gogoproto.moretags)   = "yaml:\"liquidatin_penalty\""
+    ];
+}
 
-
+message bidOwnerMapping{
+uint64 bid_id=1;
+string bid_owner=2;
 }

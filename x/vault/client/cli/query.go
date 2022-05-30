@@ -26,7 +26,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryAllVaultsByProduct(),
 		QueryVault(),
 		QueryAllVaultsByAppAndExtendedPair(),
-		// QueryVaults(),
+		QueryVaultInfo(),
 		QueryVaultOfOwnerByExtendedPair(),
 		QueryVaultByProduct(),
 		QueryAllVaultByOwner(),
@@ -87,6 +87,7 @@ func QueryAllVaultsByProduct() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vaults-by-product [app_id]",
 		Short: "list of all vaults available in a product",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 
@@ -238,40 +239,35 @@ func QueryAllVaultsByAppAndExtendedPair() *cobra.Command {
 	return cmd
 }
 
-// func QueryVaults() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "vaults [owner]",
-// 		Short: "vaults list for an individual account",
-// 		Args:  cobra.ExactArgs(1),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
+func QueryVaultInfo() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vaultsInfo [id]",
+		Short: "vaults list for an id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+		
 
-// 			pagination, err := client.ReadPageRequest(cmd.Flags())
-// 			if err != nil {
-// 				return err
-// 			}
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			ctx, err := client.GetClientQueryContext(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+			queryClient := types.NewQueryServiceClient(ctx)
 
-// 			queryClient := types.NewQueryServiceClient(ctx)
+			res, err := queryClient.QueryVaultInfo(cmd.Context(), &types.QueryVaultInfoRequest{
+				Id: args[0],
+			})
 
-// 			res, err := queryClient.QueryVaults(cmd.Context(), &types.QueryVaultsRequest{
-// 				Owner:      args[0],
-// 				Pagination: pagination,
-// 			})
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
 
-// 			if err != nil {
-// 				return err
-// 			}
-// 			return ctx.PrintProto(res)
-// 		},
-// 	}
-
-// 	flags.AddQueryFlagsToCmd(cmd)
-// 	return cmd
-// }
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
 
 func QueryVaultByProduct() *cobra.Command {
 	cmd := &cobra.Command{

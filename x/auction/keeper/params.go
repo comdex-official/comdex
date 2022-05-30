@@ -54,6 +54,20 @@ func (k *Keeper) DutchPriceFunctionType(ctx sdk.Context) (s uint64) {
 	return
 }
 
+func (k *Keeper) SurplusId(ctx sdk.Context) (s uint64) {
+	k.paramstore.Get(ctx, types.KeySurplusId, &s)
+	return
+}
+
+func (k *Keeper) DebtId(ctx sdk.Context) (s uint64) {
+	k.paramstore.Get(ctx, types.KeyDebtId, &s)
+	return
+}
+func (k *Keeper) DutchId(ctx sdk.Context) (s uint64) {
+	k.paramstore.Get(ctx, types.KeyDutchId, &s)
+	return
+}
+
 // GetParams get all parameters as types.Params
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
@@ -68,6 +82,9 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.DutchChost(ctx),
 		k.DutchStep(ctx),
 		k.DutchPriceFunctionType(ctx),
+		k.SurplusId(ctx),
+		k.DebtId(ctx),
+		k.DutchId(ctx),
 	)
 }
 

@@ -1,9 +1,10 @@
-package locker
+package wasm
 
 import (
 	"encoding/json"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,18 +31,18 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 	if msg.Custom != nil {
 		// only handle the happy path where this is really minting / swapping ...
 		// leave everything else for the wrapped version
-		var contractMsg LockerMessages
-		if err := json.Unmarshal(msg.Custom, &contractMsg); err != nil {
+		var comdexMsg bindings.ComdexMessages
+		if err := json.Unmarshal(msg.Custom, &comdexMsg); err != nil {
 			return nil, nil, sdkerrors.Wrap(err, "comdex msg error")
 		}
-		if &contractMsg.WhiteListAssetLocker != nil {
-			return m.whitelistAssetLocker(ctx, contractAddr, &contractMsg.WhiteListAssetLocker)
+		if &comdexMsg.WhiteListAssetLocker != nil {
+			return m.whitelistAssetLocker(ctx, contractAddr, &comdexMsg.WhiteListAssetLocker)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
 }
 
-func (m *CustomMessenger) whitelistAssetLocker(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *WhiteListAssetLocker) ([]sdk.Event, [][]byte, error) {
+func (m *CustomMessenger) whitelistAssetLocker(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *bindings.WhiteListAssetLocker) ([]sdk.Event, [][]byte, error) {
 	err := WhiteListAsset(m.lockerKeeper, ctx, contractAddr, whiteListAsset)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "white list asset")
@@ -50,7 +51,7 @@ func (m *CustomMessenger) whitelistAssetLocker(ctx sdk.Context, contractAddr sdk
 }
 
 func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	whiteListAsset *WhiteListAssetLocker) error {
+	whiteListAsset *bindings.WhiteListAssetLocker) error {
 
 	msg := lockertypes.MsgAddWhiteListedAssetRequest{
 		From:         contractAddr.String(),
@@ -66,4 +67,9 @@ func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractA
 
 	return nil
 
+}
+
+func GetState(addr, denom, blockheight, target string) (sdk.Coin, error) {
+	state, _ := lockerkeeper.QueryState(addr, denom, blockheight, target)
+	return *state, nil
 }

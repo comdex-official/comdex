@@ -21,10 +21,9 @@ type Keeper struct {
 	asset  expected.AssetKeeper
 	oracle expected.OracleKeeper
 	collector expected.CollectorKeeper
-	esm       expected.EsmKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, ps paramtypes.Subspace, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.OracleKeeper, collector expected.CollectorKeeper, esm expected.EsmKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, ps paramtypes.Subspace, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.OracleKeeper, collector expected.CollectorKeeper) Keeper {
 	return Keeper{
 		cdc:    cdc,
 		key:    key,
@@ -33,7 +32,6 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, ps paramtypes.Subspace, 
 		asset:  asset,
 		oracle: oracle,
 		collector: collector,
-		esm:       esm,
 	}
 }
 

@@ -37,6 +37,7 @@ type VaultKeeper interface {
 	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairId uint64, userAddress string, appMappingId uint64)
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairId uint64, userVaultId string, appMappingId uint64)
 	SetVault(ctx sdk.Context, vault types.Vault)
+	CreteNewVault(ctx sdk.Context, From string, AppMappingId uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error
 }
 
 type MarketKeeper interface {
