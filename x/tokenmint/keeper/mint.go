@@ -56,8 +56,8 @@ func (k *Keeper) GetTotalTokenMinted(ctx sdk.Context) (appTokenMintData []types.
 func (k *Keeper) GetAssetDataInTokenMintByApp(ctx sdk.Context, appMappingId uint64, assetId uint64) (tokenData types.MintedTokens, found bool) {
 
 	mintData, found := k.GetTokenMint(ctx, appMappingId)
-	if !found{
-		return tokenData,false
+	if !found {
+		return tokenData, false
 	}
 
 	for _, mintAssetData := range mintData.MintedTokens {
@@ -165,24 +165,26 @@ func (k *Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingId u
 
 	//ChangeType + == add to current supply
 	//Change type - == reduce from supply
-	mintData, _ := k.GetTokenMint(ctx, appMappingId)
+	mintData, found := k.GetTokenMint(ctx, appMappingId)
 
-	for _, mintAssetData := range mintData.MintedTokens {
+	if found {
+		for _, mintAssetData := range mintData.MintedTokens {
 
-		if mintAssetData.AssetId == assetId {
+			if mintAssetData.AssetId == assetId {
 
-			if changeType {
-				mintAssetData.CurrentSupply = mintAssetData.CurrentSupply.Add(amount)
-				break
+				if changeType {
+					mintAssetData.CurrentSupply = mintAssetData.CurrentSupply.Add(amount)
+					break
 
-			} else {
-				mintAssetData.CurrentSupply = mintAssetData.CurrentSupply.Sub(amount)
-				break
+				} else {
+					mintAssetData.CurrentSupply = mintAssetData.CurrentSupply.Sub(amount)
+					break
+				}
+
 			}
 
 		}
-
+		k.SetTokenMint(ctx, mintData)
 	}
-	k.SetTokenMint(ctx, mintData)
 
 }
