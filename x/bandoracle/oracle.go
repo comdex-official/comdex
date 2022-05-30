@@ -6,10 +6,10 @@ import (
 	"github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	channeltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
+	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 )
 
-func (am AppModule) handleOraclePacket(
+func (im IBCModule) handleOraclePacket(
 	ctx sdk.Context,
 	modulePacket channeltypes.Packet,
 ) (channeltypes.Acknowledgement, error) {
@@ -28,7 +28,7 @@ func (am AppModule) handleOraclePacket(
 			return ack, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,
 				"cannot decode the fetchPrice received packet")
 		}
-		am.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(modulePacketData.RequestID), fetchPriceResult)
+		im.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(modulePacketData.RequestID), fetchPriceResult)
 		// TODO: FetchPrice market data reception logic
 
 	default:
@@ -46,7 +46,7 @@ func (am AppModule) handleOraclePacket(
 	return ack, nil
 }
 
-func (am AppModule) handleOracleAcknowledgment(
+func (im IBCModule) handleOracleAcknowledgment(
 	ctx sdk.Context,
 	ack channeltypes.Acknowledgement,
 	modulePacket channeltypes.Packet,
@@ -73,7 +73,7 @@ func (am AppModule) handleOracleAcknowledgment(
 				return nil, sdkerrors.Wrap(err,
 					"cannot decode the fetchPrice market acknowledgment packet")
 			}
-			am.keeper.SetLastFetchPriceID(ctx, requestID)
+			im.keeper.SetLastFetchPriceID(ctx, requestID)
 			return &sdk.Result{}, nil
 
 		default:

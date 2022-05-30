@@ -71,16 +71,17 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibctransfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v2/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
-	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	ibctypes "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 	"github.com/spf13/cast"
+
+	ibctransfer "github.com/cosmos/ibc-go/v3/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v3/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
+	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -579,6 +580,7 @@ func New(
 		app.keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
 		app.ibcKeeper.ChannelKeeper,
+		app.ibcKeeper.ChannelKeeper,
 		&app.ibcKeeper.PortKeeper,
 		app.accountKeeper,
 		app.bankKeeper,
@@ -614,9 +616,9 @@ func New(
 
 	app.rewardskeeper = *rewardskeeper.NewKeeper(
 		app.cdc,
-		app.keys[collectortypes.StoreKey],
-		app.keys[collectortypes.MemStoreKey],
-		app.GetSubspace(collectortypes.ModuleName),
+		app.keys[rewardstypes.StoreKey],
+		app.keys[rewardstypes.MemStoreKey],
+		app.GetSubspace(rewardstypes.ModuleName),
 		&app.lockerKeeper,
 		&app.collectorKeeper,
 		&app.vaultKeeper,
@@ -673,14 +675,16 @@ func New(
 	)
 
 	var (
-		evidenceRouter = evidencetypes.NewRouter()
-		ibcRouter      = ibcporttypes.NewRouter()
-		transferModule = ibctransfer.NewAppModule(app.ibcTransferKeeper)
-		oracleModule   = market.NewAppModule(app.cdc, app.marketKeeper)
+		evidenceRouter      = evidencetypes.NewRouter()
+		ibcRouter           = ibcporttypes.NewRouter()
+		transferModule      = ibctransfer.NewAppModule(app.ibcTransferKeeper)
+		transferIBCModule   = ibctransfer.NewIBCModule(app.ibcTransferKeeper)
+		oracleModule        = market.NewAppModule(app.cdc, app.marketKeeper)
+		bandOracleIBCModule = bandoraclemodule.NewIBCModule(app.BandoracleKeeper)
 	)
 
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandoracleModule)
+	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandOracleIBCModule)
 	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.ibcKeeper.ChannelKeeper))
 	app.ibcKeeper.SetRouter(ibcRouter)
 
@@ -1010,9 +1014,8 @@ func (app *App) registerUpgradeHandlers() {
 			stakingtypes.ModuleName:     staking.AppModule{}.ConsensusVersion(),
 			upgradetypes.ModuleName:     upgrade.AppModule{}.ConsensusVersion(),
 			vestingtypes.ModuleName:     vesting.AppModule{}.ConsensusVersion(),
-			ibctypes.ModuleName:         ibc.AppModule{}.ConsensusVersion(),
+			ibctransfertypes.ModuleName: ibc.AppModule{}.ConsensusVersion(),
 			genutiltypes.ModuleName:     genutil.AppModule{}.ConsensusVersion(),
-			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
 			collectortypes.ModuleName:   collector.AppModule{}.ConsensusVersion(),
 			rewardstypes.ModuleName:     rewards.AppModule{}.ConsensusVersion(),

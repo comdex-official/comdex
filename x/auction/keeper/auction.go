@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"
 
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
@@ -169,6 +170,9 @@ func (k Keeper) CloseAndRestartAuctions(ctx sdk.Context) error {
 }
 func (k Keeper) CreateNewDutchAuctions(ctx sdk.Context) error {
 	lockedVaults := k.GetLockedVaults(ctx)
+	if len(lockedVaults) == 0 {
+		return auctiontypes.ErrorInvalidLockedVault
+	}
 	for _, lockedVault := range lockedVaults {
 		pair, found := k.GetPair(ctx, lockedVault.ExtendedPairId)
 		if !found {
@@ -406,9 +410,12 @@ func (k Keeper) StartDutchAuction(
 	//calculate target amount of cmst to collect
 	if auctiontypes.TestFlag != 1 {
 		inFlowTokenPrice, found1 = k.market.GetPriceForAsset(ctx, assetInId)
+		if !found1 {
+			return auctiontypes.ErrorPrices
+		}
 		outFlowTokenPrice, found2 = k.market.GetPriceForAsset(ctx, assetOutId)
-		if !(found1 && found2) {
-			return auctiontypes.ErrorInvalidBidId
+		if !found2 {
+			return auctiontypes.ErrorPrices
 		}
 	} else {
 		outFlowTokenPrice = uint64(2)
@@ -447,7 +454,10 @@ func (k Keeper) StartDutchAuction(
 	}
 	auction.AuctionId = k.GetAuctionID(ctx) + 1
 	k.SetAuctionID(ctx, auction.AuctionId)
-	k.SetDutchAuction(ctx, auction)
+	err = k.SetDutchAuction(ctx, auction)
+	if err != nil {
+		return err
+	}
 	err = k.SetFlagIsAuctionInProgress(ctx, lockedVaultId, true)
 	if err != nil {
 		return err
@@ -821,11 +831,11 @@ func (k Keeper) PlaceDebtBid(ctx sdk.Context, appId, auctionMappingId, auctionId
 func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin, max sdk.Dec) error {
 	auction, found := k.GetDutchAuction(ctx, appId, auctionMappingId, auctionId)
 	if !found {
-		return auctiontypes.ErrorInvalidDutchAuctionId
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction id %d not found", auctionId)
 	}
 
 	if bid.Denom != auction.OutflowTokenCurrentAmount.Denom {
-		return auctiontypes.ErrorInvalidDutchUserbidDenom
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid denom %s not found", bid.Denom)
 	}
 
 	if max.LT(auction.OutflowTokenCurrentPrice) {
@@ -837,12 +847,14 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	outFlowTokenCurrentPrice := auction.OutflowTokenCurrentPrice.Ceil().TruncateInt()
 	inFlowTokenCurrentPrice := auction.InflowTokenCurrentPrice.Ceil().TruncateInt()
 	slice := sdk.MinInt(bid.Amount, auction.OutflowTokenCurrentAmount.Amount)
+	//amount in usd to be given to user
 	owe := slice.Mul(outFlowTokenCurrentPrice)
+	//required target cmst to raise in usd
 	tab := auction.InflowTokenTargetAmount.Amount.Mul(inFlowTokenCurrentPrice).Sub(auction.InflowTokenCurrentAmount.Amount)
 
-	inFlowTokenToCharge := slice.ToDec().Mul(outFlowTokenCurrentPrice.ToDec()).Quo(inFlowTokenCurrentPrice.ToDec()).Ceil().TruncateInt()
-	inFlowTokenCoin := sdk.NewCoin(auction.InflowTokenTargetAmount.Denom, inFlowTokenToCharge)
-	//check if bid is greater than required target cmst
+	inFlowTokenAmount := slice.ToDec().Mul(outFlowTokenCurrentPrice.ToDec()).Quo(inFlowTokenCurrentPrice.ToDec()).Ceil().TruncateInt()
+	inFlowTokenCoin := sdk.NewCoin(auction.InflowTokenTargetAmount.Denom, inFlowTokenAmount)
+	//check if bid in usd is greater than required target cmst in usd
 	if owe.GT(tab) {
 		slice = tab.Quo(auction.OutflowTokenCurrentPrice.Ceil().TruncateInt())
 		inFlowTokenCoin.Amount = auction.InflowTokenTargetAmount.Amount.Sub(auction.InflowTokenCurrentAmount.Amount)

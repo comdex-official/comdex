@@ -4,9 +4,10 @@ import (
 
 	// assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"strconv"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	// protobuftypes "github.com/gogo/protobuf/types"
 
@@ -375,59 +376,65 @@ func (k *Keeper) GetVaults(ctx sdk.Context) (vaults []types.Vault) {
 
 func (k *Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairId uint64, userAddress string, appMappingId uint64) {
 
-	userData, _ := k.GetUserVaultExtendedPairMapping(ctx, userAddress)
+	userData, found := k.GetUserVaultExtendedPairMapping(ctx, userAddress)
 
 	var dataIndex int
-	for _, appData := range userData.UserVaultApp {
+	if found {
 
-		if appData.AppMappingId == appMappingId {
+		for _, appData := range userData.UserVaultApp {
 
-			for index, extendedPairData := range appData.UserExtendedPairVault {
+			if appData.AppMappingId == appMappingId {
 
-				if extendedPairData.ExtendedPairId == extendedPairId {
+				for index, extendedPairData := range appData.UserExtendedPairVault {
 
-					dataIndex = index
+					if extendedPairData.ExtendedPairId == extendedPairId {
+
+						dataIndex = index
+					}
 				}
+				a := appData.UserExtendedPairVault[0:dataIndex]
+				b := appData.UserExtendedPairVault[dataIndex+1:]
+				a = append(a, b...)
+				appData.UserExtendedPairVault = a
+				break
 			}
-			a := appData.UserExtendedPairVault[0:dataIndex]
-			b := appData.UserExtendedPairVault[dataIndex+1:]
-			a = append(a, b...)
-			appData.UserExtendedPairVault = a
-			break
 		}
-	}
 
-	k.SetUserVaultExtendedPairMapping(ctx, userData)
+		k.SetUserVaultExtendedPairMapping(ctx, userData)
+
+	}
 
 }
 
 func (k *Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairId uint64, userVaultId string, appMappingId uint64) {
 
-	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMappingId)
+	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMapping(ctx, appMappingId)
 
 	var dataIndex int
+	if found {
 
-	for _, appData := range appExtendedPairVaultData.ExtendedPairVaults {
+		for _, appData := range appExtendedPairVaultData.ExtendedPairVaults {
 
-		if appData.ExtendedPairId == extendedPairId {
+			if appData.ExtendedPairId == extendedPairId {
 
-			for index, vaultId := range appData.VaultIds {
+				for index, vaultId := range appData.VaultIds {
 
-				if vaultId == userVaultId {
-					dataIndex = index
+					if vaultId == userVaultId {
+						dataIndex = index
+
+					}
 
 				}
+				a := appData.VaultIds[0:dataIndex]
+				b := appData.VaultIds[dataIndex+1:]
+				a = append(a, b...)
+				appData.VaultIds = a
 
 			}
-			a := appData.VaultIds[0:dataIndex]
-			b := appData.VaultIds[dataIndex+1:]
-			a = append(a, b...)
-			appData.VaultIds = a
 
 		}
-
+		k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
 	}
-	k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
 
 }
 
@@ -483,11 +490,7 @@ func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, AppMappingId uint64
 	new_vault.Id = appMapping.ShortName + strconv.FormatUint(updated_counter, 10)
 	new_vault.AmountIn = AmountIn
 
-	// closingFeeVal := (sdk.Dec(msg.AmountOut).Mul((extended_pair_vault.ClosingFee)))
-
-	closingFeeVal := AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
-
-	new_vault.ClosingFeeAccumulated = &closingFeeVal
+	new_vault.ClosingFeeAccumulated = &zero_val
 	new_vault.AmountOut = AmountOut
 	new_vault.AppMappingId = appMapping.Id
 	new_vault.InterestAccumulated = &zero_val
