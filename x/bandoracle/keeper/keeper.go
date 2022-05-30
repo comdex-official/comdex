@@ -4,7 +4,8 @@ import (
 	"fmt"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/bandoracle/expected"
-	host "github.com/cosmos/ibc-go/v2/modules/core/24-host"
+	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	host "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -85,4 +86,15 @@ func (k Keeper) GetPort(ctx sdk.Context) string {
 func (k Keeper) SetPort(ctx sdk.Context, portID string) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.PortKey, []byte(portID))
+}
+
+// AuthenticateCapability wraps the scopedKeeper's AuthenticateCapability function
+func (k Keeper) AuthenticateCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) bool {
+	return k.scopedKeeper.AuthenticateCapability(ctx, cap, name)
+}
+
+// ClaimCapability allows the transfer module that can claim a capability that IBC module
+// passes to it
+func (k Keeper) ClaimCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) error {
+	return k.scopedKeeper.ClaimCapability(ctx, cap, name)
 }

@@ -2,16 +2,15 @@ package cli
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	"github.com/spf13/cobra"
 )
 
 const (
-	flagLiquidationRatio       = "liquidation-ratio"
-	flagScriptID               = "script-id"
-	flagPacketTimeoutHeight    = "packet-timeout-height"
-	flagFeeLimit               = "fee-limit"
-
+	flagLiquidationRatio    = "liquidation-ratio"
+	flagScriptID            = "script-id"
+	flagPacketTimeoutHeight = "packet-timeout-height"
+	flagFeeLimit            = "fee-limit"
 )
 
 func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
