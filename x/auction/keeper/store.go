@@ -3,6 +3,7 @@ package keeper
 import (
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	protobuftypes "github.com/gogo/protobuf/types"
 )
 
@@ -523,7 +524,7 @@ func (k *Keeper) GetHistoryDebtUserBiddings(ctx sdk.Context, bidder string, appI
 
 //DUTCH
 
-func (k *Keeper) SetDutchAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) {
+func (k *Keeper) SetDutchAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) error {
 	var (
 		store       = k.Store(ctx)
 		auctionType = k.GetAuctionType(ctx, auction.AuctionMappingId)
@@ -531,9 +532,10 @@ func (k *Keeper) SetDutchAuction(ctx sdk.Context, auction auctiontypes.DutchAuct
 		value       = k.cdc.MustMarshal(&auction)
 	)
 	if auctionType == "" {
-		return
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction mapping id %d not found", auction.AuctionMappingId)
 	}
 	store.Set(key, value)
+	return nil
 }
 
 func (k *Keeper) SetHistoryDutchAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) {
