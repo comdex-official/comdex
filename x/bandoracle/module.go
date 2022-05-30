@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/comdex-official/comdex/x/market/expected"
-
 	// this line is used by starport scaffolding # 1
 
 	"github.com/gorilla/mux"
@@ -21,13 +20,13 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
+	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 )
 
 var (
 	_ module.AppModule      = AppModule{}
 	_ module.AppModuleBasic = AppModuleBasic{}
-	_ porttypes.IBCModule   = AppModule{}
+	_ porttypes.IBCModule   = IBCModule{}
 )
 
 // ----------------------------------------------------------------------------
@@ -37,6 +36,17 @@ var (
 // AppModuleBasic implements the AppModuleBasic interface for the capability module.
 type AppModuleBasic struct {
 	cdc codec.BinaryCodec
+}
+
+type IBCModule struct {
+	keeper keeper.Keeper
+}
+
+// NewIBCModule creates a new IBCModule given the keeper
+func NewIBCModule(k keeper.Keeper) porttypes.IBCModule {
+	return IBCModule{
+		keeper: k,
+	}
 }
 
 func NewAppModuleBasic(cdc codec.BinaryCodec) AppModuleBasic {

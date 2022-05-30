@@ -67,16 +67,17 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibctransfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v2/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
-	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	ibctypes "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 	"github.com/spf13/cast"
+
+	ibctransfer "github.com/cosmos/ibc-go/v3/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v3/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
+	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -125,7 +126,6 @@ import (
 	"github.com/comdex-official/comdex/x/vault"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -181,7 +181,7 @@ var (
 		vault.AppModuleBasic{},
 		asset.AppModuleBasic{},
 		lend.AppModuleBasic{},
-	
+
 		market.AppModuleBasic{},
 		rewards.AppModuleBasic{},
 		locker.AppModuleBasic{},
@@ -249,10 +249,10 @@ type App struct {
 	scopedIBCOracleKeeper   capabilitykeeper.ScopedKeeper
 	scopedBandoracleKeeper  capabilitykeeper.ScopedKeeper
 
-	BandoracleKeeper  bandoraclemodulekeeper.Keeper
-	assetKeeper       assetkeeper.Keeper
-	collectorKeeper   collectorkeeper.Keeper
-	vaultKeeper       vaultkeeper.Keeper
+	BandoracleKeeper bandoraclemodulekeeper.Keeper
+	assetKeeper      assetkeeper.Keeper
+	collectorKeeper  collectorkeeper.Keeper
+	vaultKeeper      vaultkeeper.Keeper
 
 	marketKeeper      marketkeeper.Keeper
 	liquidationKeeper liquidationkeeper.Keeper
@@ -293,7 +293,7 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			vaulttypes.StoreKey,  assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
+			vaulttypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			lendtypes.StoreKey, markettypes.StoreKey, rewardstypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
 			auctiontypes.StoreKey, tokenminttypes.StoreKey,
 		)
@@ -482,7 +482,6 @@ func New(
 		&app.collectorKeeper,
 	)
 
-
 	app.tokenmintKeeper = tokenmintkeeper.NewKeeper(
 		app.cdc,
 		app.keys[tokenminttypes.StoreKey],
@@ -578,6 +577,7 @@ func New(
 		app.keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
 		app.ibcKeeper.ChannelKeeper,
+		app.ibcKeeper.ChannelKeeper,
 		&app.ibcKeeper.PortKeeper,
 		app.accountKeeper,
 		app.bankKeeper,
@@ -642,14 +642,16 @@ func New(
 	)
 
 	var (
-		evidenceRouter = evidencetypes.NewRouter()
-		ibcRouter      = ibcporttypes.NewRouter()
-		transferModule = ibctransfer.NewAppModule(app.ibcTransferKeeper)
-		oracleModule   = market.NewAppModule(app.cdc, app.marketKeeper)
+		evidenceRouter      = evidencetypes.NewRouter()
+		ibcRouter           = ibcporttypes.NewRouter()
+		transferModule      = ibctransfer.NewAppModule(app.ibcTransferKeeper)
+		transferIBCModule   = ibctransfer.NewIBCModule(app.ibcTransferKeeper)
+		oracleModule        = market.NewAppModule(app.cdc, app.marketKeeper)
+		bandOracleIBCModule = bandoraclemodule.NewIBCModule(app.BandoracleKeeper)
 	)
 
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandoracleModule)
+	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandOracleIBCModule)
 	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.ibcKeeper.ChannelKeeper))
 	app.ibcKeeper.SetRouter(ibcRouter)
 
@@ -698,7 +700,7 @@ func New(
 		collector.NewAppModule(app.cdc, app.collectorKeeper, app.accountKeeper, app.bankKeeper),
 		rewards.NewAppModule(app.cdc, app.rewardskeeper, app.accountKeeper, app.bankKeeper),
 		lend.NewAppModule(app.cdc, app.lendKeeper, app.accountKeeper, app.bankKeeper),
-		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
+		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		auction.NewAppModule(app.cdc, app.auctionKeeper, app.accountKeeper, app.bankKeeper),
 		tokenmint.NewAppModule(app.cdc, app.tokenmintKeeper, app.accountKeeper, app.bankKeeper),
 	)
@@ -709,14 +711,14 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName,ibchost.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
 		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, rewardstypes.ModuleName, lockertypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
 		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		lendtypes.ModuleName, vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
-		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, 
+		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
 		minttypes.ModuleName, bandoraclemoduletypes.ModuleName, markettypes.ModuleName, rewardstypes.ModuleName, lockertypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
@@ -971,9 +973,8 @@ func (app *App) registerUpgradeHandlers() {
 			stakingtypes.ModuleName:     staking.AppModule{}.ConsensusVersion(),
 			upgradetypes.ModuleName:     upgrade.AppModule{}.ConsensusVersion(),
 			vestingtypes.ModuleName:     vesting.AppModule{}.ConsensusVersion(),
-			ibctypes.ModuleName:         ibc.AppModule{}.ConsensusVersion(),
+			ibctransfertypes.ModuleName: ibc.AppModule{}.ConsensusVersion(),
 			genutiltypes.ModuleName:     genutil.AppModule{}.ConsensusVersion(),
-			ibctransfertypes.ModuleName: ibctransfer.AppModule{}.ConsensusVersion(),
 			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
 			collectortypes.ModuleName:   collector.AppModule{}.ConsensusVersion(),
 			rewardstypes.ModuleName:     rewards.AppModule{}.ConsensusVersion(),
