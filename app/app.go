@@ -732,7 +732,7 @@ func New(
 		locker.NewAppModule(app.cdc, app.lockerKeeper, app.accountKeeper, app.bankKeeper),
 		collector.NewAppModule(app.cdc, app.collectorKeeper, app.accountKeeper, app.bankKeeper),
 		lend.NewAppModule(app.cdc, app.lendKeeper, app.accountKeeper, app.bankKeeper),
-		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper),
+		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		auction.NewAppModule(app.cdc, app.auctionKeeper, app.accountKeeper, app.bankKeeper),
 		tokenmint.NewAppModule(app.cdc, app.tokenmintKeeper, app.accountKeeper, app.bankKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper),
