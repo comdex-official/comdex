@@ -1,47 +1,35 @@
 package types
 
 import (
-	
-
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"gopkg.in/yaml.v2"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-var _ paramtypes.ParamSet = (*Params)(nil)
+var _ paramstypes.ParamSet = (*Params)(nil)
 
-
-
-// ParamKeyTable the param key table for launch module
-func ParamKeyTable() paramtypes.KeyTable {
-	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
+// ParamKeyTable for incentives module.
+func ParamKeyTable() paramstypes.KeyTable {
+	return paramstypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-// NewParams creates a new Params instance
-func NewParams(
-) Params {
-	return Params{
-	}
-}
-
-// DefaultParams returns a default set of parameters
+// DefaultParams returns a default params for the liquidity module.
 func DefaultParams() Params {
-	return NewParams(
-	)
+	return Params{}
 }
 
-// ParamSetPairs get the params.ParamSet
-func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	return paramtypes.ParamSetPairs{
+// ParamSetPairs implements ParamSet.
+func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
+	return paramstypes.ParamSetPairs{}
+}
+
+// Validate validates Params.
+func (params Params) Validate() error {
+	for _, field := range []struct {
+		val          interface{}
+		validateFunc func(i interface{}) error
+	}{} {
+		if err := field.validateFunc(field.val); err != nil {
+			return err
+		}
 	}
-}
-
-// Validate validates the set of params
-func (p Params) Validate() error {
 	return nil
-}
-
-// String implements the Stringer interface.
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
-	return string(out)
 }

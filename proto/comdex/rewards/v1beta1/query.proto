@@ -6,6 +6,8 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "comdex/rewards/v1beta1/params.proto";
 import "comdex/rewards/v1beta1/rewards.proto";
+import "comdex/rewards/v1beta1/gauge.proto";
+import "comdex/rewards/v1beta1/epochs.proto";
 
 // this line is used by starport scaffolding # 1
 
@@ -13,17 +15,95 @@ option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 
 // Query defines the gRPC querier service.
 service Query {
+
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/params";
+  }
+  rpc QueryAllEpochsInfo(QueryAllEpochsInfoRequest) returns (QueryAllEpochsInfoResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/epochs";
+  }
+  rpc QueryEpochInfoByDuration(QueryEpochInfoByDurationRequest) returns (QueryEpochInfoByDurationResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/epoch_duration/{duration_seconds}";
+  }
+  rpc QueryAllGauges(QueryAllGaugesRequest) returns (QueryAllGaugesResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/gauges";
+  }
+  rpc QueryGaugeByID(QueryGaugeByIdRequest) returns (QueryGaugeByIdResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/gauge/{gauge_id}";
+  }
+  rpc QueryGaugeByDuration(QueryGaugesByDurationRequest) returns (QueryGaugeByDurationResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/gauge_duration/{duration_seconds}";
+  }
+
   rpc QueryRewards(QueryRewardsRequest) returns (QueryRewardsResponse) {
     option (google.api.http).get = "/comdex/rewards/v1beta1/rewards";
   }
   rpc QueryReward(QueryRewardRequest) returns (QueryRewardResponse) {
     option (google.api.http).get = "/comdex/rewards/v1beta1/reward/{id}";
   }
-  // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/comdex/rewards/v1beta1/params";
-  }
-  // this line is used by starport scaffolding # 2
+}
+
+
+// PARAMS
+message QueryParamsRequest {}
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+
+// ALL EPOCHES
+message QueryAllEpochsInfoRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+message QueryAllEpochsInfoResponse {
+  repeated EpochInfo epochs = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"epochs\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+// EPOCH BY DURATION
+message QueryEpochInfoByDurationRequest {
+  uint64 duration_seconds = 1;
+}
+message QueryEpochInfoByDurationResponse {
+  EpochInfo epoch = 1
+      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"epoch\"" ];
+}
+
+// ALL GAUGES
+message QueryAllGaugesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+message QueryAllGaugesResponse {
+  repeated Gauge gauges = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"gauges\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+// GAUGE BY ID
+message QueryGaugeByIdRequest {
+  uint64 gauge_id = 1;
+}
+message QueryGaugeByIdResponse {
+  Gauge gauge = 1
+    [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"gauge\"" ];
+}
+
+// GAUGE BY TRIIGER DURATION
+message QueryGaugesByDurationRequest {
+  uint64 duration_seconds = 1;
+}
+message QueryGaugeByDurationResponse {
+  repeated Gauge gauges = 1
+    [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"gauges\"" ];
 }
 
 message QueryRewardsRequest {
@@ -48,14 +128,3 @@ message QueryRewardResponse {
   Internal_rewards reward = 1
   [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"reward\"" ];
 }
-
-// QueryParamsRequest is request type for the Query/Params RPC method.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is response type for the Query/Params RPC method.
-message QueryParamsResponse {
-  // params holds all the parameters of this module.
-  Params params = 1 [(gogoproto.nullable) = false];
-}
-
-// this line is used by starport scaffolding # 3

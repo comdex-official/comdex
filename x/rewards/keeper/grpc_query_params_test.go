@@ -3,10 +3,10 @@ package keeper_test
 import (
 	"testing"
 
+	testkeeper "github.com/comdex-official/comdex/testutil/keeper"
+	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	testkeeper 	"github.com/comdex-official/comdex/testutil/keeper"
-	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
 func TestParamsQuery(t *testing.T) {
