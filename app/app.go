@@ -552,9 +552,9 @@ func New(
 
 	app.rewardskeeper = *rewardskeeper.NewKeeper(
 		app.cdc,
-		app.keys[collectortypes.StoreKey],
-		app.keys[collectortypes.MemStoreKey],
-		app.GetSubspace(collectortypes.ModuleName),
+		app.keys[rewardstypes.StoreKey],
+		app.keys[rewardstypes.MemStoreKey],
+		app.GetSubspace(rewardstypes.ModuleName),
 		&app.lockerKeeper,
 		&app.collectorKeeper,
 		&app.vaultKeeper,

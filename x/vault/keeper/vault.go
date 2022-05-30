@@ -490,11 +490,7 @@ func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, AppMappingId uint64
 	new_vault.Id = appMapping.ShortName + strconv.FormatUint(updated_counter, 10)
 	new_vault.AmountIn = AmountIn
 
-	// closingFeeVal := (sdk.Dec(msg.AmountOut).Mul((extended_pair_vault.ClosingFee)))
-
-	closingFeeVal := AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
-
-	new_vault.ClosingFeeAccumulated = &closingFeeVal
+	new_vault.ClosingFeeAccumulated = &zero_val
 	new_vault.AmountOut = AmountOut
 	new_vault.AppMappingId = appMapping.Id
 	new_vault.InterestAccumulated = &zero_val

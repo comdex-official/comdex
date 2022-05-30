@@ -40,6 +40,7 @@ message NetFeeCollectedData {
 message AssetIdToFeeCollected {
   uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
   string net_fees_collected = 2 [
+    (gogoproto.nullable) = false,
     (gogoproto.moretags)   = "yaml:\"net_fees_collected\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];

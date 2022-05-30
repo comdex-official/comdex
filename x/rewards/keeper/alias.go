@@ -125,3 +125,11 @@ func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recip
 func (k *Keeper) SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins {
 	return k.bank.SpendableCoins(ctx, address)
 }
+
+func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData collecortypes.NetFeeCollectedData, found bool) {
+	return k.collector.GetNetFeeCollectedData(ctx, app_id)
+}
+
+func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error {
+	return k.collector.SetNetFeeCollectedData(ctx, app_id, asset_id, fee)
+}

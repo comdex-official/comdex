@@ -246,6 +246,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 							return err
 						}
 						k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, lockedVault.ExtendedPairId, lockedVault.OriginalVaultId, lockedVault.AppMappingId)
+
 						err = k.CreteNewVault(ctx, lockedVault.Owner, lockedVault.AppMappingId, lockedVault.ExtendedPairId, lockedVault.AmountIn, lockedVault.AmountOut)
 						if err != nil {
 							return err
