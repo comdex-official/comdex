@@ -3,19 +3,33 @@ package expected
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collecortypes "github.com/comdex-official/comdex/x/collector/types"
-	"github.com/comdex-official/comdex/x/locker/types"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
+	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	"github.com/comdex-official/comdex/x/rewards/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
+
+// AccountKeeper defines the expected account keeper used for simulations (noalias).
+type AccountKeeper interface {
+	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	// Methods imported from account should be defined here
+}
+
+type LiquidityKeeper interface {
+	GetPool(ctx sdk.Context, id uint64) (pool liquiditytypes.Pool, found bool)
+	GetFarmingRewardsData(ctx sdk.Context, coinToDistribute sdk.Coin, liquidityGaugeData types.LiquidtyGaugeMetaData) ([]types.RewardDistributionDataCollector, error)
+}
 
 type AssetKeeper interface {
 	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
 }
 type LockerKeeper interface {
-	GetLockerProductAssetMapping(ctx sdk.Context, appMappingId uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool)
-	GetLocker(ctx sdk.Context, lockerId string) (locker types.Locker, found bool)
-	GetLockerLookupTable(ctx sdk.Context, appMappingId uint64) (lockerLookupData types.LockerLookupTable, found bool)
-	UpdateLocker(ctx sdk.Context, locker types.Locker)
+	GetLockerProductAssetMapping(ctx sdk.Context, appMappingId uint64) (lockerProductMapping lockertypes.LockerProductAssetMapping, found bool)
+	GetLocker(ctx sdk.Context, lockerId string) (locker lockertypes.Locker, found bool)
+	GetLockerLookupTable(ctx sdk.Context, appMappingId uint64) (lockerLookupData lockertypes.LockerLookupTable, found bool)
+	UpdateLocker(ctx sdk.Context, locker lockertypes.Locker)
 }
 
 type CollectorKeeper interface {

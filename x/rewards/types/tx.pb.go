@@ -11,24 +11,185 @@ import (
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
+	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	_ "google.golang.org/protobuf/types/known/durationpb"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
+	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
+
+type MsgCreateGauge struct {
+	From            string                                  `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	GaugeTypeId     uint64                                  `protobuf:"varint,2,opt,name=gauge_type_id,json=gaugeTypeId,proto3" json:"gauge_type_id,omitempty"`
+	TriggerDuration time.Duration                           `protobuf:"bytes,3,opt,name=trigger_duration,json=triggerDuration,proto3,stdduration" json:"trigger_duration,omitempty" yaml:"trigger_duration"`
+	DepositAmount   github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,4,opt,name=deposit_amount,json=depositAmount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"deposit_amount"`
+	TotalTriggers   uint64                                  `protobuf:"varint,5,opt,name=total_triggers,json=totalTriggers,proto3" json:"total_triggers,omitempty"`
+	StartTime       time.Time                               `protobuf:"bytes,6,opt,name=start_time,json=startTime,proto3,stdtime" json:"start_time" yaml:"start_time"`
+	// Types that are valid to be assigned to Kind:
+	//	*MsgCreateGauge_LiquidityMetaData
+	Kind isMsgCreateGauge_Kind `protobuf_oneof:"kind"`
+}
+
+func (m *MsgCreateGauge) Reset()         { *m = MsgCreateGauge{} }
+func (m *MsgCreateGauge) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateGauge) ProtoMessage()    {}
+func (*MsgCreateGauge) Descriptor() ([]byte, []int) {
+	return fileDescriptor_99c3f80c2e1e4c11, []int{0}
+}
+func (m *MsgCreateGauge) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCreateGauge) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCreateGauge.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCreateGauge) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateGauge.Merge(m, src)
+}
+func (m *MsgCreateGauge) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCreateGauge) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateGauge.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCreateGauge proto.InternalMessageInfo
+
+type isMsgCreateGauge_Kind interface {
+	isMsgCreateGauge_Kind()
+	MarshalTo([]byte) (int, error)
+	Size() int
+}
+
+type MsgCreateGauge_LiquidityMetaData struct {
+	LiquidityMetaData *LiquidtyGaugeMetaData `protobuf:"bytes,7,opt,name=liquidity_meta_data,json=liquidityMetaData,proto3,oneof" json:"liquidity_meta_data,omitempty"`
+}
+
+func (*MsgCreateGauge_LiquidityMetaData) isMsgCreateGauge_Kind() {}
+
+func (m *MsgCreateGauge) GetKind() isMsgCreateGauge_Kind {
+	if m != nil {
+		return m.Kind
+	}
+	return nil
+}
+
+func (m *MsgCreateGauge) GetFrom() string {
+	if m != nil {
+		return m.From
+	}
+	return ""
+}
+
+func (m *MsgCreateGauge) GetGaugeTypeId() uint64 {
+	if m != nil {
+		return m.GaugeTypeId
+	}
+	return 0
+}
+
+func (m *MsgCreateGauge) GetTriggerDuration() time.Duration {
+	if m != nil {
+		return m.TriggerDuration
+	}
+	return 0
+}
+
+func (m *MsgCreateGauge) GetDepositAmount() github_com_cosmos_cosmos_sdk_types.Coin {
+	if m != nil {
+		return m.DepositAmount
+	}
+	return github_com_cosmos_cosmos_sdk_types.Coin{}
+}
+
+func (m *MsgCreateGauge) GetTotalTriggers() uint64 {
+	if m != nil {
+		return m.TotalTriggers
+	}
+	return 0
+}
+
+func (m *MsgCreateGauge) GetStartTime() time.Time {
+	if m != nil {
+		return m.StartTime
+	}
+	return time.Time{}
+}
+
+func (m *MsgCreateGauge) GetLiquidityMetaData() *LiquidtyGaugeMetaData {
+	if x, ok := m.GetKind().(*MsgCreateGauge_LiquidityMetaData); ok {
+		return x.LiquidityMetaData
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*MsgCreateGauge) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*MsgCreateGauge_LiquidityMetaData)(nil),
+	}
+}
+
+type MsgCreateGaugeResponse struct {
+}
+
+func (m *MsgCreateGaugeResponse) Reset()         { *m = MsgCreateGaugeResponse{} }
+func (m *MsgCreateGaugeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateGaugeResponse) ProtoMessage()    {}
+func (*MsgCreateGaugeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_99c3f80c2e1e4c11, []int{1}
+}
+func (m *MsgCreateGaugeResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCreateGaugeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCreateGaugeResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCreateGaugeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateGaugeResponse.Merge(m, src)
+}
+func (m *MsgCreateGaugeResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCreateGaugeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateGaugeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCreateGaugeResponse proto.InternalMessageInfo
 
 type WhitelistAsset struct {
 	AppMappingId uint64   `protobuf:"varint,1,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
@@ -40,7 +201,7 @@ func (m *WhitelistAsset) Reset()         { *m = WhitelistAsset{} }
 func (m *WhitelistAsset) String() string { return proto.CompactTextString(m) }
 func (*WhitelistAsset) ProtoMessage()    {}
 func (*WhitelistAsset) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{0}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{2}
 }
 func (m *WhitelistAsset) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -100,7 +261,7 @@ func (m *RemoveWhitelistAsset) Reset()         { *m = RemoveWhitelistAsset{} }
 func (m *RemoveWhitelistAsset) String() string { return proto.CompactTextString(m) }
 func (*RemoveWhitelistAsset) ProtoMessage()    {}
 func (*RemoveWhitelistAsset) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{1}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{3}
 }
 func (m *RemoveWhitelistAsset) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -157,7 +318,7 @@ func (m *MsgWhitelistAssetResponse) Reset()         { *m = MsgWhitelistAssetResp
 func (m *MsgWhitelistAssetResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgWhitelistAssetResponse) ProtoMessage()    {}
 func (*MsgWhitelistAssetResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{2}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{4}
 }
 func (m *MsgWhitelistAssetResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -193,7 +354,7 @@ func (m *MsgRemoveWhitelistAssetResponse) Reset()         { *m = MsgRemoveWhitel
 func (m *MsgRemoveWhitelistAssetResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveWhitelistAssetResponse) ProtoMessage()    {}
 func (*MsgRemoveWhitelistAssetResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{3}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{5}
 }
 func (m *MsgRemoveWhitelistAssetResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -231,7 +392,7 @@ func (m *WhitelistAppIdVault) Reset()         { *m = WhitelistAppIdVault{} }
 func (m *WhitelistAppIdVault) String() string { return proto.CompactTextString(m) }
 func (*WhitelistAppIdVault) ProtoMessage()    {}
 func (*WhitelistAppIdVault) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{4}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{6}
 }
 func (m *WhitelistAppIdVault) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -283,7 +444,7 @@ func (m *RemoveWhitelistAppIdVault) Reset()         { *m = RemoveWhitelistAppIdV
 func (m *RemoveWhitelistAppIdVault) String() string { return proto.CompactTextString(m) }
 func (*RemoveWhitelistAppIdVault) ProtoMessage()    {}
 func (*RemoveWhitelistAppIdVault) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{5}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{7}
 }
 func (m *RemoveWhitelistAppIdVault) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -333,7 +494,7 @@ func (m *MsgWhitelistAppIdVaultResponse) Reset()         { *m = MsgWhitelistAppI
 func (m *MsgWhitelistAppIdVaultResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgWhitelistAppIdVaultResponse) ProtoMessage()    {}
 func (*MsgWhitelistAppIdVaultResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{6}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{8}
 }
 func (m *MsgWhitelistAppIdVaultResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -369,7 +530,7 @@ func (m *MsgRemoveWhitelistAppIdVaultResponse) Reset()         { *m = MsgRemoveW
 func (m *MsgRemoveWhitelistAppIdVaultResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveWhitelistAppIdVaultResponse) ProtoMessage()    {}
 func (*MsgRemoveWhitelistAppIdVaultResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{7}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{9}
 }
 func (m *MsgRemoveWhitelistAppIdVaultResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -411,7 +572,7 @@ func (m *ActivateExternalRewardsLockers) Reset()         { *m = ActivateExternal
 func (m *ActivateExternalRewardsLockers) String() string { return proto.CompactTextString(m) }
 func (*ActivateExternalRewardsLockers) ProtoMessage()    {}
 func (*ActivateExternalRewardsLockers) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{8}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{10}
 }
 func (m *ActivateExternalRewardsLockers) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -491,7 +652,7 @@ func (m *ActivateExternalRewardsLockersResponse) Reset() {
 func (m *ActivateExternalRewardsLockersResponse) String() string { return proto.CompactTextString(m) }
 func (*ActivateExternalRewardsLockersResponse) ProtoMessage()    {}
 func (*ActivateExternalRewardsLockersResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{9}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{11}
 }
 func (m *ActivateExternalRewardsLockersResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -533,7 +694,7 @@ func (m *ActivateExternalRewardsVault) Reset()         { *m = ActivateExternalRe
 func (m *ActivateExternalRewardsVault) String() string { return proto.CompactTextString(m) }
 func (*ActivateExternalRewardsVault) ProtoMessage()    {}
 func (*ActivateExternalRewardsVault) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{10}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{12}
 }
 func (m *ActivateExternalRewardsVault) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -611,7 +772,7 @@ func (m *ActivateExternalRewardsVaultResponse) Reset()         { *m = ActivateEx
 func (m *ActivateExternalRewardsVaultResponse) String() string { return proto.CompactTextString(m) }
 func (*ActivateExternalRewardsVaultResponse) ProtoMessage()    {}
 func (*ActivateExternalRewardsVaultResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_99c3f80c2e1e4c11, []int{11}
+	return fileDescriptor_99c3f80c2e1e4c11, []int{13}
 }
 func (m *ActivateExternalRewardsVaultResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -641,6 +802,8 @@ func (m *ActivateExternalRewardsVaultResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_ActivateExternalRewardsVaultResponse proto.InternalMessageInfo
 
 func init() {
+	proto.RegisterType((*MsgCreateGauge)(nil), "comdex.rewards.v1beta1.MsgCreateGauge")
+	proto.RegisterType((*MsgCreateGaugeResponse)(nil), "comdex.rewards.v1beta1.MsgCreateGaugeResponse")
 	proto.RegisterType((*WhitelistAsset)(nil), "comdex.rewards.v1beta1.WhitelistAsset")
 	proto.RegisterType((*RemoveWhitelistAsset)(nil), "comdex.rewards.v1beta1.RemoveWhitelistAsset")
 	proto.RegisterType((*MsgWhitelistAssetResponse)(nil), "comdex.rewards.v1beta1.MsgWhitelistAssetResponse")
@@ -658,57 +821,76 @@ func init() {
 func init() { proto.RegisterFile("comdex/rewards/v1beta1/tx.proto", fileDescriptor_99c3f80c2e1e4c11) }
 
 var fileDescriptor_99c3f80c2e1e4c11 = []byte{
-	// 800 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x56, 0xcd, 0x6f, 0xd3, 0x48,
-	0x14, 0x8f, 0x9b, 0x6c, 0x77, 0x3b, 0xfd, 0x5c, 0x37, 0xdb, 0x26, 0xe9, 0xca, 0xce, 0x7a, 0xab,
-	0x6c, 0xa4, 0xdd, 0xda, 0x4a, 0x17, 0x81, 0x84, 0x28, 0xa8, 0x81, 0x0a, 0x45, 0x34, 0x12, 0x32,
-	0x08, 0x04, 0x17, 0x6b, 0x62, 0x4f, 0xd2, 0x51, 0x63, 0x8f, 0xe5, 0x99, 0x84, 0xe4, 0xc8, 0xa9,
-	0x12, 0x07, 0xd4, 0xbf, 0x82, 0x13, 0x7f, 0x48, 0x8f, 0x3d, 0x72, 0xb2, 0x50, 0x7b, 0xe2, 0x9a,
-	0x03, 0x07, 0x4e, 0xc8, 0x1f, 0x49, 0x9a, 0x26, 0x4e, 0xfa, 0x21, 0x04, 0x07, 0x4e, 0xf6, 0xf8,
-	0xfd, 0xde, 0x9b, 0xf7, 0xde, 0xfc, 0xde, 0x6f, 0x0c, 0x44, 0x9d, 0x98, 0x06, 0x6a, 0x29, 0x0e,
-	0x7a, 0x05, 0x1d, 0x83, 0x2a, 0xcd, 0x42, 0x05, 0x31, 0x58, 0x50, 0x58, 0x4b, 0xb6, 0x1d, 0xc2,
-	0x08, 0xbf, 0x12, 0x00, 0xe4, 0x10, 0x20, 0x87, 0x80, 0x4c, 0xb2, 0x46, 0x6a, 0xc4, 0x87, 0x28,
-	0xde, 0x5b, 0x80, 0xce, 0x08, 0x3a, 0xa1, 0x26, 0xa1, 0x4a, 0x05, 0x52, 0xd4, 0x8b, 0xa5, 0x13,
-	0x6c, 0x05, 0x76, 0xe9, 0x1d, 0x07, 0x16, 0x9e, 0xef, 0x61, 0x86, 0xea, 0x98, 0xb2, 0x6d, 0x4a,
-	0x11, 0xe3, 0xef, 0x81, 0x05, 0x68, 0xdb, 0x9a, 0x09, 0x6d, 0x1b, 0x5b, 0x35, 0x0d, 0x1b, 0x29,
-	0x2e, 0xcb, 0xe5, 0x13, 0xc5, 0x74, 0xc7, 0x15, 0xff, 0x68, 0x43, 0xb3, 0x7e, 0x5b, 0x1a, 0xb4,
-	0x4b, 0xea, 0x1c, 0xb4, 0xed, 0x72, 0xb0, 0x2e, 0x19, 0xfc, 0xdf, 0x20, 0x51, 0x75, 0x88, 0x99,
-	0x9a, 0xca, 0x72, 0xf9, 0x99, 0xe2, 0x62, 0xc7, 0x15, 0x67, 0x03, 0x37, 0xef, 0xab, 0xa4, 0xfa,
-	0x46, 0x5e, 0x06, 0xbf, 0x41, 0x6f, 0x3b, 0x2f, 0x7e, 0x3c, 0x1b, 0xcf, 0x27, 0x8a, 0xcb, 0x1d,
-	0x57, 0x5c, 0x0c, 0xe3, 0x87, 0x16, 0x49, 0xfd, 0xd5, 0x7f, 0x2d, 0x19, 0xd2, 0x7b, 0x0e, 0x24,
-	0x55, 0x64, 0x92, 0x26, 0xfa, 0x01, 0xd2, 0xe5, 0x26, 0xa6, 0xbb, 0x06, 0xd2, 0x65, 0x5a, 0x1b,
-	0x4c, 0x55, 0x45, 0xd4, 0x26, 0x16, 0x45, 0xd2, 0x5f, 0x40, 0x2c, 0xd3, 0xda, 0xa8, 0x6a, 0x7a,
-	0x90, 0xd7, 0x1c, 0x58, 0xee, 0x9b, 0x6c, 0xbb, 0x64, 0x3c, 0x83, 0x8d, 0x3a, 0xe3, 0x77, 0x22,
-	0xaa, 0x15, 0x3b, 0xae, 0xb8, 0x36, 0xaa, 0x5a, 0xad, 0xe9, 0xf9, 0x5d, 0xa5, 0x66, 0xe9, 0x80,
-	0x03, 0xe9, 0xf3, 0x49, 0x7e, 0x9f, 0x4c, 0xb2, 0x40, 0x18, 0xe8, 0x66, 0x2f, 0x8b, 0x5e, 0xbf,
-	0x72, 0x60, 0x7d, 0x44, 0x4b, 0x87, 0x71, 0x9f, 0xe2, 0x40, 0xd8, 0xd6, 0x19, 0x6e, 0x42, 0x86,
-	0x76, 0x5a, 0x0c, 0x39, 0x16, 0xac, 0xab, 0xc1, 0x24, 0xed, 0x12, 0x7d, 0x1f, 0x39, 0xf4, 0xfa,
-	0x84, 0x3a, 0xcb, 0x95, 0xa9, 0xc9, 0x5c, 0xe1, 0x0f, 0x38, 0x30, 0xcf, 0x08, 0x83, 0x75, 0x2d,
-	0x9c, 0x69, 0x9f, 0x61, 0xb3, 0x9b, 0x69, 0x39, 0x18, 0x5e, 0xd9, 0x1b, 0xde, 0xee, 0x9c, 0xcb,
-	0xf7, 0x09, 0xb6, 0x8a, 0x0f, 0x8f, 0x5c, 0x31, 0xd6, 0x71, 0xc5, 0x64, 0x10, 0x74, 0xc0, 0x5b,
-	0xfa, 0xe2, 0x8a, 0xff, 0xd4, 0x30, 0xdb, 0x6b, 0x54, 0x64, 0x9d, 0x98, 0x4a, 0xa8, 0x00, 0xc1,
-	0x63, 0x83, 0x1a, 0xfb, 0x0a, 0x6b, 0xdb, 0x88, 0xfa, 0x81, 0xd4, 0x39, 0xdf, 0x35, 0xec, 0x00,
-	0xbf, 0x05, 0xe6, 0x8d, 0x86, 0x03, 0x19, 0x26, 0x96, 0x66, 0xc0, 0x36, 0x4d, 0x25, 0xb2, 0x5c,
-	0x3e, 0x5e, 0x4c, 0xf5, 0x77, 0x1a, 0x30, 0x4b, 0xea, 0x5c, 0x77, 0xfd, 0x00, 0xb6, 0x29, 0xbf,
-	0x09, 0x66, 0x0c, 0x64, 0x13, 0x8a, 0x19, 0x71, 0x52, 0xbf, 0xf8, 0x07, 0x9a, 0xec, 0xb8, 0xe2,
-	0x52, 0xe8, 0xda, 0x35, 0x49, 0x6a, 0x1f, 0xc6, 0xbf, 0x00, 0xab, 0x26, 0xb6, 0xb4, 0x3a, 0xd1,
-	0xf7, 0x1b, 0xb6, 0xc6, 0xb0, 0x89, 0x34, 0x8a, 0x74, 0x62, 0x19, 0x34, 0x35, 0xed, 0x6f, 0x2e,
-	0x75, 0x5c, 0x51, 0x08, 0x22, 0x44, 0x00, 0x25, 0x35, 0x69, 0x62, 0x6b, 0xd7, 0x37, 0x3c, 0xc5,
-	0x26, 0x7a, 0x12, 0x7e, 0xce, 0x83, 0xdc, 0xf8, 0xa3, 0xee, 0xb1, 0xe2, 0x73, 0x1c, 0xfc, 0x19,
-	0x01, 0x0d, 0xc8, 0x7e, 0x6d, 0x4e, 0x6c, 0x81, 0x25, 0xd4, 0x62, 0xc8, 0x32, 0x90, 0xa1, 0x3d,
-	0x86, 0xd8, 0xd1, 0x4a, 0x63, 0xb9, 0xb1, 0xd0, 0x05, 0x7b, 0xd8, 0x9f, 0x14, 0xf9, 0x66, 0x14,
-	0xc9, 0x81, 0xf5, 0x71, 0xe7, 0xde, 0x25, 0xc8, 0xe6, 0xdb, 0x69, 0x10, 0x2f, 0xd3, 0x1a, 0x5f,
-	0x05, 0x33, 0x3d, 0x75, 0xe1, 0x73, 0xf2, 0xe8, 0xab, 0x58, 0x1e, 0xd4, 0xf4, 0x4c, 0x21, 0x0a,
-	0x17, 0x79, 0x43, 0xf0, 0x2d, 0xb0, 0x78, 0x4e, 0xcb, 0xf8, 0xff, 0xa2, 0xa2, 0x8c, 0xba, 0x47,
-	0x32, 0xb7, 0xc6, 0xec, 0x39, 0xee, 0xe2, 0xe1, 0x5b, 0xe0, 0xf7, 0xb3, 0xfa, 0x19, 0xd0, 0xff,
-	0xdf, 0xc9, 0x95, 0xf6, 0xa4, 0x36, 0x73, 0xf3, 0x42, 0xe5, 0x0e, 0x49, 0x33, 0xff, 0x86, 0x03,
-	0xab, 0xc3, 0x02, 0x1e, 0x24, 0x50, 0xb8, 0x68, 0xf1, 0xfd, 0x34, 0xee, 0x5c, 0xa2, 0x03, 0xc3,
-	0xc9, 0x1c, 0x72, 0x60, 0x25, 0xe2, 0x7e, 0x88, 0xac, 0x6f, 0xbc, 0xd8, 0x64, 0xee, 0x5e, 0xcd,
-	0xef, 0x6c, 0x7f, 0x92, 0x23, 0xc5, 0xe9, 0xc6, 0x25, 0x03, 0x4f, 0xe8, 0xcf, 0x45, 0x06, 0xa2,
-	0xf8, 0xe8, 0xe8, 0x44, 0xe0, 0x8e, 0x4f, 0x04, 0xee, 0xe3, 0x89, 0xc0, 0x1d, 0x9e, 0x0a, 0xb1,
-	0xe3, 0x53, 0x21, 0xf6, 0xe1, 0x54, 0x88, 0xbd, 0x2c, 0x0c, 0xe8, 0x8a, 0xb7, 0xc3, 0x06, 0xa9,
-	0x56, 0xb1, 0x8e, 0x61, 0x3d, 0x5c, 0x2b, 0xfd, 0xbf, 0x5b, 0x5f, 0x66, 0x2a, 0xd3, 0xfe, 0xbf,
-	0xe8, 0xff, 0x5f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x60, 0xe9, 0xdd, 0xbe, 0xfc, 0x0a, 0x00, 0x00,
+	// 1091 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x57, 0xcf, 0x6f, 0xe3, 0xc4,
+	0x17, 0xaf, 0x9b, 0x7c, 0xbb, 0xdf, 0x4e, 0xdb, 0xb4, 0x75, 0x43, 0x9b, 0x66, 0xc1, 0x2e, 0x66,
+	0x29, 0x95, 0xd8, 0xda, 0x6a, 0x41, 0x20, 0x21, 0x16, 0x54, 0x6f, 0x57, 0x4b, 0x45, 0x23, 0x21,
+	0x53, 0xf1, 0xeb, 0x62, 0x4d, 0xe3, 0xa9, 0x77, 0xd4, 0xd8, 0xe3, 0xf5, 0x4c, 0x4a, 0x72, 0xe4,
+	0xb4, 0x12, 0xa7, 0x1e, 0xf9, 0x0b, 0x38, 0xf1, 0x47, 0x70, 0xdc, 0xe3, 0x1e, 0x39, 0x19, 0xd4,
+	0x9e, 0xe0, 0x18, 0x09, 0x0e, 0x9c, 0xd0, 0x8c, 0xc7, 0x4e, 0xd3, 0xc4, 0x69, 0xbb, 0x2b, 0x04,
+	0x07, 0x4e, 0x8d, 0xe7, 0x7d, 0xde, 0x7b, 0x9f, 0xf7, 0xe6, 0xf9, 0xf3, 0x5c, 0xa0, 0x37, 0x49,
+	0xe0, 0xa1, 0x8e, 0x15, 0xa3, 0xaf, 0x61, 0xec, 0x51, 0xeb, 0x64, 0xeb, 0x10, 0x31, 0xb8, 0x65,
+	0xb1, 0x8e, 0x19, 0xc5, 0x84, 0x11, 0x75, 0x39, 0x05, 0x98, 0x12, 0x60, 0x4a, 0x40, 0xbd, 0xea,
+	0x13, 0x9f, 0x08, 0x88, 0xc5, 0x7f, 0xa5, 0xe8, 0xba, 0xd6, 0x24, 0x34, 0x20, 0xd4, 0x3a, 0x84,
+	0x14, 0xe5, 0xb1, 0x9a, 0x04, 0x87, 0x99, 0xdd, 0x27, 0xc4, 0x6f, 0x21, 0x4b, 0x3c, 0x1d, 0xb6,
+	0x8f, 0x2c, 0xaf, 0x1d, 0x43, 0x86, 0x49, 0x66, 0x37, 0x0a, 0xe8, 0xf8, 0xb0, 0xed, 0x23, 0x89,
+	0xd1, 0x2f, 0xc7, 0x60, 0x38, 0x40, 0x94, 0xc1, 0x20, 0x4a, 0x01, 0xc6, 0x8f, 0x65, 0x50, 0x69,
+	0x50, 0xff, 0x7e, 0x8c, 0x20, 0x43, 0x0f, 0xb9, 0xa7, 0xfa, 0x1a, 0x28, 0x1f, 0xc5, 0x24, 0xa8,
+	0x29, 0x6b, 0xca, 0xc6, 0xb4, 0x3d, 0xdf, 0x4b, 0xf4, 0x99, 0x2e, 0x0c, 0x5a, 0xef, 0x19, 0xfc,
+	0xd4, 0x70, 0x84, 0x51, 0x35, 0xc0, 0x9c, 0xc8, 0xe3, 0xb2, 0x6e, 0x84, 0x5c, 0xec, 0xd5, 0x26,
+	0xd7, 0x94, 0x8d, 0xb2, 0x33, 0x23, 0x0e, 0x0f, 0xba, 0x11, 0xda, 0xf3, 0xd4, 0x27, 0x0a, 0x58,
+	0x60, 0x31, 0xf6, 0x7d, 0x14, 0xbb, 0x19, 0xf7, 0x5a, 0x69, 0x4d, 0xd9, 0x98, 0xd9, 0x5e, 0x35,
+	0x53, 0x62, 0x66, 0x46, 0xcc, 0xdc, 0x95, 0x00, 0x7b, 0xe7, 0x69, 0xa2, 0x4f, 0xfc, 0x96, 0xe8,
+	0xf5, 0xcb, 0xae, 0x77, 0x49, 0x80, 0x19, 0x0a, 0x22, 0xd6, 0xed, 0x25, 0xfa, 0x4a, 0x4a, 0xe9,
+	0x32, 0xc6, 0xf8, 0xee, 0x67, 0x5d, 0x71, 0xe6, 0xe5, 0x71, 0x16, 0x53, 0x7d, 0x0c, 0x2a, 0x1e,
+	0x8a, 0x08, 0xc5, 0xcc, 0x85, 0x01, 0x69, 0x87, 0xac, 0x56, 0x96, 0x34, 0xd2, 0x3b, 0x30, 0xf9,
+	0x1d, 0x64, 0xd7, 0x65, 0xde, 0x27, 0x38, 0xb4, 0x2d, 0x4e, 0xe3, 0xcf, 0x44, 0x7f, 0xc3, 0xc7,
+	0xec, 0x51, 0xfb, 0xd0, 0x6c, 0x92, 0xc0, 0x92, 0x17, 0x96, 0xfe, 0xd9, 0xa4, 0xde, 0xb1, 0xc5,
+	0xab, 0xa7, 0xc2, 0xc1, 0x99, 0x93, 0x19, 0x76, 0x44, 0x02, 0xf5, 0x75, 0x50, 0x61, 0x84, 0xc1,
+	0x96, 0x2b, 0xb9, 0xd0, 0xda, 0xff, 0x44, 0x87, 0xe6, 0xc4, 0xe9, 0x81, 0x3c, 0x54, 0xbf, 0x00,
+	0x80, 0x32, 0x18, 0x33, 0x97, 0x5f, 0x4c, 0x6d, 0x4a, 0xb0, 0xaa, 0x0f, 0x35, 0xe7, 0x20, 0xbb,
+	0x35, 0xfb, 0x15, 0x4e, 0xab, 0x97, 0xe8, 0x8b, 0x69, 0xfd, 0x7d, 0x5f, 0xe3, 0x94, 0x57, 0x3e,
+	0x2d, 0x0e, 0x38, 0x5c, 0x75, 0xc1, 0x52, 0x0b, 0x3f, 0x6e, 0x63, 0x0f, 0xb3, 0xae, 0x1b, 0x20,
+	0x06, 0x5d, 0x0f, 0x32, 0x58, 0xbb, 0x25, 0x52, 0x6c, 0x9a, 0xa3, 0x47, 0xd5, 0xdc, 0x17, 0x2e,
+	0xac, 0x2b, 0x46, 0xa1, 0x81, 0x18, 0xdc, 0x85, 0x0c, 0x7e, 0x34, 0xe1, 0x2c, 0xe6, 0xb1, 0xb2,
+	0x43, 0x7b, 0x0a, 0x94, 0x8f, 0x71, 0xe8, 0x19, 0x35, 0xb0, 0x3c, 0x38, 0x41, 0x0e, 0xa2, 0x11,
+	0x09, 0x29, 0x32, 0xbe, 0x57, 0x40, 0xe5, 0xf3, 0x47, 0x98, 0xa1, 0x16, 0xa6, 0x6c, 0x87, 0x52,
+	0xc4, 0xd4, 0x0f, 0x41, 0x05, 0x46, 0x91, 0x1b, 0xc0, 0x28, 0xc2, 0xa1, 0xcf, 0x07, 0x87, 0x8f,
+	0x59, 0xd9, 0x5e, 0xed, 0x25, 0xfa, 0x4b, 0x69, 0x4d, 0x83, 0x76, 0xc3, 0x99, 0x85, 0x51, 0xd4,
+	0x48, 0x9f, 0xf7, 0xbc, 0x7c, 0x3a, 0x27, 0xc7, 0x4d, 0xa7, 0x09, 0xfe, 0x0f, 0x79, 0x3a, 0x1e,
+	0xbf, 0xb4, 0x56, 0xda, 0x28, 0xdb, 0x4b, 0xbd, 0x44, 0x9f, 0x97, 0xf1, 0xa5, 0xc5, 0x70, 0x6e,
+	0x89, 0x9f, 0x7b, 0x9e, 0xf1, 0x83, 0x02, 0xaa, 0x0e, 0x0a, 0xc8, 0x09, 0xfa, 0x17, 0xd0, 0x55,
+	0xae, 0xa4, 0x7b, 0x1b, 0xac, 0x36, 0xa8, 0x3f, 0x48, 0x35, 0x6f, 0xfa, 0xab, 0x40, 0x6f, 0x50,
+	0x7f, 0x54, 0x35, 0x39, 0xe4, 0x1b, 0x05, 0x2c, 0xf5, 0x4d, 0x51, 0xb4, 0xe7, 0x7d, 0x06, 0xdb,
+	0x2d, 0xa6, 0x3e, 0x28, 0xa8, 0x56, 0xef, 0x25, 0xfa, 0xed, 0x51, 0xd5, 0xba, 0x27, 0xdc, 0xef,
+	0x79, 0x6a, 0x36, 0x9e, 0x28, 0x60, 0xf5, 0x32, 0xc9, 0x7f, 0x86, 0xc9, 0x1a, 0xd0, 0x06, 0xba,
+	0x99, 0xb3, 0xc8, 0xfb, 0xb5, 0x0e, 0xee, 0x8c, 0x68, 0xe9, 0x30, 0xee, 0xd7, 0x12, 0xd0, 0x76,
+	0x9a, 0x0c, 0x9f, 0x40, 0x86, 0x1e, 0x74, 0x18, 0x8a, 0x43, 0xd8, 0x72, 0xd2, 0x17, 0x6c, 0x9f,
+	0x34, 0x8f, 0xf9, 0xfb, 0xfe, 0xc2, 0x03, 0x75, 0x71, 0x56, 0x26, 0xaf, 0x9e, 0x15, 0x2e, 0xc2,
+	0xa9, 0xe4, 0xb8, 0xf2, 0x55, 0xcf, 0x15, 0xb8, 0x50, 0xfa, 0x1e, 0x4a, 0x8d, 0xa9, 0x4a, 0x8d,
+	0xbd, 0xe8, 0x6d, 0xdc, 0x44, 0x12, 0x67, 0x85, 0xab, 0xec, 0x80, 0x7a, 0x0f, 0xcc, 0x65, 0x32,
+	0xed, 0x7a, 0xb0, 0x4b, 0x85, 0x06, 0x97, 0xec, 0x5a, 0x3f, 0xd3, 0x80, 0xd9, 0x70, 0x66, 0xb3,
+	0xe7, 0x5d, 0xd8, 0xa5, 0xea, 0x36, 0x98, 0x96, 0x0a, 0x4b, 0x62, 0xa1, 0xa5, 0xd3, 0x76, 0xb5,
+	0x97, 0xe8, 0x0b, 0xd2, 0x35, 0x33, 0x19, 0x4e, 0x1f, 0xa6, 0x7e, 0x09, 0x56, 0x02, 0x1c, 0xba,
+	0x2d, 0xd2, 0x3c, 0x6e, 0x47, 0x42, 0x26, 0x5d, 0x8a, 0x9a, 0x24, 0xf4, 0xa8, 0x90, 0xda, 0x92,
+	0x6d, 0xf4, 0x12, 0x5d, 0x4b, 0x23, 0x14, 0x00, 0x0d, 0xa7, 0x1a, 0xe0, 0x70, 0x5f, 0x18, 0xb8,
+	0xae, 0x7e, 0x2a, 0x8f, 0x37, 0xc0, 0xfa, 0xf8, 0xab, 0xce, 0xa7, 0xe2, 0x8f, 0x12, 0x78, 0xb9,
+	0x00, 0x9a, 0x0e, 0xfb, 0x0b, 0xcf, 0xc4, 0x3d, 0xb0, 0x80, 0x3a, 0x0c, 0x85, 0x1e, 0xf2, 0xdc,
+	0x4f, 0x20, 0x8e, 0xdd, 0xbd, 0xb1, 0xb3, 0x51, 0xc9, 0xc0, 0x1c, 0xfb, 0xdf, 0x88, 0xfc, 0x6d,
+	0x23, 0xb2, 0x0e, 0xee, 0x8c, 0xbb, 0xf7, 0x6c, 0x40, 0xb6, 0x7f, 0x9f, 0x02, 0xa5, 0x06, 0xf5,
+	0x55, 0x04, 0x66, 0x2e, 0x7e, 0x87, 0xad, 0x17, 0xed, 0xe8, 0xc1, 0x6d, 0x5b, 0x37, 0xaf, 0x87,
+	0xcb, 0xd2, 0xa9, 0x47, 0x60, 0x3a, 0x17, 0xb1, 0xe2, 0x24, 0x83, 0xab, 0xa3, 0xbe, 0x35, 0x26,
+	0xc9, 0xe8, 0x2d, 0xa3, 0x76, 0xc0, 0xfc, 0x25, 0xc9, 0x54, 0xef, 0x16, 0x45, 0x19, 0xb5, 0xae,
+	0xea, 0xef, 0x8e, 0xc9, 0x39, 0x6e, 0xbf, 0xa9, 0x1d, 0xb0, 0x78, 0x51, 0xa6, 0xd3, 0xb7, 0xec,
+	0xcd, 0xab, 0x2b, 0xcd, 0x15, 0xbd, 0xfe, 0xce, 0xb5, 0xca, 0x1d, 0xda, 0x00, 0xea, 0xb7, 0x0a,
+	0x58, 0x19, 0xde, 0x13, 0x29, 0x81, 0xad, 0xeb, 0x16, 0xdf, 0xa7, 0xf1, 0xfe, 0x0d, 0x3a, 0x30,
+	0x4c, 0xe6, 0x54, 0x01, 0xcb, 0x05, 0x6b, 0xa8, 0xb0, 0xbe, 0xf1, 0x9a, 0x56, 0xff, 0xe0, 0xf9,
+	0xfc, 0x2e, 0xf6, 0xa7, 0x3a, 0x52, 0x03, 0xdf, 0xbe, 0x61, 0xe0, 0x2b, 0xfa, 0x73, 0x9d, 0xf7,
+	0xce, 0xfe, 0xf8, 0xe9, 0x99, 0xa6, 0x3c, 0x3b, 0xd3, 0x94, 0x5f, 0xce, 0x34, 0xe5, 0xf4, 0x5c,
+	0x9b, 0x78, 0x76, 0xae, 0x4d, 0xfc, 0x74, 0xae, 0x4d, 0x7c, 0xb5, 0x35, 0x20, 0x5f, 0x3c, 0xc3,
+	0x26, 0x39, 0x3a, 0xc2, 0x4d, 0x0c, 0x5b, 0xf2, 0xd9, 0xea, 0xff, 0xdf, 0x25, 0xd4, 0xec, 0x70,
+	0x4a, 0x7c, 0xac, 0xbf, 0xf5, 0x57, 0x00, 0x00, 0x00, 0xff, 0xff, 0x12, 0x4f, 0xee, 0x31, 0x25,
+	0x0e, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -723,6 +905,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	CreateGauge(ctx context.Context, in *MsgCreateGauge, opts ...grpc.CallOption) (*MsgCreateGaugeResponse, error)
 	Whitelist(ctx context.Context, in *WhitelistAsset, opts ...grpc.CallOption) (*MsgWhitelistAssetResponse, error)
 	RemoveWhitelist(ctx context.Context, in *RemoveWhitelistAsset, opts ...grpc.CallOption) (*MsgRemoveWhitelistAssetResponse, error)
 	WhitelistAppVault(ctx context.Context, in *WhitelistAppIdVault, opts ...grpc.CallOption) (*MsgWhitelistAppIdVaultResponse, error)
@@ -737,6 +920,15 @@ type msgClient struct {
 
 func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
+}
+
+func (c *msgClient) CreateGauge(ctx context.Context, in *MsgCreateGauge, opts ...grpc.CallOption) (*MsgCreateGaugeResponse, error) {
+	out := new(MsgCreateGaugeResponse)
+	err := c.cc.Invoke(ctx, "/comdex.rewards.v1beta1.Msg/CreateGauge", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *msgClient) Whitelist(ctx context.Context, in *WhitelistAsset, opts ...grpc.CallOption) (*MsgWhitelistAssetResponse, error) {
@@ -795,6 +987,7 @@ func (c *msgClient) ExternalRewardsVault(ctx context.Context, in *ActivateExtern
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	CreateGauge(context.Context, *MsgCreateGauge) (*MsgCreateGaugeResponse, error)
 	Whitelist(context.Context, *WhitelistAsset) (*MsgWhitelistAssetResponse, error)
 	RemoveWhitelist(context.Context, *RemoveWhitelistAsset) (*MsgRemoveWhitelistAssetResponse, error)
 	WhitelistAppVault(context.Context, *WhitelistAppIdVault) (*MsgWhitelistAppIdVaultResponse, error)
@@ -807,6 +1000,9 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
+func (*UnimplementedMsgServer) CreateGauge(ctx context.Context, req *MsgCreateGauge) (*MsgCreateGaugeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGauge not implemented")
+}
 func (*UnimplementedMsgServer) Whitelist(ctx context.Context, req *WhitelistAsset) (*MsgWhitelistAssetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Whitelist not implemented")
 }
@@ -828,6 +1024,24 @@ func (*UnimplementedMsgServer) ExternalRewardsVault(ctx context.Context, req *Ac
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
+}
+
+func _Msg_CreateGauge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateGauge)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateGauge(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.rewards.v1beta1.Msg/CreateGauge",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateGauge(ctx, req.(*MsgCreateGauge))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_Whitelist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -943,6 +1157,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "CreateGauge",
+			Handler:    _Msg_CreateGauge_Handler,
+		},
+		{
 			MethodName: "Whitelist",
 			Handler:    _Msg_Whitelist_Handler,
 		},
@@ -971,6 +1189,125 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "comdex/rewards/v1beta1/tx.proto",
 }
 
+func (m *MsgCreateGauge) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateGauge) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateGauge) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Kind != nil {
+		{
+			size := m.Kind.Size()
+			i -= size
+			if _, err := m.Kind.MarshalTo(dAtA[i:]); err != nil {
+				return 0, err
+			}
+		}
+	}
+	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime):])
+	if err1 != nil {
+		return 0, err1
+	}
+	i -= n1
+	i = encodeVarintTx(dAtA, i, uint64(n1))
+	i--
+	dAtA[i] = 0x32
+	if m.TotalTriggers != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.TotalTriggers))
+		i--
+		dAtA[i] = 0x28
+	}
+	{
+		size, err := m.DepositAmount.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x22
+	n3, err3 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.TriggerDuration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.TriggerDuration):])
+	if err3 != nil {
+		return 0, err3
+	}
+	i -= n3
+	i = encodeVarintTx(dAtA, i, uint64(n3))
+	i--
+	dAtA[i] = 0x1a
+	if m.GaugeTypeId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.GaugeTypeId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgCreateGauge_LiquidityMetaData) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateGauge_LiquidityMetaData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.LiquidityMetaData != nil {
+		{
+			size, err := m.LiquidityMetaData.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x3a
+	}
+	return len(dAtA) - i, nil
+}
+func (m *MsgCreateGaugeResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateGaugeResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateGaugeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func (m *WhitelistAsset) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -992,20 +1329,20 @@ func (m *WhitelistAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if len(m.AssetId) > 0 {
-		dAtA2 := make([]byte, len(m.AssetId)*10)
-		var j1 int
+		dAtA6 := make([]byte, len(m.AssetId)*10)
+		var j5 int
 		for _, num := range m.AssetId {
 			for num >= 1<<7 {
-				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA6[j5] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j1++
+				j5++
 			}
-			dAtA2[j1] = uint8(num)
-			j1++
+			dAtA6[j5] = uint8(num)
+			j5++
 		}
-		i -= j1
-		copy(dAtA[i:], dAtA2[:j1])
-		i = encodeVarintTx(dAtA, i, uint64(j1))
+		i -= j5
+		copy(dAtA[i:], dAtA6[:j5])
+		i = encodeVarintTx(dAtA, i, uint64(j5))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -1403,6 +1740,55 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *MsgCreateGauge) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.GaugeTypeId != 0 {
+		n += 1 + sovTx(uint64(m.GaugeTypeId))
+	}
+	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.TriggerDuration)
+	n += 1 + l + sovTx(uint64(l))
+	l = m.DepositAmount.Size()
+	n += 1 + l + sovTx(uint64(l))
+	if m.TotalTriggers != 0 {
+		n += 1 + sovTx(uint64(m.TotalTriggers))
+	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime)
+	n += 1 + l + sovTx(uint64(l))
+	if m.Kind != nil {
+		n += m.Kind.Size()
+	}
+	return n
+}
+
+func (m *MsgCreateGauge_LiquidityMetaData) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.LiquidityMetaData != nil {
+		l = m.LiquidityMetaData.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+func (m *MsgCreateGaugeResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func (m *WhitelistAsset) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1590,6 +1976,310 @@ func sovTx(x uint64) (n int) {
 }
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *MsgCreateGauge) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateGauge: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateGauge: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GaugeTypeId", wireType)
+			}
+			m.GaugeTypeId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GaugeTypeId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TriggerDuration", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.TriggerDuration, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DepositAmount", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.DepositAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalTriggers", wireType)
+			}
+			m.TotalTriggers = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.TotalTriggers |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StartTime", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTime, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LiquidityMetaData", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &LiquidtyGaugeMetaData{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Kind = &MsgCreateGauge_LiquidityMetaData{v}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgCreateGaugeResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateGaugeResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateGaugeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *WhitelistAsset) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
