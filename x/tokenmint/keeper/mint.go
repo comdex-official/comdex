@@ -56,6 +56,9 @@ func (k *Keeper) GetTotalTokenMinted(ctx sdk.Context) (appTokenMintData []types.
 func (k *Keeper) GetAssetDataInTokenMintByApp(ctx sdk.Context, appMappingId uint64, assetId uint64) (tokenData types.MintedTokens, found bool) {
 
 	mintData, found := k.GetTokenMint(ctx, appMappingId)
+	if !found{
+		return tokenData,false
+	}
 
 	for _, mintAssetData := range mintData.MintedTokens {
 

@@ -76,9 +76,6 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibctypes "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
-	"github.com/gravity-devs/liquidity/x/liquidity"
-	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
-	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/spf13/cast"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -184,7 +181,7 @@ var (
 		vault.AppModuleBasic{},
 		asset.AppModuleBasic{},
 		lend.AppModuleBasic{},
-		liquidity.AppModuleBasic{},
+	
 		market.AppModuleBasic{},
 		rewards.AppModuleBasic{},
 		locker.AppModuleBasic{},
@@ -256,7 +253,7 @@ type App struct {
 	assetKeeper       assetkeeper.Keeper
 	collectorKeeper   collectorkeeper.Keeper
 	vaultKeeper       vaultkeeper.Keeper
-	liquidityKeeper   liquiditykeeper.Keeper
+
 	marketKeeper      marketkeeper.Keeper
 	liquidationKeeper liquidationkeeper.Keeper
 	rewardskeeper     rewardskeeper.Keeper
@@ -296,7 +293,7 @@ func New(
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-			vaulttypes.StoreKey, liquiditytypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
+			vaulttypes.StoreKey,  assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			lendtypes.StoreKey, markettypes.StoreKey, rewardstypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey, wasm.StoreKey, authzkeeper.StoreKey,
 			auctiontypes.StoreKey, tokenminttypes.StoreKey,
 		)
@@ -335,7 +332,6 @@ func New(
 	app.paramsKeeper.Subspace(govtypes.ModuleName).
 		WithKeyTable(govtypes.ParamKeyTable())
 	app.paramsKeeper.Subspace(crisistypes.ModuleName)
-	app.paramsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	app.paramsKeeper.Subspace(ibchost.ModuleName)
 	app.paramsKeeper.Subspace(vaulttypes.ModuleName)
@@ -486,14 +482,7 @@ func New(
 		&app.collectorKeeper,
 	)
 
-	app.liquidityKeeper = liquiditykeeper.NewKeeper(
-		app.cdc,
-		app.keys[liquiditytypes.StoreKey],
-		app.GetSubspace(liquiditytypes.ModuleName),
-		app.bankKeeper,
-		app.accountKeeper,
-		app.distrKeeper,
-	)
+
 	app.tokenmintKeeper = tokenmintkeeper.NewKeeper(
 		app.cdc,
 		app.keys[tokenminttypes.StoreKey],
@@ -702,7 +691,6 @@ func New(
 		transferModule,
 		asset.NewAppModule(app.cdc, app.assetKeeper),
 		vault.NewAppModule(app.cdc, app.vaultKeeper),
-		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.accountKeeper, app.bankKeeper, app.distrKeeper),
 		oracleModule,
 		bandoracleModule,
 		liquidation.NewAppModule(app.cdc, app.liquidationKeeper, app.accountKeeper, app.bankKeeper),
@@ -721,14 +709,14 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName, ibchost.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName,ibchost.ModuleName,
 		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, rewardstypes.ModuleName, lockertypes.ModuleName, crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
 		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		lendtypes.ModuleName, vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName, govtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
-		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, liquiditytypes.ModuleName,
+		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, 
 		minttypes.ModuleName, bandoraclemoduletypes.ModuleName, markettypes.ModuleName, rewardstypes.ModuleName, lockertypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName, lendtypes.ModuleName, wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
@@ -754,7 +742,7 @@ func New(
 		ibchost.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
-		liquiditytypes.ModuleName,
+
 		ibctransfertypes.ModuleName,
 		assettypes.ModuleName,
 		collectortypes.ModuleName,
@@ -961,7 +949,6 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		auctiontypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
-		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
 	}

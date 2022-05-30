@@ -33,8 +33,8 @@ func (a AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
-func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {
-	
+func (a AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	types.RegisterLegacyAminoCodec(cdc)
 }
 
 func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {

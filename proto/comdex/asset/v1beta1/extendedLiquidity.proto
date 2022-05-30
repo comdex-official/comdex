@@ -11,7 +11,7 @@ option (gogoproto.goproto_getters_all) = false;
 message ExtendedPairLiquidity{
 
     uint64 pair_id =  1[ (gogoproto.moretags) = "yaml:\"id\"" ];// No need of this variable here though
-    uint64 current_batch_id= 2[ (gogoproto.moretags) = "yaml:\"current_batch_id\"" ];
+    uint64 current_batch_id = 2[ (gogoproto.moretags) = "yaml:\"current_batch_id\"" ];
     string escrow_address =3[ (gogoproto.moretags) = "yaml:\"escrow_address\"" ];
     uint64 last_order_id= 4[ (gogoproto.moretags) = "yaml:\"last_order_id\"" ];
     string last_price= 5[ (gogoproto.moretags) = "yaml:\"last_price\"" ];
