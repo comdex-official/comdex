@@ -78,7 +78,7 @@ func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Rout
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
-	_ = types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))
+	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(ctx))
 }
 
 // GetTxCmd returns the capability module's root tx command.
@@ -140,7 +140,7 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	//types.RegisterQueryServiceServer(cfg.QueryServer(), am.keeper)
-	types.RegisterQueryServiceServer(cfg.QueryServer(), keeper.NewQueryServiceServer(am.keeper))
+	types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQueryServiceServer(am.keeper))
 
 }
 

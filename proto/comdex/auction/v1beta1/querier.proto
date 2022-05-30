@@ -162,7 +162,7 @@ message QueryParamsResponse {
   ];
 }
 
-service QueryService {
+service Query {
   rpc QuerySurplusAuction(QuerySurplusAuctionRequest) returns (QuerySurplusAuctionResponse) {
     option (google.api.http).get = "/comdex/auction/v1beta1/surplusauction/{app_id}/{auction_mapping_id}/{auction_id}/{history}";
   }

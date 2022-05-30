@@ -57,7 +57,7 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncoding
 func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
-	_ = types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))
+	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(ctx))
 }
 
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
@@ -110,8 +110,8 @@ func (a AppModule) QuerierRoute() string {
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
-	types.RegisterMsgServiceServer(configurator.QueryServer(), keeper.NewMsgServiceServer(a.k))
-	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.k))
+	types.RegisterMsgServer(configurator.QueryServer(), keeper.NewMsgServiceServer(a.k))
+	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.k))
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abcitypes.RequestBeginBlock) {}

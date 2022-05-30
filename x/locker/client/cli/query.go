@@ -21,7 +21,7 @@ func queryLockedVault() *cobra.Command {
 				return err
 			}
 			id := args[0]
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockerInfo(
 				context.Background(),
 				&types.QueryLockerInfoRequest{
@@ -60,7 +60,7 @@ func queryLockerByProductAssetID() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockersByProductToAssetID(
 				context.Background(),
 				&types.QueryLockersByProductToAssetIDRequest{
@@ -95,7 +95,7 @@ func queryLockerByProductID() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockerInfoByProductID(
 				context.Background(),
 				&types.QueryLockerInfoByProductIDRequest{
@@ -134,7 +134,7 @@ func queryTotalDepositByProductAssetID() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryTotalDepositByProductAssetID(
 				context.Background(),
 				&types.QueryTotalDepositByProductAssetIDRequest{
@@ -170,7 +170,7 @@ func queryOwnerLockerByProductIDbyOwner() *cobra.Command {
 			}
 			owner := args[1]
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryOwnerLockerByProductIDbyOwner(
 				context.Background(),
 				&types.QueryOwnerLockerByProductIDbyOwnerRequest{
@@ -202,7 +202,7 @@ func queryOwnerLockerOfAllProductbyOwner() *cobra.Command {
 
 			owner := args[0]
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryOwnerLockerOfAllProductbyOwner(
 				context.Background(),
 				&types.QueryOwnerLockerOfAllProductbyOwnerRequest{
@@ -243,7 +243,7 @@ func queryOwnerLockerByProductToAssetIDbyOwner() *cobra.Command {
 
 			owner := args[2]
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryOwnerLockerByProductToAssetIDbyOwner(
 				context.Background(),
 				&types.QueryOwnerLockerByProductToAssetIDbyOwnerRequest{
@@ -279,7 +279,7 @@ func queryTotalLockerByProductID() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockerCountByProductID(
 				context.Background(),
 				&types.QueryLockerCountByProductIDRequest{
@@ -318,7 +318,7 @@ func queryTotalLockerByProductToAssetID() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockerCountByProductToAssetID(
 				context.Background(),
 				&types.QueryLockerCountByProductToAssetIDRequest{
@@ -353,7 +353,7 @@ func queryWhiteListedAssetIDsByProductID() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryWhiteListedAssetIDsByProductID(
 				context.Background(),
 				&types.QueryWhiteListedAssetIDsByProductIDRequest{
@@ -382,7 +382,7 @@ func queryWhiteListedAssetByAllProduct() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryWhiteListedAssetByAllProduct(
 				context.Background(),
 				&types.QueryWhiteListedAssetByAllProductRequest{},
@@ -414,7 +414,7 @@ func queryLockerLookupTableByApp() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockerLookupTableByApp(
 				context.Background(),
 				&types.QueryLockerLookupTableByAppRequest{
@@ -452,7 +452,7 @@ func queryLockerLookupTableByAppAndAssetId() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockerLookupTableByAppAndAssetId(
 				context.Background(),
 				&types.QueryLockerLookupTableByAppAndAssetIdRequest{
@@ -487,7 +487,7 @@ func queryLockerTotalDepositedByApp() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockerTotalDepositedByApp(
 				context.Background(),
 				&types.QueryLockerTotalDepositedByAppRequest{
@@ -521,7 +521,7 @@ func queryState() *cobra.Command {
 			blockheight := args[2]
 			target := args[3]
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryState(
 				context.Background(),
 				&types.QueryStateRequest{

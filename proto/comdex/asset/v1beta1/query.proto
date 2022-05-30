@@ -153,7 +153,7 @@ message QueryExtendedPairDataPsmPairWiseResponse {
   ];
 }
 
-service QueryService {
+service Query {
   rpc QueryAssets(QueryAssetsRequest) returns (QueryAssetsResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/assets";
   }

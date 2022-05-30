@@ -170,17 +170,9 @@ message MsgWithdrawStableMintRequest {
   [ (gogoproto.customname) = "StableVaultID", (gogoproto.moretags) = "yaml:\"stableVaultid\"" ];
 }
 
-
-
 message  MsgWithdrawStableMintResponse{}
 
-
-
-
-
-
-
-service MsgService {
+service Msg {
   rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
   rpc MsgDeposit(MsgDepositRequest) returns (MsgDepositResponse);
   rpc MsgWithdraw(MsgWithdrawRequest) returns (MsgWithdrawResponse);
