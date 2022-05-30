@@ -36,6 +36,7 @@ var (
 	ErrorInvalidAppIdAssetId                = sdkerrors.Register(ModuleName, 126, "invalid appId assetId")
 	ErrorUnableToMakeFlagsFalse             = sdkerrors.Register(ModuleName, 127, "Unable To Make Flags False after auction closed")
 	ErrorUnableToSetNetfees                 = sdkerrors.Register(ModuleName, 128, "Unable To set net fees collected after auction closed")
+	ErrorLockedVaults                       = sdkerrors.Register(ModuleName, 129, "lcoked vaults not found")
 )
 
 var (

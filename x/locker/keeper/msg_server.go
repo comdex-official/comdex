@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	"strconv"
 	"time"
 
@@ -268,13 +267,6 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
 		return nil, err
 	}
-	if err := k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, lockerData.ReturnsAccumulated))); err != nil {
-		return nil, err
-	}
-	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, lockerData.ReturnsAccumulated)); err != nil {
-		return nil, err
-	}
-	lockerData.ReturnsAccumulated = sdk.ZeroInt()
 
 	k.SetLocker(ctx, lockerData)
 
