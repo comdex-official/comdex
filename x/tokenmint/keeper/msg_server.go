@@ -69,7 +69,10 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTokensRequest) (*types.MsgMintNewTokensResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
-
+	esmData,found := k.GetTriggerEsm(ctx, msg.AppMappingId)
+	if esmData.MintingStop && found{
+		return nil, types.ErrorEmergencyShutdownIsActive
+	}
 	assetData, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
@@ -93,7 +96,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(assetDataInApp.Sender), sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(assetDataInApp.Recipient), sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
 
@@ -117,7 +120,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(assetDataInApp.Sender), sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(assetDataInApp.Recipient), sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
 

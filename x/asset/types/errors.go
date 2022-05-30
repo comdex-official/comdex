@@ -31,6 +31,7 @@ var (
 	ErrorDebtFloorIsGreaterThanDebtCeiling   = errors.Register(ModuleName, 212, "Debt Floor Is Greater Than Debt Ceiling")
 	ErrorGenesisTokenExistForApp          = errors.Register(ModuleName, 213, "Genesis Token already Exist For App")
 	ErrorGenesisCantBeZero          = errors.Register(ModuleName, 214, "genesis Cant Be Zero ")
+	ErrorFeeShouldNotBeGTOne           = errors.Register(ModuleName, 215, "Fee Should Not Be Greater than One and less than zero")
 )
 
 var (

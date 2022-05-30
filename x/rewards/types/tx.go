@@ -172,3 +172,40 @@ func (m *ActivateExternalRewardsLockers) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+func NewMsgActivateExternalVaultLockers(appMappingId uint64, extendedPairId uint64, TotalRewards sdk.Coin, DurationDays, MinLockupTimeSeconds int64, from sdk.AccAddress) *ActivateExternalRewardsVault {
+	return &ActivateExternalRewardsVault{
+		AppMappingId:         appMappingId,
+		Extended_Pair_Id:     extendedPairId,
+		TotalRewards:         TotalRewards,
+		DurationDays:         DurationDays,
+		MinLockupTimeSeconds: MinLockupTimeSeconds,
+		Depositor:            from.String(),
+	}
+}
+
+func (m *ActivateExternalRewardsVault) Route() string {
+	return RouterKey
+}
+
+func (m *ActivateExternalRewardsVault) Type() string {
+	return ModuleName
+}
+
+func (m *ActivateExternalRewardsVault) ValidateBasic() error {
+
+	return nil
+}
+
+func (m *ActivateExternalRewardsVault) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *ActivateExternalRewardsVault) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.Depositor)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}

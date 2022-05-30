@@ -26,10 +26,13 @@ var (
 	KeyPrefixLastInterestTime             = []byte{0x06}
 	AppIdsVaultKeyPrefix                  = []byte{0x12}
 	ExternalRewardsLockerKeyPrefix        = []byte{0x13}
-	ExtRewardsLockerIDKey                 = []byte{0x14}
-	ExternalRewardsLockerCounterKeyPrefix = []byte{0x15}
-	AssetForDenomKeyPrefix                = []byte{0x16}
-	EpochForLockerKeyPrefix               = []byte{0x17}
+	ExternalRewardsVaultKeyPrefix         = []byte{0x14}
+	ExtRewardsLockerIDKey                 = []byte{0x15}
+	ExtRewardsVaultIDKey                  = []byte{0x16}
+	EpochTimeIDKey                        = []byte{0x17}
+	ExternalRewardsLockerCounterKeyPrefix = []byte{0x18}
+	AssetForDenomKeyPrefix                = []byte{0x19}
+	EpochForLockerKeyPrefix               = []byte{0x20}
 )
 
 func RewardsKey(id uint64) []byte {
@@ -60,4 +63,8 @@ func AssetForDenomKey(denom uint64) []byte {
 
 func EpochForLockerKey(denom uint64) []byte {
 	return append(EpochForLockerKeyPrefix, sdk.Uint64ToBigEndian(denom)...)
+}
+
+func ExternalRewardsVaultMappingKey(appMappingID uint64) []byte {
+	return append(ExternalRewardsVaultKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
 }

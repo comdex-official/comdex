@@ -27,7 +27,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryVault(),
 		QueryAllVaultsByAppAndExtendedPair(),
 		// QueryVaults(),
-		QueryVaultOfOwnerByPair(),
+		QueryVaultOfOwnerByExtendedPair(),
 		QueryVaultByProduct(),
 		QueryAllVaultByOwner(),
 		QueryTokenMintedAllProductsByPair(),
@@ -41,6 +41,9 @@ func GetQueryCmd() *cobra.Command {
 		QueryStableVaultByProductExtendedPair(),
 		QueryExtendedPairVaultMappingByApp(),
 		QueryExtendedPairVaultMappingByAppAndExtendedPairId(),
+		QueryExtendedPairVaultMappingByOwnerAndApp(),
+		QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID(),
+		QueryTVLlockedByApp(),
 		
 	)
 
@@ -144,10 +147,10 @@ func QueryVault() *cobra.Command {
 	return cmd
 }
 
-func QueryVaultOfOwnerByPair() *cobra.Command {
+func QueryVaultOfOwnerByExtendedPair() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vault-of-owner-by-pair [product_id] [owner] [extended_pair_id]",
-		Short: "vaults list for an individual account",
+		Use:   "vault-of-owner-by-extended-pair [product_id] [owner] [extended_pair_id]",
+		Short: "vaults list for an individual account by extended pair",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -172,7 +175,7 @@ func QueryVaultOfOwnerByPair() *cobra.Command {
 
 			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := queryClient.QueryVaultOfOwnerByPair(cmd.Context(), &types.QueryVaultOfOwnerByPairRequest{
+			res, err := queryClient.QueryVaultOfOwnerByExtendedPair(cmd.Context(), &types.QueryVaultOfOwnerByExtendedPairRequest{
 				ProductId: productId,
 				Owner:      args[1],
 				ExtendedPairId: extendedPairid,
@@ -272,8 +275,8 @@ func QueryAllVaultsByAppAndExtendedPair() *cobra.Command {
 
 func QueryVaultByProduct() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vaults-by-product [product_id]",
-		Short: "vaults list for a product",
+		Use:   "extendedPairvaults-by-product [product_id]",
+		Short: "extended pair vaults list for a product",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -696,8 +699,8 @@ func QueryStableVaultByProductExtendedPair() *cobra.Command {
 
 func QueryExtendedPairVaultMappingByApp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "extendedPair-VaultMapping-By-App [app_id]",
-		Short: "get ExtendedPair Vault Mapping By App",
+		Use:   "extendedPairVault-by-product [app_id]",
+		Short: "get ExtendedPair Vault By App",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -729,7 +732,7 @@ func QueryExtendedPairVaultMappingByApp() *cobra.Command {
 
 func QueryExtendedPairVaultMappingByAppAndExtendedPairId() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "extendedPair-VaultMapping-By-App-ExtendedPairId [app_id] [extended_pair_id]",
+		Use:   "extendedPairVault-by-product-and-ExtendedPairId [app_id] [extended_pair_id]",
 		Short: "get ExtendedPair Vault Mapping By App And ExtendedPairId",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -752,6 +755,113 @@ func QueryExtendedPairVaultMappingByAppAndExtendedPairId() *cobra.Command {
 			res, err := queryClient.QueryExtendedPairVaultMappingByAppAndExtendedPairId(cmd.Context(), &types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest{
 				AppId: app_id,
 				ExtendedPairId: extended_pair_id,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryExtendedPairVaultMappingByOwnerAndApp() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extendedPairVault-by-owner-and-product [owner] [app_id]",
+		Short: "get ExtendedPair Vault Mapping By owner and App",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryExtendedPairVaultMappingByOwnerAndApp(cmd.Context(), &types.QueryExtendedPairVaultMappingByOwnerAndAppRequest{
+				Owner: args[0],
+				AppId: app_id,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extendedPairVault-by-owner-product-and-extended-pair [owner] [app_id] [extended_pair]",
+		Short: "get ExtendedPair Vault Mapping By owner App and extended pair",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extended_pair, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID(cmd.Context(), &types.QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairIDRequest{
+				Owner: args[0],
+				AppId: app_id,
+				ExtendedPair: extended_pair,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryTVLlockedByApp() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "tvl-locked-by-app [app_id]",
+		Short: "get tvl locked By App",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryTVLlockedByApp(cmd.Context(), &types.QueryTVLlockedByAppRequest{
+				AppId: app_id,
 			})
 
 			if err != nil {

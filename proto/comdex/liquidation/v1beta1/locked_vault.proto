@@ -13,78 +13,88 @@ message LockedVault {
     (gogoproto.customname) = "LockedVaultId",
     (gogoproto.moretags) = "yaml:\"id\""];
 
-  string app_vault_type_id = 2 ;
+  uint64 app_mapping_id = 2 [
+    (gogoproto.customname) = "AppMappingId",
+    (gogoproto.moretags) = "yaml:\"id\""];
 
-  string original_vault_id = 3 [
+  string app_vault_type_id = 3 ;
+
+  string original_vault_id = 4 [
     (gogoproto.customname) = "OriginalVaultId",
     (gogoproto.moretags) = "yaml:\"id\""];
 
-  uint64 pair_id = 4 [
-    (gogoproto.customname) = "PairId",
-    (gogoproto.moretags) = "yaml:\"pair_id\""];
+  uint64 extended_pair_vault_id = 5 [
+    (gogoproto.customname) = "ExtendedPairId",
+    (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
 
-  string owner = 5 [
+  string owner = 6 [
     (gogoproto.customname) = "Owner",
     (gogoproto.moretags) = "yaml:\"owner\""];
 
-  string amount_in = 6 [
+  string amount_in = 7 [
     (gogoproto.customname) = "AmountIn",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags) = "yaml:\"amount_in\"",
     (gogoproto.nullable) = false];
 
-  //updated_amount_out = amount_out + interest_accumulated + opening_fee_accumulated
-  // + closing_fee_accumulated
-  string updated_amount_out = 7 [
+  string amount_out = 8 [
     (gogoproto.customname) = "AmountOut",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags) = "yaml:\"amount_out\"",
     (gogoproto.nullable) = false];
 
-  string initiator = 8 [
+  //updated_amount_out = amount_out + interest_accumulated + opening_fee_accumulated
+  // + closing_fee_accumulated
+  string updated_amount_out = 9 [
+    (gogoproto.customname) = "UpdatedAmountOut",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"updated_amount_out\"",
+    (gogoproto.nullable) = false];
+
+  string initiator = 10 [
     (gogoproto.customname) = "Initiator",
     (gogoproto.moretags) = "yaml:\"admin\""];
 
-  bool is_auction_complete = 9 [
+  bool is_auction_complete = 11 [
     (gogoproto.customname) = "IsAuctionComplete",
     (gogoproto.moretags) = "yaml:\"is_auction_complete\""];
 
-  bool is_auction_in_progress = 10 [
+  bool is_auction_in_progress = 12 [
     (gogoproto.customname) = "IsAuctionInProgress",
     (gogoproto.moretags) = "yaml:\"is_auction_in_progress\""];
 
-  string cr_at_liquidation = 11 [
+  string cr_at_liquidation = 13 [
     (gogoproto.customname) = "CrAtLiquidation",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"cr_at_liquidation\""];
 
-  string current_collateralisation_ratio = 12 [
+  string current_collateralisation_ratio = 14 [
     (gogoproto.customname) = "CurrentCollaterlisationRatio",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"current_collateralisation_ratio\""];
 
-  string collateral_to_be_auctioned = 13 [
+  string collateral_to_be_auctioned = 15 [
     (gogoproto.customname) = "CollateralToBeAuctioned",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = true,
     (gogoproto.moretags) = "yaml:\"collateral_to_be_auctioned\""];
 
-  google.protobuf.Timestamp liquidation_timestamp = 14 [
+  google.protobuf.Timestamp liquidation_timestamp = 16 [
     (gogoproto.customname) = "LiquidationTimestamp",
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"liquidation_timestamp\""];
 
-  repeated string selloff_history = 15 [
+  repeated string selloff_history = 17 [
     (gogoproto.customname) = "SellOffHistory",
     (gogoproto.moretags) = "yaml:\"selloff_history\""];
 }
 
 message LockedVaultToAppMapping {
   uint64 app_mapping_id = 1;
-  repeated string locked_vault_id = 2 [
+  repeated LockedVault locked_vault = 2 [
     (gogoproto.moretags) = "yaml:\"locked_vault_id\""
   ];
 }

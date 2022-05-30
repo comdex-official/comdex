@@ -60,6 +60,9 @@ message Locker_external_rewards{
   int64 min_lockup_time_seconds = 11 [
     (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
   ];
+  uint64 epoch_id = 12 [
+    (gogoproto.moretags) = "yaml:\"epoch_id\""
+  ];
 }
 
 message Vault_external_rewards{
@@ -69,8 +72,8 @@ message Vault_external_rewards{
   uint64 app_mapping_id = 2 [
     (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
-  uint64 asset_id = 3 [
-    (gogoproto.moretags) = "yaml:\"asset_id\""
+  uint64 extended_Pair_Id = 3 [
+    (gogoproto.moretags) = "yaml:\"extended_Pair_Id\""
   ];
   cosmos.base.v1beta1.Coin total_rewards = 4 [
     (gogoproto.nullable) = false,
@@ -104,10 +107,28 @@ message Vault_external_rewards{
   int64 min_lockup_time_seconds = 11 [
     (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
   ];
+  uint64 epoch_id = 12 [
+    (gogoproto.moretags) = "yaml:\"epoch_id\""
+  ];
 }
 
 message WhitelistedAppIdsVault{
   repeated uint64 whitelisted_app_mapping_ids_vaults = 1 [
     (gogoproto.moretags) = "yaml:\"whitelisted_app_mapping_ids_vaults\""
+  ];
+}
+
+message EpochTime{
+  uint64 id = 1 [
+    (gogoproto.moretags) = "yaml:\"id\""
+  ];
+  uint64 app_mapping_id = 2 [
+    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
+  ];
+  int64 starting_time = 3 [
+    (gogoproto.moretags) = "yaml:\"time\""
+  ];
+  uint64 count = 4 [
+    (gogoproto.moretags) = "yaml:\"count\""
   ];
 }

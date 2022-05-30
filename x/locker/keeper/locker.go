@@ -223,6 +223,6 @@ func (k *Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
 
 //Target
 //user sends create request
-//it comdes to the function and check if user data exists or not. if not create locker
+//it comes to the function and check if user data exists or not. if not create locker
 //if user data exists- check app mapping , from app mapping check asset id . if it does then fail tx.
 // else user locker id  exists use that to create this struct and set it.

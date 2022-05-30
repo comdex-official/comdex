@@ -89,6 +89,16 @@ message ExtendedPairToVaultMapping {
            (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
   }
 
+
+
+  message TvlLockedDataMap
+  {
+    uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+    string collateral_locked_amount= 2 [ (gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
+           (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+  }
+
+
 message StableMintVault {
   string id = 1[
   (gogoproto.moretags) = "yaml:\"id\""

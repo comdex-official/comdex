@@ -12,6 +12,7 @@ service Msg {
   rpc WhitelistAppVault(WhitelistAppIdVault) returns (MsgWhitelistAppIdVaultResponse);
   rpc RemoveWhitelistAppVault(RemoveWhitelistAppIdVault) returns (MsgRemoveWhitelistAppIdVaultResponse);
   rpc ExternalRewardsLockers(ActivateExternalRewardsLockers) returns (ActivateExternalRewardsLockersResponse);
+  rpc ExternalRewardsVault(ActivateExternalRewardsVault) returns (ActivateExternalRewardsVaultResponse);
 }
 
 message WhitelistAsset {
@@ -99,7 +100,7 @@ message ActivateExternalRewardsVault {
   uint64 app_mapping_id = 1 [
     (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
-  uint64 asset_id = 2 [
+  uint64 extended_Pair_Id = 2 [
     (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
   cosmos.base.v1beta1.Coin total_rewards = 3 [

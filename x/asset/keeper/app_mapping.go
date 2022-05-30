@@ -1,11 +1,6 @@
 package keeper
 
 import (
-<<<<<<< HEAD
-	"fmt"
-
-=======
->>>>>>> 394fefd550310c2dae2b25c9005c3e4843bd47ff
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -229,14 +224,14 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 		for _, data := range msg.MintGenesisToken {
 
 			assetData, found := k.GetAsset(ctx, data.AssetId)
-			if !found{
+			if !found {
 				return types.ErrorAssetDoesNotExist
 			}
-			if assetData.IsOnchain{
+			if assetData.IsOnchain {
 				return types.ErrorAssetIsOnChain
 			}
 			hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
-			if hasAsset != 0{
+			if hasAsset != 0 {
 				return types.ErrorGenesisTokenExistForApp
 			}
 
@@ -245,7 +240,7 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 				return types.ErrorAssetAlreadyExistinApp
 			}
 			if data.IsgovToken {
-				k.SetGenesisTokenForApp(ctx, msg.Id ,data.AssetId)
+				k.SetGenesisTokenForApp(ctx, msg.Id, data.AssetId)
 			}
 			if data.GenesisSupply.IsZero() {
 				return types.ErrorGenesisCantBeZero
@@ -256,7 +251,7 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 			minter.AssetId = data.AssetId
 			minter.GenesisSupply = data.GenesisSupply
 			minter.IsgovToken = data.IsgovToken
-			minter.Sender = data.Sender
+			minter.Recipient = data.Recipient
 			mintGenesis = append(mintGenesis, &minter)
 
 		}

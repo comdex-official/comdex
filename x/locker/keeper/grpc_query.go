@@ -392,3 +392,74 @@ func (q *queryServer) QueryWhiteListedAssetByAllProduct(c context.Context, reque
 		ProductToAllAsset: productToAll,
 	}, nil
 }
+
+
+func (q *queryServer) QueryLockerLookupTableByApp(c context.Context, req *types.QueryLockerLookupTableByAppRequest) (*types.QueryLockerLookupTableByAppResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+	item, found := q.GetLockerLookupTable(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
+	}
+
+	return &types.QueryLockerLookupTableByAppResponse{
+		TokenToLockerMapping: item.Lockers,
+	}, nil
+}
+
+func (q *queryServer) QueryLockerLookupTableByAppAndAssetId(c context.Context, req *types.QueryLockerLookupTableByAppAndAssetIdRequest) (*types.QueryLockerLookupTableByAppAndAssetIdResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+	item, found := q.GetLockerLookupTable(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
+	}
+	var locker types.TokenToLockerMapping
+
+	for _, data := range item.Lockers{
+		if data.AssetId == req.AssetId{
+			locker = *data
+		}
+	}
+
+	return &types.QueryLockerLookupTableByAppAndAssetIdResponse{
+		TokenToLockerMapping: &locker,
+	}, nil
+}
+
+func (q *queryServer) QueryLockerTotalDepositedByApp(c context.Context, req *types.QueryLockerTotalDepositedByAppRequest) (*types.QueryLockerTotalDepositedByAppResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+	item, found := q.GetLockerLookupTable(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
+	}
+	var lockedDepositedAmt []*types.LockedDepositedAmountDataMap
+	
+	for _, data := range item.Lockers{
+		var lockeddata types.LockedDepositedAmountDataMap
+		lockeddata.AssetId = data.AssetId
+		lockeddata.DepositedAmount = &data.DepositedAmount
+		lockedDepositedAmt = append(lockedDepositedAmt, &lockeddata)
+
+	}
+
+	return &types.QueryLockerTotalDepositedByAppResponse{
+		LockedDepositedAmountDataMap: lockedDepositedAmt,
+	}, nil
+}

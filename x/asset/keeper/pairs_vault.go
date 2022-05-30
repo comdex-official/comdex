@@ -134,16 +134,24 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 			if msg.DebtFloor.GTE(msg.DebtCeiling) {
 				return types.ErrorDebtFloorIsGreaterThanDebtCeiling
 			}
+			if !(msg.StabilityFee.GTE(sdk.ZeroDec()) && msg.StabilityFee.LT(sdk.OneDec())) {
+				return types.ErrorFeeShouldNotBeGTOne
+			}
+			if !(msg.ClosingFee.GTE(sdk.ZeroDec()) && msg.ClosingFee.LT(sdk.OneDec())) {
+				return types.ErrorFeeShouldNotBeGTOne
+			}
+			if !(msg.DrawDownFee.GTE(sdk.ZeroDec()) && msg.DrawDownFee.LT(sdk.OneDec())) {
+				return types.ErrorFeeShouldNotBeGTOne
+			}
 			var app = types.ExtendedPairVault{
 				Id:       id + 1,
 				AppMappingId: msg.AppMappingId,
 				PairId: msg.PairId,
 				LiquidationRatio: msg.LiquidationRatio,
-				UnliquidationRatio: msg.UnliquidationRatio,
 				StabilityFee: msg.StabilityFee,
 				ClosingFee: msg.ClosingFee,
 				LiquidationPenalty: msg.LiquidationPenalty,
-				CreationFee: msg.CreationFee,
+				DrawDownFee: msg.DrawDownFee,
 				IsVaultActive: msg.IsVaultActive,
 				DebtCeiling: msg.DebtCeiling,
 				DebtFloor: msg.DebtFloor,
