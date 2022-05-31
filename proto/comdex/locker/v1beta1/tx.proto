@@ -24,15 +24,12 @@ message MsgCreateLockerRequest{
   string amount = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
-    (gogoproto.customname) = "Amount",
     (gogoproto.nullable)   = false
   ];
   uint64 asset_id  = 3 [
-    (gogoproto.customname) = "AssetID",
-     (gogoproto.moretags) = "yaml:\"asset_id\"" 
+     (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
   uint64 app_mapping_id = 4 [
-    (gogoproto.customname) = "AppMappingId",
     (gogoproto.moretags)   = "yaml:\"app_mapping_id\""
   ];
 }
@@ -40,25 +37,17 @@ message MsgCreateLockerRequest{
 
 message MsgCreateLockerResponse{}
 
-
-
-
-
-
 message MsgAddWhiteListedAssetRequest {
 
   string from = 1 [
-    (gogoproto.moretags) = "yaml:\"from\"" ,
-    (gogoproto.customname) = "From" 
+    (gogoproto.moretags) = "yaml:\"from\""
     ];
 
   uint64 app_mapping_id = 2 [
-    (gogoproto.customname) = "AppMappingId",
     (gogoproto.moretags)   = "yaml:\"app_mapping_id\""
  
   ];
   uint64 asset_id = 3 [
-    (gogoproto.customname) = "AssetID",
     (gogoproto.moretags)   = "yaml:\"asset_id\""
 
   ];
@@ -69,25 +58,20 @@ message MsgAddWhiteListedAssetResponse {}
 
 message MsgDepositAssetRequest {
   string depositor = 1 [ 
-    (gogoproto.moretags) = "yaml:\"depositor\"",  
-    (gogoproto.customname) = "Depositor" 
+    (gogoproto.moretags) = "yaml:\"depositor\""
     ];
-  string      locker_id   = 2
-    [ (gogoproto.customname) = "LockerID", 
+  string      locker_id   = 2[
      (gogoproto.moretags) = "yaml:\"locker_id\"" ];
   string amount    = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
-    (gogoproto.customname) = "Amount",
     (gogoproto.nullable)   = false
 
   ];
   uint64 asset_id  = 4 [
-    (gogoproto.customname) = "AssetID",
-     (gogoproto.moretags) = "yaml:\"asset_id\"" 
+     (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
   uint64 app_mapping_id = 5 [
-    (gogoproto.customname) = "AppMappingId",
     (gogoproto.moretags)   = "yaml:\"app_mapping_id\""
 
   ];
@@ -97,25 +81,21 @@ message MsgDepositAssetResponse {}
 
 message MsgWithdrawAssetRequest {
   string depositor = 1 [
-     (gogoproto.moretags) = "yaml:\"depositor\"" ,
-     (gogoproto.customname) = "Depositor" 
+     (gogoproto.moretags) = "yaml:\"depositor\""
      ];
   string locker_id   = 2
-      [ (gogoproto.customname) = "LockerID",
-       (gogoproto.moretags) = "yaml:\"id\"" ];
+      [
+       (gogoproto.moretags) = "yaml:\"locker_id\"" ];
   string amount = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
-    (gogoproto.customname) = "Amount",
     (gogoproto.nullable)   = false
 
   ];
   uint64 asset_id  = 4 [
-    (gogoproto.customname) = "AssetID",
-     (gogoproto.moretags) = "yaml:\"asset_id\"" 
+     (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
   uint64 app_mapping_id = 5 [
-    (gogoproto.customname) = "AppMappingId",
     (gogoproto.moretags)   = "yaml:\"app_mapping_id\""
   ];
 }

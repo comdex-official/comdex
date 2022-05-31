@@ -78,7 +78,7 @@ message LockerLookupTable {
   uint64 app_mapping_id = 1[    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
   repeated TokenToLockerMapping lockers = 2 [
-      (gogoproto.moretags) = "yaml:\"user_vault_ids\""
+      (gogoproto.moretags) = "yaml:\"lockers\""
   ];
   uint64 counter = 3;
 }
@@ -98,7 +98,7 @@ message TokenToLockerMapping {
 //Key is app_mapping_id
 message LockerProductAssetMapping {
   uint64 app_mapping_id = 1 [
-      (gogoproto.moretags) = "yaml:\"owner\""
+      (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
   
   repeated uint64 asset_ids  = 2 [
