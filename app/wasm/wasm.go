@@ -18,7 +18,7 @@ func RegisterCustomPlugins(
 	collector *collectorKeeper.Keeper,
 ) []wasmkeeper.Option {
 
-	comdexQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards)
+	comdexQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards, collector)
 
 	appDataqueryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
 		Custom: CustomQuerier(comdexQueryPlugin),

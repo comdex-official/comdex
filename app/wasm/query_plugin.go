@@ -123,8 +123,42 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			App_Id := comdexQuery.ExternalVaultRewards.App_Id
 			Asset_Id := comdexQuery.ExternalVaultRewards.Asset_Id
 
-			found, errormsg := queryPlugin.GetExternalLockerRewardsCheck(ctx, App_Id, Asset_Id)
+			found, errormsg := queryPlugin.GetExternalVaultRewardsCheck(ctx, App_Id, Asset_Id)
 			res := bindings.ExternalVaultRewardsResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "ExternalVaultRewards query response")
+			}
+			return bz, nil
+		} else if comdexQuery.CollectorLookupTableQuery != nil {
+			AppMappingId := comdexQuery.CollectorLookupTableQuery.AppMappingId
+			CollectorAssetId := comdexQuery.CollectorLookupTableQuery.CollectorAssetId
+			SecondaryAssetId := comdexQuery.CollectorLookupTableQuery.SecondaryAssetId
+			found, errormsg := queryPlugin.CollectorLookupTableQueryCheck(ctx, AppMappingId, CollectorAssetId, SecondaryAssetId)
+			res := bindings.CollectorLookupTableQueryResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "ExternalVaultRewards query response")
+			}
+			return bz, nil
+		} else if comdexQuery.ExtendedPairsVaultRecordsQuery != nil {
+			AppMappingId := comdexQuery.ExtendedPairsVaultRecordsQuery.AppMappingId
+			PairId := comdexQuery.ExtendedPairsVaultRecordsQuery.PairId
+			StabilityFee := comdexQuery.ExtendedPairsVaultRecordsQuery.StabilityFee
+			ClosingFee := comdexQuery.ExtendedPairsVaultRecordsQuery.ClosingFee
+			DrawDownFee := comdexQuery.ExtendedPairsVaultRecordsQuery.DrawDownFee
+			DebtCeiling := comdexQuery.ExtendedPairsVaultRecordsQuery.DebtCeiling
+			DebtFloor := comdexQuery.ExtendedPairsVaultRecordsQuery.DebtFloor
+			PairName := comdexQuery.ExtendedPairsVaultRecordsQuery.PairName
+
+			found, errormsg := queryPlugin.ExtendedPairsVaultRecordsQueryCheck(ctx, AppMappingId, PairId, StabilityFee, ClosingFee, DrawDownFee, DebtCeiling, DebtFloor, PairName)
+			res := bindings.ExtendedPairsVaultRecordsQueryResponse{
 				Found: found,
 				Err:   errormsg,
 			}

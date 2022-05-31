@@ -104,7 +104,7 @@ type ExternalVaultRewardsResponse struct {
 }
 
 type CollectorLookupTableQuery struct {
-	AppId            uint64 `json:"app_id"`
+	AppMappingId     uint64 `json:"app_mapping_id"`
 	CollectorAssetId uint64 `json:"collector_asset_id"`
 	SecondaryAssetId uint64 `json:"secondary_asset_id"`
 }
