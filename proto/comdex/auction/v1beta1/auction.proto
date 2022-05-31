@@ -16,7 +16,7 @@ message SurplusAuction {
 
     cosmos.base.v1beta1.Coin outflow_token = 2 [
         (gogoproto.nullable) = false,
-        (gogoproto.moretags)   = "yaml:\"auctioned_collateral\"",
+        (gogoproto.moretags)   = "yaml:\"outflow_token\"",
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
     cosmos.base.v1beta1.Coin inflow_token = 3 [
@@ -28,7 +28,7 @@ message SurplusAuction {
         (gogoproto.moretags) = "yaml:\"active_bidding_id\""
     ];
     string bidder = 5 [
-        (gogoproto.moretags) = "yaml:\"owner\"",
+        (gogoproto.moretags) = "yaml:\"bidder\"",
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.AccAddress"
     ];
 
@@ -85,12 +85,12 @@ message DebtAuction {
     ];
     cosmos.base.v1beta1.Coin expected_user_token = 3 [
         (gogoproto.nullable) = false,
-        (gogoproto.moretags)   = "yaml:\"expected_token\"",
+        (gogoproto.moretags)   = "yaml:\"expected_user_token\"",
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
     cosmos.base.v1beta1.Coin expected_minted_token = 4 [
         (gogoproto.nullable) = false,
-        (gogoproto.moretags)   = "yaml:\"expected_token\"",
+        (gogoproto.moretags)   = "yaml:\"expected_minted_token\"",
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
     google.protobuf.Timestamp end_time = 5 [
@@ -102,12 +102,12 @@ message DebtAuction {
         (gogoproto.moretags) = "yaml:\"active_bidding_id\""
     ];
     string bidder = 7 [
-        (gogoproto.moretags) = "yaml:\"owner\"",
+        (gogoproto.moretags) = "yaml:\"bidder\"",
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.AccAddress"
     ];
     cosmos.base.v1beta1.Coin current_bid_amount = 8 [
         (gogoproto.nullable) = false,
-        (gogoproto.moretags)   = "yaml:\"min_bid\"",
+        (gogoproto.moretags)   = "yaml:\"current_bid_amount\"",
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
     uint64 auction_status = 9 [

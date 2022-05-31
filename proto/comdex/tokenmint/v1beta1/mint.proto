@@ -13,7 +13,7 @@ option (gogoproto.goproto_getters_all) = false;
 message TokenMint{
   uint64 app_mapping_id = 1
       [(gogoproto.customname) = "AppMappingId",
-      (gogoproto.moretags) = "yaml:\"app_vault_type_id\"" ];
+      (gogoproto.moretags) = "yaml:\"app_mapping_id\"" ];
    repeated MintedTokens minted_tokens= 2   [ (gogoproto.moretags) = "yaml:\"minted_tokens\"" ];
   
 }

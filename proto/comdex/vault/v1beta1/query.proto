@@ -122,7 +122,7 @@ message QueryVaultByProductRequest {
 }
 
 message QueryVaultByProductResponse {
-  repeated string vault_Ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_Ids\"" ];
+  repeated string vault_ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_ids\"" ];
 }
 
 message QueryAllVaultByOwnerRequest {
@@ -132,7 +132,7 @@ message QueryAllVaultByOwnerRequest {
 }
 
 message QueryAllVaultByOwnerResponse {
-  repeated string vault_Ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_Ids\"" ];
+  repeated string vault_ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_ids\"" ];
 }
 
 message QueryTokenMintedAllProductsByPairRequest {
@@ -143,8 +143,8 @@ message QueryTokenMintedAllProductsByPairRequest {
 }
 
 message QueryTokenMintedAllProductsByPairResponse {
-  string token_Minted = 1 [ 
-  (gogoproto.moretags) = "yaml:\"token_Minted\"",
+  string token_minted = 1 [ 
+  (gogoproto.moretags) = "yaml:\"token_minted\"",
   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
 }
 
@@ -155,8 +155,8 @@ message QueryTokenMintedAllProductsRequest {
 }
 
 message QueryTokenMintedAllProductsResponse {
-  string token_Minted = 1 [ 
-  (gogoproto.moretags) = "yaml:\"token_Minted\"",
+  string token_minted = 1 [ 
+  (gogoproto.moretags) = "yaml:\"token_minted\"",
   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
 }
 
