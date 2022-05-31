@@ -25,7 +25,7 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		
+
 		txCreateLocker(),
 		txDepositAssetLocker(),
 		txWithdrawAssetLocker(),
@@ -161,7 +161,7 @@ func txWithdrawAssetLocker() *cobra.Command {
 func txAddWhiteListedAssetLocker() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "whitelist-asset-locker [app_mapping_id][asset_id] ",
-		Short: "dwithdraw from a locker",
+		Short: "withdraw from a locker",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
