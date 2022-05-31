@@ -29,6 +29,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+
 type MsgCreateRequest struct {
 	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
 	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
