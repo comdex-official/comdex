@@ -1,9 +1,14 @@
 package bindings
 
+import sdk "github.com/cosmos/cosmos-sdk/types"
+
 type ComdexMessages struct {
 	MsgWhiteListAssetLocker        MsgWhiteListAssetLocker        `json:"msg_white_list_asset_locker,omitempty"`
 	MsgWhitelistAppIdVaultInterest MsgWhitelistAppIdVaultInterest `json:"msg_whitelist_app_id_vault_interest,omitempty"`
 	MsgWhitelistAppIdLockerRewards MsgWhitelistAppIdLockerRewards `json:"msg_whitelist_app_id_locker_rewards,omitempty"`
+	MsgAddExtendedPairsVault       MsgAddExtendedPairsVault       `json:"msg_add_extended_pairs_vault,omitempty"`
+	MsgSetCollectorLookupTable     MsgSetCollectorLookupTable     `json:"msg_set_collector_lookup_table,omitempty"`
+	MsgSetAuctionMappingForApp     MsgSetAuctionMappingForApp     `json:"msg_set_auction_mapping_for_app,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
@@ -18,4 +23,41 @@ type MsgWhitelistAppIdVaultInterest struct {
 type MsgWhitelistAppIdLockerRewards struct {
 	AppMappingId uint64   `json:"app_mapping_id"`
 	AssetId      []uint64 `json:"asset_id"`
+}
+
+type MsgAddExtendedPairsVault struct {
+	AppMappingId        uint64  `json:"app_mapping_id"`
+	PairId              uint64  `json:"pair_id"`
+	LiquidationRatio    sdk.Dec `json:"liquidation_ratio"`
+	StabilityFee        sdk.Dec `json:"stability_fee"`
+	ClosingFee          sdk.Dec `json:"closing_fee"`
+	LiquidationPenalty  sdk.Dec `json:"liquidation_penalty"`
+	DrawDownFee         sdk.Dec `json:"draw_down_fee"`
+	IsVaultActive       bool    `json:"is_vault_active"`
+	DebtCeiling         uint64  `json:"debt_ceiling"`
+	DebtFloor           uint64  `json:"debt_floor"`
+	IsPsmPair           bool    `json:"is_psm_pair"`
+	MinCr               sdk.Dec `json:"min_cr"`
+	PairName            string  `json:"pair_name"`
+	AssetOutOraclePrice bool    `json:"asset_out_oracle_price"`
+	AssetOutPrice       uint64  `json:"asset_out_price"`
+}
+
+type MsgSetCollectorLookupTable struct {
+	AppId            uint64  `json:"app_id"`
+	CollectorAssetId uint64  `json:"collector_asset_id"`
+	SecondaryAssetId uint64  `json:"secondary_asset_id"`
+	SurplusThreshold uint64  `json:"surplus_threshold"`
+	DebtThreshold    uint64  `json:"debt_threshold"`
+	LockerSavingRate sdk.Dec `json:"locker_saving_rate"`
+	LotSize          uint64  `json:"lot_size"`
+	BidFactor        sdk.Dec `json:"bid_factor"`
+}
+
+type MsgSetAuctionMappingForApp struct {
+	AppId            uint64   `json:"app_id"`
+	AssetId          []uint64 `json:"asset_id"`
+	IsSurplusAuction []bool   `json:"is_surplus_auction"`
+	IsDebtAuction    []bool   `json:"is_debt_auction"`
+	IsAuctionActive  []bool   `json:"is_auction_active"`
 }

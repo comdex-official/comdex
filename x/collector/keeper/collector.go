@@ -500,16 +500,16 @@ func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAs
 	return nil
 }
 
-func (k *Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, AppId, CollectorAssetId, SecondaryAssetId uint64) error {
+func (k *Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, AppId, CollectorAssetId, SecondaryAssetId uint64) (bool, string) {
 
 	if !k.HasAsset(ctx, CollectorAssetId) {
-		return types.ErrorAssetDoesNotExist
+		return false, types.ErrorAssetDoesNotExist.Error()
 	}
 	if !k.HasAsset(ctx, SecondaryAssetId) {
-		return types.ErrorAssetDoesNotExist
+		return false, types.ErrorAssetDoesNotExist.Error()
 	}
 	if CollectorAssetId == SecondaryAssetId {
-		return types.ErrorDuplicateAssetDenoms
+		return false, types.ErrorDuplicateAssetDenoms.Error()
 	}
 	appDenom, found := k.GetAppToDenomsMapping(ctx, AppId)
 	if found {
@@ -521,10 +521,10 @@ func (k *Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, AppId, Collec
 			}
 		}
 		if check > 0 {
-			return types.ErrorDuplicateCollectorDenomForApp
+			return false, types.ErrorDuplicateCollectorDenomForApp.Error()
 		}
 	}
-	return nil
+	return true, ""
 }
 
 func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, AssetId []uint64, IsSurplusAuction, IsDebtAuction, IsAuctionActive []bool) error {

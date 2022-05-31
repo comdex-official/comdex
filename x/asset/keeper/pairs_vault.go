@@ -168,7 +168,7 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 	return nil
 }
 
-func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, AppMappingId, PairId uint64, LiquidationRatio, StabilityFee, ClosingFee, LiquidationPenalty, DrawDownFee sdk.Dec, IsVaultActive bool, debtCeiling, debtFloor uint64, IsPsmPair bool, MinCr sdk.Dec, PairName string, AssetOutOraclePrice bool, AsssetOutPrice uint64) error {
+func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, AppMappingId, PairId uint64, LiquidationRatio, StabilityFee, ClosingFee, LiquidationPenalty, DrawDownFee sdk.Dec, IsVaultActive bool, debtCeiling, debtFloor uint64, IsPsmPair bool, MinCr sdk.Dec, PairName string, AssetOutOraclePrice bool, AssetOutPrice uint64) error {
 
 	DebtCeiling := sdk.NewInt(int64(debtCeiling))
 	DebtFloor := sdk.NewInt(int64(debtFloor))
@@ -221,7 +221,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, AppMappingId,
 		MinCr:               MinCr,
 		PairName:            PairName,
 		AssetOutOraclePrice: AssetOutOraclePrice,
-		AsssetOutPrice:      AsssetOutPrice,
+		AsssetOutPrice:      AssetOutPrice,
 	}
 
 	k.SetPairsVaultID(ctx, app.Id)
