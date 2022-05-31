@@ -36,7 +36,7 @@ message MsgDepositRequest {
     (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string userVaultid   = 4
+  string userVaultId   = 4
       [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -54,7 +54,7 @@ message MsgWithdrawRequest {
     (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string userVaultid   = 4
+  string userVaultId   = 4
       [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -72,7 +72,7 @@ message MsgDrawRequest {
     (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string userVaultid   = 4
+  string userVaultId   = 4
       [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -90,7 +90,7 @@ message MsgRepayRequest {
     (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string userVaultid   = 4
+  string userVaultId   = 4
       [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -108,7 +108,7 @@ message MsgCloseRequest {
     (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string userVaultid   = 4
+  string userVaultId   = 4
       [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
 }
 
@@ -144,7 +144,7 @@ message MsgDepositStableMintRequest {
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
-  string stableVaultid   = 5
+  string stableVaultId   = 5
   [ (gogoproto.customname) = "StableVaultID", (gogoproto.moretags) = "yaml:\"stableVaultid\"" ];
 }
 
@@ -166,7 +166,7 @@ message MsgWithdrawStableMintRequest {
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
-  string stableVaultid   = 5
+  string stableVaultId   = 5
   [ (gogoproto.customname) = "StableVaultID", (gogoproto.moretags) = "yaml:\"stableVaultid\"" ];
 }
 

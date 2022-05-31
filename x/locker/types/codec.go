@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	// this line is used by starport scaffolding # 1
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
@@ -10,10 +11,10 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
-	cdc.RegisterConcrete(&MsgCreateLockerRequest{}, "comdex/locker/create-locker", nil)
-	cdc.RegisterConcrete(&MsgDepositAssetRequest{}, "comdex/locker/deposit-locker", nil)
-	cdc.RegisterConcrete(&MsgWithdrawAssetRequest{}, "comdex/locker/withdraw-locker", nil)
-	cdc.RegisterConcrete(&MsgAddWhiteListedAssetRequest{}, "comdex/locker/whitelist-asset-locker", nil)
+	cdc.RegisterConcrete(&MsgCreateLockerRequest{}, "comdex/locker/MsgCreateLockerRequest", nil)
+	cdc.RegisterConcrete(&MsgDepositAssetRequest{}, "comdex/locker/MsgDepositAssetRequest", nil)
+	cdc.RegisterConcrete(&MsgWithdrawAssetRequest{}, "comdex/locker/MsgWithdrawAssetRequest", nil)
+	cdc.RegisterConcrete(&MsgAddWhiteListedAssetRequest{}, "comdex/locker/MsgWithdrawAssetRequest", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -30,11 +31,12 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 }
 
 var (
-	Amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewProtoCodec(cdctypes.NewInterfaceRegistry())
+	amino     = codec.NewLegacyAmino()
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
-	RegisterCodec(Amino)
-	Amino.Seal()
+	RegisterCodec(amino)
+	cryptocodec.RegisterCrypto(amino)
+	amino.Seal()
 }
