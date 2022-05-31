@@ -4,7 +4,6 @@ package comdex.vault.v1beta1;
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "comdex/vault/v1beta1/vault.proto";
 
 option go_package            = "github.com/comdex-official/comdex/x/vault/types";
