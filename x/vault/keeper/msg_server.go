@@ -31,7 +31,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	ctx := sdk.UnwrapSDKContext(c)
 
 	//Checking if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
@@ -254,7 +254,7 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
@@ -283,7 +283,7 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 		return nil, types.ErrorAppMappingIdMismatch
 	}
 
-	userVault, found := k.GetVault(ctx, msg.UserVaultID)
+	userVault, found := k.GetVault(ctx, msg.UserVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
@@ -327,7 +327,7 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
@@ -359,7 +359,7 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 		return nil, types.ErrorAppMappingIdMismatch
 	}
 
-	userVault, found := k.GetVault(ctx, msg.UserVaultID)
+	userVault, found := k.GetVault(ctx, msg.UserVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
@@ -414,7 +414,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
@@ -446,7 +446,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		return nil, types.ErrorAppMappingIdMismatch
 	}
 
-	userVault, found := k.GetVault(ctx, msg.UserVaultID)
+	userVault, found := k.GetVault(ctx, msg.UserVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
@@ -546,7 +546,7 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
@@ -578,7 +578,7 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		return nil, types.ErrorAppMappingIdMismatch
 	}
 
-	userVault, found := k.GetVault(ctx, msg.UserVaultID)
+	userVault, found := k.GetVault(ctx, msg.UserVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
@@ -684,7 +684,7 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
@@ -717,7 +717,7 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 		return nil, types.ErrorAppMappingIdMismatch
 	}
 
-	userVault, found := k.GetVault(ctx, msg.UserVaultID)
+	userVault, found := k.GetVault(ctx, msg.UserVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
@@ -784,7 +784,7 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	ctx := sdk.UnwrapSDKContext(c)
 
 	//Checking if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
@@ -904,7 +904,7 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
@@ -939,7 +939,7 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 		return nil, types.ErrorAppMappingIdMismatch
 	}
 
-	stableVault, found := k.GetStableMintVault(ctx, msg.StableVaultID)
+	stableVault, found := k.GetStableMintVault(ctx, msg.StableVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
@@ -1023,7 +1023,7 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultID)
+	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
@@ -1058,7 +1058,7 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 		return nil, types.ErrorAppMappingIdMismatch
 	}
 
-	stableVault, found := k.GetStableMintVault(ctx, msg.StableVaultID)
+	stableVault, found := k.GetStableMintVault(ctx, msg.StableVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
