@@ -226,7 +226,6 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 	if !found {
 		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 	}
-	fmt.Println(assetInPrice, "price of asset ")
 	var assetOutPrice uint64
 
 	if extended_pair_vault.AssetOutOraclePrice {
@@ -253,11 +252,6 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 	if totalOut.LTE(sdk.ZeroDec()) {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountOut
 	}
-	fmt.Println(amountIn, "amountIn")
-	fmt.Println(amountOut, "amountout")
-	fmt.Println(totalIn.Quo(totalOut))
-	fmt.Println(totalIn)
-	fmt.Println(totalOut)
 
 	return totalIn.Quo(totalOut), nil
 

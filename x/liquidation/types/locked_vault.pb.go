@@ -85,7 +85,7 @@ var xxx_messageInfo_LockedVault proto.InternalMessageInfo
 
 type LockedVaultToAppMapping struct {
 	AppMappingId uint64         `protobuf:"varint,1,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty"`
-	LockedVault  []*LockedVault `protobuf:"bytes,2,rep,name=locked_vault,json=lockedVault,proto3" json:"locked_vault,omitempty" yaml:"locked_vault_id"`
+	LockedVault  []LockedVault `protobuf:"bytes,2,rep,name=locked_vault,json=lockedVault,proto3" json:"locked_vault,omitempty" yaml:"locked_vault_id"`
 }
 
 func (m *LockedVaultToAppMapping) Reset()         { *m = LockedVaultToAppMapping{} }
@@ -1224,7 +1224,7 @@ func (m *LockedVaultToAppMapping) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.LockedVault = append(m.LockedVault, &LockedVault{})
+			m.LockedVault = append(m.LockedVault, LockedVault{})
 			if err := m.LockedVault[len(m.LockedVault)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}

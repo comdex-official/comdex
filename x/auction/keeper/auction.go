@@ -2,9 +2,9 @@ package keeper
 
 import (
 	"fmt"
-	"time"
-
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 
@@ -170,42 +170,49 @@ func (k Keeper) CloseAndRestartAuctions(ctx sdk.Context) error {
 	return nil
 }
 func (k Keeper) CreateNewDutchAuctions(ctx sdk.Context) error {
+	fmt.Println("CreateNewDutchAuctions")
 	lockedVaults := k.GetLockedVaults(ctx)
+	fmt.Println("CreateNewDutchAuctions", lockedVaults)
+
 	if len(lockedVaults) == 0 {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
 	for _, lockedVault := range lockedVaults {
-		pair, found := k.GetPair(ctx, lockedVault.ExtendedPairId)
-		if !found {
+		fmt.Println("in for loop", lockedVault)
+		pair, _ := k.GetPair(ctx, lockedVault.ExtendedPairId)
+		/*if found {
 			continue
-		}
-		assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-		if !found {
+		}*/
+		assetIn, _ := k.GetAsset(ctx, pair.AssetIn)
+		/*if found {
 			continue
-		}
+		}*/
 
-		assetOut, found := k.GetAsset(ctx, pair.AssetOut)
-		if !found {
+		assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
+		/*if found {
 			continue
 		}
-
+		*/
 		outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.TruncateInt())
 		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())
+		fmt.Println("check err")
+
+		extendedPairId := lockedVault.ExtendedPairId
+		ExtendedPairVault, _ := k.asset.GetPairsVault(ctx, extendedPairId)
+		/*if found {
+			continue
+		}*/
+		liquidationPenalty := ExtendedPairVault.LiquidationPenalty
+		fmt.Println("Before CreateNewDutchAuctions !lockedVault.IsAuctionInProgress", lockedVault.IsAuctionInProgress)
+		if !lockedVault.IsAuctionInProgress {
+			fmt.Println("CreateNewDutchAuctions !lockedVault.IsAuctionInProgress", !lockedVault.IsAuctionInProgress)
+			err1 := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppMappingId, assetIn.Id, assetOut.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
+			return err1
+		}
 
 		// fetch liquidation penalty
 		//1.fetch extended pair vault id
 		//2.query in asset
-		extendedPairId := lockedVault.ExtendedPairId
-		ExtendedPairVault, found := k.asset.GetPairsVault(ctx, extendedPairId)
-		if !found {
-			continue
-		}
-		liquidationPenalty := ExtendedPairVault.LiquidationPenalty
-
-		if !lockedVault.IsAuctionInProgress {
-			err := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppMappingId, assetIn.Id, assetOut.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
-			return err
-		}
 
 	}
 	return nil
@@ -383,7 +390,6 @@ func (k Keeper) StartDebtAuction(
 		AssetInId:           assetInId,
 		AssetOutId:          assetOutId,
 	}
-	fmt.Println(auctionParams.DebtId)
 	auction.AuctionId = k.GetAuctionID(ctx) + 1
 	k.SetAuctionID(ctx, auction.AuctionId)
 	k.SetDebtAuction(ctx, auction)
@@ -400,14 +406,19 @@ func (k Keeper) StartDutchAuction(
 	lockedVaultOwner string,
 	liquidationPenalty sdk.Dec,
 ) error {
-	fmt.Println("passed params")
-	fmt.Println(outFlowToken,inFlowToken,appId,assetInId,assetOutId,lockedVaultId,lockedVaultOwner,liquidationPenalty)
 	var (
 		inFlowTokenPrice  uint64
 		outFlowTokenPrice uint64
 		found1            bool
 		found2            bool
 	)
+
+	err := k.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(outFlowToken))
+	if err != nil {
+		fmt.Println("print err", err)
+		return err
+	}
+	fmt.Println("StartDutchAuction")
 	auctionParams := k.GetParams(ctx)
 	//need to get real price instead of hard coding
 	//calculate target amount of cmst to collect
@@ -420,8 +431,6 @@ func (k Keeper) StartDutchAuction(
 		if !found2 {
 			return auctiontypes.ErrorPrices
 		}
-		fmt.Println("inflowPrice",inFlowTokenPrice)
-		fmt.Println("outflowPrice",outFlowTokenPrice)
 	} else {
 		outFlowTokenPrice = uint64(2)
 		inFlowTokenPrice = uint64(10)
@@ -458,7 +467,9 @@ func (k Keeper) StartDutchAuction(
 		LiquidationPenalty:        liquidationPenalty,
 	}
 	auction.AuctionId = k.GetAuctionID(ctx) + 1
+	fmt.Println("k.GetAuctionID(ctx)", k.GetAuctionID(ctx))
 	k.SetAuctionID(ctx, auction.AuctionId)
+	fmt.Println("acuction id-----------------", auction.AuctionId)
 	err = k.SetDutchAuction(ctx, auction)
 	if err != nil {
 		return err
@@ -834,17 +845,20 @@ func (k Keeper) PlaceDebtBid(ctx sdk.Context, appId, auctionMappingId, auctionId
 
 func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin, max sdk.Dec) error {
 	auction, found := k.GetDutchAuction(ctx, appId, auctionMappingId, auctionId)
+	fmt.Println("auction data", auction)
 	if !found {
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction id %d not found", auctionId)
 	}
-
 	if bid.Denom != auction.OutflowTokenCurrentAmount.Denom {
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid denom %s not found", bid.Denom)
 	}
+	fmt.Println("auction data----------------------------------")
 
-	if max.LT(auction.OutflowTokenCurrentPrice) {
+	if max.LT(auction.OutflowTokenCurrentPrice.Ceil()) {
 		return auctiontypes.ErrorInvalidDutchPrice
 	}
+
+	fmt.Println("price data----------------------------------")
 	// slice tells amount of collateral user should be given
 	auctionParams := k.GetParams(ctx)
 	//using ceil as we need extract more from users
@@ -874,12 +888,18 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	}
 
 	outFlowTokenCoin := sdk.NewCoin(auction.OutflowTokenInitAmount.Denom, slice)
+	fmt.Println("outflow coin")
+	fmt.Println(outFlowTokenCoin)
+	fmt.Println("inflow coin")
+	fmt.Println(inFlowTokenCoin)
 	err := k.SendCoinsFromAccountToModule(ctx, bidder, auctiontypes.ModuleName, sdk.NewCoins(inFlowTokenCoin))
 	if err != nil {
 		return err
 	}
 	err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(outFlowTokenCoin))
 	if err != nil {
+		fmt.Println("hey_________")
+		fmt.Println(err)
 		return err
 	}
 	//create user bidding
