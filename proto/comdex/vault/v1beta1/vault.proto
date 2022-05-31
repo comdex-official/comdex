@@ -34,6 +34,7 @@ message Vault {
   google.protobuf.Timestamp created_at = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"created_at\""
   ];
   string interest_accumulated = 8[
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -41,6 +42,7 @@ message Vault {
   ];
   string closing_fee_accumulated  = 9 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"interest_accumulated\""
     (gogoproto.nullable)   = false
   ];
 }
