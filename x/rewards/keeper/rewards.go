@@ -270,3 +270,25 @@ func (k *Keeper) SetExternalRewardVault(ctx sdk.Context, VaultExternalRewards ty
 	)
 	store.Set(key, value)
 }
+
+func (k *Keeper) GetRemoveWhitelistAppIdLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
+
+	return found, err
+}
+
+func (k *Keeper) GetWhitelistAppIdVaultInterestCheck(ctx sdk.Context, appMappingId uint64) (found bool, err string) {
+
+	return found, err
+}
+
+func (k *Keeper) GetWhitelistAppIdLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
+	return found, err
+}
+
+func (k *Keeper) GetExternalLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId uint64) (found bool, err string) {
+	return found, err
+}
+
+func (k *Keeper) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId uint64) (found bool, err string) {
+	return found, err
+}

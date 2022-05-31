@@ -64,6 +64,75 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "locker state query response")
 			}
 			return bz, nil
+		} else if comdexQuery.RemoveWhiteListAssetLocker != nil {
+			App_Id := comdexQuery.RemoveWhiteListAssetLocker.App_Id
+			Asset_Id := comdexQuery.RemoveWhiteListAssetLocker.Asset_Id
+
+			found, errormsg := queryPlugin.GetRemoveWhitelistAppIdLockerRewardsCheck(ctx, App_Id, Asset_Id)
+			res := bindings.RemoveWhiteListAssetResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "RemoveWhiteListAssetLocker query response")
+			}
+			return bz, nil
+		} else if comdexQuery.WhitelistAppIdLockerRewards != nil {
+			App_Id := comdexQuery.RemoveWhiteListAssetLocker.App_Id
+			Asset_Id := comdexQuery.RemoveWhiteListAssetLocker.Asset_Id
+
+			found, errormsg := queryPlugin.GetWhitelistAppIdLockerRewardsCheck(ctx, App_Id, Asset_Id)
+			res := bindings.WhitelistAppIdLockerRewardsResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "WhitelistAppIdLockerRewards query response")
+			}
+			return bz, nil
+		} else if comdexQuery.WhitelistAppIdVaultInterest != nil {
+			App_Id := comdexQuery.WhitelistAppIdVaultInterest.App_Id
+
+			found, errormsg := queryPlugin.GetWhitelistAppIdVaultInterestCheck(ctx, App_Id)
+			res := bindings.WhitelistAppIdLockerRewardsResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "WhitelistAppIdVaultInterest query response")
+			}
+			return bz, nil
+		} else if comdexQuery.ExternalLockerRewards != nil {
+			App_Id := comdexQuery.ExternalLockerRewards.App_Id
+			Asset_Id := comdexQuery.ExternalLockerRewards.Asset_Id
+
+			found, errormsg := queryPlugin.GetExternalLockerRewardsCheck(ctx, App_Id, Asset_Id)
+			res := bindings.WhitelistAppIdLockerRewardsResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "GetExternalLockerRewardsCheck query response")
+			}
+			return bz, nil
+		} else if comdexQuery.ExternalVaultRewards != nil {
+			App_Id := comdexQuery.ExternalVaultRewards.App_Id
+			Asset_Id := comdexQuery.ExternalVaultRewards.Asset_Id
+
+			found, errormsg := queryPlugin.GetExternalLockerRewardsCheck(ctx, App_Id, Asset_Id)
+			res := bindings.ExternalVaultRewardsResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "ExternalVaultRewards query response")
+			}
+			return bz, nil
 		}
 
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown App Data query variant"}

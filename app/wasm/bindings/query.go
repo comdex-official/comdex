@@ -3,12 +3,15 @@ package bindings
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 type ComdexQuery struct {
-	AppData   *AppData   `json:"get_app,omitempty"`
-	AssetData *AssetData `json:"get_asset_data,omitempty"`
-
-	State *State `json:"state,omitempty"`
-
-	MintedToken *MintedToken `json:"total_supply,omitempty"`
+	AppData                     *AppData                     `json:"get_app,omitempty"`
+	AssetData                   *AssetData                   `json:"get_asset_data,omitempty"`
+	State                       *State                       `json:"state,omitempty"`
+	MintedToken                 *MintedToken                 `json:"total_supply,omitempty"`
+	RemoveWhiteListAssetLocker  *RemoveWhiteListAssetLocker  `json:"remove_white_list_asset,omitempty"`
+	WhitelistAppIdVaultInterest *WhitelistAppIdVaultInterest `json:"whitelist_app_id_vault_interest,omitempty"`
+	WhitelistAppIdLockerRewards *WhitelistAppIdLockerRewards `json:"whitelist_app_id_locker_rewards,omitempty"`
+	ExternalLockerRewards       *ExternalLockerRewards       `json:"external_locker_rewards,omitempty"`
+	ExternalVaultRewards        *ExternalVaultRewards        `json:"external_vault_rewards,omitempty"`
 }
 
 type AppData struct {
@@ -47,4 +50,53 @@ type MintedToken struct {
 
 type MintedTokenResponse struct {
 	MintedTokens int64 `json:"current_supply"`
+}
+
+type RemoveWhiteListAssetLocker struct {
+	App_Id   uint64   `json:"app_id"`
+	Asset_Id []uint64 `json:"asset_id"`
+}
+
+type RemoveWhiteListAssetResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type WhitelistAppIdVaultInterest struct {
+	App_Id uint64 `json:"app_id"`
+}
+
+type WhitelistAppIdVaultInterestResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type WhitelistAppIdLockerRewards struct {
+	App_Id   uint64 `json:"app_id"`
+	Asset_Id uint64 `json:"asset_id"`
+}
+
+type WhitelistAppIdLockerRewardsResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type ExternalLockerRewards struct {
+	App_Id   uint64 `json:"app_id"`
+	Asset_Id uint64 `json:"asset_id"`
+}
+
+type ExternalLockerRewardsResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type ExternalVaultRewards struct {
+	App_Id   uint64 `json:"app_id"`
+	Asset_Id uint64 `json:"asset_id"`
+}
+
+type ExternalVaultRewardsResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
 }
