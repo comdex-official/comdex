@@ -259,12 +259,12 @@ func (q *queryServer) QueryTokenMintedAllProductsByPair(c context.Context, req *
 
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		if data.ExtendedPairId == req.ExtendedPairId {
-			tokenMinted = *data.TokenMintedAmount
+			tokenMinted = data.TokenMintedAmount
 		}
 	}
 
 	return &types.QueryTokenMintedAllProductsByPairResponse{
-		TokenMinted: &tokenMinted,
+		TokenMinted: tokenMinted,
 	}, nil
 }
 
@@ -287,11 +287,11 @@ func (q *queryServer) QueryTokenMintedAllProducts(c context.Context, req *types.
 	}
 
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
-		tokenMinted = tokenMinted.Add(*data.TokenMintedAmount)
+		tokenMinted = tokenMinted.Add(data.TokenMintedAmount)
 	}
 
 	return &types.QueryTokenMintedAllProductsResponse{
-		TokenMinted: &tokenMinted,
+		TokenMinted: tokenMinted,
 	}, nil
 }
 
@@ -371,7 +371,7 @@ func (q *queryServer) QueryTotalValueLockedByProductExtendedPair(c context.Conte
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		if data.ExtendedPairId == req.ExtendedPairId {
-			valueLocked = *data.CollateralLockedAmount
+			valueLocked = data.CollateralLockedAmount
 		}
 	}
 

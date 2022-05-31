@@ -105,7 +105,7 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 				interest, _ := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
 				intAcc := vault.InterestAccumulated
 				updatedIntAcc := (intAcc).Add(interest)
-				vault.InterestAccumulated = &updatedIntAcc
+				vault.InterestAccumulated = updatedIntAcc
 				vault.AmountOut = vault.AmountOut.Add(interest)
 				//update vault
 				k.SetVault(ctx, vault)
@@ -183,7 +183,7 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 						for _, w := range u.VaultIds {
 							totalRewards := v.TotalRewards
 							userVault, _ := k.GetVault(ctx, w)
-							userShare := userVault.AmountOut.Quo(*u.CollateralLockedAmount)
+							userShare := userVault.AmountOut.Quo(u.CollateralLockedAmount)
 							Duration := v.DurationDays
 							rewardsPerEpoch := (totalRewards.Amount).Quo(sdk.NewInt(Duration))
 							dailyRewards := userShare.Mul(rewardsPerEpoch)
