@@ -242,7 +242,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
-	lockerData, found := k.GetLocker(ctx, msg.LockerID)
+	lockerData, found := k.GetLocker(ctx, msg.LockerId)
 
 	if !found {
 		return nil, types.ErrorLockerDoesNotExists

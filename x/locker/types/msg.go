@@ -16,8 +16,8 @@ func NewMsgCreateLockerRequest(from sdk.AccAddress, amount sdk.Int, assetId uint
 	return &MsgCreateLockerRequest{
 		Depositor:    from.String(),
 		AppMappingId: app_mapping_id,
-		AssetId: assetId,
-		Amount: amount,
+		AssetId:      assetId,
+		Amount:       amount,
 	}
 }
 
@@ -133,7 +133,7 @@ func (m *MsgDepositAssetRequest) GetSigners() []sdk.AccAddress {
 func NewMsgWithdrawAssetRequest(from sdk.AccAddress, locker_id string, amount sdk.Int, assetId uint64, app_mapping_id uint64) *MsgWithdrawAssetRequest {
 	return &MsgWithdrawAssetRequest{
 		Depositor:    from.String(),
-		LockerID:     locker_id,
+		LockerId:     locker_id,
 		Amount:       amount,
 		AssetId:      assetId,
 		AppMappingId: app_mapping_id,
@@ -162,7 +162,7 @@ func (m *MsgWithdrawAssetRequest) ValidateBasic() error {
 	if m.AssetId < 0 {
 		return errors.Wrap(ErrorInvalidAssetID, "asset_id cannot be negative")
 	}
-	if len(m.LockerID) <= 0 {
+	if len(m.LockerId) <= 0 {
 		return errors.Wrap(ErrorInvalidLockerId, "lockerID  cannot be negative")
 	}
 	if m.Amount.IsNil() {

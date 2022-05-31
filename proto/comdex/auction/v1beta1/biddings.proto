@@ -71,9 +71,9 @@ message DebtBiddings {
         (gogoproto.moretags) = "yaml:\"auction_status\""
     ];
 
-    cosmos.base.v1beta1.Coin outflowTokens = 4 [
+    cosmos.base.v1beta1.Coin outflow_tokens = 4 [
         (gogoproto.nullable) = false,
-        (gogoproto.moretags)   = "yaml:\"outflowTokens\"",
+        (gogoproto.moretags)   = "yaml:\"outflow_tokens\"",
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
 
