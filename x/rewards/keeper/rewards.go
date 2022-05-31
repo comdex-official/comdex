@@ -9,7 +9,7 @@ import (
 func (k *Keeper) SetReward(ctx sdk.Context, rewards types.InternalRewards) {
 	var (
 		store = k.Store(ctx)
-		key   = types.RewardsKey(rewards.AppMappingID)
+		key   = types.RewardsKey(rewards.AppMapping_ID)
 		value = k.cdc.MustMarshal(&rewards)
 	)
 
