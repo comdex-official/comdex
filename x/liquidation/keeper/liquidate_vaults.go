@@ -23,7 +23,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				extPair, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 
 				liqRatio := extPair.LiquidationRatio
-				totalOut := vault.AmountOut.Add(*vault.InterestAccumulated).Add(*vault.ClosingFeeAccumulated)
+				totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
 				collateralitzationRatio, err := k.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 				if err != nil {
 					continue
@@ -56,7 +56,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 		Owner:                        vault.Owner,
 		AmountIn:                     vault.AmountIn,
 		AmountOut:                    vault.AmountOut,
-		UpdatedAmountOut:             vault.AmountOut.Add(*vault.InterestAccumulated).Add(*vault.ClosingFeeAccumulated),
+		UpdatedAmountOut:             vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated),
 		Initiator:                    types.ModuleName,
 		IsAuctionComplete:            false,
 		IsAuctionInProgress:          false,
