@@ -312,9 +312,19 @@ func (k *Keeper) GetAppIdToAuctionMappingForAsset(ctx sdk.Context, app_id uint64
 
 func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {
 	for _, msg := range records {
+		_, found:= k.GetApp(ctx, msg.AppId)
+		if !found{
+			return types.ErrorAppDoesNotExist
+		}
 		var collectorAuctionLookup types.CollectorAuctionLookupTable
 		collectorAuctionLookup.AppId = msg.AppId
 		collectorAuctionLookup.AssetIdToAuctionLookup = msg.AssetIdToAuctionLookup
+		for _, data := range collectorAuctionLookup.AssetIdToAuctionLookup{
+			_,found := k.GetAsset(ctx, data.AssetId)
+			if !found{
+				return types.ErrorAssetDoesNotExist
+			}
+		}
 		var (
 			store = ctx.KVStore(k.storeKey)
 			key   = types.AppIdToAuctionMappingKey(msg.AppId)

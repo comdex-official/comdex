@@ -15,4 +15,5 @@ var (
 	ErrorDuplicateAssetDenoms = sdkerrors.Register(ModuleName, 405, "Duplicate Asset Denoms")
 	ErrorDataDoesNotExists = sdkerrors.Register(ModuleName, 406, "Data does not exists")
 	ErrorRequestedAmtExceedsCollectedFee = sdkerrors.Register(ModuleName, 407, "Requested Amt Exceeds CollectedFee")
+	ErrorAppDoesNotExist = sdkerrors.Register(ModuleName, 408, "app does not exist")
 )
