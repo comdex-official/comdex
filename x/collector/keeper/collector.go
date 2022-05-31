@@ -53,7 +53,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, Collec
 		newCollector.CollectedOpeningFee = CollectedOpeningFee
 		newCollector.CollectedStabilityFee = CollectedStabilityFee
 		newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
-		assetIdCollect.Collector = &newCollector
+		assetIdCollect.Collector = newCollector
 
 		collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
 
@@ -78,7 +78,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, Collec
 				newCollector.CollectedOpeningFee = CollectedOpeningFee
 				newCollector.CollectedStabilityFee = CollectedStabilityFee
 				newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
-				assetIdCollect.Collector = &newCollector
+				assetIdCollect.Collector = newCollector
 
 				collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
 
@@ -103,7 +103,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, Collec
 			newCollector.CollectedOpeningFee = CollectedOpeningFee
 			newCollector.CollectedStabilityFee = CollectedStabilityFee
 			newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
-			assetIdCollect.Collector = &newCollector
+			assetIdCollect.Collector = newCollector
 
 			collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, &assetIdCollect)
 
@@ -190,7 +190,7 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 		}
 		accmLookup, _ := k.GetCollectorLookupTable(ctx, msg.AppId)
 		accmLookup.AppId = msg.AppId
-		accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, &Collector)
+		accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, Collector)
 
 		var (
 			store = ctx.KVStore(k.storeKey)
@@ -245,7 +245,7 @@ func (k *Keeper) GetCollectorLookupByAsset(ctx sdk.Context, app_id, asset_id uin
 			assetRateInfo.LockerSavingRate = msg.LockerSavingRate
 			assetRateInfo.LotSize = msg.LotSize
 			assetRateInfo.BidFactor = msg.BidFactor
-			newCollectorLoopkup.AssetrateInfo = append(newCollectorLoopkup.AssetrateInfo, &assetRateInfo)
+			newCollectorLoopkup.AssetrateInfo = append(newCollectorLoopkup.AssetrateInfo, assetRateInfo)
 		}
 	}
 	return newCollectorLoopkup, true
@@ -396,7 +396,7 @@ func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64
 		}
 	}
 	assetCollected.NetFeesCollected = netcollectedfee
-	netcollected.AssetIdToFeeCollected = append(netcollected.AssetIdToFeeCollected, &assetCollected)
+	netcollected.AssetIdToFeeCollected = append(netcollected.AssetIdToFeeCollected, assetCollected)
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.NetFeeCollectedDataKey(app_id)
@@ -439,4 +439,116 @@ func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeD
 
 	k.cdc.MustUnmarshal(value, &netFeeData)
 	return netFeeData, true
+}
+
+func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAssetId, SecondaryAssetId, SurplusThreshold, DebtThreshold uint64, LockerSavingRate sdk.Dec, LotSize uint64, BidFactor sdk.Dec) error {
+
+	if !k.HasAsset(ctx, CollectorAssetId) {
+		return types.ErrorAssetDoesNotExist
+	}
+	if !k.HasAsset(ctx, SecondaryAssetId) {
+		return types.ErrorAssetDoesNotExist
+	}
+	if CollectorAssetId == SecondaryAssetId {
+		return types.ErrorDuplicateAssetDenoms
+	}
+	appDenom, found := k.GetAppToDenomsMapping(ctx, AppId)
+	if found {
+		//check if assetdenom already exists
+		var check = 0
+		for _, data := range appDenom.AssetIds {
+			if data == CollectorAssetId {
+				check++
+			}
+		}
+		if check > 0 {
+			return types.ErrorDuplicateCollectorDenomForApp
+		}
+		// if denom is new then append
+		appDenom.AssetIds = append(appDenom.AssetIds, CollectorAssetId)
+		k.SetAppToDenomsMapping(ctx, AppId, appDenom)
+
+	} else {
+		//initialize the mappping
+		var appDenomNew types.AppToDenomsMapping
+		appDenomNew.AppId = AppId
+		appDenomNew.AssetIds = append(appDenomNew.AssetIds, CollectorAssetId)
+		k.SetAppToDenomsMapping(ctx, AppId, appDenomNew)
+	}
+
+	var Collector = types.CollectorLookupTable{
+		AppId:            AppId,
+		CollectorAssetId: CollectorAssetId,
+		SecondaryAssetId: SecondaryAssetId,
+		SurplusThreshold: SurplusThreshold,
+		DebtThreshold:    DebtThreshold,
+		LockerSavingRate: &LockerSavingRate,
+		LotSize:          LotSize,
+		BidFactor:        &BidFactor,
+	}
+	accmLookup, _ := k.GetCollectorLookupTable(ctx, AppId)
+	accmLookup.AppId = AppId
+	accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, Collector)
+
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.CollectorLookupTableMappingKey(AppId)
+		value = k.cdc.MustMarshal(&accmLookup)
+	)
+
+	store.Set(key, value)
+	return nil
+}
+
+func (k *Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, AppId, CollectorAssetId, SecondaryAssetId uint64) error {
+
+	if !k.HasAsset(ctx, CollectorAssetId) {
+		return types.ErrorAssetDoesNotExist
+	}
+	if !k.HasAsset(ctx, SecondaryAssetId) {
+		return types.ErrorAssetDoesNotExist
+	}
+	if CollectorAssetId == SecondaryAssetId {
+		return types.ErrorDuplicateAssetDenoms
+	}
+	appDenom, found := k.GetAppToDenomsMapping(ctx, AppId)
+	if found {
+		//check if assetdenom already exists
+		var check = 0
+		for _, data := range appDenom.AssetIds {
+			if data == CollectorAssetId {
+				check++
+			}
+		}
+		if check > 0 {
+			return types.ErrorDuplicateCollectorDenomForApp
+		}
+	}
+	return nil
+}
+
+func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, AssetId []uint64, IsSurplusAuction, IsDebtAuction, IsAuctionActive []bool) error {
+
+	var collectorAuctionLookup types.CollectorAuctionLookupTable
+	collectorAuctionLookup.AppId = AppId
+	var AssetIdToAuctionLookups []types.AssetIdToAuctionLookupTable
+	for i := range AssetId {
+		AssetIdToAuctionLookup := types.AssetIdToAuctionLookupTable{
+			AssetId:          AssetId[i],
+			IsSurplusAuction: IsSurplusAuction[i],
+			IsDebtAuction:    IsDebtAuction[i],
+			IsAuctionActive:  IsAuctionActive[i],
+		}
+		AssetIdToAuctionLookups = append(AssetIdToAuctionLookups, AssetIdToAuctionLookup)
+	}
+	collectorAuctionLookup.AssetIdToAuctionLookup = AssetIdToAuctionLookups
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.AppIdToAuctionMappingKey(AppId)
+		value = k.cdc.MustMarshal(&collectorAuctionLookup)
+	)
+
+	store.Set(key, value)
+
+	return nil
 }

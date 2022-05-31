@@ -64,12 +64,12 @@ func (q *queryServer) QueryCollectorLookupByProductAndAsset(c context.Context, r
 
 	for _, data := range collectorLookupData.AssetrateInfo {
 		if data.CollectorAssetId == req.AssetId {
-			collectorData = *data
+			collectorData = data
 		}
 	}
 
 	return &types.QueryCollectorLookupByProductAndAssetResponse{
-		CollectorLookup: &collectorData,
+		CollectorLookup: collectorData,
 	}, nil
 }
 

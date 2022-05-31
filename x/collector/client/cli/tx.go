@@ -198,7 +198,7 @@ func NewCmdAuctionControlProposal() *cobra.Command {
 				AssetIdToAuctionLookup.AssetId = asset_id[i]
 				AssetIdToAuctionLookup.IsSurplusAuction = newSurplusAuction
 				AssetIdToAuctionLookup.IsDebtAuction = newDebtAuction
-				collectorAuctionLookupRecords.AssetIdToAuctionLookup = append(collectorAuctionLookupRecords.AssetIdToAuctionLookup, &AssetIdToAuctionLookup)
+				collectorAuctionLookupRecords.AssetIdToAuctionLookup = append(collectorAuctionLookupRecords.AssetIdToAuctionLookup, AssetIdToAuctionLookup)
 			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
