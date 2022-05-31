@@ -44,7 +44,7 @@ type MsgAddExtendedPairsVault struct {
 }
 
 type MsgSetCollectorLookupTable struct {
-	AppId            uint64  `json:"app_id"`
+	AppMappingId     uint64  `json:"app_mapping_id"`
 	CollectorAssetId uint64  `json:"collector_asset_id"`
 	SecondaryAssetId uint64  `json:"secondary_asset_id"`
 	SurplusThreshold uint64  `json:"surplus_threshold"`
@@ -55,9 +55,8 @@ type MsgSetCollectorLookupTable struct {
 }
 
 type MsgSetAuctionMappingForApp struct {
-	AppId            uint64   `json:"app_id"`
+	AppMappingId     uint64   `json:"app_mapping_id"`
 	AssetId          []uint64 `json:"asset_id"`
 	IsSurplusAuction []bool   `json:"is_surplus_auction"`
 	IsDebtAuction    []bool   `json:"is_debt_auction"`
-	IsAuctionActive  []bool   `json:"is_auction_active"`
 }

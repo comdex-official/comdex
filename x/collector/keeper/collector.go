@@ -527,7 +527,7 @@ func (k *Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, AppId, Collec
 	return true, ""
 }
 
-func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, AssetId []uint64, IsSurplusAuction, IsDebtAuction, IsAuctionActive []bool) error {
+func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, AssetId []uint64, IsSurplusAuction, IsDebtAuction []bool) error {
 
 	var collectorAuctionLookup types.CollectorAuctionLookupTable
 	collectorAuctionLookup.AppId = AppId
@@ -537,7 +537,6 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, Asse
 			AssetId:          AssetId[i],
 			IsSurplusAuction: IsSurplusAuction[i],
 			IsDebtAuction:    IsDebtAuction[i],
-			IsAuctionActive:  IsAuctionActive[i],
 		}
 		AssetIdToAuctionLookups = append(AssetIdToAuctionLookups, AssetIdToAuctionLookup)
 	}
