@@ -633,7 +633,7 @@ func New(
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
 	supportedFeatures := "iterator,staking,stargate,comdex"
 
-	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.lockerKeeper, &app.tokenmintKeeper, &app.assetKeeper, &app.rewardskeeper), wasmOpts...)
+	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.lockerKeeper, &app.tokenmintKeeper, &app.assetKeeper, &app.rewardskeeper, &app.collectorKeeper), wasmOpts...)
 
 	app.wasmKeeper = wasmkeeper.NewKeeper(
 		app.cdc,
