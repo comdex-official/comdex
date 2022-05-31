@@ -110,7 +110,8 @@ message LockedDepositedAmountDataMap
 {
   uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
   string DepositedAmount= 2 [ (gogoproto.moretags) = "yaml:\"DepositedAmount\"",
-         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+         (gogoproto.nullable)   = false];
 }
 // message LockerStatistics {
   

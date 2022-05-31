@@ -145,7 +145,8 @@ message QueryTokenMintedAllProductsByPairRequest {
 message QueryTokenMintedAllProductsByPairResponse {
   string token_minted = 1 [ 
   (gogoproto.moretags) = "yaml:\"token_minted\"",
-  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+  (gogoproto.nullable)   = false ];
 }
 
 message QueryTokenMintedAllProductsRequest {
@@ -157,7 +158,8 @@ message QueryTokenMintedAllProductsRequest {
 message QueryTokenMintedAllProductsResponse {
   string token_minted = 1 [ 
   (gogoproto.moretags) = "yaml:\"token_minted\"",
-  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+  (gogoproto.nullable)   = false ];
 }
 
 message QueryVaultCountByProductRequest {

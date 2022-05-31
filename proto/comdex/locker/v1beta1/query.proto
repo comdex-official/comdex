@@ -224,7 +224,8 @@ message QueryLockerTotalDepositedByAppRequest {
 }
 
 message QueryLockerTotalDepositedByAppResponse {
- repeated LockedDepositedAmountDataMap lockedDepositedAmountDataMap =1 [ (gogoproto.moretags) = "yaml:\"lockedDepositedAmountDataMap\"" ];
+ repeated LockedDepositedAmountDataMap lockedDepositedAmountDataMap =1 [ (gogoproto.moretags) = "yaml:\"lockedDepositedAmountDataMap\"",
+ (gogoproto.nullable) = false ];
 }
 
 message QueryStateRequest{
