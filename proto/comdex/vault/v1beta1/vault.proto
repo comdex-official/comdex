@@ -38,6 +38,7 @@ message Vault {
   ];
   string interest_accumulated = 8[
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"interest_accumulated\""
     (gogoproto.nullable)   = false
   ];
   string closing_fee_accumulated  = 9 [

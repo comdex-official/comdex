@@ -17,7 +17,7 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 
 	rewards := k.GetRewards(ctx)
 	for _, v := range rewards {
-		appId := v.AppMapping_ID
+		appId := v.App_mapping_ID
 		assetIds := v.Asset_ID
 		err := k.IterateLocker(ctx, appId, assetIds)
 		if err != nil {

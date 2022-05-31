@@ -85,7 +85,7 @@ func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingId uint64, assetId []u
 	}
 
 	internalRewards := types.InternalRewards{
-		AppMapping_ID: appMappingId,
+		App_mapping_ID: appMappingId,
 		Asset_ID:       assetId,
 	}
 
@@ -109,7 +109,7 @@ func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingId uint64, asset
 
 	}
 	newRewards := types.InternalRewards{
-		AppMapping_ID: appMappingId,
+		App_mapping_ID: appMappingId,
 		Asset_ID:       newAssetIds,
 	}
 	k.SetReward(ctx, newRewards)
