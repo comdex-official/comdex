@@ -94,13 +94,14 @@ func (k Querier) Pools(c context.Context, req *types.QueryPoolsRequest) (*types.
 		pair := pairGetter(pool.PairId)
 		rx, ry := k.getPoolBalances(ctx, pool, pair)
 		poolRes := types.PoolResponse{
-			Id:                    pool.Id,
-			PairId:                pool.PairId,
-			ReserveAddress:        pool.ReserveAddress,
-			PoolCoinDenom:         pool.PoolCoinDenom,
-			Balances:              sdk.NewCoins(rx, ry),
-			LastDepositRequestId:  pool.LastDepositRequestId,
-			LastWithdrawRequestId: pool.LastWithdrawRequestId,
+			Id:                      pool.Id,
+			PairId:                  pool.PairId,
+			ReserveAddress:          pool.ReserveAddress,
+			SwapFeeCollectorAddress: pool.SwapFeeCollectorAddress,
+			PoolCoinDenom:           pool.PoolCoinDenom,
+			Balances:                sdk.NewCoins(rx, ry),
+			LastDepositRequestId:    pool.LastDepositRequestId,
+			LastWithdrawRequestId:   pool.LastWithdrawRequestId,
 		}
 
 		if accumulate {
@@ -136,13 +137,14 @@ func (k Querier) Pool(c context.Context, req *types.QueryPoolRequest) (*types.Qu
 
 	rx, ry := k.GetPoolBalances(ctx, pool)
 	poolRes := types.PoolResponse{
-		Id:                    pool.Id,
-		PairId:                pool.PairId,
-		ReserveAddress:        pool.ReserveAddress,
-		PoolCoinDenom:         pool.PoolCoinDenom,
-		Balances:              sdk.NewCoins(rx, ry),
-		LastDepositRequestId:  pool.LastDepositRequestId,
-		LastWithdrawRequestId: pool.LastWithdrawRequestId,
+		Id:                      pool.Id,
+		PairId:                  pool.PairId,
+		ReserveAddress:          pool.ReserveAddress,
+		SwapFeeCollectorAddress: pool.SwapFeeCollectorAddress,
+		PoolCoinDenom:           pool.PoolCoinDenom,
+		Balances:                sdk.NewCoins(rx, ry),
+		LastDepositRequestId:    pool.LastDepositRequestId,
+		LastWithdrawRequestId:   pool.LastWithdrawRequestId,
 	}
 
 	return &types.QueryPoolResponse{Pool: poolRes}, nil
@@ -172,13 +174,14 @@ func (k Querier) PoolByReserveAddress(c context.Context, req *types.QueryPoolByR
 
 	rx, ry := k.GetPoolBalances(ctx, pool)
 	poolRes := types.PoolResponse{
-		Id:                    pool.Id,
-		PairId:                pool.PairId,
-		ReserveAddress:        pool.ReserveAddress,
-		PoolCoinDenom:         pool.PoolCoinDenom,
-		Balances:              sdk.NewCoins(rx, ry),
-		LastDepositRequestId:  pool.LastDepositRequestId,
-		LastWithdrawRequestId: pool.LastWithdrawRequestId,
+		Id:                      pool.Id,
+		PairId:                  pool.PairId,
+		ReserveAddress:          pool.ReserveAddress,
+		SwapFeeCollectorAddress: pool.SwapFeeCollectorAddress,
+		PoolCoinDenom:           pool.PoolCoinDenom,
+		Balances:                sdk.NewCoins(rx, ry),
+		LastDepositRequestId:    pool.LastDepositRequestId,
+		LastWithdrawRequestId:   pool.LastWithdrawRequestId,
 	}
 
 	return &types.QueryPoolResponse{Pool: poolRes}, nil
@@ -207,13 +210,14 @@ func (k Querier) PoolByPoolCoinDenom(c context.Context, req *types.QueryPoolByPo
 
 	rx, ry := k.GetPoolBalances(ctx, pool)
 	poolRes := types.PoolResponse{
-		Id:                    pool.Id,
-		PairId:                pool.PairId,
-		ReserveAddress:        pool.ReserveAddress,
-		PoolCoinDenom:         pool.PoolCoinDenom,
-		Balances:              sdk.NewCoins(rx, ry),
-		LastDepositRequestId:  pool.LastDepositRequestId,
-		LastWithdrawRequestId: pool.LastWithdrawRequestId,
+		Id:                      pool.Id,
+		PairId:                  pool.PairId,
+		ReserveAddress:          pool.ReserveAddress,
+		SwapFeeCollectorAddress: pool.SwapFeeCollectorAddress,
+		PoolCoinDenom:           pool.PoolCoinDenom,
+		Balances:                sdk.NewCoins(rx, ry),
+		LastDepositRequestId:    pool.LastDepositRequestId,
+		LastWithdrawRequestId:   pool.LastWithdrawRequestId,
 	}
 
 	return &types.QueryPoolResponse{Pool: poolRes}, nil

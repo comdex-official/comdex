@@ -27,16 +27,26 @@ func PoolReserveAddress(poolID uint64) sdk.AccAddress {
 	)
 }
 
+// PoolSwapFeeCollectorAddress returns a unique pool swap fee collector account address for each pool.
+func PoolSwapFeeCollectorAddress(poolID uint64) sdk.AccAddress {
+	return DeriveAddress(
+		AddressType32Bytes,
+		ModuleName,
+		strings.Join([]string{PoolSwapFeeCollectorAddressPrefix, strconv.FormatUint(poolID, 10)}, ModuleAddressNameSplitter),
+	)
+}
+
 // NewPool returns a new pool object.
 func NewPool(id, pairID uint64) Pool {
 	return Pool{
-		Id:                    id,
-		PairId:                pairID,
-		ReserveAddress:        PoolReserveAddress(id).String(),
-		PoolCoinDenom:         PoolCoinDenom(id),
-		LastDepositRequestId:  0,
-		LastWithdrawRequestId: 0,
-		Disabled:              false,
+		Id:                      id,
+		PairId:                  pairID,
+		ReserveAddress:          PoolReserveAddress(id).String(),
+		PoolCoinDenom:           PoolCoinDenom(id),
+		LastDepositRequestId:    0,
+		LastWithdrawRequestId:   0,
+		Disabled:                false,
+		SwapFeeCollectorAddress: PoolSwapFeeCollectorAddress(id).String(),
 	}
 }
 

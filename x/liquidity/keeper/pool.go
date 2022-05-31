@@ -154,6 +154,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 			sdk.NewAttribute(types.AttributeKeyDepositCoins, msg.DepositCoins.String()),
 			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(pool.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyReserveAddress, pool.ReserveAddress),
+			sdk.NewAttribute(types.AttributeKeySwapFeeCollectorAddress, pool.SwapFeeCollectorAddress),
 			sdk.NewAttribute(types.AttributeKeyMintedPoolCoin, poolCoin.String()),
 		),
 	})

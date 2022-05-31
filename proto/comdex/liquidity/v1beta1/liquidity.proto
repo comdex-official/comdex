@@ -17,7 +17,7 @@ message Params {
 
   string fee_collector_address = 3;
 
-  string swap_fee_collector_address = 4;
+  string dust_collector_address = 4;
 
   string min_initial_pool_coin_supply = 5
       [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
@@ -84,6 +84,8 @@ message Pool {
   uint64 last_withdraw_request_id = 6;
 
   bool disabled = 7;
+
+  string swap_fee_collector_address = 8;
 }
 
 // DepositRequest defines a deposit request.

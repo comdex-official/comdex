@@ -18,7 +18,7 @@ const (
 // Liquidity params default values.
 var (
 	DefaultFeeCollectorAddress      = DeriveAddress(AddressType32Bytes, ModuleName, "FeeCollector")
-	DefaultSwapFeeCollectorAddress  = DeriveAddress(AddressType32Bytes, ModuleName, "SwapFeeCollector")
+	DefaultDustCollectorAddress     = DeriveAddress(AddressType32Bytes, ModuleName, "DustCollector")
 	DefaultMinInitialPoolCoinSupply = sdk.NewInt(1_000_000_000_000)
 	DefaultPairCreationFee          = sdk.NewCoins(sdk.NewInt64Coin("ucmdx", 200_000_000))
 	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin("ucmdx", 200_000_000))
@@ -33,9 +33,10 @@ var (
 
 // General constants.
 const (
-	PoolReserveAddressPrefix  = "PoolReserveAddress"
-	PairEscrowAddressPrefix   = "PairEscrowAddress"
-	ModuleAddressNameSplitter = "|"
+	PoolReserveAddressPrefix          = "PoolReserveAddress"
+	PoolSwapFeeCollectorAddressPrefix = "PoolSwapFeeCollectorAddress"
+	PairEscrowAddressPrefix           = "PairEscrowAddress"
+	ModuleAddressNameSplitter         = "|"
 )
 
 var (
@@ -47,7 +48,7 @@ var (
 	KeyBatchSize                = []byte("BatchSize")
 	KeyTickPrecision            = []byte("TickPrecision")
 	KeyFeeCollectorAddress      = []byte("FeeCollectorAddress")
-	KeySwapFeeCollectorAddress  = []byte("SwapFeeCollectorAddress")
+	KeyDustCollectorAddress     = []byte("DustCollectorAddress")
 	KeyMinInitialPoolCoinSupply = []byte("MinInitialPoolCoinSupply")
 	KeyPairCreationFee          = []byte("PairCreationFee")
 	KeyPoolCreationFee          = []byte("PoolCreationFee")
@@ -73,7 +74,7 @@ func DefaultParams() Params {
 		BatchSize:                DefaultBatchSize,
 		TickPrecision:            DefaultTickPrecision,
 		FeeCollectorAddress:      DefaultFeeCollectorAddress.String(),
-		SwapFeeCollectorAddress:  DefaultSwapFeeCollectorAddress.String(),
+		DustCollectorAddress:     DefaultDustCollectorAddress.String(),
 		MinInitialPoolCoinSupply: DefaultMinInitialPoolCoinSupply,
 		PairCreationFee:          DefaultPairCreationFee,
 		PoolCreationFee:          DefaultPoolCreationFee,
@@ -94,7 +95,7 @@ func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeyBatchSize, &params.BatchSize, validateBatchSize),
 		paramstypes.NewParamSetPair(KeyTickPrecision, &params.TickPrecision, validateTickPrecision),
 		paramstypes.NewParamSetPair(KeyFeeCollectorAddress, &params.FeeCollectorAddress, validateFeeCollectorAddress),
-		paramstypes.NewParamSetPair(KeySwapFeeCollectorAddress, &params.SwapFeeCollectorAddress, validateSwapFeeCollectorAddress),
+		paramstypes.NewParamSetPair(KeyDustCollectorAddress, &params.DustCollectorAddress, validateDustCollectorAddress),
 		paramstypes.NewParamSetPair(KeyMinInitialPoolCoinSupply, &params.MinInitialPoolCoinSupply, validateMinInitialPoolCoinSupply),
 		paramstypes.NewParamSetPair(KeyPairCreationFee, &params.PairCreationFee, validatePairCreationFee),
 		paramstypes.NewParamSetPair(KeyPoolCreationFee, &params.PoolCreationFee, validatePoolCreationFee),
@@ -118,7 +119,7 @@ func (params Params) Validate() error {
 		{params.BatchSize, validateBatchSize},
 		{params.TickPrecision, validateTickPrecision},
 		{params.FeeCollectorAddress, validateFeeCollectorAddress},
-		{params.SwapFeeCollectorAddress, validateSwapFeeCollectorAddress},
+		{params.DustCollectorAddress, validateDustCollectorAddress},
 		{params.MinInitialPoolCoinSupply, validateMinInitialPoolCoinSupply},
 		{params.PairCreationFee, validatePairCreationFee},
 		{params.PoolCreationFee, validatePoolCreationFee},
@@ -173,14 +174,14 @@ func validateFeeCollectorAddress(i interface{}) error {
 	return nil
 }
 
-func validateSwapFeeCollectorAddress(i interface{}) error {
+func validateDustCollectorAddress(i interface{}) error {
 	v, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	if _, err := sdk.AccAddressFromBech32(v); err != nil {
-		return fmt.Errorf("invalid swap fee collector address: %w", err)
+		return fmt.Errorf("invalid dust collector address: %w", err)
 	}
 
 	return nil
