@@ -7,15 +7,13 @@ import (
 
 var (
 	_ sdk.Msg = (*MsgMintNewTokensRequest)(nil)
-	
-
 )
 
-func NewMsgMintNewTokensRequest(from sdk.AccAddress, app_mapping_id uint64,asset_id uint64) *MsgMintNewTokensRequest {
+func NewMsgMintNewTokensRequest(from sdk.AccAddress, app_mapping_id uint64, asset_id uint64) *MsgMintNewTokensRequest {
 	return &MsgMintNewTokensRequest{
-		From:                from.String(),
-		AppMappingId:        app_mapping_id,
-		AssetId: asset_id,
+		From:         from.String(),
+		AppMappingId: app_mapping_id,
+		AssetId:      asset_id,
 	}
 }
 
