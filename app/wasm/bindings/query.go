@@ -46,7 +46,7 @@ type StateResponse struct {
 }
 
 type MintedToken struct {
-	App_Id   uint64 `json:"app_id"`
+	App_Id   uint64 `json:"app_mapping_id"`
 	Asset_Id uint64 `json:"asset_id"`
 }
 
@@ -55,7 +55,7 @@ type MintedTokenResponse struct {
 }
 
 type RemoveWhiteListAssetLocker struct {
-	App_Id   uint64   `json:"app_id"`
+	App_Id   uint64   `json:"app_mapping_id"`
 	Asset_Id []uint64 `json:"asset_id"`
 }
 
@@ -65,7 +65,7 @@ type RemoveWhiteListAssetResponse struct {
 }
 
 type WhitelistAppIdVaultInterest struct {
-	App_Id uint64 `json:"app_id"`
+	App_Id uint64 `json:"app_mapping_id"`
 }
 
 type WhitelistAppIdVaultInterestResponse struct {
@@ -74,7 +74,7 @@ type WhitelistAppIdVaultInterestResponse struct {
 }
 
 type WhitelistAppIdLockerRewards struct {
-	App_Id   uint64 `json:"app_id"`
+	App_Id   uint64 `json:"app_mapping_id"`
 	Asset_Id uint64 `json:"asset_id"`
 }
 
@@ -84,7 +84,7 @@ type WhitelistAppIdLockerRewardsResponse struct {
 }
 
 type ExternalLockerRewards struct {
-	App_Id   uint64 `json:"app_id"`
+	App_Id   uint64 `json:"app_mapping_id"`
 	Asset_Id uint64 `json:"asset_id"`
 }
 
@@ -94,7 +94,7 @@ type ExternalLockerRewardsResponse struct {
 }
 
 type ExternalVaultRewards struct {
-	App_Id   uint64 `json:"app_id"`
+	App_Id   uint64 `json:"app_mapping_id"`
 	Asset_Id uint64 `json:"asset_id"`
 }
 
