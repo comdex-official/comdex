@@ -27,7 +27,7 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServer {
 func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLockerRequest) (*types.MsgCreateLockerResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
-	asset, found := k.GetAsset(ctx, msg.AssetID)
+	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -176,7 +176,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	//Update Locker Data
 
 	ctx := sdk.UnwrapSDKContext(c)
-	asset, found := k.GetAsset(ctx, msg.AssetID)
+	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -185,7 +185,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
-	lockerData, found := k.GetLocker(ctx, msg.LockerID)
+	lockerData, found := k.GetLocker(ctx, msg.LockerId)
 
 	if !found {
 		return nil, types.ErrorLockerDoesNotExists
@@ -233,7 +233,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
-	asset, found := k.GetAsset(ctx, msg.AssetID)
+	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -297,7 +297,7 @@ func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddW
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
-	asset, found := k.GetAsset(ctx, msg.AssetID)
+	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -326,7 +326,7 @@ func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddW
 	} else {
 
 		// Check if the asset from msg exists or not ,
-		found := k.CheckLockerProductAssetMapping(ctx, msg.AssetID, locker_product_asset_mapping)
+		found := k.CheckLockerProductAssetMapping(ctx, msg.AssetId, locker_product_asset_mapping)
 
 		if found {
 

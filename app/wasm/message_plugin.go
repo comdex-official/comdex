@@ -66,7 +66,7 @@ func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractA
 	msg := lockertypes.MsgAddWhiteListedAssetRequest{
 		From:         contractAddr.String(),
 		AppMappingId: whiteListAsset.AppMappingId,
-		AssetID:      whiteListAsset.AssetId,
+		AssetId:      whiteListAsset.AssetId,
 	}
 	msgServer := lockerkeeper.NewMsgServiceServer(lockerKeeper)
 	_, err := msgServer.MsgAddWhiteListedAsset(sdk.WrapSDKContext(ctx), &msg)

@@ -445,13 +445,13 @@ func (q *queryServer) QueryLockerTotalDepositedByApp(c context.Context, req *typ
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
 	}
-	var lockedDepositedAmt []*types.LockedDepositedAmountDataMap
+	var lockedDepositedAmt []types.LockedDepositedAmountDataMap
 
 	for _, data := range item.Lockers {
 		var lockeddata types.LockedDepositedAmountDataMap
 		lockeddata.AssetId = data.AssetId
-		lockeddata.DepositedAmount = &data.DepositedAmount
-		lockedDepositedAmt = append(lockedDepositedAmt, &lockeddata)
+		lockeddata.DepositedAmount = data.DepositedAmount
+		lockedDepositedAmt = append(lockedDepositedAmt, lockeddata)
 
 	}
 

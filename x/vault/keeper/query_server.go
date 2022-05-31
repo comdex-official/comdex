@@ -202,7 +202,7 @@ func (q *queryServer) QueryVaultByProduct(c context.Context, req *types.QueryVau
 	}
 
 	return &types.QueryVaultByProductResponse{
-		Vault_Ids: vaultsIds,
+		VaultIds: vaultsIds,
 	}, nil
 }
 
@@ -231,7 +231,7 @@ func (q *queryServer) QueryAllVaultByOwner(c context.Context, req *types.QueryAl
 	}
 
 	return &types.QueryAllVaultByOwnerResponse{
-		Vault_Ids: vaultsIds,
+		VaultIds: vaultsIds,
 	}, nil
 }
 
@@ -264,7 +264,7 @@ func (q *queryServer) QueryTokenMintedAllProductsByPair(c context.Context, req *
 	}
 
 	return &types.QueryTokenMintedAllProductsByPairResponse{
-		Token_Minted: &token_minted,
+		TokenMinted: &token_minted,
 	}, nil
 }
 
@@ -291,7 +291,7 @@ func (q *queryServer) QueryTokenMintedAllProducts(c context.Context, req *types.
 	}
 
 	return &types.QueryTokenMintedAllProductsResponse{
-		Token_Minted: &token_minted,
+		TokenMinted: &token_minted,
 	}, nil
 }
 

@@ -34,15 +34,17 @@ message Vault {
   google.protobuf.Timestamp created_at = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
-    (gogoproto.moretags)   = "yaml:\"created_at\""
+    (gogoproto.moretags)   = "yaml:\"created_at\"",
   ];
   string interest_accumulated = 8[
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"interest_accumulated\""
+    (gogoproto.moretags)   = "yaml:\"interest_accumulated\"",
+    (gogoproto.nullable)   = false
   ];
   string closing_fee_accumulated  = 9 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"closing_fee_accumulated\""
+    (gogoproto.moretags)   = "yaml:\"closing_fee_accumulated\"",
+    (gogoproto.nullable)   = false
   ];
 }
 
@@ -84,9 +86,11 @@ message ExtendedPairToVaultMapping {
     repeated string vault_ids = 2 [ (gogoproto.moretags) = "yaml:\"vault_ids\"" ];
     string token_minted_amount =3[ 
       (gogoproto.moretags) = "yaml:\"token_minted_amount\"" ,
-      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"];
+      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+      (gogoproto.nullable)   = false];
     string collateral_locked_amount=4[ (gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
-           (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+           (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+           (gogoproto.nullable)   = false];
   }
 
 
@@ -95,7 +99,8 @@ message ExtendedPairToVaultMapping {
   {
     uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
     string collateral_locked_amount= 2 [ (gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
-           (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+           (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+           (gogoproto.nullable)   = false];
   }
 
 

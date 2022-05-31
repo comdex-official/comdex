@@ -85,8 +85,8 @@ func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingId uint64, assetId []u
 	}
 
 	internalRewards := types.InternalRewards{
-		App_mapping_ID: appMappingId,
-		Asset_ID:       assetId,
+		AppMappingID: appMappingId,
+		AssetID:       assetId,
 	}
 
 	k.SetReward(ctx, internalRewards)
@@ -100,17 +100,17 @@ func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingId uint64, asset
 		return nil
 	}
 	var newAssetIds []uint64
-	fmt.Println(rewards.Asset_ID)
-	for i := range rewards.Asset_ID {
-		if assetId != rewards.Asset_ID[i] {
-			newAssetId := rewards.Asset_ID[i]
+	fmt.Println(rewards.AssetID)
+	for i := range rewards.AssetID {
+		if assetId != rewards.AssetID[i] {
+			newAssetId := rewards.AssetID[i]
 			newAssetIds = append(newAssetIds, newAssetId)
 		}
 
 	}
 	newRewards := types.InternalRewards{
-		App_mapping_ID: appMappingId,
-		Asset_ID:       newAssetIds,
+		AppMappingID: appMappingId,
+		AssetID:       newAssetIds,
 	}
 	k.SetReward(ctx, newRewards)
 	return nil
