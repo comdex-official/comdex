@@ -74,8 +74,8 @@ type WhitelistAppIdVaultInterestResponse struct {
 }
 
 type WhitelistAppIdLockerRewards struct {
-	App_Id   uint64 `json:"app_mapping_id"`
-	Asset_Id uint64 `json:"asset_id"`
+	App_Id   uint64   `json:"app_mapping_id"`
+	Asset_Id []uint64 `json:"asset_id"`
 }
 
 type WhitelistAppIdLockerRewardsResponse struct {
