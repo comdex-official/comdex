@@ -14,7 +14,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateLockerRequest{}, "comdex/locker/MsgCreateLockerRequest", nil)
 	cdc.RegisterConcrete(&MsgDepositAssetRequest{}, "comdex/locker/MsgDepositAssetRequest", nil)
 	cdc.RegisterConcrete(&MsgWithdrawAssetRequest{}, "comdex/locker/MsgWithdrawAssetRequest", nil)
-	cdc.RegisterConcrete(&MsgAddWhiteListedAssetRequest{}, "comdex/locker/MsgWithdrawAssetRequest", nil)
+	cdc.RegisterConcrete(&MsgAddWhiteListedAssetRequest{}, "comdex/locker/MsgAddWhiteListedAssetRequest", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
