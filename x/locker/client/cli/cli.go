@@ -41,9 +41,29 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryLockerLookupTableByAppAndAssetId(),
 		queryLockerTotalDepositedByApp(),
 		queryState(),
-		txAddWhiteListedAssetLocker(),
 	)
 	// this line is used by starport scaffolding # 1
+
+	return cmd
+}
+
+// GetTxCmd returns the transaction commands for this module
+func GetTxCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:                        types.ModuleName,
+		Short:                      fmt.Sprintf("%s transactions subcommands", types.ModuleName),
+		DisableFlagParsing:         true,
+		SuggestionsMinimumDistance: 2,
+		RunE:                       client.ValidateCmd,
+	}
+
+	cmd.AddCommand(
+
+		txCreateLocker(),
+		txDepositAssetLocker(),
+		txWithdrawAssetLocker(),
+		txAddWhiteListedAssetLocker(),
+	)
 
 	return cmd
 }
