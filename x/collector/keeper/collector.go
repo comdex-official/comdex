@@ -143,6 +143,11 @@ func (k *Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, app_id uint64)
 
 //////////////////////////////111111111111111111111
 
+func (k *Keeper) UpdateLsrInCollectorLookupTable(ctx sdk.Context, app_id,asset_id uint64, lsr sdk.Dec) error {
+
+	return nil
+}
+
 func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.CollectorLookupTable) error {
 	for _, msg := range records {
 		if !k.HasAsset(ctx, msg.CollectorAssetId) {
@@ -219,36 +224,19 @@ func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collec
 	return collectorLookup, true
 }
 
-func (k *Keeper) GetCollectorLookupByAsset(ctx sdk.Context, app_id, asset_id uint64) (collectorLookup types.CollectorLookup, found bool) {
-	var (
-		store = ctx.KVStore(k.storeKey)
-		key   = types.CollectorLookupTableMappingKey(app_id)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return collectorLookup, false
+func (k *Keeper) GetCollectorLookupByAsset(ctx sdk.Context, app_id, asset_id uint64) (collectorLookupTable types.CollectorLookupTable, found bool) {
+	collectorLookup, found := k.GetCollectorLookupTable(ctx,app_id)
+	if !found{
+		return collectorLookupTable, false
 	}
-
-	k.cdc.MustUnmarshal(value, &collectorLookup)
-
-	var newCollectorLoopkup types.CollectorLookup
+	
 	var assetRateInfo types.CollectorLookupTable
-	for _, msg := range collectorLookup.AssetrateInfo {
-		if msg.CollectorAssetId == asset_id {
-			newCollectorLoopkup.AppId = msg.AppId
-			assetRateInfo.AppId = msg.AppId
-			assetRateInfo.CollectorAssetId = msg.CollectorAssetId
-			assetRateInfo.SecondaryAssetId = msg.SecondaryAssetId
-			assetRateInfo.SurplusThreshold = msg.SurplusThreshold
-			assetRateInfo.DebtThreshold = msg.DebtThreshold
-			assetRateInfo.LockerSavingRate = msg.LockerSavingRate
-			assetRateInfo.LotSize = msg.LotSize
-			assetRateInfo.BidFactor = msg.BidFactor
-			newCollectorLoopkup.AssetrateInfo = append(newCollectorLoopkup.AssetrateInfo, assetRateInfo)
+	for _, data := range collectorLookup.AssetrateInfo {
+		if data.CollectorAssetId == asset_id {
+			assetRateInfo = data
 		}
 	}
-	return newCollectorLoopkup, true
+	return assetRateInfo, true
 }
 
 // set denoms for appId in Collector LookupTable

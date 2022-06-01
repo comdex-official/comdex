@@ -50,7 +50,6 @@ func (q *queryServer) QueryCollectorLookupByProductAndAsset(c context.Context, r
 	}
 	var (
 		ctx           = sdk.UnwrapSDKContext(c)
-		collectorData types.CollectorLookupTable
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -62,14 +61,9 @@ func (q *queryServer) QueryCollectorLookupByProductAndAsset(c context.Context, r
 		return nil, status.Errorf(codes.NotFound, "Lookup table does not exist for product id %d", req.AppId)
 	}
 
-	for _, data := range collectorLookupData.AssetrateInfo {
-		if data.CollectorAssetId == req.AssetId {
-			collectorData = data
-		}
-	}
 
 	return &types.QueryCollectorLookupByProductAndAssetResponse{
-		CollectorLookup: collectorData,
+		CollectorLookup: collectorLookupData,
 	}, nil
 }
 
