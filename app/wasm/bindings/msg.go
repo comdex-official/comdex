@@ -3,13 +3,14 @@ package bindings
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 type ComdexMessages struct {
-	MsgWhiteListAssetLocker        *MsgWhiteListAssetLocker        `json:"msg_white_list_asset_locker,omitempty"`
-	MsgWhitelistAppIdVaultInterest *MsgWhitelistAppIdVaultInterest `json:"msg_whitelist_app_id_vault_interest,omitempty"`
-	MsgWhitelistAppIdLockerRewards *MsgWhitelistAppIdLockerRewards `json:"msg_whitelist_app_id_locker_rewards,omitempty"`
-	MsgAddExtendedPairsVault       *MsgAddExtendedPairsVault       `json:"msg_add_extended_pairs_vault,omitempty"`
-	MsgSetCollectorLookupTable     *MsgSetCollectorLookupTable     `json:"msg_set_collector_lookup_table,omitempty"`
-	MsgSetAuctionMappingForApp     *MsgSetAuctionMappingForApp     `json:"msg_set_auction_mapping_for_app,omitempty"`
-	MsgUpdateLsrInPairsVault       *MsgUpdateLsrInPairsVault       `json:"msg_update_lsr_in_pairs_vault,omitempty"`
+	MsgWhiteListAssetLocker            *MsgWhiteListAssetLocker            `json:"msg_white_list_asset_locker,omitempty"`
+	MsgWhitelistAppIdVaultInterest     *MsgWhitelistAppIdVaultInterest     `json:"msg_whitelist_app_id_vault_interest,omitempty"`
+	MsgWhitelistAppIdLockerRewards     *MsgWhitelistAppIdLockerRewards     `json:"msg_whitelist_app_id_locker_rewards,omitempty"`
+	MsgAddExtendedPairsVault           *MsgAddExtendedPairsVault           `json:"msg_add_extended_pairs_vault,omitempty"`
+	MsgSetCollectorLookupTable         *MsgSetCollectorLookupTable         `json:"msg_set_collector_lookup_table,omitempty"`
+	MsgSetAuctionMappingForApp         *MsgSetAuctionMappingForApp         `json:"msg_set_auction_mapping_for_app,omitempty"`
+	MsgUpdateLsrInPairsVault           *MsgUpdateLsrInPairsVault           `json:"msg_update_lsr_in_pairs_vault,omitempty"`
+	MsgUpdateLsrInCollectorLookupTable *MsgUpdateLsrInCollectorLookupTable `json:"msg_update_lsr_in_collector_lookup_table,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
@@ -66,4 +67,10 @@ type MsgUpdateLsrInPairsVault struct {
 	AppMappingId uint64  `json:"app_mapping_id"`
 	ExtPairId    uint64  `json:"ext_pair_id"`
 	StabilityFee sdk.Dec `json:"stability_fee"`
+}
+
+type MsgUpdateLsrInCollectorLookupTable struct {
+	AppMappingId uint64  `json:"app_mapping_id"`
+	AssetId      uint64  `json:"asset_id"`
+	LSR          sdk.Dec `json:"lsr"`
 }

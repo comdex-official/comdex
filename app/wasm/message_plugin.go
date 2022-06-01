@@ -67,6 +67,9 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		if comdexMsg.MsgUpdateLsrInPairsVault != nil {
 			return m.UpdateLsrInPairsVault(ctx, contractAddr, comdexMsg.MsgUpdateLsrInPairsVault)
 		}
+		if comdexMsg.MsgUpdateLsrInCollectorLookupTable != nil {
+			return m.UpdateLsrInCollectorLookupTable(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
+		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
 }
@@ -211,7 +214,7 @@ func MsgSetAuctionMappingForApp(collectorKeeper collectorkeeper.Keeper, ctx sdk.
 func (m *CustomMessenger) UpdateLsrInPairsVault(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInPairsVault) ([]sdk.Event, [][]byte, error) {
 	err := MsgUpdateLsrInPairsVault(m.assetKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "SetAuctionMappingForApp error")
+		return nil, nil, sdkerrors.Wrap(err, "UpdateLsrInPairsVault error")
 	}
 	return nil, nil, nil
 }
@@ -219,6 +222,23 @@ func (m *CustomMessenger) UpdateLsrInPairsVault(ctx sdk.Context, contractAddr sd
 func MsgUpdateLsrInPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgUpdateLsrInPairsVault) error {
 	err := assetKeeper.WasmUpdateLsrInPairsVault(ctx, a.AppMappingId, a.ExtPairId, a.StabilityFee)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) UpdateLsrInCollectorLookupTable(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+	err := MsgUpdateLsrInCollectorLookupTable(m.collectorKeeper, ctx, contractAddr, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "UpdateLsrInCollectorLookupTable error")
+	}
+	return nil, nil, nil
+}
+
+func MsgUpdateLsrInCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+	err := collectorKeeper.WasmUpdateLsrInCollectorLookupTable(ctx, a.AppMappingId, a.AssetId, a.LSR)
 	if err != nil {
 		return err
 	}

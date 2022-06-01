@@ -143,23 +143,6 @@ func (k *Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, app_id uint64)
 
 //////////////////////////////111111111111111111111
 
-func (k *Keeper) UpdateLsrInCollectorLookupTable(ctx sdk.Context, app_id,asset_id uint64, lsr sdk.Dec) error {
-	collectorLookup, found := k.GetCollectorLookupByAsset(ctx,app_id,asset_id)
-	if !found{
-		return types.ErrorDataDoesNotExists
-	}
-	collectorLookup.LockerSavingRate = &lsr
-
-	var (
-		store = ctx.KVStore(k.storeKey)
-		key   = types.CollectorLookupTableMappingKey(app_id)
-		value = k.cdc.MustMarshal(&collectorLookup)
-	)
-
-	store.Set(key, value)
-	return nil
-}
-
 func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.CollectorLookupTable) error {
 	for _, msg := range records {
 		if !k.HasAsset(ctx, msg.CollectorAssetId) {
@@ -237,11 +220,11 @@ func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collec
 }
 
 func (k *Keeper) GetCollectorLookupByAsset(ctx sdk.Context, app_id, asset_id uint64) (collectorLookupTable types.CollectorLookupTable, found bool) {
-	collectorLookup, found := k.GetCollectorLookupTable(ctx,app_id)
-	if !found{
+	collectorLookup, found := k.GetCollectorLookupTable(ctx, app_id)
+	if !found {
 		return collectorLookupTable, false
 	}
-	
+
 	var assetRateInfo types.CollectorLookupTable
 	for _, data := range collectorLookup.AssetrateInfo {
 		if data.CollectorAssetId == asset_id {
@@ -565,6 +548,31 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, Asse
 func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, AppId uint64) (bool, string) {
 
 	_, found := k.GetAppidToAssetCollectorMapping(ctx, AppId)
+	if !found {
+		return false, types.ErrorDataDoesNotExists.Error()
+	}
+	return true, ""
+}
+
+func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, assetId uint64, lsr sdk.Dec) error {
+	collectorLookup, found := k.GetCollectorLookupByAsset(ctx, appId, assetId)
+	if !found {
+		return types.ErrorDataDoesNotExists
+	}
+	collectorLookup.LockerSavingRate = &lsr
+
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.CollectorLookupTableMappingKey(appId)
+		value = k.cdc.MustMarshal(&collectorLookup)
+	)
+
+	store.Set(key, value)
+	return nil
+}
+
+func (k *Keeper) WasmUpdateLsrInCollectorLookupTableQuery(ctx sdk.Context, appId, assetId uint64) (bool, string) {
+	_, found := k.GetCollectorLookupByAsset(ctx, appId, assetId)
 	if !found {
 		return false, types.ErrorDataDoesNotExists.Error()
 	}

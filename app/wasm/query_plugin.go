@@ -205,6 +205,19 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "UpdateLsrInPairsVaultQuery query response")
 			}
 			return bz, nil
+		} else if comdexQuery.UpdateLsrInCollectorLookupTableQuery != nil {
+			AppMappingId := comdexQuery.UpdateLsrInCollectorLookupTableQuery.AppMappingId
+			AssetId := comdexQuery.UpdateLsrInCollectorLookupTableQuery.AssetId
+			found, errormsg := queryPlugin.UpdateLsrInCollectorLookupTableQueryCheck(ctx, AppMappingId, AssetId)
+			res := bindings.UpdateLsrInPairsVaultQueryResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "UpdateLsrInPairsVaultQuery query response")
+			}
+			return bz, nil
 		}
 
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown App Data query variant"}
