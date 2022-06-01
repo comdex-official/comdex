@@ -40,6 +40,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryLockerLookupTableByApp(),
 		queryLockerLookupTableByAppAndAssetId(),
 		queryLockerTotalDepositedByApp(),
+		queryOwnerTxDetailsLockerOfProductbyOwner(),
+		queryLockerByProductbyOwner(),
 		queryState(),
 	)
 	// this line is used by starport scaffolding # 1

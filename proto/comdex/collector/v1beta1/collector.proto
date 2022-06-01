@@ -121,5 +121,7 @@ message AssetIdToAuctionLookupTable {
   bool is_surplus_auction = 2 [(gogoproto.moretags) = "yaml:\"is_surplus_auction\""];
   bool is_debt_auction = 3 [(gogoproto.moretags) = "yaml:\"is_debt_auction\""];
   bool is_auction_active = 4 [(gogoproto.moretags) = "yaml:\"is_auction_active\""];
-
+  bool asset_out_oracle_price = 15 [ (gogoproto.moretags) = "yaml:\"asset_out_oracle_price\"" ];
+  uint64 assset_out_price     = 16 [ 
+    (gogoproto.moretags) = "yaml:\"assset_out_price\"" ];
 }

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -149,6 +150,42 @@ func (q *queryServer) QueryTotalDepositByProductAssetID(c context.Context, reque
 	}, nil
 }
 
+func (q *queryServer) QueryLockerByProductbyOwner(c context.Context, request *types.QueryLockerByProductbyOwnerRequest) (*types.QueryLockerByProductbyOwnerResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	app, found := q.GetApp(ctx, request.ProductId)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.ProductId)
+	}
+
+	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
+	}
+
+	var lockerInfos []types.Locker
+	for _, locker := range lockerLookupData.Lockers {
+			for _, lockerID := range locker.LockerIds {
+				locker1, _ := q.GetLocker(ctx, lockerID)
+				if request.Owner == locker1.Depositor {
+					lockerInfos = append(lockerInfos, locker1)
+				}
+			}
+	}
+	return &types.QueryLockerByProductbyOwnerResponse{
+		LockerInfo: lockerInfos,
+	}, nil
+}
+
 func (q *queryServer) QueryOwnerLockerByProductIDbyOwner(c context.Context, request *types.QueryOwnerLockerByProductIDbyOwnerRequest) (*types.QueryOwnerLockerByProductIDbyOwnerResponse, error) {
 
 	if request == nil {
@@ -202,6 +239,33 @@ func (q *queryServer) QueryOwnerLockerOfAllProductbyOwner(c context.Context, req
 
 	return &types.QueryOwnerLockerOfAllProductbyOwnerResponse{
 		LockerIds: lockerIds,
+	}, nil
+}
+
+
+func (q *queryServer) QueryOwnerTxDetailsLockerOfProductbyOwner(c context.Context, request *types.QueryOwnerTxDetailsLockerOfProductbyOwnerRequest) (*types.QueryOwnerTxDetailsLockerOfProductbyOwnerResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+		userTxData []types.UserTxData
+	)
+	userlockerLookupData, _ := q.GetUserLockerAssetMapping(ctx, request.Owner)
+
+	if userlockerLookupData.Owner == request.Owner{
+		for _, locker := range userlockerLookupData.LockerAppMapping {
+			if locker.AppMappingId == request.ProductId{
+				for _, data := range locker.UserAssetLocker {
+					userTxData = append(userTxData, data.UserTxData...)
+				}
+			}
+		}
+	}
+	return &types.QueryOwnerTxDetailsLockerOfProductbyOwnerResponse{
+		UserTxData: userTxData,
 	}, nil
 }
 

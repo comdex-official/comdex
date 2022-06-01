@@ -60,6 +60,18 @@ message QueryVaultInfoResponse {
   ];
 }
 
+message QueryVaultInfoByOwnerRequest {
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+}
+
+message QueryVaultInfoByOwnerResponse {
+ repeated VaultInfo vaultsInfo = 1 [
+    (gogoproto.customname) = "VaultsInfo",
+    (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
 message QueryAllVaultsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
@@ -275,7 +287,8 @@ message QueryTVLlockedByAppRequest {
 }
 
 message QueryTVLlockedByAppResponse {
-repeated TvlLockedDataMap tvldata = 1 [ (gogoproto.moretags) = "yaml:\"tvldata\"" ];
+repeated TvlLockedDataMap tvldata = 1 [ (gogoproto.moretags) = "yaml:\"tvldata\"",
+(gogoproto.nullable)   = false ];
 }
 
 
@@ -286,6 +299,10 @@ service Query {
 
   rpc QueryVaultInfo(QueryVaultInfoRequest) returns (QueryVaultInfoResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaultsInfo/{id}";
+  };
+
+  rpc QueryVaultInfoByOwner(QueryVaultInfoByOwnerRequest) returns (QueryVaultInfoByOwnerResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaultsInfoByOwner/{owner}";
   };
 
   rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
