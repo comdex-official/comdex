@@ -11,12 +11,16 @@ import (
 )
 
 func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
+	fmt.Println("Inside Liquidate vaults _____________")
 	appIds := k.GetAppIds(ctx).WhitelistedAppMappingIds
+	fmt.Println(appIds)
 	for i := range appIds {
+		fmt.Println("Inside Liquidate vaults 1_____________")
 		vaultsMap, _ := k.GetAppExtendedPairVaultMapping(ctx, appIds[i])
 
 		vaults := vaultsMap.ExtendedPairVaults
 		for j := range vaults {
+			fmt.Println("Inside Liquidate vaults 2______________")
 			vaultIds := vaults[j].VaultIds
 			for l := range vaultIds {
 				vault, _ := k.GetVault(ctx, vaultIds[l])
@@ -146,21 +150,24 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					if !found {
 						continue
 					}
+					fmt.Println("red1______________")
 					assetOut, found := k.GetAsset(ctx, pair.AssetOut)
 					if !found {
 						continue
 					}
+					fmt.Println("red2______________")
 					collateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, ExtPair.PairId, lockedVault.AmountIn, lockedVault.UpdatedAmountOut)
 					if err != nil {
 						continue
 					}
+					fmt.Println("red3______________")
 					//Asset Price in Dollar Terms to find how how much is to be auctioned
 					assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
 					assetOutPrice, _ := k.GetPriceForAsset(ctx, assetOut.Id)
 
 					totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
 					totalOut := lockedVault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
-
+					fmt.Println("red4______________")
 					//Selloff Collateral Calculation
 					//Assuming that the collateral to be sold is 1 unit, so finding out how much is going to be deducted from the
 					//collateral which will account as repaying the user's debt
@@ -173,7 +180,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					//Substracting again from 1 unit to find the selloff multiplication factor
 					selloffMultiplicationFactor := deductionPercentage.Sub(multiplicationFactor)
 					selloffAmount := assetsDifference.Quo(selloffMultiplicationFactor)
-
+					fmt.Println("red5______________")
 					var collateralToBeAuctioned sdk.Dec
 
 					if selloffAmount.GTE(totalIn) {
@@ -182,11 +189,14 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 
 						collateralToBeAuctioned = selloffAmount
 					}
+					fmt.Println("red6______________")
 					updatedLockedVault := lockedVault
 					updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 					updatedLockedVault.CollateralToBeAuctioned = &collateralToBeAuctioned
 					k.SetLockedVault(ctx, updatedLockedVault)
+					fmt.Println("red7______________")
 					k.UpdateLockedVaultsAppMapping(ctx, updatedLockedVault)
+					fmt.Println("red8______________")
 				}
 			}
 		}
@@ -307,6 +317,7 @@ func (k *Keeper) GetLockedVaultIDHistory(ctx sdk.Context) uint64 {
 	if value == nil {
 		return 0
 	}
+	fmt.Println("value", value)
 
 	var id protobuftypes.UInt64Value
 	k.cdc.MustUnmarshal(value, &id)
