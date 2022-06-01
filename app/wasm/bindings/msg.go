@@ -3,12 +3,12 @@ package bindings
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 type ComdexMessages struct {
-	MsgWhiteListAssetLocker        MsgWhiteListAssetLocker        `json:"msg_white_list_asset_locker,omitempty"`
-	MsgWhitelistAppIdVaultInterest MsgWhitelistAppIdVaultInterest `json:"msg_whitelist_app_id_vault_interest,omitempty"`
-	MsgWhitelistAppIdLockerRewards MsgWhitelistAppIdLockerRewards `json:"msg_whitelist_app_id_locker_rewards,omitempty"`
-	MsgAddExtendedPairsVault       MsgAddExtendedPairsVault       `json:"msg_add_extended_pairs_vault,omitempty"`
-	MsgSetCollectorLookupTable     MsgSetCollectorLookupTable     `json:"msg_set_collector_lookup_table,omitempty"`
-	MsgSetAuctionMappingForApp     MsgSetAuctionMappingForApp     `json:"msg_set_auction_mapping_for_app,omitempty"`
+	MsgWhiteListAssetLocker        *MsgWhiteListAssetLocker        `json:"msg_white_list_asset_locker,omitempty"`
+	MsgWhitelistAppIdVaultInterest *MsgWhitelistAppIdVaultInterest `json:"msg_whitelist_app_id_vault_interest,omitempty"`
+	MsgWhitelistAppIdLockerRewards *MsgWhitelistAppIdLockerRewards `json:"msg_whitelist_app_id_locker_rewards,omitempty"`
+	MsgAddExtendedPairsVault       *MsgAddExtendedPairsVault       `json:"msg_add_extended_pairs_vault,omitempty"`
+	MsgSetCollectorLookupTable     *MsgSetCollectorLookupTable     `json:"msg_set_collector_lookup_table,omitempty"`
+	MsgSetAuctionMappingForApp     *MsgSetAuctionMappingForApp     `json:"msg_set_auction_mapping_for_app,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
