@@ -35,6 +35,7 @@ func GetQueryCmd() *cobra.Command {
 	return cmd
 }
 
+// QueryAllTokenMintedForAllProducts Queries the total token minted for all the apps on comdex
 func QueryAllTokenMintedForAllProducts() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "total-token-minted-all-products",
@@ -69,6 +70,7 @@ func QueryAllTokenMintedForAllProducts() *cobra.Command {
 	return cmd
 }
 
+// QueryTokenMintedByProduct queries token minted per application/product
 func QueryTokenMintedByProduct() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "token-minted-by-product [app_id]",
@@ -108,9 +110,10 @@ func QueryTokenMintedByProduct() *cobra.Command {
 	return cmd
 }
 
+// QueryTokenMintedByProductAndAsset queries token minted for an application/product and asset
 func QueryTokenMintedByProductAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "Token-minted-by-Product-asset [app_id] [asset_id]",
+		Use:   "token-minted-by-product-asset [app_id] [asset_id]",
 		Short: "Token minted by product and asset data",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {

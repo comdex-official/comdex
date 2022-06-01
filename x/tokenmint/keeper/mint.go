@@ -42,7 +42,12 @@ func (k *Keeper) GetTotalTokenMinted(ctx sdk.Context) (appTokenMintData []types.
 		iter  = sdk.KVStorePrefixIterator(store, types.TokenMintKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var totalMinted types.TokenMint
@@ -151,7 +156,7 @@ func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingId uint64, assetId 
 
 	}
 	if tokenData.CurrentSupply.Sub(amount).LTE(sdk.NewInt(0)) {
-		return types.ErrorBuringMakesSupplyLessThanZero
+		return types.ErrorBurningMakesSupplyLessThanZero
 
 	}
 	if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, amount)); err != nil {
