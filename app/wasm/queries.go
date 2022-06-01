@@ -2,6 +2,7 @@ package wasm
 
 import (
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	tokenMintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
@@ -14,6 +15,7 @@ type QueryPlugin struct {
 	lockerKeeper    *lockerkeeper.Keeper
 	tokenMintKeeper *tokenMintKeeper.Keeper
 	rewardsKeeper   *rewardsKeeper.Keeper
+	collectorKeeper *collectorkeeper.Keeper
 }
 
 func NewQueryPlugin(
@@ -21,6 +23,7 @@ func NewQueryPlugin(
 	lockerKeeper *lockerkeeper.Keeper,
 	tokenMintKeeper *tokenMintKeeper.Keeper,
 	rewardsKeeper *rewardsKeeper.Keeper,
+	collectorKeeper *collectorkeeper.Keeper,
 
 ) *QueryPlugin {
 	return &QueryPlugin{
@@ -28,6 +31,7 @@ func NewQueryPlugin(
 		lockerKeeper:    lockerKeeper,
 		tokenMintKeeper: tokenMintKeeper,
 		rewardsKeeper:   rewardsKeeper,
+		collectorKeeper: collectorKeeper,
 	}
 }
 
@@ -74,5 +78,30 @@ func (qp QueryPlugin) GetExternalLockerRewardsCheck(ctx sdk.Context, appMappingI
 
 func (qp QueryPlugin) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingId, assetId uint64) (found bool, err string) {
 	found, err = qp.rewardsKeeper.GetExternalVaultRewardsCheck(ctx, appMappingId, assetId)
+	return found, err
+}
+
+func (qp QueryPlugin) CollectorLookupTableQueryCheck(ctx sdk.Context, AppMappingId, CollectorAssetId, SecondaryAssetId uint64) (found bool, err string) {
+	found, err = qp.collectorKeeper.WasmSetCollectorLookupTableQuery(ctx, AppMappingId, CollectorAssetId, SecondaryAssetId)
+	return found, err
+}
+
+func (qp QueryPlugin) ExtendedPairsVaultRecordsQueryCheck(ctx sdk.Context, AppMappingId, PairId uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, DebtCeiling, DebtFloor uint64, PairName string) (found bool, err string) {
+	found, err = qp.assetKeeper.WasmAddExtendedPairsVaultRecordsQuery(ctx, AppMappingId, PairId, StabilityFee, ClosingFee, DrawDownFee, DebtCeiling, DebtFloor, PairName)
+	return found, err
+}
+
+func (qp QueryPlugin) AuctionMappingForAppQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
+	found, err = qp.collectorKeeper.WasmSetAuctionMappingForAppQuery(ctx, AppMappingId)
+	return found, err
+}
+
+func (qp QueryPlugin) WhiteListedAssetQueryCheck(ctx sdk.Context, AppMappingId, AssetId uint64) (found bool, err string) {
+	found, err = qp.lockerKeeper.WasmAddWhiteListedAssetQuery(ctx, AppMappingId, AssetId)
+	return found, err
+}
+
+func (qp QueryPlugin) UpdateLsrInPairsVaultQueryCheck(ctx sdk.Context, AppMappingId, ExtPairId uint64) (found bool, err string) {
+	found, err = qp.assetKeeper.WasmUpdateLsrInPairsVaultQuery(ctx, AppMappingId, ExtPairId)
 	return found, err
 }

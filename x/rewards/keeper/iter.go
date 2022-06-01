@@ -17,7 +17,7 @@ func (k Keeper) IterateLocker(ctx sdk.Context, appMappingId uint64, assetIds []u
 			return types.ErrAssetIdDoesNotExist
 		}
 		CollectorLookup, _ := k.GetCollectorLookupByAsset(ctx, appMappingId, assetIds[i])
-		for _, j := range CollectorLookup.AssetrateInfo {
+
 			LockerProductAssetMapping, _ := k.GetLockerLookupTable(ctx, appMappingId)
 			lockers := LockerProductAssetMapping.Lockers
 			for _, v := range lockers {
@@ -26,7 +26,7 @@ func (k Keeper) IterateLocker(ctx sdk.Context, appMappingId uint64, assetIds []u
 					for w := range lockerIds {
 						locker, _ := k.GetLocker(ctx, lockerIds[w])
 						balance := locker.NetBalance
-						rewards, err := k.CalculateRewards(ctx, balance, *j.LockerSavingRate)
+						rewards, err := k.CalculateRewards(ctx, balance, *CollectorLookup.LockerSavingRate)
 						if err != nil {
 							return nil
 						}
@@ -58,7 +58,6 @@ func (k Keeper) IterateLocker(ctx sdk.Context, appMappingId uint64, assetIds []u
 					}
 				}
 			}
-		}
 	}
 	return nil
 }
