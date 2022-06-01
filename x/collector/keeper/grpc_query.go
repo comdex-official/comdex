@@ -16,7 +16,7 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -49,7 +49,7 @@ func (q *queryServer) QueryCollectorLookupByProductAndAsset(c context.Context, r
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx           = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -60,7 +60,6 @@ func (q *queryServer) QueryCollectorLookupByProductAndAsset(c context.Context, r
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "Lookup table does not exist for product id %d", req.AppId)
 	}
-
 
 	return &types.QueryCollectorLookupByProductAndAssetResponse{
 		CollectorLookup: collectorLookupData,

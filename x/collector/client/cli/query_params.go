@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// CmdQueryParams Return params for the collector store
 func CmdQueryParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",
