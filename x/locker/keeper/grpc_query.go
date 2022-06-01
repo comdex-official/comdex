@@ -16,7 +16,7 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -150,7 +150,8 @@ func (q *queryServer) QueryTotalDepositByProductAssetID(c context.Context, reque
 	}, nil
 }
 
-func (q *queryServer) QueryLockerByProductbyOwner(c context.Context, request *types.QueryLockerByProductbyOwnerRequest) (*types.QueryLockerByProductbyOwnerResponse, error) {
+func (q *queryServer) QueryLockerByProductByOwner(c context.Context,
+	request *types.QueryLockerByProductByOwnerRequest) (*types.QueryLockerByProductByOwnerResponse, error) {
 
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -174,14 +175,14 @@ func (q *queryServer) QueryLockerByProductbyOwner(c context.Context, request *ty
 
 	var lockerInfos []types.Locker
 	for _, locker := range lockerLookupData.Lockers {
-			for _, lockerID := range locker.LockerIds {
-				locker1, _ := q.GetLocker(ctx, lockerID)
-				if request.Owner == locker1.Depositor {
-					lockerInfos = append(lockerInfos, locker1)
-				}
+		for _, lockerID := range locker.LockerIds {
+			locker1, _ := q.GetLocker(ctx, lockerID)
+			if request.Owner == locker1.Depositor {
+				lockerInfos = append(lockerInfos, locker1)
 			}
+		}
 	}
-	return &types.QueryLockerByProductbyOwnerResponse{
+	return &types.QueryLockerByProductByOwnerResponse{
 		LockerInfo: lockerInfos,
 	}, nil
 }
@@ -219,7 +220,7 @@ func (q *queryServer) QueryOwnerLockerByProductIDbyOwner(c context.Context, requ
 	}, nil
 }
 
-func (q *queryServer) QueryOwnerLockerOfAllProductbyOwner(c context.Context, request *types.QueryOwnerLockerOfAllProductbyOwnerRequest) (*types.QueryOwnerLockerOfAllProductbyOwnerResponse, error) {
+func (q *queryServer) QueryOwnerLockerOfAllProductByOwner(c context.Context, request *types.QueryOwnerLockerOfAllProductByOwnerRequest) (*types.QueryOwnerLockerOfAllProductByOwnerResponse, error) {
 
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -228,43 +229,42 @@ func (q *queryServer) QueryOwnerLockerOfAllProductbyOwner(c context.Context, req
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-	userlockerLookupData, _ := q.GetUserLockerAssetMapping(ctx, request.Owner)
+	userLockerLookupData, _ := q.GetUserLockerAssetMapping(ctx, request.Owner)
 
 	var lockerIds []string
-	for _, locker := range userlockerLookupData.LockerAppMapping {
+	for _, locker := range userLockerLookupData.LockerAppMapping {
 		for _, data := range locker.UserAssetLocker {
 			lockerIds = append(lockerIds, data.LockerId)
 		}
 	}
 
-	return &types.QueryOwnerLockerOfAllProductbyOwnerResponse{
+	return &types.QueryOwnerLockerOfAllProductByOwnerResponse{
 		LockerIds: lockerIds,
 	}, nil
 }
 
-
-func (q *queryServer) QueryOwnerTxDetailsLockerOfProductbyOwner(c context.Context, request *types.QueryOwnerTxDetailsLockerOfProductbyOwnerRequest) (*types.QueryOwnerTxDetailsLockerOfProductbyOwnerResponse, error) {
+func (q *queryServer) QueryOwnerTxDetailsLockerOfProductByOwner(c context.Context, request *types.QueryOwnerTxDetailsLockerOfProductByOwnerRequest) (*types.QueryOwnerTxDetailsLockerOfProductByOwnerResponse, error) {
 
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx        = sdk.UnwrapSDKContext(c)
 		userTxData []types.UserTxData
 	)
 	userlockerLookupData, _ := q.GetUserLockerAssetMapping(ctx, request.Owner)
 
-	if userlockerLookupData.Owner == request.Owner{
+	if userlockerLookupData.Owner == request.Owner {
 		for _, locker := range userlockerLookupData.LockerAppMapping {
-			if locker.AppMappingId == request.ProductId{
+			if locker.AppMappingId == request.ProductId {
 				for _, data := range locker.UserAssetLocker {
 					userTxData = append(userTxData, data.UserTxData...)
 				}
 			}
 		}
 	}
-	return &types.QueryOwnerTxDetailsLockerOfProductbyOwnerResponse{
+	return &types.QueryOwnerTxDetailsLockerOfProductByOwnerResponse{
 		UserTxData: userTxData,
 	}, nil
 }

@@ -187,7 +187,7 @@ func queryOwnerLockerByProductIDbyOwner() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
-} 
+}
 
 func queryLockerByProductbyOwner() *cobra.Command {
 	cmd := &cobra.Command{
@@ -208,11 +208,11 @@ func queryLockerByProductbyOwner() *cobra.Command {
 			owner := args[1]
 
 			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.QueryLockerByProductbyOwner(
+			res, err := queryClient.QueryLockerByProductByOwner(
 				context.Background(),
-				&types.QueryLockerByProductbyOwnerRequest{
+				&types.QueryLockerByProductByOwnerRequest{
 					ProductId: productId,
-					Owner: owner,
+					Owner:     owner,
 				},
 			)
 			if err != nil {
@@ -240,9 +240,9 @@ func queryOwnerLockerOfAllProductbyOwner() *cobra.Command {
 			owner := args[0]
 
 			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.QueryOwnerLockerOfAllProductbyOwner(
+			res, err := queryClient.QueryOwnerLockerOfAllProductByOwner(
 				context.Background(),
-				&types.QueryOwnerLockerOfAllProductbyOwnerRequest{
+				&types.QueryOwnerLockerOfAllProductByOwnerRequest{
 					Owner: owner,
 				},
 			)
@@ -316,13 +316,12 @@ func queryOwnerTxDetailsLockerOfProductbyOwner() *cobra.Command {
 				return err
 			}
 
-
 			owner := args[1]
 
 			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.QueryOwnerTxDetailsLockerOfProductbyOwner(
+			res, err := queryClient.QueryOwnerTxDetailsLockerOfProductByOwner(
 				context.Background(),
-				&types.QueryOwnerTxDetailsLockerOfProductbyOwnerRequest{
+				&types.QueryOwnerTxDetailsLockerOfProductByOwnerRequest{
 					ProductId: productId,
 					Owner:     owner,
 				},
