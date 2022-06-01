@@ -144,7 +144,19 @@ func (k *Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, app_id uint64)
 //////////////////////////////111111111111111111111
 
 func (k *Keeper) UpdateLsrInCollectorLookupTable(ctx sdk.Context, app_id,asset_id uint64, lsr sdk.Dec) error {
+	collectorLookup, found := k.GetCollectorLookupByAsset(ctx,app_id,asset_id)
+	if !found{
+		return types.ErrorDataDoesNotExists
+	}
+	collectorLookup.LockerSavingRate = &lsr
 
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.CollectorLookupTableMappingKey(app_id)
+		value = k.cdc.MustMarshal(&collectorLookup)
+	)
+
+	store.Set(key, value)
 	return nil
 }
 
