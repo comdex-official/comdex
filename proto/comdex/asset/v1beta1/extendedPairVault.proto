@@ -57,7 +57,7 @@ message ExtendedPairVault {
 
     string pair_name            = 14 [ (gogoproto.moretags) = "yaml:\"pair_name\"" ];
     bool asset_out_oracle_price = 15 [ (gogoproto.moretags) = "yaml:\"asset_out_oracle_price\"" ];
-    uint64 assset_out_price     = 16 [ 
-    (gogoproto.moretags) = "yaml:\"assset_out_price\"" ];
+    uint64 asset_out_price     = 16 [ 
+    (gogoproto.moretags) = "yaml:\"asset_out_price\"" ];
 
   }

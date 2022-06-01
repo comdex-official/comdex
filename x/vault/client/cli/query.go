@@ -43,6 +43,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryExtendedPairVaultMappingByAppAndExtendedPairId(),
 		QueryExtendedPairVaultMappingByOwnerAndApp(),
 		QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID(),
+		QueryVaultInfoByOwner(),
 		QueryTVLlockedByApp(),
 	)
 
@@ -179,6 +180,35 @@ func QueryVaultOfOwnerByExtendedPair() *cobra.Command {
 				Owner:          args[1],
 				ExtendedPairId: extendedPairid,
 				Pagination:     pagination,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryVaultInfoByOwner() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vaultInfoByOwner [owner]",
+		Short: "vaults list for an owner",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryVaultInfoByOwner(cmd.Context(), &types.QueryVaultInfoByOwnerRequest{
+				Owner: args[0],
 			})
 
 			if err != nil {

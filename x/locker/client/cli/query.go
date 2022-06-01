@@ -187,6 +187,43 @@ func queryOwnerLockerByProductIDbyOwner() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
+} 
+
+func queryLockerByProductbyOwner() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "locker-by-product-by-owner [product_id] [owner]",
+		Short: "locker by product by owner",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			owner := args[1]
+
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryLockerByProductbyOwner(
+				context.Background(),
+				&types.QueryLockerByProductbyOwnerRequest{
+					ProductId: productId,
+					Owner: owner,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func queryOwnerLockerOfAllProductbyOwner() *cobra.Command {
@@ -249,6 +286,44 @@ func queryOwnerLockerByProductToAssetIDbyOwner() *cobra.Command {
 				&types.QueryOwnerLockerByProductToAssetIDbyOwnerRequest{
 					ProductId: productId,
 					AssetId:   assetId,
+					Owner:     owner,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryOwnerTxDetailsLockerOfProductbyOwner() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "owner-tx-details-by-product-to-owner [product_id] [owner]",
+		Short: "owner locker tx details by product to owner",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+
+			owner := args[1]
+
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryOwnerTxDetailsLockerOfProductbyOwner(
+				context.Background(),
+				&types.QueryOwnerTxDetailsLockerOfProductbyOwnerRequest{
+					ProductId: productId,
 					Owner:     owner,
 				},
 			)

@@ -103,6 +103,54 @@ func (q *queryServer) QueryVaultInfo(c context.Context, req *types.QueryVaultInf
 	}, nil
 }
 
+func (q *queryServer) QueryVaultInfoByOwner(c context.Context, req *types.QueryVaultInfoByOwnerRequest) (*types.QueryVaultInfoByOwnerResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+		vaultsIds []string
+		vaultsInfo []types.VaultInfo
+	)
+
+	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "data does not exists for user addesss %s", req.Owner)
+	}
+	for _, data := range userVaultAssetData.UserVaultApp {
+		for _, inData := range data.UserExtendedPairVault {
+			vaultsIds = append(vaultsIds, inData.VaultId)
+		}
+	}
+
+	for _,id := range vaultsIds{
+		vault, found := q.GetVault(ctx, id)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "vault does not exist for id %d", vault.Id)
+		}
+	
+		collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
+		if err != nil {
+			return nil, err
+		}
+		vaults := types.VaultInfo{
+			Id:                     vault.Id,
+			PairID:                 vault.ExtendedPairVaultID,
+			Owner:                  vault.Owner,
+			Collateral:             vault.AmountIn,
+			Debt:                   vault.AmountOut,
+			CollateralizationRatio: collateralizationRatio,
+		};
+		vaultsInfo = append(vaultsInfo, vaults)
+
+	}
+	
+	return &types.QueryVaultInfoByOwnerResponse{
+		VaultsInfo: vaultsInfo,
+	}, nil
+}
+
 func (q *queryServer) QueryAllVaultsByAppAndExtendedPair(c context.Context, req *types.QueryAllVaultsByAppAndExtendedPairRequest) (*types.QueryAllVaultsByAppAndExtendedPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -581,7 +629,7 @@ func (q *queryServer) QueryTVLlockedByApp(c context.Context, req *types.QueryTVL
 	}
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		tvlData []*types.TvlLockedDataMap
+		tvlData []types.TvlLockedDataMap
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -606,7 +654,7 @@ func (q *queryServer) QueryTVLlockedByApp(c context.Context, req *types.QueryTVL
 		tvl.AssetDenom= denom.Denom
 		tvl.CollateralLockedAmount = data.CollateralLockedAmount
 
-		tvlData = append(tvlData, &tvl)
+		tvlData = append(tvlData, tvl)
 	}
 
 	return &types.QueryTVLlockedByAppResponse{
