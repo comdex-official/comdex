@@ -70,6 +70,8 @@ message QueryVaultInfoByOwnerResponse {
     (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
     (gogoproto.nullable)   = false
   ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
 message QueryAllVaultsRequest {

@@ -73,13 +73,13 @@ message AssetToLockerMapping{
   uint64 asset_id = 1;
   string locker_id =2 [
     (gogoproto.moretags) = "yaml:\"locker_id\""];
-  repeated UserTxData UserTxData =3  [
-    (gogoproto.moretags) = "yaml:\"UserTxData\"",
+  repeated UserTxData user_tx_data =3  [
+    (gogoproto.moretags) = "yaml:\"user_tx_data\"",
     (gogoproto.nullable)   = false ];
   }
 
 message UserTxData{
-  string txType =1 [(gogoproto.moretags) = "yaml:\"txType\""];
+  string tx_type =1 [(gogoproto.moretags) = "yaml:\"tx_type\""];
   string amount = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -134,7 +134,7 @@ message LockerProductAssetMapping {
 message LockedDepositedAmountDataMap
 {
   uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
-  string DepositedAmount= 2 [ (gogoproto.moretags) = "yaml:\"DepositedAmount\"",
+  string deposited_amount= 2 [ (gogoproto.moretags) = "yaml:\"deposited_amount\"",
          (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
          (gogoproto.nullable)   = false];
 }
