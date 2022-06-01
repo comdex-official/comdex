@@ -74,8 +74,8 @@ type MsgUpdateLsrInPairsVault struct {
 	LiquidationPenalty sdk.Dec `json:"liquidation_penalty"`
 	DrawDownFee        sdk.Dec `json:"draw_down_fee"`
 	MinCr              sdk.Dec `json:"min_cr"`
-	DebtCeiling        sdk.Int `json:"debt_ceiling"`
-	DebtFloor          sdk.Int `json:"debt_floor"`
+	DebtCeiling        uint64 `json:"debt_ceiling"`
+	DebtFloor          uint64 `json:"debt_floor"`
 }
 
 type MsgUpdateLsrInCollectorLookupTable struct {
