@@ -3,20 +3,21 @@ package bindings
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 type ComdexQuery struct {
-	AppData                        *AppData                        `json:"get_app,omitempty"`
-	AssetData                      *AssetData                      `json:"get_asset_data,omitempty"`
-	State                          *State                          `json:"state,omitempty"`
-	MintedToken                    *MintedToken                    `json:"total_supply,omitempty"`
-	RemoveWhiteListAssetLocker     *RemoveWhiteListAssetLocker     `json:"remove_white_list_asset,omitempty"`
-	WhitelistAppIdVaultInterest    *WhitelistAppIdVaultInterest    `json:"whitelist_app_id_vault_interest,omitempty"`
-	WhitelistAppIdLockerRewards    *WhitelistAppIdLockerRewards    `json:"whitelist_app_id_locker_rewards,omitempty"`
-	ExternalLockerRewards          *ExternalLockerRewards          `json:"external_locker_rewards,omitempty"`
-	ExternalVaultRewards           *ExternalVaultRewards           `json:"external_vault_rewards,omitempty"`
-	CollectorLookupTableQuery      *CollectorLookupTableQuery      `json:"collector_lookup_table_query,omitempty"`
-	ExtendedPairsVaultRecordsQuery *ExtendedPairsVaultRecordsQuery `json:"extended_pairs_vault_records_query,omitempty"`
-	AuctionMappingForAppQuery      *AuctionMappingForAppQuery      `json:"auction_mapping_for_app_query,omitempty"`
-	WhiteListedAssetQuery          *WhiteListedAssetQuery          `json:"white_listed_asset_query,omitempty"`
-	UpdateLsrInPairsVaultQuery     *UpdateLsrInPairsVaultQuery     `json:"update_lsr_in_pairs_vault_query,omitempty"`
+	AppData                              *AppData                              `json:"get_app,omitempty"`
+	AssetData                            *AssetData                            `json:"get_asset_data,omitempty"`
+	State                                *State                                `json:"state,omitempty"`
+	MintedToken                          *MintedToken                          `json:"total_supply,omitempty"`
+	RemoveWhiteListAssetLocker           *RemoveWhiteListAssetLocker           `json:"remove_white_list_asset,omitempty"`
+	WhitelistAppIdVaultInterest          *WhitelistAppIdVaultInterest          `json:"whitelist_app_id_vault_interest,omitempty"`
+	WhitelistAppIdLockerRewards          *WhitelistAppIdLockerRewards          `json:"whitelist_app_id_locker_rewards,omitempty"`
+	ExternalLockerRewards                *ExternalLockerRewards                `json:"external_locker_rewards,omitempty"`
+	ExternalVaultRewards                 *ExternalVaultRewards                 `json:"external_vault_rewards,omitempty"`
+	CollectorLookupTableQuery            *CollectorLookupTableQuery            `json:"collector_lookup_table_query,omitempty"`
+	ExtendedPairsVaultRecordsQuery       *ExtendedPairsVaultRecordsQuery       `json:"extended_pairs_vault_records_query,omitempty"`
+	AuctionMappingForAppQuery            *AuctionMappingForAppQuery            `json:"auction_mapping_for_app_query,omitempty"`
+	WhiteListedAssetQuery                *WhiteListedAssetQuery                `json:"white_listed_asset_query,omitempty"`
+	UpdateLsrInPairsVaultQuery           *UpdateLsrInPairsVaultQuery           `json:"update_lsr_in_pairs_vault_query,omitempty"`
+	UpdateLsrInCollectorLookupTableQuery *UpdateLsrInCollectorLookupTableQuery `json:"update_lsr_in_collector_lookup_table_query,omitempty"`
 }
 
 type AppData struct {
@@ -158,6 +159,16 @@ type UpdateLsrInPairsVaultQuery struct {
 }
 
 type UpdateLsrInPairsVaultQueryResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type UpdateLsrInCollectorLookupTableQuery struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+	AssetId      uint64 `json:"asset_id"`
+}
+
+type UpdateLsrInCollectorLookupTableQueryResponse struct {
 	Found bool   `json:"found"`
 	Err   string `json:"err"`
 }

@@ -268,7 +268,8 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, AppMappi
 	return true, ""
 }
 
-func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id uint64, stab_fee sdk.Dec) error {
+func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id uint64, liq_ratio, stab_fee, close_fee, penalty, 
+	draw_down_fee, min_cr sdk.Dec, debtCeiling, debtFloor sdk.Int) error {
 
 	var ExtPairVaultData types.ExtendedPairVault
 	pairVaults, found := k.GetPairsVaults(ctx)
@@ -282,16 +283,16 @@ func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id u
 			ExtPairVaultData.Id = data.Id
 			ExtPairVaultData.PairId = data.PairId
 			ExtPairVaultData.AppMappingId = data.AppMappingId
-			ExtPairVaultData.LiquidationRatio = data.LiquidationRatio
+			ExtPairVaultData.LiquidationRatio = liq_ratio
 			ExtPairVaultData.StabilityFee = stab_fee
-			ExtPairVaultData.ClosingFee = data.ClosingFee
-			ExtPairVaultData.LiquidationPenalty = data.LiquidationPenalty
-			ExtPairVaultData.DrawDownFee = data.DrawDownFee
+			ExtPairVaultData.ClosingFee = close_fee
+			ExtPairVaultData.LiquidationPenalty = penalty
+			ExtPairVaultData.DrawDownFee = draw_down_fee
 			ExtPairVaultData.IsVaultActive = data.IsVaultActive
-			ExtPairVaultData.DebtCeiling = data.DebtCeiling
-			ExtPairVaultData.DebtFloor = data.DebtFloor
+			ExtPairVaultData.DebtCeiling = debtCeiling
+			ExtPairVaultData.DebtFloor = debtFloor
 			ExtPairVaultData.IsPsmPair = data.IsPsmPair
-			ExtPairVaultData.MinCr = data.MinCr
+			ExtPairVaultData.MinCr = min_cr
 			ExtPairVaultData.PairName = data.PairName
 			ExtPairVaultData.AssetOutOraclePrice = data.AssetOutOraclePrice
 			ExtPairVaultData.AsssetOutPrice = data.AsssetOutPrice

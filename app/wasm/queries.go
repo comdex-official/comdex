@@ -105,3 +105,8 @@ func (qp QueryPlugin) UpdateLsrInPairsVaultQueryCheck(ctx sdk.Context, AppMappin
 	found, err = qp.assetKeeper.WasmUpdateLsrInPairsVaultQuery(ctx, AppMappingId, ExtPairId)
 	return found, err
 }
+
+func (qp QueryPlugin) UpdateLsrInCollectorLookupTableQueryCheck(ctx sdk.Context, AppMappingId, AssetId uint64) (found bool, err string) {
+	found, err = qp.collectorKeeper.WasmUpdateLsrInCollectorLookupTableQuery(ctx, AppMappingId, AssetId)
+	return found, err
+}
