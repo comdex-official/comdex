@@ -27,7 +27,7 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServer {
 func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLockerRequest) (*types.MsgCreateLockerResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
-	asset, found := k.GetAsset(ctx, msg.AssetID)
+	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -102,13 +102,20 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 				var user_mapping_data types.UserLockerAssetMapping
 				var user_app_data types.LockerToAppMapping
 				var user_asset_data types.AssetToLockerMapping
+				var user_tx_data types.UserTxData
 
 				user_asset_data.AssetId = asset.Id
 				user_asset_data.LockerId = userLocker.LockerId
+				user_tx_data.TxType = "Create"
+				user_tx_data.Amount = msg.Amount
+				user_tx_data.Balance = msg.Amount
+				user_tx_data.TxTime = time.Now()
+				user_asset_data.UserTxData = append(user_asset_data.UserTxData, user_tx_data)
+
 				user_app_data.AppMappingId = app_mapping.Id
-				user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, &user_asset_data)
+				user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, user_asset_data)
 				user_mapping_data.Owner = msg.Depositor
-				user_mapping_data.LockerAppMapping = append(user_mapping_data.LockerAppMapping, &user_app_data)
+				user_mapping_data.LockerAppMapping = append(user_mapping_data.LockerAppMapping, user_app_data)
 
 				k.SetUserLockerAssetMapping(ctx, user_mapping_data)
 			} else {
@@ -120,13 +127,19 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 					//User has the app_mapping added
 					//So only need to add the locker id with asset
 					var user_asset_data types.AssetToLockerMapping
+					var user_tx_data types.UserTxData
 					user_asset_data.AssetId = asset.Id
 					user_asset_data.LockerId = userLocker.LockerId
+					user_tx_data.TxType = "Create"
+					user_tx_data.Amount = msg.Amount
+					user_tx_data.Balance = msg.Amount
+					user_tx_data.TxTime = time.Now()
+					user_asset_data.UserTxData = append(user_asset_data.UserTxData, user_tx_data)
 
 					for _, appData := range user_locker_asset_mapping_data.LockerAppMapping {
 						if appData.AppMappingId == app_mapping.Id {
 
-							appData.UserAssetLocker = append(appData.UserAssetLocker, &user_asset_data)
+							appData.UserAssetLocker = append(appData.UserAssetLocker, user_asset_data)
 						}
 
 					}
@@ -136,12 +149,19 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 					//Will need to create new app and add it to the user
 					var user_asset_data types.AssetToLockerMapping
 					var user_app_data types.LockerToAppMapping
+					var user_tx_data types.UserTxData
 
 					user_asset_data.AssetId = asset.Id
 					user_asset_data.LockerId = userLocker.LockerId
 					user_app_data.AppMappingId = app_mapping.Id
-					user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, &user_asset_data)
-					user_locker_asset_mapping_data.LockerAppMapping = append(user_locker_asset_mapping_data.LockerAppMapping, &user_app_data)
+					user_tx_data.TxType = "Create"
+					user_tx_data.Amount = msg.Amount
+					user_tx_data.Balance = msg.Amount
+					user_tx_data.TxTime = time.Now()
+					user_asset_data.UserTxData = append(user_asset_data.UserTxData, user_tx_data)
+
+					user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, user_asset_data)
+					user_locker_asset_mapping_data.LockerAppMapping = append(user_locker_asset_mapping_data.LockerAppMapping, user_app_data)
 					k.SetUserLockerAssetMapping(ctx, user_locker_asset_mapping_data)
 
 				}
@@ -176,7 +196,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	//Update Locker Data
 
 	ctx := sdk.UnwrapSDKContext(c)
-	asset, found := k.GetAsset(ctx, msg.AssetID)
+	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -185,7 +205,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
-	lockerData, found := k.GetLocker(ctx, msg.LockerID)
+	lockerData, found := k.GetLocker(ctx, msg.LockerId)
 
 	if !found {
 		return nil, types.ErrorLockerDoesNotExists
@@ -225,6 +245,41 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	//Update  Amount in Locker Mapping
 	k.UpdateAmountLockerMapping(ctx, lookup_table_data, asset.Id, msg.Amount, true)
 
+	user_locker_asset_mapping_data, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor)
+	user_locker_asset_mapping_data.Owner = msg.Depositor
+
+	var lockerAppMap types.LockerToAppMapping
+	
+	
+	var user_asset_data types.AssetToLockerMapping
+	var user_tx_data types.UserTxData
+	user_asset_data.AssetId = asset.Id
+	user_asset_data.LockerId = lockerData.LockerId
+
+	for _, data:= range user_locker_asset_mapping_data.LockerAppMapping{
+		if data.AppMappingId == msg.AppMappingId{
+			lockerAppMap.AppMappingId=msg.AppMappingId
+			for _, inData := range data.UserAssetLocker{
+				if inData.AssetId == msg.AssetId{
+					user_asset_data.AssetId = msg.AssetId
+					for _, innData := range inData.UserTxData{
+						user_tx_data.TxType = "Deposit"
+						user_tx_data.Amount = msg.Amount
+						user_tx_data.Balance = innData.Balance.Add(msg.Amount)
+						user_tx_data.TxTime = time.Now()
+						user_asset_data.UserTxData = append(user_asset_data.UserTxData, user_tx_data)
+					}
+				}
+			}
+		}
+	}
+	
+	lockerAppMap.UserAssetLocker = append(lockerAppMap.UserAssetLocker,user_asset_data)
+	user_locker_asset_mapping_data.LockerAppMapping = append(user_locker_asset_mapping_data.LockerAppMapping, lockerAppMap)
+	
+	
+	k.SetUserLockerAssetMapping(ctx, user_locker_asset_mapping_data)
+
 	return &types.MsgDepositAssetResponse{}, nil
 
 }
@@ -233,7 +288,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
-	asset, found := k.GetAsset(ctx, msg.AssetID)
+	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -242,7 +297,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
-	lockerData, found := k.GetLocker(ctx, msg.LockerID)
+	lockerData, found := k.GetLocker(ctx, msg.LockerId)
 
 	if !found {
 		return nil, types.ErrorLockerDoesNotExists
@@ -287,6 +342,41 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 	//Update  Amount in Locker Mapping
 	k.UpdateAmountLockerMapping(ctx, lookup_table_data, asset.Id, msg.Amount, false)
 
+	user_locker_asset_mapping_data, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor)
+	user_locker_asset_mapping_data.Owner = msg.Depositor
+
+	var lockerAppMap types.LockerToAppMapping
+	
+	
+	var user_asset_data types.AssetToLockerMapping
+	var user_tx_data types.UserTxData
+	user_asset_data.AssetId = asset.Id
+	user_asset_data.LockerId = lockerData.LockerId
+
+	for _, data:= range user_locker_asset_mapping_data.LockerAppMapping{
+		if data.AppMappingId == msg.AppMappingId{
+			lockerAppMap.AppMappingId=msg.AppMappingId
+			for _, inData := range data.UserAssetLocker{
+				if inData.AssetId == msg.AssetId{
+					user_asset_data.AssetId = msg.AssetId
+					for _, innData := range inData.UserTxData{
+						user_tx_data.TxType = "Withdraw"
+						user_tx_data.Amount = msg.Amount
+						user_tx_data.Balance = innData.Balance.Sub(msg.Amount)
+						user_tx_data.TxTime = time.Now()
+						user_asset_data.UserTxData = append(user_asset_data.UserTxData, user_tx_data)
+					}
+				}
+			}
+		}
+	}
+	
+	lockerAppMap.UserAssetLocker = append(lockerAppMap.UserAssetLocker,user_asset_data)
+	user_locker_asset_mapping_data.LockerAppMapping = append(user_locker_asset_mapping_data.LockerAppMapping, lockerAppMap)
+	
+	
+	k.SetUserLockerAssetMapping(ctx, user_locker_asset_mapping_data)
+
 	return &types.MsgWithdrawAssetResponse{}, nil
 
 }
@@ -297,7 +387,7 @@ func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddW
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
-	asset, found := k.GetAsset(ctx, msg.AssetID)
+	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
@@ -326,7 +416,7 @@ func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddW
 	} else {
 
 		// Check if the asset from msg exists or not ,
-		found := k.CheckLockerProductAssetMapping(ctx, msg.AssetID, locker_product_asset_mapping)
+		found := k.CheckLockerProductAssetMapping(ctx, msg.AssetId, locker_product_asset_mapping)
 
 		if found {
 

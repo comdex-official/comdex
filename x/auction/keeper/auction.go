@@ -38,7 +38,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartAuction(ctx sdk.Context, ap
 		return
 	}
 	//traverse this to access appId , collector asset id , surplus threshhold , debt threshhold
-	for _, collector := range assetsCollectorDataUnderAppId.AssetrateInfo {
+	for _, collector := range assetsCollectorDataUnderAppId.AssetRateInfo {
 		if collector.CollectorAssetId == assetId {
 			//collectorLookupTable has surplusThreshhold for all assets
 
@@ -60,7 +60,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartAuction(ctx sdk.Context, ap
 							return auctiontypes.NoAuction, nil
 						}
 						//Mint the tokens when collector module sends tokens to user
-						err := k.StartDebtAuction(ctx, outflowToken, inflowToken, *collector.BidFactor, appId, assetId, assetInId, assetOutId)
+						err := k.StartDebtAuction(ctx, outflowToken, inflowToken, collector.BidFactor, appId, assetId, assetInId, assetOutId)
 						if err != nil {
 							break
 						}
@@ -80,7 +80,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartAuction(ctx sdk.Context, ap
 						if err != nil {
 							return status, err
 						}
-						err = k.StartSurplusAuction(ctx, outflowToken, inflowToken, *collector.BidFactor, appId, assetId, assetInId, assetOutId)
+						err = k.StartSurplusAuction(ctx, outflowToken, inflowToken, collector.BidFactor, appId, assetId, assetInId, assetOutId)
 						if err != nil {
 							return status, err
 						}
@@ -109,7 +109,7 @@ func (k Keeper) CreateSurplusAndDebtAuctions(ctx sdk.Context) error {
 		for _, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
 			if assetToAuction.IsSurplusAuction || assetToAuction.IsDebtAuction {
 				if !assetToAuction.IsAuctionActive {
-					status, err := k.checkStatusOfNetFeesCollectedAndStartAuction(ctx, appId.Id, assetToAuction.AssetId, *assetToAuction)
+					status, err := k.checkStatusOfNetFeesCollectedAndStartAuction(ctx, appId.Id, assetToAuction.AssetId, assetToAuction)
 					if err != nil {
 						return err
 					}
@@ -401,7 +401,7 @@ func (k Keeper) StartDutchAuction(
 	liquidationPenalty sdk.Dec,
 ) error {
 	fmt.Println("passed params")
-	fmt.Println(outFlowToken,inFlowToken,appId,assetInId,assetOutId,lockedVaultId,lockedVaultOwner,liquidationPenalty)
+	fmt.Println(outFlowToken, inFlowToken, appId, assetInId, assetOutId, lockedVaultId, lockedVaultOwner, liquidationPenalty)
 	var (
 		inFlowTokenPrice  uint64
 		outFlowTokenPrice uint64
@@ -420,8 +420,8 @@ func (k Keeper) StartDutchAuction(
 		if !found2 {
 			return auctiontypes.ErrorPrices
 		}
-		fmt.Println("inflowPrice",inFlowTokenPrice)
-		fmt.Println("outflowPrice",outFlowTokenPrice)
+		fmt.Println("inflowPrice", inFlowTokenPrice)
+		fmt.Println("outflowPrice", outFlowTokenPrice)
 	} else {
 		outFlowTokenPrice = uint64(2)
 		inFlowTokenPrice = uint64(10)

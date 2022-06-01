@@ -23,7 +23,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				extPair, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 
 				liqRatio := extPair.LiquidationRatio
-				totalOut := vault.AmountOut.Add(*vault.InterestAccumulated).Add(*vault.ClosingFeeAccumulated)
+				totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
 				collateralitzationRatio, err := k.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 				if err != nil {
 					continue
@@ -56,13 +56,13 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 		Owner:                        vault.Owner,
 		AmountIn:                     vault.AmountIn,
 		AmountOut:                    vault.AmountOut,
-		UpdatedAmountOut:             vault.AmountOut.Add(*vault.InterestAccumulated).Add(*vault.ClosingFeeAccumulated),
+		UpdatedAmountOut:             vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated),
 		Initiator:                    types.ModuleName,
 		IsAuctionComplete:            false,
 		IsAuctionInProgress:          false,
 		CrAtLiquidation:              collateralizationRatio,
 		CurrentCollaterlisationRatio: collateralizationRatio,
-		CollateralToBeAuctioned:      nil,
+		CollateralToBeAuctioned:      sdk.ZeroDec(),
 		LiquidationTimestamp:         time.Now(),
 		SellOffHistory:               nil,
 	}
@@ -165,8 +165,8 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					deductionPercentage, _ := sdk.NewDecFromStr("1.0")
 					auctionDeduction := (deductionPercentage).Sub(ExtPair.LiquidationPenalty)
 					multiplicationFactor := auctionDeduction.Mul(ExtPair.MinCr)
-					asssetOutMultiplicationFactor := totalOut.Mul(ExtPair.MinCr)
-					assetsDifference := totalIn.Sub(asssetOutMultiplicationFactor)
+					assetOutMultiplicationFactor := totalOut.Mul(ExtPair.MinCr)
+					assetsDifference := totalIn.Sub(assetOutMultiplicationFactor)
 					//Substracting again from 1 unit to find the selloff multiplication factor
 					selloffMultiplicationFactor := deductionPercentage.Sub(multiplicationFactor)
 					selloffAmount := assetsDifference.Quo(selloffMultiplicationFactor)
@@ -181,7 +181,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					}
 					updatedLockedVault := lockedVault
 					updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
-					updatedLockedVault.CollateralToBeAuctioned = &collateralToBeAuctioned
+					updatedLockedVault.CollateralToBeAuctioned = collateralToBeAuctioned
 					k.SetLockedVault(ctx, *updatedLockedVault)
 				}
 			}

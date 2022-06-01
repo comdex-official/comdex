@@ -28,11 +28,11 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdQueryParams(),
 		QueryCollectorLookupByProduct(),
 		QueryCollectorLookupByProductAndAsset())
-	// this line is used by starport scaffolding # 1
 
 	return cmd
 }
 
+// QueryCollectorLookupByProduct query collector store by product
 func QueryCollectorLookupByProduct() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "collector-lookup-by-product [app-id]",
@@ -66,6 +66,7 @@ func QueryCollectorLookupByProduct() *cobra.Command {
 	return cmd
 }
 
+// QueryCollectorLookupByProductAndAsset query collector store by product and asset
 func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "collector-lookup-by-product-and-asset [app-id] [asset-id]",

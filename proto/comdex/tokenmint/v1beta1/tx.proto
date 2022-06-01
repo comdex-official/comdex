@@ -17,7 +17,6 @@ message MsgMintNewTokensRequest {
     uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\"",
     (gogoproto.customname) = "AppMappingId"];
     uint64 asset_id = 3 [
-      (gogoproto.customname) = "AssetId",
       (gogoproto.moretags)   = "yaml:\"asset_id\""
     ];
 }

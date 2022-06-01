@@ -233,7 +233,7 @@ func (k *Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
 // else user locker id  exists use that to create this struct and set it.
 
 func QueryState(addr, denom, blockheight, target string) (*sdk.Coin, error) {
-	
+
 	myAddress, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
 		return nil, err
@@ -266,4 +266,24 @@ func QueryState(addr, denom, blockheight, target string) (*sdk.Coin, error) {
 	)
 
 	return bankRes.GetBalance(), nil
+}
+
+func (k *Keeper) WasmAddWhiteListedAssetQuery(ctx sdk.Context, AppMappingId, AssetId uint64) (bool, string) {
+	_, found := k.GetApp(ctx, AppMappingId)
+	if !found {
+		return false, types.ErrorAppMappingDoesNotExist.Error()
+	}
+	_, found = k.GetAsset(ctx, AssetId)
+	if !found {
+		return false, types.ErrorAssetDoesNotExist.Error()
+	}
+	locker_product_asset_mapping, found := k.GetLockerProductAssetMapping(ctx, AppMappingId)
+
+	if found {
+		found := k.CheckLockerProductAssetMapping(ctx, AssetId, locker_product_asset_mapping)
+		if found {
+			return false, types.ErrorLockerProductAssetMappingExists.Error()
+		}
+	}
+	return true, ""
 }

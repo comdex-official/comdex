@@ -15,14 +15,13 @@ var (
 	_ sdk.Msg = (*MsgCreateStableMintRequest)(nil)
 	_ sdk.Msg = (*MsgDepositStableMintRequest)(nil)
 	_ sdk.Msg = (*MsgWithdrawStableMintRequest)(nil)
-
 )
 
 func NewMsgCreateRequest(from sdk.AccAddress, app_mapping_id uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) *MsgCreateRequest {
 	return &MsgCreateRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultID: extendedPairVaultID,
+		ExtendedPairVaultId: extendedPairVaultID,
 		AmountIn:            amountIn,
 		AmountOut:           amountOut,
 	}
@@ -82,8 +81,8 @@ func NewMsgDepositRequest(from sdk.AccAddress, app_mapping_id uint64, extended_p
 	return &MsgDepositRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultID: extended_pair_vault_id,
-		UserVaultID:         userVaultid,
+		ExtendedPairVaultId: extended_pair_vault_id,
+		UserVaultId:         userVaultid,
 		Amount:              amount,
 	}
 }
@@ -103,7 +102,7 @@ func (m *MsgDepositRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.UserVaultID) == 0 {
+	if len(m.UserVaultId) == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 	if m.Amount.IsNil() {
@@ -136,8 +135,8 @@ func NewMsgWithdrawRequest(from sdk.AccAddress, app_mapping_id uint64, extended_
 	return &MsgWithdrawRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultID: extended_pair_vault_id,
-		UserVaultID:         userVaultid,
+		ExtendedPairVaultId: extended_pair_vault_id,
+		UserVaultId:         userVaultid,
 		Amount:              amount,
 	}
 }
@@ -157,7 +156,7 @@ func (m *MsgWithdrawRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.UserVaultID) == 0 {
+	if len(m.UserVaultId) == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
 	}
 	if m.Amount.IsNil() {
@@ -190,8 +189,8 @@ func NewMsgDrawRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair
 	return &MsgDrawRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultID: extended_pair_vault_id,
-		UserVaultID:         userVaultid,
+		ExtendedPairVaultId: extended_pair_vault_id,
+		UserVaultId:         userVaultid,
 		Amount:              amount,
 	}
 }
@@ -211,7 +210,7 @@ func (m *MsgDrawRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.UserVaultID) == 0 {
+	if len(m.UserVaultId) == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 	if m.Amount.IsNil() {
@@ -244,8 +243,8 @@ func NewMsgRepayRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pai
 	return &MsgRepayRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultID: extended_pair_vault_id,
-		UserVaultID:         userVaultid,
+		ExtendedPairVaultId: extended_pair_vault_id,
+		UserVaultId:         userVaultid,
 		Amount:              amount,
 	}
 }
@@ -265,7 +264,7 @@ func (m *MsgRepayRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.UserVaultID) == 0 {
+	if len(m.UserVaultId) == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 	if m.Amount.IsNil() {
@@ -298,8 +297,8 @@ func NewMsgLiquidateRequest(from sdk.AccAddress, app_mapping_id uint64, extended
 	return &MsgCloseRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultID: extended_pair_vault_id,
-		UserVaultID:         userVaultid,
+		ExtendedPairVaultId: extended_pair_vault_id,
+		UserVaultId:         userVaultid,
 	}
 }
 
@@ -318,7 +317,7 @@ func (m *MsgCloseRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.UserVaultID) == 0 {
+	if len(m.UserVaultId) == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 
@@ -338,14 +337,12 @@ func (m *MsgCloseRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-
 func NewMsgCreateStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int) *MsgCreateStableMintRequest {
 	return &MsgCreateStableMintRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultID: extended_pair_vault_id,
-		Amount: amount,
-		
+		ExtendedPairVaultId: extended_pair_vault_id,
+		Amount:              amount,
 	}
 }
 
@@ -374,8 +371,6 @@ func (m *MsgCreateStableMintRequest) ValidateBasic() error {
 		return errors.Wrap(ErrorInvalidAmount, "amount cannot be zero")
 	}
 
-	
-
 	return nil
 }
 
@@ -396,9 +391,8 @@ func NewMsgDepositStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, 
 	return &MsgDepositStableMintRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultID: extended_pair_vault_id,
-		Amount: amount,
-		
+		ExtendedPairVaultId: extended_pair_vault_id,
+		Amount:              amount,
 	}
 }
 
@@ -427,8 +421,6 @@ func (m *MsgDepositStableMintRequest) ValidateBasic() error {
 		return errors.Wrap(ErrorInvalidAmount, "amount cannot be zero")
 	}
 
-	
-
 	return nil
 }
 
@@ -445,14 +437,12 @@ func (m *MsgDepositStableMintRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-
 func NewMsgWithdrawStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int) *MsgWithdrawStableMintRequest {
 	return &MsgWithdrawStableMintRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultID: extended_pair_vault_id,
-		Amount: amount,
-		
+		ExtendedPairVaultId: extended_pair_vault_id,
+		Amount:              amount,
 	}
 }
 
@@ -480,8 +470,6 @@ func (m *MsgWithdrawStableMintRequest) ValidateBasic() error {
 	if m.Amount.IsZero() {
 		return errors.Wrap(ErrorInvalidAmount, "amount cannot be zero")
 	}
-
-	
 
 	return nil
 }

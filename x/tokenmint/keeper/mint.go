@@ -42,7 +42,12 @@ func (k *Keeper) GetTotalTokenMinted(ctx sdk.Context) (appTokenMintData []types.
 		iter  = sdk.KVStorePrefixIterator(store, types.TokenMintKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var totalMinted types.TokenMint
@@ -110,7 +115,12 @@ func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, asset
 	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, amount)); err != nil {
 		return err
 	}
-	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(address), sdk.NewCoin(assetData.Denom, amount)); err != nil {
+	userAddress, err := sdk.AccAddressFromBech32(address)
+
+	if err != nil {
+		return err
+	}
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, amount)); err != nil {
 		return err
 	}
 	k.UpdateAssetDataInTokenMintByApp(ctx, appMappingId, assetId, true, amount)
@@ -146,7 +156,7 @@ func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingId uint64, assetId 
 
 	}
 	if tokenData.CurrentSupply.Sub(amount).LTE(sdk.NewInt(0)) {
-		return types.ErrorBuringMakesSupplyLessThanZero
+		return types.ErrorBurningMakesSupplyLessThanZero
 
 	}
 	if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, amount)); err != nil {

@@ -17,45 +17,44 @@ func (k Keeper) IterateLocker(ctx sdk.Context, appMappingId uint64, assetIds []u
 			return types.ErrAssetIdDoesNotExist
 		}
 		CollectorLookup, _ := k.GetCollectorLookupByAsset(ctx, appMappingId, assetIds[i])
-		for _, j := range CollectorLookup.AssetrateInfo {
-			LockerProductAssetMapping, _ := k.GetLockerLookupTable(ctx, appMappingId)
-			lockers := LockerProductAssetMapping.Lockers
-			for _, v := range lockers {
-				if v.AssetId == assetIds[i] {
-					lockerIds := v.LockerIds
-					for w := range lockerIds {
-						locker, _ := k.GetLocker(ctx, lockerIds[w])
-						balance := locker.NetBalance
-						rewards, err := k.CalculateRewards(ctx, balance, *j.LockerSavingRate)
-						if err != nil {
-							return nil
-						}
-						// update the lock position
-						returnsAcc := locker.ReturnsAccumulated
-						updatedReturnsAcc := rewards.Add(returnsAcc)
-						netBalance := locker.NetBalance.Add(rewards)
-						updatedLocker := lockertypes.Locker{
-							LockerId:           locker.LockerId,
-							Depositor:          locker.Depositor,
-							ReturnsAccumulated: updatedReturnsAcc,
-							NetBalance:         netBalance,
-							CreatedAt:          locker.CreatedAt,
-							AssetDepositId:     locker.AssetDepositId,
-							IsLocked:           locker.IsLocked,
-							AppMappingId:       locker.AppMappingId,
-						}
-						netfeecollectedData, _ := k.GetNetFeeCollectedData(ctx, locker.AppMappingId)
-						for _, p := range netfeecollectedData.AssetIdToFeeCollected {
-							if p.AssetId == locker.AssetDepositId {
-								updatedNetFee := p.NetFeesCollected.Sub(rewards)
-								err := k.SetNetFeeCollectedData(ctx, locker.AppMappingId, locker.AssetDepositId, updatedNetFee)
-								if err != nil {
-									return err
-								}
+
+		LockerProductAssetMapping, _ := k.GetLockerLookupTable(ctx, appMappingId)
+		lockers := LockerProductAssetMapping.Lockers
+		for _, v := range lockers {
+			if v.AssetId == assetIds[i] {
+				lockerIds := v.LockerIds
+				for w := range lockerIds {
+					locker, _ := k.GetLocker(ctx, lockerIds[w])
+					balance := locker.NetBalance
+					rewards, err := k.CalculateRewards(ctx, balance, CollectorLookup.LockerSavingRate)
+					if err != nil {
+						return nil
+					}
+					// update the lock position
+					returnsAcc := locker.ReturnsAccumulated
+					updatedReturnsAcc := rewards.Add(returnsAcc)
+					netBalance := locker.NetBalance.Add(rewards)
+					updatedLocker := lockertypes.Locker{
+						LockerId:           locker.LockerId,
+						Depositor:          locker.Depositor,
+						ReturnsAccumulated: updatedReturnsAcc,
+						NetBalance:         netBalance,
+						CreatedAt:          locker.CreatedAt,
+						AssetDepositId:     locker.AssetDepositId,
+						IsLocked:           locker.IsLocked,
+						AppMappingId:       locker.AppMappingId,
+					}
+					netfeecollectedData, _ := k.GetNetFeeCollectedData(ctx, locker.AppMappingId)
+					for _, p := range netfeecollectedData.AssetIdToFeeCollected {
+						if p.AssetId == locker.AssetDepositId {
+							updatedNetFee := p.NetFeesCollected.Sub(rewards)
+							err := k.SetNetFeeCollectedData(ctx, locker.AppMappingId, locker.AssetDepositId, updatedNetFee)
+							if err != nil {
+								return err
 							}
 						}
-						k.UpdateLocker(ctx, updatedLocker)
 					}
+					k.UpdateLocker(ctx, updatedLocker)
 				}
 			}
 		}
@@ -105,7 +104,7 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 				interest, _ := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
 				intAcc := vault.InterestAccumulated
 				updatedIntAcc := (intAcc).Add(interest)
-				vault.InterestAccumulated = &updatedIntAcc
+				vault.InterestAccumulated = updatedIntAcc
 				vault.AmountOut = vault.AmountOut.Add(interest)
 				//update vault
 				k.SetVault(ctx, vault)
@@ -183,7 +182,7 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 						for _, w := range u.VaultIds {
 							totalRewards := v.TotalRewards
 							userVault, _ := k.GetVault(ctx, w)
-							userShare := userVault.AmountOut.Quo(*u.CollateralLockedAmount)
+							userShare := userVault.AmountOut.Quo(u.CollateralLockedAmount)
 							Duration := v.DurationDays
 							rewardsPerEpoch := (totalRewards.Amount).Quo(sdk.NewInt(Duration))
 							dailyRewards := userShare.Mul(rewardsPerEpoch)
