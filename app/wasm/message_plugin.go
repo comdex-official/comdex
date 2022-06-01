@@ -218,7 +218,8 @@ func (m *CustomMessenger) UpdateLsrInPairsVault(ctx sdk.Context, contractAddr sd
 
 func MsgUpdateLsrInPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgUpdateLsrInPairsVault) error {
-	err := assetKeeper.WasmUpdateLsrInPairsVault(ctx, a.AppMappingId, a.ExtPairId, a.StabilityFee)
+	err := assetKeeper.WasmUpdateLsrInPairsVault(ctx, a.AppMappingId, a.ExtPairId, a.LiquidationRatio ,a.StabilityFee, a.ClosingFee,
+	a.LiquidationPenalty, a.DrawDownFee,a.MinCr, a.DebtCeiling, a.DebtFloor)
 	if err != nil {
 		return err
 	}
