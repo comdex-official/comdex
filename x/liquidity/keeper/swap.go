@@ -515,3 +515,95 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 
 	return nil
 }
+
+// ConvertAccumulatedSwapFeesWithSwapDistrToken swaps accumulated swap fees from -
+// pair swap fee accmulator into actual distribution coin
+func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context) {
+
+	params := k.GetParams(ctx)
+	availablePools := k.GetAllPools(ctx)
+	const poolMapPrefix = "pool_"
+
+	edges := [][]string{}
+	pairPoolIdMap := make(map[string]uint64)
+
+	for _, pool := range availablePools {
+		pair, found := k.GetPair(ctx, pool.PairId)
+		if !found {
+			continue
+		}
+		edges = append(edges, []string{pair.BaseCoinDenom, pair.QuoteCoinDenom})
+		pairPoolIdMap[pair.BaseCoinDenom+pair.QuoteCoinDenom] = pair.Id
+		pairPoolIdMap[pair.QuoteCoinDenom+pair.BaseCoinDenom] = pair.Id
+		pairPoolIdMap[poolMapPrefix+pair.BaseCoinDenom+pair.QuoteCoinDenom] = pool.Id
+		pairPoolIdMap[poolMapPrefix+pair.QuoteCoinDenom+pair.BaseCoinDenom] = pool.Id
+	}
+
+	undirectedGraph := types.BuildUndirectedGraph(edges)
+
+	for _, pool := range availablePools {
+		pair, found := k.GetPair(ctx, pool.PairId)
+		if !found {
+			continue
+		}
+
+		availableBalances := k.bankKeeper.GetAllBalances(ctx, pair.GetSwapFeeCollectorAddress())
+
+		for _, balance := range availableBalances {
+			if balance.Denom != params.SwapFeeDistrDenom {
+				shortestPath, found := types.BFS_ShortestPath(undirectedGraph, balance.Denom, params.SwapFeeDistrDenom)
+				if found && len(shortestPath) > 1 {
+					swappablePairID := pairPoolIdMap[shortestPath[0]+shortestPath[1]]
+					swappablePoolID := pairPoolIdMap[poolMapPrefix+shortestPath[0]+shortestPath[1]]
+
+					swappablePair, found := k.GetPair(ctx, swappablePairID)
+					if !found {
+						continue
+					}
+					swappablePool, found := k.GetPool(ctx, swappablePoolID)
+					if !found {
+						continue
+					}
+
+					rx, ry := k.getPoolBalances(ctx, swappablePool, swappablePair)
+					fmt.Println(rx, ry)
+					baseCoinPoolPrice := rx.Amount.ToDec().Quo(ry.Amount.ToDec())
+
+					orderDirection := types.OrderDirectionBuy
+					demandCoinDenom := swappablePair.BaseCoinDenom
+
+					// price = baseCoinPoolPrice + 1%
+					price := baseCoinPoolPrice.Add(baseCoinPoolPrice.Quo(sdk.NewDec(100)))
+
+					// amount = (availableBalance - swapfee)/price
+					amount := balance.Amount.ToDec().Sub(CalculateSwapfeeAmount(ctx, params, balance.Amount).ToDec()).Quo(price)
+
+					// if balanceDenom is baseCoin in pair, order direction is sell (swap into quote coin)
+					// else order direction is buy (swap into base coin)
+					if balance.Denom == swappablePair.BaseCoinDenom {
+						orderDirection = types.OrderDirectionSell
+						demandCoinDenom = swappablePair.QuoteCoinDenom
+
+						// price = baseCoinPoolPrice - 1%
+						price = baseCoinPoolPrice.Sub(baseCoinPoolPrice.Quo(sdk.NewDec(100)))
+
+						// amount = amount-swapfee
+						amount = balance.Amount.ToDec().Sub(CalculateSwapfeeAmount(ctx, params, balance.Amount).ToDec())
+					}
+
+					newLimitOrderMsg := types.NewMsgLimitOrder(
+						pair.GetSwapFeeCollectorAddress(),
+						swappablePairID,
+						orderDirection,
+						balance,
+						demandCoinDenom,
+						price,
+						amount.TruncateInt(),
+						time.Second*10,
+					)
+					k.LimitOrder(ctx, newLimitOrderMsg)
+				}
+			}
+		}
+	}
+}

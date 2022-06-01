@@ -13,6 +13,7 @@ const (
 	DefaultBatchSize        uint32 = 1
 	DefaultTickPrecision    uint32 = 6
 	DefaultMaxOrderLifespan        = 24 * time.Hour
+	DefaultFeeDenom         string = "ucmdx"
 )
 
 // Liquidity params default values.
@@ -20,8 +21,8 @@ var (
 	DefaultFeeCollectorAddress      = DeriveAddress(AddressType32Bytes, ModuleName, "FeeCollector")
 	DefaultDustCollectorAddress     = DeriveAddress(AddressType32Bytes, ModuleName, "DustCollector")
 	DefaultMinInitialPoolCoinSupply = sdk.NewInt(1_000_000_000_000)
-	DefaultPairCreationFee          = sdk.NewCoins(sdk.NewInt64Coin("ucmdx", 200_000_000))
-	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin("ucmdx", 200_000_000))
+	DefaultPairCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(DefaultFeeDenom, 200_000_000))
+	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(DefaultFeeDenom, 200_000_000))
 	DefaultMinInitialDepositAmount  = sdk.NewInt(1000000)
 	DefaultMaxPriceLimitRatio       = sdk.NewDecWithPrec(1, 1) // 10%
 	DefaultSwapFeeRate              = sdk.NewDecWithPrec(3, 3) // 0.3%
@@ -29,6 +30,7 @@ var (
 	DefaultDepositExtraGas          = sdk.Gas(60000)
 	DefaultWithdrawExtraGas         = sdk.Gas(64000)
 	DefaultOrderExtraGas            = sdk.Gas(37000)
+	DefaultSwapFeeDistrDenom        = DefaultFeeDenom
 )
 
 // General constants.
@@ -60,6 +62,7 @@ var (
 	KeyDepositExtraGas          = []byte("DepositExtraGas")
 	KeyWithdrawExtraGas         = []byte("WithdrawExtraGas")
 	KeyOrderExtraGas            = []byte("OrderExtraGas")
+	KeySwapFeeDistrDenom        = []byte("SwapFeeDistrDenom")
 )
 
 var _ paramstypes.ParamSet = (*Params)(nil)
@@ -86,6 +89,7 @@ func DefaultParams() Params {
 		DepositExtraGas:          DefaultDepositExtraGas,
 		WithdrawExtraGas:         DefaultWithdrawExtraGas,
 		OrderExtraGas:            DefaultOrderExtraGas,
+		SwapFeeDistrDenom:        DefaultSwapFeeDistrDenom,
 	}
 }
 
@@ -107,6 +111,7 @@ func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeyDepositExtraGas, &params.DepositExtraGas, validateExtraGas),
 		paramstypes.NewParamSetPair(KeyWithdrawExtraGas, &params.WithdrawExtraGas, validateExtraGas),
 		paramstypes.NewParamSetPair(KeyOrderExtraGas, &params.OrderExtraGas, validateExtraGas),
+		paramstypes.NewParamSetPair(KeySwapFeeDistrDenom, &params.SwapFeeDistrDenom, validateSwapFeeDistrDenom),
 	}
 }
 
@@ -131,6 +136,7 @@ func (params Params) Validate() error {
 		{params.DepositExtraGas, validateExtraGas},
 		{params.WithdrawExtraGas, validateExtraGas},
 		{params.OrderExtraGas, validateExtraGas},
+		{params.SwapFeeDistrDenom, validateSwapFeeDistrDenom},
 	} {
 		if err := field.validateFunc(field.val); err != nil {
 			return err
@@ -297,6 +303,15 @@ func validateWithdrawFeeRate(i interface{}) error {
 
 func validateExtraGas(i interface{}) error {
 	_, ok := i.(sdk.Gas)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	return nil
+}
+
+func validateSwapFeeDistrDenom(i interface{}) error {
+	_, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
