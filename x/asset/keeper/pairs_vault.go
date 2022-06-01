@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -48,49 +46,6 @@ func (k *Keeper) SetPairsVault(ctx sdk.Context, app types.ExtendedPairVault) {
 	)
 
 	store.Set(key, value)
-}
-
-func (k *Keeper) UpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id uint64, stab_fee sdk.Dec) error{
-
-	var ExtPairVaultData types.ExtendedPairVault
-	pairVaults, found := k.GetPairsVaults(ctx)
-	if !found{
-		return types.ErrorPairDoesNotExist
-	}
-	var count = 0
-	for _, data := range pairVaults {
-		if data.AppMappingId == app_id && data.Id == ex_pair_id {
-			count++
-			ExtPairVaultData.Id = data.Id 
-			ExtPairVaultData.PairId = data.PairId
-			ExtPairVaultData.AppMappingId = data.AppMappingId
-			ExtPairVaultData.LiquidationRatio = data.LiquidationRatio
-			ExtPairVaultData.StabilityFee = stab_fee
-			ExtPairVaultData.ClosingFee = data.ClosingFee
-			ExtPairVaultData.LiquidationPenalty = data.LiquidationPenalty
-			ExtPairVaultData.DrawDownFee = data.DrawDownFee
-			ExtPairVaultData.IsVaultActive = data.IsVaultActive
-			ExtPairVaultData.DebtCeiling = data.DebtCeiling
-			ExtPairVaultData.DebtFloor = data.DebtFloor
-			ExtPairVaultData.IsPsmPair = data.IsPsmPair
-			ExtPairVaultData.MinCr = data.MinCr
-			ExtPairVaultData.PairName = data.PairName
-			ExtPairVaultData.AssetOutOraclePrice  = data.AssetOutOraclePrice
-			ExtPairVaultData.AsssetOutPrice = data.AsssetOutPrice
-		}
-	}
-	if count == 0{
-		return types.ErrorExtendedPairDoesNotExistForTheApp
-	}
-
-	var (
-		store = k.Store(ctx)
-		key   = types.PairsKey(app_id)
-		value = k.cdc.MustMarshal(&ExtPairVaultData)
-	)
-
-	store.Set(key, value)
-	return nil
 }
 
 func (k *Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs types.ExtendedPairVault, found bool) {
@@ -297,7 +252,6 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, AppMappi
 			}
 		}
 	}
-	fmt.Println()
 	if DebtFloor.GTE(DebtCeiling) {
 		return false, types.ErrorDebtFloorIsGreaterThanDebtCeiling.Error()
 	}
@@ -311,5 +265,65 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, AppMappi
 		return false, types.ErrorFeeShouldNotBeGTOne.Error()
 	}
 
+	return true, ""
+}
+
+func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id uint64, stab_fee sdk.Dec) error {
+
+	var ExtPairVaultData types.ExtendedPairVault
+	pairVaults, found := k.GetPairsVaults(ctx)
+	if !found {
+		return types.ErrorPairDoesNotExist
+	}
+	var count = 0
+	for _, data := range pairVaults {
+		if data.AppMappingId == app_id && data.Id == ex_pair_id {
+			count++
+			ExtPairVaultData.Id = data.Id
+			ExtPairVaultData.PairId = data.PairId
+			ExtPairVaultData.AppMappingId = data.AppMappingId
+			ExtPairVaultData.LiquidationRatio = data.LiquidationRatio
+			ExtPairVaultData.StabilityFee = stab_fee
+			ExtPairVaultData.ClosingFee = data.ClosingFee
+			ExtPairVaultData.LiquidationPenalty = data.LiquidationPenalty
+			ExtPairVaultData.DrawDownFee = data.DrawDownFee
+			ExtPairVaultData.IsVaultActive = data.IsVaultActive
+			ExtPairVaultData.DebtCeiling = data.DebtCeiling
+			ExtPairVaultData.DebtFloor = data.DebtFloor
+			ExtPairVaultData.IsPsmPair = data.IsPsmPair
+			ExtPairVaultData.MinCr = data.MinCr
+			ExtPairVaultData.PairName = data.PairName
+			ExtPairVaultData.AssetOutOraclePrice = data.AssetOutOraclePrice
+			ExtPairVaultData.AsssetOutPrice = data.AsssetOutPrice
+		}
+	}
+	if count == 0 {
+		return types.ErrorExtendedPairDoesNotExistForTheApp
+	}
+
+	var (
+		store = k.Store(ctx)
+		key   = types.PairsKey(app_id)
+		value = k.cdc.MustMarshal(&ExtPairVaultData)
+	)
+
+	store.Set(key, value)
+	return nil
+}
+
+func (k *Keeper) WasmUpdateLsrInPairsVaultQuery(ctx sdk.Context, appId, exPairId uint64) (bool, string) {
+	pairVaults, found := k.GetPairsVaults(ctx)
+	if !found {
+		return false, types.ErrorPairDoesNotExist.Error()
+	}
+	var count = 0
+	for _, data := range pairVaults {
+		if data.AppMappingId == appId && data.Id == exPairId {
+			count++
+		}
+	}
+	if count == 0 {
+		return false, types.ErrorExtendedPairDoesNotExistForTheApp.Error()
+	}
 	return true, ""
 }

@@ -312,16 +312,16 @@ func (k *Keeper) GetAppIdToAuctionMappingForAsset(ctx sdk.Context, app_id uint64
 
 func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {
 	for _, msg := range records {
-		_, found:= k.GetApp(ctx, msg.AppId)
-		if !found{
+		_, found := k.GetApp(ctx, msg.AppId)
+		if !found {
 			return types.ErrorAppDoesNotExist
 		}
 		var collectorAuctionLookup types.CollectorAuctionLookupTable
 		collectorAuctionLookup.AppId = msg.AppId
 		collectorAuctionLookup.AssetIdToAuctionLookup = msg.AssetIdToAuctionLookup
-		for _, data := range collectorAuctionLookup.AssetIdToAuctionLookup{
-			_,found := k.GetAsset(ctx, data.AssetId)
-			if !found{
+		for _, data := range collectorAuctionLookup.AssetIdToAuctionLookup {
+			_, found := k.GetAsset(ctx, data.AssetId)
+			if !found {
 				return types.ErrorAssetDoesNotExist
 			}
 		}
@@ -560,4 +560,13 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, Asse
 	store.Set(key, value)
 
 	return nil
+}
+
+func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, AppId uint64) (bool, string) {
+
+	_, found := k.GetAppidToAssetCollectorMapping(ctx, AppId)
+	if !found {
+		return false, types.ErrorDataDoesNotExists.Error()
+	}
+	return true, ""
 }

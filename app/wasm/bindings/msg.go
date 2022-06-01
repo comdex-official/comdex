@@ -9,6 +9,7 @@ type ComdexMessages struct {
 	MsgAddExtendedPairsVault       *MsgAddExtendedPairsVault       `json:"msg_add_extended_pairs_vault,omitempty"`
 	MsgSetCollectorLookupTable     *MsgSetCollectorLookupTable     `json:"msg_set_collector_lookup_table,omitempty"`
 	MsgSetAuctionMappingForApp     *MsgSetAuctionMappingForApp     `json:"msg_set_auction_mapping_for_app,omitempty"`
+	MsgUpdateLsrInPairsVault       *MsgUpdateLsrInPairsVault       `json:"msg_update_lsr_in_pairs_vault,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
@@ -59,4 +60,10 @@ type MsgSetAuctionMappingForApp struct {
 	AssetId          []uint64 `json:"asset_id"`
 	IsSurplusAuction []bool   `json:"is_surplus_auction"`
 	IsDebtAuction    []bool   `json:"is_debt_auction"`
+}
+
+type MsgUpdateLsrInPairsVault struct {
+	AppMappingId uint64  `json:"app_mapping_id"`
+	ExtPairId    uint64  `json:"ext_pair_id"`
+	StabilityFee sdk.Dec `json:"stability_fee"`
 }

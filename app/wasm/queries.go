@@ -90,3 +90,18 @@ func (qp QueryPlugin) ExtendedPairsVaultRecordsQueryCheck(ctx sdk.Context, AppMa
 	found, err = qp.assetKeeper.WasmAddExtendedPairsVaultRecordsQuery(ctx, AppMappingId, PairId, StabilityFee, ClosingFee, DrawDownFee, DebtCeiling, DebtFloor, PairName)
 	return found, err
 }
+
+func (qp QueryPlugin) AuctionMappingForAppQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
+	found, err = qp.collectorKeeper.WasmSetAuctionMappingForAppQuery(ctx, AppMappingId)
+	return found, err
+}
+
+func (qp QueryPlugin) WhiteListedAssetQueryCheck(ctx sdk.Context, AppMappingId, AssetId uint64) (found bool, err string) {
+	found, err = qp.lockerKeeper.WasmAddWhiteListedAssetQuery(ctx, AppMappingId, AssetId)
+	return found, err
+}
+
+func (qp QueryPlugin) UpdateLsrInPairsVaultQueryCheck(ctx sdk.Context, AppMappingId, ExtPairId uint64) (found bool, err string) {
+	found, err = qp.assetKeeper.WasmUpdateLsrInPairsVaultQuery(ctx, AppMappingId, ExtPairId)
+	return found, err
+}

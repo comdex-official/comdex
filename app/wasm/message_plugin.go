@@ -64,6 +64,9 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		if comdexMsg.MsgSetAuctionMappingForApp != nil {
 			return m.SetAuctionMappingForApp(ctx, contractAddr, comdexMsg.MsgSetAuctionMappingForApp)
 		}
+		if comdexMsg.MsgUpdateLsrInPairsVault != nil {
+			return m.UpdateLsrInPairsVault(ctx, contractAddr, comdexMsg.MsgUpdateLsrInPairsVault)
+		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
 }
@@ -154,8 +157,8 @@ func GetState(addr, denom, blockheight, target string) (sdk.Coin, error) {
 	return *state, nil
 }
 
-func (m *CustomMessenger) AddExtendedPairsVault(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *bindings.MsgAddExtendedPairsVault) ([]sdk.Event, [][]byte, error) {
-	err := MsgAddExtendedPairsVault(m.assetKeeper, ctx, contractAddr, whiteListAsset)
+func (m *CustomMessenger) AddExtendedPairsVault(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgAddExtendedPairsVault) ([]sdk.Event, [][]byte, error) {
+	err := MsgAddExtendedPairsVault(m.assetKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "AddExtendedPairsVault error")
 	}
@@ -171,8 +174,8 @@ func MsgAddExtendedPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, c
 	return nil
 }
 
-func (m *CustomMessenger) SetCollectorLookupTable(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *bindings.MsgSetCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
-	err := MsgSetCollectorLookupTable(m.collectorKeeper, ctx, contractAddr, whiteListAsset)
+func (m *CustomMessenger) SetCollectorLookupTable(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgSetCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+	err := MsgSetCollectorLookupTable(m.collectorKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "SetCollectorLookupTable error")
 	}
@@ -188,8 +191,8 @@ func MsgSetCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.
 	return nil
 }
 
-func (m *CustomMessenger) SetAuctionMappingForApp(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *bindings.MsgSetAuctionMappingForApp) ([]sdk.Event, [][]byte, error) {
-	err := MsgSetAuctionMappingForApp(m.collectorKeeper, ctx, contractAddr, whiteListAsset)
+func (m *CustomMessenger) SetAuctionMappingForApp(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgSetAuctionMappingForApp) ([]sdk.Event, [][]byte, error) {
+	err := MsgSetAuctionMappingForApp(m.collectorKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "SetAuctionMappingForApp error")
 	}
@@ -199,6 +202,23 @@ func (m *CustomMessenger) SetAuctionMappingForApp(ctx sdk.Context, contractAddr 
 func MsgSetAuctionMappingForApp(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgSetAuctionMappingForApp) error {
 	err := collectorKeeper.WasmSetAuctionMappingForApp(ctx, a.AppMappingId, a.AssetId, a.IsSurplusAuction, a.IsDebtAuction)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) UpdateLsrInPairsVault(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInPairsVault) ([]sdk.Event, [][]byte, error) {
+	err := MsgUpdateLsrInPairsVault(m.assetKeeper, ctx, contractAddr, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "SetAuctionMappingForApp error")
+	}
+	return nil, nil, nil
+}
+
+func MsgUpdateLsrInPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	a *bindings.MsgUpdateLsrInPairsVault) error {
+	err := assetKeeper.WasmUpdateLsrInPairsVault(ctx, a.AppMappingId, a.ExtPairId, a.StabilityFee)
 	if err != nil {
 		return err
 	}

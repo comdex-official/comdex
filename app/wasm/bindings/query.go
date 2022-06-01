@@ -14,6 +14,9 @@ type ComdexQuery struct {
 	ExternalVaultRewards           *ExternalVaultRewards           `json:"external_vault_rewards,omitempty"`
 	CollectorLookupTableQuery      *CollectorLookupTableQuery      `json:"collector_lookup_table_query,omitempty"`
 	ExtendedPairsVaultRecordsQuery *ExtendedPairsVaultRecordsQuery `json:"extended_pairs_vault_records_query,omitempty"`
+	AuctionMappingForAppQuery      *AuctionMappingForAppQuery      `json:"auction_mapping_for_app_query,omitempty"`
+	WhiteListedAssetQuery          *WhiteListedAssetQuery          `json:"white_listed_asset_query,omitempty"`
+	UpdateLsrInPairsVaultQuery     *UpdateLsrInPairsVaultQuery     `json:"update_lsr_in_pairs_vault_query,omitempty"`
 }
 
 type AppData struct {
@@ -126,6 +129,35 @@ type ExtendedPairsVaultRecordsQuery struct {
 }
 
 type ExtendedPairsVaultRecordsQueryResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type AuctionMappingForAppQuery struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+}
+
+type AuctionMappingForAppQueryResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type WhiteListedAssetQuery struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+	AssetId      uint64 `json:"asset_id"`
+}
+
+type WhiteListedAssetQueryResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type UpdateLsrInPairsVaultQuery struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+	ExtPairId    uint64 `json:"ext_pair_id"`
+}
+
+type UpdateLsrInPairsVaultQueryResponse struct {
 	Found bool   `json:"found"`
 	Err   string `json:"err"`
 }

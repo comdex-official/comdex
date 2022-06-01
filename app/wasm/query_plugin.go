@@ -167,6 +167,44 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "ExternalVaultRewards query response")
 			}
 			return bz, nil
+		} else if comdexQuery.AuctionMappingForAppQuery != nil {
+			AppMappingId := comdexQuery.AuctionMappingForAppQuery.AppMappingId
+			found, errormsg := queryPlugin.AuctionMappingForAppQueryCheck(ctx, AppMappingId)
+			res := bindings.AuctionMappingForAppQueryResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "AuctionMappingForAppQuery query response")
+			}
+			return bz, nil
+		} else if comdexQuery.WhiteListedAssetQuery != nil {
+			AppMappingId := comdexQuery.WhiteListedAssetQuery.AppMappingId
+			AssetId := comdexQuery.WhiteListedAssetQuery.AssetId
+			found, errormsg := queryPlugin.WhiteListedAssetQueryCheck(ctx, AppMappingId, AssetId)
+			res := bindings.WhiteListedAssetQueryResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "WhiteListedAssetQueryCheck query response")
+			}
+			return bz, nil
+		} else if comdexQuery.UpdateLsrInPairsVaultQuery != nil {
+			AppMappingId := comdexQuery.UpdateLsrInPairsVaultQuery.AppMappingId
+			ExtPairId := comdexQuery.UpdateLsrInPairsVaultQuery.ExtPairId
+			found, errormsg := queryPlugin.UpdateLsrInPairsVaultQueryCheck(ctx, AppMappingId, ExtPairId)
+			res := bindings.UpdateLsrInPairsVaultQueryResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "UpdateLsrInPairsVaultQuery query response")
+			}
+			return bz, nil
 		}
 
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown App Data query variant"}
