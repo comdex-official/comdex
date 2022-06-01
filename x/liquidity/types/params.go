@@ -24,7 +24,7 @@ var (
 	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin("ucmdx", 200_000_000))
 	DefaultMinInitialDepositAmount  = sdk.NewInt(1000000)
 	DefaultMaxPriceLimitRatio       = sdk.NewDecWithPrec(1, 1) // 10%
-	DefaultSwapFeeRate              = sdk.ZeroDec()
+	DefaultSwapFeeRate              = sdk.NewDecWithPrec(3, 3) // 0.3%
 	DefaultWithdrawFeeRate          = sdk.ZeroDec()
 	DefaultDepositExtraGas          = sdk.Gas(60000)
 	DefaultWithdrawExtraGas         = sdk.Gas(64000)
@@ -34,7 +34,7 @@ var (
 // General constants.
 const (
 	PoolReserveAddressPrefix          = "PoolReserveAddress"
-	PoolSwapFeeCollectorAddressPrefix = "PoolSwapFeeCollectorAddress"
+	PairSwapFeeCollectorAddressPrefix = "PairSwapFeeCollectorAddress"
 	PairEscrowAddressPrefix           = "PairEscrowAddress"
 	ModuleAddressNameSplitter         = "|"
 )

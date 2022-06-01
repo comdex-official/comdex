@@ -67,6 +67,8 @@ message Pair {
   string last_price = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
 
   uint64 current_batch_id = 7;
+
+  string swap_fee_collector_address = 8;
 }
 
 // Pool defines a basic liquidity pool with no min-price and max-price.
@@ -85,7 +87,6 @@ message Pool {
 
   bool disabled = 7;
 
-  string swap_fee_collector_address = 8;
 }
 
 // DepositRequest defines a deposit request.

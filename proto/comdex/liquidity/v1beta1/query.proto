@@ -181,8 +181,6 @@ message PoolResponse {
   uint64 last_deposit_request_id = 6;
 
   uint64 last_withdraw_request_id = 7;
-
-  string swap_fee_collector_address = 8;
 }
 
 // QuerySoftLockRequest is request type for the Query/SoftLock RPC method.

@@ -32,4 +32,5 @@ var (
 	ErrCalculatedPoolAmountIsZero    = sdkerrors.Register(ModuleName, 24, "calculated provided pool supply with pool tokens is zero or something went wrong while calculation")
 	ErrOraclePricesNotFound          = sdkerrors.Register(ModuleName, 25, "oracle prices not found")
 	ErrSupplyValueCalculationInvalid = sdkerrors.Register(ModuleName, 26, "something went wrong while calculation supply values")
+	ErrInsufficientAvailableBalance  = sdkerrors.Register(ModuleName, 27, "insufficient available balance")
 )
