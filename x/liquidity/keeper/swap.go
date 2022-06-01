@@ -519,6 +519,7 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 // ConvertAccumulatedSwapFeesWithSwapDistrToken swaps accumulated swap fees from -
 // pair swap fee accmulator into actual distribution coin
 func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context) {
+	logger := k.Logger(ctx)
 
 	params := k.GetParams(ctx)
 	availablePools := k.GetAllPools(ctx)
@@ -601,7 +602,10 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context) {
 						amount.TruncateInt(),
 						time.Second*10,
 					)
-					k.LimitOrder(ctx, newLimitOrderMsg)
+					_, err := k.LimitOrder(ctx, newLimitOrderMsg)
+					if err != nil {
+						logger.Info(fmt.Sprintf("err occurred in ConvertAccumulatedSwapFeesWithSwapDistrToken while placing order  : %v", err))
+					}
 				}
 			}
 		}
