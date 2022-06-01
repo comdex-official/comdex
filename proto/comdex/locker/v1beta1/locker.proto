@@ -54,7 +54,8 @@ message UserLockerAssetMapping {
       (gogoproto.moretags) = "yaml:\"owner\""
   ];
   repeated LockerToAppMapping  locker_app_mapping = 2 [
-  (gogoproto.moretags) = "yaml:\"locker_app_mapping\""
+  (gogoproto.moretags) = "yaml:\"locker_app_mapping\"",
+  (gogoproto.nullable)   = false 
   ];
 }
 
@@ -63,7 +64,8 @@ message LockerToAppMapping {
  uint64 app_mapping_id = 1;
 
  repeated AssetToLockerMapping user_asset_locker= 2[
-  (gogoproto.moretags) = "yaml:\"user_asset_locker\""];
+  (gogoproto.moretags) = "yaml:\"user_asset_locker\"",
+  (gogoproto.nullable)   = false ];
 }
 
 //This is used inside LockerToAppMapping
@@ -71,7 +73,30 @@ message AssetToLockerMapping{
   uint64 asset_id = 1;
   string locker_id =2 [
     (gogoproto.moretags) = "yaml:\"locker_id\""];
+  repeated UserTxData UserTxData =3  [
+    (gogoproto.moretags) = "yaml:\"UserTxData\"",
+    (gogoproto.nullable)   = false ];
   }
+
+message UserTxData{
+  string txType =1 [(gogoproto.moretags) = "yaml:\"txType\""];
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  string balance = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"balance\"",
+    (gogoproto.nullable)   = false
+  ];
+  google.protobuf.Timestamp tx_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"tx_time\""
+  ];
+
+}
 
 //Key is app_mapping_id
 message LockerLookupTable {
