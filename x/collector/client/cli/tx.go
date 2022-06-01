@@ -103,9 +103,9 @@ func NewCmdLookupTableParams() *cobra.Command {
 					SecondaryAssetId: secondaryAssetId[i],
 					SurplusThreshold: surplusThreshold[i],
 					DebtThreshold:    debtThreshold[i],
-					LockerSavingRate: &newLockerSavingRate,
+					LockerSavingRate: newLockerSavingRate,
 					LotSize:          lotSize[i],
-					BidFactor:        &newBidFactor,
+					BidFactor:        newBidFactor,
 				})
 			}
 
@@ -156,7 +156,7 @@ func NewCmdLookupTableParams() *cobra.Command {
 // NewCmdAuctionControlProposal cmd to update controls for auction params
 func NewCmdAuctionControlProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auction-control [app-id] [asset_id] [surplus_auction] [debt_auction] [asset_out_oracle_price] [assset_out_price]",
+		Use:   "auction-control [app-id] [asset_id] [surplus_auction] [debt_auction] [asset_out_oracle_price] [asset_out_price]",
 		Args:  cobra.ExactArgs(6),
 		Short: "Set auction control",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -185,7 +185,7 @@ func NewCmdAuctionControlProposal() *cobra.Command {
 				return err
 			}
 
-			assset_out_price, err := ParseUint64SliceFromString(args[5], ",")
+			asset_out_price, err := ParseUint64SliceFromString(args[5], ",")
 			if err != nil {
 				return err
 			}
@@ -215,7 +215,7 @@ func NewCmdAuctionControlProposal() *cobra.Command {
 				AssetIdToAuctionLookup.IsSurplusAuction = newSurplusAuction
 				AssetIdToAuctionLookup.IsDebtAuction = newDebtAuction
 				AssetIdToAuctionLookup.AssetOutOraclePrice = newasset_out_oracle_price
-				AssetIdToAuctionLookup.AsssetOutPrice = assset_out_price[i]
+				AssetIdToAuctionLookup.AssetOutPrice = asset_out_price[i]
 				collectorAuctionLookupRecords.AssetIdToAuctionLookup = append(collectorAuctionLookupRecords.AssetIdToAuctionLookup, AssetIdToAuctionLookup)
 			}
 

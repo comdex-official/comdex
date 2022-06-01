@@ -159,7 +159,7 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 			MinCr:               msg.MinCr,
 			PairName:            msg.PairName,
 			AssetOutOraclePrice: msg.AssetOutOraclePrice,
-			AsssetOutPrice:      msg.AsssetOutPrice,
+			AssetOutPrice:      msg.AssetOutPrice,
 		}
 
 		k.SetPairsVaultID(ctx, app.Id)
@@ -221,7 +221,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, AppMappingId,
 		MinCr:               MinCr,
 		PairName:            PairName,
 		AssetOutOraclePrice: AssetOutOraclePrice,
-		AsssetOutPrice:      AssetOutPrice,
+		AssetOutPrice:      AssetOutPrice,
 	}
 
 	k.SetPairsVaultID(ctx, app.Id)
@@ -295,7 +295,7 @@ func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id u
 			ExtPairVaultData.MinCr = min_cr
 			ExtPairVaultData.PairName = data.PairName
 			ExtPairVaultData.AssetOutOraclePrice = data.AssetOutOraclePrice
-			ExtPairVaultData.AsssetOutPrice = data.AsssetOutPrice
+			ExtPairVaultData.AssetOutPrice = data.AssetOutPrice
 		}
 	}
 	if count == 0 {

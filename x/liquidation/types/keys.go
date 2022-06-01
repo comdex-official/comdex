@@ -17,7 +17,7 @@ var (
 	LockedVaultIdKey                 = []byte{0x01}
 	LockedVaultKeyPrefix             = []byte{0x11}
 	LockedVaultKeyHistory            = []byte{0x12}
-	AppIdsKeyPrefix                  = []byte{0x12}
+	AppIdsKeyPrefix                  = []byte{0x15}
 	AppLockedVaultMappingKeyPrefix   = []byte{0x13}
 	AppIDLockedVaultMappingKeyPrefix = []byte{0x14}
 )

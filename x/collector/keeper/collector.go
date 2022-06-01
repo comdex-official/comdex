@@ -49,7 +49,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, assetId uint64, Collect
 		var collectorNewData types.AppIdToAssetCollectorMapping
 		collectorNewData.AppId = appId
 
-		var assetIdCollect types.AssetIdCollectorMappping
+		var assetIdCollect types.AssetIdCollectorMapping
 		assetIdCollect.AssetId = assetId
 
 		var newCollector types.CollectorData
@@ -74,7 +74,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, assetId uint64, Collect
 				var collectorNewData types.AppIdToAssetCollectorMapping
 				collectorNewData.AppId = appId
 
-				var assetIdCollect types.AssetIdCollectorMappping
+				var assetIdCollect types.AssetIdCollectorMapping
 				assetIdCollect.AssetId = assetId
 
 				var newCollector types.CollectorData
@@ -99,7 +99,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, assetId uint64, Collect
 			var collectorNewData types.AppIdToAssetCollectorMapping
 			collectorNewData.AppId = appId
 
-			var assetIdCollect types.AssetIdCollectorMappping
+			var assetIdCollect types.AssetIdCollectorMapping
 			assetIdCollect.AssetId = assetId
 
 			var newCollector types.CollectorData
@@ -421,7 +421,7 @@ func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, appId uint64) (netFeeDa
 	if !found {
 		return netFeeData, false
 	}
-	var assetCollector types.AssetIdCollectorMappping
+	var assetCollector types.AssetIdCollectorMapping
 	for _, data := range collectorData.AssetCollector {
 
 		assetCollector.AssetId = data.AssetId
@@ -485,9 +485,9 @@ func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAs
 		SecondaryAssetId: SecondaryAssetId,
 		SurplusThreshold: SurplusThreshold,
 		DebtThreshold:    DebtThreshold,
-		LockerSavingRate: &LockerSavingRate,
+		LockerSavingRate: LockerSavingRate,
 		LotSize:          LotSize,
-		BidFactor:        &BidFactor,
+		BidFactor:        BidFactor,
 	}
 	accmLookup, _ := k.GetCollectorLookupTable(ctx, AppId)
 	accmLookup.AppId = AppId
@@ -569,7 +569,7 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, ass
 	if !found {
 		return types.ErrorDataDoesNotExists
 	}
-	collectorLookup.LockerSavingRate = &lsr
+	collectorLookup.LockerSavingRate = lsr
 
 	var (
 		store = ctx.KVStore(k.storeKey)
