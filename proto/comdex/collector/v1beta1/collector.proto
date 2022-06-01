@@ -36,7 +36,7 @@ message NetFeeCollectedData {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
   repeated AssetIdToFeeCollected assetIdToFeeCollected = 2 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"assetIdToFeeCollected\""];
+    (gogoproto.moretags) = "yaml:\"asset_id_to_fee_collected\""];
 }
 
 message AssetIdToFeeCollected {
@@ -60,7 +60,6 @@ message AssetIdCollectorMapping {
     (gogoproto.moretags) = "yaml:\"collector\""];
 
 }
-//////////////////////////////////////////////////////111111111111
 
 message CollectorLookupTable {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
@@ -85,9 +84,9 @@ message CollectorLookupTable {
 
 message CollectorLookup { 
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-  repeated CollectorLookupTable assetrate_info = 2 [
+  repeated CollectorLookupTable asset_rate_info = 2 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"assetrate_info\""];
+    (gogoproto.moretags) = "yaml:\"asset_rate_info\""];
 }
 
 message AppToDenomsMapping {
@@ -104,18 +103,15 @@ message HistoricalAuction {
 }
 
 message AssetToAuctionMapping {
-  uint64 auctionId = 1 [(gogoproto.moretags) = "yaml:\"auctionId\""];
+  uint64 auctionId = 1 [(gogoproto.moretags) = "yaml:\"auction_id\""];
   repeated string asset_denoms = 2 [(gogoproto.moretags) = "yaml:\"asset_denoms\""];
 }
-
-////////////////////////////////////////////////////////33333333333333
-
 
 message CollectorAuctionLookupTable {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
   repeated AssetIdToAuctionLookupTable assetIdToAuctionLookup = 2 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"assetIdToAuctionLookup\""];
+    (gogoproto.moretags) = "yaml:\"asset_id_to_auction_lookup\""];
 }
 
 message AssetIdToAuctionLookupTable {

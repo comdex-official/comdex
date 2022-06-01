@@ -196,7 +196,7 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 		}
 		accmLookup, _ := k.GetCollectorLookupTable(ctx, msg.AppId)
 		accmLookup.AppId = msg.AppId
-		accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, Collector)
+		accmLookup.AssetRateInfo = append(accmLookup.AssetRateInfo, Collector)
 
 		var (
 			store = ctx.KVStore(k.storeKey)
@@ -234,7 +234,7 @@ func (k *Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appId, assetId uint6
 	}
 
 	var assetRateInfo types.CollectorLookupTable
-	for _, data := range collectorLookup.AssetrateInfo {
+	for _, data := range collectorLookup.AssetRateInfo {
 		if data.CollectorAssetId == assetId {
 			assetRateInfo = data
 		}
@@ -491,7 +491,7 @@ func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAs
 	}
 	accmLookup, _ := k.GetCollectorLookupTable(ctx, AppId)
 	accmLookup.AppId = AppId
-	accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, Collector)
+	accmLookup.AssetRateInfo = append(accmLookup.AssetRateInfo, Collector)
 
 	var (
 		store = ctx.KVStore(k.storeKey)
