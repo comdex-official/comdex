@@ -1,6 +1,8 @@
 package bindings
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 type ComdexMessages struct {
 	MsgWhiteListAssetLocker            *MsgWhiteListAssetLocker            `json:"msg_white_list_asset_locker,omitempty"`
@@ -66,7 +68,14 @@ type MsgSetAuctionMappingForApp struct {
 type MsgUpdateLsrInPairsVault struct {
 	AppMappingId uint64  `json:"app_mapping_id"`
 	ExtPairId    uint64  `json:"ext_pair_id"`
+	LiquidationRatio sdk.Dec `json:"liquidation_ratio"`
 	StabilityFee sdk.Dec `json:"stability_fee"`
+	ClosingFee sdk.Dec `json:"closing_fee"`
+	LiquidationPenalty sdk.Dec `json:"liquidation_penalty"`
+	DrawDownFee sdk.Dec `json:"draw_down_fee"`
+	MinCr sdk.Dec `json:"min_cr"`
+	DebtCeiling sdk.Int `json:"debt_ceiling"`
+	DebtFloor sdk.Int `json:"debt_floor"`
 }
 
 type MsgUpdateLsrInCollectorLookupTable struct {
