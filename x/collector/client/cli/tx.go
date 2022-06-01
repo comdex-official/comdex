@@ -102,9 +102,9 @@ func NewCmdLookupTableParams() *cobra.Command {
 					SecondaryAssetId: secondary_asset_id[i],
 					SurplusThreshold: surplusThreshold[i],
 					DebtThreshold:    debtThreshold[i],
-					LockerSavingRate: &newlockerSavingRate,
+					LockerSavingRate: newlockerSavingRate,
 					LotSize:          lot_size[i],
-					BidFactor:        &newbid_factor,
+					BidFactor:        newbid_factor,
 				})
 			}
 

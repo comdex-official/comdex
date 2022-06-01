@@ -76,9 +76,9 @@ message LockedVault {
     (gogoproto.moretags) = "yaml:\"current_collateralisation_ratio\""];
 
   string collateral_to_be_auctioned = 15 [
+    (gogoproto.nullable) = false,
     (gogoproto.customname) = "CollateralToBeAuctioned",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable) = true,
     (gogoproto.moretags) = "yaml:\"collateral_to_be_auctioned\""];
 
   google.protobuf.Timestamp liquidation_timestamp = 16 [

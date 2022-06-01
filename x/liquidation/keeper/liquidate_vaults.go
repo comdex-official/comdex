@@ -62,7 +62,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 		IsAuctionInProgress:          false,
 		CrAtLiquidation:              collateralizationRatio,
 		CurrentCollaterlisationRatio: collateralizationRatio,
-		CollateralToBeAuctioned:      nil,
+		CollateralToBeAuctioned:      sdk.ZeroDec(),
 		LiquidationTimestamp:         time.Now(),
 		SellOffHistory:               nil,
 	}
@@ -181,7 +181,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					}
 					updatedLockedVault := lockedVault
 					updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
-					updatedLockedVault.CollateralToBeAuctioned = &collateralToBeAuctioned
+					updatedLockedVault.CollateralToBeAuctioned = collateralToBeAuctioned
 					k.SetLockedVault(ctx, *updatedLockedVault)
 				}
 			}

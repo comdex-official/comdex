@@ -475,9 +475,9 @@ func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAs
 		SecondaryAssetId: SecondaryAssetId,
 		SurplusThreshold: SurplusThreshold,
 		DebtThreshold:    DebtThreshold,
-		LockerSavingRate: &LockerSavingRate,
+		LockerSavingRate: LockerSavingRate,
 		LotSize:          LotSize,
-		BidFactor:        &BidFactor,
+		BidFactor:        BidFactor,
 	}
 	accmLookup, _ := k.GetCollectorLookupTable(ctx, AppId)
 	accmLookup.AppId = AppId
@@ -559,7 +559,7 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, ass
 	if !found {
 		return types.ErrorDataDoesNotExists
 	}
-	collectorLookup.LockerSavingRate = &lsr
+	collectorLookup.LockerSavingRate = lsr
 
 	var (
 		store = ctx.KVStore(k.storeKey)
