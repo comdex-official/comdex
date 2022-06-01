@@ -97,7 +97,7 @@ message ExtendedPairToVaultMapping {
 
   message TvlLockedDataMap
   {
-    uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+    string asset_denom = 1 [ (gogoproto.moretags) = "yaml:\"asset_denom\"" ];
     string collateral_locked_amount= 2 [ (gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
            (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
            (gogoproto.nullable)   = false];

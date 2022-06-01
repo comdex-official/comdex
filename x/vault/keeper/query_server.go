@@ -598,7 +598,12 @@ func (q *queryServer) QueryTVLlockedByApp(c context.Context, req *types.QueryTVL
 
 		var tvl types.TvlLockedDataMap
 
-		tvl.AssetId = pairId.AssetIn
+
+		denom,found := q.GetAsset(ctx,pairId.AssetIn)
+		if !found{
+			return nil, types.ErrorAssetDoesNotExist
+		}
+		tvl.AssetDenom= denom.Denom
 		tvl.CollateralLockedAmount = data.CollateralLockedAmount
 
 		tvlData = append(tvlData, &tvl)
