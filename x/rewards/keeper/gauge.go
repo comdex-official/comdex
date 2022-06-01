@@ -44,10 +44,6 @@ func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCrea
 
 // ValidateMsgCreateGaugeLiquidityMetaData validates types.MsgCreateGauge_LiquidityMetaData.
 func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, kind *types.MsgCreateGauge_LiquidityMetaData) error {
-	if kind.LiquidityMetaData.LockDuration <= 0 {
-		return types.ErrInvalidDuration
-	}
-
 	_, found := k.liquidityKeeper.GetPool(ctx, kind.LiquidityMetaData.PoolId)
 	if !found {
 		return types.ErrInvalidPoolID
@@ -94,7 +90,6 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gaug
 				PoolId:       extraData.LiquidityMetaData.PoolId,
 				IsMasterPool: extraData.LiquidityMetaData.IsMasterPool,
 				ChildPoolIds: extraData.LiquidityMetaData.ChildPoolIds,
-				LockDuration: extraData.LiquidityMetaData.LockDuration,
 			},
 		}
 		newGauge.Kind = liquidityGaugeType
