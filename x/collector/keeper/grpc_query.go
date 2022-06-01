@@ -40,7 +40,7 @@ func (q *queryServer) QueryCollectorLookupByProduct(c context.Context, req *type
 	}
 
 	return &types.QueryCollectorLookupByProductResponse{
-		CollectorLookup: collectorLookupData.AssetrateInfo,
+		CollectorLookup: collectorLookupData.AssetRateInfo,
 	}, nil
 }
 

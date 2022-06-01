@@ -73,8 +73,8 @@ message AssetToLockerMapping{
   uint64 asset_id = 1;
   string locker_id =2 [
     (gogoproto.moretags) = "yaml:\"locker_id\""];
-  repeated UserTxData UserTxData =3  [
-    (gogoproto.moretags) = "yaml:\"UserTxData\"",
+  repeated UserTxData userTxData =3  [
+    (gogoproto.moretags) = "yaml:\"userTxData\"",
     (gogoproto.nullable)   = false ];
   }
 

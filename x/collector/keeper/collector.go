@@ -196,7 +196,7 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 		}
 		accmLookup, _ := k.GetCollectorLookupTable(ctx, msg.AppId)
 		accmLookup.AppId = msg.AppId
-		accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, Collector)
+		accmLookup.AssetRateInfo = append(accmLookup.AssetRateInfo, Collector)
 
 		var (
 			store = ctx.KVStore(k.storeKey)
@@ -234,7 +234,7 @@ func (k *Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appId, assetId uint6
 	}
 
 	var assetRateInfo types.CollectorLookupTable
-	for _, data := range collectorLookup.AssetrateInfo {
+	for _, data := range collectorLookup.AssetRateInfo {
 		if data.CollectorAssetId == assetId {
 			assetRateInfo = data
 		}
@@ -491,7 +491,7 @@ func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAs
 	}
 	accmLookup, _ := k.GetCollectorLookupTable(ctx, AppId)
 	accmLookup.AppId = AppId
-	accmLookup.AssetrateInfo = append(accmLookup.AssetrateInfo, Collector)
+	accmLookup.AssetRateInfo = append(accmLookup.AssetRateInfo, Collector)
 
 	var (
 		store = ctx.KVStore(k.storeKey)
@@ -565,16 +565,30 @@ func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, AppId uint64)
 }
 
 func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, assetId uint64, lsr sdk.Dec) error {
-	collectorLookup, found := k.GetCollectorLookupByAsset(ctx, appId, assetId)
-	if !found {
-		return types.ErrorDataDoesNotExists
+	
+	var Collector types.CollectorLookupTable
+	accmLookup, _ := k.GetCollectorLookupTable(ctx, appId)
+
+	for _, data:= range accmLookup.AssetRateInfo{
+		if Collector.CollectorAssetId == assetId{ 
+			Collector.CollectorAssetId = assetId
+			Collector.AppId = data.AppId
+			Collector.BidFactor = data.BidFactor
+			Collector.DebtThreshold = data.DebtThreshold
+			Collector.LockerSavingRate = lsr
+			Collector.LotSize = data.LotSize
+			Collector.SecondaryAssetId = data.SecondaryAssetId
+			Collector.DebtThreshold = data.DebtThreshold
+
 	}
-	collectorLookup.LockerSavingRate = lsr
+}
+	accmLookup.AppId = appId
+	accmLookup.AssetRateInfo = append(accmLookup.AssetRateInfo, Collector)
 
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.CollectorLookupTableMappingKey(appId)
-		value = k.cdc.MustMarshal(&collectorLookup)
+		value = k.cdc.MustMarshal(&accmLookup)
 	)
 
 	store.Set(key, value)
