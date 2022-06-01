@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -295,6 +297,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, AppMappi
 			}
 		}
 	}
+	fmt.Println()
 	if DebtFloor.GTE(DebtCeiling) {
 		return false, types.ErrorDebtFloorIsGreaterThanDebtCeiling.Error()
 	}

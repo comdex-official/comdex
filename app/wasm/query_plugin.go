@@ -79,8 +79,8 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.WhitelistAppIdLockerRewards != nil {
-			App_Id := comdexQuery.RemoveWhiteListAssetLocker.App_Id
-			Asset_Id := comdexQuery.RemoveWhiteListAssetLocker.Asset_Id
+			App_Id := comdexQuery.WhitelistAppIdLockerRewards.App_Id
+			Asset_Id := comdexQuery.WhitelistAppIdLockerRewards.Asset_Id
 
 			found, errormsg := queryPlugin.GetWhitelistAppIdLockerRewardsCheck(ctx, App_Id, Asset_Id)
 			res := bindings.WhitelistAppIdLockerRewardsResponse{

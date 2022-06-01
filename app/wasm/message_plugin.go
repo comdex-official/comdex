@@ -2,6 +2,7 @@ package wasm
 
 import (
 	"encoding/json"
+
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
@@ -45,23 +46,23 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		if err := json.Unmarshal(msg.Custom, &comdexMsg); err != nil {
 			return nil, nil, sdkerrors.Wrap(err, "comdex msg error")
 		}
-		if &comdexMsg.MsgWhiteListAssetLocker != nil {
-			return m.whitelistAssetLocker(ctx, contractAddr, &comdexMsg.MsgWhiteListAssetLocker)
+		if comdexMsg.MsgWhiteListAssetLocker != nil {
+			return m.whitelistAssetLocker(ctx, contractAddr, comdexMsg.MsgWhiteListAssetLocker)
 		}
-		if &comdexMsg.MsgWhitelistAppIdLockerRewards != nil {
-			return m.whitelistAppIdLockerRewards(ctx, contractAddr, &comdexMsg.MsgWhitelistAppIdLockerRewards)
+		if comdexMsg.MsgWhitelistAppIdLockerRewards != nil {
+			return m.whitelistAppIdLockerRewards(ctx, contractAddr, comdexMsg.MsgWhitelistAppIdLockerRewards)
 		}
-		if &comdexMsg.MsgWhitelistAppIdVaultInterest != nil {
-			return m.whitelistAppIdVaultInterest(ctx, contractAddr, &comdexMsg.MsgWhitelistAppIdVaultInterest)
+		if comdexMsg.MsgWhitelistAppIdVaultInterest != nil {
+			return m.whitelistAppIdVaultInterest(ctx, contractAddr, comdexMsg.MsgWhitelistAppIdVaultInterest)
 		}
-		if &comdexMsg.MsgAddExtendedPairsVault != nil {
-			return m.AddExtendedPairsVault(ctx, contractAddr, &comdexMsg.MsgAddExtendedPairsVault)
+		if comdexMsg.MsgAddExtendedPairsVault != nil {
+			return m.AddExtendedPairsVault(ctx, contractAddr, comdexMsg.MsgAddExtendedPairsVault)
 		}
-		if &comdexMsg.MsgSetCollectorLookupTable != nil {
-			return m.SetCollectorLookupTable(ctx, contractAddr, &comdexMsg.MsgSetCollectorLookupTable)
+		if comdexMsg.MsgSetCollectorLookupTable != nil {
+			return m.SetCollectorLookupTable(ctx, contractAddr, comdexMsg.MsgSetCollectorLookupTable)
 		}
-		if &comdexMsg.MsgSetAuctionMappingForApp != nil {
-			return m.SetAuctionMappingForApp(ctx, contractAddr, &comdexMsg.MsgSetAuctionMappingForApp)
+		if comdexMsg.MsgSetAuctionMappingForApp != nil {
+			return m.SetAuctionMappingForApp(ctx, contractAddr, comdexMsg.MsgSetAuctionMappingForApp)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
