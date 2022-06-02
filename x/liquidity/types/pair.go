@@ -17,16 +17,25 @@ func (pair Pair) GetEscrowAddress() sdk.AccAddress {
 	return addr
 }
 
+func (pair Pair) GetSwapFeeCollectorAddress() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(pair.SwapFeeCollectorAddress)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
 // NewPair returns a new pair object.
 func NewPair(id uint64, baseCoinDenom, quoteCoinDenom string) Pair {
 	return Pair{
-		Id:             id,
-		BaseCoinDenom:  baseCoinDenom,
-		QuoteCoinDenom: quoteCoinDenom,
-		EscrowAddress:  PairEscrowAddress(id).String(),
-		LastOrderId:    0,
-		LastPrice:      nil,
-		CurrentBatchId: 1,
+		Id:                      id,
+		BaseCoinDenom:           baseCoinDenom,
+		QuoteCoinDenom:          quoteCoinDenom,
+		EscrowAddress:           PairEscrowAddress(id).String(),
+		LastOrderId:             0,
+		LastPrice:               nil,
+		CurrentBatchId:          1,
+		SwapFeeCollectorAddress: PairSwapFeeCollectorAddress(id).String(),
 	}
 }
 
@@ -61,6 +70,15 @@ func PairEscrowAddress(pairID uint64) sdk.AccAddress {
 		AddressType32Bytes,
 		ModuleName,
 		strings.Join([]string{PairEscrowAddressPrefix, strconv.FormatUint(pairID, 10)}, ModuleAddressNameSplitter))
+}
+
+// PairSwapFeeCollectorAddress returns a unique pair swap fee collector account address for each pair.
+func PairSwapFeeCollectorAddress(pairID uint64) sdk.AccAddress {
+	return DeriveAddress(
+		AddressType32Bytes,
+		ModuleName,
+		strings.Join([]string{PairSwapFeeCollectorAddressPrefix, strconv.FormatUint(pairID, 10)}, ModuleAddressNameSplitter),
+	)
 }
 
 // MustMarshalPair returns the pair bytes.

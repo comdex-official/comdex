@@ -14,6 +14,9 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
 	k.DeleteOutdatedRequests(ctx)
+	if ctx.BlockHeight()%150 == 0 {
+		k.ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx)
+	}
 }
 
 func EndBlocker(ctx sdk.Context, k keeper.Keeper) {

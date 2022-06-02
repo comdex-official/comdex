@@ -654,6 +654,7 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 			FilledEpochs:       gauge.TriggeredCount,
 			EpochDuration:      gauge.TriggerDuration,
 			NextDistribution:   epochInfo.CurrentEpochStartTime.Add(epochInfo.Duration),
+			IsSwapFee:          gauge.ForSwapFee,
 		})
 	}
 

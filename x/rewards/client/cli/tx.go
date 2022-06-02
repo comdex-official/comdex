@@ -394,16 +394,11 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 		}
 	}
 
-	lockDuration, err := cmd.Flags().GetDuration(FlagLockDuration)
-	if err != nil {
-		return types.MsgCreateGauge_LiquidityMetaData{}, err
-	}
 	liquidityGaugeExtraData := types.MsgCreateGauge_LiquidityMetaData{
 		LiquidityMetaData: &types.LiquidtyGaugeMetaData{
 			PoolId:       poolID,
 			IsMasterPool: isMasterPool,
 			ChildPoolIds: childPoolIds,
-			LockDuration: lockDuration,
 		},
 	}
 	return liquidityGaugeExtraData, nil

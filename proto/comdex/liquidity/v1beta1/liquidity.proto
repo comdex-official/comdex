@@ -17,7 +17,7 @@ message Params {
 
   string fee_collector_address = 3;
 
-  string swap_fee_collector_address = 4;
+  string dust_collector_address = 4;
 
   string min_initial_pool_coin_supply = 5
       [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
@@ -50,6 +50,10 @@ message Params {
 
   uint64 order_extra_gas = 15
       [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Gas", (gogoproto.nullable) = false];
+  
+  string swap_fee_distr_denom = 16;
+  string swap_fee_burn_rate = 17
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
 }
 
 // Pair defines a coin pair.
@@ -67,6 +71,8 @@ message Pair {
   string last_price = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
 
   uint64 current_batch_id = 7;
+
+  string swap_fee_collector_address = 8;
 }
 
 // Pool defines a basic liquidity pool with no min-price and max-price.
@@ -84,6 +90,7 @@ message Pool {
   uint64 last_withdraw_request_id = 6;
 
   bool disabled = 7;
+
 }
 
 // DepositRequest defines a deposit request.

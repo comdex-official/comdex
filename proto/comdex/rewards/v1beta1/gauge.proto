@@ -12,12 +12,6 @@ message LiquidtyGaugeMetaData {
   uint64 pool_id = 1;
   bool is_master_pool = 2;
   repeated uint64 child_pool_ids = 3;
-  google.protobuf.Duration lock_duration = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdduration) = true,
-    (gogoproto.jsontag) = "lock_duration,omitempty",
-    (gogoproto.moretags) = "yaml:\"lock_duration\""
-  ];
 }
 
 message Gauge {
@@ -53,8 +47,9 @@ message Gauge {
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
     bool is_active = 11;
+    bool for_swap_fee = 12;
     oneof kind {
-      LiquidtyGaugeMetaData liquidity_meta_data = 12;
+      LiquidtyGaugeMetaData liquidity_meta_data = 13;
     }
 }
 

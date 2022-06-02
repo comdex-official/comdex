@@ -62,3 +62,79 @@ func DeriveAddress(addressType AddressType, moduleName, name string) sdk.AccAddr
 		return sdk.AccAddress{}
 	}
 }
+
+// ItemExists returns true if item exists in array else false
+func ItemExists(array []string, item string) bool {
+	for _, v := range array {
+		if v == item {
+			return true
+		}
+	}
+	return false
+}
+
+// BuildUndirectedGraph builds undirected the graph from the given edges represented as adjacency list
+func BuildUndirectedGraph(edges [][]string) (graph map[string][]string) {
+	graph = make(map[string][]string)
+
+	// Loop to iterate over every edge of the graph
+	for _, edge := range edges {
+		a, b := edge[0], edge[1]
+
+		// Creating the graph as adjacency list
+		graph[a] = append(graph[a], b)
+		graph[b] = append(graph[b], a)
+	}
+	return graph
+}
+
+// BFS_ShortestPath returns the shortest path between two nodes in undirected graph
+func BFS_ShortestPath(undirectedGraph map[string][]string, start string, goal string) ([]string, bool) {
+	explored := []string{}
+
+	// Queue for traversing the graph in the BFS
+	queue := [][]string{{start}}
+
+	// If the desired node is reached
+	if start == goal {
+		return []string{start}, true
+	}
+
+	// Loop to traverse the graph with the help of the queue
+	for true {
+		if len(queue) == 0 {
+			// empty queue, hence break the loop
+			break
+		}
+		path := queue[0]
+
+		// dequeue opearation
+		queue = queue[1:]
+
+		node := path[len(path)-1]
+
+		// Condition to check if the current node is not visited
+		if !ItemExists(explored, node) {
+			neighbours := undirectedGraph[node]
+
+			// Loop to iterate over the neighbours of the node
+			for _, neighbour := range neighbours {
+				newPath := path
+				newPath = append(newPath, neighbour)
+
+				// enqueue operation
+				queue = append(queue, newPath)
+
+				// Condition to check if the neighbour node is the goal
+				if neighbour == goal {
+
+					// path found
+					return newPath, true
+				}
+			}
+			explored = append(explored, node)
+		}
+	}
+	// return false, if no paths exists between start -> goal
+	return []string{}, false
+}

@@ -10,32 +10,36 @@ import (
 
 // Liquidity params default values.
 const (
-	DefaultBatchSize        uint32 = 1
-	DefaultTickPrecision    uint32 = 6
-	DefaultMaxOrderLifespan        = 24 * time.Hour
+	DefaultBatchSize        uint32        = 1
+	DefaultTickPrecision    uint32        = 6
+	DefaultMaxOrderLifespan time.Duration = 24 * time.Hour
+	DefaultFeeDenom         string        = "ucmdx"
 )
 
 // Liquidity params default values.
 var (
 	DefaultFeeCollectorAddress      = DeriveAddress(AddressType32Bytes, ModuleName, "FeeCollector")
-	DefaultSwapFeeCollectorAddress  = DeriveAddress(AddressType32Bytes, ModuleName, "SwapFeeCollector")
+	DefaultDustCollectorAddress     = DeriveAddress(AddressType32Bytes, ModuleName, "DustCollector")
 	DefaultMinInitialPoolCoinSupply = sdk.NewInt(1_000_000_000_000)
-	DefaultPairCreationFee          = sdk.NewCoins(sdk.NewInt64Coin("ucmdx", 200_000_000))
-	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin("ucmdx", 200_000_000))
+	DefaultPairCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(DefaultFeeDenom, 200_000_000))
+	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(DefaultFeeDenom, 200_000_000))
 	DefaultMinInitialDepositAmount  = sdk.NewInt(1000000)
 	DefaultMaxPriceLimitRatio       = sdk.NewDecWithPrec(1, 1) // 10%
-	DefaultSwapFeeRate              = sdk.ZeroDec()
+	DefaultSwapFeeRate              = sdk.NewDecWithPrec(3, 3) // 0.3%
 	DefaultWithdrawFeeRate          = sdk.ZeroDec()
 	DefaultDepositExtraGas          = sdk.Gas(60000)
 	DefaultWithdrawExtraGas         = sdk.Gas(64000)
 	DefaultOrderExtraGas            = sdk.Gas(37000)
+	DefaultSwapFeeDistrDenom        = DefaultFeeDenom
+	DefaultSwapFeeBurnRate          = sdk.NewDecWithPrec(5, 1) //50%
 )
 
 // General constants.
 const (
-	PoolReserveAddressPrefix  = "PoolReserveAddress"
-	PairEscrowAddressPrefix   = "PairEscrowAddress"
-	ModuleAddressNameSplitter = "|"
+	PoolReserveAddressPrefix          = "PoolReserveAddress"
+	PairSwapFeeCollectorAddressPrefix = "PairSwapFeeCollectorAddress"
+	PairEscrowAddressPrefix           = "PairEscrowAddress"
+	ModuleAddressNameSplitter         = "|"
 )
 
 var (
@@ -47,7 +51,7 @@ var (
 	KeyBatchSize                = []byte("BatchSize")
 	KeyTickPrecision            = []byte("TickPrecision")
 	KeyFeeCollectorAddress      = []byte("FeeCollectorAddress")
-	KeySwapFeeCollectorAddress  = []byte("SwapFeeCollectorAddress")
+	KeyDustCollectorAddress     = []byte("DustCollectorAddress")
 	KeyMinInitialPoolCoinSupply = []byte("MinInitialPoolCoinSupply")
 	KeyPairCreationFee          = []byte("PairCreationFee")
 	KeyPoolCreationFee          = []byte("PoolCreationFee")
@@ -59,6 +63,8 @@ var (
 	KeyDepositExtraGas          = []byte("DepositExtraGas")
 	KeyWithdrawExtraGas         = []byte("WithdrawExtraGas")
 	KeyOrderExtraGas            = []byte("OrderExtraGas")
+	KeySwapFeeDistrDenom        = []byte("SwapFeeDistrDenom")
+	KeySwapFeeBurnRate          = []byte("SwapFeeBurnRate")
 )
 
 var _ paramstypes.ParamSet = (*Params)(nil)
@@ -73,7 +79,7 @@ func DefaultParams() Params {
 		BatchSize:                DefaultBatchSize,
 		TickPrecision:            DefaultTickPrecision,
 		FeeCollectorAddress:      DefaultFeeCollectorAddress.String(),
-		SwapFeeCollectorAddress:  DefaultSwapFeeCollectorAddress.String(),
+		DustCollectorAddress:     DefaultDustCollectorAddress.String(),
 		MinInitialPoolCoinSupply: DefaultMinInitialPoolCoinSupply,
 		PairCreationFee:          DefaultPairCreationFee,
 		PoolCreationFee:          DefaultPoolCreationFee,
@@ -85,6 +91,8 @@ func DefaultParams() Params {
 		DepositExtraGas:          DefaultDepositExtraGas,
 		WithdrawExtraGas:         DefaultWithdrawExtraGas,
 		OrderExtraGas:            DefaultOrderExtraGas,
+		SwapFeeDistrDenom:        DefaultSwapFeeDistrDenom,
+		SwapFeeBurnRate:          DefaultSwapFeeBurnRate,
 	}
 }
 
@@ -94,7 +102,7 @@ func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeyBatchSize, &params.BatchSize, validateBatchSize),
 		paramstypes.NewParamSetPair(KeyTickPrecision, &params.TickPrecision, validateTickPrecision),
 		paramstypes.NewParamSetPair(KeyFeeCollectorAddress, &params.FeeCollectorAddress, validateFeeCollectorAddress),
-		paramstypes.NewParamSetPair(KeySwapFeeCollectorAddress, &params.SwapFeeCollectorAddress, validateSwapFeeCollectorAddress),
+		paramstypes.NewParamSetPair(KeyDustCollectorAddress, &params.DustCollectorAddress, validateDustCollectorAddress),
 		paramstypes.NewParamSetPair(KeyMinInitialPoolCoinSupply, &params.MinInitialPoolCoinSupply, validateMinInitialPoolCoinSupply),
 		paramstypes.NewParamSetPair(KeyPairCreationFee, &params.PairCreationFee, validatePairCreationFee),
 		paramstypes.NewParamSetPair(KeyPoolCreationFee, &params.PoolCreationFee, validatePoolCreationFee),
@@ -106,6 +114,8 @@ func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeyDepositExtraGas, &params.DepositExtraGas, validateExtraGas),
 		paramstypes.NewParamSetPair(KeyWithdrawExtraGas, &params.WithdrawExtraGas, validateExtraGas),
 		paramstypes.NewParamSetPair(KeyOrderExtraGas, &params.OrderExtraGas, validateExtraGas),
+		paramstypes.NewParamSetPair(KeySwapFeeDistrDenom, &params.SwapFeeDistrDenom, validateSwapFeeDistrDenom),
+		paramstypes.NewParamSetPair(KeySwapFeeBurnRate, &params.SwapFeeBurnRate, validateSwapFeeBurnRate),
 	}
 }
 
@@ -118,7 +128,7 @@ func (params Params) Validate() error {
 		{params.BatchSize, validateBatchSize},
 		{params.TickPrecision, validateTickPrecision},
 		{params.FeeCollectorAddress, validateFeeCollectorAddress},
-		{params.SwapFeeCollectorAddress, validateSwapFeeCollectorAddress},
+		{params.DustCollectorAddress, validateDustCollectorAddress},
 		{params.MinInitialPoolCoinSupply, validateMinInitialPoolCoinSupply},
 		{params.PairCreationFee, validatePairCreationFee},
 		{params.PoolCreationFee, validatePoolCreationFee},
@@ -130,6 +140,8 @@ func (params Params) Validate() error {
 		{params.DepositExtraGas, validateExtraGas},
 		{params.WithdrawExtraGas, validateExtraGas},
 		{params.OrderExtraGas, validateExtraGas},
+		{params.SwapFeeDistrDenom, validateSwapFeeDistrDenom},
+		{params.SwapFeeBurnRate, validateSwapFeeBurnRate},
 	} {
 		if err := field.validateFunc(field.val); err != nil {
 			return err
@@ -173,14 +185,14 @@ func validateFeeCollectorAddress(i interface{}) error {
 	return nil
 }
 
-func validateSwapFeeCollectorAddress(i interface{}) error {
+func validateDustCollectorAddress(i interface{}) error {
 	v, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	if _, err := sdk.AccAddressFromBech32(v); err != nil {
-		return fmt.Errorf("invalid swap fee collector address: %w", err)
+		return fmt.Errorf("invalid dust collector address: %w", err)
 	}
 
 	return nil
@@ -298,6 +310,28 @@ func validateExtraGas(i interface{}) error {
 	_, ok := i.(sdk.Gas)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	return nil
+}
+
+func validateSwapFeeDistrDenom(i interface{}) error {
+	_, ok := i.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	return nil
+}
+
+func validateSwapFeeBurnRate(i interface{}) error {
+	v, ok := i.(sdk.Dec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v.IsNegative() {
+		return fmt.Errorf("swap fee burn rate must not be negative: %s", v)
 	}
 
 	return nil

@@ -5,11 +5,16 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	time "time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/liquidity/amm"
+)
+
+const (
+	DefaultSwapFeeDistributionDuration time.Duration = time.Hour * 24
 )
 
 var (

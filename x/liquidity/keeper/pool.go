@@ -9,6 +9,7 @@ import (
 
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
 // getNextPoolIdWithUpdate increments pool id by one and set it.
@@ -146,6 +147,26 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 		return types.Pool{}, err
 	}
 
+	newGauge := rewardstypes.NewMsgCreateGauge(
+		pair.GetSwapFeeCollectorAddress(),
+		ctx.BlockTime(),
+		rewardstypes.LiquidityGaugeTypeID,
+		types.DefaultSwapFeeDistributionDuration,
+		sdk.NewCoin(params.SwapFeeDistrDenom, sdk.NewInt(0)),
+		1,
+	)
+	newGauge.Kind = &rewardstypes.MsgCreateGauge_LiquidityMetaData{
+		LiquidityMetaData: &rewardstypes.LiquidtyGaugeMetaData{
+			PoolId:       pool.Id,
+			IsMasterPool: false,
+			ChildPoolIds: []uint64{},
+		},
+	}
+	err := k.rewardsKeeper.CreateNewGauge(ctx, newGauge, true)
+	if err != nil {
+		return types.Pool{}, err
+	}
+
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCreatePool,
@@ -154,6 +175,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 			sdk.NewAttribute(types.AttributeKeyDepositCoins, msg.DepositCoins.String()),
 			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(pool.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyReserveAddress, pool.ReserveAddress),
+			sdk.NewAttribute(types.AttributeKeySwapFeeCollectorAddress, pair.SwapFeeCollectorAddress),
 			sdk.NewAttribute(types.AttributeKeyMintedPoolCoin, poolCoin.String()),
 		),
 	})
@@ -444,4 +466,46 @@ func (k Keeper) FinishWithdrawRequest(ctx sdk.Context, req types.WithdrawRequest
 	})
 
 	return nil
+}
+
+func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, poolId uint64) (sdk.Coin, error) {
+	pool, found := k.GetPool(ctx, poolId)
+	if !found {
+		return sdk.Coin{}, types.ErrInvalidPoolID
+	}
+
+	pair, found := k.GetPair(ctx, pool.PairId)
+	if !found {
+		return sdk.Coin{}, types.ErrInvalidPairId
+	}
+
+	params := k.GetParams(ctx)
+
+	availableBalance := k.bankKeeper.GetBalance(ctx, pair.GetSwapFeeCollectorAddress(), params.SwapFeeDistrDenom)
+
+	burnAmount := availableBalance.Amount.ToDec().MulTruncate(params.SwapFeeBurnRate).TruncateInt()
+	burnCoin := sdk.NewCoin(availableBalance.Denom, burnAmount)
+
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), types.ModuleName, sdk.NewCoins(burnCoin))
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(burnCoin))
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	availableBalance.Amount = availableBalance.Amount.Sub(burnCoin.Amount)
+
+	if availableBalance.IsPositive() {
+		err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), rewardstypes.ModuleName, sdk.NewCoins(availableBalance))
+		if err != nil {
+			return sdk.Coin{}, err
+		}
+	} else {
+		// negative amount handalling
+		availableBalance.Amount = sdk.NewInt(0)
+	}
+	return availableBalance, nil
 }
