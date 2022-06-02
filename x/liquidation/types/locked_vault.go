@@ -1,13 +1,25 @@
 package types
 
-import github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+import (
+	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 func (m *WhitelistedAppIds) ValidateBasic() error {
-	//TODO implement me
-	panic("implement me")
+	if m.WhitelistedAppMappingIds == nil {
+
+		return fmt.Errorf("WhitelistedAppIds cannot be empty")
+	}
+
+	return nil
 }
 
-func (m *WhitelistedAppIds) GetSigners() []github_com_cosmos_cosmos_sdk_types.AccAddress {
-	//TODO implement me
-	panic("implement me")
+func (m *WhitelistedAppIds) GetSigners() []sdk.AccAddress {
+
+	return nil
+}
+
+func (m *WhitelistedAppIds) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(m)
+	return sdk.MustSortJSON(bz)
 }
