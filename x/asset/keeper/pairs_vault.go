@@ -269,7 +269,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, AppMappi
 }
 
 func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id uint64, liq_ratio, stab_fee, close_fee, penalty, 
-	draw_down_fee, min_cr sdk.Dec, debtCeiling, debtFloor sdk.Int) error {
+	draw_down_fee, min_cr sdk.Dec, debtCeiling, debtFloor uint64) error {
 
 	var ExtPairVaultData types.ExtendedPairVault
 	pairVaults, found := k.GetPairsVaults(ctx)
@@ -289,8 +289,8 @@ func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id u
 			ExtPairVaultData.LiquidationPenalty = penalty
 			ExtPairVaultData.DrawDownFee = draw_down_fee
 			ExtPairVaultData.IsVaultActive = data.IsVaultActive
-			ExtPairVaultData.DebtCeiling = debtCeiling
-			ExtPairVaultData.DebtFloor = debtFloor
+			ExtPairVaultData.DebtCeiling = sdk.NewInt(int64(debtCeiling))
+			ExtPairVaultData.DebtFloor =  sdk.NewInt(int64(debtFloor)) 
 			ExtPairVaultData.IsPsmPair = data.IsPsmPair
 			ExtPairVaultData.MinCr = min_cr
 			ExtPairVaultData.PairName = data.PairName
