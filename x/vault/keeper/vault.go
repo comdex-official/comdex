@@ -122,12 +122,12 @@ func (k *Keeper) CheckAppExtendedPairVaultMapping(ctx sdk.Context, appMappingId 
 		newAppExtendedPairVault.Counter = 0
 		zero_val := sdk.ZeroInt()
 		newExtendedPairVault.ExtendedPairId = extendedPairVaultId
-		newExtendedPairVault.CollateralLockedAmount = &zero_val
-		newExtendedPairVault.TokenMintedAmount = &zero_val
+		newExtendedPairVault.CollateralLockedAmount = zero_val
+		newExtendedPairVault.TokenMintedAmount = zero_val
 		newAppExtendedPairVault.ExtendedPairVaults = append(newAppExtendedPairVault.ExtendedPairVaults, &newExtendedPairVault)
 		k.SetAppExtendedPairVaultMapping(ctx, newAppExtendedPairVault)
 
-		return newAppExtendedPairVault.Counter, *newExtendedPairVault.TokenMintedAmount, 0
+		return newAppExtendedPairVault.Counter, newExtendedPairVault.TokenMintedAmount, 0
 
 	} else {
 
@@ -137,7 +137,7 @@ func (k *Keeper) CheckAppExtendedPairVaultMapping(ctx sdk.Context, appMappingId 
 
 				lenOfVaults := len(app_extended_pair_vault_data.ExtendedPairVaults)
 
-				return app_extended_pair_vault_data.Counter, *extendedPairVaultData.TokenMintedAmount, uint64(lenOfVaults)
+				return app_extended_pair_vault_data.Counter, extendedPairVaultData.TokenMintedAmount, uint64(lenOfVaults)
 			}
 
 		}
@@ -145,12 +145,12 @@ func (k *Keeper) CheckAppExtendedPairVaultMapping(ctx sdk.Context, appMappingId 
 		zero_val := sdk.ZeroInt()
 		var newExtendedPairVault types.ExtendedPairVaultMapping
 		newExtendedPairVault.ExtendedPairId = extendedPairVaultId
-		newExtendedPairVault.CollateralLockedAmount = &zero_val
-		newExtendedPairVault.TokenMintedAmount = &zero_val
+		newExtendedPairVault.CollateralLockedAmount = zero_val
+		newExtendedPairVault.TokenMintedAmount = zero_val
 		app_extended_pair_vault_data.ExtendedPairVaults = append(app_extended_pair_vault_data.ExtendedPairVaults, &newExtendedPairVault)
 		k.SetAppExtendedPairVaultMapping(ctx, app_extended_pair_vault_data)
 
-		return app_extended_pair_vault_data.Counter, *newExtendedPairVault.TokenMintedAmount, 0
+		return app_extended_pair_vault_data.Counter, newExtendedPairVault.TokenMintedAmount, 0
 
 	}
 
@@ -168,8 +168,8 @@ func (k *Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Contex
 
 			addedMintedData := appData.TokenMintedAmount.Add(vaultData.AmountOut)
 			addedCollateralData := appData.CollateralLockedAmount.Add(vaultData.AmountIn)
-			appData.TokenMintedAmount = &addedMintedData
-			appData.CollateralLockedAmount = &addedCollateralData
+			appData.TokenMintedAmount = addedMintedData
+			appData.CollateralLockedAmount = addedCollateralData
 			appData.VaultIds = append(appData.VaultIds, vaultData.Id)
 
 		}
@@ -191,8 +191,8 @@ func (k *Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault
 
 			addedMintedData := appData.TokenMintedAmount.Add(vaultData.AmountOut)
 			addedCollateralData := appData.CollateralLockedAmount.Add(vaultData.AmountIn)
-			appData.TokenMintedAmount = &addedMintedData
-			appData.CollateralLockedAmount = &addedCollateralData
+			appData.TokenMintedAmount = addedMintedData
+			appData.CollateralLockedAmount = addedCollateralData
 			appData.VaultIds = append(appData.VaultIds, vaultData.Id)
 
 		}
@@ -239,7 +239,7 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 		}
 	} else {
 		//If oracle Price is not required for the assetOut
-		assetOutPrice = extended_pair_vault.AsssetOutPrice
+		assetOutPrice = extended_pair_vault.AssetOutPrice
 
 	}
 
@@ -319,10 +319,10 @@ func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valu
 		if extendedPairData.ExtendedPairId == extendedPairId {
 			if changeType {
 				updatedVal := extendedPairData.CollateralLockedAmount.Add(amount)
-				extendedPairData.CollateralLockedAmount = &updatedVal
+				extendedPairData.CollateralLockedAmount = updatedVal
 			} else {
 				updatedVal := extendedPairData.CollateralLockedAmount.Sub(amount)
-				extendedPairData.CollateralLockedAmount = &updatedVal
+				extendedPairData.CollateralLockedAmount = updatedVal
 			}
 		}
 	}
@@ -340,10 +340,10 @@ func (k *Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLook
 		if extendedPairData.ExtendedPairId == extendedPairId {
 			if changeType {
 				updatedVal := extendedPairData.TokenMintedAmount.Add(amount)
-				extendedPairData.TokenMintedAmount = &updatedVal
+				extendedPairData.TokenMintedAmount = updatedVal
 			} else {
 				updatedVal := extendedPairData.TokenMintedAmount.Sub(amount)
-				extendedPairData.TokenMintedAmount = &updatedVal
+				extendedPairData.TokenMintedAmount = updatedVal
 			}
 		}
 	}
@@ -493,10 +493,10 @@ func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, AppMappingId uint64
 	new_vault.Id = appMapping.ShortName + strconv.FormatUint(updated_counter, 10)
 	new_vault.AmountIn = AmountIn
 
-	new_vault.ClosingFeeAccumulated = &zero_val
+	new_vault.ClosingFeeAccumulated = zero_val
 	new_vault.AmountOut = AmountOut
 	new_vault.AppMappingId = appMapping.Id
-	new_vault.InterestAccumulated = &zero_val
+	new_vault.InterestAccumulated = zero_val
 	new_vault.Owner = From
 	new_vault.CreatedAt = time.Now()
 	new_vault.ExtendedPairVaultID = extendedPairVault.Id

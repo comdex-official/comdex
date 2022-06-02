@@ -3,21 +3,22 @@ package types
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateRequest{}, "comdex/vault/create", nil)
-	cdc.RegisterConcrete(&MsgCloseRequest{}, "comdex/vault/close", nil)
-	cdc.RegisterConcrete(&MsgDepositRequest{}, "comdex/vault/deposit", nil)
-	cdc.RegisterConcrete(&MsgRepayRequest{}, "comdex/vault/repay", nil)
-	cdc.RegisterConcrete(&MsgWithdrawRequest{}, "comdex/vault/withdraw", nil)
-	cdc.RegisterConcrete(&MsgDrawRequest{}, "comdex/vault/draw", nil)
-	cdc.RegisterConcrete(&MsgCreateStableMintRequest{}, "comdex/vault/create-stable-mint", nil)
-	cdc.RegisterConcrete(&MsgDepositStableMintRequest{}, "comdex/vault/deposit-stable-mint", nil)
-	cdc.RegisterConcrete(&MsgWithdrawStableMintRequest{}, "comdex/vault/withdraw-stable-mint", nil)
+	cdc.RegisterConcrete(&MsgCreateRequest{}, "comdex/vault/MsgCreateRequest", nil)
+	cdc.RegisterConcrete(&MsgCloseRequest{}, "comdex/vault/MsgCloseRequest", nil)
+	cdc.RegisterConcrete(&MsgDepositRequest{}, "comdex/vault/MsgDepositRequest", nil)
+	cdc.RegisterConcrete(&MsgRepayRequest{}, "comdex/vault/MsgRepayRequest", nil)
+	cdc.RegisterConcrete(&MsgWithdrawRequest{}, "comdex/vault/MsgWithdrawRequest", nil)
+	cdc.RegisterConcrete(&MsgDrawRequest{}, "comdex/vault/MsgDrawRequest", nil)
+	cdc.RegisterConcrete(&MsgCreateStableMintRequest{}, "comdex/vault/MsgCreateStableMintRequest", nil)
+	cdc.RegisterConcrete(&MsgDepositStableMintRequest{}, "comdex/vault/MsgDepositStableMintRequest", nil)
+	cdc.RegisterConcrete(&MsgWithdrawStableMintRequest{}, "comdex/vault/MsgWithdrawStableMintRequest", nil)
 }
 
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
@@ -39,10 +40,11 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 
 var (
 	amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
 	RegisterLegacyAminoCodec(amino)
+	cryptocodec.RegisterCrypto(amino)
 	amino.Seal()
 }

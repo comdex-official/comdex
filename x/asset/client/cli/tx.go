@@ -870,7 +870,7 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 
 func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-pairs-vault [app_mapping_id] [pair_id] [liquidation_ratio] [stability_fee] [closing_fee] [liquidation_penalty] [draw_down_fee] [is_vault_active] [debt_cieling] [debt_floor] [is_psm_pair] [min_cr] [pair_name] [asset_out_oracle_price] [assset_out_price]",
+		Use:   "add-pairs-vault [app_mapping_id] [pair_id] [liquidation_ratio] [stability_fee] [closing_fee] [liquidation_penalty] [draw_down_fee] [is_vault_active] [debt_cieling] [debt_floor] [is_psm_pair] [min_cr] [pair_name] [asset_out_oracle_price] [asset_out_price]",
 		Args:  cobra.ExactArgs(15),
 		Short: "Add pairs vault",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -949,7 +949,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 				return err
 			}
 
-			assset_out_price, err := ParseUint64SliceFromString(args[14], ",")
+			asset_out_price, err := ParseUint64SliceFromString(args[14], ",")
 			if err != nil {
 				return err
 			}
@@ -1021,7 +1021,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 					MinCr:               newmin_cr,
 					PairName:            pair_name[i],
 					AssetOutOraclePrice: newasset_out_oracle_price,
-					AsssetOutPrice:      assset_out_price[i],
+					AssetOutPrice:      asset_out_price[i],
 				})
 			}
 

@@ -43,7 +43,9 @@ func GetQueryCmd() *cobra.Command {
 		QueryExtendedPairVaultMappingByAppAndExtendedPairId(),
 		QueryExtendedPairVaultMappingByOwnerAndApp(),
 		QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID(),
-		QueryTVLlockedByApp(),
+		QueryVaultInfoByOwner(),
+		QueryTVLLockedByAppOfAllExtendedPairs(),
+		QueryTotalTVLByApp(),
 	)
 
 	return cmd
@@ -179,6 +181,35 @@ func QueryVaultOfOwnerByExtendedPair() *cobra.Command {
 				Owner:          args[1],
 				ExtendedPairId: extendedPairid,
 				Pagination:     pagination,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryVaultInfoByOwner() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vaultInfoByOwner [owner]",
+		Short: "vaults list for an owner",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryVaultInfoByOwner(cmd.Context(), &types.QueryVaultInfoByOwnerRequest{
+				Owner: args[0],
 			})
 
 			if err != nil {
@@ -834,7 +865,40 @@ func QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID() *cobra.Comman
 	return cmd
 }
 
-func QueryTVLlockedByApp() *cobra.Command {
+func QueryTVLLockedByAppOfAllExtendedPairs() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "tvl-locked-by-app-all-extended-pairs [app_id]",
+		Short: "get tvl locked By App of all extended pairs",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryTVLLockedByAppOfAllExtendedPairs(cmd.Context(), &types.QueryTVLLockedByAppOfAllExtendedPairsRequest{
+				AppId: app_id,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryTotalTVLByApp() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "tvl-locked-by-app [app_id]",
 		Short: "get tvl locked By App",
@@ -852,7 +916,7 @@ func QueryTVLlockedByApp() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryTVLlockedByApp(cmd.Context(), &types.QueryTVLlockedByAppRequest{
+			res, err := queryClient.QueryTotalTVLByApp(cmd.Context(), &types.QueryTotalTVLByAppRequest{
 				AppId: app_id,
 			})
 

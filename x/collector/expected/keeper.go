@@ -1,9 +1,8 @@
 package expected
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/comdex-official/comdex/x/asset/types"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type BankKeeper interface {
@@ -12,13 +11,12 @@ type BankKeeper interface {
 
 	SendCoinsFromModuleToModule(
 		ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins,
-	   ) error
+	) error
 }
 
 type AssetKeeper interface {
-	// GetApps(ctx sdk.Context) (assettypes.AppMapping, bool)
-	HasAssetForDenom(ctx sdk.Context, id string) (bool)
-	HasAsset(ctx sdk.Context, id uint64) (bool)
+	HasAssetForDenom(ctx sdk.Context, id string) bool
+	HasAsset(ctx sdk.Context, id uint64) bool
 	GetAssetForDenom(ctx sdk.Context, denom string) (types.Asset, bool)
 	GetApp(ctx sdk.Context, id uint64) (types.AppMapping, bool)
 	GetAsset(ctx sdk.Context, id uint64) (types.Asset, bool)

@@ -270,3 +270,49 @@ func (k *Keeper) SetExternalRewardVault(ctx sdk.Context, VaultExternalRewards ty
 	)
 	store.Set(key, value)
 }
+
+// Wasm query checks
+
+func (k *Keeper) GetRemoveWhitelistAppIdLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
+	_, found = k.GetReward(ctx, appMappingId)
+	if found != true {
+		return false, "not found"
+	}
+	return true, ""
+}
+
+func (k *Keeper) GetWhitelistAppIdVaultInterestCheck(ctx sdk.Context, appMappingId uint64) (found bool, err string) {
+	found = uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults)
+	if found {
+		return false, "app Id already exists"
+	}
+	return true, ""
+}
+
+func (k *Keeper) GetWhitelistAppIdLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
+	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, appMappingId)
+	for i := range assetId {
+		found := uint64InSlice(assetId[i], lockerAssets.AssetIds)
+		if !found {
+			return false, "assetId does not exist"
+		}
+	}
+	return true, ""
+}
+
+func (k *Keeper) GetExternalLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, AssetId uint64) (found bool, err string) {
+	lockerAssets, found := k.GetLockerProductAssetMapping(ctx, appMappingId)
+	if !found {
+		return false, "LockerProductAssetMapping Doesnt Exist"
+	}
+
+	found = uint64InSlice(AssetId, lockerAssets.AssetIds)
+	if !found {
+		return false, "AssetId does not exist"
+	}
+	return true, ""
+}
+
+func (k *Keeper) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId uint64) (found bool, err string) {
+	return true, ""
+}

@@ -15,7 +15,7 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -27,9 +27,9 @@ func (q *queryServer) QueryAllTokenMintedForAllProducts(c context.Context, req *
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	totalmintedData := q.GetTotalTokenMinted(ctx)
+	totalMintedData := q.GetTotalTokenMinted(ctx)
 	return &types.QueryAllTokenMintedForAllProductsResponse{
-		TokenMint: totalmintedData,
+		TokenMint: totalMintedData,
 	}, nil
 }
 
@@ -53,12 +53,12 @@ func (q *queryServer) QueryTokenMintedByProductAndAsset(c context.Context, req *
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-	tokenmint, found := q.GetAssetDataInTokenMintByApp(ctx, req.AppId, req.AssetId)
+	tokenMint, found := q.GetAssetDataInTokenMintByApp(ctx, req.AppId, req.AssetId)
 	if !found {
 		return nil, types.ErrorMintDataNotFound
 	}
 
 	return &types.QueryTokenMintedByProductAndAssetResponse{
-		MintedTokens: tokenmint,
+		MintedTokens: tokenMint,
 	}, nil
 }

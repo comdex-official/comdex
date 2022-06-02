@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/comdex-official/comdex/x/tokenmint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -16,7 +17,7 @@ func (k *Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 
 func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return types.ErrorMintingGenesisSupplyLessThanOne
 	}
 
 	return k.bank.MintCoins(ctx, name, sdk.NewCoins(coin))

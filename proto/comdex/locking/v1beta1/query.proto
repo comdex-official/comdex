@@ -1,0 +1,108 @@
+syntax = "proto3";
+package comdex.locking.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "comdex/locking/v1beta1/params.proto";
+import "comdex/locking/v1beta1/lock.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/locking/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryLockByIdRequest {
+  uint64 id = 1;
+}
+
+message QueryLockByIdResponse {
+  Lock lock = 1
+      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"lock\"" ];
+}
+
+message QueryLocksByOwnerRequest {
+  string owner = 1;
+}
+
+message QueryLocksByOwnerResponse {
+  repeated Lock locks = 1
+      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"locks\"" ];
+}
+
+message QueryAllLocksRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryAllLocksResponse {
+  repeated Lock locks = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"locks\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+
+message QueryUnlockingByIdRequest {
+  uint64 id = 1;
+}
+
+message QueryUnlockingByIdResponse {
+  Unlocking unlocking = 1
+      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"unlocking\"" ];
+}
+
+message QueryUnlockingsByOwnerRequest {
+  string owner = 1;
+}
+
+message QueryUnlockingsByOwnerResponse {
+  repeated Unlocking unlockings = 1
+      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"unlockings\"" ];
+}
+
+message QueryAllUnlockingsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryAllUnlockingsResponse {
+  repeated Unlocking unlockings = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"unlockings\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/comdex/locking/v1beta1/params";
+  }
+  rpc QueryLockByID(QueryLockByIdRequest) returns (QueryLockByIdResponse) {
+    option (google.api.http).get = "/comdex/locking/v1beta1/lock_id/{id}";
+  }
+  rpc QueryLocksByOwner(QueryLocksByOwnerRequest) returns (QueryLocksByOwnerResponse) {
+    option (google.api.http).get = "/comdex/locking/v1beta1/lock_owner/{owner}";
+  }
+  rpc QueryAllLocks(QueryAllLocksRequest) returns (QueryAllLocksResponse) {
+    option (google.api.http).get = "/comdex/locking/v1beta1/locks";
+  }
+  rpc QueryUnlockingByID(QueryUnlockingByIdRequest) returns (QueryUnlockingByIdResponse) {
+    option (google.api.http).get = "/comdex/locking/v1beta1/unlocking_id/{id}";
+  }
+  rpc QueryUnlockingsByOwner(QueryUnlockingsByOwnerRequest) returns (QueryUnlockingsByOwnerResponse) {
+    option (google.api.http).get = "/comdex/locking/v1beta1/unlocking_owner/{owner}";
+  }
+  rpc QueryAllUnlockings(QueryAllUnlockingsRequest) returns (QueryAllUnlockingsResponse) {
+    option (google.api.http).get = "/comdex/locking/v1beta1/unlockings";
+  }
+}

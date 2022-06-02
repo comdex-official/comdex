@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-
 var (
 	ErrorInvalidAmount        = errors.Register(ModuleName, 101, "invalid amount")
 	ErrorInvalidAmountIn      = errors.Register(ModuleName, 102, "invalid amount_in")
@@ -17,15 +16,15 @@ var (
 )
 
 var (
-
-	ErrorAssetDoesNotExist   = errors.Register(ModuleName, 201, "Asset Does not exists")
-	ErrorAppMappingDoesNotExists= errors.Register(ModuleName, 202, "App Mapping Does Not exists")
-	ErrorAssetNotWhiteListedForGenesisMinting=errors.Register(ModuleName, 203, "Asset not added in appMapping data for genesis minting")
-	ErrorGensisMintingForTokenalreadyDone=errors.Register(ModuleName, 204, "Asset minting already done for the given app")
-	ErrorBuringMakesSupplyLessThanZero=errors.Register(ModuleName, 205, "Burning request recudes the the supply to 0 or less than 0 tokens")
-	ErrorMintDataNotFound   = errors.Register(ModuleName, 206, "minted data not found")
+	ErrorAssetDoesNotExist                    = errors.Register(ModuleName, 201, "Asset Does not exists")
+	ErrorAppMappingDoesNotExists              = errors.Register(ModuleName, 202, "App Mapping Does Not exists")
+	ErrorAssetNotWhiteListedForGenesisMinting = errors.Register(ModuleName, 203, "Asset not added in appMapping data for genesis minting")
+	ErrorGenesisMintingForTokenAlreadyDone    = errors.Register(ModuleName, 204, "Asset minting already done for the given app")
+	ErrorBurningMakesSupplyLessThanZero       = errors.Register(ModuleName, 205, "Burning request reduces the the supply to 0 or less than 0 tokens")
+	ErrorMintDataNotFound                     = errors.Register(ModuleName, 206, "minted data not found")
+	ErrorMintingGenesisSupplyLessThanOne      = errors.Register(ModuleName, 207, "Mint genesis supply should be greater than zero")
 )
 
 var (
-	ErrorEmergencyShutdownIsActive  = errors.Register(ModuleName, 301, "Error Emergency Shutdown Is Active for this App")
+	ErrorEmergencyShutdownIsActive = errors.Register(ModuleName, 301, "Error Emergency Shutdown Is Active for this App")
 )

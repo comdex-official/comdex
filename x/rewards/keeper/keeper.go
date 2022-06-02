@@ -2,8 +2,9 @@ package keeper
 
 import (
 	"fmt"
-	"github.com/comdex-official/comdex/x/rewards/expected"
 	"time"
+
+	"github.com/comdex-official/comdex/x/rewards/expected"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -15,17 +16,17 @@ import (
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		storeKey   sdk.StoreKey
-		memKey     sdk.StoreKey
-		paramstore paramtypes.Subspace
-		locker     expected.LockerKeeper
-		collector  expected.CollectorKeeper
-		vault      expected.VaultKeeper
-		asset      expected.AssetKeeper
-		bank       expected.BankKeeper
+		cdc             codec.BinaryCodec
+		storeKey        sdk.StoreKey
+		memKey          sdk.StoreKey
+		paramstore      paramtypes.Subspace
+		locker          expected.LockerKeeper
+		collector       expected.CollectorKeeper
+		vault           expected.VaultKeeper
+		asset           expected.AssetKeeper
+		bank            expected.BankKeeper
+		liquidityKeeper expected.LiquidityKeeper
 	}
-	
 )
 
 func NewKeeper(
@@ -38,6 +39,7 @@ func NewKeeper(
 	vault expected.VaultKeeper,
 	asset expected.AssetKeeper,
 	bank expected.BankKeeper,
+	liquidityKeeper expected.LiquidityKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -47,15 +49,16 @@ func NewKeeper(
 
 	return &Keeper{
 
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
-		locker:     locker,
-		collector:  collector,
-		vault:      vault,
-		asset:      asset,
-		bank:       bank,
+		cdc:             cdc,
+		storeKey:        storeKey,
+		memKey:          memKey,
+		paramstore:      ps,
+		locker:          locker,
+		collector:       collector,
+		vault:           vault,
+		asset:           asset,
+		bank:            bank,
+		liquidityKeeper: liquidityKeeper,
 	}
 }
 

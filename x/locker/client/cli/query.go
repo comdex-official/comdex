@@ -189,6 +189,43 @@ func queryOwnerLockerByProductIDbyOwner() *cobra.Command {
 	return cmd
 }
 
+func queryLockerByProductbyOwner() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "locker-by-product-by-owner [product_id] [owner]",
+		Short: "locker by product by owner",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			owner := args[1]
+
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryLockerByProductByOwner(
+				context.Background(),
+				&types.QueryLockerByProductByOwnerRequest{
+					ProductId: productId,
+					Owner:     owner,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
 func queryOwnerLockerOfAllProductbyOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "owner-locker-by-all-product-by-owner [owner]",
@@ -203,9 +240,9 @@ func queryOwnerLockerOfAllProductbyOwner() *cobra.Command {
 			owner := args[0]
 
 			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.QueryOwnerLockerOfAllProductbyOwner(
+			res, err := queryClient.QueryOwnerLockerOfAllProductByOwner(
 				context.Background(),
-				&types.QueryOwnerLockerOfAllProductbyOwnerRequest{
+				&types.QueryOwnerLockerOfAllProductByOwnerRequest{
 					Owner: owner,
 				},
 			)
@@ -250,6 +287,50 @@ func queryOwnerLockerByProductToAssetIDbyOwner() *cobra.Command {
 					ProductId: productId,
 					AssetId:   assetId,
 					Owner:     owner,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryOwnerTxDetailsLockerOfProductbyOwner() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "owner-tx-details-by-product-to-owner [product_id] [owner]",
+		Short: "owner locker tx details by product to owner",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			productId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			owner := args[1]
+
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryOwnerTxDetailsLockerOfProductByOwner(
+				context.Background(),
+				&types.QueryOwnerTxDetailsLockerOfProductByOwnerRequest{
+					ProductId: productId,
+					Owner:     owner,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {

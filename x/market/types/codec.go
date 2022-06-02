@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
@@ -10,9 +11,9 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgAddMarketRequest{}, "comdex/market/add-market", nil)
-	cdc.RegisterConcrete(&MsgUpdateMarketRequest{}, "comdex/market/update-market", nil)
-	cdc.RegisterConcrete(&MsgRemoveMarketForAssetRequest{}, "comdex/market/remove-market-for-asset", nil)
+	cdc.RegisterConcrete(&MsgAddMarketRequest{}, "comdex/market/MsgAddMarketRequest", nil)
+	cdc.RegisterConcrete(&MsgUpdateMarketRequest{}, "comdex/market/MsgUpdateMarketRequest", nil)
+	cdc.RegisterConcrete(&MsgRemoveMarketForAssetRequest{}, "comdex/market/MsgRemoveMarketForAssetRequest", nil)
 
 }
 
@@ -40,5 +41,6 @@ var (
 
 func init() {
 	RegisterLegacyAminoCodec(amino)
+	cryptocodec.RegisterCrypto(amino)
 	amino.Seal()
 }

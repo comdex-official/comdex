@@ -4,7 +4,6 @@ package comdex.vault.v1beta1;
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "comdex/vault/v1beta1/vault.proto";
 
 option go_package            = "github.com/comdex-official/comdex/x/vault/types";
@@ -59,6 +58,20 @@ message QueryVaultInfoResponse {
     (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
     (gogoproto.nullable)   = false
   ];
+}
+
+message QueryVaultInfoByOwnerRequest {
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+}
+
+message QueryVaultInfoByOwnerResponse {
+ repeated VaultInfo vaultsInfo = 1 [
+    (gogoproto.customname) = "VaultsInfo",
+    (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
+    (gogoproto.nullable)   = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
 message QueryAllVaultsRequest {
@@ -123,7 +136,7 @@ message QueryVaultByProductRequest {
 }
 
 message QueryVaultByProductResponse {
-  repeated string vault_Ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_Ids\"" ];
+  repeated string vault_ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_ids\"" ];
 }
 
 message QueryAllVaultByOwnerRequest {
@@ -133,7 +146,7 @@ message QueryAllVaultByOwnerRequest {
 }
 
 message QueryAllVaultByOwnerResponse {
-  repeated string vault_Ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_Ids\"" ];
+  repeated string vault_ids = 1 [ (gogoproto.moretags) = "yaml:\"vault_ids\"" ];
 }
 
 message QueryTokenMintedAllProductsByPairRequest {
@@ -144,9 +157,10 @@ message QueryTokenMintedAllProductsByPairRequest {
 }
 
 message QueryTokenMintedAllProductsByPairResponse {
-  string token_Minted = 1 [ 
-  (gogoproto.moretags) = "yaml:\"token_Minted\"",
-  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+  string token_minted = 1 [ 
+  (gogoproto.moretags) = "yaml:\"token_minted\"",
+  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+  (gogoproto.nullable)   = false ];
 }
 
 message QueryTokenMintedAllProductsRequest {
@@ -156,9 +170,10 @@ message QueryTokenMintedAllProductsRequest {
 }
 
 message QueryTokenMintedAllProductsResponse {
-  string token_Minted = 1 [ 
-  (gogoproto.moretags) = "yaml:\"token_Minted\"",
-  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
+  string token_minted = 1 [ 
+  (gogoproto.moretags) = "yaml:\"token_minted\"",
+  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+  (gogoproto.nullable)   = false ];
 }
 
 message QueryVaultCountByProductRequest {
@@ -268,13 +283,23 @@ message QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairIDResponse {
 string vaultId = 1 [ (gogoproto.moretags) = "yaml:\"vaultId\"" ];
 }
 
-message QueryTVLlockedByAppRequest {
+message QueryTVLLockedByAppOfAllExtendedPairsRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
 
 }
 
-message QueryTVLlockedByAppResponse {
-repeated TvlLockedDataMap tvldata = 1 [ (gogoproto.moretags) = "yaml:\"tvldata\"" ];
+message QueryTVLLockedByAppOfAllExtendedPairsResponse {
+repeated TvlLockedDataMap tvldata = 1 [ (gogoproto.moretags) = "yaml:\"tvldata\"",
+(gogoproto.nullable)   = false ];
+}
+
+message QueryTotalTVLByAppRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+
+}
+
+message QueryTotalTVLByAppResponse {
+  uint64 collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\""];
 }
 
 
@@ -285,6 +310,10 @@ service Query {
 
   rpc QueryVaultInfo(QueryVaultInfoRequest) returns (QueryVaultInfoResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaultsInfo/{id}";
+  };
+
+  rpc QueryVaultInfoByOwner(QueryVaultInfoByOwnerRequest) returns (QueryVaultInfoByOwnerResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaultsInfoByOwner/{owner}";
   };
 
   rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
@@ -361,7 +390,11 @@ service Query {
     option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairVault-by-owner-product-extendedPair/{owner}/{app_id}/{extended_pair}";
   };
 
-  rpc QueryTVLlockedByApp(QueryTVLlockedByAppRequest) returns (QueryTVLlockedByAppResponse) {
+  rpc QueryTVLLockedByAppOfAllExtendedPairs(QueryTVLLockedByAppOfAllExtendedPairsRequest) returns (QueryTVLLockedByAppOfAllExtendedPairsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/tvl-locked-by-app-all-extended-pairs/{app_id}";
+  };
+
+  rpc QueryTotalTVLByApp(QueryTotalTVLByAppRequest) returns (QueryTotalTVLByAppResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/tvl-locked-by-app/{app_id}";
   };
 }

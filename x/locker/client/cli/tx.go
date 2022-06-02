@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -13,26 +12,6 @@ import (
 
 	"github.com/comdex-official/comdex/x/locker/types"
 )
-
-// GetTxCmd returns the transaction commands for this module
-func GetTxCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("%s transactions subcommands", types.ModuleName),
-		DisableFlagParsing:         true,
-		SuggestionsMinimumDistance: 2,
-		RunE:                       client.ValidateCmd,
-	}
-
-	cmd.AddCommand(
-		
-		txCreateLocker(),
-		txDepositAssetLocker(),
-		txWithdrawAssetLocker(),
-	)
-
-	return cmd
-}
 
 func txCreateLocker() *cobra.Command {
 	cmd := &cobra.Command{
@@ -161,7 +140,7 @@ func txWithdrawAssetLocker() *cobra.Command {
 func txAddWhiteListedAssetLocker() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "whitelist-asset-locker [app_mapping_id][asset_id] ",
-		Short: "dwithdraw from a locker",
+		Short: "withdraw from a locker",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 

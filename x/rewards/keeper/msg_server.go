@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -17,6 +18,22 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 }
 
 var _ types.MsgServer = msgServer{}
+
+func (m msgServer) CreateGauge(goCtx context.Context, msg *types.MsgCreateGauge) (*types.MsgCreateGaugeResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	err := m.Keeper.ValidateMsgCreateCreateGauge(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	err = m.Keeper.CreateNewGauge(ctx, msg, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.MsgCreateGaugeResponse{}, nil
+}
 
 func (m msgServer) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (*types.MsgWhitelistAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)

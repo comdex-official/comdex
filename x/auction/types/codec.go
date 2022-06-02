@@ -3,14 +3,15 @@ package types
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgPlaceSurplusBidRequest{}, "comdex/auction/bid-surplus", nil)
-	cdc.RegisterConcrete(&MsgPlaceDebtBidRequest{}, "comdex/auction/bid-debt", nil)
-	cdc.RegisterConcrete(&MsgPlaceDutchBidRequest{}, "comdex/auction/bid-dutch", nil)
+	cdc.RegisterConcrete(&MsgPlaceSurplusBidRequest{}, "comdex/auction/MsgPlaceSurplusBidRequest", nil)
+	cdc.RegisterConcrete(&MsgPlaceDebtBidRequest{}, "comdex/auction/MsgPlaceDebtBidRequest", nil)
+	cdc.RegisterConcrete(&MsgPlaceDutchBidRequest{}, "comdex/auction/MsgPlaceDutchBidRequest", nil)
 }
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
@@ -33,5 +34,6 @@ var (
 
 func init() {
 	RegisterLegacyAminoCodec(amino)
+	cryptocodec.RegisterCrypto(amino)
 	amino.Seal()
 }

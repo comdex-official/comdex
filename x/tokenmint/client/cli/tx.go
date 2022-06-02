@@ -5,17 +5,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
-
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/comdex-official/comdex/x/tokenmint/types"
-)
-
-var (
-	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
 )
 
 const (
@@ -40,6 +34,7 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
+// Token mint txs cmd
 func txMint() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "tokenmint [app_ID] [asset_id]",
@@ -50,14 +45,12 @@ func txMint() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			app_ID, err := sdk.ParseUint(args[0])
-			appID := app_ID.Uint64()
+			appId, err := sdk.ParseUint(args[0])
+			appID := appId.Uint64()
 
-			asset_ID, err := sdk.ParseUint(args[1])
-			assetID := asset_ID.Uint64()
+			assetId, err := sdk.ParseUint(args[1])
 
-
-			msg := types.NewMsgMintNewTokensRequest(ctx.GetFromAddress(), appID, assetID)
+			msg := types.NewMsgMintNewTokensRequest(ctx.GetFromAddress(), appID, assetId.Uint64())
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -67,4 +60,3 @@ func txMint() *cobra.Command {
 	return cmd
 
 }
-

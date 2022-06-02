@@ -1,5 +1,5 @@
-
 syntax = "proto3";
+
 package comdex.vault.v1beta1;
 
 import "gogoproto/gogo.proto";
@@ -12,7 +12,6 @@ message MsgCreateRequest {
   string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
   uint64 extended_pair_vault_id = 3 [
-    (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string amount_in = 4 [
@@ -31,13 +30,14 @@ message MsgCreateResponse {}
 
 message MsgDepositRequest {
   string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+
   uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
+
   uint64 extended_pair_vault_id = 3 [
-    (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string userVaultid   = 4
-      [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
+  string user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -51,11 +51,10 @@ message MsgWithdrawRequest {
   string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
   uint64 extended_pair_vault_id = 3 [
-    (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string userVaultid   = 4
-      [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
+  string user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -69,11 +68,10 @@ message MsgDrawRequest {
   string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
   uint64 extended_pair_vault_id = 3 [
-    (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string userVaultid   = 4
-      [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
+  string user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -87,11 +85,10 @@ message MsgRepayRequest {
   string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
   uint64 extended_pair_vault_id = 3 [
-    (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string userVaultid   = 4
-      [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
+  string user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
@@ -105,11 +102,10 @@ message MsgCloseRequest {
   string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
   uint64 extended_pair_vault_id = 3 [
-    (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string userVaultid   = 4
-      [ (gogoproto.customname) = "UserVaultID", (gogoproto.moretags) = "yaml:\"userVaultid\"" ];
+  string user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
 }
 
 message MsgCloseResponse {}
@@ -119,7 +115,6 @@ message MsgCreateStableMintRequest {
   string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
   uint64 extended_pair_vault_id = 3 [
-    (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string amount = 4 [
@@ -136,7 +131,6 @@ message MsgDepositStableMintRequest {
   string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
   uint64 extended_pair_vault_id = 3 [
-    (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string amount = 4 [
@@ -144,8 +138,8 @@ message MsgDepositStableMintRequest {
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
-  string stableVaultid   = 5
-  [ (gogoproto.customname) = "StableVaultID", (gogoproto.moretags) = "yaml:\"stableVaultid\"" ];
+  string stable_vault_id   = 5
+  [ (gogoproto.moretags) = "yaml:\"stable_vault_id\"" ];
 }
 
 
@@ -158,7 +152,6 @@ message MsgWithdrawStableMintRequest {
   string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
   uint64 extended_pair_vault_id = 3 [
-    (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string amount = 4 [
@@ -166,8 +159,8 @@ message MsgWithdrawStableMintRequest {
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
-  string stableVaultid   = 5
-  [ (gogoproto.customname) = "StableVaultID", (gogoproto.moretags) = "yaml:\"stableVaultid\"" ];
+  string stable_vault_id   = 5
+  [ (gogoproto.moretags) = "yaml:\"stable_vault_id\"" ];
 }
 
 message  MsgWithdrawStableMintResponse{}
