@@ -306,6 +306,12 @@ func queryOwnerTxDetailsLockerOfProductbyOwner() *cobra.Command {
 		Short: "owner locker tx details by product to owner",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -324,6 +330,7 @@ func queryOwnerTxDetailsLockerOfProductbyOwner() *cobra.Command {
 				&types.QueryOwnerTxDetailsLockerOfProductByOwnerRequest{
 					ProductId: productId,
 					Owner:     owner,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
