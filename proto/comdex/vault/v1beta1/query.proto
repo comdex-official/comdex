@@ -283,12 +283,12 @@ message QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairIDResponse {
 string vaultId = 1 [ (gogoproto.moretags) = "yaml:\"vaultId\"" ];
 }
 
-message QueryTVLlockedByAppOfallExtendedPairsRequest {
+message QueryTVLLockedByAppOfAllExtendedPairsRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
 
 }
 
-message QueryTVLlockedByAppOfallExtendedPairsResponse {
+message QueryTVLLockedByAppOfAllExtendedPairsResponse {
 repeated TvlLockedDataMap tvldata = 1 [ (gogoproto.moretags) = "yaml:\"tvldata\"",
 (gogoproto.nullable)   = false ];
 }
@@ -390,7 +390,7 @@ service Query {
     option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairVault-by-owner-product-extendedPair/{owner}/{app_id}/{extended_pair}";
   };
 
-  rpc QueryTVLlockedByAppOfallExtendedPairs(QueryTVLlockedByAppOfallExtendedPairsRequest) returns (QueryTVLlockedByAppOfallExtendedPairsResponse) {
+  rpc QueryTVLLockedByAppOfAllExtendedPairs(QueryTVLLockedByAppOfAllExtendedPairsRequest) returns (QueryTVLLockedByAppOfAllExtendedPairsResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/tvl-locked-by-app-all-extended-pairs/{app_id}";
   };
 
