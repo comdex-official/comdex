@@ -5,12 +5,13 @@ import (
 )
 
 const (
-	ModuleName     = "liquidation"
-	ParamsSubspace = ModuleName
-	QuerierRoute   = ModuleName
-	RouterKey      = ModuleName
-	StoreKey       = ModuleName
-	MemStoreKey    = ModuleName
+	ModuleName            = "liquidation"
+	ParamsSubspace        = ModuleName
+	QuerierRoute          = ModuleName
+	RouterKey             = ModuleName
+	StoreKey              = ModuleName
+	MemStoreKey           = ModuleName
+	SafeLiquidationFactor = "0.15"
 )
 
 var (
