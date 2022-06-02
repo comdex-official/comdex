@@ -623,7 +623,7 @@ func (q *queryServer) QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairI
 	}, nil
 }
 
-func (q *queryServer) QueryTVLlockedByApp(c context.Context, req *types.QueryTVLlockedByAppRequest) (*types.QueryTVLlockedByAppResponse, error) {
+func (q *queryServer) QueryTVLlockedByAppOfallExtendedPairs(c context.Context, req *types.QueryTVLlockedByAppOfallExtendedPairsRequest) (*types.QueryTVLlockedByAppOfallExtendedPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -657,7 +657,37 @@ func (q *queryServer) QueryTVLlockedByApp(c context.Context, req *types.QueryTVL
 		tvlData = append(tvlData, tvl)
 	}
 
-	return &types.QueryTVLlockedByAppResponse{
+	return &types.QueryTVLlockedByAppOfallExtendedPairsResponse{
 		Tvldata: tvlData,
+	}, nil
+}
+
+func (q *queryServer) QueryTotalTVLByApp(c context.Context, req *types.QueryTotalTVLByAppRequest) (*types.QueryTotalTVLByAppResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var (
+		ctx     = sdk.UnwrapSDKContext(c)
+		locked uint64
+	)
+	_, found := q.GetApp(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
+	}
+
+	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.AppId)
+	}
+	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
+		extPairVault, _ := q.GetPairsVault(ctx, data.ExtendedPairId)
+		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
+
+		rate, _ := q.GetPriceForAsset(ctx, pairId.AssetIn)
+		locked = locked + (rate * data.CollateralLockedAmount.Uint64())
+	}
+
+	return &types.QueryTotalTVLByAppResponse{
+		CollateralLocked: locked,
 	}, nil
 }
