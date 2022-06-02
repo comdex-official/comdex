@@ -7,7 +7,7 @@ import "comdex/locker/v1beta1/locker.proto";
 import "comdex/locker/v1beta1/params.proto";
 import "comdex/asset/v1beta1/asset.proto";
 import "cosmos/base/v1beta1/coin.proto";
-
+import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package            = "github.com/comdex-official/comdex/x/locker/types";
 option (gogoproto.equal_all) = false;
@@ -144,11 +144,15 @@ message QueryOwnerLockerOfAllProductByOwnerResponse {
 message QueryOwnerTxDetailsLockerOfProductByOwnerRequest {
   uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
   string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
 message QueryOwnerTxDetailsLockerOfProductByOwnerResponse {
   repeated UserTxData user_tx_data = 1 [ (gogoproto.moretags) = "yaml:\"user_tx_data\"",
   (gogoproto.nullable)   = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
 message QueryOwnerLockerByProductToAssetIDbyOwnerRequest {
