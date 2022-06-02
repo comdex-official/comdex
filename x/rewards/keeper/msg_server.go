@@ -27,31 +27,10 @@ func (m msgServer) CreateGauge(goCtx context.Context, msg *types.MsgCreateGauge)
 		return nil, err
 	}
 
-	newGauge, err := m.Keeper.NewGauge(ctx, msg)
+	err = m.Keeper.CreateNewGauge(ctx, msg, false)
 	if err != nil {
 		return nil, err
 	}
-
-	gaugeIdsByTriggerDuration, err := m.Keeper.GetUpdatedGaugeIdsByTriggerDurationObj(ctx, newGauge.TriggerDuration, newGauge.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	from, _ := sdk.AccAddressFromBech32(newGauge.From)
-	err = m.Keeper.bank.SendCoinsFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoins(newGauge.DepositAmount))
-	if err != nil {
-		return nil, err
-	}
-
-	_, found := m.Keeper.GetEpochInfoByDuration(ctx, newGauge.TriggerDuration)
-	if !found {
-		newEpochInfo := m.Keeper.NewEpochInfo(ctx, newGauge.TriggerDuration)
-		m.Keeper.SetEpochInfoByDuration(ctx, newEpochInfo)
-	}
-
-	m.Keeper.SetGaugeID(ctx, newGauge.Id)
-	m.Keeper.SetGauge(ctx, newGauge)
-	m.Keeper.SetGaugeIdsByTriggerDuration(ctx, gaugeIdsByTriggerDuration)
 
 	return &types.MsgCreateGaugeResponse{}, nil
 }

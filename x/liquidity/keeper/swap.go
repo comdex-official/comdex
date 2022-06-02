@@ -567,7 +567,6 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context) {
 					}
 
 					rx, ry := k.getPoolBalances(ctx, swappablePool, swappablePair)
-					fmt.Println(rx, ry)
 					baseCoinPoolPrice := rx.Amount.ToDec().Quo(ry.Amount.ToDec())
 
 					orderDirection := types.OrderDirectionBuy

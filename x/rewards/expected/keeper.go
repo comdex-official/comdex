@@ -20,6 +20,7 @@ type AccountKeeper interface {
 type LiquidityKeeper interface {
 	GetPool(ctx sdk.Context, id uint64) (pool liquiditytypes.Pool, found bool)
 	GetFarmingRewardsData(ctx sdk.Context, coinToDistribute sdk.Coin, liquidityGaugeData types.LiquidtyGaugeMetaData) ([]types.RewardDistributionDataCollector, error)
+	TransferFundsForSwapFeeDistribution(ctx sdk.Context, poolId uint64) (sdk.Coin, error)
 }
 
 type AssetKeeper interface {

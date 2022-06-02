@@ -74,6 +74,7 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gaug
 		TriggeredCount:    0,
 		DistributedAmount: sdk.NewCoin(msg.DepositAmount.Denom, sdk.NewInt(0)),
 		IsActive:          true,
+		ForSwapFee:        false,
 		Kind:              nil,
 	}
 
@@ -127,6 +128,36 @@ func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerD
 	return gaugeIdsByTriggerDuration, nil
 }
 
+func (k Keeper) CreateNewGauge(ctx sdk.Context, msg *types.MsgCreateGauge, forSwapFee bool) error {
+	newGauge, err := k.NewGauge(ctx, msg)
+	if err != nil {
+		return err
+	}
+	newGauge.ForSwapFee = forSwapFee
+
+	gaugeIdsByTriggerDuration, err := k.GetUpdatedGaugeIdsByTriggerDurationObj(ctx, newGauge.TriggerDuration, newGauge.Id)
+	if err != nil {
+		return err
+	}
+
+	from, _ := sdk.AccAddressFromBech32(newGauge.From)
+	err = k.bank.SendCoinsFromAccountToModule(ctx, from, types.ModuleName, sdk.NewCoins(newGauge.DepositAmount))
+	if err != nil {
+		return err
+	}
+
+	_, found := k.GetEpochInfoByDuration(ctx, newGauge.TriggerDuration)
+	if !found {
+		newEpochInfo := k.NewEpochInfo(ctx, newGauge.TriggerDuration)
+		k.SetEpochInfoByDuration(ctx, newEpochInfo)
+	}
+
+	k.SetGaugeID(ctx, newGauge.Id)
+	k.SetGauge(ctx, newGauge)
+	k.SetGaugeIdsByTriggerDuration(ctx, gaugeIdsByTriggerDuration)
+	return nil
+}
+
 // InitateGaugesForDuration triggers the gauge in the event of triggerDuration.
 func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.Duration) error {
 	logger := k.Logger(ctx)
@@ -140,40 +171,82 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 		if !found {
 			continue
 		}
-		if ctx.BlockTime().Before(gauge.StartTime) || !gauge.IsActive {
-			continue
-		}
+		if !gauge.ForSwapFee {
+			if ctx.BlockTime().Before(gauge.StartTime) || !gauge.IsActive {
+				continue
+			}
 
-		if gauge.TriggeredCount == gauge.TotalTriggers {
-			gauge.IsActive = false
+			if gauge.TriggeredCount == gauge.TotalTriggers {
+				gauge.IsActive = false
+				k.SetGauge(ctx, gauge)
+				continue
+			}
+
+			depositAmountSplitsByEpochs := SplitTotalAmountPerEpoch(gauge.DepositAmount.Amount.Uint64(), gauge.TotalTriggers)
+			if len(depositAmountSplitsByEpochs) <= int(gauge.TriggeredCount) {
+				logger.Info("triggered counts are higher than total trigger splits, exceptions avoided")
+				continue
+			}
+			amountToDistribute := depositAmountSplitsByEpochs[gauge.TriggeredCount]
+			availableDeposits := gauge.DepositAmount.Amount.Sub(gauge.DistributedAmount.Amount)
+
+			// just in case (exception handelled), but this will never pass
+			if availableDeposits.LT(sdk.NewIntFromUint64(amountToDistribute)) {
+				continue
+			}
+
+			ongoingEpochCount := gauge.TriggeredCount + 1
+			coinToDistribute := sdk.NewCoin(gauge.DepositAmount.Denom, sdk.NewIntFromUint64(amountToDistribute))
+
+			coinsDistributed, err := k.BeginRewardDistributions(ctx, gauge, coinToDistribute, ongoingEpochCount, triggerDuration)
+			if err != nil {
+				logger.Info(fmt.Sprintf("error occurred while reward distribution in BeginRewardDistributions, err : %s", err))
+				continue
+			}
+			gauge.TriggeredCount = ongoingEpochCount
+			gauge.DistributedAmount.Amount = gauge.DistributedAmount.Amount.Add(coinsDistributed.Amount)
 			k.SetGauge(ctx, gauge)
-			continue
-		}
+		} else {
 
-		depositAmountSplitsByEpochs := SplitTotalAmountPerEpoch(gauge.DepositAmount.Amount.Uint64(), gauge.TotalTriggers)
-		if len(depositAmountSplitsByEpochs) <= int(gauge.TriggeredCount) {
-			logger.Info("triggered counts are higher than total trigger splits, exceptions avoided")
-			continue
-		}
-		amountToDistribute := depositAmountSplitsByEpochs[gauge.TriggeredCount]
-		availableDeposits := gauge.DepositAmount.Amount.Sub(gauge.DistributedAmount.Amount)
+			// distribution method for swap fee
+			poolId := gauge.GetLiquidityMetaData().PoolId
 
-		// just in case (exception handelled), but this will never pass
-		if availableDeposits.LT(sdk.NewIntFromUint64(amountToDistribute)) {
-			continue
-		}
+			ongoingEpochCount := gauge.TriggeredCount + 1
+			coinToDistribute := gauge.DepositAmount
 
-		ongoingEpochCount := gauge.TriggeredCount + 1
-		coinToDistribute := sdk.NewCoin(gauge.DepositAmount.Denom, sdk.NewIntFromUint64(amountToDistribute))
+			// distributing swap fees amount which was accumulated at epoch-1
+			if coinToDistribute.IsPositive() {
+				coinsDistributed, err := k.BeginRewardDistributions(ctx, gauge, coinToDistribute, ongoingEpochCount, triggerDuration)
+				if err != nil {
+					logger.Info(fmt.Sprintf("error occurred while reward distribution in BeginRewardDistributions, err : %s", err))
+					continue
+				}
 
-		coinsDistributed, err := k.BeginRewardDistributions(ctx, gauge, coinToDistribute, ongoingEpochCount, triggerDuration)
-		if err != nil {
-			logger.Info(fmt.Sprintf("error occurred while reward distribution in BeginRewardDistributions, err : %s", err))
-			continue
+				gauge.DepositAmount = gauge.DepositAmount.Sub(coinsDistributed)
+
+				// in case of swap fee distribution denom change in params
+				if gauge.DistributedAmount.Denom == coinsDistributed.Denom {
+					gauge.DistributedAmount.Amount = gauge.DistributedAmount.Amount.Add(coinsDistributed.Amount)
+				} else {
+					gauge.DistributedAmount = coinsDistributed
+				}
+			}
+
+			// transfering swap fees amount of current epoch from swap fee collector address to rewards module
+			receivedAmount, err := k.liquidityKeeper.TransferFundsForSwapFeeDistribution(ctx, poolId)
+			if err != nil {
+				logger.Info(fmt.Sprintf("error occurred while swap fee fund transfer, err : %s", err))
+				continue
+			}
+			// in case of swap fee distribution denom change in params
+			if gauge.DepositAmount.Denom == receivedAmount.Denom {
+				gauge.DepositAmount = gauge.DepositAmount.Add(receivedAmount)
+			} else {
+				gauge.DepositAmount = receivedAmount
+			}
+			gauge.TriggeredCount = ongoingEpochCount
+			k.SetGauge(ctx, gauge)
 		}
-		gauge.TriggeredCount = ongoingEpochCount
-		gauge.DistributedAmount.Amount = gauge.DistributedAmount.Amount.Add(coinsDistributed.Amount)
-		k.SetGauge(ctx, gauge)
 	}
 
 	return nil

@@ -33,4 +33,5 @@ type BankKeeper interface {
 type RewardsKeeper interface {
 	GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeID uint64) (gauges []rewardstypes.Gauge)
 	GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration) (epochInfo rewardstypes.EpochInfo, found bool)
+	CreateNewGauge(ctx sdk.Context, msg *rewardstypes.MsgCreateGauge, forSwapFee bool) error
 }

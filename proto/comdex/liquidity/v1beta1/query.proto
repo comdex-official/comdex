@@ -256,6 +256,7 @@ message PoolIncentive {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"next_distribution\""
   ];
+  bool is_swap_fee = 10;
 }
 
 // QueryPoolIncentivesResponse is response type for the Query/PoolsIncentives RPC method.
