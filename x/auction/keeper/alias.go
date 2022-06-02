@@ -16,7 +16,7 @@ func (k *Keeper) GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) 
 	return k.bank.GetBalance(ctx, addr, denom)
 }
 
-func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
+func (k *Keeper) MintCoins(ctx sdk.Context, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return nil
 	}
@@ -24,7 +24,7 @@ func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 	return k.bank.MintCoins(ctx, name, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
+func (k *Keeper) BurnCoins(ctx sdk.Context, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return nil
 	}
