@@ -559,6 +559,7 @@ func (m *AssetToAuctionMapping) GetAssetDenoms() []string {
 	return nil
 }
 
+// key app id -> assets  traverse this one
 type CollectorAuctionLookupTable struct {
 	AppId                  uint64                        `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	AssetIdToAuctionLookup []AssetIdToAuctionLookupTable `protobuf:"bytes,2,rep,name=assetIdToAuctionLookup,proto3" json:"assetIdToAuctionLookup" yaml:"asset_id_to_auction_lookup"`

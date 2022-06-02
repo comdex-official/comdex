@@ -107,6 +107,9 @@ message AssetToAuctionMapping {
   repeated string asset_denoms = 2 [(gogoproto.moretags) = "yaml:\"asset_denoms\""];
 }
 
+////////////////////////////////////////////////////////33333333333333
+
+// key app id -> assets  traverse this one
 message CollectorAuctionLookupTable {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
   repeated AssetIdToAuctionLookupTable assetIdToAuctionLookup = 2 [

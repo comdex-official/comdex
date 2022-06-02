@@ -356,17 +356,6 @@ func request_Query_QueryDebtAuction_0(ctx context.Context, marshaler runtime.Mar
 		_   = err
 	)
 
-	val, ok = pathParams["auction_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "auction_id")
-	}
-
-	protoReq.AuctionId, err = runtime.Uint64(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "auction_id", err)
-	}
-
 	val, ok = pathParams["app_id"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
@@ -426,17 +415,6 @@ func local_request_Query_QueryDebtAuction_0(ctx context.Context, marshaler runti
 		err error
 		_   = err
 	)
-
-	val, ok = pathParams["auction_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "auction_id")
-	}
-
-	protoReq.AuctionId, err = runtime.Uint64(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "auction_id", err)
-	}
 
 	val, ok = pathParams["app_id"]
 	if !ok {
@@ -1496,7 +1474,7 @@ var (
 
 	pattern_Query_QuerySurplusBiddings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "auction", "v1beta1", "surplusbiddings", "bidder", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_QueryDebtAuction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 7}, []string{"comdex", "auction", "v1beta1", "debtauction", "auction_id", "app_id", "auction_mapping_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryDebtAuction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "auction", "v1beta1", "debtauction", "app_id", "auction_mapping_id", "auction_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_QueryDebtAuctions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "auction", "v1beta1", "debtauctions", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
 
