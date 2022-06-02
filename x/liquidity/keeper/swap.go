@@ -14,8 +14,7 @@ import (
 )
 
 func CalculateSwapfeeAmount(ctx sdk.Context, params types.Params, calculatedOfferCoinAmt sdk.Int) sdk.Int {
-	multiplier := sdk.OneDec().Sub(params.SwapFeeRate)
-	return calculatedOfferCoinAmt.Sub(calculatedOfferCoinAmt.ToDec().MulTruncate(multiplier).TruncateInt())
+	return calculatedOfferCoinAmt.ToDec().MulTruncate(params.SwapFeeRate).TruncateInt()
 }
 
 // ValidateMsgLimitOrder validates types.MsgLimitOrder with state and returns

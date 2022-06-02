@@ -52,6 +52,8 @@ message Params {
       [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Gas", (gogoproto.nullable) = false];
   
   string swap_fee_distr_denom = 16;
+  string swap_fee_burn_rate = 17
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
 }
 
 // Pair defines a coin pair.

@@ -10,10 +10,10 @@ import (
 
 // Liquidity params default values.
 const (
-	DefaultBatchSize        uint32 = 1
-	DefaultTickPrecision    uint32 = 6
-	DefaultMaxOrderLifespan        = 24 * time.Hour
-	DefaultFeeDenom         string = "ucmdx"
+	DefaultBatchSize        uint32        = 1
+	DefaultTickPrecision    uint32        = 6
+	DefaultMaxOrderLifespan time.Duration = 24 * time.Hour
+	DefaultFeeDenom         string        = "ucmdx"
 )
 
 // Liquidity params default values.
@@ -31,6 +31,7 @@ var (
 	DefaultWithdrawExtraGas         = sdk.Gas(64000)
 	DefaultOrderExtraGas            = sdk.Gas(37000)
 	DefaultSwapFeeDistrDenom        = DefaultFeeDenom
+	DefaultSwapFeeBurnRate          = sdk.NewDecWithPrec(5, 1) //50%
 )
 
 // General constants.
@@ -63,6 +64,7 @@ var (
 	KeyWithdrawExtraGas         = []byte("WithdrawExtraGas")
 	KeyOrderExtraGas            = []byte("OrderExtraGas")
 	KeySwapFeeDistrDenom        = []byte("SwapFeeDistrDenom")
+	KeySwapFeeBurnRate          = []byte("SwapFeeBurnRate")
 )
 
 var _ paramstypes.ParamSet = (*Params)(nil)
@@ -90,6 +92,7 @@ func DefaultParams() Params {
 		WithdrawExtraGas:         DefaultWithdrawExtraGas,
 		OrderExtraGas:            DefaultOrderExtraGas,
 		SwapFeeDistrDenom:        DefaultSwapFeeDistrDenom,
+		SwapFeeBurnRate:          DefaultSwapFeeBurnRate,
 	}
 }
 
@@ -112,6 +115,7 @@ func (params *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(KeyWithdrawExtraGas, &params.WithdrawExtraGas, validateExtraGas),
 		paramstypes.NewParamSetPair(KeyOrderExtraGas, &params.OrderExtraGas, validateExtraGas),
 		paramstypes.NewParamSetPair(KeySwapFeeDistrDenom, &params.SwapFeeDistrDenom, validateSwapFeeDistrDenom),
+		paramstypes.NewParamSetPair(KeySwapFeeBurnRate, &params.SwapFeeBurnRate, validateSwapFeeBurnRate),
 	}
 }
 
@@ -137,6 +141,7 @@ func (params Params) Validate() error {
 		{params.WithdrawExtraGas, validateExtraGas},
 		{params.OrderExtraGas, validateExtraGas},
 		{params.SwapFeeDistrDenom, validateSwapFeeDistrDenom},
+		{params.SwapFeeBurnRate, validateSwapFeeBurnRate},
 	} {
 		if err := field.validateFunc(field.val); err != nil {
 			return err
@@ -314,6 +319,19 @@ func validateSwapFeeDistrDenom(i interface{}) error {
 	_, ok := i.(string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	return nil
+}
+
+func validateSwapFeeBurnRate(i interface{}) error {
+	v, ok := i.(sdk.Dec)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v.IsNegative() {
+		return fmt.Errorf("swap fee burn rate must not be negative: %s", v)
 	}
 
 	return nil

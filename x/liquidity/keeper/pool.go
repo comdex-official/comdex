@@ -483,11 +483,29 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, poolId uint
 
 	availableBalance := k.bankKeeper.GetBalance(ctx, pair.GetSwapFeeCollectorAddress(), params.SwapFeeDistrDenom)
 
+	burnAmount := availableBalance.Amount.ToDec().MulTruncate(params.SwapFeeBurnRate).TruncateInt()
+	burnCoin := sdk.NewCoin(availableBalance.Denom, burnAmount)
+
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), types.ModuleName, sdk.NewCoins(burnCoin))
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(burnCoin))
+	if err != nil {
+		return sdk.Coin{}, err
+	}
+
+	availableBalance.Amount = availableBalance.Amount.Sub(burnCoin.Amount)
+
 	if availableBalance.IsPositive() {
 		err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), rewardstypes.ModuleName, sdk.NewCoins(availableBalance))
 		if err != nil {
 			return sdk.Coin{}, err
 		}
+	} else {
+		// negative amount handalling
+		availableBalance.Amount = sdk.NewInt(0)
 	}
 	return availableBalance, nil
 }
