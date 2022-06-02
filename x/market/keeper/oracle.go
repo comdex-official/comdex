@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
@@ -169,10 +168,8 @@ func (k *Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64) {
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	fmt.Print("price asked")
-	fmt.Println(id)
 	if id == 1 {
-		return 200, true
+		return 139, true
 	}
 	if id == 2 {
 		return 100, true

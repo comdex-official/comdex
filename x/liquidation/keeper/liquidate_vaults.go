@@ -171,11 +171,11 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					//Selloff Collateral Calculation
 					//Assuming that the collateral to be sold is 1 unit, so finding out how much is going to be deducted from the
 					//collateral which will account as repaying the user's debt
-
+					perc, _ := sdk.NewDecFromStr("0.1")
 					deductionPercentage, _ := sdk.NewDecFromStr("1.0")
 					auctionDeduction := (deductionPercentage).Sub(ExtPair.LiquidationPenalty)
-					multiplicationFactor := auctionDeduction.Mul(ExtPair.MinCr)
-					asssetOutMultiplicationFactor := totalOut.Mul(ExtPair.MinCr)
+					multiplicationFactor := auctionDeduction.Mul(ExtPair.MinCr.Add(perc))
+					asssetOutMultiplicationFactor := totalOut.Mul(ExtPair.MinCr.Add(perc))
 					assetsDifference := totalIn.Sub(asssetOutMultiplicationFactor)
 					//Substracting again from 1 unit to find the selloff multiplication factor
 					selloffMultiplicationFactor := deductionPercentage.Sub(multiplicationFactor)
@@ -183,7 +183,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					fmt.Println("red5______________")
 					var collateralToBeAuctioned sdk.Dec
 
-					if selloffAmount.GTE(totalIn) {
+					if selloffAmount.GTE(totalIn) || selloffAmount.IsNegative() {
 						collateralToBeAuctioned = totalIn
 					} else {
 
@@ -193,6 +193,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					updatedLockedVault := lockedVault
 					updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 					updatedLockedVault.CollateralToBeAuctioned = &collateralToBeAuctioned
+					//updatedLockedVault.IsAuctionComplete = false
 					k.SetLockedVault(ctx, updatedLockedVault)
 					fmt.Println("red7______________")
 					k.UpdateLockedVaultsAppMapping(ctx, updatedLockedVault)
@@ -206,78 +207,86 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 
 func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 	//not unliquidating
-	appIds := k.GetAppIds(ctx).WhitelistedAppMappingIds
-	for _, v := range appIds {
-		lockedVaultMapping, _ := k.GetLockedVaultbyAppId(ctx, v)
-		{
-			lockedVaults := lockedVaultMapping.LockedVault
-			for _, lockedVault := range lockedVaults {
-				if lockedVault.IsAuctionComplete {
-					//also calculate the current collaterlization ration to ensure there is no sudden changes
-					userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
-					if err != nil {
-						continue
-					}
+	fmt.Println("UnliquidateLockedVaults______")
+	//appIds := k.GetAppIds(ctx).WhitelistedAppMappingIds
 
-					extPair, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+	fmt.Println("UnliquidateLockedVaults______1")
+	lockedVaults := k.GetLockedVaults(ctx)
+	fmt.Println("UnliquidateLockedVaults______1111111333", lockedVaults)
+	for _, lockedVault := range lockedVaults {
+		fmt.Println("UnliquidateLockedVaults______8429")
+		ExtPair, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+		if lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.GTE(ExtPair.MinCr) {
+			//also calculate the current collaterlization ration to ensure there is no sudden changes
+			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
+			if err != nil {
+				continue
+			}
 
-					pair, found := k.GetPair(ctx, extPair.PairId)
-					if !found {
-						continue
-					}
+			extPair, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
 
-					unliquidatePointPercentage := extPair.MinCr
+			pair, found := k.GetPair(ctx, extPair.PairId)
+			if !found {
+				continue
+			}
 
-					assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-					if !found {
-						continue
-					}
+			unliquidatePointPercentage := extPair.MinCr
 
-					if lockedVault.AmountOut.IsZero() {
-						err := k.CreateLockedVaultHistoy(ctx, lockedVault)
-						if err != nil {
-							return err
-						}
-						k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, lockedVault.ExtendedPairId, lockedVault.OriginalVaultId, lockedVault.AppMappingId)
-						fmt.Println("deleting")
-						fmt.Println("deleting")
-						k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
-						if err := k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
-							continue
-						}
-						continue
-					}
-					newCalculatedCollateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, extPair.PairId, lockedVault.AmountIn, lockedVault.UpdatedAmountOut)
-					if err != nil {
-						continue
-					}
-					if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
-						updatedLockedVault := lockedVault
-						updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
-						fmt.Println("UnliquidateLockedVaults")
-						k.SetLockedVault(ctx, updatedLockedVault)
-						continue
-					}
-					if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
-						err := k.CreateLockedVaultHistoy(ctx, lockedVault)
-						if err != nil {
-							return err
-						}
-						k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, lockedVault.ExtendedPairId, lockedVault.OriginalVaultId, lockedVault.AppMappingId)
-
-						err = k.CreteNewVault(ctx, lockedVault.Owner, lockedVault.AppMappingId, lockedVault.ExtendedPairId, lockedVault.AmountIn, lockedVault.AmountOut)
-						if err != nil {
-							return err
-						}
-						fmt.Println("deleting")
-						fmt.Println("deleting")
-						k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
-
-						//======================================NOTE TO BE CHANGED================================================
-						//One important thing that we missed is that we need to pop and append the current vault as per the user -> This has bee handled -Vishnu
-						//IF all the borrowed amount is repayed , then we need to ensure the unliquidate vault is not called for that particular lockedvault- his vault is automatically closed.
-					}
+			assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+			if !found {
+				continue
+			}
+			fmt.Println("UnliquidateLockedVaults______2")
+			if lockedVault.AmountOut.IsZero() {
+				fmt.Println("UnliquidateLockedVaults______6")
+				err := k.CreateLockedVaultHistoy(ctx, lockedVault)
+				if err != nil {
+					return err
 				}
+				fmt.Println("UnliquidateLockedVaults______4")
+				//k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, lockedVault.ExtendedPairId, lockedVault.OriginalVaultId, lockedVault.AppMappingId)
+				fmt.Println("deleting")
+				fmt.Println("deleting")
+				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+				if err := k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
+					continue
+				}
+				continue
+			}
+			fmt.Println("UnliquidateLockedVaults______8")
+			newCalculatedCollateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, extPair.PairId, lockedVault.AmountIn, lockedVault.UpdatedAmountOut)
+			fmt.Println("err", err)
+			if err != nil {
+				continue
+			}
+			fmt.Println("newCalculatedCollateralizationRatio", newCalculatedCollateralizationRatio)
+			if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
+				updatedLockedVault := lockedVault
+				updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
+				fmt.Println("UnliquidateLockedVaults")
+				k.SetLockedVault(ctx, updatedLockedVault)
+				continue
+			}
+			if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
+				fmt.Println("wad________1")
+				err := k.CreateLockedVaultHistoy(ctx, lockedVault)
+				fmt.Println("wad________2", err)
+				if err != nil {
+					return err
+				}
+				//k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, lockedVault.ExtendedPairId, lockedVault.OriginalVaultId, lockedVault.AppMappingId)
+				fmt.Println("wad________3")
+				err = k.CreteNewVault(ctx, lockedVault.Owner, lockedVault.AppMappingId, lockedVault.ExtendedPairId, lockedVault.AmountIn, lockedVault.AmountOut)
+				if err != nil {
+					return err
+				}
+				fmt.Println("deleting")
+				fmt.Println("deleting")
+				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+
+				//======================================NOTE TO BE CHANGED================================================
+				//One important thing that we missed is that we need to pop and append the current vault as per the user -> This has bee handled -Vishnu
+				//IF all the borrowed amount is repayed , then we need to ensure the unliquidate vault is not called for that particular lockedvault- his vault is automatically closed.
 			}
 		}
 	}

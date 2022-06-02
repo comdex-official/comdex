@@ -258,6 +258,9 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 	if totalOut.LTE(sdk.ZeroDec()) {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountOut
 	}
+	fmt.Println("totalIn", totalIn)
+	fmt.Println("totalout", totalOut)
+	fmt.Println("totalIn.Quo(totalOut)", totalIn.Quo(totalOut))
 
 	return totalIn.Quo(totalOut), nil
 

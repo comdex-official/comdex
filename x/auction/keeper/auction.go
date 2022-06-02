@@ -227,6 +227,7 @@ func (k Keeper) CreateNewDutchAuctions(ctx sdk.Context) error {
 		if !found {
 			return auctiontypes.ErrorPrices
 		}
+		//assetInPrice is the collateral price
 		outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))).TruncateInt())
 		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())
 		fmt.Println("check err")
@@ -705,6 +706,7 @@ func (k Keeper) CloseDutchAuction(
 		return err
 	}
 	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount)
+	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(dutchAuction.InflowTokenCurrentAmount.Amount)
 	fmt.Println("locked vault here amount amount out")
 	fmt.Println(burnToken)
 	fmt.Println(lockedVault)
@@ -943,10 +945,17 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 		//see if user has balance to buy whole collateral
 		userBalanceUsd := k.bank.GetBalance(ctx, bidder, bid.Denom).Amount.Mul(outFlowTokenCurrentPrice)
 		collateralAvailableUsd := auction.OutflowTokenCurrentAmount.Amount.Mul(outFlowTokenCurrentPrice)
+		fmt.Println("entered  chost")
+		fmt.Println("collateral usd")
+		fmt.Println(collateralAvailableUsd)
+		fmt.Println("user balance usd")
+		fmt.Println(userBalanceUsd)
 		if userBalanceUsd.LT(collateralAvailableUsd) {
 			return auctiontypes.ErrorDutchinsufficientUserBalance
 		}
 		slice = auction.OutflowTokenCurrentAmount.Amount
+		fmt.Println("entered  chost slice")
+		fmt.Println(slice)
 	}
 
 	outFlowTokenCoin := sdk.NewCoin(auction.OutflowTokenInitAmount.Denom, slice)
@@ -981,12 +990,12 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	if auction.InflowTokenCurrentAmount.IsGTE(auction.InflowTokenTargetAmount) {
 		//send left overcollateral to vault owner as target cmst reached and also
 		total := auction.OutflowTokenCurrentAmount
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, auction.VaultOwner, sdk.NewCoins(total))
+		err := k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(total))
 		if err != nil {
 			return err
 		}
 		err = k.IncreaseLockedVaultAmountIn(ctx, auction.LockedVaultId, total.Amount)
-		fmt.Println("sending user")
+		fmt.Println("sending user amount to vault")
 		fmt.Println(total)
 		k.SetDutchAuction(ctx, auction)
 		//remove dutch auction
