@@ -23,9 +23,6 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServer {
 
 func (k *msgServer) MsgAddAsset(c context.Context, msg *types.MsgAddAssetRequest) (*types.MsgAddAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.Admin(ctx) {
-		return nil, types.ErrorUnauthorized
-	}
 
 	if k.HasAssetForDenom(ctx, msg.Denom) {
 		return nil, types.ErrorDuplicateAsset
@@ -50,9 +47,6 @@ func (k *msgServer) MsgAddAsset(c context.Context, msg *types.MsgAddAssetRequest
 
 func (k *msgServer) MsgUpdateAsset(c context.Context, msg *types.MsgUpdateAssetRequest) (*types.MsgUpdateAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.Admin(ctx) {
-		return nil, types.ErrorUnauthorized
-	}
 
 	asset, found := k.GetAsset(ctx, msg.Id)
 	if !found {
@@ -82,9 +76,6 @@ func (k *msgServer) MsgUpdateAsset(c context.Context, msg *types.MsgUpdateAssetR
 
 func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) (*types.MsgAddPairResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.Admin(ctx) {
-		return nil, types.ErrorUnauthorized
-	}
 
 	if !k.HasAsset(ctx, msg.AssetIn) {
 		return nil, types.ErrorAssetDoesNotExist
