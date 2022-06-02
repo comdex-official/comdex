@@ -304,7 +304,7 @@ func queryOwnerTxDetailsLockerOfProductbyOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "owner-tx-details-by-product-to-owner [product_id] [owner]",
 		Short: "owner locker tx details by product to owner",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
