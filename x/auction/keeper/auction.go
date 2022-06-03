@@ -147,6 +147,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartAuction(ctx sdk.Context, ap
 
 func (k Keeper) CreateSurplusAndDebtAuctions(ctx sdk.Context) error {
 	appIds, found := k.GetApps(ctx)
+	appIds =
 	if !found {
 		return assettypes.AppIdsDoesntExist
 	}
@@ -382,7 +383,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) error {
 		} else {
 			//If oracle Price is not required for the assetOut
 			inFlowTokenCurrentPrice = ExtendedPairVault.AssetOutPrice
-	
+
 		}
 		//inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
 		dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
@@ -804,12 +805,11 @@ func (k Keeper) CloseDutchAuction(
 	}
 	fmt.Println("hello8__________________")
 	fmt.Println(dutchAuction.AppId, dutchAuction.AssetInId, burnToken)
-
-	//TODO UNCOMMENT
-	//err = k.tokenmint.BurnTokensForApp(ctx, dutchAuction.AppId, dutchAuction.AssetInId, burnToken.Amount)
-	//if err != nil {
-	//	return err
-	//}
+	
+	err = k.tokenmint.BurnTokensForApp(ctx, dutchAuction.AppId, dutchAuction.AssetInId, burnToken.Amount)
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("hello9__________________")
 	//calculate penalty
