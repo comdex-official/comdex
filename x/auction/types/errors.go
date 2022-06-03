@@ -36,7 +36,10 @@ var (
 	ErrorInvalidAppIdAssetId                = sdkerrors.Register(ModuleName, 126, "invalid appId assetId")
 	ErrorUnableToMakeFlagsFalse             = sdkerrors.Register(ModuleName, 127, "Unable To Make Flags False after auction closed")
 	ErrorUnableToSetNetfees                 = sdkerrors.Register(ModuleName, 128, "Unable To set net fees collected after auction closed")
-	ErrorLockedVaults                       = sdkerrors.Register(ModuleName, 129, "lcoked vaults not found")
+	ErrorLockedVaults                       = sdkerrors.Register(ModuleName, 129, "locked vaults not found")
+	ErrorInvalidPair                        = sdkerrors.Register(ModuleName, 130, "pair not found for extended pair id")
+	ErrorAssetNotFound                      = sdkerrors.Register(ModuleName, 131, "asset not found for given id")
+	ErrorInvalidExtendedPairVault           = sdkerrors.Register(ModuleName, 132, "extended pair vault not found for given id")
 )
 
 var (

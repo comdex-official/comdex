@@ -232,29 +232,29 @@ func (k Keeper) CreateNewDutchAuctions(ctx sdk.Context) error {
 	fmt.Println("CreateNewDutchAuctions")
 	lockedVaults := k.GetLockedVaults(ctx)
 	fmt.Println("CreateNewDutchAuctions", lockedVaults)
-
+	fmt.Println(len(lockedVaults))
 	if len(lockedVaults) == 0 {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
 	for _, lockedVault := range lockedVaults {
 		fmt.Println("in for loop", lockedVault)
-
-		pairVault, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
-
-		pair, _ := k.GetPair(ctx, pairVault.PairId)
-		/*if found {
-			continue
-		}*/
-		assetIn, _ := k.GetAsset(ctx, pair.AssetIn)
-		/*if found {
-			continue
-		}*/
-
-		assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
-		/*if found {
-			continue
+		extendedPair, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+		if !found {
+			return auctiontypes.ErrorInvalidPair
 		}
-		*/
+		pair, found := k.GetPair(ctx, extendedPair.PairId)
+		if !found {
+			return auctiontypes.ErrorInvalidPair
+		}
+		assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+		if !found {
+			return auctiontypes.ErrorAssetNotFound
+		}
+
+		assetOut, found := k.GetAsset(ctx, pair.AssetOut)
+		if !found {
+			return auctiontypes.ErrorAssetNotFound
+		}
 		assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 		if !found {
 			return auctiontypes.ErrorPrices
@@ -265,10 +265,10 @@ func (k Keeper) CreateNewDutchAuctions(ctx sdk.Context) error {
 		fmt.Println("check err")
 
 		extendedPairId := lockedVault.ExtendedPairId
-		ExtendedPairVault, _ := k.asset.GetPairsVault(ctx, extendedPairId)
-		/*if found {
-			continue
-		}*/
+		ExtendedPairVault, found := k.GetPairsVault(ctx, extendedPairId)
+		if !found {
+			return auctiontypes.ErrorInvalidExtendedPairVault
+		}
 		liquidationPenalty := ExtendedPairVault.LiquidationPenalty
 		fmt.Println("Before CreateNewDutchAuctions !lockedVault.IsAuctionInProgress", lockedVault.IsAuctionInProgress)
 		if !lockedVault.IsAuctionInProgress {

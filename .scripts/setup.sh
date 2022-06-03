@@ -1,4 +1,4 @@
-make all
+make install
 
 rm -rf ~/.comdex
 
