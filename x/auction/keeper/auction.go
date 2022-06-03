@@ -377,11 +377,8 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) error {
 
 		var inFlowTokenCurrentPrice uint64
 		if ExtendedPairVault.AssetOutOraclePrice {
-			fmt.Println(ExtendedPairVault.AssetOutOraclePrice, "value bool price required")
 			//If oracle Price required for the assetOut
 			inFlowTokenCurrentPrice, _ = k.GetPriceForAsset(ctx, dutchAuction.AssetInId)
-	
-			fmt.Println(inFlowTokenCurrentPrice, "should be what is set dollar ")
 		} else {
 			//If oracle Price is not required for the assetOut
 			inFlowTokenCurrentPrice = ExtendedPairVault.AssetOutPrice
