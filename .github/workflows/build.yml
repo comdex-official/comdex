@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - development
+      - feature/dev
   release:
     types: [created]
 jobs:
