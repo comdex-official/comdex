@@ -238,7 +238,10 @@ func (k Keeper) CreateNewDutchAuctions(ctx sdk.Context) error {
 	}
 	for _, lockedVault := range lockedVaults {
 		fmt.Println("in for loop", lockedVault)
-		pair, _ := k.GetPair(ctx, lockedVault.ExtendedPairId)
+
+		pairVault, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+
+		pair, _ := k.GetPair(ctx, pairVault.PairId)
 		/*if found {
 			continue
 		}*/
@@ -369,9 +372,20 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) error {
 	auctionParams := k.GetParams(ctx)
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
-		inFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetInId)
-		if !found {
-			return auctiontypes.ErrorPrices
+		lockedVault, _ := k.GetLockedVault(ctx, dutchAuction.LockedVaultId)
+		ExtendedPairVault, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+
+		var inFlowTokenCurrentPrice uint64
+		if ExtendedPairVault.AssetOutOraclePrice {
+			fmt.Println(ExtendedPairVault.AssetOutOraclePrice, "value bool price required")
+			//If oracle Price required for the assetOut
+			inFlowTokenCurrentPrice, _ = k.GetPriceForAsset(ctx, dutchAuction.AssetInId)
+	
+			fmt.Println(inFlowTokenCurrentPrice, "should be what is set dollar ")
+		} else {
+			//If oracle Price is not required for the assetOut
+			inFlowTokenCurrentPrice = ExtendedPairVault.AssetOutPrice
+	
 		}
 		//inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
 		dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
