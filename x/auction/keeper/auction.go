@@ -152,7 +152,7 @@ func (k Keeper) CreateSurplusAndDebtAuctions(ctx sdk.Context) error {
 	}
 	for _, appId := range appIds {
 		//check if auction status for an asset is false
-		auctionLookupTable, found := k.GetCollectorAuctionLookupTable(ctx, appId.Id)
+		auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appId.Id)
 		if !found {
 			continue
 		}
