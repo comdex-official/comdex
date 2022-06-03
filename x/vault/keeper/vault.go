@@ -76,7 +76,7 @@ func (k *Keeper) CheckUserToAppMapping(ctx sdk.Context, userVaultAssetData types
 }
 
 //Set AppExtendedPairVaultMapping to check the current status of the vault by extended pair vault id
-func (k *Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData types.AppExtendedPairVaultMapping) {
+func (k *Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData types.AppExtendedPairVaultMapping)error {
 
 	var (
 		store = k.Store(ctx)
@@ -85,6 +85,7 @@ func (k *Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPair
 	)
 
 	store.Set(key, value)
+	return nil
 
 }
 

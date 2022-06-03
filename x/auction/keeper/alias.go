@@ -2,6 +2,7 @@ package keeper
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	vaultttypes "github.com/comdex-official/comdex/x/vault/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -113,6 +114,9 @@ func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeD
 func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool) {
 	return k.asset.GetApps(ctx)
 }
+func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app assettypes.AppMapping, found bool) {
+	return k.asset.GetApp(ctx, id)
+}
 
 func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, address string, amount sdk.Int) error {
 	return k.tokenmint.MintNewTokensForApp(ctx, appMappingId, assetId, address, amount)
@@ -140,4 +144,16 @@ func (k *Keeper) SetLockedVault(ctx sdk.Context, locked_vault liquidationtypes.L
 
 func (k *Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool) {
 	return k.asset.GetPairsVault(ctx, id)
+}
+
+func (k *Keeper) GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingId uint64) (appExtendedPairVaultData vaultttypes.AppExtendedPairVaultMapping, found bool) {
+	return k.vault.GetAppExtendedPairVaultMapping(ctx, appMappingId)
+}
+
+func (k *Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData vaultttypes.AppExtendedPairVaultMapping)error {
+	return k.vault.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+}
+
+func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, appId uint64) (collectorAuctionLookupTable types.CollectorAuctionLookupTable, found bool){
+	return k.collector.GetAuctionMappingForApp(ctx, appId)
 }

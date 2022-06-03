@@ -302,13 +302,14 @@ func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id u
 		return types.ErrorExtendedPairDoesNotExistForTheApp
 	}
 
-	var (
-		store = k.Store(ctx)
-		key   = types.PairsKey(app_id)
-		value = k.cdc.MustMarshal(&ExtPairVaultData)
-	)
+	k.SetPairsVault(ctx, ExtPairVaultData)
+	// var (
+	// 	store = k.Store(ctx)
+	// 	key   = types.PairsKey(app_id)
+	// 	value = k.cdc.MustMarshal(&ExtPairVaultData)
+	// )
 
-	store.Set(key, value)
+	// store.Set(key, value)
 	return nil
 }
 

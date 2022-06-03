@@ -87,7 +87,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 }
 
 func (k Keeper) UpdateLockedVaultsAppMapping(ctx sdk.Context, lockedVault types.LockedVault) {
-	LockedVaultToApp, _ := k.GetLockedVaultByAppId(ctx, lockedVault.LockedVaultId)
+	LockedVaultToApp, _ := k.GetLockedVaultByAppId(ctx, lockedVault.AppMappingId)
 	LockedVaultToApp.LockedVault = append(LockedVaultToApp.LockedVault, &lockedVault)
 
 	newLockedVaultToApp := types.LockedVaultToAppMapping{
@@ -163,8 +163,30 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					}
 					fmt.Println("red3______________")
 					//Asset Price in Dollar Terms to find how how much is to be auctioned
+
+					extendedPairVault, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+					if !found {
+						return types.ErrorExtendedPairVaultDoesNotExists
+					}
+					var assetOutPrice uint64
+
+					if extendedPairVault.AssetOutOraclePrice {
+						fmt.Println(extendedPairVault.AssetOutOraclePrice, "value bool price required")
+						//If oracle Price required for the assetOut
+						assetOutPrice, found = k.GetPriceForAsset(ctx, assetOut.Id)
+						fmt.Println(assetOutPrice, "should be what is set dollar ")
+
+						if !found {
+							return types.ErrorPriceDoesNotExist
+						}
+					} else {
+						//If oracle Price is not required for the assetOut
+						assetOutPrice = extendedPairVault.AssetOutPrice
+
+					}
+
 					assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
-					assetOutPrice, _ := k.GetPriceForAsset(ctx, assetOut.Id)
+					// assetOutPrice, _ := k.GetPriceForAsset(ctx, assetOut.Id)
 
 					totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
 					totalOut := lockedVault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()

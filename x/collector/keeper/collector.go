@@ -585,13 +585,14 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, ass
 	accmLookup.AppId = appId
 	accmLookup.AssetRateInfo = append(accmLookup.AssetRateInfo, Collector)
 
-	var (
-		store = ctx.KVStore(k.storeKey)
-		key   = types.CollectorLookupTableMappingKey(appId)
-		value = k.cdc.MustMarshal(&accmLookup)
-	)
+	k.SetCollectorLookupTable(ctx, Collector)
+	// var (
+	// 	store = ctx.KVStore(k.storeKey)
+	// 	key   = types.CollectorLookupTableMappingKey(appId)
+	// 	value = k.cdc.MustMarshal(&accmLookup)
+	// )
 
-	store.Set(key, value)
+	// store.Set(key, value)
 	return nil
 }
 
