@@ -9,9 +9,9 @@ import (
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	block := k.GetLastBlockheight(ctx)
-	if block !=0 {
+	if block != 0 {
 		if ctx.BlockHeight()%20-1 == 0 && ctx.BlockHeight() > block+21 {
-			assets := k.GetAssets(ctx)
+			assets := k.GetAssetsForOracle(ctx)
 			for _, asset := range assets {
 				k.SetRates(ctx, asset.Name)
 				k.SetMarketForAsset(ctx, asset.Id, asset.Name)

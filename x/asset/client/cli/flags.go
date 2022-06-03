@@ -1,25 +1,25 @@
 package cli
 
 import (
-	"strings"
-	"strconv"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
+	"strconv"
+	"strings"
 )
 
 const (
-	flagLiquidationRatio       = "liquidation-ratio"
-	flagName                   = "name"
-	flagDenom                  = "denom"
-	flagDecimals               = "decimals"
-	flagCollateralWeight       = "collateralWeight"
-	flagLiquidationThreshold   = "liquidationThreshold"
-	flagIsBridgedAsset         = "isBridgedAsset"
-	flagbaseborrowrateasset1   = "baseBorrowRate1"
-	flagbaseborrowrateasset2   = "baseBorrowRate2"
-	flagbaselendrateasset1     = "baseLendRate1"
-	flagbaselendrateasset2     = "baseLendRate2"
-	flagModuleAcc              = "moduleAcc"
+	flagLiquidationRatio     = "liquidation-ratio"
+	flagName                 = "name"
+	flagDenom                = "denom"
+	flagDecimals             = "decimals"
+	flagCollateralWeight     = "collateralWeight"
+	flagLiquidationThreshold = "liquidationThreshold"
+	flagIsBridgedAsset       = "isBridgedAsset"
+	flagbaseborrowrateasset1 = "baseBorrowRate1"
+	flagbaseborrowrateasset2 = "baseBorrowRate2"
+	flagbaselendrateasset1   = "baseLendRate1"
+	flagbaselendrateasset2   = "baseLendRate2"
+	flagModuleAcc            = "moduleAcc"
 )
 
 func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
@@ -42,11 +42,10 @@ func ParseStringFromString(s string, seperator string) ([]string, error) {
 }
 
 func ParseBoolFromString(s string) bool {
-
-	switch s {
-	case "1":
+	if s == "1" {
 		return true
-	default:
+
+	} else {
 		return false
 	}
 }

@@ -15,12 +15,12 @@ func (k *Keeper) ClaimCapability(ctx sdk.Context, cap *capabilitytypes.Capabilit
 	return k.scoped.ClaimCapability(ctx, cap, name)
 }
 
-func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) ( bool) {
+func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
 	return k.assetKeeper.HasAsset(ctx, id)
 }
 
-func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset){
-	return k.assetKeeper.GetAssets(ctx)
+func (k *Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []types.Asset) {
+	return k.assetKeeper.GetAssetsForOracle(ctx)
 }
 
 func (k *Keeper) GetLastFetchPriceID(ctx sdk.Context) int64 {
@@ -31,6 +31,6 @@ func (k *Keeper) GetLastBlockheight(ctx sdk.Context) int64 {
 	return k.bandoraclekeeper.GetLastBlockheight(ctx)
 }
 
-func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) bandoraclemoduletypes.MsgFetchPriceData{
+func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) bandoraclemoduletypes.MsgFetchPriceData {
 	return k.bandoraclekeeper.GetFetchPriceMsg(ctx)
 }

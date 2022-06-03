@@ -48,6 +48,16 @@ func (k *Keeper) SetAsset(ctx sdk.Context, asset types.Asset) {
 	store.Set(key, value)
 }
 
+func (k *Keeper) SetAssetForOracle(ctx sdk.Context, asset types.Asset) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForOracleKey(asset.Id)
+		value = k.cdc.MustMarshal(&asset)
+	)
+
+	store.Set(key, value)
+}
+
 func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
 	var (
 		store = k.Store(ctx)
@@ -81,6 +91,23 @@ func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.AssetKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.Asset
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		assets = append(assets, asset)
+	}
+
+	return assets
+}
+
+func (k *Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []types.Asset) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AssetForOracleKeyPrefix)
 	)
 
 	defer iter.Close()
@@ -161,18 +188,21 @@ func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error 
 		var (
 			id    = k.GetAssetID(ctx)
 			asset = types.Asset{
-				Id:        id + 1,
-				Name:      msg.Name,
-				Denom:     msg.Denom,
-				Decimals:  msg.Decimals,
-				IsOnchain: msg.IsOnchain,
+				Id:               id + 1,
+				Name:             msg.Name,
+				Denom:            msg.Denom,
+				Decimals:         msg.Decimals,
+				IsOnchain:        msg.IsOnchain,
+				AssetOraclePrice: msg.AssetOraclePrice,
 			}
 		)
 
 		k.SetAssetID(ctx, asset.Id)
 		k.SetAsset(ctx, asset)
 		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
-
+		if msg.AssetOraclePrice {
+			k.SetAssetForOracle(ctx, asset)
+		}
 	}
 
 	return nil
