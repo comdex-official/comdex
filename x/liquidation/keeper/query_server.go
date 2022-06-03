@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-	"fmt"
+
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -243,7 +243,6 @@ func (q *queryServer) QueryAppIds(c context.Context, _ *types.QueryAppIdsRequest
 	)
 
 	item := q.GetAppIds(ctx)
-	fmt.Println("item", item.WhitelistedAppMappingIds)
 	return &types.QueryAppIdsResponse{
 		WhitelistedAppIds: item,
 	}, nil

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -119,8 +118,6 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		return nil, err
 	}
 
-	fmt.Println("1st msg.AmountOut", msg.AmountOut)
-
 	//Calculating Closing Fee
 	//----Done inside the vault-----//
 
@@ -137,11 +134,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		//If not zero deduct send to collector//////////
 		//one approach could be
 		collectorShare := (msg.AmountOut.Mul(sdk.Int(extended_pair_vault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
-		fmt.Println(collectorShare, "collectorShare")
-		fmt.Println(sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare)), "sdk.Interpretation")
-		fmt.Println("ctx", ctx)
 
-		fmt.Println("collector updated")
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 			return nil, err
 		}
@@ -150,13 +143,11 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 			return nil, err
 		}
 
-		fmt.Println("mod to mod")
 		// and send the rest to the user
 		amountToUser := msg.AmountOut.Sub(collectorShare)
 		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
 			return nil, err
 		}
-		fmt.Println("amountToUser")
 
 	}
 
@@ -500,9 +491,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		//If not zero deduct send to collector//////////
 		//one approach could be
 		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
-		fmt.Println(collectorShare, "collectorShare")
-		fmt.Println(sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare)), "sdk.Interpretation")
-		fmt.Println("ctx", ctx)
+
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 			return nil, err
 		}
@@ -510,15 +499,12 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println("collector updated")
 
-		fmt.Println("mod to mod")
 		// and send the rest to the user
 		amountToUser := msg.Amount.Sub(collectorShare)
 		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
 			return nil, err
 		}
-		fmt.Println("amountToUser")
 
 	}
 
@@ -627,13 +613,10 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		k.SetVault(ctx, userVault)
 
 	} else {
-		fmt.Println(msg.Amount, "msg.Amount")
-		fmt.Println("uservault amount data 1", userVault.AmountOut)
+
 		updatedUserSentAmountAfterFeesDeduction := msg.Amount.Sub(userVault.InterestAccumulated)
-		fmt.Println(updatedUserSentAmountAfterFeesDeduction, "updatedUserSentAmountAfterFeesDeduction")
-		fmt.Println("uservault amount data 2", userVault.AmountOut)
+
 		updatedUserDebt := userVault.AmountOut.Sub(updatedUserSentAmountAfterFeesDeduction)
-		fmt.Println(updatedUserDebt, "updatedUserDebt")
 
 		// //If user's closing fees is a bigger amount than the debt floor, user will not close the debt floor
 		// totalUpdatedDebt:=updatedUserDebt.Add(*userVault.ClosingFeeAccumulated)
@@ -642,8 +625,6 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		// }
 
 		if !updatedUserDebt.GTE(extended_pair_vault.DebtFloor) {
-			fmt.Println(updatedUserDebt.GTE(extended_pair_vault.DebtFloor), "updatedUserDebt.GTE(extended_pair_vault.DebtFloor)")
-			fmt.Println(extended_pair_vault.DebtFloor, "extended_pair_vault.DebtFloor")
 
 			return nil, types.ErrorAmountOutLessThanDebtFloor
 		}

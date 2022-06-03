@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/comdex-official/comdex/x/tokenmint/types"
@@ -83,7 +82,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
-		fmt.Println(types.ModuleName, "module name ")
+
 		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}

@@ -100,7 +100,6 @@ func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingId uint64, asset
 		return nil
 	}
 	var newAssetIds []uint64
-	fmt.Println(rewards.Asset_ID)
 	for i := range rewards.Asset_ID {
 		if assetId != rewards.Asset_ID[i] {
 			newAssetId := rewards.Asset_ID[i]
