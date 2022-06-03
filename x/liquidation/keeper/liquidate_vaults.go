@@ -51,7 +51,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 
 func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, collateralizationRatio sdk.Dec, appId uint64) error {
 
-	lockedVaultId := k.GetLockedVaultIDbyApp(ctx, appId)
+	lockedVaultId := k.GetLockedVaultID(ctx)
 
 	var value = types.LockedVault{
 		LockedVaultId:                lockedVaultId + 1,
@@ -360,17 +360,33 @@ func (k *Keeper) GetLockedVaultIDHistory(ctx sdk.Context) uint64 {
 
 func (k *Keeper) SetLockedVaultID(ctx sdk.Context, id uint64) {
 	var (
-		store = k.Store(ctx)
-		key   = types.AppLockedVaultMappingKey(id)
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: id,
-			},
-		)
+	 store = k.Store(ctx)
+	 key   = types.LockedVaultIdKey
+	 value = k.cdc.MustMarshal(
+	  &protobuftypes.UInt64Value{
+	   Value: id,
+	  },
+	 )
 	)
 	store.Set(key, value)
-}
-
+   }
+   
+   func (k *Keeper) GetLockedVaultID(ctx sdk.Context) uint64 {
+	var (
+	 store = k.Store(ctx)
+	 key   = types.LockedVaultIdKey
+	 value = store.Get(key)
+	)
+   
+	if value == nil {
+	 return 0
+	}
+   
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+   
+	return id.GetValue()
+   }
 func (k *Keeper) SetLockedVaultIDHistory(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
