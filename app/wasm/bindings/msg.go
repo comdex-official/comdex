@@ -59,10 +59,12 @@ type MsgSetCollectorLookupTable struct {
 }
 
 type MsgSetAuctionMappingForApp struct {
-	AppMappingId     uint64   `json:"app_mapping_id"`
-	AssetId          []uint64 `json:"asset_id"`
-	IsSurplusAuction []bool   `json:"is_surplus_auction"`
-	IsDebtAuction    []bool   `json:"is_debt_auction"`
+	AppMappingId        uint64   `json:"app_mapping_id"`
+	AssetId             []uint64 `json:"asset_id"`
+	IsSurplusAuction    []bool   `json:"is_surplus_auction"`
+	IsDebtAuction       []bool   `json:"is_debt_auction"`
+	AssetOutOraclePrice []bool   `json:"asset_out_oracle_price"`
+	AssetOutPrice       []uint64 `json:"asset_out_price"`
 }
 
 type MsgUpdateLsrInPairsVault struct {
@@ -74,8 +76,8 @@ type MsgUpdateLsrInPairsVault struct {
 	LiquidationPenalty sdk.Dec `json:"liquidation_penalty"`
 	DrawDownFee        sdk.Dec `json:"draw_down_fee"`
 	MinCr              sdk.Dec `json:"min_cr"`
-	DebtCeiling        uint64 `json:"debt_ceiling"`
-	DebtFloor          uint64 `json:"debt_floor"`
+	DebtCeiling        uint64  `json:"debt_ceiling"`
+	DebtFloor          uint64  `json:"debt_floor"`
 }
 
 type MsgUpdateLsrInCollectorLookupTable struct {
