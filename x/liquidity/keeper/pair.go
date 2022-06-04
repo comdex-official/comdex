@@ -26,6 +26,14 @@ func (k Keeper) getNextOrderIDWithUpdate(ctx sdk.Context, pair types.Pair) uint6
 
 // ValidateMsgCreatePair validates types.MsgCreatePair.
 func (k Keeper) ValidateMsgCreatePair(ctx sdk.Context, msg *types.MsgCreatePair) error {
+	if !k.assetKeeper.HasAssetForDenom(ctx, msg.BaseCoinDenom) {
+		return sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", msg.BaseCoinDenom)
+	}
+
+	if !k.assetKeeper.HasAssetForDenom(ctx, msg.QuoteCoinDenom) {
+		return sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", msg.QuoteCoinDenom)
+	}
+
 	if _, found := k.GetPairByDenoms(ctx, msg.BaseCoinDenom, msg.QuoteCoinDenom); found {
 		return types.ErrPairAlreadyExists
 	}

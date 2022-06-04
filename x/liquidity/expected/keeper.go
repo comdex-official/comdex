@@ -3,6 +3,7 @@ package expected
 import (
 	"time"
 
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -28,6 +29,15 @@ type BankKeeper interface {
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 	InputOutputCoins(ctx sdk.Context, inputs []banktypes.Input, outputs []banktypes.Output) error
+}
+
+type AssetKeeper interface {
+	HasAssetForDenom(ctx sdk.Context, denom string) bool
+	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
+}
+
+type MarketKeeper interface {
+	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }
 
 type RewardsKeeper interface {
