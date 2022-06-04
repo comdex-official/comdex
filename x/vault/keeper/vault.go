@@ -3,7 +3,7 @@ package keeper
 import (
 
 	// assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"fmt"
+
 	"strconv"
 	"time"
 
@@ -76,7 +76,7 @@ func (k *Keeper) CheckUserToAppMapping(ctx sdk.Context, userVaultAssetData types
 }
 
 //Set AppExtendedPairVaultMapping to check the current status of the vault by extended pair vault id
-func (k *Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData types.AppExtendedPairVaultMapping)error {
+func (k *Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData types.AppExtendedPairVaultMapping) error {
 
 	var (
 		store = k.Store(ctx)
@@ -230,10 +230,9 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 	var assetOutPrice uint64
 
 	if extended_pair_vault.AssetOutOraclePrice {
-		fmt.Println(extended_pair_vault.AssetOutOraclePrice, "value bool price required")
+
 		//If oracle Price required for the assetOut
 		assetOutPrice, found = k.GetPriceForAsset(ctx, assetOutData.Id)
-		fmt.Println(assetOutPrice, "should be what is set dollar ")
 
 		if !found {
 			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
@@ -244,12 +243,6 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 
 	}
 
-	fmt.Println("assetInPrice____________")
-	fmt.Println(assetInData.Id)
-	fmt.Println(assetInPrice)
-	fmt.Println("assetOutPrice____________")
-	fmt.Println(assetOutData.Id)
-	fmt.Println(assetOutPrice)
 	totalIn := amountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
 	if totalIn.LTE(sdk.ZeroDec()) {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountIn
@@ -259,9 +252,6 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 	if totalOut.LTE(sdk.ZeroDec()) {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountOut
 	}
-	fmt.Println("totalIn", totalIn)
-	fmt.Println("totalout", totalOut)
-	fmt.Println("totalIn.Quo(totalOut)", totalIn.Quo(totalOut))
 
 	return totalIn.Quo(totalOut), nil
 

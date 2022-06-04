@@ -26,6 +26,7 @@ type (
 		asset           expected.AssetKeeper
 		bank            expected.BankKeeper
 		liquidityKeeper expected.LiquidityKeeper
+		marketKeeper    expected.MarketKeeper
 	}
 )
 
@@ -40,6 +41,7 @@ func NewKeeper(
 	asset expected.AssetKeeper,
 	bank expected.BankKeeper,
 	liquidityKeeper expected.LiquidityKeeper,
+	marketKeeper expected.MarketKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -59,6 +61,7 @@ func NewKeeper(
 		asset:           asset,
 		bank:            bank,
 		liquidityKeeper: liquidityKeeper,
+		marketKeeper:    marketKeeper,
 	}
 }
 
@@ -100,7 +103,6 @@ func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingId uint64, asset
 		return nil
 	}
 	var newAssetIds []uint64
-	fmt.Println(rewards.Asset_ID)
 	for i := range rewards.Asset_ID {
 		if assetId != rewards.Asset_ID[i] {
 			newAssetId := rewards.Asset_ID[i]

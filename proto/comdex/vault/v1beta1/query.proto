@@ -12,9 +12,9 @@ option (gogoproto.goproto_getters_all) = false;
 
 message VaultInfo{
   string id = 1;
-  uint64 pair_id = 2 [
-    (gogoproto.customname) = "PairID",
-    (gogoproto.moretags)   = "yaml:\"pair_id\""
+  uint64 extended_pair_id = 2 [
+    (gogoproto.customname) = "ExtendedPairID",
+    (gogoproto.moretags)   = "yaml:\"extended_pair_id\""
   ];
   string owner     = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 
@@ -35,6 +35,20 @@ message VaultInfo{
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
+  string extended_pair_name     = 7 [ (gogoproto.moretags) = "yaml:\"extended_pair_name\"" ];
+
+  string interest_rate        = 8 [ 
+      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"interest_rate\"" 
+    ];
+    string asset_in_denom     = 9 [ (gogoproto.moretags) = "yaml:\"asset_in_denom\"" ];
+    string asset_out_denom     = 10 [ (gogoproto.moretags) = "yaml:\"asset_out_denom\"" ];
+    string min_cr               = 11 [ 
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"min_cr\"" 
+    ];
 }
 
 message QueryVaultRequest {
@@ -60,11 +74,12 @@ message QueryVaultInfoResponse {
   ];
 }
 
-message QueryVaultInfoByOwnerRequest {
-  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+message QueryVaultInfoByAppByOwnerRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
 }
 
-message QueryVaultInfoByOwnerResponse {
+message QueryVaultInfoByAppByOwnerResponse {
  repeated VaultInfo vaultsInfo = 1 [
     (gogoproto.customname) = "VaultsInfo",
     (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
@@ -302,6 +317,27 @@ message QueryTotalTVLByAppResponse {
   uint64 collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\""];
 }
 
+message QueryUserMyPositionByAppRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+
+}
+
+message QueryUserMyPositionByAppResponse {
+  uint64 collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\""];
+  uint64 total_due = 2 [(gogoproto.moretags) = "yaml:\"total_due\""];
+  string available_to_borrow = 3 [
+    (gogoproto.moretags) = "yaml:\"available_to_borrow\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string average_cr_ratio = 4 [
+    (gogoproto.moretags) = "yaml:\"average_cr_ratio\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
 
 service Query {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
@@ -312,8 +348,8 @@ service Query {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaultsInfo/{id}";
   };
 
-  rpc QueryVaultInfoByOwner(QueryVaultInfoByOwnerRequest) returns (QueryVaultInfoByOwnerResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vaultsInfoByOwner/{owner}";
+  rpc QueryVaultInfoByAppByOwner(QueryVaultInfoByAppByOwnerRequest) returns (QueryVaultInfoByAppByOwnerResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/vaultsInfoByOwner/{app_id}/{owner}";
   };
 
   rpc QueryAllVaults(QueryAllVaultsRequest) returns (QueryAllVaultsResponse) {
@@ -396,5 +432,9 @@ service Query {
 
   rpc QueryTotalTVLByApp(QueryTotalTVLByAppRequest) returns (QueryTotalTVLByAppResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/tvl-locked-by-app/{app_id}";
+  };
+
+  rpc QueryUserMyPositionByApp(QueryUserMyPositionByAppRequest) returns (QueryUserMyPositionByAppResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/user-my-position-by-app/{app_id}/{owner}";
   };
 }
