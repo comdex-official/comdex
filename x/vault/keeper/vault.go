@@ -495,39 +495,21 @@ func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, AppMappingId uint64
 
 	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updated_counter, new_vault)
 
-	user_vault_extendedPair_mapping_data, user_exists := k.GetUserVaultExtendedPairMapping(ctx, From)
-	if !user_exists {
-		//UserData does not exists
-		//Create a new instance
-		var user_mapping_data types.UserVaultAssetMapping
-		var user_app_data types.VaultToAppMapping
-		var user_extendedPair_data types.ExtendedPairToVaultMapping
+	user_vault_extendedPair_mapping_data, _ := k.GetUserVaultExtendedPairMapping(ctx, From)
 
-		user_extendedPair_data.ExtendedPairId = new_vault.ExtendedPairVaultID
-		user_extendedPair_data.VaultId = new_vault.Id
-		user_app_data.AppMappingId = appMapping.Id
-		user_app_data.UserExtendedPairVault = append(user_app_data.UserExtendedPairVault, &user_extendedPair_data)
-		user_mapping_data.Owner = From
-		user_mapping_data.UserVaultApp = append(user_mapping_data.UserVaultApp, &user_app_data)
+	//So only need to add the locker id with asset
+	var user_extendedPair_data types.ExtendedPairToVaultMapping
+	user_extendedPair_data.VaultId = new_vault.Id
+	user_extendedPair_data.ExtendedPairId = new_vault.ExtendedPairVaultID
 
-		k.SetUserVaultExtendedPairMapping(ctx, user_mapping_data)
-	} else {
+	for _, appData := range user_vault_extendedPair_mapping_data.UserVaultApp {
+		if appData.AppMappingId == appMapping.Id {
 
-		//So only need to add the locker id with asset
-		var user_extendedPair_data types.ExtendedPairToVaultMapping
-		user_extendedPair_data.VaultId = new_vault.Id
-		user_extendedPair_data.ExtendedPairId = new_vault.ExtendedPairVaultID
-
-		for _, appData := range user_vault_extendedPair_mapping_data.UserVaultApp {
-			if appData.AppMappingId == appMapping.Id {
-
-				appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &user_extendedPair_data)
-			}
-
+			appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &user_extendedPair_data)
 		}
-		k.SetUserVaultExtendedPairMapping(ctx, user_vault_extendedPair_mapping_data)
 
 	}
+	k.SetUserVaultExtendedPairMapping(ctx, user_vault_extendedPair_mapping_data)
 
 	return nil
 }
