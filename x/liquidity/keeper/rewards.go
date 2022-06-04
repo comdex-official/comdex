@@ -40,25 +40,25 @@ func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool,
 	return x, y, nil
 }
 
-func oracle(denom string) (uint64, bool) {
-	if denom == "ucmdx" {
-		return 2000000, true
-	} else if denom == "ucgold" {
-		return 1800000000, true
-	} else if denom == "ucsilver" {
-		return 25000000, true
-	} else if denom == "ucoil" {
-		return 120000000, true
+func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
+
+	asset, found := k.assetKeeper.GetAssetForDenom(ctx, denom)
+	if !found {
+		return 0, false
 	}
-	return 0, false
+
+	price, found := k.marketKeeper.GetPriceForAsset(ctx, asset.Id)
+	if !found {
+		return 0, false
+	}
+	return price, true
 }
 
 func (k Keeper) GetOraclePrices(ctx sdk.Context, quoteCoinDenom, baseCoinDenom string) (sdk.Dec, string, error) {
-	//nolint TODO : Use market module to get the prices
-	oraclePrice, found := oracle(quoteCoinDenom) // for quote coin
+	oraclePrice, found := k.OraclePrice(ctx, quoteCoinDenom)
 	denom := quoteCoinDenom
 	if !found {
-		oraclePrice, found = oracle(baseCoinDenom) // for base coin
+		oraclePrice, found = k.OraclePrice(ctx, baseCoinDenom)
 		denom = baseCoinDenom
 		if !found {
 			return sdk.NewDec(0), "", types.ErrOraclePricesNotFound

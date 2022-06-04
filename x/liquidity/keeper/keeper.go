@@ -21,6 +21,8 @@ type Keeper struct {
 	accountKeeper expected.AccountKeeper
 	bankKeeper    expected.BankKeeper
 
+	assetKeeper   expected.AssetKeeper
+	marketKeeper  expected.MarketKeeper
 	rewardsKeeper expected.RewardsKeeper
 }
 
@@ -31,6 +33,8 @@ func NewKeeper(
 	paramSpace paramstypes.Subspace,
 	accountKeeper expected.AccountKeeper,
 	bankKeeper expected.BankKeeper,
+	assetKeeper expected.AssetKeeper,
+	marketKeeper expected.MarketKeeper,
 	rewardsKeeper expected.RewardsKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
@@ -43,6 +47,8 @@ func NewKeeper(
 		paramSpace:    paramSpace,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
+		assetKeeper:   assetKeeper,
+		marketKeeper:  marketKeeper,
 		rewardsKeeper: rewardsKeeper,
 	}
 }

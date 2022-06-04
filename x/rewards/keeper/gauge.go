@@ -42,11 +42,47 @@ func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCrea
 	return nil
 }
 
+func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
+
+	asset, found := k.asset.GetAssetForDenom(ctx, denom)
+	if !found {
+		return 0, false
+	}
+
+	price, found := k.marketKeeper.GetPriceForAsset(ctx, asset.Id)
+	if !found {
+		return 0, false
+	}
+	return price, true
+}
+
+func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, pairId uint64) error {
+	pair, found := k.liquidityKeeper.GetPair(ctx, pairId)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrPairNotExists, "pair does not exists for given pool id")
+	}
+
+	_, baseCoinPriceFound := k.OraclePrice(ctx, pair.BaseCoinDenom)
+	_, quoteCoinPricefound := k.OraclePrice(ctx, pair.QuoteCoinDenom)
+	if !(baseCoinPriceFound || quoteCoinPricefound) {
+		return sdkerrors.Wrapf(types.ErrPriceNotFound, "oracle price required for atleast %s or %s but not found", pair.QuoteCoinDenom, pair.BaseCoinDenom)
+	}
+
+	return nil
+}
+
 // ValidateMsgCreateGaugeLiquidityMetaData validates types.MsgCreateGauge_LiquidityMetaData.
-func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, kind *types.MsgCreateGauge_LiquidityMetaData) error {
-	_, found := k.liquidityKeeper.GetPool(ctx, kind.LiquidityMetaData.PoolId)
+func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, kind *types.MsgCreateGauge_LiquidityMetaData, forSwapFee bool) error {
+	pool, found := k.liquidityKeeper.GetPool(ctx, kind.LiquidityMetaData.PoolId)
 	if !found {
 		return types.ErrInvalidPoolID
+	}
+
+	if !forSwapFee {
+		err := k.ValidateIfOraclePricesExists(ctx, pool.PairId)
+		if err != nil {
+			return err
+		}
 	}
 
 	childPoolIds := kind.LiquidityMetaData.ChildPoolIds
@@ -61,7 +97,7 @@ func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, kind *t
 }
 
 // NewGauge returns the new Gauge object.
-func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gauge, error) {
+func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge, forSwapFee bool) (types.Gauge, error) {
 	newGauge := types.Gauge{
 		Id:                k.GetGaugeID(ctx) + 1,
 		From:              msg.From,
@@ -81,7 +117,7 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge) (types.Gaug
 	switch extraData := msg.Kind.(type) {
 	case *types.MsgCreateGauge_LiquidityMetaData:
 
-		err := k.ValidateMsgCreateGaugeLiquidityMetaData(ctx, extraData)
+		err := k.ValidateMsgCreateGaugeLiquidityMetaData(ctx, extraData, forSwapFee)
 		if err != nil {
 			return types.Gauge{}, err
 		}
@@ -129,7 +165,7 @@ func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerD
 }
 
 func (k Keeper) CreateNewGauge(ctx sdk.Context, msg *types.MsgCreateGauge, forSwapFee bool) error {
-	newGauge, err := k.NewGauge(ctx, msg)
+	newGauge, err := k.NewGauge(ctx, msg, forSwapFee)
 	if err != nil {
 		return err
 	}
