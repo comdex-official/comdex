@@ -622,9 +622,11 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 		if ctx.BlockTime().Before(gauge.StartTime) || !gauge.IsActive {
 			continue
 		}
-		if gauge.TriggeredCount == gauge.TotalTriggers {
-			continue
-		}
+
+		// Not needed, redundant check
+		// if gauge.TriggeredCount == gauge.TotalTriggers {
+		// 	continue
+		// }
 		epochInfo, found := k.rewardsKeeper.GetEpochInfoByDuration(ctx, gauge.TriggerDuration)
 		if !found {
 			continue
