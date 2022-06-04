@@ -43,9 +43,10 @@ func GetQueryCmd() *cobra.Command {
 		QueryExtendedPairVaultMappingByAppAndExtendedPairId(),
 		QueryExtendedPairVaultMappingByOwnerAndApp(),
 		QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID(),
-		QueryVaultInfoByOwner(),
+		QueryVaultInfoByAppByOwner(),
 		QueryTVLLockedByAppOfAllExtendedPairs(),
 		QueryTotalTVLByApp(),
+		QueryUserMyPositionByApp(),
 	)
 
 	return cmd
@@ -194,22 +195,27 @@ func QueryVaultOfOwnerByExtendedPair() *cobra.Command {
 	return cmd
 }
 
-func QueryVaultInfoByOwner() *cobra.Command {
+func QueryVaultInfoByAppByOwner() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vaultInfoByOwner [owner]",
-		Short: "vaults list for an owner",
-		Args:  cobra.ExactArgs(1),
+		Use:   "vaultInfoByAppByOwner [app_id] [owner]",
+		Short: "vaults list for an owner by App",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryVaultInfoByOwner(cmd.Context(), &types.QueryVaultInfoByOwnerRequest{
-				Owner: args[0],
+			res, err := queryClient.QueryVaultInfoByAppByOwner(cmd.Context(), &types.QueryVaultInfoByAppByOwnerRequest{
+				AppId: app_id,
+				Owner: args[1],
 			})
 
 			if err != nil {
@@ -918,6 +924,40 @@ func QueryTotalTVLByApp() *cobra.Command {
 
 			res, err := queryClient.QueryTotalTVLByApp(cmd.Context(), &types.QueryTotalTVLByAppRequest{
 				AppId: app_id,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryUserMyPositionByApp() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "user-my-position-by-app [app_id] [owner]",
+		Short: "user my position by app",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryUserMyPositionByApp(cmd.Context(), &types.QueryUserMyPositionByAppRequest{
+				AppId: app_id,
+				Owner: args[1] ,
 			})
 
 			if err != nil {

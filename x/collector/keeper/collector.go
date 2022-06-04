@@ -557,10 +557,8 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, Asse
 
 func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, AppId uint64) (bool, string) {
 
-	_, found := k.GetAppidToAssetCollectorMapping(ctx, AppId)
-	if !found {
-		return false, types.ErrorDataDoesNotExists.Error()
-	}
+	_, _ = k.GetAppidToAssetCollectorMapping(ctx, AppId)
+	
 	return true, ""
 }
 
@@ -570,7 +568,7 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, ass
 	accmLookup, _ := k.GetCollectorLookupTable(ctx, appId)
 
 	for _, data:= range accmLookup.AssetRateInfo{
-		if Collector.CollectorAssetId == assetId{ 
+		if data.CollectorAssetId == assetId{ 
 			Collector.CollectorAssetId = assetId
 			Collector.AppId = data.AppId
 			Collector.BidFactor = data.BidFactor
@@ -579,12 +577,8 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, ass
 			Collector.LotSize = data.LotSize
 			Collector.SecondaryAssetId = data.SecondaryAssetId
 			Collector.DebtThreshold = data.DebtThreshold
-
 	}
 }
-	accmLookup.AppId = appId
-	accmLookup.AssetRateInfo = append(accmLookup.AssetRateInfo, Collector)
-
 	k.SetCollectorLookupTable(ctx, Collector)
 	// var (
 	// 	store = ctx.KVStore(k.storeKey)
