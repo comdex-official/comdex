@@ -247,6 +247,15 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				continue
 			}
 
+			if lockedVault.AmountIn.IsZero() {
+				err := k.CreateLockedVaultHistory(ctx, lockedVault)
+				if err != nil {
+					return err
+				}
+
+				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+			}
+
 			if lockedVault.AmountOut.IsZero() {
 
 				err := k.CreateLockedVaultHistory(ctx, lockedVault)
