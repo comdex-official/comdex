@@ -32,12 +32,13 @@ const DutchString = "dutch"
 const TestFlag = 0
 
 var (
-	AuctionKeyPrefix        = []byte{0x11}
-	UserKeyPrefix           = []byte{0x12}
-	AuctionIdKey            = []byte{0x13}
-	UserBiddingsIdKey       = []byte{0x14}
-	HistoryAuctionKeyPrefix = []byte{0x15}
-	HistoryUserKeyPrefix    = []byte{0x16}
+	AuctionKeyPrefix            = []byte{0x11}
+	UserKeyPrefix               = []byte{0x12}
+	AuctionIdKey                = []byte{0x13}
+	UserBiddingsIdKey           = []byte{0x14}
+	HistoryAuctionKeyPrefix     = []byte{0x15}
+	HistoryUserKeyPrefix        = []byte{0x16}
+	ProtocolStatisticsPrefixKey = []byte{0x17}
 )
 
 func AuctionKey(appId uint64, auctionType string, auctionId uint64) []byte {
@@ -70,4 +71,12 @@ func HistoryUserAuctionTypeKey(bidder string, appId uint64, auctionType string) 
 
 func HistoryAuctionTypeKey(appId uint64, auctionType string) []byte {
 	return append(append(HistoryAuctionKeyPrefix, sdk.Uint64ToBigEndian(appId)...), auctionType...)
+}
+
+func ProtocolStatisticsKey(appId, assetId uint64) []byte {
+	return append(append(ProtocolStatisticsPrefixKey, sdk.Uint64ToBigEndian(appId)...), sdk.Uint64ToBigEndian(assetId)...)
+}
+
+func ProtocolStatisticsAppIdKey(appId uint64) []byte {
+	return append(ProtocolStatisticsPrefixKey, sdk.Uint64ToBigEndian(appId)...)
 }

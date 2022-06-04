@@ -309,3 +309,43 @@ func (q *QueryServer) QueryBiddingsForAuction(c context.Context, req *types.Quer
 		Biddings: item,
 	}, nil
 }
+
+func (q *QueryServer) QueryProtocolStatistics(c context.Context, req *types.QueryProtocolStatisticsRequest) (*types.QueryProtocolStatisticsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.ProtocolStatistics
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+
+	key = types.ProtocolStatisticsAppIdKey(req.AppId)
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.ProtocolStatistics
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryProtocolStatisticsResponse{
+		Stats:      items,
+		Pagination: pagination,
+	}, nil
+}
