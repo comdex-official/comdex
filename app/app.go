@@ -605,6 +605,8 @@ func New(
 		app.GetSubspace(liquiditytypes.ModuleName),
 		app.accountKeeper,
 		app.bankKeeper,
+		&app.assetKeeper,
+		&app.marketKeeper,
 		&app.rewardskeeper,
 	)
 
@@ -627,6 +629,7 @@ func New(
 		&app.assetKeeper,
 		app.bankKeeper,
 		app.liquidityKeeper,
+		&app.marketKeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")

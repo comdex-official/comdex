@@ -18,6 +18,7 @@ type AccountKeeper interface {
 }
 
 type LiquidityKeeper interface {
+	GetPair(ctx sdk.Context, id uint64) (pair liquiditytypes.Pair, found bool)
 	GetPool(ctx sdk.Context, id uint64) (pool liquiditytypes.Pool, found bool)
 	GetFarmingRewardsData(ctx sdk.Context, coinToDistribute sdk.Coin, liquidityGaugeData types.LiquidtyGaugeMetaData) ([]types.RewardDistributionDataCollector, error)
 	TransferFundsForSwapFeeDistribution(ctx sdk.Context, poolId uint64) (sdk.Coin, error)
@@ -25,7 +26,14 @@ type LiquidityKeeper interface {
 
 type AssetKeeper interface {
 	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
+	HasAssetForDenom(ctx sdk.Context, denom string) bool
+	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
 }
+
+type MarketKeeper interface {
+	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+}
+
 type LockerKeeper interface {
 	GetLockerProductAssetMapping(ctx sdk.Context, appMappingId uint64) (lockerProductMapping lockertypes.LockerProductAssetMapping, found bool)
 	GetLocker(ctx sdk.Context, lockerId string) (locker lockertypes.Locker, found bool)
