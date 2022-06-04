@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/comdex-official/comdex/x/lend/expected"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -12,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 type (
@@ -22,7 +25,6 @@ type (
 		paramstore paramtypes.Subspace
 		bank       expected.BankKeeper
 		account    expected.AccountKeeper
-		asset      expected.AssetKeeper
 	}
 )
 
@@ -33,7 +35,6 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 	bank expected.BankKeeper,
 	account expected.AccountKeeper,
-	asset expected.AssetKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -49,7 +50,6 @@ func NewKeeper(
 		paramstore: ps,
 		bank:       bank,
 		account:    account,
-		asset:      asset,
 	}
 }
 
@@ -61,122 +61,49 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(moduleName), denom).Amount
 }
 
-func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, pairID uint64, lent sdk.Coin) error {
-
-	/*if k.GetOracleValidationResult(ctx) == false{
-		return nil, types.ErrorOraclePriceExpired
-	}*/
-
-	if k.HasLendForAddressByPair(ctx, lenderAddr, pairID) {
-		return types.ErrorDuplicateLend
+func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, PairId uint64, loan sdk.Coin) error {
+	if !k.IsWhitelistedAsset(ctx, loan.Denom) {
+		return sdkerrors.Wrap(types.ErrInvalidAsset, loan.String())
 	}
 
-	lentTokens := sdk.NewCoins(lent)
-
-	ExtPairID, _ := k.asset.GetWhitelistPair(ctx, pairID)
-
-	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, lent.Denom)
-	if err := k.setCollateralAmount(ctx, lenderAddr, currentCollateral.Add(lent)); err != nil {
-		return err
+	pair, found := k.GetPair(ctx, PairId)
+	if !found {
+		return sdkerrors.Wrap(types.ErrorPairDoesNotExist, strconv.Itoa(int(PairId)))
 	}
-	basePair, found := k.asset.GetPair(ctx, ExtPairID.PairId)
-	if found != true {
-		return types.ErrorPairDoesNotExist
+	asset1, _ := k.GetAsset(ctx, pair.Asset_1)
+	asset2, _ := k.GetAsset(ctx, pair.Asset_2)
+
+	if loan.Denom != asset1.Denom && loan.Denom != asset2.Denom {
+		return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, loan.Denom)
 	}
 
-	Asset, found := k.asset.GetAsset(ctx, basePair.AssetIn)
-	if found != true {
-		return types.ErrorAssetDoesNotExist
-	}
+	userLendId := k.GetUserLendIDHistory(ctx)
+	k.SetUserLendHistory(ctx, lenderAddr, loan, userLendId)
+	k.SetUserLendIDHistory(ctx, userLendId+1)
 
-	if Asset.Denom != lent.Denom {
-		return types.ErrInvalidAsset
-	}
-
-	cToken, err := k.ExchangeToken(ctx, lent, Asset.Name)
-	if err != nil {
+	// send token balance to lend module account
+	// update users lending
+	//TODO:
+	// update reserves
+	// calculate interest rate
+	loanTokens := sdk.NewCoins(loan)
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, types.ModuleName, loanTokens); err != nil {
 		return err
 	}
 
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, ExtPairID.ModuleAcc, lentTokens); err != nil {
+	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, loan.Denom)
+	if err := k.setCollateralAmount(ctx, lenderAddr, currentCollateral.Add(loan)); err != nil {
 		return err
 	}
-	// mint c/Token and set new total cToken supply
-
-	cTokens := sdk.NewCoins(cToken)
-	if err = k.bank.MintCoins(ctx, ExtPairID.ModuleAcc, cTokens); err != nil {
-		return err
-	}
-	if err = k.setCTokenSupply(ctx, k.GetCTokenSupply(ctx, cToken.Denom).Add(cToken)); err != nil {
-		return err
-	}
-
-	err = k.bank.SendCoinsFromModuleToAccount(ctx, ExtPairID.ModuleAcc, lenderAddr, cTokens)
-	if err != nil {
-		return err
-	}
-
-	Id := k.GetLendID(ctx)
-	lendPositon := types.Lend_Asset{
-		ID:          Id + 1,
-		PairID:      pairID,
-		Owner:       lenderAddr.String(),
-		AmountIn:    lent,
-		LendingTime: ctx.BlockTime(),
-		Reward:      sdk.NewCoin("cCMDX", sdk.NewInt(0)),
-	}
-
-	k.SetLendID(ctx, lendPositon.ID)
-	k.SetLend(ctx, lendPositon)
-	k.SetLendForAddressByPair(ctx, lenderAddr, pairID, lendPositon.ID)
 
 	return nil
 }
 
-/*func (k Keeper) DepositLendAsset(c context.Context, msg *types.MsgDepositLend) (*types.MsgDepositResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	//if k.GetOracleValidationResult(ctx) == false{
-	//	return nil, types.ErrorOraclePriceExpired
-	//}
-
-	from, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
-
-	lend, found := k.GetLend(ctx, msg.ID)
-	if !found {
-		return nil, types.ErrorLendDoesNotExist
-	}
-	if msg.From != lend.Owner {
-		return nil, types.ErrorUnauthorized
-	}
-
-	pair, found := k.GetPair(ctx, lend.PairID)
-	if !found {
-		return nil, types.ErrorPairDoesNotExist
-	}
-
-	assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-	if !found {
-		return nil, types.ErrorAssetDoesNotExist
-	}
-
-	lend.AmountIn = lend.AmountIn.Add(msg.Amount)
-	if !lend.AmountIn.IsPositive() {
-		return nil, types.ErrorUnauthorized
-	}
-
-	if err := k.SendCoinFromAccountToModule(ctx, from, pair.mo, sdk.NewCoin(assetIn.Denom, msg.Amount.Amount)); err != nil {
-		return nil, err
-	}
-
-	k.SetLend(ctx, lend)
-	return &types.MsgDepositResponse{}, nil
-}*/
-
 func (k Keeper) WithdrawAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, withdrawal sdk.Coin) error {
+
+	if !k.IsWhitelistedAsset(ctx, withdrawal.Denom) {
+		return sdkerrors.Wrap(types.ErrInvalidAsset, withdrawal.String())
+	}
 
 	// Ensure module account has sufficient unreserved tokens to withdraw
 	reservedAmount := k.GetReserveFunds(ctx, withdrawal.Denom)
@@ -203,7 +130,37 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, withdr
 	return nil
 }
 
+func (k Keeper) BorrowAsset(ctx sdk.Context, lenderAddr sdk.AccAddress, loan sdk.Coin) error {
+	if !k.IsWhitelistedAsset(ctx, loan.Denom) {
+		return sdkerrors.Wrap(types.ErrInvalidAsset, loan.String())
+	}
+
+	// send token balance to lend module account
+	loanTokens := sdk.NewCoins(loan)
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, types.ModuleName, loanTokens); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (k Keeper) RepayAsset(ctx sdk.Context, borrowerAddr sdk.AccAddress, payment sdk.Coin) (sdk.Int, error) {
+	if !payment.IsValid() {
+		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrInvalidAsset, payment.String())
+	}
+
+	if !k.IsWhitelistedAsset(ctx, payment.Denom) {
+		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrInvalidAsset, payment.String())
+	}
+
+	return payment.Amount, nil
+}
+
 func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, lenderAddr sdk.AccAddress, payment sdk.Coin) error {
+	if !k.IsWhitelistedAsset(ctx, payment.Denom) {
+		return sdkerrors.Wrap(types.ErrInvalidAsset, payment.String())
+	}
+
 	loanTokens := sdk.NewCoins(payment)
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, moduleName, loanTokens); err != nil {
 		return err
@@ -219,4 +176,64 @@ func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, lenderAddr sdk.Ac
 
 func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
+}
+
+func (k *Keeper) SetUserLendIDHistory(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendHistoryPrefix
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+	store.Set(key, value)
+}
+
+
+func (k *Keeper) SetUserLendHistory(ctx sdk.Context, lenderAddr sdk.AccAddress, loan sdk.Coin, id uint64) {
+	
+	user_lend := types.LendHistory{
+		Owner: lenderAddr.String(),
+		Amount: &loan,
+	}
+	var (
+		store = k.Store(ctx)
+		key   = types.LendUserHistoryKey(id)
+		value = k.cdc.MustMarshal(&user_lend)
+	)
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetUserLendHistory(ctx sdk.Context, id uint64) (user_lend types.LendHistory, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendUserHistoryKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return user_lend, false
+	}
+
+	k.cdc.MustUnmarshal(value, &user_lend)
+	return user_lend, true
+}
+
+func (k *Keeper) GetUserLendIDHistory(ctx sdk.Context) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendHistoryPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return 0
+	}
+
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
 }

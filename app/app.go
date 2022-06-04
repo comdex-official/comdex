@@ -102,6 +102,7 @@ import (
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	"github.com/comdex-official/comdex/x/lend"
+	lendclient "github.com/comdex-official/comdex/x/lend/client"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/locker"
@@ -171,6 +172,10 @@ var (
 			append(
 				assetclient.AddAssetsHandler,
 				bandoraclemoduleclient.AddFetchPriceHandler,
+				lendclient.AddWhitelistedAssetsHandler,
+				lendclient.UpdateWhitelistedAssetHandler,
+				lendclient.AddWhitelistedPairsProposalHandler,
+				lendclient.UpdateWhitelistedPairProposalHandler,
 				collectorclient.AddLookupTableParamsHandlers,
 				collectorclient.AddAuctionControlParamsHandler,
 				paramsclient.ProposalHandler,
@@ -487,7 +492,6 @@ func New(
 		app.GetSubspace(lendtypes.ModuleName),
 		app.bankKeeper,
 		app.accountKeeper,
-		&app.assetKeeper,
 	)
 
 	app.vaultKeeper = vaultkeeper.NewKeeper(

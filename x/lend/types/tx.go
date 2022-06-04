@@ -5,10 +5,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func NewMsgLend(lender sdk.AccAddress, pairID uint64, amount sdk.Coin) *MsgLend {
+func NewMsgLend(lender sdk.AccAddress, pair uint64, amount sdk.Coin) *MsgLend {
 	return &MsgLend{
 		Lender: lender.String(),
-		PairId: pairID,
+		PairId: pair,
 		Amount: amount,
 	}
 }
@@ -70,6 +70,74 @@ func (msg *MsgWithdraw) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes get the bytes for the message signer to sign on
 func (msg *MsgWithdraw) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func NewMsgBorrow(borrower sdk.AccAddress, amount sdk.Coin) *MsgBorrow {
+	return &MsgBorrow{
+		Borrower: borrower.String(),
+		Amount:   amount,
+	}
+}
+
+func (msg MsgBorrow) Route() string { return ModuleName }
+func (msg MsgBorrow) Type() string  { return EventTypeBorrowAsset }
+
+func (msg *MsgBorrow) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		return err
+	}
+
+	if asset := msg.GetAmount(); !asset.IsValid() {
+		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	}
+
+	return nil
+}
+
+func (msg *MsgBorrow) GetSigners() []sdk.AccAddress {
+	borrower, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	return []sdk.AccAddress{borrower}
+}
+
+// GetSignBytes get the bytes for the message signer to sign on
+func (msg *MsgBorrow) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func NewMsgRepay(borrower sdk.AccAddress, amount sdk.Coin) *MsgRepay {
+	return &MsgRepay{
+		Borrower: borrower.String(),
+		Amount:   amount,
+	}
+}
+
+func (msg MsgRepay) Route() string { return ModuleName }
+func (msg MsgRepay) Type() string  { return EventTypeRepayBorrowedAsset }
+
+func (msg *MsgRepay) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		return err
+	}
+
+	if asset := msg.GetAmount(); !asset.IsValid() {
+		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	}
+
+	return nil
+}
+
+func (msg *MsgRepay) GetSigners() []sdk.AccAddress {
+	borrower, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	return []sdk.AccAddress{borrower}
+}
+
+// GetSignBytes get the bytes for the message signer to sign on
+func (msg *MsgRepay) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }

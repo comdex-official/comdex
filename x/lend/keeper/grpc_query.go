@@ -11,28 +11,33 @@ import (
 )
 
 var (
-	_ types.QueryServer = (*queryServer)(nil)
+	_ types.QueryServiceServer = (*queryServer)(nil)
 )
 
 type queryServer struct {
 	Keeper
 }
 
-func (q queryServer) QueryLends(c context.Context, req *types.QueryLendsRequest) (*types.QueryLendsResponse, error) {
+func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+	return &queryServer{
+		Keeper: k,
+	}
+}
+
+func (q *queryServer) QueryAssets(c context.Context, req *types.QueryAssetsRequest) (*types.QueryAssetsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-
 	var (
-		items []types.Lend_Asset
+		items []types.Asset
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.LendKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.WhitelistedAssetKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.Lend_Asset
+			var item types.Asset
 			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
@@ -49,13 +54,13 @@ func (q queryServer) QueryLends(c context.Context, req *types.QueryLendsRequest)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryLendsResponse{
-		Lends:      items,
+	return &types.QueryAssetsResponse{
+		Assets:     items,
 		Pagination: pagination,
 	}, nil
 }
 
-func (q queryServer) QueryLend(c context.Context, req *types.QueryLendRequest) (*types.QueryLendResponse, error) {
+func (q *queryServer) QueryAsset(c context.Context, req *types.QueryAssetRequest) (*types.QueryAssetResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -64,18 +69,31 @@ func (q queryServer) QueryLend(c context.Context, req *types.QueryLendRequest) (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetLend(ctx, req.Id)
+	item, found := q.GetAsset(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
 	}
 
-	return &types.QueryLendResponse{
-		Lend: item,
+	return &types.QueryAssetResponse{
+		Asset: item,
 	}, nil
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
-	return &queryServer{
-		Keeper: k,
+func (q *queryServer) QueryAssetPerDenom(c context.Context, req *types.QueryAssetPerDenomRequest) (*types.QueryAssetPerDenomResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	item, found := q.GetAssetForDenom(ctx, req.Denom)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Denom)
+	}
+
+	return &types.QueryAssetPerDenomResponse{
+		Asset: item,
+	}, nil
 }

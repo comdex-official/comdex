@@ -6,6 +6,9 @@ import (
 )
 
 const (
+	flagName                 = "name"
+	flagDenom                = "denom"
+	flagDecimal              = "decimal"
 	flagCollateralWeight     = "collateralWeight"
 	flagLiquidationThreshold = "liquidationThreshold"
 	flagBaseBorrowRate       = "baseBorrowRate"
@@ -13,6 +16,11 @@ const (
 	flagAssetOne             = "assetOne"
 	flagAssetTwo             = "assetTwo"
 	flagModuleAcc            = "moduleAcc"
+	flagbaseborrowrateasset1 = "baseborrowrateasset1"
+	flagbaseborrowrateasset2 = "baseborrowrateasset2"
+	flagbaselendrateasset1   = "baselendrateasset1"
+	flagbaselendrateasset2   = "baselendrateasset2"
+	flagIsBridgedAsset       = "isBridgedAsset"
 )
 
 func ParseStringFromString(s string, seperator string) ([]string, error) {
@@ -51,4 +59,14 @@ func ParseUint64SliceFromString(s string, seperator string) ([]uint64, error) {
 		parsedInts = append(parsedInts, parsed)
 	}
 	return parsedInts, nil
+}
+
+func ParseBoolFromString(s string) bool {
+
+	switch s {
+	case "1":
+		return true
+	default:
+		return false
+	}
 }

@@ -1,7 +1,6 @@
 package expected
 
 import (
-	"github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -23,6 +22,7 @@ type BankKeeper interface {
 type AccountKeeper interface {
 	GetModuleAddress(name string) sdk.AccAddress
 	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+
 }
 
 type MarketKeeper interface {
@@ -31,11 +31,4 @@ type MarketKeeper interface {
 
 type BandoracleKeeper interface {
 	GetOracleValidationResult(ctx sdk.Context) bool
-}
-
-type AssetKeeper interface {
-	GetWhitelistAsset(ctx sdk.Context, id uint64) (asset types.ExtendedAsset, found bool)
-	GetWhitelistPair(ctx sdk.Context, id uint64) (pair types.ExtendedPairLend, found bool)
-	GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found bool)
-	GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found bool)
 }

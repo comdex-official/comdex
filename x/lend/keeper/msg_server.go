@@ -74,6 +74,68 @@ func (m msgServer) Withdraw(goCtx context.Context, withdraw *types.MsgWithdraw) 
 	return &types.MsgWithdrawResponse{}, nil
 }
 
+func (m msgServer) Borrow(goCtx context.Context, borrow *types.MsgBorrow) (*types.MsgBorrowResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	borrowerAddr, err := sdk.AccAddressFromBech32(borrow.Borrower)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := m.keeper.BorrowAsset(ctx, borrowerAddr, borrow.Amount); err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeBorrowAsset,
+			sdk.NewAttribute(types.EventAttrBorrower, borrowerAddr.String()),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, borrow.Amount.String()),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
+			sdk.NewAttribute(sdk.AttributeKeySender, borrowerAddr.String()),
+		),
+	})
+
+	return &types.MsgBorrowResponse{}, nil
+}
+
+func (m msgServer) Repay(goCtx context.Context, repay *types.MsgRepay) (*types.MsgRepayResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	borrowerAddr, err := sdk.AccAddressFromBech32(repay.Borrower)
+	if err != nil {
+		return nil, err
+	}
+
+	repaid, err := m.keeper.RepayAsset(ctx, borrowerAddr, repay.Amount)
+	if err != nil {
+		return nil, err
+	}
+
+	repaidCoin := sdk.NewCoin(repay.Amount.Denom, repaid)
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRepayBorrowedAsset,
+			sdk.NewAttribute(types.EventAttrBorrower, borrowerAddr.String()),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, repaidCoin.String()),
+			sdk.NewAttribute(types.EventAttrAttempted, repay.Amount.String()),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
+			sdk.NewAttribute(sdk.AttributeKeySender, borrowerAddr.String()),
+		),
+	})
+
+	return &types.MsgRepayResponse{
+		Repaid: repaidCoin,
+	}, nil
+}
+
 func (m msgServer) FundModuleAccounts(goCtx context.Context, accounts *types.MsgFundModuleAccounts) (*types.MsgFundModuleAccountsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

@@ -44,8 +44,12 @@ func (AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
+func (AppModuleBasic) RegisterCodec(cdc *codec.LegacyAmino) {
+	types.RegisterCodec(cdc)
+}
+
 func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	types.RegisterLegacyAminoCodec(cdc)
+	types.RegisterCodec(cdc)
 }
 
 // RegisterInterfaces registers the module's interface types
@@ -134,7 +138,7 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQueryServiceServer(am.keeper))
+	types.RegisterQueryServiceServer(cfg.QueryServer(), keeper.NewQueryServiceServer(am.keeper))
 }
 
 // RegisterInvariants registers the capability module's invariants.

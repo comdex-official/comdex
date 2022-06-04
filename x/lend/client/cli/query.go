@@ -28,19 +28,56 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(
-		CmdQueryParams(),
-		queryLend(),
-		queryLends(),
-	)
+	cmd.AddCommand(CmdQueryParams())
+	cmd.AddCommand(queryAssets())
+	cmd.AddCommand(queryAsset())
+	cmd.AddCommand(queryAssetPerDenom())
+	// this line is used by starport scaffolding # 1
 
 	return cmd
 }
 
-func queryLend() *cobra.Command {
+func queryAssets() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lend [id]",
-		Short: "Query a lend position",
+		Use:   "assets",
+		Short: "Query assets",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryServiceClient(ctx)
+
+			res, err := queryClient.QueryAssets(
+				context.Background(),
+				&types.QueryAssetsRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryAsset() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "asset [id]",
+		Short: "Query an asset",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -53,11 +90,11 @@ func queryLend() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryClient(ctx)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := queryClient.QueryLend(
+			res, err := queryClient.QueryAsset(
 				context.Background(),
-				&types.QueryLendRequest{
+				&types.QueryAssetRequest{
 					Id: id,
 				},
 			)
@@ -74,27 +111,28 @@ func queryLend() *cobra.Command {
 	return cmd
 }
 
-func queryLends() *cobra.Command {
+func queryAssetPerDenom() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lends",
-		Short: "Query lends",
+		Use:   "denom [name]",
+		Short: "Query an asset by providing denom",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			pagination, err := client.ReadPageRequest(cmd.Flags())
+			denom := args[0]
 			if err != nil {
 				return err
 			}
 
-			queryClient := types.NewQueryClient(ctx)
+			queryClient := types.NewQueryServiceClient(ctx)
 
-			res, err := queryClient.QueryLends(
+			res, err := queryClient.QueryAssetPerDenom(
 				context.Background(),
-				&types.QueryLendsRequest{
-					Pagination: pagination,
+				&types.QueryAssetPerDenomRequest{
+					Denom: denom,
 				},
 			)
 			if err != nil {
@@ -106,7 +144,6 @@ func queryLends() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "lends")
 
 	return cmd
 }
