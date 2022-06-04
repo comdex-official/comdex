@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strconv"
 
 	// "github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -91,7 +92,7 @@ func (q *queryServer) QueryVaultInfo(c context.Context, req *types.QueryVaultInf
 	if err != nil {
 		return nil, err
 	}
-	pairvaults, _ := q.GetPairsVault(ctx,vault.ExtendedPairVaultID)
+	pairvaults, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 	pairId, _ := q.GetPair(ctx, pairvaults.PairId)
 	assetin, _ := q.GetAsset(ctx, pairId.AssetIn)
 	assetout, _ := q.GetAsset(ctx, pairId.AssetOut)
@@ -105,8 +106,9 @@ func (q *queryServer) QueryVaultInfo(c context.Context, req *types.QueryVaultInf
 			CollateralizationRatio: collateralizationRatio,
 			ExtendedPairName:       pairvaults.PairName,
 			InterestRate:           pairvaults.StabilityFee,
-			AssetInDenom: assetin.Denom,
-			AssetOutDenom: assetout.Denom,
+			AssetInDenom:           assetin.Denom,
+			AssetOutDenom:          assetout.Denom,
+			MinCr:                  pairvaults.MinCr,
 		},
 	}, nil
 }
@@ -127,7 +129,7 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 		return nil, status.Errorf(codes.NotFound, "data does not exists for user addesss %s", req.Owner)
 	}
 	for _, data := range userVaultAssetData.UserVaultApp {
-		if data.AppMappingId == req.AppId{
+		if data.AppMappingId == req.AppId {
 			for _, inData := range data.UserExtendedPairVault {
 				vaultsIds = append(vaultsIds, inData.VaultId)
 			}
@@ -144,7 +146,7 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 		if err != nil {
 			return nil, err
 		}
-		pairvaults, _ := q.GetPairsVault(ctx,vault.ExtendedPairVaultID)
+		pairvaults, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 		pairId, _ := q.GetPair(ctx, pairvaults.PairId)
 		assetin, _ := q.GetAsset(ctx, pairId.AssetIn)
 		assetout, _ := q.GetAsset(ctx, pairId.AssetOut)
@@ -158,8 +160,9 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 			CollateralizationRatio: collateralizationRatio,
 			ExtendedPairName:       pairvaults.PairName,
 			InterestRate:           pairvaults.StabilityFee,
-			AssetInDenom: assetin.Denom,
-			AssetOutDenom: assetout.Denom,
+			AssetInDenom:           assetin.Denom,
+			AssetOutDenom:          assetout.Denom,
+			MinCr:                  pairvaults.MinCr,
 		}
 		vaultsInfo = append(vaultsInfo, vaults)
 
@@ -707,5 +710,82 @@ func (q *queryServer) QueryTotalTVLByApp(c context.Context, req *types.QueryTota
 
 	return &types.QueryTotalTVLByAppResponse{
 		CollateralLocked: locked,
+	}, nil
+}
+
+func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.QueryUserMyPositionByAppRequest) (*types.QueryUserMyPositionByAppResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var (
+		ctx              = sdk.UnwrapSDKContext(c)
+		vaultsIds        []string
+		total_locked     uint64
+		total_due        uint64
+		
+	)
+	var available_borrow = sdk.ZeroInt()
+	var average_cr = sdk.ZeroDec()
+	var total_cr   = sdk.ZeroDec()
+	_, found := q.GetApp(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
+	}
+	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "data does not exists for user addesss %s", req.Owner)
+	}
+	for _, data := range userVaultAssetData.UserVaultApp {
+		if data.AppMappingId == req.AppId {
+			for _, inData := range data.UserExtendedPairVault {
+				vaultsIds = append(vaultsIds, inData.VaultId)
+
+			}
+		}
+	}
+
+	for _, data := range vaultsIds {
+		vault, _ := q.GetVault(ctx, data)
+
+		extPairVault, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
+		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
+
+		assetIn_price, _ := q.GetPriceForAsset(ctx, pairId.AssetIn)
+		var assetOut_price uint64
+		total_locked = total_locked + assetIn_price*vault.AmountIn.Uint64()
+
+		if extPairVault.AssetOutOraclePrice {
+			assetOut_price, _ = q.GetPriceForAsset(ctx, pairId.AssetOut)
+		} else {
+			assetOut_price = extPairVault.AssetOutPrice
+		}
+
+		total_due = total_due + assetOut_price*vault.AmountOut.Uint64()
+		collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
+		if err != nil {
+			return nil, err
+			
+		}
+
+		total_cr = total_cr.Add(collateralizationRatio)
+		var min_cr = extPairVault.MinCr
+
+		AmtIn := vault.AmountIn.Mul(sdk.NewIntFromUint64(assetIn_price)).ToDec()
+
+		av := sdk.Int(AmtIn.Quo(min_cr))
+
+
+		available_borrow = available_borrow.Add(av).Quo(sdk.Int(sdk.OneDec()))
+		
+	}
+
+	t, _ := sdk.NewDecFromStr(strconv.Itoa(len(vaultsIds)))
+	average_cr = total_cr.Quo(t)
+
+	return &types.QueryUserMyPositionByAppResponse{
+		CollateralLocked:  total_locked,
+		TotalDue:          total_due,
+		AvailableToBorrow: available_borrow,
+		AverageCrRatio:    average_cr,
 	}, nil
 }
