@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"context"
 	"strconv"
 	"time"
@@ -111,12 +112,12 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 				user_tx_data.Amount = msg.Amount
 				user_tx_data.Balance = msg.Amount
 				user_tx_data.TxTime = time.Now()
-				user_asset_data.UserTxData = append(user_asset_data.UserTxData, user_tx_data)
+				user_asset_data.UserData = append(user_asset_data.UserData, &user_tx_data)
 
 				user_app_data.AppMappingId = app_mapping.Id
-				user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, user_asset_data)
+				user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, &user_asset_data)
 				user_mapping_data.Owner = msg.Depositor
-				user_mapping_data.LockerAppMapping = append(user_mapping_data.LockerAppMapping, user_app_data)
+				user_mapping_data.LockerAppMapping = append(user_mapping_data.LockerAppMapping, &user_app_data)
 
 				k.SetUserLockerAssetMapping(ctx, user_mapping_data)
 			} else {
@@ -135,12 +136,12 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 					user_tx_data.Amount = msg.Amount
 					user_tx_data.Balance = msg.Amount
 					user_tx_data.TxTime = time.Now()
-					user_asset_data.UserTxData = append(user_asset_data.UserTxData, user_tx_data)
+					user_asset_data.UserData = append(user_asset_data.UserData, &user_tx_data)
 
 					for _, appData := range user_locker_asset_mapping_data.LockerAppMapping {
 						if appData.AppMappingId == app_mapping.Id {
 
-							appData.UserAssetLocker = append(appData.UserAssetLocker, user_asset_data)
+							appData.UserAssetLocker = append(appData.UserAssetLocker, &user_asset_data)
 						}
 
 					}
@@ -159,10 +160,10 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 					user_tx_data.Amount = msg.Amount
 					user_tx_data.Balance = msg.Amount
 					user_tx_data.TxTime = time.Now()
-					user_asset_data.UserTxData = append(user_asset_data.UserTxData, user_tx_data)
+					user_asset_data.UserData = append(user_asset_data.UserData, &user_tx_data)
 
-					user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, user_asset_data)
-					user_locker_asset_mapping_data.LockerAppMapping = append(user_locker_asset_mapping_data.LockerAppMapping, user_app_data)
+					user_app_data.UserAssetLocker = append(user_app_data.UserAssetLocker, &user_asset_data)
+					user_locker_asset_mapping_data.LockerAppMapping = append(user_locker_asset_mapping_data.LockerAppMapping, &user_app_data)
 					k.SetUserLockerAssetMapping(ctx, user_locker_asset_mapping_data)
 
 				}
@@ -247,26 +248,30 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	k.UpdateAmountLockerMapping(ctx, lookup_table_data, asset.Id, msg.Amount, true)
 
 	user_locker_asset_mapping_data, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor)
-
-	var user_tx_data types.UserTxData
+	fmt.Println("user_locker_asset_mapping_data.....22222", user_locker_asset_mapping_data)
+	fmt.Println(user_locker_asset_mapping_data, "top dffefgedg ")
+	var user_his_data types.UserTxData
+	user_his_data.TxType = "Deposit"
+	user_his_data.Amount = msg.Amount
+	user_his_data.Balance = lockerData.NetBalance
+	user_his_data.TxTime = time.Now()
 	for _, userLockerAppData := range user_locker_asset_mapping_data.LockerAppMapping {
+		fmt.Println(userLockerAppData, "middle dffefgedg ")
 		if userLockerAppData.AppMappingId == msg.AppMappingId {
-
 			for _, assetData := range userLockerAppData.UserAssetLocker {
-
 				if assetData.AssetId == msg.AssetId {
-					user_tx_data.TxType = "Deposit"
-					user_tx_data.Amount = msg.Amount
-					user_tx_data.Balance = lockerData.NetBalance
-					user_tx_data.TxTime = time.Now()
-					assetData.UserTxData = append(assetData.UserTxData, user_tx_data)
-
+					fmt.Println(userLockerAppData, "last dffefgedg srbjhvbjhvjhvmhgv")
+					assetData.UserData = append(assetData.UserData, &user_his_data)
 				}
 			}
 		}
 
 	}
+	fmt.Println(user_his_data, " 2nd last data ----------")
+	fmt.Println("user_locker_asset_mapping_data.........333333", user_locker_asset_mapping_data)
 	k.SetUserLockerAssetMapping(ctx, user_locker_asset_mapping_data)
+	fmt.Println(user_locker_asset_mapping_data, " final data --------")
+
 	// user_locker_asset_mapping_data.Owner = msg.Depositor
 
 	// var lockerAppMap types.LockerToAppMapping
@@ -374,7 +379,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 					user_tx_data.Amount = msg.Amount
 					user_tx_data.Balance = lockerData.NetBalance
 					user_tx_data.TxTime = time.Now()
-					assetData.UserTxData = append(assetData.UserTxData, user_tx_data)
+					assetData.UserData = append(assetData.UserData, &user_tx_data)
 
 				}
 			}

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	// "github.com/cosmos/cosmos-sdk/store/prefix"
@@ -686,7 +687,7 @@ func (q *queryServer) QueryTotalTVLByApp(c context.Context, req *types.QueryTota
 	}
 	var (
 		ctx    = sdk.UnwrapSDKContext(c)
-		locked uint64
+		locked = sdk.ZeroInt()
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -702,8 +703,9 @@ func (q *queryServer) QueryTotalTVLByApp(c context.Context, req *types.QueryTota
 		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
 
 		rate, _ := q.GetPriceForAsset(ctx, pairId.AssetIn)
-		locked = locked + (rate * data.CollateralLockedAmount.Uint64())
+		locked = data.CollateralLockedAmount.Mul(sdk.NewIntFromUint64(rate)).Add(locked)
 	}
+	locked= locked.Quo(sdk.NewInt(1000000))
 
 	return &types.QueryTotalTVLByAppResponse{
 		CollateralLocked: locked,
@@ -767,6 +769,8 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 
 		}
 
+		fmt.Println(collaterlizationRatio.Add(totalCr))
+
 		totalCr = collaterlizationRatio.Add(totalCr)
 		var minCr = extPairVault.MinCr
 
@@ -779,9 +783,9 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		availableBorrow = av.Quo(sdk.Int(sdk.OneDec())).Add(availableBorrow)
 
 	}
-	totalLocked = totalLocked.Quo(sdk.OneInt())
-	totalDue = totalDue.Quo(sdk.OneInt())
-	availableBorrow = availableBorrow.Quo(sdk.OneInt())
+	totalLocked = totalLocked.Quo(sdk.NewInt(10000000))
+	totalDue = totalDue.Quo(sdk.NewInt(10000000))
+	availableBorrow = availableBorrow.Quo(sdk.NewInt(10000000))
 	t, _ := sdk.NewDecFromStr(strconv.Itoa(len(vaultsIds)))
 	averageCr = totalCr.Quo(t)
 

@@ -13,7 +13,7 @@ type ComdexMessages struct {
 	MsgSetAuctionMappingForApp           *MsgSetAuctionMappingForApp           `json:"msg_set_auction_mapping_for_app,omitempty"`
 	MsgUpdateLsrInPairsVault             *MsgUpdateLsrInPairsVault             `json:"msg_update_lsr_in_pairs_vault,omitempty"`
 	MsgUpdateLsrInCollectorLookupTable   *MsgUpdateLsrInCollectorLookupTable   `json:"msg_update_lsr_in_collector_lookup_table,omitempty"`
-	MsgRemoveWhitelistAssetLocker        *MsgRemoveWhitelistAssetLocker        `json:"msg_remove_whitelist_asset,omitempty"`
+	MsgRemoveWhitelistAssetLocker        *MsgRemoveWhitelistAssetLocker        `json:"msg_remove_whitelist_asset_locker,omitempty"`
 	MsgRemoveWhitelistAppIdVaultInterest *MsgRemoveWhitelistAppIdVaultInterest `json:"msg_remove_whitelist_app_id_vault_interest,omitempty"`
 	MsgWhitelistAppIdLiquidation         *MsgWhitelistAppIdLiquidation         `json:"msg_whitelist_app_id_liquidation,omitempty"`
 	MsgRemoveWhitelistAppIdLiquidation   *MsgRemoveWhitelistAppIdLiquidation   `json:"msg_remove_whitelist_app_id_liquidation,omitempty"`

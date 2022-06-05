@@ -40,8 +40,8 @@ service Query {
     option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_info_by_all_product_owner/{owner}";
   };
 
-  rpc QueryOwnerTxDetailsLockerOfProductByOwner(QueryOwnerTxDetailsLockerOfProductByOwnerRequest) returns (QueryOwnerTxDetailsLockerOfProductByOwnerResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_tx-details_by_product/{product_id}/{owner}";
+  rpc QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) returns (QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_tx-details_by_product/{product_id}/{owner}/{asset_id}";
   };
 
  rpc QueryOwnerLockerByProductToAssetIDbyOwner(QueryOwnerLockerByProductToAssetIDbyOwnerRequest) returns (QueryOwnerLockerByProductToAssetIDbyOwnerResponse) {
@@ -141,16 +141,16 @@ message QueryOwnerLockerOfAllProductByOwnerResponse {
   repeated string locker_ids = 1 [ (gogoproto.moretags) = "yaml:\"locker_ids\"" ];
 }
 
-message QueryOwnerTxDetailsLockerOfProductByOwnerRequest {
+message QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest {
   uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
   string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  uint64 asset_id = 3 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryOwnerTxDetailsLockerOfProductByOwnerResponse {
-  repeated UserTxData user_tx_data = 1 [ (gogoproto.moretags) = "yaml:\"user_tx_data\"",
-  (gogoproto.nullable)   = false ];
+message QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse {
+  repeated UserTxData user_tx_data = 1 [ (gogoproto.moretags) = "yaml:\"user_tx_data\""];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
