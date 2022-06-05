@@ -3,21 +3,25 @@ package bindings
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 type ComdexQuery struct {
-	AppData                              *AppData                              `json:"get_app,omitempty"`
-	AssetData                            *AssetData                            `json:"get_asset_data,omitempty"`
-	State                                *State                                `json:"state,omitempty"`
-	MintedToken                          *MintedToken                          `json:"total_supply,omitempty"`
-	RemoveWhiteListAssetLocker           *RemoveWhiteListAssetLocker           `json:"remove_white_list_asset,omitempty"`
-	WhitelistAppIdVaultInterest          *WhitelistAppIdVaultInterest          `json:"whitelist_app_id_vault_interest,omitempty"`
-	WhitelistAppIdLockerRewards          *WhitelistAppIdLockerRewards          `json:"whitelist_app_id_locker_rewards,omitempty"`
-	ExternalLockerRewards                *ExternalLockerRewards                `json:"external_locker_rewards,omitempty"`
-	ExternalVaultRewards                 *ExternalVaultRewards                 `json:"external_vault_rewards,omitempty"`
-	CollectorLookupTableQuery            *CollectorLookupTableQuery            `json:"collector_lookup_table_query,omitempty"`
-	ExtendedPairsVaultRecordsQuery       *ExtendedPairsVaultRecordsQuery       `json:"extended_pairs_vault_records_query,omitempty"`
-	AuctionMappingForAppQuery            *AuctionMappingForAppQuery            `json:"auction_mapping_for_app_query,omitempty"`
-	WhiteListedAssetQuery                *WhiteListedAssetQuery                `json:"white_listed_asset_query,omitempty"`
-	UpdateLsrInPairsVaultQuery           *UpdateLsrInPairsVaultQuery           `json:"update_lsr_in_pairs_vault_query,omitempty"`
-	UpdateLsrInCollectorLookupTableQuery *UpdateLsrInCollectorLookupTableQuery `json:"update_lsr_in_collector_lookup_table_query,omitempty"`
+	AppData                                *AppData                                `json:"get_app,omitempty"`
+	AssetData                              *AssetData                              `json:"get_asset_data,omitempty"`
+	State                                  *State                                  `json:"state,omitempty"`
+	MintedToken                            *MintedToken                            `json:"total_supply,omitempty"`
+	RemoveWhiteListAssetLocker             *RemoveWhiteListAssetLocker             `json:"remove_white_list_asset,omitempty"`
+	WhitelistAppIdVaultInterest            *WhitelistAppIdVaultInterest            `json:"whitelist_app_id_vault_interest,omitempty"`
+	WhitelistAppIdLockerRewards            *WhitelistAppIdLockerRewards            `json:"whitelist_app_id_locker_rewards,omitempty"`
+	ExternalLockerRewards                  *ExternalLockerRewards                  `json:"external_locker_rewards,omitempty"`
+	ExternalVaultRewards                   *ExternalVaultRewards                   `json:"external_vault_rewards,omitempty"`
+	CollectorLookupTableQuery              *CollectorLookupTableQuery              `json:"collector_lookup_table_query,omitempty"`
+	ExtendedPairsVaultRecordsQuery         *ExtendedPairsVaultRecordsQuery         `json:"extended_pairs_vault_records_query,omitempty"`
+	AuctionMappingForAppQuery              *AuctionMappingForAppQuery              `json:"auction_mapping_for_app_query,omitempty"`
+	WhiteListedAssetQuery                  *WhiteListedAssetQuery                  `json:"white_listed_asset_query,omitempty"`
+	UpdateLsrInPairsVaultQuery             *UpdateLsrInPairsVaultQuery             `json:"update_lsr_in_pairs_vault_query,omitempty"`
+	UpdateLsrInCollectorLookupTableQuery   *UpdateLsrInCollectorLookupTableQuery   `json:"update_lsr_in_collector_lookup_table_query,omitempty"`
+	RemoveWhitelistAssetLockerQuery        *RemoveWhitelistAssetLockerQuery        `json:"remove_whitelist_asset_locker_query,omitempty"`
+	RemoveWhitelistAppIdVaultInterestQuery *RemoveWhitelistAppIdVaultInterestQuery `json:"remove_whitelist_app_id_vault_interest_query,omitempty"`
+	WhitelistAppIdLiquidationQuery         *WhitelistAppIdLiquidationQuery         `json:"whitelist_app_id_liquidation_query,omitempty"`
+	RemoveWhitelistAppIdLiquidationQuery   *RemoveWhitelistAppIdLiquidationQuery   `json:"remove_whitelist_app_id_liquidation_query,omitempty"`
 }
 
 type AppData struct {
@@ -169,6 +173,43 @@ type UpdateLsrInCollectorLookupTableQuery struct {
 }
 
 type UpdateLsrInCollectorLookupTableQueryResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type RemoveWhitelistAssetLockerQuery struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+	AssetId      uint64 `json:"asset_id"`
+}
+
+type RemoveWhitelistAssetLockerQueryResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type RemoveWhitelistAppIdVaultInterestQuery struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+}
+
+type RemoveWhitelistAppIdVaultInterestQueryResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type WhitelistAppIdLiquidationQuery struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+}
+
+type WhitelistAppIdLiquidationQueryResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type RemoveWhitelistAppIdLiquidationQuery struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+}
+
+type RemoveWhitelistAppIdLiquidationQueryResponse struct {
 	Found bool   `json:"found"`
 	Err   string `json:"err"`
 }

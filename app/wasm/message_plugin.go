@@ -2,6 +2,7 @@ package wasm
 
 import (
 	"encoding/json"
+	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
@@ -16,24 +17,26 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper, assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
+func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper, assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
-			wrapped:         old,
-			lockerKeeper:    lockerKeeper,
-			rewardsKeeper:   rewardsKeeper,
-			assetKeeper:     assetKeeper,
-			collectorKeeper: collectorKeeper,
+			wrapped:           old,
+			lockerKeeper:      lockerKeeper,
+			rewardsKeeper:     rewardsKeeper,
+			assetKeeper:       assetKeeper,
+			collectorKeeper:   collectorKeeper,
+			liquidationKeeper: liquidationKeeper,
 		}
 	}
 }
 
 type CustomMessenger struct {
-	wrapped         wasmkeeper.Messenger
-	lockerKeeper    lockerkeeper.Keeper
-	rewardsKeeper   rewardskeeper.Keeper
-	assetKeeper     assetkeeper.Keeper
-	collectorKeeper collectorkeeper.Keeper
+	wrapped           wasmkeeper.Messenger
+	lockerKeeper      lockerkeeper.Keeper
+	rewardsKeeper     rewardskeeper.Keeper
+	assetKeeper       assetkeeper.Keeper
+	collectorKeeper   collectorkeeper.Keeper
+	liquidationKeeper liquidationkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -69,6 +72,18 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		}
 		if comdexMsg.MsgUpdateLsrInCollectorLookupTable != nil {
 			return m.UpdateLsrInCollectorLookupTable(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
+		}
+		if comdexMsg.MsgRemoveWhitelistAssetLocker != nil {
+			return m.RemoveWhitelistAssetLocker(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
+		}
+		if comdexMsg.MsgRemoveWhitelistAppIdVaultInterest != nil {
+			return m.RemoveWhitelistAppIdVaultInterest(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
+		}
+		if comdexMsg.MsgWhitelistAppIdLiquidation != nil {
+			return m.WhitelistAppIdLiquidation(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
+		}
+		if comdexMsg.MsgRemoveWhitelistAppIdLiquidation != nil {
+			return m.RemoveWhitelistAppIdLiquidation(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
@@ -240,6 +255,74 @@ func (m *CustomMessenger) UpdateLsrInCollectorLookupTable(ctx sdk.Context, contr
 func MsgUpdateLsrInCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
 	err := collectorKeeper.WasmUpdateLsrInCollectorLookupTable(ctx, a.AppMappingId, a.AssetId, a.LSR)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) RemoveWhitelistAssetLocker(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+	err := MsgRemoveWhitelistAssetLocker(m.rewardsKeeper, ctx, contractAddr, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAssetRewards error")
+	}
+	return nil, nil, nil
+}
+
+func MsgRemoveWhitelistAssetLocker(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+	err := rewardsKeeper.WasmRemoveWhitelistAssetLocker(ctx, a.AppMappingId, a.AssetId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) RemoveWhitelistAppIdVaultInterest(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+	err := MsgRemoveWhitelistAppIdVaultInterest(m.rewardsKeeper, ctx, contractAddr, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdVaultInterest error")
+	}
+	return nil, nil, nil
+}
+
+func MsgRemoveWhitelistAppIdVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+	err := rewardsKeeper.WasmRemoveWhitelistAppIdVaultInterest(ctx, a.AppMappingId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) WhitelistAppIdLiquidation(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+	err := MsgWhitelistAppIdLiquidation(m.liquidationKeeper, ctx, contractAddr, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "WhitelistAppIdLiquidation error")
+	}
+	return nil, nil, nil
+}
+
+func MsgWhitelistAppIdLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+	err := liquidationKeeper.WasmWhitelistAppIdLiquidation(ctx, a.AppMappingId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) RemoveWhitelistAppIdLiquidation(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+	err := MsgRemoveWhitelistAppIdLiquidation(m.liquidationKeeper, ctx, contractAddr, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdLiquidation error")
+	}
+	return nil, nil, nil
+}
+
+func MsgRemoveWhitelistAppIdLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+	err := liquidationKeeper.WasmRemoveWhitelistAppIdLiquidation(ctx, a.AppMappingId)
 	if err != nil {
 		return err
 	}
