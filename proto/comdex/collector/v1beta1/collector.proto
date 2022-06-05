@@ -50,7 +50,8 @@ message AssetIdToFeeCollected {
 }
 message AppIdToAssetCollectorMapping {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-  repeated AssetIdCollectorMapping asset_collector = 2 [(gogoproto.moretags) = "yaml:\"asset_collector\""];
+  repeated AssetIdCollectorMapping asset_collector = 2 [(gogoproto.moretags) = "yaml:\"asset_collector\"",
+  (gogoproto.nullable) = false];
 }
 
 message AssetIdCollectorMapping {

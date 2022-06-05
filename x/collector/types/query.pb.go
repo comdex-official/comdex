@@ -304,6 +304,316 @@ func (m *QueryCollectorLookupByProductAndAssetResponse) GetCollectorLookup() Col
 	return CollectorLookupTable{}
 }
 
+type QueryCollectorDataByProductAndAssetRequest struct {
+	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+}
+
+func (m *QueryCollectorDataByProductAndAssetRequest) Reset() {
+	*m = QueryCollectorDataByProductAndAssetRequest{}
+}
+func (m *QueryCollectorDataByProductAndAssetRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryCollectorDataByProductAndAssetRequest) ProtoMessage() {}
+func (*QueryCollectorDataByProductAndAssetRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d4bd1f010dddda3, []int{6}
+}
+func (m *QueryCollectorDataByProductAndAssetRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCollectorDataByProductAndAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCollectorDataByProductAndAssetRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCollectorDataByProductAndAssetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCollectorDataByProductAndAssetRequest.Merge(m, src)
+}
+func (m *QueryCollectorDataByProductAndAssetRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCollectorDataByProductAndAssetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCollectorDataByProductAndAssetRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCollectorDataByProductAndAssetRequest proto.InternalMessageInfo
+
+func (m *QueryCollectorDataByProductAndAssetRequest) GetAppId() uint64 {
+	if m != nil {
+		return m.AppId
+	}
+	return 0
+}
+
+func (m *QueryCollectorDataByProductAndAssetRequest) GetAssetId() uint64 {
+	if m != nil {
+		return m.AssetId
+	}
+	return 0
+}
+
+type QueryCollectorDataByProductAndAssetResponse struct {
+	CollectorData CollectorData `protobuf:"bytes,1,opt,name=collectorData,proto3" json:"collectorData" yaml:"collectorData"`
+}
+
+func (m *QueryCollectorDataByProductAndAssetResponse) Reset() {
+	*m = QueryCollectorDataByProductAndAssetResponse{}
+}
+func (m *QueryCollectorDataByProductAndAssetResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryCollectorDataByProductAndAssetResponse) ProtoMessage() {}
+func (*QueryCollectorDataByProductAndAssetResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d4bd1f010dddda3, []int{7}
+}
+func (m *QueryCollectorDataByProductAndAssetResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCollectorDataByProductAndAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCollectorDataByProductAndAssetResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCollectorDataByProductAndAssetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCollectorDataByProductAndAssetResponse.Merge(m, src)
+}
+func (m *QueryCollectorDataByProductAndAssetResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCollectorDataByProductAndAssetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCollectorDataByProductAndAssetResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCollectorDataByProductAndAssetResponse proto.InternalMessageInfo
+
+func (m *QueryCollectorDataByProductAndAssetResponse) GetCollectorData() CollectorData {
+	if m != nil {
+		return m.CollectorData
+	}
+	return CollectorData{}
+}
+
+type QueryAuctionMappingForAppAndAssetRequest struct {
+	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+}
+
+func (m *QueryAuctionMappingForAppAndAssetRequest) Reset() {
+	*m = QueryAuctionMappingForAppAndAssetRequest{}
+}
+func (m *QueryAuctionMappingForAppAndAssetRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAuctionMappingForAppAndAssetRequest) ProtoMessage()    {}
+func (*QueryAuctionMappingForAppAndAssetRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d4bd1f010dddda3, []int{8}
+}
+func (m *QueryAuctionMappingForAppAndAssetRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAuctionMappingForAppAndAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAuctionMappingForAppAndAssetRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAuctionMappingForAppAndAssetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAuctionMappingForAppAndAssetRequest.Merge(m, src)
+}
+func (m *QueryAuctionMappingForAppAndAssetRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAuctionMappingForAppAndAssetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAuctionMappingForAppAndAssetRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAuctionMappingForAppAndAssetRequest proto.InternalMessageInfo
+
+func (m *QueryAuctionMappingForAppAndAssetRequest) GetAppId() uint64 {
+	if m != nil {
+		return m.AppId
+	}
+	return 0
+}
+
+func (m *QueryAuctionMappingForAppAndAssetRequest) GetAssetId() uint64 {
+	if m != nil {
+		return m.AssetId
+	}
+	return 0
+}
+
+type QueryAuctionMappingForAppAndAssetResponse struct {
+	AssetIdToAuctionLookupTable AssetIdToAuctionLookupTable `protobuf:"bytes,1,opt,name=assetIdToAuctionLookupTable,proto3" json:"assetIdToAuctionLookupTable" yaml:"assetIdToAuctionLookupTable"`
+}
+
+func (m *QueryAuctionMappingForAppAndAssetResponse) Reset() {
+	*m = QueryAuctionMappingForAppAndAssetResponse{}
+}
+func (m *QueryAuctionMappingForAppAndAssetResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryAuctionMappingForAppAndAssetResponse) ProtoMessage() {}
+func (*QueryAuctionMappingForAppAndAssetResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d4bd1f010dddda3, []int{9}
+}
+func (m *QueryAuctionMappingForAppAndAssetResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAuctionMappingForAppAndAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAuctionMappingForAppAndAssetResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAuctionMappingForAppAndAssetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAuctionMappingForAppAndAssetResponse.Merge(m, src)
+}
+func (m *QueryAuctionMappingForAppAndAssetResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAuctionMappingForAppAndAssetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAuctionMappingForAppAndAssetResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAuctionMappingForAppAndAssetResponse proto.InternalMessageInfo
+
+func (m *QueryAuctionMappingForAppAndAssetResponse) GetAssetIdToAuctionLookupTable() AssetIdToAuctionLookupTable {
+	if m != nil {
+		return m.AssetIdToAuctionLookupTable
+	}
+	return AssetIdToAuctionLookupTable{}
+}
+
+type QueryNetFeeCollectedForAppAndAssetRequest struct {
+	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) Reset() {
+	*m = QueryNetFeeCollectedForAppAndAssetRequest{}
+}
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryNetFeeCollectedForAppAndAssetRequest) ProtoMessage() {}
+func (*QueryNetFeeCollectedForAppAndAssetRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d4bd1f010dddda3, []int{10}
+}
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryNetFeeCollectedForAppAndAssetRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryNetFeeCollectedForAppAndAssetRequest.Merge(m, src)
+}
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryNetFeeCollectedForAppAndAssetRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryNetFeeCollectedForAppAndAssetRequest proto.InternalMessageInfo
+
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) GetAppId() uint64 {
+	if m != nil {
+		return m.AppId
+	}
+	return 0
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) GetAssetId() uint64 {
+	if m != nil {
+		return m.AssetId
+	}
+	return 0
+}
+
+type QueryNetFeeCollectedForAppAndAssetResponse struct {
+	AssetIdToFeeCollected AssetIdToFeeCollected `protobuf:"bytes,1,opt,name=assetIdToFeeCollected,proto3" json:"assetIdToFeeCollected" yaml:"assetIdToFeeCollected"`
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) Reset() {
+	*m = QueryNetFeeCollectedForAppAndAssetResponse{}
+}
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryNetFeeCollectedForAppAndAssetResponse) ProtoMessage() {}
+func (*QueryNetFeeCollectedForAppAndAssetResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d4bd1f010dddda3, []int{11}
+}
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryNetFeeCollectedForAppAndAssetResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryNetFeeCollectedForAppAndAssetResponse.Merge(m, src)
+}
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryNetFeeCollectedForAppAndAssetResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryNetFeeCollectedForAppAndAssetResponse proto.InternalMessageInfo
+
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) GetAssetIdToFeeCollected() AssetIdToFeeCollected {
+	if m != nil {
+		return m.AssetIdToFeeCollected
+	}
+	return AssetIdToFeeCollected{}
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "comdex.collector.v1beta1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "comdex.collector.v1beta1.QueryParamsResponse")
@@ -311,6 +621,12 @@ func init() {
 	proto.RegisterType((*QueryCollectorLookupByProductResponse)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByProductResponse")
 	proto.RegisterType((*QueryCollectorLookupByProductAndAssetRequest)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByProductAndAssetRequest")
 	proto.RegisterType((*QueryCollectorLookupByProductAndAssetResponse)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByProductAndAssetResponse")
+	proto.RegisterType((*QueryCollectorDataByProductAndAssetRequest)(nil), "comdex.collector.v1beta1.QueryCollectorDataByProductAndAssetRequest")
+	proto.RegisterType((*QueryCollectorDataByProductAndAssetResponse)(nil), "comdex.collector.v1beta1.QueryCollectorDataByProductAndAssetResponse")
+	proto.RegisterType((*QueryAuctionMappingForAppAndAssetRequest)(nil), "comdex.collector.v1beta1.QueryAuctionMappingForAppAndAssetRequest")
+	proto.RegisterType((*QueryAuctionMappingForAppAndAssetResponse)(nil), "comdex.collector.v1beta1.QueryAuctionMappingForAppAndAssetResponse")
+	proto.RegisterType((*QueryNetFeeCollectedForAppAndAssetRequest)(nil), "comdex.collector.v1beta1.QueryNetFeeCollectedForAppAndAssetRequest")
+	proto.RegisterType((*QueryNetFeeCollectedForAppAndAssetResponse)(nil), "comdex.collector.v1beta1.QueryNetFeeCollectedForAppAndAssetResponse")
 }
 
 func init() {
@@ -318,42 +634,59 @@ func init() {
 }
 
 var fileDescriptor_1d4bd1f010dddda3 = []byte{
-	// 558 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x94, 0xcf, 0x6b, 0x13, 0x41,
-	0x14, 0xc7, 0x33, 0xb1, 0x89, 0x32, 0x45, 0x8a, 0xd3, 0x22, 0x21, 0xe8, 0x26, 0x0c, 0x2d, 0x04,
-	0xe9, 0xee, 0xd8, 0xf4, 0xe6, 0x21, 0xda, 0x08, 0x95, 0x82, 0x42, 0x8c, 0xf6, 0xa2, 0x07, 0x99,
-	0xec, 0x4e, 0xd7, 0xc5, 0xcd, 0xce, 0x74, 0x7f, 0x48, 0x97, 0xd2, 0x8b, 0x27, 0x8f, 0x82, 0x88,
-	0x67, 0xc1, 0x8b, 0xff, 0x49, 0x8f, 0x05, 0x2f, 0x9e, 0x82, 0x24, 0x1e, 0x3c, 0xe7, 0x2f, 0x90,
-	0x9d, 0xd9, 0x54, 0x9b, 0xb2, 0xd9, 0x1a, 0xc1, 0xdb, 0x30, 0xf3, 0x79, 0xef, 0x7d, 0xbf, 0x8f,
-	0xf7, 0x06, 0xae, 0x9a, 0xbc, 0x6f, 0xb1, 0x03, 0x62, 0x72, 0xd7, 0x65, 0x66, 0xc8, 0x7d, 0xf2,
-	0x7a, 0xa3, 0xc7, 0x42, 0xba, 0x41, 0xf6, 0x23, 0xe6, 0xc7, 0x86, 0xf0, 0x79, 0xc8, 0x51, 0x45,
-	0x51, 0xc6, 0x29, 0x65, 0xa4, 0x54, 0x75, 0xc5, 0xe6, 0x36, 0x97, 0x10, 0x49, 0x4e, 0x8a, 0xaf,
-	0xde, 0xb0, 0x39, 0xb7, 0x5d, 0x46, 0xa8, 0x70, 0x08, 0xf5, 0x3c, 0x1e, 0xd2, 0xd0, 0xe1, 0x5e,
-	0x90, 0xbe, 0xae, 0x65, 0xd6, 0x14, 0xd4, 0xa7, 0xfd, 0x09, 0xd6, 0xc8, 0xc4, 0x7e, 0xcb, 0x90,
-	0x24, 0x5e, 0x81, 0xe8, 0x71, 0xa2, 0xb6, 0x23, 0xc3, 0xbb, 0x6c, 0x3f, 0x62, 0x41, 0x88, 0x77,
-	0xe1, 0xf2, 0x99, 0xdb, 0x40, 0x70, 0x2f, 0x60, 0xa8, 0x05, 0xcb, 0xaa, 0x4c, 0x05, 0xd4, 0x41,
-	0x63, 0xb1, 0x59, 0x37, 0xb2, 0xcc, 0x19, 0x2a, 0xb2, 0xbd, 0x70, 0x3c, 0xa8, 0x15, 0xba, 0x69,
-	0x14, 0xee, 0xc0, 0x55, 0x99, 0xf6, 0xfe, 0x04, 0x7f, 0xc8, 0xf9, 0xab, 0x48, 0xb4, 0xe3, 0x8e,
-	0xcf, 0xad, 0xc8, 0x0c, 0xd3, 0xf2, 0xa8, 0x01, 0xcb, 0x54, 0x88, 0x17, 0x8e, 0x25, 0xeb, 0x2c,
-	0xb4, 0xaf, 0x8d, 0x07, 0xb5, 0xab, 0x31, 0xed, 0xbb, 0x77, 0xb0, 0xba, 0xc7, 0xdd, 0x12, 0x15,
-	0x62, 0xc7, 0xc2, 0x9f, 0x00, 0x5c, 0xcb, 0x49, 0x99, 0x6a, 0x3f, 0x80, 0x4b, 0xe6, 0x59, 0xa6,
-	0x02, 0xea, 0x97, 0x1a, 0x8b, 0x4d, 0x23, 0xdb, 0xc4, 0x54, 0xd2, 0xa7, 0xb4, 0xe7, 0xb2, 0xb6,
-	0x96, 0x58, 0x1a, 0x0f, 0x6a, 0xd7, 0x95, 0xa0, 0xa9, 0xa4, 0xb8, 0x3b, 0x5d, 0x06, 0xbf, 0x05,
-	0x70, 0x7d, 0xa6, 0xc6, 0x2d, 0xcf, 0xda, 0x0a, 0x02, 0xf6, 0xf7, 0xf6, 0x91, 0x01, 0xaf, 0xd0,
-	0x24, 0x32, 0x61, 0x8b, 0x92, 0x5d, 0x1e, 0x0f, 0x6a, 0x4b, 0x29, 0x9b, 0xbe, 0xe0, 0xee, 0x65,
-	0x79, 0xdc, 0xb1, 0xf0, 0x17, 0x00, 0xf5, 0x0b, 0x4a, 0x99, 0xd5, 0x36, 0xf0, 0x1f, 0xda, 0xd6,
-	0xfc, 0x5c, 0x82, 0x25, 0xa9, 0x15, 0x7d, 0x04, 0xb0, 0xac, 0xe6, 0x09, 0xad, 0x67, 0x57, 0x3d,
-	0x3f, 0xc6, 0x55, 0xfd, 0x82, 0xb4, 0xf2, 0x8a, 0x6f, 0xbf, 0xf9, 0xfa, 0xe3, 0x7d, 0xf1, 0x16,
-	0x6a, 0x10, 0x15, 0xa6, 0xf3, 0xbd, 0x3d, 0xc7, 0x74, 0xa8, 0x4b, 0xce, 0xad, 0x93, 0x1a, 0x68,
-	0xf4, 0x13, 0xc0, 0x9b, 0x33, 0xfb, 0x89, 0x5a, 0x39, 0x12, 0x72, 0x56, 0xa1, 0x7a, 0x77, 0xee,
-	0xf8, 0xd4, 0xd4, 0xb6, 0x34, 0x75, 0x0f, 0xb5, 0x48, 0xfe, 0x9f, 0xa0, 0xbb, 0x32, 0x89, 0xde,
-	0x8b, 0x75, 0xa1, 0xd2, 0x90, 0x43, 0x35, 0x71, 0x47, 0xe8, 0x43, 0x31, 0x67, 0xd3, 0x26, 0xa3,
-	0x83, 0xb6, 0xe7, 0x94, 0x3c, 0xb5, 0x06, 0xd5, 0x07, 0xff, 0x9c, 0x27, 0x6d, 0xc1, 0x73, 0xd9,
-	0x82, 0x5d, 0xf4, 0x64, 0xae, 0x16, 0xe8, 0xd4, 0xb3, 0x74, 0xb9, 0x40, 0xa7, 0xcd, 0x20, 0x87,
-	0x93, 0xdd, 0x3a, 0x6a, 0x3f, 0x3a, 0x1e, 0x6a, 0xe0, 0x64, 0xa8, 0x81, 0xef, 0x43, 0x0d, 0xbc,
-	0x1b, 0x69, 0x85, 0x93, 0x91, 0x56, 0xf8, 0x36, 0xd2, 0x0a, 0xcf, 0x36, 0x6d, 0x27, 0x7c, 0x19,
-	0xf5, 0x12, 0x17, 0x59, 0x03, 0xf5, 0xa7, 0x94, 0x30, 0x16, 0x2c, 0xe8, 0x95, 0xe5, 0xb7, 0xbc,
-	0xf9, 0x2b, 0x00, 0x00, 0xff, 0xff, 0x57, 0x50, 0x18, 0x55, 0x5d, 0x06, 0x00, 0x00,
+	// 823 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x97, 0xc1, 0x4f, 0x13, 0x4b,
+	0x1c, 0xc7, 0x3b, 0x7d, 0xd0, 0xf7, 0x32, 0x84, 0x90, 0x37, 0xf0, 0x5e, 0xc8, 0x3e, 0x5e, 0x8b,
+	0x23, 0xc4, 0x8a, 0x6c, 0x57, 0x20, 0x5e, 0x3c, 0xa0, 0x5d, 0xb0, 0x86, 0x44, 0x14, 0x16, 0x88,
+	0x51, 0x0f, 0x66, 0xba, 0x3b, 0xd4, 0x86, 0xb2, 0x33, 0xb4, 0x5b, 0x43, 0x43, 0xb8, 0x18, 0x31,
+	0x24, 0xc6, 0xc4, 0xc4, 0x18, 0x13, 0x6f, 0xc6, 0x93, 0xff, 0x82, 0xff, 0x80, 0x1c, 0x31, 0x5e,
+	0x3c, 0x35, 0x06, 0x3c, 0x78, 0xe6, 0x2f, 0x30, 0x3b, 0x3b, 0xc5, 0xb6, 0xb0, 0xdd, 0x85, 0x26,
+	0x78, 0xdb, 0xec, 0x7e, 0x7f, 0xdf, 0xf9, 0xfe, 0x3e, 0x9d, 0x99, 0x5f, 0x0a, 0x87, 0x4c, 0xb6,
+	0x6a, 0xd1, 0x75, 0xcd, 0x64, 0x85, 0x02, 0x35, 0x1d, 0x56, 0xd4, 0x1e, 0x8f, 0x65, 0xa9, 0x43,
+	0xc6, 0xb4, 0xb5, 0x32, 0x2d, 0x56, 0x52, 0xbc, 0xc8, 0x1c, 0x86, 0xfa, 0x3d, 0x55, 0xea, 0x50,
+	0x95, 0x92, 0x2a, 0xa5, 0x2f, 0xc7, 0x72, 0x4c, 0x88, 0x34, 0xf7, 0xc9, 0xd3, 0x2b, 0x03, 0x39,
+	0xc6, 0x72, 0x05, 0xaa, 0x11, 0x9e, 0xd7, 0x88, 0x6d, 0x33, 0x87, 0x38, 0x79, 0x66, 0x97, 0xe4,
+	0xd7, 0x61, 0xdf, 0x35, 0x39, 0x29, 0x92, 0xd5, 0x9a, 0x2c, 0xe9, 0x2b, 0xfb, 0x15, 0x43, 0x28,
+	0x71, 0x1f, 0x44, 0xf3, 0x6e, 0xda, 0x39, 0x51, 0x6e, 0xd0, 0xb5, 0x32, 0x2d, 0x39, 0x78, 0x09,
+	0xf6, 0x36, 0xbc, 0x2d, 0x71, 0x66, 0x97, 0x28, 0x9a, 0x84, 0x31, 0x6f, 0x99, 0x7e, 0x30, 0x08,
+	0x92, 0x5d, 0xe3, 0x83, 0x29, 0xbf, 0xe6, 0x52, 0x5e, 0xa5, 0xde, 0xb1, 0x53, 0x4d, 0x44, 0x0c,
+	0x59, 0x85, 0xe7, 0xe0, 0x90, 0xb0, 0x9d, 0xaa, 0xc9, 0x6f, 0x31, 0xb6, 0x52, 0xe6, 0x7a, 0x65,
+	0xae, 0xc8, 0xac, 0xb2, 0xe9, 0xc8, 0xe5, 0x51, 0x12, 0xc6, 0x08, 0xe7, 0x0f, 0xf3, 0x96, 0x58,
+	0xa7, 0x43, 0xff, 0xfb, 0xa0, 0x9a, 0xe8, 0xae, 0x90, 0xd5, 0xc2, 0x55, 0xec, 0xbd, 0xc7, 0x46,
+	0x27, 0xe1, 0x7c, 0xc6, 0xc2, 0xef, 0x00, 0x1c, 0x0e, 0xb0, 0x94, 0xd9, 0xd7, 0x61, 0x8f, 0xd9,
+	0xa8, 0xe9, 0x07, 0x83, 0x7f, 0x24, 0xbb, 0xc6, 0x53, 0xfe, 0x4d, 0x34, 0x99, 0x2e, 0x92, 0x6c,
+	0x81, 0xea, 0x71, 0xb7, 0xa5, 0x83, 0x6a, 0xe2, 0x5f, 0x2f, 0x50, 0x93, 0x29, 0x36, 0x9a, 0x97,
+	0xc1, 0xdb, 0x00, 0x8e, 0xb6, 0xcc, 0x98, 0xb6, 0xad, 0x74, 0xa9, 0x44, 0x4f, 0xde, 0x3e, 0x4a,
+	0xc1, 0xbf, 0x88, 0x5b, 0xe9, 0x6a, 0xa3, 0x42, 0xdb, 0x7b, 0x50, 0x4d, 0xf4, 0x48, 0xad, 0xfc,
+	0x82, 0x8d, 0x3f, 0xc5, 0xe3, 0x8c, 0x85, 0x3f, 0x00, 0xa8, 0x86, 0x8c, 0xd2, 0x0a, 0x1b, 0x38,
+	0x0b, 0x6c, 0xcf, 0x00, 0x1c, 0x69, 0xcc, 0x3a, 0x4d, 0x1c, 0xf2, 0x1b, 0xa0, 0xbd, 0x05, 0xf0,
+	0x52, 0xa8, 0x20, 0x12, 0xd9, 0x0a, 0xec, 0x36, 0xeb, 0x95, 0x12, 0xd8, 0x85, 0x10, 0xc0, 0x84,
+	0xf1, 0x80, 0x24, 0xd5, 0xd7, 0x44, 0xca, 0xfd, 0x88, 0x8d, 0x46, 0x6f, 0xfc, 0x14, 0xc0, 0xa4,
+	0x08, 0x97, 0x2e, 0x9b, 0xee, 0x45, 0x31, 0x4b, 0x38, 0xcf, 0xdb, 0xb9, 0x0c, 0x2b, 0xa6, 0x39,
+	0x3f, 0x3b, 0x46, 0x9f, 0x01, 0xbc, 0x18, 0x22, 0x86, 0x24, 0xf4, 0x1e, 0xc0, 0xff, 0x64, 0xe5,
+	0x22, 0x93, 0x15, 0x75, 0x7b, 0x45, 0x02, 0xbb, 0xe2, 0x0f, 0x2c, 0xed, 0x5f, 0xac, 0x8f, 0x48,
+	0x7c, 0xb8, 0x2e, 0xec, 0xf1, 0x52, 0x6c, 0xb4, 0x4a, 0x81, 0xb7, 0x6a, 0x3d, 0xdd, 0xa6, 0x4e,
+	0x86, 0x52, 0xf9, 0x23, 0x51, 0xeb, 0xac, 0xd9, 0x7e, 0xac, 0x1d, 0x84, 0x80, 0x1c, 0x12, 0xee,
+	0x73, 0x00, 0xff, 0x39, 0x6c, 0xab, 0x5e, 0x2f, 0xb1, 0x6a, 0x21, 0xb0, 0xd6, 0x97, 0xe9, 0x43,
+	0x12, 0xe8, 0x40, 0x13, 0xd0, 0x7a, 0x11, 0x36, 0x8e, 0x5f, 0x73, 0xfc, 0x53, 0x17, 0xec, 0x14,
+	0xe1, 0xd1, 0x1b, 0x00, 0x63, 0xde, 0x54, 0x40, 0xa3, 0xfe, 0x11, 0x8e, 0x0e, 0x23, 0x45, 0x0d,
+	0xa9, 0xf6, 0xfa, 0xc7, 0x97, 0x9f, 0x7c, 0xf9, 0xfe, 0x2a, 0x3a, 0x82, 0x92, 0x9a, 0x57, 0xa6,
+	0xb2, 0xe5, 0xe5, 0xbc, 0x99, 0x27, 0x05, 0xed, 0xc8, 0x50, 0xf4, 0xc6, 0x12, 0xfa, 0x01, 0xe0,
+	0xff, 0x2d, 0x6f, 0x45, 0x34, 0x19, 0x10, 0x21, 0x60, 0xa0, 0x29, 0xd7, 0x4e, 0x5d, 0x2f, 0x9b,
+	0xca, 0x88, 0xa6, 0xae, 0xa3, 0x49, 0x2d, 0x78, 0xb2, 0xab, 0x05, 0x61, 0xa2, 0x66, 0x2b, 0x2a,
+	0xf7, 0x6c, 0xb4, 0x0d, 0x6f, 0x0b, 0x6e, 0xa2, 0xd7, 0xd1, 0x80, 0x79, 0x59, 0xdb, 0x4e, 0x28,
+	0x73, 0xca, 0xc8, 0x4d, 0xe7, 0x42, 0xb9, 0xd9, 0xb6, 0x8f, 0x44, 0xf0, 0x40, 0x20, 0x58, 0x42,
+	0x0b, 0xa7, 0x42, 0xa0, 0x12, 0xdb, 0x52, 0xc5, 0x16, 0x3d, 0x84, 0xa1, 0x6d, 0xd4, 0x0e, 0xdb,
+	0x26, 0x7a, 0x11, 0x85, 0xe7, 0x43, 0xdc, 0xf1, 0x68, 0x3a, 0x6c, 0x37, 0xad, 0x66, 0x95, 0x72,
+	0xa3, 0x4d, 0x17, 0x49, 0xe4, 0x9e, 0x20, 0xb2, 0x80, 0xe6, 0xc3, 0x10, 0xb1, 0x88, 0x43, 0xc2,
+	0xf3, 0xd8, 0x8a, 0xc2, 0x73, 0x81, 0xf7, 0x39, 0xd2, 0x03, 0xfa, 0x08, 0x31, 0x93, 0x94, 0xa9,
+	0xb6, 0x3c, 0x24, 0x89, 0xbb, 0x82, 0xc4, 0x3c, 0xba, 0xe3, 0x4f, 0x82, 0x78, 0x3e, 0x27, 0xe4,
+	0xb0, 0x1d, 0x85, 0x38, 0xf8, 0xee, 0x45, 0x41, 0x4d, 0x84, 0x99, 0x20, 0xca, 0x74, 0x7b, 0x26,
+	0xe1, 0x51, 0xd8, 0xd4, 0x51, 0x97, 0x29, 0x3d, 0x19, 0x0a, 0x7d, 0x76, 0x67, 0x2f, 0x0e, 0x76,
+	0xf7, 0xe2, 0xe0, 0xdb, 0x5e, 0x1c, 0xbc, 0xdc, 0x8f, 0x47, 0x76, 0xf7, 0xe3, 0x91, 0xaf, 0xfb,
+	0xf1, 0xc8, 0xfd, 0x89, 0x5c, 0xde, 0x79, 0x54, 0xce, 0xba, 0xf1, 0xfd, 0xee, 0xdc, 0xfa, 0x18,
+	0x4e, 0x85, 0xd3, 0x52, 0x36, 0x26, 0xfe, 0x7f, 0x4c, 0xfc, 0x0c, 0x00, 0x00, 0xff, 0xff, 0x9e,
+	0xbd, 0x2d, 0xd8, 0x46, 0x0d, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -372,6 +705,9 @@ type QueryClient interface {
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	QueryCollectorLookupByProduct(ctx context.Context, in *QueryCollectorLookupByProductRequest, opts ...grpc.CallOption) (*QueryCollectorLookupByProductResponse, error)
 	QueryCollectorLookupByProductAndAsset(ctx context.Context, in *QueryCollectorLookupByProductAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorLookupByProductAndAssetResponse, error)
+	QueryCollectorDataByProductAndAsset(ctx context.Context, in *QueryCollectorDataByProductAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorDataByProductAndAssetResponse, error)
+	QueryAuctionMappingForAppAndAsset(ctx context.Context, in *QueryAuctionMappingForAppAndAssetRequest, opts ...grpc.CallOption) (*QueryAuctionMappingForAppAndAssetResponse, error)
+	QueryNetFeeCollectedForAppAndAsset(ctx context.Context, in *QueryNetFeeCollectedForAppAndAssetRequest, opts ...grpc.CallOption) (*QueryNetFeeCollectedForAppAndAssetResponse, error)
 }
 
 type queryClient struct {
@@ -409,12 +745,42 @@ func (c *queryClient) QueryCollectorLookupByProductAndAsset(ctx context.Context,
 	return out, nil
 }
 
+func (c *queryClient) QueryCollectorDataByProductAndAsset(ctx context.Context, in *QueryCollectorDataByProductAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorDataByProductAndAssetResponse, error) {
+	out := new(QueryCollectorDataByProductAndAssetResponse)
+	err := c.cc.Invoke(ctx, "/comdex.collector.v1beta1.Query/QueryCollectorDataByProductAndAsset", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryAuctionMappingForAppAndAsset(ctx context.Context, in *QueryAuctionMappingForAppAndAssetRequest, opts ...grpc.CallOption) (*QueryAuctionMappingForAppAndAssetResponse, error) {
+	out := new(QueryAuctionMappingForAppAndAssetResponse)
+	err := c.cc.Invoke(ctx, "/comdex.collector.v1beta1.Query/QueryAuctionMappingForAppAndAsset", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryNetFeeCollectedForAppAndAsset(ctx context.Context, in *QueryNetFeeCollectedForAppAndAssetRequest, opts ...grpc.CallOption) (*QueryNetFeeCollectedForAppAndAssetResponse, error) {
+	out := new(QueryNetFeeCollectedForAppAndAssetResponse)
+	err := c.cc.Invoke(ctx, "/comdex.collector.v1beta1.Query/QueryNetFeeCollectedForAppAndAsset", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	QueryCollectorLookupByProduct(context.Context, *QueryCollectorLookupByProductRequest) (*QueryCollectorLookupByProductResponse, error)
 	QueryCollectorLookupByProductAndAsset(context.Context, *QueryCollectorLookupByProductAndAssetRequest) (*QueryCollectorLookupByProductAndAssetResponse, error)
+	QueryCollectorDataByProductAndAsset(context.Context, *QueryCollectorDataByProductAndAssetRequest) (*QueryCollectorDataByProductAndAssetResponse, error)
+	QueryAuctionMappingForAppAndAsset(context.Context, *QueryAuctionMappingForAppAndAssetRequest) (*QueryAuctionMappingForAppAndAssetResponse, error)
+	QueryNetFeeCollectedForAppAndAsset(context.Context, *QueryNetFeeCollectedForAppAndAssetRequest) (*QueryNetFeeCollectedForAppAndAssetResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -429,6 +795,15 @@ func (*UnimplementedQueryServer) QueryCollectorLookupByProduct(ctx context.Conte
 }
 func (*UnimplementedQueryServer) QueryCollectorLookupByProductAndAsset(ctx context.Context, req *QueryCollectorLookupByProductAndAssetRequest) (*QueryCollectorLookupByProductAndAssetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryCollectorLookupByProductAndAsset not implemented")
+}
+func (*UnimplementedQueryServer) QueryCollectorDataByProductAndAsset(ctx context.Context, req *QueryCollectorDataByProductAndAssetRequest) (*QueryCollectorDataByProductAndAssetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCollectorDataByProductAndAsset not implemented")
+}
+func (*UnimplementedQueryServer) QueryAuctionMappingForAppAndAsset(ctx context.Context, req *QueryAuctionMappingForAppAndAssetRequest) (*QueryAuctionMappingForAppAndAssetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAuctionMappingForAppAndAsset not implemented")
+}
+func (*UnimplementedQueryServer) QueryNetFeeCollectedForAppAndAsset(ctx context.Context, req *QueryNetFeeCollectedForAppAndAssetRequest) (*QueryNetFeeCollectedForAppAndAssetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryNetFeeCollectedForAppAndAsset not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -489,6 +864,60 @@ func _Query_QueryCollectorLookupByProductAndAsset_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_QueryCollectorDataByProductAndAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCollectorDataByProductAndAssetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryCollectorDataByProductAndAsset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.collector.v1beta1.Query/QueryCollectorDataByProductAndAsset",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryCollectorDataByProductAndAsset(ctx, req.(*QueryCollectorDataByProductAndAssetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryAuctionMappingForAppAndAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAuctionMappingForAppAndAssetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryAuctionMappingForAppAndAsset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.collector.v1beta1.Query/QueryAuctionMappingForAppAndAsset",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryAuctionMappingForAppAndAsset(ctx, req.(*QueryAuctionMappingForAppAndAssetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryNetFeeCollectedForAppAndAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryNetFeeCollectedForAppAndAssetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryNetFeeCollectedForAppAndAsset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.collector.v1beta1.Query/QueryNetFeeCollectedForAppAndAsset",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryNetFeeCollectedForAppAndAsset(ctx, req.(*QueryNetFeeCollectedForAppAndAssetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "comdex.collector.v1beta1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -504,6 +933,18 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryCollectorLookupByProductAndAsset",
 			Handler:    _Query_QueryCollectorLookupByProductAndAsset_Handler,
+		},
+		{
+			MethodName: "QueryCollectorDataByProductAndAsset",
+			Handler:    _Query_QueryCollectorDataByProductAndAsset_Handler,
+		},
+		{
+			MethodName: "QueryAuctionMappingForAppAndAsset",
+			Handler:    _Query_QueryAuctionMappingForAppAndAsset_Handler,
+		},
+		{
+			MethodName: "QueryNetFeeCollectedForAppAndAsset",
+			Handler:    _Query_QueryNetFeeCollectedForAppAndAsset_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -697,6 +1138,204 @@ func (m *QueryCollectorLookupByProductAndAssetResponse) MarshalToSizedBuffer(dAt
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryCollectorDataByProductAndAssetRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCollectorDataByProductAndAssetRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCollectorDataByProductAndAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.AssetId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AssetId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCollectorDataByProductAndAssetResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCollectorDataByProductAndAssetResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCollectorDataByProductAndAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.CollectorData.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAuctionMappingForAppAndAssetRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAuctionMappingForAppAndAssetRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAuctionMappingForAppAndAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.AssetId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AssetId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAuctionMappingForAppAndAssetResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAuctionMappingForAppAndAssetResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAuctionMappingForAppAndAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.AssetIdToAuctionLookupTable.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.AssetId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AssetId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.AssetIdToFeeCollected.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -777,6 +1416,84 @@ func (m *QueryCollectorLookupByProductAndAssetResponse) Size() (n int) {
 	var l int
 	_ = l
 	l = m.CollectorLookup.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryCollectorDataByProductAndAssetRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
+	}
+	if m.AssetId != 0 {
+		n += 1 + sovQuery(uint64(m.AssetId))
+	}
+	return n
+}
+
+func (m *QueryCollectorDataByProductAndAssetResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.CollectorData.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryAuctionMappingForAppAndAssetRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
+	}
+	if m.AssetId != 0 {
+		n += 1 + sovQuery(uint64(m.AssetId))
+	}
+	return n
+}
+
+func (m *QueryAuctionMappingForAppAndAssetResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.AssetIdToAuctionLookupTable.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
+	}
+	if m.AssetId != 0 {
+		n += 1 + sovQuery(uint64(m.AssetId))
+	}
+	return n
+}
+
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.AssetIdToFeeCollected.Size()
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -1220,6 +1937,519 @@ func (m *QueryCollectorLookupByProductAndAssetResponse) Unmarshal(dAtA []byte) e
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.CollectorLookup.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCollectorDataByProductAndAssetRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCollectorDataByProductAndAssetRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCollectorDataByProductAndAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
+			}
+			m.AssetId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCollectorDataByProductAndAssetResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCollectorDataByProductAndAssetResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCollectorDataByProductAndAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CollectorData", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.CollectorData.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAuctionMappingForAppAndAssetRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAuctionMappingForAppAndAssetRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAuctionMappingForAppAndAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
+			}
+			m.AssetId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAuctionMappingForAppAndAssetResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAuctionMappingForAppAndAssetResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAuctionMappingForAppAndAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetIdToAuctionLookupTable", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.AssetIdToAuctionLookupTable.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryNetFeeCollectedForAppAndAssetRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryNetFeeCollectedForAppAndAssetRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryNetFeeCollectedForAppAndAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
+			}
+			m.AssetId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryNetFeeCollectedForAppAndAssetResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryNetFeeCollectedForAppAndAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetIdToFeeCollected", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.AssetIdToFeeCollected.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -209,13 +209,65 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			AppMappingId := comdexQuery.UpdateLsrInCollectorLookupTableQuery.AppMappingId
 			AssetId := comdexQuery.UpdateLsrInCollectorLookupTableQuery.AssetId
 			found, errormsg := queryPlugin.UpdateLsrInCollectorLookupTableQueryCheck(ctx, AppMappingId, AssetId)
-			res := bindings.UpdateLsrInPairsVaultQueryResponse{
+			res := bindings.UpdateLsrInCollectorLookupTableQueryResponse{
 				Found: found,
 				Err:   errormsg,
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
 				return nil, sdkerrors.Wrap(err, "UpdateLsrInPairsVaultQuery query response")
+			}
+			return bz, nil
+		} else if comdexQuery.RemoveWhitelistAppIdVaultInterestQuery != nil {
+			AppMappingId := comdexQuery.RemoveWhitelistAppIdVaultInterestQuery.AppMappingId
+			found, errormsg := queryPlugin.WasmRemoveWhitelistAppIdVaultInterestQueryCheck(ctx, AppMappingId)
+			res := bindings.RemoveWhitelistAppIdVaultInterestQueryResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdVaultInterestQuery query response")
+			}
+			return bz, nil
+		} else if comdexQuery.RemoveWhitelistAssetLockerQuery != nil {
+			AppMappingId := comdexQuery.RemoveWhitelistAssetLockerQuery.AppMappingId
+			AssetId := comdexQuery.RemoveWhitelistAssetLockerQuery.AssetId
+
+			found, errormsg := queryPlugin.WasmRemoveWhitelistAssetLockerQueryCheck(ctx, AppMappingId, AssetId)
+			res := bindings.RemoveWhitelistAssetLockerQueryResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "RemoveWhitelistAssetLockerQuery query response")
+			}
+			return bz, nil
+		} else if comdexQuery.WhitelistAppIdLiquidationQuery != nil {
+			AppMappingId := comdexQuery.WhitelistAppIdLiquidationQuery.AppMappingId
+
+			found, errormsg := queryPlugin.WasmWhitelistAppIdLiquidationQueryCheck(ctx, AppMappingId)
+			res := bindings.WhitelistAppIdLiquidationQueryResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "WhitelistAppIdLiquidationQuery query response")
+			}
+			return bz, nil
+		} else if comdexQuery.RemoveWhitelistAppIdLiquidationQuery != nil {
+			AppMappingId := comdexQuery.RemoveWhitelistAppIdLiquidationQuery.AppMappingId
+
+			found, errormsg := queryPlugin.WasmRemoveWhitelistAppIdLiquidationQueryCheck(ctx, AppMappingId)
+			res := bindings.RemoveWhitelistAppIdLiquidationQueryResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdLiquidationQuery query response")
 			}
 			return bz, nil
 		}
