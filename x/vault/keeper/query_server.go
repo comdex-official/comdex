@@ -769,7 +769,6 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 
 		}
 
-		fmt.Println(collaterlizationRatio.Add(totalCr))
 
 		totalCr = collaterlizationRatio.Add(totalCr)
 		var minCr = extPairVault.MinCr

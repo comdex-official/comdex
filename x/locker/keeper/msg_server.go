@@ -248,29 +248,23 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	k.UpdateAmountLockerMapping(ctx, lookup_table_data, asset.Id, msg.Amount, true)
 
 	user_locker_asset_mapping_data, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor)
-	fmt.Println("user_locker_asset_mapping_data.....22222", user_locker_asset_mapping_data)
-	fmt.Println(user_locker_asset_mapping_data, "top dffefgedg ")
 	var user_his_data types.UserTxData
 	user_his_data.TxType = "Deposit"
 	user_his_data.Amount = msg.Amount
 	user_his_data.Balance = lockerData.NetBalance
 	user_his_data.TxTime = time.Now()
 	for _, userLockerAppData := range user_locker_asset_mapping_data.LockerAppMapping {
-		fmt.Println(userLockerAppData, "middle dffefgedg ")
 		if userLockerAppData.AppMappingId == msg.AppMappingId {
 			for _, assetData := range userLockerAppData.UserAssetLocker {
 				if assetData.AssetId == msg.AssetId {
-					fmt.Println(userLockerAppData, "last dffefgedg srbjhvbjhvjhvmhgv")
 					assetData.UserData = append(assetData.UserData, &user_his_data)
 				}
 			}
 		}
 
 	}
-	fmt.Println(user_his_data, " 2nd last data ----------")
-	fmt.Println("user_locker_asset_mapping_data.........333333", user_locker_asset_mapping_data)
+
 	k.SetUserLockerAssetMapping(ctx, user_locker_asset_mapping_data)
-	fmt.Println(user_locker_asset_mapping_data, " final data --------")
 
 	// user_locker_asset_mapping_data.Owner = msg.Depositor
 
