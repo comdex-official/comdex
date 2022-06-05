@@ -530,16 +530,18 @@ func (k *Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, AppId, Collec
 	return true, ""
 }
 
-func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, AssetId []uint64, IsSurplusAuction, IsDebtAuction []bool) error {
+func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, AssetId []uint64, IsSurplusAuction, IsDebtAuction, AssetOutOraclePrice []bool, AssetOutPrice []uint64) error {
 
 	var collectorAuctionLookup types.CollectorAuctionLookupTable
 	collectorAuctionLookup.AppId = AppId
 	var AssetIdToAuctionLookups []types.AssetIdToAuctionLookupTable
 	for i := range AssetId {
 		AssetIdToAuctionLookup := types.AssetIdToAuctionLookupTable{
-			AssetId:          AssetId[i],
-			IsSurplusAuction: IsSurplusAuction[i],
-			IsDebtAuction:    IsDebtAuction[i],
+			AssetId:             AssetId[i],
+			IsSurplusAuction:    IsSurplusAuction[i],
+			IsDebtAuction:       IsDebtAuction[i],
+			AssetOutOraclePrice: AssetOutOraclePrice[i],
+			AssetOutPrice:       AssetOutPrice[i],
 		}
 		AssetIdToAuctionLookups = append(AssetIdToAuctionLookups, AssetIdToAuctionLookup)
 	}
@@ -558,17 +560,17 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, Asse
 func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, AppId uint64) (bool, string) {
 
 	_, _ = k.GetAppidToAssetCollectorMapping(ctx, AppId)
-	
+
 	return true, ""
 }
 
 func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, assetId uint64, lsr sdk.Dec) error {
-	
+
 	var Collector types.CollectorLookupTable
 	accmLookup, _ := k.GetCollectorLookupTable(ctx, appId)
 
-	for _, data:= range accmLookup.AssetRateInfo{
-		if data.CollectorAssetId == assetId{ 
+	for _, data := range accmLookup.AssetRateInfo {
+		if data.CollectorAssetId == assetId {
 			Collector.CollectorAssetId = assetId
 			Collector.AppId = data.AppId
 			Collector.BidFactor = data.BidFactor
@@ -577,8 +579,8 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, ass
 			Collector.LotSize = data.LotSize
 			Collector.SecondaryAssetId = data.SecondaryAssetId
 			Collector.DebtThreshold = data.DebtThreshold
+		}
 	}
-}
 	k.SetCollectorLookupTable(ctx, Collector)
 	// var (
 	// 	store = ctx.KVStore(k.storeKey)

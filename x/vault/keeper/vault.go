@@ -495,21 +495,21 @@ func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, AppMappingId uint64
 
 	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updated_counter, new_vault)
 
-	user_vault_extendedPair_mapping_data, _ := k.GetUserVaultExtendedPairMapping(ctx, From)
+	userVaultExtendedpairMappingData, _ := k.GetUserVaultExtendedPairMapping(ctx, From)
 
 	//So only need to add the locker id with asset
-	var user_extendedPair_data types.ExtendedPairToVaultMapping
-	user_extendedPair_data.VaultId = new_vault.Id
-	user_extendedPair_data.ExtendedPairId = new_vault.ExtendedPairVaultID
+	var userExtendedpairData types.ExtendedPairToVaultMapping
+	userExtendedpairData.VaultId = new_vault.Id
+	userExtendedpairData.ExtendedPairId = new_vault.ExtendedPairVaultID
 
-	for _, appData := range user_vault_extendedPair_mapping_data.UserVaultApp {
+	for _, appData := range userVaultExtendedpairMappingData.UserVaultApp {
 		if appData.AppMappingId == appMapping.Id {
 
-			appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &user_extendedPair_data)
+			appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &userExtendedpairData)
 		}
 
 	}
-	k.SetUserVaultExtendedPairMapping(ctx, user_vault_extendedPair_mapping_data)
+	k.SetUserVaultExtendedPairMapping(ctx, userVaultExtendedpairMappingData)
 
 	return nil
 }

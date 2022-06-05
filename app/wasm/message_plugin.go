@@ -204,7 +204,7 @@ func (m *CustomMessenger) SetAuctionMappingForApp(ctx sdk.Context, contractAddr 
 
 func MsgSetAuctionMappingForApp(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgSetAuctionMappingForApp) error {
-	err := collectorKeeper.WasmSetAuctionMappingForApp(ctx, a.AppMappingId, a.AssetId, a.IsSurplusAuction, a.IsDebtAuction)
+	err := collectorKeeper.WasmSetAuctionMappingForApp(ctx, a.AppMappingId, a.AssetId, a.IsSurplusAuction, a.IsDebtAuction, a.AssetOutOraclePrice, a.AssetOutPrice)
 	if err != nil {
 		return err
 	}
@@ -221,8 +221,8 @@ func (m *CustomMessenger) UpdateLsrInPairsVault(ctx sdk.Context, contractAddr sd
 
 func MsgUpdateLsrInPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgUpdateLsrInPairsVault) error {
-	err := assetKeeper.WasmUpdateLsrInPairsVault(ctx, a.AppMappingId, a.ExtPairId, a.LiquidationRatio ,a.StabilityFee, a.ClosingFee,
-	a.LiquidationPenalty, a.DrawDownFee,a.MinCr, a.DebtCeiling, a.DebtFloor)
+	err := assetKeeper.WasmUpdateLsrInPairsVault(ctx, a.AppMappingId, a.ExtPairId, a.LiquidationRatio, a.StabilityFee, a.ClosingFee,
+		a.LiquidationPenalty, a.DrawDownFee, a.MinCr, a.DebtCeiling, a.DebtFloor)
 	if err != nil {
 		return err
 	}
