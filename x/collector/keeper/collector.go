@@ -203,6 +203,30 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 
 }
 
+func (k *Keeper) SetCollectorLookupTableforWasm(ctx sdk.Context, records ...types.CollectorLookupTable) error {
+	for _, msg := range records {
+
+		accmLookup, _ := k.GetCollectorLookupTable(ctx, msg.AppId)
+		accmLookup.AppId = msg.AppId
+		aa := accmLookup.AssetRateInfo
+		for j, v := range aa{
+
+			if v.CollectorAssetId == msg.CollectorAssetId{
+			v.LockerSavingRate = msg.LockerSavingRate
+			accmLookup.AssetRateInfo[j] = v
+			var (
+				store = ctx.KVStore(k.storeKey)
+				key   = types.CollectorLookupTableMappingKey(msg.AppId)
+				value = k.cdc.MustMarshal(&accmLookup)
+			)
+			store.Set(key, value)
+			}
+		}		
+	}
+	return nil
+
+}
+
 // GetCollectorLookupTable returns collector lookup table
 func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, appId uint64) (collectorLookup types.CollectorLookup, found bool) {
 	var (
@@ -567,17 +591,9 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, ass
 			Collector.LockerSavingRate = lsr
 			Collector.LotSize = data.LotSize
 			Collector.SecondaryAssetId = data.SecondaryAssetId
-			Collector.DebtThreshold = data.DebtThreshold
 		}
 	}
-	k.SetCollectorLookupTable(ctx, Collector)
-	// var (
-	// 	store = ctx.KVStore(k.storeKey)
-	// 	key   = types.CollectorLookupTableMappingKey(appId)
-	// 	value = k.cdc.MustMarshal(&accmLookup)
-	// )
-
-	// store.Set(key, value)
+	k.SetCollectorLookupTableforWasm(ctx, Collector)
 	return nil
 }
 
