@@ -142,7 +142,7 @@ require (
 )
 
 replace (
-	// github.com/cosmos/cosmos-sdk => /Users/vishnu/Workspace/comdex-sdk/cosmos-sdk
+	github.com/cosmos/cosmos-sdk => github.com/comdex-official/cosmos-sdk v0.45.1-test1
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
