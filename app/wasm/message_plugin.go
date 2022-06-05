@@ -74,16 +74,16 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 			return m.UpdateLsrInCollectorLookupTable(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
 		}
 		if comdexMsg.MsgRemoveWhitelistAssetLocker != nil {
-			return m.RemoveWhitelistAssetLocker(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
+			return m.RemoveWhitelistAssetLocker(ctx, contractAddr, comdexMsg.MsgRemoveWhitelistAssetLocker)
 		}
 		if comdexMsg.MsgRemoveWhitelistAppIdVaultInterest != nil {
-			return m.RemoveWhitelistAppIdVaultInterest(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
+			return m.RemoveWhitelistAppIdVaultInterest(ctx, contractAddr, comdexMsg.MsgRemoveWhitelistAppIdVaultInterest)
 		}
 		if comdexMsg.MsgWhitelistAppIdLiquidation != nil {
-			return m.WhitelistAppIdLiquidation(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
+			return m.WhitelistAppIdLiquidation(ctx, contractAddr, comdexMsg.MsgWhitelistAppIdLiquidation)
 		}
 		if comdexMsg.MsgRemoveWhitelistAppIdLiquidation != nil {
-			return m.RemoveWhitelistAppIdLiquidation(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
+			return m.RemoveWhitelistAppIdLiquidation(ctx, contractAddr, comdexMsg.MsgRemoveWhitelistAppIdLiquidation)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
@@ -261,7 +261,7 @@ func MsgUpdateLsrInCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, 
 	return nil
 }
 
-func (m *CustomMessenger) RemoveWhitelistAssetLocker(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+func (m *CustomMessenger) RemoveWhitelistAssetLocker(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgRemoveWhitelistAssetLocker) ([]sdk.Event, [][]byte, error) {
 	err := MsgRemoveWhitelistAssetLocker(m.rewardsKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAssetRewards error")
@@ -270,7 +270,7 @@ func (m *CustomMessenger) RemoveWhitelistAssetLocker(ctx sdk.Context, contractAd
 }
 
 func MsgRemoveWhitelistAssetLocker(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+	a *bindings.MsgRemoveWhitelistAssetLocker) error {
 	err := rewardsKeeper.WasmRemoveWhitelistAssetLocker(ctx, a.AppMappingId, a.AssetId)
 	if err != nil {
 		return err
@@ -278,7 +278,7 @@ func MsgRemoveWhitelistAssetLocker(rewardsKeeper rewardskeeper.Keeper, ctx sdk.C
 	return nil
 }
 
-func (m *CustomMessenger) RemoveWhitelistAppIdVaultInterest(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+func (m *CustomMessenger) RemoveWhitelistAppIdVaultInterest(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgRemoveWhitelistAppIdVaultInterest) ([]sdk.Event, [][]byte, error) {
 	err := MsgRemoveWhitelistAppIdVaultInterest(m.rewardsKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdVaultInterest error")
@@ -287,7 +287,7 @@ func (m *CustomMessenger) RemoveWhitelistAppIdVaultInterest(ctx sdk.Context, con
 }
 
 func MsgRemoveWhitelistAppIdVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+	a *bindings.MsgRemoveWhitelistAppIdVaultInterest) error {
 	err := rewardsKeeper.WasmRemoveWhitelistAppIdVaultInterest(ctx, a.AppMappingId)
 	if err != nil {
 		return err
@@ -295,7 +295,7 @@ func MsgRemoveWhitelistAppIdVaultInterest(rewardsKeeper rewardskeeper.Keeper, ct
 	return nil
 }
 
-func (m *CustomMessenger) WhitelistAppIdLiquidation(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+func (m *CustomMessenger) WhitelistAppIdLiquidation(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgWhitelistAppIdLiquidation) ([]sdk.Event, [][]byte, error) {
 	err := MsgWhitelistAppIdLiquidation(m.liquidationKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "WhitelistAppIdLiquidation error")
@@ -304,7 +304,7 @@ func (m *CustomMessenger) WhitelistAppIdLiquidation(ctx sdk.Context, contractAdd
 }
 
 func MsgWhitelistAppIdLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+	a *bindings.MsgWhitelistAppIdLiquidation) error {
 	err := liquidationKeeper.WasmWhitelistAppIdLiquidation(ctx, a.AppMappingId)
 	if err != nil {
 		return err
@@ -312,7 +312,7 @@ func MsgWhitelistAppIdLiquidation(liquidationKeeper liquidationkeeper.Keeper, ct
 	return nil
 }
 
-func (m *CustomMessenger) RemoveWhitelistAppIdLiquidation(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+func (m *CustomMessenger) RemoveWhitelistAppIdLiquidation(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgRemoveWhitelistAppIdLiquidation) ([]sdk.Event, [][]byte, error) {
 	err := MsgRemoveWhitelistAppIdLiquidation(m.liquidationKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdLiquidation error")
@@ -321,7 +321,7 @@ func (m *CustomMessenger) RemoveWhitelistAppIdLiquidation(ctx sdk.Context, contr
 }
 
 func MsgRemoveWhitelistAppIdLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+	a *bindings.MsgRemoveWhitelistAppIdLiquidation) error {
 	err := liquidationKeeper.WasmRemoveWhitelistAppIdLiquidation(ctx, a.AppMappingId)
 	if err != nil {
 		return err
