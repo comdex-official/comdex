@@ -1052,7 +1052,7 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 	}
 
 	stableAmountIn := stableVault.AmountIn.Sub(msg.Amount)
-	if !stableAmountIn.IsPositive() {
+	if stableAmountIn.LT(sdk.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
 
 	}
