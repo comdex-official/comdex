@@ -3,6 +3,7 @@ package wasm
 import (
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	tokenMintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
@@ -11,11 +12,12 @@ import (
 )
 
 type QueryPlugin struct {
-	assetKeeper     *assetKeeper.Keeper
-	lockerKeeper    *lockerkeeper.Keeper
-	tokenMintKeeper *tokenMintKeeper.Keeper
-	rewardsKeeper   *rewardsKeeper.Keeper
-	collectorKeeper *collectorkeeper.Keeper
+	assetKeeper       *assetKeeper.Keeper
+	lockerKeeper      *lockerkeeper.Keeper
+	tokenMintKeeper   *tokenMintKeeper.Keeper
+	rewardsKeeper     *rewardsKeeper.Keeper
+	collectorKeeper   *collectorkeeper.Keeper
+	liquidationKeeper *liquidationKeeper.Keeper
 }
 
 func NewQueryPlugin(
@@ -24,14 +26,16 @@ func NewQueryPlugin(
 	tokenMintKeeper *tokenMintKeeper.Keeper,
 	rewardsKeeper *rewardsKeeper.Keeper,
 	collectorKeeper *collectorkeeper.Keeper,
+	liquidation *liquidationKeeper.Keeper,
 
 ) *QueryPlugin {
 	return &QueryPlugin{
-		assetKeeper:     assetKeeper,
-		lockerKeeper:    lockerKeeper,
-		tokenMintKeeper: tokenMintKeeper,
-		rewardsKeeper:   rewardsKeeper,
-		collectorKeeper: collectorKeeper,
+		assetKeeper:       assetKeeper,
+		lockerKeeper:      lockerKeeper,
+		tokenMintKeeper:   tokenMintKeeper,
+		rewardsKeeper:     rewardsKeeper,
+		collectorKeeper:   collectorKeeper,
+		liquidationKeeper: liquidation,
 	}
 }
 
@@ -108,5 +112,25 @@ func (qp QueryPlugin) UpdateLsrInPairsVaultQueryCheck(ctx sdk.Context, AppMappin
 
 func (qp QueryPlugin) UpdateLsrInCollectorLookupTableQueryCheck(ctx sdk.Context, AppMappingId, AssetId uint64) (found bool, err string) {
 	found, err = qp.collectorKeeper.WasmUpdateLsrInCollectorLookupTableQuery(ctx, AppMappingId, AssetId)
+	return found, err
+}
+
+func (qp QueryPlugin) WasmRemoveWhitelistAppIdVaultInterestQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAppIdVaultInterestQuery(ctx, AppMappingId)
+	return found, err
+}
+
+func (qp QueryPlugin) WasmRemoveWhitelistAssetLockerQueryCheck(ctx sdk.Context, AppMappingId, AssetId uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAssetLockerQuery(ctx, AppMappingId, AssetId)
+	return found, err
+}
+
+func (qp QueryPlugin) WasmWhitelistAppIdLiquidationQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
+	found, err = qp.liquidationKeeper.WasmWhitelistAppIdLiquidationQuery(ctx, AppMappingId)
+	return found, err
+}
+
+func (qp QueryPlugin) WasmRemoveWhitelistAppIdLiquidationQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
+	found, err = qp.liquidationKeeper.WasmRemoveWhitelistAppIdLiquidationQuery(ctx, AppMappingId)
 	return found, err
 }
