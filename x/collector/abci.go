@@ -6,6 +6,4 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
-	//k.TriggerAuction(ctx)
-}
+func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {}

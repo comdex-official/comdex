@@ -101,13 +101,13 @@ func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collec
 	return k.collector.GetCollectorLookupTable(ctx, app_id)
 }
 
-func (k *Keeper) SetCollectorAuctionLookupTable(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {
-	return k.collector.SetCollectorAuctionLookupTable(ctx, records...)
-}
+// func (k *Keeper) SetCollectorAuctionLookupTable(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {
+// 	return k.collector.SetCollectorAuctionLookupTable(ctx, records...)
+// }
 
-func (k *Keeper) GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.CollectorAuctionLookupTable, found bool) {
-	return k.collector.GetCollectorAuctionLookupTable(ctx, app_id)
-}
+// func (k *Keeper) GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.CollectorAuctionLookupTable, found bool) {
+// 	return k.collector.GetCollectorAuctionLookupTable(ctx, app_id)
+// }
 func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData types.NetFeeCollectedData, found bool) {
 	return k.collector.GetNetFeeCollectedData(ctx, app_id)
 }
@@ -156,4 +156,7 @@ func (k *Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPair
 
 func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, appId uint64) (collectorAuctionLookupTable types.CollectorAuctionLookupTable, found bool){
 	return k.collector.GetAuctionMappingForApp(ctx, appId)
+}
+func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error{
+	return k.collector.SetAuctionMappingForApp(ctx, records...)
 }
