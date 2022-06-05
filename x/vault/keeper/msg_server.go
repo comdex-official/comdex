@@ -586,8 +586,9 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		return nil, types.ErrorInvalidAmount
 	}
 
-	newAmount := userVault.AmountOut.Sub(msg.Amount)
-	if !newAmount.IsPositive() {
+	newAmount:=userVault.AmountOut.Add(userVault.InterestAccumulated)
+	newAmount = newAmount.Sub(msg.Amount)
+	if newAmount.LT(sdk.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
 	}
 
@@ -1051,7 +1052,7 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 	}
 
 	stableAmountIn := stableVault.AmountIn.Sub(msg.Amount)
-	if !stableAmountIn.IsPositive() {
+	if stableAmountIn.LT(sdk.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
 
 	}
