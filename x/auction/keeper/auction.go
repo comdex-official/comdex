@@ -213,7 +213,7 @@ func (k Keeper) CreateSurplusAndDebtAuctions(ctx sdk.Context) error {
 					} else {
 						continue
 					}
-					err = k.SetCollectorAuctionLookupTable(ctx, auctionLookupTable)
+					err = k.SetAuctionMappingForApp(ctx, auctionLookupTable)
 					if err == nil {
 						continue
 					}
@@ -226,14 +226,14 @@ func (k Keeper) CreateSurplusAndDebtAuctions(ctx sdk.Context) error {
 
 func (k Keeper) makeFalseForFlags(ctx sdk.Context, appId, assetId uint64) error {
 
-	auctionLookupTable, found := k.GetCollectorAuctionLookupTable(ctx, appId)
+	auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appId)
 	if !found {
 		return auctiontypes.ErrorInvalidAddress
 	}
 	for _, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
 		if assetToAuction.AssetId == assetId {
 			assetToAuction.IsAuctionActive = false
-			err := k.SetCollectorAuctionLookupTable(ctx, auctionLookupTable)
+			err := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
 			if err != nil {
 				return err
 			}
