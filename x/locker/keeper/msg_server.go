@@ -257,7 +257,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 				if assetData.AssetId == msg.AssetId {
 					user_tx_data.TxType = "Deposit"
 					user_tx_data.Amount = msg.Amount
-					user_tx_data.Balance = user_tx_data.Balance.Add(msg.Amount)
+					user_tx_data.Balance = lockerData.NetBalance
 					user_tx_data.TxTime = time.Now()
 					assetData.UserTxData = append(assetData.UserTxData, user_tx_data)
 
@@ -372,7 +372,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 				if assetData.AssetId == msg.AssetId {
 					user_tx_data.TxType = "Withdraw"
 					user_tx_data.Amount = msg.Amount
-					user_tx_data.Balance = user_tx_data.Balance.Sub(msg.Amount)
+					user_tx_data.Balance = lockerData.NetBalance
 					user_tx_data.TxTime = time.Now()
 					assetData.UserTxData = append(assetData.UserTxData, user_tx_data)
 
