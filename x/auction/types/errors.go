@@ -40,6 +40,7 @@ var (
 	ErrorInvalidPair                        = sdkerrors.Register(ModuleName, 130, "pair not found for extended pair id")
 	ErrorAssetNotFound                      = sdkerrors.Register(ModuleName, 131, "asset not found for given id")
 	ErrorInvalidExtendedPairVault           = sdkerrors.Register(ModuleName, 132, "extended pair vault not found for given id")
+	ErrorAppExtendedPairVaultData           = sdkerrors.Register(ModuleName, 133, "extended pair vault data not found for app mapping id")
 )
 
 var (
