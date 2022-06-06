@@ -657,7 +657,7 @@ func (q *queryServer) QueryTVLLockedByAppOfAllExtendedPairs(c context.Context, r
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.AppId)
 	if !found {
-		return nil, nil
+		return &types.QueryTVLLockedByAppOfAllExtendedPairsResponse{}, nil
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		extPairVault, _ := q.GetPairsVault(ctx, data.ExtendedPairId)
