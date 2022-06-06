@@ -169,7 +169,7 @@ func (k *Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64) {
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	if id == 1 {
-		return 139, true
+		return 200, true
 	}
 	if id == 2 {
 		return 100, true

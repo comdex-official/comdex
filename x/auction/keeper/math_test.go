@@ -18,3 +18,11 @@ func TestRed(t *testing.T) {
 	liq := sdk.MustNewDecFromStr("0.15")
 	fmt.Println(getBurnAmount(amount, liq))
 }
+
+func TestAdd(t *testing.T) {
+	a := sdk.ZeroInt()
+	b := sdk.NewIntFromUint64(300)
+	c := sdk.NewIntFromUint64(100)
+	d := b.Add(a.Sub(c))
+	fmt.Println(d)
+}
