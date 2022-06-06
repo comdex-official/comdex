@@ -300,11 +300,11 @@ func queryOwnerLockerByProductToAssetIDbyOwner() *cobra.Command {
 	return cmd
 }
 
-func queryOwnerTxDetailsLockerOfProductbyOwner() *cobra.Command {
+func queryOwnerTxDetailsLockerOfProductByOwnerByAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "owner-tx-details-by-product-to-owner [product_id] [owner]",
-		Short: "owner locker tx details by product to owner",
-		Args:  cobra.ExactArgs(2),
+		Use:   "owner-tx-details-by-product-to-owner-by-asset [product_id] [owner] [asset_id]",
+		Short: "owner locker tx details by product to owner by asset",
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			pagination, err := client.ReadPageRequest(cmd.Flags())
@@ -324,12 +324,18 @@ func queryOwnerTxDetailsLockerOfProductbyOwner() *cobra.Command {
 
 			owner := args[1]
 
+			assetId, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
 			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.QueryOwnerTxDetailsLockerOfProductByOwner(
+			res, err := queryClient.QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(
 				context.Background(),
-				&types.QueryOwnerTxDetailsLockerOfProductByOwnerRequest{
+				&types.QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest{
 					ProductId: productId,
 					Owner:     owner,
+					AssetId: assetId,
 					Pagination: pagination,
 				},
 			)

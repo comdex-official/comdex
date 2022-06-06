@@ -314,7 +314,9 @@ message QueryTotalTVLByAppRequest {
 }
 
 message QueryTotalTVLByAppResponse {
-  uint64 collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\""];
+  string collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
 }
 
 message QueryUserMyPositionByAppRequest {

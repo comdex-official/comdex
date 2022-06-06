@@ -40,7 +40,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryLockerLookupTableByApp(),
 		queryLockerLookupTableByAppAndAssetId(),
 		queryLockerTotalDepositedByApp(),
-		queryOwnerTxDetailsLockerOfProductbyOwner(),
+		queryOwnerTxDetailsLockerOfProductByOwnerByAsset(),
 		queryLockerByProductbyOwner(),
 		queryState(),
 	)
