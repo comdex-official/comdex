@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -226,7 +227,8 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 	for _, lockedVault := range lockedVaults {
 
 		ExtPair, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
-		if lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.GTE(ExtPair.MinCr) {
+		fmt.Println("tom_________1 ", lockedVault.CurrentCollaterlisationRatio, ExtPair.MinCr, lockedVault.IsAuctionComplete)
+		if lockedVault.IsAuctionComplete {
 			//also calculate the current collaterlization ration to ensure there is no sudden changes
 			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
 			if err != nil {
@@ -247,6 +249,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				continue
 			}
 
+			fmt.Println("tom_________2 ", lockedVault.AmountIn, lockedVault.AmountOut)
 			if lockedVault.AmountIn.IsZero() && lockedVault.AmountOut.IsZero() {
 				err := k.CreateLockedVaultHistory(ctx, lockedVault)
 				if err != nil {
@@ -254,6 +257,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				}
 				k.UpdateUserVaultExtendedPairMapping(ctx, lockedVault.ExtendedPairId, lockedVault.Owner, lockedVault.AppMappingId)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+				continue
 			}
 
 			if lockedVault.AmountOut.IsZero() {

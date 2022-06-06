@@ -16,7 +16,7 @@ func txPlaceSurplusBid() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "bid-surplus [auction-id] [bid] [app-id] [auction-mapping-id]",
 		Short: "Place a bid on an auction",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
