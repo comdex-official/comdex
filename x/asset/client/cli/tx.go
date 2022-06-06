@@ -69,7 +69,7 @@ func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 					Name:             names[i],
 					Denom:            denoms[i],
 					Decimals:         decimals[i],
-					IsOnchain:        newIsOnChain,
+					IsOnChain:        newIsOnChain,
 					AssetOraclePrice: newAssetOraclePrice,
 				})
 			}

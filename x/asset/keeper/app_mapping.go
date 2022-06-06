@@ -82,7 +82,12 @@ func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppMapping, found bool) 
 		iter  = sdk.KVStorePrefixIterator(store, types.AppKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var app types.AppMapping
@@ -242,16 +247,16 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 			if !found {
 				return types.ErrorAssetDoesNotExist
 			}
-			if !assetData.IsOnchain {
+			if !assetData.IsOnChain {
 				return types.ErrorAssetIsOffChain
 			}
 			hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
-			if hasAsset != 0 && data.IsgovToken{
+			if hasAsset != 0 && data.IsgovToken {
 				return types.ErrorGenesisTokenExistForApp
 			}
 
-			checkfound := k.CheckIfAssetIsaddedToAppMapping(ctx, data.AssetId)
-			if !checkfound {
+			checkFound := k.CheckIfAssetIsaddedToAppMapping(ctx, data.AssetId)
+			if !checkFound {
 				return types.ErrorAssetAlreadyExistinApp
 			}
 			if data.IsgovToken {
@@ -273,7 +278,7 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 				Id:               msg.Id,
 				Name:             appdata.Name,
 				ShortName:        appdata.ShortName,
-				MinGovDeposit: appdata.MinGovDeposit,
+				MinGovDeposit:    appdata.MinGovDeposit,
 				GovTimeInSeconds: appdata.GovTimeInSeconds,
 				MintGenesisToken: mintGenesis,
 			}

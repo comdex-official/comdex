@@ -192,7 +192,7 @@ func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error 
 				Name:             msg.Name,
 				Denom:            msg.Denom,
 				Decimals:         msg.Decimals,
-				IsOnchain:        msg.IsOnchain,
+				IsOnChain:        msg.IsOnChain,
 				AssetOraclePrice: msg.AssetOraclePrice,
 			}
 		)
