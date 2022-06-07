@@ -466,13 +466,22 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) error {
 	auctionParams := k.GetParams(ctx)
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
-		lockedVault, _ := k.GetLockedVault(ctx, dutchAuction.LockedVaultId)
-		ExtendedPairVault, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+		lockedVault, found := k.GetLockedVault(ctx, dutchAuction.LockedVaultId)
+		if !found {
+			return auctiontypes.ErrorInvalidLockedVault
+		}
 
+		ExtendedPairVault, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+		if !found {
+			return auctiontypes.ErrorInvalidExtendedPairVault
+		}
 		var inFlowTokenCurrentPrice uint64
 		if ExtendedPairVault.AssetOutOraclePrice {
 			//If oracle Price required for the assetOut
-			inFlowTokenCurrentPrice, _ = k.GetPriceForAsset(ctx, dutchAuction.AssetInId)
+			inFlowTokenCurrentPrice, found = k.GetPriceForAsset(ctx, dutchAuction.AssetInId)
+			if !found {
+				return auctiontypes.ErrorPrices
+			}
 		} else {
 			//If oracle Price is not required for the assetOut
 			inFlowTokenCurrentPrice = ExtendedPairVault.AssetOutPrice
@@ -599,15 +608,20 @@ func (k Keeper) StartDutchAuction(
 		found2 bool
 	)
 
-	lockedVault, _ := k.GetLockedVault(ctx, lockedVaultId)
+	lockedVault, found := k.GetLockedVault(ctx, lockedVaultId)
+	if !found {
+		return auctiontypes.ErrorInvalidLockedVault
+	}
 
 	var extendedPairVault = lockedVault.ExtendedPairId
 
-	ExtendedPairVault, _ := k.GetPairsVault(ctx, extendedPairVault)
-
+	ExtendedPairVault, found := k.GetPairsVault(ctx, extendedPairVault)
+	if !found {
+		return auctiontypes.ErrorInvalidExtendedPairVault
+	}
 	if ExtendedPairVault.AssetOutOraclePrice {
 		//If oracle Price required for the assetOut
-		inFlowTokenPrice, _ = k.GetPriceForAsset(ctx, assetInId)
+		inFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetInId)
 	} else {
 		//If oracle Price is not required for the assetOut
 		inFlowTokenPrice = ExtendedPairVault.AssetOutPrice
@@ -1109,7 +1123,10 @@ func (k Keeper) PlaceSurplusBid(ctx sdk.Context, appId, auctionMappingId, auctio
 		if err != nil {
 			return err
 		}
-		bidding, _ := k.GetSurplusUserBidding(ctx, auction.Bidder.String(), auction.AppId, auction.ActiveBiddingId)
+		bidding, err := k.GetSurplusUserBidding(ctx, auction.Bidder.String(), auction.AppId, auction.ActiveBiddingId)
+		if err != nil {
+			return err
+		}
 		bidding.BiddingStatus = auctiontypes.RejectedBiddingStatus
 		err = k.SetSurplusUserBidding(ctx, bidding)
 		if err != nil {
@@ -1174,7 +1191,10 @@ func (k Keeper) PlaceDebtBid(ctx sdk.Context, appId, auctionMappingId, auctionId
 		if err != nil {
 			return err
 		}
-		bidding, _ := k.GetDebtUserBidding(ctx, auction.Bidder.String(), auction.AppId, auction.ActiveBiddingId)
+		bidding, err := k.GetDebtUserBidding(ctx, auction.Bidder.String(), auction.AppId, auction.ActiveBiddingId)
+		if err != nil {
+			return err
+		}
 		bidding.BiddingStatus = auctiontypes.RejectedBiddingStatus
 
 		err = k.SetDebtUserBidding(ctx, bidding)
@@ -1224,13 +1244,22 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	inFlowTokenAmount := slice.ToDec().Mul(outFlowTokenCurrentPrice.ToDec()).Quo(inFlowTokenCurrentPrice.ToDec()).Ceil().TruncateInt()
 	inFlowTokenCoin := sdk.NewCoin(auction.InflowTokenTargetAmount.Denom, inFlowTokenAmount)
 	//check if bid in usd is greater than required target cmst in usd
-	fmt.Println("hey_______33", auction.OutflowTokenCurrentAmount.Amount.ToDec().Sub(slice.ToDec()).Mul(outFlowTokenCurrentPrice.ToDec()).TruncateInt(), auctionParams.Chost.Ceil().TruncateInt())
-	fmt.Println("hey______34", owe.GT(tab), !auction.IsLockedVaultAmountInZero)
+
+	lockedVault, found := k.GetLockedVault(ctx, auction.LockedVaultId)
+	if !found {
+		return auctiontypes.ErrorInvalidLockedVault
+	}
+	ExtendedPairVault, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+	if !found {
+		return auctiontypes.ErrorInvalidExtendedPairVault
+	}
+	dust := sdk.NewIntFromUint64(ExtendedPairVault.MinUsdValueLeft)
+	amountLeft := auction.OutflowTokenCurrentAmount.Amount.ToDec().Sub(slice.ToDec()).Mul(outFlowTokenCurrentPrice.ToDec()).TruncateInt()
+	fmt.Println("hey_________1", amountLeft, dust)
 	if owe.GT(tab) && !auction.IsLockedVaultAmountInZero {
-		fmt.Println("hey______99")
 		slice = tab.Quo(auction.OutflowTokenCurrentPrice.Ceil().TruncateInt())
 		inFlowTokenCoin.Amount = auction.InflowTokenTargetAmount.Amount.Sub(auction.InflowTokenCurrentAmount.Amount)
-	} else if auction.OutflowTokenCurrentAmount.Amount.ToDec().Sub(slice.ToDec()).Mul(outFlowTokenCurrentPrice.ToDec()).TruncateInt().LT(auctionParams.Chost.Ceil().TruncateInt()) {
+	} else if amountLeft.LT(dust) && amountLeft.GT(sdk.ZeroInt()) {
 		//(outflowtokenavailableamount-slice) in usd < chost in usd
 		//see if user has balance to buy whole collateral
 		coll := auction.OutflowTokenCurrentAmount.Amount.Uint64()
