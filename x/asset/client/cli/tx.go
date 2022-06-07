@@ -716,7 +716,7 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 			from := clientCtx.GetFromAddress()
 
 			var aMap []types.AppMapping
-			var bMap []*types.MintGenesisToken
+			var bMap []types.MintGenesisToken
 			new_min_gov_deposit, ok := sdk.NewIntFromString(min_gov_deposit)
 
 			if err != nil {
@@ -730,7 +730,7 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 				ShortName:        short_name,
 				MinGovDeposit:    new_min_gov_deposit,
 				GovTimeInSeconds: gov_time_in_seconds.Seconds(),
-				MintGenesisToken: bMap,
+				GenesisToken: bMap,
 			})
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
@@ -810,7 +810,7 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 			}
 
 			var aMap []types.AppMapping
-			var bMap []*types.MintGenesisToken
+			var bMap []types.MintGenesisToken
 			for i := range asset_id {
 				newisgovToken := ParseBoolFromString(isgovToken[i])
 				newgenesis_supply, ok := sdk.NewIntFromString(genesis_supply[i])
@@ -828,11 +828,11 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 				cmap.IsgovToken = newisgovToken
 				cmap.Recipient = address.String()
 
-				bMap = append(bMap, &cmap)
+				bMap = append(bMap, cmap)
 			}
 			aMap = append(aMap, types.AppMapping{
 				Id:               app_id,
-				MintGenesisToken: bMap,
+				GenesisToken: bMap,
 			})
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
@@ -870,8 +870,8 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 
 func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-pairs-vault [app_mapping_id] [pair_id] [liquidation_ratio] [stability_fee] [closing_fee] [liquidation_penalty] [draw_down_fee] [is_vault_active] [debt_cieling] [debt_floor] [is_psm_pair] [min_cr] [pair_name] [asset_out_oracle_price] [asset_out_price]",
-		Args:  cobra.ExactArgs(15),
+		Use:   "add-pairs-vault [app_mapping_id] [pair_id] [liquidation_ratio] [stability_fee] [closing_fee] [liquidation_penalty] [draw_down_fee] [is_vault_active] [debt_cieling] [debt_floor] [is_psm_pair] [min_cr] [pair_name] [asset_out_oracle_price] [asset_out_price] [min_usd_value_left]",
+		Args:  cobra.ExactArgs(16),
 		Short: "Add pairs vault",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -953,6 +953,10 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			min_usd_value_left, err := ParseUint64SliceFromString(args[15], ",")
+			if err != nil {
+				return err
+			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
@@ -1021,7 +1025,8 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 					MinCr:               newmin_cr,
 					PairName:            pair_name[i],
 					AssetOutOraclePrice: newasset_out_oracle_price,
-					AssetOutPrice:      asset_out_price[i],
+					AssetOutPrice:       asset_out_price[i],
+					MinUsdValueLeft:     min_usd_value_left[i],
 				})
 			}
 

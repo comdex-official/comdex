@@ -59,5 +59,7 @@ message ExtendedPairVault {
     bool asset_out_oracle_price = 15 [ (gogoproto.moretags) = "yaml:\"asset_out_oracle_price\"" ];
     uint64 asset_out_price     = 16 [ 
     (gogoproto.moretags) = "yaml:\"asset_out_price\"" ];
+    uint64 min_usd_value_left = 17 [ 
+    (gogoproto.moretags) = "yaml:\"min_usd_value_left\"" ];
 
   }

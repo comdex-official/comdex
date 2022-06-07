@@ -66,7 +66,7 @@ func (k *Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint
 	appData, _ := k.GetApp(ctx, id)
 	minGovDeposit := appData.MinGovDeposit.Int64()
 	var assetId uint64
-	gen := appData.MintGenesisToken
+	gen := appData.GenesisToken
 	govTimeInSeconds := int64(appData.GovTimeInSeconds)
 	for _, v := range gen {
 		if v.IsgovToken == true {
@@ -99,9 +99,9 @@ func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppMapping, found bool) 
 func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64) (mintData types.MintGenesisToken, found bool) {
 	appsData, _ := k.GetApp(ctx, appId)
 
-	for _, data := range appsData.MintGenesisToken {
+	for _, data := range appsData.GenesisToken {
 		if data.AssetId == assetId {
-			return *data, true
+			return data, true
 		}
 	}
 	return mintData, false
@@ -111,7 +111,7 @@ func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64)
 func (k *Keeper) CheckIfAssetIsaddedToAppMapping(ctx sdk.Context, assetId uint64) bool {
 	apps, _ := k.GetApps(ctx)
 	for _, data := range apps {
-		for _, inData := range data.MintGenesisToken {
+		for _, inData := range data.GenesisToken {
 			if inData.AssetId == assetId {
 				return false
 			}
@@ -213,7 +213,7 @@ func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMappi
 				ShortName:        msg.ShortName,
 				MinGovDeposit:    msg.MinGovDeposit,
 				GovTimeInSeconds: msg.GovTimeInSeconds,
-				MintGenesisToken: msg.MintGenesisToken,
+				GenesisToken: msg.GenesisToken,
 			}
 		)
 
@@ -234,9 +234,9 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 		if !found {
 			return types.AppIdsDoesntExist
 		}
-		var mintGenesis []*types.MintGenesisToken
+		// var mintGenesis []types.MintGenesisToken
 
-		for _, data := range msg.MintGenesisToken {
+		for _, data := range msg.GenesisToken {
 
 			assetData, found := k.GetAsset(ctx, data.AssetId)
 			if !found {
@@ -254,18 +254,11 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 			if !checkfound {
 				return types.ErrorAssetAlreadyExistinApp
 			}
-			if data.IsgovToken {
+			if hasAsset == 0 && data.IsgovToken {
 				k.SetGenesisTokenForApp(ctx, msg.Id, data.AssetId)
 			}
-		}
-		for _, data := range msg.MintGenesisToken {
-			var minter types.MintGenesisToken
-			minter.AssetId = data.AssetId
-			minter.GenesisSupply = data.GenesisSupply
-			minter.IsgovToken = data.IsgovToken
-			minter.Recipient = data.Recipient
-			mintGenesis = append(mintGenesis, &minter)
-
+			appdata.GenesisToken = append(appdata.GenesisToken, data)
+			
 		}
 
 		var (
@@ -275,7 +268,7 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 				ShortName:        appdata.ShortName,
 				MinGovDeposit: appdata.MinGovDeposit,
 				GovTimeInSeconds: appdata.GovTimeInSeconds,
-				MintGenesisToken: mintGenesis,
+				GenesisToken: appdata.GenesisToken,
 			}
 		)
 
