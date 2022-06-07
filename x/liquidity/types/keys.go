@@ -9,7 +9,7 @@ import (
 
 const (
 	// ModuleName defines the module name
-	ModuleName = "liquidity"
+	ModuleName = "v1liquidity"
 
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName

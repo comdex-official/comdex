@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ModuleName   = "vault"
+	ModuleName   = "v1vault"
 	QuerierRoute = ModuleName
 	RouterKey    = ModuleName
 	StoreKey     = ModuleName
@@ -24,14 +24,14 @@ var (
 	VaultKeyPrefix                        = []byte{0x10}
 	UserVaultExtendedPairMappingKeyPrefix = []byte{0x12}
 	AppExtendedPairVaultMappingKeyPrefix  = []byte{0x13}
-	StableMintVaultKeyPrefix			  = []byte{0x14}
+	StableMintVaultKeyPrefix              = []byte{0x14}
 )
 
 func VaultKey(vaultId string) []byte {
-	return append(VaultKeyPrefix,vaultId...)
+	return append(VaultKeyPrefix, vaultId...)
 }
 func StableMintVaultKey(stableVaultId string) []byte {
-	return append(StableMintVaultKeyPrefix,stableVaultId...)
+	return append(StableMintVaultKeyPrefix, stableVaultId...)
 }
 
 func UserVaultExtendedPairMappingKey(address string) []byte {
