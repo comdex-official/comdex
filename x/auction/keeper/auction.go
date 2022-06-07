@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"time"
 
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -400,17 +399,17 @@ func (k Keeper) CloseDebtAuctions(ctx sdk.Context, appId uint64) error {
 	debtAuctions := k.GetDebtAuctions(ctx, appId)
 
 	for _, debtAuction := range debtAuctions {
-		fmt.Println("close auction")
+
 		if ctx.BlockTime().After(debtAuction.EndTime) {
-			fmt.Println(" insideclose auction")
+
 			if debtAuction.AuctionStatus == auctiontypes.AuctionStartNoBids {
-				fmt.Println(" inside restart auction")
+
 				err := k.RestartDebtAuction(ctx, appId, debtAuction)
 				if err != nil {
 					return err
 				}
 			} else {
-				fmt.Println("inside close______!")
+
 				err := k.CloseDebtAuction(ctx, debtAuction)
 				if err != nil {
 					return err
@@ -806,7 +805,7 @@ func (k Keeper) CloseDebtAuction(
 
 	//If there are bids
 	if debtAuction.AuctionStatus != auctiontypes.AuctionStartNoBids {
-		fmt.Println("hello_____1")
+
 		if auctiontypes.TestFlag == 1 {
 			//following 6 lines used for testing purpose
 			err := k.MintCoins(ctx, auctiontypes.ModuleName, debtAuction.CurrentBidAmount)
@@ -985,8 +984,7 @@ func (k Keeper) CloseDutchAuction(
 	outFlowToken := dutchAuction.OutflowTokenInitAmount.Sub(dutchAuction.OutflowTokenCurrentAmount)
 	sellOfHistory := outFlowToken.String() + dutchAuction.InflowTokenCurrentAmount.String()
 	lockedVault.SellOffHistory = append(lockedVault.SellOffHistory, sellOfHistory)
-	fmt.Println("zoo________________1111")
-	fmt.Println(lockedVault)
+
 	k.SetLockedVault(ctx, lockedVault)
 
 	dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
@@ -1255,7 +1253,7 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	}
 	dust := sdk.NewIntFromUint64(ExtendedPairVault.MinUsdValueLeft)
 	amountLeft := auction.OutflowTokenCurrentAmount.Amount.ToDec().Sub(slice.ToDec()).Mul(outFlowTokenCurrentPrice.ToDec()).TruncateInt()
-	fmt.Println("hey_________1", amountLeft, dust)
+
 	if owe.GT(tab) && !auction.IsLockedVaultAmountInZero {
 		slice = tab.Quo(auction.OutflowTokenCurrentPrice.Ceil().TruncateInt())
 		inFlowTokenCoin.Amount = auction.InflowTokenTargetAmount.Amount.Sub(auction.InflowTokenCurrentAmount.Amount)
