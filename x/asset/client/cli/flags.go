@@ -1,25 +1,27 @@
 package cli
 
 import (
-	"strings"
-	"strconv"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
+	"strconv"
+	"strings"
 )
 
 const (
-	flagLiquidationRatio       = "liquidation-ratio"
-	flagName                   = "name"
-	flagDenom                  = "denom"
-	flagDecimals               = "decimals"
-	flagCollateralWeight       = "collateralWeight"
-	flagLiquidationThreshold   = "liquidationThreshold"
-	flagIsBridgedAsset         = "isBridgedAsset"
-	flagbaseborrowrateasset1   = "baseBorrowRate1"
-	flagbaseborrowrateasset2   = "baseBorrowRate2"
-	flagbaselendrateasset1     = "baseLendRate1"
-	flagbaselendrateasset2     = "baseLendRate2"
-	flagModuleAcc              = "moduleAcc"
+	flagLiquidationRatio      = "liquidation-ratio"
+	flagName                  = "name"
+	flagDenom                 = "denom"
+	flagDecimals              = "decimals"
+	flagCollateralWeight      = "collateralWeight"
+	flagLiquidationThreshold  = "liquidationThreshold"
+	flagIsBridgedAsset        = "isBridgedAsset"
+	flagbaseborrowrateasset1  = "baseBorrowRate1"
+	flagbaseborrowrateasset2  = "baseBorrowRate2"
+	flagbaselendrateasset1    = "baseLendRate1"
+	flagbaselendrateasset2    = "baseLendRate2"
+	flagModuleAcc             = "moduleAcc"
+	FlagExtendedPairVaultFile = "extended-pair-vault-file"
 )
 
 func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
@@ -77,4 +79,33 @@ func ParseUint64SliceFromString(s string, seperator string) ([]uint64, error) {
 		parsedInts = append(parsedInts, parsed)
 	}
 	return parsedInts, nil
+}
+
+func FlagSetCreateExtendedPaiVault() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagExtendedPairVaultFile, "", "extended json file path")
+	return fs
+}
+
+type createExtPairVaultInputs struct {
+	AppMappingId        string `json:"app_mapping_id"`
+	PairId              string `json:"pair_id"`
+	LiquidationRatio    string `json:"liquidation_ratio"`
+	StabilityFee        string `json:"stability_fee"`
+	ClosingFee          string `json:"closing_fee"`
+	LiquidationPenalty  string `json:"liquidation_penalty"`
+	DrawDownFee         string `json:"draw_down_fee"`
+	IsVaultActive       string `json:"is_vault_active"`
+	DebtCeiling         string `json:"debt_ceiling"`
+	DebtFloor           string `json:"debt_floor"`
+	IsPsmPair           string `json:"is_psm_pair"`
+	MinCr               string `json:"min_cr"`
+	PairName            string `json:"pair_name"`
+	AssetOutOraclePrice string `json:"asset_out_oracle_price"`
+	AssetOutPrice       string `json:"asset_out_price"`
+	MinUsdValueLeft     string `json:"min_usd_value_left"`
+	Title               string
+	Description         string
+	Deposit             string
 }
