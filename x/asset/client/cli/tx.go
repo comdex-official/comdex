@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"fmt"
+	flag "github.com/spf13/pflag"
 	"strconv"
 	"time"
 
@@ -271,7 +273,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 				return err
 			}
 
-			asset_id, err := ParseUint64SliceFromString(args[0], ",")
+			assetId, err := ParseUint64SliceFromString(args[0], ",")
 			if err != nil {
 				return err
 			}
@@ -304,7 +306,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 			from := ctx.GetFromAddress()
 
 			var assets []types.ExtendedAsset
-			for i := range asset_id {
+			for i := range assetId {
 				newcollateralWeigt, err := sdk.NewDecFromStr(collateralWeight[i])
 				if err != nil {
 					return err
@@ -316,7 +318,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 				newisBridgedAsset := ParseBoolFromString(isBridgedAsset[i])
 
 				assets = append(assets, types.ExtendedAsset{
-					AssetId:              asset_id[i],
+					AssetId:              assetId[i],
 					CollateralWeight:     newcollateralWeigt,
 					LiquidationThreshold: newliquidationThreshold,
 					IsBridgedAsset:       newisBridgedAsset,
@@ -465,7 +467,7 @@ func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 				return err
 			}
 
-			pair_id, err := ParseUint64SliceFromString(args[0], ",")
+			pairId, err := ParseUint64SliceFromString(args[0], ",")
 			if err != nil {
 				return err
 			}
@@ -493,31 +495,31 @@ func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 			}
 
 			var pairs []types.ExtendedPairLend
-			for i := range pair_id {
+			for i := range pairId {
 
-				newbaseborrowrateasset1, err := sdk.NewDecFromStr(baseborrowrateasset1[i])
+				newBaseBorrowRateAsset1, err := sdk.NewDecFromStr(baseborrowrateasset1[i])
 				if err != nil {
 					return err
 				}
-				newbaseborrowrateasset2, err := sdk.NewDecFromStr(baseborrowrateasset2[i])
+				newBaseBorrowRateAsset2, err := sdk.NewDecFromStr(baseborrowrateasset2[i])
 				if err != nil {
 					return err
 				}
-				newbaselendrateasset1, err := sdk.NewDecFromStr(baselendrateasset1[i])
+				newBaseLendRateAsset1, err := sdk.NewDecFromStr(baselendrateasset1[i])
 				if err != nil {
 					return err
 				}
-				newbaselendrateasset2, err := sdk.NewDecFromStr(baselendrateasset2[i])
+				newBaseLendRateAsset2, err := sdk.NewDecFromStr(baselendrateasset2[i])
 				if err != nil {
 					return err
 				}
 				pairs = append(pairs, types.ExtendedPairLend{
-					PairId:                pair_id[i],
+					PairId:                pairId[i],
 					ModuleAcc:             moduleAccnt[i],
-					BaseBorrowRateAsset_1: newbaseborrowrateasset1,
-					BaseBorrowRateAsset_2: newbaseborrowrateasset2,
-					BaseLendRateAsset_1:   newbaselendrateasset1,
-					BaseLendRateAsset_2:   newbaselendrateasset2,
+					BaseBorrowRateAsset_1: newBaseBorrowRateAsset1,
+					BaseBorrowRateAsset_2: newBaseBorrowRateAsset2,
+					BaseLendRateAsset_1:   newBaseLendRateAsset1,
+					BaseLendRateAsset_2:   newBaseLendRateAsset2,
 				})
 			}
 
@@ -681,7 +683,7 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 	return cmd
 }
 
-func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
+func NewCmdSubmitAddAppMappingProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-app-mapping [name] [short_name] [min_gov_deposit] [gov_time_in_seconds]",
 		Args:  cobra.ExactArgs(4),
@@ -694,11 +696,11 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 
 			name := args[0]
 
-			short_name := args[1]
+			shortName := args[1]
 
-			min_gov_deposit := args[2]
+			minGovDeposit := args[2]
 
-			gov_time_in_seconds, err := time.ParseDuration(args[3] + "s")
+			govTimeIn, err := time.ParseDuration(args[3] + "s")
 			if err != nil {
 				return err
 			}
@@ -717,7 +719,7 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 
 			var aMap []types.AppMapping
 			var bMap []types.MintGenesisToken
-			new_min_gov_deposit, ok := sdk.NewIntFromString(min_gov_deposit)
+			newMinGovDeposit, ok := sdk.NewIntFromString(minGovDeposit)
 
 			if err != nil {
 				return err
@@ -727,10 +729,10 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 			}
 			aMap = append(aMap, types.AppMapping{
 				Name:             name,
-				ShortName:        short_name,
-				MinGovDeposit:    new_min_gov_deposit,
-				GovTimeInSeconds: gov_time_in_seconds.Seconds(),
-				GenesisToken: bMap,
+				ShortName:        shortName,
+				MinGovDeposit:    newMinGovDeposit,
+				GovTimeInSeconds: govTimeIn.Seconds(),
+				GenesisToken:     bMap,
 			})
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
@@ -766,7 +768,7 @@ func NewCmdSubmitAddAppMapingProposal() *cobra.Command {
 	return cmd
 }
 
-func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
+func NewCmdSubmitAddAssetMappingProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-asset-mapping [app_id] [asset_id] [genesis_supply] [isgovToken] [recipient]",
 		Args:  cobra.ExactArgs(5),
@@ -777,20 +779,20 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 				return err
 			}
 
-			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			appId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			asset_id, err := ParseUint64SliceFromString(args[1], ",")
+			assetId, err := ParseUint64SliceFromString(args[1], ",")
 			if err != nil {
 				return err
 			}
-			genesis_supply, err := ParseStringFromString(args[2], ",")
+			genesisSupply, err := ParseStringFromString(args[2], ",")
 			if err != nil {
 				return err
 			}
-			isgovToken, err := ParseStringFromString(args[3], ",")
+			isGovToken, err := ParseStringFromString(args[3], ",")
 			if err != nil {
 				return err
 			}
@@ -811,9 +813,9 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 
 			var aMap []types.AppMapping
 			var bMap []types.MintGenesisToken
-			for i := range asset_id {
-				newisgovToken := ParseBoolFromString(isgovToken[i])
-				newgenesis_supply, ok := sdk.NewIntFromString(genesis_supply[i])
+			for i := range assetId {
+				newIsGovToken := ParseBoolFromString(isGovToken[i])
+				newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply[i])
 				address, err := sdk.AccAddressFromBech32(recipient[i])
 				if err != nil {
 					panic(err)
@@ -823,15 +825,15 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 				}
 				var cmap types.MintGenesisToken
 
-				cmap.AssetId = asset_id[i]
-				cmap.GenesisSupply = &newgenesis_supply
-				cmap.IsgovToken = newisgovToken
+				cmap.AssetId = assetId[i]
+				cmap.GenesisSupply = &newGenesisSupply
+				cmap.IsgovToken = newIsGovToken
 				cmap.Recipient = address.String()
 
 				bMap = append(bMap, cmap)
 			}
 			aMap = append(aMap, types.AppMapping{
-				Id:               app_id,
+				Id:           appId,
 				GenesisToken: bMap,
 			})
 
@@ -870,195 +872,207 @@ func NewCmdSubmitAddAssetMapingProposal() *cobra.Command {
 
 func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-pairs-vault [app_mapping_id] [pair_id] [liquidation_ratio] [stability_fee] [closing_fee] [liquidation_penalty] [draw_down_fee] [is_vault_active] [debt_cieling] [debt_floor] [is_psm_pair] [min_cr] [pair_name] [asset_out_oracle_price] [asset_out_price] [min_usd_value_left]",
-		Args:  cobra.ExactArgs(16),
-		Short: "Add pairs vault",
+		Use:   "add-pairs-vault [flags]",
+		Args:  cobra.ExactArgs(0),
+		Short: "Add pairs vault ",
+		Long:  `Must provide path to a extended pair vault JSON file (--extended-pair-vault-file) describing the extended pair to be created`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			app_mapping_id, err := strconv.ParseUint(args[0], 10, 64)
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewBuildCreateExtendedPairVaultMsg(clientCtx, txf, cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			pair_id, err := ParseUint64SliceFromString(args[1], ",")
-			if err != nil {
-				return err
-			}
-
-			liquidation_ratio, err := ParseStringFromString(args[2], ",")
-			if err != nil {
-				return err
-			}
-
-			stability_fee, err := ParseStringFromString(args[3], ",")
-			if err != nil {
-				return err
-			}
-
-			closing_fee, err := ParseStringFromString(args[4], ",")
-			if err != nil {
-				return err
-			}
-
-			liquidation_penalty, err := ParseStringFromString(args[5], ",")
-			if err != nil {
-				return err
-			}
-
-			draw_down_fee, err := ParseStringFromString(args[6], ",")
-			if err != nil {
-				return err
-			}
-
-			is_vault_active, err := ParseStringFromString(args[7], ",")
-			if err != nil {
-				return err
-			}
-
-			debt_cieling, err := ParseStringFromString(args[8], ",")
-			if err != nil {
-				return err
-			}
-
-			debt_floor, err := ParseStringFromString(args[9], ",")
-			if err != nil {
-				return err
-			}
-
-			is_psm_pair, err := ParseStringFromString(args[10], ",")
-			if err != nil {
-				return err
-			}
-
-			min_cr, err := ParseStringFromString(args[11], ",")
-			if err != nil {
-				return err
-			}
-
-			pair_name, err := ParseStringFromString(args[12], ",")
-			if err != nil {
-				return err
-			}
-
-			asset_out_oracle_price, err := ParseStringFromString(args[13], ",")
-			if err != nil {
-				return err
-			}
-
-			asset_out_price, err := ParseUint64SliceFromString(args[14], ",")
-			if err != nil {
-				return err
-			}
-			min_usd_value_left, err := ParseUint64SliceFromString(args[15], ",")
-			if err != nil {
-				return err
-			}
-
-			title, err := cmd.Flags().GetString(cli.FlagTitle)
-			if err != nil {
-				return err
-			}
-
-			description, err := cmd.Flags().GetString(cli.FlagDescription)
-			if err != nil {
-				return err
-			}
-
-			from := clientCtx.GetFromAddress()
-
-			var pairs []types.ExtendedPairVault
-			for i := range pair_id {
-				newliquidation_ratio, err := sdk.NewDecFromStr(liquidation_ratio[i])
-				if err != nil {
-					return err
-				}
-				newstability_fee, err := sdk.NewDecFromStr(stability_fee[i])
-				if err != nil {
-					return err
-				}
-				newclosing_fee, err := sdk.NewDecFromStr(closing_fee[i])
-				if err != nil {
-					return err
-				}
-				newliquidation_penalty, err := sdk.NewDecFromStr(liquidation_penalty[i])
-				if err != nil {
-					return err
-				}
-				new_draw_down_fee, err := sdk.NewDecFromStr(draw_down_fee[i])
-				if err != nil {
-					return err
-				}
-				newmin_cr, err := sdk.NewDecFromStr(min_cr[i])
-				if err != nil {
-					return err
-				}
-				newis_vault_active := ParseBoolFromString(is_vault_active[i])
-				if err != nil {
-					return err
-				}
-				debt_ceiling, ok := sdk.NewIntFromString(debt_cieling[i])
-				if !ok {
-					return types.ErrorInvalidDebtCeiling
-				}
-				debt_floor, ok := sdk.NewIntFromString(debt_floor[i])
-				if !ok {
-					return types.ErrorInvalidDebtFloor
-				}
-				newis_psm_pair := ParseBoolFromString(is_psm_pair[i])
-				newasset_out_oracle_price := ParseBoolFromString(asset_out_oracle_price[i])
-				pairs = append(pairs, types.ExtendedPairVault{
-					AppMappingId:        app_mapping_id,
-					PairId:              pair_id[i],
-					LiquidationRatio:    newliquidation_ratio,
-					StabilityFee:        newstability_fee,
-					ClosingFee:          newclosing_fee,
-					LiquidationPenalty:  newliquidation_penalty,
-					DrawDownFee:         new_draw_down_fee,
-					IsVaultActive:       newis_vault_active,
-					DebtCeiling:         debt_ceiling,
-					DebtFloor:           debt_floor,
-					IsPsmPair:           newis_psm_pair,
-					MinCr:               newmin_cr,
-					PairName:            pair_name[i],
-					AssetOutOraclePrice: newasset_out_oracle_price,
-					AssetOutPrice:       asset_out_price[i],
-					MinUsdValueLeft:     min_usd_value_left[i],
-				})
-			}
-
-			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
-			if err != nil {
-				return err
-			}
-			deposit, err := sdk.ParseCoinsNormalized(depositStr)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewAddExtendedPairsVaultProposa(title, description, pairs)
-
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
 		},
 	}
 
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+	cmd.Flags().AddFlagSet(FlagSetCreateExtendedPaiVault())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	//flags.AddTxFlagsToCmd(cmd)
+	//_ = cmd.MarkFlagRequired(FlagExtendedPairVaultFile)
 
 	return cmd
+}
+
+func NewBuildCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	extPairVault, err := parseExtendPairVaultFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse extPairVault: %w", err)
+	}
+
+	appMappingId, err := strconv.ParseUint(extPairVault.AppMappingId, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	pairId, err := ParseUint64SliceFromString(extPairVault.PairId, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	liquidationRatio, err := ParseStringFromString(extPairVault.LiquidationRatio, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	stabilityFee, err := ParseStringFromString(extPairVault.StabilityFee, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	closingFee, err := ParseStringFromString(extPairVault.ClosingFee, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	liquidationPenalty, err := ParseStringFromString(extPairVault.LiquidationPenalty, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	drawDownFee, err := ParseStringFromString(extPairVault.DrawDownFee, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	isVaultActive, err := ParseStringFromString(extPairVault.IsVaultActive, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	debtCieling, err := ParseStringFromString(extPairVault.DebtCeiling, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	debtFloor, err := ParseStringFromString(extPairVault.DebtFloor, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	isPsmPair, err := ParseStringFromString(extPairVault.IsPsmPair, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	minCr, err := ParseStringFromString(extPairVault.MinCr, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	pairName, err := ParseStringFromString(extPairVault.PairName, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	assetOutOraclePrice, err := ParseStringFromString(extPairVault.AssetOutOraclePrice, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	assetOutPrice, err := ParseUint64SliceFromString(extPairVault.AssetOutPrice, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	minUsdValueLeft, err := ParseUint64SliceFromString(extPairVault.MinUsdValueLeft, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	title, err := ParseStringFromString(extPairVault.Title, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	description, err := ParseStringFromString(extPairVault.Description, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	from := clientCtx.GetFromAddress()
+
+	var pairs []types.ExtendedPairVault
+	for i := range pairId {
+		newLiquidationRatio, err := sdk.NewDecFromStr(liquidationRatio[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		newStabilityFee, err := sdk.NewDecFromStr(stabilityFee[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		newClosingFee, err := sdk.NewDecFromStr(closingFee[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		newLiquidationPenalty, err := sdk.NewDecFromStr(liquidationPenalty[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		newDrawDownFee, err := sdk.NewDecFromStr(drawDownFee[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		newMinCr, err := sdk.NewDecFromStr(minCr[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		newIsVaultActive := ParseBoolFromString(isVaultActive[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		debtCeiling, ok := sdk.NewIntFromString(debtCieling[i])
+		if !ok {
+			return txf, nil, types.ErrorInvalidDebtCeiling
+		}
+		newDebtFloor, ok := sdk.NewIntFromString(debtFloor[i])
+		if !ok {
+			return txf, nil, types.ErrorInvalidDebtFloor
+		}
+		newIsPsmPair := ParseBoolFromString(isPsmPair[i])
+		newAssetOutOraclePrice := ParseBoolFromString(assetOutOraclePrice[i])
+		pairs = append(pairs, types.ExtendedPairVault{
+			AppMappingId:        appMappingId,
+			PairId:              pairId[i],
+			LiquidationRatio:    newLiquidationRatio,
+			StabilityFee:        newStabilityFee,
+			ClosingFee:          newClosingFee,
+			LiquidationPenalty:  newLiquidationPenalty,
+			DrawDownFee:         newDrawDownFee,
+			IsVaultActive:       newIsVaultActive,
+			DebtCeiling:         debtCeiling,
+			DebtFloor:           newDebtFloor,
+			IsPsmPair:           newIsPsmPair,
+			MinCr:               newMinCr,
+			PairName:            pairName[i],
+			AssetOutOraclePrice: newAssetOutOraclePrice,
+			AssetOutPrice:       assetOutPrice[i],
+			MinUsdValueLeft:     minUsdValueLeft[i],
+		})
+	}
+
+	deposit, err := sdk.ParseCoinsNormalized(extPairVault.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewAddExtendedPairsVaultProposa(title[0], description[0], pairs)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+	return txf, msg, nil
 }
