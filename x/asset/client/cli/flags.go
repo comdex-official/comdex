@@ -22,6 +22,7 @@ const (
 	flagbaselendrateasset2    = "baseLendRate2"
 	flagModuleAcc             = "moduleAcc"
 	FlagExtendedPairVaultFile = "extended-pair-vault-file"
+	FlagAddAssetMappingFile   = "add-asset-mapping-file"
 )
 
 func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
@@ -81,10 +82,17 @@ func ParseUint64SliceFromString(s string, seperator string) ([]uint64, error) {
 	return parsedInts, nil
 }
 
-func FlagSetCreateExtendedPaiVault() *flag.FlagSet {
+func FlagSetCreateExtendedPairVault() *flag.FlagSet {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 
 	fs.String(FlagExtendedPairVaultFile, "", "extended json file path")
+	return fs
+}
+
+func FlagSetCreateAssetMapping() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagAddAssetMappingFile, "", "add asset mapping json file path")
 	return fs
 }
 
@@ -108,4 +116,15 @@ type createExtPairVaultInputs struct {
 	Title               string
 	Description         string
 	Deposit             string
+}
+
+type createAddAssetMappingInputs struct {
+	AppId         string `json:"app_id"`
+	AssetId       string `json:"asset_id"`
+	GenesisSupply string `json:"genesis_supply"`
+	IsGovToken    string `json:"is_gov_token"`
+	Recipient     string `json:"recipient"`
+	Title         string
+	Description   string
+	Deposit       string
 }
