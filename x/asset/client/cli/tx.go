@@ -18,7 +18,7 @@ import (
 
 func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-assets [name] [Denom] [Decimals] [isOnchain]",
+		Use:   "add-assets [name] [Denom] [Decimals] [isOnChain]",
 		Args:  cobra.ExactArgs(4),
 		Short: "Submit assets",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -770,102 +770,31 @@ func NewCmdSubmitAddAppMappingProposal() *cobra.Command {
 
 func NewCmdSubmitAddAssetMappingProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-asset-mapping [app_id] [asset_id] [genesis_supply] [isgovToken] [recipient]",
-		Args:  cobra.ExactArgs(5),
+		Use:   "add-asset-mapping [flags]",
+		Args:  cobra.ExactArgs(0),
 		Short: "Add asset mapping",
+		Long:  `Must provide path to a add asset mapping JSON file (--add-asset-mapping-file) describing the asset mapping to be created`,
 		RunE: func(cmd *cobra.Command, args []string) error {
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewCreateAssetMappingMsg(clientCtx, txf, cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			assetId, err := ParseUint64SliceFromString(args[1], ",")
-			if err != nil {
-				return err
-			}
-			genesisSupply, err := ParseStringFromString(args[2], ",")
-			if err != nil {
-				return err
-			}
-			isGovToken, err := ParseStringFromString(args[3], ",")
-			if err != nil {
-				return err
-			}
-			recipient, err := ParseStringFromString(args[4], ",")
-			if err != nil {
-				return err
-			}
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
 
-			title, err := cmd.Flags().GetString(cli.FlagTitle)
-			if err != nil {
-				return err
-			}
-
-			description, err := cmd.Flags().GetString(cli.FlagDescription)
-			if err != nil {
-				return err
-			}
-
-			var aMap []types.AppMapping
-			var bMap []types.MintGenesisToken
-			for i := range assetId {
-				newIsGovToken := ParseBoolFromString(isGovToken[i])
-				newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply[i])
-				address, err := sdk.AccAddressFromBech32(recipient[i])
-				if err != nil {
-					panic(err)
-				}
-				if !ok {
-					return types.ErrorInvalidGenesisSupply
-				}
-				var cmap types.MintGenesisToken
-
-				cmap.AssetId = assetId[i]
-				cmap.GenesisSupply = &newGenesisSupply
-				cmap.IsgovToken = newIsGovToken
-				cmap.Recipient = address.String()
-
-				bMap = append(bMap, cmap)
-			}
-			aMap = append(aMap, types.AppMapping{
-				Id:           appId,
-				GenesisToken: bMap,
-			})
-
-			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
-			if err != nil {
-				return err
-			}
-			deposit, err := sdk.ParseCoinsNormalized(depositStr)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewAddAssetMapingProposa(title, description, aMap)
-
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
-			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
 
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+	cmd.Flags().AddFlagSet(FlagSetCreateAssetMapping())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
 
 	return cmd
 }
@@ -884,7 +813,7 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 
 			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
-			txf, msg, err := NewBuildCreateExtendedPairVaultMsg(clientCtx, txf, cmd.Flags())
+			txf, msg, err := NewCreateExtendedPairVaultMsg(clientCtx, txf, cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -893,15 +822,13 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().AddFlagSet(FlagSetCreateExtendedPaiVault())
+	cmd.Flags().AddFlagSet(FlagSetCreateExtendedPairVault())
 	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
-	//flags.AddTxFlagsToCmd(cmd)
-	//_ = cmd.MarkFlagRequired(FlagExtendedPairVaultFile)
 
 	return cmd
 }
 
-func NewBuildCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
 	extPairVault, err := parseExtendPairVaultFlags(fs)
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse extPairVault: %w", err)
@@ -987,14 +914,12 @@ func NewBuildCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory
 		return txf, nil, err
 	}
 
-	title, err := ParseStringFromString(extPairVault.Title, ",")
-	if err != nil {
-		return txf, nil, err
+	if extPairVault.Title == "" {
+		return txf, nil, types.ErrorProposalTitleMissing
 	}
 
-	description, err := ParseStringFromString(extPairVault.Description, ",")
-	if err != nil {
-		return txf, nil, err
+	if extPairVault.Description == "" {
+		return txf, nil, types.ErrorProposalDescriptionMissing
 	}
 
 	from := clientCtx.GetFromAddress()
@@ -1064,9 +989,89 @@ func NewBuildCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory
 		return txf, nil, err
 	}
 
-	content := types.NewAddExtendedPairsVaultProposa(title[0], description[0], pairs)
+	content := types.NewAddExtendedPairsVaultProposa(extPairVault.Title, extPairVault.Description, pairs)
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+	return txf, msg, nil
+}
+
+func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	assetMapping, err := parseAssetMappingFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse assetMapping: %w", err)
+	}
+
+	appId, err := strconv.ParseUint(assetMapping.AppId, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	assetId, err := ParseUint64SliceFromString(assetMapping.AssetId, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	genesisSupply, err := ParseStringFromString(assetMapping.GenesisSupply, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	isGovToken, err := ParseStringFromString(assetMapping.IsGovToken, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	recipient, err := ParseStringFromString(assetMapping.Recipient, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if assetMapping.Title == "" {
+		return txf, nil, types.ErrorProposalTitleMissing
+	}
+
+	if assetMapping.Description == "" {
+		return txf, nil, types.ErrorProposalDescriptionMissing
+	}
+
+	var aMap []types.AppMapping
+	var bMap []types.MintGenesisToken
+	for i := range assetId {
+		newIsGovToken := ParseBoolFromString(isGovToken[i])
+		newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply[i])
+		address, err := sdk.AccAddressFromBech32(recipient[i])
+		if err != nil {
+			panic(err)
+		}
+		if !ok {
+			return txf, nil, types.ErrorInvalidGenesisSupply
+		}
+		var cmap types.MintGenesisToken
+
+		cmap.AssetId = assetId[i]
+		cmap.GenesisSupply = &newGenesisSupply
+		cmap.IsgovToken = newIsGovToken
+		cmap.Recipient = address.String()
+
+		bMap = append(bMap, cmap)
+	}
+	aMap = append(aMap, types.AppMapping{
+		Id:           appId,
+		GenesisToken: bMap,
+	})
+
+	deposit, err := sdk.ParseCoinsNormalized(assetMapping.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewAddAssetMapingProposa(assetMapping.Title, assetMapping.Description, aMap)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
 	if err != nil {
 		return txf, nil, err
 	}
