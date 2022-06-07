@@ -9,20 +9,21 @@ import (
 )
 
 const (
-	flagLiquidationRatio      = "liquidation-ratio"
-	flagName                  = "name"
-	flagDenom                 = "denom"
-	flagDecimals              = "decimals"
-	flagCollateralWeight      = "collateralWeight"
-	flagLiquidationThreshold  = "liquidationThreshold"
-	flagIsBridgedAsset        = "isBridgedAsset"
-	flagbaseborrowrateasset1  = "baseBorrowRate1"
-	flagbaseborrowrateasset2  = "baseBorrowRate2"
-	flagbaselendrateasset1    = "baseLendRate1"
-	flagbaselendrateasset2    = "baseLendRate2"
-	flagModuleAcc             = "moduleAcc"
-	FlagExtendedPairVaultFile = "extended-pair-vault-file"
-	FlagAddAssetMappingFile   = "add-asset-mapping-file"
+	flagLiquidationRatio        = "liquidation-ratio"
+	flagName                    = "name"
+	flagDenom                   = "denom"
+	flagDecimals                = "decimals"
+	flagCollateralWeight        = "collateralWeight"
+	flagLiquidationThreshold    = "liquidationThreshold"
+	flagIsBridgedAsset          = "isBridgedAsset"
+	flagBaseBorrowRateAsset1    = "baseBorrowRate1"
+	flagBaseBorrowRateAsset2    = "baseBorrowRate2"
+	flagBaseLendRateAsset1      = "baseLendRate1"
+	flagBaseLendRateAsset2      = "baseLendRate2"
+	flagModuleAcc               = "moduleAcc"
+	FlagExtendedPairVaultFile   = "extended-pair-vault-file"
+	FlagAddAssetMappingFile     = "add-asset-mapping-file"
+	FlagAddWhiteListedPairsFile = "add-white-whitelisted-pairs-file"
 )
 
 func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
@@ -96,6 +97,13 @@ func FlagSetCreateAssetMapping() *flag.FlagSet {
 	return fs
 }
 
+func FlagSetCreateWhiteListedPairsMapping() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagAddWhiteListedPairsFile, "", "add white listed asset pairs json file path")
+	return fs
+}
+
 type createExtPairVaultInputs struct {
 	AppMappingId        string `json:"app_mapping_id"`
 	PairId              string `json:"pair_id"`
@@ -127,4 +135,16 @@ type createAddAssetMappingInputs struct {
 	Title         string
 	Description   string
 	Deposit       string
+}
+
+type createAddWhiteListedPairsInputs struct {
+	PairId               string `json:"pair_id"`
+	ModuleAccount        string `json:"module-account"`
+	BaseBorrowRateAsset1 string `json:"base_borrow_rate_asset_1"`
+	BaseBorrowRateAsset2 string `json:"base_borrow_rate_asset_2"`
+	BaseLendRateAsset1   string `json:"base_lend_rate_asset_1"`
+	BaseLendRateAsset2   string `json:"base_lend_rate_asset_2"`
+	Title                string
+	Description          string
+	Deposit              string
 }

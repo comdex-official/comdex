@@ -458,112 +458,41 @@ func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 
 func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-lend-asset-pairs [pair_id] [Module-Account] [Base_Borrow_Rate_Asset1] [Base_Borrow_Rate_Asset2] [Base_Lend_Rate_Asset1] [Base_Lend_Rate_Asset2]",
+		Use:   "add-lend-asset-pairs [flags]",
 		Short: "Add lend asset pairs",
-		Args:  cobra.ExactArgs(6),
+		Long: `Must provide path to a add white listed pairs JSON file (--add-white-whitelisted-pairs-file) describing the white listed pairs to be created
+Sample json content
+{
+	"pair_id" :"",
+	"module-account" :"",
+	"base_borrow_rate_asset_1" :"",
+	"base_borrow_rate_asset_2" :"",
+	"base_lend_rate_asset_1" :"",
+	"base_lend_rate_asset_2" :"",
+	"title" :"",
+	"description" :"",
+	"deposit" :""
+}`,
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			pairId, err := ParseUint64SliceFromString(args[0], ",")
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewCreateWhiteListedPairsMsg(clientCtx, txf, cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			moduleAccnt, err := ParseStringFromString(args[1], ",")
-			if err != nil {
-				return err
-			}
-
-			baseborrowrateasset1, err := ParseStringFromString(args[2], ",")
-			if err != nil {
-				return err
-			}
-			baseborrowrateasset2, err := ParseStringFromString(args[3], ",")
-			if err != nil {
-				return err
-			}
-			baselendrateasset1, err := ParseStringFromString(args[4], ",")
-			if err != nil {
-				return err
-			}
-			baselendrateasset2, err := ParseStringFromString(args[5], ",")
-			if err != nil {
-				return err
-			}
-
-			var pairs []types.ExtendedPairLend
-			for i := range pairId {
-
-				newBaseBorrowRateAsset1, err := sdk.NewDecFromStr(baseborrowrateasset1[i])
-				if err != nil {
-					return err
-				}
-				newBaseBorrowRateAsset2, err := sdk.NewDecFromStr(baseborrowrateasset2[i])
-				if err != nil {
-					return err
-				}
-				newBaseLendRateAsset1, err := sdk.NewDecFromStr(baselendrateasset1[i])
-				if err != nil {
-					return err
-				}
-				newBaseLendRateAsset2, err := sdk.NewDecFromStr(baselendrateasset2[i])
-				if err != nil {
-					return err
-				}
-				pairs = append(pairs, types.ExtendedPairLend{
-					PairId:                pairId[i],
-					ModuleAcc:             moduleAccnt[i],
-					BaseBorrowRateAsset_1: newBaseBorrowRateAsset1,
-					BaseBorrowRateAsset_2: newBaseBorrowRateAsset2,
-					BaseLendRateAsset_1:   newBaseLendRateAsset1,
-					BaseLendRateAsset_2:   newBaseLendRateAsset2,
-				})
-			}
-
-			title, err := cmd.Flags().GetString(cli.FlagTitle)
-			if err != nil {
-				return err
-			}
-
-			description, err := cmd.Flags().GetString(cli.FlagDescription)
-			if err != nil {
-				return err
-			}
-
-			from := clientCtx.GetFromAddress()
-
-			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
-			if err != nil {
-				return err
-			}
-			deposit, err := sdk.ParseCoinsNormalized(depositStr)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewAddWhitelistedPairsProposal(title, description, pairs)
-
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
 		},
 	}
 
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+	cmd.Flags().AddFlagSet(FlagSetCreateWhiteListedPairsMapping())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
 
 	return cmd
 }
@@ -587,38 +516,38 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			baseborrowrateasset1, err := cmd.Flags().GetString(flagbaseborrowrateasset1)
+			baseBorrowRateAsset1, err := cmd.Flags().GetString(flagBaseBorrowRateAsset1)
 			if err != nil {
 				return err
 			}
-			newbaseborrowrateasset1, err := sdk.NewDecFromStr(baseborrowrateasset1)
-			if err != nil {
-				return err
-			}
-
-			baseborrowrateasset2, err := cmd.Flags().GetString(flagbaseborrowrateasset2)
-			if err != nil {
-				return err
-			}
-			newbaseborrowrateasset2, err := sdk.NewDecFromStr(baseborrowrateasset2)
+			newBaseBorrowRateAsset1, err := sdk.NewDecFromStr(baseBorrowRateAsset1)
 			if err != nil {
 				return err
 			}
 
-			baselendrateasset1, err := cmd.Flags().GetString(flagbaselendrateasset1)
+			baseBorrowRateAsset2, err := cmd.Flags().GetString(flagBaseBorrowRateAsset2)
 			if err != nil {
 				return err
 			}
-			newbaselendrateasset1, err := sdk.NewDecFromStr(baselendrateasset1)
+			newBaseBorrowRateAsset2, err := sdk.NewDecFromStr(baseBorrowRateAsset2)
 			if err != nil {
 				return err
 			}
 
-			baselendrateasset2, err := cmd.Flags().GetString(flagbaselendrateasset2)
+			baseLendRateAsset1, err := cmd.Flags().GetString(flagBaseLendRateAsset1)
 			if err != nil {
 				return err
 			}
-			newbaselendrateasset2, err := sdk.NewDecFromStr(baselendrateasset2)
+			newBaseLendRateAsset1, err := sdk.NewDecFromStr(baseLendRateAsset1)
+			if err != nil {
+				return err
+			}
+
+			baseLendRateAsset2, err := cmd.Flags().GetString(flagBaseLendRateAsset2)
+			if err != nil {
+				return err
+			}
+			newBaseLendRateAsset2, err := sdk.NewDecFromStr(baseLendRateAsset2)
 			if err != nil {
 				return err
 			}
@@ -626,10 +555,10 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 			pair := types.ExtendedPairLend{
 				Id:                    id,
 				ModuleAcc:             moduleAcc,
-				BaseBorrowRateAsset_1: newbaseborrowrateasset1,
-				BaseBorrowRateAsset_2: newbaseborrowrateasset2,
-				BaseLendRateAsset_1:   newbaselendrateasset1,
-				BaseLendRateAsset_2:   newbaselendrateasset2,
+				BaseBorrowRateAsset_1: newBaseBorrowRateAsset1,
+				BaseBorrowRateAsset_2: newBaseBorrowRateAsset2,
+				BaseLendRateAsset_1:   newBaseLendRateAsset1,
+				BaseLendRateAsset_2:   newBaseLendRateAsset2,
 			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
@@ -672,10 +601,10 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
 	cmd.Flags().String(flagModuleAcc, "", "moduleAcc")
-	cmd.Flags().String(flagbaseborrowrateasset1, "", "baseborrowrateasset1")
-	cmd.Flags().String(flagbaseborrowrateasset2, "", "baseborrowrateasset2")
-	cmd.Flags().String(flagbaselendrateasset1, "", "baselendrateasset1")
-	cmd.Flags().String(flagbaselendrateasset2, "", "baselendrateasset2")
+	cmd.Flags().String(flagBaseBorrowRateAsset1, "", "baseborrowrateasset1")
+	cmd.Flags().String(flagBaseBorrowRateAsset2, "", "baseborrowrateasset2")
+	cmd.Flags().String(flagBaseLendRateAsset1, "", "baselendrateasset1")
+	cmd.Flags().String(flagBaseLendRateAsset2, "", "baselendrateasset2")
 
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
@@ -773,7 +702,18 @@ func NewCmdSubmitAddAssetMappingProposal() *cobra.Command {
 		Use:   "add-asset-mapping [flags]",
 		Args:  cobra.ExactArgs(0),
 		Short: "Add asset mapping",
-		Long:  `Must provide path to a add asset mapping JSON file (--add-asset-mapping-file) describing the asset mapping to be created`,
+		Long: `Must provide path to a add asset mapping JSON file (--add-asset-mapping-file) describing the asset mapping to be created
+Sample json content
+{
+	"app_id" :"",
+	"asset_id" :"",
+	"genesis_supply" :"",
+	"is_gov_token" :"",
+	"recipient" :"",
+	"title" :"",
+	"description" :"",
+	"deposit" :""
+}`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -804,7 +744,31 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 		Use:   "add-pairs-vault [flags]",
 		Args:  cobra.ExactArgs(0),
 		Short: "Add pairs vault ",
-		Long:  `Must provide path to a extended pair vault JSON file (--extended-pair-vault-file) describing the extended pair to be created`,
+		Long: `Must provide path to a extended pair vault JSON file (--extended-pair-vault-file) describing the extended pair to be created
+Sample json content
+{
+	"app_mapping_id" : "",
+	"pair_id" : "",
+	"liquidation_ratio" : "",
+	"stability_fee" : "",
+	"closing_fee" : "",
+	"liquidation_penalty" : "",
+	"draw_down_fee" : "",
+	"is_vault_active" : "",
+	"debt_ceiling" : "",
+	"debt_floor" : "",
+	"is_psm_pair" : "",
+	"min_cr" : "",
+	"pair_name" : "",
+	"asset_out_oracle_price" : "",
+	"asset_out_price" : "",
+	"min_usd_value_left" : "",
+	"title" :"",
+	"description" :"",
+	"deposit":""
+	
+	
+}`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -1072,6 +1036,88 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 	content := types.NewAddAssetMapingProposa(assetMapping.Title, assetMapping.Description, aMap)
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+	return txf, msg, nil
+}
+
+func NewCreateWhiteListedPairsMsg(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	whiteListedPairs, err := parseWhiteListedPairsFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse whiteListedPairs: %w", err)
+	}
+
+	pairId, err := ParseUint64SliceFromString(whiteListedPairs.PairId, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	moduleAccount, err := ParseStringFromString(whiteListedPairs.ModuleAccount, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	baseBorrowRateAsset1, err := ParseStringFromString(whiteListedPairs.BaseBorrowRateAsset1, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	baseBorrowRateAsset2, err := ParseStringFromString(whiteListedPairs.BaseBorrowRateAsset2, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	baseLendRateAsset1, err := ParseStringFromString(whiteListedPairs.BaseLendRateAsset1, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	baseLendRateAsset2, err := ParseStringFromString(whiteListedPairs.BaseLendRateAsset2, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	var pairs []types.ExtendedPairLend
+	for i := range pairId {
+
+		newBaseBorrowRateAsset1, err := sdk.NewDecFromStr(baseBorrowRateAsset1[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		newBaseBorrowRateAsset2, err := sdk.NewDecFromStr(baseBorrowRateAsset2[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		newBaseLendRateAsset1, err := sdk.NewDecFromStr(baseLendRateAsset1[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		newBaseLendRateAsset2, err := sdk.NewDecFromStr(baseLendRateAsset2[i])
+		if err != nil {
+			return txf, nil, err
+		}
+		pairs = append(pairs, types.ExtendedPairLend{
+			PairId:                pairId[i],
+			ModuleAcc:             moduleAccount[i],
+			BaseBorrowRateAsset_1: newBaseBorrowRateAsset1,
+			BaseBorrowRateAsset_2: newBaseBorrowRateAsset2,
+			BaseLendRateAsset_1:   newBaseLendRateAsset1,
+			BaseLendRateAsset_2:   newBaseLendRateAsset2,
+		})
+	}
+
+	from := clientCtx.GetFromAddress()
+
+	deposit, err := sdk.ParseCoinsNormalized(whiteListedPairs.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewAddWhitelistedPairsProposal(whiteListedPairs.Title, whiteListedPairs.Description, pairs)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {
 		return txf, nil, err
 	}
