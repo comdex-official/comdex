@@ -105,4 +105,7 @@ type createExtPairVaultInputs struct {
 	AssetOutOraclePrice string `json:"asset_out_oracle_price"`
 	AssetOutPrice       string `json:"asset_out_price"`
 	MinUsdValueLeft     string `json:"min_usd_value_left"`
+	Title               string
+	Description         string
+	Deposit             string
 }

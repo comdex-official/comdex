@@ -895,12 +895,8 @@ func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
 	}
 
 	cmd.Flags().AddFlagSet(FlagSetCreateExtendedPaiVault())
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	//cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
 	flags.AddTxFlagsToCmd(cmd)
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
 	_ = cmd.MarkFlagRequired(FlagExtendedPairVaultFile)
 
 	return cmd
@@ -992,12 +988,12 @@ func NewBuildCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory
 		return txf, nil, err
 	}
 
-	title, err := fs.GetString(cli.FlagTitle)
+	title, err := ParseStringFromString(extPairVault.Title, ",")
 	if err != nil {
 		return txf, nil, err
 	}
 
-	description, err := fs.GetString(cli.FlagDescription)
+	description, err := ParseStringFromString(extPairVault.Description, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -1064,16 +1060,12 @@ func NewBuildCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory
 		})
 	}
 
-	depositStr, err := fs.GetString(cli.FlagDeposit)
-	if err != nil {
-		return txf, nil, err
-	}
-	deposit, err := sdk.ParseCoinsNormalized(depositStr)
+	deposit, err := sdk.ParseCoinsNormalized(extPairVault.Deposit)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	content := types.NewAddExtendedPairsVaultProposa(title, description, pairs)
+	content := types.NewAddExtendedPairsVaultProposa(title[0], description[0], pairs)
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {
