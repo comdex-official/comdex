@@ -387,12 +387,13 @@ func (m *MsgCreateStableMintRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgDepositStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int) *MsgDepositStableMintRequest {
+func NewMsgDepositStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int, stablemint_id string) *MsgDepositStableMintRequest {
 	return &MsgDepositStableMintRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
 		ExtendedPairVaultId: extended_pair_vault_id,
 		Amount:              amount,
+		StableVaultId: stablemint_id,
 	}
 }
 
@@ -437,12 +438,13 @@ func (m *MsgDepositStableMintRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgWithdrawStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int) *MsgWithdrawStableMintRequest {
+func NewMsgWithdrawStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int, stablemint_id string) *MsgWithdrawStableMintRequest {
 	return &MsgWithdrawStableMintRequest{
 		From:                from.String(),
 		AppMappingId:        app_mapping_id,
 		ExtendedPairVaultId: extended_pair_vault_id,
 		Amount:              amount,
+		StableVaultId:       stablemint_id,
 	}
 }
 

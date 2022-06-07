@@ -49,6 +49,7 @@ type MsgAddExtendedPairsVault struct {
 	PairName            string  `json:"pair_name"`
 	AssetOutOraclePrice bool    `json:"asset_out_oracle_price"`
 	AssetOutPrice       uint64  `json:"asset_out_price"`
+	MinUsdValueLeft     uint64  `json:"min_usd_value_left"`
 }
 
 type MsgSetCollectorLookupTable struct {
@@ -82,6 +83,7 @@ type MsgUpdateLsrInPairsVault struct {
 	MinCr              sdk.Dec `json:"min_cr"`
 	DebtCeiling        uint64  `json:"debt_ceiling"`
 	DebtFloor          uint64  `json:"debt_floor"`
+	MinUsdValueLeft     uint64  `json:"min_usd_value_left"`
 }
 
 type MsgUpdateLsrInCollectorLookupTable struct {

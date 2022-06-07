@@ -657,7 +657,7 @@ func (q *queryServer) QueryTVLLockedByAppOfAllExtendedPairs(c context.Context, r
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.AppId)
+		return &types.QueryTVLLockedByAppOfAllExtendedPairsResponse{}, nil
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		extPairVault, _ := q.GetPairsVault(ctx, data.ExtendedPairId)
@@ -704,7 +704,7 @@ func (q *queryServer) QueryTotalTVLByApp(c context.Context, req *types.QueryTota
 		rate, _ := q.GetPriceForAsset(ctx, pairId.AssetIn)
 		locked = data.CollateralLockedAmount.Mul(sdk.NewIntFromUint64(rate)).Add(locked)
 	}
-	locked= locked.Quo(sdk.NewInt(1000000))
+	locked = locked.Quo(sdk.NewInt(1000000))
 
 	return &types.QueryTotalTVLByAppResponse{
 		CollateralLocked: locked,
@@ -716,15 +716,15 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx       = sdk.UnwrapSDKContext(c)
-		vaultsIds []string
-		totalLocked = sdk.ZeroInt()
-	    totalDue = sdk.ZeroInt()
-	    availableBorrow = sdk.ZeroInt()
-	    averageCr = sdk.ZeroDec()
-	    totalCr = sdk.ZeroDec()
+		ctx             = sdk.UnwrapSDKContext(c)
+		vaultsIds       []string
+		totalLocked     = sdk.ZeroInt()
+		totalDue        = sdk.ZeroInt()
+		availableBorrow = sdk.ZeroInt()
+		averageCr       = sdk.ZeroDec()
+		totalCr         = sdk.ZeroDec()
 	)
-	
+
 	_, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
@@ -734,7 +734,11 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
-	userVaultAssetData, _ := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
+
+	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
+	if !found {
+		return &types.QueryUserMyPositionByAppResponse{}, nil
+	}
 
 	for _, data := range userVaultAssetData.UserVaultApp {
 		if data.AppMappingId == req.AppId {
@@ -744,9 +748,15 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 			}
 		}
 	}
+	if len(vaultsIds) == 0{
+		return &types.QueryUserMyPositionByAppResponse{}, nil
+	}
 
 	for _, data := range vaultsIds {
-		vault, _ := q.GetVault(ctx, data)
+		vault, found := q.GetVault(ctx, data)
+		if !found {
+			return &types.QueryUserMyPositionByAppResponse{}, nil
+		}
 
 		extPairVault, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
@@ -767,7 +777,6 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 			return nil, err
 
 		}
-
 
 		totalCr = collaterlizationRatio.Add(totalCr)
 		var minCr = extPairVault.MinCr

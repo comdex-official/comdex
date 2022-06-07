@@ -288,7 +288,7 @@ func (q *queryServer) QueryTokenGov(c context.Context, req *types.QueryTokenGovR
 	if !found {
 		return nil, types.AppIdsDoesntExist
 	}
-	for _, data := range appData.MintGenesisToken {
+	for _, data := range appData.GenesisToken{
 		if data.IsgovToken {
 			asset_id = data.AssetId
 		}
