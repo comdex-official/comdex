@@ -159,7 +159,8 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 			MinCr:               msg.MinCr,
 			PairName:            msg.PairName,
 			AssetOutOraclePrice: msg.AssetOutOraclePrice,
-			AssetOutPrice:      msg.AssetOutPrice,
+			AssetOutPrice:       msg.AssetOutPrice,
+			MinUsdValueLeft:     msg.MinUsdValueLeft,
 		}
 
 		k.SetPairsVaultID(ctx, app.Id)
@@ -168,7 +169,7 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 	return nil
 }
 
-func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, AppMappingId, PairId uint64, LiquidationRatio, StabilityFee, ClosingFee, LiquidationPenalty, DrawDownFee sdk.Dec, IsVaultActive bool, debtCeiling, debtFloor uint64, IsPsmPair bool, MinCr sdk.Dec, PairName string, AssetOutOraclePrice bool, AssetOutPrice uint64) error {
+func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, AppMappingId, PairId uint64, LiquidationRatio, StabilityFee, ClosingFee, LiquidationPenalty, DrawDownFee sdk.Dec, IsVaultActive bool, debtCeiling, debtFloor uint64, IsPsmPair bool, MinCr sdk.Dec, PairName string, AssetOutOraclePrice bool, AssetOutPrice, MinUsdValueLeft uint64) error {
 
 	DebtCeiling := sdk.NewInt(int64(debtCeiling))
 	DebtFloor := sdk.NewInt(int64(debtFloor))
@@ -222,6 +223,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, AppMappingId,
 		PairName:            PairName,
 		AssetOutOraclePrice: AssetOutOraclePrice,
 		AssetOutPrice:      AssetOutPrice,
+		MinUsdValueLeft:    MinUsdValueLeft,
 	}
 
 	k.SetPairsVaultID(ctx, app.Id)
@@ -269,7 +271,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, AppMappi
 }
 
 func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id uint64, liq_ratio, stab_fee, close_fee, penalty, 
-	draw_down_fee, min_cr sdk.Dec, debtCeiling, debtFloor uint64) error {
+	draw_down_fee, min_cr sdk.Dec, debtCeiling, debtFloor , minUsdValueLeft uint64) error {
 
 	var ExtPairVaultData types.ExtendedPairVault
 	pairVaults, found := k.GetPairsVaults(ctx)
@@ -296,6 +298,7 @@ func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id u
 			ExtPairVaultData.PairName = data.PairName
 			ExtPairVaultData.AssetOutOraclePrice = data.AssetOutOraclePrice
 			ExtPairVaultData.AssetOutPrice = data.AssetOutPrice
+			ExtPairVaultData.MinUsdValueLeft = minUsdValueLeft
 		}
 	}
 	if count == 0 {

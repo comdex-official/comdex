@@ -559,6 +559,7 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, ass
 			Collector.AppId = data.AppId
 			Collector.BidFactor = data.BidFactor
 			Collector.DebtThreshold = data.DebtThreshold
+			Collector.SurplusThreshold = data.SurplusThreshold
 			Collector.LockerSavingRate = lsr
 			Collector.LotSize = data.LotSize
 			Collector.SecondaryAssetId = data.SecondaryAssetId

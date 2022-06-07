@@ -748,9 +748,15 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 			}
 		}
 	}
+	if len(vaultsIds) == 0{
+		return &types.QueryUserMyPositionByAppResponse{}, nil
+	}
 
 	for _, data := range vaultsIds {
-		vault, _ := q.GetVault(ctx, data)
+		vault, found := q.GetVault(ctx, data)
+		if !found {
+			return &types.QueryUserMyPositionByAppResponse{}, nil
+		}
 
 		extPairVault, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 		pairId, _ := q.GetPair(ctx, extPairVault.PairId)

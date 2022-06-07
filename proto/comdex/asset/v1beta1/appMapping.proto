@@ -16,7 +16,8 @@ message AppMapping {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false];
     double gov_time_in_seconds = 5 [ (gogoproto.moretags) = "yaml:\"gov_time_in_seconds\""];
-    repeated MintGenesisToken mint_genesis_token = 6 [ (gogoproto.moretags) = "yaml:\"mint_genesis_token\"" ];
+    repeated MintGenesisToken genesis_token = 6 [ (gogoproto.moretags) = "yaml:\"genesis_token\"",
+    (gogoproto.nullable) = false];
 }
 
 message MintGenesisToken {
