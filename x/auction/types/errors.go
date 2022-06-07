@@ -40,6 +40,9 @@ var (
 	ErrorInvalidPair                        = sdkerrors.Register(ModuleName, 130, "pair not found for extended pair id")
 	ErrorAssetNotFound                      = sdkerrors.Register(ModuleName, 131, "asset not found for given id")
 	ErrorInvalidExtendedPairVault           = sdkerrors.Register(ModuleName, 132, "extended pair vault not found for given id")
+	ErrorAppExtendedPairVaultData           = sdkerrors.Register(ModuleName, 133, "extended pair vault data not found for app mapping id")
+	ErrorDebtMaxBidFactor                   = sdkerrors.Register(ModuleName, 134, "bid should be less than bid amount by bid factor")
+	ErrorLeaveChost                         = sdkerrors.Register(ModuleName, 135, "either bid all the amount or bid amount by leaving greater than chost")
 )
 
 var (

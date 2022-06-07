@@ -27,7 +27,10 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(CmdQueryParams(),
 		QueryCollectorLookupByProduct(),
-		QueryCollectorLookupByProductAndAsset())
+		QueryCollectorLookupByProductAndAsset(),
+		QueryCollectorDataByProductAndAsset(),
+		QueryAuctionMappingForAppAndAsset(),
+		QueryNetFeeCollectedForAppAndAsset())
 
 	return cmd
 }
@@ -91,6 +94,122 @@ func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 
 			res, err := queryClient.QueryCollectorLookupByProductAndAsset(cmd.Context(), &types.QueryCollectorLookupByProductAndAssetRequest{
 				AppId:   appId,
+				AssetId: assetId,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// QueryCollectorLookupByProduct query collector store by product
+func QueryCollectorDataByProductAndAsset() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "collector-data-by-product-and-asset [app-id] [asset_id]",
+		Short: "collector data for a product and asset",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			appId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryCollectorDataByProductAndAsset(cmd.Context(), &types.QueryCollectorDataByProductAndAssetRequest{
+				AppId: appId,
+				AssetId: assetId,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+
+func QueryAuctionMappingForAppAndAsset() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "auction-data-by-product-and-asset [app-id] [asset_id]",
+		Short: "auction data for a product and asset",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			appId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAuctionMappingForAppAndAsset(cmd.Context(), &types.QueryAuctionMappingForAppAndAssetRequest{
+				AppId: appId,
+				AssetId: assetId,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryNetFeeCollectedForAppAndAsset() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "net-fee-data-by-product-by-asset [app-id] [asset-id]",
+		Short: "net fee data for a product and asset",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			appId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryNetFeeCollectedForAppAndAsset(cmd.Context(), &types.QueryNetFeeCollectedForAppAndAssetRequest{
+				AppId: appId,
 				AssetId: assetId,
 			})
 

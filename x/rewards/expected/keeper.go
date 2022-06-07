@@ -28,6 +28,7 @@ type AssetKeeper interface {
 	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
 	HasAssetForDenom(ctx sdk.Context, denom string) bool
 	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
+	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 }
 
 type MarketKeeper interface {
@@ -48,6 +49,7 @@ type CollectorKeeper interface {
 	GetCollectorLookupByAsset(ctx sdk.Context, app_id, asset_id uint64) (collectorLookup collecortypes.CollectorLookupTable, found bool)
 	GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData collecortypes.NetFeeCollectedData, found bool)
 	SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error
+	DecreaseNetFeeCollectedData(ctx sdk.Context, appId, assetId uint64, amount sdk.Int) error
 }
 
 type VaultKeeper interface {

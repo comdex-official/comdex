@@ -314,7 +314,9 @@ message QueryTotalTVLByAppRequest {
 }
 
 message QueryTotalTVLByAppResponse {
-  uint64 collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\""];
+  string collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
 }
 
 message QueryUserMyPositionByAppRequest {
@@ -324,8 +326,12 @@ message QueryUserMyPositionByAppRequest {
 }
 
 message QueryUserMyPositionByAppResponse {
-  uint64 collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\""];
-  uint64 total_due = 2 [(gogoproto.moretags) = "yaml:\"total_due\""];
+  string collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+  string total_due = 2 [(gogoproto.moretags) = "yaml:\"total_due\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
   string available_to_borrow = 3 [
     (gogoproto.moretags) = "yaml:\"available_to_borrow\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",

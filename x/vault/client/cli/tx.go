@@ -323,9 +323,9 @@ func txCreateStableMint() *cobra.Command {
 
 func txDepositStableMint() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] ",
+		Use:   "deposit-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] [stablemint_id] ",
 		Short: "deposit to stable mint vault",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -346,10 +346,10 @@ func txDepositStableMint() *cobra.Command {
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
-
+			stablemint_id := args[3]
 			
 
-			msg := types.NewMsgDepositStableMintRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amount)
+			msg := types.NewMsgDepositStableMintRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amount, stablemint_id)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -366,9 +366,9 @@ func txDepositStableMint() *cobra.Command {
 
 func txWithdrawStableMint() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] ",
+		Use:   "withdraw-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] [stablemint_id]",
 		Short: "withdraw from stable mint vault",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -389,10 +389,10 @@ func txWithdrawStableMint() *cobra.Command {
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
-
+			stablemint_id := args[3]
 			
 
-			msg := types.NewMsgWithdrawStableMintRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amount)
+			msg := types.NewMsgWithdrawStableMintRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amount, stablemint_id)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

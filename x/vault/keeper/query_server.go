@@ -123,11 +123,13 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 		vaultsIds  []string
 		vaultsInfo []types.VaultInfo
 	)
-
-	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "data does not exists for user addesss %s", req.Owner)
+	_, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
+
+	userVaultAssetData, _ := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
+
 	for _, data := range userVaultAssetData.UserVaultApp {
 		if data.AppMappingId == req.AppId {
 			for _, inData := range data.UserExtendedPairVault {
@@ -229,10 +231,7 @@ func (q *queryServer) QueryVaultOfOwnerByExtendedPair(c context.Context, req *ty
 		return nil, status.Errorf(codes.NotFound, "extended pair does not exist for id %d", req.ExtendedPairId)
 	}
 
-	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "data does not exists for user addesss %s", req.Owner)
-	}
+	userVaultAssetData, _ := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
 
 	for _, data := range userVaultAssetData.UserVaultApp {
 		if data.AppMappingId == req.ProductId {
@@ -290,10 +289,8 @@ func (q *queryServer) QueryAllVaultByOwner(c context.Context, req *types.QueryAl
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "data does not exists for user addesss %s", req.Owner)
-	}
+	userVaultAssetData, _ := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
+
 	for _, data := range userVaultAssetData.UserVaultApp {
 		for _, inData := range data.UserExtendedPairVault {
 			vaultsIds = append(vaultsIds, inData.VaultId)
@@ -660,7 +657,7 @@ func (q *queryServer) QueryTVLLockedByAppOfAllExtendedPairs(c context.Context, r
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.AppId)
+		return &types.QueryTVLLockedByAppOfAllExtendedPairsResponse{}, nil
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		extPairVault, _ := q.GetPairsVault(ctx, data.ExtendedPairId)
@@ -689,7 +686,7 @@ func (q *queryServer) QueryTotalTVLByApp(c context.Context, req *types.QueryTota
 	}
 	var (
 		ctx    = sdk.UnwrapSDKContext(c)
-		locked uint64
+		locked = sdk.ZeroInt()
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -705,8 +702,9 @@ func (q *queryServer) QueryTotalTVLByApp(c context.Context, req *types.QueryTota
 		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
 
 		rate, _ := q.GetPriceForAsset(ctx, pairId.AssetIn)
-		locked = locked + (rate * data.CollateralLockedAmount.Uint64())
+		locked = data.CollateralLockedAmount.Mul(sdk.NewIntFromUint64(rate)).Add(locked)
 	}
+	locked = locked.Quo(sdk.NewInt(1000000))
 
 	return &types.QueryTotalTVLByAppResponse{
 		CollateralLocked: locked,
@@ -718,23 +716,30 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx              = sdk.UnwrapSDKContext(c)
-		vaultsIds        []string
-		total_locked     uint64
-		total_due        uint64
-		
+		ctx             = sdk.UnwrapSDKContext(c)
+		vaultsIds       []string
+		totalLocked     = sdk.ZeroInt()
+		totalDue        = sdk.ZeroInt()
+		availableBorrow = sdk.ZeroInt()
+		averageCr       = sdk.ZeroDec()
+		totalCr         = sdk.ZeroDec()
 	)
-	var available_borrow = sdk.ZeroInt()
-	var average_cr = sdk.ZeroDec()
-	var total_cr   = sdk.ZeroDec()
+
+	_, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "Address is not correct")
+	}
+
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
+
 	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "data does not exists for user addesss %s", req.Owner)
+		return &types.QueryUserMyPositionByAppResponse{}, nil
 	}
+
 	for _, data := range userVaultAssetData.UserVaultApp {
 		if data.AppMappingId == req.AppId {
 			for _, inData := range data.UserExtendedPairVault {
@@ -743,49 +748,58 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 			}
 		}
 	}
+	if len(vaultsIds) == 0{
+		return &types.QueryUserMyPositionByAppResponse{}, nil
+	}
 
 	for _, data := range vaultsIds {
-		vault, _ := q.GetVault(ctx, data)
+		vault, found := q.GetVault(ctx, data)
+		if !found {
+			return &types.QueryUserMyPositionByAppResponse{}, nil
+		}
 
 		extPairVault, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
 
-		assetIn_price, _ := q.GetPriceForAsset(ctx, pairId.AssetIn)
-		var assetOut_price uint64
-		total_locked = total_locked + assetIn_price*vault.AmountIn.Uint64()
+		assetInPrice, _ := q.GetPriceForAsset(ctx, pairId.AssetIn)
+		var assetOutPrice uint64
+		totalLocked = vault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).Add(totalLocked)
 
 		if extPairVault.AssetOutOraclePrice {
-			assetOut_price, _ = q.GetPriceForAsset(ctx, pairId.AssetOut)
+			assetOutPrice, _ = q.GetPriceForAsset(ctx, pairId.AssetOut)
 		} else {
-			assetOut_price = extPairVault.AssetOutPrice
+			assetOutPrice = extPairVault.AssetOutPrice
 		}
+		totalDue = vault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).Add(totalDue)
 
-		total_due = total_due + assetOut_price*vault.AmountOut.Uint64()
-		collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
+		collaterlizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
 		if err != nil {
 			return nil, err
-			
+
 		}
 
-		total_cr = total_cr.Add(collateralizationRatio)
-		var min_cr = extPairVault.MinCr
+		totalCr = collaterlizationRatio.Add(totalCr)
+		var minCr = extPairVault.MinCr
 
-		AmtIn := vault.AmountIn.Mul(sdk.NewIntFromUint64(assetIn_price)).ToDec()
+		AmtIn := vault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
+		AmtOut := vault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
 
-		av := sdk.Int(AmtIn.Quo(min_cr))
+		av := sdk.Int(AmtIn.Quo(minCr))
+		av = av.Sub(sdk.Int(AmtOut))
 
+		availableBorrow = av.Quo(sdk.Int(sdk.OneDec())).Add(availableBorrow)
 
-		available_borrow = available_borrow.Add(av).Quo(sdk.Int(sdk.OneDec()))
-		
 	}
-
+	totalLocked = totalLocked.Quo(sdk.NewInt(10000000))
+	totalDue = totalDue.Quo(sdk.NewInt(10000000))
+	availableBorrow = availableBorrow.Quo(sdk.NewInt(10000000))
 	t, _ := sdk.NewDecFromStr(strconv.Itoa(len(vaultsIds)))
-	average_cr = total_cr.Quo(t)
+	averageCr = totalCr.Quo(t)
 
 	return &types.QueryUserMyPositionByAppResponse{
-		CollateralLocked:  total_locked,
-		TotalDue:          total_due,
-		AvailableToBorrow: available_borrow,
-		AverageCrRatio:    average_cr,
+		CollateralLocked:  totalLocked,
+		TotalDue:          totalDue,
+		AvailableToBorrow: availableBorrow,
+		AverageCrRatio:    averageCr,
 	}, nil
 }

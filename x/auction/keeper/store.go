@@ -8,6 +8,41 @@ import (
 )
 
 //Generic for all auctions
+
+func (k *Keeper) SetProtocolStatistics(ctx sdk.Context, appId, assetId uint64, amount sdk.Int) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.ProtocolStatisticsKey(appId, assetId)
+	)
+	stat, found := k.GetProtocolStat(ctx, appId, assetId)
+	if found {
+		stat.Loss = stat.Loss.Add(amount.ToDec())
+		value := k.cdc.MustMarshal(&stat)
+		store.Set(key, value)
+	} else {
+		var stats auctiontypes.ProtocolStatistics
+		stats.AppId = appId
+		stats.AssetId = assetId
+		stats.Loss = amount.ToDec()
+		value := k.cdc.MustMarshal(&stats)
+		store.Set(key, value)
+	}
+
+}
+
+func (k *Keeper) GetProtocolStat(ctx sdk.Context, appId, assetId uint64) (stats auctiontypes.ProtocolStatistics, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.ProtocolStatisticsKey(appId, assetId)
+		value = store.Get(key)
+	)
+	if value == nil {
+		return stats, false
+	}
+	k.cdc.MustUnmarshal(value, &stats)
+	return stats, true
+}
+
 func (k *Keeper) GetAuctionID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)

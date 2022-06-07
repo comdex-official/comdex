@@ -5,14 +5,18 @@ import (
 )
 
 type ComdexMessages struct {
-	MsgWhiteListAssetLocker            *MsgWhiteListAssetLocker            `json:"msg_white_list_asset_locker,omitempty"`
-	MsgWhitelistAppIdVaultInterest     *MsgWhitelistAppIdVaultInterest     `json:"msg_whitelist_app_id_vault_interest,omitempty"`
-	MsgWhitelistAppIdLockerRewards     *MsgWhitelistAppIdLockerRewards     `json:"msg_whitelist_app_id_locker_rewards,omitempty"`
-	MsgAddExtendedPairsVault           *MsgAddExtendedPairsVault           `json:"msg_add_extended_pairs_vault,omitempty"`
-	MsgSetCollectorLookupTable         *MsgSetCollectorLookupTable         `json:"msg_set_collector_lookup_table,omitempty"`
-	MsgSetAuctionMappingForApp         *MsgSetAuctionMappingForApp         `json:"msg_set_auction_mapping_for_app,omitempty"`
-	MsgUpdateLsrInPairsVault           *MsgUpdateLsrInPairsVault           `json:"msg_update_lsr_in_pairs_vault,omitempty"`
-	MsgUpdateLsrInCollectorLookupTable *MsgUpdateLsrInCollectorLookupTable `json:"msg_update_lsr_in_collector_lookup_table,omitempty"`
+	MsgWhiteListAssetLocker              *MsgWhiteListAssetLocker              `json:"msg_white_list_asset_locker,omitempty"`
+	MsgWhitelistAppIdVaultInterest       *MsgWhitelistAppIdVaultInterest       `json:"msg_whitelist_app_id_vault_interest,omitempty"`
+	MsgWhitelistAppIdLockerRewards       *MsgWhitelistAppIdLockerRewards       `json:"msg_whitelist_app_id_locker_rewards,omitempty"`
+	MsgAddExtendedPairsVault             *MsgAddExtendedPairsVault             `json:"msg_add_extended_pairs_vault,omitempty"`
+	MsgSetCollectorLookupTable           *MsgSetCollectorLookupTable           `json:"msg_set_collector_lookup_table,omitempty"`
+	MsgSetAuctionMappingForApp           *MsgSetAuctionMappingForApp           `json:"msg_set_auction_mapping_for_app,omitempty"`
+	MsgUpdateLsrInPairsVault             *MsgUpdateLsrInPairsVault             `json:"msg_update_lsr_in_pairs_vault,omitempty"`
+	MsgUpdateLsrInCollectorLookupTable   *MsgUpdateLsrInCollectorLookupTable   `json:"msg_update_lsr_in_collector_lookup_table,omitempty"`
+	MsgRemoveWhitelistAssetLocker        *MsgRemoveWhitelistAssetLocker        `json:"msg_remove_whitelist_asset_locker,omitempty"`
+	MsgRemoveWhitelistAppIdVaultInterest *MsgRemoveWhitelistAppIdVaultInterest `json:"msg_remove_whitelist_app_id_vault_interest,omitempty"`
+	MsgWhitelistAppIdLiquidation         *MsgWhitelistAppIdLiquidation         `json:"msg_whitelist_app_id_liquidation,omitempty"`
+	MsgRemoveWhitelistAppIdLiquidation   *MsgRemoveWhitelistAppIdLiquidation   `json:"msg_remove_whitelist_app_id_liquidation,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
@@ -45,6 +49,7 @@ type MsgAddExtendedPairsVault struct {
 	PairName            string  `json:"pair_name"`
 	AssetOutOraclePrice bool    `json:"asset_out_oracle_price"`
 	AssetOutPrice       uint64  `json:"asset_out_price"`
+	MinUsdValueLeft     uint64  `json:"min_usd_value_left"`
 }
 
 type MsgSetCollectorLookupTable struct {
@@ -78,10 +83,28 @@ type MsgUpdateLsrInPairsVault struct {
 	MinCr              sdk.Dec `json:"min_cr"`
 	DebtCeiling        uint64  `json:"debt_ceiling"`
 	DebtFloor          uint64  `json:"debt_floor"`
+	MinUsdValueLeft     uint64  `json:"min_usd_value_left"`
 }
 
 type MsgUpdateLsrInCollectorLookupTable struct {
 	AppMappingId uint64  `json:"app_mapping_id"`
 	AssetId      uint64  `json:"asset_id"`
 	LSR          sdk.Dec `json:"lsr"`
+}
+
+type MsgRemoveWhitelistAssetLocker struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+	AssetId      uint64 `json:"asset_id"`
+}
+
+type MsgRemoveWhitelistAppIdVaultInterest struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+}
+
+type MsgWhitelistAppIdLiquidation struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
+}
+
+type MsgRemoveWhitelistAppIdLiquidation struct {
+	AppMappingId uint64 `json:"app_mapping_id"`
 }

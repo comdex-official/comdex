@@ -52,6 +52,10 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 	return k.vault.CalculateCollaterlizationRatio(ctx, extendedPairVaultId, amountIn, amountOut)
 }
 
+func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
+	return k.asset.GetAsset(ctx, id)
+}
+
 func (k *Keeper) GetVault(ctx sdk.Context, id string) (vault vaulttypes.Vault, found bool) {
 	return k.vault.GetVault(ctx, id)
 }
@@ -132,4 +136,8 @@ func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeD
 
 func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error {
 	return k.collector.SetNetFeeCollectedData(ctx, app_id, asset_id, fee)
+}
+
+func (k *Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error {
+	return k.collector.DecreaseNetFeeCollectedData(ctx, app_id, asset_id, fee)
 }

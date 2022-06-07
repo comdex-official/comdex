@@ -224,9 +224,26 @@ message DutchAuction {
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"liquidatin_penalty\""
     ];
+    bool is_locked_vault_amount_in_zero = 21 [
+        (gogoproto.moretags) = "yaml:\"is_locked_vault_amount_in_zero\""
+    ];
 }
 
 message bidOwnerMapping{
 uint64 bid_id=1;
 string bid_owner=2;
+}
+
+message ProtocolStatistics {
+    uint64 app_id = 1 [
+        (gogoproto.moretags) = "yaml:\"app_id\""
+    ];
+    uint64 asset_id = 2 [
+        (gogoproto.moretags) = "yaml:\"asset_id\""
+    ];
+    string loss = 3[
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable)   = false,
+        (gogoproto.moretags)   = "yaml:\"loss\""
+    ];
 }
