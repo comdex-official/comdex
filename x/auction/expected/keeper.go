@@ -55,6 +55,7 @@ type VaultKeeper interface {
 	//BurnCAssets(ctx sdk.Context, moduleName string, collateralDenom string, denom string, amount sdk.Int) error
 	GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingId uint64) (appExtendedPairVaultData vaultttypes.AppExtendedPairVaultMapping, found bool)
 	SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData vaultttypes.AppExtendedPairVaultMapping) error
+	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData vaultttypes.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool)
 }
 
 type CollectorKeeper interface {

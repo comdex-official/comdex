@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/auction/types"
 	"time"
+
+	"github.com/comdex-official/comdex/x/auction/types"
 
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -439,7 +440,10 @@ func (k Keeper) RestartDebtAuction(
 	if status == auctiontypes.NoAuction {
 		return nil
 	}
-	auctionParams := k.GetParams(ctx)
+	auctionParams, found := k.GetAuctionParams(ctx, appId)
+	if !found {
+		return auctiontypes.ErrorInvalidAuctionParams
+	}
 	debtAuction.ExpectedUserToken = inflowToken
 	debtAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
 	err := k.SetDebtAuction(ctx, debtAuction)
@@ -458,7 +462,10 @@ func (k Keeper) RestartSurplusAuction(
 	if status == auctiontypes.NoAuction {
 		return nil
 	}
-	auctionParams := k.GetParams(ctx)
+	auctionParams, found := k.GetAuctionParams(ctx, appId)
+	if !found {
+		return auctiontypes.ErrorInvalidAuctionParams
+	}
 	surplusAuction.InflowToken = inflowToken
 	surplusAuction.Bid = inflowToken
 	surplusAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
@@ -472,7 +479,10 @@ func (k Keeper) RestartSurplusAuction(
 //get all app ids and call RestartDutchAuctions with app id
 func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) error {
 	dutchAuctions := k.GetDutchAuctions(ctx, appId)
-	auctionParams := k.GetParams(ctx)
+	auctionParams, found := k.GetAuctionParams(ctx, appId)
+	if !found {
+		return auctiontypes.ErrorInvalidAuctionParams
+	}
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
 		lockedVault, found := k.GetLockedVault(ctx, dutchAuction.LockedVaultId)
@@ -538,7 +548,10 @@ func (k Keeper) StartSurplusAuction(
 	assetInId, assetOutId uint64,
 ) error {
 
-	auctionParams := k.GetParams(ctx)
+	auctionParams, found := k.GetAuctionParams(ctx, appId)
+	if !found {
+		return auctiontypes.ErrorInvalidAuctionParams
+	}
 	auction := auctiontypes.SurplusAuction{
 		OutflowToken:     outflowToken,
 		InflowToken:      inflowToken,
@@ -573,7 +586,10 @@ func (k Keeper) StartDebtAuction(
 	assetInId, assetOutId uint64,
 ) error {
 
-	auctionParams := k.GetParams(ctx)
+	auctionParams, found := k.GetAuctionParams(ctx, appId)
+	if !found {
+		return auctiontypes.ErrorInvalidAuctionParams
+	}
 	auction := auctiontypes.DebtAuction{
 		AuctionedToken:      auctionToken,
 		ExpectedMintedToken: auctionToken,
@@ -641,7 +657,10 @@ func (k Keeper) StartDutchAuction(
 	if err != nil {
 		return err
 	}
-	auctionParams := k.GetParams(ctx)
+	auctionParams, found := k.GetAuctionParams(ctx, appId)
+	if !found {
+		return auctiontypes.ErrorInvalidAuctionParams
+	}
 	//need to get real price instead of hard coding
 	//calculate target amount of cmst to collect
 	if auctiontypes.TestFlag != 1 {
@@ -953,6 +972,7 @@ func (k Keeper) CloseDutchAuction(
 
 			//Transfer balance from collector module to auction module
 			requiredAmount := lockedVault.AmountOut.Sub(burnToken.Amount)
+
 			_, err := k.GetAmountFromCollector(ctx, dutchAuction.AppId, dutchAuction.AssetInId, requiredAmount)
 			if err != nil {
 
@@ -966,16 +986,21 @@ func (k Keeper) CloseDutchAuction(
 	}
 
 	//burn the burn tokens
-	err := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, tokenminttypes.ModuleName, sdk.NewCoins(burnToken))
+	err := k.BurnCoins(ctx, auctiontypes.ModuleName, burnToken)
 	if err != nil {
 		return err
 	}
-
-	err = k.tokenmint.BurnTokensForApp(ctx, dutchAuction.AppId, dutchAuction.AssetInId, burnToken.Amount)
-	if err != nil {
-
-		return err
+	ExtendedPairVault, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+	if !found {
+		return auctiontypes.ErrorInvalidExtendedPairVault
 	}
+
+	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMapping(ctx, ExtendedPairVault.AppMappingId)
+	if !found {
+		return sdkerrors.ErrNotFound
+	}
+
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, burnToken.Amount, false)
 
 	//send penalty
 	err = k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(burnToken.Denom, penaltyAmount)))

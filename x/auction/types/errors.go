@@ -43,6 +43,7 @@ var (
 	ErrorAppExtendedPairVaultData           = sdkerrors.Register(ModuleName, 133, "extended pair vault data not found for app mapping id")
 	ErrorDebtMaxBidFactor                   = sdkerrors.Register(ModuleName, 134, "bid should be less than bid amount by bid factor")
 	ErrorLeaveChost                         = sdkerrors.Register(ModuleName, 135, "either bid all the amount or bid amount by leaving greater than chost")
+	ErrorInvalidAuctionParams               = sdkerrors.Register(ModuleName, 136, "auction params not found for given app id")
 )
 
 var (
