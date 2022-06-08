@@ -15,6 +15,15 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+func (k Keeper) GetUUSDFromUSD(ctx sdk.Context, price sdk.Dec) sdk.Dec {
+	usdInUUSD := sdk.MustNewDecFromStr("1000000")
+	return price.Mul(usdInUUSD)
+}
+func (k Keeper) GetModuleAccountBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int {
+	address := k.account.GetModuleAddress(moduleName)
+	return k.bank.GetBalance(ctx, address, denom).Amount
+}
+
 func (k Keeper) IncreaseLockedVaultAmountIn(ctx sdk.Context, lockedVaultId uint64, amount sdk.Int) error {
 	lockedVault, found := k.GetLockedVault(ctx, lockedVaultId)
 	if !found {
@@ -1221,6 +1230,7 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction id %d not found", auctionId)
 	}
+	max = k.GetUUSDFromUSD(ctx, max)
 	if bid.Denom != auction.OutflowTokenCurrentAmount.Denom {
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid denom %s not found", bid.Denom)
 	}
@@ -1230,7 +1240,7 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	}
 
 	// slice tells amount of collateral user should be given
-	auctionParams := k.GetParams(ctx)
+
 	//using ceil as we need extract more from users
 	outFlowTokenCurrentPrice := auction.OutflowTokenCurrentPrice.Ceil().TruncateInt()
 	inFlowTokenCurrentPrice := auction.InflowTokenCurrentPrice.Ceil().TruncateInt()
@@ -1262,7 +1272,7 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 		//(outflowtokenavailableamount-slice) in usd < chost in usd
 		//see if user has balance to buy whole collateral
 		coll := auction.OutflowTokenCurrentAmount.Amount.Uint64()
-		dust := auctionParams.Chost.Ceil().TruncateInt().Uint64() / 1000000
+		dust := dust.Uint64() / 1000000
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "either bid all the amount %d or bid amount by leaving dust greater than %d usd", coll, dust)
 	}
 
