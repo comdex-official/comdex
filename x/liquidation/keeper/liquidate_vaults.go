@@ -22,7 +22,10 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 
 			vaultIds := vaults[j].VaultIds
 			for l := range vaultIds {
-				vault, _ := k.GetVault(ctx, vaultIds[l])
+				vault, found := k.GetVault(ctx, vaultIds[l])
+				if !found {
+					continue
+				}
 
 				extPair, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 

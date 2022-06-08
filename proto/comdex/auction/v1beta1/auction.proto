@@ -247,3 +247,39 @@ message ProtocolStatistics {
         (gogoproto.moretags)   = "yaml:\"loss\""
     ];
 }
+
+message AuctionParams{
+    uint64 app_id = 1 [
+        (gogoproto.moretags) = "yaml:\"app_id\""
+    ];
+    uint64 auction_duration_seconds = 2 [
+        (gogoproto.moretags) = "yaml:\"auction_duration_seconds\""
+    ];
+    string buffer = 3 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable)   = false,
+        (gogoproto.moretags)   = "yaml:\"buffer\""
+    ];
+    string cusp = 4 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable)   = false,
+        (gogoproto.moretags)   = "yaml:\"cusp\""
+    ];
+    string step = 5 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+        (gogoproto.nullable)   = false,
+        (gogoproto.moretags)   = "yaml:\"step\""
+    ];
+    uint64 price_function_type = 6 [
+        (gogoproto.moretags) = "yaml:\"price_function_type\""
+    ];
+    uint64 surplus_id = 7 [
+        (gogoproto.moretags) = "yaml:\"surplus_id\""
+    ];
+    uint64 debt_id = 8 [
+        (gogoproto.moretags) = "yaml:\"debt_id\""
+    ];
+    uint64 dutch_id = 9 [
+        (gogoproto.moretags) = "yaml:\"dutch_id\""
+    ];
+}

@@ -15,8 +15,8 @@ var (
 		govclient.NewProposalHandler(cli.NewCmdUpdateWhitelistedAssetProposal, rest.UpdateNewWhitelistedAssetsProposalRESTHandler),
 		govclient.NewProposalHandler(cli.NewCmdAddWhitelistedPairsProposal, rest.AddNewWhitelistedPairsProposalRESTHandler),
 		govclient.NewProposalHandler(cli.NewCmdUpdateWhitelistedPairProposal, rest.UpdateNewWhitelistedPairProposalRESTHandler),
-		govclient.NewProposalHandler(cli.NewCmdSubmitAddAppMapingProposal, rest.AddNewAppMappingProposalRESTHandler),
+		govclient.NewProposalHandler(cli.NewCmdSubmitAddAppMappingProposal, rest.AddNewAppMappingProposalRESTHandler),
 		govclient.NewProposalHandler(cli.NewCmdSubmitAddExtendedPairsVaultProposal, rest.AddExtendedPairsVaultProposalRESTHandler),
-		govclient.NewProposalHandler(cli.NewCmdSubmitAddAssetMapingProposal, rest.AddNewAssetMappingProposalRESTHandler),
+		govclient.NewProposalHandler(cli.NewCmdSubmitAddAssetMappingProposal, rest.AddNewAssetMappingProposalRESTHandler),
 	}
 )

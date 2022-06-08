@@ -26,6 +26,7 @@ func GetQueryCmd() *cobra.Command {
 		queryDutchAuctions(),
 		queryDutchBiddings(),
 		queryProtocolStats(),
+		queryAuctionParams(),
 	)
 
 	return cmd

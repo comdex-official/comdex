@@ -29,7 +29,6 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
-	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -144,6 +143,9 @@ import (
 	lockingtypes "github.com/comdex-official/comdex/x/locking/types"
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
+
+	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
+	tv1_0_1 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_1"
 )
 
 const (
@@ -453,7 +455,6 @@ func New(
 		homePath,
 		app.BaseApp,
 	)
-	app.registerUpgradeHandlers()
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.stakingKeeper = *stakingKeeper.SetHooks(
@@ -636,7 +637,7 @@ func New(
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
 	supportedFeatures := "iterator,staking,stargate,comdex"
 
-	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.lockerKeeper, &app.tokenmintKeeper, &app.assetKeeper, &app.rewardskeeper, &app.collectorKeeper, &app.liquidationKeeper), wasmOpts...)
+	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.lockerKeeper, &app.tokenmintKeeper, &app.assetKeeper, &app.rewardskeeper, &app.collectorKeeper, &app.liquidationKeeper, &app.auctionKeeper), wasmOpts...)
 
 	app.wasmKeeper = wasmkeeper.NewKeeper(
 		app.cdc,
@@ -814,6 +815,7 @@ func New(
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encoding.Amino)
 	app.configurator = module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
+	app.registerUpgradeHandlers()
 	// initialize stores
 	app.MountKVStores(app.keys)
 	app.MountTransientStores(app.tkeys)
@@ -1003,45 +1005,58 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 	}
 }
-func (app *App) registerUpgradeHandlers() {
-	app.upgradeKeeper.SetUpgradeHandler("v0.1.2", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-		// 1st-time running in-store migrations, using 1 as fromVersion to
-		// avoid running InitGenesis.
-		fromVM := map[string]uint64{
-			authtypes.ModuleName:        auth.AppModule{}.ConsensusVersion(),
-			banktypes.ModuleName:        bank.AppModule{}.ConsensusVersion(),
-			capabilitytypes.ModuleName:  capability.AppModule{}.ConsensusVersion(),
-			crisistypes.ModuleName:      crisis.AppModule{}.ConsensusVersion(),
-			distrtypes.ModuleName:       distr.AppModule{}.ConsensusVersion(),
-			evidencetypes.ModuleName:    evidence.AppModule{}.ConsensusVersion(),
-			govtypes.ModuleName:         gov.AppModule{}.ConsensusVersion(),
-			minttypes.ModuleName:        mint.AppModule{}.ConsensusVersion(),
-			paramstypes.ModuleName:      params.AppModule{}.ConsensusVersion(),
-			slashingtypes.ModuleName:    slashing.AppModule{}.ConsensusVersion(),
-			stakingtypes.ModuleName:     staking.AppModule{}.ConsensusVersion(),
-			upgradetypes.ModuleName:     upgrade.AppModule{}.ConsensusVersion(),
-			vestingtypes.ModuleName:     vesting.AppModule{}.ConsensusVersion(),
-			ibctransfertypes.ModuleName: ibc.AppModule{}.ConsensusVersion(),
-			genutiltypes.ModuleName:     genutil.AppModule{}.ConsensusVersion(),
-			assettypes.ModuleName:       asset.AppModule{}.ConsensusVersion(),
-			collectortypes.ModuleName:   collector.AppModule{}.ConsensusVersion(),
-			rewardstypes.ModuleName:     rewards.AppModule{}.ConsensusVersion(),
-			vaulttypes.ModuleName:       vault.AppModule{}.ConsensusVersion(),
-			lendtypes.ModuleName:        lend.AppModule{}.ConsensusVersion(),
-			lockertypes.ModuleName:      locker.AppModule{}.ConsensusVersion(),
-			tokenminttypes.ModuleName:   tokenmint.AppModule{}.ConsensusVersion(),
-			wasmtypes.ModuleName:        wasm.AppModule{}.ConsensusVersion(),
-		}
-		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
-	})
 
-	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
+func (a *App) registerUpgradeHandlers() {
+	a.upgradeKeeper.SetUpgradeHandler(
+		tv1_0_0.UpgradeName,
+		tv1_0_0.CreateUpgradeHandler(a.mm, a.configurator, a.wasmKeeper),
+	)
+
+	a.upgradeKeeper.SetUpgradeHandler(
+		tv1_0_1.UpgradeName,
+		tv1_0_1.CreateUpgradeHandler(a.mm, a.configurator),
+	)
+
+	// When a planned update height is reached, the old binary will panic
+	// writing on disk the height and name of the update that triggered it
+	// This will read that value, and execute the preparations for the upgrade.
+	upgradeInfo, err := a.upgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(err)
 	}
-	if upgradeInfo.Name == "v0.1.2" && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{}
+
+	var storeUpgrades *storetypes.StoreUpgrades
+
+	switch {
+	case upgradeInfo.Name == tv1_0_0.UpgradeName && !a.upgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		// prepare store for testnet upgrade v1.0.0
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added:   []string{authz.ModuleName},
+			Deleted: []string{"asset", "liquidity", "oracle", "vault"},
+		}
+	case upgradeInfo.Name == tv1_0_1.UpgradeName && !a.upgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		// prepare store for testnet upgrade v1.0.1
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{
+				assettypes.ModuleName,
+				auctiontypes.ModuleName,
+				bandoraclemoduletypes.ModuleName,
+				collectortypes.ModuleName,
+				lendtypes.ModuleName,
+				liquidationtypes.ModuleName,
+				liquiditytypes.ModuleName,
+				lockertypes.ModuleName,
+				lockingtypes.ModuleName,
+				markettypes.ModuleName,
+				rewardstypes.ModuleName,
+				tokenminttypes.ModuleName,
+				vaulttypes.ModuleName,
+			},
+		}
+	}
+
+	if storeUpgrades != nil {
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+		a.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 	}
 }

@@ -53,7 +53,7 @@ func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
 
 		shouldTrigger := ctx.BlockTime().After(epoch.CurrentEpochStartTime.Add(epoch.Duration))
 		if shouldTrigger {
-			logger.Info(fmt.Sprintf("Starting new epoch with duration %d and epoch number %d", &epoch.Duration, epoch.CurrentEpoch))
+			logger.Info(fmt.Sprintf("Starting new epoch with duration %s and epoch number %d", &epoch.Duration, epoch.CurrentEpoch))
 			err := k.InitateGaugesForDuration(ctx, epoch.Duration)
 			if err != nil {
 				logger.Info(fmt.Sprintf("err occurred in epoch trigger : %v", err))

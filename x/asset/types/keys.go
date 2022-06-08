@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ModuleName     = "asset"
+	ModuleName     = "assetv1"
 	ParamsSubspace = ModuleName
 	QuerierRoute   = ModuleName
 	RouterKey      = ModuleName
@@ -13,25 +13,25 @@ const (
 )
 
 var (
-	AssetIDKey    = []byte{0x01}
-	PairIDKey     = []byte{0x03}
-	AppIDkey      = []byte{0x04}
+	AssetIDKey      = []byte{0x01}
+	PairIDKey       = []byte{0x03}
+	AppIDkey        = []byte{0x04}
 	PairsVaultIDkey = []byte{0x05}
 
-	AssetKeyPrefix    = []byte{0x11}
-	PairKeyPrefix     = []byte{0x14}
-	AppKeyPrefix      = []byte{0x15}
+	AssetKeyPrefix      = []byte{0x11}
+	PairKeyPrefix       = []byte{0x14}
+	AppKeyPrefix        = []byte{0x15}
 	PairsVaultKeyPrefix = []byte{0x16}
 
-	AssetForDenomKeyPrefix  = []byte{0x21}
+	AssetForDenomKeyPrefix = []byte{0x21}
 	AppForShortNamePrefix  = []byte{0x22}
-	AppForNamePrefix  = []byte{0x23}
-	GensisForAppPrefix  = []byte{0x24}
+	AppForNamePrefix       = []byte{0x23}
+	GensisForAppPrefix     = []byte{0x24}
 
-	WhitelistAssetIDKey    = []byte{0x31}
-	WhitelistAssetKeyPrefix    = []byte{0x32}
-	WhitelistPairIDKey     = []byte{0x33}
-	WhitelistPairKeyPrefix     = []byte{0x34}
+	WhitelistAssetIDKey     = []byte{0x31}
+	WhitelistAssetKeyPrefix = []byte{0x32}
+	WhitelistPairIDKey      = []byte{0x33}
+	WhitelistPairKeyPrefix  = []byte{0x34}
 )
 
 func AppKey(id uint64) []byte {
