@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/comdex-official/comdex/x/auction/types"
 	"time"
 
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -1333,5 +1334,24 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 			return err
 		}
 	}
+	return nil
+}
+
+func (k Keeper) AddAuctionParams(ctx sdk.Context, appId, auctionDurationSeconds uint64, buffer, cusp sdk.Dec, step, priceFunctionType, surplusId, debtId, dutchId uint64) error {
+	newStep := sdk.NewIntFromUint64(step)
+	auctionParams := types.AuctionParams{
+		AppId:                  appId,
+		AuctionDurationSeconds: auctionDurationSeconds,
+		Buffer:                 buffer,
+		Cusp:                   cusp,
+		Step:                   newStep,
+		PriceFunctionType:      priceFunctionType,
+		SurplusId:              surplusId,
+		DebtId:                 debtId,
+		DutchId:                dutchId,
+	}
+
+	k.SetAuctionParams(ctx, auctionParams)
+
 	return nil
 }

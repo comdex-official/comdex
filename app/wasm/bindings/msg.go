@@ -17,6 +17,7 @@ type ComdexMessages struct {
 	MsgRemoveWhitelistAppIdVaultInterest *MsgRemoveWhitelistAppIdVaultInterest `json:"msg_remove_whitelist_app_id_vault_interest,omitempty"`
 	MsgWhitelistAppIdLiquidation         *MsgWhitelistAppIdLiquidation         `json:"msg_whitelist_app_id_liquidation,omitempty"`
 	MsgRemoveWhitelistAppIdLiquidation   *MsgRemoveWhitelistAppIdLiquidation   `json:"msg_remove_whitelist_app_id_liquidation,omitempty"`
+	MsgAddAuctionParams                  *MsgAddAuctionParams                  `json:"msg_add_auction_params,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
@@ -83,7 +84,7 @@ type MsgUpdateLsrInPairsVault struct {
 	MinCr              sdk.Dec `json:"min_cr"`
 	DebtCeiling        uint64  `json:"debt_ceiling"`
 	DebtFloor          uint64  `json:"debt_floor"`
-	MinUsdValueLeft     uint64  `json:"min_usd_value_left"`
+	MinUsdValueLeft    uint64  `json:"min_usd_value_left"`
 }
 
 type MsgUpdateLsrInCollectorLookupTable struct {
@@ -107,4 +108,16 @@ type MsgWhitelistAppIdLiquidation struct {
 
 type MsgRemoveWhitelistAppIdLiquidation struct {
 	AppMappingId uint64 `json:"app_mapping_id"`
+}
+
+type MsgAddAuctionParams struct {
+	AppMappingId           uint64  `json:"app_mapping_id"`
+	AuctionDurationSeconds uint64  `json:"auction_duration_seconds"`
+	Buffer                 sdk.Dec `json:"buffer"`
+	Cusp                   sdk.Dec `json:"cusp"`
+	Step                   uint64  `json:"step"`
+	PriceFunctionType      uint64  `json:"price_function_type"`
+	SurplusId              uint64  `json:"surplus_id"`
+	DebtId                 uint64  `json:"debt_id"`
+	DutchId                uint64  `json:"dutch_id"`
 }

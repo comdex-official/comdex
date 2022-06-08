@@ -793,3 +793,28 @@ func (k *Keeper) GetHistoryDutchUserBiddings(ctx sdk.Context, bidder string, app
 
 	return userBiddings
 }
+
+func (k *Keeper) SetAuctionParams(ctx sdk.Context, auctionParams auctiontypes.AuctionParams) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.AuctionParamsKey(auctionParams.AppId)
+		value = k.cdc.MustMarshal(&auctionParams)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetAuctionParams(ctx sdk.Context, AppId uint64) (asset auctiontypes.AuctionParams, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.AuctionParamsKey(AppId)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return asset, false
+	}
+
+	k.cdc.MustUnmarshal(value, &asset)
+	return asset, true
+}

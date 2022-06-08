@@ -349,3 +349,22 @@ func (q *QueryServer) QueryProtocolStatistics(c context.Context, req *types.Quer
 		Pagination: pagination,
 	}, nil
 }
+
+func (q *QueryServer) QueryAuctionParams(c context.Context, req *auctiontypes.QueryAuctionParamRequest) (*auctiontypes.QueryAuctionParamResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	item, found := q.GetAuctionParams(ctx, req.Id)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Auction Params not exist for id %d", req.Id)
+	}
+
+	return &types.QueryAuctionParamResponse{
+		AuctionParams: item,
+	}, nil
+}
