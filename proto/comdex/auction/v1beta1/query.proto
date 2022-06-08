@@ -194,6 +194,14 @@ message QueryParamsResponse {
   ];
 }
 
+message QueryAuctionParamRequest {
+  uint64 id = 1;
+}
+
+message QueryAuctionParamResponse {
+  AuctionParams auctionParams = 1
+  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction_params\"" ];
+}
 
 
 service Query {
@@ -229,5 +237,8 @@ service Query {
   }
   rpc QueryProtocolStatistics(QueryProtocolStatisticsRequest) returns (QueryProtocolStatisticsResponse) {
     option (google.api.http).get = "/comdex/auction/v1beta1/protocolstats/{app_id}";
+  }
+  rpc QueryAuctionParams(QueryAuctionParamRequest) returns (QueryAuctionParamResponse) {
+    option (google.api.http).get = "/comdex/auction/v1beta1/auctionparams/{id}";
   }
 }

@@ -39,6 +39,7 @@ var (
 	HistoryAuctionKeyPrefix     = []byte{0x15}
 	HistoryUserKeyPrefix        = []byte{0x16}
 	ProtocolStatisticsPrefixKey = []byte{0x17}
+	AuctionParamsKeyPrefix      = []byte{0x18}
 )
 
 func AuctionKey(appId uint64, auctionType string, auctionId uint64) []byte {
@@ -79,4 +80,8 @@ func ProtocolStatisticsKey(appId, assetId uint64) []byte {
 
 func ProtocolStatisticsAppIdKey(appId uint64) []byte {
 	return append(ProtocolStatisticsPrefixKey, sdk.Uint64ToBigEndian(appId)...)
+}
+
+func AuctionParamsKey(id uint64) []byte {
+	return append(AuctionParamsKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }

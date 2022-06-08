@@ -2,6 +2,7 @@ package wasm
 
 import (
 	"encoding/json"
+	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -17,7 +18,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper, assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
+func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper, assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper, auctionKeeper auctionkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
 			wrapped:           old,
@@ -26,6 +27,7 @@ func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewa
 			assetKeeper:       assetKeeper,
 			collectorKeeper:   collectorKeeper,
 			liquidationKeeper: liquidationKeeper,
+			auctionKeeper:     auctionKeeper,
 		}
 	}
 }
@@ -37,6 +39,7 @@ type CustomMessenger struct {
 	assetKeeper       assetkeeper.Keeper
 	collectorKeeper   collectorkeeper.Keeper
 	liquidationKeeper liquidationkeeper.Keeper
+	auctionKeeper     auctionkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -84,6 +87,9 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		}
 		if comdexMsg.MsgRemoveWhitelistAppIdLiquidation != nil {
 			return m.RemoveWhitelistAppIdLiquidation(ctx, contractAddr, comdexMsg.MsgRemoveWhitelistAppIdLiquidation)
+		}
+		if comdexMsg.MsgAddAuctionParams != nil {
+			return m.AddAuctionParams(ctx, contractAddr, comdexMsg.MsgAddAuctionParams)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
@@ -323,6 +329,23 @@ func (m *CustomMessenger) RemoveWhitelistAppIdLiquidation(ctx sdk.Context, contr
 func MsgRemoveWhitelistAppIdLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgRemoveWhitelistAppIdLiquidation) error {
 	err := liquidationKeeper.WasmRemoveWhitelistAppIdLiquidation(ctx, a.AppMappingId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) AddAuctionParams(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgAddAuctionParams) ([]sdk.Event, [][]byte, error) {
+	err := MsgAddAuctionParams(m.auctionKeeper, ctx, contractAddr, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "AddAuctionParams error")
+	}
+	return nil, nil, nil
+}
+
+func MsgAddAuctionParams(auctionKeeper auctionkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	a *bindings.MsgAddAuctionParams) error {
+	err := auctionKeeper.AddAuctionParams(ctx, a.AppMappingId, a.AuctionDurationSeconds, a.Buffer, a.Cusp, a.Step, a.PriceFunctionType, a.SurplusId, a.DebtId, a.DutchId)
 	if err != nil {
 		return err
 	}
