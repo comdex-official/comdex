@@ -178,7 +178,7 @@ func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, 
 
 	epochId := k.GetEpochTimeId(ctx)
 	epoch := types.EpochTime{
-		Id:           epochId,
+		Id:           epochId + 1,
 		AppMappingId: AppMappingId,
 		StartingTime: ctx.BlockTime().Unix() + 84600,
 	}
@@ -195,13 +195,13 @@ func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, 
 		StartTimestamp:       ctx.BlockTime(),
 		EndTimestamp:         endTime,
 		MinLockupTimeSeconds: MinLockupTimeSeconds,
-		EpochId:              epochId,
+		EpochId:              epoch.Id,
 	}
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, Depositor, types.ModuleName, sdk.NewCoins(sdk.Coin{Amount: TotalRewards.Amount, Denom: TotalRewards.Denom})); err != nil {
 		return err
 	}
 
-	k.SetEpochTimeId(ctx, epochId+1)
+	k.SetEpochTimeId(ctx, msg.EpochId)
 	k.SetExternalRewardsLockers(ctx, msg)
 	k.SetExternalRewardsLockersId(ctx, msg.Id)
 	k.SetEpochTime(ctx, epoch)
@@ -226,7 +226,7 @@ func (k Keeper) ActExternalRewardsVaults(ctx sdk.Context, AppMappingId uint64, E
 
 	epochId := k.GetEpochTimeId(ctx)
 	epoch := types.EpochTime{
-		Id:           epochId+1,
+		Id:           epochId + 1,
 		AppMappingId: AppMappingId,
 		StartingTime: ctx.BlockTime().Unix() + 84600,
 	}
