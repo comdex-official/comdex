@@ -163,3 +163,7 @@ func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, appId uint64) (collect
 func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {
 	return k.collector.SetAuctionMappingForApp(ctx, records...)
 }
+
+func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData vaultttypes.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, valutLookupData, extendedPairId, amount, changeType)
+}
