@@ -32,8 +32,6 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 	if err != nil {
 		return
 	}
-
-
 }
 
 // EndBlocker for incentives module.

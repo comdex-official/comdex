@@ -197,7 +197,7 @@ func (k *Keeper) SetEpochTime(ctx sdk.Context, epoch types.EpochTime) {
 func (k *Keeper) GetEpochTime(ctx sdk.Context, Id uint64) (epoch types.EpochTime, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetForDenomKey(Id)
+		key   = types.EpochForLockerKey(Id)
 		value = store.Get(key)
 	)
 
