@@ -359,9 +359,9 @@ func (q *QueryServer) QueryAuctionParams(c context.Context, req *auctiontypes.Qu
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetAuctionParams(ctx, req.Id)
+	item, found := q.GetAuctionParams(ctx, req.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Auction Params not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "Auction Params not exist for id %d", req.AppId)
 	}
 
 	return &types.QueryAuctionParamResponse{
