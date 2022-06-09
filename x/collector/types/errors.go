@@ -16,4 +16,5 @@ var (
 	ErrorDataDoesNotExists = sdkerrors.Register(ModuleName, 406, "Data does not exists")
 	ErrorRequestedAmtExceedsCollectedFee = sdkerrors.Register(ModuleName, 407, "Requested Amt Exceeds CollectedFee")
 	ErrorAppDoesNotExist = sdkerrors.Register(ModuleName, 408, "app does not exist")
+	ErrorAssetNotAddedForGenesisMinting = sdkerrors.Register(ModuleName, 409, "Asset Not Added For Genesis Minting")
 )
