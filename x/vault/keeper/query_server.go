@@ -141,7 +141,7 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 	for _, id := range vaultsIds {
 		vault, found := q.GetVault(ctx, id)
 		if !found {
-			return nil, status.Errorf(codes.NotFound, "vault does not exist for id %d", vault.Id)
+			return &types.QueryVaultInfoByAppByOwnerResponse{}, nil
 		}
 
 		collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
