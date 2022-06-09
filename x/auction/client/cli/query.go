@@ -484,7 +484,7 @@ func queryAuctionParams() *cobra.Command {
 			res, err := queryClient.QueryAuctionParams(
 				context.Background(),
 				&types.QueryAuctionParamRequest{
-					Id: id,
+					AppId: id,
 				},
 			)
 			if err != nil {

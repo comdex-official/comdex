@@ -195,7 +195,7 @@ message QueryParamsResponse {
 }
 
 message QueryAuctionParamRequest {
-  uint64 id = 1;
+  uint64 app_id = 1;
 }
 
 message QueryAuctionParamResponse {
@@ -239,6 +239,6 @@ service Query {
     option (google.api.http).get = "/comdex/auction/v1beta1/protocolstats/{app_id}";
   }
   rpc QueryAuctionParams(QueryAuctionParamRequest) returns (QueryAuctionParamResponse) {
-    option (google.api.http).get = "/comdex/auction/v1beta1/auctionparams/{id}";
+    option (google.api.http).get = "/comdex/auction/v1beta1/auctionparams/{app_id}";
   }
 }
