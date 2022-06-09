@@ -2,6 +2,7 @@ package expected
 
 import (
 	"github.com/comdex-official/comdex/x/asset/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -20,4 +21,9 @@ type AssetKeeper interface {
 	GetAssetForDenom(ctx sdk.Context, denom string) (types.Asset, bool)
 	GetApp(ctx sdk.Context, id uint64) (types.AppMapping, bool)
 	GetAsset(ctx sdk.Context, id uint64) (types.Asset, bool)
+	GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64) (mintData types.MintGenesisToken, found bool)
+}
+
+type AuctionKeeper interface {
+	GetAuctionParams(ctx sdk.Context, AppId uint64) (asset auctiontypes.AuctionParams, found bool)
 }

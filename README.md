@@ -7,13 +7,14 @@
 <h4> An ecosystem of solutions built with an aim of bridging DeFi & CeFi </h4>
 </div>
 
-Comdex is a decentralized synthetics protocol built on Cosmos.
-Users can collateralize their holdings from the Cosmos ecosystem to take exposure to a range of synthetic assets.
-Comdex builds solutions to democratize finance by giving investors exposure to a large range of asset classes.
+A DeFi infrastructure layer for the Cosmos ecosystem
+A layer-1 infrastructure for seamless deployment of DeFi applications in the Cosmos ecosystem, powering DeFi in the multi-chain future.
+
+Plug & play customizable Comdex modules to deliver bleeding edge dApps
 
 ## Docs
 
-We will be soon releasing out documentations.
+checkout the documents here [docs.comdex.one](https://docs.comdex.one).
 
 If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](https://discord.com/invite/7vjPvWKKMT).
 
@@ -33,18 +34,18 @@ make install
 
 ## Testnet
 
+To verify latest testnet and main net version check 
+[Version](https://github.com/comdex-official/networks/blob/main/README.md)
+
 For further information on joining the testnet, head over to the 
 [Comdex Networks TestNet](https://github.com/comdex-official/networks/tree/main/testnet).
 
 The explorer for this chain is hosted [TestNet Explorer](https://comets-test.comdex.one/)
 
-Latest testnet version - [1.0.0](https://github.com/comdex-official/comdex/releases/tag/v1.0.0)
-
 ## MainNet
 For further information on joining the mainnet, head over to the
 [Comdex Networks MainNet](https://github.com/comdex-official/networks/tree/main/mainnet).
 
-Latest Mainnet verion - [0.1.1](https://github.com/comdex-official/comdex/releases/tag/v0.1.1)
 
 ## Mainet Explorers 
 The explorer for this chain is hosted

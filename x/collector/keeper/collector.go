@@ -183,6 +183,10 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 		if msg.CollectorAssetId == msg.SecondaryAssetId {
 			return types.ErrorDuplicateAssetDenoms
 		}
+		_, found := k.GetMintGenesisTokenData(ctx,msg.AppId,msg.SecondaryAssetId)
+		if !found {
+			return types.ErrorAssetNotAddedForGenesisMinting
+		}
 		appDenom, found := k.GetAppToDenomsMapping(ctx, msg.AppId)
 		if found {
 			//check if assetdenom already exists
@@ -324,6 +328,10 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Colle
 		_, found := k.GetApp(ctx, msg.AppId)
 		if !found {
 			return types.ErrorAppDoesNotExist
+		}
+		_, found1 := k.GetAuctionParams(ctx, msg.AppId)
+		if !found1{
+			return types.ErrorAuctionParmsNotSet
 		}
 		var collectorAuctionLookup types.CollectorAuctionLookupTable
 		collectorAuctionLookup.AppId = msg.AppId

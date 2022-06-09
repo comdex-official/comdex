@@ -145,7 +145,7 @@ import (
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
-	tv1_0_1 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_1"
+	tv1_1_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_1_0"
 )
 
 const (
@@ -573,6 +573,7 @@ func New(
 		app.keys[collectortypes.StoreKey],
 		app.keys[collectortypes.MemStoreKey],
 		&app.assetKeeper,
+		&app.auctionKeeper,
 		app.GetSubspace(collectortypes.ModuleName),
 		app.bankKeeper,
 	)
@@ -1013,8 +1014,8 @@ func (a *App) registerUpgradeHandlers() {
 	)
 
 	a.upgradeKeeper.SetUpgradeHandler(
-		tv1_0_1.UpgradeName,
-		tv1_0_1.CreateUpgradeHandler(a.mm, a.configurator),
+		tv1_1_0.UpgradeName,
+		tv1_1_0.CreateUpgradeHandler(a.mm, a.configurator),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1034,8 +1035,8 @@ func (a *App) registerUpgradeHandlers() {
 			Added:   []string{authz.ModuleName},
 			Deleted: []string{"asset", "liquidity", "oracle", "vault"},
 		}
-	case upgradeInfo.Name == tv1_0_1.UpgradeName && !a.upgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		// prepare store for testnet upgrade v1.0.1
+	case upgradeInfo.Name == tv1_1_0.UpgradeName && !a.upgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		// prepare store for testnet upgrade v1.1.0
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{
 				assettypes.ModuleName,

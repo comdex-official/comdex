@@ -37,7 +37,7 @@ func (q *queryServer) QueryCollectorLookupByProduct(c context.Context, req *type
 
 	collectorLookupData, found := q.GetCollectorLookupTable(ctx, req.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Lookup table does not exist for product id %d", req.AppId)
+		return &types.QueryCollectorLookupByProductResponse{}, nil
 	}
 
 	return &types.QueryCollectorLookupByProductResponse{
@@ -59,7 +59,7 @@ func (q *queryServer) QueryCollectorLookupByProductAndAsset(c context.Context, r
 
 	collectorLookupData, found := q.GetCollectorLookupByAsset(ctx, req.AppId, req.AssetId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Lookup table does not exist for product id %d", req.AppId)
+		return &types.QueryCollectorLookupByProductAndAssetResponse{}, nil
 	}
 
 	return &types.QueryCollectorLookupByProductAndAssetResponse{
