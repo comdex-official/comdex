@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 )
 func (k *Keeper) HasAssetForDenom(ctx sdk.Context, id string) bool {
 	return k.asset.HasAssetForDenom(ctx, id)
@@ -33,4 +34,8 @@ func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recip
 
 func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64) (mintData types.MintGenesisToken, found bool)  {
 	return k.asset.GetMintGenesisTokenData(ctx,appId, assetId)
+}
+
+func (k *Keeper) GetAuctionParams(ctx sdk.Context, AppId uint64) (asset auctiontypes.AuctionParams, found bool)  {
+	return k.auction.GetAuctionParams(ctx,AppId)
 }

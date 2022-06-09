@@ -573,6 +573,7 @@ func New(
 		app.keys[collectortypes.StoreKey],
 		app.keys[collectortypes.MemStoreKey],
 		&app.assetKeeper,
+		&app.auctionKeeper,
 		app.GetSubspace(collectortypes.ModuleName),
 		app.bankKeeper,
 	)
