@@ -1,65 +1,9 @@
 syntax = "proto3";
 package comdex.auction.v1beta1;
 
-import "gogoproto/gogo.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/auction/types";
 
 message Params {
-  string liquidation_penalty_percent  = 1 [ 
-    (gogoproto.moretags) = "yaml:\"liquidation_penalty_percent\""
-  ]; 
-  string auction_discount_percent  = 2 [ 
-    (gogoproto.moretags) = "yaml:\"auction_discount_percent\""
-  ]; 
-  uint64 auction_duration_seconds  = 3 [ 
-    (gogoproto.moretags) = "yaml:\"auction_duration_seconds\""
-  ];
-  string debt_mint_token_decrease_percentage  = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false,
-    (gogoproto.moretags)   = "yaml:\"debt_mint_token_decrease_percentage\""
-  ];
-  string buffer  = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false,
-    (gogoproto.moretags)   = "yaml:\"buffer\""
-  ];
-  string cusp  = 6 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false,
-    (gogoproto.moretags)   = "yaml:\"cusp\""
-  ];
-  string tau  = 7 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false,
-    (gogoproto.moretags)   = "yaml:\"tau\""
-  ];
-  string dutchDecreasePercentage  = 8 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false,
-    (gogoproto.moretags)   = "yaml:\"decreasePercent\""
-  ];
-  string chost  = 9 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false,
-    (gogoproto.moretags)   = "yaml:\"chost\""
-  ];
-  string step  = 10 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false,
-    (gogoproto.moretags)   = "yaml:\"step\""
-  ];
-  uint64 priceFunctionType = 11 [
-    (gogoproto.moretags) = "yaml:\"priceFunctionType\""
-  ];
-  uint64 surplus_id = 12 [
-    (gogoproto.moretags) = "yaml:\"priceFunctionType\""
-  ];
-  uint64 debt_id = 13 [
-    (gogoproto.moretags) = "yaml:\"priceFunctionType\""
-  ];
-  uint64 dutch_id = 14 [
-    (gogoproto.moretags) = "yaml:\"priceFunctionType\""
-  ];
+
 }
