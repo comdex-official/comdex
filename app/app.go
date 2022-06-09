@@ -1089,6 +1089,7 @@ func (a *App) registerUpgradeHandlers() {
 				rewardstypes.ModuleName,
 				tokenminttypes.ModuleName,
 				vaulttypes.ModuleName,
+				feegrant.ModuleName,
 			},
 		}
 	}
