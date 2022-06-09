@@ -14,7 +14,7 @@ Plug & play customizable Comdex modules to deliver bleeding edge dApps
 
 ## Docs
 
-checkout the documents here [docs.comdex.one](htps://docs.comdex.one)
+checkout the documents here [docs.comdex.one](https://docs.comdex.one).
 
 If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](https://discord.com/invite/7vjPvWKKMT).
 
