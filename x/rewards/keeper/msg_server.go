@@ -27,10 +27,10 @@ func (m msgServer) CreateGauge(goCtx context.Context, msg *types.MsgCreateGauge)
 		return nil, err
 	}
 
-	err = m.Keeper.CreateNewGauge(ctx, msg, false)
+	/*err = m.Keeper.CreateNewGauge(ctx, msg, false)
 	if err != nil {
 		return nil, err
-	}
+	}*/
 
 	return &types.MsgCreateGaugeResponse{}, nil
 }
