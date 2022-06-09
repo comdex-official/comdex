@@ -56,6 +56,9 @@ The explorer for this chain is hosted
 * [Atomscan](https://atomscan.com/comdex)
 * [ZenChainLabs](https://comdex.zenscan.io/)
 
+## want to contribute to comdex, please go through the contribution guides
+* [Contribution guides](https://github.com/comdex-official/contribution-docs)
+
 ## License
 
 Copyright © Comdex Technologies Pte Ltd. All rights reserved.
