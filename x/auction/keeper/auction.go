@@ -1000,7 +1000,7 @@ func (k Keeper) CloseDutchAuction(
 		return sdkerrors.ErrNotFound
 	}
 
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, burnToken.Amount, false)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, burnToken.Amount, false)
 
 	//send penalty
 	err = k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(burnToken.Denom, penaltyAmount)))
