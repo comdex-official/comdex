@@ -88,12 +88,10 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (
 	if prevInterestTime == 0 {
 		prevInterestTime = currentTime
 	}
-
 	secondsElapsed := currentTime - prevInterestTime
 	if secondsElapsed < 0 {
 		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrNegativeTimeElapsed, fmt.Sprintf("%d seconds", secondsElapsed))
 	}
-
 	//{(1+ Annual Interest Rate)^(No of seconds per block/No. of seconds in a year)}-1
 
 	yearsElapsed := sdk.NewDec(secondsElapsed).QuoInt64(types.SecondsPerYear).MustFloat64()
@@ -106,15 +104,12 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (
 	amtFloat, _ := strconv.ParseFloat(amount.String(), 64)
 	newAmount := intAccPerBlock * amtFloat
 
-	err := k.SetLastInterestTime(ctx, currentTime)
-	if err != nil {
-		return sdk.ZeroInt(), err
-	}
 	return sdk.NewInt(int64(newAmount)), nil
 }
 
 //IterateVaults does interest calculation for vaults
 func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
+	fmt.Println("in iterate")
 	extVaultMapping, _ := k.GetAppExtendedPairVaultMapping(ctx, appMappingId)
 	for _, v := range extVaultMapping.ExtendedPairVaults {
 		vaultIds := v.VaultIds
@@ -133,6 +128,7 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 				k.SetVault(ctx, vault)
 			}
 		}
+		
 	}
 	return nil
 }
