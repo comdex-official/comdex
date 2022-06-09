@@ -168,23 +168,10 @@ func (k *Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64) {
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	if id == 1 {
-		return 300000, true
+	market, found := k.GetMarketForAsset(ctx, id)
+	if !found {
+		return 0, false
 	}
-	if id == 2 {
-		return 100000, true
-	}
-	if id == 3 {
-		return 2000000, true
-	}
-	if id == 4 {
-		return 1000000, true
-	}
-	return 0, false
-	//market, found := k.GetMarketForAsset(ctx, id)
-	//if !found {
-	//	return 0, false
-	//}
-	//
-	//return k.GetPriceForMarket(ctx, market.Symbol)
+	
+	return k.GetPriceForMarket(ctx, market.Symbol)
 }
