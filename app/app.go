@@ -1,12 +1,14 @@
 package app
 
 import (
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	"github.com/spf13/cast"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
+	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/comdex-official/comdex/x/liquidation"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
@@ -197,17 +199,18 @@ var (
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
 			append(
-				assetclient.AddAssetsHandler,
-				bandoraclemoduleclient.AddFetchPriceHandler,
-				collectorclient.AddLookupTableParamsHandlers,
-				collectorclient.AddAuctionControlParamsHandler,
-				paramsclient.ProposalHandler,
-				distrclient.ProposalHandler,
-				upgradeclient.ProposalHandler,
-				upgradeclient.CancelProposalHandler,
-				ibcclientclient.UpdateClientProposalHandler,
-				ibcclientclient.UpgradeProposalHandler,
-			)...,
+				[]govclient.ProposalHandler{
+					bandoraclemoduleclient.AddFetchPriceHandler,
+					collectorclient.AddLookupTableParamsHandlers,
+					collectorclient.AddAuctionControlParamsHandler,
+					paramsclient.ProposalHandler,
+					distrclient.ProposalHandler,
+					upgradeclient.ProposalHandler,
+					upgradeclient.CancelProposalHandler,
+					ibcclientclient.UpdateClientProposalHandler,
+					ibcclientclient.UpgradeProposalHandler},
+				append(wasmclient.ProposalHandlers,
+					assetclient.AddAssetsHandler...)...)...,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
