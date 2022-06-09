@@ -117,18 +117,22 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 			vault, _ := k.GetVault(ctx, vaultIds[j])
 			ExtPairVault, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 			StabilityFee := ExtPairVault.StabilityFee
+			if !ExtPairVault.IsPsmPair {
+				if StabilityFee != sdk.ZeroDec() {
 
-			if StabilityFee != sdk.ZeroDec() {
-
-				interest, _ := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
-				intAcc := vault.InterestAccumulated
-				updatedIntAcc := (intAcc).Add(interest)
-				vault.InterestAccumulated = updatedIntAcc
-				vault.AmountOut = vault.AmountOut.Add(interest)
-				k.SetVault(ctx, vault)
+					interest, err := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
+					if err != nil {
+						continue
+					}
+					intAcc := vault.InterestAccumulated
+					updatedIntAcc := (intAcc).Add(interest)
+					vault.InterestAccumulated = updatedIntAcc
+					vault.AmountOut = vault.AmountOut.Add(interest)
+					k.SetVault(ctx, vault)
+				}
 			}
 		}
-		
+
 	}
 	return nil
 }
