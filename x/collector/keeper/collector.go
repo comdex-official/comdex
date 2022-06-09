@@ -329,6 +329,10 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Colle
 		if !found {
 			return types.ErrorAppDoesNotExist
 		}
+		_, found1 := k.GetAuctionParams(ctx, msg.AppId)
+		if !found1{
+			return types.ErrorAuctionParmsNotSet
+		}
 		var collectorAuctionLookup types.CollectorAuctionLookupTable
 		collectorAuctionLookup.AppId = msg.AppId
 		collectorAuctionLookup.AssetIdToAuctionLookup = msg.AssetIdToAuctionLookup
