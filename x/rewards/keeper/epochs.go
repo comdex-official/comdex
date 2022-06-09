@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/comdex-official/comdex/x/rewards/types"
@@ -20,7 +19,7 @@ func (k Keeper) NewEpochInfo(ctx sdk.Context, duration time.Duration) types.Epoc
 }
 
 // TriggerAndUpdateEpochInfos updated the existing epoch and initiates the task if it is to be triggered.
-func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
+/*func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
 	logger := k.Logger(ctx)
 
 	epochInfos := k.GetAllEpochInfos(ctx)
@@ -65,4 +64,4 @@ func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
 			k.SetEpochInfoByDuration(ctx, epoch)
 		}
 	}
-}
+}*/
