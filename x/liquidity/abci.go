@@ -11,7 +11,6 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
-
 	allApps, found := k.GetApps(ctx)
 	if found {
 

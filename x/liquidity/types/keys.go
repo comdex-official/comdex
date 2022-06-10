@@ -114,7 +114,7 @@ func GetAllDepositRequestKey(appID uint64) []byte {
 
 // GetDepositRequestKey returns the store key to retrieve deposit request object from the pool id and request id.
 func GetDepositRequestKey(appID, poolID, id uint64) []byte {
-	return append(append(append(DepositRequestKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(append(DepositRequestKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(id)...)
 }
 
 // GetDepositRequestIndexKey returns the index key to map deposit requests
@@ -125,14 +125,14 @@ func GetDepositRequestIndexKey(
 	depositor sdk.AccAddress,
 	poolID, reqID uint64,
 ) []byte {
-	return append(append(append(append(DepositRequestIndexKeyPrefix, address.MustLengthPrefix(depositor)...),
-		sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(reqID)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(append(append(DepositRequestIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(depositor)...),
+		sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(reqID)...)
 }
 
 // GetDepositRequestIndexKeyPrefix returns the index key prefix to iterate
 // deposit requests by a depositor.
 func GetDepositRequestIndexKeyPrefix(appID uint64, depositor sdk.AccAddress) []byte {
-	return append(append(DepositRequestIndexKeyPrefix, address.MustLengthPrefix(depositor)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(DepositRequestIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(depositor)...)
 }
 
 // GetWithdrawRequestKey returns the store key to retrieve withdraw request object from the pool id and request id.
@@ -229,10 +229,10 @@ func ParseDepositRequestIndexKey(key []byte) (depositor sdk.AccAddress, poolID, 
 		panic("key does not have proper prefix")
 	}
 
-	addrLen := key[1]
-	depositor = key[2 : 2+addrLen]
-	poolID = sdk.BigEndianToUint64(key[2+addrLen : 2+addrLen+8])
-	reqID = sdk.BigEndianToUint64(key[2+addrLen+8:])
+	addrLen := key[9]
+	depositor = key[10 : 10+addrLen]
+	poolID = sdk.BigEndianToUint64(key[10+addrLen : 10+addrLen+8])
+	reqID = sdk.BigEndianToUint64(key[10+addrLen+8:])
 	return
 }
 
