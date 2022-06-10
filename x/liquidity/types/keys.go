@@ -204,13 +204,11 @@ func ParsePairsByDenomsIndexKey(key []byte) (denomA, denomB string, pairID uint6
 	if !bytes.HasPrefix(key, PairsByDenomsIndexKeyPrefix) {
 		panic("key does not have proper prefix")
 	}
-
-	denomALen := key[1]
-	denomA = string(key[2 : 2+denomALen])
-	denomBLen := key[2+denomALen]
-	denomB = string(key[3+denomALen : 3+denomALen+denomBLen])
-	pairID = sdk.BigEndianToUint64(key[3+denomALen+denomBLen:])
-
+	denomALen := key[9]
+	denomA = string(key[10 : 10+denomALen])
+	denomBLen := key[10+denomALen]
+	denomB = string(key[11+denomALen : 11+denomALen+denomBLen])
+	pairID = sdk.BigEndianToUint64(key[11+denomALen+denomBLen:])
 	return
 }
 
