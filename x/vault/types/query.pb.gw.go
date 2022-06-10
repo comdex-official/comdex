@@ -2957,55 +2957,55 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_QueryVault_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaults", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryVault_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaults", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryVaultInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaultsInfo", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryVaultInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaultsInfo", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryVaultInfoByAppByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "vaultsInfoByOwner", "app_id", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryVaultInfoByAppByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "vaultsInfoByOwner", "app_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllVaults_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "vault", "v1beta1", "vaults"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllVaults_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "vault", "v1beta1", "vaults"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllVaultsByProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaults-by-product", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllVaultsByProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaults-by-product", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllVaultsByAppAndExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "vaults-by-app-and-extended-pair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllVaultsByAppAndExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "vaults-by-app-and-extended-pair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryVaultOfOwnerByExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "vault", "v1beta1", "vault-of-owner-by-extended-pair", "product_id", "owner", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryVaultOfOwnerByExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "vault", "v1beta1", "vault-of-owner-by-extended-pair", "product_id", "owner", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryVaultByProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "extendedPairvaults-by-product", "product_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryVaultByProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "extendedPairvaults-by-product", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllVaultByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaults-by-owner", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllVaultByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaults-by-owner", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTokenMintedAllProductsByPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "token-minted-by-products-extended-pair", "product_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryTokenMintedAllProductsByPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "token-minted-by-products-extended-pair", "product_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTokenMintedAllProducts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "token-minted-by-products", "product_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryTokenMintedAllProducts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "token-minted-by-products", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryVaultCountByProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vault-count-by-products", "product_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryVaultCountByProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vault-count-by-products", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryVaultCountByProductAndPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "vault-count-by-products-and-pair", "product_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryVaultCountByProductAndPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "vault-count-by-products-and-pair", "product_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTotalValueLockedByProductExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "value-locked-by-product-pair", "product_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryTotalValueLockedByProductExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "value-locked-by-product-pair", "product_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryExtendedPairIDByProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "external-pair-by-product", "product_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryExtendedPairIDByProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "external-pair-by-product", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryStableVaultInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-id", "stable_vault_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryStableVaultInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-id", "stable_vault_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllStableVaults_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-product", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllStableVaults_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-product", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryStableVaultByProductExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-product-extendedPair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryStableVaultByProductExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-product-extendedPair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-by-product-and-ExtendedPairId", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-by-product-and-ExtendedPairId", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryExtendedPairVaultMappingByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-by-product", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryExtendedPairVaultMappingByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-by-product", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryExtendedPairVaultMappingByOwnerAndApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-by-owner-and-product", "owner", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryExtendedPairVaultMappingByOwnerAndApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-by-owner-and-product", "owner", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-by-owner-product-extendedPair", "owner", "app_id", "extended_pair"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-by-owner-product-extendedPair", "owner", "app_id", "extended_pair"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTVLLockedByAppOfAllExtendedPairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "tvl-locked-by-app-all-extended-pairs", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryTVLLockedByAppOfAllExtendedPairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "tvl-locked-by-app-all-extended-pairs", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTotalTVLByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "tvl-locked-by-app", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryTotalTVLByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "tvl-locked-by-app", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryUserMyPositionByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "user-my-position-by-app", "app_id", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryUserMyPositionByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "user-my-position-by-app", "app_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
