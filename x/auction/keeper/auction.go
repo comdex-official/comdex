@@ -1161,7 +1161,7 @@ func (k Keeper) PlaceSurplusBid(ctx sdk.Context, appId, auctionMappingId, auctio
 	if err != nil {
 		return err
 	}
-	biddingId, err := k.CreateNewSurplusBid(ctx, auctionId, auctionMappingId, auctionId, bidder, bid)
+	biddingId, err := k.CreateNewSurplusBid(ctx, appId, auctionMappingId, auctionId, bidder, bid)
 	if err != nil {
 		return err
 	}
