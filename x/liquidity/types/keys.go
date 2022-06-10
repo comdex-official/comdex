@@ -135,14 +135,14 @@ func GetDepositRequestIndexKeyPrefix(appID uint64, depositor sdk.AccAddress) []b
 	return append(append(DepositRequestIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(depositor)...)
 }
 
-// GetWithdrawRequestKey returns the store key to retrieve withdraw request object from the pool id and request id.
-func GetWithdrawRequestKey(appID, poolID, id uint64) []byte {
-	return append(append(append(WithdrawRequestKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
-}
-
 // GetPoolKey returns the store key to retrieve pool object from the pool id.
 func GetAllWithdrawRequestKey(appID uint64) []byte {
 	return append(WithdrawRequestKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
+}
+
+// GetWithdrawRequestKey returns the store key to retrieve withdraw request object from the pool id and request id.
+func GetWithdrawRequestKey(appID, poolID, id uint64) []byte {
+	return append(append(append(WithdrawRequestKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(id)...)
 }
 
 // GetWithdrawRequestIndexKey returns the index key to map withdraw requests
@@ -153,14 +153,14 @@ func GetWithdrawRequestIndexKey(
 	withdrawer sdk.AccAddress,
 	poolID, reqID uint64,
 ) []byte {
-	return append(append(append(append(WithdrawRequestIndexKeyPrefix, address.MustLengthPrefix(withdrawer)...),
-		sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(reqID)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(append(append(WithdrawRequestIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(withdrawer)...),
+		sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(reqID)...)
 }
 
 // GetWithdrawRequestIndexKeyPrefix returns the index key prefix to iterate
 // withdraw requests by a withdrawer.
 func GetWithdrawRequestIndexKeyPrefix(appID uint64, depositor sdk.AccAddress) []byte {
-	return append(append(WithdrawRequestIndexKeyPrefix, address.MustLengthPrefix(depositor)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(WithdrawRequestIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(depositor)...)
 }
 
 // GetOrderKey returns the store key to retrieve order object from the pair id and request id.
@@ -242,10 +242,10 @@ func ParseWithdrawRequestIndexKey(key []byte) (withdrawer sdk.AccAddress, poolID
 		panic("key does not have proper prefix")
 	}
 
-	addrLen := key[1]
-	withdrawer = key[2 : 2+addrLen]
-	poolID = sdk.BigEndianToUint64(key[2+addrLen : 2+addrLen+8])
-	reqID = sdk.BigEndianToUint64(key[2+addrLen+8:])
+	addrLen := key[9]
+	withdrawer = key[10 : 10+addrLen]
+	poolID = sdk.BigEndianToUint64(key[10+addrLen : 10+addrLen+8])
+	reqID = sdk.BigEndianToUint64(key[10+addrLen+8:])
 	return
 }
 
