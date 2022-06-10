@@ -107,7 +107,7 @@ func (k Keeper) getSurplusInflowTokenAmount(ctx sdk.Context, appId, AssetInId, A
 
 		if data.AssetOutOraclePrice {
 			//If oracle Price required for the assetOut
-			outflowTokenPrice, found = k.GetPriceForAsset(ctx, AssetInId)
+			outflowTokenPrice, found = k.GetPriceForAsset(ctx, AssetOutId)
 
 		} else {
 			//If oracle Price is not required for the assetOut
