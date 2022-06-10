@@ -19,6 +19,7 @@ func NewDepositRequest(msg *MsgDeposit, pool Pool, id uint64, msgHeight int64) D
 		AcceptedCoins:  nil,
 		MintedPoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdk.ZeroInt()),
 		Status:         RequestStatusNotExecuted,
+		AppId:          msg.AppId,
 	}
 }
 
@@ -86,6 +87,7 @@ func NewWithdrawRequest(msg *MsgWithdraw, id uint64, msgHeight int64) WithdrawRe
 		PoolCoin:       msg.PoolCoin,
 		WithdrawnCoins: nil,
 		Status:         RequestStatusNotExecuted,
+		AppId:          msg.AppId,
 	}
 }
 
@@ -152,6 +154,7 @@ func NewOrderForLimitOrder(msg *MsgLimitOrder, id uint64, pair Pair, offerCoin s
 		BatchId:            pair.CurrentBatchId,
 		ExpireAt:           expireAt,
 		Status:             OrderStatusNotExecuted,
+		AppId:              msg.AppId,
 	}
 }
 
@@ -172,6 +175,7 @@ func NewOrderForMarketOrder(msg *MsgMarketOrder, id uint64, pair Pair, offerCoin
 		BatchId:            pair.CurrentBatchId,
 		ExpireAt:           expireAt,
 		Status:             OrderStatusNotExecuted,
+		AppId:              msg.AppId,
 	}
 }
 

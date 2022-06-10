@@ -44,122 +44,159 @@ var (
 )
 
 // GetPairKey returns the store key to retrieve pair object from the pair id.
-func GetPairKey(pairID uint64) []byte {
-	return append(PairKeyPrefix, sdk.Uint64ToBigEndian(pairID)...)
+func GetLastPairIDKey(appID uint64) []byte {
+	return append(LastPairIDKey, sdk.Uint64ToBigEndian(appID)...)
+}
+
+// GetPairKey returns the store key to retrieve pair object from the pair id.
+func GetPairKey(appID, pairID uint64) []byte {
+	return append(append(PairKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairID)...)
+}
+
+// GetPairKey returns the store key to retrieve pair object from the pair id.
+func GetAllPairsKey(appID uint64) []byte {
+	return append(PairKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetPairIndexKey returns the index key to get a pair by denoms.
-func GetPairIndexKey(baseCoinDenom, quoteCoinDenom string) []byte {
-	return append(append(PairIndexKeyPrefix, LengthPrefixString(baseCoinDenom)...), LengthPrefixString(quoteCoinDenom)...)
+func GetPairIndexKey(appID uint64, baseCoinDenom, quoteCoinDenom string) []byte {
+	return append(append(append(PairIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), LengthPrefixString(baseCoinDenom)...), LengthPrefixString(quoteCoinDenom)...)
 }
 
 // GetPairsByDenomsIndexKey returns the index key to lookup pairs with given denoms.
-func GetPairsByDenomsIndexKey(denomA, denomB string, pairID uint64) []byte {
-	return append(append(append(PairsByDenomsIndexKeyPrefix, LengthPrefixString(denomA)...), LengthPrefixString(denomB)...), sdk.Uint64ToBigEndian(pairID)...)
+func GetPairsByDenomsIndexKey(appID uint64, denomA, denomB string, pairID uint64) []byte {
+	return append(append(append(append(PairsByDenomsIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), LengthPrefixString(denomA)...), LengthPrefixString(denomB)...), sdk.Uint64ToBigEndian(pairID)...)
 }
 
 // GetPairsByDenomIndexKeyPrefix returns the index key prefix to lookup pairs with given denom.
-func GetPairsByDenomIndexKeyPrefix(denomA string) []byte {
-	return append(PairsByDenomsIndexKeyPrefix, LengthPrefixString(denomA)...)
+func GetPairsByDenomIndexKeyPrefix(appID uint64, denomA string) []byte {
+	return append(append(PairsByDenomsIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), LengthPrefixString(denomA)...)
 }
 
 // GetPairsByDenomsIndexKeyPrefix returns the index key prefix to lookup pairs with given denoms.
-func GetPairsByDenomsIndexKeyPrefix(denomA, denomB string) []byte {
-	return append(append(PairsByDenomsIndexKeyPrefix, LengthPrefixString(denomA)...), LengthPrefixString(denomB)...)
+func GetPairsByDenomsIndexKeyPrefix(appID uint64, denomA, denomB string) []byte {
+	return append(append(append(PairsByDenomsIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), LengthPrefixString(denomA)...), LengthPrefixString(denomB)...)
+}
+
+func GetLastPoolIDKey(appID uint64) []byte {
+	return append(LastPoolIDKey, sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetPoolKey returns the store key to retrieve pool object from the pool id.
-func GetPoolKey(poolID uint64) []byte {
-	return append(PoolKeyPrefix, sdk.Uint64ToBigEndian(poolID)...)
+func GetPoolKey(appID, poolID uint64) []byte {
+	return append(append(PoolKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(appID)...)
+}
+
+// GetPoolKey returns the store key to retrieve pool object from the pool id.
+func GetAllPoolsKey(appID uint64) []byte {
+	return append(PoolKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetPoolByReserveAddressIndexKey returns the index key to retrieve the particular pool.
-func GetPoolByReserveAddressIndexKey(reserveAddr sdk.AccAddress) []byte {
-	return append(PoolByReserveAddressIndexKeyPrefix, address.MustLengthPrefix(reserveAddr)...)
+func GetPoolByReserveAddressIndexKey(appID uint64, reserveAddr sdk.AccAddress) []byte {
+	return append(append(PoolByReserveAddressIndexKeyPrefix, address.MustLengthPrefix(reserveAddr)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetPoolsByPairIndexKey returns the index key to retrieve pool id that is used to iterate pools.
-func GetPoolsByPairIndexKey(pairID, poolID uint64) []byte {
-	return append(append(PoolsByPairIndexKeyPrefix, sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(poolID)...)
+func GetPoolsByPairIndexKey(appID, pairID, poolID uint64) []byte {
+	return append(append(append(PoolsByPairIndexKeyPrefix, sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetPoolsByPairIndexKeyPrefix returns the store key to retrieve pool id to iterate pools.
-func GetPoolsByPairIndexKeyPrefix(pairID uint64) []byte {
-	return append(PoolsByPairIndexKeyPrefix, sdk.Uint64ToBigEndian(pairID)...)
+func GetPoolsByPairIndexKeyPrefix(appID, pairID uint64) []byte {
+	return append(append(PoolsByPairIndexKeyPrefix, sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(appID)...)
+}
+
+// GetPoolKey returns the store key to retrieve pool object from the pool id.
+func GetAllDepositRequestKey(appID uint64) []byte {
+	return append(DepositRequestKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetDepositRequestKey returns the store key to retrieve deposit request object from the pool id and request id.
-func GetDepositRequestKey(poolID, id uint64) []byte {
-	return append(append(DepositRequestKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(id)...)
+func GetDepositRequestKey(appID, poolID, id uint64) []byte {
+	return append(append(append(DepositRequestKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetDepositRequestIndexKey returns the index key to map deposit requests
 // with a depositor.
 func GetDepositRequestIndexKey(
 	//nolint
+	appID uint64,
 	depositor sdk.AccAddress,
 	poolID, reqID uint64,
 ) []byte {
-	return append(append(append(DepositRequestIndexKeyPrefix, address.MustLengthPrefix(depositor)...),
-		sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(reqID)...)
+	return append(append(append(append(DepositRequestIndexKeyPrefix, address.MustLengthPrefix(depositor)...),
+		sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(reqID)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetDepositRequestIndexKeyPrefix returns the index key prefix to iterate
 // deposit requests by a depositor.
-func GetDepositRequestIndexKeyPrefix(depositor sdk.AccAddress) []byte {
-	return append(DepositRequestIndexKeyPrefix, address.MustLengthPrefix(depositor)...)
+func GetDepositRequestIndexKeyPrefix(appID uint64, depositor sdk.AccAddress) []byte {
+	return append(append(DepositRequestIndexKeyPrefix, address.MustLengthPrefix(depositor)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetWithdrawRequestKey returns the store key to retrieve withdraw request object from the pool id and request id.
-func GetWithdrawRequestKey(poolID, id uint64) []byte {
-	return append(append(WithdrawRequestKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(id)...)
+func GetWithdrawRequestKey(appID, poolID, id uint64) []byte {
+	return append(append(append(WithdrawRequestKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
+}
+
+// GetPoolKey returns the store key to retrieve pool object from the pool id.
+func GetAllWithdrawRequestKey(appID uint64) []byte {
+	return append(WithdrawRequestKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetWithdrawRequestIndexKey returns the index key to map withdraw requests
 // with a withdrawer.
 func GetWithdrawRequestIndexKey(
 	//nolint
+	appID uint64,
 	withdrawer sdk.AccAddress,
 	poolID, reqID uint64,
 ) []byte {
-	return append(append(append(WithdrawRequestIndexKeyPrefix, address.MustLengthPrefix(withdrawer)...),
-		sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(reqID)...)
+	return append(append(append(append(WithdrawRequestIndexKeyPrefix, address.MustLengthPrefix(withdrawer)...),
+		sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(reqID)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetWithdrawRequestIndexKeyPrefix returns the index key prefix to iterate
 // withdraw requests by a withdrawer.
-func GetWithdrawRequestIndexKeyPrefix(depositor sdk.AccAddress) []byte {
-	return append(WithdrawRequestIndexKeyPrefix, address.MustLengthPrefix(depositor)...)
+func GetWithdrawRequestIndexKeyPrefix(appID uint64, depositor sdk.AccAddress) []byte {
+	return append(append(WithdrawRequestIndexKeyPrefix, address.MustLengthPrefix(depositor)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetOrderKey returns the store key to retrieve order object from the pair id and request id.
-func GetOrderKey(pairID, id uint64) []byte {
-	return append(append(OrderKeyPrefix, sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(id)...)
+func GetOrderKey(appID, pairID, id uint64) []byte {
+	return append(append(append(OrderKeyPrefix, sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
+}
+
+// GetPoolKey returns the store key to retrieve pool object from the pool id.
+func GetAllOrdersKey(appID uint64) []byte {
+	return append(OrderKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetPoolLiquidityProvidersDataKeyPrefix returns the store key to retrieve liquidity providers data from the pool id.
-func GetPoolLiquidityProvidersDataKey(poolID uint64) []byte {
-	return append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(poolID)...)
+func GetPoolLiquidityProvidersDataKey(appID, poolID uint64) []byte {
+	return append(append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetOrdersByPairKeyPrefix returns the store key to iterate orders by pair.
-func GetOrdersByPairKeyPrefix(pairID uint64) []byte {
-	return append(OrderKeyPrefix, sdk.Uint64ToBigEndian(pairID)...)
+func GetOrdersByPairKeyPrefix(appID uint64, pairID uint64) []byte {
+	return append(append(OrderKeyPrefix, sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetOrderIndexKey returns the index key to map orders with an orderer.
 func GetOrderIndexKey(
+	appID uint64,
 	orderer sdk.AccAddress,
 	pairID, orderID uint64,
 ) []byte {
-	return append(append(append(OrderIndexKeyPrefix, address.MustLengthPrefix(orderer)...),
-		sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(orderID)...)
+	return append(append(append(append(OrderIndexKeyPrefix, address.MustLengthPrefix(orderer)...),
+		sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(orderID)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetOrderIndexKeyPrefix returns the index key prefix to iterate orders
 // by an orderer.
-func GetOrderIndexKeyPrefix(orderer sdk.AccAddress) []byte {
-	return append(OrderIndexKeyPrefix, address.MustLengthPrefix(orderer)...)
+func GetOrderIndexKeyPrefix(appID uint64, orderer sdk.AccAddress) []byte {
+	return append(append(OrderIndexKeyPrefix, address.MustLengthPrefix(orderer)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // ParsePairsByDenomsIndexKey parses a pair by denom index key.

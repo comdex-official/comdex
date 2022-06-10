@@ -53,6 +53,8 @@ message MsgCreatePair {
 
   // quote_coin_denom specifies the quote coin denom of the pair.
   string quote_coin_denom = 3;
+
+  uint64 app_id = 4;
 }
 
 message MsgCreatePairResponse {}
@@ -68,6 +70,8 @@ message MsgCreatePool {
   // deposit_coins specifies the amount of coins to deposit.
   repeated cosmos.base.v1beta1.Coin deposit_coins = 3
       [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
+  
+  uint64 app_id = 4;
 }
 
 // MsgCreatePoolResponse defines the Msg/CreatePool response type.
@@ -84,6 +88,8 @@ message MsgDeposit {
   // deposit_coins specifies the amount of coins to deposit.
   repeated cosmos.base.v1beta1.Coin deposit_coins = 3
       [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
+  
+  uint64 app_id = 4;
 }
 
 // MsgDepositResponse defines the Msg/Deposit response type.
@@ -99,6 +105,8 @@ message MsgWithdraw {
 
   // pool_coin specifies the pool coin that is a proof of liquidity provider for the pool
   cosmos.base.v1beta1.Coin pool_coin = 3 [(gogoproto.nullable) = false];
+
+  uint64 app_id = 4;
 }
 
 // MsgWithdrawResponse defines the Msg/Withdraw response type.
@@ -129,6 +137,8 @@ message MsgLimitOrder {
 
   // order_lifespan specifies the order lifespan
   google.protobuf.Duration order_lifespan = 8 [(gogoproto.stdduration) = true, (gogoproto.nullable) = false];
+
+  uint64 app_id = 9;
 }
 
 // MsgLimitOrderResponse defines the Msg/LimitOrder response type.
@@ -156,6 +166,8 @@ message MsgMarketOrder {
 
   // order_lifespan specifies the order lifespan
   google.protobuf.Duration order_lifespan = 7 [(gogoproto.stdduration) = true, (gogoproto.nullable) = false];
+
+  uint64 app_id = 8;
 }
 
 // MsgMarketOrderResponse defines the Msg/MarketOrder response type.
@@ -171,6 +183,8 @@ message MsgCancelOrder {
 
   // order_id specifies the order id
   uint64 order_id = 3;
+
+  uint64 app_id = 4;
 }
 
 // MsgCancelOrderResponse defines the Msg/CancelOrder response type.
@@ -183,6 +197,8 @@ message MsgCancelAllOrders {
 
   // pair_ids specifies pair ids to cancel orders
   repeated uint64 pair_ids = 2;
+
+  uint64 app_id = 3;
 }
 
 // MsgCancelAllOrdersResponse defines the Msg/CancelAllOrders response type.
@@ -203,6 +219,8 @@ message MsgTokensSoftLock {
     (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable)     = false
   ];
+
+  uint64 app_id = 4;
 }
 
 // MsgTokensSoftLockResponse  defines the Msg/MsgTokensSoftLockResponse response type.
@@ -222,6 +240,8 @@ message MsgTokensSoftUnlock {
     (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable)     = false
   ];
+
+  uint64 app_id = 4;
 }
 
 // MsgTokensSoftUnlockResponse defines the Msg/MsgTokensSoftUnlockResponse response type.

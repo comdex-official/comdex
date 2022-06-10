@@ -393,7 +393,7 @@ func NewMsgDepositStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, 
 		AppMappingId:        app_mapping_id,
 		ExtendedPairVaultId: extended_pair_vault_id,
 		Amount:              amount,
-		StableVaultId: stablemint_id,
+		StableVaultId:       stablemint_id,
 	}
 }
 

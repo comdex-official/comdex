@@ -26,6 +26,8 @@ message QueryPoolsRequest {
   string disabled = 2;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
+
+  uint64 app_id = 4;
 }
 
 // QueryPoolsResponse is response type for the Query/Pools RPC method.
@@ -38,6 +40,7 @@ message QueryPoolsResponse {
 // QueryPoolRequest is request type for the Query/Pool RPC method.
 message QueryPoolRequest {
   uint64 pool_id = 1;
+  uint64 app_id = 2;
 }
 
 // QueryPoolResponse is response type for the Query/Pool RPC method.
@@ -48,11 +51,13 @@ message QueryPoolResponse {
 // QueryPoolByReserveAddressRequest is request type for the Query/PoolByReserveAddress RPC method.
 message QueryPoolByReserveAddressRequest {
   string reserve_address = 1;
+  uint64 app_id = 2;
 }
 
 // QueryPoolByPoolCoinDenomRequest is request type for the Query/PoolByPoolCoinDenom RPC method.
 message QueryPoolByPoolCoinDenomRequest {
   string pool_coin_denom = 1;
+  uint64 app_id = 2;
 }
 
 // QueryPairsRequest is request type for the Query/Pairs RPC method.
@@ -60,6 +65,8 @@ message QueryPairsRequest {
   repeated string denoms = 1;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
+
+  uint64 app_id = 3;
 }
 
 // QueryPairsResponse is response type for the Query/Pairs RPC method.
@@ -72,6 +79,7 @@ message QueryPairsResponse {
 // QueryPairRequest is request type for the Query/Pair RPC method.
 message QueryPairRequest {
   uint64 pair_id = 1;
+  uint64 app_id = 2;
 }
 
 // QueryPairResponse is response type for the Query/Pair RPC method.
@@ -82,8 +90,9 @@ message QueryPairResponse {
 // QueryDepositRequestsRequest is request type for the Query/DepositRequests RPC method.
 message QueryDepositRequestsRequest {
   uint64 pool_id = 1;
+  uint64 app_id = 2;
 
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
 // QueryDepositRequestsResponse is response type for the Query/DepositRequests RPC method.
@@ -97,6 +106,7 @@ message QueryDepositRequestsResponse {
 message QueryDepositRequestRequest {
   uint64 pool_id = 1;
   uint64 id      = 2;
+  uint64 app_id = 3;
 }
 
 // QueryDepositRequestResponse is response type for the Query/DepositRequest RPC method.
@@ -109,6 +119,7 @@ message QueryWithdrawRequestsRequest {
   uint64 pool_id = 1;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  uint64 app_id = 3;
 }
 
 // QueryWithdrawRequestsResponse is response type for the Query/WithdrawRequests RPC method.
@@ -122,6 +133,7 @@ message QueryWithdrawRequestsResponse {
 message QueryWithdrawRequestRequest {
   uint64 pool_id = 1;
   uint64 id      = 2;
+  uint64 app_id = 3;
 }
 
 // QueryWithdrawRequestResponse is response type for the Query/WithdrawRequest RPC method.
@@ -134,6 +146,7 @@ message QueryOrdersRequest {
   uint64 pair_id = 1;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  uint64 app_id = 3;
 }
 
 // QueryOrdersResponse is response type for the Query/Orders RPC method.
@@ -147,6 +160,7 @@ message QueryOrdersResponse {
 message QueryOrderRequest {
   uint64 pair_id = 1;
   uint64 id      = 2;
+  uint64 app_id = 3;
 }
 
 // QueryOrderResponse is response type for the Query/Order RPC method.
@@ -159,6 +173,7 @@ message QueryOrdersByOrdererRequest {
   string                                orderer    = 1;
   uint64                                pair_id    = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
+  uint64 app_id = 4;
 }
 
 //
@@ -187,6 +202,7 @@ message PoolResponse {
 message QuerySoftLockRequest {
   uint64 pool_id = 1;
   string depositor = 2;
+  uint64 app_id = 3;
 }
 
 message QueuedPoolCoin {
@@ -218,6 +234,7 @@ message QuerySoftLockResponse {
 message QueryDeserializePoolCoinRequest {
   uint64 pool_id = 1;
   uint64 pool_coin_amount = 2;
+  uint64 app_id = 3;
 }
 
 // QueryDeserializePoolCoinResponse is response type for the Query/DeserializePoolCoin RPC method.
@@ -229,7 +246,9 @@ message QueryDeserializePoolCoinResponse {
 }
 
 // QueryPoolsIncentivesRequest is request type for the Query/PoolsIncentives RPC method.
-message QueryPoolsIncentivesRequest {}
+message QueryPoolsIncentivesRequest {
+  uint64 app_id = 1;
+}
 
 message PoolIncentive {
   uint64 pool_id = 1;
@@ -257,6 +276,7 @@ message PoolIncentive {
     (gogoproto.moretags) = "yaml:\"next_distribution\""
   ];
   bool is_swap_fee = 10;
+  uint64 app_id = 11;
 }
 
 // QueryPoolIncentivesResponse is response type for the Query/PoolsIncentives RPC method.
@@ -266,6 +286,7 @@ message QueryPoolIncentivesResponse {
 
 message QueryFarmedPoolCoinRequest {
   uint64 pool_id = 1;
+  uint64 app_id = 2;
 }
 
 message QueryFarmedPoolCoinResponse {

@@ -35,10 +35,12 @@ const (
 // NewMsgCreatePair returns a new MsgCreatePair.
 func NewMsgCreatePair(
 	//nolint
+	appId uint64,
 	creator sdk.AccAddress,
 	baseCoinDenom, quoteCoinDenom string,
 ) *MsgCreatePair {
 	return &MsgCreatePair{
+		AppId:          appId,
 		Creator:        creator.String(),
 		BaseCoinDenom:  baseCoinDenom,
 		QuoteCoinDenom: quoteCoinDenom,
@@ -84,12 +86,14 @@ func (msg MsgCreatePair) GetCreator() sdk.AccAddress {
 
 // NewMsgCreatePool creates a new MsgCreatePool.
 func NewMsgCreatePool(
+	appID uint64,
 	//nolint
 	creator sdk.AccAddress,
 	pairID uint64,
 	depositCoins sdk.Coins,
 ) *MsgCreatePool {
 	return &MsgCreatePool{
+		AppId:        appID,
 		Creator:      creator.String(),
 		PairId:       pairID,
 		DepositCoins: depositCoins,
@@ -143,12 +147,14 @@ func (msg MsgCreatePool) GetCreator() sdk.AccAddress {
 
 // NewMsgDeposit creates a new MsgDeposit.
 func NewMsgDeposit(
+	appID uint64,
 	//nolint
 	depositor sdk.AccAddress,
 	poolID uint64,
 	depositCoins sdk.Coins,
 ) *MsgDeposit {
 	return &MsgDeposit{
+		AppId:        appID,
 		Depositor:    depositor.String(),
 		PoolId:       poolID,
 		DepositCoins: depositCoins,
@@ -197,12 +203,14 @@ func (msg MsgDeposit) GetDepositor() sdk.AccAddress {
 
 // NewMsgWithdraw creates a new MsgWithdraw.
 func NewMsgWithdraw(
+	appID uint64,
 	//nolint
 	withdrawer sdk.AccAddress,
 	poolID uint64,
 	poolCoin sdk.Coin,
 ) *MsgWithdraw {
 	return &MsgWithdraw{
+		AppId:      appID,
 		Withdrawer: withdrawer.String(),
 		PoolId:     poolID,
 		PoolCoin:   poolCoin,
@@ -251,6 +259,7 @@ func (msg MsgWithdraw) GetWithdrawer() sdk.AccAddress {
 
 // NewMsgLimitOrder creates a new MsgLimitOrder.
 func NewMsgLimitOrder(
+	appID uint64,
 	//nolint
 	orderer sdk.AccAddress,
 	pairID uint64,
@@ -262,6 +271,7 @@ func NewMsgLimitOrder(
 	orderLifespan time.Duration,
 ) *MsgLimitOrder {
 	return &MsgLimitOrder{
+		AppId:           appID,
 		Orderer:         orderer.String(),
 		PairId:          pairID,
 		Direction:       dir,
@@ -349,6 +359,7 @@ func (msg MsgLimitOrder) GetOrderer() sdk.AccAddress {
 
 // NewMsgMarketOrder creates a new MsgMarketOrder.
 func NewMsgMarketOrder(
+	appID uint64,
 	//nolint
 	orderer sdk.AccAddress,
 	pairID uint64,
@@ -359,6 +370,7 @@ func NewMsgMarketOrder(
 	orderLifespan time.Duration,
 ) *MsgMarketOrder {
 	return &MsgMarketOrder{
+		AppId:           appID,
 		Orderer:         orderer.String(),
 		PairId:          pairID,
 		Direction:       dir,
@@ -432,12 +444,14 @@ func (msg MsgMarketOrder) GetOrderer() sdk.AccAddress {
 
 // NewMsgCancelOrder creates a new MsgCancelOrder.
 func NewMsgCancelOrder(
+	appID uint64,
 	//nolint
 	orderer sdk.AccAddress,
 	pairID uint64,
 	orderID uint64,
 ) *MsgCancelOrder {
 	return &MsgCancelOrder{
+		AppId:   appID,
 		OrderId: orderID,
 		PairId:  pairID,
 		Orderer: orderer.String(),
@@ -483,11 +497,13 @@ func (msg MsgCancelOrder) GetOrderer() sdk.AccAddress {
 
 // NewMsgCancelAllOrders creates a new MsgCancelAllOrders.
 func NewMsgCancelAllOrders(
+	appId uint64,
 	//nolint
 	orderer sdk.AccAddress,
 	pairIDs []uint64,
 ) *MsgCancelAllOrders {
 	return &MsgCancelAllOrders{
+		AppId:   appId,
 		Orderer: orderer.String(),
 		PairIds: pairIDs,
 	}
@@ -536,12 +552,14 @@ func (msg MsgCancelAllOrders) GetOrderer() sdk.AccAddress {
 
 // NewMsgSoftLock creates a new MsgTokensSoftLock.
 func NewMsgSoftLock(
+	appID uint64,
 	//nolint
 	depositor sdk.AccAddress,
 	poolID uint64,
 	softLockCoin sdk.Coin,
 ) *MsgTokensSoftLock {
 	return &MsgTokensSoftLock{
+		AppId:        appID,
 		Depositor:    depositor.String(),
 		PoolId:       poolID,
 		SoftLockCoin: softLockCoin,
@@ -590,12 +608,14 @@ func (msg MsgTokensSoftLock) GetWithdrawer() sdk.AccAddress {
 
 // NewMsgSoftUnlock creates a new MsgTokensSoftUnlock.
 func NewMsgSoftUnlock(
+	appID uint64,
 	//nolint
 	depositor sdk.AccAddress,
 	poolID uint64,
 	softUnlockCoin sdk.Coin,
 ) *MsgTokensSoftUnlock {
 	return &MsgTokensSoftUnlock{
+		AppId:          appID,
 		Depositor:      depositor.String(),
 		PoolId:         poolID,
 		SoftUnlockCoin: softUnlockCoin,

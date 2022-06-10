@@ -73,6 +73,8 @@ message Pair {
   uint64 current_batch_id = 7;
 
   string swap_fee_collector_address = 8;
+  
+  uint64 app_id =  9;
 }
 
 // Pool defines a basic liquidity pool with no min-price and max-price.
@@ -91,6 +93,7 @@ message Pool {
 
   bool disabled = 7;
 
+  uint64 app_id = 8;
 }
 
 // DepositRequest defines a deposit request.
@@ -118,6 +121,8 @@ message DepositRequest {
   cosmos.base.v1beta1.Coin minted_pool_coin = 7 [(gogoproto.nullable) = false];
 
   RequestStatus status = 8;
+
+  uint64 app_id = 9;
 }
 
 // WithdrawRequest defines a withdraw request.
@@ -142,6 +147,8 @@ message WithdrawRequest {
       [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
 
   RequestStatus status = 7;
+
+  uint64 app_id = 8;
 }
 
 // Order defines an order.
@@ -183,6 +190,8 @@ message Order {
   google.protobuf.Timestamp expire_at = 13 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 
   OrderStatus status = 14;
+
+  uint64 app_id = 15;
 }
 
 // OrderDirection enumerates order directions.
@@ -274,8 +283,9 @@ message QueuedLiquidityProvider {
 message PoolLiquidityProvidersData {
   uint64 pool_id = 1;
   repeated uint64 bonded_lock_ids = 2 [ 
-      (gogoproto.moretags) = "yaml:\"bonded_lock_ids\"" 
-  ];
-  map<string, DepositsMade> liquidity_providers = 3;
-  repeated QueuedLiquidityProvider queued_liquidity_providers = 4;
-}
+    (gogoproto.moretags) = "yaml:\"bonded_lock_ids\"" 
+    ];
+    map<string, DepositsMade> liquidity_providers = 3;
+    repeated QueuedLiquidityProvider queued_liquidity_providers = 4;
+  uint64 app_id = 5;
+  }

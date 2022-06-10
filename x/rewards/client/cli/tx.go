@@ -54,9 +54,9 @@ func GetTxCmd() *cobra.Command {
 // NewCreateGaugeCmd implemets create-gauge cli transaction command.
 func NewCreateGaugeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-gauge [gauge-type-id] [trigger-duration] [deposit-amount] [total-triggers]",
+		Use:   "create-gauge [app-id] [gauge-type-id] [trigger-duration] [deposit-amount] [total-triggers]",
 		Short: "create new gauge",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -65,22 +65,27 @@ func NewCreateGaugeCmd() *cobra.Command {
 
 			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
-			gaugeTypeID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse add-id: %w", err)
+			}
+
+			gaugeTypeID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse gauge-type-id: %w", err)
 			}
 
-			triggerDuration, err := time.ParseDuration(args[1])
+			triggerDuration, err := time.ParseDuration(args[2])
 			if err != nil {
 				return fmt.Errorf("parse trigger-duration: %w", err)
 			}
 
-			depositAmount, err := sdk.ParseCoinNormalized(args[2])
+			depositAmount, err := sdk.ParseCoinNormalized(args[3])
 			if err != nil {
 				return err
 			}
 
-			totalTriggers, err := strconv.ParseUint(args[3], 10, 64)
+			totalTriggers, err := strconv.ParseUint(args[4], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse gauge-type-id: %w", err)
 			}
@@ -101,6 +106,7 @@ func NewCreateGaugeCmd() *cobra.Command {
 			}
 
 			msg := types.NewMsgCreateGauge(
+				appID,
 				clientCtx.GetFromAddress(),
 				startTime,
 				gaugeTypeID,

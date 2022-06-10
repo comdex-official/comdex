@@ -33,7 +33,7 @@ func PoolReserveAddress(poolID uint64) sdk.AccAddress {
 }
 
 // NewPool returns a new pool object.
-func NewPool(id, pairID uint64) Pool {
+func NewPool(appID, id, pairID uint64) Pool {
 	return Pool{
 		Id:                    id,
 		PairId:                pairID,
@@ -42,6 +42,7 @@ func NewPool(id, pairID uint64) Pool {
 		LastDepositRequestId:  0,
 		LastWithdrawRequestId: 0,
 		Disabled:              false,
+		AppId:                 appID,
 	}
 }
 

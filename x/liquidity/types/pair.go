@@ -26,7 +26,7 @@ func (pair Pair) GetSwapFeeCollectorAddress() sdk.AccAddress {
 }
 
 // NewPair returns a new pair object.
-func NewPair(id uint64, baseCoinDenom, quoteCoinDenom string) Pair {
+func NewPair(id uint64, baseCoinDenom, quoteCoinDenom string, appID uint64) Pair {
 	return Pair{
 		Id:                      id,
 		BaseCoinDenom:           baseCoinDenom,
@@ -36,6 +36,7 @@ func NewPair(id uint64, baseCoinDenom, quoteCoinDenom string) Pair {
 		LastPrice:               nil,
 		CurrentBatchId:          1,
 		SwapFeeCollectorAddress: PairSwapFeeCollectorAddress(id).String(),
+		AppId:                   appID,
 	}
 }
 

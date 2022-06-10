@@ -35,4 +35,5 @@ var (
 	ErrInsufficientAvailableBalance  = sdkerrors.Register(ModuleName, 27, "insufficient available balance")
 	ErrInvalidPairId                 = sdkerrors.Register(ModuleName, 28, "invalid pair id")
 	ErrAssetNotWhiteListed           = sdkerrors.Register(ModuleName, 29, "asset not whitelisted")
+	ErrInvalidAppID                  = sdkerrors.Register(ModuleName, 30, "app id invalid")
 )

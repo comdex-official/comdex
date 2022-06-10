@@ -39,6 +39,11 @@ func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCrea
 		return types.ErrInvalidGaugeStartTime
 	}
 
+	_, found := k.asset.GetApp(ctx, msg.AppId)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+	}
+
 	return nil
 }
 
@@ -56,8 +61,8 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
 	return price, true
 }
 
-func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, pairId uint64) error {
-	pair, found := k.liquidityKeeper.GetPair(ctx, pairId)
+func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, appID, pairId uint64) error {
+	pair, found := k.liquidityKeeper.GetPair(ctx, appID, pairId)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrPairNotExists, "pair does not exists for given pool id")
 	}
@@ -72,14 +77,14 @@ func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, pairId uint64) err
 }
 
 // ValidateMsgCreateGaugeLiquidityMetaData validates types.MsgCreateGauge_LiquidityMetaData.
-func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, kind *types.MsgCreateGauge_LiquidityMetaData, forSwapFee bool) error {
-	pool, found := k.liquidityKeeper.GetPool(ctx, kind.LiquidityMetaData.PoolId)
+func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, appID uint64, kind *types.MsgCreateGauge_LiquidityMetaData, forSwapFee bool) error {
+	pool, found := k.liquidityKeeper.GetPool(ctx, appID, kind.LiquidityMetaData.PoolId)
 	if !found {
 		return types.ErrInvalidPoolID
 	}
 
 	if !forSwapFee {
-		err := k.ValidateIfOraclePricesExists(ctx, pool.PairId)
+		err := k.ValidateIfOraclePricesExists(ctx, appID, pool.PairId)
 		if err != nil {
 			return err
 		}
@@ -87,7 +92,7 @@ func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, kind *t
 
 	childPoolIds := kind.LiquidityMetaData.ChildPoolIds
 	for _, poolID := range childPoolIds {
-		_, found := k.liquidityKeeper.GetPool(ctx, poolID)
+		_, found := k.liquidityKeeper.GetPool(ctx, appID, poolID)
 		if !found {
 			return sdkerrors.Wrap(types.ErrInvalidPoolID, fmt.Sprintf("invalid child pool id : %d", poolID))
 		}
@@ -112,12 +117,13 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge, forSwapFee 
 		IsActive:          true,
 		ForSwapFee:        false,
 		Kind:              nil,
+		AppId:             msg.AppId,
 	}
 
 	switch extraData := msg.Kind.(type) {
 	case *types.MsgCreateGauge_LiquidityMetaData:
 
-		err := k.ValidateMsgCreateGaugeLiquidityMetaData(ctx, extraData, forSwapFee)
+		err := k.ValidateMsgCreateGaugeLiquidityMetaData(ctx, msg.AppId, extraData, forSwapFee)
 		if err != nil {
 			return types.Gauge{}, err
 		}
@@ -269,7 +275,7 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 			}
 
 			// transfering swap fees amount of current epoch from swap fee collector address to rewards module
-			receivedAmount, err := k.liquidityKeeper.TransferFundsForSwapFeeDistribution(ctx, poolId)
+			receivedAmount, err := k.liquidityKeeper.TransferFundsForSwapFeeDistribution(ctx, gauge.AppId, poolId)
 			if err != nil {
 				logger.Info(fmt.Sprintf("error occurred while swap fee fund transfer, err : %s", err))
 				continue
