@@ -103,6 +103,14 @@ message TvlLockedDataMap
     (gogoproto.nullable) = false];
 }
 
+message MintedDataMap
+{
+  string asset_denom = 1 [(gogoproto.moretags) = "yaml:\"asset_denom\""];
+  string minted_amount = 2 [(gogoproto.moretags) = "yaml:\"minted_amount\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+}
+
 
 message StableMintVault {
   string id = 1[

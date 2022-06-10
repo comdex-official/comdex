@@ -770,21 +770,21 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "rewards", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "rewards", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllEpochsInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "rewards", "v1beta1", "epochs"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllEpochsInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "rewards", "v1beta1", "epochs"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryEpochInfoByDuration_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "rewards", "v1beta1", "epoch_duration", "duration_seconds"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryEpochInfoByDuration_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "rewards", "v1beta1", "epoch_duration", "duration_seconds"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllGauges_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "rewards", "v1beta1", "gauges"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllGauges_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "rewards", "v1beta1", "gauges"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryGaugeByID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "rewards", "v1beta1", "gauge", "gauge_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryGaugeByID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "rewards", "v1beta1", "gauge", "gauge_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryGaugeByDuration_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "rewards", "v1beta1", "gauge_duration", "duration_seconds"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryGaugeByDuration_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "rewards", "v1beta1", "gauge_duration", "duration_seconds"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryRewards_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 1}, []string{"comdex", "rewards", "v1beta1"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryRewards_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 1}, []string{"comdex", "rewards", "v1beta1"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryReward_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "rewards", "v1beta1", "reward", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryReward_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "rewards", "v1beta1", "reward", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

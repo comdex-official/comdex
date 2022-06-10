@@ -35,6 +35,8 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 	if err != nil {
 		return
 	}
+
+	k.SetLastInterestTime(ctx, ctx.BlockTime().Unix())
 }
 
 // EndBlocker for incentives module.

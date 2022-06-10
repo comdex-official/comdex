@@ -628,3 +628,43 @@ func queryState() *cobra.Command {
 
 	return cmd
 }
+
+func queryLockerTotalRewardsByAssetAppWise() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "lockers-rewards-by-product-asset-id [app_id] [asset_id]",
+		Short: "Query all lockers rewards by product and asset id",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryLockerTotalRewardsByAssetAppWise(
+				context.Background(),
+				&types.QueryLockerTotalRewardsByAssetAppWiseRequest{
+					AppId: appId,
+					AssetId:   assetId,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}

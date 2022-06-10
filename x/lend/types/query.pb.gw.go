@@ -321,11 +321,11 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_QueryLends_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "lends"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLends_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "lends"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLend_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "lends", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLend_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "lends", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdexofficial", "comdex", "lend", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdexofficial", "comdex", "lend", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

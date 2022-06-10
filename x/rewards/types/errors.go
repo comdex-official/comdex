@@ -25,4 +25,5 @@ var (
 	ErrAppIdDoesNotExists  = sdkerrors.Register(ModuleName, 1104, "Asset Id does not exist in locker for App_Mapping")
 	ErrPairNotExists       = sdkerrors.Register(ModuleName, 1105, "pair does not exists")
 	ErrPriceNotFound       = sdkerrors.Register(ModuleName, 1106, "price not found")
+	ErrVaultNotFound       = sdkerrors.Register(ModuleName, 1107, "vault not found")
 )
