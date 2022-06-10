@@ -262,7 +262,7 @@ $ %s query %s pools --disabled=true
 func NewQueryPoolCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pool [app-id] [pool-id]",
-		Args:  cobra.MaximumNArgs(2),
+		Args:  cobra.MinimumNArgs(1),
 		Short: "Query details of the liquidity pool",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the liquidity pool
@@ -307,12 +307,14 @@ $ %s query %s pool --reserve-address=cre1...
 			switch {
 			case poolID != nil:
 				res, err = queryClient.Pool(cmd.Context(), &types.QueryPoolRequest{
+					AppId:  appID,
 					PoolId: *poolID,
 				})
 			case poolCoinDenom != "":
 				res, err = queryClient.PoolByPoolCoinDenom(
 					cmd.Context(),
 					&types.QueryPoolByPoolCoinDenomRequest{
+						AppId:         appID,
 						PoolCoinDenom: poolCoinDenom,
 					})
 			case reserveAddr != "":

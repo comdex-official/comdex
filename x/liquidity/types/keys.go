@@ -84,7 +84,7 @@ func GetLastPoolIDKey(appID uint64) []byte {
 
 // GetPoolKey returns the store key to retrieve pool object from the pool id.
 func GetPoolKey(appID, poolID uint64) []byte {
-	return append(append(PoolKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(PoolKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
 }
 
 // GetPoolKey returns the store key to retrieve pool object from the pool id.
@@ -94,17 +94,17 @@ func GetAllPoolsKey(appID uint64) []byte {
 
 // GetPoolByReserveAddressIndexKey returns the index key to retrieve the particular pool.
 func GetPoolByReserveAddressIndexKey(appID uint64, reserveAddr sdk.AccAddress) []byte {
-	return append(append(PoolByReserveAddressIndexKeyPrefix, address.MustLengthPrefix(reserveAddr)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(PoolByReserveAddressIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(reserveAddr)...)
 }
 
 // GetPoolsByPairIndexKey returns the index key to retrieve pool id that is used to iterate pools.
 func GetPoolsByPairIndexKey(appID, pairID, poolID uint64) []byte {
-	return append(append(append(PoolsByPairIndexKeyPrefix, sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(append(PoolsByPairIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(poolID)...)
 }
 
 // GetPoolsByPairIndexKeyPrefix returns the store key to retrieve pool id to iterate pools.
 func GetPoolsByPairIndexKeyPrefix(appID, pairID uint64) []byte {
-	return append(append(PoolsByPairIndexKeyPrefix, sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(PoolsByPairIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairID)...)
 }
 
 // GetPoolKey returns the store key to retrieve pool object from the pool id.
@@ -219,7 +219,7 @@ func ParsePoolsByPairIndexKey(key []byte) (poolID uint64) {
 	}
 
 	bytesLen := 8
-	poolID = sdk.BigEndianToUint64(key[1+bytesLen:])
+	poolID = sdk.BigEndianToUint64(key[1+bytesLen+bytesLen:])
 	return
 }
 

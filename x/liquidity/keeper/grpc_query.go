@@ -105,6 +105,7 @@ func (k Querier) Pools(c context.Context, req *types.QueryPoolsRequest) (*types.
 			Balances:              sdk.NewCoins(rx, ry),
 			LastDepositRequestId:  pool.LastDepositRequestId,
 			LastWithdrawRequestId: pool.LastWithdrawRequestId,
+			AppId:                 req.AppId,
 		}
 
 		if accumulate {
@@ -151,6 +152,7 @@ func (k Querier) Pool(c context.Context, req *types.QueryPoolRequest) (*types.Qu
 		Balances:              sdk.NewCoins(rx, ry),
 		LastDepositRequestId:  pool.LastDepositRequestId,
 		LastWithdrawRequestId: pool.LastWithdrawRequestId,
+		AppId:                 req.AppId,
 	}
 
 	return &types.QueryPoolResponse{Pool: poolRes}, nil
@@ -191,6 +193,7 @@ func (k Querier) PoolByReserveAddress(c context.Context, req *types.QueryPoolByR
 		Balances:              sdk.NewCoins(rx, ry),
 		LastDepositRequestId:  pool.LastDepositRequestId,
 		LastWithdrawRequestId: pool.LastWithdrawRequestId,
+		AppId:                 req.AppId,
 	}
 
 	return &types.QueryPoolResponse{Pool: poolRes}, nil
@@ -212,10 +215,15 @@ func (k Querier) PoolByPoolCoinDenom(c context.Context, req *types.QueryPoolByPo
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	poolID, err := types.ParsePoolCoinDenom(req.PoolCoinDenom)
+	appID, poolID, err := types.ParsePoolCoinDenom(req.PoolCoinDenom)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to parse pool coin denom: %v", err)
 	}
+
+	if appID != req.AppId {
+		return nil, status.Errorf(codes.InvalidArgument, "pool coin %s, invalid for given app id", req.PoolCoinDenom)
+	}
+
 	pool, found := k.GetPool(ctx, req.AppId, poolID)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "pool %d doesn't exist", poolID)
@@ -230,6 +238,7 @@ func (k Querier) PoolByPoolCoinDenom(c context.Context, req *types.QueryPoolByPo
 		Balances:              sdk.NewCoins(rx, ry),
 		LastDepositRequestId:  pool.LastDepositRequestId,
 		LastWithdrawRequestId: pool.LastWithdrawRequestId,
+		AppId:                 req.AppId,
 	}
 
 	return &types.QueryPoolResponse{Pool: poolRes}, nil
