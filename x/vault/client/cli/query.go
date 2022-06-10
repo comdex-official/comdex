@@ -27,7 +27,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryVault(),
 		QueryAllVaultsByAppAndExtendedPair(),
 		QueryVaultInfo(),
-		// QueryVaultOfOwnerByExtendedPair(),
+		QueryVaultOfOwnerByExtendedPair(),
 		QueryVaultByProduct(),
 		QueryAllVaultByOwner(),
 		QueryTokenMintedAllProductsByPair(),
@@ -149,51 +149,51 @@ func QueryVault() *cobra.Command {
 	return cmd
 }
 
-// func QueryVaultOfOwnerByExtendedPair() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "vault-of-owner-by-extended-pair [product_id] [owner] [extended_pair_id]",
-// 		Short: "vaults list for an individual account by extended pair",
-// 		Args:  cobra.ExactArgs(3),
-// 		RunE: func(cmd *cobra.Command, args []string) error {
+func QueryVaultOfOwnerByExtendedPair() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vault-of-owner-by-extended-pair [product_id] [owner] [extended_pair_id]",
+		Short: "vaults list for an individual account by extended pair",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
 
-// 			pagination, err := client.ReadPageRequest(cmd.Flags())
-// 			if err != nil {
-// 				return err
-// 			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 
-// 			ctx, err := client.GetClientQueryContext(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
-// 			productId, err := strconv.ParseUint(args[0], 10, 64)
-// 			if err != nil {
-// 				return err
-// 			}
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			productId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
 
-// 			extendedPairid, err := strconv.ParseUint(args[2], 10, 64)
-// 			if err != nil {
-// 				return err
-// 			}
+			extendedPairid, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
 
-// 			queryClient := types.NewQueryClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
-// 			res, err := queryClient.QueryVaultOfOwnerByExtendedPair(cmd.Context(), &types.QueryVaultOfOwnerByExtendedPairRequest{
-// 				ProductId:      productId,
-// 				Owner:          args[1],
-// 				ExtendedPairId: extendedPairid,
-// 				Pagination:     pagination,
-// 			})
+			res, err := queryClient.QueryVaultOfOwnerByExtendedPair(cmd.Context(), &types.QueryVaultOfOwnerByExtendedPairRequest{
+				ProductId:      productId,
+				Owner:          args[1],
+				ExtendedPairId: extendedPairid,
+				Pagination:     pagination,
+			})
 
-// 			if err != nil {
-// 				return err
-// 			}
-// 			return ctx.PrintProto(res)
-// 		},
-// 	}
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
-// 	return cmd
-// }
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
 
 func QueryVaultInfoByAppByOwner() *cobra.Command {
 	cmd := &cobra.Command{

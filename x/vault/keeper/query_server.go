@@ -207,46 +207,42 @@ func (q *queryServer) QueryAllVaultsByAppAndExtendedPair(c context.Context, req 
 	}, nil
 }
 
-// func (q *queryServer) QueryVaultOfOwnerByExtendedPair(c context.Context, req *types.QueryVaultOfOwnerByExtendedPairRequest) (*types.QueryVaultOfOwnerByExtendedPairResponse, error) {
-// 	if req == nil {
-// 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-// 	}
-// 	var (
-// 		ctx     = sdk.UnwrapSDKContext(c)
-// 		vaultId = ""
-// 	)
+func (q *queryServer) QueryVaultOfOwnerByExtendedPair(c context.Context, req *types.QueryVaultOfOwnerByExtendedPairRequest) (*types.QueryVaultOfOwnerByExtendedPairResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var (
+		ctx     = sdk.UnwrapSDKContext(c)
+		vaultId = ""
+	)
 
-// 	_, found := q.GetApp(ctx, req.ProductId)
-// 	if !found {
-// 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.ProductId)
-// 	}
+	_, found := q.GetApp(ctx, req.ProductId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.ProductId)
+	}
 
-// 	_, err := sdk.AccAddressFromBech32(req.Owner)
-// 	if err != nil {
-// 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
-// 	}
+	_, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "Address is not correct")
+	}
 
-// 	_, nfound := q.GetPairsVault(ctx, req.ExtendedPairId)
-// 	if !nfound {
-// 		return &types.QueryVaultOfOwnerByExtendedPairResponse{},nil
-// 	}
+	_, nfound := q.GetPairsVault(ctx, req.ExtendedPairId)
+	if !nfound {
+		return &types.QueryVaultOfOwnerByExtendedPairResponse{},nil
+	}
 
-// 	userVaultAssetData, _ := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
+	vaultData := q.GetVaults(ctx)
 
-// 	for _, data := range userVaultAssetData.UserVaultApp {
-// 		if data.AppMappingId == req.ProductId {
-// 			for _, inData := range data.UserExtendedPairVault {
-// 				if inData.ExtendedPairId == req.ExtendedPairId {
-// 					vaultId = inData.VaultId
-// 				}
-// 			}
-// 		}
-// 	}
+	for _, data := range vaultData {
+		if data.AppMappingId == req.ProductId && data.ExtendedPairVaultID == req.ExtendedPairId && data.Owner == req.Owner{
+			vaultId = data.Id
+		}
+	}
 
-// 	return &types.QueryVaultOfOwnerByExtendedPairResponse{
-// 		Vault_Id: vaultId,
-// 	}, nil
-// }
+	return &types.QueryVaultOfOwnerByExtendedPairResponse{
+		Vault_Id: vaultId,
+	}, nil
+}
 
 func (q *queryServer) QueryVaultByProduct(c context.Context, req *types.QueryVaultByProductRequest) (*types.QueryVaultByProductResponse, error) {
 	if req == nil {
