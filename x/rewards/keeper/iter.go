@@ -68,6 +68,22 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 								if err != nil {
 									return err
 								}
+								lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appMappingId, p.AssetId)
+								if !found{
+									var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
+									lockerReward.AssetId = p.AssetId
+									lockerReward.TotalRewards = sdk.ZeroInt().Add(rewards)
+									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+									if err != nil{
+										return err
+									}
+								}else{
+									lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(rewards)
+									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+									if err != nil{
+										return err
+									}
+								}
 							}
 						}
 						k.UpdateLocker(ctx, updatedLocker)
@@ -131,7 +147,6 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 					intAcc := vault.InterestAccumulated
 					updatedIntAcc := (intAcc).Add(interest)
 					vault.InterestAccumulated = updatedIntAcc
-					vault.AmountOut = vault.AmountOut.Add(interest)
 					k.SetVault(ctx, vault)
 				}
 			}

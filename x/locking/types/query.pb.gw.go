@@ -691,19 +691,19 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locking", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locking", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockByID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locking", "v1beta1", "lock_id", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLockByID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locking", "v1beta1", "lock_id", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLocksByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locking", "v1beta1", "lock_owner", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLocksByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locking", "v1beta1", "lock_owner", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllLocks_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locking", "v1beta1", "locks"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllLocks_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locking", "v1beta1", "locks"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryUnlockingByID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locking", "v1beta1", "unlocking_id", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryUnlockingByID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locking", "v1beta1", "unlocking_id", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryUnlockingsByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locking", "v1beta1", "unlocking_owner", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryUnlockingsByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locking", "v1beta1", "unlocking_owner", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllUnlockings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locking", "v1beta1", "unlockings"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllUnlockings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locking", "v1beta1", "unlockings"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

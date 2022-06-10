@@ -537,3 +537,28 @@ func (q *queryServer) QueryState(c context.Context, req *types.QueryStateRequest
 		Amount: *qs,
 	}, nil
 }
+
+func (q *queryServer) QueryLockerTotalRewardsByAssetAppWise(c context.Context, request *types.QueryLockerTotalRewardsByAssetAppWiseRequest) (*types.QueryLockerTotalRewardsByAssetAppWiseResponse, error) {
+
+	if request == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	_, found := q.GetApp(ctx, request.AppId)
+
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
+	}
+
+	rewards_data, found := q.GetLockerTotalRewardsByAssetAppWise(ctx,request.AppId,request.AssetId)
+	if !found{
+		return &types.QueryLockerTotalRewardsByAssetAppWiseResponse{},nil
+	}
+	return &types.QueryLockerTotalRewardsByAssetAppWiseResponse{
+		TotalRewards: rewards_data,
+	}, nil
+}
