@@ -571,7 +571,7 @@ $ %s query %s 1 withdraw-requests 1 1
 func NewQueryOrdersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "orders [app-id] [orderer]",
-		Args:  cobra.MaximumNArgs(2),
+		Args:  cobra.MinimumNArgs(1),
 		Short: "Query for all orders in the pair",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all orders in the pair.

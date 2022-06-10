@@ -165,7 +165,7 @@ func GetWithdrawRequestIndexKeyPrefix(appID uint64, depositor sdk.AccAddress) []
 
 // GetOrderKey returns the store key to retrieve order object from the pair id and request id.
 func GetOrderKey(appID, pairID, id uint64) []byte {
-	return append(append(append(OrderKeyPrefix, sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(append(OrderKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(id)...)
 }
 
 // GetPoolKey returns the store key to retrieve pool object from the pool id.
@@ -173,14 +173,9 @@ func GetAllOrdersKey(appID uint64) []byte {
 	return append(OrderKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
-// GetPoolLiquidityProvidersDataKeyPrefix returns the store key to retrieve liquidity providers data from the pool id.
-func GetPoolLiquidityProvidersDataKey(appID, poolID uint64) []byte {
-	return append(append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(appID)...)
-}
-
 // GetOrdersByPairKeyPrefix returns the store key to iterate orders by pair.
 func GetOrdersByPairKeyPrefix(appID uint64, pairID uint64) []byte {
-	return append(append(OrderKeyPrefix, sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(OrderKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairID)...)
 }
 
 // GetOrderIndexKey returns the index key to map orders with an orderer.
@@ -189,14 +184,19 @@ func GetOrderIndexKey(
 	orderer sdk.AccAddress,
 	pairID, orderID uint64,
 ) []byte {
-	return append(append(append(append(OrderIndexKeyPrefix, address.MustLengthPrefix(orderer)...),
-		sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(orderID)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(append(append(OrderIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(orderer)...),
+		sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(orderID)...)
 }
 
 // GetOrderIndexKeyPrefix returns the index key prefix to iterate orders
 // by an orderer.
 func GetOrderIndexKeyPrefix(appID uint64, orderer sdk.AccAddress) []byte {
-	return append(append(OrderIndexKeyPrefix, address.MustLengthPrefix(orderer)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(OrderIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(orderer)...)
+}
+
+// GetPoolLiquidityProvidersDataKeyPrefix returns the store key to retrieve liquidity providers data from the pool id.
+func GetPoolLiquidityProvidersDataKey(appID, poolID uint64) []byte {
+	return append(append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 // ParsePairsByDenomsIndexKey parses a pair by denom index key.
@@ -255,10 +255,10 @@ func ParseOrderIndexKey(key []byte) (orderer sdk.AccAddress, pairID, orderID uin
 		panic("key does not have proper prefix")
 	}
 
-	addrLen := key[1]
-	orderer = key[2 : 2+addrLen]
-	pairID = sdk.BigEndianToUint64(key[2+addrLen : 2+addrLen+8])
-	orderID = sdk.BigEndianToUint64(key[2+addrLen+8:])
+	addrLen := key[9]
+	orderer = key[10 : 10+addrLen]
+	pairID = sdk.BigEndianToUint64(key[10+addrLen : 10+addrLen+8])
+	orderID = sdk.BigEndianToUint64(key[10+addrLen+8:])
 	return
 }
 

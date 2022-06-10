@@ -446,7 +446,7 @@ $ %s tx %s cancel-order 1 1 --from mykey
 func NewCancelAllOrdersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "cancel-all-orders [app-id] [pair-ids]",
-		Args:  cobra.MaximumNArgs(2),
+		Args:  cobra.MinimumNArgs(1),
 		Short: "Cancel all orders",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Cancel all orders.
