@@ -116,7 +116,10 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 	for _, v := range extVaultMapping.ExtendedPairVaults {
 		vaultIds := v.VaultIds
 		for j, _ := range vaultIds {
-			vault, _ := k.GetVault(ctx, vaultIds[j])
+			vault, found := k.GetVault(ctx, vaultIds[j])
+			if !found {
+				continue
+			}
 			ExtPairVault, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 			StabilityFee := ExtPairVault.StabilityFee
 			fmt.Println("vault....", vault)
