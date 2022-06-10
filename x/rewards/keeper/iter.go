@@ -109,16 +109,20 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (
 
 //IterateVaults does interest calculation for vaults
 func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
-	fmt.Println("in iterate")
-	extVaultMapping, _ := k.GetAppExtendedPairVaultMapping(ctx, appMappingId)
+	extVaultMapping, found := k.GetAppExtendedPairVaultMapping(ctx, appMappingId)
+	if !found {
+		return types.ErrVaultNotFound
+	}
 	for _, v := range extVaultMapping.ExtendedPairVaults {
 		vaultIds := v.VaultIds
 		for j, _ := range vaultIds {
 			vault, _ := k.GetVault(ctx, vaultIds[j])
 			ExtPairVault, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 			StabilityFee := ExtPairVault.StabilityFee
-			if !ExtPairVault.IsPsmPair {
+			fmt.Println("vault....", vault)
+			if vault.ExtendedPairVaultID != 0 {
 				if StabilityFee != sdk.ZeroDec() {
+					fmt.Println("Inside vault....", vault)
 
 					interest, err := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
 					if err != nil {
