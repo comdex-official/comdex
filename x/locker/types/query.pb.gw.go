@@ -1899,39 +1899,39 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_QueryLockerInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "locker_info", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLockerInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "locker_info", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockersByProductToAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "lockers_info_asset_id", "product_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLockersByProductToAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "lockers_info_asset_id", "product_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerInfoByProductID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "lockers_info_product_id", "product_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLockerInfoByProductID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "lockers_info_product_id", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTotalDepositByProductAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "total_deposit_product_asset_id", "product_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryTotalDepositByProductAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "total_deposit_product_asset_id", "product_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryOwnerLockerByProductIDbyOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "owner_locker_by_all_product_by_owner", "product_id", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryOwnerLockerByProductIDbyOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "owner_locker_by_all_product_by_owner", "product_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryOwnerLockerOfAllProductByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "owner_locker_info_by_all_product_owner", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryOwnerLockerOfAllProductByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "owner_locker_info_by_all_product_owner", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "locker", "v1beta1", "owner_locker_tx-details_by_product", "product_id", "owner", "asset_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "locker", "v1beta1", "owner_locker_tx-details_by_product", "product_id", "owner", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "locker", "v1beta1", "owner_locker_info_product_asset_id_owner", "product_id", "asset_id", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "locker", "v1beta1", "owner_locker_info_product_asset_id_owner", "product_id", "asset_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerByProductByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "locker_info_product_owner", "product_id", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLockerByProductByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "locker_info_product_owner", "product_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerCountByProductID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "total_locker_product_id", "product_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLockerCountByProductID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "total_locker_product_id", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerCountByProductToAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "total_locker_product_asset_id", "product_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLockerCountByProductToAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "total_locker_product_asset_id", "product_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryWhiteListedAssetIDsByProductID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "whitelisted_asset_ids_by_product_id", "product_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryWhiteListedAssetIDsByProductID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "whitelisted_asset_ids_by_product_id", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryWhiteListedAssetByAllProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locker", "v1beta1", "whitelisted_asset_product_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryWhiteListedAssetByAllProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locker", "v1beta1", "whitelisted_asset_product_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locker", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locker", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerLookupTableByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "locker-lookup-by-app", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLockerLookupTableByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "locker-lookup-by-app", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerLookupTableByAppAndAssetId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "locker-lookup-by-app-and-assetId", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLockerLookupTableByAppAndAssetId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "locker-lookup-by-app-and-assetId", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerTotalDepositedByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "locker-deposited-by-app", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLockerTotalDepositedByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "locker-deposited-by-app", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

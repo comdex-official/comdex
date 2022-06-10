@@ -1201,31 +1201,31 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_QueryAssets_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "assets"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAssets_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "assets"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "assets", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "assets", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryPairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "pairs"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryPairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "pairs"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "pairs", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "pairs", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAppsMapings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "apps"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAppsMapings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "apps"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAppMapings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "app", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAppMapings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "app", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryPairVault_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "pairVault", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryPairVault_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "pairVault", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryPairVaults_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "pairVaults"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryPairVaults_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "asset", "v1beta1", "pairVaults"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryProductToExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "product_to_extended_pair", "product_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryProductToExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "product_to_extended_pair", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryExtendedPairPsmPairWise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "extended_pair_psm_pair_wise", "product_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryExtendedPairPsmPairWise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "extended_pair_psm_pair_wise", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTokenGov_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "check_for_token_gov", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryTokenGov_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "check_for_token_gov", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryExtendedPairDataPsmPairWise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "extended_pair_psm_wise", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryExtendedPairDataPsmPairWise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "extended_pair_psm_wise", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

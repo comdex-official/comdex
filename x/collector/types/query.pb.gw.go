@@ -718,17 +718,17 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex-official", "comdex", "collector", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex-official", "comdex", "collector", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryCollectorLookupByProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "collector", "v1beta1", "collector-lookup-by-product", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryCollectorLookupByProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "collector", "v1beta1", "collector-lookup-by-product", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryCollectorLookupByProductAndAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "collector", "v1beta1", "collector-lookup-by-product-and-asset", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryCollectorLookupByProductAndAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "collector", "v1beta1", "collector-lookup-by-product-and-asset", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryCollectorDataByProductAndAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "collector", "v1beta1", "collector-data-by-product-and-asset", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryCollectorDataByProductAndAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "collector", "v1beta1", "collector-data-by-product-and-asset", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAuctionMappingForAppAndAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "collector", "v1beta1", "auction-data-by-product-and-asset", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAuctionMappingForAppAndAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "collector", "v1beta1", "auction-data-by-product-and-asset", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryNetFeeCollectedForAppAndAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "collector", "v1beta1", "net-fee-data-by-product-and-asset", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryNetFeeCollectedForAppAndAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "collector", "v1beta1", "net-fee-data-by-product-and-asset", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
