@@ -696,6 +696,12 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 	poolIncentives := []*types.PoolIncentive{}
 
 	for _, gauge := range liquidityGauges {
+
+		// skip gauge whose appID is not equal to the requested appID
+		if gauge.AppId != req.AppId {
+			continue
+		}
+
 		if ctx.BlockTime().Before(gauge.StartTime) || !gauge.IsActive {
 			continue
 		}
@@ -734,6 +740,7 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 			EpochDuration:      gauge.TriggerDuration,
 			NextDistribution:   epochInfo.CurrentEpochStartTime.Add(epochInfo.Duration),
 			IsSwapFee:          gauge.ForSwapFee,
+			AppId:              gauge.AppId,
 		})
 	}
 

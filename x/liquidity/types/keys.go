@@ -196,7 +196,7 @@ func GetOrderIndexKeyPrefix(appID uint64, orderer sdk.AccAddress) []byte {
 
 // GetPoolLiquidityProvidersDataKeyPrefix returns the store key to retrieve liquidity providers data from the pool id.
 func GetPoolLiquidityProvidersDataKey(appID, poolID uint64) []byte {
-	return append(append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(poolID)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
 }
 
 // ParsePairsByDenomsIndexKey parses a pair by denom index key.
