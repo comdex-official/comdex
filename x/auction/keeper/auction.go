@@ -59,37 +59,6 @@ func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultId uint
 	return nil
 }
 
-func (k Keeper) AddAppExtendedPairVaultMapping(ctx sdk.Context, lockedVaultId uint64, outFlowToken sdk.Coin, burnToken sdk.Coin) error {
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultId)
-	if !found {
-		return auctiontypes.ErrorVaultNotFound
-	}
-	var appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping
-	var extendedPairVaultMapping vaulttypes.ExtendedPairVaultMapping
-	appExtpair, found := k.GetAppExtendedPairVaultMapping(ctx, lockedVault.AppMappingId)
-	if !found {
-		return auctiontypes.ErrorInvalidLockedVault
-	}
-	appExtendedPairVaultData.AppMappingId = lockedVault.AppMappingId
-	appExtendedPairVaultData.Counter = appExtpair.Counter
-
-	for _, data := range appExtpair.ExtendedPairVaults {
-		if data.ExtendedPairId == lockedVault.ExtendedPairId {
-			extendedPairVaultMapping.ExtendedPairId = lockedVault.ExtendedPairId
-			extendedPairVaultMapping.VaultIds = data.VaultIds
-			extendedPairVaultMapping.CollateralLockedAmount = data.CollateralLockedAmount.Sub(outFlowToken.Amount)
-			extendedPairVaultMapping.TokenMintedAmount = data.TokenMintedAmount.Sub(burnToken.Amount)
-		}
-	}
-	appExtendedPairVaultData.ExtendedPairVaults = append(appExtendedPairVaultData.ExtendedPairVaults, &extendedPairVaultMapping)
-
-	err := k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 //Here inflow calculated properly as lot size is in ucmst and out flow calculated based on price ratio (so no usd involved here)
 //In surplus we need to sell cmst and get harbour . we know amount of cmst(outflow token) to sell but we need to get how much harbor to collect from user .
 func (k Keeper) getSurplusInflowTokenAmount(ctx sdk.Context, appId, AssetInId, AssetOutId uint64, lotSize sdk.Int) (status uint64, outflowToken, inflowToken sdk.Coin) {
@@ -1039,7 +1008,9 @@ func (k Keeper) CloseDutchAuction(
 
 	dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
 
-	err = k.AddAppExtendedPairVaultMapping(ctx, dutchAuction.LockedVaultId, outFlowToken, burnToken)
+	fmt.Println("outflow token --------",outFlowToken)
+	fmt.Println("burn token -----------",burnToken)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, outFlowToken.Amount, false)
 	//update locked vault
 	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
 	if err != nil {
