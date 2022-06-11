@@ -35,7 +35,7 @@ func (a *App) ExportAppStateAndValidators(
 		return servertypes.ExportedApp{}, err
 	}
 
-	validators, err := staking.WriteValidators(ctx, a.stakingKeeper)
+	validators, err := staking.WriteValidators(ctx, a.StakingKeeper)
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}
@@ -69,13 +69,13 @@ func (a *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []strin
 	}
 
 	/* Just to be safe, assert the invariants on current state. */
-	a.crisisKeeper.AssertInvariants(ctx)
+	a.CrisisKeeper.AssertInvariants(ctx)
 
 	/* Handle fee distribution state. */
 
 	// withdraw all validator commission
-	a.stakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
-		_, err := a.distrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
+	a.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+		_, err := a.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
 		if err != nil {
 			panic(err)
 		}
@@ -83,40 +83,40 @@ func (a *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []strin
 	})
 
 	// withdraw all delegator rewards
-	dels := a.stakingKeeper.GetAllDelegations(ctx)
+	dels := a.StakingKeeper.GetAllDelegations(ctx)
 	for _, delegation := range dels {
-		_, err := a.distrKeeper.WithdrawDelegationRewards(ctx, delegation.GetDelegatorAddr(), delegation.GetValidatorAddr())
+		_, err := a.DistrKeeper.WithdrawDelegationRewards(ctx, delegation.GetDelegatorAddr(), delegation.GetValidatorAddr())
 		if err != nil {
 			panic(err)
 		}
 	}
 
 	// clear validator slash events
-	a.distrKeeper.DeleteAllValidatorSlashEvents(ctx)
+	a.DistrKeeper.DeleteAllValidatorSlashEvents(ctx)
 
 	// clear validator historical rewards
-	a.distrKeeper.DeleteAllValidatorHistoricalRewards(ctx)
+	a.DistrKeeper.DeleteAllValidatorHistoricalRewards(ctx)
 
 	// set context height to zero
 	height := ctx.BlockHeight()
 	ctx = ctx.WithBlockHeight(0)
 
 	// reinitialize all validators
-	a.stakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+	a.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
 		// donate any unwithdrawn outstanding reward fraction tokens to the community pool
-		scraps := a.distrKeeper.GetValidatorOutstandingRewardsCoins(ctx, val.GetOperator())
-		feePool := a.distrKeeper.GetFeePool(ctx)
+		scraps := a.DistrKeeper.GetValidatorOutstandingRewardsCoins(ctx, val.GetOperator())
+		feePool := a.DistrKeeper.GetFeePool(ctx)
 		feePool.CommunityPool = feePool.CommunityPool.Add(scraps...)
-		a.distrKeeper.SetFeePool(ctx, feePool)
+		a.DistrKeeper.SetFeePool(ctx, feePool)
 
-		a.distrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
+		a.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
 		return false
 	})
 
 	// reinitialize all delegations
 	for _, del := range dels {
-		a.distrKeeper.Hooks().BeforeDelegationCreated(ctx, del.GetDelegatorAddr(), del.GetValidatorAddr())
-		a.distrKeeper.Hooks().AfterDelegationModified(ctx, del.GetDelegatorAddr(), del.GetValidatorAddr())
+		a.DistrKeeper.Hooks().BeforeDelegationCreated(ctx, del.GetDelegatorAddr(), del.GetValidatorAddr())
+		a.DistrKeeper.Hooks().AfterDelegationModified(ctx, del.GetDelegatorAddr(), del.GetValidatorAddr())
 	}
 
 	// reset context height
@@ -125,20 +125,20 @@ func (a *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []strin
 	/* Handle staking state. */
 
 	// iterate through redelegations, reset creation height
-	a.stakingKeeper.IterateRedelegations(ctx, func(_ int64, red stakingtypes.Redelegation) (stop bool) {
+	a.StakingKeeper.IterateRedelegations(ctx, func(_ int64, red stakingtypes.Redelegation) (stop bool) {
 		for i := range red.Entries {
 			red.Entries[i].CreationHeight = 0
 		}
-		a.stakingKeeper.SetRedelegation(ctx, red)
+		a.StakingKeeper.SetRedelegation(ctx, red)
 		return false
 	})
 
 	// iterate through unbonding delegations, reset creation height
-	a.stakingKeeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd stakingtypes.UnbondingDelegation) (stop bool) {
+	a.StakingKeeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd stakingtypes.UnbondingDelegation) (stop bool) {
 		for i := range ubd.Entries {
 			ubd.Entries[i].CreationHeight = 0
 		}
-		a.stakingKeeper.SetUnbondingDelegation(ctx, ubd)
+		a.StakingKeeper.SetUnbondingDelegation(ctx, ubd)
 		return false
 	})
 
@@ -150,7 +150,7 @@ func (a *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []strin
 
 	for ; iter.Valid(); iter.Next() {
 		addr := sdk.ValAddress(iter.Key()[1:])
-		validator, found := a.stakingKeeper.GetValidator(ctx, addr)
+		validator, found := a.StakingKeeper.GetValidator(ctx, addr)
 		if !found {
 			panic("expected validator, not found")
 		}
@@ -160,24 +160,24 @@ func (a *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []strin
 			validator.Jailed = true
 		}
 
-		a.stakingKeeper.SetValidator(ctx, validator)
+		a.StakingKeeper.SetValidator(ctx, validator)
 		counter++
 	}
 
 	iter.Close()
 
-	if _, err := a.stakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx); err != nil {
+	if _, err := a.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx); err != nil {
 		panic(err)
 	}
 
 	/* Handle slashing state. */
 
 	// reset start height on signing infos
-	a.slashingKeeper.IterateValidatorSigningInfos(
+	a.SlashingKeeper.IterateValidatorSigningInfos(
 		ctx,
 		func(addr sdk.ConsAddress, info slashingtypes.ValidatorSigningInfo) (stop bool) {
 			info.StartHeight = 0
-			a.slashingKeeper.SetValidatorSigningInfo(ctx, addr, info)
+			a.SlashingKeeper.SetValidatorSigningInfo(ctx, addr, info)
 			return false
 		},
 	)
