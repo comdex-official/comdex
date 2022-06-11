@@ -14,6 +14,7 @@ const (
 
 	// Msg Specific Flags - Liquidity GaugeType Flags.
 	FlagPoolID       = "pool-id"
+	FlagAppID        = "app-id"
 	FlagIsMasterPool = "is-master-pool"
 	FlagChildPoolIds = "child-pool-ids"
 )
@@ -27,6 +28,7 @@ func FlagSetCreateGauge() *flag.FlagSet {
 
 	// Msg Specific Flags - Liquidity GaugeType Flags.
 	fs.Uint64(FlagPoolID, 0, "Pool Id")
+	fs.Uint64(FlagAppID, 0, "App Id")
 	fs.Bool(FlagIsMasterPool, false, "If gauge is for master pool or not, default false")
 	fs.String(FlagChildPoolIds, "", "List of child pool ids, default [] i.e all pools")
 

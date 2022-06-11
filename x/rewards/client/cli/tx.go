@@ -54,9 +54,9 @@ func GetTxCmd() *cobra.Command {
 // NewCreateGaugeCmd implemets create-gauge cli transaction command.
 func NewCreateGaugeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-gauge [app-id] [gauge-type-id] [trigger-duration] [deposit-amount] [total-triggers]",
+		Use:   "create-gauge [gauge-type-id] [trigger-duration] [deposit-amount] [total-triggers]",
 		Short: "create new gauge",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -65,27 +65,22 @@ func NewCreateGaugeCmd() *cobra.Command {
 
 			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
-			appID, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return fmt.Errorf("parse add-id: %w", err)
-			}
-
-			gaugeTypeID, err := strconv.ParseUint(args[1], 10, 64)
+			gaugeTypeID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse gauge-type-id: %w", err)
 			}
 
-			triggerDuration, err := time.ParseDuration(args[2])
+			triggerDuration, err := time.ParseDuration(args[1])
 			if err != nil {
 				return fmt.Errorf("parse trigger-duration: %w", err)
 			}
 
-			depositAmount, err := sdk.ParseCoinNormalized(args[3])
+			depositAmount, err := sdk.ParseCoinNormalized(args[2])
 			if err != nil {
 				return err
 			}
 
-			totalTriggers, err := strconv.ParseUint(args[4], 10, 64)
+			totalTriggers, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse gauge-type-id: %w", err)
 			}
@@ -106,7 +101,7 @@ func NewCreateGaugeCmd() *cobra.Command {
 			}
 
 			msg := types.NewMsgCreateGauge(
-				appID,
+				0,
 				clientCtx.GetFromAddress(),
 				startTime,
 				gaugeTypeID,
@@ -121,6 +116,8 @@ func NewCreateGaugeCmd() *cobra.Command {
 				if err != nil {
 					return err
 				}
+				appID, err := cmd.Flags().GetUint64(FlagAppID)
+				msg.AppId = appID
 				msg.Kind = &gaugeExtraData
 			}
 
@@ -377,6 +374,14 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 	}
 	if poolID == 0 {
 		return types.MsgCreateGauge_LiquidityMetaData{}, fmt.Errorf("%s required but not specified / pool-id cannot be 0", FlagPoolID)
+	}
+
+	appID, err := cmd.Flags().GetUint64(FlagAppID)
+	if err != nil {
+		return types.MsgCreateGauge_LiquidityMetaData{}, err
+	}
+	if appID == 0 {
+		return types.MsgCreateGauge_LiquidityMetaData{}, fmt.Errorf("%s required but not specified / app-id cannot be 0", FlagAppID)
 	}
 
 	isMasterPool, err := cmd.Flags().GetBool(FlagIsMasterPool)

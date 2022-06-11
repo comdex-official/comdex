@@ -39,11 +39,6 @@ func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCrea
 		return types.ErrInvalidGaugeStartTime
 	}
 
-	_, found := k.asset.GetApp(ctx, msg.AppId)
-	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
-	}
-
 	return nil
 }
 
@@ -78,6 +73,11 @@ func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, appID, pairId uint
 
 // ValidateMsgCreateGaugeLiquidityMetaData validates types.MsgCreateGauge_LiquidityMetaData.
 func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, appID uint64, kind *types.MsgCreateGauge_LiquidityMetaData, forSwapFee bool) error {
+	_, found := k.asset.GetApp(ctx, appID)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", appID)
+	}
+
 	pool, found := k.liquidityKeeper.GetPool(ctx, appID, kind.LiquidityMetaData.PoolId)
 	if !found {
 		return types.ErrInvalidPoolID
