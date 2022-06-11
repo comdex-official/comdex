@@ -134,6 +134,15 @@ message LockedDepositedAmountDataMap
          (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
          (gogoproto.nullable)   = false];
 }
+
+message LockerTotalRewardsByAssetAppWise {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  string total_rewards= 3 [ (gogoproto.moretags) = "yaml:\"total_rewards\"",
+         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+         (gogoproto.nullable)   = false];
+}
+
 // message LockerStatistics {
   
 //   map<string, uint64> locked_assets = 2 [

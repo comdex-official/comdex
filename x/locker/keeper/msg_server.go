@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
-
 	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -75,9 +73,9 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 				return nil, err
 			}
 
-			if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
-				return nil, err
-			}
+			// if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
+			// 	return nil, err
+			// }
 
 			//Creating locker instance
 			var userLocker types.Locker
@@ -236,9 +234,9 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 		return nil, err
 	}
 
-	if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
-		return nil, err
-	}
+	// if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
+	// 	return nil, err
+	// }
 
 	lockerData.NetBalance = lockerData.NetBalance.Add(msg.Amount)
 	k.SetLocker(ctx, lockerData)
@@ -346,9 +344,9 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 
 	lockerData.NetBalance = lockerData.NetBalance.Sub(msg.Amount)
 
-	if err := k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
-		return nil, err
-	}
+	// if err := k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
+	// 	return nil, err
+	// }
 
 	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
 		return nil, err

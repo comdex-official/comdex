@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/comdex-official/comdex/x/auction/types"
@@ -58,37 +59,7 @@ func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultId uint
 	return nil
 }
 
-func (k Keeper) AddAppExtendedPairVaultMapping(ctx sdk.Context, lockedVaultId uint64, outFlowToken sdk.Coin, burnToken sdk.Coin) error {
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultId)
-	if !found {
-		return auctiontypes.ErrorVaultNotFound
-	}
-	var appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping
-	var extendedPairVaultMapping vaulttypes.ExtendedPairVaultMapping
-	appExtpair, found := k.GetAppExtendedPairVaultMapping(ctx, lockedVault.AppMappingId)
-	if !found {
-		return auctiontypes.ErrorInvalidLockedVault
-	}
-	appExtendedPairVaultData.AppMappingId = lockedVault.AppMappingId
-	appExtendedPairVaultData.Counter = appExtpair.Counter
-
-	for _, data := range appExtpair.ExtendedPairVaults {
-		if data.ExtendedPairId == lockedVault.ExtendedPairId {
-			extendedPairVaultMapping.ExtendedPairId = lockedVault.ExtendedPairId
-			extendedPairVaultMapping.VaultIds = data.VaultIds
-			extendedPairVaultMapping.CollateralLockedAmount = data.CollateralLockedAmount.Sub(outFlowToken.Amount)
-			extendedPairVaultMapping.TokenMintedAmount = data.TokenMintedAmount.Sub(burnToken.Amount)
-		}
-	}
-	appExtendedPairVaultData.ExtendedPairVaults = append(appExtendedPairVaultData.ExtendedPairVaults, &extendedPairVaultMapping)
-
-	err := k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
+//Here inflow calculated properly as lot size is in ucmst and out flow calculated based on price ratio (so no usd involved here)
 //In surplus we need to sell cmst and get harbour . we know amount of cmst(outflow token) to sell but we need to get how much harbor to collect from user .
 func (k Keeper) getSurplusInflowTokenAmount(ctx sdk.Context, appId, AssetInId, AssetOutId uint64, lotSize sdk.Int) (status uint64, outflowToken, inflowToken sdk.Coin) {
 	emptyCoin := sdk.NewCoin("empty", sdk.NewIntFromUint64(1))
@@ -107,7 +78,7 @@ func (k Keeper) getSurplusInflowTokenAmount(ctx sdk.Context, appId, AssetInId, A
 
 		if data.AssetOutOraclePrice {
 			//If oracle Price required for the assetOut
-			outflowTokenPrice, found = k.GetPriceForAsset(ctx, AssetInId)
+			outflowTokenPrice, found = k.GetPriceForAsset(ctx, AssetOutId)
 
 		} else {
 			//If oracle Price is not required for the assetOut
@@ -125,6 +96,7 @@ func (k Keeper) getSurplusInflowTokenAmount(ctx sdk.Context, appId, AssetInId, A
 	return 5, outflowToken, inflowToken
 }
 
+//Here inflow calculated properly as lot size is in ucmst and out flow calculated based on price ratio (so no usd involved here)
 // In debt we know amount of how much cmst to collect (inflow token) , but we need to know how much harbour(outflow token) to MINT and give it to the user
 func (k Keeper) getDebtOutflowTokenAmount(ctx sdk.Context, appId, AssetInId, AssetOutId uint64, lotSize sdk.Int) (status uint64, outflowToken, inflowToken sdk.Coin) {
 	emptyCoin := sdk.NewCoin("empty", sdk.NewIntFromUint64(1))
@@ -358,6 +330,7 @@ func (k Keeper) CreateNewDutchAuctions(ctx sdk.Context) error {
 			return auctiontypes.ErrorPrices
 		}
 		//assetInPrice is the collateral price
+		////Here collateral to be auctioned is received in ucollateral*uusd so inorder to get back amount we divide with uusd of assetIn
 		outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))).TruncateInt())
 		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())
 
@@ -476,6 +449,9 @@ func (k Keeper) RestartSurplusAuction(
 	return nil
 }
 
+//This function does two things
+//updates outflowtoken current price and inflow token current price no matter whether auction duration completed or price below end price for outflow token
+//if auction duration completed or price decreased , then update start time,end time , outFlowTokenInitialPrice, outFlowTokenEndPrice,
 //get all app ids and call RestartDutchAuctions with app id
 func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) error {
 	dutchAuctions := k.GetDutchAuctions(ctx, appId)
@@ -616,6 +592,7 @@ func (k Keeper) StartDebtAuction(
 	return nil
 }
 
+//here assetInId and assetOutId are reverse of vault's assetinID , assetOutID
 func (k Keeper) StartDutchAuction(
 	ctx sdk.Context,
 	outFlowToken sdk.Coin,
@@ -678,6 +655,7 @@ func (k Keeper) StartDutchAuction(
 	}
 	inFlowTokenTargetAmount := k.getInflowTokenTargetAmount(outFlowToken.Amount, sdk.NewIntFromUint64(inFlowTokenPrice), sdk.NewIntFromUint64(outFlowTokenPrice))
 	inFlowTokenTarget := sdk.NewCoin(inFlowToken.Denom, inFlowTokenTargetAmount)
+	//These prices are in uusd
 	outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(outFlowTokenPrice), auctionParams.Buffer)
 	outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
 	vaultOwner, err := sdk.AccAddressFromBech32(lockedVaultOwner)
@@ -984,12 +962,16 @@ func (k Keeper) CloseDutchAuction(
 			burnToken.Amount = lockedVault.AmountOut
 		}
 	}
-
+	fmt.Println("before burn tokens in auction")
+	fmt.Println(k.GetModuleAccountBalance(ctx, auctiontypes.ModuleName, "ucmst"))
+	fmt.Println("BURN TOKEN 1 : ", burnToken)
 	//burn the burn tokens
 	err := k.BurnCoins(ctx, auctiontypes.ModuleName, burnToken)
 	if err != nil {
 		return err
 	}
+	fmt.Println("after burn tokens in auction")
+	fmt.Println(k.GetModuleAccountBalance(ctx, auctiontypes.ModuleName, "ucmst"))
 	ExtendedPairVault, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
 	if !found {
 		return auctiontypes.ErrorInvalidExtendedPairVault
@@ -999,7 +981,9 @@ func (k Keeper) CloseDutchAuction(
 	if !found {
 		return sdkerrors.ErrNotFound
 	}
-
+	fmt.Println("BURN TOKEN 1 : ", burnToken)
+	fmt.Println("appExtendedPairVaultData : ", appExtendedPairVaultData)
+	fmt.Println("ExtendedPairVault")
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, burnToken.Amount, false)
 
 	//send penalty
@@ -1024,7 +1008,9 @@ func (k Keeper) CloseDutchAuction(
 
 	dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
 
-	err = k.AddAppExtendedPairVaultMapping(ctx, dutchAuction.LockedVaultId, outFlowToken, burnToken)
+	fmt.Println("outflow token --------",outFlowToken)
+	fmt.Println("burn token -----------",burnToken)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, outFlowToken.Amount, false)
 	//update locked vault
 	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
 	if err != nil {
@@ -1146,7 +1132,7 @@ func (k Keeper) PlaceSurplusBid(ctx sdk.Context, appId, auctionMappingId, auctio
 	if err != nil {
 		return err
 	}
-	biddingId, err := k.CreateNewSurplusBid(ctx, auctionId, auctionMappingId, auctionId, bidder, bid)
+	biddingId, err := k.CreateNewSurplusBid(ctx, appId, auctionMappingId, auctionId, bidder, bid)
 	if err != nil {
 		return err
 	}
@@ -1260,25 +1246,28 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid denom %s not found", bid.Denom)
 	}
 
+	//Here OutflowToken current price is in uusd and max is in uusd
 	if max.LT(auction.OutflowTokenCurrentPrice.Ceil()) {
 		return auctiontypes.ErrorInvalidDutchPrice
 	}
 
 	// slice tells amount of collateral user should be given
-
 	//using ceil as we need extract more from users
 	outFlowTokenCurrentPrice := auction.OutflowTokenCurrentPrice.Ceil().TruncateInt()
 	inFlowTokenCurrentPrice := auction.InflowTokenCurrentPrice.Ceil().TruncateInt()
 	slice := sdk.MinInt(bid.Amount, auction.OutflowTokenCurrentAmount.Amount)
 	//amount in usd to be given to user
+	//owe is in usd * 10**-12
 	owe := slice.Mul(outFlowTokenCurrentPrice)
-	//required target cmst to raise in usd
-	tab := auction.InflowTokenTargetAmount.Amount.Mul(inFlowTokenCurrentPrice).Sub(auction.InflowTokenCurrentAmount.Amount)
+	//required target cmst to raise in usd * 10**-12
+	//here we are multiplying each ucmdx with uusd so cmdx tokens price will be calculated amount * 10**-12
+	tab := auction.InflowTokenTargetAmount.Amount.Mul(inFlowTokenCurrentPrice).Sub(auction.InflowTokenCurrentAmount.Amount.Mul(inFlowTokenCurrentPrice))
 
+	// here price ratio is taken so no problem whether price is usd or uusd
 	inFlowTokenAmount := slice.ToDec().Mul(outFlowTokenCurrentPrice.ToDec()).Quo(inFlowTokenCurrentPrice.ToDec()).Ceil().TruncateInt()
 	inFlowTokenCoin := sdk.NewCoin(auction.InflowTokenTargetAmount.Denom, inFlowTokenAmount)
-	//check if bid in usd is greater than required target cmst in usd
 
+	//here we are getting min dust for asset to be left in uusd(usd*10**-6)
 	lockedVault, found := k.GetLockedVault(ctx, auction.LockedVaultId)
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
@@ -1287,18 +1276,29 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	if !found {
 		return auctiontypes.ErrorInvalidExtendedPairVault
 	}
-	dust := sdk.NewIntFromUint64(ExtendedPairVault.MinUsdValueLeft)
-	amountLeft := auction.OutflowTokenCurrentAmount.Amount.ToDec().Sub(slice.ToDec()).Mul(outFlowTokenCurrentPrice.ToDec()).TruncateInt()
 
+	//dust is in usd * 10*-6 (uusd)
+	dust := sdk.NewIntFromUint64(ExtendedPairVault.MinUsdValueLeft)
+	//here subtracting current amount and slice to get amount left in auction and also converting it to usd * 10**-12
+	amountLeftInPUSD := auction.OutflowTokenCurrentAmount.Amount.ToDec().Sub(slice.ToDec()).Mul(outFlowTokenCurrentPrice.ToDec())
+	//convert amountLeft to uusd from pusd(10**-12) so we can compare dust and amountLeft in UUSD . this happens by converting ucmdx to cmdx
+	amountLeft := amountLeftInPUSD.Quo(sdk.MustNewDecFromStr("1000000")).TruncateInt()
+
+	//check if bid in usd*10**-12 is greater than required target cmst in usd*10**-12
+	//if user wants to buy more than target cmst then user should be sold only required cmst amount
+	//so we need to divide tab by outflow token current price and we get outflowtoken amount to be sold to user
+	//if user is not buying more than required cmst then we check for dust
+	//here tab is divided by price again so price ration is only considered , we are not using owe again in this function so no problem
+	//As tab is the amount calculated from difference of target and current inflow token we will be using same as inflow token
 	if owe.GT(tab) && !auction.IsLockedVaultAmountInZero {
 		slice = tab.Quo(auction.OutflowTokenCurrentPrice.Ceil().TruncateInt())
 		inFlowTokenCoin.Amount = auction.InflowTokenTargetAmount.Amount.Sub(auction.InflowTokenCurrentAmount.Amount)
 	} else if amountLeft.LT(dust) && amountLeft.GT(sdk.ZeroInt()) {
-		//(outflowtokenavailableamount-slice) in usd < chost in usd
-		//see if user has balance to buy whole collateral
+		//(outflowtokenavailableamount-slice) in uusd < chost in uusd
+		//so ask user to increase his bid or decrease do that more than dust is left .
 		coll := auction.OutflowTokenCurrentAmount.Amount.Uint64()
-		dust := dust.Uint64() / 1000000
-		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "either bid all the amount %d or bid amount by leaving dust greater than %d usd", coll, dust)
+		dust := dust.Uint64()
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "either bid all the amount %d (UTOKEN) or bid amount by leaving dust greater than %d UUSD", coll, dust)
 	}
 
 	outFlowTokenCoin := sdk.NewCoin(auction.OutflowTokenInitAmount.Denom, slice)
@@ -1327,7 +1327,7 @@ func (k Keeper) PlaceDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionI
 	auction.InflowTokenCurrentAmount = auction.InflowTokenCurrentAmount.Add(inFlowTokenCoin)
 
 	//collateral not over but target cmst reached then send remaining collateral to owner
-	//if inflow token current amount > InflowTokenTargetAmount
+	//if inflow token current amount >= InflowTokenTargetAmount
 	if auction.InflowTokenCurrentAmount.IsGTE(auction.InflowTokenTargetAmount) && !auction.IsLockedVaultAmountInZero {
 		//send left overcollateral to vault owner as target cmst reached and also
 
