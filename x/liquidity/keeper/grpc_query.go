@@ -31,6 +31,19 @@ func (k Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 	return &types.QueryParamsResponse{Params: params}, nil
 }
 
+// Params queries the parameters of the liquidity module.
+func (k Querier) GenericParams(c context.Context, req *types.QueryGenericParamsRequest) (*types.QueryGenericParamsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+	if req.AppId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "app id cannot be 0")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	params, err := k.Keeper.GetGenericParams(ctx, req.AppId)
+	return &types.QueryGenericParamsResponse{Params: params}, err
+}
+
 // Pools queries all pools.
 func (k Querier) Pools(c context.Context, req *types.QueryPoolsRequest) (*types.QueryPoolsResponse, error) {
 	if req == nil {

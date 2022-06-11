@@ -26,6 +26,7 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		NewQueryParamsCmd(),
+		NewQueryGenericPairsCmd(),
 		NewQueryPoolsCmd(),
 		NewQueryPoolCmd(),
 		NewQueryPairsCmd(),
@@ -76,6 +77,51 @@ $ %s query %s params
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQueryGenericPairsCmd implements the pgeneric-params query command.
+func NewQueryGenericPairsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "generic-params [app-id]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Query the current liquidity parameters information for app",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query values set as liquidity parameters for a given app.
+Example:
+$ %s query %s generic-params 1
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.GenericParams(
+				cmd.Context(),
+				&types.QueryGenericParamsRequest{
+					AppId: appID,
+				})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(flagSetPairs())
 	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd

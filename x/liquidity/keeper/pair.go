@@ -51,7 +51,10 @@ func (k Keeper) CreatePair(ctx sdk.Context, msg *types.MsgCreatePair, isViaProp 
 		return types.Pair{}, err
 	}
 
-	params := k.GetParams(ctx)
+	params, err := k.GetGenericParams(ctx, msg.AppId)
+	if err != nil {
+		return types.Pair{}, sdkerrors.Wrap(err, "params retreval failed")
+	}
 
 	if !isViaProp {
 		// Send the pair creation fee to the fee collector.

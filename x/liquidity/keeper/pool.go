@@ -80,7 +80,10 @@ func (k Keeper) ValidateMsgCreatePool(ctx sdk.Context, msg *types.MsgCreatePool)
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
 	}
 
-	params := k.GetParams(ctx)
+	params, err := k.GetGenericParams(ctx, msg.AppId)
+	if err != nil {
+		return sdkerrors.Wrap(err, "params retreval failed")
+	}
 	for _, coin := range msg.DepositCoins {
 		if coin.Denom != pair.BaseCoinDenom && coin.Denom != pair.QuoteCoinDenom {
 			return sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom %s is not in the pair", coin.Denom)
@@ -115,7 +118,10 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 		return types.Pool{}, err
 	}
 
-	params := k.GetParams(ctx)
+	params, err := k.GetGenericParams(ctx, msg.AppId)
+	if err != nil {
+		return types.Pool{}, sdkerrors.Wrap(err, "params retreval failed")
+	}
 	pair, _ := k.GetPair(ctx, msg.AppId, msg.PairId)
 
 	// Create and save the new pool object.
@@ -168,7 +174,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 			ChildPoolIds: []uint64{},
 		},
 	}
-	err := k.rewardsKeeper.CreateNewGauge(ctx, newGauge, true)
+	err = k.rewardsKeeper.CreateNewGauge(ctx, newGauge, true)
 	if err != nil {
 		return types.Pool{}, err
 	}
@@ -229,6 +235,11 @@ func (k Keeper) Deposit(ctx sdk.Context, msg *types.MsgDeposit) (types.DepositRe
 		return types.DepositRequest{}, err
 	}
 
+	params, err := k.GetGenericParams(ctx, msg.AppId)
+	if err != nil {
+		return types.DepositRequest{}, sdkerrors.Wrap(err, "params retreval failed")
+	}
+
 	if err := k.bankKeeper.SendCoins(ctx, msg.GetDepositor(), types.GlobalEscrowAddress, msg.DepositCoins); err != nil {
 		return types.DepositRequest{}, err
 	}
@@ -239,7 +250,6 @@ func (k Keeper) Deposit(ctx sdk.Context, msg *types.MsgDeposit) (types.DepositRe
 	k.SetDepositRequest(ctx, req)
 	k.SetDepositRequestIndex(ctx, req)
 
-	params := k.GetParams(ctx)
 	ctx.GasMeter().ConsumeGas(params.DepositExtraGas, "DepositExtraGas")
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -283,6 +293,11 @@ func (k Keeper) Withdraw(ctx sdk.Context, msg *types.MsgWithdraw) (types.Withdra
 		return types.WithdrawRequest{}, err
 	}
 
+	params, err := k.GetGenericParams(ctx, msg.AppId)
+	if err != nil {
+		return types.WithdrawRequest{}, sdkerrors.Wrap(err, "params retreval failed")
+	}
+
 	pool, _ := k.GetPool(ctx, msg.AppId, msg.PoolId)
 	if err := k.bankKeeper.SendCoins(ctx, msg.GetWithdrawer(), types.GlobalEscrowAddress, sdk.NewCoins(msg.PoolCoin)); err != nil {
 		return types.WithdrawRequest{}, err
@@ -293,7 +308,6 @@ func (k Keeper) Withdraw(ctx sdk.Context, msg *types.MsgWithdraw) (types.Withdra
 	k.SetWithdrawRequest(ctx, req)
 	k.SetWithdrawRequestIndex(ctx, req)
 
-	params := k.GetParams(ctx)
 	ctx.GasMeter().ConsumeGas(params.WithdrawExtraGas, "WithdrawExtraGas")
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -397,6 +411,11 @@ func (k Keeper) FinishDepositRequest(ctx sdk.Context, req types.DepositRequest, 
 
 // ExecuteWithdrawRequest executes a withdraw request.
 func (k Keeper) ExecuteWithdrawRequest(ctx sdk.Context, req types.WithdrawRequest) error {
+	params, err := k.GetGenericParams(ctx, req.AppId)
+	if err != nil {
+		return sdkerrors.Wrap(err, "params retreval failed")
+	}
+
 	pool, _ := k.GetPool(ctx, req.AppId, req.PoolId)
 	if pool.Disabled {
 		if err := k.FinishWithdrawRequest(ctx, req, types.RequestStatusFailed); err != nil {
@@ -417,7 +436,6 @@ func (k Keeper) ExecuteWithdrawRequest(ctx sdk.Context, req types.WithdrawReques
 		return nil
 	}
 
-	params := k.GetParams(ctx)
 	x, y := ammPool.Withdraw(req.PoolCoin.Amount, params.WithdrawFeeRate)
 	if x.IsZero() && y.IsZero() {
 		if err := k.FinishWithdrawRequest(ctx, req, types.RequestStatusFailed); err != nil {
@@ -495,14 +513,17 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, pool
 		return sdk.Coin{}, types.ErrInvalidPairId
 	}
 
-	params := k.GetParams(ctx)
+	params, err := k.GetGenericParams(ctx, appID)
+	if err != nil {
+		return sdk.Coin{}, sdkerrors.Wrap(err, "params retreval failed")
+	}
 
 	availableBalance := k.bankKeeper.GetBalance(ctx, pair.GetSwapFeeCollectorAddress(), params.SwapFeeDistrDenom)
 
 	burnAmount := availableBalance.Amount.ToDec().MulTruncate(params.SwapFeeBurnRate).TruncateInt()
 	burnCoin := sdk.NewCoin(availableBalance.Denom, burnAmount)
 
-	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), types.ModuleName, sdk.NewCoins(burnCoin))
+	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), types.ModuleName, sdk.NewCoins(burnCoin))
 	if err != nil {
 		return sdk.Coin{}, err
 	}

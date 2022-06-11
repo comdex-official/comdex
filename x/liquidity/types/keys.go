@@ -25,22 +25,23 @@ var (
 	LastPairIDKey = []byte{0xa0} // key for the latest pair id
 	LastPoolIDKey = []byte{0xa1} // key for the latest pool id
 
-	PairKeyPrefix               = []byte{0xa5}
-	PairIndexKeyPrefix          = []byte{0xa6}
-	PairsByDenomsIndexKeyPrefix = []byte{0xa7}
+	PairKeyPrefix               = []byte{0xa2}
+	PairIndexKeyPrefix          = []byte{0xa3}
+	PairsByDenomsIndexKeyPrefix = []byte{0xa4}
 
-	PoolKeyPrefix                      = []byte{0xab}
-	PoolByReserveAddressIndexKeyPrefix = []byte{0xac}
-	PoolsByPairIndexKeyPrefix          = []byte{0xad}
+	PoolKeyPrefix                      = []byte{0xa5}
+	PoolByReserveAddressIndexKeyPrefix = []byte{0xa6}
+	PoolsByPairIndexKeyPrefix          = []byte{0xa7}
 
-	DepositRequestKeyPrefix       = []byte{0xb0}
-	DepositRequestIndexKeyPrefix  = []byte{0xb4} //nolint TODO: rearrange prefixes
-	WithdrawRequestKeyPrefix      = []byte{0xb1}
-	WithdrawRequestIndexKeyPrefix = []byte{0xb5}
+	DepositRequestKeyPrefix       = []byte{0xa8}
+	DepositRequestIndexKeyPrefix  = []byte{0xa9} //nolint TODO: rearrange prefixes
+	WithdrawRequestKeyPrefix      = []byte{0xb0}
+	WithdrawRequestIndexKeyPrefix = []byte{0xb1}
 	OrderKeyPrefix                = []byte{0xb2}
 	OrderIndexKeyPrefix           = []byte{0xb3}
 
 	PoolLiquidityProvidersDataKeyPrefix = []byte{0xb4}
+	GenericParamsKey                    = []byte{0xb5}
 )
 
 // GetPairKey returns the store key to retrieve pair object from the pair id.
@@ -197,6 +198,11 @@ func GetOrderIndexKeyPrefix(appID uint64, orderer sdk.AccAddress) []byte {
 // GetPoolLiquidityProvidersDataKeyPrefix returns the store key to retrieve liquidity providers data from the pool id.
 func GetPoolLiquidityProvidersDataKey(appID, poolID uint64) []byte {
 	return append(append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
+}
+
+// GetGenericParamsKey returns the store key to retrieve params object.
+func GetGenericParamsKey(appID uint64) []byte {
+	return append(GenericParamsKey, sdk.Uint64ToBigEndian(appID)...)
 }
 
 // ParsePairsByDenomsIndexKey parses a pair by denom index key.

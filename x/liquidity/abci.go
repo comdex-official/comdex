@@ -33,7 +33,10 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	if found {
 
 		for _, app := range allApps {
-			params := k.GetParams(ctx)
+			params, err := k.GetGenericParams(ctx, app.Id)
+			if err != nil {
+				continue
+			}
 			if ctx.BlockHeight()%int64(params.BatchSize) == 0 {
 				k.ExecuteRequests(ctx, app.Id)
 				k.ProcessQueuedLiquidityProviders(ctx, app.Id)

@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "comdex/liquidity/v1beta1/liquidity.proto";
+import "comdex/liquidity/v1beta1/params.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 
@@ -17,6 +18,16 @@ message QueryParamsRequest {}
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryGenericParamsRequest is request type for the Query/GenericParams RPC method.
+message QueryGenericParamsRequest {
+  uint64 app_id = 1;
+}
+
+// QueryGenericParamsResponse is response type for the Query/GenericParams RPC method.
+message QueryGenericParamsResponse {
+  GenericParams params = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryPoolsRequest is request type for the Query/Pools RPC method.
@@ -303,6 +314,11 @@ service Query {
   // Params returns parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/params";
+  }
+
+  // Params returns parameters of the module.
+  rpc GenericParams(QueryGenericParamsRequest) returns (QueryGenericParamsResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/generic_params";
   }
 
   // Pools returns all liquidity pools.

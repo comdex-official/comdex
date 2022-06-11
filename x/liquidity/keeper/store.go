@@ -564,6 +564,24 @@ func (k Keeper) GetPoolLiquidityProvidersData(ctx sdk.Context, appID, poolID uin
 // SetPoolLiquidityProvidersData sets the liquidity providers data by pool id.
 func (k Keeper) SetPoolLiquidityProvidersData(ctx sdk.Context, liquidityProvidersData types.PoolLiquidityProvidersData) {
 	store := ctx.KVStore(k.storeKey)
-	bz := types.MustMarshaPoolLiquidityProvidersData(k.cdc, liquidityProvidersData)
+	bz := types.MustMarshalPoolLiquidityProvidersData(k.cdc, liquidityProvidersData)
 	store.Set(types.GetPoolLiquidityProvidersDataKey(liquidityProvidersData.AppId, liquidityProvidersData.PoolId), bz)
+}
+
+// GetGenericLiquidityParams returns the generic liquidity params by app id.
+func (k Keeper) GetGenericLiquidityParams(ctx sdk.Context, appID uint64) (genericLiquidityParams types.GenericParams, found bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetGenericParamsKey(appID))
+	if bz == nil {
+		return
+	}
+	genericLiquidityParams = types.MustUnmarshalGenericLiquidityParams(k.cdc, bz)
+	return genericLiquidityParams, true
+}
+
+// SetGenericLiquidityParams sets the the generic liquidity params by app id.
+func (k Keeper) SetGenericLiquidityParams(ctx sdk.Context, genericLiquidityParams types.GenericParams) {
+	store := ctx.KVStore(k.storeKey)
+	bz := types.MustMarshalGenericLiquidityParams(k.cdc, genericLiquidityParams)
+	store.Set(types.GetGenericParamsKey(genericLiquidityParams.AppId), bz)
 }
