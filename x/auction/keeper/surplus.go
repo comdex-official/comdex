@@ -63,7 +63,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 	if !found {
 		return
 	}
-	//traverse this to access appId , collector asset id , surplus threshhold , debt threshhold
+	//traverse this to access appId , collector asset id , surplus threshhold
 	for _, collector := range assetsCollectorDataUnderAppId.AssetRateInfo {
 
 		if collector.CollectorAssetId == assetId {

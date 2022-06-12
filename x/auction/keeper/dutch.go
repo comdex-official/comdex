@@ -18,9 +18,6 @@ func (k Keeper) DutchActivator(ctx sdk.Context) error {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
 	for _, lockedVault := range lockedVaults {
-		if lockedVault.IsAuctionInProgress{
-			return nil
-		}
 		extendedPair, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
 		if !found {
 			return auctiontypes.ErrorInvalidPair
@@ -125,6 +122,7 @@ func (k Keeper) StartDutchAuction(
 		outFlowTokenPrice = uint64(2)
 		inFlowTokenPrice = uint64(10)
 	}
+	//set target amount for debt
 	inFlowTokenTargetAmount := k.getInflowTokenTargetAmount(outFlowToken.Amount, sdk.NewIntFromUint64(inFlowTokenPrice), sdk.NewIntFromUint64(outFlowTokenPrice))
 	inFlowTokenTarget := sdk.NewCoin(inFlowToken.Denom, inFlowTokenTargetAmount)
 	//These prices are in uusd

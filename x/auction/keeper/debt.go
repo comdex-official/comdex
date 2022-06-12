@@ -62,11 +62,11 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 	if !found {
 		return
 	}
-	//traverse this to access appId , collector asset id , surplus threshhold , debt threshhold
+	//traverse this to access appId , collector asset id  , debt threshhold
 	for _, collector := range assetsCollectorDataUnderAppId.AssetRateInfo {
 
 		if collector.CollectorAssetId == assetId {
-			//collectorLookupTable has surplusThreshhold for all assets
+			
 
 			NetFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appId)
 
@@ -98,7 +98,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 							break
 						}
 						return auctiontypes.StartedDebtAuction, nil
-						// if netfees >= surplus threshhold+lotsize the start surplus auction with lot size and surplus auction is allowed true
+					
 					} else {
 
 						return auctiontypes.NoAuction, nil
@@ -340,7 +340,7 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appId, auctionMappingId, au
 		change := auction.BidFactor.MulInt(auction.ExpectedMintedToken.Amount).Ceil().TruncateInt()
 		maxBidAmount := auction.ExpectedMintedToken.Amount.Sub(change)
 		if bid.Amount.GT(maxBidAmount) {
-			sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", maxBidAmount)
+			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", maxBidAmount)
 		}
 	} else {
 		if bid.Amount.GT(auction.AuctionedToken.Amount) {
