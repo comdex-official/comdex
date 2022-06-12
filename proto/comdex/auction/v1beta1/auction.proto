@@ -14,14 +14,14 @@ message SurplusAuction {
         (gogoproto.moretags) = "yaml:\"auction_id\""
     ];
 
-    cosmos.base.v1beta1.Coin outflow_token = 2 [
+    cosmos.base.v1beta1.Coin sell_token = 2 [
         (gogoproto.nullable) = false,
-        (gogoproto.moretags)   = "yaml:\"outflow_token\"",
+        (gogoproto.moretags)   = "yaml:\"sell_token\"",
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
-    cosmos.base.v1beta1.Coin inflow_token = 3 [
+    cosmos.base.v1beta1.Coin buy_token = 3 [
         (gogoproto.nullable) = false,
-        (gogoproto.moretags)   = "yaml:\"inflow_token\"",
+        (gogoproto.moretags)   = "yaml:\"buy_token\"",
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
     uint64 active_bidding_id = 4 [

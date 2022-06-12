@@ -370,6 +370,27 @@ func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, appId uint64) (collect
 	return collectorAuctionLookupTable, true
 }
 
+func (k *Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.CollectorAuctionLookupTable, found bool) {
+
+	var (
+		store = ctx.KVStore(k.storeKey)
+		iter  = sdk.KVStorePrefixIterator(store, types.AppIdToAuctionMappingPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var table types.CollectorAuctionLookupTable
+		k.cdc.MustUnmarshal(iter.Value(), &table)
+		collectorAuctionLookupTable = append(collectorAuctionLookupTable, table)
+	}
+	if collectorAuctionLookupTable == nil {
+		return nil, false
+	}
+
+	return collectorAuctionLookupTable, true
+}
+
 
 func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, appId, assetId uint64, fee sdk.Int) error {
 
