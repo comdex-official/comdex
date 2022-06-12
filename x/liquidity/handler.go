@@ -3,6 +3,8 @@ package liquidity
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/pkg/errors"
 
 	"github.com/comdex-official/comdex/x/liquidity/keeper"
 	"github.com/comdex-official/comdex/x/liquidity/types"
@@ -40,8 +42,25 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgCancelAllOrders:
 			res, err := msgServer.CancelAllOrders(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgTokensSoftLock:
+			res, err := msgServer.TokensSoftLock(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgTokensSoftUnlock:
+			res, err := msgServer.TokensSoftUnlock(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", types.ModuleName, msg)
+		}
+	}
+}
+
+func NewLiquidityProposalHandler(k keeper.Keeper) govtypes.Handler {
+	return func(ctx sdk.Context, content govtypes.Content) error {
+		switch c := content.(type) {
+		case *types.UpdateGenericParamsProposal:
+			return k.HandelUpdateGenericParamsProposal(ctx, c)
+		default:
+			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}
 	}
 }

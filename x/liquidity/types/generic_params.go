@@ -11,8 +11,8 @@ import (
 
 // Liquidity params default values.
 const (
-	DefaultBatchSize        uint32        = 1
-	DefaultTickPrecision    uint32        = 6
+	DefaultBatchSize        uint64        = 1
+	DefaultTickPrecision    uint64        = 6
 	DefaultMaxOrderLifespan time.Duration = 24 * time.Hour
 	DefaultFeeDenom         string        = "ucmdx"
 )
@@ -34,6 +34,7 @@ var (
 )
 
 var (
+	AppId                    = "AppId"
 	BatchSize                = "BatchSize"
 	TickPrecision            = "TickPrecision"
 	FeeCollectorAddress      = "FeeCollectorAddress"
@@ -52,6 +53,24 @@ var (
 	SwapFeeDistrDenom        = "SwapFeeDistrDenom"
 	SwapFeeBurnRate          = "SwapFeeBurnRate"
 )
+
+var UpdatableKeys = []string{
+	BatchSize,
+	TickPrecision,
+	MinInitialPoolCoinSupply,
+	PairCreationFee,
+	PoolCreationFee,
+	MinInitialDepositAmount,
+	MaxPriceLimitRatio,
+	MaxOrderLifespan,
+	SwapFeeRate,
+	WithdrawFeeRate,
+	DepositExtraGas,
+	WithdrawExtraGas,
+	OrderExtraGas,
+	SwapFeeDistrDenom,
+	SwapFeeBurnRate,
+}
 
 // DeriveFeeCollectorAddress returns a unique address of the fee collector.
 func DeriveFeeCollectorAddress(appID uint64) sdk.AccAddress {
@@ -93,15 +112,38 @@ func DefaultGenericParams(appID uint64) GenericParams {
 	}
 }
 
-func ParseString(value string) (string, error) {
+func KeyParseValidateFuncMap() map[string][]interface{} {
+	return map[string][]interface{}{
+		AppId:                    {ParseStringToUint, validateAppId},
+		BatchSize:                {ParseStringToUint, validateBatchSize},
+		TickPrecision:            {ParseStringToUint, validateTickPrecision},
+		FeeCollectorAddress:      {ParseString, validateFeeCollectorAddress},
+		DustCollectorAddress:     {ParseString, validateDustCollectorAddress},
+		MinInitialPoolCoinSupply: {ParseStringToInt, validateMinInitialPoolCoinSupply},
+		PairCreationFee:          {ParseStringToCoins, validatePairCreationFee},
+		PoolCreationFee:          {ParseStringToCoins, validatePoolCreationFee},
+		MinInitialDepositAmount:  {ParseStringToInt, validateMinInitialDepositAmount},
+		MaxPriceLimitRatio:       {ParseStringToDec, validateMaxPriceLimitRatio},
+		MaxOrderLifespan:         {ParseStringToDuration, validateMaxOrderLifespan},
+		SwapFeeRate:              {ParseStringToDec, validateSwapFeeRate},
+		WithdrawFeeRate:          {ParseStringToDec, validateWithdrawFeeRate},
+		DepositExtraGas:          {ParseStringToGas, validateExtraGas},
+		WithdrawExtraGas:         {ParseStringToGas, validateExtraGas},
+		OrderExtraGas:            {ParseStringToGas, validateExtraGas},
+		SwapFeeDistrDenom:        {ParseString, validateSwapFeeDistrDenom},
+		SwapFeeBurnRate:          {ParseStringToDec, validateSwapFeeBurnRate},
+	}
+}
+
+func ParseString(value string) (interface{}, error) {
 	return value, nil
 }
 
-func ParseStringToUint(value string) (uint64, error) {
+func ParseStringToUint(value string) (interface{}, error) {
 	return strconv.ParseUint(value, 10, 64)
 }
 
-func ParseStringToInt(value string) (sdk.Int, error) {
+func ParseStringToInt(value string) (interface{}, error) {
 	parsedValue, ok := sdk.NewIntFromString(value)
 	if !ok {
 		return sdk.Int{}, fmt.Errorf("invalid parameter type: %T", value)
@@ -109,30 +151,44 @@ func ParseStringToInt(value string) (sdk.Int, error) {
 	return parsedValue, nil
 }
 
-func ParseStringToCoins(value string) (sdk.Coins, error) {
+func ParseStringToCoins(value string) (interface{}, error) {
 	return sdk.ParseCoinsNormalized(value)
 }
 
-func ParseStringToDec(value string) (sdk.Dec, error) {
+func ParseStringToDec(value string) (interface{}, error) {
 	return sdk.NewDecFromStr(value)
 }
 
-func ParseStringToDuration(value string) (time.Duration, error) {
+func ParseStringToDuration(value string) (interface{}, error) {
 	return time.ParseDuration(value)
 }
 
-func ParseStringToGas(value string) (sdk.Gas, error) {
+func ParseStringToGas(value string) (interface{}, error) {
 	gas, err := ParseStringToUint(value)
 	if err != nil {
 		return sdk.Gas(0), nil
 	}
-	return sdk.Gas(gas), nil
+	g, _ := gas.(uint64)
+	return sdk.Gas(g), nil
+}
+
+func validateAppId(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v == 0 {
+		return fmt.Errorf("app id must be positive: %d", v)
+	}
+
+	return nil
 }
 
 func validateBatchSize(i interface{}) error {
 	v, ok := i.(uint64)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return fmt.Errorf("invalid parameter type: %d", i)
 	}
 
 	if v == 0 {
@@ -269,6 +325,10 @@ func validateSwapFeeRate(i interface{}) error {
 		return fmt.Errorf("swap fee rate must not be negative: %s", v)
 	}
 
+	if v.GTE(sdk.OneDec()) {
+		return fmt.Errorf("swap fee rate cannot exceed 1 i.e 100 perc. : %s", v)
+	}
+
 	return nil
 }
 
@@ -280,6 +340,9 @@ func validateWithdrawFeeRate(i interface{}) error {
 
 	if v.IsNegative() {
 		return fmt.Errorf("withdraw fee rate must not be negative: %s", v)
+	}
+	if v.GTE(sdk.OneDec()) {
+		return fmt.Errorf("withdraw fee rate cannot exceed 1 i.e 100 perc. : %s", v)
 	}
 
 	return nil
@@ -311,6 +374,10 @@ func validateSwapFeeBurnRate(i interface{}) error {
 
 	if v.IsNegative() {
 		return fmt.Errorf("swap fee burn rate must not be negative: %s", v)
+	}
+
+	if v.GTE(sdk.OneDec()) {
+		return fmt.Errorf("swap fee burn rate cannot exceed 1 i.e 100 perc. : %s", v)
 	}
 
 	return nil

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package comdex.liquidity.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/liquidity/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message UpdateGenericParamsProposal {
+    uint64 app_id = 1;
+    repeated string keys = 2;
+    repeated string values = 3;
+    string title = 4 [(gogoproto.moretags) = "yaml:\"title\""];
+    string description = 5 [(gogoproto.moretags) = "yaml:\"description\""];
+}

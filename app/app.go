@@ -135,6 +135,7 @@ import (
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 
 	"github.com/comdex-official/comdex/x/liquidity"
+	liquidityclient "github.com/comdex-official/comdex/x/liquidity/client"
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
@@ -171,15 +172,16 @@ var (
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
 			append(
-				assetclient.AddAssetsHandler,
-				bandoraclemoduleclient.AddFetchPriceHandler,
-				collectorclient.AddLookupTableParamsHandlers,
-				collectorclient.AddAuctionControlParamsHandler,
-				paramsclient.ProposalHandler,
-				distrclient.ProposalHandler,
-				upgradeclient.ProposalHandler,
-				upgradeclient.CancelProposalHandler,
-			)...,
+				append(
+					assetclient.AddAssetsHandler,
+					bandoraclemoduleclient.AddFetchPriceHandler,
+					collectorclient.AddLookupTableParamsHandlers,
+					collectorclient.AddAuctionControlParamsHandler,
+					paramsclient.ProposalHandler,
+					distrclient.ProposalHandler,
+					upgradeclient.ProposalHandler,
+					upgradeclient.CancelProposalHandler,
+				), liquidityclient.LiquidityProposalHandler...)...,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -669,7 +671,8 @@ func New(
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.assetKeeper)).
 		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.collectorKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper))
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
+		AddRoute(liquiditytypes.RouterKey, liquidity.NewLiquidityProposalHandler(app.liquidityKeeper))
 
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,

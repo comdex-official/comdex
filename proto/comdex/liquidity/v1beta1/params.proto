@@ -13,9 +13,9 @@ message Params {}
 
 // Params defines the parameters for the liquidity module.
 message GenericParams {
-    uint32 batch_size = 1;
+    uint64 batch_size = 1;
 
-    uint32 tick_precision = 2;
+    uint64 tick_precision = 2;
   
     string fee_collector_address = 3;
   
