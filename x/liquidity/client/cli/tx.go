@@ -52,7 +52,7 @@ func NewCreatePairCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Create a pair(market) for trading.
 Example:
-$ %s tx %s create-pair uatom stake --from mykey
+$ %s tx %s create-pair 1 uatom stake --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -89,7 +89,7 @@ func NewCreatePoolCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Create a liquidity pool with coins.
 Example:
-$ %s tx %s create-pool 1 1000000000uatom,50000000000stake --from mykey
+$ %s tx %s create-pool 1 1 1000000000uatom,50000000000stake --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -134,7 +134,7 @@ func NewDepositCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Deposit coins to a liquidity pool.
 Example:
-$ %s tx %s deposit 1 1000000000uatom,50000000000stake --from mykey
+$ %s tx %s deposit 1 1 1000000000uatom,50000000000stake --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -179,7 +179,7 @@ func NewWithdrawCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Withdraw coins from the specified liquidity pool.
 Example:
-$ %s tx %s withdraw 1 10000pool1 --from mykey
+$ %s tx %s withdraw 1 1 10000pool1 --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -234,6 +234,7 @@ $ %s tx %s limit-order 1 1 b 5000stake uatom 0.5 10000 --from mykey
 $ %s tx %s limit-order 1 1 sell 10000uatom stake 2.0 10000 --order-lifespan=10m --from mykey
 $ %s tx %s limit-order 1 1 s 10000uatom stake 2.0 10000 --order-lifespan=10m --from mykey
 
+[app-id]: application id on which transaction to be made
 [pair-id]: pair id to swap with
 [direction]: order direction (one of: buy,b,sell,s)
 [offer-coin]: the amount of offer coin to swap
@@ -319,11 +320,12 @@ func NewMarketOrderCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Make a market order.
 Example:
-$ %s tx %s market-order 1 buy 5000stake uatom 10000 --from mykey
-$ %s tx %s market-order 1 b 5000stake uatom 10000 --from mykey
-$ %s tx %s market-order 1 sell 10000uatom stake 10000 --order-lifespan=10m --from mykey
-$ %s tx %s market-order 1 s 10000uatom stake 10000 --order-lifespan=10m --from mykey
+$ %s tx %s market-order 1 1 buy 5000stake uatom 10000 --from mykey
+$ %s tx %s market-order 1 1 b 5000stake uatom 10000 --from mykey
+$ %s tx %s market-order 1 1 sell 10000uatom stake 10000 --order-lifespan=10m --from mykey
+$ %s tx %s market-order 1 1 s 10000uatom stake 10000 --order-lifespan=10m --from mykey
 
+[app-id]: application id on which transaction to be made
 [pair-id]: pair id to swap with
 [direction]: order direction (one of: buy,b,sell,s)
 [offer-coin]: the amount of offer coin to swap
@@ -403,7 +405,7 @@ func NewCancelOrderCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Cancel an order.
 Example:
-$ %s tx %s cancel-order 1 1 --from mykey
+$ %s tx %s cancel-order 1 1 1 --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -453,8 +455,8 @@ func NewCancelAllOrdersCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Cancel all orders.
 Example:
-$ %s tx %s cancel-all-orders --from mykey
-$ %s tx %s cancel-all-orders 1,3 --from mykey
+$ %s tx %s cancel-all-orders 1 --from mykey
+$ %s tx %s cancel-all-orders 1 1,3 --from mykey
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -499,7 +501,7 @@ func NewSoftLockTokensCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`soft-lock coins from the specified liquidity pool,  to start earning rewards
 Example:
-$ %s tx %s soft-lock 1 10000pool1 --from mykey
+$ %s tx %s soft-lock 1 1 10000pool1 --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -549,7 +551,7 @@ func NewSoftUnlockTokensCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`soft-unlock coins from the specified liquidity pool,  to stop receiving rewards
 Example:
-$ %s tx %s soft-unlock 1 10000pool1 --from mykey
+$ %s tx %s soft-unlock 1 1 10000pool1 --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),

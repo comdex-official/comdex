@@ -316,93 +316,93 @@ service Query {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/params";
   }
 
-  // Params returns parameters of the module.
+  // GenericParams returns app parameters of the module.
   rpc GenericParams(QueryGenericParamsRequest) returns (QueryGenericParamsResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/generic_params";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/generic_params/{app_id}";
   }
 
   // Pools returns all liquidity pools.
   rpc Pools(QueryPoolsRequest) returns (QueryPoolsResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}";
   }
 
   // Pool returns the specific liquidity pool.
   rpc Pool(QueryPoolRequest) returns (QueryPoolResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{pool_id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/{pool_id}";
   }
 
   // PoolByReserveAddress returns all pools that correspond to the reserve account.
   rpc PoolByReserveAddress(QueryPoolByReserveAddressRequest) returns (QueryPoolResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/reserve_address/{reserve_address}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/reserve_address/{reserve_address}";
   }
 
   // PoolByPoolCoinDenom returns all pools that correspond to the pool coin denom.
   rpc PoolByPoolCoinDenom(QueryPoolByPoolCoinDenomRequest) returns (QueryPoolResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/pool_coin_denom/{pool_coin_denom}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/pool_coin_denom/{pool_coin_denom}";
   }
 
   // Pairs returns all liquidity pairs.
   rpc Pairs(QueryPairsRequest) returns (QueryPairsResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}";
   }
 
   // Pair returns the specific pair.
   rpc Pair(QueryPairRequest) returns (QueryPairResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{pair_id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}";
   }
 
   // DepositRequests returns all deposit requests.
   rpc DepositRequests(QueryDepositRequestsRequest) returns (QueryDepositRequestsResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{pool_id}/deposit_requests";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/{pool_id}/deposit_requests";
   }
 
   // DepositRequest returns the specific deposit request.
   rpc DepositRequest(QueryDepositRequestRequest) returns (QueryDepositRequestResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{pool_id}/deposit_requests/{id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/{pool_id}/deposit_requests/{id}";
   }
 
   // WithdrawRequests returns all withdraw requests.
   rpc WithdrawRequests(QueryWithdrawRequestsRequest) returns (QueryWithdrawRequestsResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{pool_id}/withdraw_requests";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/{pool_id}/withdraw_requests";
   }
 
   // WithdrawRequest returns the specific withdraw request.
   rpc WithdrawRequest(QueryWithdrawRequestRequest) returns (QueryWithdrawRequestResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{pool_id}/withdraw_requests/{id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/{pool_id}/withdraw_requests/{id}";
   }
 
   // Orders returns all orders within the pair.
   rpc Orders(QueryOrdersRequest) returns (QueryOrdersResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{pair_id}/orders";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}/orders";
   }
 
   // Order returns the specific order.
   rpc Order(QueryOrderRequest) returns (QueryOrderResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{pair_id}/orders/{id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}/orders/{id}";
   }
 
   // OrdersByOrderer returns orders made by an orderer.
   rpc OrdersByOrderer(QueryOrdersByOrdererRequest) returns (QueryOrdersResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{orderer}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{app_id}/{orderer}";
   }
 
   // SoftLock returns deposited poolcoin for farming .
   rpc SoftLock(QuerySoftLockRequest) returns (QuerySoftLockResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/softlock/{pool_id}/{depositor}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/softlock/{app_id}/{pool_id}/{depositor}";
   }
 
   // DeserializePoolCoin splits poolcoin into the actual provided pool assets .
   rpc DeserializePoolCoin(QueryDeserializePoolCoinRequest) returns (QueryDeserializePoolCoinResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/deserialize/{pool_id}/{pool_coin_amount}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/deserialize/{app_id}/{pool_id}/{pool_coin_amount}";
   }
 
   // PoolIncentives provides insights about available pool incentives.
   rpc PoolIncentives(QueryPoolsIncentivesRequest) returns (QueryPoolIncentivesResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pool_incentives";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pool_incentives/{app_id}";
   }
 
   // FarmedPoolCoin returns the total coin in the soft-lock.
   rpc FarmedPoolCoin(QueryFarmedPoolCoinRequest) returns (QueryFarmedPoolCoinResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/farmed_coin/{pool_id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/farmed_coin/{app_id}/{pool_id}";
   }
 }

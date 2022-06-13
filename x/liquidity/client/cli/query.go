@@ -136,9 +136,9 @@ func NewQueryPairsCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all existing pairs on a network.
 Example:
-$ %s query %s pairs
-$ %s query %s pairs --denoms=uatom
-$ %s query %s pairs --denoms=uatom,stake
+$ %s query %s pairs 1
+$ %s query %s pairs 1 --denoms=uatom
+$ %s query %s pairs 1 --denoms=uatom,stake
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -192,7 +192,7 @@ func NewQueryPairCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the pair.
 Example:
-$ %s query %s pair 1
+$ %s query %s pair 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -241,9 +241,9 @@ func NewQueryPoolsCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all existing liquidity pools on a network.
 Example:
-$ %s query %s pools
-$ %s query %s pools --pair-id=1
-$ %s query %s pools --disabled=true
+$ %s query %s pools 1
+$ %s query %s pools 1 --pair-id=1
+$ %s query %s pools 1 --disabled=true
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -313,9 +313,9 @@ func NewQueryPoolCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the liquidity pool
 Example:
-$ %s query %s pool 1
-$ %s query %s pool --pool-coin-denom=pool1
-$ %s query %s pool --reserve-address=cre1...
+$ %s query %s pool 1 1
+$ %s query %s pool 1 --pool-coin-denom=pool1
+$ %s query %s pool 1 --reserve-address=comdex...
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -394,7 +394,7 @@ func NewQueryDepositRequestsCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all deposit requests in the pool.
 Example:
-$ %s query %s deposit-requests 1
+$ %s query %s deposit-requests 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -451,7 +451,7 @@ func NewQueryDepositRequestCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the specific deposit request.
 Example:
-$ %s query %s deposit-requests 1 1
+$ %s query %s deposit-request 1 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -508,7 +508,7 @@ func NewQueryWithdrawRequestsCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all withdraw requests in the pool.
 Example:
-$ %s query %s withdraw-requests 1
+$ %s query %s withdraw-requests 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -565,7 +565,7 @@ func NewQueryWithdrawRequestCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the specific withdraw request.
 Example:
-$ %s query %s 1 withdraw-requests 1 1
+$ %s query %s withdraw-request 1 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -622,9 +622,9 @@ func NewQueryOrdersCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all orders in the pair.
 Example:
-$ %s query %s orders cre1...
-$ %s query %s orders --pair-id=1 cre1...
-$ %s query %s orders --pair-id=1
+$ %s query %s orders 1 comdex...
+$ %s query %s orders 1 --pair-id=1 comdex...
+$ %s query %s orders 1 --pair-id=1
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -706,7 +706,7 @@ func NewQueryOrderCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the specific order.
 Example:
-$ %s query %s order 1 1
+$ %s query %s order 1 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -763,7 +763,7 @@ func NewQuerySoftLockCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the soft-lock in specific pool for adddress.
 Example:
-$ %s query %s soft-lock 1 comdex1ed6zea6ppj29vkzk8f867rsauu65lq2p75jc3u
+$ %s query %s soft-lock 1 1 comdex...
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -815,7 +815,7 @@ func NewQueryDeserializePoolCoinCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Deserialize pool coins into pool assets.
 Example:
-$ %s query %s deserialize 1 123400000
+$ %s query %s deserialize 1 1 123400000
 > {coins : [1000000ucmdx, 4000000ucmst]}
 `,
 				version.AppName, types.ModuleName,
@@ -872,7 +872,7 @@ func NewQueryPoolIncentivesCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query Pool Incentives
 Example:
-$ %s query %s pool-incentives
+$ %s query %s pool-incentives 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -917,7 +917,7 @@ func NewQueryFarmedPoolCoinCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query total coins being farmed (in soft-lock).
 Example:
-$ %s query %s farmed-coin 1
+$ %s query %s farmed-coin 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
