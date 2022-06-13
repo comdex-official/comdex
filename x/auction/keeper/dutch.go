@@ -448,7 +448,7 @@ func (k Keeper) CloseDutchAuction(
 	}
 
 	//send penalty
-	err := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(burnToken.Denom, penaltyAmount)))
+	err := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(burnToken.Denom, penaltyCoin.Amount)))
 	if err != nil {
 		return err
 	}
