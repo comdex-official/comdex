@@ -59,6 +59,43 @@ func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultId uint
 	return nil
 }
 
+func (k Keeper) AddAuctionParams(ctx sdk.Context, appId, auctionDurationSeconds uint64, buffer, cusp sdk.Dec, step, priceFunctionType, surplusId, debtId, dutchId uint64) error {
+	newStep := sdk.NewIntFromUint64(step)
+	auctionParams := types.AuctionParams{
+		AppId:                  appId,
+		AuctionDurationSeconds: auctionDurationSeconds,
+		Buffer:                 buffer,
+		Cusp:                   cusp,
+		Step:                   newStep,
+		PriceFunctionType:      priceFunctionType,
+		SurplusId:              surplusId,
+		DebtId:                 debtId,
+		DutchId:                dutchId,
+	}
+
+	k.SetAuctionParams(ctx, auctionParams)
+
+	return nil
+}
+
+func (k Keeper) makeFalseForFlags(ctx sdk.Context, appId, assetId uint64) error {
+
+	auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appId)
+	if !found {
+		return auctiontypes.ErrorInvalidAddress
+	}
+	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
+		if assetToAuction.AssetId == assetId {
+			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = false
+			err := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 //Here inflow calculated properly as lot size is in ucmst and out flow calculated based on price ratio (so no usd involved here)
 //In surplus we need to sell cmst and get harbour . we know amount of cmst(outflow token) to sell but we need to get how much harbor to collect from user .
 // func (k Keeper) getSurplusInflowTokenAmount(ctx sdk.Context, appId, AssetInId, AssetOutId uint64, lotSize sdk.Int) (status uint64, outflowToken, inflowToken sdk.Coin) {
@@ -254,23 +291,6 @@ func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultId uint
 // 	return nil
 // }
 
-func (k Keeper) makeFalseForFlags(ctx sdk.Context, appId, assetId uint64) error {
-
-	auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appId)
-	if !found {
-		return auctiontypes.ErrorInvalidAddress
-	}
-	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
-		if assetToAuction.AssetId == assetId {
-			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = false
-			err := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
 
 // func (k Keeper) CloseAndRestartAuctions(ctx sdk.Context) error {
 // 	appIds, found := k.GetApps(ctx)
@@ -1371,21 +1391,3 @@ func (k Keeper) makeFalseForFlags(ctx sdk.Context, appId, assetId uint64) error 
 // 	return nil
 // }
 
-func (k Keeper) AddAuctionParams(ctx sdk.Context, appId, auctionDurationSeconds uint64, buffer, cusp sdk.Dec, step, priceFunctionType, surplusId, debtId, dutchId uint64) error {
-	newStep := sdk.NewIntFromUint64(step)
-	auctionParams := types.AuctionParams{
-		AppId:                  appId,
-		AuctionDurationSeconds: auctionDurationSeconds,
-		Buffer:                 buffer,
-		Cusp:                   cusp,
-		Step:                   newStep,
-		PriceFunctionType:      priceFunctionType,
-		SurplusId:              surplusId,
-		DebtId:                 debtId,
-		DutchId:                dutchId,
-	}
-
-	k.SetAuctionParams(ctx, auctionParams)
-
-	return nil
-}
