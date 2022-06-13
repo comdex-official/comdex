@@ -128,7 +128,7 @@ func (k Keeper) StartDutchAuction(
 	inFlowTokenTarget := sdk.NewCoin(inFlowToken.Denom, inFlowTokenTargetAmount)
 	//These prices are in uusd
 	outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(outFlowTokenPrice), auctionParams.Buffer)
-	outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
+	outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp, liquidationPenalty)
 	vaultOwner, err := sdk.AccAddressFromBech32(lockedVaultOwner)
 	if err != nil {
 		return err
@@ -402,12 +402,12 @@ func (k Keeper) CloseDutchAuction(
 
 	//calculate penalty
 	penaltyCoin := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
-	penaltyCoin.Amount = dutchAuction.InflowTokenCurrentAmount.Amount.Mul(dutchAuction.LiquidationPenalty.TruncateInt())
-
+	// penaltyCoin.Amount = dutchAuction.InflowTokenCurrentAmount.Amount.Mul(dutchAuction.LiquidationPenalty.TruncateInt()) 
 	// burn and send target CMST to collector
 	burnToken := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
-	burnToken.Amount = dutchAuction.ToBurnAmount.Amount.Sub(penaltyCoin.Amount)
 
+	penaltyCoin.Amount = (burnToken.Amount.Mul(dutchAuction.LiquidationPenalty.TruncateInt())).Quo(dutchAuction.LiquidationPenalty.TruncateInt().Add(sdk.NewIntFromUint64(1)))
+	burnToken.Amount = dutchAuction.ToBurnAmount.Amount.Sub(penaltyCoin.Amount)
 	//doing burn amount  = inflowtokencurrentamount / (1 + liq_penalty)
 	// burnToken.Amount = burnToken.Amount.Add(k.getBurnAmount(dutchAuction.InflowTokenCurrentAmount.Amount, dutchAuction.LiquidationPenalty))
 	// burnToken.Amount = dutchAuction.InflowTokenCurrentAmount.Amount.Sub(penaltyAmount)
@@ -454,8 +454,8 @@ func (k Keeper) CloseDutchAuction(
 		return err
 	}
 	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount.Sub(dutchAuction.OutflowTokenCurrentAmount.Amount))
-	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount)
-	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(burnToken.Amount)
+	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount.Quo(sdk.Int(dutchAuction.LiquidationPenalty).Add(sdk.NewIntFromUint64(1))))
+	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(burnToken.Amount.Quo(sdk.Int(dutchAuction.LiquidationPenalty).Add(sdk.NewIntFromUint64(1))))
 
 	//set sell of history in locked vault
 	outFlowToken := dutchAuction.OutflowTokenInitAmount.Sub(dutchAuction.OutflowTokenCurrentAmount)
@@ -548,7 +548,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) error {
 			dutchAuction.StartTime = timeNow
 			dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
 			outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(outFlowTokenCurrentPrice), auctionParams.Buffer)
-			outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
+			outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp, dutchAuction.LiquidationPenalty)
 			dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
 			dutchAuction.OutflowTokenEndPrice = outFlowTokenEndPrice
 			dutchAuction.OutflowTokenCurrentPrice = outFlowTokenInitialPrice
