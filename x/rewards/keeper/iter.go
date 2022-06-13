@@ -69,18 +69,21 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 									return err
 								}
 								lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appMappingId, p.AssetId)
-								if !found{
+
+								if !found {
 									var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
+									lockerReward.AppId = locker.AppMappingId
 									lockerReward.AssetId = p.AssetId
 									lockerReward.TotalRewards = sdk.ZeroInt().Add(rewards)
-									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
-									if err != nil{
+									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
+									if err != nil {
 										return err
 									}
-								}else{
+								} else {
 									lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(rewards)
+
 									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
-									if err != nil{
+									if err != nil {
 										return err
 									}
 								}
