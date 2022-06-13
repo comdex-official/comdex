@@ -54,6 +54,11 @@ func (k Keeper) DutchActivator(ctx sdk.Context) error {
 			if err1 != nil {
 				return err1
 			}
+		}else{
+			err2 := k.RestartDutchAuctions(ctx, lockedVault.AppMappingId)
+			if err2 != nil {
+				return err2
+			}
 		}
 	}
 	return nil
@@ -429,7 +434,7 @@ func (k Keeper) CloseDutchAuction(
 
 			//storing protocol loss
 			k.SetProtocolStatistics(ctx, dutchAuction.AppId, dutchAuction.AssetInId, requiredAmount.Amount)
-			burnToken.Amount = lockedVault.AmountOut
+			// burnToken.Amount = lockedVault.AmountOut
 	}
 
 	//burning
@@ -448,6 +453,7 @@ func (k Keeper) CloseDutchAuction(
 	if err != nil {
 		return err
 	}
+	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount.Sub(dutchAuction.OutflowTokenCurrentAmount.Amount))
 	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount)
 	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(burnToken.Amount)
 
