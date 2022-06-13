@@ -34,7 +34,7 @@ var (
 	PoolsByPairIndexKeyPrefix          = []byte{0xa7}
 
 	DepositRequestKeyPrefix       = []byte{0xa8}
-	DepositRequestIndexKeyPrefix  = []byte{0xa9} //nolint TODO: rearrange prefixes
+	DepositRequestIndexKeyPrefix  = []byte{0xa9}
 	WithdrawRequestKeyPrefix      = []byte{0xb0}
 	WithdrawRequestIndexKeyPrefix = []byte{0xb1}
 	OrderKeyPrefix                = []byte{0xb2}
@@ -44,7 +44,7 @@ var (
 	GenericParamsKey                    = []byte{0xb5}
 )
 
-// GetPairKey returns the store key to retrieve pair object from the pair id.
+// GetLastPairIDKey returns the store key to retrieve the last pair id.
 func GetLastPairIDKey(appID uint64) []byte {
 	return append(LastPairIDKey, sdk.Uint64ToBigEndian(appID)...)
 }
@@ -54,7 +54,7 @@ func GetPairKey(appID, pairID uint64) []byte {
 	return append(append(PairKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairID)...)
 }
 
-// GetPairKey returns the store key to retrieve pair object from the pair id.
+// GetAllPairsKey returns the store key to retrieve all pairs.
 func GetAllPairsKey(appID uint64) []byte {
 	return append(PairKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
@@ -79,6 +79,7 @@ func GetPairsByDenomsIndexKeyPrefix(appID uint64, denomA, denomB string) []byte 
 	return append(append(append(PairsByDenomsIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), LengthPrefixString(denomA)...), LengthPrefixString(denomB)...)
 }
 
+// GetLastPoolIDKey returns the store key to retrieve the last pool id.
 func GetLastPoolIDKey(appID uint64) []byte {
 	return append(LastPoolIDKey, sdk.Uint64ToBigEndian(appID)...)
 }
@@ -88,7 +89,7 @@ func GetPoolKey(appID, poolID uint64) []byte {
 	return append(append(PoolKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
 }
 
-// GetPoolKey returns the store key to retrieve pool object from the pool id.
+// GetAllPairsKey returns the store key to retrieve all pools.
 func GetAllPoolsKey(appID uint64) []byte {
 	return append(PoolKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
@@ -108,7 +109,7 @@ func GetPoolsByPairIndexKeyPrefix(appID, pairID uint64) []byte {
 	return append(append(PoolsByPairIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairID)...)
 }
 
-// GetPoolKey returns the store key to retrieve pool object from the pool id.
+// GetAllDepositRequestKey returns the store key to retrieve all deposit requests.
 func GetAllDepositRequestKey(appID uint64) []byte {
 	return append(DepositRequestKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
@@ -136,7 +137,7 @@ func GetDepositRequestIndexKeyPrefix(appID uint64, depositor sdk.AccAddress) []b
 	return append(append(DepositRequestIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(depositor)...)
 }
 
-// GetPoolKey returns the store key to retrieve pool object from the pool id.
+// GetAllWithdrawRequestKey returns the store key to retrieve all withdraw requests.
 func GetAllWithdrawRequestKey(appID uint64) []byte {
 	return append(WithdrawRequestKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
@@ -169,7 +170,7 @@ func GetOrderKey(appID, pairID, id uint64) []byte {
 	return append(append(append(OrderKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairID)...), sdk.Uint64ToBigEndian(id)...)
 }
 
-// GetPoolKey returns the store key to retrieve pool object from the pool id.
+// GetAllOrdersKey returns the store key to retrieve all orders.
 func GetAllOrdersKey(appID uint64) []byte {
 	return append(OrderKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }

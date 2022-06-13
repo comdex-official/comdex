@@ -11,12 +11,11 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 	allApps, found := k.GetApps(ctx)
 	if found {
 
 		for _, app := range allApps {
-
-			defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
 			k.DeleteOutdatedRequests(ctx, app.Id)
 			if ctx.BlockHeight()%150 == 0 {
