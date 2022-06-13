@@ -69,7 +69,7 @@ func (k Keeper) StartDutchAuction(
 	outFlowToken sdk.Coin,
 	inFlowToken sdk.Coin,
 	appId uint64,
-	assetOutId, assetInId uint64,
+	assetInId, assetOutId uint64,
 	lockedVaultId uint64,
 	lockedVaultOwner string,
 	liquidationPenalty sdk.Dec,
@@ -93,7 +93,7 @@ func (k Keeper) StartDutchAuction(
 	}
 	if ExtendedPairVault.AssetOutOraclePrice {
 		//If oracle Price required for the assetOut
-		inFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetOutId)
+		inFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetInId)
 	} else {
 		//If oracle Price is not required for the assetOut
 		inFlowTokenPrice = ExtendedPairVault.AssetOutPrice
