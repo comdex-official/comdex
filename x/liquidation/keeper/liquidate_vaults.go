@@ -190,8 +190,12 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					//Assuming that the collateral to be sold is 1 unit, so finding out how much is going to be deducted from the
 					//collateral which will account as repaying the user's debt
 
-					numerator := ((ExtPair.MinCr.Mul(totalOut)).Sub(totalIn)).Mul(ExtPair.LiquidationPenalty.Add(sdk.SmallestDec()))
-					denominator := (ExtPair.MinCr.Sub(ExtPair.LiquidationPenalty.Add(sdk.SmallestDec()))).Mul(sdk.NewIntFromUint64(assetInPrice).ToDec())
+					numpart1 := ExtPair.MinCr.Mul(totalOut)
+					numpart2 := ExtPair.LiquidationPenalty.Add(sdk.MustNewDecFromStr("1"))
+					numerator1 := numpart1.Sub(totalIn)
+					numerator := numerator1.Mul(numpart2)
+					denominator1 := ExtPair.MinCr.Sub(numpart2)
+					denominator := denominator1.Mul((sdk.NewIntFromUint64(assetInPrice).ToDec()))
 					collateralToBeAuctioned := numerator.Quo(denominator)
 
 					// safeLiquidationFactor, _ := sdk.NewDecFromStr(types.SafeLiquidationFactor)
