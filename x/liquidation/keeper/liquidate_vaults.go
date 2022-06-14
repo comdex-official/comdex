@@ -245,14 +245,14 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 	lockedVaults := k.GetLockedVaults(ctx)
 
 	for _, lockedVault := range lockedVaults {
-
+		fmt.Println("inside unliquidate1")
 		if lockedVault.IsAuctionComplete {
 			//also calculate the current collaterlization ration to ensure there is no sudden changes
 			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
 			if err != nil {
 				continue
 			}
-
+			fmt.Println("inside unliquidate2")
 			extPair, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
 
 			pair, found := k.GetPair(ctx, extPair.PairId)
@@ -272,6 +272,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				if err != nil {
 					return err
 				}
+				fmt.Println("inside unliquidate3")
 				k.UpdateUserVaultExtendedPairMapping(ctx, lockedVault.ExtendedPairId, lockedVault.Owner, lockedVault.AppMappingId)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 				continue
@@ -283,7 +284,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				if err != nil {
 					return err
 				}
-
+				fmt.Println("inside unliquidate4")
 				k.UpdateUserVaultExtendedPairMapping(ctx, lockedVault.ExtendedPairId, lockedVault.Owner, lockedVault.AppMappingId)
 
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
@@ -296,7 +297,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			if err != nil {
 				continue
 			}
-
+			fmt.Println("newCalculatedCollateralizationRatio",newCalculatedCollateralizationRatio)
 			if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
 				updatedLockedVault := lockedVault
 				updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
@@ -317,7 +318,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				if err != nil {
 					return err
 				}
-
+				fmt.Println("delete locked vault")
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 
 				//======================================NOTE TO BE CHANGED================================================

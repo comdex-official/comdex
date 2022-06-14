@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"time"
 
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -408,6 +409,7 @@ func (k Keeper) CloseDutchAuction(
 
 	penaltyCoin.Amount = (burnToken.Amount.Mul(dutchAuction.LiquidationPenalty.TruncateInt())).Quo(dutchAuction.LiquidationPenalty.TruncateInt().Add(sdk.NewIntFromUint64(1)))
 	burnToken.Amount = dutchAuction.ToBurnAmount.Amount.Sub(penaltyCoin.Amount)
+	fmt.Print("burnToken amount", burnToken.Amount)
 	//doing burn amount  = inflowtokencurrentamount / (1 + liq_penalty)
 	// burnToken.Amount = burnToken.Amount.Add(k.getBurnAmount(dutchAuction.InflowTokenCurrentAmount.Amount, dutchAuction.LiquidationPenalty))
 	// burnToken.Amount = dutchAuction.InflowTokenCurrentAmount.Amount.Sub(penaltyAmount)
@@ -454,8 +456,11 @@ func (k Keeper) CloseDutchAuction(
 		return err
 	}
 	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount.Sub(dutchAuction.OutflowTokenCurrentAmount.Amount))
-	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount.Quo(sdk.Int(dutchAuction.LiquidationPenalty).Add(sdk.NewIntFromUint64(1))))
-	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(burnToken.Amount.Quo(sdk.Int(dutchAuction.LiquidationPenalty).Add(sdk.NewIntFromUint64(1))))
+
+	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount)
+	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(burnToken.Amount)
+	fmt.Println("lockedVault.AmountIn",lockedVault.AmountIn)
+	fmt.Println("lockedVault.AmountOut",lockedVault.AmountOut)
 
 	//set sell of history in locked vault
 	outFlowToken := dutchAuction.OutflowTokenInitAmount.Sub(dutchAuction.OutflowTokenCurrentAmount)
