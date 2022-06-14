@@ -198,7 +198,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					denominator1 := ExtPair.MinCr.Sub(numpart2)
 					denominator := denominator1.Mul((sdk.NewIntFromUint64(assetInPrice).ToDec()))
 					collateralAuctioned := numerator.Quo(denominator)
-					collateralToBeAuctioned := collateralAuctioned.Mul(sdk.NewDec(1000000))
+					collateralToBeAuctioned := collateralAuctioned.Mul(sdk.NewIntFromUint64(assetInPrice).ToDec())
 					fmt.Println("numpart1",numpart1)
 					fmt.Println("numpart2",numpart2)
 					fmt.Println("numerator1",numerator1)
@@ -220,8 +220,8 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					// selloffAmount := assetsDifference.Quo(selloffMultiplicationFactor)
 					// var collateralToBeAuctioned sdk.Dec
 					fmt.Println("collateralToBeAuctioned1111111111",collateralToBeAuctioned)
-					if collateralToBeAuctioned.GTE(lockedVault.AmountIn.ToDec()) || collateralToBeAuctioned.IsNegative(){
-						collateralToBeAuctioned = lockedVault.AmountIn.ToDec()
+					if collateralToBeAuctioned.GTE(totalIn) || collateralToBeAuctioned.IsNegative(){
+						collateralToBeAuctioned = totalIn
 					}
 					fmt.Println("totalin", totalIn)
 					fmt.Println("collateralToBeAuctioned22222222",collateralToBeAuctioned)
