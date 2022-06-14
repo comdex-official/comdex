@@ -196,7 +196,8 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					numerator := numerator1.Mul(numpart2)
 					denominator1 := ExtPair.MinCr.Sub(numpart2)
 					denominator := denominator1.Mul((sdk.NewIntFromUint64(assetInPrice).ToDec()))
-					collateralToBeAuctioned := numerator.Quo(denominator)
+					collateralAuctioned := numerator.Quo(denominator)
+					collateralToBeAuctioned := collateralAuctioned.Mul(sdk.NewDec(1000000))
 
 					// safeLiquidationFactor, _ := sdk.NewDecFromStr(types.SafeLiquidationFactor)
 					// deductionPercentage, _ := sdk.NewDecFromStr("1.0")
