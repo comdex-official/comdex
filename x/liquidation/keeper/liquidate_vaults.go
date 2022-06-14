@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -198,7 +199,16 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					denominator := denominator1.Mul((sdk.NewIntFromUint64(assetInPrice).ToDec()))
 					collateralAuctioned := numerator.Quo(denominator)
 					collateralToBeAuctioned := collateralAuctioned.Mul(sdk.NewDec(1000000))
+					fmt.Println("numpart1",numpart1)
+					fmt.Println("numpart2",numpart2)
+					fmt.Println("numerator1",numerator1)
+					fmt.Println("numerator",numerator)
+					fmt.Println("denominator1",denominator1)
+					fmt.Println("denominator",denominator)
+					fmt.Println("collateralAuctioned",collateralAuctioned)
+			
 
+					
 					// safeLiquidationFactor, _ := sdk.NewDecFromStr(types.SafeLiquidationFactor)
 					// deductionPercentage, _ := sdk.NewDecFromStr("1.0")
 					// auctionDeduction := (deductionPercentage).Sub(ExtPair.LiquidationPenalty)
@@ -209,10 +219,12 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					// selloffMultiplicationFactor := deductionPercentage.Sub(multiplicationFactor)
 					// selloffAmount := assetsDifference.Quo(selloffMultiplicationFactor)
 					// var collateralToBeAuctioned sdk.Dec
-
-					if collateralToBeAuctioned.GTE(totalIn) || collateralToBeAuctioned.IsNegative(){
-						collateralToBeAuctioned = totalIn
+					fmt.Println("collateralToBeAuctioned1111111111",collateralToBeAuctioned)
+					if collateralToBeAuctioned.GTE(lockedVault.AmountIn.ToDec()) || collateralToBeAuctioned.IsNegative(){
+						collateralToBeAuctioned = lockedVault.AmountIn.ToDec()
 					}
+					fmt.Println("totalin", totalIn)
+					fmt.Println("collateralToBeAuctioned22222222",collateralToBeAuctioned)
 					updatedLockedVault := lockedVault
 					updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 					updatedLockedVault.CollateralToBeAuctioned = collateralToBeAuctioned
