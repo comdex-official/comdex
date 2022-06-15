@@ -2419,41 +2419,41 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 var (
 	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "liquidity", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_GenericParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidity", "v1beta1", "generic_params", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GenericParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidity", "v1beta1", "generic_params", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Pools_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Pools_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Pool_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Pool_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_PoolByReserveAddress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "reserve_address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_PoolByReserveAddress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "reserve_address"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_PoolByPoolCoinDenom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_coin_denom"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_PoolByPoolCoinDenom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_coin_denom"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Pairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidity", "v1beta1", "pairs", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Pairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidity", "v1beta1", "pairs", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Pair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "pairs", "app_id", "pair_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Pair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "pairs", "app_id", "pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_DepositRequests_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_id", "deposit_requests"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_DepositRequests_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_id", "deposit_requests"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_DepositRequest_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_id", "deposit_requests", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_DepositRequest_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_id", "deposit_requests", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_WithdrawRequests_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_id", "withdraw_requests"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_WithdrawRequests_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_id", "withdraw_requests"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_WithdrawRequest_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_id", "withdraw_requests", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_WithdrawRequest_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "liquidity", "v1beta1", "pools", "app_id", "pool_id", "withdraw_requests", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Orders_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"comdex", "liquidity", "v1beta1", "pairs", "app_id", "pair_id", "orders"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Orders_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"comdex", "liquidity", "v1beta1", "pairs", "app_id", "pair_id", "orders"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Order_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "liquidity", "v1beta1", "pairs", "app_id", "pair_id", "orders", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Order_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "liquidity", "v1beta1", "pairs", "app_id", "pair_id", "orders", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_OrdersByOrderer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "orders", "app_id", "orderer"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_OrdersByOrderer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "orders", "app_id", "orderer"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_SoftLock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "liquidity", "v1beta1", "softlock", "app_id", "pool_id", "depositor"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_SoftLock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "liquidity", "v1beta1", "softlock", "app_id", "pool_id", "depositor"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_DeserializePoolCoin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "liquidity", "v1beta1", "deserialize", "app_id", "pool_id", "pool_coin_amount"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_DeserializePoolCoin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "liquidity", "v1beta1", "deserialize", "app_id", "pool_id", "pool_coin_amount"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_PoolIncentives_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidity", "v1beta1", "pool_incentives", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_PoolIncentives_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidity", "v1beta1", "pool_incentives", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_FarmedPoolCoin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "farmed_coin", "app_id", "pool_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_FarmedPoolCoin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidity", "v1beta1", "farmed_coin", "app_id", "pool_id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
