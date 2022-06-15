@@ -207,49 +207,53 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 			}
 		}
 
-		chilPoolSuppliesData := k.GetAggregatedChildPoolContributions(ctx, appID, childPoolIds, lpAddresses)
+		if len(childPoolIds) != 0 {
 
-		for _, accAddress := range lpAddresses {
-			aggregatedSupplyValue, found := chilPoolSuppliesData[accAddress.String()]
-			if !found {
-				childPoolSupplies = append(childPoolSupplies, sdk.NewDec(0))
-			} else {
-				childPoolSupplies = append(childPoolSupplies, aggregatedSupplyValue)
-			}
-		}
+			chilPoolSuppliesData := k.GetAggregatedChildPoolContributions(ctx, appID, childPoolIds, lpAddresses)
 
-		if len(lpAddresses) != len(lpSupplies) || len(lpAddresses) != len(childPoolSupplies) {
-			return nil, types.ErrSupplyValueCalculationInvalid
-		}
-
-		totalRewardEligibleSupply := sdk.NewDec(0)
-		for i := 0; i < len(lpAddresses); i++ {
-			var minSupply sdk.Dec
-			if lpSupplies[i].LTE(childPoolSupplies[i]) {
-				minSupply = lpSupplies[i]
-			} else {
-				minSupply = childPoolSupplies[i]
-			}
-			totalRewardEligibleSupply = totalRewardEligibleSupply.Add(minSupply)
-			minMasterChildPoolSupplies = append(minMasterChildPoolSupplies, minSupply)
-		}
-
-		rewardData := []rewardstypes.RewardDistributionDataCollector{}
-		if !totalRewardEligibleSupply.IsZero() {
-			multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
-			for index, address := range lpAddresses {
-				if !minMasterChildPoolSupplies[index].IsZero() {
-					calculatedReward := int64(math.Floor(minMasterChildPoolSupplies[index].Mul(multiplier).MustFloat64()))
-					newData := new(rewardstypes.RewardDistributionDataCollector)
-					newData.RewardReceiver = address
-					newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
-					rewardData = append(rewardData, *newData)
+			for _, accAddress := range lpAddresses {
+				aggregatedSupplyValue, found := chilPoolSuppliesData[accAddress.String()]
+				if !found {
+					childPoolSupplies = append(childPoolSupplies, sdk.NewDec(0))
+				} else {
+					childPoolSupplies = append(childPoolSupplies, aggregatedSupplyValue)
 				}
 			}
-		}
 
-		return rewardData, nil
+			if len(lpAddresses) != len(lpSupplies) || len(lpAddresses) != len(childPoolSupplies) {
+				return nil, types.ErrSupplyValueCalculationInvalid
+			}
+
+			totalRewardEligibleSupply := sdk.NewDec(0)
+			for i := 0; i < len(lpAddresses); i++ {
+				var minSupply sdk.Dec
+				if lpSupplies[i].LTE(childPoolSupplies[i]) {
+					minSupply = lpSupplies[i]
+				} else {
+					minSupply = childPoolSupplies[i]
+				}
+				totalRewardEligibleSupply = totalRewardEligibleSupply.Add(minSupply)
+				minMasterChildPoolSupplies = append(minMasterChildPoolSupplies, minSupply)
+			}
+
+			rewardData := []rewardstypes.RewardDistributionDataCollector{}
+			if !totalRewardEligibleSupply.IsZero() {
+				multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
+				for index, address := range lpAddresses {
+					if !minMasterChildPoolSupplies[index].IsZero() {
+						calculatedReward := int64(math.Floor(minMasterChildPoolSupplies[index].Mul(multiplier).MustFloat64()))
+						newData := new(rewardstypes.RewardDistributionDataCollector)
+						newData.RewardReceiver = address
+						newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
+						rewardData = append(rewardData, *newData)
+					}
+				}
+			}
+
+			return rewardData, nil
+		}
 	}
+
 	// Logic for non master pool gauges (external rewards)
 	totalRewardEligibleSupply := sdk.NewDec(0)
 	for _, supply := range lpSupplies {
