@@ -23,7 +23,7 @@ func (k msgServer) MsgPlaceSurplusBid(goCtx context.Context, msg *types.MsgPlace
 	if err != nil {
 		return nil, err
 	}
-	err = k.PlaceSurplusBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Amount)
+	err = k.PlaceSurplusAuctionBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Amount)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (k msgServer) MsgPlaceDebtBid(goCtx context.Context, msg *types.MsgPlaceDeb
 	if err != nil {
 		return nil, err
 	}
-	err = k.PlaceDebtBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Bid, msg.ExpectedUserToken)
+	err = k.PlaceDebtAuctionBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Bid, msg.ExpectedUserToken)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (k msgServer) MsgPlaceDutchBid(goCtx context.Context, msg *types.MsgPlaceDu
 	if err != nil {
 		return nil, err
 	}
-	err = k.PlaceDutchBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Amount, msg.Max)
+	err = k.PlaceDutchAuctionBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Amount)
 	if err != nil {
 		return nil, err
 	}

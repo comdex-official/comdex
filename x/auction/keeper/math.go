@@ -33,8 +33,8 @@ func (k Keeper) getOutflowTokenInitialPrice(price sdk.Int, buffer sdk.Dec) sdk.D
 	return result
 }
 
-func (k Keeper) getOutflowTokenEndPrice(price, cusp sdk.Dec) sdk.Dec {
-	result := Multiply(price, cusp)
+func (k Keeper) getOutflowTokenEndPrice(price, cusp , liquidationPenalty sdk.Dec) sdk.Dec {
+	result := price.Sub(Multiply(price, liquidationPenalty)) 
 	return result
 }
 

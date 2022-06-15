@@ -62,6 +62,7 @@ type MsgSetCollectorLookupTable struct {
 	LockerSavingRate sdk.Dec `json:"locker_saving_rate"`
 	LotSize          uint64  `json:"lot_size"`
 	BidFactor        sdk.Dec `json:"bid_factor"`
+	DebtLotSize       uint64 `json:"debt_lot_size"`
 }
 
 type MsgSetAuctionMappingForApp struct {
@@ -120,4 +121,5 @@ type MsgAddAuctionParams struct {
 	SurplusId              uint64  `json:"surplus_id"`
 	DebtId                 uint64  `json:"debt_id"`
 	DutchId                uint64  `json:"dutch_id"`
+	BidDurationSeconds     uint64  `json:"bid_duration_seconds"`
 }

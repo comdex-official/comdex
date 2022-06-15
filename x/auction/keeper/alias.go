@@ -170,3 +170,7 @@ func (k *Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLook
 func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData vaultttypes.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool) {
 	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, valutLookupData, extendedPairId, amount, changeType)
 }
+
+func (k *Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.CollectorAuctionLookupTable, found bool) {
+	return k.collector.GetAllAuctionMappingForApp(ctx)
+}

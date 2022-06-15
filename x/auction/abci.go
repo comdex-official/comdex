@@ -8,8 +8,21 @@ import (
 
 func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
 	//k.CreateNewAuctions(ctx)
-	err := k.CloseAndRestartAuctions(ctx)
-	if err != nil {
+	// err := k.CloseAndRestartAuctions(ctx)
+	// if err != nil {
+	// 	return
+	// }
+
+	err1 := k.SurplusActivator(ctx)
+	if err1 != nil {
+		return
+	}
+	err2 := k.DebtActivator(ctx)
+	if err2 != nil {
+		return
+	}
+	err3 := k.DutchActivator(ctx)
+	if err3 != nil {
 		return
 	}
 }
