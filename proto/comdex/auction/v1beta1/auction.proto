@@ -72,6 +72,11 @@ message SurplusAuction {
     uint64 asset_out_id = 15 [
         (gogoproto.moretags) = "yaml:\"asset_out_id\""
     ];
+    google.protobuf.Timestamp bid_end_time = 16 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdtime) = true,
+        (gogoproto.moretags)   = "yaml:\"bid_end_time\""
+    ];
   }
 
 message DebtAuction {
@@ -135,6 +140,11 @@ message DebtAuction {
     ];
     uint64 asset_out_id = 16 [
         (gogoproto.moretags) = "yaml:\"asset_out_id\""
+    ];
+    google.protobuf.Timestamp bid_end_time = 17 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdtime) = true,
+        (gogoproto.moretags)   = "yaml:\"bid_end_time\""
     ];
 }
 
@@ -286,5 +296,8 @@ message AuctionParams{
     ];
     uint64 dutch_id = 9 [
         (gogoproto.moretags) = "yaml:\"dutch_id\""
+    ];
+    uint64 bid_duration_seconds = 10 [
+        (gogoproto.moretags) = "yaml:\"bid_duration_seconds\""
     ];
 }

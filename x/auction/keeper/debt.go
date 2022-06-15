@@ -118,28 +118,34 @@ func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appId, AssetInId, AssetO
 	if !found1 || !found2 {
 		return auctiontypes.NoAuction, emptyCoin, emptyCoin
 	}
-
-	var buyTokenPrice uint64
-	collectorAuction, found := k.GetAuctionMappingForApp(ctx, appId)
-	if !found {
-		return auctiontypes.NoAuction, emptyCoin, emptyCoin
-	}
-	for _, data := range collectorAuction.AssetIdToAuctionLookup {
-
-		if data.AssetOutOraclePrice {
-			//If oracle Price required for the assetOut
-			buyTokenPrice, found = k.GetPriceForAsset(ctx, AssetInId)
-
-		} else {
-			//If oracle Price is not required for the assetOut
-			buyTokenPrice = data.AssetOutPrice
+	var debtLot uint64
+	collectorData, _ := k.GetCollectorLookupTable(ctx, appId)
+	for _, collector := range collectorData.AssetRateInfo {
+		if collector.CollectorAssetId == AssetInId{
+			debtLot = collector.DebtLotSize
 		}
 	}
-	sellTokenPrice, found := k.GetPriceForAsset(ctx, AssetOutId)
+
+	// var buyTokenPrice uint64
+	// collectorAuction, found := k.GetAuctionMappingForApp(ctx, appId)
+	// if !found {
+	// 	return auctiontypes.NoAuction, emptyCoin, emptyCoin
+	// }
+	// for _, data := range collectorAuction.AssetIdToAuctionLookup {
+
+	// 	if data.AssetOutOraclePrice {
+	// 		//If oracle Price required for the assetOut
+	// 		buyTokenPrice, found = k.GetPriceForAsset(ctx, AssetInId)
+
+	// 	} else {
+	// 		//If oracle Price is not required for the assetOut
+	// 		buyTokenPrice = data.AssetOutPrice
+	// 	}
+	// }
+	// sellTokenPrice, found := k.GetPriceForAsset(ctx, AssetOutId)
 	// inflow token will be of lot size
 	buyToken = sdk.NewCoin(buyAsset.Denom, lotSize)
-	outflowTokenAmount := buyToken.Amount.Mul(sdk.NewIntFromUint64(buyTokenPrice)).Quo(sdk.NewIntFromUint64(sellTokenPrice))
-	sellToken = sdk.NewCoin(sellAsset.Denom, outflowTokenAmount)
+	sellToken = sdk.NewCoin(sellAsset.Denom, sdk.NewIntFromUint64(debtLot))
 	return 5, sellToken, buyToken
 }
 
@@ -187,7 +193,7 @@ func (k Keeper) DebtAuctionClose(ctx sdk.Context, appId uint64) error {
 
 	for _, debtAuction := range debtAuctions {
 
-		if ctx.BlockTime().After(debtAuction.EndTime) {
+		if ctx.BlockTime().After(debtAuction.EndTime) || ctx.BlockTime().After(debtAuction.BidEndTime) {
 
 			if debtAuction.AuctionStatus == auctiontypes.AuctionStartNoBids {
 
@@ -320,6 +326,7 @@ func (k Keeper) closeDebtAuction(
 
 func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appId, auctionMappingId, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin, expectedUserToken sdk.Coin) error {
 	auction, err := k.GetDebtAuction(ctx, appId, auctionMappingId, auctionId)
+	auctionParam, _ := k.GetAuctionParams(ctx,appId)
 
 	if err != nil {
 		return auctiontypes.ErrorInvalidDebtAuctionId
@@ -381,6 +388,7 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appId, auctionMappingId, au
 	auction.Bidder = bidder
 	auction.CurrentBidAmount = bid
 	auction.ExpectedMintedToken = bid
+	auction.BidEndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParam.BidDurationSeconds))
 	err = k.SetDebtAuction(ctx, auction)
 	if err != nil {
 		return err

@@ -127,30 +127,29 @@ func (k Keeper) getSurplusBuyTokenAmount(ctx sdk.Context, appId, AssetBuyId, Ass
 		return auctiontypes.NoAuction, emptyCoin, emptyCoin
 	}
 
-	var sellTokenPrice uint64
-	collectorAuction, found := k.GetAuctionMappingForApp(ctx, appId)
-	if !found {
-		return auctiontypes.NoAuction, emptyCoin, emptyCoin
-	}
-	for _, data := range collectorAuction.AssetIdToAuctionLookup {
+	// var sellTokenPrice uint64
+	// collectorAuction, found := k.GetAuctionMappingForApp(ctx, appId)
+	// if !found {
+	// 	return auctiontypes.NoAuction, emptyCoin, emptyCoin
+	// }
+	// for _, data := range collectorAuction.AssetIdToAuctionLookup {
 
-		if data.AssetOutOraclePrice {
-			//If oracle Price required for the assetOut
-			sellTokenPrice, found = k.GetPriceForAsset(ctx, AssetSellId)
+	// 	if data.AssetOutOraclePrice {
+	// 		//If oracle Price required for the assetOut
+	// 		sellTokenPrice, found = k.GetPriceForAsset(ctx, AssetSellId)
 
-		} else {
-			//If oracle Price is not required for the assetOut
-			sellTokenPrice = data.AssetOutPrice
+	// 	} else {
+	// 		//If oracle Price is not required for the assetOut
+	// 		sellTokenPrice = data.AssetOutPrice
 
-		}
+	// 	}
 
-	}
+	// }
 
-	buyTokenPrice, found := k.GetPriceForAsset(ctx, AssetBuyId)
+	// buyTokenPrice, found := k.GetPriceForAsset(ctx, AssetBuyId)
 	//outflow token will be of lot size
 	sellToken = sdk.NewCoin(sellingAsset.Denom, lotSize)
-	buyTokenAmount := sellToken.Amount.Mul(sdk.NewIntFromUint64(sellTokenPrice)).Quo(sdk.NewIntFromUint64(buyTokenPrice))
-	buyToken = sdk.NewCoin(buyingAsset.Denom, buyTokenAmount)
+	buyToken = sdk.NewCoin(buyingAsset.Denom, sdk.ZeroInt())
 	return 5, sellToken, buyToken
 }
 
@@ -195,7 +194,7 @@ func (k Keeper) startSurplusAuction(
 func (k Keeper) SurplusAuctionClose(ctx sdk.Context, appId uint64) error {
 	surplusAuctions := k.GetSurplusAuctions(ctx, appId)
 	for _, surplusAuction := range surplusAuctions {
-		if ctx.BlockTime().After(surplusAuction.EndTime) {
+		if ctx.BlockTime().After(surplusAuction.EndTime) || ctx.BlockTime().After(surplusAuction.BidEndTime) {
 
 			if surplusAuction.AuctionStatus == auctiontypes.AuctionStartNoBids {
 
@@ -335,6 +334,8 @@ func (k Keeper) closeSurplusAuction(
 
 func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appId, auctionMappingId, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin) error {
 	auction, err := k.GetSurplusAuction(ctx, appId, auctionMappingId, auctionId)
+	auctionParam, _ := k.GetAuctionParams(ctx,appId)
+
 	if err != nil {
 		return auctiontypes.ErrorInvalidSurplusAuctionId
 	}
@@ -384,6 +385,7 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appId, auctionMappingId,
 	auction.BiddingIds = append(auction.BiddingIds, bidIdOwner)
 	auction.Bidder = bidder
 	auction.Bid = bid
+	auction.BidEndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParam.BidDurationSeconds))
 	err = k.SetSurplusAuction(ctx, auction)
 	if err != nil {
 		return err

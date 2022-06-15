@@ -208,7 +208,7 @@ func (m *CustomMessenger) SetCollectorLookupTable(ctx sdk.Context, contractAddr 
 
 func MsgSetCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgSetCollectorLookupTable) error {
-	err := collectorKeeper.WasmSetCollectorLookupTable(ctx, a.AppMappingId, a.CollectorAssetId, a.SecondaryAssetId, a.SurplusThreshold, a.DebtThreshold, a.LockerSavingRate, a.LotSize, a.BidFactor)
+	err := collectorKeeper.WasmSetCollectorLookupTable(ctx, a.AppMappingId, a.CollectorAssetId, a.SecondaryAssetId, a.SurplusThreshold, a.DebtThreshold, a.LockerSavingRate, a.LotSize, a.BidFactor, a.DebtLotSize)
 	if err != nil {
 		return err
 	}
@@ -345,7 +345,7 @@ func (m *CustomMessenger) AddAuctionParams(ctx sdk.Context, contractAddr sdk.Acc
 
 func MsgAddAuctionParams(auctionKeeper auctionkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgAddAuctionParams) error {
-	err := auctionKeeper.AddAuctionParams(ctx, a.AppMappingId, a.AuctionDurationSeconds, a.Buffer, a.Cusp, a.Step, a.PriceFunctionType, a.SurplusId, a.DebtId, a.DutchId)
+	err := auctionKeeper.AddAuctionParams(ctx, a.AppMappingId, a.AuctionDurationSeconds, a.Buffer, a.Cusp, a.Step, a.PriceFunctionType, a.SurplusId, a.DebtId, a.DutchId, a.BidDurationSeconds)
 	if err != nil {
 		return err
 	}

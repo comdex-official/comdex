@@ -22,7 +22,7 @@ var (
 	ErrorAppMappingDoesNotExist          = errors.Register(ModuleName, 202, "App Mapping Id does not exists")
 	ErrorAppMappingIdMismatch            = errors.Register(ModuleName, 203, "App Mapping Id mismatch, use the correct App Mapping ID in request")
 	ErrorVaultCreationInactive           = errors.Register(ModuleName, 204, "Vault Creation Inactive")
-	ErrorUserVaultAlreadyExists          = errors.Register(ModuleName, 205, "User vault already exists for teh given extended pair vault id ")
+	ErrorUserVaultAlreadyExists          = errors.Register(ModuleName, 205, "User vault already exists for the given extended pair vault id ")
 	ErrorAmountOutLessThanDebtFloor      = errors.Register(ModuleName, 206, "Amount Out is less than Debt Floor")
 	ErrorAmountOutGreaterThanDebtCeiling = errors.Register(ModuleName, 207, "Amount Out is greater than Debt Ceiling")
 	ErrorPairDoesNotExist                = errors.Register(ModuleName, 208, "Pair does not exists")

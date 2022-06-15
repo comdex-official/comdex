@@ -59,7 +59,7 @@ func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultId uint
 	return nil
 }
 
-func (k Keeper) AddAuctionParams(ctx sdk.Context, appId, auctionDurationSeconds uint64, buffer, cusp sdk.Dec, step, priceFunctionType, surplusId, debtId, dutchId uint64) error {
+func (k Keeper) AddAuctionParams(ctx sdk.Context, appId, auctionDurationSeconds uint64, buffer, cusp sdk.Dec, step, priceFunctionType, surplusId, debtId, dutchId uint64, bidDurationSeconds uint64) error {
 	newStep := sdk.NewIntFromUint64(step)
 	auctionParams := types.AuctionParams{
 		AppId:                  appId,
@@ -71,6 +71,7 @@ func (k Keeper) AddAuctionParams(ctx sdk.Context, appId, auctionDurationSeconds 
 		SurplusId:              surplusId,
 		DebtId:                 debtId,
 		DutchId:                dutchId,
+		BidDurationSeconds:     bidDurationSeconds,
 	}
 
 	k.SetAuctionParams(ctx, auctionParams)
