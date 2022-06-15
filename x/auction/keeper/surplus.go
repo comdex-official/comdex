@@ -386,6 +386,9 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appId, auctionMappingId,
 	auction.Bidder = bidder
 	auction.Bid = bid
 	auction.BidEndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParam.BidDurationSeconds))
+	if auction.BidEndTime.After((auction.EndTime)){
+		auction.BidEndTime = auction.EndTime
+	}
 	err = k.SetSurplusAuction(ctx, auction)
 	if err != nil {
 		return err
