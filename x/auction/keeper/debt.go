@@ -389,6 +389,9 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appId, auctionMappingId, au
 	auction.CurrentBidAmount = bid
 	auction.ExpectedMintedToken = bid
 	auction.BidEndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParam.BidDurationSeconds))
+	if auction.BidEndTime.After((auction.EndTime)){
+		auction.BidEndTime = auction.EndTime
+	}
 	err = k.SetDebtAuction(ctx, auction)
 	if err != nil {
 		return err
