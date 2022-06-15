@@ -68,6 +68,22 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 								if err != nil {
 									return err
 								}
+								lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appMappingId, p.AssetId)
+								if !found{
+									var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
+									lockerReward.AssetId = p.AssetId
+									lockerReward.TotalRewards = sdk.ZeroInt().Add(rewards)
+									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+									if err != nil{
+										return err
+									}
+								}else{
+									lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(rewards)
+									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+									if err != nil{
+										return err
+									}
+								}
 							}
 						}
 						k.UpdateLocker(ctx, updatedLocker)
@@ -88,12 +104,10 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (
 	if prevInterestTime == 0 {
 		prevInterestTime = currentTime
 	}
-
 	secondsElapsed := currentTime - prevInterestTime
 	if secondsElapsed < 0 {
 		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrNegativeTimeElapsed, fmt.Sprintf("%d seconds", secondsElapsed))
 	}
-
 	//{(1+ Annual Interest Rate)^(No of seconds per block/No. of seconds in a year)}-1
 
 	yearsElapsed := sdk.NewDec(secondsElapsed).QuoInt64(types.SecondsPerYear).MustFloat64()
@@ -106,33 +120,41 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (
 	amtFloat, _ := strconv.ParseFloat(amount.String(), 64)
 	newAmount := intAccPerBlock * amtFloat
 
-	err := k.SetLastInterestTime(ctx, currentTime)
-	if err != nil {
-		return sdk.ZeroInt(), err
-	}
 	return sdk.NewInt(int64(newAmount)), nil
 }
 
 //IterateVaults does interest calculation for vaults
 func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
-	extVaultMapping, _ := k.GetAppExtendedPairVaultMapping(ctx, appMappingId)
+	extVaultMapping, found := k.GetAppExtendedPairVaultMapping(ctx, appMappingId)
+	if !found {
+		return types.ErrVaultNotFound
+	}
 	for _, v := range extVaultMapping.ExtendedPairVaults {
 		vaultIds := v.VaultIds
 		for j, _ := range vaultIds {
-			vault, _ := k.GetVault(ctx, vaultIds[j])
+			vault, found := k.GetVault(ctx, vaultIds[j])
+			if !found {
+				continue
+			}
 			ExtPairVault, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 			StabilityFee := ExtPairVault.StabilityFee
+			fmt.Println("vault....", vault)
+			if vault.ExtendedPairVaultID != 0 {
+				if StabilityFee != sdk.ZeroDec() {
+					fmt.Println("Inside vault....", vault)
 
-			if StabilityFee != sdk.ZeroDec() {
-
-				interest, _ := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
-				intAcc := vault.InterestAccumulated
-				updatedIntAcc := (intAcc).Add(interest)
-				vault.InterestAccumulated = updatedIntAcc
-				vault.AmountOut = vault.AmountOut.Add(interest)
-				k.SetVault(ctx, vault)
+					interest, err := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
+					if err != nil {
+						continue
+					}
+					intAcc := vault.InterestAccumulated
+					updatedIntAcc := (intAcc).Add(interest)
+					vault.InterestAccumulated = updatedIntAcc
+					k.SetVault(ctx, vault)
+				}
 			}
 		}
+
 	}
 	return nil
 }

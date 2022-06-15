@@ -26,4 +26,5 @@ var (
 	ErrPairNotExists       = sdkerrors.Register(ModuleName, 1105, "pair does not exists")
 	ErrPriceNotFound       = sdkerrors.Register(ModuleName, 1106, "price not found")
 	ErrInvalidAppID        = sdkerrors.Register(ModuleName, 1107, "invalid app id")
+	ErrVaultNotFound       = sdkerrors.Register(ModuleName, 1108, "vault not found")
 )

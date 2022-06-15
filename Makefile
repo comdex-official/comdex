@@ -1,87 +1,96 @@
-PACKAGES := $(shell go list ./...)
-VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
+#!/usr/bin/make -f
+
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
-TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
-BUILD_TAGS := $(strip netgo,ledger)
-LD_FLAGS := -s -w \
-    -X github.com/cosmos/cosmos-sdk/version.Name=comdex \
-    -X github.com/cosmos/cosmos-sdk/version.AppName=comdex \
-    -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
-    -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
-    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
-    -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TENDERMINT_VERSION)
-
-BUILD_FLAGS += -ldflags "${LD_FLAGS}" -tags "${BUILD_TAGS}"
-
-GOBIN = $(shell go env GOPATH)/bin
-GOARCH = $(shell go env GOARCH)
-GOOS = $(shell go env GOOS)
-
-.PHONY: benchmark
-benchmark:
-	@go test -mod=readonly -v -bench ${PACKAGES}
-
-.PHONY: all install build verify
-
-.PHONY: clean
-clean:
-	rm -rf ./bin ./vendor
-
-all: verify build
-
-install: mod-vendor
-ifeq (${OS},Windows_NT)
-	go build -mod=readonly ${BUILD_FLAGS} -o ${GOBIN}/comdex.exe ./node
-else
-	go build -mod=readonly ${BUILD_FLAGS} -o ${GOBIN}/comdex ./node
+# don't override user values
+ifeq (,$(VERSION))
+  VERSION := $(shell git describe --tags)
+  # if VERSION is empty, then populate it with branch's name and raw commit hash
+  ifeq (,$(VERSION))
+    VERSION := $(BRANCH)-$(COMMIT)
+  endif
 endif
+
+PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
+LEDGER_ENABLED ?= true
+SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
+TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
+BUILDDIR ?= $(CURDIR)/build
+
+export GO111MODULE = on
+
+# process build tags
+
+build_tags = netgo
+ifeq ($(LEDGER_ENABLED),true)
+  ifeq ($(OS),Windows_NT)
+    GCCEXE = $(shell where gcc.exe 2> NUL)
+    ifeq ($(GCCEXE),)
+      $(error gcc.exe not installed for ledger support, please install or set LEDGER_ENABLED=false)
+    else
+      build_tags += ledger
+    endif
+  else
+    UNAME_S = $(shell uname -s)
+    ifeq ($(UNAME_S),OpenBSD)
+      $(warning OpenBSD detected, disabling ledger support (https://github.com/cosmos/cosmos-sdk/issues/1988))
+    else
+      GCC = $(shell command -v gcc 2> /dev/null)
+      ifeq ($(GCC),)
+        $(error gcc not installed for ledger support, please install or set LEDGER_ENABLED=false)
+      else
+        build_tags += ledger
+      endif
+    endif
+  endif
+endif
+
+ifeq (cleveldb,$(findstring cleveldb,$(COMDEX_BUILD_OPTIONS)))
+  build_tags += gcc cleveldb
+endif
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
+
+whitespace :=
+whitespace += $(whitespace)
+comma := ,
+build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
+
+# process linker flags
+
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=comdex \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=comdex \
+		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
+		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
+		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
+			-X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION)
+
+ifeq (cleveldb,$(findstring cleveldb,$(COMDEX_BUILD_OPTIONS)))
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
+endif
+ifeq ($(LINK_STATICALLY),true)
+  ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static"
+endif
+ifeq (,$(findstring nostrip,$(COMDEX_BUILD_OPTIONS)))
+  ldflags += -w -s
+endif
+ldflags += $(LDFLAGS)
+ldflags := $(strip $(ldflags))
+
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+# check for nostrip option
+ifeq (,$(findstring nostrip,$(COMDEX_BUILD_OPTIONS)))
+  BUILD_FLAGS += -trimpath
+endif
+
+#$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
+
+
+all: install
+
+install: go.sum
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/comdex
 
 build:
-ifeq (${OS},Windows_NT)
-	go build  ${BUILD_FLAGS} -o build/${GOOS}/${GOARCH}/comdex.exe ./node
-else
-	go build  ${BUILD_FLAGS} -o build/${GOOS}/${GOARCH}/comdex ./node
-endif
-
-release: build
-	mkdir -p release
-ifeq (${OS},Windows_NT)
-	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=build/${GOOS}/${GOARCH} comdex.exe
-else
-	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=build/${GOOS}/${GOARCH} comdex
-endif
-
-.PHONY: go-lint
-go-lint:
-	@golangci-lint run --fix
-
-.PHONY: mod-vendor
-mod-vendor: tools
-	@go mod vendor
-	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto,github.com/cosmos/ibc-go/v3/proto
-
-.PHONY: proto-gen
-proto-gen:
-	@.scripts/proto-gen.sh
-
-.PHONY: proto-lint
-proto-lint:
-	@find proto -name *.proto -exec clang-format-12 -i {} \;
-
-.PHONY: test
-test:
-	@go test -mod=readonly -timeout 15m -v ${PACKAGES}
-
-.PHONT: test-coverage
-test-coverage:
-	@go test -mod=readonly -timeout 15m -v -covermode=atomic -coverprofile=coverage.txt ${PACKAGES}
-
-.PHONY: tools
-tools:
-	@go install github.com/bufbuild/buf/cmd/buf@v0.37.0
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.27.0
-	@go install github.com/goware/modvendor@v0.3.0
-	@go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0
-	@go get gopkg.in/go-playground/assert.v1@v1.2.1
-	@go get gopkg.in/go-playground/validator.v9@v9.29.1
+	go build $(BUILD_FLAGS) -o bin/comdex ./cmd/comdex

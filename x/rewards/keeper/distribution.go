@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
 // GetRewardDistributionData returns the reward distribution data.

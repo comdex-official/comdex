@@ -29,6 +29,33 @@ func (k *Keeper) SetLockerProductAssetMapping(ctx sdk.Context, lockerProductMapp
 
 }
 
+func (k *Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error{
+
+	var (
+		store = k.Store(ctx)
+		key   = types.LockerTotalRewardsByAssetAppWiseKey(lockerRewardsMapping.AppId, lockerRewardsMapping.AssetId)
+		value = k.cdc.MustMarshal(&lockerRewardsMapping)
+	)
+
+	store.Set(key, value)
+	return nil
+
+}
+
+func (k *Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, app_id, asset_id uint64) (lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockerTotalRewardsByAssetAppWiseKey(app_id, asset_id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return lockerRewardsMapping, false
+	}
+
+	k.cdc.MustUnmarshal(value, &lockerRewardsMapping)
+	return lockerRewardsMapping, true
+}
 func (k *Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingId uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
 	var (
 		store = k.Store(ctx)

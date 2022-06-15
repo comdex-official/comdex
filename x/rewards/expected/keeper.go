@@ -42,6 +42,8 @@ type LockerKeeper interface {
 	GetLocker(ctx sdk.Context, lockerId string) (locker lockertypes.Locker, found bool)
 	GetLockerLookupTable(ctx sdk.Context, appMappingId uint64) (lockerLookupData lockertypes.LockerLookupTable, found bool)
 	UpdateLocker(ctx sdk.Context, locker lockertypes.Locker)
+	SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise) error
+	GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, app_id, asset_id uint64) (lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise, found bool)
 }
 
 type CollectorKeeper interface {

@@ -1070,15 +1070,15 @@ func request_Query_QueryAuctionParams_0(ctx context.Context, marshaler runtime.M
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	msg, err := client.QueryAuctionParams(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -1097,15 +1097,15 @@ func local_request_Query_QueryAuctionParams_0(ctx context.Context, marshaler run
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	msg, err := server.QueryAuctionParams(ctx, &protoReq)
@@ -1680,29 +1680,29 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_QuerySurplusAuction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "auction", "v1beta1", "surplusauction", "app_id", "auction_mapping_id", "auction_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QuerySurplusAuction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "auction", "v1beta1", "surplusauction", "app_id", "auction_mapping_id", "auction_id", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QuerySurplusAuctions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "auction", "v1beta1", "surplusauctions", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QuerySurplusAuctions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "auction", "v1beta1", "surplusauctions", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QuerySurplusBiddings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "auction", "v1beta1", "surplusbiddings", "bidder", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QuerySurplusBiddings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "auction", "v1beta1", "surplusbiddings", "bidder", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryDebtAuction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "auction", "v1beta1", "debtauction", "app_id", "auction_mapping_id", "auction_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryDebtAuction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "auction", "v1beta1", "debtauction", "app_id", "auction_mapping_id", "auction_id", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryDebtAuctions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "auction", "v1beta1", "debtauctions", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryDebtAuctions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "auction", "v1beta1", "debtauctions", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryDebtBiddings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "auction", "v1beta1", "debtbiddings", "bidder", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryDebtBiddings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "auction", "v1beta1", "debtbiddings", "bidder", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryDutchAuction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "auction", "v1beta1", "dutchauction", "app_id", "auction_mapping_id", "auction_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryDutchAuction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6, 1, 0, 4, 1, 5, 7}, []string{"comdex", "auction", "v1beta1", "dutchauction", "app_id", "auction_mapping_id", "auction_id", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryDutchAuctions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "auction", "v1beta1", "dutchauctions", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryDutchAuctions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "auction", "v1beta1", "dutchauctions", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryDutchBiddings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "auction", "v1beta1", "dutchbiddings", "bidder", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryDutchBiddings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "auction", "v1beta1", "dutchbiddings", "bidder", "app_id", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "auction", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "auction", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryProtocolStatistics_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "auction", "v1beta1", "protocolstats", "app_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryProtocolStatistics_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "auction", "v1beta1", "protocolstats", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAuctionParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "auction", "v1beta1", "auctionparams", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAuctionParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "auction", "v1beta1", "auctionparams", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

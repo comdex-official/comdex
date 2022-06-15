@@ -14,7 +14,10 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 	k.TriggerAndUpdateEpochInfos(ctx)
 
-	k.IterateLocker(ctx)
+	err := k.IterateLocker(ctx)
+	if err != nil {
+		return
+	}
 
 	AppIdsVault := k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults
 	for i := range AppIdsVault {
@@ -24,7 +27,7 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 		}
 	}
 
-	err := k.DistributeExtRewardLocker(ctx)
+	err = k.DistributeExtRewardLocker(ctx)
 	if err != nil {
 		return
 	}
@@ -32,6 +35,8 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 	if err != nil {
 		return
 	}
+
+	k.SetLastInterestTime(ctx, ctx.BlockTime().Unix())
 }
 
 // EndBlocker for incentives module.
