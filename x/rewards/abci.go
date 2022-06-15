@@ -12,7 +12,7 @@ import (
 
 func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
-	//k.TriggerAndUpdateEpochInfos(ctx)
+	k.TriggerAndUpdateEpochInfos(ctx)
 
 	err := k.IterateLocker(ctx)
 	if err != nil {

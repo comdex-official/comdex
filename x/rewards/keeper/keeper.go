@@ -16,17 +16,17 @@ import (
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		storeKey   sdk.StoreKey
-		memKey     sdk.StoreKey
-		paramstore paramtypes.Subspace
-		locker     expected.LockerKeeper
-		collector  expected.CollectorKeeper
-		vault      expected.VaultKeeper
-		asset      expected.AssetKeeper
-		bank       expected.BankKeeper
-		//liquidityKeeper expected.LiquidityKeeper
-		marketKeeper expected.MarketKeeper
+		cdc             codec.BinaryCodec
+		storeKey        sdk.StoreKey
+		memKey          sdk.StoreKey
+		paramstore      paramtypes.Subspace
+		locker          expected.LockerKeeper
+		collector       expected.CollectorKeeper
+		vault           expected.VaultKeeper
+		asset           expected.AssetKeeper
+		bank            expected.BankKeeper
+		liquidityKeeper expected.LiquidityKeeper
+		marketKeeper    expected.MarketKeeper
 	}
 )
 
@@ -40,7 +40,7 @@ func NewKeeper(
 	vault expected.VaultKeeper,
 	asset expected.AssetKeeper,
 	bank expected.BankKeeper,
-	//liquidityKeeper expected.LiquidityKeeper,
+	liquidityKeeper expected.LiquidityKeeper,
 	marketKeeper expected.MarketKeeper,
 
 ) *Keeper {
@@ -51,17 +51,17 @@ func NewKeeper(
 
 	return &Keeper{
 
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
-		locker:     locker,
-		collector:  collector,
-		vault:      vault,
-		asset:      asset,
-		bank:       bank,
-		//liquidityKeeper: liquidityKeeper,
-		marketKeeper: marketKeeper,
+		cdc:             cdc,
+		storeKey:        storeKey,
+		memKey:          memKey,
+		paramstore:      ps,
+		locker:          locker,
+		collector:       collector,
+		vault:           vault,
+		asset:           asset,
+		bank:            bank,
+		liquidityKeeper: liquidityKeeper,
+		marketKeeper:    marketKeeper,
 	}
 }
 

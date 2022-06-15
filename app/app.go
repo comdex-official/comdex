@@ -1,12 +1,13 @@
 package app
 
 import (
-	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	"github.com/spf13/cast"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
+	"github.com/spf13/cast"
 
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -104,6 +105,7 @@ import (
 	collectorclient "github.com/comdex-official/comdex/x/collector/client"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+
 	//"github.com/comdex-official/comdex/x/lend"
 	//lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	//lendtypes "github.com/comdex-official/comdex/x/lend/types"
@@ -138,9 +140,9 @@ import (
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 
-	//"github.com/comdex-official/comdex/x/liquidity"
-	//liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
-	//liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
+	"github.com/comdex-official/comdex/x/liquidity"
+	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
 	//"github.com/comdex-official/comdex/x/locking"
 	//lockingkeeper "github.com/comdex-official/comdex/x/locking/keeper"
@@ -233,7 +235,7 @@ var (
 		auction.AppModuleBasic{},
 		tokenmint.AppModuleBasic{},
 		wasm.AppModuleBasic{},
-		//liquidity.AppModuleBasic{},
+		liquidity.AppModuleBasic{},
 		//locking.AppModuleBasic{},
 		rewards.AppModuleBasic{},
 	)
@@ -306,7 +308,7 @@ type App struct {
 	ScopedWasmKeeper capabilitykeeper.ScopedKeeper
 	AuctionKeeper    auctionkeeper.Keeper
 	TokenmintKeeper  tokenmintkeeper.Keeper
-	//liquidityKeeper   liquiditykeeper.Keeper
+	liquidityKeeper  liquiditykeeper.Keeper
 	//lockingKeeper     lockingkeeper.Keeper
 	Rewardskeeper rewardskeeper.Keeper
 
@@ -394,7 +396,7 @@ func New(
 	app.ParamsKeeper.Subspace(wasmtypes.ModuleName)
 	app.ParamsKeeper.Subspace(auctiontypes.ModuleName)
 	app.ParamsKeeper.Subspace(tokenminttypes.ModuleName)
-	//app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
+	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
 	//app.ParamsKeeper.Subspace(lockingtypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
 
@@ -633,7 +635,7 @@ func New(
 		&app.CollectorKeeper,
 	)
 
-	/*app.liquidityKeeper = liquiditykeeper.NewKeeper(
+	app.liquidityKeeper = liquiditykeeper.NewKeeper(
 		app.cdc,
 		app.keys[liquiditytypes.StoreKey],
 		app.GetSubspace(liquiditytypes.ModuleName),
@@ -644,7 +646,7 @@ func New(
 		&app.Rewardskeeper,
 	)
 
-	app.lockingKeeper = lockingkeeper.NewKeeper(
+	/*app.lockingKeeper = lockingkeeper.NewKeeper(
 		app.cdc,
 		app.keys[lockingtypes.StoreKey],
 		app.GetSubspace(lockingtypes.ModuleName),
@@ -662,7 +664,7 @@ func New(
 		&app.VaultKeeper,
 		&app.AssetKeeper,
 		app.BankKeeper,
-		//app.liquidityKeeper,
+		app.liquidityKeeper,
 		&app.MarketKeeper,
 	)
 
@@ -779,7 +781,7 @@ func New(
 		wasm.NewAppModule(app.cdc, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper),
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
-		//liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.AccountKeeper, app.BankKeeper),
+		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.AccountKeeper, app.BankKeeper),
 		//locking.NewAppModule(app.cdc, app.lockingKeeper, app.AccountKeeper, app.BankKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
 	)
@@ -844,7 +846,7 @@ func New(
 		vesting.AppModuleBasic{}.Name(),
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
-		//liquiditytypes.ModuleName,
+		liquiditytypes.ModuleName,
 		//lockingtypes.ModuleName,
 		rewardstypes.ModuleName,
 	)
@@ -1038,7 +1040,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		auctiontypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 		lockertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:             {authtypes.Burner},
-		//liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+		liquiditytypes.ModuleName:   {authtypes.Minter, authtypes.Burner},
 		//lockingtypes.ModuleName:        nil,
 		rewardstypes.ModuleName: {authtypes.Minter, authtypes.Burner},
 	}
@@ -1082,7 +1084,7 @@ func (a *App) registerUpgradeHandlers() {
 				collectortypes.ModuleName,
 				//lendtypes.ModuleName,
 				liquidationtypes.ModuleName,
-				//liquiditytypes.ModuleName,
+				liquiditytypes.ModuleName,
 				lockertypes.ModuleName,
 				//lockingtypes.ModuleName,
 				markettypes.ModuleName,
