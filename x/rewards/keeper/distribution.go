@@ -1,7 +1,16 @@
 package keeper
 
+import (
+	"fmt"
+	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/rewards/types"
+)
+
 // GetRewardDistributionData returns the reward distribution data.
-/*func (k Keeper) GetRewardDistributionData(
+func (k Keeper) GetRewardDistributionData(
 	ctx sdk.Context, gauge types.Gauge, coinToDistribute sdk.Coin, epochCount uint64, epochDuration time.Duration,
 ) ([]types.RewardDistributionDataCollector, error) {
 	gaugeType := gauge.Kind
@@ -78,4 +87,3 @@ func (k Keeper) BeginRewardDistributions(
 
 	return totalDistributionCoinsCalculated, nil
 }
-*/

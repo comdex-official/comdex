@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/comdex-official/comdex/x/rewards/types"
@@ -55,7 +56,7 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
 	return price, true
 }
 
-/*func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, pairId uint64) error {
+func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, pairId uint64) error {
 	pair, found := k.liquidityKeeper.GetPair(ctx, pairId)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrPairNotExists, "pair does not exists for given pool id")
@@ -68,10 +69,10 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
 	}
 
 	return nil
-}*/
+}
 
 // ValidateMsgCreateGaugeLiquidityMetaData validates types.MsgCreateGauge_LiquidityMetaData.
-/*func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, kind *types.MsgCreateGauge_LiquidityMetaData, forSwapFee bool) error {
+func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, kind *types.MsgCreateGauge_LiquidityMetaData, forSwapFee bool) error {
 	pool, found := k.liquidityKeeper.GetPool(ctx, kind.LiquidityMetaData.PoolId)
 	if !found {
 		return types.ErrInvalidPoolID
@@ -93,10 +94,10 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
 	}
 
 	return nil
-}*/
+}
 
 // NewGauge returns the new Gauge object.
-/*func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge, forSwapFee bool) (types.Gauge, error) {
+func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge, forSwapFee bool) (types.Gauge, error) {
 	newGauge := types.Gauge{
 		Id:                k.GetGaugeID(ctx) + 1,
 		From:              msg.From,
@@ -131,7 +132,7 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
 		newGauge.Kind = liquidityGaugeType
 	}
 	return newGauge, nil
-}*/
+}
 
 // NewGaugeIdsByDuration return new GaugeByTriggerDuration.
 func (k Keeper) NewGaugeIdsByDuration(ctx sdk.Context, duration time.Duration) types.GaugeByTriggerDuration {
@@ -163,7 +164,7 @@ func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerD
 	return gaugeIdsByTriggerDuration, nil
 }
 
-/*func (k Keeper) CreateNewGauge(ctx sdk.Context, msg *types.MsgCreateGauge, forSwapFee bool) error {
+func (k Keeper) CreateNewGauge(ctx sdk.Context, msg *types.MsgCreateGauge, forSwapFee bool) error {
 	newGauge, err := k.NewGauge(ctx, msg, forSwapFee)
 	if err != nil {
 		return err
@@ -191,10 +192,10 @@ func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerD
 	k.SetGauge(ctx, newGauge)
 	k.SetGaugeIdsByTriggerDuration(ctx, gaugeIdsByTriggerDuration)
 	return nil
-}*/
+}
 
 // InitateGaugesForDuration triggers the gauge in the event of triggerDuration.
-/*func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.Duration) error {
+func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.Duration) error {
 	logger := k.Logger(ctx)
 	gaugesForDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, triggerDuration)
 	if !found {
@@ -285,4 +286,4 @@ func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerD
 	}
 
 	return nil
-}*/
+}
