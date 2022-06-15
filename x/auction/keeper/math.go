@@ -22,6 +22,7 @@ func Sub(a, b sdk.Dec) sdk.Dec {
 	return a.Sub(b)
 }
 
+//Here we are taking ratio of price so no problem with units of price
 func (k Keeper) getInflowTokenTargetAmount(amount, inFlowTokenPrice, outFlowTokenPrice sdk.Int) sdk.Int {
 	result := amount.ToDec().Mul(outFlowTokenPrice.ToDec()).Quo(inFlowTokenPrice.ToDec()).Ceil().TruncateInt()
 	return result
@@ -32,8 +33,8 @@ func (k Keeper) getOutflowTokenInitialPrice(price sdk.Int, buffer sdk.Dec) sdk.D
 	return result
 }
 
-func (k Keeper) getOutflowTokenEndPrice(price, cusp sdk.Dec) sdk.Dec {
-	result := Multiply(price, cusp)
+func (k Keeper) getOutflowTokenEndPrice(price, cusp , liquidationPenalty sdk.Dec) sdk.Dec {
+	result := price.Sub(Multiply(price, liquidationPenalty)) 
 	return result
 }
 

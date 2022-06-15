@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -78,7 +79,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	//if does then check app to extendedPair mapping has any vault key
 	//if it does throw error
 	user_vault_extendedPair_mapping, user_exists := k.GetUserVaultExtendedPairMapping(ctx, msg.From)
-
+	fmt.Println("user_vault_extendedPair_mapping--------------",user_vault_extendedPair_mapping)
 	if user_exists {
 		_, already_exists := k.CheckUserAppToExtendedPairMapping(ctx, user_vault_extendedPair_mapping, extended_pair_vault.Id, app_mapping.Id)
 		if already_exists {

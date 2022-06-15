@@ -67,7 +67,7 @@ func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest
 	)
 	vault, found := q.GetVault(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "vault does not exist for id %d", req.Id)
+		return &types.QueryVaultResponse{}, nil
 	}
 
 	return &types.QueryVaultResponse{
@@ -85,7 +85,7 @@ func (q *queryServer) QueryVaultInfo(c context.Context, req *types.QueryVaultInf
 
 	vault, found := q.GetVault(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "vault does not exist for id %d", req.Id)
+		return &types.QueryVaultInfoResponse{}, nil
 	}
 
 	collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
@@ -191,7 +191,7 @@ func (q *queryServer) QueryAllVaultsByAppAndExtendedPair(c context.Context, req 
 
 	_, nfound := q.GetPairsVault(ctx, req.ExtendedPairId)
 	if !nfound {
-		return nil, status.Errorf(codes.NotFound, "extended pair does not exist for id %d", req.ExtendedPairId)
+		return &types.QueryAllVaultsByAppAndExtendedPairResponse{}, nil
 	}
 
 	vaultData := q.GetVaults(ctx)
@@ -228,18 +228,14 @@ func (q *queryServer) QueryVaultOfOwnerByExtendedPair(c context.Context, req *ty
 
 	_, nfound := q.GetPairsVault(ctx, req.ExtendedPairId)
 	if !nfound {
-		return nil, status.Errorf(codes.NotFound, "extended pair does not exist for id %d", req.ExtendedPairId)
+		return &types.QueryVaultOfOwnerByExtendedPairResponse{}, nil
 	}
 
-	userVaultAssetData, _ := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
+	vaultData := q.GetVaults(ctx)
 
-	for _, data := range userVaultAssetData.UserVaultApp {
-		if data.AppMappingId == req.ProductId {
-			for _, inData := range data.UserExtendedPairVault {
-				if inData.ExtendedPairId == req.ExtendedPairId {
-					vaultId = inData.VaultId
-				}
-			}
+	for _, data := range vaultData {
+		if data.AppMappingId == req.ProductId && data.ExtendedPairVaultID == req.ExtendedPairId && data.Owner == req.Owner {
+			vaultId = data.Id
 		}
 	}
 
@@ -263,7 +259,7 @@ func (q *queryServer) QueryVaultByProduct(c context.Context, req *types.QueryVau
 	}
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.ProductId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "extended pair vault data no found for product id %d", req.ProductId)
+		return &types.QueryVaultByProductResponse{}, nil
 	}
 
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
@@ -335,13 +331,13 @@ func (q *queryServer) QueryTokenMintedAllProductsByPair(c context.Context, req *
 	}, nil
 }
 
-func (q *queryServer) QueryTokenMintedAllProducts(c context.Context, req *types.QueryTokenMintedAllProductsRequest) (*types.QueryTokenMintedAllProductsResponse, error) {
+func (q *queryServer) QueryTokenMintedByProductAssetWise(c context.Context, req *types.QueryTokenMintedByProductAssetWiseRequest) (*types.QueryTokenMintedByProductAssetWiseResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx         = sdk.UnwrapSDKContext(c)
-		tokenMinted = sdk.ZeroInt()
+		ctx        = sdk.UnwrapSDKContext(c)
+		mintedData []types.MintedDataMap
 	)
 	_, found := q.GetApp(ctx, req.ProductId)
 	if !found {
@@ -350,15 +346,26 @@ func (q *queryServer) QueryTokenMintedAllProducts(c context.Context, req *types.
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.ProductId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.ProductId)
+		return &types.QueryTokenMintedByProductAssetWiseResponse{}, nil
 	}
-
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
-		tokenMinted = tokenMinted.Add(data.TokenMintedAmount)
+		extPairVault, _ := q.GetPairsVault(ctx, data.ExtendedPairId)
+		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
+
+		var minted types.MintedDataMap
+
+		denom, found := q.GetAsset(ctx, pairId.AssetOut)
+		if !found {
+			return nil, types.ErrorAssetDoesNotExist
+		}
+		minted.AssetDenom = denom.Denom
+		minted.MintedAmount = data.TokenMintedAmount
+
+		mintedData = append(mintedData, minted)
 	}
 
-	return &types.QueryTokenMintedAllProductsResponse{
-		TokenMinted: tokenMinted,
+	return &types.QueryTokenMintedByProductAssetWiseResponse{
+		MintedData: mintedData,
 	}, nil
 }
 
@@ -377,7 +384,7 @@ func (q *queryServer) QueryVaultCountByProduct(c context.Context, req *types.Que
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.ProductId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.ProductId)
+		return &types.QueryVaultCountByProductResponse{}, nil
 	}
 
 	count = appExtendedPairVaultData.Counter
@@ -402,7 +409,7 @@ func (q *queryServer) QueryVaultCountByProductAndPair(c context.Context, req *ty
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.ProductId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.ProductId)
+		return &types.QueryVaultCountByProductAndPairResponse{}, nil
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		if data.ExtendedPairId == req.ExtendedPairId {
@@ -429,12 +436,12 @@ func (q *queryServer) QueryTotalValueLockedByProductExtendedPair(c context.Conte
 	}
 	_, nfound := q.GetPairsVault(ctx, req.ExtendedPairId)
 	if !nfound {
-		return nil, status.Errorf(codes.NotFound, "extended pair does not exist for id %d", req.ExtendedPairId)
+		return &types.QueryTotalValueLockedByProductExtendedPairResponse{}, nil
 	}
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.ProductId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.ProductId)
+		return &types.QueryTotalValueLockedByProductExtendedPairResponse{}, nil
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		if data.ExtendedPairId == req.ExtendedPairId {
@@ -462,7 +469,7 @@ func (q *queryServer) QueryExtendedPairIDByProduct(c context.Context, req *types
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.ProductId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.ProductId)
+		return &types.QueryExtendedPairIDByProductResponse{}, nil
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		pairIds = append(pairIds, data.ExtendedPairId)
@@ -482,7 +489,7 @@ func (q *queryServer) QueryStableVaultInfo(c context.Context, req *types.QuerySt
 	)
 	stableMintData, found := q.GetStableMintVault(ctx, req.StableVaultId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "stable mint data not exist for id %d", req.StableVaultId)
+		return &types.QueryStableVaultInfoResponse{}, nil
 	}
 
 	return &types.QueryStableVaultInfoResponse{
@@ -545,7 +552,7 @@ func (q *queryServer) QueryExtendedPairVaultMappingByAppAndExtendedPairId(c cont
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.AppId)
+		return &types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse{}, nil
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		if data.ExtendedPairId == req.ExtendedPairId {
@@ -573,7 +580,7 @@ func (q *queryServer) QueryExtendedPairVaultMappingByApp(c context.Context, req 
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.AppId)
+		return &types.QueryExtendedPairVaultMappingByAppResponse{}, nil
 	}
 	pairIds = append(pairIds, appExtendedPairVaultData.ExtendedPairVaults...)
 
@@ -597,7 +604,7 @@ func (q *queryServer) QueryExtendedPairVaultMappingByOwnerAndApp(c context.Conte
 
 	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for owner %d", req.Owner)
+		return &types.QueryExtendedPairVaultMappingByOwnerAndAppResponse{}, nil
 	}
 	for _, data := range userVaultAssetData.UserVaultApp {
 		if data.AppMappingId == req.AppId {
@@ -625,7 +632,7 @@ func (q *queryServer) QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairI
 
 	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for owner %d", req.Owner)
+		return &types.QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairIDResponse{}, nil
 	}
 	for _, data := range userVaultAssetData.UserVaultApp {
 		if data.AppMappingId == req.AppId {
@@ -695,7 +702,7 @@ func (q *queryServer) QueryTotalTVLByApp(c context.Context, req *types.QueryTota
 
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMapping(ctx, req.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for product id %d", req.AppId)
+		return &types.QueryTotalTVLByAppResponse{}, nil
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		extPairVault, _ := q.GetPairsVault(ctx, data.ExtendedPairId)
@@ -732,7 +739,7 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
+		return &types.QueryUserMyPositionByAppResponse{}, nil
 	}
 
 	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
@@ -748,7 +755,7 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 			}
 		}
 	}
-	if len(vaultsIds) == 0{
+	if len(vaultsIds) == 0 {
 		return &types.QueryUserMyPositionByAppResponse{}, nil
 	}
 
@@ -790,9 +797,9 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		availableBorrow = av.Quo(sdk.Int(sdk.OneDec())).Add(availableBorrow)
 
 	}
-	totalLocked = totalLocked.Quo(sdk.NewInt(10000000))
-	totalDue = totalDue.Quo(sdk.NewInt(10000000))
-	availableBorrow = availableBorrow.Quo(sdk.NewInt(10000000))
+	totalLocked = totalLocked.Quo(sdk.NewInt(1000000))
+	totalDue = totalDue.Quo(sdk.NewInt(1000000))
+	availableBorrow = availableBorrow.Quo(sdk.NewInt(1000000))
 	t, _ := sdk.NewDecFromStr(strconv.Itoa(len(vaultsIds)))
 	averageCr = totalCr.Quo(t)
 

@@ -220,6 +220,7 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 			LockerSavingRate: msg.LockerSavingRate,
 			LotSize:          msg.LotSize,
 			BidFactor:        msg.BidFactor,
+			DebtLotSize:      msg.DebtLotSize,
 		}
 		accmLookup, _ := k.GetCollectorLookupTable(ctx, msg.AppId)
 		accmLookup.AppId = msg.AppId
@@ -370,6 +371,27 @@ func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, appId uint64) (collect
 	return collectorAuctionLookupTable, true
 }
 
+func (k *Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.CollectorAuctionLookupTable, found bool) {
+
+	var (
+		store = ctx.KVStore(k.storeKey)
+		iter  = sdk.KVStorePrefixIterator(store, types.AppIdToAuctionMappingPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var table types.CollectorAuctionLookupTable
+		k.cdc.MustUnmarshal(iter.Value(), &table)
+		collectorAuctionLookupTable = append(collectorAuctionLookupTable, table)
+	}
+	if collectorAuctionLookupTable == nil {
+		return nil, false
+	}
+
+	return collectorAuctionLookupTable, true
+}
+
 
 func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, appId, assetId uint64, fee sdk.Int) error {
 
@@ -436,7 +458,7 @@ func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, appId uint64) (netFeeDa
 	return netFeeData, true
 }
 
-func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAssetId, SecondaryAssetId, SurplusThreshold, DebtThreshold uint64, LockerSavingRate sdk.Dec, LotSize uint64, BidFactor sdk.Dec) error {
+func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAssetId, SecondaryAssetId, SurplusThreshold, DebtThreshold uint64, LockerSavingRate sdk.Dec, LotSize uint64, BidFactor sdk.Dec, DebtLotSize uint64) error {
 
 	if !k.HasAsset(ctx, CollectorAssetId) {
 		return types.ErrorAssetDoesNotExist
@@ -480,6 +502,7 @@ func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAs
 		LockerSavingRate: LockerSavingRate,
 		LotSize:          LotSize,
 		BidFactor:        BidFactor,
+		DebtLotSize:      DebtLotSize,
 	}
 	accmLookup, _ := k.GetCollectorLookupTable(ctx, AppId)
 	accmLookup.AppId = AppId
@@ -571,6 +594,7 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, ass
 			Collector.LockerSavingRate = lsr
 			Collector.LotSize = data.LotSize
 			Collector.SecondaryAssetId = data.SecondaryAssetId
+			Collector.DebtLotSize = data.DebtLotSize
 		}
 	}
 	k.SetCollectorLookupTableforWasm(ctx, Collector)

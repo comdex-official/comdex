@@ -80,6 +80,10 @@ service Query {
     option (google.api.http).get = "/comdex/locker/v1beta1/locker-lookup-by-app-and-assetId/{app_id}/{asset_id}";
   };
 
+  rpc QueryLockerTotalRewardsByAssetAppWise(QueryLockerTotalRewardsByAssetAppWiseRequest) returns (QueryLockerTotalRewardsByAssetAppWiseResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/loker-rewards-by-app-and-assetId/{app_id}/{asset_id}";
+  };
+
   rpc QueryLockerTotalDepositedByApp(QueryLockerTotalDepositedByAppRequest) returns (QueryLockerTotalDepositedByAppResponse) {
     option (google.api.http).get = "/comdex/locker/v1beta1/locker-deposited-by-app/{app_id}";
   };
@@ -258,6 +262,16 @@ message QueryLockerTotalDepositedByAppRequest {
 message QueryLockerTotalDepositedByAppResponse {
  repeated LockedDepositedAmountDataMap locked_deposited_amount_data_map =1 [ (gogoproto.moretags) = "yaml:\"locked_deposited_amount_data_map\"",
  (gogoproto.nullable) = false ];
+}
+
+message QueryLockerTotalRewardsByAssetAppWiseRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+}
+
+message QueryLockerTotalRewardsByAssetAppWiseResponse {
+  LockerTotalRewardsByAssetAppWise total_rewards =1 [ (gogoproto.moretags) = "yaml:\"total_rewards\"",
+  (gogoproto.nullable) = false ];
 }
 
 message QueryStateRequest{

@@ -33,7 +33,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryTokenMintedAllProductsByPair(),
 		QueryVaultCountByProduct(),
 		QueryVaultCountByProductAndPair(),
-		QueryTokenMintedAllProducts(),
+		QueryTokenMintedByProductAssetWise(),
 		QueryTotalValueLockedByProductExtendedPair(),
 		QueryExtendedPairIDByProduct(),
 		QueryStableVaultInfo(),
@@ -421,10 +421,10 @@ func QueryTokenMintedAllProductsByPair() *cobra.Command {
 	return cmd
 }
 
-func QueryTokenMintedAllProducts() *cobra.Command {
+func QueryTokenMintedByProductAssetWise() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "token-minted-by-products [product_id]",
-		Short: "token minted by products",
+		Use:   "token-minted-by-products-asset-wise [product_id]",
+		Short: "token minted by products asset wise",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -444,7 +444,7 @@ func QueryTokenMintedAllProducts() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryTokenMintedAllProducts(cmd.Context(), &types.QueryTokenMintedAllProductsRequest{
+			res, err := queryClient.QueryTokenMintedByProductAssetWise(cmd.Context(), &types.QueryTokenMintedByProductAssetWiseRequest{
 				ProductId:  productId,
 				Pagination: pagination,
 			})

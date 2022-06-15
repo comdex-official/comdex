@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -190,23 +191,40 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					//Assuming that the collateral to be sold is 1 unit, so finding out how much is going to be deducted from the
 					//collateral which will account as repaying the user's debt
 
-					safeLiquidationFactor, _ := sdk.NewDecFromStr(types.SafeLiquidationFactor)
-					deductionPercentage, _ := sdk.NewDecFromStr("1.0")
-					auctionDeduction := (deductionPercentage).Sub(ExtPair.LiquidationPenalty)
-					multiplicationFactor := auctionDeduction.Mul(ExtPair.MinCr.Add(safeLiquidationFactor))
-					asssetOutMultiplicationFactor := totalOut.Mul(ExtPair.MinCr.Add(safeLiquidationFactor))
-					assetsDifference := totalIn.Sub(asssetOutMultiplicationFactor)
-					//Substracting again from 1 unit to find the selloff multiplication factor
-					selloffMultiplicationFactor := deductionPercentage.Sub(multiplicationFactor)
-					selloffAmount := assetsDifference.Quo(selloffMultiplicationFactor)
-					var collateralToBeAuctioned sdk.Dec
+					numpart1 := ExtPair.MinCr.Mul(totalOut)
+					numpart2 := ExtPair.LiquidationPenalty.Add(sdk.MustNewDecFromStr("1"))
+					numerator1 := numpart1.Sub(totalIn)
+					numerator := numerator1.Mul(numpart2)
+					denominator1 := ExtPair.MinCr.Sub(numpart2)
+					denominator := denominator1.Mul((sdk.NewIntFromUint64(assetInPrice).ToDec()))
+					collateralAuctioned := numerator.Quo(denominator)
+					collateralToBeAuctioned := collateralAuctioned.Mul(sdk.NewIntFromUint64(assetInPrice).ToDec())
+					fmt.Println("numpart1",numpart1)
+					fmt.Println("numpart2",numpart2)
+					fmt.Println("numerator1",numerator1)
+					fmt.Println("numerator",numerator)
+					fmt.Println("denominator1",denominator1)
+					fmt.Println("denominator",denominator)
+					fmt.Println("collateralAuctioned",collateralAuctioned)
+			
 
-					if selloffAmount.GTE(totalIn) || selloffAmount.IsNegative() {
+					
+					// safeLiquidationFactor, _ := sdk.NewDecFromStr(types.SafeLiquidationFactor)
+					// deductionPercentage, _ := sdk.NewDecFromStr("1.0")
+					// auctionDeduction := (deductionPercentage).Sub(ExtPair.LiquidationPenalty)
+					// multiplicationFactor := auctionDeduction.Mul(ExtPair.MinCr.Add(safeLiquidationFactor))
+					// asssetOutMultiplicationFactor := totalOut.Mul(ExtPair.MinCr.Add(safeLiquidationFactor))
+					// assetsDifference := totalIn.Sub(asssetOutMultiplicationFactor)
+					// //Substracting again from 1 unit to find the selloff multiplication factor
+					// selloffMultiplicationFactor := deductionPercentage.Sub(multiplicationFactor)
+					// selloffAmount := assetsDifference.Quo(selloffMultiplicationFactor)
+					// var collateralToBeAuctioned sdk.Dec
+					fmt.Println("collateralToBeAuctioned1111111111",collateralToBeAuctioned)
+					if collateralToBeAuctioned.GTE(totalIn) || collateralToBeAuctioned.IsNegative(){
 						collateralToBeAuctioned = totalIn
-					} else {
-
-						collateralToBeAuctioned = selloffAmount
 					}
+					fmt.Println("totalin", totalIn)
+					fmt.Println("collateralToBeAuctioned22222222",collateralToBeAuctioned)
 					updatedLockedVault := lockedVault
 					updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 					updatedLockedVault.CollateralToBeAuctioned = collateralToBeAuctioned
@@ -227,14 +245,14 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 	lockedVaults := k.GetLockedVaults(ctx)
 
 	for _, lockedVault := range lockedVaults {
-
+		fmt.Println("inside unliquidate1")
 		if lockedVault.IsAuctionComplete {
 			//also calculate the current collaterlization ration to ensure there is no sudden changes
 			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
 			if err != nil {
 				continue
 			}
-
+			fmt.Println("inside unliquidate2")
 			extPair, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
 
 			pair, found := k.GetPair(ctx, extPair.PairId)
@@ -254,6 +272,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				if err != nil {
 					return err
 				}
+				fmt.Println("inside unliquidate3")
 				k.UpdateUserVaultExtendedPairMapping(ctx, lockedVault.ExtendedPairId, lockedVault.Owner, lockedVault.AppMappingId)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 				continue
@@ -265,7 +284,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				if err != nil {
 					return err
 				}
-
+				fmt.Println("inside unliquidate4")
 				k.UpdateUserVaultExtendedPairMapping(ctx, lockedVault.ExtendedPairId, lockedVault.Owner, lockedVault.AppMappingId)
 
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
@@ -278,7 +297,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 			if err != nil {
 				continue
 			}
-
+			fmt.Println("newCalculatedCollateralizationRatio",newCalculatedCollateralizationRatio)
 			if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
 				updatedLockedVault := lockedVault
 				updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
@@ -299,7 +318,7 @@ func (k Keeper) UnliquidateLockedVaults(ctx sdk.Context) error {
 				if err != nil {
 					return err
 				}
-
+				fmt.Println("delete locked vault")
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 
 				//======================================NOTE TO BE CHANGED================================================
