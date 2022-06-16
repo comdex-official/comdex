@@ -85,7 +85,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 						assetInId := collector.CollectorAssetId
 						assetOutId := collector.SecondaryAssetId
 						//net = 200 debtThreshhold = 500 , lotsize = 100
-						amount := sdk.NewIntFromUint64(collector.DebtThreshold).Sub(AssetIdToFeeCollected.NetFeesCollected)
+						amount := sdk.NewIntFromUint64(collector.LotSize)
 
 						status, outflowToken, inflowToken := k.getDebtSellTokenAmount(ctx, appId, assetInId, assetOutId, amount)
 						if status == auctiontypes.NoAuction {
