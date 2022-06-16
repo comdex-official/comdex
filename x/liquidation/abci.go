@@ -15,8 +15,8 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 	if err != nil {
 		return
 	}
-	err = k.UnliquidateLockedVaults(ctx)
-	if err != nil {
-		return
-	}
+	// err = k.UnliquidateLockedVaults(ctx)
+	// if err != nil {
+	// 	return
+	// }
 }

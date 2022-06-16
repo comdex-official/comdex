@@ -47,6 +47,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryTVLLockedByAppOfAllExtendedPairs(),
 		QueryTotalTVLByApp(),
 		QueryUserMyPositionByApp(),
+		QueryUserExtendedPairTotalData(),
 	)
 
 	return cmd
@@ -958,6 +959,35 @@ func QueryUserMyPositionByApp() *cobra.Command {
 			res, err := queryClient.QueryUserMyPositionByApp(cmd.Context(), &types.QueryUserMyPositionByAppRequest{
 				AppId: app_id,
 				Owner: args[1] ,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryUserExtendedPairTotalData() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "user-extended-total-data [owner]",
+		Short: "User Extended Pair Total Data",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryUserExtendedPairTotalData(cmd.Context(), &types.QueryUserExtendedPairTotalDataRequest{
+				Owner: args[0],
 			})
 
 			if err != nil {
