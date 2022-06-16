@@ -34,7 +34,8 @@ func (k Keeper) getOutflowTokenInitialPrice(price sdk.Int, buffer sdk.Dec) sdk.D
 }
 
 func (k Keeper) getOutflowTokenEndPrice(price, cusp , liquidationPenalty sdk.Dec) sdk.Dec {
-	result := price.Sub(Multiply(price, liquidationPenalty)) 
+	denomination := liquidationPenalty.Add(sdk.MustNewDecFromStr("1"))
+	result := price.Quo(denomination)
 	return result
 }
 

@@ -49,7 +49,7 @@ func (k msgServer) MsgPlaceDutchBid(goCtx context.Context, msg *types.MsgPlaceDu
 	if err != nil {
 		return nil, err
 	}
-	err = k.PlaceDutchAuctionBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Amount)
+	err = k.PlaceDutchAuctionBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Amount, msg.Max)
 	if err != nil {
 		return nil, err
 	}

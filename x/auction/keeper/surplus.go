@@ -88,7 +88,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 						assetSellId := collector.CollectorAssetId
 
 						//net = 900 surplusThreshhold = 500 , lotsize = 100
-						amount := AssetIdToFeeCollected.NetFeesCollected.Sub(sdk.NewIntFromUint64(collector.SurplusThreshold))
+						amount := sdk.NewIntFromUint64(collector.LotSize)
 
 						status, sellToken, buyToken := k.getSurplusBuyTokenAmount(ctx, appId, assetBuyId, assetSellId, amount)
 
