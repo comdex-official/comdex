@@ -582,15 +582,16 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) error {
 
 		}
 		//inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
-		dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
 		tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
 		dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
 		seconds := sdk.NewInt(int64(dur.Seconds()))
 		outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)
-		dutchAuction.OutflowTokenCurrentPrice = outFlowTokenCurrentPrice
+		
 
 		//check if auction need to be restarted
-		if ctx.BlockTime().After(dutchAuction.EndTime) || outFlowTokenCurrentPrice.LT(dutchAuction.OutflowTokenEndPrice) {
+		if ctx.BlockTime().After(dutchAuction.EndTime){
+			dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
+			dutchAuction.OutflowTokenCurrentPrice = outFlowTokenCurrentPrice
 			//SET initial price fetched from market module and also end price , start time , end time
 			//outFlowTokenCurrentPrice := sdk.NewIntFromUint64(10)
 			outFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
