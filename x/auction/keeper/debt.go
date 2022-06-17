@@ -299,7 +299,7 @@ func (k Keeper) closeDebtAuction(
 			return err
 		}
 
-		err = k.SetNetFeeCollectedData(ctx, debtAuction.AuctionId, debtAuction.AssetInId, debtAuction.ExpectedUserToken.Amount)
+		err = k.SetNetFeeCollectedData(ctx, debtAuction.AppId, debtAuction.AssetInId, debtAuction.ExpectedUserToken.Amount)
 		if err != nil {
 
 			return auctiontypes.ErrorUnableToSetNetfees

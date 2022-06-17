@@ -33,6 +33,8 @@ type LiquidationKeeper interface {
 	GetLockedVaults(ctx sdk.Context) (locked_vaults []liquidationtypes.LockedVault)
 	GetLockedVault(ctx sdk.Context, id uint64) (locked_vault liquidationtypes.LockedVault, found bool)
 	SetLockedVault(ctx sdk.Context, locked_vault liquidationtypes.LockedVault)
+	DeleteLockedVault(ctx sdk.Context, id uint64)
+	CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
 	//UpdateAssetQuantitiesInLockedVault(ctx sdk.Context, collateral_auction auctiontypes.CollateralAuction, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) error
 }
 
@@ -57,6 +59,7 @@ type VaultKeeper interface {
 	SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData vaultttypes.AppExtendedPairVaultMapping) error
 	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLookupData vaultttypes.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool)
 	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData vaultttypes.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool) 
+	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairId uint64, userAddress string, appMappingId uint64)
 }
 
 type CollectorKeeper interface {

@@ -21,10 +21,11 @@ func (k *Keeper) GetAmountFromCollector(ctx sdk.Context, appId, assetId uint64, 
 				return returnedFee, types.ErrorRequestedAmtExceedsCollectedFee
 			} else {
 				asset, _ := k.GetAsset(ctx, assetId)
-				if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount))); err != nil {
+				err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
+				if err !=nil {
 					return returnedFee, err
 				}
-				err := k.DecreaseNetFeeCollectedData(ctx, appId, assetId, amount)
+				err = k.DecreaseNetFeeCollectedData(ctx, appId, assetId, amount)
 				if err != nil {
 					return sdk.Int{}, err
 				}

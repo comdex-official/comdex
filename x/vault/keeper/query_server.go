@@ -810,3 +810,19 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		AverageCrRatio:    averageCr,
 	}, nil
 }
+
+func (q *queryServer) QueryUserExtendedPairTotalData(c context.Context, req *types.QueryUserExtendedPairTotalDataRequest) (*types.QueryUserExtendedPairTotalDataResponse, error) {
+
+	var (
+		ctx           = sdk.UnwrapSDKContext(c)
+	)
+
+	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
+	if !found {
+		return &types.QueryUserExtendedPairTotalDataResponse{}, nil
+	}
+	
+	return &types.QueryUserExtendedPairTotalDataResponse{
+		UserTotalData: &userVaultAssetData,
+	}, nil
+}

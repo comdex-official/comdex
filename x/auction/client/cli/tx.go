@@ -124,14 +124,13 @@ func txPlaceDutchBid() *cobra.Command {
 				return err
 			}
 
-			// max := sdk.MustNewDecFromStr(args[1])
+			max := sdk.MustNewDecFromStr(args[2])
 
-			appId, err := strconv.ParseUint(args[2], 10, 64)
+			appId, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			max := sdk.MustNewDecFromStr(args[3])
 
 			auctionMappingId, err := strconv.ParseUint(args[4], 10, 64)
 			if err != nil {
