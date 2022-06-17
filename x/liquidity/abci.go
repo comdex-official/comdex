@@ -12,19 +12,34 @@ import (
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
+	allApps, found := k.GetApps(ctx)
+	if found {
 
-	k.DeleteOutdatedRequests(ctx)
-	if ctx.BlockHeight()%150 == 0 {
-		k.ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx)
+		for _, app := range allApps {
+
+			k.DeleteOutdatedRequests(ctx, app.Id)
+			if ctx.BlockHeight()%150 == 0 {
+				k.ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx, app.Id)
+			}
+		}
 	}
 }
 
 func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
 
-	params := k.GetParams(ctx)
-	if ctx.BlockHeight()%int64(params.BatchSize) == 0 {
-		k.ExecuteRequests(ctx)
-		k.ProcessQueuedLiquidityProviders(ctx)
+	allApps, found := k.GetApps(ctx)
+	if found {
+
+		for _, app := range allApps {
+			params, err := k.GetGenericParams(ctx, app.Id)
+			if err != nil {
+				continue
+			}
+			if ctx.BlockHeight()%int64(params.BatchSize) == 0 {
+				k.ExecuteRequests(ctx, app.Id)
+				k.ProcessQueuedLiquidityProviders(ctx, app.Id)
+			}
+		}
 	}
 }

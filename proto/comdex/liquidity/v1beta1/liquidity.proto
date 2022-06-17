@@ -4,57 +4,9 @@ package comdex.liquidity.v1beta1;
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/duration.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/liquidity/types";
 option (gogoproto.goproto_getters_all) = false;
-
-// Params defines the parameters for the liquidity module.
-message Params {
-  uint32 batch_size = 1;
-
-  uint32 tick_precision = 2;
-
-  string fee_collector_address = 3;
-
-  string dust_collector_address = 4;
-
-  string min_initial_pool_coin_supply = 5
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-
-  repeated cosmos.base.v1beta1.Coin pair_creation_fee = 6
-      [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
-
-  repeated cosmos.base.v1beta1.Coin pool_creation_fee = 7
-      [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
-
-  string min_initial_deposit_amount = 8
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
-
-  string max_price_limit_ratio = 9
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-
-  google.protobuf.Duration max_order_lifespan = 10 [(gogoproto.stdduration) = true, (gogoproto.nullable) = false];
-
-  string swap_fee_rate = 11
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-
-  string withdraw_fee_rate = 12
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-
-  uint64 deposit_extra_gas = 13
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Gas", (gogoproto.nullable) = false];
-
-  uint64 withdraw_extra_gas = 14
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Gas", (gogoproto.nullable) = false];
-
-  uint64 order_extra_gas = 15
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Gas", (gogoproto.nullable) = false];
-  
-  string swap_fee_distr_denom = 16;
-  string swap_fee_burn_rate = 17
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
-}
 
 // Pair defines a coin pair.
 message Pair {
@@ -73,6 +25,8 @@ message Pair {
   uint64 current_batch_id = 7;
 
   string swap_fee_collector_address = 8;
+  
+  uint64 app_id =  9;
 }
 
 // Pool defines a basic liquidity pool with no min-price and max-price.
@@ -91,6 +45,7 @@ message Pool {
 
   bool disabled = 7;
 
+  uint64 app_id = 8;
 }
 
 // DepositRequest defines a deposit request.
@@ -118,6 +73,8 @@ message DepositRequest {
   cosmos.base.v1beta1.Coin minted_pool_coin = 7 [(gogoproto.nullable) = false];
 
   RequestStatus status = 8;
+
+  uint64 app_id = 9;
 }
 
 // WithdrawRequest defines a withdraw request.
@@ -142,6 +99,8 @@ message WithdrawRequest {
       [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
 
   RequestStatus status = 7;
+
+  uint64 app_id = 8;
 }
 
 // Order defines an order.
@@ -183,6 +142,8 @@ message Order {
   google.protobuf.Timestamp expire_at = 13 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 
   OrderStatus status = 14;
+
+  uint64 app_id = 15;
 }
 
 // OrderDirection enumerates order directions.
@@ -274,8 +235,9 @@ message QueuedLiquidityProvider {
 message PoolLiquidityProvidersData {
   uint64 pool_id = 1;
   repeated uint64 bonded_lock_ids = 2 [ 
-      (gogoproto.moretags) = "yaml:\"bonded_lock_ids\"" 
-  ];
-  map<string, DepositsMade> liquidity_providers = 3;
-  repeated QueuedLiquidityProvider queued_liquidity_providers = 4;
-}
+    (gogoproto.moretags) = "yaml:\"bonded_lock_ids\"" 
+    ];
+    map<string, DepositsMade> liquidity_providers = 3;
+    repeated QueuedLiquidityProvider queued_liquidity_providers = 4;
+  uint64 app_id = 5;
+  }

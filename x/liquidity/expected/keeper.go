@@ -34,6 +34,8 @@ type BankKeeper interface {
 type AssetKeeper interface {
 	HasAssetForDenom(ctx sdk.Context, denom string) bool
 	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
+	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppMapping, found bool)
+	GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool)
 }
 
 type MarketKeeper interface {

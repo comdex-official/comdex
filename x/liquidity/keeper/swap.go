@@ -13,21 +13,30 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
-func CalculateSwapfeeAmount(ctx sdk.Context, params types.Params, calculatedOfferCoinAmt sdk.Int) sdk.Int {
+func CalculateSwapfeeAmount(ctx sdk.Context, params types.GenericParams, calculatedOfferCoinAmt sdk.Int) sdk.Int {
 	return calculatedOfferCoinAmt.ToDec().MulTruncate(params.SwapFeeRate).TruncateInt()
 }
 
 // ValidateMsgLimitOrder validates types.MsgLimitOrder with state and returns
 // calculated offer coin and price that is fit into ticks.
 func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder) (offerCoin sdk.Coin, swapFeeCoin sdk.Coin, price sdk.Dec, err error) {
-	params := k.GetParams(ctx)
+	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
+	if !found {
+		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{},
+			sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+	}
+
+	params, err := k.GetGenericParams(ctx, msg.AppId)
+	if err != nil {
+		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrap(err, "params retreval failed")
+	}
 
 	if msg.OrderLifespan > params.MaxOrderLifespan {
 		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{},
 			sdkerrors.Wrapf(types.ErrTooLongOrderLifespan, "%s is longer than %s", msg.OrderLifespan, params.MaxOrderLifespan)
 	}
 
-	pair, found := k.GetPair(ctx, msg.PairId)
+	pair, found := k.GetPair(ctx, msg.AppId, msg.PairId)
 	if !found {
 		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
 	}
@@ -89,13 +98,18 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 
 // LimitOrder handles types.MsgLimitOrder and stores types.Order.
 func (k Keeper) LimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder) (types.Order, error) {
+	params, err := k.GetGenericParams(ctx, msg.AppId)
+	if err != nil {
+		return types.Order{}, sdkerrors.Wrap(err, "params retreval failed")
+	}
+
 	offerCoin, swapFeeCoin, price, err := k.ValidateMsgLimitOrder(ctx, msg)
 	if err != nil {
 		return types.Order{}, err
 	}
 
 	refundedCoin := msg.OfferCoin.Sub(offerCoin.Add(swapFeeCoin))
-	pair, _ := k.GetPair(ctx, msg.PairId)
+	pair, _ := k.GetPair(ctx, msg.AppId, msg.PairId)
 	if err := k.bankKeeper.SendCoins(ctx, msg.GetOrderer(), pair.GetEscrowAddress(), sdk.NewCoins(offerCoin.Add(swapFeeCoin))); err != nil {
 		return types.Order{}, err
 	}
@@ -103,10 +117,9 @@ func (k Keeper) LimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder) (types.Ord
 	requestID := k.getNextOrderIDWithUpdate(ctx, pair)
 	expireAt := ctx.BlockTime().Add(msg.OrderLifespan)
 	order := types.NewOrderForLimitOrder(msg, requestID, pair, offerCoin, price, expireAt, ctx.BlockHeight())
-	k.SetOrder(ctx, order)
-	k.SetOrderIndex(ctx, order)
+	k.SetOrder(ctx, msg.AppId, order)
+	k.SetOrderIndex(ctx, msg.AppId, order)
 
-	params := k.GetParams(ctx)
 	ctx.GasMeter().ConsumeGas(params.OrderExtraGas, "OrderExtraGas")
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -132,14 +145,23 @@ func (k Keeper) LimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder) (types.Ord
 // ValidateMsgMarketOrder validates types.MsgMarketOrder with state and returns
 // calculated offer coin and price.
 func (k Keeper) ValidateMsgMarketOrder(ctx sdk.Context, msg *types.MsgMarketOrder) (offerCoin sdk.Coin, swapFeeCoin sdk.Coin, price sdk.Dec, err error) {
-	params := k.GetParams(ctx)
+	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
+	if !found {
+		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{},
+			sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+	}
+
+	params, err := k.GetGenericParams(ctx, msg.AppId)
+	if err != nil {
+		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrap(err, "params retreval failed")
+	}
 
 	if msg.OrderLifespan > params.MaxOrderLifespan {
 		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{},
 			sdkerrors.Wrapf(types.ErrTooLongOrderLifespan, "%s is longer than %s", msg.OrderLifespan, params.MaxOrderLifespan)
 	}
 
-	pair, found := k.GetPair(ctx, msg.PairId)
+	pair, found := k.GetPair(ctx, msg.AppId, msg.PairId)
 	if !found {
 		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
 	}
@@ -186,13 +208,18 @@ func (k Keeper) ValidateMsgMarketOrder(ctx sdk.Context, msg *types.MsgMarketOrde
 
 // MarketOrder handles types.MsgMarketOrder and stores types.Order.
 func (k Keeper) MarketOrder(ctx sdk.Context, msg *types.MsgMarketOrder) (types.Order, error) {
+	params, err := k.GetGenericParams(ctx, msg.AppId)
+	if err != nil {
+		return types.Order{}, sdkerrors.Wrap(err, "params retreval failed")
+	}
+
 	offerCoin, swapFeeCoin, price, err := k.ValidateMsgMarketOrder(ctx, msg)
 	if err != nil {
 		return types.Order{}, err
 	}
 
 	refundedCoin := msg.OfferCoin.Sub(offerCoin.Add(swapFeeCoin))
-	pair, _ := k.GetPair(ctx, msg.PairId)
+	pair, _ := k.GetPair(ctx, msg.AppId, msg.PairId)
 	if err := k.bankKeeper.SendCoins(ctx, msg.GetOrderer(), pair.GetEscrowAddress(), sdk.NewCoins(offerCoin.Add(swapFeeCoin))); err != nil {
 		return types.Order{}, err
 	}
@@ -200,10 +227,9 @@ func (k Keeper) MarketOrder(ctx sdk.Context, msg *types.MsgMarketOrder) (types.O
 	requestID := k.getNextOrderIDWithUpdate(ctx, pair)
 	expireAt := ctx.BlockTime().Add(msg.OrderLifespan)
 	order := types.NewOrderForMarketOrder(msg, requestID, pair, offerCoin, price, expireAt, ctx.BlockHeight())
-	k.SetOrder(ctx, order)
-	k.SetOrderIndex(ctx, order)
+	k.SetOrder(ctx, msg.AppId, order)
+	k.SetOrderIndex(ctx, msg.AppId, order)
 
-	params := k.GetParams(ctx)
 	ctx.GasMeter().ConsumeGas(params.OrderExtraGas, "OrderExtraGas")
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -228,8 +254,13 @@ func (k Keeper) MarketOrder(ctx sdk.Context, msg *types.MsgMarketOrder) (types.O
 
 // ValidateMsgCancelOrder validates types.MsgCancelOrder and returns the order.
 func (k Keeper) ValidateMsgCancelOrder(ctx sdk.Context, msg *types.MsgCancelOrder) (order types.Order, err error) {
-	var found bool
-	order, found = k.GetOrder(ctx, msg.PairId, msg.OrderId)
+	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
+	if !found {
+		return types.Order{},
+			sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+	}
+
+	order, found = k.GetOrder(ctx, msg.AppId, msg.PairId, msg.OrderId)
 	if !found {
 		return types.Order{},
 			sdkerrors.Wrapf(sdkerrors.ErrNotFound, "order %d not found in pair %d", msg.OrderId, msg.PairId)
@@ -240,7 +271,7 @@ func (k Keeper) ValidateMsgCancelOrder(ctx sdk.Context, msg *types.MsgCancelOrde
 	if order.Status == types.OrderStatusCanceled {
 		return types.Order{}, types.ErrAlreadyCanceled
 	}
-	pair, _ := k.GetPair(ctx, msg.PairId)
+	pair, _ := k.GetPair(ctx, msg.AppId, msg.PairId)
 	if order.BatchId == pair.CurrentBatchId {
 		return types.Order{}, types.ErrSameBatch
 	}
@@ -270,8 +301,22 @@ func (k Keeper) CancelOrder(ctx sdk.Context, msg *types.MsgCancelOrder) error {
 	return nil
 }
 
+// ValidateMsgCancelAllOrders validates types.MsgCancelAllOrders and returns the order.
+func (k Keeper) ValidateMsgCancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) error {
+	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+	}
+	return nil
+}
+
 // CancelAllOrders handles types.MsgCancelAllOrders and cancels all orders.
 func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) error {
+	err := k.ValidateMsgCancelAllOrders(ctx, msg)
+	if err != nil {
+		return err
+	}
+
 	var canceledOrderIds []string
 	//nolint
 	cb := func(pair types.Pair, order types.Order) (stop bool, err error) {
@@ -287,10 +332,10 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 	var pairIDs []string
 	if len(msg.PairIds) == 0 {
 		pairMap := map[uint64]types.Pair{}
-		if err := k.IterateAllOrders(ctx, func(order types.Order) (stop bool, err error) {
+		if err := k.IterateAllOrders(ctx, msg.AppId, func(order types.Order) (stop bool, err error) {
 			pair, ok := pairMap[order.PairId]
 			if !ok {
-				pair, _ = k.GetPair(ctx, order.PairId)
+				pair, _ = k.GetPair(ctx, msg.AppId, order.PairId)
 				pairMap[order.PairId] = pair
 			}
 			return cb(pair, order)
@@ -300,11 +345,11 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 	} else {
 		for _, pairID := range msg.PairIds {
 			pairIDs = append(pairIDs, strconv.FormatUint(pairID, 10))
-			pair, found := k.GetPair(ctx, pairID)
+			pair, found := k.GetPair(ctx, msg.AppId, pairID)
 			if !found {
 				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", pairID)
 			}
-			if err := k.IterateOrdersByPair(ctx, pairID, func(req types.Order) (stop bool, err error) {
+			if err := k.IterateOrdersByPair(ctx, msg.AppId, pairID, func(req types.Order) (stop bool, err error) {
 				return cb(pair, req)
 			}); err != nil {
 				return err
@@ -325,9 +370,14 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 }
 
 func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
+	params, err := k.GetGenericParams(ctx, pair.AppId)
+	if err != nil {
+		return sdkerrors.Wrap(err, "params retreval failed")
+	}
+
 	ob := amm.NewOrderBook()
 	skip := true // Whether to skip the matching since there is no orders.
-	if err := k.IterateOrdersByPair(ctx, pair.Id, func(order types.Order) (stop bool, err error) {
+	if err := k.IterateOrdersByPair(ctx, pair.AppId, pair.Id, func(order types.Order) (stop bool, err error) {
 		switch order.Status {
 		case types.OrderStatusNotExecuted,
 			types.OrderStatusNotMatched,
@@ -341,7 +391,7 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 			ob.Add(types.NewUserOrder(order))
 			if order.Status == types.OrderStatusNotExecuted {
 				order.SetStatus(types.OrderStatusNotMatched)
-				k.SetOrder(ctx, order)
+				k.SetOrder(ctx, pair.AppId, order)
 			}
 			skip = false
 		case types.OrderStatusCanceled:
@@ -358,7 +408,7 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 	}
 
 	var poolOrderSources []amm.OrderSource
-	_ = k.IteratePoolsByPair(ctx, pair.Id, func(pool types.Pool) (stop bool, err error) {
+	_ = k.IteratePoolsByPair(ctx, pair.AppId, pair.Id, func(pool types.Pool) (stop bool, err error) {
 		rx, ry := k.getPoolBalances(ctx, pool, pair)
 		ps := k.GetPoolCoinSupply(ctx, pool)
 		ammPool := amm.NewBasicPool(rx.Amount, ry.Amount, ps)
@@ -373,7 +423,6 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 
 	os := amm.MergeOrderSources(append(poolOrderSources, ob)...)
 
-	params := k.GetParams(ctx)
 	matchPrice, found := amm.FindMatchPrice(os, int(params.TickPrecision))
 	if found {
 		buyOrders := os.BuyOrdersOver(matchPrice)
@@ -400,6 +449,10 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 }
 
 func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.Order, quoteCoinDust sdk.Int) error {
+	params, err := k.GetGenericParams(ctx, pair.AppId)
+	if err != nil {
+		return sdkerrors.Wrap(err, "params retreval failed")
+	}
 	bulkOp := types.NewBulkSendCoinsOperation()
 	for _, order := range orders {
 		if !order.IsMatched() {
@@ -420,7 +473,7 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 		}
 		switch order := order.(type) {
 		case *types.UserOrder:
-			o, _ := k.GetOrder(ctx, pair.Id, order.OrderID)
+			o, _ := k.GetOrder(ctx, pair.AppId, pair.Id, order.OrderID)
 			o.OpenAmount = o.OpenAmount.Sub(order.Amount.Sub(order.OpenAmount))
 			o.RemainingOfferCoin = o.RemainingOfferCoin.Sub(order.OfferCoin.Sub(order.RemainingOfferCoin))
 			o.ReceivedCoin = o.ReceivedCoin.Add(order.ReceivedDemandCoin)
@@ -430,7 +483,7 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 				}
 			} else {
 				o.SetStatus(types.OrderStatusPartiallyMatched)
-				k.SetOrder(ctx, o)
+				k.SetOrder(ctx, pair.AppId, o)
 				// nolint
 				// TODO: emit an event?
 			}
@@ -439,7 +492,6 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 			bulkOp.QueueSendCoins(pair.GetEscrowAddress(), order.ReserveAddress, sdk.NewCoins(order.ReceivedDemandCoin))
 		}
 	}
-	params := k.GetParams(ctx)
 	dustCollectorAddr, _ := sdk.AccAddressFromBech32(params.DustCollectorAddress)
 	bulkOp.QueueSendCoins(pair.GetEscrowAddress(), dustCollectorAddr, sdk.NewCoins(sdk.NewCoin(pair.QuoteCoinDenom, quoteCoinDust)))
 	if err := bulkOp.Run(ctx, k.bankKeeper); err != nil {
@@ -453,8 +505,12 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 		return nil
 	}
 
-	params := k.GetParams(ctx)
-	pair, _ := k.GetPair(ctx, order.PairId)
+	params, err := k.GetGenericParams(ctx, order.AppId)
+	if err != nil {
+		return sdkerrors.Wrap(err, "params retreval failed")
+	}
+
+	pair, _ := k.GetPair(ctx, order.AppId, order.PairId)
 
 	accumulatedSwapFee := sdk.NewCoin(order.OfferCoin.Denom, sdk.NewInt(0))
 	collectedSwapFeeAmountFromOrderer := CalculateSwapfeeAmount(ctx, params, order.OfferCoin.Amount)
@@ -491,7 +547,7 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 	}
 
 	order.SetStatus(status)
-	k.SetOrder(ctx, order)
+	k.SetOrder(ctx, order.AppId, order)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -517,18 +573,22 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 
 // ConvertAccumulatedSwapFeesWithSwapDistrToken swaps accumulated swap fees from -
 // pair swap fee accmulator into actual distribution coin
-func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context) {
+func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, appID uint64) {
 	logger := k.Logger(ctx)
 
-	params := k.GetParams(ctx)
-	availablePools := k.GetAllPools(ctx)
+	params, err := k.GetGenericParams(ctx, appID)
+	if err != nil {
+		return
+	}
+
+	availablePools := k.GetAllPools(ctx, appID)
 	const poolMapPrefix = "pool_"
 
 	edges := [][]string{}
 	pairPoolIdMap := make(map[string]uint64)
 
 	for _, pool := range availablePools {
-		pair, found := k.GetPair(ctx, pool.PairId)
+		pair, found := k.GetPair(ctx, pool.AppId, pool.PairId)
 		if !found {
 			continue
 		}
@@ -542,7 +602,7 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context) {
 	undirectedGraph := types.BuildUndirectedGraph(edges)
 
 	for _, pool := range availablePools {
-		pair, found := k.GetPair(ctx, pool.PairId)
+		pair, found := k.GetPair(ctx, pool.AppId, pool.PairId)
 		if !found {
 			continue
 		}
@@ -556,11 +616,11 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context) {
 					swappablePairID := pairPoolIdMap[shortestPath[0]+shortestPath[1]]
 					swappablePoolID := pairPoolIdMap[poolMapPrefix+shortestPath[0]+shortestPath[1]]
 
-					swappablePair, found := k.GetPair(ctx, swappablePairID)
+					swappablePair, found := k.GetPair(ctx, appID, swappablePairID)
 					if !found {
 						continue
 					}
-					swappablePool, found := k.GetPool(ctx, swappablePoolID)
+					swappablePool, found := k.GetPool(ctx, appID, swappablePoolID)
 					if !found {
 						continue
 					}
@@ -591,6 +651,7 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context) {
 					}
 
 					newLimitOrderMsg := types.NewMsgLimitOrder(
+						appID,
 						pair.GetSwapFeeCollectorAddress(),
 						swappablePairID,
 						orderDirection,

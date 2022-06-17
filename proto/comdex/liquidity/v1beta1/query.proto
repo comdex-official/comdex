@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "comdex/liquidity/v1beta1/liquidity.proto";
+import "comdex/liquidity/v1beta1/params.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 
@@ -19,6 +20,16 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryGenericParamsRequest is request type for the Query/GenericParams RPC method.
+message QueryGenericParamsRequest {
+  uint64 app_id = 1;
+}
+
+// QueryGenericParamsResponse is response type for the Query/GenericParams RPC method.
+message QueryGenericParamsResponse {
+  GenericParams params = 1 [(gogoproto.nullable) = false];
+}
+
 // QueryPoolsRequest is request type for the Query/Pools RPC method.
 message QueryPoolsRequest {
   uint64 pair_id = 1;
@@ -26,6 +37,8 @@ message QueryPoolsRequest {
   string disabled = 2;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
+
+  uint64 app_id = 4;
 }
 
 // QueryPoolsResponse is response type for the Query/Pools RPC method.
@@ -38,6 +51,7 @@ message QueryPoolsResponse {
 // QueryPoolRequest is request type for the Query/Pool RPC method.
 message QueryPoolRequest {
   uint64 pool_id = 1;
+  uint64 app_id = 2;
 }
 
 // QueryPoolResponse is response type for the Query/Pool RPC method.
@@ -48,11 +62,13 @@ message QueryPoolResponse {
 // QueryPoolByReserveAddressRequest is request type for the Query/PoolByReserveAddress RPC method.
 message QueryPoolByReserveAddressRequest {
   string reserve_address = 1;
+  uint64 app_id = 2;
 }
 
 // QueryPoolByPoolCoinDenomRequest is request type for the Query/PoolByPoolCoinDenom RPC method.
 message QueryPoolByPoolCoinDenomRequest {
   string pool_coin_denom = 1;
+  uint64 app_id = 2;
 }
 
 // QueryPairsRequest is request type for the Query/Pairs RPC method.
@@ -60,6 +76,8 @@ message QueryPairsRequest {
   repeated string denoms = 1;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
+
+  uint64 app_id = 3;
 }
 
 // QueryPairsResponse is response type for the Query/Pairs RPC method.
@@ -72,6 +90,7 @@ message QueryPairsResponse {
 // QueryPairRequest is request type for the Query/Pair RPC method.
 message QueryPairRequest {
   uint64 pair_id = 1;
+  uint64 app_id = 2;
 }
 
 // QueryPairResponse is response type for the Query/Pair RPC method.
@@ -82,8 +101,9 @@ message QueryPairResponse {
 // QueryDepositRequestsRequest is request type for the Query/DepositRequests RPC method.
 message QueryDepositRequestsRequest {
   uint64 pool_id = 1;
+  uint64 app_id = 2;
 
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
 // QueryDepositRequestsResponse is response type for the Query/DepositRequests RPC method.
@@ -97,6 +117,7 @@ message QueryDepositRequestsResponse {
 message QueryDepositRequestRequest {
   uint64 pool_id = 1;
   uint64 id      = 2;
+  uint64 app_id = 3;
 }
 
 // QueryDepositRequestResponse is response type for the Query/DepositRequest RPC method.
@@ -109,6 +130,7 @@ message QueryWithdrawRequestsRequest {
   uint64 pool_id = 1;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  uint64 app_id = 3;
 }
 
 // QueryWithdrawRequestsResponse is response type for the Query/WithdrawRequests RPC method.
@@ -122,6 +144,7 @@ message QueryWithdrawRequestsResponse {
 message QueryWithdrawRequestRequest {
   uint64 pool_id = 1;
   uint64 id      = 2;
+  uint64 app_id = 3;
 }
 
 // QueryWithdrawRequestResponse is response type for the Query/WithdrawRequest RPC method.
@@ -134,6 +157,7 @@ message QueryOrdersRequest {
   uint64 pair_id = 1;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  uint64 app_id = 3;
 }
 
 // QueryOrdersResponse is response type for the Query/Orders RPC method.
@@ -147,6 +171,7 @@ message QueryOrdersResponse {
 message QueryOrderRequest {
   uint64 pair_id = 1;
   uint64 id      = 2;
+  uint64 app_id = 3;
 }
 
 // QueryOrderResponse is response type for the Query/Order RPC method.
@@ -159,6 +184,7 @@ message QueryOrdersByOrdererRequest {
   string                                orderer    = 1;
   uint64                                pair_id    = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
+  uint64 app_id = 4;
 }
 
 //
@@ -181,12 +207,15 @@ message PoolResponse {
   uint64 last_deposit_request_id = 6;
 
   uint64 last_withdraw_request_id = 7;
+
+  uint64 app_id = 8;
 }
 
 // QuerySoftLockRequest is request type for the Query/SoftLock RPC method.
 message QuerySoftLockRequest {
   uint64 pool_id = 1;
   string depositor = 2;
+  uint64 app_id = 3;
 }
 
 message QueuedPoolCoin {
@@ -218,6 +247,7 @@ message QuerySoftLockResponse {
 message QueryDeserializePoolCoinRequest {
   uint64 pool_id = 1;
   uint64 pool_coin_amount = 2;
+  uint64 app_id = 3;
 }
 
 // QueryDeserializePoolCoinResponse is response type for the Query/DeserializePoolCoin RPC method.
@@ -229,7 +259,9 @@ message QueryDeserializePoolCoinResponse {
 }
 
 // QueryPoolsIncentivesRequest is request type for the Query/PoolsIncentives RPC method.
-message QueryPoolsIncentivesRequest {}
+message QueryPoolsIncentivesRequest {
+  uint64 app_id = 1;
+}
 
 message PoolIncentive {
   uint64 pool_id = 1;
@@ -257,6 +289,7 @@ message PoolIncentive {
     (gogoproto.moretags) = "yaml:\"next_distribution\""
   ];
   bool is_swap_fee = 10;
+  uint64 app_id = 11;
 }
 
 // QueryPoolIncentivesResponse is response type for the Query/PoolsIncentives RPC method.
@@ -266,6 +299,7 @@ message QueryPoolIncentivesResponse {
 
 message QueryFarmedPoolCoinRequest {
   uint64 pool_id = 1;
+  uint64 app_id = 2;
 }
 
 message QueryFarmedPoolCoinResponse {
@@ -282,88 +316,93 @@ service Query {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/params";
   }
 
+  // GenericParams returns app parameters of the module.
+  rpc GenericParams(QueryGenericParamsRequest) returns (QueryGenericParamsResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/generic_params/{app_id}";
+  }
+
   // Pools returns all liquidity pools.
   rpc Pools(QueryPoolsRequest) returns (QueryPoolsResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}";
   }
 
   // Pool returns the specific liquidity pool.
   rpc Pool(QueryPoolRequest) returns (QueryPoolResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{pool_id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/{pool_id}";
   }
 
   // PoolByReserveAddress returns all pools that correspond to the reserve account.
   rpc PoolByReserveAddress(QueryPoolByReserveAddressRequest) returns (QueryPoolResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/reserve_address/{reserve_address}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/reserve_address/{reserve_address}";
   }
 
   // PoolByPoolCoinDenom returns all pools that correspond to the pool coin denom.
   rpc PoolByPoolCoinDenom(QueryPoolByPoolCoinDenomRequest) returns (QueryPoolResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/pool_coin_denom/{pool_coin_denom}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/pool_coin_denom/{pool_coin_denom}";
   }
 
   // Pairs returns all liquidity pairs.
   rpc Pairs(QueryPairsRequest) returns (QueryPairsResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}";
   }
 
   // Pair returns the specific pair.
   rpc Pair(QueryPairRequest) returns (QueryPairResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{pair_id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}";
   }
 
   // DepositRequests returns all deposit requests.
   rpc DepositRequests(QueryDepositRequestsRequest) returns (QueryDepositRequestsResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{pool_id}/deposit_requests";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/{pool_id}/deposit_requests";
   }
 
   // DepositRequest returns the specific deposit request.
   rpc DepositRequest(QueryDepositRequestRequest) returns (QueryDepositRequestResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{pool_id}/deposit_requests/{id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/{pool_id}/deposit_requests/{id}";
   }
 
   // WithdrawRequests returns all withdraw requests.
   rpc WithdrawRequests(QueryWithdrawRequestsRequest) returns (QueryWithdrawRequestsResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{pool_id}/withdraw_requests";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/{pool_id}/withdraw_requests";
   }
 
   // WithdrawRequest returns the specific withdraw request.
   rpc WithdrawRequest(QueryWithdrawRequestRequest) returns (QueryWithdrawRequestResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{pool_id}/withdraw_requests/{id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pools/{app_id}/{pool_id}/withdraw_requests/{id}";
   }
 
   // Orders returns all orders within the pair.
   rpc Orders(QueryOrdersRequest) returns (QueryOrdersResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{pair_id}/orders";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}/orders";
   }
 
   // Order returns the specific order.
   rpc Order(QueryOrderRequest) returns (QueryOrderResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{pair_id}/orders/{id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}/orders/{id}";
   }
 
   // OrdersByOrderer returns orders made by an orderer.
   rpc OrdersByOrderer(QueryOrdersByOrdererRequest) returns (QueryOrdersResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{orderer}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{app_id}/{orderer}";
   }
 
   // SoftLock returns deposited poolcoin for farming .
   rpc SoftLock(QuerySoftLockRequest) returns (QuerySoftLockResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/softlock/{pool_id}/{depositor}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/softlock/{app_id}/{pool_id}/{depositor}";
   }
 
   // DeserializePoolCoin splits poolcoin into the actual provided pool assets .
   rpc DeserializePoolCoin(QueryDeserializePoolCoinRequest) returns (QueryDeserializePoolCoinResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/deserialize/{pool_id}/{pool_coin_amount}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/deserialize/{app_id}/{pool_id}/{pool_coin_amount}";
   }
 
   // PoolIncentives provides insights about available pool incentives.
   rpc PoolIncentives(QueryPoolsIncentivesRequest) returns (QueryPoolIncentivesResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pool_incentives";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/pool_incentives/{app_id}";
   }
 
   // FarmedPoolCoin returns the total coin in the soft-lock.
   rpc FarmedPoolCoin(QueryFarmedPoolCoinRequest) returns (QueryFarmedPoolCoinResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/farmed_coin/{pool_id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/farmed_coin/{app_id}/{pool_id}";
   }
 }

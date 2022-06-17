@@ -19,6 +19,7 @@ func NewDepositRequest(msg *MsgDeposit, pool Pool, id uint64, msgHeight int64) D
 		AcceptedCoins:  nil,
 		MintedPoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdk.ZeroInt()),
 		Status:         RequestStatusNotExecuted,
+		AppId:          msg.AppId,
 	}
 }
 
@@ -86,6 +87,7 @@ func NewWithdrawRequest(msg *MsgWithdraw, id uint64, msgHeight int64) WithdrawRe
 		PoolCoin:       msg.PoolCoin,
 		WithdrawnCoins: nil,
 		Status:         RequestStatusNotExecuted,
+		AppId:          msg.AppId,
 	}
 }
 
@@ -152,6 +154,7 @@ func NewOrderForLimitOrder(msg *MsgLimitOrder, id uint64, pair Pair, offerCoin s
 		BatchId:            pair.CurrentBatchId,
 		ExpireAt:           expireAt,
 		Status:             OrderStatusNotExecuted,
+		AppId:              msg.AppId,
 	}
 }
 
@@ -172,6 +175,7 @@ func NewOrderForMarketOrder(msg *MsgMarketOrder, id uint64, pair Pair, offerCoin
 		BatchId:            pair.CurrentBatchId,
 		ExpireAt:           expireAt,
 		Status:             OrderStatusNotExecuted,
+		AppId:              msg.AppId,
 	}
 }
 
@@ -382,7 +386,7 @@ func MustUnmarshalOrder(cdc codec.BinaryCodec, value []byte) Order {
 
 // MustMarshaPoolLiquidityProvidersData returns the PoolLiquidityProvidersData bytes.
 // It throws panic if it fails.
-func MustMarshaPoolLiquidityProvidersData(cdc codec.BinaryCodec, liquidityProvidersData PoolLiquidityProvidersData) []byte {
+func MustMarshalPoolLiquidityProvidersData(cdc codec.BinaryCodec, liquidityProvidersData PoolLiquidityProvidersData) []byte {
 	return cdc.MustMarshal(&liquidityProvidersData)
 }
 
@@ -396,6 +400,28 @@ func UnmarshalPoolLiquidityProvidersData(cdc codec.BinaryCodec, value []byte) (l
 // It throws panic if it fails.
 func MustUnmarshalPoolLiquidityProvidersData(cdc codec.BinaryCodec, value []byte) PoolLiquidityProvidersData {
 	msg, err := UnmarshalPoolLiquidityProvidersData(cdc, value)
+	if err != nil {
+		panic(err)
+	}
+	return msg
+}
+
+// MustMarshalGenericLiquidityParams returns the GenericParams bytes.
+// It throws panic if it fails.
+func MustMarshalGenericLiquidityParams(cdc codec.BinaryCodec, genericLiquidityParams GenericParams) []byte {
+	return cdc.MustMarshal(&genericLiquidityParams)
+}
+
+// UnmarshalGenericLiquidityParams returns the GenericParams from bytes.
+func UnmarshalGenericLiquidityParams(cdc codec.BinaryCodec, value []byte) (genericLiquidityParams GenericParams, err error) {
+	err = cdc.Unmarshal(value, &genericLiquidityParams)
+	return genericLiquidityParams, err
+}
+
+// MustUnmarshalGenericLiquidityParams returns the GenericParams from bytes.
+// It throws panic if it fails.
+func MustUnmarshalGenericLiquidityParams(cdc codec.BinaryCodec, value []byte) GenericParams {
+	msg, err := UnmarshalGenericLiquidityParams(cdc, value)
 	if err != nil {
 		panic(err)
 	}

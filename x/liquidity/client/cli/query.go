@@ -26,6 +26,7 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		NewQueryParamsCmd(),
+		NewQueryGenericPairsCmd(),
 		NewQueryPoolsCmd(),
 		NewQueryPoolCmd(),
 		NewQueryPairsCmd(),
@@ -81,18 +82,63 @@ $ %s query %s params
 	return cmd
 }
 
+// NewQueryGenericPairsCmd implements the pgeneric-params query command.
+func NewQueryGenericPairsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "generic-params [app-id]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Query the current liquidity parameters information for app",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query values set as liquidity parameters for a given app.
+Example:
+$ %s query %s generic-params 1
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.GenericParams(
+				cmd.Context(),
+				&types.QueryGenericParamsRequest{
+					AppId: appID,
+				})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(flagSetPairs())
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
 // NewQueryPairsCmd implements the pairs query command.
 func NewQueryPairsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pairs",
-		Args:  cobra.NoArgs,
+		Use:   "pairs [app-id]",
+		Args:  cobra.ExactArgs(1),
 		Short: "Query for all pairs",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all existing pairs on a network.
 Example:
-$ %s query %s pairs
-$ %s query %s pairs --denoms=uatom
-$ %s query %s pairs --denoms=uatom,stake
+$ %s query %s pairs 1
+$ %s query %s pairs 1 --denoms=uatom
+$ %s query %s pairs 1 --denoms=uatom,stake
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -105,6 +151,11 @@ $ %s query %s pairs --denoms=uatom,stake
 				return err
 			}
 
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
 			pageReq, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -115,6 +166,7 @@ $ %s query %s pairs --denoms=uatom,stake
 			queryClient := types.NewQueryClient(clientCtx)
 			res, err := queryClient.Pairs(cmd.Context(), &types.QueryPairsRequest{
 				Denoms:     denoms,
+				AppId:      appID,
 				Pagination: pageReq,
 			})
 			if err != nil {
@@ -134,13 +186,13 @@ $ %s query %s pairs --denoms=uatom,stake
 // NewQueryPairCmd implements the pair query command.
 func NewQueryPairCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pair [pair-id]",
-		Args:  cobra.ExactArgs(1),
+		Use:   "pair [app-id] [pair-id]",
+		Args:  cobra.ExactArgs(2),
 		Short: "Query details of the pair",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the pair.
 Example:
-$ %s query %s pair 1
+$ %s query %s pair 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -151,7 +203,12 @@ $ %s query %s pair 1
 				return err
 			}
 
-			pairID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			pairID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -160,6 +217,7 @@ $ %s query %s pair 1
 
 			res, err := queryClient.Pair(cmd.Context(), &types.QueryPairRequest{
 				PairId: pairID,
+				AppId:  appID,
 			})
 			if err != nil {
 				return err
@@ -177,15 +235,15 @@ $ %s query %s pair 1
 // NewQueryPoolsCmd implements the pools query command.
 func NewQueryPoolsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pools",
-		Args:  cobra.NoArgs,
+		Use:   "pools [app-id]",
+		Args:  cobra.ExactArgs(1),
 		Short: "Query for all liquidity pools",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all existing liquidity pools on a network.
 Example:
-$ %s query %s pools
-$ %s query %s pools --pair-id=1
-$ %s query %s pools --disabled=true
+$ %s query %s pools 1
+$ %s query %s pools 1 --pair-id=1
+$ %s query %s pools 1 --disabled=true
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -196,6 +254,11 @@ $ %s query %s pools --disabled=true
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
 			}
 
 			pageReq, err := client.ReadPageRequest(cmd.Flags())
@@ -222,6 +285,7 @@ $ %s query %s pools --disabled=true
 
 			queryClient := types.NewQueryClient(clientCtx)
 			res, err := queryClient.Pools(cmd.Context(), &types.QueryPoolsRequest{
+				AppId:      appID,
 				PairId:     pairID,
 				Disabled:   disabledStr,
 				Pagination: pageReq,
@@ -243,15 +307,15 @@ $ %s query %s pools --disabled=true
 // NewQueryPoolCmd implements the pool query command.
 func NewQueryPoolCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pool [pool-id]",
-		Args:  cobra.MaximumNArgs(1),
+		Use:   "pool [app-id] [pool-id]",
+		Args:  cobra.MinimumNArgs(1),
 		Short: "Query details of the liquidity pool",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the liquidity pool
 Example:
-$ %s query %s pool 1
-$ %s query %s pool --pool-coin-denom=pool1
-$ %s query %s pool --reserve-address=cre1...
+$ %s query %s pool 1 1
+$ %s query %s pool 1 --pool-coin-denom=pool1
+$ %s query %s pool 1 --reserve-address=comdex...
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -264,9 +328,14 @@ $ %s query %s pool --reserve-address=cre1...
 				return err
 			}
 
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
 			var poolID *uint64
-			if len(args) > 0 {
-				id, err := strconv.ParseUint(args[0], 10, 64)
+			if len(args) > 1 {
+				id, err := strconv.ParseUint(args[1], 10, 64)
 				if err != nil {
 					return fmt.Errorf("parse pool id: %w", err)
 				}
@@ -284,18 +353,21 @@ $ %s query %s pool --reserve-address=cre1...
 			switch {
 			case poolID != nil:
 				res, err = queryClient.Pool(cmd.Context(), &types.QueryPoolRequest{
+					AppId:  appID,
 					PoolId: *poolID,
 				})
 			case poolCoinDenom != "":
 				res, err = queryClient.PoolByPoolCoinDenom(
 					cmd.Context(),
 					&types.QueryPoolByPoolCoinDenomRequest{
+						AppId:         appID,
 						PoolCoinDenom: poolCoinDenom,
 					})
 			case reserveAddr != "":
 				res, err = queryClient.PoolByReserveAddress(
 					cmd.Context(),
 					&types.QueryPoolByReserveAddressRequest{
+						AppId:          appID,
 						ReserveAddress: reserveAddr,
 					})
 			}
@@ -316,13 +388,13 @@ $ %s query %s pool --reserve-address=cre1...
 // NewQueryDepositRequestsCmd implements the deposit requests query command.
 func NewQueryDepositRequestsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit-requests [pool-id]",
-		Args:  cobra.ExactArgs(1),
+		Use:   "deposit-requests [app-id] [pool-id]",
+		Args:  cobra.ExactArgs(2),
 		Short: "Query for all deposit requests in the pool",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all deposit requests in the pool.
 Example:
-$ %s query %s deposit-requests 1
+$ %s query %s deposit-requests 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -338,7 +410,12 @@ $ %s query %s deposit-requests 1
 				return err
 			}
 
-			poolID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -348,6 +425,7 @@ $ %s query %s deposit-requests 1
 			res, err := queryClient.DepositRequests(
 				cmd.Context(),
 				&types.QueryDepositRequestsRequest{
+					AppId:      appID,
 					PoolId:     poolID,
 					Pagination: pageReq,
 				})
@@ -367,13 +445,13 @@ $ %s query %s deposit-requests 1
 // NewQueryDepositRequestCmd implements the deposit request query command.
 func NewQueryDepositRequestCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit-request [pool-id] [id]",
-		Args:  cobra.ExactArgs(2),
+		Use:   "deposit-request [app-id] [pool-id] [id]",
+		Args:  cobra.ExactArgs(3),
 		Short: "Query details of the specific deposit request",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the specific deposit request.
 Example:
-$ %s query %s deposit-requests 1 1
+$ %s query %s deposit-request 1 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -384,12 +462,17 @@ $ %s query %s deposit-requests 1 1
 				return err
 			}
 
-			poolID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			id, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -399,6 +482,7 @@ $ %s query %s deposit-requests 1 1
 			res, err := queryClient.DepositRequest(
 				cmd.Context(),
 				&types.QueryDepositRequestRequest{
+					AppId:  appID,
 					PoolId: poolID,
 					Id:     id,
 				})
@@ -418,13 +502,13 @@ $ %s query %s deposit-requests 1 1
 // NewQueryWithdrawRequestsCmd implements the withdraw requests query command.
 func NewQueryWithdrawRequestsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw-requests [pool-id]",
-		Args:  cobra.ExactArgs(1),
+		Use:   "withdraw-requests [app-id] [pool-id]",
+		Args:  cobra.ExactArgs(2),
 		Short: "Query for all withdraw requests in the pool.",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all withdraw requests in the pool.
 Example:
-$ %s query %s withdraw-requests 1
+$ %s query %s withdraw-requests 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -440,7 +524,12 @@ $ %s query %s withdraw-requests 1
 				return err
 			}
 
-			poolID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -450,6 +539,7 @@ $ %s query %s withdraw-requests 1
 			res, err := queryClient.WithdrawRequests(
 				cmd.Context(),
 				&types.QueryWithdrawRequestsRequest{
+					AppId:      appID,
 					PoolId:     poolID,
 					Pagination: pageReq,
 				})
@@ -469,13 +559,13 @@ $ %s query %s withdraw-requests 1
 // NewQueryWithdrawRequestCmd implements the withdraw request query command.
 func NewQueryWithdrawRequestCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw-request [pool-id] [id]",
-		Args:  cobra.ExactArgs(2),
+		Use:   "withdraw-request [app-id] [pool-id] [id]",
+		Args:  cobra.ExactArgs(3),
 		Short: "Query details of the specific withdraw request",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the specific withdraw request.
 Example:
-$ %s query %s withdraw-requests 1 1
+$ %s query %s withdraw-request 1 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -486,12 +576,17 @@ $ %s query %s withdraw-requests 1 1
 				return err
 			}
 
-			poolID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			id, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -501,6 +596,7 @@ $ %s query %s withdraw-requests 1 1
 			res, err := queryClient.WithdrawRequest(
 				cmd.Context(),
 				&types.QueryWithdrawRequestRequest{
+					AppId:  appID,
 					PoolId: poolID,
 					Id:     id,
 				})
@@ -520,15 +616,15 @@ $ %s query %s withdraw-requests 1 1
 // NewQueryOrdersCmd implements the orders query command.
 func NewQueryOrdersCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "orders [orderer]",
-		Args:  cobra.MaximumNArgs(1),
+		Use:   "orders [app-id] [orderer]",
+		Args:  cobra.MinimumNArgs(1),
 		Short: "Query for all orders in the pair",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all orders in the pair.
 Example:
-$ %s query %s orders cre1...
-$ %s query %s orders --pair-id=1 cre1...
-$ %s query %s orders --pair-id=1
+$ %s query %s orders 1 comdex...
+$ %s query %s orders 1 --pair-id=1 comdex...
+$ %s query %s orders 1 --pair-id=1
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -546,9 +642,14 @@ $ %s query %s orders --pair-id=1
 				return err
 			}
 
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
 			var orderer *string
-			if len(args) > 0 {
-				orderer = &args[0]
+			if len(args) > 1 {
+				orderer = &args[1]
 			}
 
 			var pairID uint64
@@ -568,6 +669,7 @@ $ %s query %s orders --pair-id=1
 			var res *types.QueryOrdersResponse
 			if orderer == nil {
 				res, err = queryClient.Orders(cmd.Context(), &types.QueryOrdersRequest{
+					AppId:      appID,
 					PairId:     pairID,
 					Pagination: pageReq,
 				})
@@ -576,6 +678,7 @@ $ %s query %s orders --pair-id=1
 					cmd.Context(),
 					&types.QueryOrdersByOrdererRequest{
 						Orderer:    *orderer,
+						AppId:      appID,
 						PairId:     pairID,
 						Pagination: pageReq,
 					})
@@ -597,13 +700,13 @@ $ %s query %s orders --pair-id=1
 // NewQueryOrderCmd implements the order query command.
 func NewQueryOrderCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "order [pair-id] [id]",
-		Args:  cobra.ExactArgs(2),
+		Use:   "order [app-id] [pair-id] [id]",
+		Args:  cobra.ExactArgs(3),
 		Short: "Query details of the specific order",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the specific order.
 Example:
-$ %s query %s order 1 1
+$ %s query %s order 1 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -614,12 +717,17 @@ $ %s query %s order 1 1
 				return err
 			}
 
-			pairID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			pairID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[1], 10, 64)
+			id, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -629,6 +737,7 @@ $ %s query %s order 1 1
 			res, err := queryClient.Order(
 				cmd.Context(),
 				&types.QueryOrderRequest{
+					AppId:  appID,
 					PairId: pairID,
 					Id:     id,
 				})
@@ -648,13 +757,13 @@ $ %s query %s order 1 1
 // NewQuerySoftLockCmd implements the soft lock query command.
 func NewQuerySoftLockCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "soft-lock [pool-id] [depositor]",
-		Args:  cobra.ExactArgs(2),
+		Use:   "soft-lock [app-id] [pool-id] [depositor]",
+		Args:  cobra.ExactArgs(3),
 		Short: "Query details of the soft-lock",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the soft-lock in specific pool for adddress.
 Example:
-$ %s query %s soft-lock 1 comdex1ed6zea6ppj29vkzk8f867rsauu65lq2p75jc3u
+$ %s query %s soft-lock 1 1 comdex...
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -665,7 +774,12 @@ $ %s query %s soft-lock 1 comdex1ed6zea6ppj29vkzk8f867rsauu65lq2p75jc3u
 				return err
 			}
 
-			poolID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -675,8 +789,9 @@ $ %s query %s soft-lock 1 comdex1ed6zea6ppj29vkzk8f867rsauu65lq2p75jc3u
 			res, err := queryClient.SoftLock(
 				cmd.Context(),
 				&types.QuerySoftLockRequest{
+					AppId:     appID,
 					PoolId:    poolID,
-					Depositor: args[1],
+					Depositor: args[2],
 				})
 			if err != nil {
 				return err
@@ -694,13 +809,13 @@ $ %s query %s soft-lock 1 comdex1ed6zea6ppj29vkzk8f867rsauu65lq2p75jc3u
 // NewQuerySoftLockCmd implements the soft lock query command.
 func NewQueryDeserializePoolCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deserialize [pool-id] [pool-coin-amount]",
-		Args:  cobra.ExactArgs(2),
+		Use:   "deserialize [app-id] [pool-id] [pool-coin-amount]",
+		Args:  cobra.ExactArgs(3),
 		Short: "Deserialize pool coins into the pool assets",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Deserialize pool coins into pool assets.
 Example:
-$ %s query %s deserialize 1 123400000
+$ %s query %s deserialize 1 1 123400000
 > {coins : [1000000ucmdx, 4000000ucmst]}
 `,
 				version.AppName, types.ModuleName,
@@ -712,11 +827,16 @@ $ %s query %s deserialize 1 123400000
 				return err
 			}
 
-			poolID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
-			poolCoinAmount, err := strconv.ParseUint(args[1], 10, 64)
+			poolCoinAmount, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -726,6 +846,7 @@ $ %s query %s deserialize 1 123400000
 			res, err := queryClient.DeserializePoolCoin(
 				cmd.Context(),
 				&types.QueryDeserializePoolCoinRequest{
+					AppId:          appID,
 					PoolId:         poolID,
 					PoolCoinAmount: poolCoinAmount,
 				})
@@ -745,13 +866,13 @@ $ %s query %s deserialize 1 123400000
 // NewQueryPoolIncentivesCmd implements the pool-incentives query command.
 func NewQueryPoolIncentivesCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pool-incentives",
-		Args:  cobra.NoArgs,
+		Use:   "pool-incentives [app-id]",
+		Args:  cobra.ExactArgs(1),
 		Short: "Query pool incentives",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query Pool Incentives
 Example:
-$ %s query %s pool-incentives
+$ %s query %s pool-incentives 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -762,11 +883,18 @@ $ %s query %s pool-incentives
 				return err
 			}
 
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
 			queryClient := types.NewQueryClient(clientCtx)
 
 			res, err := queryClient.PoolIncentives(
 				cmd.Context(),
-				&types.QueryPoolsIncentivesRequest{})
+				&types.QueryPoolsIncentivesRequest{
+					AppId: appID,
+				})
 			if err != nil {
 				return err
 			}
@@ -783,13 +911,13 @@ $ %s query %s pool-incentives
 // NewQueryFarmedPoolCoinCmd implements the farmed-coin query command.
 func NewQueryFarmedPoolCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "farmed-coin [pool-id]",
-		Args:  cobra.ExactArgs(1),
+		Use:   "farmed-coin [app-id] [pool-id]",
+		Args:  cobra.ExactArgs(2),
 		Short: "Query total coins being farmed (in soft-lock)",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query total coins being farmed (in soft-lock).
 Example:
-$ %s query %s farmed-coin 1
+$ %s query %s farmed-coin 1 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -800,7 +928,12 @@ $ %s query %s farmed-coin 1
 				return err
 			}
 
-			poolID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -810,6 +943,7 @@ $ %s query %s farmed-coin 1
 			res, err := queryClient.FarmedPoolCoin(
 				cmd.Context(),
 				&types.QueryFarmedPoolCoinRequest{
+					AppId:  appID,
 					PoolId: poolID,
 				})
 			if err != nil {

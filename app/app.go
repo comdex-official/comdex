@@ -147,6 +147,7 @@ import (
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 
 	"github.com/comdex-official/comdex/x/liquidity"
+	liquidityclient "github.com/comdex-official/comdex/x/liquidity/client"
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
@@ -182,6 +183,24 @@ func GetWasmEnabledProposals() []wasm.ProposalType {
 	return proposals
 }
 
+func GetGovProposalHandlers() []govclient.ProposalHandler {
+	proposalHandlers := []govclient.ProposalHandler{
+		bandoraclemoduleclient.AddFetchPriceHandler,
+		collectorclient.AddLookupTableParamsHandlers,
+		collectorclient.AddAuctionControlParamsHandler,
+		paramsclient.ProposalHandler,
+		distrclient.ProposalHandler,
+		upgradeclient.ProposalHandler,
+		upgradeclient.CancelProposalHandler,
+		ibcclientclient.UpdateClientProposalHandler,
+		ibcclientclient.UpgradeProposalHandler,
+	}
+	proposalHandlers = append(proposalHandlers, wasmclient.ProposalHandlers...)
+	proposalHandlers = append(proposalHandlers, assetclient.AddAssetsHandler...)
+	proposalHandlers = append(proposalHandlers, liquidityclient.LiquidityProposalHandler...)
+	return proposalHandlers
+}
+
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
@@ -205,21 +224,7 @@ var (
 		staking.AppModuleBasic{},
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
-		gov.NewAppModuleBasic(
-			append(
-				[]govclient.ProposalHandler{
-					bandoraclemoduleclient.AddFetchPriceHandler,
-					collectorclient.AddLookupTableParamsHandlers,
-					collectorclient.AddAuctionControlParamsHandler,
-					paramsclient.ProposalHandler,
-					distrclient.ProposalHandler,
-					upgradeclient.ProposalHandler,
-					upgradeclient.CancelProposalHandler,
-					ibcclientclient.UpdateClientProposalHandler,
-					ibcclientclient.UpgradeProposalHandler},
-				append(wasmclient.ProposalHandlers,
-					assetclient.AddAssetsHandler...)...)...,
-		),
+		gov.NewAppModuleBasic(GetGovProposalHandlers()...),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
@@ -354,7 +359,7 @@ func New(
 			vaulttypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
-			rewardstypes.StoreKey, feegrant.StoreKey,
+			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey,
 		)
 	)
 
@@ -724,7 +729,8 @@ func New(
 		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.CollectorKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
-		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper))
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
+		AddRoute(liquiditytypes.RouterKey, liquidity.NewLiquidityProposalHandler(app.liquidityKeeper))
 
 	if len(wasmEnabledProposals) != 0 {
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, wasmEnabledProposals))

@@ -39,19 +39,34 @@ func AllInvariants(k Keeper) sdk.Invariant {
 // deposit requests.
 func DepositCoinsEscrowInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		escrowDepositCoins := sdk.Coins{}
-		_ = k.IterateAllDepositRequests(ctx, func(req types.DepositRequest) (stop bool, err error) {
-			if req.Status == types.RequestStatusNotExecuted {
-				escrowDepositCoins = escrowDepositCoins.Add(req.DepositCoins...)
+		allApps, found := k.assetKeeper.GetApps(ctx)
+		if !found {
+			return sdk.FormatInvariant(
+				types.ModuleName, "deposit-coins-escrow",
+				fmt.Sprintf("no apps found"),
+			), false
+		}
+		for _, app := range allApps {
+			escrowDepositCoins := sdk.Coins{}
+			_ = k.IterateAllDepositRequests(ctx, app.Id, func(req types.DepositRequest) (stop bool, err error) {
+				if req.Status == types.RequestStatusNotExecuted {
+					escrowDepositCoins = escrowDepositCoins.Add(req.DepositCoins...)
+				}
+				return false, nil
+			})
+			balances := k.bankKeeper.SpendableCoins(ctx, types.GlobalEscrowAddress)
+			broken := !balances.IsAllGTE(escrowDepositCoins)
+			if broken {
+				return sdk.FormatInvariant(
+					types.ModuleName, "deposit-coins-escrow",
+					fmt.Sprintf("escrow amount %s is smaller than expected %s", balances, escrowDepositCoins),
+				), broken
 			}
-			return false, nil
-		})
-		balances := k.bankKeeper.SpendableCoins(ctx, types.GlobalEscrowAddress)
-		broken := !balances.IsAllGTE(escrowDepositCoins)
+		}
 		return sdk.FormatInvariant(
 			types.ModuleName, "deposit-coins-escrow",
-			fmt.Sprintf("escrow amount %s is smaller than expected %s", balances, escrowDepositCoins),
-		), broken
+			fmt.Sprintf("all good"),
+		), false
 	}
 }
 
@@ -60,19 +75,34 @@ func DepositCoinsEscrowInvariant(k Keeper) sdk.Invariant {
 // coins in all withdrawal requests.
 func PoolCoinEscrowInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		escrowPoolCoins := sdk.Coins{}
-		_ = k.IterateAllWithdrawRequests(ctx, func(req types.WithdrawRequest) (stop bool, err error) {
-			if req.Status == types.RequestStatusNotExecuted {
-				escrowPoolCoins = escrowPoolCoins.Add(req.PoolCoin)
+		allApps, found := k.assetKeeper.GetApps(ctx)
+		if !found {
+			return sdk.FormatInvariant(
+				types.ModuleName, "pool-coin-escrow",
+				fmt.Sprintf("no apps found"),
+			), false
+		}
+		for _, app := range allApps {
+			escrowPoolCoins := sdk.Coins{}
+			_ = k.IterateAllWithdrawRequests(ctx, app.Id, func(req types.WithdrawRequest) (stop bool, err error) {
+				if req.Status == types.RequestStatusNotExecuted {
+					escrowPoolCoins = escrowPoolCoins.Add(req.PoolCoin)
+				}
+				return false, nil
+			})
+			balances := k.bankKeeper.SpendableCoins(ctx, types.GlobalEscrowAddress)
+			broken := !balances.IsAllGTE(escrowPoolCoins)
+			if broken {
+				return sdk.FormatInvariant(
+					types.ModuleName, "pool-coin-escrow",
+					fmt.Sprintf("escrow amount %s is smaller than expected %s", balances, escrowPoolCoins),
+				), broken
 			}
-			return false, nil
-		})
-		balances := k.bankKeeper.SpendableCoins(ctx, types.GlobalEscrowAddress)
-		broken := !balances.IsAllGTE(escrowPoolCoins)
+		}
 		return sdk.FormatInvariant(
 			types.ModuleName, "pool-coin-escrow",
-			fmt.Sprintf("escrow amount %s is smaller than expected %s", balances, escrowPoolCoins),
-		), broken
+			fmt.Sprintf("all good"),
+		), false
 	}
 }
 
@@ -81,30 +111,46 @@ func PoolCoinEscrowInvariant(k Keeper) sdk.Invariant {
 // orders.
 func RemainingOfferCoinEscrowInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		var (
-			count int
-			msg   string
-		)
-		_ = k.IterateAllPairs(ctx, func(pair types.Pair) (stop bool, err error) {
-			remainingOfferCoins := sdk.Coins{}
-			_ = k.IterateOrdersByPair(ctx, pair.Id, func(req types.Order) (stop bool, err error) {
-				if !req.Status.ShouldBeDeleted() {
-					remainingOfferCoins = remainingOfferCoins.Add(req.RemainingOfferCoin)
+		allApps, found := k.assetKeeper.GetApps(ctx)
+		if !found {
+			return sdk.FormatInvariant(
+				types.ModuleName, "remaining-offer-coin-escrow",
+				fmt.Sprintf("no apps found"),
+			), false
+		}
+
+		for _, app := range allApps {
+			var (
+				count int
+				msg   string
+			)
+			_ = k.IterateAllPairs(ctx, app.Id, func(pair types.Pair) (stop bool, err error) {
+				remainingOfferCoins := sdk.Coins{}
+				_ = k.IterateOrdersByPair(ctx, app.Id, pair.Id, func(req types.Order) (stop bool, err error) {
+					if !req.Status.ShouldBeDeleted() {
+						remainingOfferCoins = remainingOfferCoins.Add(req.RemainingOfferCoin)
+					}
+					return false, nil
+				})
+				balances := k.bankKeeper.SpendableCoins(ctx, pair.GetEscrowAddress())
+				if !balances.IsAllGTE(remainingOfferCoins) {
+					count++
+					msg += fmt.Sprintf("\tpair %d has %s, which is smaller than %s\n", pair.Id, balances, remainingOfferCoins)
 				}
 				return false, nil
 			})
-			balances := k.bankKeeper.SpendableCoins(ctx, pair.GetEscrowAddress())
-			if !balances.IsAllGTE(remainingOfferCoins) {
-				count++
-				msg += fmt.Sprintf("\tpair %d has %s, which is smaller than %s\n", pair.Id, balances, remainingOfferCoins)
+			broken := count != 0
+			if broken {
+				return sdk.FormatInvariant(
+					types.ModuleName, "remaining-offer-coin-escrow",
+					fmt.Sprintf("%d pair(s) with insufficient escrow amount found\n%s", count, msg),
+				), broken
 			}
-			return false, nil
-		})
-		broken := count != 0
+		}
 		return sdk.FormatInvariant(
 			types.ModuleName, "remaining-offer-coin-escrow",
-			fmt.Sprintf("%d pair(s) with insufficient escrow amount found\n%s", count, msg),
-		), broken
+			fmt.Sprintf("all good"),
+		), false
 	}
 }
 
@@ -112,24 +158,41 @@ func RemainingOfferCoinEscrowInvariant(k Keeper) sdk.Invariant {
 // been marked as disabled.
 func PoolStatusInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		var (
-			count int
-			msg   string
-		)
-		_ = k.IterateAllPools(ctx, func(pool types.Pool) (stop bool, err error) {
-			if !pool.Disabled {
-				ps := k.GetPoolCoinSupply(ctx, pool)
-				if ps.IsZero() {
-					count++
-					msg += fmt.Sprintf("\tpool %d should be disabled, but not\n", pool.Id)
+
+		allApps, found := k.assetKeeper.GetApps(ctx)
+		if !found {
+			return sdk.FormatInvariant(
+				types.ModuleName, "pool-status",
+				fmt.Sprintf("no apps found"),
+			), false
+		}
+
+		for _, app := range allApps {
+			var (
+				count int
+				msg   string
+			)
+			_ = k.IterateAllPools(ctx, app.Id, func(pool types.Pool) (stop bool, err error) {
+				if !pool.Disabled {
+					ps := k.GetPoolCoinSupply(ctx, pool)
+					if ps.IsZero() {
+						count++
+						msg += fmt.Sprintf("\tpool %d should be disabled, but not\n", pool.Id)
+					}
 				}
+				return false, nil
+			})
+			broken := count != 0
+			if broken {
+				return sdk.FormatInvariant(
+					types.ModuleName, "pool-status",
+					fmt.Sprintf("%d pool(s) with wrong status found\n%s", count, msg),
+				), broken
 			}
-			return false, nil
-		})
-		broken := count != 0
+		}
 		return sdk.FormatInvariant(
 			types.ModuleName, "pool-status",
-			fmt.Sprintf("%d pool(s) with wrong status found\n%s", count, msg),
-		), broken
+			fmt.Sprintf("all good"),
+		), false
 	}
 }

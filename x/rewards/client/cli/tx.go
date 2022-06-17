@@ -101,6 +101,7 @@ func NewCreateGaugeCmd() *cobra.Command {
 			}
 
 			msg := types.NewMsgCreateGauge(
+				0,
 				clientCtx.GetFromAddress(),
 				startTime,
 				gaugeTypeID,
@@ -115,6 +116,8 @@ func NewCreateGaugeCmd() *cobra.Command {
 				if err != nil {
 					return err
 				}
+				appID, err := cmd.Flags().GetUint64(FlagAppID)
+				msg.AppId = appID
 				msg.Kind = &gaugeExtraData
 			}
 
@@ -371,6 +374,14 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 	}
 	if poolID == 0 {
 		return types.MsgCreateGauge_LiquidityMetaData{}, fmt.Errorf("%s required but not specified / pool-id cannot be 0", FlagPoolID)
+	}
+
+	appID, err := cmd.Flags().GetUint64(FlagAppID)
+	if err != nil {
+		return types.MsgCreateGauge_LiquidityMetaData{}, err
+	}
+	if appID == 0 {
+		return types.MsgCreateGauge_LiquidityMetaData{}, fmt.Errorf("%s required but not specified / app-id cannot be 0", FlagAppID)
 	}
 
 	isMasterPool, err := cmd.Flags().GetBool(FlagIsMasterPool)

@@ -24,7 +24,7 @@ var _ types.MsgServer = msgServer{}
 func (m msgServer) CreatePair(goCtx context.Context, msg *types.MsgCreatePair) (*types.MsgCreatePairResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if _, err := m.Keeper.CreatePair(ctx, msg); err != nil {
+	if _, err := m.Keeper.CreatePair(ctx, msg, false); err != nil {
 		return nil, err
 	}
 

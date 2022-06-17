@@ -20,47 +20,52 @@ const (
 var (
 	_ amm.OrderSource = (*BasicPoolOrderSource)(nil)
 
-	poolCoinDenomRegexp = regexp.MustCompile(`^pool([1-9]\d*)$`)
+	poolCoinDenomRegexp = regexp.MustCompile(`^pool([1-9]-[1-9]\d*)$`)
 )
 
 // PoolReserveAddress returns a unique pool reserve account address for each pool.
-func PoolReserveAddress(poolID uint64) sdk.AccAddress {
+func PoolReserveAddress(appID, poolID uint64) sdk.AccAddress {
 	return DeriveAddress(
 		AddressType32Bytes,
 		ModuleName,
-		strings.Join([]string{PoolReserveAddressPrefix, strconv.FormatUint(poolID, 10)}, ModuleAddressNameSplitter),
+		strings.Join([]string{PoolReserveAddressPrefix, strconv.FormatUint(appID, 10), strconv.FormatUint(poolID, 10)}, ModuleAddressNameSplitter),
 	)
 }
 
 // NewPool returns a new pool object.
-func NewPool(id, pairID uint64) Pool {
+func NewPool(appID, id, pairID uint64) Pool {
 	return Pool{
 		Id:                    id,
 		PairId:                pairID,
-		ReserveAddress:        PoolReserveAddress(id).String(),
-		PoolCoinDenom:         PoolCoinDenom(id),
+		ReserveAddress:        PoolReserveAddress(appID, id).String(),
+		PoolCoinDenom:         PoolCoinDenom(appID, id),
 		LastDepositRequestId:  0,
 		LastWithdrawRequestId: 0,
 		Disabled:              false,
+		AppId:                 appID,
 	}
 }
 
 // PoolCoinDenom returns a unique pool coin denom for a pool.
-func PoolCoinDenom(poolID uint64) string {
-	return fmt.Sprintf("pool%d", poolID)
+func PoolCoinDenom(appID, poolID uint64) string {
+	return fmt.Sprintf("pool%d-%d", appID, poolID)
 }
 
 // ParsePoolCoinDenom parses a pool coin denom and returns the pool id.
-func ParsePoolCoinDenom(denom string) (poolID uint64, err error) {
+func ParsePoolCoinDenom(denom string) (appID, poolID uint64, err error) {
 	chunks := poolCoinDenomRegexp.FindStringSubmatch(denom)
 	if len(chunks) == 0 {
-		return 0, fmt.Errorf("%s is not a pool coin denom", denom)
+		return 0, 0, fmt.Errorf("%s is not a pool coin denom", denom)
 	}
-	poolID, err = strconv.ParseUint(chunks[1], 10, 64)
+	appID, err = strconv.ParseUint(strings.Split(chunks[1], "-")[0], 10, 64)
 	if err != nil {
-		return 0, fmt.Errorf("parse pool id: %w", err)
+		return 0, 0, fmt.Errorf("parse app id: %w", err)
 	}
-	return poolID, nil
+	poolID, err = strconv.ParseUint(strings.Split(chunks[1], "-")[1], 10, 64)
+	if err != nil {
+		return 0, 0, fmt.Errorf("parse pool id: %w", err)
+	}
+	return appID, poolID, nil
 }
 
 func (pool Pool) GetReserveAddress() sdk.AccAddress {

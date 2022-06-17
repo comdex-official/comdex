@@ -3,6 +3,8 @@ package cli
 // DONTCOVER
 
 import (
+	"strings"
+
 	flag "github.com/spf13/pflag"
 )
 
@@ -55,4 +57,14 @@ func flagSetOrder() *flag.FlagSet {
 	fs.Duration(FlagOrderLifespan, 0, "Duration the order lives until it is expired; an order will be executed for at least one batch, even if the lifespan is 0; valid time units are ns|us|ms|s|m|h")
 
 	return fs
+}
+
+func ParseStringSliceFromString(s string, seperator string) ([]string, error) {
+	var parsedStrings []string
+	for _, s := range strings.Split(s, seperator) {
+		s = strings.TrimSpace(s)
+
+		parsedStrings = append(parsedStrings, s)
+	}
+	return parsedStrings, nil
 }

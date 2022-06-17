@@ -51,6 +51,7 @@ message Gauge {
     oneof kind {
       LiquidtyGaugeMetaData liquidity_meta_data = 13;
     }
+    uint64 app_id = 14;
 }
 
 message GaugeByTriggerDuration {

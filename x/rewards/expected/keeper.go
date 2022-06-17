@@ -18,10 +18,10 @@ type AccountKeeper interface {
 }
 
 type LiquidityKeeper interface {
-	GetPair(ctx sdk.Context, id uint64) (pair liquiditytypes.Pair, found bool)
-	GetPool(ctx sdk.Context, id uint64) (pool liquiditytypes.Pool, found bool)
-	GetFarmingRewardsData(ctx sdk.Context, coinToDistribute sdk.Coin, liquidityGaugeData types.LiquidtyGaugeMetaData) ([]types.RewardDistributionDataCollector, error)
-	TransferFundsForSwapFeeDistribution(ctx sdk.Context, poolId uint64) (sdk.Coin, error)
+	GetPair(ctx sdk.Context, appID, id uint64) (pair liquiditytypes.Pair, found bool)
+	GetPool(ctx sdk.Context, appID, id uint64) (pool liquiditytypes.Pool, found bool)
+	GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinToDistribute sdk.Coin, liquidityGaugeData types.LiquidtyGaugeMetaData) ([]types.RewardDistributionDataCollector, error)
+	TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, poolId uint64) (sdk.Coin, error)
 }
 
 type AssetKeeper interface {
@@ -29,6 +29,8 @@ type AssetKeeper interface {
 	HasAssetForDenom(ctx sdk.Context, denom string) bool
 	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
+	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppMapping, found bool)
+	GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool)
 }
 
 type MarketKeeper interface {
