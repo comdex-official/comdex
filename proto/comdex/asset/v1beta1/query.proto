@@ -168,10 +168,10 @@ service Query {
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/params";
   }
-  rpc QueryAppsMapings(QueryAppsRequest) returns (QueryAppsResponse) {
+  rpc QueryAppsMappings(QueryAppsRequest) returns (QueryAppsResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/apps";
   }
-  rpc QueryAppMapings(QueryAppRequest) returns (QueryAppResponse) {
+  rpc QueryAppMappings(QueryAppRequest) returns (QueryAppResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/app/{id}";
   }
   rpc QueryPairVault(QueryPairVaultRequest) returns (QueryPairVaultResponse) {
