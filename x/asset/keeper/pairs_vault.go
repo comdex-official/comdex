@@ -10,7 +10,7 @@ import (
 func (k *Keeper) GetPairsVaultID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.PairsVaultIDkey
+		key   = types.PairsVaultIDKey
 		value = store.Get(key)
 	)
 
@@ -27,7 +27,7 @@ func (k *Keeper) GetPairsVaultID(ctx sdk.Context) uint64 {
 func (k *Keeper) SetPairsVaultID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PairsVaultIDkey
+		key   = types.PairsVaultIDKey
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -69,7 +69,12 @@ func (k *Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault
 		iter  = sdk.KVStorePrefixIterator(store, types.PairsVaultKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var app types.ExtendedPairVault
@@ -115,8 +120,8 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 		if !found {
 			return types.ErrorUnknownAppType
 		}
-		_, gotit := k.GetPair(ctx, msg.PairId)
-		if !gotit {
+		_, pairExists := k.GetPair(ctx, msg.PairId)
+		if !pairExists {
 			return types.ErrorPairDoesNotExist
 		}
 
@@ -178,8 +183,8 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, AppMappingId,
 	if !found {
 		return types.ErrorUnknownAppType
 	}
-	_, gotit := k.GetPair(ctx, PairId)
-	if !gotit {
+	_, pairExists := k.GetPair(ctx, PairId)
+	if !pairExists {
 		return types.ErrorPairDoesNotExist
 	}
 
@@ -222,8 +227,8 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, AppMappingId,
 		MinCr:               MinCr,
 		PairName:            PairName,
 		AssetOutOraclePrice: AssetOutOraclePrice,
-		AssetOutPrice:      AssetOutPrice,
-		MinUsdValueLeft:    MinUsdValueLeft,
+		AssetOutPrice:       AssetOutPrice,
+		MinUsdValueLeft:     MinUsdValueLeft,
 	}
 
 	k.SetPairsVaultID(ctx, app.Id)
@@ -241,8 +246,8 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, AppMappi
 	if !found {
 		return false, types.ErrorUnknownAppType.Error()
 	}
-	_, gotit := k.GetPair(ctx, PairId)
-	if !gotit {
+	_, pairExists := k.GetPair(ctx, PairId)
+	if !pairExists {
 		return false, types.ErrorPairDoesNotExist.Error()
 	}
 	extendedPairVault, _ := k.GetPairsVaults(ctx)
@@ -270,8 +275,8 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, AppMappi
 	return true, ""
 }
 
-func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id uint64, liq_ratio, stab_fee, close_fee, penalty, 
-	draw_down_fee, min_cr sdk.Dec, debtCeiling, debtFloor , minUsdValueLeft uint64) error {
+func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, appId, exPairId uint64, liqRatio, stabFee, closeFee, penalty,
+	drawDownFee, minCr sdk.Dec, debtCeiling, debtFloor, minUsdValueLeft uint64) error {
 
 	var ExtPairVaultData types.ExtendedPairVault
 	pairVaults, found := k.GetPairsVaults(ctx)
@@ -280,21 +285,21 @@ func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, app_id, ex_pair_id u
 	}
 	var count = 0
 	for _, data := range pairVaults {
-		if data.AppMappingId == app_id && data.Id == ex_pair_id {
+		if data.AppMappingId == appId && data.Id == exPairId {
 			count++
 			ExtPairVaultData.Id = data.Id
 			ExtPairVaultData.PairId = data.PairId
 			ExtPairVaultData.AppMappingId = data.AppMappingId
-			ExtPairVaultData.LiquidationRatio = liq_ratio
-			ExtPairVaultData.StabilityFee = stab_fee
-			ExtPairVaultData.ClosingFee = close_fee
+			ExtPairVaultData.LiquidationRatio = liqRatio
+			ExtPairVaultData.StabilityFee = stabFee
+			ExtPairVaultData.ClosingFee = closeFee
 			ExtPairVaultData.LiquidationPenalty = penalty
-			ExtPairVaultData.DrawDownFee = draw_down_fee
+			ExtPairVaultData.DrawDownFee = drawDownFee
 			ExtPairVaultData.IsVaultActive = data.IsVaultActive
 			ExtPairVaultData.DebtCeiling = sdk.NewInt(int64(debtCeiling))
-			ExtPairVaultData.DebtFloor =  sdk.NewInt(int64(debtFloor)) 
+			ExtPairVaultData.DebtFloor = sdk.NewInt(int64(debtFloor))
 			ExtPairVaultData.IsPsmPair = data.IsPsmPair
-			ExtPairVaultData.MinCr = min_cr
+			ExtPairVaultData.MinCr = minCr
 			ExtPairVaultData.PairName = data.PairName
 			ExtPairVaultData.AssetOutOraclePrice = data.AssetOutOraclePrice
 			ExtPairVaultData.AssetOutPrice = data.AssetOutPrice

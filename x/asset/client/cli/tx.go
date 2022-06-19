@@ -41,7 +41,7 @@ func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 				return err
 			}
 
-			isOnchain, err := ParseStringFromString(args[3], ",")
+			isOnChain, err := ParseStringFromString(args[3], ",")
 			if err != nil {
 				return err
 			}
@@ -60,7 +60,7 @@ func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 
 			var assets []types.Asset
 			for i := range names {
-				newIsOnChain := ParseBoolFromString(isOnchain[i])
+				newIsOnChain := ParseBoolFromString(isOnChain[i])
 				assets = append(assets, types.Asset{
 					Name:      names[i],
 					Denom:     denoms[i],
@@ -307,21 +307,21 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 
 			var assets []types.ExtendedAsset
 			for i := range assetId {
-				newcollateralWeigt, err := sdk.NewDecFromStr(collateralWeight[i])
+				newCollateralWeight, err := sdk.NewDecFromStr(collateralWeight[i])
 				if err != nil {
 					return err
 				}
-				newliquidationThreshold, err := sdk.NewDecFromStr(liquidationThreshold[i])
+				newLiquidationThreshold, err := sdk.NewDecFromStr(liquidationThreshold[i])
 				if err != nil {
 					return err
 				}
-				newisBridgedAsset := ParseBoolFromString(isBridgedAsset[i])
+				newIsBridgedAsset := ParseBoolFromString(isBridgedAsset[i])
 
 				assets = append(assets, types.ExtendedAsset{
 					AssetId:              assetId[i],
-					CollateralWeight:     newcollateralWeigt,
-					LiquidationThreshold: newliquidationThreshold,
-					IsBridgedAsset:       newisBridgedAsset,
+					CollateralWeight:     newCollateralWeight,
+					LiquidationThreshold: newLiquidationThreshold,
+					IsBridgedAsset:       newIsBridgedAsset,
 				})
 			}
 
@@ -377,7 +377,7 @@ func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			newcollateralWeight, err := sdk.NewDecFromStr(collateralWeight)
+			newCollateralWeight, err := sdk.NewDecFromStr(collateralWeight)
 			if err != nil {
 				return err
 			}
@@ -386,7 +386,7 @@ func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			newliquidationThreshold, err := sdk.NewDecFromStr(liquidationThreshold)
+			newLiquidationThreshold, err := sdk.NewDecFromStr(liquidationThreshold)
 			if err != nil {
 				return err
 			}
@@ -406,15 +406,15 @@ func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
 				return err
 			}
 
-			newisBridgedAsset := ParseBoolFromString(isBridgedAsset)
+			newIsBridgedAsset := ParseBoolFromString(isBridgedAsset)
 
 			from := clientCtx.GetFromAddress()
 
 			asset := types.ExtendedAsset{
 				Id:                   id,
-				CollateralWeight:     newcollateralWeight,
-				LiquidationThreshold: newliquidationThreshold,
-				IsBridgedAsset:       newisBridgedAsset,
+				CollateralWeight:     newCollateralWeight,
+				LiquidationThreshold: newLiquidationThreshold,
+				IsBridgedAsset:       newIsBridgedAsset,
 			}
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
@@ -601,10 +601,10 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
 	cmd.Flags().String(flagModuleAcc, "", "moduleAcc")
-	cmd.Flags().String(flagBaseBorrowRateAsset1, "", "baseborrowrateasset1")
-	cmd.Flags().String(flagBaseBorrowRateAsset2, "", "baseborrowrateasset2")
-	cmd.Flags().String(flagBaseLendRateAsset1, "", "baselendrateasset1")
-	cmd.Flags().String(flagBaseLendRateAsset2, "", "baselendrateasset2")
+	cmd.Flags().String(flagBaseBorrowRateAsset1, "", "base borrow rate asset1")
+	cmd.Flags().String(flagBaseBorrowRateAsset2, "", "base borrow rate asset2")
+	cmd.Flags().String(flagBaseLendRateAsset1, "", "base lend rate asset1")
+	cmd.Flags().String(flagBaseLendRateAsset2, "", "base lend rate asset2")
 
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
@@ -838,7 +838,7 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 		return txf, nil, err
 	}
 
-	debtCieling, err := ParseStringFromString(extPairVault.DebtCeiling, ",")
+	debtCeiling, err := ParseStringFromString(extPairVault.DebtCeiling, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -918,7 +918,7 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 		if err != nil {
 			return txf, nil, err
 		}
-		debtCeiling, ok := sdk.NewIntFromString(debtCieling[i])
+		debtCeiling, ok := sdk.NewIntFromString(debtCeiling[i])
 		if !ok {
 			return txf, nil, types.ErrorInvalidDebtCeiling
 		}

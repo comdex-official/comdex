@@ -183,7 +183,7 @@ func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest
 	}, nil
 }
 
-func (q *queryServer) QueryAppsMapings(c context.Context, _ *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
+func (q *queryServer) QueryAppsMappings(c context.Context, _ *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
 	var (
 		ctx         = sdk.UnwrapSDKContext(c)
 		apps, found = q.GetApps(ctx)
@@ -197,7 +197,7 @@ func (q *queryServer) QueryAppsMapings(c context.Context, _ *types.QueryAppsRequ
 	}, nil
 }
 
-func (q *queryServer) QueryAppMapings(c context.Context, req *types.QueryAppRequest) (*types.QueryAppResponse, error) {
+func (q *queryServer) QueryAppMappings(c context.Context, req *types.QueryAppRequest) (*types.QueryAppResponse, error) {
 	var (
 		ctx        = sdk.UnwrapSDKContext(c)
 		app, found = q.GetApp(ctx, req.Id)
@@ -281,21 +281,21 @@ func (q *queryServer) QueryExtendedPairPsmPairWise(c context.Context, req *types
 
 func (q *queryServer) QueryTokenGov(c context.Context, req *types.QueryTokenGovRequest) (*types.QueryTokenGovResponse, error) {
 	var (
-		ctx      = sdk.UnwrapSDKContext(c)
-		asset_id uint64
+		ctx     = sdk.UnwrapSDKContext(c)
+		assetId uint64
 	)
 	appData, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, types.AppIdsDoesntExist
 	}
-	for _, data := range appData.GenesisToken{
+	for _, data := range appData.GenesisToken {
 		if data.IsgovToken {
-			asset_id = data.AssetId
+			assetId = data.AssetId
 		}
 	}
 
 	return &types.QueryTokenGovResponse{
-		GovAssetId: asset_id,
+		GovAssetId: assetId,
 	}, nil
 }
 

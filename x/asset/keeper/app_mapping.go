@@ -10,7 +10,7 @@ import (
 func (k *Keeper) GetAppID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.AppIDkey
+		key   = types.AppIDKey
 		value = store.Get(key)
 	)
 
@@ -27,7 +27,7 @@ func (k *Keeper) GetAppID(ctx sdk.Context) uint64 {
 func (k *Keeper) SetAppID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AppIDkey
+		key   = types.AppIDKey
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -82,7 +82,12 @@ func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppMapping, found bool) 
 		iter  = sdk.KVStorePrefixIterator(store, types.AppKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var app types.AppMapping
@@ -108,7 +113,7 @@ func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64)
 
 }
 
-func (k *Keeper) CheckIfAssetIsaddedToAppMapping(ctx sdk.Context, assetId uint64) bool {
+func (k *Keeper) CheckIfAssetIsAddedToAppMapping(ctx sdk.Context, assetId uint64) bool {
 	apps, _ := k.GetApps(ctx)
 	for _, data := range apps {
 		for _, inData := range data.GenesisToken {
@@ -168,7 +173,7 @@ func (k *Keeper) HasAppForName(ctx sdk.Context, Name string) bool {
 func (k *Keeper) SetGenesisTokenForApp(ctx sdk.Context, appId uint64, assetId uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.GensisForApp(appId)
+		key   = types.GenesisForApp(appId)
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: assetId,
@@ -182,7 +187,7 @@ func (k *Keeper) SetGenesisTokenForApp(ctx sdk.Context, appId uint64, assetId ui
 func (k *Keeper) GetGenesisTokenForApp(ctx sdk.Context, appId uint64) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.GensisForApp(appId)
+		key   = types.GenesisForApp(appId)
 		value = store.Get(key)
 	)
 
@@ -213,7 +218,7 @@ func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMappi
 				ShortName:        msg.ShortName,
 				MinGovDeposit:    msg.MinGovDeposit,
 				GovTimeInSeconds: msg.GovTimeInSeconds,
-				GenesisToken: msg.GenesisToken,
+				GenesisToken:     msg.GenesisToken,
 			}
 		)
 
@@ -246,19 +251,19 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 				return types.ErrorAssetIsOffChain
 			}
 			hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
-			if hasAsset != 0 && data.IsgovToken{
+			if hasAsset != 0 && data.IsgovToken {
 				return types.ErrorGenesisTokenExistForApp
 			}
 
-			checkfound := k.CheckIfAssetIsaddedToAppMapping(ctx, data.AssetId)
-			if !checkfound {
-				return types.ErrorAssetAlreadyExistinApp
+			checkFound := k.CheckIfAssetIsAddedToAppMapping(ctx, data.AssetId)
+			if !checkFound {
+				return types.ErrorAssetAlreadyExistingApp
 			}
 			if hasAsset == 0 && data.IsgovToken {
 				k.SetGenesisTokenForApp(ctx, msg.Id, data.AssetId)
 			}
 			appdata.GenesisToken = append(appdata.GenesisToken, data)
-			
+
 		}
 
 		var (
@@ -266,9 +271,9 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 				Id:               msg.Id,
 				Name:             appdata.Name,
 				ShortName:        appdata.ShortName,
-				MinGovDeposit: appdata.MinGovDeposit,
+				MinGovDeposit:    appdata.MinGovDeposit,
 				GovTimeInSeconds: appdata.GovTimeInSeconds,
-				GenesisToken: appdata.GenesisToken,
+				GenesisToken:     appdata.GenesisToken,
 			}
 		)
 

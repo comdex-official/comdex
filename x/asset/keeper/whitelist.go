@@ -63,7 +63,7 @@ func (k *Keeper) GetWhitelistAsset(ctx sdk.Context, id uint64) (asset types.Exte
 	return asset, true
 }
 
-func (k *Keeper) GetwhitelistPairID(ctx sdk.Context) uint64 {
+func (k *Keeper) GetWhiteListPairID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.WhitelistPairIDKey
@@ -134,13 +134,13 @@ func (k *Keeper) AddWhitelistedAssetRecords(ctx sdk.Context, records ...types.Ex
 			return types.ErrorAssetDoesNotExist
 		}
 		if k.HasWhitelistAsset(ctx, msg.Id) {
-			return  types.ErrorDuplicateAsset
+			return types.ErrorDuplicateAsset
 		}
 
 		var (
-			id = k.GetWhitelistAssetID(ctx)
+			id    = k.GetWhitelistAssetID(ctx)
 			asset = types.ExtendedAsset{
-				Id:                   id+1,
+				Id:                   id + 1,
 				AssetId:              msg.AssetId,
 				CollateralWeight:     msg.CollateralWeight,
 				LiquidationThreshold: msg.LiquidationThreshold,
@@ -184,14 +184,14 @@ func (k *Keeper) AddWhitelistedPairsRecords(ctx sdk.Context, records ...types.Ex
 			return types.ErrorPairDoesNotExist
 		}
 		_, got := k.GetWhitelistPair(ctx, msg.Id)
-		if got{
+		if got {
 			return types.ErrorDuplicatePair
 		}
 
 		var (
-			id   = k.GetwhitelistPairID(ctx)
+			id   = k.GetWhiteListPairID(ctx)
 			pair = types.ExtendedPairLend{
-				Id: 				   id+1,
+				Id:                    id + 1,
 				PairId:                msg.PairId,
 				ModuleAcc:             msg.ModuleAcc,
 				BaseBorrowRateAsset_1: msg.BaseBorrowRateAsset_1,
@@ -217,19 +217,19 @@ func (k *Keeper) UpdateWhitelistedPairRecords(ctx sdk.Context, msg types.Extende
 	if len(msg.ModuleAcc) > 0 {
 		pair.ModuleAcc = msg.ModuleAcc
 	}
-	if !msg.BaseBorrowRateAsset_1.IsZero(){
+	if !msg.BaseBorrowRateAsset_1.IsZero() {
 		pair.BaseBorrowRateAsset_1 = msg.BaseBorrowRateAsset_1
 	}
-	if !msg.BaseBorrowRateAsset_2.IsZero(){
+	if !msg.BaseBorrowRateAsset_2.IsZero() {
 		pair.BaseBorrowRateAsset_2 = msg.BaseBorrowRateAsset_2
 	}
-	if !msg.BaseLendRateAsset_1.IsZero(){
+	if !msg.BaseLendRateAsset_1.IsZero() {
 		pair.BaseLendRateAsset_1 = msg.BaseLendRateAsset_1
 	}
-	if !msg.BaseLendRateAsset_2.IsZero(){
+	if !msg.BaseLendRateAsset_2.IsZero() {
 		pair.BaseLendRateAsset_2 = msg.BaseLendRateAsset_2
 	}
-	
+
 	k.SetWhitelistPair(ctx, pair)
 	return nil
 }

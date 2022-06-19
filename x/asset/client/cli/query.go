@@ -218,7 +218,7 @@ func queryAppsMappings() *cobra.Command {
 	return cmd
 }
 
-func queryAppMapings() *cobra.Command {
+func queryAppMappings() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "app [id]",
 		Short: "Query App by id",
@@ -335,7 +335,7 @@ func queryProductToExtendedPair() *cobra.Command {
 				return err
 			}
 
-			product_id, err := strconv.ParseUint(args[0], 10, 64)
+			productId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -345,7 +345,7 @@ func queryProductToExtendedPair() *cobra.Command {
 			res, err := queryClient.QueryProductToExtendedPair(
 				context.Background(),
 				&types.QueryProductToExtendedPairRequest{
-					ProductId: product_id,
+					ProductId: productId,
 				},
 			)
 			if err != nil {
@@ -373,7 +373,7 @@ func queryExtendedPairPsmPairWise() *cobra.Command {
 				return err
 			}
 
-			product_id, err := strconv.ParseUint(args[0], 10, 64)
+			productId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -383,7 +383,7 @@ func queryExtendedPairPsmPairWise() *cobra.Command {
 			res, err := queryClient.QueryExtendedPairPsmPairWise(
 				context.Background(),
 				&types.QueryExtendedPairPsmPairWiseRequest{
-					ProductId: product_id,
+					ProductId: productId,
 				},
 			)
 			if err != nil {
@@ -411,7 +411,7 @@ func queryTokenGov() *cobra.Command {
 				return err
 			}
 
-			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			appId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -421,7 +421,7 @@ func queryTokenGov() *cobra.Command {
 			res, err := queryClient.QueryTokenGov(
 				context.Background(),
 				&types.QueryTokenGovRequest{
-					AppId: app_id,
+					AppId: appId,
 				},
 			)
 			if err != nil {
@@ -449,7 +449,7 @@ func queryExtendedPairDataPsmPairWise() *cobra.Command {
 				return err
 			}
 
-			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			appId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -459,7 +459,7 @@ func queryExtendedPairDataPsmPairWise() *cobra.Command {
 			res, err := queryClient.QueryExtendedPairDataPsmPairWise(
 				context.Background(),
 				&types.QueryExtendedPairDataPsmPairWiseRequest{
-					AppId: app_id,
+					AppId: appId,
 				},
 			)
 			if err != nil {
