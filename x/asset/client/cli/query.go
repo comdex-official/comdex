@@ -200,7 +200,7 @@ func queryAppsMappings() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryAppsMapings(
+			res, err := queryClient.QueryAppsMappings(
 				context.Background(),
 				&types.QueryAppsRequest{},
 			)
@@ -236,7 +236,7 @@ func queryAppMappings() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryAppMapings(
+			res, err := queryClient.QueryAppMappings(
 				context.Background(),
 				&types.QueryAppRequest{
 					Id: id,
