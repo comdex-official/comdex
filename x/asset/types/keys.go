@@ -15,8 +15,8 @@ const (
 var (
 	AssetIDKey      = []byte{0x01}
 	PairIDKey       = []byte{0x03}
-	AppIDkey        = []byte{0x04}
-	PairsVaultIDkey = []byte{0x05}
+	AppIDKey        = []byte{0x04}
+	PairsVaultIDKey = []byte{0x05}
 
 	AssetKeyPrefix      = []byte{0x11}
 	PairKeyPrefix       = []byte{0x14}
@@ -26,7 +26,7 @@ var (
 	AssetForDenomKeyPrefix = []byte{0x21}
 	AppForShortNamePrefix  = []byte{0x22}
 	AppForNamePrefix       = []byte{0x23}
-	GensisForAppPrefix     = []byte{0x24}
+	GenesisForAppPrefix    = []byte{0x24}
 
 	WhitelistAssetIDKey     = []byte{0x31}
 	WhitelistAssetKeyPrefix = []byte{0x32}
@@ -61,8 +61,8 @@ func AssetForNameKey(Name string) []byte {
 	return append(AppForNamePrefix, []byte(Name)...)
 }
 
-func GensisForApp(appId uint64) []byte {
-	return append(GensisForAppPrefix, sdk.Uint64ToBigEndian(appId)...)
+func GenesisForApp(appId uint64) []byte {
+	return append(GenesisForAppPrefix, sdk.Uint64ToBigEndian(appId)...)
 }
 
 func PairKey(id uint64) []byte {

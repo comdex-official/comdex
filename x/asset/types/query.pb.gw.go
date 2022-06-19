@@ -244,7 +244,7 @@ func local_request_Query_QueryAppsMapings_0(ctx context.Context, marshaler runti
 	var protoReq QueryAppsRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := server.QueryAppsMapings(ctx, &protoReq)
+	msg, err := server.QueryAppsMappings(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -298,7 +298,7 @@ func local_request_Query_QueryAppMapings_0(ctx context.Context, marshaler runtim
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := server.QueryAppMapings(ctx, &protoReq)
+	msg, err := server.QueryAppMappings(ctx, &protoReq)
 	return msg, metadata, err
 
 }

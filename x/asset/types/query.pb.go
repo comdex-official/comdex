@@ -1243,7 +1243,7 @@ func (c *queryClient) QueryParams(ctx context.Context, in *QueryParamsRequest, o
 
 func (c *queryClient) QueryAppsMapings(ctx context.Context, in *QueryAppsRequest, opts ...grpc.CallOption) (*QueryAppsResponse, error) {
 	out := new(QueryAppsResponse)
-	err := c.cc.Invoke(ctx, "/comdex.asset.v1beta1.Query/QueryAppsMapings", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.asset.v1beta1.Query/QueryAppsMappings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1252,7 +1252,7 @@ func (c *queryClient) QueryAppsMapings(ctx context.Context, in *QueryAppsRequest
 
 func (c *queryClient) QueryAppMapings(ctx context.Context, in *QueryAppRequest, opts ...grpc.CallOption) (*QueryAppResponse, error) {
 	out := new(QueryAppResponse)
-	err := c.cc.Invoke(ctx, "/comdex.asset.v1beta1.Query/QueryAppMapings", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/comdex.asset.v1beta1.Query/QueryAppMappings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1320,8 +1320,8 @@ type QueryServer interface {
 	QueryPairs(context.Context, *QueryPairsRequest) (*QueryPairsResponse, error)
 	QueryPair(context.Context, *QueryPairRequest) (*QueryPairResponse, error)
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	QueryAppsMapings(context.Context, *QueryAppsRequest) (*QueryAppsResponse, error)
-	QueryAppMapings(context.Context, *QueryAppRequest) (*QueryAppResponse, error)
+	QueryAppsMappings(context.Context, *QueryAppsRequest) (*QueryAppsResponse, error)
+	QueryAppMappings(context.Context, *QueryAppRequest) (*QueryAppResponse, error)
 	QueryPairVault(context.Context, *QueryPairVaultRequest) (*QueryPairVaultResponse, error)
 	QueryPairVaults(context.Context, *QueryPairVaultsRequest) (*QueryPairVaultsResponse, error)
 	QueryProductToExtendedPair(context.Context, *QueryProductToExtendedPairRequest) (*QueryProductToExtendedPairResponse, error)
@@ -1349,11 +1349,11 @@ func (*UnimplementedQueryServer) QueryPair(ctx context.Context, req *QueryPairRe
 func (*UnimplementedQueryServer) QueryParams(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryParams not implemented")
 }
-func (*UnimplementedQueryServer) QueryAppsMapings(ctx context.Context, req *QueryAppsRequest) (*QueryAppsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryAppsMapings not implemented")
+func (*UnimplementedQueryServer) QueryAppsMappings(ctx context.Context, req *QueryAppsRequest) (*QueryAppsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAppsMappings not implemented")
 }
-func (*UnimplementedQueryServer) QueryAppMapings(ctx context.Context, req *QueryAppRequest) (*QueryAppResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryAppMapings not implemented")
+func (*UnimplementedQueryServer) QueryAppMappings(ctx context.Context, req *QueryAppRequest) (*QueryAppResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAppMappings not implemented")
 }
 func (*UnimplementedQueryServer) QueryPairVault(ctx context.Context, req *QueryPairVaultRequest) (*QueryPairVaultResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryPairVault not implemented")
@@ -1474,14 +1474,14 @@ func _Query_QueryAppsMapings_Handler(srv interface{}, ctx context.Context, dec f
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryAppsMapings(ctx, in)
+		return srv.(QueryServer).QueryAppsMappings(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.asset.v1beta1.Query/QueryAppsMapings",
+		FullMethod: "/comdex.asset.v1beta1.Query/QueryAppsMappings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryAppsMapings(ctx, req.(*QueryAppsRequest))
+		return srv.(QueryServer).QueryAppsMappings(ctx, req.(*QueryAppsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1492,14 +1492,14 @@ func _Query_QueryAppMapings_Handler(srv interface{}, ctx context.Context, dec fu
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryAppMapings(ctx, in)
+		return srv.(QueryServer).QueryAppMappings(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.asset.v1beta1.Query/QueryAppMapings",
+		FullMethod: "/comdex.asset.v1beta1.Query/QueryAppMappings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryAppMapings(ctx, req.(*QueryAppRequest))
+		return srv.(QueryServer).QueryAppMappings(ctx, req.(*QueryAppRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1637,11 +1637,11 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_QueryParams_Handler,
 		},
 		{
-			MethodName: "QueryAppsMapings",
+			MethodName: "QueryAppsMappings",
 			Handler:    _Query_QueryAppsMapings_Handler,
 		},
 		{
-			MethodName: "QueryAppMapings",
+			MethodName: "QueryAppMappings",
 			Handler:    _Query_QueryAppMapings_Handler,
 		},
 		{
