@@ -3,8 +3,8 @@ package keeper
 import (
 	"context"
 
-	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/comdex-official/comdex/x/lend/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

@@ -27,27 +27,42 @@ const (
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_lend"
 
-	CTokenPrefix = "c/"
+	CTokenPrefix   = "uc"
+	SecondsPerYear = 31557600
 )
 
 var (
-	KeyPrefixCollateralAmount         = []byte{0x01}
-	KeyPrefixReserveAmount            = []byte{0x02}
-	WhitelistedAssetIDKey             = []byte{0x03}
-	WhitelistedPairIDKey              = []byte{0x04}
-	LendKeyPrefix                     = []byte{0x05}
-	WhitelistedAssetForDenomKeyPrefix = []byte{0x06}
-	WhitelistedRecordKey              = []byte{0x07}
-	PairIDKey                         = []byte{0x08}
-	PairKeyPrefix                     = []byte{0x09}
-	LendIDKey                         = []byte{0x10}
-	KeyPrefixRegisteredToken          = []byte{0x11}
-	KeyPrefixCtokenSupply             = []byte{0x12}
-	LendForAddressByPairKeyPrefix     = []byte{0x13}
+	WhitelistedAssetKeyPrefix = []byte{0x02}
+	KeyPrefixCollateralAmount = []byte{0x04}
+	KeyPrefixReserveAmount    = []byte{0x05}
+
+	KeyPrefixCtokenSupply = []byte{0x12}
+	PoolKeyPrefix         = []byte{0x13}
+	PairKeyPrefix         = []byte{0x14}
+	LendUserPrefix        = []byte{0x15}
+	LendHistoryIdPrefix   = []byte{0x16}
+	PoolIdPrefix          = []byte{0x17}
+	LendPairIDKey         = []byte{0x18}
+	LendPairKeyPrefix     = []byte{0x19}
+	BorrowHistoryIdPrefix = []byte{0x25}
+	BorrowPairKeyPrefix   = []byte{0x26}
+	LendsKey              = []byte{0x32}
+	BorrowsKey            = []byte{0x33}
+
+	AssetToPairMappingKeyPrefix           = []byte{0x20}
+	WhitelistedAssetForDenomKeyPrefix     = []byte{0x21}
+	LendForAddressByAssetKeyPrefix        = []byte{0x22}
+	UserLendsForAddressKeyPrefix          = []byte{0x23}
+	BorrowForAddressByPairKeyPrefix       = []byte{0x24}
+	UserBorrowsForAddressKeyPrefix        = []byte{0x27}
+	LendIdToBorrowIdMappingKeyPrefix      = []byte{0x28}
+	AssetStatsByPoolIdAndAssetIdKeyPrefix = []byte{0x29}
+	AssetRatesStatsKeyPrefix              = []byte{0x30}
+	KeyPrefixLastInterestTime             = []byte{0x31}
 )
 
-func LendKey(id uint64) []byte {
-	return append(LendKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func AssetKey(id uint64) []byte {
+	return append(WhitelistedAssetKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func AssetForDenomKey(denom string) []byte {
@@ -88,11 +103,12 @@ func PairKey(id uint64) []byte {
 	return append(PairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func CreateRegisteredTokenKey(baseTokenDenom string) []byte {
-	var key []byte
-	key = append(key, KeyPrefixRegisteredToken...)
-	key = append(key, []byte(baseTokenDenom)...)
-	return append(key, 0) // append 0 for null-termination
+func LendUserKey(id uint64) []byte {
+	return append(LendUserPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func PoolKey(id uint64) []byte {
+	return append(PoolKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func CreateCTokenSupplyKey(uTokenDenom string) []byte {
@@ -103,11 +119,59 @@ func CreateCTokenSupplyKey(uTokenDenom string) []byte {
 	return append(key, 0) // append 0 for null-termination
 }
 
-func LendForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
-	v := append(LendForAddressByPairKeyPrefix, address.Bytes()...)
+func LendPairKey(id uint64) []byte {
+	return append(LendPairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func AssetRatesStatsKey(id uint64) []byte {
+	return append(AssetRatesStatsKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func BorrowUserKey(id uint64) []byte {
+	return append(BorrowPairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func AssetToPairMappingKey(id uint64) []byte {
+	return append(AssetToPairMappingKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func LendForAddressByAsset(address sdk.AccAddress, pairID uint64) []byte {
+	v := append(LendForAddressByAssetKeyPrefix, address.Bytes()...)
 	if len(v) != 1+20 {
 		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+20))
 	}
 
 	return append(v, sdk.Uint64ToBigEndian(pairID)...)
+}
+
+func BorrowForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
+	v := append(BorrowForAddressByPairKeyPrefix, address.Bytes()...)
+	if len(v) != 1+20 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+20))
+	}
+
+	return append(v, sdk.Uint64ToBigEndian(pairID)...)
+}
+
+func UserLendsForAddressKey(address string) []byte {
+	return append(UserLendsForAddressKeyPrefix, address...)
+}
+
+func UserBorrowsForAddressKey(address string) []byte {
+	return append(UserBorrowsForAddressKeyPrefix, address...)
+}
+
+func LendIdToBorrowIdMappingKey(id uint64) []byte {
+	return append(LendIdToBorrowIdMappingKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func SetAssetStatsByPoolIdAndAssetId(assetID, pairID uint64) []byte {
+	v := append(AssetStatsByPoolIdAndAssetIdKeyPrefix, sdk.Uint64ToBigEndian(assetID)...)
+	return append(v, sdk.Uint64ToBigEndian(pairID)...)
+}
+
+func CreateLastInterestTimeKey() []byte {
+	var key []byte
+	key = append(key, KeyPrefixLastInterestTime...)
+	return key
 }

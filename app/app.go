@@ -112,9 +112,10 @@ import (
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 
-	//"github.com/comdex-official/comdex/x/lend"
-	//lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
-	//lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	"github.com/comdex-official/comdex/x/lend"
+	lendclient "github.com/comdex-official/comdex/x/lend/client"
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/locker"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
@@ -188,6 +189,11 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 		bandoraclemoduleclient.AddFetchPriceHandler,
 		collectorclient.AddLookupTableParamsHandlers,
 		collectorclient.AddAuctionControlParamsHandler,
+		lendclient.AddLendPairsHandler,
+		lendclient.UpdateLendPairsHandler,
+		lendclient.AddPoolHandler,
+		lendclient.AddAssetToPairHandler,
+		lendclient.AddAssetRatesStatsHandler,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
@@ -236,7 +242,7 @@ var (
 		vesting.AppModuleBasic{},
 		vault.AppModuleBasic{},
 		asset.AppModuleBasic{},
-		//lend.AppModuleBasic{},
+		lend.AppModuleBasic{},
 
 		market.AppModuleBasic{},
 		locker.AppModuleBasic{},
@@ -317,11 +323,11 @@ type App struct {
 	MarketKeeper      marketkeeper.Keeper
 	LiquidationKeeper liquidationkeeper.Keeper
 	LockerKeeper      lockerkeeper.Keeper
-	//lendKeeper        lendkeeper.Keeper
-	ScopedWasmKeeper capabilitykeeper.ScopedKeeper
-	AuctionKeeper    auctionkeeper.Keeper
-	TokenmintKeeper  tokenmintkeeper.Keeper
-	liquidityKeeper  liquiditykeeper.Keeper
+	LendKeeper        lendkeeper.Keeper
+	ScopedWasmKeeper  capabilitykeeper.ScopedKeeper
+	AuctionKeeper     auctionkeeper.Keeper
+	TokenmintKeeper   tokenmintkeeper.Keeper
+	liquidityKeeper   liquiditykeeper.Keeper
 	//lockingKeeper     lockingkeeper.Keeper
 	Rewardskeeper rewardskeeper.Keeper
 
@@ -402,7 +408,7 @@ func New(
 	app.ParamsKeeper.Subspace(vaulttypes.ModuleName)
 	app.ParamsKeeper.Subspace(assettypes.ModuleName)
 	app.ParamsKeeper.Subspace(collectortypes.ModuleName)
-	//app.ParamsKeeper.Subspace(lendtypes.ModuleName)
+	app.ParamsKeeper.Subspace(lendtypes.ModuleName)
 	app.ParamsKeeper.Subspace(markettypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquidationtypes.ModuleName)
 	app.ParamsKeeper.Subspace(lockertypes.ModuleName)
@@ -543,7 +549,7 @@ func New(
 		&app.MarketKeeper,
 	)
 
-	/*app.lendKeeper = *lendkeeper.NewKeeper(
+	app.LendKeeper = *lendkeeper.NewKeeper(
 		app.cdc,
 		app.keys[lendtypes.StoreKey],
 		app.keys[lendtypes.StoreKey],
@@ -551,7 +557,8 @@ func New(
 		app.BankKeeper,
 		app.AccountKeeper,
 		&app.AssetKeeper,
-	)*/
+		&app.MarketKeeper,
+	)
 
 	app.VaultKeeper = vaultkeeper.NewKeeper(
 		app.cdc,
@@ -727,6 +734,7 @@ func New(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
 		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.CollectorKeeper)).
+		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
@@ -804,7 +812,7 @@ func New(
 		liquidation.NewAppModule(app.cdc, app.LiquidationKeeper, app.AccountKeeper, app.BankKeeper),
 		locker.NewAppModule(app.cdc, app.LockerKeeper, app.AccountKeeper, app.BankKeeper),
 		collector.NewAppModule(app.cdc, app.CollectorKeeper, app.AccountKeeper, app.BankKeeper),
-		//lend.NewAppModule(app.cdc, app.lendKeeper, app.AccountKeeper, app.BankKeeper),
+		lend.NewAppModule(app.cdc, app.LendKeeper, app.AccountKeeper, app.BankKeeper),
 		wasm.NewAppModule(app.cdc, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper),
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
@@ -860,7 +868,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		assettypes.ModuleName,
 		collectortypes.ModuleName,
-		//lendtypes.ModuleName,
+		lendtypes.ModuleName,
 		vaulttypes.ModuleName,
 		tokenminttypes.ModuleName,
 		bandoraclemoduletypes.ModuleName,
@@ -1060,16 +1068,16 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		collectortypes.ModuleName:      {authtypes.Burner, authtypes.Staking},
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
-		//lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
-		tokenminttypes.ModuleName: {authtypes.Minter, authtypes.Burner},
-		//lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
-		//lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
-		//lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
-		liquidationtypes.ModuleName: {authtypes.Minter, authtypes.Burner},
-		auctiontypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
-		lockertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		wasm.ModuleName:             {authtypes.Burner},
-		liquiditytypes.ModuleName:   {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
+		tokenminttypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
+		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		auctiontypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+		wasm.ModuleName:                {authtypes.Burner},
+		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		//lockingtypes.ModuleName:        nil,
 		rewardstypes.ModuleName: {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:     nil,
@@ -1112,7 +1120,7 @@ func (a *App) registerUpgradeHandlers() {
 				auctiontypes.ModuleName,
 				bandoraclemoduletypes.ModuleName,
 				collectortypes.ModuleName,
-				//lendtypes.ModuleName,
+				lendtypes.ModuleName,
 				liquidationtypes.ModuleName,
 				liquiditytypes.ModuleName,
 				lockertypes.ModuleName,

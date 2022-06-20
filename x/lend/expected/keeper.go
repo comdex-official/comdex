@@ -1,7 +1,7 @@
 package expected
 
 import (
-	"github.com/comdex-official/comdex/x/asset/types"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -34,8 +34,5 @@ type BandoracleKeeper interface {
 }
 
 type AssetKeeper interface {
-	GetWhitelistAsset(ctx sdk.Context, id uint64) (asset types.ExtendedAsset, found bool)
-	GetWhitelistPair(ctx sdk.Context, id uint64) (pair types.ExtendedPairLend, found bool)
-	GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found bool)
-	GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found bool)
+	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 }

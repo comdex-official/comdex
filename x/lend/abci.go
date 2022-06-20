@@ -6,4 +6,17 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {}
+func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
+	err := k.IterateLends(ctx)
+	if err != nil {
+		return
+	}
+	err = k.IterateBorrows(ctx)
+	if err != nil {
+		return
+	}
+	err = k.SetLastInterestTime(ctx, ctx.BlockTime().Unix())
+	if err != nil {
+		return
+	}
+}
