@@ -103,12 +103,6 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetId uint64, Am
 		return err
 	}
 
-	//TODO:
-	// create lend position
-	// update that position from next block
-	// set initial interest 0
-	// loan amt, pool, check if bridged asset,
-
 	//////////////////////////////////////////////
 	lendId := k.GetUserLendIDHistory(ctx)
 
@@ -138,15 +132,6 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetId uint64, Am
 }
 
 func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendId uint64, withdrawal sdk.Coin) error {
-
-	//TODO:
-	// check if lend position exists
-	// check borrow for that lend position
-	// get current CR
-	// calculate available to withdraw
-	// take balance in c/Token and return Token
-	// if borrow available update CR
-	// Ensure module account has sufficient unreserved tokens to withdraw
 
 	lenderAddr, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
@@ -189,11 +174,6 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendId uint64, withd
 	if !found {
 
 		if withdrawal.Amount.LT(lendPos.UpdatedAmountIn) {
-
-			//TODO:
-			// update lend & Updated amount in position
-			// create a lend to borrow mapping
-			// borrow calculations for CR
 
 			if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, pool.ModuleName, cToken); err != nil {
 				return err
@@ -250,12 +230,6 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendId uint64, withd
 }
 
 func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendId uint64, deposit sdk.Coin) error {
-
-	//TODO:
-	// check lend position
-	// mint additional c/Token
-	// send c/token to user
-	// update LendPos
 
 	lenderAddr, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
@@ -378,14 +352,6 @@ func uint64InSlice(a uint64, list []uint64) bool {
 }
 
 func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64, IsStableBorrow bool, AmountIn, loan sdk.Coin) error {
-
-	//TODO:
-	// take Lending Id and check if exists
-	// take the pair id, check if that pair id exists for lend AssetId (Asset to pair mapping)
-	// Amount In is the u/Token user provided (updated Amount In) At the time of creation
-	// option to deposit additional u/Token to inc CR will be added in DepositBorrow function
-	// From Amount Out calculate the CR, if below LR fail
-	// update kv stores accordingly
 
 	lenderAddr, _ := sdk.AccAddressFromBech32(addr)
 
@@ -645,11 +611,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 }
 
 func (k Keeper) RepayAsset(ctx sdk.Context, borrowId uint64, borrowerAddr string, payment sdk.Coin) error {
-	//TODO:
-	// check borrow position
-	// payment is LT UpdatedAmountOut
-	// take the payment from borrower and reduce UpdatedAmountOut
-	// update KV store accordingly
 
 	borrowPos, found := k.GetBorrow(ctx, borrowId)
 	if !found {
@@ -828,10 +789,6 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowId uint64, addr string
 
 func (k Keeper) DrawAsset(ctx sdk.Context, borrowId uint64, borrowerAddr string, payment sdk.Coin) error {
 
-	//TODO:
-	// check borrow position
-	// check current CR and verify
-
 	borrowPos, found := k.GetBorrow(ctx, borrowId)
 	if !found {
 		return types.ErrBorrowNotFound
@@ -867,11 +824,6 @@ func (k Keeper) DrawAsset(ctx sdk.Context, borrowId uint64, borrowerAddr string,
 }
 
 func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowId uint64) error {
-
-	//TODO:
-	// take borrow position
-	// match user
-	// Delete BorrowPos and mappings
 
 	borrowPos, found := k.GetBorrow(ctx, borrowId)
 	if !found {
