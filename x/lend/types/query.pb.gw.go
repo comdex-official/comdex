@@ -1431,35 +1431,35 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_QueryLends_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "lends"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLends_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "lends"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLend_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "lends", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryLend_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "lends", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllLendByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "lends-by-owner", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllLendByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "lends-by-owner", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdexofficial", "comdex", "lend", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdexofficial", "comdex", "lend", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryPairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "pairs"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryPairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "pairs"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "pairs", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "pairs", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAssetRatesStats_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "asset_rates_stats"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAssetRatesStats_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "asset_rates_stats"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAssetRatesStat_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "asset_rates_stats", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAssetRatesStat_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "asset_rates_stats", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryPools_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "pools"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryPools_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "pools"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryPool_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "pools", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryPool_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "pools", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAssetToPairMappings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "asset_to_pair_mappings"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAssetToPairMappings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "asset_to_pair_mappings"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAssetToPairMapping_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "asset_to_pair_mappings", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAssetToPairMapping_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "asset_to_pair_mappings", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryBorrows_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "borrows"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryBorrows_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "borrows"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryBorrow_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "borrows", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryBorrow_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "borrows", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllBorrowByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "borrows-by-owner", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_QueryAllBorrowByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "borrows-by-owner", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
