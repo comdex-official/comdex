@@ -137,12 +137,13 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 			}
 		}
 	}
-
+	var count = len(vaultsIds)
 	for _, id := range vaultsIds {
 		vault, found := q.GetVault(ctx, id)
 		if !found {
-			return &types.QueryVaultInfoByAppByOwnerResponse{}, nil
-		}
+            count--
+            continue
+        }
 
 		collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
 		if err != nil {
@@ -169,6 +170,9 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 		vaultsInfo = append(vaultsInfo, vaults)
 
 	}
+	if count == 0 {
+        return &types.QueryVaultInfoByAppByOwnerResponse{}, nil
+    }
 
 	return &types.QueryVaultInfoByAppByOwnerResponse{
 		VaultsInfo: vaultsInfo,
@@ -755,15 +759,14 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 			}
 		}
 	}
-	if len(vaultsIds) == 0 {
-		return &types.QueryUserMyPositionByAppResponse{}, nil
-	}
+	var count = len(vaultsIds)
 
 	for _, data := range vaultsIds {
 		vault, found := q.GetVault(ctx, data)
 		if !found {
-			return &types.QueryUserMyPositionByAppResponse{}, nil
-		}
+            count--
+            continue
+        }
 
 		extPairVault, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
@@ -797,6 +800,9 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		availableBorrow = av.Quo(sdk.Int(sdk.OneDec())).Add(availableBorrow)
 
 	}
+	if count == 0{
+        return &types.QueryUserMyPositionByAppResponse{}, nil
+    }
 	totalLocked = totalLocked.Quo(sdk.NewInt(1000000))
 	totalDue = totalDue.Quo(sdk.NewInt(1000000))
 	availableBorrow = availableBorrow.Quo(sdk.NewInt(1000000))
