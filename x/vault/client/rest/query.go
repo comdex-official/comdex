@@ -16,10 +16,10 @@ func queryVault(ctx client.Context) http.HandlerFunc {
 
 		vars := mux.Vars(r)
 
-		qc := types.NewQueryServiceClient(ctx)
+		qc := types.NewQueryClient(ctx)
 		idParam := vars["id"]
 
-		id:= idParam
+		id := idParam
 
 		res, err := qc.QueryVault(context.Background(),
 			&types.QueryVaultRequest{
