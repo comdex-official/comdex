@@ -7,11 +7,6 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
-	//k.CreateNewAuctions(ctx)
-	// err := k.CloseAndRestartAuctions(ctx)
-	// if err != nil {
-	// 	return
-	// }
 
 	err1 := k.SurplusActivator(ctx)
 	if err1 != nil {
