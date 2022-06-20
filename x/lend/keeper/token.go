@@ -11,12 +11,12 @@ func (k Keeper) ExchangeToken(ctx sdk.Context, token sdk.Coin, tokenName string)
 		return sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidAsset, token.String())
 	}
 
-	uTokenDenom := k.FromTokenToCTokenDenom(ctx, tokenName)
-	if uTokenDenom == "" {
+	cTokenDenom := k.FromTokenToCTokenDenom(ctx, tokenName)
+	if cTokenDenom == "" {
 		return sdk.Coin{}, sdkerrors.Wrap(types.ErrInvalidAsset, tokenName)
 	}
 	uTokenAmount := token.Amount
-	return sdk.NewCoin(uTokenDenom, uTokenAmount), nil
+	return sdk.NewCoin(cTokenDenom, uTokenAmount), nil
 }
 
 func (k Keeper) FromTokenToCTokenDenom(_ sdk.Context, tokenDenom string) string {

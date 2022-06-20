@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/asset/types"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -49,18 +49,18 @@ func (k *Keeper) GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins 
 	return k.bank.GetAllBalances(ctx, addr)
 }
 
-func (k *Keeper) GetWhitelistAsset(ctx sdk.Context, id uint64) (asset types.ExtendedAsset, found bool) {
-	return k.asset.GetWhitelistAsset(ctx, id)
-}
-
-func (k *Keeper) GetWhitelistPair(ctx sdk.Context, id uint64) (pair types.ExtendedPairLend, found bool) {
-	return k.asset.GetWhitelistPair(ctx, id)
-}
-
-func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found bool) {
-	return k.asset.GetPair(ctx, id)
-}
-
-func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found bool) {
+func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
 	return k.asset.GetAsset(ctx, id)
+}
+
+func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
+	return k.market.GetPriceForAsset(ctx, id)
+}
+
+func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
+	if coin.IsZero() {
+		return nil
+	}
+	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
+
 }
