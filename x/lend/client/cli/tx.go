@@ -358,7 +358,7 @@ func txFundModuleAccounts() *cobra.Command {
 	return cmd
 }
 
-func CmdAddWNewLendPairsProposal() *cobra.Command {
+func CmdAddNewLendPairsProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-lend-pairs [asset_in] [asset_out] [is_inter_pool] [asset_out_pool_id] [liquidation_ratio]",
 		Short: "Add lend asset pairs",
