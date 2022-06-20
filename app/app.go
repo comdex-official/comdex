@@ -323,7 +323,7 @@ type App struct {
 	MarketKeeper      marketkeeper.Keeper
 	LiquidationKeeper liquidationkeeper.Keeper
 	LockerKeeper      lockerkeeper.Keeper
-	lendKeeper        lendkeeper.Keeper
+	LendKeeper        lendkeeper.Keeper
 	ScopedWasmKeeper  capabilitykeeper.ScopedKeeper
 	AuctionKeeper     auctionkeeper.Keeper
 	TokenmintKeeper   tokenmintkeeper.Keeper
@@ -549,7 +549,7 @@ func New(
 		&app.MarketKeeper,
 	)
 
-	app.lendKeeper = *lendkeeper.NewKeeper(
+	app.LendKeeper = *lendkeeper.NewKeeper(
 		app.cdc,
 		app.keys[lendtypes.StoreKey],
 		app.keys[lendtypes.StoreKey],
@@ -734,7 +734,7 @@ func New(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
 		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.CollectorKeeper)).
-		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.lendKeeper)).
+		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
@@ -812,7 +812,7 @@ func New(
 		liquidation.NewAppModule(app.cdc, app.LiquidationKeeper, app.AccountKeeper, app.BankKeeper),
 		locker.NewAppModule(app.cdc, app.LockerKeeper, app.AccountKeeper, app.BankKeeper),
 		collector.NewAppModule(app.cdc, app.CollectorKeeper, app.AccountKeeper, app.BankKeeper),
-		lend.NewAppModule(app.cdc, app.lendKeeper, app.AccountKeeper, app.BankKeeper),
+		lend.NewAppModule(app.cdc, app.LendKeeper, app.AccountKeeper, app.BankKeeper),
 		wasm.NewAppModule(app.cdc, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper),
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
