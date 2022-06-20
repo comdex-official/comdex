@@ -347,7 +347,7 @@ message QueryUserExtendedPairTotalDataRequest {
 }
 
 message QueryUserExtendedPairTotalDataResponse {
-UserVaultAssetMapping userTotalData = 1 [ (gogoproto.moretags) = "yaml:\"userTotalData\"" ];
+UserVaultAssetMapping userTotalData = 1 [ (gogoproto.moretags) = "yaml:\"user_total_data\"" ];
 }
 
 

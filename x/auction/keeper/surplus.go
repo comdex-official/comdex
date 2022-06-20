@@ -127,26 +127,7 @@ func (k Keeper) getSurplusBuyTokenAmount(ctx sdk.Context, appId, AssetBuyId, Ass
 		return auctiontypes.NoAuction, emptyCoin, emptyCoin
 	}
 
-	// var sellTokenPrice uint64
-	// collectorAuction, found := k.GetAuctionMappingForApp(ctx, appId)
-	// if !found {
-	// 	return auctiontypes.NoAuction, emptyCoin, emptyCoin
-	// }
-	// for _, data := range collectorAuction.AssetIdToAuctionLookup {
 
-	// 	if data.AssetOutOraclePrice {
-	// 		//If oracle Price required for the assetOut
-	// 		sellTokenPrice, found = k.GetPriceForAsset(ctx, AssetSellId)
-
-	// 	} else {
-	// 		//If oracle Price is not required for the assetOut
-	// 		sellTokenPrice = data.AssetOutPrice
-
-	// 	}
-
-	// }
-
-	// buyTokenPrice, found := k.GetPriceForAsset(ctx, AssetBuyId)
 	//outflow token will be of lot size
 	sellToken = sdk.NewCoin(sellingAsset.Denom, lotSize)
 	buyToken = sdk.NewCoin(buyingAsset.Denom, sdk.ZeroInt())
@@ -265,7 +246,7 @@ func (k Keeper) closeSurplusAuction(
 		}
 
 		if auctiontypes.TestFlag == 1 {
-			//following 4 lines used for testing purpose
+
 			err = k.BurnCoins(ctx, auctiontypes.ModuleName, highestBidReceived)
 			if err != nil {
 				return auctiontypes.ErrorInvalidBurn
@@ -328,7 +309,7 @@ func (k Keeper) closeSurplusAuction(
 	if err != nil {
 		return err
 	}
-	//store auctions and user bidding in history after they are deleted
+
 	return nil
 }
 
@@ -342,7 +323,7 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appId, auctionMappingId,
 	if bid.Denom != auction.BuyToken.Denom {
 		return auctiontypes.ErrorInvalidBiddingDenom
 	}
-	//Test this multiplication check if new bid greater than previous bid by bid factor
+
 	if auction.AuctionStatus != auctiontypes.AuctionStartNoBids {
 		change := auction.BidFactor.MulInt(auction.Bid.Amount).Ceil().TruncateInt()
 		minBidAmount := auction.Bid.Amount.Add(change)

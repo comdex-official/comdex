@@ -126,24 +126,6 @@ func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appId, AssetInId, AssetO
 		}
 	}
 
-	// var buyTokenPrice uint64
-	// collectorAuction, found := k.GetAuctionMappingForApp(ctx, appId)
-	// if !found {
-	// 	return auctiontypes.NoAuction, emptyCoin, emptyCoin
-	// }
-	// for _, data := range collectorAuction.AssetIdToAuctionLookup {
-
-	// 	if data.AssetOutOraclePrice {
-	// 		//If oracle Price required for the assetOut
-	// 		buyTokenPrice, found = k.GetPriceForAsset(ctx, AssetInId)
-
-	// 	} else {
-	// 		//If oracle Price is not required for the assetOut
-	// 		buyTokenPrice = data.AssetOutPrice
-	// 	}
-	// }
-	// sellTokenPrice, found := k.GetPriceForAsset(ctx, AssetOutId)
-	// inflow token will be of lot size
 	buyToken = sdk.NewCoin(buyAsset.Denom, lotSize)
 	sellToken = sdk.NewCoin(sellAsset.Denom, sdk.NewIntFromUint64(debtLot))
 	return 5, sellToken, buyToken
@@ -244,14 +226,13 @@ func (k Keeper) closeDebtAuction(
 	if debtAuction.AuctionStatus != auctiontypes.AuctionStartNoBids {
 
 		if auctiontypes.TestFlag == 1 {
-			//following 6 lines used for testing purpose
+
 			err := k.MintCoins(ctx, auctiontypes.ModuleName, debtAuction.CurrentBidAmount)
 			err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, debtAuction.Bidder, sdk.NewCoins(debtAuction.CurrentBidAmount))
 			if err != nil {
 				return err
 			}
 		} else {
-			//ask token mint to mint new tokens for bidder address
 
 			err := k.MintNewTokensForApp(ctx, debtAuction.AppId, debtAuction.AssetOutId, debtAuction.Bidder.String(), debtAuction.CurrentBidAmount.Amount)
 			if err != nil {
@@ -342,7 +323,7 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appId, auctionMappingId, au
 		return auctiontypes.ErrorInvalidDebtMintedDenom
 	}
 
-	//Test this multiplication check if new bid greater than previous bid by bid factor
+
 	if auction.AuctionStatus != auctiontypes.AuctionStartNoBids {
 		change := auction.BidFactor.MulInt(auction.ExpectedMintedToken.Amount).Ceil().TruncateInt()
 		maxBidAmount := auction.ExpectedMintedToken.Amount.Sub(change)

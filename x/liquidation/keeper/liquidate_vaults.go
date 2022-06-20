@@ -149,76 +149,19 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 						continue
 					}
 
-					// assetOut, found := k.GetAsset(ctx, pair.AssetOut)
-					// if !found {
-					// 	continue
-					// }
-
 					collateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, ExtPair.PairId, lockedVault.AmountIn, lockedVault.UpdatedAmountOut)
 					if err != nil {
 						continue
 					}
 
-					//Asset Price in Dollar Terms to find how how much is to be auctioned
-
-					// extendedPairVault, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
-					// if !found {
-					// 	return types.ErrorExtendedPairVaultDoesNotExists
-					// }
-					// var assetOutPrice uint64
-
-					// if extendedPairVault.AssetOutOraclePrice {
-
-					// 	//If oracle Price required for the assetOut
-					// 	assetOutPrice, found = k.GetPriceForAsset(ctx, assetOut.Id)
-
-					// 	if !found {
-					// 		return types.ErrorPriceDoesNotExist
-					// 	}
-					// } else {
-					// 	//If oracle Price is not required for the assetOut
-					// 	assetOutPrice = extendedPairVault.AssetOutPrice
-
-					// }
 
 					assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
-					// assetOutPrice, _ := k.GetPriceForAsset(ctx, assetOut.Id)
 
 					totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
-					// totalOut := lockedVault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
-					//Selloff Collateral Calculation
-					//Assuming that the collateral to be sold is 1 unit, so finding out how much is going to be deducted from the
-					//collateral which will account as repaying the user's debt
 
-					// numpart1 := ExtPair.MinCr.Mul(totalOut)
-					// numpart2 := ExtPair.LiquidationPenalty.Add(sdk.MustNewDecFromStr("1"))
-					// numerator1 := numpart1.Sub(totalIn)
-					// numerator := numerator1.Mul(numpart2)
-					// denominator1 := ExtPair.MinCr.Sub(numpart2)
-					// denominator := denominator1.Mul((sdk.NewIntFromUint64(assetInPrice).ToDec()))
-					// collateralAuctioned := numerator.Quo(denominator)
-					// collateralToBeAuctioned := collateralAuctioned.Mul(sdk.NewIntFromUint64(assetInPrice).ToDec())
-			
-
-					
-					// safeLiquidationFactor, _ := sdk.NewDecFromStr(types.SafeLiquidationFactor)
-					// deductionPercentage, _ := sdk.NewDecFromStr("1.0")
-					// auctionDeduction := (deductionPercentage).Sub(ExtPair.LiquidationPenalty)
-					// multiplicationFactor := auctionDeduction.Mul(ExtPair.MinCr.Add(safeLiquidationFactor))
-					// asssetOutMultiplicationFactor := totalOut.Mul(ExtPair.MinCr.Add(safeLiquidationFactor))
-					// assetsDifference := totalIn.Sub(asssetOutMultiplicationFactor)
-					// //Substracting again from 1 unit to find the selloff multiplication factor
-					// selloffMultiplicationFactor := deductionPercentage.Sub(multiplicationFactor)
-					// selloffAmount := assetsDifference.Quo(selloffMultiplicationFactor)
-					// var collateralToBeAuctioned sdk.Dec
-
-					// if collateralToBeAuctioned.GTE(totalIn) || collateralToBeAuctioned.IsNegative(){
-					// 	collateralToBeAuctioned = totalIn
-					// }
 					updatedLockedVault := lockedVault
 					updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 					updatedLockedVault.CollateralToBeAuctioned = totalIn
-					//updatedLockedVault.IsAuctionComplete = false
 					k.SetLockedVault(ctx, updatedLockedVault)
 					k.UpdateLockedVaultsAppMapping(ctx, updatedLockedVault)
 				}
