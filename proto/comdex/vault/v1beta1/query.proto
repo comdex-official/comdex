@@ -342,10 +342,22 @@ message QueryUserMyPositionByAppResponse {
   ];
 }
 
+message QueryUserExtendedPairTotalDataRequest {
+  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+}
+
+message QueryUserExtendedPairTotalDataResponse {
+UserVaultAssetMapping userTotalData = 1 [ (gogoproto.moretags) = "yaml:\"user_total_data\"" ];
+}
+
 
 service Query {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
+  };
+
+  rpc QueryUserExtendedPairTotalData(QueryUserExtendedPairTotalDataRequest) returns (QueryUserExtendedPairTotalDataResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/user-extended-total-data/{owner}";
   };
 
   rpc QueryVaultInfo(QueryVaultInfoRequest) returns (QueryVaultInfoResponse) {

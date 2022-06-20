@@ -493,7 +493,27 @@ func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, AppMappingId uint64
 	new_vault.ExtendedPairVaultID = extendedPairVault.Id
 	k.SetVault(ctx, new_vault)
 
-	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updated_counter, new_vault)
+	//get extendedpair lookup table data 
+	// push the new vault id in that extended pair of the app
+	// update the counter of the extendedpair lookup tabe
+	////// ///////
+
+	app_extended_pair_vault_data, _ := k.GetAppExtendedPairVaultMapping(ctx, AppMappingId)
+
+	app_extended_pair_vault_data.Counter = updated_counter
+
+	for _, appData := range app_extended_pair_vault_data.ExtendedPairVaults {
+
+  			if appData.ExtendedPairId == new_vault.ExtendedPairVaultID {
+
+    		appData.VaultIds = append(appData.VaultIds, new_vault.Id)
+  		}
+	}
+	
+	k.SetAppExtendedPairVaultMapping(ctx, app_extended_pair_vault_data)
+
+	//////////////////
+	// k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updated_counter, new_vault)
 
 	userVaultExtendedpairMappingData, _ := k.GetUserVaultExtendedPairMapping(ctx, From)
 

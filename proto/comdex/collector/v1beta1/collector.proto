@@ -81,6 +81,8 @@ message CollectorLookupTable {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.moretags)   = "yaml:\"bid_factor\""
   ];
+  uint64 debt_lot_size = 9 [
+  (gogoproto.moretags) = "yaml:\"debt_lot_size\""];
 }
 
 message CollectorLookup { 

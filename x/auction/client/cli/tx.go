@@ -105,7 +105,7 @@ func txPlaceDebtBid() *cobra.Command {
 
 func txPlaceDutchBid() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "bid-dutch [auction-id] [amount] [maxamountpercollateraltoken] [app-id] [auction-mapping-id]",
+		Use:   "bid-dutch [auction-id] [amount] [maxamountpercollateraltoken]  [app-id] [auction-mapping-id]",
 		Short: "Place a Dutch bid on an auction",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -130,6 +130,7 @@ func txPlaceDutchBid() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
+
 
 			auctionMappingId, err := strconv.ParseUint(args[4], 10, 64)
 			if err != nil {

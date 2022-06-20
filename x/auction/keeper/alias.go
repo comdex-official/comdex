@@ -170,3 +170,18 @@ func (k *Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLook
 func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData vaultttypes.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool) {
 	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, valutLookupData, extendedPairId, amount, changeType)
 }
+
+func (k *Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.CollectorAuctionLookupTable, found bool) {
+	return k.collector.GetAllAuctionMappingForApp(ctx)
+}
+func (k *Keeper) DeleteLockedVault(ctx sdk.Context, id uint64){
+	k.liquidation.DeleteLockedVault(ctx, id)
+}
+
+func (k *Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairId uint64, userAddress string, appMappingId uint64) {
+	k.vault.UpdateUserVaultExtendedPairMapping(ctx, extendedPairId, userAddress, appMappingId)
+}
+
+func (k Keeper) CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error{
+	return k.liquidation.CreateLockedVaultHistory(ctx, lockedVault)
+}
