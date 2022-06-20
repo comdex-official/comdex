@@ -1,8 +1,14 @@
 package cli
 
 import (
+	flag "github.com/spf13/pflag"
 	"strconv"
 	"strings"
+)
+
+const (
+	FlagAddLookupParamsTable = "collector-lookup-table-file"
+	FlagAuctionControlParams = "auction-control-params-file"
 )
 
 func ParseStringFromString(s string, separator string) ([]string, error) {
@@ -41,4 +47,45 @@ func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
 		parsedInts = append(parsedInts, parsed)
 	}
 	return parsedInts, nil
+}
+
+func FlagSetCreateLookupTableParamsMapping() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagAddLookupParamsTable, "", "create lookup table params json file path")
+	return fs
+}
+
+func FlagSetAuctionControlParamsMapping() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagAuctionControlParams, "", "auction control params json file path")
+	return fs
+}
+
+type createLookupTableParamsInputs struct {
+	AppID            string `json:"app_id"`
+	CollectorAssetID string `json:"collector_asset_id"`
+	SecondaryAssetID string `json:"secondary_asset_id"`
+	SurplusThreshold string `json:"surplus_threshold"`
+	DebtThreshold    string `json:"debt_threshold"`
+	LockerSavingRate string `json:"locker_saving_rate"`
+	LotSize          string `json:"lot_size"`
+	BidFactor        string `json:"bid_factor"`
+	DebtLotSize      string `json:"debt_lot_size"`
+	Title            string
+	Description      string
+	Deposit          string
+}
+
+type auctionControlParamsInputs struct {
+	AppID               string `json:"app_id"`
+	AssetID             string `json:"asset_id"`
+	SurplusAuction      string `json:"surplus_auction"`
+	DebtAuction         string `json:"debt_auction"`
+	AssetOutOraclePrice string `json:"asset_out_oracle_price"`
+	AssetOutPrice       string `json:"asset_out_price"`
+	Title               string
+	Description         string
+	Deposit             string
 }
