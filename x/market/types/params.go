@@ -4,7 +4,6 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-
 var (
 	KeyIBCPort          = []byte("IBCPort")
 	KeyIBCVersion       = []byte("IBCVersion")

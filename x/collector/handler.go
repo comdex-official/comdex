@@ -44,7 +44,6 @@ func handleLookupTableParamsProposal(ctx sdk.Context, k keeper.Keeper, p *types.
 	return k.HandleProposalLookupTableParams(ctx, p)
 }
 
-
 func HandleProposalLookupAppToAuction(ctx sdk.Context, k keeper.Keeper, p *types.AuctionControlByAppIdProposal) error {
 	return k.HandleProposalLookupAppToAuction(ctx, p)
 }

@@ -3,7 +3,7 @@ package types
 import "encoding/binary"
 
 type (
-	OracleScriptID uint64
+	OracleScriptID  uint64
 	OracleRequestID int64
 )
 

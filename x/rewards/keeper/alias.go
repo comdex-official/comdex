@@ -142,10 +142,9 @@ func (k *Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, app_id, asset_id u
 	return k.collector.DecreaseNetFeeCollectedData(ctx, app_id, asset_id, fee)
 }
 
-
-func (k *Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error{
+func (k *Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error {
 	return k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
 }
-func (k *Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, app_id, asset_id uint64) (lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise, found bool){
-	return k.locker.GetLockerTotalRewardsByAssetAppWise(ctx,app_id,asset_id)
+func (k *Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, app_id, asset_id uint64) (lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise, found bool) {
+	return k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, app_id, asset_id)
 }

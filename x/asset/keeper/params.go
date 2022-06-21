@@ -6,7 +6,6 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-
 func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.params.SetParamSet(ctx, &params)
 }

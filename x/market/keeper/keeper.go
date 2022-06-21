@@ -10,22 +10,22 @@ import (
 )
 
 type Keeper struct {
-	cdc         codec.BinaryCodec
-	key         sdk.StoreKey
-	params      paramstypes.Subspace
-	scoped      expected.ScopedKeeper
-	assetKeeper assetkeeper.Keeper
+	cdc              codec.BinaryCodec
+	key              sdk.StoreKey
+	params           paramstypes.Subspace
+	scoped           expected.ScopedKeeper
+	assetKeeper      assetkeeper.Keeper
 	bandoraclekeeper expected.BandOracleKeeper
 }
 
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper, bandoraclekeeper expected.BandOracleKeeper) *Keeper {
 
 	return &Keeper{
-		cdc:         cdc,
-		key:         key,
-		params:      params,
-		scoped:      scoped,
-		assetKeeper: assetKeeper,
+		cdc:              cdc,
+		key:              key,
+		params:           params,
+		scoped:           scoped,
+		assetKeeper:      assetKeeper,
 		bandoraclekeeper: bandoraclekeeper,
 	}
 }

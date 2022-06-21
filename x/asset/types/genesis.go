@@ -2,9 +2,9 @@ package types
 
 func NewGenesisState(assets []Asset, pairs []Pair, params Params) *GenesisState {
 	return &GenesisState{
-		Assets:  assets,
-		Pairs:   pairs,
-		Params:  params,
+		Assets: assets,
+		Pairs:  pairs,
+		Params: params,
 	}
 }
 

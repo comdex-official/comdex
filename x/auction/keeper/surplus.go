@@ -1,28 +1,28 @@
 package keeper
 
 import (
-	"time"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
-	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 )
 
 func (k Keeper) SurplusActivator(ctx sdk.Context) error {
 
 	auctionMapData, found := k.GetAllAuctionMappingForApp(ctx)
-	if !found{
+	if !found {
 		return nil
 	}
-	for _, data := range auctionMapData{
-		for _, indata := range data.AssetIdToAuctionLookup{
-			if indata.IsSurplusAuction && !indata.IsAuctionActive{
-				err:= k.CreateSurplusAuction(ctx, data.AppId, indata.AssetId )
-				if err !=nil{
+	for _, data := range auctionMapData {
+		for _, indata := range data.AssetIdToAuctionLookup {
+			if indata.IsSurplusAuction && !indata.IsAuctionActive {
+				err := k.CreateSurplusAuction(ctx, data.AppId, indata.AssetId)
+				if err != nil {
 					return err
 				}
-			}else if indata.IsSurplusAuction && indata.IsAuctionActive{
+			} else if indata.IsSurplusAuction && indata.IsAuctionActive {
 				err := k.SurplusAuctionClose(ctx, data.AppId)
 				if err != nil {
 					return err
@@ -36,25 +36,25 @@ func (k Keeper) SurplusActivator(ctx sdk.Context) error {
 
 func (k Keeper) CreateSurplusAuction(ctx sdk.Context, app_id, asset_id uint64) error {
 
-		//check if auction status for an asset is false
+	//check if auction status for an asset is false
 
-		status, err := k.checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx, app_id, asset_id)
-		if err != nil {
-			return err
+	status, err := k.checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx, app_id, asset_id)
+	if err != nil {
+		return err
+	}
+
+	auctionLookupTable, _ := k.GetAuctionMappingForApp(ctx, app_id)
+
+	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
+		if assetToAuction.AssetId == asset_id && status == auctiontypes.StartedSurplusAuction {
+
+			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = true
 		}
-
-		auctionLookupTable, _ := k.GetAuctionMappingForApp(ctx, app_id)
-
-		for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
-			if assetToAuction.AssetId == asset_id && status == auctiontypes.StartedSurplusAuction{
-
-				auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = true
-			}
-		}
-		err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
-		if err1 != nil {
-			return err1
-		}
+	}
+	err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
+	if err1 != nil {
+		return err1
+	}
 	return nil
 }
 
@@ -80,7 +80,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 
 				if AssetIdToFeeCollected.AssetId == assetId {
 
-					 if AssetIdToFeeCollected.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold+collector.LotSize)){
+					if AssetIdToFeeCollected.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold + collector.LotSize)) {
 						// START SURPLUS AUCTION .  WITH COLLECTOR ASSET ID AS token given to user of lot size and secondary asset as received from user and burnt , bid factor
 						//calculate inflow token amount
 
@@ -127,7 +127,6 @@ func (k Keeper) getSurplusBuyTokenAmount(ctx sdk.Context, appId, AssetBuyId, Ass
 		return auctiontypes.NoAuction, emptyCoin, emptyCoin
 	}
 
-
 	//outflow token will be of lot size
 	sellToken = sdk.NewCoin(sellingAsset.Denom, lotSize)
 	buyToken = sdk.NewCoin(buyingAsset.Denom, sdk.ZeroInt())
@@ -148,8 +147,8 @@ func (k Keeper) startSurplusAuction(
 		return auctiontypes.ErrorInvalidAuctionParams
 	}
 	auction := auctiontypes.SurplusAuction{
-		SellToken:     sellToken,
-		BuyToken:      buyToken,
+		SellToken:        sellToken,
+		BuyToken:         buyToken,
 		ActiveBiddingId:  0,
 		Bidder:           nil,
 		Bid:              buyToken,
@@ -217,7 +216,6 @@ func (k Keeper) RestartSurplus(
 	}
 	return nil
 }
-
 
 func (k Keeper) closeSurplusAuction(
 	ctx sdk.Context,
@@ -315,7 +313,7 @@ func (k Keeper) closeSurplusAuction(
 
 func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appId, auctionMappingId, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin) error {
 	auction, err := k.GetSurplusAuction(ctx, appId, auctionMappingId, auctionId)
-	auctionParam, _ := k.GetAuctionParams(ctx,appId)
+	auctionParam, _ := k.GetAuctionParams(ctx, appId)
 
 	if err != nil {
 		return auctiontypes.ErrorInvalidSurplusAuctionId
@@ -367,7 +365,7 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appId, auctionMappingId,
 	auction.Bidder = bidder
 	auction.Bid = bid
 	auction.BidEndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParam.BidDurationSeconds))
-	if auction.BidEndTime.After((auction.EndTime)){
+	if auction.BidEndTime.After((auction.EndTime)) {
 		auction.BidEndTime = auction.EndTime
 	}
 	err = k.SetSurplusAuction(ctx, auction)

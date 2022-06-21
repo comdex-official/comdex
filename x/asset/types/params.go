@@ -4,7 +4,6 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-
 var (
 	_ paramstypes.ParamSet = (*Params)(nil)
 )
@@ -22,8 +21,7 @@ func ParamKeyTable() paramstypes.KeyTable {
 }
 
 func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
-	return paramstypes.ParamSetPairs{
-	}
+	return paramstypes.ParamSetPairs{}
 }
 
 func (m *Params) Validate() error {

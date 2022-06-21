@@ -223,7 +223,7 @@ func NewCmdSubmitFetchPriceProposal() *cobra.Command {
 				return err
 			}
 
-			content := types.NewFetchPriceProposal(title, description,*pmsg )
+			content := types.NewFetchPriceProposal(title, description, *pmsg)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {

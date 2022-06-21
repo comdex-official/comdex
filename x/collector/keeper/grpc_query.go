@@ -72,18 +72,18 @@ func (q *queryServer) QueryCollectorDataByProductAndAsset(c context.Context, req
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx           = sdk.UnwrapSDKContext(c)
 		collectorData types.CollectorData
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
-	collectormap, _ := q.GetAppidToAssetCollectorMapping(ctx,req.AppId)
+	collectormap, _ := q.GetAppidToAssetCollectorMapping(ctx, req.AppId)
 
-	for _,data := range collectormap.AssetCollector{
+	for _, data := range collectormap.AssetCollector {
 
-		if data.AssetId == req.AssetId{
+		if data.AssetId == req.AssetId {
 			collectorData.CollectedClosingFee = data.Collector.CollectedClosingFee
 			collectorData.CollectedOpeningFee = data.Collector.CollectedOpeningFee
 			collectorData.CollectedStabilityFee = data.Collector.CollectedStabilityFee
@@ -101,16 +101,16 @@ func (q *queryServer) QueryAuctionMappingForAppAndAsset(c context.Context, req *
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx                  = sdk.UnwrapSDKContext(c)
 		assetToAuctionLookup types.AssetIdToAuctionLookupTable
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
-	auctionData,_ := q.GetAuctionMappingForApp(ctx,req.AppId)
-	for _, data := range auctionData.AssetIdToAuctionLookup{
-		if data.AssetId == req.AssetId{
+	auctionData, _ := q.GetAuctionMappingForApp(ctx, req.AppId)
+	for _, data := range auctionData.AssetIdToAuctionLookup {
+		if data.AssetId == req.AssetId {
 			assetToAuctionLookup.AssetId = data.AssetId
 			assetToAuctionLookup.AssetOutOraclePrice = data.AssetOutOraclePrice
 			assetToAuctionLookup.AssetOutPrice = data.AssetOutPrice
@@ -125,27 +125,25 @@ func (q *queryServer) QueryAuctionMappingForAppAndAsset(c context.Context, req *
 	}, nil
 }
 
-
 func (q *queryServer) QueryNetFeeCollectedForAppAndAsset(c context.Context, req *types.QueryNetFeeCollectedForAppAndAssetRequest) (*types.QueryNetFeeCollectedForAppAndAssetResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx                   = sdk.UnwrapSDKContext(c)
 		assetIdToFeeCollected types.AssetIdToFeeCollected
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
-	fee, _ := q.GetNetFeeCollectedData(ctx,req.AppId)
-	for _,data := range fee.AssetIdToFeeCollected{
-		if data.AssetId == req.AssetId{
+	fee, _ := q.GetNetFeeCollectedData(ctx, req.AppId)
+	for _, data := range fee.AssetIdToFeeCollected {
+		if data.AssetId == req.AssetId {
 			assetIdToFeeCollected.AssetId = data.AssetId
 			assetIdToFeeCollected.NetFeesCollected = data.NetFeesCollected
 		}
 	}
-
 
 	return &types.QueryNetFeeCollectedForAppAndAssetResponse{
 		AssetIdToFeeCollected: assetIdToFeeCollected,

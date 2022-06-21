@@ -154,7 +154,6 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 						continue
 					}
 
-
 					assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
 
 					totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()

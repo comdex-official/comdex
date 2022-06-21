@@ -48,5 +48,5 @@ var (
 )
 
 var (
-	ErrorEmergencyShutdownIsActive  = errors.Register(ModuleName, 501, "Error Emergency Shutdown Is Active for this App")
+	ErrorEmergencyShutdownIsActive = errors.Register(ModuleName, 501, "Error Emergency Shutdown Is Active for this App")
 )

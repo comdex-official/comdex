@@ -333,9 +333,9 @@ func queryOwnerTxDetailsLockerOfProductByOwnerByAsset() *cobra.Command {
 			res, err := queryClient.QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(
 				context.Background(),
 				&types.QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest{
-					ProductId: productId,
-					Owner:     owner,
-					AssetId: assetId,
+					ProductId:  productId,
+					Owner:      owner,
+					AssetId:    assetId,
 					Pagination: pagination,
 				},
 			)
@@ -654,8 +654,8 @@ func queryLockerTotalRewardsByAssetAppWise() *cobra.Command {
 			res, err := queryClient.QueryLockerTotalRewardsByAssetAppWise(
 				context.Background(),
 				&types.QueryLockerTotalRewardsByAssetAppWiseRequest{
-					AppId: appId,
-					AssetId:   assetId,
+					AppId:   appId,
+					AssetId: assetId,
 				},
 			)
 			if err != nil {

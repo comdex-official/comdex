@@ -22,19 +22,18 @@ const (
 )
 
 var (
-	AddCollectorLookupKey = [] byte{0x01}
-	AppidToAssetCollectorMappingPrefix = []byte{0x03}
+	AddCollectorLookupKey               = []byte{0x01}
+	AppidToAssetCollectorMappingPrefix  = []byte{0x03}
 	AppIdToAuctionMappingForAssetPrefix = []byte{0x04}
-	AppIdToAuctionMappingPrefix = []byte{0x05}
-	CollectorAuctionLookupPrefix = []byte{0x06}
-	CollectorForDenomKeyPrefix = []byte{0x07}
-	NetFeeCollectedDataPrefix = []byte{0x08}
+	AppIdToAuctionMappingPrefix         = []byte{0x05}
+	CollectorAuctionLookupPrefix        = []byte{0x06}
+	CollectorForDenomKeyPrefix          = []byte{0x07}
+	NetFeeCollectedDataPrefix           = []byte{0x08}
 )
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
-
 
 func CollectorLookupTableMappingKey(app_id uint64) []byte {
 	return append(AddCollectorLookupKey, sdk.Uint64ToBigEndian(app_id)...)
