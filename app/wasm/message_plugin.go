@@ -244,7 +244,7 @@ func (m *CustomMessenger) UpdateLsrInPairsVault(ctx sdk.Context, contractAddr sd
 
 func MsgUpdateLsrInPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	updateLsrPairVault *bindings.MsgUpdateLsrInPairsVault) error {
-	err := assetKeeper.WasmUpdateLsrInPairsVault(ctx, updateLsrPairVault)
+	err := assetKeeper.WasmUpdatePairsVault(ctx, updateLsrPairVault)
 	if err != nil {
 		return err
 	}
@@ -261,7 +261,7 @@ func (m *CustomMessenger) UpdateLsrInCollectorLookupTable(ctx sdk.Context, contr
 
 func MsgUpdateLsrInCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	updateLsrInColBinding *bindings.MsgUpdateLsrInCollectorLookupTable) error {
-	err := collectorKeeper.WasmUpdateLsrInCollectorLookupTable(ctx, updateLsrInColBinding)
+	err := collectorKeeper.WasmUpdateCollectorLookupTable(ctx, updateLsrInColBinding)
 	if err != nil {
 		return err
 	}

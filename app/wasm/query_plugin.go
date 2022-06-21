@@ -195,7 +195,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 		} else if comdexQuery.UpdateLsrInPairsVaultQuery != nil {
 			appMappingID := comdexQuery.UpdateLsrInPairsVaultQuery.AppMappingId
 			extPairID := comdexQuery.UpdateLsrInPairsVaultQuery.ExtPairId
-			found, errormsg := queryPlugin.UpdateLsrInPairsVaultQueryCheck(ctx, appMappingID, extPairID)
+			found, errormsg := queryPlugin.UpdatePairsVaultQueryCheck(ctx, appMappingID, extPairID)
 			res := bindings.UpdateLsrInPairsVaultQueryResponse{
 				Found: found,
 				Err:   errormsg,
@@ -208,7 +208,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 		} else if comdexQuery.UpdateLsrInCollectorLookupTableQuery != nil {
 			appMappingID := comdexQuery.UpdateLsrInCollectorLookupTableQuery.AppMappingId
 			assetID := comdexQuery.UpdateLsrInCollectorLookupTableQuery.AssetId
-			found, errormsg := queryPlugin.UpdateLsrInCollectorLookupTableQueryCheck(ctx, appMappingID, assetID)
+			found, errormsg := queryPlugin.UpdateCollectorLookupTableQueryCheck(ctx, appMappingID, assetID)
 			res := bindings.UpdateLsrInCollectorLookupTableQueryResponse{
 				Found: found,
 				Err:   errormsg,

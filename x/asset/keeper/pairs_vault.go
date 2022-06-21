@@ -248,7 +248,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appMappi
 	return true, ""
 }
 
-func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, updateLsrPairVault *bindings.MsgUpdateLsrInPairsVault) error {
+func (k *Keeper) WasmUpdatePairsVault(ctx sdk.Context, updateLsrPairVault *bindings.MsgUpdateLsrInPairsVault) error {
 	var ExtPairVaultData types.ExtendedPairVault
 	pairVaults, found := k.GetPairsVaults(ctx)
 	if !found {
@@ -286,7 +286,7 @@ func (k *Keeper) WasmUpdateLsrInPairsVault(ctx sdk.Context, updateLsrPairVault *
 	return nil
 }
 
-func (k *Keeper) WasmUpdateLsrInPairsVaultQuery(ctx sdk.Context, appID, exPairID uint64) (bool, string) {
+func (k *Keeper) WasmUpdatePairsVaultQuery(ctx sdk.Context, appID, exPairID uint64) (bool, string) {
 	pairVaults, found := k.GetPairsVaults(ctx)
 	if !found {
 		return false, types.ErrorPairDoesNotExist.Error()

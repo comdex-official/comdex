@@ -585,7 +585,7 @@ func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, appID uint64)
 	return true, ""
 }
 
-func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, updateLsrInColBinding *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+func (k *Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateLsrInColBinding *bindings.MsgUpdateLsrInCollectorLookupTable) error {
 	var Collector types.CollectorLookupTable
 	accmLookup, _ := k.GetCollectorLookupTable(ctx, updateLsrInColBinding.AppMappingId)
 
@@ -609,7 +609,7 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, updateLsrI
 	return nil
 }
 
-func (k *Keeper) WasmUpdateLsrInCollectorLookupTableQuery(ctx sdk.Context, appID, assetID uint64) (bool, string) {
+func (k *Keeper) WasmUpdateCollectorLookupTableQuery(ctx sdk.Context, appID, assetID uint64) (bool, string) {
 	_, found := k.GetCollectorLookupByAsset(ctx, appID, assetID)
 	if !found {
 		return false, types.ErrorDataDoesNotExists.Error()

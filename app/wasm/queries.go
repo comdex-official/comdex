@@ -105,13 +105,13 @@ func (qp QueryPlugin) WhiteListedAssetQueryCheck(ctx sdk.Context, appMappingID, 
 	return found, err
 }
 
-func (qp QueryPlugin) UpdateLsrInPairsVaultQueryCheck(ctx sdk.Context, appMappingID, extPairID uint64) (found bool, err string) {
-	found, err = qp.assetKeeper.WasmUpdateLsrInPairsVaultQuery(ctx, appMappingID, extPairID)
+func (qp QueryPlugin) UpdatePairsVaultQueryCheck(ctx sdk.Context, appMappingID, extPairID uint64) (found bool, err string) {
+	found, err = qp.assetKeeper.WasmUpdatePairsVaultQuery(ctx, appMappingID, extPairID)
 	return found, err
 }
 
-func (qp QueryPlugin) UpdateLsrInCollectorLookupTableQueryCheck(ctx sdk.Context, appMappingID, AssetId uint64) (found bool, err string) {
-	found, err = qp.collectorKeeper.WasmUpdateLsrInCollectorLookupTableQuery(ctx, appMappingID, AssetId)
+func (qp QueryPlugin) UpdateCollectorLookupTableQueryCheck(ctx sdk.Context, appMappingID, AssetId uint64) (found bool, err string) {
+	found, err = qp.collectorKeeper.WasmUpdateCollectorLookupTableQuery(ctx, appMappingID, AssetId)
 	return found, err
 }
 
