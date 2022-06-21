@@ -585,21 +585,21 @@ func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, appID uint64)
 	return true, ""
 }
 
-func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appID, assetID, debtThreshold, surplusThreshold, lotSize, debtLotSize uint64, bidFactor, lsr sdk.Dec) error  {
+func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, updateLsrInColBinding *bindings.MsgUpdateLsrInCollectorLookupTable) error {
 	var Collector types.CollectorLookupTable
-	accmLookup, _ := k.GetCollectorLookupTable(ctx, appID)
+	accmLookup, _ := k.GetCollectorLookupTable(ctx, updateLsrInColBinding.AppMappingId)
 
 	for _, data := range accmLookup.AssetRateInfo {
-		if data.CollectorAssetId == assetID {
-			Collector.CollectorAssetId = assetID
-            Collector.AppId = data.AppId
-            Collector.BidFactor = bidFactor
-            Collector.DebtThreshold = debtThreshold
-            Collector.SurplusThreshold = surplusThreshold
-            Collector.LockerSavingRate = lsr
-            Collector.LotSize = lotSize
-            Collector.SecondaryAssetId = data.SecondaryAssetId
-            Collector.DebtLotSize = debtLotSize
+		if data.CollectorAssetId == updateLsrInColBinding.AssetId {
+			Collector.CollectorAssetId = updateLsrInColBinding.AssetId
+			Collector.AppId = data.AppId
+			Collector.BidFactor = updateLsrInColBinding.BidFactor
+			Collector.DebtThreshold = updateLsrInColBinding.DebtThreshold
+			Collector.SurplusThreshold = updateLsrInColBinding.SurplusThreshold
+			Collector.LockerSavingRate = updateLsrInColBinding.LSR
+			Collector.LotSize = updateLsrInColBinding.LotSize
+			Collector.SecondaryAssetId = data.SecondaryAssetId
+			Collector.DebtLotSize = updateLsrInColBinding.DebtLotSize
 		}
 	}
 	err := k.SetCollectorLookupTableForWasm(ctx, Collector)
