@@ -380,7 +380,7 @@ func (k *Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAd
 func (k *Keeper) UpdateUserBorrowIdMapping(
 	ctx sdk.Context,
 	lendOwner string,
-	borrowId types.BorrowAsset,
+	borrow types.BorrowAsset,
 	isInsert bool,
 ) error {
 
@@ -396,10 +396,10 @@ func (k *Keeper) UpdateUserBorrowIdMapping(
 	}
 
 	if isInsert {
-		userVaults.Borrows = append(userVaults.Borrows, borrowId)
+		userVaults.Borrows = append(userVaults.Borrows, borrow)
 	} else {
 		for index, id := range userVaults.Borrows {
-			if id == borrowId {
+			if id.ID == borrow.ID {
 				userVaults.Borrows = append(userVaults.Borrows[:index], userVaults.Borrows[index+1:]...)
 				break
 			}
