@@ -199,7 +199,7 @@ func (k *Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingId u
 
 }
 
-func (k *Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingId uint64, from string, amount sdk.Coin) error {
+func (k *Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingId uint64, from sdk.AccAddress, amount sdk.Coin) error {
 
 	_, found := k.GetApp(ctx, appMappingId)
 	if !found {
@@ -217,14 +217,14 @@ func (k *Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingId uint64, from 
 	return nil
 }
 
-func (k *Keeper) BurnFrom(ctx sdk.Context, amount sdk.Coin, burnFrom string) error {
+func (k *Keeper) BurnFrom(ctx sdk.Context, amount sdk.Coin, burnFrom sdk.AccAddress) error {
 
-	addr, err := sdk.AccAddressFromBech32(burnFrom)
-	if err != nil {
-		return err
-	}
-	err = k.SendCoinFromAccountToModule(ctx,
-		addr,
+	// addr, err := sdk.AccAddressFromBech32(burnFrom)
+	// if err != nil {
+	// 	return err
+	// }
+	err := k.SendCoinFromAccountToModule(ctx,
+		burnFrom,
 		types.ModuleName,
 		amount)
 	if err != nil {

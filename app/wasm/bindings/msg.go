@@ -131,7 +131,7 @@ type MsgAddAuctionParams struct {
 }
 
 type MsgBurnGovTokensForApp struct {
-	AppMappingId           uint64  `json:"app_mapping_id"`
-	From 				   string  `json:"from"`					
-	Amount				   sdk.Coin `json:"amount"`
+	AppMappingId           uint64         `json:"app_mapping_id"`
+	From 				   sdk.AccAddress `json:"from"`					
+	Amount				   sdk.Coin       `json:"amount"`
 }
