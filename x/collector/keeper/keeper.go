@@ -29,7 +29,7 @@ func NewKeeper(
 	storeKey,
 	memKey sdk.StoreKey,
 	asset expected.AssetKeeper,
-	auction    expected.AuctionKeeper,
+	auction expected.AuctionKeeper,
 	ps paramtypes.Subspace,
 	bank expected.BankKeeper,
 
@@ -45,7 +45,7 @@ func NewKeeper(
 		storeKey:   storeKey,
 		memKey:     memKey,
 		asset:      asset,
-		auction: auction,
+		auction:    auction,
 		paramStore: ps,
 		bank:       bank,
 	}

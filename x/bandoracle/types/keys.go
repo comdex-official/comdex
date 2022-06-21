@@ -25,7 +25,7 @@ const (
 
 var (
 	// PortKey defines the key to store the port ID in store
-	PortKey = KeyPrefix("bandoracle-port-")
+	PortKey    = KeyPrefix("bandoracle-port-")
 	MsgdataKey = []byte{0x02}
 )
 

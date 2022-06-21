@@ -258,7 +258,7 @@ func (q *queryServer) QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(c context
 		for _, locker := range userlockerLookupData.LockerAppMapping {
 			if locker.AppMappingId == request.ProductId {
 				for _, data := range locker.UserAssetLocker {
-					if data.AssetId == request.AssetId{
+					if data.AssetId == request.AssetId {
 						userTxData = append(userTxData, data.UserData...)
 					}
 				}
@@ -554,9 +554,9 @@ func (q *queryServer) QueryLockerTotalRewardsByAssetAppWise(c context.Context, r
 		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
 	}
 
-	rewards_data, found := q.GetLockerTotalRewardsByAssetAppWise(ctx,request.AppId,request.AssetId)
-	if !found{
-		return &types.QueryLockerTotalRewardsByAssetAppWiseResponse{},nil
+	rewards_data, found := q.GetLockerTotalRewardsByAssetAppWise(ctx, request.AppId, request.AssetId)
+	if !found {
+		return &types.QueryLockerTotalRewardsByAssetAppWiseResponse{}, nil
 	}
 	return &types.QueryLockerTotalRewardsByAssetAppWiseResponse{
 		TotalRewards: rewards_data,

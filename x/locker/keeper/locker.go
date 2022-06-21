@@ -29,7 +29,7 @@ func (k *Keeper) SetLockerProductAssetMapping(ctx sdk.Context, lockerProductMapp
 
 }
 
-func (k *Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error{
+func (k *Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error {
 
 	var (
 		store = k.Store(ctx)

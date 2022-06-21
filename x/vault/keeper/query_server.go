@@ -141,9 +141,9 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 	for _, id := range vaultsIds {
 		vault, found := q.GetVault(ctx, id)
 		if !found {
-            count--
-            continue
-        }
+			count--
+			continue
+		}
 
 		collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
 		if err != nil {
@@ -171,8 +171,8 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 
 	}
 	if count == 0 {
-        return &types.QueryVaultInfoByAppByOwnerResponse{}, nil
-    }
+		return &types.QueryVaultInfoByAppByOwnerResponse{}, nil
+	}
 
 	return &types.QueryVaultInfoByAppByOwnerResponse{
 		VaultsInfo: vaultsInfo,
@@ -764,9 +764,9 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 	for _, data := range vaultsIds {
 		vault, found := q.GetVault(ctx, data)
 		if !found {
-            count--
-            continue
-        }
+			count--
+			continue
+		}
 
 		extPairVault, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
@@ -800,9 +800,9 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		availableBorrow = av.Quo(sdk.Int(sdk.OneDec())).Add(availableBorrow)
 
 	}
-	if count == 0{
-        return &types.QueryUserMyPositionByAppResponse{}, nil
-    }
+	if count == 0 {
+		return &types.QueryUserMyPositionByAppResponse{}, nil
+	}
 	totalLocked = totalLocked.Quo(sdk.NewInt(1000000))
 	totalDue = totalDue.Quo(sdk.NewInt(1000000))
 	availableBorrow = availableBorrow.Quo(sdk.NewInt(1000000))
@@ -820,14 +820,14 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 func (q *queryServer) QueryUserExtendedPairTotalData(c context.Context, req *types.QueryUserExtendedPairTotalDataRequest) (*types.QueryUserExtendedPairTotalDataResponse, error) {
 
 	var (
-		ctx           = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 
 	userVaultAssetData, found := q.GetUserVaultExtendedPairMapping(ctx, req.Owner)
 	if !found {
 		return &types.QueryUserExtendedPairTotalDataResponse{}, nil
 	}
-	
+
 	return &types.QueryUserExtendedPairTotalDataResponse{
 		UserTotalData: &userVaultAssetData,
 	}, nil

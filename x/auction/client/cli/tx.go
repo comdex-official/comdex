@@ -131,7 +131,6 @@ func txPlaceDutchBid() *cobra.Command {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-
 			auctionMappingId, err := strconv.ParseUint(args[4], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])

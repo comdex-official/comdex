@@ -1,27 +1,27 @@
 package keeper
 
 import (
-	"time"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 )
 
 func (k Keeper) DebtActivator(ctx sdk.Context) error {
 
 	auctionMapData, found := k.GetAllAuctionMappingForApp(ctx)
-	if !found{
+	if !found {
 		return nil
 	}
-	for _, data := range auctionMapData{
-		for _, indata := range data.AssetIdToAuctionLookup{
-			if indata.IsDebtAuction && !indata.IsAuctionActive{
-				err:= k.CreateDebtAuction(ctx, data.AppId, indata.AssetId )
-				if err !=nil{
+	for _, data := range auctionMapData {
+		for _, indata := range data.AssetIdToAuctionLookup {
+			if indata.IsDebtAuction && !indata.IsAuctionActive {
+				err := k.CreateDebtAuction(ctx, data.AppId, indata.AssetId)
+				if err != nil {
 					return err
 				}
-			}else if indata.IsDebtAuction && indata.IsAuctionActive{
+			} else if indata.IsDebtAuction && indata.IsAuctionActive {
 				err := k.DebtAuctionClose(ctx, data.AppId)
 				if err != nil {
 					return err
@@ -45,7 +45,7 @@ func (k Keeper) CreateDebtAuction(ctx sdk.Context, app_id, asset_id uint64) erro
 	auctionLookupTable, _ := k.GetAuctionMappingForApp(ctx, app_id)
 
 	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
-		if assetToAuction.AssetId == asset_id && status == auctiontypes.StartedDebtAuction{
+		if assetToAuction.AssetId == asset_id && status == auctiontypes.StartedDebtAuction {
 
 			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = true
 		}
@@ -54,7 +54,7 @@ func (k Keeper) CreateDebtAuction(ctx sdk.Context, app_id, asset_id uint64) erro
 	if err1 != nil {
 		return err1
 	}
-return nil
+	return nil
 }
 
 func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context, appId, assetId uint64) (status uint64, err error) {
@@ -66,7 +66,6 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 	for _, collector := range assetsCollectorDataUnderAppId.AssetRateInfo {
 
 		if collector.CollectorAssetId == assetId {
-			
 
 			NetFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appId)
 
@@ -79,7 +78,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 
 				if AssetIdToFeeCollected.AssetId == assetId {
 
-					if AssetIdToFeeCollected.NetFeesCollected.LTE(sdk.NewIntFromUint64(collector.DebtThreshold-collector.LotSize)) {
+					if AssetIdToFeeCollected.NetFeesCollected.LTE(sdk.NewIntFromUint64(collector.DebtThreshold - collector.LotSize)) {
 						// START DEBT AUCTION .  LOTSIZE AS MINTED FOR SECONDARY ASSET and ACCEPT Collector assetid from user
 						//calculate inflow token amount
 						assetInId := collector.CollectorAssetId
@@ -98,7 +97,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 							break
 						}
 						return auctiontypes.StartedDebtAuction, nil
-					
+
 					} else {
 
 						return auctiontypes.NoAuction, nil
@@ -110,7 +109,6 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 	return auctiontypes.NoAuction, nil
 }
 
-
 func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appId, AssetInId, AssetOutId uint64, lotSize sdk.Int) (status uint64, sellToken, buyToken sdk.Coin) {
 	emptyCoin := sdk.NewCoin("empty", sdk.NewIntFromUint64(1))
 	sellAsset, found1 := k.GetAsset(ctx, AssetOutId)
@@ -121,7 +119,7 @@ func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appId, AssetInId, AssetO
 	var debtLot uint64
 	collectorData, _ := k.GetCollectorLookupTable(ctx, appId)
 	for _, collector := range collectorData.AssetRateInfo {
-		if collector.CollectorAssetId == AssetInId{
+		if collector.CollectorAssetId == AssetInId {
 			debtLot = collector.DebtLotSize
 		}
 	}
@@ -307,7 +305,7 @@ func (k Keeper) closeDebtAuction(
 
 func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appId, auctionMappingId, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin, expectedUserToken sdk.Coin) error {
 	auction, err := k.GetDebtAuction(ctx, appId, auctionMappingId, auctionId)
-	auctionParam, _ := k.GetAuctionParams(ctx,appId)
+	auctionParam, _ := k.GetAuctionParams(ctx, appId)
 
 	if err != nil {
 		return auctiontypes.ErrorInvalidDebtAuctionId
@@ -322,7 +320,6 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appId, auctionMappingId, au
 	if bid.Denom != auction.ExpectedMintedToken.Denom {
 		return auctiontypes.ErrorInvalidDebtMintedDenom
 	}
-
 
 	if auction.AuctionStatus != auctiontypes.AuctionStartNoBids {
 		change := auction.BidFactor.MulInt(auction.ExpectedMintedToken.Amount).Ceil().TruncateInt()
@@ -370,7 +367,7 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appId, auctionMappingId, au
 	auction.CurrentBidAmount = bid
 	auction.ExpectedMintedToken = bid
 	auction.BidEndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParam.BidDurationSeconds))
-	if auction.BidEndTime.After((auction.EndTime)){
+	if auction.BidEndTime.After((auction.EndTime)) {
 		auction.BidEndTime = auction.EndTime
 	}
 	err = k.SetDebtAuction(ctx, auction)
@@ -379,7 +376,6 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appId, auctionMappingId, au
 	}
 	return nil
 }
-
 
 func (k Keeper) CreateNewDebtBid(ctx sdk.Context, appId, auctionMappingId, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin, expectedUserToken sdk.Coin) (biddingId uint64, err error) {
 	bidding := auctiontypes.DebtBiddings{

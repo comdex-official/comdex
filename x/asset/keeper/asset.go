@@ -86,7 +86,7 @@ func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
 		if err != nil {
-			
+
 		}
 	}(iter)
 

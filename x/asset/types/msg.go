@@ -13,9 +13,9 @@ var (
 
 func NewMsgAddPairRequest(from sdk.AccAddress, assetIn, assetOut uint64, liquidationRatio sdk.Dec) *MsgAddPairRequest {
 	return &MsgAddPairRequest{
-		From:             from.String(),
-		AssetIn:          assetIn,
-		AssetOut:         assetOut,
+		From:     from.String(),
+		AssetIn:  assetIn,
+		AssetOut: assetOut,
 	}
 }
 

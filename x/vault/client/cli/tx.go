@@ -70,7 +70,7 @@ func txCreate() *cobra.Command {
 				return types.ErrorInvalidAmountOut
 			}
 
-			msg := types.NewMsgCreateRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amountIn, amountOut)
+			msg := types.NewMsgCreateRequest(ctx.FromAddress, app_mapping_id, extended_pair_vault_id, amountIn, amountOut)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -277,7 +277,6 @@ func txClose() *cobra.Command {
 	return cmd
 }
 
-
 func txCreateStableMint() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-stable-mint [app_mapping_id] [extended_pair_vault_id] [amount] ",
@@ -304,9 +303,7 @@ func txCreateStableMint() *cobra.Command {
 				return types.ErrorInvalidAmountIn
 			}
 
-			
-
-			msg := types.NewMsgCreateStableMintRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amount)
+			msg := types.NewMsgCreateStableMintRequest(ctx.FromAddress, app_mapping_id, extended_pair_vault_id, amount)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -347,9 +344,8 @@ func txDepositStableMint() *cobra.Command {
 				return types.ErrorInvalidAmountIn
 			}
 			stablemint_id := args[3]
-			
 
-			msg := types.NewMsgDepositStableMintRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amount, stablemint_id)
+			msg := types.NewMsgDepositStableMintRequest(ctx.FromAddress, app_mapping_id, extended_pair_vault_id, amount, stablemint_id)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -390,9 +386,8 @@ func txWithdrawStableMint() *cobra.Command {
 				return types.ErrorInvalidAmountIn
 			}
 			stablemint_id := args[3]
-			
 
-			msg := types.NewMsgWithdrawStableMintRequest(ctx.FromAddress,app_mapping_id, extended_pair_vault_id, amount, stablemint_id)
+			msg := types.NewMsgWithdrawStableMintRequest(ctx.FromAddress, app_mapping_id, extended_pair_vault_id, amount, stablemint_id)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

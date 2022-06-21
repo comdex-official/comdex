@@ -958,7 +958,7 @@ func QueryUserMyPositionByApp() *cobra.Command {
 
 			res, err := queryClient.QueryUserMyPositionByApp(cmd.Context(), &types.QueryUserMyPositionByAppRequest{
 				AppId: app_id,
-				Owner: args[1] ,
+				Owner: args[1],
 			})
 
 			if err != nil {

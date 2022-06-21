@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
+	keepertest "github.com/comdex-official/comdex/testutil/keeper"
+	"github.com/comdex-official/comdex/x/collector/keeper"
+	"github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-    "github.com/comdex-official/comdex/x/collector/types"
-    "github.com/comdex-official/comdex/x/collector/keeper"
-    keepertest "github.com/comdex-official/comdex/testutil/keeper"
 )
 
 func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {

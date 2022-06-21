@@ -8,7 +8,7 @@ import (
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	block := k.GetLastBlockheight(ctx)
-	if block !=0 {
+	if block != 0 {
 		if ctx.BlockHeight()%20 == 0 {
 			req := k.GetTempFetchPriceID(ctx)
 			res := k.OraclePriceValidationByRequestId(ctx, req)

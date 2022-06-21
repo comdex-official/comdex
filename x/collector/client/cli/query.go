@@ -132,7 +132,7 @@ func QueryCollectorDataByProductAndAsset() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryCollectorDataByProductAndAsset(cmd.Context(), &types.QueryCollectorDataByProductAndAssetRequest{
-				AppId: appId,
+				AppId:   appId,
 				AssetId: assetId,
 			})
 
@@ -146,7 +146,6 @@ func QueryCollectorDataByProductAndAsset() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }
-
 
 func QueryAuctionMappingForAppAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
@@ -171,7 +170,7 @@ func QueryAuctionMappingForAppAndAsset() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAuctionMappingForAppAndAsset(cmd.Context(), &types.QueryAuctionMappingForAppAndAssetRequest{
-				AppId: appId,
+				AppId:   appId,
 				AssetId: assetId,
 			})
 
@@ -209,7 +208,7 @@ func QueryNetFeeCollectedForAppAndAsset() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryNetFeeCollectedForAppAndAsset(cmd.Context(), &types.QueryNetFeeCollectedForAppAndAssetRequest{
-				AppId: appId,
+				AppId:   appId,
 				AssetId: assetId,
 			})
 

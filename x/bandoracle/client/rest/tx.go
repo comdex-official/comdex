@@ -8,9 +8,7 @@ import (
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 )
 
-
 type UpdateNewPairRequest struct{}
-
 
 func SubmitFetchPriceProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
@@ -28,4 +26,3 @@ func FetchPriceRESTHandler(clientCtx client.Context) http.HandlerFunc {
 		}
 	}
 }
-
