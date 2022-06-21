@@ -105,7 +105,6 @@ func (m *CustomMessenger) whitelistAssetLocker(ctx sdk.Context, contractAddr sdk
 
 func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	whiteListAsset *bindings.MsgWhiteListAssetLocker) error {
-
 	msg := lockertypes.MsgAddWhiteListedAssetRequest{
 		From:         contractAddr.String(),
 		AppMappingId: whiteListAsset.AppMappingId,
@@ -132,7 +131,6 @@ func (m *CustomMessenger) whitelistAppIdLockerRewards(ctx sdk.Context, contractA
 
 func WhitelistAppIdLockerRewards(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	whiteListAsset *bindings.MsgWhitelistAppIdLockerRewards) error {
-
 	msg := rewardstypes.WhitelistAsset{
 		From:         contractAddr.String(),
 		AppMappingId: whiteListAsset.AppMappingId,
@@ -159,7 +157,6 @@ func (m *CustomMessenger) whitelistAppIdVaultInterest(ctx sdk.Context, contractA
 
 func WhitelistAppIdVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	whiteListAsset *bindings.MsgWhitelistAppIdVaultInterest) error {
-
 	msg := rewardstypes.WhitelistAppIdVault{
 
 		From:         contractAddr.String(),
@@ -207,8 +204,8 @@ func (m *CustomMessenger) SetCollectorLookupTable(ctx sdk.Context, contractAddr 
 }
 
 func MsgSetCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgSetCollectorLookupTable) error {
-	err := collectorKeeper.WasmSetCollectorLookupTable(ctx, a.AppMappingId, a.CollectorAssetId, a.SecondaryAssetId, a.SurplusThreshold, a.DebtThreshold, a.LockerSavingRate, a.LotSize, a.BidFactor, a.DebtLotSize)
+	collectorBindings *bindings.MsgSetCollectorLookupTable) error {
+	err := collectorKeeper.WasmSetCollectorLookupTable(ctx, collectorBindings)
 	if err != nil {
 		return err
 	}
@@ -224,8 +221,8 @@ func (m *CustomMessenger) SetAuctionMappingForApp(ctx sdk.Context, contractAddr 
 }
 
 func MsgSetAuctionMappingForApp(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgSetAuctionMappingForApp) error {
-	err := collectorKeeper.WasmSetAuctionMappingForApp(ctx, a.AppMappingId, a.AssetId, a.IsSurplusAuction, a.IsDebtAuction, a.AssetOutOraclePrice, a.AssetOutPrice)
+	auctionMappingBinding *bindings.MsgSetAuctionMappingForApp) error {
+	err := collectorKeeper.WasmSetAuctionMappingForApp(ctx, auctionMappingBinding)
 	if err != nil {
 		return err
 	}

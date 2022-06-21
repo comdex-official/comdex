@@ -50,7 +50,7 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	return k.market.GetPriceForAsset(ctx, id)
 }
 
-func (k *Keeper) GetLockedVaults(ctx sdk.Context) (locked_vaults []liquidationtypes.LockedVault) {
+func (k *Keeper) GetLockedVaults(ctx sdk.Context) (lockedVaults []liquidationtypes.LockedVault) {
 	return k.liquidation.GetLockedVaults(ctx)
 }
 
@@ -82,12 +82,12 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 	return k.collector.SetCollectorLookupTable(ctx, records...)
 }
 
-func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collectorLookup types.CollectorLookup, found bool) {
-	return k.collector.GetCollectorLookupTable(ctx, app_id)
+func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup types.CollectorLookup, found bool) {
+	return k.collector.GetCollectorLookupTable(ctx, appID)
 }
 
-func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData types.NetFeeCollectedData, found bool) {
-	return k.collector.GetNetFeeCollectedData(ctx, app_id)
+func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData types.NetFeeCollectedData, found bool) {
+	return k.collector.GetNetFeeCollectedData(ctx, appID)
 }
 func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool) {
 	return k.asset.GetApps(ctx)

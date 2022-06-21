@@ -1,54 +1,52 @@
 package keeper
 
 import (
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetAmountFromCollector returns amount from the collector
-func (k *Keeper) GetAmountFromCollector(ctx sdk.Context, appId, assetId uint64, amount sdk.Int) (sdk.Int, error) {
-	netFeeData, found := k.GetNetFeeCollectedData(ctx, appId)
+func (k *Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) (sdk.Int, error) {
+	netFeeData, found := k.GetNetFeeCollectedData(ctx, appID)
 	var returnedFee sdk.Int
 	if !found {
 		return returnedFee, types.ErrorDataDoesNotExists
 	}
 
 	for _, data := range netFeeData.AssetIdToFeeCollected {
-		if data.AssetId == assetId {
+		if data.AssetId == assetID {
 			if !(data.NetFeesCollected.Sub(amount).GT(sdk.ZeroInt())) {
 				return returnedFee, types.ErrorRequestedAmtExceedsCollectedFee
-			} else {
-				asset, _ := k.GetAsset(ctx, assetId)
-				err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
-				if err != nil {
-					return returnedFee, err
-				}
-				err = k.DecreaseNetFeeCollectedData(ctx, appId, assetId, amount)
-				if err != nil {
-					return sdk.Int{}, err
-				}
+			}
+			asset, _ := k.GetAsset(ctx, assetID)
+			err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
+			if err != nil {
+				return returnedFee, err
+			}
+			err = k.DecreaseNetFeeCollectedData(ctx, appID, assetID, amount)
+			if err != nil {
+				return sdk.Int{}, err
 			}
 		}
-
 	}
 	return returnedFee, nil
 }
 
-func (k *Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appId, assetId uint64, amount sdk.Int) error {
-
-	collectorData, found := k.GetNetFeeCollectedData(ctx, appId)
+func (k *Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) error {
+	collectorData, found := k.GetNetFeeCollectedData(ctx, appID)
 	if !found {
 		return types.ErrorDataDoesNotExists
 	}
 	var netCollected types.NetFeeCollectedData
 	var assetCollected types.AssetIdToFeeCollected
-	netCollected.AppId = appId
+	netCollected.AppId = appID
 
 	var netCollectedFee sdk.Int
 	for _, data := range collectorData.AssetIdToFeeCollected {
-		if data.AssetId == assetId {
-			assetCollected.AssetId = assetId
+		if data.AssetId == assetID {
+			assetCollected.AssetId = assetID
 			netCollectedFee = data.NetFeesCollected.Sub(amount)
 		}
 	}
@@ -56,7 +54,7 @@ func (k *Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appId, assetId uin
 	netCollected.AssetIdToFeeCollected = append(netCollected.AssetIdToFeeCollected, assetCollected)
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.NetFeeCollectedDataKey(appId)
+		key   = types.NetFeeCollectedDataKey(appID)
 		value = k.cdc.MustMarshal(&netCollected)
 	)
 
@@ -66,54 +64,66 @@ func (k *Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appId, assetId uin
 }
 
 // UpdateCollector update collector store
-func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, assetId uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error {
-	if !k.HasAsset(ctx, assetId) {
+func (k *Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected sdk.Int) error {
+	if !k.HasAsset(ctx, assetID) {
 		return types.ErrorAssetDoesNotExist
 	}
 
-	collectorData, found := k.GetAppidToAssetCollectorMapping(ctx, appId)
+	collectorData, found := k.GetAppidToAssetCollectorMapping(ctx, appID)
 	if !found {
 		//create a new instance of AppId To AssetCollectorMapping
 		var collectorNewData types.AppIdToAssetCollectorMapping
-		collectorNewData.AppId = appId
+		collectorNewData.AppId = appID
 
-		var assetIdCollect types.AssetIdCollectorMapping
-		assetIdCollect.AssetId = assetId
+		var assetIDCollect types.AssetIdCollectorMapping
+		assetIDCollect.AssetId = assetID
 
 		var newCollector types.CollectorData
-		newCollector.CollectedClosingFee = CollectedClosingFee
-		newCollector.CollectedOpeningFee = CollectedOpeningFee
-		newCollector.CollectedStabilityFee = CollectedStabilityFee
-		newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
-		assetIdCollect.Collector = newCollector
-		collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, assetIdCollect)
+		newCollector.CollectedClosingFee = collectedClosingFee
+		newCollector.CollectedOpeningFee = collectedOpeningFee
+		newCollector.CollectedStabilityFee = collectedStabilityFee
+		newCollector.LiquidationRewardsCollected = liquidationRewardsCollected
+		assetIDCollect.Collector = newCollector
+		collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, assetIDCollect)
 
 		k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
-		k.SetNetFeeCollectedData(ctx, appId, assetId, newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee).Add(newCollector.CollectedStabilityFee).Add(newCollector.LiquidationRewardsCollected))
+		err := k.SetNetFeeCollectedData(ctx, appID, assetID,
+			newCollector.CollectedClosingFee.
+				Add(newCollector.CollectedOpeningFee).
+				Add(newCollector.CollectedStabilityFee).
+				Add(newCollector.LiquidationRewardsCollected))
+		if err != nil {
+			return err
+		}
 	} else {
-
-		var check = 0 // makes it 1 if assetId exists for appId
+		var check = 0 // makes it 1 if assetID exists for appId
 		for _, data := range collectorData.AssetCollector {
-
-			if data.AssetId == assetId {
+			if data.AssetId == assetID {
 				check++
 				var collectorNewData types.AppIdToAssetCollectorMapping
-				collectorNewData.AppId = appId
+				collectorNewData.AppId = appID
 
-				var assetIdCollect types.AssetIdCollectorMapping
-				assetIdCollect.AssetId = assetId
+				var assetIDCollect types.AssetIdCollectorMapping
+				assetIDCollect.AssetId = assetID
 
 				var newCollector types.CollectorData
-				newCollector.CollectedClosingFee = data.Collector.CollectedClosingFee.Add(CollectedClosingFee)
-				newCollector.CollectedOpeningFee = data.Collector.CollectedOpeningFee.Add(CollectedOpeningFee)
-				newCollector.CollectedStabilityFee = data.Collector.CollectedStabilityFee.Add(CollectedStabilityFee)
+				newCollector.CollectedClosingFee = data.Collector.CollectedClosingFee.Add(collectedClosingFee)
+				newCollector.CollectedOpeningFee = data.Collector.CollectedOpeningFee.Add(collectedOpeningFee)
+				newCollector.CollectedStabilityFee = data.Collector.CollectedStabilityFee.Add(collectedStabilityFee)
 				newCollector.LiquidationRewardsCollected = sdk.ZeroInt()
-				newCollector.LiquidationRewardsCollected = data.Collector.LiquidationRewardsCollected.Add((newCollector.LiquidationRewardsCollected))
-				assetIdCollect.Collector = newCollector
+				newCollector.LiquidationRewardsCollected = data.Collector.LiquidationRewardsCollected.Add(newCollector.LiquidationRewardsCollected)
+				assetIDCollect.Collector = newCollector
 
-				collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, assetIdCollect)
+				collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, assetIDCollect)
 				k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
-				k.SetNetFeeCollectedData(ctx, appId, assetId, CollectedClosingFee.Add(CollectedOpeningFee).Add(CollectedStabilityFee).Add(LiquidationRewardsCollected))
+				err := k.SetNetFeeCollectedData(ctx, appID, assetID,
+					collectedClosingFee.
+						Add(collectedOpeningFee).
+						Add(collectedStabilityFee).
+						Add(liquidationRewardsCollected))
+				if err != nil {
+					return err
+				}
 
 				return nil
 			}
@@ -121,22 +131,29 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, assetId uint64, Collect
 
 		if check == 0 {
 			var collectorNewData types.AppIdToAssetCollectorMapping
-			collectorNewData.AppId = appId
+			collectorNewData.AppId = appID
 
-			var assetIdCollect types.AssetIdCollectorMapping
-			assetIdCollect.AssetId = assetId
+			var assetIDCollect types.AssetIdCollectorMapping
+			assetIDCollect.AssetId = assetID
 			var newCollector types.CollectorData
 
-			newCollector.CollectedClosingFee = CollectedClosingFee
-			newCollector.CollectedOpeningFee = CollectedOpeningFee
-			newCollector.CollectedStabilityFee = CollectedStabilityFee
-			newCollector.LiquidationRewardsCollected = LiquidationRewardsCollected
-			assetIdCollect.Collector = newCollector
+			newCollector.CollectedClosingFee = collectedClosingFee
+			newCollector.CollectedOpeningFee = collectedOpeningFee
+			newCollector.CollectedStabilityFee = collectedStabilityFee
+			newCollector.LiquidationRewardsCollected = liquidationRewardsCollected
+			assetIDCollect.Collector = newCollector
 
-			collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, assetIdCollect)
+			collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, assetIDCollect)
 
 			k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
-			k.SetNetFeeCollectedData(ctx, appId, assetId, newCollector.CollectedClosingFee.Add(newCollector.CollectedOpeningFee).Add(newCollector.CollectedStabilityFee).Add(newCollector.LiquidationRewardsCollected))
+			err := k.SetNetFeeCollectedData(ctx, appID, assetID,
+				newCollector.CollectedClosingFee.
+					Add(newCollector.CollectedOpeningFee).
+					Add(newCollector.CollectedStabilityFee).
+					Add(newCollector.LiquidationRewardsCollected))
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -145,21 +162,19 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, assetId uint64, Collect
 
 // SetAppidToAssetCollectorMapping update collector with app_id and asset
 func (k *Keeper) SetAppidToAssetCollectorMapping(ctx sdk.Context, appAssetCollectorData types.AppIdToAssetCollectorMapping) {
-
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.AppidToAssetCollectorMappingKey(appAssetCollectorData.AppId)
 		value = k.cdc.MustMarshal(&appAssetCollectorData)
 	)
 	store.Set(key, value)
-
 }
 
 // GetAppidToAssetCollectorMapping returns app_id to asset mapping for collector
-func (k *Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appId uint64) (appAssetCollectorData types.AppIdToAssetCollectorMapping, found bool) {
+func (k *Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (appAssetCollectorData types.AppIdToAssetCollectorMapping, found bool) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.AppidToAssetCollectorMappingKey(appId)
+		key   = types.AppidToAssetCollectorMappingKey(appID)
 		value = store.Get(key)
 	)
 
@@ -202,7 +217,6 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 			// if denom is new then append
 			appDenom.AssetIds = append(appDenom.AssetIds, msg.CollectorAssetId)
 			k.SetAppToDenomsMapping(ctx, msg.AppId, appDenom)
-
 		} else {
 			//initialize the mappping
 			var appDenomNew types.AppToDenomsMapping
@@ -238,14 +252,12 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 
 }
 
-func (k *Keeper) SetCollectorLookupTableforWasm(ctx sdk.Context, records ...types.CollectorLookupTable) error {
+func (k *Keeper) SetCollectorLookupTableForWasm(ctx sdk.Context, records ...types.CollectorLookupTable) error {
 	for _, msg := range records {
-
 		accmLookup, _ := k.GetCollectorLookupTable(ctx, msg.AppId)
 		accmLookup.AppId = msg.AppId
 		aa := accmLookup.AssetRateInfo
 		for j, v := range aa {
-
 			if v.CollectorAssetId == msg.CollectorAssetId {
 				v.LockerSavingRate = msg.LockerSavingRate
 				accmLookup.AssetRateInfo[j] = v
@@ -263,10 +275,10 @@ func (k *Keeper) SetCollectorLookupTableforWasm(ctx sdk.Context, records ...type
 }
 
 // GetCollectorLookupTable returns collector lookup table
-func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, appId uint64) (collectorLookup types.CollectorLookup, found bool) {
+func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup types.CollectorLookup, found bool) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.CollectorLookupTableMappingKey(appId)
+		key   = types.CollectorLookupTableMappingKey(appID)
 		value = store.Get(key)
 	)
 
@@ -279,15 +291,15 @@ func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, appId uint64) (collect
 }
 
 // GetCollectorLookupByAsset return collector lookup data queried on asset
-func (k *Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appId, assetId uint64) (collectorLookupTable types.CollectorLookupTable, found bool) {
-	collectorLookup, found := k.GetCollectorLookupTable(ctx, appId)
+func (k *Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64) (collectorLookupTable types.CollectorLookupTable, found bool) {
+	collectorLookup, found := k.GetCollectorLookupTable(ctx, appID)
 	if !found {
 		return collectorLookupTable, false
 	}
 
 	var assetRateInfo types.CollectorLookupTable
 	for _, data := range collectorLookup.AssetRateInfo {
-		if data.CollectorAssetId == assetId {
+		if data.CollectorAssetId == assetID {
 			assetRateInfo = data
 		}
 	}
@@ -295,10 +307,10 @@ func (k *Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appId, assetId uint6
 }
 
 // SetAppToDenomsMapping set denoms for appId in Collector LookupTable
-func (k *Keeper) SetAppToDenomsMapping(ctx sdk.Context, appId uint64, appToDenom types.AppToDenomsMapping) {
+func (k *Keeper) SetAppToDenomsMapping(ctx sdk.Context, appID uint64, appToDenom types.AppToDenomsMapping) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.CollectorForDenomKey(appId)
+		key   = types.CollectorForDenomKey(appID)
 		value = k.cdc.MustMarshal(&appToDenom)
 	)
 
@@ -306,10 +318,10 @@ func (k *Keeper) SetAppToDenomsMapping(ctx sdk.Context, appId uint64, appToDenom
 }
 
 // GetAppToDenomsMapping get denoms for appId in Collector LookupTable
-func (k *Keeper) GetAppToDenomsMapping(ctx sdk.Context, AppId uint64) (appToDenom types.AppToDenomsMapping, found bool) {
+func (k *Keeper) GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom types.AppToDenomsMapping, found bool) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.CollectorForDenomKey(AppId)
+		key   = types.CollectorForDenomKey(appID)
 		value = store.Get(key)
 	)
 
@@ -344,21 +356,20 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Colle
 		}
 		var (
 			store = ctx.KVStore(k.storeKey)
-			key   = types.AppIdToAuctionMappingKey(msg.AppId)
+			key   = types.AppIDToAuctionMappingKey(msg.AppId)
 			value = k.cdc.MustMarshal(&collectorAuctionLookup)
 		)
 
 		store.Set(key, value)
-
 	}
 	return nil
 }
 
 // GetAuctionMappingForApp gets auction map data for app/product
-func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, appId uint64) (collectorAuctionLookupTable types.CollectorAuctionLookupTable, found bool) {
+func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, appID uint64) (collectorAuctionLookupTable types.CollectorAuctionLookupTable, found bool) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.AppIdToAuctionMappingKey(appId)
+		key   = types.AppIDToAuctionMappingKey(appID)
 		value = store.Get(key)
 	)
 
@@ -371,13 +382,17 @@ func (k *Keeper) GetAuctionMappingForApp(ctx sdk.Context, appId uint64) (collect
 }
 
 func (k *Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.CollectorAuctionLookupTable, found bool) {
-
 	var (
 		store = ctx.KVStore(k.storeKey)
-		iter  = sdk.KVStorePrefixIterator(store, types.AppIdToAuctionMappingPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.AppIDToAuctionMappingPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var table types.CollectorAuctionLookupTable
@@ -391,24 +406,23 @@ func (k *Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLo
 	return collectorAuctionLookupTable, true
 }
 
-func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, appId, assetId uint64, fee sdk.Int) error {
-
-	collectorData, found := k.GetNetFeeCollectedData(ctx, appId)
+func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error {
+	collectorData, found := k.GetNetFeeCollectedData(ctx, appID)
 	if !found {
 		var netCollected types.NetFeeCollectedData
 		var assetCollected types.AssetIdToFeeCollected
-		netCollected.AppId = appId
+		netCollected.AppId = appID
 
 		var netCollectedFee sdk.Int
 
-		assetCollected.AssetId = assetId
+		assetCollected.AssetId = assetID
 		netCollectedFee = fee
 
 		assetCollected.NetFeesCollected = netCollectedFee
 		netCollected.AssetIdToFeeCollected = append(netCollected.AssetIdToFeeCollected, assetCollected)
 		var (
 			store = ctx.KVStore(k.storeKey)
-			key   = types.NetFeeCollectedDataKey(appId)
+			key   = types.NetFeeCollectedDataKey(appID)
 			value = k.cdc.MustMarshal(&netCollected)
 		)
 
@@ -416,12 +430,12 @@ func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, appId, assetId uint64, 
 	} else {
 		var netCollected types.NetFeeCollectedData
 		var assetCollected types.AssetIdToFeeCollected
-		netCollected.AppId = appId
+		netCollected.AppId = appID
 
 		var netCollectedFee sdk.Int
 		for _, data := range collectorData.AssetIdToFeeCollected {
-			if data.AssetId == assetId {
-				assetCollected.AssetId = assetId
+			if data.AssetId == assetID {
+				assetCollected.AssetId = assetID
 				netCollectedFee = data.NetFeesCollected.Add(fee)
 			}
 		}
@@ -429,7 +443,7 @@ func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, appId, assetId uint64, 
 		netCollected.AssetIdToFeeCollected = append(netCollected.AssetIdToFeeCollected, assetCollected)
 		var (
 			store = ctx.KVStore(k.storeKey)
-			key   = types.NetFeeCollectedDataKey(appId)
+			key   = types.NetFeeCollectedDataKey(appID)
 			value = k.cdc.MustMarshal(&netCollected)
 		)
 
@@ -440,11 +454,10 @@ func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, appId, assetId uint64, 
 }
 
 // GetNetFeeCollectedData sets net fees collected
-func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, appId uint64) (netFeeData types.NetFeeCollectedData, found bool) {
-
+func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData types.NetFeeCollectedData, found bool) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.NetFeeCollectedDataKey(appId)
+		key   = types.NetFeeCollectedDataKey(appID)
 		value = store.Get(key)
 	)
 
@@ -456,23 +469,22 @@ func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, appId uint64) (netFeeDa
 	return netFeeData, true
 }
 
-func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAssetId, SecondaryAssetId, SurplusThreshold, DebtThreshold uint64, LockerSavingRate sdk.Dec, LotSize uint64, BidFactor sdk.Dec, DebtLotSize uint64) error {
-
-	if !k.HasAsset(ctx, CollectorAssetId) {
+func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, collectorBindings *bindings.MsgSetCollectorLookupTable) error {
+	if !k.HasAsset(ctx, collectorBindings.CollectorAssetId) {
 		return types.ErrorAssetDoesNotExist
 	}
-	if !k.HasAsset(ctx, SecondaryAssetId) {
+	if !k.HasAsset(ctx, collectorBindings.SecondaryAssetId) {
 		return types.ErrorAssetDoesNotExist
 	}
-	if CollectorAssetId == SecondaryAssetId {
+	if collectorBindings.CollectorAssetId == collectorBindings.SecondaryAssetId {
 		return types.ErrorDuplicateAssetDenoms
 	}
-	appDenom, found := k.GetAppToDenomsMapping(ctx, AppId)
+	appDenom, found := k.GetAppToDenomsMapping(ctx, collectorBindings.AppMappingId)
 	if found {
-		//check if assetdenom already exists
+		//check if asset denom already exists
 		var check = 0
 		for _, data := range appDenom.AssetIds {
-			if data == CollectorAssetId {
+			if data == collectorBindings.CollectorAssetId {
 				check++
 			}
 		}
@@ -480,35 +492,34 @@ func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAs
 			return types.ErrorDuplicateCollectorDenomForApp
 		}
 		// if denom is new then append
-		appDenom.AssetIds = append(appDenom.AssetIds, CollectorAssetId)
-		k.SetAppToDenomsMapping(ctx, AppId, appDenom)
-
+		appDenom.AssetIds = append(appDenom.AssetIds, collectorBindings.CollectorAssetId)
+		k.SetAppToDenomsMapping(ctx, collectorBindings.AppMappingId, appDenom)
 	} else {
-		//initialize the mappping
+		//initialize the mapping
 		var appDenomNew types.AppToDenomsMapping
-		appDenomNew.AppId = AppId
-		appDenomNew.AssetIds = append(appDenomNew.AssetIds, CollectorAssetId)
-		k.SetAppToDenomsMapping(ctx, AppId, appDenomNew)
+		appDenomNew.AppId = collectorBindings.AppMappingId
+		appDenomNew.AssetIds = append(appDenomNew.AssetIds, collectorBindings.CollectorAssetId)
+		k.SetAppToDenomsMapping(ctx, collectorBindings.AppMappingId, appDenomNew)
 	}
 
 	var Collector = types.CollectorLookupTable{
-		AppId:            AppId,
-		CollectorAssetId: CollectorAssetId,
-		SecondaryAssetId: SecondaryAssetId,
-		SurplusThreshold: SurplusThreshold,
-		DebtThreshold:    DebtThreshold,
-		LockerSavingRate: LockerSavingRate,
-		LotSize:          LotSize,
-		BidFactor:        BidFactor,
-		DebtLotSize:      DebtLotSize,
+		AppId:            collectorBindings.AppMappingId,
+		CollectorAssetId: collectorBindings.CollectorAssetId,
+		SecondaryAssetId: collectorBindings.SecondaryAssetId,
+		SurplusThreshold: collectorBindings.SurplusThreshold,
+		DebtThreshold:    collectorBindings.DebtThreshold,
+		LockerSavingRate: collectorBindings.LockerSavingRate,
+		LotSize:          collectorBindings.LotSize,
+		BidFactor:        collectorBindings.BidFactor,
+		DebtLotSize:      collectorBindings.DebtLotSize,
 	}
-	accmLookup, _ := k.GetCollectorLookupTable(ctx, AppId)
-	accmLookup.AppId = AppId
+	accmLookup, _ := k.GetCollectorLookupTable(ctx, collectorBindings.AppMappingId)
+	accmLookup.AppId = collectorBindings.AppMappingId
 	accmLookup.AssetRateInfo = append(accmLookup.AssetRateInfo, Collector)
 
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.CollectorLookupTableMappingKey(AppId)
+		key   = types.CollectorLookupTableMappingKey(collectorBindings.AppMappingId)
 		value = k.cdc.MustMarshal(&accmLookup)
 	)
 
@@ -516,23 +527,22 @@ func (k *Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, AppId, CollectorAs
 	return nil
 }
 
-func (k *Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, AppId, CollectorAssetId, SecondaryAssetId uint64) (bool, string) {
-
-	if !k.HasAsset(ctx, CollectorAssetId) {
+func (k *Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, appID, collectorAssetID, secondaryAssetID uint64) (bool, string) {
+	if !k.HasAsset(ctx, collectorAssetID) {
 		return false, types.ErrorAssetDoesNotExist.Error()
 	}
-	if !k.HasAsset(ctx, SecondaryAssetId) {
+	if !k.HasAsset(ctx, secondaryAssetID) {
 		return false, types.ErrorAssetDoesNotExist.Error()
 	}
-	if CollectorAssetId == SecondaryAssetId {
+	if collectorAssetID == secondaryAssetID {
 		return false, types.ErrorDuplicateAssetDenoms.Error()
 	}
-	appDenom, found := k.GetAppToDenomsMapping(ctx, AppId)
+	appDenom, found := k.GetAppToDenomsMapping(ctx, appID)
 	if found {
-		//check if assetdenom already exists
+		//check if asset denom already exists
 		var check = 0
 		for _, data := range appDenom.AssetIds {
-			if data == CollectorAssetId {
+			if data == collectorAssetID {
 				check++
 			}
 		}
@@ -543,25 +553,24 @@ func (k *Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, AppId, Collec
 	return true, ""
 }
 
-func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, AssetId []uint64, IsSurplusAuction, IsDebtAuction, AssetOutOraclePrice []bool, AssetOutPrice []uint64) error {
-
+func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBinding *bindings.MsgSetAuctionMappingForApp) error {
 	var collectorAuctionLookup types.CollectorAuctionLookupTable
-	collectorAuctionLookup.AppId = AppId
-	var AssetIdToAuctionLookups []types.AssetIdToAuctionLookupTable
-	for i := range AssetId {
-		AssetIdToAuctionLookup := types.AssetIdToAuctionLookupTable{
-			AssetId:             AssetId[i],
-			IsSurplusAuction:    IsSurplusAuction[i],
-			IsDebtAuction:       IsDebtAuction[i],
-			AssetOutOraclePrice: AssetOutOraclePrice[i],
-			AssetOutPrice:       AssetOutPrice[i],
+	collectorAuctionLookup.AppId = auctionMappingBinding.AppMappingId
+	var assetIDToAuctionLookups []types.AssetIdToAuctionLookupTable
+	for i := range auctionMappingBinding.AssetId {
+		assetIDToAuctionLookup := types.AssetIdToAuctionLookupTable{
+			AssetId:             auctionMappingBinding.AssetId[i],
+			IsSurplusAuction:    auctionMappingBinding.IsSurplusAuction[i],
+			IsDebtAuction:       auctionMappingBinding.IsDebtAuction[i],
+			AssetOutOraclePrice: auctionMappingBinding.AssetOutOraclePrice[i],
+			AssetOutPrice:       auctionMappingBinding.AssetOutPrice[i],
 		}
-		AssetIdToAuctionLookups = append(AssetIdToAuctionLookups, AssetIdToAuctionLookup)
+		assetIDToAuctionLookups = append(assetIDToAuctionLookups, assetIDToAuctionLookup)
 	}
-	collectorAuctionLookup.AssetIdToAuctionLookup = AssetIdToAuctionLookups
+	collectorAuctionLookup.AssetIdToAuctionLookup = assetIDToAuctionLookups
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.AppIdToAuctionMappingKey(AppId)
+		key   = types.AppIDToAuctionMappingKey(auctionMappingBinding.AppMappingId)
 		value = k.cdc.MustMarshal(&collectorAuctionLookup)
 	)
 
@@ -570,21 +579,19 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, AppId uint64, Asse
 	return nil
 }
 
-func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, AppId uint64) (bool, string) {
-
-	_, _ = k.GetAppidToAssetCollectorMapping(ctx, AppId)
+func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, appID uint64) (bool, string) {
+	_, _ = k.GetAppidToAssetCollectorMapping(ctx, appID)
 
 	return true, ""
 }
 
-func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, assetId uint64, lsr sdk.Dec) error {
-
+func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appID, assetID uint64, lsr sdk.Dec) error {
 	var Collector types.CollectorLookupTable
-	accmLookup, _ := k.GetCollectorLookupTable(ctx, appId)
+	accmLookup, _ := k.GetCollectorLookupTable(ctx, appID)
 
 	for _, data := range accmLookup.AssetRateInfo {
-		if data.CollectorAssetId == assetId {
-			Collector.CollectorAssetId = assetId
+		if data.CollectorAssetId == assetID {
+			Collector.CollectorAssetId = assetID
 			Collector.AppId = data.AppId
 			Collector.BidFactor = data.BidFactor
 			Collector.DebtThreshold = data.DebtThreshold
@@ -595,12 +602,15 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, ass
 			Collector.DebtLotSize = data.DebtLotSize
 		}
 	}
-	k.SetCollectorLookupTableforWasm(ctx, Collector)
+	err := k.SetCollectorLookupTableForWasm(ctx, Collector)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func (k *Keeper) WasmUpdateLsrInCollectorLookupTableQuery(ctx sdk.Context, appId, assetId uint64) (bool, string) {
-	_, found := k.GetCollectorLookupByAsset(ctx, appId, assetId)
+func (k *Keeper) WasmUpdateLsrInCollectorLookupTableQuery(ctx sdk.Context, appID, assetID uint64) (bool, string) {
+	_, found := k.GetCollectorLookupByAsset(ctx, appID, assetID)
 	if !found {
 		return false, types.ErrorDataDoesNotExists.Error()
 	}
