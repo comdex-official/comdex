@@ -585,13 +585,13 @@ func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, appID uint64)
 	return true, ""
 }
 
-func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appId, assetId, debtThreshold, surplusThreshold, lotSize, debtLotSize uint64, bidFactor, lsr sdk.Dec) error  {
+func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, appID, assetID, debtThreshold, surplusThreshold, lotSize, debtLotSize uint64, bidFactor, lsr sdk.Dec) error  {
 	var Collector types.CollectorLookupTable
-	accmLookup, _ := k.GetCollectorLookupTable(ctx, appId)
+	accmLookup, _ := k.GetCollectorLookupTable(ctx, appID)
 
 	for _, data := range accmLookup.AssetRateInfo {
-		if data.CollectorAssetId == assetId {
-			Collector.CollectorAssetId = assetId
+		if data.CollectorAssetId == assetID {
+			Collector.CollectorAssetId = assetID
             Collector.AppId = data.AppId
             Collector.BidFactor = bidFactor
             Collector.DebtThreshold = debtThreshold
