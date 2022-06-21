@@ -18,7 +18,6 @@ func (m *WhitelistAppId) Type() string {
 }
 
 func (m *WhitelistAppId) ValidateBasic() error {
-
 	return nil
 }
 
@@ -35,9 +34,9 @@ func (m *WhitelistAppId) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgRemoveWhitelistAsset(appMappingId uint64, from sdk.AccAddress) *RemoveWhitelistAppId {
+func NewMsgRemoveWhitelistAsset(appMappingID uint64, from sdk.AccAddress) *RemoveWhitelistAppId {
 	return &RemoveWhitelistAppId{
-		AppMappingId: appMappingId,
+		AppMappingId: appMappingID,
 		From:         from.String(),
 	}
 }
@@ -51,7 +50,6 @@ func (m *RemoveWhitelistAppId) Type() string {
 }
 
 func (m *RemoveWhitelistAppId) ValidateBasic() error {
-
 	return nil
 }
 

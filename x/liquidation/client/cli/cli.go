@@ -38,8 +38,8 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		txWhitelistAppId(),
-		txRemoveWhitelistAppId(),
+		txWhitelistAppID(),
+		txRemoveWhitelistAppID(),
 	)
 
 	return cmd
