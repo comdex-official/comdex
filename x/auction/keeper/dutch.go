@@ -43,8 +43,8 @@ func (k Keeper) DutchActivator(ctx sdk.Context) error {
 		outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))).TruncateInt())
 		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())
 
-		extendedPairId := lockedVault.ExtendedPairId
-		ExtendedPairVault, found := k.GetPairsVault(ctx, extendedPairId)
+		extendedPairID := lockedVault.ExtendedPairId
+		ExtendedPairVault, found := k.GetPairsVault(ctx, extendedPairID)
 		if !found {
 			return auctiontypes.ErrorInvalidExtendedPairVault
 		}
@@ -68,9 +68,9 @@ func (k Keeper) StartDutchAuction(
 	ctx sdk.Context,
 	outFlowToken sdk.Coin,
 	inFlowToken sdk.Coin,
-	appId uint64,
-	assetInId, assetOutId uint64,
-	lockedVaultId uint64,
+	appID uint64,
+	assetInID, assetOutID uint64,
+	lockedVaultID uint64,
 	lockedVaultOwner string,
 	liquidationPenalty sdk.Dec,
 ) error {
@@ -80,7 +80,7 @@ func (k Keeper) StartDutchAuction(
 		found             bool
 	)
 
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultId)
+	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
@@ -94,14 +94,13 @@ func (k Keeper) StartDutchAuction(
 	}
 	if ExtendedPairVault.AssetOutOraclePrice {
 		//If oracle Price required for the assetOut
-		inFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetInId)
+		inFlowTokenPrice, _ = k.GetPriceForAsset(ctx, assetInID)
 	} else {
 		//If oracle Price is not required for the assetOut
 		inFlowTokenPrice = ExtendedPairVault.AssetOutPrice
-
 	}
 
-	auctionParams, found := k.GetAuctionParams(ctx, appId)
+	auctionParams, found := k.GetAuctionParams(ctx, appID)
 	if !found {
 		return auctiontypes.ErrorInvalidAuctionParams
 	}
@@ -111,18 +110,13 @@ func (k Keeper) StartDutchAuction(
 	}
 	//need to get real price instead of hard coding
 	//calculate target amount of cmst to collect
-	if auctiontypes.TestFlag != 1 {
-		// inFlowTokenPrice, found1 = k.GetPriceForAsset(ctx, assetInId)
-		// if !found1 {
-		// 	return auctiontypes.ErrorPrices
-		// }
-		outFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetOutId)
-		if !found {
-			return auctiontypes.ErrorPrices
-		}
-	} else {
-		outFlowTokenPrice = uint64(2)
-		inFlowTokenPrice = uint64(10)
+	// inFlowTokenPrice, found1 = k.GetPriceForAsset(ctx, assetInId)
+	// if !found1 {
+	// 	return auctiontypes.ErrorPrices
+	// }
+	outFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetOutID)
+	if !found {
+		return auctiontypes.ErrorPrices
 	}
 	//set target amount for debt
 	inFlowTokenTargetAmount := lockedVault.AmountOut
@@ -154,10 +148,10 @@ func (k Keeper) StartDutchAuction(
 		AuctionStatus:             auctiontypes.AuctionStartNoBids,
 		BiddingIds:                []*auctiontypes.BidOwnerMapping{},
 		AuctionMappingId:          auctionParams.DutchId,
-		AppId:                     appId,
-		AssetInId:                 assetInId,
-		AssetOutId:                assetOutId,
-		LockedVaultId:             lockedVaultId,
+		AppId:                     appID,
+		AssetInId:                 assetInID,
+		AssetOutId:                assetOutID,
+		LockedVaultId:             lockedVaultID,
 		VaultOwner:                vaultOwner,
 		LiquidationPenalty:        liquidationPenalty,
 		IsLockedVaultAmountInZero: false,
@@ -168,7 +162,7 @@ func (k Keeper) StartDutchAuction(
 	if err != nil {
 		return err
 	}
-	err = k.SetFlagIsAuctionInProgress(ctx, lockedVaultId, true)
+	err = k.SetFlagIsAuctionInProgress(ctx, lockedVaultID, true)
 	if err != nil {
 		return err
 	}
@@ -187,10 +181,10 @@ func (k Keeper) StartDutchAuction(
 	return nil
 }
 
-func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appId, auctionMappingId, auctionId uint64, bidder sdk.AccAddress, bid sdk.Coin, max sdk.Dec) error {
-	auction, err := k.GetDutchAuction(ctx, appId, auctionMappingId, auctionId)
+func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder sdk.AccAddress, bid sdk.Coin, max sdk.Dec) error {
+	auction, err := k.GetDutchAuction(ctx, appID, auctionMappingID, auctionID)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction id %d not found", auctionId)
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction id %d not found", auctionID)
 	}
 	if bid.Denom != auction.OutflowTokenCurrentAmount.Denom {
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid denom %s not found", bid.Denom)
@@ -279,26 +273,18 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appId, auctionMappingId, a
 	if err != nil {
 		return err
 	}
-	// err = k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(extraCoin))
-	// if err != nil {
-	// 	return err
-	// }
-	// err = k.SetNetFeeCollectedData(ctx, auction.AppId, auction.AssetOutId, extraCoin.Amount)
-	// if err != nil {
-	// 	return err
-	// }
-	//create user bidding
-	biddingId, err := k.CreateNewDutchBid(ctx, appId, auctionMappingId, auctionId, bidder, inFlowTokenCoin, outFlowTokenCoin)
+
+	biddingID, err := k.CreateNewDutchBid(ctx, appID, auctionMappingID, auctionID, bidder, inFlowTokenCoin, outFlowTokenCoin)
 	if err != nil {
 		return err
 	}
-	var bidIdOwner = &auctiontypes.BidOwnerMapping{BidId: biddingId, BidOwner: bidder.String()}
-	auction.BiddingIds = append(auction.BiddingIds, bidIdOwner)
+	var bidIDOwner = &auctiontypes.BidOwnerMapping{BidId: biddingID, BidOwner: bidder.String()}
+	auction.BiddingIds = append(auction.BiddingIds, bidIDOwner)
 	if auction.AuctionStatus == auctiontypes.AuctionStartNoBids {
 		auction.AuctionStatus = auctiontypes.AuctionGoingOn
 	}
 
-	//calculate inflow amount and outflow amount if  user  transaction successfull
+	//calculate inflow amount and outflow amount if  user  transaction successful
 	auction.OutflowTokenCurrentAmount = auction.OutflowTokenCurrentAmount.Sub(outFlowTokenCoin)
 	auction.InflowTokenCurrentAmount = auction.InflowTokenCurrentAmount.Add(inFlowTokenCoin)
 
@@ -330,13 +316,11 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appId, auctionMappingId, a
 			return err
 		}
 	} else if auction.OutflowTokenCurrentAmount.Amount.IsZero() && auction.InflowTokenCurrentAmount.IsLT(auction.InflowTokenTargetAmount) { //entire collateral sold out
-
 		auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
 
 		requiredAmount := auction.InflowTokenTargetAmount.Sub(auction.InflowTokenCurrentAmount)
 		_, err := k.GetAmountFromCollector(ctx, auction.AppId, auction.AssetInId, requiredAmount.Amount)
 		if err != nil {
-
 			return err
 		}
 
@@ -355,7 +339,6 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appId, auctionMappingId, a
 			return err
 		}
 	} else if auction.OutflowTokenCurrentAmount.Amount.IsZero() { //entire collateral sold out
-
 		auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
 
 		err = k.SetDutchAuction(ctx, auction)
@@ -379,23 +362,23 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appId, auctionMappingId, a
 	return nil
 }
 
-func (k Keeper) CreateNewDutchBid(ctx sdk.Context, appId, auctionMappingId, auctionId uint64, bidder sdk.AccAddress, outFlowTokenCoin sdk.Coin, inFlowTokenCoin sdk.Coin) (biddingId uint64, err error) {
+func (k Keeper) CreateNewDutchBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder sdk.AccAddress, outFlowTokenCoin sdk.Coin, inFlowTokenCoin sdk.Coin) (biddingID uint64, err error) {
 	bidding := auctiontypes.DutchBiddings{
 		BiddingId:          k.GetUserBiddingID(ctx) + 1,
-		AuctionId:          auctionId,
+		AuctionId:          auctionID,
 		AuctionStatus:      auctiontypes.ActiveAuctionStatus,
 		Bidder:             bidder.String(),
 		OutflowTokenAmount: outFlowTokenCoin,
 		InflowTokenAmount:  inFlowTokenCoin,
 		BiddingTimestamp:   ctx.BlockTime(),
 		BiddingStatus:      auctiontypes.SuccessBiddingStatus,
-		AppId:              appId,
-		AuctionMappingId:   auctionMappingId,
+		AppId:              appID,
+		AuctionMappingId:   auctionMappingID,
 	}
 	k.SetUserBiddingID(ctx, bidding.BiddingId)
 	err = k.SetDutchUserBidding(ctx, bidding)
 	if err != nil {
-		return biddingId, err
+		return biddingID, err
 	}
 	return bidding.BiddingId, nil
 }
@@ -403,12 +386,10 @@ func (k Keeper) CreateNewDutchBid(ctx sdk.Context, appId, auctionMappingId, auct
 func (k Keeper) CloseDutchAuction(
 	ctx sdk.Context,
 	dutchAuction auctiontypes.DutchAuction,
-) error {
-
-	//delete dutch biddings
+) error { //delete dutch biddings
 	if dutchAuction.AuctionStatus != auctiontypes.AuctionStartNoBids {
-		for _, biddingId := range dutchAuction.BiddingIds {
-			bidding, err := k.GetDutchUserBidding(ctx, biddingId.BidOwner, dutchAuction.AppId, biddingId.BidId)
+		for _, biddingID := range dutchAuction.BiddingIds {
+			bidding, err := k.GetDutchUserBidding(ctx, biddingID.BidOwner, dutchAuction.AppId, biddingID.BidId)
 			if err != nil {
 				return err
 			}
@@ -544,9 +525,9 @@ func (k Keeper) CloseDutchAuction(
 	return nil
 }
 
-func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) error {
-	dutchAuctions := k.GetDutchAuctions(ctx, appId)
-	auctionParams, found := k.GetAuctionParams(ctx, appId)
+func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
+	dutchAuctions := k.GetDutchAuctions(ctx, appID)
+	auctionParams, found := k.GetAuctionParams(ctx, appID)
 	if !found {
 		return auctiontypes.ErrorInvalidAuctionParams
 	}
@@ -571,7 +552,6 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appId uint64) error {
 		} else {
 			//If oracle Price is not required for the assetOut
 			inFlowTokenCurrentPrice = ExtendedPairVault.AssetOutPrice
-
 		}
 		//inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
 		tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
