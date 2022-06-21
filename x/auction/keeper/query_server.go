@@ -44,7 +44,7 @@ func (q *QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySur
 		ctx  = sdk.UnwrapSDKContext(c)
 		item auctiontypes.SurplusAuction
 	)
-	if req.History == true {
+	if req.History {
 		item, err = q.GetHistorySurplusAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
 	} else {
 		item, err = q.GetSurplusAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
@@ -68,7 +68,7 @@ func (q *QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySu
 		ctx   = sdk.UnwrapSDKContext(c)
 		key   []byte
 	)
-	if req.History == true {
+	if req.History {
 		key = types.HistoryAuctionTypeKey(req.AppId, types.SurplusString)
 	} else {
 		key = types.AuctionTypeKey(req.AppId, types.SurplusString)
@@ -109,7 +109,7 @@ func (q *QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySu
 		ctx  = sdk.UnwrapSDKContext(c)
 		item []auctiontypes.SurplusBiddings
 	)
-	if req.History == true {
+	if req.History {
 		item = q.GetHistorySurplusUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
 		item = q.GetSurplusUserBiddings(ctx, req.Bidder, req.AppId)
@@ -129,7 +129,7 @@ func (q *QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAu
 		ctx  = sdk.UnwrapSDKContext(c)
 		item auctiontypes.DebtAuction
 	)
-	if req.History == true {
+	if req.History {
 		item, err = q.GetHistoryDebtAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
 	} else {
 		item, err = q.GetDebtAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
@@ -152,7 +152,7 @@ func (q *QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtA
 		ctx   = sdk.UnwrapSDKContext(c)
 		key   []byte
 	)
-	if req.History == true {
+	if req.History {
 		key = types.HistoryAuctionTypeKey(req.AppId, types.DebtString)
 	} else {
 		key = types.AuctionTypeKey(req.AppId, types.DebtString)
@@ -194,7 +194,7 @@ func (q *QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtB
 		ctx  = sdk.UnwrapSDKContext(c)
 		item []auctiontypes.DebtBiddings
 	)
-	if req.History == true {
+	if req.History {
 		item = q.GetHistoryDebtUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
 		item = q.GetDebtUserBiddings(ctx, req.Bidder, req.AppId)
@@ -215,10 +215,10 @@ func (q *QueryServer) QueryDutchAuction(c context.Context, req *types.QueryDutch
 		ctx  = sdk.UnwrapSDKContext(c)
 		item auctiontypes.DutchAuction
 	)
-	if req.History == true {
-		item, err = q.GetHistoryDutchAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	if req.History {
+		item, _ = q.GetHistoryDutchAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
 	} else {
-		item, err = q.GetDutchAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+		item, _ = q.GetDutchAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
 	}
 
 	return &types.QueryDutchAuctionResponse{
@@ -236,7 +236,7 @@ func (q *QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutc
 		ctx   = sdk.UnwrapSDKContext(c)
 		key   []byte
 	)
-	if req.History == true {
+	if req.History {
 		key = types.HistoryAuctionTypeKey(req.AppId, types.DutchString)
 	} else {
 		key = types.AuctionTypeKey(req.AppId, types.DutchString)
@@ -277,7 +277,7 @@ func (q *QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutc
 		ctx  = sdk.UnwrapSDKContext(c)
 		item []auctiontypes.DutchBiddings
 	)
-	if req.History == true {
+	if req.History {
 		item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
 		item = q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)
@@ -298,7 +298,7 @@ func (q *QueryServer) QueryBiddingsForAuction(c context.Context, req *types.Quer
 		ctx  = sdk.UnwrapSDKContext(c)
 		item []auctiontypes.DutchBiddings
 	)
-	if req.History == true {
+	if req.History {
 		item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
 		item = q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)

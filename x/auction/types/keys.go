@@ -34,48 +34,48 @@ const TestFlag = 0
 var (
 	AuctionKeyPrefix            = []byte{0x11}
 	UserKeyPrefix               = []byte{0x12}
-	AuctionIdKey                = []byte{0x13}
-	UserBiddingsIdKey           = []byte{0x14}
+	AuctionIDKey                = []byte{0x13}
+	UserBiddingsIDKey           = []byte{0x14}
 	HistoryAuctionKeyPrefix     = []byte{0x15}
 	HistoryUserKeyPrefix        = []byte{0x16}
 	ProtocolStatisticsPrefixKey = []byte{0x17}
 	AuctionParamsKeyPrefix      = []byte{0x18}
 )
 
-func AuctionKey(appId uint64, auctionType string, auctionId uint64) []byte {
-	return append(append(append(AuctionKeyPrefix, sdk.Uint64ToBigEndian(appId)...), auctionType...), sdk.Uint64ToBigEndian(auctionId)...)
+func AuctionKey(appID uint64, auctionType string, auctionID uint64) []byte {
+	return append(append(append(AuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(auctionID)...)
 }
 
-func UserKey(bidder string, appId uint64, auctionType string, bidId uint64) []byte {
-	return append(append(append(append(UserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appId)...), auctionType...), sdk.Uint64ToBigEndian(bidId)...)
+func UserKey(bidder string, appID uint64, auctionType string, bidId uint64) []byte {
+	return append(append(append(append(UserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(bidId)...)
 }
 
-func UserAuctionTypeKey(bidder string, appId uint64, auctionType string) []byte {
-	return append(append(append(UserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appId)...), auctionType...)
+func UserAuctionTypeKey(bidder string, appID uint64, auctionType string) []byte {
+	return append(append(append(UserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...)
 }
 
-func AuctionTypeKey(appId uint64, auctionType string) []byte {
-	return append(append(AuctionKeyPrefix, sdk.Uint64ToBigEndian(appId)...), auctionType...)
+func AuctionTypeKey(appID uint64, auctionType string) []byte {
+	return append(append(AuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...)
 }
 
-func HistoryAuctionKey(appId uint64, auctionType string, auctionId uint64) []byte {
-	return append(append(append(HistoryAuctionKeyPrefix, sdk.Uint64ToBigEndian(appId)...), auctionType...), sdk.Uint64ToBigEndian(auctionId)...)
+func HistoryAuctionKey(appID uint64, auctionType string, auctionID uint64) []byte {
+	return append(append(append(HistoryAuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(auctionID)...)
 }
 
-func HistoryUserKey(bidder string, appId uint64, auctionType string, bidId uint64) []byte {
-	return append(append(append(append(HistoryUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appId)...), auctionType...), sdk.Uint64ToBigEndian(bidId)...)
+func HistoryUserKey(bidder string, appID uint64, auctionType string, bidId uint64) []byte {
+	return append(append(append(append(HistoryUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(bidId)...)
 }
 
-func HistoryUserAuctionTypeKey(bidder string, appId uint64, auctionType string) []byte {
-	return append(append(append(HistoryUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appId)...), auctionType...)
+func HistoryUserAuctionTypeKey(bidder string, appID uint64, auctionType string) []byte {
+	return append(append(append(HistoryUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...)
 }
 
-func HistoryAuctionTypeKey(appId uint64, auctionType string) []byte {
-	return append(append(HistoryAuctionKeyPrefix, sdk.Uint64ToBigEndian(appId)...), auctionType...)
+func HistoryAuctionTypeKey(appID uint64, auctionType string) []byte {
+	return append(append(HistoryAuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...)
 }
 
-func ProtocolStatisticsKey(appId, assetId uint64) []byte {
-	return append(append(ProtocolStatisticsPrefixKey, sdk.Uint64ToBigEndian(appId)...), sdk.Uint64ToBigEndian(assetId)...)
+func ProtocolStatisticsKey(appID, assetId uint64) []byte {
+	return append(append(ProtocolStatisticsPrefixKey, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetId)...)
 }
 
 func ProtocolStatisticsAppIdKey(appId uint64) []byte {
