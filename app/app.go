@@ -152,10 +152,6 @@ import (
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
-	//"github.com/comdex-official/comdex/x/locking"
-	//lockingkeeper "github.com/comdex-official/comdex/x/locking/keeper"
-	//lockingtypes "github.com/comdex-official/comdex/x/locking/types"
-
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
@@ -253,7 +249,6 @@ var (
 		tokenmint.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
-		//locking.AppModuleBasic{},
 		rewards.AppModuleBasic{},
 	)
 )
@@ -328,8 +323,7 @@ type App struct {
 	AuctionKeeper     auctionkeeper.Keeper
 	TokenmintKeeper   tokenmintkeeper.Keeper
 	liquidityKeeper   liquiditykeeper.Keeper
-	//lockingKeeper     lockingkeeper.Keeper
-	Rewardskeeper rewardskeeper.Keeper
+	Rewardskeeper     rewardskeeper.Keeper
 
 	WasmKeeper wasm.Keeper
 	// the module manager
@@ -417,7 +411,6 @@ func New(
 	app.ParamsKeeper.Subspace(auctiontypes.ModuleName)
 	app.ParamsKeeper.Subspace(tokenminttypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
-	//app.ParamsKeeper.Subspace(lockingtypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
 
 	// set the BaseApp's parameter store
@@ -678,14 +671,6 @@ func New(
 		&app.Rewardskeeper,
 	)
 
-	/*app.lockingKeeper = lockingkeeper.NewKeeper(
-		app.cdc,
-		app.keys[lockingtypes.StoreKey],
-		app.GetSubspace(lockingtypes.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper,
-	)*/
-
 	app.Rewardskeeper = *rewardskeeper.NewKeeper(
 		app.cdc,
 		app.keys[rewardstypes.StoreKey],
@@ -817,7 +802,6 @@ func New(
 		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper),
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.AccountKeeper, app.BankKeeper),
-		//locking.NewAppModule(app.cdc, app.lockingKeeper, app.AccountKeeper, app.BankKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
@@ -882,7 +866,6 @@ func New(
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
 		liquiditytypes.ModuleName,
-		//lockingtypes.ModuleName,
 		rewardstypes.ModuleName,
 	)
 
@@ -1078,9 +1061,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		//lockingtypes.ModuleName:        nil,
-		rewardstypes.ModuleName: {authtypes.Minter, authtypes.Burner},
-		icatypes.ModuleName:     nil,
+		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		icatypes.ModuleName:            nil,
 	}
 }
 
@@ -1124,7 +1106,6 @@ func (a *App) registerUpgradeHandlers() {
 				liquidationtypes.ModuleName,
 				liquiditytypes.ModuleName,
 				lockertypes.ModuleName,
-				//lockingtypes.ModuleName,
 				markettypes.ModuleName,
 				rewardstypes.ModuleName,
 				tokenminttypes.ModuleName,
