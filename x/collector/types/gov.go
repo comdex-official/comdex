@@ -35,7 +35,6 @@ func (p *LookupTableParams) ProposalRoute() string { return RouterKey }
 func (p *LookupTableParams) ProposalType() string { return ProposalLookupTableParams }
 
 func (p *LookupTableParams) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -56,7 +55,6 @@ func (p *AuctionControlByAppIdProposal) ProposalRoute() string { return RouterKe
 func (p *AuctionControlByAppIdProposal) ProposalType() string { return ProposalAuctionTableParams }
 
 func (p *AuctionControlByAppIdProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err

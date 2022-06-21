@@ -22,39 +22,33 @@ const (
 )
 
 var (
-	AddCollectorLookupKey               = []byte{0x01}
-	AppidToAssetCollectorMappingPrefix  = []byte{0x03}
-	AppIdToAuctionMappingForAssetPrefix = []byte{0x04}
-	AppIdToAuctionMappingPrefix         = []byte{0x05}
-	CollectorAuctionLookupPrefix        = []byte{0x06}
-	CollectorForDenomKeyPrefix          = []byte{0x07}
-	NetFeeCollectedDataPrefix           = []byte{0x08}
+	AddCollectorLookupKey              = []byte{0x01}
+	AppIDToAssetCollectorMappingPrefix = []byte{0x03}
+	AppIDToAuctionMappingPrefix        = []byte{0x05}
+	CollectorForDenomKeyPrefix         = []byte{0x07}
+	NetFeeCollectedDataPrefix          = []byte{0x08}
 )
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
 
-func CollectorLookupTableMappingKey(app_id uint64) []byte {
-	return append(AddCollectorLookupKey, sdk.Uint64ToBigEndian(app_id)...)
+func CollectorLookupTableMappingKey(appID uint64) []byte {
+	return append(AddCollectorLookupKey, sdk.Uint64ToBigEndian(appID)...)
 }
 
-func AppidToAssetCollectorMappingKey(app_id uint64) []byte {
-	return append(AppidToAssetCollectorMappingPrefix, sdk.Uint64ToBigEndian(app_id)...)
-}
-func AppIdToAuctionMappingForAssetKey(app_id uint64) []byte {
-	return append(AppIdToAuctionMappingForAssetPrefix, sdk.Uint64ToBigEndian(app_id)...)
-}
-func AppIdToAuctionMappingKey(app_id uint64) []byte {
-	return append(AppIdToAuctionMappingPrefix, sdk.Uint64ToBigEndian(app_id)...)
-}
-func CollectorAuctionLookupKey(app_id uint64) []byte {
-	return append(CollectorAuctionLookupPrefix, sdk.Uint64ToBigEndian(app_id)...)
-}
-func NetFeeCollectedDataKey(app_id uint64) []byte {
-	return append(NetFeeCollectedDataPrefix, sdk.Uint64ToBigEndian(app_id)...)
+func AppidToAssetCollectorMappingKey(appID uint64) []byte {
+	return append(AppIDToAssetCollectorMappingPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
-func CollectorForDenomKey(app_id uint64) []byte {
-	return append(CollectorForDenomKeyPrefix, sdk.Uint64ToBigEndian(app_id)...)
+func AppIDToAuctionMappingKey(appId uint64) []byte {
+	return append(AppIDToAuctionMappingPrefix, sdk.Uint64ToBigEndian(appId)...)
+}
+
+func NetFeeCollectedDataKey(appID uint64) []byte {
+	return append(NetFeeCollectedDataPrefix, sdk.Uint64ToBigEndian(appID)...)
+}
+
+func CollectorForDenomKey(appID uint64) []byte {
+	return append(CollectorForDenomKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }

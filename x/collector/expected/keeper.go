@@ -21,9 +21,9 @@ type AssetKeeper interface {
 	GetAssetForDenom(ctx sdk.Context, denom string) (types.Asset, bool)
 	GetApp(ctx sdk.Context, id uint64) (types.AppMapping, bool)
 	GetAsset(ctx sdk.Context, id uint64) (types.Asset, bool)
-	GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64) (mintData types.MintGenesisToken, found bool)
+	GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64) (mintData types.MintGenesisToken, found bool)
 }
 
 type AuctionKeeper interface {
-	GetAuctionParams(ctx sdk.Context, AppId uint64) (asset auctiontypes.AuctionParams, found bool)
+	GetAuctionParams(ctx sdk.Context, appID uint64) (asset auctiontypes.AuctionParams, found bool)
 }
