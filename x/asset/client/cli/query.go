@@ -335,7 +335,7 @@ func queryProductToExtendedPair() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -345,7 +345,7 @@ func queryProductToExtendedPair() *cobra.Command {
 			res, err := queryClient.QueryProductToExtendedPair(
 				context.Background(),
 				&types.QueryProductToExtendedPairRequest{
-					ProductId: productId,
+					ProductId: productID,
 				},
 			)
 			if err != nil {
@@ -373,7 +373,7 @@ func queryExtendedPairPsmPairWise() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -383,7 +383,7 @@ func queryExtendedPairPsmPairWise() *cobra.Command {
 			res, err := queryClient.QueryExtendedPairPsmPairWise(
 				context.Background(),
 				&types.QueryExtendedPairPsmPairWiseRequest{
-					ProductId: productId,
+					ProductId: productID,
 				},
 			)
 			if err != nil {
@@ -411,7 +411,7 @@ func queryTokenGov() *cobra.Command {
 				return err
 			}
 
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -421,7 +421,7 @@ func queryTokenGov() *cobra.Command {
 			res, err := queryClient.QueryTokenGov(
 				context.Background(),
 				&types.QueryTokenGovRequest{
-					AppId: appId,
+					AppId: appID,
 				},
 			)
 			if err != nil {
@@ -449,7 +449,7 @@ func queryExtendedPairDataPsmPairWise() *cobra.Command {
 				return err
 			}
 
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -459,7 +459,7 @@ func queryExtendedPairDataPsmPairWise() *cobra.Command {
 			res, err := queryClient.QueryExtendedPairDataPsmPairWise(
 				context.Background(),
 				&types.QueryExtendedPairDataPsmPairWiseRequest{
-					AppId: appId,
+					AppId: appID,
 				},
 			)
 			if err != nil {

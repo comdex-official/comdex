@@ -69,7 +69,12 @@ func (k *Keeper) GetPairs(ctx sdk.Context) (pairs []types.Pair) {
 		iter  = sdk.KVStorePrefixIterator(store, types.PairKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var pair types.Pair

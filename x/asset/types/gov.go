@@ -47,7 +47,6 @@ func init() {
 
 	govtypes.RegisterProposalType(ProposalAddExtendedPairsVault)
 	govtypes.RegisterProposalTypeCodec(&AddExtendedPairsVaultProposal{}, "comdex/AddExtendedPairsVaultProposal")
-
 }
 
 var (
@@ -121,7 +120,6 @@ func (p *UpdateAssetProposal) ProposalRoute() string { return RouterKey }
 func (p *UpdateAssetProposal) ProposalType() string { return ProposalUpdateAsset }
 
 func (p *UpdateAssetProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err

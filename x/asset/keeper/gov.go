@@ -23,7 +23,6 @@ func (k Keeper) HandleAddWhitelistedAssetRecords(ctx sdk.Context, p *types.AddWh
 
 func (k Keeper) HandleUpdateWhitelistedAssetRecords(ctx sdk.Context, p *types.UpdateWhitelistedAssetProposal) error {
 	return k.UpdateWhitelistedAssetRecords(ctx, p.Asset)
-
 }
 
 func (k Keeper) HandleAddWhitelistedPairsRecords(ctx sdk.Context, p *types.AddWhitelistedPairsProposal) error {

@@ -105,8 +105,8 @@ func FlagSetCreateWhiteListedPairsMapping() *flag.FlagSet {
 }
 
 type createExtPairVaultInputs struct {
-	AppMappingId        string `json:"app_mapping_id"`
-	PairId              string `json:"pair_id"`
+	AppMappingID        string `json:"app_mapping_id"`
+	PairID              string `json:"pair_id"`
 	LiquidationRatio    string `json:"liquidation_ratio"`
 	StabilityFee        string `json:"stability_fee"`
 	ClosingFee          string `json:"closing_fee"`
@@ -127,8 +127,8 @@ type createExtPairVaultInputs struct {
 }
 
 type createAddAssetMappingInputs struct {
-	AppId         string `json:"app_id"`
-	AssetId       string `json:"asset_id"`
+	AppID         string `json:"app_id"`
+	AssetID       string `json:"asset_id"`
 	GenesisSupply string `json:"genesis_supply"`
 	IsGovToken    string `json:"is_gov_token"`
 	Recipient     string `json:"recipient"`
@@ -138,7 +138,7 @@ type createAddAssetMappingInputs struct {
 }
 
 type createAddWhiteListedPairsInputs struct {
-	PairId               string `json:"pair_id"`
+	PairID               string `json:"pair_id"`
 	ModuleAccount        string `json:"module-account"`
 	BaseBorrowRateAsset1 string `json:"base_borrow_rate_asset_1"`
 	BaseBorrowRateAsset2 string `json:"base_borrow_rate_asset_2"`
