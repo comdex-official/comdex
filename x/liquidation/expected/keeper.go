@@ -27,17 +27,17 @@ type AssetKeeper interface {
 }
 
 type VaultKeeper interface {
-	GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingId uint64) (appExtendedPairVaultData types.AppExtendedPairVaultMapping, found bool)
-	CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultId uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error)
+	GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData types.AppExtendedPairVaultMapping, found bool)
+	CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error)
 	GetVault(ctx sdk.Context, id string) (vault types.Vault, found bool)
 	DeleteVault(ctx sdk.Context, id string)
 	UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context, counter uint64, vaultData types.Vault)
-	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData types.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool)
-	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLookupData types.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool)
-	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairId uint64, userAddress string, appMappingId uint64)
-	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairId uint64, userVaultId string, appMappingId uint64)
+	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData types.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool)
+	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData types.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool)
+	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64)
+	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID string, appMappingID uint64)
 	SetVault(ctx sdk.Context, vault types.Vault)
-	CreteNewVault(ctx sdk.Context, From string, AppMappingId uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error
+	CreteNewVault(ctx sdk.Context, From string, appMappingID uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) error
 }
 
 type MarketKeeper interface {
