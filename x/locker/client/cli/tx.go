@@ -24,12 +24,12 @@ func txCreateLocker() *cobra.Command {
 				return err
 			}
 
-			appMappingId, err := strconv.ParseUint(args[0], 10, 64)
+			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -38,7 +38,7 @@ func txCreateLocker() *cobra.Command {
 				return types.ErrorInvalidAmountIn
 			}
 
-			msg := types.NewMsgCreateLockerRequest(ctx.FromAddress, amount, assetId, appMappingId)
+			msg := types.NewMsgCreateLockerRequest(ctx.FromAddress, amount, assetID, appMappingID)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -50,7 +50,6 @@ func txCreateLocker() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txDepositAssetLocker() *cobra.Command {
@@ -59,31 +58,30 @@ func txDepositAssetLocker() *cobra.Command {
 		Short: "deposit to a locker",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			lockerId := args[0]
-			if len(lockerId) == 0 {
+			lockerID := args[0]
+			if len(lockerID) == 0 {
 				return err
 			}
 			amount, ok := sdk.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
-			assetId, err := strconv.ParseUint(args[2], 10, 64)
+			assetID, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			appMappingId, err := strconv.ParseUint(args[3], 10, 64)
+			appMappingID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgDepositAssetRequest(ctx.FromAddress, lockerId, amount, assetId, appMappingId)
+			msg := types.NewMsgDepositAssetRequest(ctx.FromAddress, lockerID, amount, assetID, appMappingID)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -98,34 +96,33 @@ func txDepositAssetLocker() *cobra.Command {
 func txWithdrawAssetLocker() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "withdraw-locker [locker_id] [amount] [asset_id] [app_mapping_id] ",
-		Short: "dwithdraw from a locker",
+		Short: "withdraw from a locker",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			lockerId := args[0]
-			if len(lockerId) == 0 {
+			lockerID := args[0]
+			if len(lockerID) == 0 {
 				return err
 			}
 			amount, ok := sdk.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
-			assetId, err := strconv.ParseUint(args[2], 10, 64)
+			assetID, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			appMappingId, err := strconv.ParseUint(args[3], 10, 64)
+			appMappingID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgWithdrawAssetRequest(ctx.FromAddress, lockerId, amount, assetId, appMappingId)
+			msg := types.NewMsgWithdrawAssetRequest(ctx.FromAddress, lockerID, amount, assetID, appMappingID)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -143,22 +140,21 @@ func txAddWhiteListedAssetLocker() *cobra.Command {
 		Short: "withdraw from a locker",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			appMappingId, err := strconv.ParseUint(args[0], 10, 64)
+			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgAddWhiteListedAssetRequest(ctx.FromAddress, appMappingId, assetId)
+			msg := types.NewMsgAddWhiteListedAssetRequest(ctx.FromAddress, appMappingID, assetID)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

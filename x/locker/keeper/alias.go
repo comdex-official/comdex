@@ -80,8 +80,8 @@ func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found b
 	return k.asset.GetApps(ctx)
 }
 
-func (k *Keeper) UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error {
-	return k.collector.UpdateCollector(ctx, appId, asset_id, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected)
+func (k *Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected sdk.Int) error {
+	return k.collector.UpdateCollector(ctx, appID, assetID, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected)
 }
 
 func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {

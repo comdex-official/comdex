@@ -50,12 +50,12 @@ func queryLockerByProductAssetID() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -64,8 +64,8 @@ func queryLockerByProductAssetID() *cobra.Command {
 			res, err := queryClient.QueryLockersByProductToAssetID(
 				context.Background(),
 				&types.QueryLockersByProductToAssetIDRequest{
-					ProductId: productId,
-					AssetId:   assetId,
+					ProductId: productID,
+					AssetId:   assetID,
 				},
 			)
 			if err != nil {
@@ -90,7 +90,7 @@ func queryLockerByProductID() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -99,7 +99,7 @@ func queryLockerByProductID() *cobra.Command {
 			res, err := queryClient.QueryLockerInfoByProductID(
 				context.Background(),
 				&types.QueryLockerInfoByProductIDRequest{
-					ProductId: productId,
+					ProductId: productID,
 				},
 			)
 			if err != nil {
@@ -124,12 +124,12 @@ func queryTotalDepositByProductAssetID() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -138,8 +138,8 @@ func queryTotalDepositByProductAssetID() *cobra.Command {
 			res, err := queryClient.QueryTotalDepositByProductAssetID(
 				context.Background(),
 				&types.QueryTotalDepositByProductAssetIDRequest{
-					ProductId: productId,
-					AssetId:   assetId,
+					ProductId: productID,
+					AssetId:   assetID,
 				},
 			)
 			if err != nil {
@@ -164,7 +164,7 @@ func queryOwnerLockerByProductIDbyOwner() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -174,7 +174,7 @@ func queryOwnerLockerByProductIDbyOwner() *cobra.Command {
 			res, err := queryClient.QueryOwnerLockerByProductIDbyOwner(
 				context.Background(),
 				&types.QueryOwnerLockerByProductIDbyOwnerRequest{
-					ProductId: productId,
+					ProductId: productID,
 					Owner:     owner,
 				},
 			)
@@ -189,7 +189,7 @@ func queryOwnerLockerByProductIDbyOwner() *cobra.Command {
 	return cmd
 }
 
-func queryLockerByProductbyOwner() *cobra.Command {
+func queryLockerByProductByOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "locker-by-product-by-owner [product_id] [owner]",
 		Short: "locker by product by owner",
@@ -200,7 +200,7 @@ func queryLockerByProductbyOwner() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -211,7 +211,7 @@ func queryLockerByProductbyOwner() *cobra.Command {
 			res, err := queryClient.QueryLockerByProductByOwner(
 				context.Background(),
 				&types.QueryLockerByProductByOwnerRequest{
-					ProductId: productId,
+					ProductId: productID,
 					Owner:     owner,
 				},
 			)
@@ -226,7 +226,7 @@ func queryLockerByProductbyOwner() *cobra.Command {
 	return cmd
 }
 
-func queryOwnerLockerOfAllProductbyOwner() *cobra.Command {
+func queryOwnerLockerOfAllProductByOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "owner-locker-by-all-product-by-owner [owner]",
 		Short: "owner locker by all product by owner",
@@ -268,12 +268,12 @@ func queryOwnerLockerByProductToAssetIDbyOwner() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -284,8 +284,8 @@ func queryOwnerLockerByProductToAssetIDbyOwner() *cobra.Command {
 			res, err := queryClient.QueryOwnerLockerByProductToAssetIDbyOwner(
 				context.Background(),
 				&types.QueryOwnerLockerByProductToAssetIDbyOwnerRequest{
-					ProductId: productId,
-					AssetId:   assetId,
+					ProductId: productID,
+					AssetId:   assetID,
 					Owner:     owner,
 				},
 			)
@@ -306,7 +306,6 @@ func queryOwnerTxDetailsLockerOfProductByOwnerByAsset() *cobra.Command {
 		Short: "owner locker tx details by product to owner by asset",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -317,14 +316,14 @@ func queryOwnerTxDetailsLockerOfProductByOwnerByAsset() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			owner := args[1]
 
-			assetId, err := strconv.ParseUint(args[2], 10, 64)
+			assetID, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -333,9 +332,9 @@ func queryOwnerTxDetailsLockerOfProductByOwnerByAsset() *cobra.Command {
 			res, err := queryClient.QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(
 				context.Background(),
 				&types.QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest{
-					ProductId:  productId,
+					ProductId:  productID,
 					Owner:      owner,
-					AssetId:    assetId,
+					AssetId:    assetID,
 					Pagination: pagination,
 				},
 			)
@@ -361,7 +360,7 @@ func queryTotalLockerByProductID() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -370,7 +369,7 @@ func queryTotalLockerByProductID() *cobra.Command {
 			res, err := queryClient.QueryLockerCountByProductID(
 				context.Background(),
 				&types.QueryLockerCountByProductIDRequest{
-					ProductId: productId,
+					ProductId: productID,
 				},
 			)
 			if err != nil {
@@ -395,12 +394,12 @@ func queryTotalLockerByProductToAssetID() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -409,8 +408,8 @@ func queryTotalLockerByProductToAssetID() *cobra.Command {
 			res, err := queryClient.QueryLockerCountByProductToAssetID(
 				context.Background(),
 				&types.QueryLockerCountByProductToAssetIDRequest{
-					ProductId: productId,
-					AssetId:   assetId,
+					ProductId: productID,
+					AssetId:   assetID,
 				},
 			)
 			if err != nil {
@@ -435,7 +434,7 @@ func queryWhiteListedAssetIDsByProductID() *cobra.Command {
 				return err
 			}
 
-			productId, err := strconv.ParseUint(args[0], 10, 64)
+			productID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -444,7 +443,7 @@ func queryWhiteListedAssetIDsByProductID() *cobra.Command {
 			res, err := queryClient.QueryWhiteListedAssetIDsByProductID(
 				context.Background(),
 				&types.QueryWhiteListedAssetIDsByProductIDRequest{
-					ProductId: productId,
+					ProductId: productID,
 				},
 			)
 			if err != nil {
@@ -496,7 +495,7 @@ func queryLockerLookupTableByApp() *cobra.Command {
 				return err
 			}
 
-			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -505,7 +504,7 @@ func queryLockerLookupTableByApp() *cobra.Command {
 			res, err := queryClient.QueryLockerLookupTableByApp(
 				context.Background(),
 				&types.QueryLockerLookupTableByAppRequest{
-					AppId: app_id,
+					AppId: appID,
 				},
 			)
 			if err != nil {
@@ -519,7 +518,7 @@ func queryLockerLookupTableByApp() *cobra.Command {
 	return cmd
 }
 
-func queryLockerLookupTableByAppAndAssetId() *cobra.Command {
+func queryLockerLookupTableByAppAndAssetID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "locker-lookup-by-app-and-assetId [app_id] [asset_id]",
 		Short: "locker lookup by app and assetId",
@@ -530,11 +529,11 @@ func queryLockerLookupTableByAppAndAssetId() *cobra.Command {
 				return err
 			}
 
-			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			asset_id, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -543,8 +542,8 @@ func queryLockerLookupTableByAppAndAssetId() *cobra.Command {
 			res, err := queryClient.QueryLockerLookupTableByAppAndAssetId(
 				context.Background(),
 				&types.QueryLockerLookupTableByAppAndAssetIdRequest{
-					AppId:   app_id,
-					AssetId: asset_id,
+					AppId:   appID,
+					AssetId: assetID,
 				},
 			)
 			if err != nil {
@@ -569,7 +568,7 @@ func queryLockerTotalDepositedByApp() *cobra.Command {
 				return err
 			}
 
-			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -578,7 +577,7 @@ func queryLockerTotalDepositedByApp() *cobra.Command {
 			res, err := queryClient.QueryLockerTotalDepositedByApp(
 				context.Background(),
 				&types.QueryLockerTotalDepositedByAppRequest{
-					AppId: app_id,
+					AppId: appID,
 				},
 			)
 			if err != nil {
@@ -594,8 +593,8 @@ func queryLockerTotalDepositedByApp() *cobra.Command {
 
 func queryState() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "state [address] [denom] [blockheight] [target]",
-		Short: "state of an account at a blockheight",
+		Use:   "state [address] [denom] [block_height] [target]",
+		Short: "state of an account at a block height",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -605,7 +604,7 @@ func queryState() *cobra.Command {
 
 			address := args[0]
 			denom := args[1]
-			blockheight := args[2]
+			blockHeight := args[2]
 			target := args[3]
 
 			queryClient := types.NewQueryClient(ctx)
@@ -614,7 +613,7 @@ func queryState() *cobra.Command {
 				&types.QueryStateRequest{
 					Address: address,
 					Denom:   denom,
-					Height:  blockheight,
+					Height:  blockHeight,
 					Target:  target,
 				},
 			)
@@ -640,12 +639,12 @@ func queryLockerTotalRewardsByAssetAppWise() *cobra.Command {
 				return err
 			}
 
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -654,8 +653,8 @@ func queryLockerTotalRewardsByAssetAppWise() *cobra.Command {
 			res, err := queryClient.QueryLockerTotalRewardsByAssetAppWise(
 				context.Background(),
 				&types.QueryLockerTotalRewardsByAssetAppWiseRequest{
-					AppId:   appId,
-					AssetId: assetId,
+					AppId:   appID,
+					AssetId: assetID,
 				},
 			)
 			if err != nil {
