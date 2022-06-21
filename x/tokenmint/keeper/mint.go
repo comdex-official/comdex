@@ -206,14 +206,29 @@ func (k *Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingId uint64, from 
 		return types.ErrorAppMappingDoesNotExists
 	}
 
-	if err := k.SendCoinFromAccountToModule(ctx, sdk.MustAccAddressFromBech32(from), types.ModuleName, amount); err != nil {
+	err := k.BurnFrom(ctx, amount, from)
+	if err != nil {
 		return err
 	}
 	asset, _ := k.GetAssetForDenom(ctx, amount.Denom)
 
-	if err := k.BurnTokensForApp(ctx, appMappingId, asset.Id, amount.Amount); err != nil {
-		return err
-	}
+	k.UpdateAssetDataInTokenMintByApp(ctx, appMappingId, asset.Id, false, amount.Amount)
 	
 	return nil
+}
+
+func (k *Keeper) BurnFrom(ctx sdk.Context, amount sdk.Coin, burnFrom string) error {
+
+	addr, err := sdk.AccAddressFromBech32(burnFrom)
+	if err != nil {
+		return err
+	}
+	err = k.SendCoinFromAccountToModule(ctx,
+		addr,
+		types.ModuleName,
+		amount)
+	if err != nil {
+		return err
+	}
+	return k.BurnCoin(ctx, types.ModuleName, amount)
 }
