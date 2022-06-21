@@ -248,7 +248,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appMappi
 	return true, ""
 }
 
-func (k *Keeper) WasmUpdatePairsVault(ctx sdk.Context, updateLsrPairVault *bindings.MsgUpdateLsrInPairsVault) error {
+func (k *Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.MsgUpdatePairsVault) error {
 	var ExtPairVaultData types.ExtendedPairVault
 	pairVaults, found := k.GetPairsVaults(ctx)
 	if !found {
@@ -256,25 +256,25 @@ func (k *Keeper) WasmUpdatePairsVault(ctx sdk.Context, updateLsrPairVault *bindi
 	}
 	var count = 0
 	for _, data := range pairVaults {
-		if data.AppMappingId == updateLsrPairVault.AppMappingId && data.Id == updateLsrPairVault.ExtPairId {
+		if data.AppMappingId == updatePairVault.AppMappingId && data.Id == updatePairVault.ExtPairId {
 			count++
 			ExtPairVaultData.Id = data.Id
 			ExtPairVaultData.PairId = data.PairId
 			ExtPairVaultData.AppMappingId = data.AppMappingId
-			ExtPairVaultData.LiquidationRatio = updateLsrPairVault.LiquidationRatio
-			ExtPairVaultData.StabilityFee = updateLsrPairVault.StabilityFee
-			ExtPairVaultData.ClosingFee = updateLsrPairVault.ClosingFee
-			ExtPairVaultData.LiquidationPenalty = updateLsrPairVault.LiquidationPenalty
-			ExtPairVaultData.DrawDownFee = updateLsrPairVault.DrawDownFee
+			ExtPairVaultData.LiquidationRatio = updatePairVault.LiquidationRatio
+			ExtPairVaultData.StabilityFee = updatePairVault.StabilityFee
+			ExtPairVaultData.ClosingFee = updatePairVault.ClosingFee
+			ExtPairVaultData.LiquidationPenalty = updatePairVault.LiquidationPenalty
+			ExtPairVaultData.DrawDownFee = updatePairVault.DrawDownFee
 			ExtPairVaultData.IsVaultActive = data.IsVaultActive
-			ExtPairVaultData.DebtCeiling = sdk.NewInt(int64(updateLsrPairVault.DebtCeiling))
-			ExtPairVaultData.DebtFloor = sdk.NewInt(int64(updateLsrPairVault.DebtFloor))
+			ExtPairVaultData.DebtCeiling = sdk.NewInt(int64(updatePairVault.DebtCeiling))
+			ExtPairVaultData.DebtFloor = sdk.NewInt(int64(updatePairVault.DebtFloor))
 			ExtPairVaultData.IsPsmPair = data.IsPsmPair
-			ExtPairVaultData.MinCr = updateLsrPairVault.MinCr
+			ExtPairVaultData.MinCr = updatePairVault.MinCr
 			ExtPairVaultData.PairName = data.PairName
 			ExtPairVaultData.AssetOutOraclePrice = data.AssetOutOraclePrice
 			ExtPairVaultData.AssetOutPrice = data.AssetOutPrice
-			ExtPairVaultData.MinUsdValueLeft = updateLsrPairVault.MinUsdValueLeft
+			ExtPairVaultData.MinUsdValueLeft = updatePairVault.MinUsdValueLeft
 		}
 	}
 	if count == 0 {

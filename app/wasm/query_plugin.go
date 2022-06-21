@@ -192,30 +192,30 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "WhiteListedAssetQueryCheck query response")
 			}
 			return bz, nil
-		} else if comdexQuery.UpdateLsrInPairsVaultQuery != nil {
-			appMappingID := comdexQuery.UpdateLsrInPairsVaultQuery.AppMappingId
-			extPairID := comdexQuery.UpdateLsrInPairsVaultQuery.ExtPairId
+		} else if comdexQuery.UpdatePairsVaultQuery != nil {
+			appMappingID := comdexQuery.UpdatePairsVaultQuery.AppMappingId
+			extPairID := comdexQuery.UpdatePairsVaultQuery.ExtPairId
 			found, errormsg := queryPlugin.UpdatePairsVaultQueryCheck(ctx, appMappingID, extPairID)
-			res := bindings.UpdateLsrInPairsVaultQueryResponse{
+			res := bindings.UpdatePairsVaultQueryResponse{
 				Found: found,
 				Err:   errormsg,
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "UpdateLsrInPairsVaultQuery query response")
+				return nil, sdkerrors.Wrap(err, "UpdatePairsVaultQuery query response")
 			}
 			return bz, nil
-		} else if comdexQuery.UpdateLsrInCollectorLookupTableQuery != nil {
-			appMappingID := comdexQuery.UpdateLsrInCollectorLookupTableQuery.AppMappingId
-			assetID := comdexQuery.UpdateLsrInCollectorLookupTableQuery.AssetId
+		} else if comdexQuery.UpdateCollectorLookupTableQuery != nil {
+			appMappingID := comdexQuery.UpdateCollectorLookupTableQuery.AppMappingId
+			assetID := comdexQuery.UpdateCollectorLookupTableQuery.AssetId
 			found, errormsg := queryPlugin.UpdateCollectorLookupTableQueryCheck(ctx, appMappingID, assetID)
-			res := bindings.UpdateLsrInCollectorLookupTableQueryResponse{
+			res := bindings.UpdateCollectorLookupTableQueryResponse{
 				Found: found,
 				Err:   errormsg,
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "UpdateLsrInPairsVaultQuery query response")
+				return nil, sdkerrors.Wrap(err, "UpdatePairsVaultQuery query response")
 			}
 			return bz, nil
 		} else if comdexQuery.RemoveWhitelistAppIdVaultInterestQuery != nil {

@@ -72,11 +72,11 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		if comdexMsg.MsgSetAuctionMappingForApp != nil {
 			return m.SetAuctionMappingForApp(ctx, contractAddr, comdexMsg.MsgSetAuctionMappingForApp)
 		}
-		if comdexMsg.MsgUpdateLsrInPairsVault != nil {
-			return m.UpdateLsrInPairsVault(ctx, contractAddr, comdexMsg.MsgUpdateLsrInPairsVault)
+		if comdexMsg.MsgUpdatePairsVault != nil {
+			return m.UpdatePairsVault(ctx, contractAddr, comdexMsg.MsgUpdatePairsVault)
 		}
-		if comdexMsg.MsgUpdateLsrInCollectorLookupTable != nil {
-			return m.UpdateLsrInCollectorLookupTable(ctx, contractAddr, comdexMsg.MsgUpdateLsrInCollectorLookupTable)
+		if comdexMsg.MsgUpdateCollectorLookupTable != nil {
+			return m.UpdateCollectorLookupTable(ctx, contractAddr, comdexMsg.MsgUpdateCollectorLookupTable)
 		}
 		if comdexMsg.MsgRemoveWhitelistAssetLocker != nil {
 			return m.RemoveWhitelistAssetLocker(ctx, contractAddr, comdexMsg.MsgRemoveWhitelistAssetLocker)
@@ -234,34 +234,34 @@ func MsgSetAuctionMappingForApp(collectorKeeper collectorkeeper.Keeper, ctx sdk.
 	return nil
 }
 
-func (m *CustomMessenger) UpdateLsrInPairsVault(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInPairsVault) ([]sdk.Event, [][]byte, error) {
-	err := MsgUpdateLsrInPairsVault(m.assetKeeper, ctx, contractAddr, a)
+func (m *CustomMessenger) UpdatePairsVault(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdatePairsVault) ([]sdk.Event, [][]byte, error) {
+	err := MsgUpdatePairsVault(m.assetKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "UpdateLsrInPairsVault error")
+		return nil, nil, sdkerrors.Wrap(err, "UpdatePairsVault error")
 	}
 	return nil, nil, nil
 }
 
-func MsgUpdateLsrInPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	updateLsrPairVault *bindings.MsgUpdateLsrInPairsVault) error {
-	err := assetKeeper.WasmUpdatePairsVault(ctx, updateLsrPairVault)
+func MsgUpdatePairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	updatePairVault *bindings.MsgUpdatePairsVault) error {
+	err := assetKeeper.WasmUpdatePairsVault(ctx, updatePairVault)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *CustomMessenger) UpdateLsrInCollectorLookupTable(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateLsrInCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
-	err := MsgUpdateLsrInCollectorLookupTable(m.collectorKeeper, ctx, contractAddr, a)
+func (m *CustomMessenger) UpdateCollectorLookupTable(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+	err := MsgUpdateCollectorLookupTable(m.collectorKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "UpdateLsrInCollectorLookupTable error")
+		return nil, nil, sdkerrors.Wrap(err, "UpdateCollectorLookupTable error")
 	}
 	return nil, nil, nil
 }
 
-func MsgUpdateLsrInCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	updateLsrInColBinding *bindings.MsgUpdateLsrInCollectorLookupTable) error {
-	err := collectorKeeper.WasmUpdateCollectorLookupTable(ctx, updateLsrInColBinding)
+func MsgUpdateCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	updateColBinding *bindings.MsgUpdateCollectorLookupTable) error {
+	err := collectorKeeper.WasmUpdateCollectorLookupTable(ctx, updateColBinding)
 	if err != nil {
 		return err
 	}

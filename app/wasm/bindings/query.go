@@ -16,8 +16,8 @@ type ComdexQuery struct {
 	ExtendedPairsVaultRecordsQuery         *ExtendedPairsVaultRecordsQuery         `json:"extended_pairs_vault_records_query,omitempty"`
 	AuctionMappingForAppQuery              *AuctionMappingForAppQuery              `json:"auction_mapping_for_app_query,omitempty"`
 	WhiteListedAssetQuery                  *WhiteListedAssetQuery                  `json:"white_listed_asset_query,omitempty"`
-	UpdateLsrInPairsVaultQuery             *UpdateLsrInPairsVaultQuery             `json:"update_lsr_in_pairs_vault_query,omitempty"`
-	UpdateLsrInCollectorLookupTableQuery   *UpdateLsrInCollectorLookupTableQuery   `json:"update_lsr_in_collector_lookup_table_query,omitempty"`
+	UpdatePairsVaultQuery                  *UpdatePairsVaultQuery                  `json:"update_pairs_vault_query,omitempty"`
+	UpdateCollectorLookupTableQuery        *UpdateCollectorLookupTableQuery        `json:"update_collector_lookup_table_query,omitempty"`
 	RemoveWhitelistAssetLockerQuery        *RemoveWhitelistAssetLockerQuery        `json:"remove_whitelist_asset_locker_query,omitempty"`
 	RemoveWhitelistAppIdVaultInterestQuery *RemoveWhitelistAppIdVaultInterestQuery `json:"remove_whitelist_app_id_vault_interest_query,omitempty"`
 	WhitelistAppIdLiquidationQuery         *WhitelistAppIdLiquidationQuery         `json:"whitelist_app_id_liquidation_query,omitempty"`
@@ -157,22 +157,22 @@ type WhiteListedAssetQueryResponse struct {
 	Err   string `json:"err"`
 }
 
-type UpdateLsrInPairsVaultQuery struct {
+type UpdatePairsVaultQuery struct {
 	AppMappingId uint64 `json:"app_mapping_id"`
 	ExtPairId    uint64 `json:"ext_pair_id"`
 }
 
-type UpdateLsrInPairsVaultQueryResponse struct {
+type UpdatePairsVaultQueryResponse struct {
 	Found bool   `json:"found"`
 	Err   string `json:"err"`
 }
 
-type UpdateLsrInCollectorLookupTableQuery struct {
+type UpdateCollectorLookupTableQuery struct {
 	AppMappingId uint64 `json:"app_mapping_id"`
 	AssetId      uint64 `json:"asset_id"`
 }
 
-type UpdateLsrInCollectorLookupTableQueryResponse struct {
+type UpdateCollectorLookupTableQueryResponse struct {
 	Found bool   `json:"found"`
 	Err   string `json:"err"`
 }

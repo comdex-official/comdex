@@ -11,8 +11,8 @@ type ComdexMessages struct {
 	MsgAddExtendedPairsVault             *MsgAddExtendedPairsVault             `json:"msg_add_extended_pairs_vault,omitempty"`
 	MsgSetCollectorLookupTable           *MsgSetCollectorLookupTable           `json:"msg_set_collector_lookup_table,omitempty"`
 	MsgSetAuctionMappingForApp           *MsgSetAuctionMappingForApp           `json:"msg_set_auction_mapping_for_app,omitempty"`
-	MsgUpdateLsrInPairsVault             *MsgUpdateLsrInPairsVault             `json:"msg_update_lsr_in_pairs_vault,omitempty"`
-	MsgUpdateLsrInCollectorLookupTable   *MsgUpdateLsrInCollectorLookupTable   `json:"msg_update_lsr_in_collector_lookup_table,omitempty"`
+	MsgUpdatePairsVault                  *MsgUpdatePairsVault                  `json:"msg_update_pairs_vault,omitempty"`
+	MsgUpdateCollectorLookupTable        *MsgUpdateCollectorLookupTable        `json:"msg_update_collector_lookup_table,omitempty"`
 	MsgRemoveWhitelistAssetLocker        *MsgRemoveWhitelistAssetLocker        `json:"msg_remove_whitelist_asset_locker,omitempty"`
 	MsgRemoveWhitelistAppIdVaultInterest *MsgRemoveWhitelistAppIdVaultInterest `json:"msg_remove_whitelist_app_id_vault_interest,omitempty"`
 	MsgWhitelistAppIdLiquidation         *MsgWhitelistAppIdLiquidation         `json:"msg_whitelist_app_id_liquidation,omitempty"`
@@ -75,7 +75,7 @@ type MsgSetAuctionMappingForApp struct {
 	AssetOutPrice       []uint64 `json:"asset_out_price"`
 }
 
-type MsgUpdateLsrInPairsVault struct {
+type MsgUpdatePairsVault struct {
 	AppMappingId       uint64  `json:"app_mapping_id"`
 	ExtPairId          uint64  `json:"ext_pair_id"`
 	LiquidationRatio   sdk.Dec `json:"liquidation_ratio"`
@@ -89,7 +89,7 @@ type MsgUpdateLsrInPairsVault struct {
 	MinUsdValueLeft    uint64  `json:"min_usd_value_left"`
 }
 
-type MsgUpdateLsrInCollectorLookupTable struct {
+type MsgUpdateCollectorLookupTable struct {
 	AppMappingId     uint64  `json:"app_mapping_id"`
 	AssetId          uint64  `json:"asset_id"`
 	DebtThreshold    uint64  `json:"debt_threshold"`
