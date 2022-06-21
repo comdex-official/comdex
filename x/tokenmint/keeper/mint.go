@@ -198,3 +198,22 @@ func (k *Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingId u
 	}
 
 }
+
+func (k *Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingId uint64, from string, amount sdk.Coin) error {
+
+	_, found := k.GetApp(ctx, appMappingId)
+	if !found {
+		return types.ErrorAppMappingDoesNotExists
+	}
+
+	if err := k.SendCoinFromAccountToModule(ctx, sdk.MustAccAddressFromBech32(from), types.ModuleName, amount); err != nil {
+		return err
+	}
+	asset, _ := k.GetAssetForDenom(ctx, amount.Denom)
+
+	if err := k.BurnTokensForApp(ctx, appMappingId, asset.Id, amount.Amount); err != nil {
+		return err
+	}
+	
+	return nil
+}

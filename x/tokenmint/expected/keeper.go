@@ -22,5 +22,6 @@ type AssetKeeper interface {
 	GetApp(ctx sdk.Context, id uint64) (assettypes.AppMapping, bool)
 	GetApps(ctx sdk.Context) ([]assettypes.AppMapping, bool)
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
+	GetAssetForDenom(ctx sdk.Context, denom string) (assettypes.Asset, bool)
 	GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64) (assettypes.MintGenesisToken, bool)
 }
