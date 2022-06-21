@@ -10,6 +10,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
+	"strconv"
 )
 
 type (
@@ -61,6 +62,14 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int {
 	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(moduleName), denom).Amount
 }
+func uint64InAssetData(a uint64, list []types.AssetDataPoolMapping) bool {
+	for _, b := range list {
+		if b.AssetId == a {
+			return true
+		}
+	}
+	return false
+}
 
 func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetId uint64, Amount sdk.Coin, PoolId uint64) error {
 
@@ -69,6 +78,11 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetId uint64, Am
 
 	if Amount.Denom != asset.Denom {
 		return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, Amount.Denom)
+	}
+
+	found := uint64InAssetData(AssetId, pool.AssetData)
+	if !found {
+		return sdkerrors.Wrap(types.ErrInvalidAssetIdForPool, strconv.FormatUint(AssetId, 10))
 	}
 
 	addr, _ := sdk.AccAddressFromBech32(lenderAddr)
@@ -304,7 +318,7 @@ func (k Keeper) CloseLend(ctx sdk.Context, addr string, lendId uint64) error {
 	availableAmount := k.ModuleBalance(ctx, pool.ModuleName, lendPos.AmountIn.Denom)
 
 	if lendPos.UpdatedAmountIn.GT(availableAmount.Sub(reservedAmount)) {
-		return sdkerrors.Wrap(types.ErrLendingPoolInsufficient, lendPos.AmountIn.String())
+		return sdkerrors.Wrap(types.ErrLendingPoolInsufficient, lendPos.UpdatedAmountIn.String())
 	}
 
 	tokens := sdk.NewCoins(sdk.NewCoin(lendPos.AmountIn.Denom, lendPos.UpdatedAmountIn))
@@ -852,6 +866,9 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowId uint6
 	if err != nil {
 		return err
 	}
+	//TODO:
+	// send the bridged asset back to the assetIn pools
+
 	k.DeleteBorrow(ctx, borrowId)
 
 	return nil

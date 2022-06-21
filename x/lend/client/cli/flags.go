@@ -81,14 +81,13 @@ func FlagSetAddAssetRatesStatsMapping() *flag.FlagSet {
 }
 
 type addNewLendPairsInputs struct {
-	AssetIn          string `json:"asset_in"`
-	AssetOut         string `json:"asset_out"`
-	IsInterPool      string `json:"is_inter_pool"`
-	AssetOutPoolID   string `json:"asset_out_pool_id"`
-	LiquidationRatio string `json:"liquidation_ratio"`
-	Title            string
-	Description      string
-	Deposit          string
+	AssetIn        string `json:"asset_in"`
+	AssetOut       string `json:"asset_out"`
+	IsInterPool    string `json:"is_inter_pool"`
+	AssetOutPoolID string `json:"asset_out_pool_id"`
+	Title          string
+	Description    string
+	Deposit        string
 }
 
 type addLendPoolInputs struct {
