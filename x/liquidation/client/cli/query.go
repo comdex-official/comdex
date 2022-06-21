@@ -140,7 +140,6 @@ func queryUserLockedVaults() *cobra.Command {
 		Short: "locked vaults list for an individual account",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -175,7 +174,6 @@ func queryUserLockedVaultsHistory() *cobra.Command {
 		Short: "historical locked vaults list for an individual account",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -210,7 +208,6 @@ func queryLockedVaultsPair() *cobra.Command {
 		Short: "locked vaults list With Pair Id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -249,7 +246,6 @@ func queryAppIds() *cobra.Command {
 		Use:   "whitelisted-app-id",
 		Short: "Query whitelisted app id",
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -271,8 +267,3 @@ func queryAppIds() *cobra.Command {
 
 	return cmd
 }
-
-//Query All Locked Vaults history
-// Query Locked Vaults History - User Wise
-//Query Locked Vaults Collateral wise
-//Query Locked Vaults cAssetWise

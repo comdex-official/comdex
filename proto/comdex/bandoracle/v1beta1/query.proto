@@ -18,7 +18,7 @@ service Query {
     option (google.api.http).get = "/comdex/bandoracle/v1beta1/fetch_price_result/{request_id}";
   }
 
-  rpc LastFetchPriceId(QueryLastFetchPriceIdRequest) returns (QueryLastFetchPriceIdResponse) {
+  rpc LastFetchPriceID(QueryLastFetchPriceIdRequest) returns (QueryLastFetchPriceIdResponse) {
     option (google.api.http).get = "/comdex/bandoracle/v1beta1/last_fetch_price_id";
   }
 }

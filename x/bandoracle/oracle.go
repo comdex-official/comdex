@@ -20,7 +20,6 @@ func (im IBCModule) handleOraclePacket(
 	}
 
 	switch modulePacketData.GetClientID() {
-
 	case types.FetchPriceClientIDKey:
 		var fetchPriceResult types.FetchPriceResult
 		if err := obi.Decode(modulePacketData.Result, &fetchPriceResult); err != nil {
@@ -36,7 +35,6 @@ func (im IBCModule) handleOraclePacket(
 			"market received packet not found: %s", modulePacketData.GetClientID())
 		ack = channeltypes.NewErrorAcknowledgement(err.Error())
 		return ack, err
-
 	}
 	ack = channeltypes.NewResultAcknowledgement(
 		types.ModuleCdc.MustMarshalJSON(
@@ -66,7 +64,6 @@ func (im IBCModule) handleOracleAcknowledgment(
 		requestID := types.OracleRequestID(oracleAck.RequestID)
 
 		switch data.GetClientID() {
-
 		case types.FetchPriceClientIDKey:
 			var fetchPriceData types.FetchPriceCallData
 			if err = obi.Decode(data.GetCalldata(), &fetchPriceData); err != nil {

@@ -14,8 +14,8 @@ func (k Keeper) GetModuleAccountBalance(ctx sdk.Context, moduleName string, deno
 	return k.bank.GetBalance(ctx, address, denom).Amount
 }
 
-func (k Keeper) IncreaseLockedVaultAmountIn(ctx sdk.Context, lockedVaultId uint64, amount sdk.Int) error {
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultId)
+func (k Keeper) IncreaseLockedVaultAmountIn(ctx sdk.Context, lockedVaultID uint64, amount sdk.Int) error {
+	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}
@@ -24,8 +24,8 @@ func (k Keeper) IncreaseLockedVaultAmountIn(ctx sdk.Context, lockedVaultId uint6
 	return nil
 }
 
-func (k Keeper) DecreaseLockedVaultAmountIn(ctx sdk.Context, lockedVaultId uint64, amount sdk.Int) (isZero bool, err error) {
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultId)
+func (k Keeper) DecreaseLockedVaultAmountIn(ctx sdk.Context, lockedVaultID uint64, amount sdk.Int) (isZero bool, err error) {
+	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
 	if !found {
 		return false, auctiontypes.ErrorVaultNotFound
 	}
@@ -37,8 +37,8 @@ func (k Keeper) DecreaseLockedVaultAmountIn(ctx sdk.Context, lockedVaultId uint6
 	return false, nil
 }
 
-func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultId uint64, amount sdk.Int) error {
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultId)
+func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultID uint64, amount sdk.Int) error {
+	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}
@@ -47,18 +47,18 @@ func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultId uint
 	return nil
 }
 
-func (k Keeper) AddAuctionParams(ctx sdk.Context, appId, auctionDurationSeconds uint64, buffer, cusp sdk.Dec, step, priceFunctionType, surplusId, debtId, dutchId uint64, bidDurationSeconds uint64) error {
+func (k Keeper) AddAuctionParams(ctx sdk.Context, appID, auctionDurationSeconds uint64, buffer, cusp sdk.Dec, step, priceFunctionType, surplusID, debtID, dutchID uint64, bidDurationSeconds uint64) error {
 	newStep := sdk.NewIntFromUint64(step)
 	auctionParams := auctiontypes.AuctionParams{
-		AppId:                  appId,
+		AppId:                  appID,
 		AuctionDurationSeconds: auctionDurationSeconds,
 		Buffer:                 buffer,
 		Cusp:                   cusp,
 		Step:                   newStep,
 		PriceFunctionType:      priceFunctionType,
-		SurplusId:              surplusId,
-		DebtId:                 debtId,
-		DutchId:                dutchId,
+		SurplusId:              surplusID,
+		DebtId:                 debtID,
+		DutchId:                dutchID,
 		BidDurationSeconds:     bidDurationSeconds,
 	}
 
@@ -67,14 +67,13 @@ func (k Keeper) AddAuctionParams(ctx sdk.Context, appId, auctionDurationSeconds 
 	return nil
 }
 
-func (k Keeper) makeFalseForFlags(ctx sdk.Context, appId, assetId uint64) error {
-
-	auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appId)
+func (k Keeper) makeFalseForFlags(ctx sdk.Context, appID, assetID uint64) error {
+	auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appID)
 	if !found {
 		return auctiontypes.ErrorInvalidAddress
 	}
 	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
-		if assetToAuction.AssetId == assetId {
+		if assetToAuction.AssetId == assetID {
 			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = false
 			err := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
 			if err != nil {

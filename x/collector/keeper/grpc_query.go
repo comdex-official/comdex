@@ -79,10 +79,9 @@ func (q *queryServer) QueryCollectorDataByProductAndAsset(c context.Context, req
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
-	collectormap, _ := q.GetAppidToAssetCollectorMapping(ctx, req.AppId)
+	collectorMap, _ := q.GetAppidToAssetCollectorMapping(ctx, req.AppId)
 
-	for _, data := range collectormap.AssetCollector {
-
+	for _, data := range collectorMap.AssetCollector {
 		if data.AssetId == req.AssetId {
 			collectorData.CollectedClosingFee = data.Collector.CollectedClosingFee
 			collectorData.CollectedOpeningFee = data.Collector.CollectedOpeningFee
@@ -131,7 +130,7 @@ func (q *queryServer) QueryNetFeeCollectedForAppAndAsset(c context.Context, req 
 	}
 	var (
 		ctx                   = sdk.UnwrapSDKContext(c)
-		assetIdToFeeCollected types.AssetIdToFeeCollected
+		assetIDToFeeCollected types.AssetIdToFeeCollected
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -140,13 +139,13 @@ func (q *queryServer) QueryNetFeeCollectedForAppAndAsset(c context.Context, req 
 	fee, _ := q.GetNetFeeCollectedData(ctx, req.AppId)
 	for _, data := range fee.AssetIdToFeeCollected {
 		if data.AssetId == req.AssetId {
-			assetIdToFeeCollected.AssetId = data.AssetId
-			assetIdToFeeCollected.NetFeesCollected = data.NetFeesCollected
+			assetIDToFeeCollected.AssetId = data.AssetId
+			assetIDToFeeCollected.NetFeesCollected = data.NetFeesCollected
 		}
 	}
 
 	return &types.QueryNetFeeCollectedForAppAndAssetResponse{
-		AssetIdToFeeCollected: assetIdToFeeCollected,
+		AssetIdToFeeCollected: assetIDToFeeCollected,
 	}, nil
 }
 

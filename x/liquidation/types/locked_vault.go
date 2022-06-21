@@ -7,7 +7,6 @@ import (
 
 func (m *WhitelistedAppIds) ValidateBasic() error {
 	if m.WhitelistedAppMappingIds == nil {
-
 		return fmt.Errorf("WhitelistedAppIds cannot be empty")
 	}
 
@@ -15,7 +14,6 @@ func (m *WhitelistedAppIds) ValidateBasic() error {
 }
 
 func (m *WhitelistedAppIds) GetSigners() []sdk.AccAddress {
-
 	return nil
 }
 

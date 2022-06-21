@@ -110,7 +110,6 @@ func (m *CustomMessenger) whitelistAssetLocker(ctx sdk.Context, contractAddr sdk
 
 func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	whiteListAsset *bindings.MsgWhiteListAssetLocker) error {
-
 	msg := lockertypes.MsgAddWhiteListedAssetRequest{
 		From:         contractAddr.String(),
 		AppMappingId: whiteListAsset.AppMappingId,
@@ -137,7 +136,6 @@ func (m *CustomMessenger) whitelistAppIdLockerRewards(ctx sdk.Context, contractA
 
 func WhitelistAppIdLockerRewards(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	whiteListAsset *bindings.MsgWhitelistAppIdLockerRewards) error {
-
 	msg := rewardstypes.WhitelistAsset{
 		From:         contractAddr.String(),
 		AppMappingId: whiteListAsset.AppMappingId,
@@ -164,7 +162,6 @@ func (m *CustomMessenger) whitelistAppIdVaultInterest(ctx sdk.Context, contractA
 
 func WhitelistAppIdVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	whiteListAsset *bindings.MsgWhitelistAppIdVaultInterest) error {
-
 	msg := rewardstypes.WhitelistAppIdVault{
 
 		From:         contractAddr.String(),
@@ -195,8 +192,8 @@ func (m *CustomMessenger) AddExtendedPairsVault(ctx sdk.Context, contractAddr sd
 }
 
 func MsgAddExtendedPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgAddExtendedPairsVault) error {
-	err := assetKeeper.WasmAddExtendedPairsVaultRecords(ctx, a.AppMappingId, a.PairId, a.LiquidationRatio, a.StabilityFee, a.ClosingFee, a.LiquidationPenalty, a.DrawDownFee, a.IsVaultActive, a.DebtCeiling, a.DebtFloor, a.IsPsmPair, a.MinCr, a.PairName, a.AssetOutOraclePrice, a.AssetOutPrice, a.MinUsdValueLeft)
+	pairVaultBinding *bindings.MsgAddExtendedPairsVault) error {
+	err := assetKeeper.WasmAddExtendedPairsVaultRecords(ctx, pairVaultBinding)
 	if err != nil {
 		return err
 	}
@@ -212,8 +209,8 @@ func (m *CustomMessenger) SetCollectorLookupTable(ctx sdk.Context, contractAddr 
 }
 
 func MsgSetCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgSetCollectorLookupTable) error {
-	err := collectorKeeper.WasmSetCollectorLookupTable(ctx, a.AppMappingId, a.CollectorAssetId, a.SecondaryAssetId, a.SurplusThreshold, a.DebtThreshold, a.LockerSavingRate, a.LotSize, a.BidFactor, a.DebtLotSize)
+	collectorBindings *bindings.MsgSetCollectorLookupTable) error {
+	err := collectorKeeper.WasmSetCollectorLookupTable(ctx, collectorBindings)
 	if err != nil {
 		return err
 	}
@@ -229,8 +226,8 @@ func (m *CustomMessenger) SetAuctionMappingForApp(ctx sdk.Context, contractAddr 
 }
 
 func MsgSetAuctionMappingForApp(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgSetAuctionMappingForApp) error {
-	err := collectorKeeper.WasmSetAuctionMappingForApp(ctx, a.AppMappingId, a.AssetId, a.IsSurplusAuction, a.IsDebtAuction, a.AssetOutOraclePrice, a.AssetOutPrice)
+	auctionMappingBinding *bindings.MsgSetAuctionMappingForApp) error {
+	err := collectorKeeper.WasmSetAuctionMappingForApp(ctx, auctionMappingBinding)
 	if err != nil {
 		return err
 	}
@@ -246,9 +243,8 @@ func (m *CustomMessenger) UpdateLsrInPairsVault(ctx sdk.Context, contractAddr sd
 }
 
 func MsgUpdateLsrInPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgUpdateLsrInPairsVault) error {
-	err := assetKeeper.WasmUpdateLsrInPairsVault(ctx, a.AppMappingId, a.ExtPairId, a.LiquidationRatio, a.StabilityFee, a.ClosingFee,
-		a.LiquidationPenalty, a.DrawDownFee, a.MinCr, a.DebtCeiling, a.DebtFloor, a.MinUsdValueLeft)
+	updateLsrPairVault *bindings.MsgUpdateLsrInPairsVault) error {
+	err := assetKeeper.WasmUpdateLsrInPairsVault(ctx, updateLsrPairVault)
 	if err != nil {
 		return err
 	}

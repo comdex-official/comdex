@@ -42,12 +42,11 @@ func QueryCollectorLookupByProduct() *cobra.Command {
 		Short: "collector lookup for a product",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -55,7 +54,7 @@ func QueryCollectorLookupByProduct() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryCollectorLookupByProduct(cmd.Context(), &types.QueryCollectorLookupByProductRequest{
-				AppId: appId,
+				AppId: appID,
 			})
 
 			if err != nil {
@@ -76,16 +75,15 @@ func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 		Short: "collector lookup for a product by asset id",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -93,8 +91,8 @@ func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryCollectorLookupByProductAndAsset(cmd.Context(), &types.QueryCollectorLookupByProductAndAssetRequest{
-				AppId:   appId,
-				AssetId: assetId,
+				AppId:   appID,
+				AssetId: assetID,
 			})
 
 			if err != nil {
@@ -108,23 +106,22 @@ func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 	return cmd
 }
 
-// QueryCollectorLookupByProduct query collector store by product
+// QueryCollectorDataByProductAndAsset query collector store by product
 func QueryCollectorDataByProductAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "collector-data-by-product-and-asset [app-id] [asset_id]",
 		Short: "collector data for a product and asset",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -132,8 +129,8 @@ func QueryCollectorDataByProductAndAsset() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryCollectorDataByProductAndAsset(cmd.Context(), &types.QueryCollectorDataByProductAndAssetRequest{
-				AppId:   appId,
-				AssetId: assetId,
+				AppId:   appID,
+				AssetId: assetID,
 			})
 
 			if err != nil {
@@ -153,16 +150,15 @@ func QueryAuctionMappingForAppAndAsset() *cobra.Command {
 		Short: "auction data for a product and asset",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -170,8 +166,8 @@ func QueryAuctionMappingForAppAndAsset() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAuctionMappingForAppAndAsset(cmd.Context(), &types.QueryAuctionMappingForAppAndAssetRequest{
-				AppId:   appId,
-				AssetId: assetId,
+				AppId:   appID,
+				AssetId: assetID,
 			})
 
 			if err != nil {
@@ -191,16 +187,15 @@ func QueryNetFeeCollectedForAppAndAsset() *cobra.Command {
 		Short: "net fee data for a product and asset",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -208,8 +203,8 @@ func QueryNetFeeCollectedForAppAndAsset() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryNetFeeCollectedForAppAndAsset(cmd.Context(), &types.QueryNetFeeCollectedForAppAndAssetRequest{
-				AppId:   appId,
-				AssetId: assetId,
+				AppId:   appID,
+				AssetId: assetID,
 			})
 
 			if err != nil {

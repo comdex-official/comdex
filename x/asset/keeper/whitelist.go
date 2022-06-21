@@ -150,7 +150,6 @@ func (k *Keeper) AddWhitelistedAssetRecords(ctx sdk.Context, records ...types.Ex
 
 		k.SetWhitelistAssetID(ctx, asset.Id)
 		k.SetWhitelistAsset(ctx, asset)
-
 	}
 
 	return nil
@@ -168,10 +167,8 @@ func (k *Keeper) UpdateWhitelistedAssetRecords(ctx sdk.Context, msg types.Extend
 	if !msg.LiquidationThreshold.IsZero() {
 		asset.LiquidationThreshold = msg.LiquidationThreshold
 	}
-	if msg.IsBridgedAsset || !msg.IsBridgedAsset {
-		asset.IsBridgedAsset = msg.IsBridgedAsset
 
-	}
+	asset.IsBridgedAsset = msg.IsBridgedAsset
 
 	k.SetWhitelistAsset(ctx, asset)
 	return nil
@@ -208,7 +205,6 @@ func (k *Keeper) AddWhitelistedPairsRecords(ctx sdk.Context, records ...types.Ex
 }
 
 func (k *Keeper) UpdateWhitelistedPairRecords(ctx sdk.Context, msg types.ExtendedPairLend) error {
-
 	pair, found := k.GetWhitelistPair(ctx, msg.Id)
 	if !found {
 		return types.ErrorPairDoesNotExist

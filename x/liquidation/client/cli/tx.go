@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func txWhitelistAppId() *cobra.Command {
+func txWhitelistAppID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "whitelist-app-id [app_mapping_Id]",
 		Short: "Add Whitelisted appId for liquidations",
@@ -20,26 +20,23 @@ func txWhitelistAppId() *cobra.Command {
 				return err
 			}
 
-			appMappingId, err := strconv.ParseUint(args[0], 10, 64)
+			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			msg := types.NewMsgWhitelistAppId(
-				appMappingId,
+				appMappingID,
 				ctx.GetFromAddress(),
 			)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
-
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
-
-func txRemoveWhitelistAppId() *cobra.Command {
+func txRemoveWhitelistAppID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "remove-whitelist-app-id [app_mapping_Id] ",
 		Short: "Remove Whitelisted appId for liquidations",
@@ -50,13 +47,13 @@ func txRemoveWhitelistAppId() *cobra.Command {
 				return err
 			}
 
-			appMappingId, err := strconv.ParseUint(args[0], 10, 64)
+			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			msg := types.NewMsgRemoveWhitelistAsset(
-				appMappingId,
+				appMappingID,
 				ctx.GetFromAddress(),
 			)
 
@@ -66,5 +63,4 @@ func txRemoveWhitelistAppId() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
