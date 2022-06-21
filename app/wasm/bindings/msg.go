@@ -89,9 +89,14 @@ type MsgUpdateLsrInPairsVault struct {
 }
 
 type MsgUpdateLsrInCollectorLookupTable struct {
-	AppMappingId uint64  `json:"app_mapping_id"`
-	AssetId      uint64  `json:"asset_id"`
-	LSR          sdk.Dec `json:"lsr"`
+	AppMappingId     uint64  `json:"app_mapping_id"`
+	AssetId          uint64  `json:"asset_id"`
+	DebtThreshold    uint64  `json:"debt_threshold"`
+	SurplusThreshold uint64  `json:"surplus_threshold"`
+	LotSize          uint64  `json:"lot_size"`
+	DebtLotSize      uint64  `json:"debt_lot_size"`
+	BidFactor        sdk.Dec `json:"bid_factor"`
+	LSR              sdk.Dec `json:"lsr"`
 }
 
 type MsgRemoveWhitelistAssetLocker struct {

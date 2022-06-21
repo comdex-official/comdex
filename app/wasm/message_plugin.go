@@ -260,7 +260,7 @@ func (m *CustomMessenger) UpdateLsrInCollectorLookupTable(ctx sdk.Context, contr
 
 func MsgUpdateLsrInCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
-	err := collectorKeeper.WasmUpdateLsrInCollectorLookupTable(ctx, a.AppMappingId, a.AssetId, a.LSR)
+	err := collectorKeeper.WasmUpdateLsrInCollectorLookupTable(ctx, a.AppMappingId, a.AssetId, a.DebtThreshold, a.SurplusThreshold, a.LotSize, a.DebtLotSize, a.BidFactor, a.LSR)
 	if err != nil {
 		return err
 	}
