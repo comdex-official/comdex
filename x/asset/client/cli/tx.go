@@ -798,12 +798,12 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 		return txf, nil, fmt.Errorf("failed to parse extPairVault: %w", err)
 	}
 
-	appMappingId, err := strconv.ParseUint(extPairVault.AppMappingId, 10, 64)
+	appMappingId, err := strconv.ParseUint(extPairVault.AppMappingID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	pairId, err := ParseUint64SliceFromString(extPairVault.PairId, ",")
+	pairId, err := ParseUint64SliceFromString(extPairVault.PairID, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -972,12 +972,12 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 		return txf, nil, fmt.Errorf("failed to parse assetMapping: %w", err)
 	}
 
-	appId, err := strconv.ParseUint(assetMapping.AppId, 10, 64)
+	appId, err := strconv.ParseUint(assetMapping.AppID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	assetId, err := ParseUint64SliceFromString(assetMapping.AssetId, ",")
+	assetId, err := ParseUint64SliceFromString(assetMapping.AssetID, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -1052,7 +1052,7 @@ func NewCreateWhiteListedPairsMsg(clientCtx client.Context, txf tx.Factory, fs *
 		return txf, nil, fmt.Errorf("failed to parse whiteListedPairs: %w", err)
 	}
 
-	pairId, err := ParseUint64SliceFromString(whiteListedPairs.PairId, ",")
+	pairId, err := ParseUint64SliceFromString(whiteListedPairs.PairID, ",")
 	if err != nil {
 		return txf, nil, err
 	}

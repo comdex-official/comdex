@@ -86,7 +86,7 @@ func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
 		if err != nil {
-
+			return
 		}
 	}(iter)
 
@@ -177,7 +177,6 @@ func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error 
 		k.SetAssetID(ctx, asset.Id)
 		k.SetAsset(ctx, asset)
 		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
-
 	}
 
 	return nil
@@ -208,7 +207,6 @@ func (k *Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 
 	k.SetAsset(ctx, asset)
 	return nil
-
 }
 
 func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
