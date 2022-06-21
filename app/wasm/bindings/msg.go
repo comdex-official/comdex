@@ -18,6 +18,7 @@ type ComdexMessages struct {
 	MsgWhitelistAppIdLiquidation         *MsgWhitelistAppIdLiquidation         `json:"msg_whitelist_app_id_liquidation,omitempty"`
 	MsgRemoveWhitelistAppIdLiquidation   *MsgRemoveWhitelistAppIdLiquidation   `json:"msg_remove_whitelist_app_id_liquidation,omitempty"`
 	MsgAddAuctionParams                  *MsgAddAuctionParams                  `json:"msg_add_auction_params,omitempty"`
+	MsgBurnGovTokensForApp               *MsgBurnGovTokensForApp               `json:"msg_burn_gov_tokens_for_app,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
@@ -89,9 +90,14 @@ type MsgUpdateLsrInPairsVault struct {
 }
 
 type MsgUpdateLsrInCollectorLookupTable struct {
-	AppMappingId uint64  `json:"app_mapping_id"`
-	AssetId      uint64  `json:"asset_id"`
-	LSR          sdk.Dec `json:"lsr"`
+	AppMappingId     uint64  `json:"app_mapping_id"`
+	AssetId          uint64  `json:"asset_id"`
+	DebtThreshold    uint64  `json:"debt_threshold"`
+	SurplusThreshold uint64  `json:"surplus_threshold"`
+	LotSize          uint64  `json:"lot_size"`
+	DebtLotSize      uint64  `json:"debt_lot_size"`
+	BidFactor        sdk.Dec `json:"bid_factor"`
+	LSR              sdk.Dec `json:"lsr"`
 }
 
 type MsgRemoveWhitelistAssetLocker struct {
@@ -122,4 +128,10 @@ type MsgAddAuctionParams struct {
 	DebtId                 uint64  `json:"debt_id"`
 	DutchId                uint64  `json:"dutch_id"`
 	BidDurationSeconds     uint64  `json:"bid_duration_seconds"`
+}
+
+type MsgBurnGovTokensForApp struct {
+	AppMappingId           uint64         `json:"app_mapping_id"`
+	From 				   sdk.AccAddress `json:"from"`					
+	Amount				   sdk.Coin       `json:"amount"`
 }

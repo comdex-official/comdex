@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
+	tokenmintkeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
@@ -40,6 +41,7 @@ type CustomMessenger struct {
 	collectorKeeper   collectorkeeper.Keeper
 	liquidationKeeper liquidationkeeper.Keeper
 	auctionKeeper     auctionkeeper.Keeper
+	tokenmintKeeper   tokenmintkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -90,6 +92,9 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		}
 		if comdexMsg.MsgAddAuctionParams != nil {
 			return m.AddAuctionParams(ctx, contractAddr, comdexMsg.MsgAddAuctionParams)
+		}
+		if comdexMsg.MsgBurnGovTokensForApp != nil {
+			return m.BurnGovTokensForApp(ctx, contractAddr, comdexMsg.MsgBurnGovTokensForApp)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
@@ -256,7 +261,7 @@ func (m *CustomMessenger) UpdateLsrInCollectorLookupTable(ctx sdk.Context, contr
 
 func MsgUpdateLsrInCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgUpdateLsrInCollectorLookupTable) error {
-	err := collectorKeeper.WasmUpdateLsrInCollectorLookupTable(ctx, a.AppMappingId, a.AssetId, a.LSR)
+	err := collectorKeeper.WasmUpdateLsrInCollectorLookupTable(ctx, a.AppMappingId, a.AssetId, a.DebtThreshold, a.SurplusThreshold, a.LotSize, a.DebtLotSize, a.BidFactor, a.LSR)
 	if err != nil {
 		return err
 	}
@@ -342,6 +347,23 @@ func (m *CustomMessenger) AddAuctionParams(ctx sdk.Context, contractAddr sdk.Acc
 func MsgAddAuctionParams(auctionKeeper auctionkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgAddAuctionParams) error {
 	err := auctionKeeper.AddAuctionParams(ctx, a.AppMappingId, a.AuctionDurationSeconds, a.Buffer, a.Cusp, a.Step, a.PriceFunctionType, a.SurplusId, a.DebtId, a.DutchId, a.BidDurationSeconds)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) BurnGovTokensForApp(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgBurnGovTokensForApp) ([]sdk.Event, [][]byte, error) {
+	err := MsgBurnGovTokensForApp(m.tokenmintKeeper, ctx, contractAddr, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "BurnGovTokensForApp error")
+	}
+	return nil, nil, nil
+}
+
+func MsgBurnGovTokensForApp(tokenmintKeeper tokenmintkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	a *bindings.MsgBurnGovTokensForApp) error {
+	err := tokenmintKeeper.BurnGovTokensForApp(ctx, a.AppMappingId, a.From, a.Amount)
 	if err != nil {
 		return err
 	}
