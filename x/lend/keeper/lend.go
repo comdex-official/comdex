@@ -226,7 +226,7 @@ func (k *Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address sdk.AccAdd
 func (k *Keeper) UpdateUserLendIdMapping(
 	ctx sdk.Context,
 	lendOwner string,
-	lendId types.LendAsset,
+	lend types.LendAsset,
 	isInsert bool,
 ) error {
 
@@ -242,10 +242,12 @@ func (k *Keeper) UpdateUserLendIdMapping(
 	}
 
 	if isInsert {
-		userVaults.Lends = append(userVaults.Lends, lendId)
+		userVaults.Lends = append(userVaults.Lends, lend)
 	} else {
-		for index, id := range userVaults.Lends {
-			if id == lendId {
+
+		for index, newLend := range userVaults.Lends {
+
+			if newLend.ID == lend.ID {
 				userVaults.Lends = append(userVaults.Lends[:index], userVaults.Lends[index+1:]...)
 				break
 			}
