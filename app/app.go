@@ -365,7 +365,7 @@ func New(
 			vaulttypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
-			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey,
+			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, lendtypes.StoreKey,
 		)
 	)
 
@@ -833,7 +833,7 @@ func New(
 		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName,
 		liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName,
-		govtypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName,
+		govtypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName, lendtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -842,7 +842,7 @@ func New(
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		icatypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
-		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
+		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(), lendtypes.ModuleName,
 		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName,
 	)
 
