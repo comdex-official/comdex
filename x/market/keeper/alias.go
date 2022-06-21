@@ -28,7 +28,7 @@ func (k *Keeper) GetLastFetchPriceID(ctx sdk.Context) int64 {
 }
 
 func (k *Keeper) GetLastBlockheight(ctx sdk.Context) int64 {
-	return k.bandoraclekeeper.GetLastBlockheight(ctx)
+	return k.bandoraclekeeper.GetLastBlockHeight(ctx)
 }
 
 func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) bandoraclemoduletypes.MsgFetchPriceData {

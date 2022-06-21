@@ -17,7 +17,7 @@ func (k Keeper) FetchPriceResult(c context.Context, req *types.QueryFetchPriceRe
 	return &types.QueryFetchPriceResponse{Result: &result}, nil
 }
 
-func (k Keeper) LastFetchPriceId(c context.Context, req *types.QueryLastFetchPriceIdRequest) (*types.QueryLastFetchPriceIdResponse, error) {
+func (k Keeper) LastFetchPriceID(c context.Context, req *types.QueryLastFetchPriceIdRequest) (*types.QueryLastFetchPriceIdResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	id := k.GetLastFetchPriceID(ctx)
 	return &types.QueryLastFetchPriceIdResponse{RequestId: id}, nil
