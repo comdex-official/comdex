@@ -52,7 +52,7 @@ func CmdLastFetchPriceID() *cobra.Command {
 				return err
 			}
 			queryClient := types.NewQueryClient(clientCtx)
-			r, err := queryClient.LastFetchPriceId(context.Background(), &types.QueryLastFetchPriceIdRequest{})
+			r, err := queryClient.LastFetchPriceID(context.Background(), &types.QueryLastFetchPriceIdRequest{})
 			if err != nil {
 				return err
 			}

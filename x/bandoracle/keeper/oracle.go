@@ -48,7 +48,6 @@ func (k Keeper) SetLastFetchPriceID(ctx sdk.Context, id types.OracleRequestID) {
 }
 
 func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types.MsgFetchPriceDataResponse, error) {
-
 	sourcePort := types.PortID
 	sourceChannelEnd, found := k.channelKeeper.GetChannel(ctx, sourcePort, msg.SourceChannel)
 	if !found {
@@ -74,12 +73,12 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 		symbol = append(symbol, asset.Name)
 	}
 
-	encodedCalldata := obi.MustEncode(types.FetchPriceCallData{symbol, 1000000})
+	encodedCallData := obi.MustEncode(types.FetchPriceCallData{Symbols: symbol, Multiplier: 1000000})
 
 	packetData := packet.NewOracleRequestPacketData(
 		msg.ClientID,
 		msg.OracleScriptID,
-		encodedCalldata,
+		encodedCallData,
 		msg.AskCount,
 		msg.MinCount,
 		msg.FeeLimit,
@@ -106,7 +105,7 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.MsgdataKey
+		key   = types.MsgDataKey
 		v     = types.NewMsgFetchPriceData(
 			types.ModuleName,
 			types.OracleScriptID(msg.OracleScriptID),
@@ -127,7 +126,7 @@ func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) 
 func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.MsgdataKey
+		key   = types.MsgDataKey
 		value = store.Get(key)
 	)
 	var msg types.MsgFetchPriceData
@@ -138,28 +137,28 @@ func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {
 	return msg
 }
 
-func (k Keeper) GetLastBlockheight(ctx sdk.Context) int64 {
+func (k Keeper) GetLastBlockHeight(ctx sdk.Context) int64 {
 	bz := ctx.KVStore(k.storeKey).Get(types.KeyPrefix(types.LastBlockheightKey))
 	intV := gogotypes.Int64Value{}
 	k.cdc.MustUnmarshalLengthPrefixed(bz, &intV)
 	return intV.GetValue()
 }
 
-func (k Keeper) SetLastBlockheight(ctx sdk.Context, height int64) {
+func (k Keeper) SetLastBlockHeight(ctx sdk.Context, height int64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.KeyPrefix(types.LastBlockheightKey),
-		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: int64(height)}))
+		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: height}))
 }
 
 func (k Keeper) AddFetchPriceRecords(ctx sdk.Context, price types.MsgFetchPriceData) error {
 	k.SetFetchPriceMsg(ctx, price)
-	k.SetLastBlockheight(ctx, ctx.BlockHeight())
+	k.SetLastBlockHeight(ctx, ctx.BlockHeight())
 	return nil
 }
 
-func (k Keeper) OraclePriceValidationByRequestId(ctx sdk.Context, req int64) bool {
-	currentReqId := k.GetLastFetchPriceID(ctx)
-	if currentReqId != req {
+func (k Keeper) OraclePriceValidationByRequestID(ctx sdk.Context, req int64) bool {
+	currentReqID := k.GetLastFetchPriceID(ctx)
+	if currentReqID != req {
 		return true
 	} else {
 		return false
@@ -169,7 +168,7 @@ func (k Keeper) OraclePriceValidationByRequestId(ctx sdk.Context, req int64) boo
 func (k Keeper) SetOracleValidationResult(ctx sdk.Context, res bool) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.KeyPrefix(types.OracleValidationResultKey),
-		k.cdc.MustMarshalLengthPrefixed(&gogotypes.BoolValue{Value: bool(res)}))
+		k.cdc.MustMarshalLengthPrefixed(&gogotypes.BoolValue{Value: res}))
 }
 
 func (k Keeper) GetOracleValidationResult(ctx sdk.Context) bool {
@@ -182,7 +181,7 @@ func (k Keeper) GetOracleValidationResult(ctx sdk.Context) bool {
 func (k Keeper) SetTempFetchPriceID(ctx sdk.Context, id int64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.KeyPrefix(types.TempFetchPriceIDKey),
-		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: int64(id)}))
+		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: id}))
 }
 
 func (k Keeper) GetTempFetchPriceID(ctx sdk.Context) int64 {
