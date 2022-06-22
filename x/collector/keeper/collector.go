@@ -260,6 +260,11 @@ func (k *Keeper) SetCollectorLookupTableForWasm(ctx sdk.Context, records ...type
 		for j, v := range aa {
 			if v.CollectorAssetId == msg.CollectorAssetId {
 				v.LockerSavingRate = msg.LockerSavingRate
+				v.BidFactor = msg.BidFactor
+				v.DebtLotSize = msg.DebtLotSize
+				v.DebtThreshold = msg.DebtThreshold
+				v.LotSize = msg.LotSize
+				v.SurplusThreshold = msg.SurplusThreshold
 				accmLookup.AssetRateInfo[j] = v
 				var (
 					store = ctx.KVStore(k.storeKey)
