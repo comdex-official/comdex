@@ -45,8 +45,8 @@ func AuctionKey(appID uint64, auctionType string, auctionID uint64) []byte {
 	return append(append(append(AuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(auctionID)...)
 }
 
-func UserKey(bidder string, appID uint64, auctionType string, bidId uint64) []byte {
-	return append(append(append(append(UserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(bidId)...)
+func UserKey(bidder string, appID uint64, auctionType string, bidID uint64) []byte {
+	return append(append(append(append(UserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(bidID)...)
 }
 
 func UserAuctionTypeKey(bidder string, appID uint64, auctionType string) []byte {
@@ -73,12 +73,12 @@ func HistoryAuctionTypeKey(appID uint64, auctionType string) []byte {
 	return append(append(HistoryAuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...)
 }
 
-func ProtocolStatisticsKey(appID, assetId uint64) []byte {
-	return append(append(ProtocolStatisticsPrefixKey, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetId)...)
+func ProtocolStatisticsKey(appID, assetID uint64) []byte {
+	return append(append(ProtocolStatisticsPrefixKey, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
 }
 
-func ProtocolStatisticsAppIdKey(appId uint64) []byte {
-	return append(ProtocolStatisticsPrefixKey, sdk.Uint64ToBigEndian(appId)...)
+func ProtocolStatisticsAppIDKey(appID uint64) []byte {
+	return append(ProtocolStatisticsPrefixKey, sdk.Uint64ToBigEndian(appID)...)
 }
 
 func AuctionParamsKey(id uint64) []byte {

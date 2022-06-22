@@ -446,14 +446,14 @@ func (k Keeper) CloseDutchAuction(
 
 	// 		//Transfer balance from collector module to auction module
 	// 		requiredAmount := dutchAuction.InflowTokenTargetAmount.Sub(dutchAuction.InflowTokenCurrentAmount)
-	// 		_, err := k.GetAmountFromCollector(ctx, dutchAuction.AppId, dutchAuction.AssetInId, requiredAmount.Amount)
+	// 		_, err := k.GetAmountFromCollector(ctx, dutchAuction.appID, dutchAuction.AssetInId, requiredAmount.Amount)
 	// 		if err != nil {
 
 	// 			return err
 	// 		}
 
 	// 		//storing protocol loss
-	// 		k.SetProtocolStatistics(ctx, dutchAuction.AppId, dutchAuction.AssetInId, requiredAmount.Amount)
+	// 		k.SetProtocolStatistics(ctx, dutchAuction.appID, dutchAuction.AssetInId, requiredAmount.Amount)
 	// 		// burnToken.Amount = lockedVault.AmountOut
 	// }
 

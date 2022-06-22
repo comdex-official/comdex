@@ -8,14 +8,6 @@ func Multiply(a, b sdk.Dec) sdk.Dec {
 	return a.Mul(b)
 }
 
-func Add(a, b sdk.Dec) sdk.Dec {
-	return a.Add(b)
-}
-
-func Sub(a, b sdk.Dec) sdk.Dec {
-	return a.Sub(b)
-}
-
 func (k Keeper) getOutflowTokenInitialPrice(price sdk.Int, buffer sdk.Dec) sdk.Dec {
 	result := buffer.Mul(price.ToDec())
 	return result

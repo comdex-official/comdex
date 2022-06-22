@@ -126,11 +126,11 @@ func (qp QueryPlugin) WasmRemoveWhitelistAssetLockerQueryCheck(ctx sdk.Context, 
 }
 
 func (qp QueryPlugin) WasmWhitelistAppIDLiquidationQueryCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
-	found, err = qp.liquidationKeeper.WasmWhitelistAppIdLiquidationQuery(ctx, appMappingID)
+	found, err = qp.liquidationKeeper.WasmWhitelistAppIDLiquidationQuery(ctx, appMappingID)
 	return found, err
 }
 
 func (qp QueryPlugin) WasmRemoveWhitelistAppIDLiquidationQueryCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
-	found, err = qp.liquidationKeeper.WasmRemoveWhitelistAppIdLiquidationQuery(ctx, appMappingID)
+	found, err = qp.liquidationKeeper.WasmRemoveWhitelistAppIDLiquidationQuery(ctx, appMappingID)
 	return found, err
 }
