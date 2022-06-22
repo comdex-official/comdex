@@ -34,7 +34,7 @@ var (
 )
 
 var (
-	AppId                    = "AppId"
+	AppID                    = "AppId"
 	BatchSize                = "BatchSize"
 	TickPrecision            = "TickPrecision"
 	FeeCollectorAddress      = "FeeCollectorAddress"
@@ -114,7 +114,7 @@ func DefaultGenericParams(appID uint64) GenericParams {
 
 func KeyParseValidateFuncMap() map[string][]interface{} {
 	return map[string][]interface{}{
-		AppId:                    {ParseStringToUint, validateAppId},
+		AppID:                    {ParseStringToUint, validateAppID},
 		BatchSize:                {ParseStringToUint, validateBatchSize},
 		TickPrecision:            {ParseStringToUint, validateTickPrecision},
 		FeeCollectorAddress:      {ParseString, validateFeeCollectorAddress},
@@ -169,10 +169,10 @@ func ParseStringToGas(value string) (interface{}, error) {
 		return sdk.Gas(0), nil
 	}
 	g, _ := gas.(uint64)
-	return sdk.Gas(g), nil
+	return g, nil
 }
 
-func validateAppId(i interface{}) error {
+func validateAppID(i interface{}) error {
 	v, ok := i.(uint64)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)

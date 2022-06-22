@@ -43,7 +43,7 @@ func DepositCoinsEscrowInvariant(k Keeper) sdk.Invariant {
 		if !found {
 			return sdk.FormatInvariant(
 				types.ModuleName, "deposit-coins-escrow",
-				fmt.Sprintf("no apps found"),
+				"no apps found",
 			), false
 		}
 		for _, app := range allApps {
@@ -65,7 +65,7 @@ func DepositCoinsEscrowInvariant(k Keeper) sdk.Invariant {
 		}
 		return sdk.FormatInvariant(
 			types.ModuleName, "deposit-coins-escrow",
-			fmt.Sprintf("all good"),
+			"all good",
 		), false
 	}
 }
@@ -79,7 +79,7 @@ func PoolCoinEscrowInvariant(k Keeper) sdk.Invariant {
 		if !found {
 			return sdk.FormatInvariant(
 				types.ModuleName, "pool-coin-escrow",
-				fmt.Sprintf("no apps found"),
+				"no apps found",
 			), false
 		}
 		for _, app := range allApps {
@@ -101,7 +101,7 @@ func PoolCoinEscrowInvariant(k Keeper) sdk.Invariant {
 		}
 		return sdk.FormatInvariant(
 			types.ModuleName, "pool-coin-escrow",
-			fmt.Sprintf("all good"),
+			"all good",
 		), false
 	}
 }
@@ -115,7 +115,7 @@ func RemainingOfferCoinEscrowInvariant(k Keeper) sdk.Invariant {
 		if !found {
 			return sdk.FormatInvariant(
 				types.ModuleName, "remaining-offer-coin-escrow",
-				fmt.Sprintf("no apps found"),
+				"no apps found",
 			), false
 		}
 
@@ -124,9 +124,10 @@ func RemainingOfferCoinEscrowInvariant(k Keeper) sdk.Invariant {
 				count int
 				msg   string
 			)
-			_ = k.IterateAllPairs(ctx, app.Id, func(pair types.Pair) (stop bool, err error) {
+			appID := app.Id
+			_ = k.IterateAllPairs(ctx, appID, func(pair types.Pair) (stop bool, err error) {
 				remainingOfferCoins := sdk.Coins{}
-				_ = k.IterateOrdersByPair(ctx, app.Id, pair.Id, func(req types.Order) (stop bool, err error) {
+				_ = k.IterateOrdersByPair(ctx, appID, pair.Id, func(req types.Order) (stop bool, err error) {
 					if !req.Status.ShouldBeDeleted() {
 						remainingOfferCoins = remainingOfferCoins.Add(req.RemainingOfferCoin)
 					}
@@ -149,7 +150,7 @@ func RemainingOfferCoinEscrowInvariant(k Keeper) sdk.Invariant {
 		}
 		return sdk.FormatInvariant(
 			types.ModuleName, "remaining-offer-coin-escrow",
-			fmt.Sprintf("all good"),
+			"all good",
 		), false
 	}
 }
@@ -158,12 +159,11 @@ func RemainingOfferCoinEscrowInvariant(k Keeper) sdk.Invariant {
 // been marked as disabled.
 func PoolStatusInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-
 		allApps, found := k.assetKeeper.GetApps(ctx)
 		if !found {
 			return sdk.FormatInvariant(
 				types.ModuleName, "pool-status",
-				fmt.Sprintf("no apps found"),
+				"no apps found",
 			), false
 		}
 
@@ -192,7 +192,7 @@ func PoolStatusInvariant(k Keeper) sdk.Invariant {
 		}
 		return sdk.FormatInvariant(
 			types.ModuleName, "pool-status",
-			fmt.Sprintf("all good"),
+			"all good",
 		), false
 	}
 }

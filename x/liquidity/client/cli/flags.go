@@ -59,9 +59,11 @@ func flagSetOrder() *flag.FlagSet {
 	return fs
 }
 
-func ParseStringSliceFromString(s string, seperator string) ([]string, error) {
-	var parsedStrings []string
-	for _, s := range strings.Split(s, seperator) {
+func ParseStringSliceFromString(s string, separator string) ([]string, error) {
+	stringSlice := strings.Split(s, separator)
+
+	parsedStrings := make([]string, 0, len(stringSlice))
+	for _, s := range stringSlice {
 		s = strings.TrimSpace(s)
 
 		parsedStrings = append(parsedStrings, s)

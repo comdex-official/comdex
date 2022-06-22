@@ -502,15 +502,15 @@ func (k Keeper) FinishWithdrawRequest(ctx sdk.Context, req types.WithdrawRequest
 	return nil
 }
 
-func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, poolId uint64) (sdk.Coin, error) {
-	pool, found := k.GetPool(ctx, appID, poolId)
+func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, poolID uint64) (sdk.Coin, error) {
+	pool, found := k.GetPool(ctx, appID, poolID)
 	if !found {
 		return sdk.Coin{}, types.ErrInvalidPoolID
 	}
 
 	pair, found := k.GetPair(ctx, appID, pool.PairId)
 	if !found {
-		return sdk.Coin{}, types.ErrInvalidPairId
+		return sdk.Coin{}, types.ErrInvalidPairID
 	}
 
 	params, err := k.GetGenericParams(ctx, appID)
