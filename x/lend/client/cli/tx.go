@@ -780,6 +780,10 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 	if err != nil {
 		return txf, nil, err
 	}
+	cAssetId, err := ParseUint64SliceFromString(assetRatesStatsInput.CAssetId, ",")
+	if err != nil {
+		return txf, nil, err
+	}
 
 	var assetRatesStats []types.AssetRatesStats
 	for i := range assetId {
@@ -810,6 +814,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 			LiquidationThreshold: newLiquidationThreshold,
 			LiquidationPenalty:   newLiquidationPenalty,
 			ReserveFactor:        newReserveFactor,
+			CAssetId:             cAssetId[i],
 		},
 		)
 	}

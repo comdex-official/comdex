@@ -54,4 +54,5 @@ var (
 	ErrorDuplicateAssetRatesStats      = sdkerrors.Register(ModuleName, 1143, "Dublicate Asset Rates Stats")
 	ErrorAssetStatsNotFound            = sdkerrors.Register(ModuleName, 1144, "Asset Stats Not Found")
 	ErrInvalidAssetIdForPool           = sdkerrors.Register(ModuleName, 1145, "Asset Id not defined in the pool")
+	ErrorAssetRatesStatsNotFound       = sdkerrors.Register(ModuleName, 1143, "Asset Rates Stats not found")
 )

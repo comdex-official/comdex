@@ -159,6 +159,7 @@ func (k *Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRates
 				LiquidationThreshold: msg.LiquidationThreshold,
 				LiquidationPenalty:   msg.LiquidationPenalty,
 				ReserveFactor:        msg.ReserveFactor,
+				CAssetId:             msg.CAssetId,
 			}
 		)
 

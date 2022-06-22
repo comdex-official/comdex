@@ -284,6 +284,11 @@ message AssetRatesStats{
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"reserve_factor\""
   ];
+  uint64 c_asset_id = 14 [
+    (gogoproto.customname) = "CAssetId",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"c_asset_id\""
+  ];
 
 }
 
