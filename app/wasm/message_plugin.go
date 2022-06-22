@@ -295,7 +295,7 @@ func (m *CustomMessenger) RemoveWhitelistAppIDVaultInterest(ctx sdk.Context, con
 
 func MsgRemoveWhitelistAppIDVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgRemoveWhitelistAppIdVaultInterest) error {
-	err := rewardsKeeper.WasmRemoveWhitelistAppIdVaultInterest(ctx, a.AppMappingId)
+	err := rewardsKeeper.WasmRemoveWhitelistAppIDVaultInterest(ctx, a.AppMappingId)
 	if err != nil {
 		return err
 	}

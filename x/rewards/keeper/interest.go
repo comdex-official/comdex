@@ -19,7 +19,7 @@ func (k *Keeper) SetLastInterestTime(ctx sdk.Context, interestTime int64) error 
 	return nil
 }
 
-// GetLastInterestTime gets last time at which interest was accrued
+// GetLastInterestTime gets last time at which interest was accrued .
 func (k Keeper) GetLastInterestTime(ctx sdk.Context) int64 {
 	store := ctx.KVStore(k.storeKey)
 	timeKey := types.CreateLastInterestTimeKey()

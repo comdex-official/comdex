@@ -2,6 +2,7 @@ package wasm
 
 import (
 	"encoding/json"
+
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -68,7 +69,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			appID := comdexQuery.RemoveWhiteListAssetLocker.App_Id
 			assetID := comdexQuery.RemoveWhiteListAssetLocker.Asset_Id
 
-			found, errormsg := queryPlugin.GetRemoveWhitelistAppIdLockerRewardsCheck(ctx, appID, assetID)
+			found, errormsg := queryPlugin.GetRemoveWhitelistAppIDLockerRewardsCheck(ctx, appID, assetID)
 			res := bindings.RemoveWhiteListAssetResponse{
 				Found: found,
 				Err:   errormsg,
@@ -82,7 +83,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			appID := comdexQuery.WhitelistAppIdLockerRewards.App_Id
 			assetID := comdexQuery.WhitelistAppIdLockerRewards.Asset_Id
 
-			found, errormsg := queryPlugin.GetWhitelistAppIdLockerRewardsCheck(ctx, appID, assetID)
+			found, errormsg := queryPlugin.GetWhitelistAppIDLockerRewardsCheck(ctx, appID, assetID)
 			res := bindings.WhitelistAppIdLockerRewardsResponse{
 				Found: found,
 				Err:   errormsg,
@@ -95,7 +96,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 		} else if comdexQuery.WhitelistAppIdVaultInterest != nil {
 			appID := comdexQuery.WhitelistAppIdVaultInterest.App_Id
 
-			found, errormsg := queryPlugin.GetWhitelistAppIdVaultInterestCheck(ctx, appID)
+			found, errormsg := queryPlugin.GetWhitelistAppIDVaultInterestCheck(ctx, appID)
 			res := bindings.WhitelistAppIdLockerRewardsResponse{
 				Found: found,
 				Err:   errormsg,
@@ -220,7 +221,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			return bz, nil
 		} else if comdexQuery.RemoveWhitelistAppIdVaultInterestQuery != nil {
 			appMappingID := comdexQuery.RemoveWhitelistAppIdVaultInterestQuery.AppMappingId
-			found, errormsg := queryPlugin.WasmRemoveWhitelistAppIdVaultInterestQueryCheck(ctx, appMappingID)
+			found, errormsg := queryPlugin.WasmRemoveWhitelistAppIDVaultInterestQueryCheck(ctx, appMappingID)
 			res := bindings.RemoveWhitelistAppIdVaultInterestQueryResponse{
 				Found: found,
 				Err:   errormsg,

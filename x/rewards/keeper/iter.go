@@ -12,21 +12,20 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-//IterateLocker does reward calculation for locker
+//IterateLocker does reward calculation for locker .
 func (k Keeper) IterateLocker(ctx sdk.Context) error {
 	rewards := k.GetRewards(ctx)
 	for _, v := range rewards {
-		appMappingId := v.App_mapping_ID
+		appMappingID := v.App_mapping_ID
 		assetIds := v.Asset_ID
 
 		for i := range assetIds {
-
-			CollectorLookup, found := k.GetCollectorLookupByAsset(ctx, appMappingId, assetIds[i])
+			CollectorLookup, found := k.GetCollectorLookupByAsset(ctx, appMappingID, assetIds[i])
 			if !found {
 				continue
 			}
 
-			LockerProductAssetMapping, _ := k.GetLockerLookupTable(ctx, appMappingId)
+			LockerProductAssetMapping, _ := k.GetLockerLookupTable(ctx, appMappingID)
 			lockers := LockerProductAssetMapping.Lockers
 			for _, v := range lockers {
 				if v.AssetId == assetIds[i] {
@@ -61,6 +60,9 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 								//updatedNetFee := p.NetFeesCollected.Sub(rewards)
 								//err := k.SetNetFeeCollectedData(ctx, locker.AppMappingId, locker.AssetDepositId, updatedNetFee)
 								err := k.DecreaseNetFeeCollectedData(ctx, locker.AppMappingId, locker.AssetDepositId, rewards)
+								if err != nil {
+									return err
+								}
 								err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, rewards)))
 								if err != nil {
 									return err
@@ -68,7 +70,7 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 								if err != nil {
 									return err
 								}
-								lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appMappingId, p.AssetId)
+								lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appMappingID, p.AssetId)
 
 								if !found {
 									var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
@@ -98,9 +100,12 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 	return nil
 }
 
-//CalculateRewards does per block rewards/interest calculation
-func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (sdk.Int, error) {
-
+//CalculateRewards does per block rewards/interest calculation .
+func (k Keeper) CalculateRewards(
+	ctx sdk.Context,
+	// nolint
+	amount sdk.Int, lsr sdk.Dec,
+) (sdk.Int, error) {
 	currentTime := ctx.BlockTime().Unix()
 
 	prevInterestTime := k.GetLastInterestTime(ctx)
@@ -126,15 +131,15 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (
 	return sdk.NewInt(int64(newAmount)), nil
 }
 
-//IterateVaults does interest calculation for vaults
-func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
-	extVaultMapping, found := k.GetAppExtendedPairVaultMapping(ctx, appMappingId)
+//IterateVaults does interest calculation for vaults .
+func (k Keeper) IterateVaults(ctx sdk.Context, appMappingID uint64) error {
+	extVaultMapping, found := k.GetAppExtendedPairVaultMapping(ctx, appMappingID)
 	if !found {
 		return types.ErrVaultNotFound
 	}
 	for _, v := range extVaultMapping.ExtendedPairVaults {
 		vaultIds := v.VaultIds
-		for j, _ := range vaultIds {
+		for j := 0; j < len(vaultIds); j++ {
 			vault, found := k.GetVault(ctx, vaultIds[j])
 			if !found {
 				continue
@@ -143,7 +148,6 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 			StabilityFee := ExtPairVault.StabilityFee
 			if vault.ExtendedPairVaultID != 0 {
 				if StabilityFee != sdk.ZeroDec() {
-
 					interest, err := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
 					if err != nil {
 						continue
@@ -155,12 +159,11 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingId uint64) error {
 				}
 			}
 		}
-
 	}
 	return nil
 }
 
-//DistributeExtRewardLocker does distribution of external locker rewards
+//DistributeExtRewardLocker does distribution of external locker rewards .
 func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 	extRewards := k.GetExternalRewardsLockers(ctx)
 	for i, v := range extRewards {
@@ -170,8 +173,7 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 			timeNow := ctx.BlockTime().Unix()
 
 			if et < timeNow {
-
-				if extRewards[i].IsActive == true {
+				if extRewards[i].IsActive {
 					//count, _ := k.GetExternalRewardsLockersCounter(ctx, extRewards[i].Id)
 					epoch, _ := k.GetEpochTime(ctx, v.EpochId)
 
@@ -181,7 +183,7 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 							if u.AssetId == v.AssetId {
 								lockerIds := u.LockerIds
 								totalShare := u.DepositedAmount
-								for w, _ := range lockerIds {
+								for w := 0; w < len(lockerIds); w++ {
 									locker, _ := k.GetLocker(ctx, lockerIds[w])
 
 									userShare := (locker.NetBalance.ToDec()).Quo(totalShare.ToDec())
@@ -223,8 +225,7 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 			timeNow := ctx.BlockTime().Unix()
 
 			if et < timeNow {
-				if extRewards[i].IsActive == true {
-
+				if extRewards[i].IsActive {
 					epoch, _ := k.GetEpochTime(ctx, v.EpochId)
 					if epoch.Count < uint64(extRewards[i].DurationDays) {
 						appExtPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, v.AppMappingId)

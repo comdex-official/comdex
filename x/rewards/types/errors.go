@@ -6,7 +6,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// x/rewards module sentinel errors
+// x/rewards module sentinel errors .
 var (
 	ErrInvalidGaugeStartTime   = sdkerrors.Register(ModuleName, 2, "start time smaller than current time")
 	ErrInvalidGaugeTypeID      = sdkerrors.Register(ModuleName, 3, "gauge type id invalid")
@@ -19,10 +19,10 @@ var (
 	ErrInvalidCalculatedAMount = sdkerrors.Register(ModuleName, 10, "available distribution coins smaller than calculated distribution amount")
 
 	ErrSample              = sdkerrors.Register(ModuleName, 1100, "sample error")
-	ErrAssetIdDoesNotExist = sdkerrors.Register(ModuleName, 1101, "Asset Id does not exist in locker for App_Mapping")
+	ErrAssetIDDoesNotExist = sdkerrors.Register(ModuleName, 1101, "Asset Id does not exist in locker for App_Mapping")
 	ErrNegativeTimeElapsed = sdkerrors.Register(ModuleName, 1102, "negative time elapsed since last interest time")
-	ErrAppIdExists         = sdkerrors.Register(ModuleName, 1103, "Asset Id does not exist in locker for App_Mapping")
-	ErrAppIdDoesNotExists  = sdkerrors.Register(ModuleName, 1104, "Asset Id does not exist in locker for App_Mapping")
+	ErrAppIDExists         = sdkerrors.Register(ModuleName, 1103, "Asset Id does not exist in locker for App_Mapping")
+	ErrAppIDDoesNotExists  = sdkerrors.Register(ModuleName, 1104, "Asset Id does not exist in locker for App_Mapping")
 	ErrPairNotExists       = sdkerrors.Register(ModuleName, 1105, "pair does not exists")
 	ErrPriceNotFound       = sdkerrors.Register(ModuleName, 1106, "price not found")
 	ErrInvalidAppID        = sdkerrors.Register(ModuleName, 1107, "invalid app id")
