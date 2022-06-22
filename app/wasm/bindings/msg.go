@@ -67,12 +67,12 @@ type MsgSetCollectorLookupTable struct {
 }
 
 type MsgSetAuctionMappingForApp struct {
-	AppMappingID        uint64   `json:"app_mapping_id"`
-	AssetID             []uint64 `json:"asset_id"`
-	IsSurplusAuction    []bool   `json:"is_surplus_auction"`
-	IsDebtAuction       []bool   `json:"is_debt_auction"`
-	AssetOutOraclePrice []bool   `json:"asset_out_oracle_price"`
-	AssetOutPrice       []uint64 `json:"asset_out_price"`
+	AppMappingID         uint64   `json:"app_mapping_id"`
+	AssetIDs             []uint64 `json:"asset_id"`
+	IsSurplusAuctions    []bool   `json:"is_surplus_auction"`
+	IsDebtAuctions       []bool   `json:"is_debt_auction"`
+	AssetOutOraclePrices []bool   `json:"asset_out_oracle_price"`
+	AssetOutPrices       []uint64 `json:"asset_out_price"`
 }
 
 type MsgUpdatePairsVault struct {

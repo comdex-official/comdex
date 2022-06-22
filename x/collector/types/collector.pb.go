@@ -3090,7 +3090,7 @@ func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IsSurplusAuction", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field IsSurplusAuctions", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3110,7 +3110,7 @@ func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 			m.IsSurplusAuction = bool(v != 0)
 		case 3:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IsDebtAuction", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field IsDebtAuctions", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3150,7 +3150,7 @@ func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 			m.IsAuctionActive = bool(v != 0)
 		case 15:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutOraclePrice", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutOraclePrices", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -3170,7 +3170,7 @@ func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 			m.AssetOutOraclePrice = bool(v != 0)
 		case 16:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutPrice", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutPrices", wireType)
 			}
 			m.AssetOutPrice = 0
 			for shift := uint(0); ; shift += 7 {

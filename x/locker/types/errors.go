@@ -9,7 +9,7 @@ var (
 	ErrorInvalidAmountOut    = errors.Register(ModuleName, 103, "invalid amount_out")
 	ErrorInvalidFrom         = errors.Register(ModuleName, 104, "invalid depositer adddress")
 	ErrorInvalidAppMappingID = errors.Register(ModuleName, 106, "Invalid App Mapping ID")
-	ErrorInvalidAssetID      = errors.Register(ModuleName, 107, "Invalid AssetID")
+	ErrorInvalidAssetID      = errors.Register(ModuleName, 107, "Invalid AssetIDs")
 	ErrorInvalidLockerID     = errors.Register(ModuleName, 108, "Invalid LockerID")
 )
 

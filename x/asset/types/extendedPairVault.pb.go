@@ -807,7 +807,7 @@ func (m *ExtendedPairVault) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 15:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutOraclePrice", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutOraclePrices", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -827,7 +827,7 @@ func (m *ExtendedPairVault) Unmarshal(dAtA []byte) error {
 			m.AssetOutOraclePrice = bool(v != 0)
 		case 16:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutPrice", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutPrices", wireType)
 			}
 			m.AssetOutPrice = 0
 			for shift := uint(0); ; shift += 7 {

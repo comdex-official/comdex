@@ -562,13 +562,13 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBind
 	var collectorAuctionLookup types.CollectorAuctionLookupTable
 	collectorAuctionLookup.AppId = auctionMappingBinding.AppMappingID
 	var assetIDToAuctionLookups []types.AssetIdToAuctionLookupTable
-	for i := range auctionMappingBinding.AssetID {
+	for i := range auctionMappingBinding.AssetIDs {
 		assetIDToAuctionLookup := types.AssetIdToAuctionLookupTable{
-			AssetId:             auctionMappingBinding.AssetID[i],
-			IsSurplusAuction:    auctionMappingBinding.IsSurplusAuction[i],
-			IsDebtAuction:       auctionMappingBinding.IsDebtAuction[i],
-			AssetOutOraclePrice: auctionMappingBinding.AssetOutOraclePrice[i],
-			AssetOutPrice:       auctionMappingBinding.AssetOutPrice[i],
+			AssetId:             auctionMappingBinding.AssetIDs[i],
+			IsSurplusAuction:    auctionMappingBinding.IsSurplusAuctions[i],
+			IsDebtAuction:       auctionMappingBinding.IsDebtAuctions[i],
+			AssetOutOraclePrice: auctionMappingBinding.AssetOutOraclePrices[i],
+			AssetOutPrice:       auctionMappingBinding.AssetOutPrices[i],
 		}
 		assetIDToAuctionLookups = append(assetIDToAuctionLookups, assetIDToAuctionLookup)
 	}
