@@ -15,7 +15,7 @@ func (k Keeper) GetRewardDistributionData(
 ) ([]types.RewardDistributionDataCollector, error) {
 	gaugeType := gauge.Kind
 
-	var rewardDistributionData = []types.RewardDistributionDataCollector{}
+	var rewardDistributionData []types.RewardDistributionDataCollector
 	var err error = nil
 
 	switch gaugeExtraData := gaugeType.(type) {

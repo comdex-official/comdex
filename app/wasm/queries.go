@@ -61,16 +61,16 @@ func (qp QueryPlugin) GetTokenMint(ctx sdk.Context, appMappingID, assetID uint64
 }
 
 func (qp QueryPlugin) GetRemoveWhitelistAppIdLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetRemoveWhitelistAppIdLockerRewardsCheck(ctx, appMappingId, assetId)
+	found, err = qp.rewardsKeeper.GetRemoveWhitelistAppIDLockerRewardsCheck(ctx, appMappingId, assetId)
 	return found, err
 }
 
 func (qp QueryPlugin) GetWhitelistAppIdVaultInterestCheck(ctx sdk.Context, appMappingId uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetWhitelistAppIdVaultInterestCheck(ctx, appMappingId)
+	found, err = qp.rewardsKeeper.GetWhitelistAppIDVaultInterestCheck(ctx, appMappingId)
 	return found, err
 }
 func (qp QueryPlugin) GetWhitelistAppIdLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetWhitelistAppIdLockerRewardsCheck(ctx, appMappingId, assetId)
+	found, err = qp.rewardsKeeper.GetWhitelistAppIDLockerRewardsCheck(ctx, appMappingId, assetId)
 
 	return found, err
 }
@@ -116,7 +116,7 @@ func (qp QueryPlugin) UpdateCollectorLookupTableQueryCheck(ctx sdk.Context, appM
 }
 
 func (qp QueryPlugin) WasmRemoveWhitelistAppIdVaultInterestQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAppIdVaultInterestQuery(ctx, AppMappingId)
+	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAppIDVaultInterestQuery(ctx, AppMappingId)
 	return found, err
 }
 

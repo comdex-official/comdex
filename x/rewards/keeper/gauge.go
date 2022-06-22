@@ -43,7 +43,6 @@ func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCrea
 }
 
 func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
-
 	asset, found := k.asset.GetAssetForDenom(ctx, denom)
 	if !found {
 		return 0, false
@@ -56,15 +55,15 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
 	return price, true
 }
 
-func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, appID, pairId uint64) error {
-	pair, found := k.liquidityKeeper.GetPair(ctx, appID, pairId)
+func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, appID, pairID uint64) error {
+	pair, found := k.liquidityKeeper.GetPair(ctx, appID, pairID)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrPairNotExists, "pair does not exists for given pool id")
 	}
 
 	_, baseCoinPriceFound := k.OraclePrice(ctx, pair.BaseCoinDenom)
-	_, quoteCoinPricefound := k.OraclePrice(ctx, pair.QuoteCoinDenom)
-	if !(baseCoinPriceFound || quoteCoinPricefound) {
+	_, quoteCoinPriceFound := k.OraclePrice(ctx, pair.QuoteCoinDenom)
+	if !(baseCoinPriceFound || quoteCoinPriceFound) {
 		return sdkerrors.Wrapf(types.ErrPriceNotFound, "oracle price required for atleast %s or %s but not found", pair.QuoteCoinDenom, pair.BaseCoinDenom)
 	}
 
@@ -248,10 +247,8 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 			gauge.TriggeredCount = ongoingEpochCount
 			gauge.DistributedAmount.Amount = gauge.DistributedAmount.Amount.Add(coinsDistributed.Amount)
 			k.SetGauge(ctx, gauge)
-		} else {
-
-			// distribution method for swap fee
-			poolId := gauge.GetLiquidityMetaData().PoolId
+		} else { // distribution method for swap fee
+			poolID := gauge.GetLiquidityMetaData().PoolId
 
 			ongoingEpochCount := gauge.TriggeredCount + 1
 			coinToDistribute := gauge.DepositAmount
@@ -274,8 +271,8 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 				}
 			}
 
-			// transfering swap fees amount of current epoch from swap fee collector address to rewards module
-			receivedAmount, err := k.liquidityKeeper.TransferFundsForSwapFeeDistribution(ctx, gauge.AppId, poolId)
+			// transferring swap fees amount of current epoch from swap fee collector address to rewards module
+			receivedAmount, err := k.liquidityKeeper.TransferFundsForSwapFeeDistribution(ctx, gauge.AppId, poolID)
 			if err != nil {
 				logger.Info(fmt.Sprintf("error occurred while swap fee fund transfer, err : %s", err))
 				continue
