@@ -19,7 +19,7 @@ var _ types.MsgServer = msgServer{}
 func (m msgServer) WhitelistApp(goCtx context.Context, id *types.WhitelistAppId) (*types.MsgWhitelistAppIdResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := m.Keeper.WhitelistAppId(ctx, id.AppMappingId); err != nil {
+	if err := m.Keeper.WhitelistAppID(ctx, id.AppMappingId); err != nil {
 		return nil, err
 	}
 	return &types.MsgWhitelistAppIdResponse{}, nil

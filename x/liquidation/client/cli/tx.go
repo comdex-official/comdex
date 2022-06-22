@@ -25,7 +25,7 @@ func txWhitelistAppID() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgWhitelistAppId(
+			msg := types.NewMsgWhitelistAppID(
 				appMappingID,
 				ctx.GetFromAddress(),
 			)

@@ -11,14 +11,6 @@ var (
 	_ sdk.Msg = (*MsgAddPairRequest)(nil)
 )
 
-func NewMsgAddPairRequest(from sdk.AccAddress, assetIn, assetOut uint64, liquidationRatio sdk.Dec) *MsgAddPairRequest {
-	return &MsgAddPairRequest{
-		From:     from.String(),
-		AssetIn:  assetIn,
-		AssetOut: assetOut,
-	}
-}
-
 func (m *MsgAddPairRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
@@ -43,15 +35,6 @@ func (m *MsgAddPairRequest) GetSigners() []sdk.AccAddress {
 	}
 
 	return []sdk.AccAddress{from}
-}
-
-func NewMsgAddAssetRequest(from sdk.AccAddress, name, denom string, decimals int64) *MsgAddAssetRequest {
-	return &MsgAddAssetRequest{
-		From:     from.String(),
-		Name:     name,
-		Denom:    denom,
-		Decimals: decimals,
-	}
 }
 
 func (m *MsgAddAssetRequest) ValidateBasic() error {
@@ -87,16 +70,6 @@ func (m *MsgAddAssetRequest) GetSigners() []sdk.AccAddress {
 	}
 
 	return []sdk.AccAddress{from}
-}
-
-func NewMsgUpdateAssetRequest(from sdk.AccAddress, id uint64, name, denom string, decimals int64) *MsgUpdateAssetRequest {
-	return &MsgUpdateAssetRequest{
-		From:     from.String(),
-		Id:       id,
-		Name:     name,
-		Denom:    denom,
-		Decimals: decimals,
-	}
 }
 
 func (m *MsgUpdateAssetRequest) ValidateBasic() error {
