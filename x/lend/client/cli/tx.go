@@ -561,6 +561,11 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 
 	moduleName := newLendPool.ModuleName
 
+	mainAssetId, err := strconv.ParseUint(newLendPool.AssetID, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
 	firstBridgedAssetId, err := strconv.ParseUint(newLendPool.FirstBridgedAssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
@@ -592,6 +597,7 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 	}
 	pool = types.Pool{
 		ModuleName:           moduleName,
+		MainAssetId:          mainAssetId,
 		FirstBridgedAssetId:  firstBridgedAssetId,
 		SecondBridgedAssetId: secondBridgedAssetId,
 		AssetData:            assetData,

@@ -121,7 +121,7 @@ message QueryPoolRequest {
 }
 
 message QueryPoolResponse {
-  Pool Pool = 1
+  Pool pool = 1
   [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"pool\"" ];
 }
 

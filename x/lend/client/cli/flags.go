@@ -92,6 +92,7 @@ type addNewLendPairsInputs struct {
 
 type addLendPoolInputs struct {
 	ModuleName           string `json:"module_name"`
+	MainAssetID          string `json:"main_asset_id"`
 	FirstBridgedAssetID  string `json:"first_bridged_asset_id"`
 	SecondBridgedAssetID string `json:"second_bridged_asset_id"`
 	AssetID              string `json:"asset_id"`
