@@ -22,7 +22,6 @@ func NewQueryServer(k Keeper) types.QueryServer {
 }
 
 func (q *queryServer) QueryAllTokenMintedForAllProducts(c context.Context, req *types.QueryAllTokenMintedForAllProductsRequest) (*types.QueryAllTokenMintedForAllProductsResponse, error) {
-
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -34,7 +33,6 @@ func (q *queryServer) QueryAllTokenMintedForAllProducts(c context.Context, req *
 }
 
 func (q *queryServer) QueryTokenMintedByProduct(c context.Context, req *types.QueryTokenMintedByProductRequest) (*types.QueryTokenMintedByProductResponse, error) {
-
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -49,7 +47,6 @@ func (q *queryServer) QueryTokenMintedByProduct(c context.Context, req *types.Qu
 }
 
 func (q *queryServer) QueryTokenMintedByProductAndAsset(c context.Context, req *types.QueryTokenMintedByProductAndAssetRequest) (*types.QueryTokenMintedByProductAndAssetResponse, error) {
-
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
