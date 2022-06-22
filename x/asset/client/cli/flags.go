@@ -7,7 +7,6 @@ import (
 )
 
 const (
-	flagLiquidationRatio        = "liquidation-ratio"
 	flagName                    = "name"
 	flagDenom                   = "denom"
 	flagDecimals                = "decimals"

@@ -321,7 +321,7 @@ func (q *QueryServer) QueryProtocolStatistics(c context.Context, req *types.Quer
 		key   []byte
 	)
 
-	key = types.ProtocolStatisticsAppIdKey(req.AppId)
+	key = types.ProtocolStatisticsAppIDKey(req.AppId)
 
 	pagination, err := query.FilteredPaginate(
 		prefix.NewStore(q.Store(ctx), key),

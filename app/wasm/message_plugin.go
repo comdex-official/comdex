@@ -312,7 +312,7 @@ func (m *CustomMessenger) WhitelistAppIDLiquidation(ctx sdk.Context, contractAdd
 
 func MsgWhitelistAppIDLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgWhitelistAppIDLiquidation) error {
-	err := liquidationKeeper.WasmWhitelistAppIdLiquidation(ctx, a.AppMappingID)
+	err := liquidationKeeper.WasmWhitelistAppIDLiquidation(ctx, a.AppMappingID)
 	if err != nil {
 		return err
 	}
@@ -329,7 +329,7 @@ func (m *CustomMessenger) RemoveWhitelistAppIDLiquidation(ctx sdk.Context, contr
 
 func MsgRemoveWhitelistAppIDLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgRemoveWhitelistAppIDLiquidation) error {
-	err := liquidationKeeper.WasmRemoveWhitelistAppIdLiquidation(ctx, a.AppMappingID)
+	err := liquidationKeeper.WasmRemoveWhitelistAppIDLiquidation(ctx, a.AppMappingID)
 	if err != nil {
 		return err
 	}

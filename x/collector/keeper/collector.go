@@ -71,7 +71,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collect
 
 	collectorData, found := k.GetAppidToAssetCollectorMapping(ctx, appID)
 	if !found {
-		//create a new instance of AppId To AssetCollectorMapping
+		//create a new instance of appID To AssetCollectorMapping
 		var collectorNewData types.AppIdToAssetCollectorMapping
 		collectorNewData.AppId = appID
 
@@ -157,7 +157,6 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collect
 		}
 	}
 	return nil
-
 }
 
 // SetAppidToAssetCollectorMapping update collector with app_id and asset
@@ -249,7 +248,6 @@ func (k *Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Colle
 		store.Set(key, value)
 	}
 	return nil
-
 }
 
 func (k *Keeper) SetCollectorLookupTableForWasm(ctx sdk.Context, records ...types.CollectorLookupTable) error {
@@ -276,7 +274,6 @@ func (k *Keeper) SetCollectorLookupTableForWasm(ctx sdk.Context, records ...type
 		}
 	}
 	return nil
-
 }
 
 // GetCollectorLookupTable returns collector lookup table
