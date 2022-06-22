@@ -31,7 +31,7 @@ func (k Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 	return &types.QueryParamsResponse{Params: params}, nil
 }
 
-// Params queries the parameters of the liquidity module.
+// GenericParams queries the parameters of the liquidity module.
 func (k Querier) GenericParams(c context.Context, req *types.QueryGenericParamsRequest) (*types.QueryGenericParamsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
@@ -633,7 +633,7 @@ func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*
 	availableLiquidityGauges := k.rewardsKeeper.GetAllGaugesByGaugeTypeID(ctx, rewardstypes.LiquidityGaugeTypeID)
 	minEpochDuration := k.GetMinimumEpochDurationFromPoolID(ctx, poolID, availableLiquidityGauges)
 
-	queuedCoins := []types.QueuedPoolCoin{}
+	var queuedCoins []types.QueuedPoolCoin
 	for _, queuedRequest := range lpData.QueuedLiquidityProviders {
 		if queuedRequest.Address == depositor.String() {
 			poolCoin := sdk.Coin{}
@@ -706,7 +706,7 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 
 	liquidityGauges := k.rewardsKeeper.GetAllGaugesByGaugeTypeID(ctx, rewardstypes.LiquidityGaugeTypeID)
 
-	poolIncentives := []*types.PoolIncentive{}
+	var poolIncentives []*types.PoolIncentive
 
 	for _, gauge := range liquidityGauges {
 
@@ -727,7 +727,7 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 		if !found {
 			continue
 		}
-		childPoolIds := []uint64{}
+		var childPoolIds []uint64
 		if len(gauge.GetLiquidityMetaData().ChildPoolIds) == 0 {
 			pools := k.GetAllPools(ctx, req.AppId)
 			for _, pool := range pools {

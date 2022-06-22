@@ -273,7 +273,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 				return err
 			}
 
-			assetId, err := ParseUint64SliceFromString(args[0], ",")
+			assetIDs, err := ParseUint64SliceFromString(args[0], ",")
 			if err != nil {
 				return err
 			}
@@ -306,7 +306,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 			from := ctx.GetFromAddress()
 
 			var assets []types.ExtendedAsset
-			for i := range assetId {
+			for i := range assetIDs {
 				newCollateralWeight, err := sdk.NewDecFromStr(collateralWeight[i])
 				if err != nil {
 					return err
@@ -318,7 +318,7 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 				newIsBridgedAsset := ParseBoolFromString(isBridgedAsset[i])
 
 				assets = append(assets, types.ExtendedAsset{
-					AssetId:              assetId[i],
+					AssetId:              assetIDs[i],
 					CollateralWeight:     newCollateralWeight,
 					LiquidationThreshold: newLiquidationThreshold,
 					IsBridgedAsset:       newIsBridgedAsset,
@@ -708,7 +708,7 @@ func NewCmdSubmitUpdateGovTimeInAppMappingProposal() *cobra.Command {
 				return err
 			}
 
-			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -740,7 +740,7 @@ func NewCmdSubmitUpdateGovTimeInAppMappingProposal() *cobra.Command {
 			}
 
 			aTime := types.AppAndGovTime{
-				AppId:             app_id,
+				AppId:            appID,
 				GovTimeInSeconds: govTimeIn.Seconds(),
 			}
 
@@ -786,7 +786,6 @@ Sample json content
 	"deposit" :""
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -800,7 +799,6 @@ Sample json content
 			}
 
 			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
-
 		},
 	}
 
@@ -869,12 +867,12 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 		return txf, nil, fmt.Errorf("failed to parse extPairVault: %w", err)
 	}
 
-	appMappingId, err := strconv.ParseUint(extPairVault.AppMappingID, 10, 64)
+	appMappingID, err := strconv.ParseUint(extPairVault.AppMappingID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	pairId, err := ParseUint64SliceFromString(extPairVault.PairID, ",")
+	pairID, err := ParseUint64SliceFromString(extPairVault.PairID, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -960,7 +958,7 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 	from := clientCtx.GetFromAddress()
 
 	var pairs []types.ExtendedPairVault
-	for i := range pairId {
+	for i := range pairID {
 		newLiquidationRatio, err := sdk.NewDecFromStr(liquidationRatio[i])
 		if err != nil {
 			return txf, nil, err
@@ -1000,8 +998,8 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 		newIsPsmPair := ParseBoolFromString(isPsmPair[i])
 		newAssetOutOraclePrice := ParseBoolFromString(assetOutOraclePrice[i])
 		pairs = append(pairs, types.ExtendedPairVault{
-			AppMappingId:        appMappingId,
-			PairId:              pairId[i],
+			AppMappingId:        appMappingID,
+			PairId:              pairID[i],
 			LiquidationRatio:    newLiquidationRatio,
 			StabilityFee:        newStabilityFee,
 			ClosingFee:          newClosingFee,
@@ -1043,12 +1041,12 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 		return txf, nil, fmt.Errorf("failed to parse assetMapping: %w", err)
 	}
 
-	appId, err := strconv.ParseUint(assetMapping.AppID, 10, 64)
+	appID, err := strconv.ParseUint(assetMapping.AppID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	assetId, err := ParseUint64SliceFromString(assetMapping.AssetID, ",")
+	assetIDs, err := ParseUint64SliceFromString(assetMapping.AssetID, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -1075,7 +1073,7 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 
 	var aMap []types.AppMapping
 	var bMap []types.MintGenesisToken
-	for i := range assetId {
+	for i := range assetIDs {
 		newIsGovToken := ParseBoolFromString(isGovToken[i])
 		newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply[i])
 		address, err := sdk.AccAddressFromBech32(recipient[i])
@@ -1087,7 +1085,7 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 		}
 		var cmap types.MintGenesisToken
 
-		cmap.AssetId = assetId[i]
+		cmap.AssetId = assetIDs[i]
 		cmap.GenesisSupply = &newGenesisSupply
 		cmap.IsgovToken = newIsGovToken
 		cmap.Recipient = address.String()
@@ -1095,7 +1093,7 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 		bMap = append(bMap, cmap)
 	}
 	aMap = append(aMap, types.AppMapping{
-		Id:           appId,
+		Id:           appID,
 		GenesisToken: bMap,
 	})
 
@@ -1123,7 +1121,7 @@ func NewCreateWhiteListedPairsMsg(clientCtx client.Context, txf tx.Factory, fs *
 		return txf, nil, fmt.Errorf("failed to parse whiteListedPairs: %w", err)
 	}
 
-	pairId, err := ParseUint64SliceFromString(whiteListedPairs.PairID, ",")
+	pairID, err := ParseUint64SliceFromString(whiteListedPairs.PairID, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -1151,8 +1149,7 @@ func NewCreateWhiteListedPairsMsg(clientCtx client.Context, txf tx.Factory, fs *
 	}
 
 	var pairs []types.ExtendedPairLend
-	for i := range pairId {
-
+	for i := range pairID {
 		newBaseBorrowRateAsset1, err := sdk.NewDecFromStr(baseBorrowRateAsset1[i])
 		if err != nil {
 			return txf, nil, err
@@ -1170,7 +1167,7 @@ func NewCreateWhiteListedPairsMsg(clientCtx client.Context, txf tx.Factory, fs *
 			return txf, nil, err
 		}
 		pairs = append(pairs, types.ExtendedPairLend{
-			PairId:                pairId[i],
+			PairId:                pairID[i],
 			ModuleAcc:             moduleAccount[i],
 			BaseBorrowRateAsset_1: newBaseBorrowRateAsset1,
 			BaseBorrowRateAsset_2: newBaseBorrowRateAsset2,

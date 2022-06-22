@@ -1,7 +1,7 @@
 package cli
 
 import (
-	context "context"
+	"context"
 	"strconv"
 
 	"github.com/comdex-official/comdex/x/liquidation/types"
@@ -212,7 +212,7 @@ func queryLockedVaultsPair() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			Pair_Id, err := strconv.ParseUint(args[0], 10, 64)
+			pairID, err := strconv.ParseUint(args[0], 10, 64)
 
 			if err != nil {
 				return err
@@ -226,7 +226,7 @@ func queryLockedVaultsPair() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryLockedVaultsPair(cmd.Context(), &types.QueryLockedVaultsPairRequest{
-				PairId:     Pair_Id,
+				PairId:     pairID,
 				Pagination: pagination,
 			})
 

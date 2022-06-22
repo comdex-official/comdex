@@ -8,9 +8,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&FetchPriceProposal{}, "comdex/FetchPriceProposal", nil)
-}
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgFetchPriceData{}, "bandoracle/FetchPriceData", nil)
 }

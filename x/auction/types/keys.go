@@ -29,7 +29,6 @@ const StartedDebtAuction uint64 = 2
 const SurplusString = "surplus"
 const DebtString = "debt"
 const DutchString = "dutch"
-const TestFlag = 0
 
 var (
 	AuctionKeyPrefix            = []byte{0x11}

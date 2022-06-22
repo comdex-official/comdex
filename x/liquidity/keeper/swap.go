@@ -584,8 +584,8 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 	availablePools := k.GetAllPools(ctx, appID)
 	const poolMapPrefix = "pool_"
 
-	edges := [][]string{}
-	pairPoolIdMap := make(map[string]uint64)
+	var edges [][]string
+	pairPoolIDMap := make(map[string]uint64)
 
 	for _, pool := range availablePools {
 		pair, found := k.GetPair(ctx, pool.AppId, pool.PairId)
@@ -593,10 +593,10 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 			continue
 		}
 		edges = append(edges, []string{pair.BaseCoinDenom, pair.QuoteCoinDenom})
-		pairPoolIdMap[pair.BaseCoinDenom+pair.QuoteCoinDenom] = pair.Id
-		pairPoolIdMap[pair.QuoteCoinDenom+pair.BaseCoinDenom] = pair.Id
-		pairPoolIdMap[poolMapPrefix+pair.BaseCoinDenom+pair.QuoteCoinDenom] = pool.Id
-		pairPoolIdMap[poolMapPrefix+pair.QuoteCoinDenom+pair.BaseCoinDenom] = pool.Id
+		pairPoolIDMap[pair.BaseCoinDenom+pair.QuoteCoinDenom] = pair.Id
+		pairPoolIDMap[pair.QuoteCoinDenom+pair.BaseCoinDenom] = pair.Id
+		pairPoolIDMap[poolMapPrefix+pair.BaseCoinDenom+pair.QuoteCoinDenom] = pool.Id
+		pairPoolIDMap[poolMapPrefix+pair.QuoteCoinDenom+pair.BaseCoinDenom] = pool.Id
 	}
 
 	undirectedGraph := types.BuildUndirectedGraph(edges)
@@ -611,10 +611,10 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 
 		for _, balance := range availableBalances {
 			if balance.Denom != params.SwapFeeDistrDenom {
-				shortestPath, found := types.BFS_ShortestPath(undirectedGraph, balance.Denom, params.SwapFeeDistrDenom)
+				shortestPath, found := types.BfsShortestpath(undirectedGraph, balance.Denom, params.SwapFeeDistrDenom)
 				if found && len(shortestPath) > 1 {
-					swappablePairID := pairPoolIdMap[shortestPath[0]+shortestPath[1]]
-					swappablePoolID := pairPoolIdMap[poolMapPrefix+shortestPath[0]+shortestPath[1]]
+					swappablePairID := pairPoolIDMap[shortestPath[0]+shortestPath[1]]
+					swappablePoolID := pairPoolIDMap[poolMapPrefix+shortestPath[0]+shortestPath[1]]
 
 					swappablePair, found := k.GetPair(ctx, appID, swappablePairID)
 					if !found {
