@@ -49,7 +49,12 @@ func (k *Keeper) GetAllEpochInfos(ctx sdk.Context) (epochInfos []types.EpochInfo
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.EpochInfoByDurationKeyPrefix)
 	)
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		var epochInfo types.EpochInfo
 		k.cdc.MustUnmarshal(iter.Value(), &epochInfo)
@@ -128,7 +133,12 @@ func (k *Keeper) GetAllGauges(ctx sdk.Context) (gauges []types.Gauge) {
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.GaugeKeyPrefix)
 	)
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		var gauge types.Gauge
 		k.cdc.MustUnmarshal(iter.Value(), &gauge)
@@ -167,7 +177,12 @@ func (k *Keeper) GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeID uint64) 
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.GaugeKeyPrefix)
 	)
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		var gauge types.Gauge
 		k.cdc.MustUnmarshal(iter.Value(), &gauge)

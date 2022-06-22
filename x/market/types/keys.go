@@ -13,18 +13,11 @@ const (
 )
 
 var (
-	CalldataIDKey = []byte{0x02}
-
-	CalldataKeyPrefix = []byte{0x12}
-	MarketKeyPrefix   = []byte{0x13}
+	MarketKeyPrefix = []byte{0x13}
 
 	MarketForAssetKeyPrefix = []byte{0x22}
 	PriceForMarketKeyPrefix = []byte{0x23}
 )
-
-func CalldataKey(id uint64) []byte {
-	return append(CalldataKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
 
 func MarketKey(symbol string) []byte {
 	return append(MarketKeyPrefix, []byte(symbol)...)
