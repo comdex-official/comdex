@@ -230,6 +230,17 @@ func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMappi
 	return nil
 }
 
+func (k *Keeper) UpdateGovTimeInAppMapping(ctx sdk.Context, msg types.AppAndGovTime) error {
+	appDetails, found := k.GetApp(ctx, msg.AppId)
+	if !found {
+		return types.ErrorAssetDoesNotExist
+	}
+	appDetails.GovTimeInSeconds = msg.GovTimeInSeconds
+
+	k.SetApp(ctx, appDetails)
+	return nil
+}
+
 func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMapping) error {
 	for _, msg := range records {
 		appdata, found := k.GetApp(ctx, msg.Id)

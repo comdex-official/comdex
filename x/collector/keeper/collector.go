@@ -585,21 +585,21 @@ func (k *Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, appID uint64)
 	return true, ""
 }
 
-func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, updateLsrInColBinding *bindings.MsgUpdateLsrInCollectorLookupTable) error {
+func (k *Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding *bindings.MsgUpdateCollectorLookupTable) error {
 	var Collector types.CollectorLookupTable
-	accmLookup, _ := k.GetCollectorLookupTable(ctx, updateLsrInColBinding.AppMappingId)
+	accmLookup, _ := k.GetCollectorLookupTable(ctx, updateColBinding.AppMappingId)
 
 	for _, data := range accmLookup.AssetRateInfo {
-		if data.CollectorAssetId == updateLsrInColBinding.AssetId {
-			Collector.CollectorAssetId = updateLsrInColBinding.AssetId
+		if data.CollectorAssetId == updateColBinding.AssetId {
+			Collector.CollectorAssetId = updateColBinding.AssetId
 			Collector.AppId = data.AppId
-			Collector.BidFactor = updateLsrInColBinding.BidFactor
-			Collector.DebtThreshold = updateLsrInColBinding.DebtThreshold
-			Collector.SurplusThreshold = updateLsrInColBinding.SurplusThreshold
-			Collector.LockerSavingRate = updateLsrInColBinding.LSR
-			Collector.LotSize = updateLsrInColBinding.LotSize
+			Collector.BidFactor = updateColBinding.BidFactor
+			Collector.DebtThreshold = updateColBinding.DebtThreshold
+			Collector.SurplusThreshold = updateColBinding.SurplusThreshold
+			Collector.LockerSavingRate = updateColBinding.LSR
+			Collector.LotSize = updateColBinding.LotSize
 			Collector.SecondaryAssetId = data.SecondaryAssetId
-			Collector.DebtLotSize = updateLsrInColBinding.DebtLotSize
+			Collector.DebtLotSize = updateColBinding.DebtLotSize
 		}
 	}
 	err := k.SetCollectorLookupTableForWasm(ctx, Collector)
@@ -609,7 +609,7 @@ func (k *Keeper) WasmUpdateLsrInCollectorLookupTable(ctx sdk.Context, updateLsrI
 	return nil
 }
 
-func (k *Keeper) WasmUpdateLsrInCollectorLookupTableQuery(ctx sdk.Context, appID, assetID uint64) (bool, string) {
+func (k *Keeper) WasmUpdateCollectorLookupTableQuery(ctx sdk.Context, appID, assetID uint64) (bool, string) {
 	_, found := k.GetCollectorLookupByAsset(ctx, appID, assetID)
 	if !found {
 		return false, types.ErrorDataDoesNotExists.Error()

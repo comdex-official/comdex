@@ -20,6 +20,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&AddAppMappingProposal{}, "comdex/asset/AddAppMappingProposal", nil)
 	cdc.RegisterConcrete(&AddAssetMappingProposal{}, "comdex/asset/AddAssetMappingProposal", nil)
 	cdc.RegisterConcrete(&AddExtendedPairsVaultProposal{}, "comdex/asset/AddExtendedPairsVaultProposal", nil)
+	cdc.RegisterConcrete(&UpdateGovTimeInAppMappingProposal{}, "comdex/asset/UpdateGovTimeInAppMappingProposal", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
@@ -35,6 +36,7 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&AddAppMappingProposal{},
 		&AddAssetMappingProposal{},
 		&AddExtendedPairsVaultProposal{},
+		&UpdateGovTimeInAppMappingProposal{},
 	)
 
 	registry.RegisterImplementations(

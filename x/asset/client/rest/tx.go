@@ -39,6 +39,13 @@ func UpdateNewAssetProposalRESTHandler(clientCtx client.Context) govrest.Proposa
 	}
 }
 
+func UpdateNewGovTimeInAppMappingProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "update-gov-time-app-mapping",
+		Handler:  UpdateGovTimeInAppMappingRESTHandler(clientCtx),
+	}
+}
+
 func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-new-pairs",
@@ -109,6 +116,16 @@ func AddNewAssetsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 }
 
 func UpdateNewAssetRESTHandler(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req UpdateNewAssetRequest
+
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
+			return
+		}
+	}
+}
+
+func UpdateGovTimeInAppMappingRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UpdateNewAssetRequest
 

@@ -26,3 +26,8 @@ message MintGenesisToken {
     bool isgovToken = 3 [ (gogoproto.moretags) = "yaml:\"isgovToken\"" ];
     string recipient = 4 [ (gogoproto.moretags) = "yaml:\"recipient\"" ];
 }
+
+message AppAndGovTime {
+    uint64 app_id      = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+    double gov_time_in_seconds = 2 [ (gogoproto.moretags) = "yaml:\"gov_time_in_seconds\""];
+}

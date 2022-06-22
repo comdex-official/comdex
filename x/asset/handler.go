@@ -43,6 +43,8 @@ func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return handleAddWhitelistedAssetProposal(ctx, k, c)
 		case *types.UpdateWhitelistedAssetProposal:
 			return handleUpdateWhitelistedAssetProposal(ctx, k, c)
+		case *types.UpdateGovTimeInAppMappingProposal:
+			return handleUpdateGovTimeInAppMappingProposal(ctx, k, c)
 		case *types.AddWhitelistedPairsProposal:
 			return handleAddWhitelistedPairsProposal(ctx, k, c)
 		case *types.UpdateWhitelistedPairProposal:
@@ -78,6 +80,10 @@ func handleAddWhitelistedAssetProposal(ctx sdk.Context, k keeper.Keeper, p *type
 
 func handleUpdateWhitelistedAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateWhitelistedAssetProposal) error {
 	return k.HandleUpdateWhitelistedAssetRecords(ctx, p)
+}
+
+func handleUpdateGovTimeInAppMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateGovTimeInAppMappingProposal) error {
+	return k.HandleUpdateGovTimeInAppMapping(ctx, p)
 }
 
 func handleAddWhitelistedPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddWhitelistedPairsProposal) error {
