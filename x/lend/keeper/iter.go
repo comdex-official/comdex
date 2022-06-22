@@ -9,7 +9,10 @@ import (
 )
 
 func (k Keeper) IterateLends(ctx sdk.Context) error {
-	lends, _ := k.GetLends(ctx)
+	lends, found := k.GetLends(ctx)
+	if !found {
+		return types.ErrLendNotFound
+	}
 	for _, v := range lends.LendIds {
 		lend, _ := k.GetLend(ctx, v)
 		lendAPY, _ := k.GetLendAPYByAssetId(ctx, lend.PoolId, lend.AssetId)
@@ -32,13 +35,17 @@ func (k Keeper) IterateLends(ctx sdk.Context) error {
 		pool, _ := k.GetPool(ctx, lend.PoolId)
 		asset, _ := k.GetAsset(ctx, lend.AssetId)
 		Amount := sdk.NewCoin(asset.Denom, interestPerBlock)
-		cToken, err := k.ExchangeToken(ctx, Amount, asset.Name)
+		assetRatesStat, found := k.GetAssetRatesStats(ctx, lend.AssetId)
+		if !found {
+			return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lend.AssetId, 10))
+		}
+		cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetId)
+		cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
 		if err != nil {
 			return err
 		}
 		addr, _ := sdk.AccAddressFromBech32(lend.Owner)
-		cTokens := sdk.NewCoins(cToken)
-		err = k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, addr, cTokens)
+		err = k.SendCoinFromModuleToAccount(ctx, pool.ModuleName, addr, cToken)
 		if err != nil {
 			return err
 		}

@@ -58,7 +58,7 @@ var (
 	LendIdToBorrowIdMappingKeyPrefix      = []byte{0x28}
 	AssetStatsByPoolIdAndAssetIdKeyPrefix = []byte{0x29}
 	AssetRatesStatsKeyPrefix              = []byte{0x30}
-	KeyPrefixLastInterestTime             = []byte{0x31}
+	KeyPrefixLastTime                     = []byte{0x31}
 )
 
 func AssetKey(id uint64) []byte {
@@ -172,6 +172,6 @@ func SetAssetStatsByPoolIdAndAssetId(assetID, pairID uint64) []byte {
 
 func CreateLastInterestTimeKey() []byte {
 	var key []byte
-	key = append(key, KeyPrefixLastInterestTime...)
+	key = append(key, KeyPrefixLastTime...)
 	return key
 }
