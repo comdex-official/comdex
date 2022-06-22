@@ -1359,7 +1359,7 @@ func (m *QueryAllStableVaultsRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryAllStableVaultsRequest proto.InternalMessageInfo
 
 type QueryAllStableVaultsResponse struct {
-	StableMintVault []*StableMintVault `protobuf:"bytes,1,rep,name=stable_mint_vault,json=stableMintVault,proto3" json:"stable_mint_vault,omitempty" yaml:"stable_mint_vault"`
+	StableMintVault []StableMintVault `protobuf:"bytes,1,rep,name=stable_mint_vault,json=stableMintVault,proto3" json:"stable_mint_vault,omitempty" yaml:"stable_mint_vault"`
 }
 
 func (m *QueryAllStableVaultsResponse) Reset()         { *m = QueryAllStableVaultsResponse{} }
@@ -9919,7 +9919,7 @@ func (m *QueryAllStableVaultsResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.StableMintVault = append(m.StableMintVault, &StableMintVault{})
+			m.StableMintVault = append(m.StableMintVault, StableMintVault{})
 			if err := m.StableMintVault[len(m.StableMintVault)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}

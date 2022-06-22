@@ -63,7 +63,7 @@ func DeriveAddress(addressType AddressType, moduleName, name string) sdk.AccAddr
 	}
 }
 
-// ItemExists returns true if item exists in array else false
+// ItemExists returns true if item exists in array else false .
 func ItemExists(array []string, item string) bool {
 	for _, v := range array {
 		if v == item {
@@ -73,7 +73,7 @@ func ItemExists(array []string, item string) bool {
 	return false
 }
 
-// BuildUndirectedGraph builds undirected the graph from the given edges represented as adjacency list
+// BuildUndirectedGraph builds undirected the graph from the given edges represented as adjacency list .
 func BuildUndirectedGraph(edges [][]string) (graph map[string][]string) {
 	graph = make(map[string][]string)
 
@@ -101,7 +101,7 @@ func BfsShortestpath(undirectedGraph map[string][]string, start string, goal str
 	}
 
 	// Loop to traverse the graph with the help of the queue
-	for true {
+	for {
 		if len(queue) == 0 {
 			// empty queue, hence break the loop
 			break
@@ -127,7 +127,6 @@ func BfsShortestpath(undirectedGraph map[string][]string, start string, goal str
 
 				// Condition to check if the neighbour node is the goal
 				if neighbour == goal {
-
 					// path found
 					return newPath, true
 				}

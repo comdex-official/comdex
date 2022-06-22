@@ -17,7 +17,7 @@ type UpdateGenericParamsRequest struct {
 	Title       string       `json:"title" yaml:"title"`
 	Description string       `json:"description" yaml:"description"`
 	Deposit     sdk.Coins    `json:"deposit" yaml:"deposit"`
-	AppId       uint64       `json:"app_id" yaml:"app_id"`
+	AppID       uint64       `json:"app_id" yaml:"app_id"`
 	Keys        []string     `json:"keys" yaml:"keys"`
 	Values      []string     `json:"values" yaml:"values"`
 }
@@ -50,7 +50,7 @@ func UpdateGenericParamsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 		content := types.NewUpdateGenericParamsProposal(
 			req.Title,
 			req.Description,
-			req.AppId,
+			req.AppID,
 			req.Keys,
 			req.Values,
 		)

@@ -34,7 +34,8 @@ func FlagSetCreateGauge() *flag.FlagSet {
 }
 
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
-	var parsedInts []uint64
+	stringSlice := strings.Split(s, separator)
+	parsedInts := make([]uint64, 0, len(stringSlice))
 	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 

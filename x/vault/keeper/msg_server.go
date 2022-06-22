@@ -25,16 +25,17 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServer {
 	}
 }
 
-//Creating a new CDP
+//Creating a new CDP.
+// nolint
 func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	//Checking if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
+	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
-	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
@@ -47,29 +48,29 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	//Checking if app_mapping_id exists
-	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	//Checking if appMapping_id exists
+	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
-	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
-	if app_mapping.Id != extended_pair_vault.AppMappingId {
-		return nil, types.ErrorAppMappingIdMismatch
+	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
+	if appMapping.Id != extendedPairVault.AppMappingId {
+		return nil, types.ErrorAppMappingIDMismatch
 	}
 
 	//Converting user address for bank transaction
-	depositor_address, err := sdk.AccAddressFromBech32(msg.From)
+	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
 	// Checking if this is a stableMint pair or not  -- stableMintPair == psmPair
-	if extended_pair_vault.IsPsmPair {
+	if extendedPairVault.IsPsmPair {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking
-	if !extended_pair_vault.IsVaultActive {
+	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultCreationInactive
 
 	}
@@ -79,36 +80,36 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	//if it does throw error
 	user_vault_extendedPair_mapping, user_exists := k.GetUserVaultExtendedPairMapping(ctx, msg.From)
 	if user_exists {
-		_, already_exists := k.CheckUserAppToExtendedPairMapping(ctx, user_vault_extendedPair_mapping, extended_pair_vault.Id, app_mapping.Id)
+		_, already_exists := k.CheckUserAppToExtendedPairMapping(ctx, user_vault_extendedPair_mapping, extendedPairVault.Id, appMapping.Id)
 		if already_exists {
 			return nil, types.ErrorUserVaultAlreadyExists
 
 		}
 
 	}
-	//Call CheckAppExtendedPairVaultMapping function to get counter - it also initialised the kv store if app_mapping_id does not exists, or extended_pair_vault_id does not exists.
+	//Call CheckAppExtendedPairVaultMapping function to get counter - it also initialised the kv store if appMapping_id does not exists, or extendedPairVault_id does not exists.
 
-	counter_val, token_minted_statistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
+	counterVal, tokenMintedStatistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
 	//Check debt Floor
-	if !msg.AmountOut.GTE(extended_pair_vault.DebtFloor) {
+	if !msg.AmountOut.GTE(extendedPairVault.DebtFloor) {
 
 		return nil, types.ErrorAmountOutLessThanDebtFloor
 	}
 	//Check Debt Ceil
-	current_minted_statistics := token_minted_statistics.Add(msg.AmountOut)
+	currentMintedStatistics := tokenMintedStatistics.Add(msg.AmountOut)
 
-	if current_minted_statistics.GT(extended_pair_vault.DebtCeiling) {
+	if currentMintedStatistics.GT(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
 
 	//Calculate CR - make necessary changes to the calculate collateralization function
-	if err := k.VerifyCollaterlizationRatio(ctx, extended_pair_vault.Id, msg.AmountIn, msg.AmountOut, extended_pair_vault.MinCr); err != nil {
+	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, msg.AmountIn, msg.AmountOut, extendedPairVault.MinCr); err != nil {
 		return nil, err
 	}
 
 	//Take amount from user
-	if err := k.SendCoinFromAccountToModule(ctx, depositor_address, types.ModuleName, sdk.NewCoin(assetInData.Denom, msg.AmountIn)); err != nil {
+	if err := k.SendCoinFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoin(assetInData.Denom, msg.AmountIn)); err != nil {
 		return nil, err
 	}
 	//Mint Tokens for user
@@ -122,29 +123,29 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 
 	//Send Fees to Accumulator
 	//Deducting Opening Fee if 0 opening fee then act accordingly
-	if extended_pair_vault.DrawDownFee.IsZero() {
+	if extendedPairVault.DrawDownFee.IsZero() {
 
 		//Send Rest to user
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, msg.AmountOut)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetOutData.Denom, msg.AmountOut)); err != nil {
 			return nil, err
 		}
 
 	} else {
 		//If not zero deduct send to collector//////////
 		//one approach could be
-		collectorShare := (msg.AmountOut.Mul(sdk.Int(extended_pair_vault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		collectorShare := (msg.AmountOut.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
 
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 			return nil, err
 		}
-		err := k.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
+		err := k.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
 		if err != nil {
 			return nil, err
 		}
 
 		// and send the rest to the user
 		amountToUser := msg.AmountOut.Sub(collectorShare)
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
 			return nil, err
 		}
 
@@ -153,28 +154,28 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	//If all correct  create vault
 	zero_val := sdk.ZeroInt()
 	var new_vault types.Vault
-	updated_counter := counter_val + 1
-	new_vault.Id = app_mapping.ShortName + strconv.FormatUint(updated_counter, 10)
+	updatedCounter := counterVal + 1
+	new_vault.Id = appMapping.ShortName + strconv.FormatUint(updatedCounter, 10)
 	new_vault.AmountIn = msg.AmountIn
 
-	// closingFeeVal := (sdk.Dec(msg.AmountOut).Mul((extended_pair_vault.ClosingFee)))
+	// closingFeeVal := (sdk.Dec(msg.AmountOut).Mul((extendedPairVault.ClosingFee)))
 
-	closingFeeVal := msg.AmountOut.Mul(sdk.Int(extended_pair_vault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
+	closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
 
 	new_vault.ClosingFeeAccumulated = closingFeeVal
 	new_vault.AmountOut = msg.AmountOut
-	new_vault.AppMappingId = app_mapping.Id
+	new_vault.AppMappingId = appMapping.Id
 	new_vault.InterestAccumulated = zero_val
 	new_vault.Owner = msg.From
 	new_vault.CreatedAt = time.Now()
-	new_vault.ExtendedPairVaultID = extended_pair_vault.Id
+	new_vault.ExtendedPairVaultID = extendedPairVault.Id
 
 	k.SetVault(ctx, new_vault)
 
 	//Update mapping data - take proper approach
 	// lookup table already exists
 	//only need to update counter and token statistics value
-	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updated_counter, new_vault)
+	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updatedCounter, new_vault)
 
 	//update user data
 	//Check and update - similar fashion as Locker module
@@ -188,26 +189,26 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 
 		user_extendedPair_data.ExtendedPairId = new_vault.ExtendedPairVaultID
 		user_extendedPair_data.VaultId = new_vault.Id
-		user_app_data.AppMappingId = app_mapping.Id
+		user_app_data.AppMappingId = appMapping.Id
 		user_app_data.UserExtendedPairVault = append(user_app_data.UserExtendedPairVault, &user_extendedPair_data)
 		user_mapping_data.Owner = msg.From
 		user_mapping_data.UserVaultApp = append(user_mapping_data.UserVaultApp, &user_app_data)
 
 		k.SetUserVaultExtendedPairMapping(ctx, user_mapping_data)
 	} else {
-		///Check if user app_mapping data exits
+		///Check if user appMapping data exits
 
-		app_exists := k.CheckUserToAppMapping(ctx, user_vault_extendedPair_mapping_data, app_mapping.Id)
+		app_exists := k.CheckUserToAppMapping(ctx, user_vault_extendedPair_mapping_data, appMapping.Id)
 		if app_exists {
 
-			//User has the app_mapping added
+			//User has the appMapping added
 			//So only need to add the locker id with asset
 			var user_extendedPair_data types.ExtendedPairToVaultMapping
 			user_extendedPair_data.VaultId = new_vault.Id
 			user_extendedPair_data.ExtendedPairId = new_vault.ExtendedPairVaultID
 
 			for _, appData := range user_vault_extendedPair_mapping_data.UserVaultApp {
-				if appData.AppMappingId == app_mapping.Id {
+				if appData.AppMappingId == appMapping.Id {
 
 					appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &user_extendedPair_data)
 				}
@@ -222,7 +223,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 
 			user_extendedPair_data.ExtendedPairId = new_vault.ExtendedPairVaultID
 			user_extendedPair_data.VaultId = new_vault.Id
-			user_app_data.AppMappingId = app_mapping.Id
+			user_app_data.AppMappingId = appMapping.Id
 			user_app_data.UserExtendedPairVault = append(user_app_data.UserExtendedPairVault, &user_extendedPair_data)
 			user_vault_extendedPair_mapping_data.UserVaultApp = append(user_vault_extendedPair_mapping_data.UserVaultApp, &user_app_data)
 			k.SetUserVaultExtendedPairMapping(ctx, user_vault_extendedPair_mapping_data)
@@ -234,7 +235,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	return &types.MsgCreateResponse{}, nil
 }
 
-//Only for depositing new collateral
+//Only for depositing new collateral.
 func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
@@ -244,11 +245,11 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
+	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
-	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
@@ -257,20 +258,19 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	//Checking if app_mapping_id exists
-	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	//Checking if appMapping_id exists
+	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if vault acccess disabled
-	if !extended_pair_vault.IsVaultActive {
+	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultInactive
-
 	}
 
-	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
-	if app_mapping.Id != extended_pair_vault.AppMappingId {
-		return nil, types.ErrorAppMappingIdMismatch
+	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
+	if appMapping.Id != extendedPairVault.AppMappingId {
+		return nil, types.ErrorAppMappingIDMismatch
 	}
 
 	userVault, found := k.GetVault(ctx, msg.UserVaultId)
@@ -278,14 +278,13 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 		return nil, types.ErrorVaultDoesNotExist
 	}
 	if userVault.Owner != msg.From {
-
 		return nil, types.ErrVaultAccessUnauthorised
 	}
 
-	if app_mapping.Id != userVault.AppMappingId {
+	if appMapping.Id != userVault.AppMappingId {
 		return nil, types.ErrorInvalidAppMappingData
 	}
-	if extended_pair_vault.Id != userVault.ExtendedPairVaultID {
+	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
 
@@ -300,14 +299,13 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 
 	k.SetVault(ctx, userVault)
 	//Updating appExtendedPairvaultMappingData data -
-	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, app_mapping.Id)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, msg.Amount, true)
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, msg.Amount, true)
 
 	return &types.MsgDepositResponse{}, nil
-
 }
 
-//Withdrawing collateral
+//Withdrawing collateral.
 func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
@@ -317,11 +315,11 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
+	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
-	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
@@ -334,19 +332,18 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 	// 	return nil, types.ErrorAssetDoesNotExist
 	// }
 
-	//Checking if app_mapping_id exists
-	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	//Checking if appMapping_id exists
+	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if vault acccess disabled
-	if !extended_pair_vault.IsVaultActive {
+	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultInactive
-
 	}
-	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
-	if app_mapping.Id != extended_pair_vault.AppMappingId {
-		return nil, types.ErrorAppMappingIdMismatch
+	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
+	if appMapping.Id != extendedPairVault.AppMappingId {
+		return nil, types.ErrorAppMappingIDMismatch
 	}
 
 	userVault, found := k.GetVault(ctx, msg.UserVaultId)
@@ -354,17 +351,13 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 		return nil, types.ErrorVaultDoesNotExist
 	}
 	if userVault.Owner != msg.From {
-
 		return nil, types.ErrVaultAccessUnauthorised
 	}
 
-	if app_mapping.Id != userVault.AppMappingId {
-
+	if appMapping.Id != userVault.AppMappingId {
 		return nil, types.ErrorInvalidAppMappingData
-
 	}
-	if extended_pair_vault.Id != userVault.ExtendedPairVaultID {
-
+	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
 
@@ -377,7 +370,7 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 	totalDebtCalculation = totalDebtCalculation.Add(userVault.ClosingFeeAccumulated)
 
 	//Calculate CR - make necessary changes to the calculate collateralization function
-	if err := k.VerifyCollaterlizationRatio(ctx, extended_pair_vault.Id, userVault.AmountIn, totalDebtCalculation, extended_pair_vault.MinCr); err != nil {
+	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, userVault.AmountIn, totalDebtCalculation, extendedPairVault.MinCr); err != nil {
 		return nil, err
 	}
 
@@ -388,13 +381,13 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 	k.SetVault(ctx, userVault)
 
 	//Updating appExtendedPairVaultMappingData
-	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, app_mapping.Id)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, msg.Amount, false)
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, msg.Amount, false)
 
 	return &types.MsgWithdrawResponse{}, nil
 }
 
-//To borrow more amount
+//To borrow more amount.
 func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
@@ -404,11 +397,11 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
+	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
-	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
@@ -421,19 +414,18 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	//Checking if app_mapping_id exists
-	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	//Checking if appMapping_id exists
+	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if vault acccess disabled
-	if !extended_pair_vault.IsVaultActive {
+	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultInactive
-
 	}
-	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
-	if app_mapping.Id != extended_pair_vault.AppMappingId {
-		return nil, types.ErrorAppMappingIdMismatch
+	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
+	if appMapping.Id != extendedPairVault.AppMappingId {
+		return nil, types.ErrorAppMappingIDMismatch
 	}
 
 	userVault, found := k.GetVault(ctx, msg.UserVaultId)
@@ -441,17 +433,13 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		return nil, types.ErrorVaultDoesNotExist
 	}
 	if userVault.Owner != msg.From {
-
 		return nil, types.ErrVaultAccessUnauthorised
 	}
 
-	if app_mapping.Id != userVault.AppMappingId {
-
+	if appMapping.Id != userVault.AppMappingId {
 		return nil, types.ErrorInvalidAppMappingData
-
 	}
-	if extended_pair_vault.Id != userVault.ExtendedPairVaultID {
-
+	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
 	if msg.Amount.LTE(sdk.NewInt(0)) {
@@ -462,16 +450,16 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 	totaldebt := newUpdatedAmountOut.Add(userVault.InterestAccumulated)
 	totaldebt = totaldebt.Add(userVault.ClosingFeeAccumulated)
 
-	_, token_minted_statistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
+	_, tokenMintedStatistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
 	//Check Debt Ceil
-	current_minted_statistics := token_minted_statistics.Add(msg.Amount)
+	currentMintedStatistics := tokenMintedStatistics.Add(msg.Amount)
 
-	if current_minted_statistics.GTE(extended_pair_vault.DebtCeiling) {
+	if currentMintedStatistics.GTE(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
 
-	if err := k.VerifyCollaterlizationRatio(ctx, extended_pair_vault.Id, userVault.AmountIn, totaldebt, extended_pair_vault.MinCr); err != nil {
+	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, userVault.AmountIn, totaldebt, extendedPairVault.MinCr); err != nil {
 		return nil, err
 	}
 
@@ -479,22 +467,20 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		return nil, err
 	}
 
-	if extended_pair_vault.DrawDownFee.IsZero() {
-
+	if extendedPairVault.DrawDownFee.IsZero() {
 		//Send Rest to user
 		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
 			return nil, err
 		}
-
 	} else {
 		//If not zero deduct send to collector//////////
 		//one approach could be
-		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
 
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 			return nil, err
 		}
-		err := k.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
+		err := k.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
 		if err != nil {
 			return nil, err
 		}
@@ -504,7 +490,6 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
 			return nil, err
 		}
-
 	}
 
 	// if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
@@ -515,14 +500,13 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 	k.SetVault(ctx, userVault)
 
 	//Updating appExtendedPairVaultMappingData
-	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, app_mapping.Id)
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, msg.Amount, true)
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, msg.Amount, true)
 
 	return &types.MsgDrawResponse{}, nil
 }
 
 func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(c)
 
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -531,11 +515,11 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
+	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
-	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
@@ -548,19 +532,18 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	//Checking if app_mapping_id exists
-	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	//Checking if appMapping_id exists
+	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if vault acccess disabled
-	if !extended_pair_vault.IsVaultActive {
+	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultInactive
-
 	}
-	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
-	if app_mapping.Id != extended_pair_vault.AppMappingId {
-		return nil, types.ErrorAppMappingIdMismatch
+	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
+	if appMapping.Id != extendedPairVault.AppMappingId {
+		return nil, types.ErrorAppMappingIDMismatch
 	}
 
 	userVault, found := k.GetVault(ctx, msg.UserVaultId)
@@ -568,17 +551,13 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		return nil, types.ErrorVaultDoesNotExist
 	}
 	if userVault.Owner != msg.From {
-
 		return nil, types.ErrVaultAccessUnauthorised
 	}
 
-	if app_mapping.Id != userVault.AppMappingId {
-
+	if appMapping.Id != userVault.AppMappingId {
 		return nil, types.ErrorInvalidAppMappingData
-
 	}
-	if extended_pair_vault.Id != userVault.ExtendedPairVaultID {
-
+	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
 	if msg.Amount.LTE(sdk.NewInt(0)) {
@@ -605,27 +584,24 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.Amount))); err != nil {
 			return nil, err
 		}
-		err := k.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, msg.Amount, sdk.ZeroInt(), sdk.ZeroInt(), sdk.ZeroInt())
+		err := k.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, msg.Amount, sdk.ZeroInt(), sdk.ZeroInt(), sdk.ZeroInt())
 		if err != nil {
 			return nil, err
 		}
 
 		k.SetVault(ctx, userVault)
-
 	} else {
-
 		updatedUserSentAmountAfterFeesDeduction := msg.Amount.Sub(userVault.InterestAccumulated)
 
 		updatedUserDebt := userVault.AmountOut.Sub(updatedUserSentAmountAfterFeesDeduction)
 
 		// //If user's closing fees is a bigger amount than the debt floor, user will not close the debt floor
 		// totalUpdatedDebt:=updatedUserDebt.Add(*userVault.ClosingFeeAccumulated)
-		// if err := k.VerifyCollaterlizationRatio(ctx, extended_pair_vault.Id, userVault.AmountIn, totalUpdatedDebt, extended_pair_vault.MinCr); err != nil {
+		// if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, userVault.AmountIn, totalUpdatedDebt, extendedPairVault.MinCr); err != nil {
 		// 	return nil, err
 		// }
 
-		if !updatedUserDebt.GTE(extended_pair_vault.DebtFloor) {
-
+		if !updatedUserDebt.GTE(extendedPairVault.DebtFloor) {
 			return nil, types.ErrorAmountOutLessThanDebtFloor
 		}
 		if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
@@ -639,7 +615,7 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, userVault.InterestAccumulated))); err != nil {
 			return nil, err
 		}
-		err := k.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, userVault.InterestAccumulated, sdk.ZeroInt(), sdk.ZeroInt(), sdk.ZeroInt())
+		err := k.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, userVault.InterestAccumulated, sdk.ZeroInt(), sdk.ZeroInt(), sdk.ZeroInt())
 		if err != nil {
 			return nil, err
 		}
@@ -648,9 +624,8 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		zeroval := sdk.ZeroInt()
 		userVault.InterestAccumulated = zeroval
 		k.SetVault(ctx, userVault)
-		appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, app_mapping.Id)
-		k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, updatedUserSentAmountAfterFeesDeduction, false)
-
+		appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
+		k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, updatedUserSentAmountAfterFeesDeduction, false)
 	}
 
 	return &types.MsgRepayResponse{}, nil
@@ -665,11 +640,11 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
+	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
-	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
@@ -682,20 +657,20 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	//Checking if app_mapping_id exists
-	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	//Checking if appMapping_id exists
+	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	// //Checking if vault acccess disabled
-	// if !extended_pair_vault.IsVaultActive {
+	// if !extendedPairVault.IsVaultActive {
 	// 	return nil, types.ErrorVaultInactive
 
 	// }
 
-	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
-	if app_mapping.Id != extended_pair_vault.AppMappingId {
-		return nil, types.ErrorAppMappingIdMismatch
+	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
+	if appMapping.Id != extendedPairVault.AppMappingId {
+		return nil, types.ErrorAppMappingIDMismatch
 	}
 
 	userVault, found := k.GetVault(ctx, msg.UserVaultId)
@@ -703,17 +678,13 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 		return nil, types.ErrorVaultDoesNotExist
 	}
 	if userVault.Owner != msg.From {
-
 		return nil, types.ErrVaultAccessUnauthorised
 	}
 
-	if app_mapping.Id != userVault.AppMappingId {
-
+	if appMapping.Id != userVault.AppMappingId {
 		return nil, types.ErrorInvalidAppMappingData
-
 	}
-	if extended_pair_vault.Id != userVault.ExtendedPairVaultID {
-
+	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
 
@@ -725,7 +696,7 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 
 	//			SEND TO COLLECTOR----userVault.InterestAccumulated & userVault.ClosingFees
 
-	err = k.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, userVault.InterestAccumulated, userVault.ClosingFeeAccumulated, sdk.ZeroInt(), sdk.ZeroInt())
+	err = k.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, userVault.InterestAccumulated, userVault.ClosingFeeAccumulated, sdk.ZeroInt(), sdk.ZeroInt())
 	if err != nil {
 		return nil, err
 	}
@@ -744,16 +715,16 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 	}
 
 	//Update LookupTable minting Status
-	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, app_mapping.Id)
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
 
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, userVault.AmountIn, false)
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, userVault.AmountOut, false)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, userVault.AmountIn, false)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, userVault.AmountOut, false)
 
 	//Remove address from lookup table
-	k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, extended_pair_vault.Id, userVault.Id, app_mapping.Id)
+	k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, extendedPairVault.Id, userVault.Id, appMapping.Id)
 
 	//Remove user extendedPair to address field in UserLookupStruct
-	k.UpdateUserVaultExtendedPairMapping(ctx, extended_pair_vault.Id, msg.From, app_mapping.Id)
+	k.UpdateUserVaultExtendedPairMapping(ctx, extendedPairVault.Id, msg.From, appMapping.Id)
 
 	//Delete Vault
 	k.DeleteVault(ctx, userVault.Id)
@@ -765,11 +736,11 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	ctx := sdk.UnwrapSDKContext(c)
 
 	//Checking if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
+	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
-	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
@@ -781,50 +752,48 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	//Checking if app_mapping_id exists
-	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	//Checking if appMapping_id exists
+	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
-	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
-	if app_mapping.Id != extended_pair_vault.AppMappingId {
-		return nil, types.ErrorAppMappingIdMismatch
+	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
+	if appMapping.Id != extendedPairVault.AppMappingId {
+		return nil, types.ErrorAppMappingIDMismatch
 	}
 
 	//Converting user address for bank transaction
-	depositor_address, err := sdk.AccAddressFromBech32(msg.From)
+	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
 	// Checking if this is a stableMint pair or not  -- stableMintPair == psmPair
-	if !extended_pair_vault.IsPsmPair {
+	if !extendedPairVault.IsPsmPair {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking
-	if !extended_pair_vault.IsVaultActive {
+	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultCreationInactive
-
 	}
-	//Call CheckAppExtendedPairVaultMapping function to get counter - it also initialised the kv store if app_mapping_id does not exists, or extended_pair_vault_id does not exists.
+	//Call CheckAppExtendedPairVaultMapping function to get counter - it also initialised the kv store if appMapping_id does not exists, or extendedPairVault_id does not exists.
 
-	counter_val, token_minted_statistics, lenOfVault := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
+	counterVal, tokenMintedStatistics, lenOfVault := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
 	if lenOfVault >= 1 {
 		return nil, types.ErrorStableMintVaultAlreadyCreated
-
 	}
 
 	//Check Debt Ceil
-	current_minted_statistics := token_minted_statistics.Add(msg.Amount)
+	currentMintedStatistics := tokenMintedStatistics.Add(msg.Amount)
 
-	if current_minted_statistics.GTE(extended_pair_vault.DebtCeiling) {
+	if currentMintedStatistics.GTE(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
 
 	//Take amount from user
-	if err := k.SendCoinFromAccountToModule(ctx, depositor_address, types.ModuleName, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
+	if err := k.SendCoinFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
 		return nil, err
 	}
 	//Mint Tokens for user
@@ -832,46 +801,43 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
 		return nil, err
 	}
-	if extended_pair_vault.DrawDownFee.IsZero() {
-
+	if extendedPairVault.DrawDownFee.IsZero() {
 		//Send Rest to user
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
 			return nil, err
 		}
-
 	} else {
 		//If not zero deduct send to collector//////////
 		//			COLLECTOR FUNCTION
-		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 			return nil, err
 		}
-		err := k.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
+		err := k.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
 		if err != nil {
 			return nil, err
 		}
 
 		// and send the rest to the user
 		amountToUser := msg.Amount.Sub(collectorShare)
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
 			return nil, err
 		}
-
 	}
 	//Create Mint Vault
 
 	var stableVault types.StableMintVault
-	updated_counter := counter_val + 1
+	updatedCounter := counterVal + 1
 
-	stableVault.Id = app_mapping.ShortName + strconv.FormatUint(updated_counter, 10)
+	stableVault.Id = appMapping.ShortName + strconv.FormatUint(updatedCounter, 10)
 	stableVault.AmountIn = msg.Amount
 	stableVault.AmountOut = msg.Amount
-	stableVault.AppMappingId = app_mapping.Id
+	stableVault.AppMappingId = appMapping.Id
 	stableVault.CreatedAt = time.Now()
-	stableVault.ExtendedPairVaultID = extended_pair_vault.Id
+	stableVault.ExtendedPairVaultID = extendedPairVault.Id
 	k.SetStableMintVault(ctx, stableVault)
 	//update Locker Data 	//Update Amount
-	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(ctx, updated_counter, stableVault)
+	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(ctx, updatedCounter, stableVault)
 
 	return &types.MsgCreateStableMintResponse{}, nil
 }
@@ -879,17 +845,17 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDepositStableMintRequest) (*types.MsgDepositStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	depositor_address, err := sdk.AccAddressFromBech32(msg.From)
+	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
+	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
-	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
@@ -902,32 +868,31 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	//Checking if app_mapping_id exists
-	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	//Checking if appMapping_id exists
+	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if vault acccess disabled
-	if !extended_pair_vault.IsVaultActive {
+	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultInactive
-
 	}
-	if !extended_pair_vault.IsPsmPair {
+	if !extendedPairVault.IsPsmPair {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
-	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
-	if app_mapping.Id != extended_pair_vault.AppMappingId {
-		return nil, types.ErrorAppMappingIdMismatch
+	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
+	if appMapping.Id != extendedPairVault.AppMappingId {
+		return nil, types.ErrorAppMappingIDMismatch
 	}
 
 	stableVault, found := k.GetStableMintVault(ctx, msg.StableVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
-	if app_mapping.Id != stableVault.AppMappingId {
+	if appMapping.Id != stableVault.AppMappingId {
 		return nil, types.ErrorInvalidAppMappingData
 	}
-	if extended_pair_vault.Id != stableVault.ExtendedPairVaultID {
+	if extendedPairVault.Id != stableVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
 
@@ -935,17 +900,17 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 	if !stableAmountIn.IsPositive() {
 		return nil, types.ErrorInvalidAmount
 	}
-	_, token_minted_statistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, app_mapping.Id, extended_pair_vault.Id)
+	_, tokenMintedStatistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
 	//Check Debt Ceil
-	current_minted_statistics := token_minted_statistics.Add(msg.Amount)
+	currentMintedStatistics := tokenMintedStatistics.Add(msg.Amount)
 
-	if current_minted_statistics.GTE(extended_pair_vault.DebtCeiling) {
+	if currentMintedStatistics.GTE(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
 
 	//Take amount from user
-	if err := k.SendCoinFromAccountToModule(ctx, depositor_address, types.ModuleName, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
+	if err := k.SendCoinFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
 		return nil, err
 	}
 	//Mint Tokens for user
@@ -953,13 +918,11 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
 		return nil, err
 	}
-	if extended_pair_vault.DrawDownFee.IsZero() {
-
+	if extendedPairVault.DrawDownFee.IsZero() {
 		//Send Rest to user
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
 			return nil, err
 		}
-
 	} else {
 		//If not zero deduct send to collector//////////
 		//
@@ -968,29 +931,28 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 		//
 		/////////////////////////////////////////////////
 
-		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 			return nil, err
 		}
-		err := k.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
+		err := k.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
 		if err != nil {
 			return nil, err
 		}
 
 		// and send the rest to the user
 		amountToUser := msg.Amount.Sub(collectorShare)
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
 			return nil, err
 		}
-
 	}
 	stableVault.AmountIn = stableVault.AmountIn.Add(msg.Amount)
 	stableVault.AmountOut = stableVault.AmountOut.Add(msg.Amount)
 
 	k.SetStableMintVault(ctx, stableVault)
-	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, app_mapping.Id)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, stableVault.AmountIn, true)
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, stableVault.AmountOut, true)
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, stableVault.AmountIn, true)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, stableVault.AmountOut, true)
 
 	return &types.MsgDepositStableMintResponse{}, nil
 }
@@ -998,17 +960,17 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdrawStableMintRequest) (*types.MsgWithdrawStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	depositor_address, err := sdk.AccAddressFromBech32(msg.From)
+	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
 	//checks if extended pair exists
-	extended_pair_vault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
+	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
 	}
-	pairData, found := k.GetPair(ctx, extended_pair_vault.PairId)
+	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
@@ -1021,54 +983,52 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	//Checking if app_mapping_id exists
-	app_mapping, found := k.GetApp(ctx, msg.AppMappingId)
+	//Checking if appMapping_id exists
+	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if vault acccess disabled
-	if !extended_pair_vault.IsVaultActive {
+	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultInactive
-
 	}
-	if !extended_pair_vault.IsPsmPair {
+	if !extendedPairVault.IsPsmPair {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
-	//Checking if the app_mapping_id in the msg_create & extended_pair_vault_are same or not
-	if app_mapping.Id != extended_pair_vault.AppMappingId {
-		return nil, types.ErrorAppMappingIdMismatch
+	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
+	if appMapping.Id != extendedPairVault.AppMappingId {
+		return nil, types.ErrorAppMappingIDMismatch
 	}
 
 	stableVault, found := k.GetStableMintVault(ctx, msg.StableVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
-	if app_mapping.Id != stableVault.AppMappingId {
+	if appMapping.Id != stableVault.AppMappingId {
 		return nil, types.ErrorInvalidAppMappingData
 	}
-	if extended_pair_vault.Id != stableVault.ExtendedPairVaultID {
+	if extendedPairVault.Id != stableVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
 
 	stableAmountIn := stableVault.AmountIn.Sub(msg.Amount)
 	if stableAmountIn.LT(sdk.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
-
 	}
 	var updatedAmount sdk.Int
 	//Take amount from user
-	if err := k.SendCoinFromAccountToModule(ctx, depositor_address, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
+	if err := k.SendCoinFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
 		return nil, err
 	}
 
-	if extended_pair_vault.DrawDownFee.IsZero() {
+	if extendedPairVault.DrawDownFee.IsZero() {
 		//BurnTokens for user
 		if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
 			return nil, err
 		}
 
 		//Send Rest to user
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
 			return nil, err
 		}
 		updatedAmount = msg.Amount
@@ -1079,11 +1039,11 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 		//
 		//
 		/////////////////////////////////////////////////
-		collectorShare := (msg.Amount.Mul(sdk.Int(extended_pair_vault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
 		if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 			return nil, err
 		}
-		err := k.UpdateCollector(ctx, app_mapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
+		err := k.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
 		if err != nil {
 			return nil, err
 		}
@@ -1097,16 +1057,16 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 
 		// and send the rest to the user
 
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor_address, sdk.NewCoin(assetInData.Denom, updatedAmount)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetInData.Denom, updatedAmount)); err != nil {
 			return nil, err
 		}
 	}
 	stableVault.AmountIn = stableVault.AmountIn.Sub(updatedAmount)
 	stableVault.AmountOut = stableVault.AmountOut.Sub(updatedAmount)
 	k.SetStableMintVault(ctx, stableVault)
-	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, app_mapping.Id)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, stableVault.AmountIn, false)
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extended_pair_vault.Id, stableVault.AmountOut, false)
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, stableVault.AmountIn, false)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, stableVault.AmountOut, false)
 
 	return &types.MsgWithdrawStableMintResponse{}, nil
 }

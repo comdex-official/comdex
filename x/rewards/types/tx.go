@@ -81,11 +81,16 @@ func (m MsgCreateGauge) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{owner}
 }
 
-func NewMsgWhitelistAsset(appMappingId uint64, from sdk.AccAddress, assetId []uint64) *WhitelistAsset {
+func NewMsgWhitelistAsset(
+	appMappingID uint64,
+	// nolint
+	from sdk.AccAddress,
+	assetID []uint64,
+) *WhitelistAsset {
 	return &WhitelistAsset{
-		AppMappingId: appMappingId,
+		AppMappingId: appMappingID,
 		From:         from.String(),
-		AssetId:      assetId,
+		AssetId:      assetID,
 	}
 }
 
@@ -98,7 +103,6 @@ func (m *WhitelistAsset) Type() string {
 }
 
 func (m *WhitelistAsset) ValidateBasic() error {
-
 	return nil
 }
 
@@ -115,11 +119,16 @@ func (m *WhitelistAsset) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgRemoveWhitelistAsset(appMappingId uint64, from sdk.AccAddress, assetId uint64) *RemoveWhitelistAsset {
+func NewMsgRemoveWhitelistAsset(
+	appMappingID uint64,
+	// nolint
+	from sdk.AccAddress,
+	assetID uint64,
+) *RemoveWhitelistAsset {
 	return &RemoveWhitelistAsset{
-		AppMappingId: appMappingId,
+		AppMappingId: appMappingID,
 		From:         from.String(),
-		AssetId:      assetId,
+		AssetId:      assetID,
 	}
 }
 
@@ -132,7 +141,6 @@ func (m *RemoveWhitelistAsset) Type() string {
 }
 
 func (m *RemoveWhitelistAsset) ValidateBasic() error {
-
 	return nil
 }
 
@@ -149,9 +157,13 @@ func (m *RemoveWhitelistAsset) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgWhitelistAppIdVault(appMappingId uint64, from sdk.AccAddress) *WhitelistAppIdVault {
+func NewMsgWhitelistAppIDVault(
+	appMappingID uint64,
+	// nolint
+	from sdk.AccAddress,
+) *WhitelistAppIdVault {
 	return &WhitelistAppIdVault{
-		AppMappingId: appMappingId,
+		AppMappingId: appMappingID,
 		From:         from.String(),
 	}
 }
@@ -165,7 +177,6 @@ func (m *WhitelistAppIdVault) Type() string {
 }
 
 func (m *WhitelistAppIdVault) ValidateBasic() error {
-
 	return nil
 }
 
@@ -182,9 +193,13 @@ func (m *WhitelistAppIdVault) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgRemoveWhitelistAppIdVault(appMappingId uint64, from sdk.AccAddress) *RemoveWhitelistAppIdVault {
+func NewMsgRemoveWhitelistAppIDVault(
+	appMappingID uint64,
+	// nolint
+	from sdk.AccAddress,
+) *RemoveWhitelistAppIdVault {
 	return &RemoveWhitelistAppIdVault{
-		AppMappingId: appMappingId,
+		AppMappingId: appMappingID,
 		From:         from.String(),
 	}
 }
@@ -198,7 +213,6 @@ func (m *RemoveWhitelistAppIdVault) Type() string {
 }
 
 func (m *RemoveWhitelistAppIdVault) ValidateBasic() error {
-
 	return nil
 }
 
@@ -215,13 +229,20 @@ func (m *RemoveWhitelistAppIdVault) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgActivateExternalRewardsLockers(appMappingId uint64, AssetId uint64, TotalRewards sdk.Coin, DurationDays, MinLockupTimeSeconds int64, from sdk.AccAddress) *ActivateExternalRewardsLockers {
+func NewMsgActivateExternalRewardsLockers(
+	appMappingID uint64,
+	assetID uint64,
+	totalRewards sdk.Coin,
+	durationDays, minLockupTimeSeconds int64,
+	// nolint
+	from sdk.AccAddress,
+) *ActivateExternalRewardsLockers {
 	return &ActivateExternalRewardsLockers{
-		AppMappingId:         appMappingId,
-		AssetId:              AssetId,
-		TotalRewards:         TotalRewards,
-		DurationDays:         DurationDays,
-		MinLockupTimeSeconds: MinLockupTimeSeconds,
+		AppMappingId:         appMappingID,
+		AssetId:              assetID,
+		TotalRewards:         totalRewards,
+		DurationDays:         durationDays,
+		MinLockupTimeSeconds: minLockupTimeSeconds,
 		Depositor:            from.String(),
 	}
 }
@@ -235,7 +256,6 @@ func (m *ActivateExternalRewardsLockers) Type() string {
 }
 
 func (m *ActivateExternalRewardsLockers) ValidateBasic() error {
-
 	return nil
 }
 
@@ -252,13 +272,20 @@ func (m *ActivateExternalRewardsLockers) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgActivateExternalVaultLockers(appMappingId uint64, extendedPairId uint64, TotalRewards sdk.Coin, DurationDays, MinLockupTimeSeconds int64, from sdk.AccAddress) *ActivateExternalRewardsVault {
+func NewMsgActivateExternalVaultLockers(
+	appMappingID uint64,
+	extendedPairID uint64,
+	totalRewards sdk.Coin,
+	durationDays, minLockupTimeSeconds int64,
+	// nolint
+	from sdk.AccAddress,
+) *ActivateExternalRewardsVault {
 	return &ActivateExternalRewardsVault{
-		AppMappingId:         appMappingId,
-		Extended_Pair_Id:     extendedPairId,
-		TotalRewards:         TotalRewards,
-		DurationDays:         DurationDays,
-		MinLockupTimeSeconds: MinLockupTimeSeconds,
+		AppMappingId:         appMappingID,
+		Extended_Pair_Id:     extendedPairID,
+		TotalRewards:         totalRewards,
+		DurationDays:         durationDays,
+		MinLockupTimeSeconds: minLockupTimeSeconds,
 		Depositor:            from.String(),
 	}
 }
@@ -272,7 +299,6 @@ func (m *ActivateExternalRewardsVault) Type() string {
 }
 
 func (m *ActivateExternalRewardsVault) ValidateBasic() error {
-
 	return nil
 }
 

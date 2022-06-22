@@ -693,7 +693,6 @@ func (k Querier) DeserializePoolCoin(c context.Context, req *types.QueryDeserial
 
 // PoolIncentives provides insights about available pool incentives.
 func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentivesRequest) (*types.QueryPoolIncentivesResponse, error) {
-
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -709,7 +708,6 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 	var poolIncentives []*types.PoolIncentive
 
 	for _, gauge := range liquidityGauges {
-
 		// skip gauge whose appID is not equal to the requested appID
 		if gauge.AppId != req.AppId {
 			continue

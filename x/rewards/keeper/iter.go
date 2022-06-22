@@ -60,7 +60,10 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 								//updatedNetFee := p.NetFeesCollected.Sub(rewards)
 								//err := k.SetNetFeeCollectedData(ctx, locker.AppMappingId, locker.AssetDepositId, updatedNetFee)
 								err := k.DecreaseNetFeeCollectedData(ctx, locker.AppMappingId, locker.AssetDepositId, rewards)
-
+								if err != nil {
+									return err
+								}
+								err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, rewards)))
 								if err != nil {
 									return err
 								}
@@ -99,9 +102,12 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 	return nil
 }
 
-//CalculateRewards does per block rewards/interest calculation.
-func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (sdk.Int, error) {
-
+//CalculateRewards does per block rewards/interest calculation .
+func (k Keeper) CalculateRewards(
+	ctx sdk.Context,
+	// nolint
+	amount sdk.Int, lsr sdk.Dec,
+) (sdk.Int, error) {
 	currentTime := ctx.BlockTime().Unix()
 
 	prevInterestTime := k.GetLastInterestTime(ctx)
@@ -127,7 +133,7 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec) (
 	return sdk.NewInt(int64(newAmount)), nil
 }
 
-//IterateVaults does interest calculation for vaults.
+//IterateVaults does interest calculation for vaults .
 func (k Keeper) IterateVaults(ctx sdk.Context, appMappingID uint64) error {
 	extVaultMapping, found := k.GetAppExtendedPairVaultMapping(ctx, appMappingID)
 	if !found {
@@ -159,7 +165,7 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingID uint64) error {
 	return nil
 }
 
-//DistributeExtRewardLocker does distribution of external locker rewards.
+//DistributeExtRewardLocker does distribution of external locker rewards .
 func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 	extRewards := k.GetExternalRewardsLockers(ctx)
 	for i, v := range extRewards {

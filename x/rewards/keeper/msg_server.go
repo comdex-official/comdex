@@ -89,7 +89,7 @@ func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.Activa
 	if err != nil {
 		return nil, err
 	}
-	if err := m.Keeper.ActExternalRewardsVaults(ctx, msg.AppMappingId, msg.Extended_Pair_Id, msg.TotalRewards, msg.DurationDays, Depositor, msg.MinLockupTimeSeconds); err != nil {
+	if err := m.Keeper.ActExternalRewardsVaults(ctx, msg.AppMappingId, msg.Extended_Pair_Id, msg.DurationDays, msg.MinLockupTimeSeconds, msg.TotalRewards, Depositor); err != nil {
 		return nil, err
 	}
 	return &types.ActivateExternalRewardsVaultResponse{}, nil

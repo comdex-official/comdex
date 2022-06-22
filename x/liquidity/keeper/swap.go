@@ -516,7 +516,6 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 	collectedSwapFeeAmountFromOrderer := CalculateSwapfeeAmount(ctx, params, order.OfferCoin.Amount)
 
 	if order.RemainingOfferCoin.IsPositive() {
-
 		refundCoin := order.RemainingOfferCoin
 
 		if order.RemainingOfferCoin.IsEqual(order.OfferCoin) {
@@ -572,7 +571,7 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 }
 
 // ConvertAccumulatedSwapFeesWithSwapDistrToken swaps accumulated swap fees from -
-// pair swap fee accmulator into actual distribution coin
+// pair swap fee accmulator into actual distribution coin .
 func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, appID uint64) {
 	logger := k.Logger(ctx)
 

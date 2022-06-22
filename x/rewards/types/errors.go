@@ -6,7 +6,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// x/rewards module sentinel errors
+// x/rewards module sentinel errors .
 var (
 	ErrInvalidGaugeStartTime   = sdkerrors.Register(ModuleName, 2, "start time smaller than current time")
 	ErrInvalidGaugeTypeID      = sdkerrors.Register(ModuleName, 3, "gauge type id invalid")

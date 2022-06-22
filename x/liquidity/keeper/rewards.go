@@ -41,7 +41,6 @@ func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool,
 }
 
 func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
-
 	asset, found := k.assetKeeper.GetAssetForDenom(ctx, denom)
 	if !found {
 		return 0, false
@@ -78,8 +77,10 @@ func (k Keeper) CalculateLiquidityAddedValue(
 	poolSupplyX := sdk.NewDecFromInt(quoteCoinPoolBalance.Amount)
 	poolSupplyY := sdk.NewDecFromInt(baseCoinPoolBalance.Amount)
 
-	baseCoinPoolPrice := sdk.NewDec(0)
-	quoteCoinPoolPrice := sdk.NewDec(0)
+	var (
+		baseCoinPoolPrice  sdk.Dec
+		quoteCoinPoolPrice sdk.Dec
+	)
 	if oraclePriceDenom == quoteCoin.Denom {
 		baseCoinPoolPrice = poolSupplyX.Quo(poolSupplyY).Mul(oraclePrice)
 		quoteCoinPoolPrice = poolSupplyY.Quo(poolSupplyX).Mul(baseCoinPoolPrice)
@@ -208,7 +209,6 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 		}
 
 		if len(childPoolIds) != 0 {
-
 			chilPoolSuppliesData := k.GetAggregatedChildPoolContributions(ctx, appID, childPoolIds, lpAddresses)
 
 			for _, accAddress := range lpAddresses {

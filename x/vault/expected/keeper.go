@@ -23,7 +23,7 @@ type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 	GetApp(ctx sdk.Context, id uint64) (assettypes.AppMapping, bool)
-	GetPairsVault(ctx sdk.Context, pairId uint64) (assettypes.ExtendedPairVault, bool)
+	GetPairsVault(ctx sdk.Context, pairID uint64) (assettypes.ExtendedPairVault, bool)
 }
 
 type Marketkeeper interface {
@@ -31,5 +31,5 @@ type Marketkeeper interface {
 }
 
 type CollectorKeeper interface {
-	UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error
+	UpdateCollector(ctx sdk.Context, appID, assetID uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error
 }
