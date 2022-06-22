@@ -1,16 +1,12 @@
 package keeper
 
 import (
-
-	// assettypes "github.com/comdex-official/comdex/x/asset/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/tokenmint/types"
 )
 
 func (k *Keeper) SetTokenMint(ctx sdk.Context, appTokenMintData types.TokenMint) {
-
 	var (
 		store = k.Store(ctx)
 		key   = types.TokenMintKey(appTokenMintData.AppMappingId)
@@ -18,13 +14,12 @@ func (k *Keeper) SetTokenMint(ctx sdk.Context, appTokenMintData types.TokenMint)
 	)
 
 	store.Set(key, value)
-
 }
 
-func (k *Keeper) GetTokenMint(ctx sdk.Context, appMappingId uint64) (appTokenMintData types.TokenMint, found bool) {
+func (k *Keeper) GetTokenMint(ctx sdk.Context, appMappingID uint64) (appTokenMintData types.TokenMint, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.TokenMintKey(appMappingId)
+		key   = types.TokenMintKey(appMappingID)
 		value = store.Get(key)
 	)
 
@@ -45,7 +40,7 @@ func (k *Keeper) GetTotalTokenMinted(ctx sdk.Context) (appTokenMintData []types.
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
 		if err != nil {
-
+			return
 		}
 	}(iter)
 
@@ -58,59 +53,43 @@ func (k *Keeper) GetTotalTokenMinted(ctx sdk.Context) (appTokenMintData []types.
 	return appTokenMintData
 }
 
-func (k *Keeper) GetAssetDataInTokenMintByApp(ctx sdk.Context, appMappingId uint64, assetId uint64) (tokenData types.MintedTokens, found bool) {
-
-	mintData, found := k.GetTokenMint(ctx, appMappingId)
+func (k *Keeper) GetAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64) (tokenData types.MintedTokens, found bool) {
+	mintData, found := k.GetTokenMint(ctx, appMappingID)
 	if !found {
 		return tokenData, false
 	}
 
 	for _, mintAssetData := range mintData.MintedTokens {
-
-		if mintAssetData.AssetId == assetId {
+		if mintAssetData.AssetId == assetID {
 			tokenData = *mintAssetData
 			return tokenData, true
 		}
-
 	}
 	return tokenData, false
 }
 
-func (k *Keeper) GetAssetDataInTokenMintByAppSupply(ctx sdk.Context, appMappingId uint64, assetId uint64) (tokenDataSupply int64, found bool) {
-	tokenData, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingId, assetId)
+func (k *Keeper) GetAssetDataInTokenMintByAppSupply(ctx sdk.Context, appMappingID uint64, assetID uint64) (tokenDataSupply int64, found bool) {
+	tokenData, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingID, assetID)
 
 	if !found {
-
 		return 0, false
 	}
 	return tokenData.CurrentSupply.Int64(), found
 }
 
-func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, address string, amount sdk.Int) error {
-
-	assetData, found := k.GetAsset(ctx, assetId)
+func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, address string, amount sdk.Int) error {
+	assetData, found := k.GetAsset(ctx, assetID)
 	if !found {
 		return types.ErrorAssetDoesNotExist
 	}
-	// appMappingData, found := k.GetApp(ctx, appMappingId)
-	// if !found {
-	// 	return types.ErrorAppMappingDoesNotExists
-	// }
-	// //Checking if asset exists in the app
-
-	// _, found = k.GetMintGenesisTokenData(ctx, appMappingData.Id, assetData.Id)
-	// if !found {
-	// 	return types.ErrorAssetNotWhiteListedForGenesisMinting
-	// }
-	_, found = k.GetTokenMint(ctx, appMappingId)
+	_, found = k.GetTokenMint(ctx, appMappingID)
 	if !found {
 		return types.ErrorAppMappingDoesNotExists
 	}
 
-	_, found = k.GetAssetDataInTokenMintByApp(ctx, appMappingId, assetId)
+	_, found = k.GetAssetDataInTokenMintByApp(ctx, appMappingID, assetID)
 	if !found {
 		return types.ErrorAssetNotWhiteListedForGenesisMinting
-
 	}
 	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, amount)); err != nil {
 		return err
@@ -123,41 +102,27 @@ func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, asset
 	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, amount)); err != nil {
 		return err
 	}
-	k.UpdateAssetDataInTokenMintByApp(ctx, appMappingId, assetId, true, amount)
+	k.UpdateAssetDataInTokenMintByApp(ctx, appMappingID, assetID, true, amount)
 
 	return nil
-
 }
 
-func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, amount sdk.Int) error {
-
-	assetData, found := k.GetAsset(ctx, assetId)
+func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error {
+	assetData, found := k.GetAsset(ctx, assetID)
 	if !found {
 		return types.ErrorAssetDoesNotExist
 	}
-	// appMappingData, found := k.GetApp(ctx, appMappingId)
-	// if !found {
-	// 	return types.ErrorAppMappingDoesNotExists
-	// }
-	// //Checking if asset exists in the app
-
-	// _, found = k.GetMintGenesisTokenData(ctx, appMappingData.Id, assetData.Id)
-	// if !found {
-	// 	return types.ErrorAssetNotWhiteListedForGenesisMinting
-	// }
-	_, found = k.GetTokenMint(ctx, appMappingId)
+	_, found = k.GetTokenMint(ctx, appMappingID)
 	if !found {
 		return types.ErrorAppMappingDoesNotExists
 	}
 
-	tokenData, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingId, assetId)
+	tokenData, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingID, assetID)
 	if !found {
 		return types.ErrorAssetNotWhiteListedForGenesisMinting
-
 	}
 	if tokenData.CurrentSupply.Sub(amount).LTE(sdk.NewInt(0)) {
 		return types.ErrorBurningMakesSupplyLessThanZero
-
 	}
 	if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, amount)); err != nil {
 		return err
@@ -165,43 +130,34 @@ func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingId uint64, assetId 
 	// if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(address), sdk.NewCoin(assetData.Denom, amount)); err != nil {
 	// 	return err
 	// }
-	k.UpdateAssetDataInTokenMintByApp(ctx, appMappingId, assetId, false, amount)
+	k.UpdateAssetDataInTokenMintByApp(ctx, appMappingID, assetID, false, amount)
 
 	return nil
-
 }
 
-func (k *Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingId uint64, assetId uint64, changeType bool, amount sdk.Int) {
-
+func (k *Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int) {
 	//ChangeType + == add to current supply
 	//Change type - == reduce from supply
-	mintData, found := k.GetTokenMint(ctx, appMappingId)
+	mintData, found := k.GetTokenMint(ctx, appMappingID)
 
 	if found {
 		for _, mintAssetData := range mintData.MintedTokens {
-
-			if mintAssetData.AssetId == assetId {
-
+			if mintAssetData.AssetId == assetID {
 				if changeType {
 					mintAssetData.CurrentSupply = mintAssetData.CurrentSupply.Add(amount)
 					break
-
 				} else {
 					mintAssetData.CurrentSupply = mintAssetData.CurrentSupply.Sub(amount)
 					break
 				}
-
 			}
-
 		}
 		k.SetTokenMint(ctx, mintData)
 	}
-
 }
 
-func (k *Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingId uint64, from sdk.AccAddress, amount sdk.Coin) error {
-
-	_, found := k.GetApp(ctx, appMappingId)
+func (k *Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingID uint64, from sdk.AccAddress, amount sdk.Coin) error {
+	_, found := k.GetApp(ctx, appMappingID)
 	if !found {
 		return types.ErrorAppMappingDoesNotExists
 	}
@@ -212,17 +168,12 @@ func (k *Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingId uint64, from 
 	}
 	asset, _ := k.GetAssetForDenom(ctx, amount.Denom)
 
-	k.UpdateAssetDataInTokenMintByApp(ctx, appMappingId, asset.Id, false, amount.Amount)
-	
+	k.UpdateAssetDataInTokenMintByApp(ctx, appMappingID, asset.Id, false, amount.Amount)
+
 	return nil
 }
 
 func (k *Keeper) BurnFrom(ctx sdk.Context, amount sdk.Coin, burnFrom sdk.AccAddress) error {
-
-	// addr, err := sdk.AccAddressFromBech32(burnFrom)
-	// if err != nil {
-	// 	return err
-	// }
 	err := k.SendCoinFromAccountToModule(ctx,
 		burnFrom,
 		types.ModuleName,

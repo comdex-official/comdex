@@ -61,10 +61,10 @@ func (k *Keeper) GetApps(ctx sdk.Context) ([]assettypes.AppMapping, bool) {
 	return k.asset.GetApps(ctx)
 }
 
-func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appId, assetId uint64) (assettypes.MintGenesisToken, bool) {
-	return k.asset.GetMintGenesisTokenData(ctx, appId, assetId)
+func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64) (assettypes.MintGenesisToken, bool) {
+	return k.asset.GetMintGenesisTokenData(ctx, appID, assetID)
 }
 
-func (k *Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (assettypes.Asset, bool){
-	return k.asset.GetAssetForDenom(ctx,denom)
+func (k *Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (assettypes.Asset, bool) {
+	return k.asset.GetAssetForDenom(ctx, denom)
 }
