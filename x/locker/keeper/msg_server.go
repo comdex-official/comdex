@@ -224,7 +224,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	return &types.MsgDepositAssetResponse{}, nil
 }
 
-//Remove asset id from Deposit & Withdraw-redundant
+// MsgWithdrawAsset Remove asset id from Deposit & Withdraw-redundant
 func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	asset, found := k.GetAsset(ctx, msg.AssetId)

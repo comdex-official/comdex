@@ -6,10 +6,6 @@ import (
 )
 
 var (
-	ErrorAssetDoesNotExist = errors.Register(ModuleName, 201, "asset does not exist")
-)
-
-var (
 	ErrorUnknownProposalType = errors.Register(ModuleName, 401, "unknown proposal type")
 )
 

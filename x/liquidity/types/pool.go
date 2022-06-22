@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	time "time"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	DefaultSwapFeeDistributionDuration time.Duration = time.Hour * 24
+	DefaultSwapFeeDistributionDuration = time.Hour * 24
 )
 
 var (

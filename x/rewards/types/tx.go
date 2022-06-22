@@ -1,13 +1,12 @@
 package types
 
 import (
-	fmt "fmt"
-	time "time"
+	"fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// constants.
 const (
 	TypeMsgCreateGauge = "create_gauge"
 )

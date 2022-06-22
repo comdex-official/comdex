@@ -1,16 +1,13 @@
 package keeper
 
 import (
-	"fmt"
-	"strings"
+	_ "fmt"
+	_ "strings"
 
-	"github.com/comdex-official/comdex/x/rewards/types"
+	_ "github.com/comdex-official/comdex/x/rewards/types"
 )
 
 // IntegerArrayToString converts integer slice to "," separated string.
-func IntegerArrayToString(intArray []uint64) string {
-	return strings.Trim(strings.Join(strings.Fields(fmt.Sprint(types.ValidGaugeTypeIds)), ","), "[]")
-}
 
 // SplitTotalAmountPerEpoch splits amount into totalEpochs
 // e.g. SplitTotalAmountPerEpoch(150, 11) => [13 13 13 13 14 14 14 14 14 14 14].

@@ -1,6 +1,5 @@
 package types
 
-// should be unique.
 const (
 	LiquidityGaugeTypeID = 1
 )

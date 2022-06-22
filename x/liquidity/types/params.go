@@ -4,10 +4,9 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-// General constants.
 const (
-	FeeCollectorAddressPrefix         = "FeeCollectorAddress"
-	DustCollectorAddressPrefix        = "DustCollectorAddress"
+	FeeCollectorAddressPrefix = "FeeCollectorAddress"
+
 	PoolReserveAddressPrefix          = "PoolReserveAddress"
 	PairSwapFeeCollectorAddressPrefix = "PairSwapFeeCollectorAddress"
 	PairEscrowAddressPrefix           = "PairEscrowAddress"

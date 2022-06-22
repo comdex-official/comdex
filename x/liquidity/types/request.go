@@ -384,7 +384,7 @@ func MustUnmarshalOrder(cdc codec.BinaryCodec, value []byte) Order {
 	return msg
 }
 
-// MustMarshaPoolLiquidityProvidersData returns the PoolLiquidityProvidersData bytes.
+// MustMarshalPoolLiquidityProvidersData MustMarshaPoolLiquidityProvidersData returns the PoolLiquidityProvidersData bytes.
 // It throws panic if it fails.
 func MustMarshalPoolLiquidityProvidersData(cdc codec.BinaryCodec, liquidityProvidersData PoolLiquidityProvidersData) []byte {
 	return cdc.MustMarshal(&liquidityProvidersData)
