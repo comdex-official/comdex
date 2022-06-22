@@ -8,48 +8,48 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingId uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
-	return k.locker.GetLockerProductAssetMapping(ctx, appMappingId)
+func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
+	return k.locker.GetLockerProductAssetMapping(ctx, appMappingID)
 }
 
-func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, app_id uint64) (appAssetCollectorData collecortypes.AppIdToAssetCollectorMapping, found bool) {
-	return k.collector.GetAppidToAssetCollectorMapping(ctx, app_id)
+func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (appAssetCollectorData collecortypes.AppIdToAssetCollectorMapping, found bool) {
+	return k.collector.GetAppidToAssetCollectorMapping(ctx, appID)
 }
 
-func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collectorLookup collecortypes.CollectorLookup, found bool) {
-	return k.collector.GetCollectorLookupTable(ctx, app_id)
+func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup collecortypes.CollectorLookup, found bool) {
+	return k.collector.GetCollectorLookupTable(ctx, appID)
 }
 
-func (k Keeper) GetAppToDenomsMapping(ctx sdk.Context, AppId uint64) (appToDenom collecortypes.AppToDenomsMapping, found bool) {
-	return k.collector.GetAppToDenomsMapping(ctx, AppId)
+func (k Keeper) GetAppToDenomsMapping(ctx sdk.Context, AppID uint64) (appToDenom collecortypes.AppToDenomsMapping, found bool) {
+	return k.collector.GetAppToDenomsMapping(ctx, AppID)
 }
 
-func (k Keeper) GetLocker(ctx sdk.Context, lockerId string) (locker types.Locker, found bool) {
-	return k.locker.GetLocker(ctx, lockerId)
+func (k Keeper) GetLocker(ctx sdk.Context, lockerID string) (locker types.Locker, found bool) {
+	return k.locker.GetLocker(ctx, lockerID)
 }
 
 func (k Keeper) GetSupply(ctx sdk.Context, denom string) sdk.Coin {
 	return k.bank.GetSupply(ctx, denom)
 }
 
-func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appMappingId uint64) (lockerLookupData types.LockerLookupTable, found bool) {
-	return k.locker.GetLockerLookupTable(ctx, appMappingId)
+func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appMappingID uint64) (lockerLookupData types.LockerLookupTable, found bool) {
+	return k.locker.GetLockerLookupTable(ctx, appMappingID)
 }
 
-func (k Keeper) GetCollectorLookupByAsset(ctx sdk.Context, app_id, asset_id uint64) (collectorLookup collecortypes.CollectorLookupTable, found bool) {
-	return k.collector.GetCollectorLookupByAsset(ctx, app_id, asset_id)
+func (k Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64) (collectorLookup collecortypes.CollectorLookupTable, found bool) {
+	return k.collector.GetCollectorLookupByAsset(ctx, appID, assetID)
 }
 
 func (k Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
 	k.locker.UpdateLocker(ctx, locker)
 }
 
-func (k *Keeper) GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingId uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping, found bool) {
-	return k.vault.GetAppExtendedPairVaultMapping(ctx, appMappingId)
+func (k *Keeper) GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping, found bool) {
+	return k.vault.GetAppExtendedPairVaultMapping(ctx, appMappingID)
 }
 
-func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultId uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
-	return k.vault.CalculateCollaterlizationRatio(ctx, extendedPairVaultId, amountIn, amountOut)
+func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
+	return k.vault.CalculateCollaterlizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
 }
 
 func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
@@ -68,16 +68,16 @@ func (k *Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Contex
 	k.vault.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, counter, vaultData)
 }
 
-func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool) {
-	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, valutLookupData, extendedPairId, amount, changeType)
+func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, vaultLookupData, extendedPairID, amount, changeType)
 }
 
-func (k *Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairId uint64, userAddress string, appMappingId uint64) {
-	k.vault.UpdateUserVaultExtendedPairMapping(ctx, extendedPairId, userAddress, appMappingId)
+func (k *Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64) {
+	k.vault.UpdateUserVaultExtendedPairMapping(ctx, extendedPairID, userAddress, appMappingID)
 }
 
-func (k *Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairId uint64, userVaultId string, appMappingId uint64) {
-	k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, extendedPairId, userVaultId, appMappingId)
+func (k *Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID string, appMappingID uint64) {
+	k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, extendedPairID, userVaultID, appMappingID)
 }
 func (k *Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool) {
 	return k.asset.GetPairsVault(ctx, id)
@@ -123,28 +123,27 @@ func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recip
 		return nil
 	}
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
-
 }
 
 func (k *Keeper) SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins {
 	return k.bank.SpendableCoins(ctx, address)
 }
 
-func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData collecortypes.NetFeeCollectedData, found bool) {
-	return k.collector.GetNetFeeCollectedData(ctx, app_id)
+func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData collecortypes.NetFeeCollectedData, found bool) {
+	return k.collector.GetNetFeeCollectedData(ctx, appID)
 }
 
-func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error {
-	return k.collector.SetNetFeeCollectedData(ctx, app_id, asset_id, fee)
+func (k *Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error {
+	return k.collector.SetNetFeeCollectedData(ctx, appID, assetID, fee)
 }
 
-func (k *Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error {
-	return k.collector.DecreaseNetFeeCollectedData(ctx, app_id, asset_id, fee)
+func (k *Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error {
+	return k.collector.DecreaseNetFeeCollectedData(ctx, appID, assetID, fee)
 }
 
 func (k *Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error {
 	return k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
 }
-func (k *Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, app_id, asset_id uint64) (lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise, found bool) {
-	return k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, app_id, asset_id)
+func (k *Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise, found bool) {
+	return k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, appID, assetID)
 }

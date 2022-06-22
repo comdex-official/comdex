@@ -15,6 +15,7 @@ const (
 	ProposalAddAppMapping          = "AddAppMapping"
 	ProposalAddAssetMapping        = "AddAssetMapping"
 	ProposalAddExtendedPairsVault  = "AddExtendedPairsVault"
+	ProposalUpdateGovTimeInAppMapping = "UpdateGovTimeInAppMapping"
 )
 
 func init() {
@@ -39,6 +40,9 @@ func init() {
 	govtypes.RegisterProposalType(ProposalUpdateWhitelistedPair)
 	govtypes.RegisterProposalTypeCodec(&UpdateWhitelistedPairProposal{}, "comdex/UpdateWhitelistedPairProposal")
 
+	govtypes.RegisterProposalType(ProposalUpdateGovTimeInAppMapping)
+	govtypes.RegisterProposalTypeCodec(&UpdateGovTimeInAppMappingProposal{}, "comdex/UpdateGovTimeInAppMappingProposal")
+
 	govtypes.RegisterProposalType(ProposalAddAppMapping)
 	govtypes.RegisterProposalTypeCodec(&AddAppMappingProposal{}, "comdex/AddAppMappingProposal")
 
@@ -47,7 +51,6 @@ func init() {
 
 	govtypes.RegisterProposalType(ProposalAddExtendedPairsVault)
 	govtypes.RegisterProposalTypeCodec(&AddExtendedPairsVaultProposal{}, "comdex/AddExtendedPairsVaultProposal")
-
 }
 
 var (
@@ -58,6 +61,7 @@ var (
 	_ govtypes.Content = &UpdateWhitelistedAssetProposal{}
 	_ govtypes.Content = &AddWhitelistedPairsProposal{}
 	_ govtypes.Content = &UpdateWhitelistedPairProposal{}
+	_ govtypes.Content = &UpdateGovTimeInAppMappingProposal{}
 	_ govtypes.Content = &AddAppMappingProposal{}
 	_ govtypes.Content = &AddAssetMappingProposal{}
 	_ govtypes.Content = &AddExtendedPairsVaultProposal{}
@@ -121,7 +125,6 @@ func (p *UpdateAssetProposal) ProposalRoute() string { return RouterKey }
 func (p *UpdateAssetProposal) ProposalType() string { return ProposalUpdateAsset }
 
 func (p *UpdateAssetProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -349,6 +352,36 @@ func (p *AddAppMappingProposal) ValidateBasic() error {
 	}
 	if len(p.App) == 0 {
 		return ErrorEmptyProposalAssets
+	}
+
+	return nil
+}
+
+func NewUpdateGovTimeInAppMappingProposal(title, description string, aTime AppAndGovTime ) govtypes.Content {
+	return &UpdateGovTimeInAppMappingProposal{
+		Title:       title,
+		Description: description,
+		GovTime:     aTime,
+	}
+}
+
+func (p *UpdateGovTimeInAppMappingProposal) GetTitle() string {
+	return p.Title
+}
+
+func (p *UpdateGovTimeInAppMappingProposal) GetDescription() string {
+	return p.Description
+}
+
+func (p *UpdateGovTimeInAppMappingProposal) ProposalRoute() string { return RouterKey }
+
+func (p *UpdateGovTimeInAppMappingProposal) ProposalType() string { return ProposalUpdateGovTimeInAppMapping }
+
+func (p *UpdateGovTimeInAppMappingProposal) ValidateBasic() error {
+
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
 	}
 
 	return nil

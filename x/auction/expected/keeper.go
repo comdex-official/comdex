@@ -4,7 +4,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
-	vaultttypes "github.com/comdex-official/comdex/x/vault/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -30,9 +30,9 @@ type MarketKeeper interface {
 type LiquidationKeeper interface {
 	SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag bool) error
 	SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) error
-	GetLockedVaults(ctx sdk.Context) (locked_vaults []liquidationtypes.LockedVault)
-	GetLockedVault(ctx sdk.Context, id uint64) (locked_vault liquidationtypes.LockedVault, found bool)
-	SetLockedVault(ctx sdk.Context, locked_vault liquidationtypes.LockedVault)
+	GetLockedVaults(ctx sdk.Context) (lockedVaults []liquidationtypes.LockedVault)
+	GetLockedVault(ctx sdk.Context, id uint64) (lockedVault liquidationtypes.LockedVault, found bool)
+	SetLockedVault(ctx sdk.Context, lockedVault liquidationtypes.LockedVault)
 	DeleteLockedVault(ctx sdk.Context, id uint64)
 	CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
 	//UpdateAssetQuantitiesInLockedVault(ctx sdk.Context, collateral_auction auctiontypes.CollateralAuction, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) error
@@ -47,37 +47,27 @@ type AssetKeeper interface {
 }
 
 type VaultKeeper interface {
-	//CalculateCollaterlizationRatio(
-	//	ctx sdk.Context,
-	//	amountIn sdk.Int,
-	//	assetIn assettypes.Asset,
-	//	amountOut sdk.Int,
-	//	assetOut assettypes.Asset,
-	//) (sdk.Dec, error)
-	//BurnCAssets(ctx sdk.Context, moduleName string, collateralDenom string, denom string, amount sdk.Int) error
-	GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingId uint64) (appExtendedPairVaultData vaultttypes.AppExtendedPairVaultMapping, found bool)
-	SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData vaultttypes.AppExtendedPairVaultMapping) error
-	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLookupData vaultttypes.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool)
-	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData vaultttypes.AppExtendedPairVaultMapping, extendedPairId uint64, amount sdk.Int, changeType bool)
-	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairId uint64, userAddress string, appMappingId uint64)
+	GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping, found bool)
+	SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping) error
+	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool)
+	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool)
+	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64)
 }
 
 type CollectorKeeper interface {
-	GetAppidToAssetCollectorMapping(ctx sdk.Context, app_id uint64) (appAssetCollectorData types.AppIdToAssetCollectorMapping, found bool)
-	UpdateCollector(ctx sdk.Context, appId, asset_id uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error
+	GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (appAssetCollectorData types.AppIdToAssetCollectorMapping, found bool)
+	UpdateCollector(ctx sdk.Context, appID, assetID uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error
 	SetCollectorLookupTable(ctx sdk.Context, records ...types.CollectorLookupTable) error
-	GetCollectorLookupTable(ctx sdk.Context, app_id uint64) (collectorLookup types.CollectorLookup, found bool)
-	// SetCollectorAuctionLookupTable(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error
-	// GetCollectorAuctionLookupTable(ctx sdk.Context, app_id uint64) (appIdToAuctionData types.CollectorAuctionLookupTable, found bool)
-	GetAuctionMappingForApp(ctx sdk.Context, appId uint64) (collectorAuctionLookupTable types.CollectorAuctionLookupTable, found bool)
-	GetNetFeeCollectedData(ctx sdk.Context, app_id uint64) (netFeeData types.NetFeeCollectedData, found bool)
-	GetAmountFromCollector(ctx sdk.Context, appId, asset_id uint64, amount sdk.Int) (sdk.Int, error)
-	SetNetFeeCollectedData(ctx sdk.Context, app_id, asset_id uint64, fee sdk.Int) error
+	GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup types.CollectorLookup, found bool)
+	GetAuctionMappingForApp(ctx sdk.Context, appID uint64) (collectorAuctionLookupTable types.CollectorAuctionLookupTable, found bool)
+	GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData types.NetFeeCollectedData, found bool)
+	GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) (sdk.Int, error)
+	SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error
 	SetAuctionMappingForApp(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error
 	GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.CollectorAuctionLookupTable, found bool)
 }
 
 type TokenMintKeeper interface {
-	MintNewTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, address string, amount sdk.Int) error
-	BurnTokensForApp(ctx sdk.Context, appMappingId uint64, assetId uint64, amount sdk.Int) error
+	MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, address string, amount sdk.Int) error
+	BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error
 }

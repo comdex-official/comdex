@@ -8,7 +8,6 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
-
 	for _, item := range state.Markets {
 		k.SetMarket(ctx, item)
 	}

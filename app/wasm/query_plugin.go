@@ -15,12 +15,12 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			return nil, sdkerrors.Wrap(err, "app query")
 		}
 		if comdexQuery.AppData != nil {
-			App_Id := comdexQuery.AppData.App_Id
-			MinGovDeposit, GovTimeInSeconds, AssetId, _ := queryPlugin.GetAppInfo(ctx, App_Id)
+			appID := comdexQuery.AppData.AppMappingID
+			MinGovDeposit, GovTimeInSeconds, assetID, _ := queryPlugin.GetAppInfo(ctx, appID)
 			res := bindings.AppDataResponse{
 				MinGovDeposit:    MinGovDeposit,
 				GovTimeInSeconds: GovTimeInSeconds,
-				AssetId:          AssetId,
+				AssetID:          assetID,
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
@@ -28,8 +28,8 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.AssetData != nil {
-			asset_Id := comdexQuery.AssetData.Asset_Id
-			denom, _ := queryPlugin.GetAssetInfo(ctx, asset_Id)
+			assetID := comdexQuery.AssetData.AssetID
+			denom, _ := queryPlugin.GetAssetInfo(ctx, assetID)
 			res := bindings.AssetDataResponse{
 				Denom: denom,
 			}
@@ -39,9 +39,9 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.MintedToken != nil {
-			App_Id := comdexQuery.MintedToken.App_Id
-			Asset_Id := comdexQuery.MintedToken.Asset_Id
-			MintedToken, _ := queryPlugin.GetTokenMint(ctx, App_Id, Asset_Id)
+			appID := comdexQuery.MintedToken.AppMappingID
+			assetID := comdexQuery.MintedToken.AssetID
+			MintedToken, _ := queryPlugin.GetTokenMint(ctx, appID, assetID)
 			res := bindings.MintedTokenResponse{
 				MintedTokens: MintedToken,
 			}
@@ -65,10 +65,10 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.RemoveWhiteListAssetLocker != nil {
-			App_Id := comdexQuery.RemoveWhiteListAssetLocker.App_Id
-			Asset_Id := comdexQuery.RemoveWhiteListAssetLocker.Asset_Id
+			appID := comdexQuery.RemoveWhiteListAssetLocker.AppMappingID
+			assetID := comdexQuery.RemoveWhiteListAssetLocker.AssetIDs
 
-			found, errormsg := queryPlugin.GetRemoveWhitelistAppIdLockerRewardsCheck(ctx, App_Id, Asset_Id)
+			found, errormsg := queryPlugin.GetRemoveWhitelistAppIDLockerRewardsCheck(ctx, appID, assetID)
 			res := bindings.RemoveWhiteListAssetResponse{
 				Found: found,
 				Err:   errormsg,
@@ -78,12 +78,12 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "RemoveWhiteListAssetLocker query response")
 			}
 			return bz, nil
-		} else if comdexQuery.WhitelistAppIdLockerRewards != nil {
-			App_Id := comdexQuery.WhitelistAppIdLockerRewards.App_Id
-			Asset_Id := comdexQuery.WhitelistAppIdLockerRewards.Asset_Id
+		} else if comdexQuery.WhitelistAppIDLockerRewards != nil {
+			appID := comdexQuery.WhitelistAppIDLockerRewards.AppMappingID
+			assetID := comdexQuery.WhitelistAppIDLockerRewards.AssetID
 
-			found, errormsg := queryPlugin.GetWhitelistAppIdLockerRewardsCheck(ctx, App_Id, Asset_Id)
-			res := bindings.WhitelistAppIdLockerRewardsResponse{
+			found, errormsg := queryPlugin.GetWhitelistAppIDLockerRewardsCheck(ctx, appID, assetID)
+			res := bindings.WhitelistAppIDLockerRewardsResponse{
 				Found: found,
 				Err:   errormsg,
 			}
@@ -92,11 +92,11 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "WhitelistAppIdLockerRewards query response")
 			}
 			return bz, nil
-		} else if comdexQuery.WhitelistAppIdVaultInterest != nil {
-			App_Id := comdexQuery.WhitelistAppIdVaultInterest.App_Id
+		} else if comdexQuery.WhitelistAppIDVaultInterest != nil {
+			appID := comdexQuery.WhitelistAppIDVaultInterest.AppMappingID
 
-			found, errormsg := queryPlugin.GetWhitelistAppIdVaultInterestCheck(ctx, App_Id)
-			res := bindings.WhitelistAppIdLockerRewardsResponse{
+			found, errormsg := queryPlugin.GetWhitelistAppIDVaultInterestCheck(ctx, appID)
+			res := bindings.WhitelistAppIDLockerRewardsResponse{
 				Found: found,
 				Err:   errormsg,
 			}
@@ -106,11 +106,11 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.ExternalLockerRewards != nil {
-			App_Id := comdexQuery.ExternalLockerRewards.App_Id
-			Asset_Id := comdexQuery.ExternalLockerRewards.Asset_Id
+			appID := comdexQuery.ExternalLockerRewards.AppMappingID
+			assetID := comdexQuery.ExternalLockerRewards.AssetID
 
-			found, errormsg := queryPlugin.GetExternalLockerRewardsCheck(ctx, App_Id, Asset_Id)
-			res := bindings.WhitelistAppIdLockerRewardsResponse{
+			found, errormsg := queryPlugin.GetExternalLockerRewardsCheck(ctx, appID, assetID)
+			res := bindings.WhitelistAppIDLockerRewardsResponse{
 				Found: found,
 				Err:   errormsg,
 			}
@@ -120,10 +120,10 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.ExternalVaultRewards != nil {
-			App_Id := comdexQuery.ExternalVaultRewards.App_Id
-			Asset_Id := comdexQuery.ExternalVaultRewards.Asset_Id
+			appID := comdexQuery.ExternalVaultRewards.AppMappingID
+			assetID := comdexQuery.ExternalVaultRewards.AssetID
 
-			found, errormsg := queryPlugin.GetExternalVaultRewardsCheck(ctx, App_Id, Asset_Id)
+			found, errormsg := queryPlugin.GetExternalVaultRewardsCheck(ctx, appID, assetID)
 			res := bindings.ExternalVaultRewardsResponse{
 				Found: found,
 				Err:   errormsg,
@@ -134,10 +134,10 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.CollectorLookupTableQuery != nil {
-			AppMappingId := comdexQuery.CollectorLookupTableQuery.AppMappingId
-			CollectorAssetId := comdexQuery.CollectorLookupTableQuery.CollectorAssetId
-			SecondaryAssetId := comdexQuery.CollectorLookupTableQuery.SecondaryAssetId
-			found, errormsg := queryPlugin.CollectorLookupTableQueryCheck(ctx, AppMappingId, CollectorAssetId, SecondaryAssetId)
+			appMappingID := comdexQuery.CollectorLookupTableQuery.AppMappingID
+			collectorAssetID := comdexQuery.CollectorLookupTableQuery.CollectorAssetID
+			secondaryAssetID := comdexQuery.CollectorLookupTableQuery.SecondaryAssetID
+			found, errormsg := queryPlugin.CollectorLookupTableQueryCheck(ctx, appMappingID, collectorAssetID, secondaryAssetID)
 			res := bindings.CollectorLookupTableQueryResponse{
 				Found: found,
 				Err:   errormsg,
@@ -148,8 +148,8 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.ExtendedPairsVaultRecordsQuery != nil {
-			AppMappingId := comdexQuery.ExtendedPairsVaultRecordsQuery.AppMappingId
-			PairId := comdexQuery.ExtendedPairsVaultRecordsQuery.PairId
+			appMappingID := comdexQuery.ExtendedPairsVaultRecordsQuery.AppMappingID
+			pairID := comdexQuery.ExtendedPairsVaultRecordsQuery.PairID
 			StabilityFee := comdexQuery.ExtendedPairsVaultRecordsQuery.StabilityFee
 			ClosingFee := comdexQuery.ExtendedPairsVaultRecordsQuery.ClosingFee
 			DrawDownFee := comdexQuery.ExtendedPairsVaultRecordsQuery.DrawDownFee
@@ -157,10 +157,10 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			DebtFloor := comdexQuery.ExtendedPairsVaultRecordsQuery.DebtFloor
 			PairName := comdexQuery.ExtendedPairsVaultRecordsQuery.PairName
 
-			found, errormsg := queryPlugin.ExtendedPairsVaultRecordsQueryCheck(ctx, AppMappingId, PairId, StabilityFee, ClosingFee, DrawDownFee, DebtCeiling, DebtFloor, PairName)
+			found, errorMsg := queryPlugin.ExtendedPairsVaultRecordsQueryCheck(ctx, appMappingID, pairID, StabilityFee, ClosingFee, DrawDownFee, DebtCeiling, DebtFloor, PairName)
 			res := bindings.ExtendedPairsVaultRecordsQueryResponse{
 				Found: found,
-				Err:   errormsg,
+				Err:   errorMsg,
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
@@ -168,8 +168,8 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.AuctionMappingForAppQuery != nil {
-			AppMappingId := comdexQuery.AuctionMappingForAppQuery.AppMappingId
-			found, errormsg := queryPlugin.AuctionMappingForAppQueryCheck(ctx, AppMappingId)
+			appMappingID := comdexQuery.AuctionMappingForAppQuery.AppMappingID
+			found, errormsg := queryPlugin.AuctionMappingForAppQueryCheck(ctx, appMappingID)
 			res := bindings.AuctionMappingForAppQueryResponse{
 				Found: found,
 				Err:   errormsg,
@@ -180,9 +180,9 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.WhiteListedAssetQuery != nil {
-			AppMappingId := comdexQuery.WhiteListedAssetQuery.AppMappingId
-			AssetId := comdexQuery.WhiteListedAssetQuery.AssetId
-			found, errormsg := queryPlugin.WhiteListedAssetQueryCheck(ctx, AppMappingId, AssetId)
+			appMappingID := comdexQuery.WhiteListedAssetQuery.AppMappingID
+			assetID := comdexQuery.WhiteListedAssetQuery.AssetID
+			found, errormsg := queryPlugin.WhiteListedAssetQueryCheck(ctx, appMappingID, assetID)
 			res := bindings.WhiteListedAssetQueryResponse{
 				Found: found,
 				Err:   errormsg,
@@ -192,36 +192,36 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "WhiteListedAssetQueryCheck query response")
 			}
 			return bz, nil
-		} else if comdexQuery.UpdateLsrInPairsVaultQuery != nil {
-			AppMappingId := comdexQuery.UpdateLsrInPairsVaultQuery.AppMappingId
-			ExtPairId := comdexQuery.UpdateLsrInPairsVaultQuery.ExtPairId
-			found, errormsg := queryPlugin.UpdateLsrInPairsVaultQueryCheck(ctx, AppMappingId, ExtPairId)
-			res := bindings.UpdateLsrInPairsVaultQueryResponse{
+		} else if comdexQuery.UpdatePairsVaultQuery != nil {
+			appMappingID := comdexQuery.UpdatePairsVaultQuery.AppMappingID
+			extPairID := comdexQuery.UpdatePairsVaultQuery.ExtPairID
+			found, errormsg := queryPlugin.UpdatePairsVaultQueryCheck(ctx, appMappingID, extPairID)
+			res := bindings.UpdatePairsVaultQueryResponse{
 				Found: found,
 				Err:   errormsg,
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "UpdateLsrInPairsVaultQuery query response")
+				return nil, sdkerrors.Wrap(err, "UpdatePairsVaultQuery query response")
 			}
 			return bz, nil
-		} else if comdexQuery.UpdateLsrInCollectorLookupTableQuery != nil {
-			AppMappingId := comdexQuery.UpdateLsrInCollectorLookupTableQuery.AppMappingId
-			AssetId := comdexQuery.UpdateLsrInCollectorLookupTableQuery.AssetId
-			found, errormsg := queryPlugin.UpdateLsrInCollectorLookupTableQueryCheck(ctx, AppMappingId, AssetId)
-			res := bindings.UpdateLsrInCollectorLookupTableQueryResponse{
+		} else if comdexQuery.UpdateCollectorLookupTableQuery != nil {
+			appMappingID := comdexQuery.UpdateCollectorLookupTableQuery.AppMappingID
+			assetID := comdexQuery.UpdateCollectorLookupTableQuery.AssetID
+			found, errormsg := queryPlugin.UpdateCollectorLookupTableQueryCheck(ctx, appMappingID, assetID)
+			res := bindings.UpdateCollectorLookupTableQueryResponse{
 				Found: found,
 				Err:   errormsg,
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "UpdateLsrInPairsVaultQuery query response")
+				return nil, sdkerrors.Wrap(err, "UpdatePairsVaultQuery query response")
 			}
 			return bz, nil
-		} else if comdexQuery.RemoveWhitelistAppIdVaultInterestQuery != nil {
-			AppMappingId := comdexQuery.RemoveWhitelistAppIdVaultInterestQuery.AppMappingId
-			found, errormsg := queryPlugin.WasmRemoveWhitelistAppIdVaultInterestQueryCheck(ctx, AppMappingId)
-			res := bindings.RemoveWhitelistAppIdVaultInterestQueryResponse{
+		} else if comdexQuery.RemoveWhitelistAppIDVaultInterestQuery != nil {
+			appMappingID := comdexQuery.RemoveWhitelistAppIDVaultInterestQuery.AppMappingID
+			found, errormsg := queryPlugin.WasmRemoveWhitelistAppIDVaultInterestQueryCheck(ctx, appMappingID)
+			res := bindings.RemoveWhitelistAppIDVaultInterestQueryResponse{
 				Found: found,
 				Err:   errormsg,
 			}
@@ -231,10 +231,10 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			return bz, nil
 		} else if comdexQuery.RemoveWhitelistAssetLockerQuery != nil {
-			AppMappingId := comdexQuery.RemoveWhitelistAssetLockerQuery.AppMappingId
-			AssetId := comdexQuery.RemoveWhitelistAssetLockerQuery.AssetId
+			appMappingID := comdexQuery.RemoveWhitelistAssetLockerQuery.AppMappingID
+			assetID := comdexQuery.RemoveWhitelistAssetLockerQuery.AssetID
 
-			found, errormsg := queryPlugin.WasmRemoveWhitelistAssetLockerQueryCheck(ctx, AppMappingId, AssetId)
+			found, errormsg := queryPlugin.WasmRemoveWhitelistAssetLockerQueryCheck(ctx, appMappingID, assetID)
 			res := bindings.RemoveWhitelistAssetLockerQueryResponse{
 				Found: found,
 				Err:   errormsg,
@@ -244,35 +244,33 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "RemoveWhitelistAssetLockerQuery query response")
 			}
 			return bz, nil
-		} else if comdexQuery.WhitelistAppIdLiquidationQuery != nil {
-			AppMappingId := comdexQuery.WhitelistAppIdLiquidationQuery.AppMappingId
+		} else if comdexQuery.WhitelistAppIDLiquidationQuery != nil {
+			AppMappingID := comdexQuery.WhitelistAppIDLiquidationQuery.AppMappingID
 
-			found, errormsg := queryPlugin.WasmWhitelistAppIdLiquidationQueryCheck(ctx, AppMappingId)
-			res := bindings.WhitelistAppIdLiquidationQueryResponse{
+			found, errormsg := queryPlugin.WasmWhitelistAppIDLiquidationQueryCheck(ctx, AppMappingID)
+			res := bindings.WhitelistAppIDLiquidationQueryResponse{
 				Found: found,
 				Err:   errormsg,
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "WhitelistAppIdLiquidationQuery query response")
+				return nil, sdkerrors.Wrap(err, "WhitelistAppIDLiquidationQuery query response")
 			}
 			return bz, nil
-		} else if comdexQuery.RemoveWhitelistAppIdLiquidationQuery != nil {
-			AppMappingId := comdexQuery.RemoveWhitelistAppIdLiquidationQuery.AppMappingId
+		} else if comdexQuery.RemoveWhitelistAppIDLiquidationQuery != nil {
+			AppMappingID := comdexQuery.RemoveWhitelistAppIDLiquidationQuery.AppMappingID
 
-			found, errormsg := queryPlugin.WasmRemoveWhitelistAppIdLiquidationQueryCheck(ctx, AppMappingId)
-			res := bindings.RemoveWhitelistAppIdLiquidationQueryResponse{
+			found, errormsg := queryPlugin.WasmRemoveWhitelistAppIDLiquidationQueryCheck(ctx, AppMappingID)
+			res := bindings.RemoveWhitelistAppIDLiquidationQueryResponse{
 				Found: found,
 				Err:   errormsg,
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdLiquidationQuery query response")
+				return nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIDLiquidationQuery query response")
 			}
 			return bz, nil
 		}
-
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown App Data query variant"}
 	}
-
 }

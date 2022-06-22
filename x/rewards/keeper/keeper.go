@@ -78,77 +78,75 @@ func uint64InSlice(a uint64, list []uint64) bool {
 	return false
 }
 
-func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingId uint64, assetId []uint64) error {
-	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, appMappingId)
-	for i := range assetId {
-		found := uint64InSlice(assetId[i], lockerAssets.AssetIds)
+func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) error {
+	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, appMappingID)
+	for i := range assetIDs {
+		found := uint64InSlice(assetIDs[i], lockerAssets.AssetIds)
 		if !found {
-			return types.ErrAssetIdDoesNotExist
+			return types.ErrAssetIDDoesNotExist
 		}
 	}
 
 	internalRewards := types.InternalRewards{
-		App_mapping_ID: appMappingId,
-		Asset_ID:       assetId,
+		App_mapping_ID: appMappingID,
+		Asset_ID:       assetIDs,
 	}
 
 	k.SetReward(ctx, internalRewards)
 	return nil
 }
 
-func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingId uint64, assetId uint64) error {
-
-	rewards, found := k.GetReward(ctx, appMappingId)
-	if found != true {
+func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingID uint64, assetID uint64) error {
+	rewards, found := k.GetReward(ctx, appMappingID)
+	if !found {
 		return nil
 	}
 	var newAssetIds []uint64
 	for i := range rewards.Asset_ID {
-		if assetId != rewards.Asset_ID[i] {
-			newAssetId := rewards.Asset_ID[i]
-			newAssetIds = append(newAssetIds, newAssetId)
+		if assetID != rewards.Asset_ID[i] {
+			newAssetID := rewards.Asset_ID[i]
+			newAssetIds = append(newAssetIds, newAssetID)
 		}
-
 	}
 	newRewards := types.InternalRewards{
-		App_mapping_ID: appMappingId,
+		App_mapping_ID: appMappingID,
 		Asset_ID:       newAssetIds,
 	}
 	k.SetReward(ctx, newRewards)
 	return nil
 }
 
-func (k Keeper) WhitelistAppIdVault(ctx sdk.Context, appMappingId uint64) error {
-	found := uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults)
+func (k Keeper) WhitelistAppIDVault(ctx sdk.Context, appMappingID uint64) error {
+	found := uint64InSlice(appMappingID, k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults)
 	if found {
-		return types.ErrAppIdExists
+		return types.ErrAppIDExists
 	}
-	WhitelistedAppIds := append(k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults, appMappingId)
+	WhitelistedAppIds := append(k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults, appMappingID)
 	UpdatedWhitelistedAppIds := types.WhitelistedAppIdsVault{
 		WhitelistedAppMappingIdsVaults: WhitelistedAppIds,
 	}
-	k.SetAppId(ctx, UpdatedWhitelistedAppIds)
+	k.SetAppID(ctx, UpdatedWhitelistedAppIds)
 	return nil
 }
 
-func (k Keeper) RemoveWhitelistAppIdVault(ctx sdk.Context, appMappingId uint64) error {
+func (k Keeper) RemoveWhitelistAppIDVault(ctx sdk.Context, appMappingID uint64) error {
 	WhitelistedAppIds := k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults
-	found := uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults)
+	found := uint64InSlice(appMappingID, k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults)
 	if !found {
-		return types.ErrAppIdDoesNotExists
+		return types.ErrAppIDDoesNotExists
 	}
 	var newAppIds []uint64
 	for i := range WhitelistedAppIds {
-		if appMappingId != WhitelistedAppIds[i] {
-			newAppId := WhitelistedAppIds[i]
-			newAppIds = append(newAppIds, newAppId)
+		if appMappingID != WhitelistedAppIds[i] {
+			newAppID := WhitelistedAppIds[i]
+			newAppIds = append(newAppIds, newAppID)
 		}
 	}
 	UpdatedWhitelistedAppIds := types.WhitelistedAppIdsVault{
 		WhitelistedAppMappingIdsVaults: newAppIds,
 	}
 
-	k.SetAppId(ctx, UpdatedWhitelistedAppIds)
+	k.SetAppID(ctx, UpdatedWhitelistedAppIds)
 	return nil
 }
 
@@ -156,164 +154,162 @@ func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
 
-func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, AppMappingId uint64, AssetId uint64, TotalRewards sdk.Coin, DurationDays int64, Depositor sdk.AccAddress, MinLockupTimeSeconds int64) error {
-	Id := k.GetExternalRewardsLockersId(ctx)
-	lockerAssets, found := k.GetLockerProductAssetMapping(ctx, AppMappingId)
+func (k Keeper) ActExternalRewardsLockers(ctx sdk.Context, appMappingID uint64, assetID uint64, totalRewards sdk.Coin, durationDays int64, depositor sdk.AccAddress, minLockupTimeSeconds int64) error {
+	ID := k.GetExternalRewardsLockersID(ctx)
+	lockerAssets, found := k.GetLockerProductAssetMapping(ctx, appMappingID)
 	if !found {
-		return types.ErrAssetIdDoesNotExist
+		return types.ErrAssetIDDoesNotExist
 	}
 
-	found = uint64InSlice(AssetId, lockerAssets.AssetIds)
+	found = uint64InSlice(assetID, lockerAssets.AssetIds)
 	if !found {
-		return types.ErrAssetIdDoesNotExist
+		return types.ErrAssetIDDoesNotExist
 	}
 	extRewards := k.GetExternalRewardsLockers(ctx)
 	for _, v := range extRewards {
-		if v.AppMappingId == AppMappingId && v.AssetId == AssetId {
-			return types.ErrAssetIdDoesNotExist
+		if v.AppMappingId == appMappingID && v.AssetId == assetID {
+			return types.ErrAssetIDDoesNotExist
 		}
 	}
 
-	endTime := ctx.BlockTime().Add(time.Second * time.Duration(DurationDays*86400))
+	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*86400))
 
-	epochId := k.GetEpochTimeId(ctx)
+	epochID := k.GetEpochTimeID(ctx)
 	epoch := types.EpochTime{
-		Id:           epochId + 1,
-		AppMappingId: AppMappingId,
+		Id:           epochID + 1,
+		AppMappingId: appMappingID,
 		StartingTime: ctx.BlockTime().Unix() + 84600,
 	}
 
 	msg := types.LockerExternalRewards{
-		Id:                   Id + 1,
-		AppMappingId:         AppMappingId,
-		AssetId:              AssetId,
-		TotalRewards:         TotalRewards,
-		DurationDays:         DurationDays,
+		Id:                   ID + 1,
+		AppMappingId:         appMappingID,
+		AssetId:              assetID,
+		TotalRewards:         totalRewards,
+		DurationDays:         durationDays,
 		IsActive:             true,
-		AvailableRewards:     TotalRewards,
-		Depositor:            Depositor.String(),
+		AvailableRewards:     totalRewards,
+		Depositor:            depositor.String(),
 		StartTimestamp:       ctx.BlockTime(),
 		EndTimestamp:         endTime,
-		MinLockupTimeSeconds: MinLockupTimeSeconds,
+		MinLockupTimeSeconds: minLockupTimeSeconds,
 		EpochId:              epoch.Id,
 	}
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, Depositor, types.ModuleName, sdk.NewCoins(sdk.Coin{Amount: TotalRewards.Amount, Denom: TotalRewards.Denom})); err != nil {
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(sdk.Coin{Amount: totalRewards.Amount, Denom: totalRewards.Denom})); err != nil {
 		return err
 	}
 
-	k.SetEpochTimeId(ctx, msg.EpochId)
+	k.SetEpochTimeID(ctx, msg.EpochId)
 	k.SetExternalRewardsLockers(ctx, msg)
-	k.SetExternalRewardsLockersId(ctx, msg.Id)
+	k.SetExternalRewardsLockersID(ctx, msg.Id)
 	k.SetEpochTime(ctx, epoch)
 	return nil
 }
 
-func (k Keeper) ActExternalRewardsVaults(ctx sdk.Context, AppMappingId uint64, Extended_Pair_Id uint64, TotalRewards sdk.Coin, DurationDays int64, Depositor sdk.AccAddress, MinLockupTimeSeconds int64) error {
-	Id := k.GetExternalRewardsVaultId(ctx)
+func (k Keeper) ActExternalRewardsVaults(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, totalRewards sdk.Coin, durationDays int64, depositor sdk.AccAddress, minLockupTimeSeconds int64) error {
+	ID := k.GetExternalRewardsVaultID(ctx)
 
-	appExtPairVaultData, found := k.GetAppExtendedPairVaultMapping(ctx, AppMappingId)
+	appExtPairVaultData, found := k.GetAppExtendedPairVaultMapping(ctx, appMappingID)
 	if !found {
-		return types.ErrAssetIdDoesNotExist
+		return types.ErrAssetIDDoesNotExist
 	}
 	extPairVault := appExtPairVaultData.ExtendedPairVaults
 	for _, v := range extPairVault {
-		if Extended_Pair_Id != v.ExtendedPairId {
-			return types.ErrAssetIdDoesNotExist
+		if extendedPairID != v.ExtendedPairId {
+			return types.ErrAssetIDDoesNotExist
 		}
 	}
 
-	endTime := ctx.BlockTime().Add(time.Second * time.Duration(DurationDays*86400))
+	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*86400))
 
-	epochId := k.GetEpochTimeId(ctx)
+	epochID := k.GetEpochTimeID(ctx)
 	epoch := types.EpochTime{
-		Id:           epochId + 1,
-		AppMappingId: AppMappingId,
+		Id:           epochID + 1,
+		AppMappingId: appMappingID,
 		StartingTime: ctx.BlockTime().Unix() + 84600,
 	}
 
 	msg := types.VaultExternalRewards{
-		Id:                   Id + 1,
-		AppMappingId:         AppMappingId,
-		Extended_Pair_Id:     Extended_Pair_Id,
-		TotalRewards:         TotalRewards,
-		DurationDays:         DurationDays,
+		Id:                   ID + 1,
+		AppMappingId:         appMappingID,
+		Extended_Pair_Id:     extendedPairID,
+		TotalRewards:         totalRewards,
+		DurationDays:         durationDays,
 		IsActive:             true,
-		AvailableRewards:     TotalRewards,
-		Depositor:            Depositor.String(),
+		AvailableRewards:     totalRewards,
+		Depositor:            depositor.String(),
 		StartTimestamp:       ctx.BlockTime(),
 		EndTimestamp:         endTime,
-		MinLockupTimeSeconds: MinLockupTimeSeconds,
+		MinLockupTimeSeconds: minLockupTimeSeconds,
 		EpochId:              epoch.Id,
 	}
 
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, Depositor, types.ModuleName, sdk.NewCoins(sdk.Coin{Amount: TotalRewards.Amount, Denom: TotalRewards.Denom})); err != nil {
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(sdk.Coin{Amount: totalRewards.Amount, Denom: totalRewards.Denom})); err != nil {
 		return err
 	}
 
-	k.SetEpochTimeId(ctx, msg.EpochId)
+	k.SetEpochTimeID(ctx, msg.EpochId)
 	k.SetExternalRewardVault(ctx, msg)
-	k.SetExternalRewardsVaultId(ctx, msg.Id)
+	k.SetExternalRewardsVaultID(ctx, msg.Id)
 	k.SetEpochTime(ctx, epoch)
 	return nil
 }
 
 //Wasm tx and query binding functions
 
-func (k Keeper) WasmRemoveWhitelistAssetLocker(ctx sdk.Context, appMappingId uint64, assetId uint64) error {
-
-	rewards, _ := k.GetReward(ctx, appMappingId)
+func (k Keeper) WasmRemoveWhitelistAssetLocker(ctx sdk.Context, appMappingID uint64, assetID uint64) error {
+	rewards, _ := k.GetReward(ctx, appMappingID)
 
 	var newAssetIds []uint64
 	for i := range rewards.Asset_ID {
-		if assetId != rewards.Asset_ID[i] {
-			newAssetId := rewards.Asset_ID[i]
-			newAssetIds = append(newAssetIds, newAssetId)
+		if assetID != rewards.Asset_ID[i] {
+			newAssetID := rewards.Asset_ID[i]
+			newAssetIds = append(newAssetIds, newAssetID)
 		}
-
 	}
 	newRewards := types.InternalRewards{
-		App_mapping_ID: appMappingId,
+		App_mapping_ID: appMappingID,
 		Asset_ID:       newAssetIds,
 	}
 	k.SetReward(ctx, newRewards)
 	return nil
 }
 
-func (k Keeper) WasmRemoveWhitelistAssetLockerQuery(ctx sdk.Context, appMappingId uint64, assetId uint64) (bool, string) {
-	rewards, found := k.GetReward(ctx, appMappingId)
-	if found != true {
+func (k Keeper) WasmRemoveWhitelistAssetLockerQuery(ctx sdk.Context, appMappingID uint64, assetID uint64) (bool, string) {
+	rewards, found := k.GetReward(ctx, appMappingID)
+	if !found {
 		return false, "app Id not found"
 	}
 	for _, j := range rewards.Asset_ID {
-		if j != assetId {
-			return false, types.ErrAssetIdDoesNotExist.Error()
+		if j != assetID {
+			return false, types.ErrAssetIDDoesNotExist.Error()
 		}
 	}
 	return true, ""
 }
 
-func (k Keeper) WasmRemoveWhitelistAppIdVaultInterest(ctx sdk.Context, appMappingId uint64) error {
+func (k Keeper) WasmRemoveWhitelistAppIDVaultInterest(ctx sdk.Context, appMappingID uint64) error {
 	WhitelistedAppIds := k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults
 
 	var newAppIds []uint64
 	for i := range WhitelistedAppIds {
-		if appMappingId != WhitelistedAppIds[i] {
-			newAppId := WhitelistedAppIds[i]
-			newAppIds = append(newAppIds, newAppId)
+		if appMappingID != WhitelistedAppIds[i] {
+			newAppID := WhitelistedAppIds[i]
+			newAppIds = append(newAppIds, newAppID)
 		}
 	}
 	UpdatedWhitelistedAppIds := types.WhitelistedAppIdsVault{
 		WhitelistedAppMappingIdsVaults: newAppIds,
 	}
 
-	k.SetAppId(ctx, UpdatedWhitelistedAppIds)
+	k.SetAppID(ctx, UpdatedWhitelistedAppIds)
 	return nil
 }
 
-func (k Keeper) WasmRemoveWhitelistAppIdVaultInterestQuery(ctx sdk.Context, appMappingId uint64) (bool, string) {
-	found := uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults)
+func (k Keeper) WasmRemoveWhitelistAppIDVaultInterestQuery(ctx sdk.Context, appMappingID uint64) (bool, string) {
+	found := uint64InSlice(appMappingID, k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults)
 	if !found {
-		return false, types.ErrAppIdDoesNotExists.Error()
+		return false, types.ErrAppIDDoesNotExists.Error()
 	}
 	return true, ""
 }

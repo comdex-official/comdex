@@ -6,37 +6,38 @@ import (
 
 type ComdexMessages struct {
 	MsgWhiteListAssetLocker              *MsgWhiteListAssetLocker              `json:"msg_white_list_asset_locker,omitempty"`
-	MsgWhitelistAppIdVaultInterest       *MsgWhitelistAppIdVaultInterest       `json:"msg_whitelist_app_id_vault_interest,omitempty"`
-	MsgWhitelistAppIdLockerRewards       *MsgWhitelistAppIdLockerRewards       `json:"msg_whitelist_app_id_locker_rewards,omitempty"`
+	MsgWhitelistAppIDVaultInterest       *MsgWhitelistAppIDVaultInterest       `json:"msg_whitelist_app_id_vault_interest,omitempty"`
+	MsgWhitelistAppIDLockerRewards       *MsgWhitelistAppIDLockerRewards       `json:"msg_whitelist_app_id_locker_rewards,omitempty"`
 	MsgAddExtendedPairsVault             *MsgAddExtendedPairsVault             `json:"msg_add_extended_pairs_vault,omitempty"`
 	MsgSetCollectorLookupTable           *MsgSetCollectorLookupTable           `json:"msg_set_collector_lookup_table,omitempty"`
 	MsgSetAuctionMappingForApp           *MsgSetAuctionMappingForApp           `json:"msg_set_auction_mapping_for_app,omitempty"`
-	MsgUpdateLsrInPairsVault             *MsgUpdateLsrInPairsVault             `json:"msg_update_lsr_in_pairs_vault,omitempty"`
-	MsgUpdateLsrInCollectorLookupTable   *MsgUpdateLsrInCollectorLookupTable   `json:"msg_update_lsr_in_collector_lookup_table,omitempty"`
+	MsgUpdatePairsVault                  *MsgUpdatePairsVault                  `json:"msg_update_pairs_vault,omitempty"`
+	MsgUpdateCollectorLookupTable        *MsgUpdateCollectorLookupTable        `json:"msg_update_collector_lookup_table,omitempty"`
 	MsgRemoveWhitelistAssetLocker        *MsgRemoveWhitelistAssetLocker        `json:"msg_remove_whitelist_asset_locker,omitempty"`
-	MsgRemoveWhitelistAppIdVaultInterest *MsgRemoveWhitelistAppIdVaultInterest `json:"msg_remove_whitelist_app_id_vault_interest,omitempty"`
-	MsgWhitelistAppIdLiquidation         *MsgWhitelistAppIdLiquidation         `json:"msg_whitelist_app_id_liquidation,omitempty"`
-	MsgRemoveWhitelistAppIdLiquidation   *MsgRemoveWhitelistAppIdLiquidation   `json:"msg_remove_whitelist_app_id_liquidation,omitempty"`
+	MsgRemoveWhitelistAppIDVaultInterest *MsgRemoveWhitelistAppIDVaultInterest `json:"msg_remove_whitelist_app_id_vault_interest,omitempty"`
+	MsgWhitelistAppIDLiquidation         *MsgWhitelistAppIDLiquidation         `json:"msg_whitelist_app_id_liquidation,omitempty"`
+	MsgRemoveWhitelistAppIDLiquidation   *MsgRemoveWhitelistAppIDLiquidation   `json:"msg_remove_whitelist_app_id_liquidation,omitempty"`
 	MsgAddAuctionParams                  *MsgAddAuctionParams                  `json:"msg_add_auction_params,omitempty"`
+	MsgBurnGovTokensForApp               *MsgBurnGovTokensForApp               `json:"msg_burn_gov_tokens_for_app,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
-	AppMappingId uint64 `json:"app_mapping_id"`
-	AssetId      uint64 `json:"asset_id"`
+	AppMappingID uint64 `json:"app_mapping_id"`
+	AssetID      uint64 `json:"asset_id"`
 }
 
-type MsgWhitelistAppIdVaultInterest struct {
-	AppMappingId uint64 `json:"app_mapping_id"`
+type MsgWhitelistAppIDVaultInterest struct {
+	AppMappingID uint64 `json:"app_mapping_id"`
 }
 
-type MsgWhitelistAppIdLockerRewards struct {
-	AppMappingId uint64   `json:"app_mapping_id"`
-	AssetId      []uint64 `json:"asset_id"`
+type MsgWhitelistAppIDLockerRewards struct {
+	AppMappingID uint64   `json:"app_mapping_id"`
+	AssetIDs     []uint64 `json:"asset_ids"`
 }
 
 type MsgAddExtendedPairsVault struct {
-	AppMappingId        uint64  `json:"app_mapping_id"`
-	PairId              uint64  `json:"pair_id"`
+	AppMappingID        uint64  `json:"app_mapping_id"`
+	PairID              uint64  `json:"pair_id"`
 	LiquidationRatio    sdk.Dec `json:"liquidation_ratio"`
 	StabilityFee        sdk.Dec `json:"stability_fee"`
 	ClosingFee          sdk.Dec `json:"closing_fee"`
@@ -54,9 +55,9 @@ type MsgAddExtendedPairsVault struct {
 }
 
 type MsgSetCollectorLookupTable struct {
-	AppMappingId     uint64  `json:"app_mapping_id"`
-	CollectorAssetId uint64  `json:"collector_asset_id"`
-	SecondaryAssetId uint64  `json:"secondary_asset_id"`
+	AppMappingID     uint64  `json:"app_mapping_id"`
+	CollectorAssetID uint64  `json:"collector_asset_id"`
+	SecondaryAssetID uint64  `json:"secondary_asset_id"`
 	SurplusThreshold uint64  `json:"surplus_threshold"`
 	DebtThreshold    uint64  `json:"debt_threshold"`
 	LockerSavingRate sdk.Dec `json:"locker_saving_rate"`
@@ -66,17 +67,17 @@ type MsgSetCollectorLookupTable struct {
 }
 
 type MsgSetAuctionMappingForApp struct {
-	AppMappingId        uint64   `json:"app_mapping_id"`
-	AssetId             []uint64 `json:"asset_id"`
-	IsSurplusAuction    []bool   `json:"is_surplus_auction"`
-	IsDebtAuction       []bool   `json:"is_debt_auction"`
-	AssetOutOraclePrice []bool   `json:"asset_out_oracle_price"`
-	AssetOutPrice       []uint64 `json:"asset_out_price"`
+	AppMappingID         uint64   `json:"app_mapping_id"`
+	AssetIDs             []uint64 `json:"asset_id"`
+	IsSurplusAuctions    []bool   `json:"is_surplus_auction"`
+	IsDebtAuctions       []bool   `json:"is_debt_auction"`
+	AssetOutOraclePrices []bool   `json:"asset_out_oracle_price"`
+	AssetOutPrices       []uint64 `json:"asset_out_price"`
 }
 
-type MsgUpdateLsrInPairsVault struct {
-	AppMappingId       uint64  `json:"app_mapping_id"`
-	ExtPairId          uint64  `json:"ext_pair_id"`
+type MsgUpdatePairsVault struct {
+	AppMappingID       uint64  `json:"app_mapping_id"`
+	ExtPairID          uint64  `json:"ext_pair_id"`
 	LiquidationRatio   sdk.Dec `json:"liquidation_ratio"`
 	StabilityFee       sdk.Dec `json:"stability_fee"`
 	ClosingFee         sdk.Dec `json:"closing_fee"`
@@ -88,38 +89,49 @@ type MsgUpdateLsrInPairsVault struct {
 	MinUsdValueLeft    uint64  `json:"min_usd_value_left"`
 }
 
-type MsgUpdateLsrInCollectorLookupTable struct {
-	AppMappingId uint64  `json:"app_mapping_id"`
-	AssetId      uint64  `json:"asset_id"`
-	LSR          sdk.Dec `json:"lsr"`
+type MsgUpdateCollectorLookupTable struct {
+	AppMappingID     uint64  `json:"app_mapping_id"`
+	AssetID          uint64  `json:"asset_id"`
+	DebtThreshold    uint64  `json:"debt_threshold"`
+	SurplusThreshold uint64  `json:"surplus_threshold"`
+	LotSize          uint64  `json:"lot_size"`
+	DebtLotSize      uint64  `json:"debt_lot_size"`
+	BidFactor        sdk.Dec `json:"bid_factor"`
+	LSR              sdk.Dec `json:"lsr"`
 }
 
 type MsgRemoveWhitelistAssetLocker struct {
-	AppMappingId uint64 `json:"app_mapping_id"`
-	AssetId      uint64 `json:"asset_id"`
+	AppMappingID uint64 `json:"app_mapping_id"`
+	AssetID      uint64 `json:"asset_id"`
 }
 
-type MsgRemoveWhitelistAppIdVaultInterest struct {
-	AppMappingId uint64 `json:"app_mapping_id"`
+type MsgRemoveWhitelistAppIDVaultInterest struct {
+	AppMappingID uint64 `json:"app_mapping_id"`
 }
 
-type MsgWhitelistAppIdLiquidation struct {
-	AppMappingId uint64 `json:"app_mapping_id"`
+type MsgWhitelistAppIDLiquidation struct {
+	AppMappingID uint64 `json:"app_mapping_id"`
 }
 
-type MsgRemoveWhitelistAppIdLiquidation struct {
-	AppMappingId uint64 `json:"app_mapping_id"`
+type MsgRemoveWhitelistAppIDLiquidation struct {
+	AppMappingID uint64 `json:"app_mapping_id"`
 }
 
 type MsgAddAuctionParams struct {
-	AppMappingId           uint64  `json:"app_mapping_id"`
+	AppMappingID           uint64  `json:"app_mapping_id"`
 	AuctionDurationSeconds uint64  `json:"auction_duration_seconds"`
 	Buffer                 sdk.Dec `json:"buffer"`
 	Cusp                   sdk.Dec `json:"cusp"`
 	Step                   uint64  `json:"step"`
 	PriceFunctionType      uint64  `json:"price_function_type"`
-	SurplusId              uint64  `json:"surplus_id"`
-	DebtId                 uint64  `json:"debt_id"`
-	DutchId                uint64  `json:"dutch_id"`
+	SurplusID              uint64  `json:"surplus_id"`
+	DebtID                 uint64  `json:"debt_id"`
+	DutchID                uint64  `json:"dutch_id"`
 	BidDurationSeconds     uint64  `json:"bid_duration_seconds"`
+}
+
+type MsgBurnGovTokensForApp struct {
+	AppMappingID uint64         `json:"app_mapping_id"`
+	From         sdk.AccAddress `json:"from"`
+	Amount       sdk.Coin       `json:"amount"`
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
-// IntegerArrayToString converts iteger slice to "," seprated string.
+// IntegerArrayToString converts integer slice to "," separated string.
 func IntegerArrayToString(intArray []uint64) string {
 	return strings.Trim(strings.Join(strings.Fields(fmt.Sprint(types.ValidGaugeTypeIds)), ","), "[]")
 }
@@ -15,7 +15,7 @@ func IntegerArrayToString(intArray []uint64) string {
 // SplitTotalAmountPerEpoch splits amount into totalEpochs
 // e.g. SplitTotalAmountPerEpoch(150, 11) => [13 13 13 13 14 14 14 14 14 14 14].
 func SplitTotalAmountPerEpoch(totalAmount uint64, totalEpochs uint64) []uint64 {
-	splits := []uint64{}
+	var splits []uint64
 	if totalAmount < totalEpochs {
 		return splits
 	} else if totalAmount%totalEpochs == 0 {

@@ -33,17 +33,17 @@ func txPlaceSurplusBid() *cobra.Command {
 				return err
 			}
 
-			appId, err := strconv.ParseUint(args[2], 10, 64)
+			appID, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			auctionMappingId, err := strconv.ParseUint(args[3], 10, 64)
+			auctionMappingID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			msg := types.NewMsgPlaceSurplusBid(clientCtx.GetFromAddress(), id, amt, appId, auctionMappingId)
+			msg := types.NewMsgPlaceSurplusBid(clientCtx.GetFromAddress(), id, amt, appID, auctionMappingID)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -57,7 +57,7 @@ func txPlaceSurplusBid() *cobra.Command {
 
 func txPlaceDebtBid() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "bid-debt [auction-id] [bid] [user expected Token] [app-id] [auction-mapping-id] ",
+		Use:   "bid-debt [auction-id] [bid] [user-expected-token] [app-id] [auction-mapping-id] ",
 		Short: "Place a Debt bid on an auction",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -81,17 +81,17 @@ func txPlaceDebtBid() *cobra.Command {
 				return err
 			}
 
-			appId, err := strconv.ParseUint(args[3], 10, 64)
+			appID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			auctionMappingId, err := strconv.ParseUint(args[4], 10, 64)
+			auctionMappingID, err := strconv.ParseUint(args[4], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			msg := types.NewMsgPlaceDebtBid(clientCtx.GetFromAddress(), id, bid, userExpectedToken, appId, auctionMappingId)
+			msg := types.NewMsgPlaceDebtBid(clientCtx.GetFromAddress(), id, bid, userExpectedToken, appID, auctionMappingID)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -105,7 +105,7 @@ func txPlaceDebtBid() *cobra.Command {
 
 func txPlaceDutchBid() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "bid-dutch [auction-id] [amount] [maxamountpercollateraltoken]  [app-id] [auction-mapping-id]",
+		Use:   "bid-dutch [auction-id] [amount] [max-amount-per-collateral-token]  [app-id] [auction-mapping-id]",
 		Short: "Place a Dutch bid on an auction",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -114,7 +114,7 @@ func txPlaceDutchBid() *cobra.Command {
 				return err
 			}
 
-			auctionId, err := strconv.ParseUint(args[0], 10, 64)
+			auctionID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
@@ -126,17 +126,17 @@ func txPlaceDutchBid() *cobra.Command {
 
 			max := sdk.MustNewDecFromStr(args[2])
 
-			appId, err := strconv.ParseUint(args[3], 10, 64)
+			appID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			auctionMappingId, err := strconv.ParseUint(args[4], 10, 64)
+			auctionMappingID, err := strconv.ParseUint(args[4], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			msg := types.NewMsgPlaceDutchBid(clientCtx.GetFromAddress(), auctionId, amt, max, appId, auctionMappingId)
+			msg := types.NewMsgPlaceDutchBid(clientCtx.GetFromAddress(), auctionID, amt, max, appID, auctionMappingID)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

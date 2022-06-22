@@ -30,7 +30,6 @@ func (p *FetchPriceProposal) ProposalRoute() string { return RouterKey }
 func (p *FetchPriceProposal) ProposalType() string { return ProposalFetchPrice }
 
 func (p *FetchPriceProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err

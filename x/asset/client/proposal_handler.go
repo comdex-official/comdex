@@ -18,5 +18,6 @@ var (
 		govclient.NewProposalHandler(cli.NewCmdSubmitAddAppMappingProposal, rest.AddNewAppMappingProposalRESTHandler),
 		govclient.NewProposalHandler(cli.NewCmdSubmitAddExtendedPairsVaultProposal, rest.AddExtendedPairsVaultProposalRESTHandler),
 		govclient.NewProposalHandler(cli.NewCmdSubmitAddAssetMappingProposal, rest.AddNewAssetMappingProposalRESTHandler),
+		govclient.NewProposalHandler(cli.NewCmdSubmitUpdateGovTimeInAppMappingProposal, rest.UpdateNewGovTimeInAppMappingProposalRESTHandler),
 	}
 )

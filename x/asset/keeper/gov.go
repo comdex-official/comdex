@@ -23,7 +23,10 @@ func (k Keeper) HandleAddWhitelistedAssetRecords(ctx sdk.Context, p *types.AddWh
 
 func (k Keeper) HandleUpdateWhitelistedAssetRecords(ctx sdk.Context, p *types.UpdateWhitelistedAssetProposal) error {
 	return k.UpdateWhitelistedAssetRecords(ctx, p.Asset)
+}
 
+func (k Keeper) HandleUpdateGovTimeInAppMapping(ctx sdk.Context, p *types.UpdateGovTimeInAppMappingProposal) error {
+	return k.UpdateGovTimeInAppMapping(ctx, p.GovTime)
 }
 
 func (k Keeper) HandleAddWhitelistedPairsRecords(ctx sdk.Context, p *types.AddWhitelistedPairsProposal) error {

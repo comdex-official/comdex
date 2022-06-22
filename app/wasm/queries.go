@@ -39,98 +39,98 @@ func NewQueryPlugin(
 	}
 }
 
-func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appMappingId uint64) (int64, int64, uint64, error) {
-	MinGovDeposit, GovTimeInSeconds, AssetId, err := qp.assetKeeper.GetAppWasmQuery(ctx, appMappingId)
+func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appMappingID uint64) (int64, int64, uint64, error) {
+	MinGovDeposit, GovTimeInSeconds, AssetID, err := qp.assetKeeper.GetAppWasmQuery(ctx, appMappingID)
 	if err != nil {
-		return MinGovDeposit, GovTimeInSeconds, AssetId, nil
+		return MinGovDeposit, GovTimeInSeconds, AssetID, nil
 	}
-	return MinGovDeposit, GovTimeInSeconds, AssetId, nil
+	return MinGovDeposit, GovTimeInSeconds, AssetID, nil
 }
 
-func (qp QueryPlugin) GetAssetInfo(ctx sdk.Context, Id uint64) (string, error) {
-	assetDenom := qp.assetKeeper.GetAssetDenom(ctx, Id)
+func (qp QueryPlugin) GetAssetInfo(ctx sdk.Context, ID uint64) (string, error) {
+	assetDenom := qp.assetKeeper.GetAssetDenom(ctx, ID)
 	return assetDenom, nil
 }
 
-func (qp QueryPlugin) GetTokenMint(ctx sdk.Context, appMappingId, assetId uint64) (int64, error) {
-	tokenData, err := qp.tokenMintKeeper.GetAssetDataInTokenMintByAppSupply(ctx, appMappingId, assetId)
-	if err != true {
+func (qp QueryPlugin) GetTokenMint(ctx sdk.Context, appMappingID, assetID uint64) (int64, error) {
+	tokenData, found := qp.tokenMintKeeper.GetAssetDataInTokenMintByAppSupply(ctx, appMappingID, assetID)
+	if !found {
 		return tokenData, nil
 	}
 	return tokenData, nil
 }
 
-func (qp QueryPlugin) GetRemoveWhitelistAppIdLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetRemoveWhitelistAppIdLockerRewardsCheck(ctx, appMappingId, assetId)
+func (qp QueryPlugin) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.GetRemoveWhitelistAppIDLockerRewardsCheck(ctx, appMappingID, assetIDs)
 	return found, err
 }
 
-func (qp QueryPlugin) GetWhitelistAppIdVaultInterestCheck(ctx sdk.Context, appMappingId uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetWhitelistAppIdVaultInterestCheck(ctx, appMappingId)
+func (qp QueryPlugin) GetWhitelistAppIDVaultInterestCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.GetWhitelistAppIDVaultInterestCheck(ctx, appMappingID)
 	return found, err
 }
-func (qp QueryPlugin) GetWhitelistAppIdLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetWhitelistAppIdLockerRewardsCheck(ctx, appMappingId, assetId)
+func (qp QueryPlugin) GetWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.GetWhitelistAppIDLockerRewardsCheck(ctx, appMappingID, assetIDs)
 
 	return found, err
 }
 
-func (qp QueryPlugin) GetExternalLockerRewardsCheck(ctx sdk.Context, appMappingId, assetId uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetExternalLockerRewardsCheck(ctx, appMappingId, assetId)
+func (qp QueryPlugin) GetExternalLockerRewardsCheck(ctx sdk.Context, appMappingID, assetID uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.GetExternalLockerRewardsCheck(ctx, appMappingID, assetID)
 	return found, err
 }
 
-func (qp QueryPlugin) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingId, assetId uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetExternalVaultRewardsCheck(ctx, appMappingId, assetId)
+func (qp QueryPlugin) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingID, assetID uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.GetExternalVaultRewardsCheck(ctx, appMappingID, assetID)
 	return found, err
 }
 
-func (qp QueryPlugin) CollectorLookupTableQueryCheck(ctx sdk.Context, AppMappingId, CollectorAssetId, SecondaryAssetId uint64) (found bool, err string) {
-	found, err = qp.collectorKeeper.WasmSetCollectorLookupTableQuery(ctx, AppMappingId, CollectorAssetId, SecondaryAssetId)
+func (qp QueryPlugin) CollectorLookupTableQueryCheck(ctx sdk.Context, appMappingID, collectorAssetID, secondaryAssetID uint64) (found bool, err string) {
+	found, err = qp.collectorKeeper.WasmSetCollectorLookupTableQuery(ctx, appMappingID, collectorAssetID, secondaryAssetID)
 	return found, err
 }
 
-func (qp QueryPlugin) ExtendedPairsVaultRecordsQueryCheck(ctx sdk.Context, AppMappingId, PairId uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, DebtCeiling, DebtFloor uint64, PairName string) (found bool, err string) {
-	found, err = qp.assetKeeper.WasmAddExtendedPairsVaultRecordsQuery(ctx, AppMappingId, PairId, StabilityFee, ClosingFee, DrawDownFee, DebtCeiling, DebtFloor, PairName)
+func (qp QueryPlugin) ExtendedPairsVaultRecordsQueryCheck(ctx sdk.Context, appMappingID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, DebtCeiling, DebtFloor uint64, PairName string) (found bool, err string) {
+	found, err = qp.assetKeeper.WasmAddExtendedPairsVaultRecordsQuery(ctx, appMappingID, pairID, StabilityFee, ClosingFee, DrawDownFee, DebtCeiling, DebtFloor, PairName)
 	return found, err
 }
 
-func (qp QueryPlugin) AuctionMappingForAppQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
-	found, err = qp.collectorKeeper.WasmSetAuctionMappingForAppQuery(ctx, AppMappingId)
+func (qp QueryPlugin) AuctionMappingForAppQueryCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
+	found, err = qp.collectorKeeper.WasmSetAuctionMappingForAppQuery(ctx, appMappingID)
 	return found, err
 }
 
-func (qp QueryPlugin) WhiteListedAssetQueryCheck(ctx sdk.Context, AppMappingId, AssetId uint64) (found bool, err string) {
-	found, err = qp.lockerKeeper.WasmAddWhiteListedAssetQuery(ctx, AppMappingId, AssetId)
+func (qp QueryPlugin) WhiteListedAssetQueryCheck(ctx sdk.Context, appMappingID, assetID uint64) (found bool, err string) {
+	found, err = qp.lockerKeeper.WasmAddWhiteListedAssetQuery(ctx, appMappingID, assetID)
 	return found, err
 }
 
-func (qp QueryPlugin) UpdateLsrInPairsVaultQueryCheck(ctx sdk.Context, AppMappingId, ExtPairId uint64) (found bool, err string) {
-	found, err = qp.assetKeeper.WasmUpdateLsrInPairsVaultQuery(ctx, AppMappingId, ExtPairId)
+func (qp QueryPlugin) UpdatePairsVaultQueryCheck(ctx sdk.Context, appMappingID, extPairID uint64) (found bool, err string) {
+	found, err = qp.assetKeeper.WasmUpdatePairsVaultQuery(ctx, appMappingID, extPairID)
 	return found, err
 }
 
-func (qp QueryPlugin) UpdateLsrInCollectorLookupTableQueryCheck(ctx sdk.Context, AppMappingId, AssetId uint64) (found bool, err string) {
-	found, err = qp.collectorKeeper.WasmUpdateLsrInCollectorLookupTableQuery(ctx, AppMappingId, AssetId)
+func (qp QueryPlugin) UpdateCollectorLookupTableQueryCheck(ctx sdk.Context, appMappingID, assetID uint64) (found bool, err string) {
+	found, err = qp.collectorKeeper.WasmUpdateCollectorLookupTableQuery(ctx, appMappingID, assetID)
 	return found, err
 }
 
-func (qp QueryPlugin) WasmRemoveWhitelistAppIdVaultInterestQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAppIdVaultInterestQuery(ctx, AppMappingId)
+func (qp QueryPlugin) WasmRemoveWhitelistAppIDVaultInterestQueryCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAppIDVaultInterestQuery(ctx, appMappingID)
 	return found, err
 }
 
-func (qp QueryPlugin) WasmRemoveWhitelistAssetLockerQueryCheck(ctx sdk.Context, AppMappingId, AssetId uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAssetLockerQuery(ctx, AppMappingId, AssetId)
+func (qp QueryPlugin) WasmRemoveWhitelistAssetLockerQueryCheck(ctx sdk.Context, appMappingID, assetID uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAssetLockerQuery(ctx, appMappingID, assetID)
 	return found, err
 }
 
-func (qp QueryPlugin) WasmWhitelistAppIdLiquidationQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
-	found, err = qp.liquidationKeeper.WasmWhitelistAppIdLiquidationQuery(ctx, AppMappingId)
+func (qp QueryPlugin) WasmWhitelistAppIDLiquidationQueryCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
+	found, err = qp.liquidationKeeper.WasmWhitelistAppIdLiquidationQuery(ctx, appMappingID)
 	return found, err
 }
 
-func (qp QueryPlugin) WasmRemoveWhitelistAppIdLiquidationQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
-	found, err = qp.liquidationKeeper.WasmRemoveWhitelistAppIdLiquidationQuery(ctx, AppMappingId)
+func (qp QueryPlugin) WasmRemoveWhitelistAppIDLiquidationQueryCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
+	found, err = qp.liquidationKeeper.WasmRemoveWhitelistAppIdLiquidationQuery(ctx, appMappingID)
 	return found, err
 }

@@ -282,7 +282,7 @@ func (q *queryServer) QueryExtendedPairPsmPairWise(c context.Context, req *types
 func (q *queryServer) QueryTokenGov(c context.Context, req *types.QueryTokenGovRequest) (*types.QueryTokenGovResponse, error) {
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		assetId uint64
+		assetID uint64
 	)
 	appData, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -290,12 +290,12 @@ func (q *queryServer) QueryTokenGov(c context.Context, req *types.QueryTokenGovR
 	}
 	for _, data := range appData.GenesisToken {
 		if data.IsgovToken {
-			assetId = data.AssetId
+			assetID = data.AssetId
 		}
 	}
 
 	return &types.QueryTokenGovResponse{
-		GovAssetId: assetId,
+		GovAssetId: assetID,
 	}, nil
 }
 

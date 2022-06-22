@@ -21,15 +21,15 @@ func querySurplusAuction() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			auctionMappingId, err := strconv.ParseUint(args[1], 10, 64)
+			auctionMappingID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
-			auctionId, err := strconv.ParseUint(args[2], 10, 64)
+			auctionID, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -41,10 +41,10 @@ func querySurplusAuction() *cobra.Command {
 			res, err := queryClient.QuerySurplusAuction(
 				context.Background(),
 				&types.QuerySurplusAuctionRequest{
-					appId,
-					auctionMappingId,
-					auctionId,
-					history,
+					AppId:            appID,
+					AuctionMappingId: auctionMappingID,
+					AuctionId:        auctionID,
+					History:          history,
 				},
 			)
 			if err != nil {
@@ -67,7 +67,7 @@ func querySurplusAuctions() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -83,7 +83,7 @@ func querySurplusAuctions() *cobra.Command {
 			res, err := queryClient.QuerySurplusAuctions(
 				context.Background(),
 				&types.QuerySurplusAuctionsRequest{
-					AppId:      appId,
+					AppId:      appID,
 					History:    history,
 					Pagination: pagination,
 				},
@@ -113,7 +113,7 @@ func querySurplusBiddings() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[1], 10, 64)
+			appID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -125,7 +125,7 @@ func querySurplusBiddings() *cobra.Command {
 			res, err := queryClient.QuerySurplusBiddings(
 				context.Background(),
 				&types.QuerySurplusBiddingsRequest{
-					AppId:   appId,
+					AppId:   appID,
 					History: history,
 					Bidder:  bidder.String(),
 				},
@@ -150,15 +150,15 @@ func queryDebtAuction() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			auctionMappingId, err := strconv.ParseUint(args[1], 10, 64)
+			auctionMappingID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
-			auctionId, err := strconv.ParseUint(args[2], 10, 64)
+			auctionID, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -170,10 +170,10 @@ func queryDebtAuction() *cobra.Command {
 			res, err := queryClient.QueryDebtAuction(
 				context.Background(),
 				&types.QueryDebtAuctionRequest{
-					appId,
-					auctionMappingId,
-					auctionId,
-					history,
+					AppId:            appID,
+					AuctionMappingId: auctionMappingID,
+					AuctionId:        auctionID,
+					History:          history,
 				},
 			)
 			if err != nil {
@@ -196,7 +196,7 @@ func queryDebtAuctions() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -212,7 +212,7 @@ func queryDebtAuctions() *cobra.Command {
 			res, err := queryClient.QueryDebtAuctions(
 				context.Background(),
 				&types.QueryDebtAuctionsRequest{
-					AppId:      appId,
+					AppId:      appID,
 					History:    history,
 					Pagination: pagination,
 				},
@@ -228,7 +228,7 @@ func queryDebtAuctions() *cobra.Command {
 	return cmd
 }
 
-func queryDebtBiddings() *cobra.Command {
+func queryDebtBidding() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "debt-biddings [bidder] [app-id] [history]",
 		Short: "Query surplus Debt by bidder address",
@@ -242,7 +242,7 @@ func queryDebtBiddings() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[1], 10, 64)
+			appID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -255,7 +255,7 @@ func queryDebtBiddings() *cobra.Command {
 				context.Background(),
 				&types.QueryDebtBiddingsRequest{
 					Bidder:  bidder.String(),
-					AppId:   appId,
+					AppId:   appID,
 					History: history,
 				},
 			)
@@ -279,15 +279,15 @@ func queryDutchAuction() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			auctionMappingId, err := strconv.ParseUint(args[1], 10, 64)
+			auctionMappingID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
-			auctionId, err := strconv.ParseUint(args[2], 10, 64)
+			auctionID, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -299,10 +299,10 @@ func queryDutchAuction() *cobra.Command {
 			res, err := queryClient.QueryDutchAuction(
 				context.Background(),
 				&types.QueryDutchAuctionRequest{
-					appId,
-					auctionMappingId,
-					auctionId,
-					history,
+					AppId:            appID,
+					AuctionMappingId: auctionMappingID,
+					AuctionId:        auctionID,
+					History:          history,
 				},
 			)
 			if err != nil {
@@ -325,7 +325,7 @@ func queryDutchAuctions() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -341,7 +341,7 @@ func queryDutchAuctions() *cobra.Command {
 			res, err := queryClient.QueryDutchAuctions(
 				context.Background(),
 				&types.QueryDutchAuctionsRequest{
-					AppId:      appId,
+					AppId:      appID,
 					History:    history,
 					Pagination: pagination,
 				},
@@ -367,7 +367,7 @@ func queryProtocolStats() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -379,7 +379,7 @@ func queryProtocolStats() *cobra.Command {
 			res, err := queryClient.QueryProtocolStatistics(
 				context.Background(),
 				&types.QueryProtocolStatisticsRequest{
-					AppId:      appId,
+					AppId:      appID,
 					Pagination: pagination,
 				},
 			)
@@ -408,7 +408,7 @@ func queryDutchBiddings() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[1], 10, 64)
+			appID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -420,7 +420,7 @@ func queryDutchBiddings() *cobra.Command {
 			res, err := queryClient.QueryDutchBiddings(
 				context.Background(),
 				&types.QueryDutchBiddingsRequest{
-					AppId:   appId,
+					AppId:   appID,
 					History: history,
 					Bidder:  bidder.String(),
 				},

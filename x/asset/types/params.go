@@ -25,6 +25,5 @@ func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 }
 
 func (m *Params) Validate() error {
-
 	return nil
 }

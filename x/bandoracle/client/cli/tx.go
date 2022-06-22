@@ -105,7 +105,10 @@ func CmdRequestFetchPriceData() *cobra.Command {
 	}
 
 	cmd.Flags().String(flagChannel, "", "The channel id")
-	cmd.MarkFlagRequired(flagChannel)
+	err := cmd.MarkFlagRequired(flagChannel)
+	if err != nil {
+		return nil
+	}
 	cmd.Flags().StringSlice(flagSymbols, nil, "Symbols used in calling the market script")
 	cmd.Flags().Uint64(flagMultiplier, 1000000, "Multiplier used in calling the market script")
 	cmd.Flags().String(flagFeeLimit, "", "the maximum tokens that will be paid to all data source providers")
@@ -244,7 +247,10 @@ func NewCmdSubmitFetchPriceProposal() *cobra.Command {
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
 	cmd.Flags().String(flagChannel, "", "The channel id")
-	cmd.MarkFlagRequired(flagChannel)
+	err := cmd.MarkFlagRequired(flagChannel)
+	if err != nil {
+		return nil
+	}
 	cmd.Flags().StringSlice(flagSymbols, nil, "Symbols used in calling the market script")
 	cmd.Flags().Uint64(flagMultiplier, 1000000, "Multiplier used in calling the market script")
 	cmd.Flags().String(flagFeeLimit, "", "the maximum tokens that will be paid to all data source providers")
