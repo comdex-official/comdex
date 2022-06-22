@@ -1,8 +1,6 @@
 package cli
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"strconv"
 	"strings"
@@ -25,15 +23,6 @@ const (
 	FlagAddAssetMappingFile     = "add-asset-mapping-file"
 	FlagAddWhiteListedPairsFile = "add-white-whitelisted-pairs-file"
 )
-
-func GetLiquidationRatio(cmd *cobra.Command) (sdk.Dec, error) {
-	s, err := cmd.Flags().GetString(flagLiquidationRatio)
-	if err != nil {
-		return sdk.Dec{}, err
-	}
-
-	return sdk.NewDecFromStr(s)
-}
 
 func ParseStringFromString(s string, separator string) ([]string, error) {
 	var parsedStrings []string
