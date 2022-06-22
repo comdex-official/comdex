@@ -108,6 +108,7 @@ type addAssetRatesStatsInputs struct {
 	Base                 string `json:"base"`
 	Slope1               string `json:"slope_1"`
 	Slope2               string `json:"slope_2"`
+	EnableStableBorrow   string `json:"enable_stable_borrow"`
 	StableBase           string `json:"stable_base"`
 	StableSlope1         string `json:"stable_slope_1"`
 	StableSlope2         string `json:"stable_slope_2"`

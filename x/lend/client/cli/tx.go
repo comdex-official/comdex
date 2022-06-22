@@ -754,7 +754,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 	if err != nil {
 		return txf, nil, err
 	}
-	enableStableBorrow, err := ParseUint64SliceFromString(assetRatesStatsInput.Base, ",")
+	enableStableBorrow, err := ParseUint64SliceFromString(assetRatesStatsInput.EnableStableBorrow, ",")
 	if err != nil {
 		return txf, nil, err
 	}
