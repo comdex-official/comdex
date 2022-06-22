@@ -24,15 +24,15 @@ func RegisterCustomPlugins(
 
 	comdexQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards, collector, liquidation)
 
-	appDataqueryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
+	appDataQueryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
 		Custom: CustomQuerier(comdexQueryPlugin),
 	})
 	messengerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
-		CustomMessageDecorator(*locker, *rewards, *asset, *collector, *liquidation, *auction),
+		CustomMessageDecorator(*locker, *rewards, *asset, *collector, *liquidation, *auction, *tokenMint),
 	)
 
 	return []wasm.Option{
-		appDataqueryPluginOpt,
+		appDataQueryPluginOpt,
 		messengerDecoratorOpt,
 	}
 }
