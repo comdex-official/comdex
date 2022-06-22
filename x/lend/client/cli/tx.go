@@ -561,7 +561,7 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 
 	moduleName := newLendPool.ModuleName
 
-	mainAssetId, err := strconv.ParseUint(newLendPool.AssetID, 10, 64)
+	mainAssetId, err := strconv.ParseUint(newLendPool.MainAssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
