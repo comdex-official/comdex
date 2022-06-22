@@ -21,7 +21,6 @@ func RegisterCustomPlugins(
 	liquidation *liquidationKeeper.Keeper,
 	auction *auctionKeeper.Keeper,
 ) []wasmkeeper.Option {
-
 	comdexQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards, collector, liquidation)
 
 	appDataQueryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
