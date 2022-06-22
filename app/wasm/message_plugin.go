@@ -19,7 +19,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper, assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper, auctionKeeper auctionkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
+func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper,
+	assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper,
+	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
 			wrapped:           old,
@@ -29,6 +31,7 @@ func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewa
 			collectorKeeper:   collectorKeeper,
 			liquidationKeeper: liquidationKeeper,
 			auctionKeeper:     auctionKeeper,
+			tokenMintKeeper:   tokenMintKeeper,
 		}
 	}
 }
@@ -41,7 +44,7 @@ type CustomMessenger struct {
 	collectorKeeper   collectorkeeper.Keeper
 	liquidationKeeper liquidationkeeper.Keeper
 	auctionKeeper     auctionkeeper.Keeper
-	tokenmintKeeper   tokenmintkeeper.Keeper
+	tokenMintKeeper   tokenmintkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -354,7 +357,7 @@ func MsgAddAuctionParams(auctionKeeper auctionkeeper.Keeper, ctx sdk.Context, co
 }
 
 func (m *CustomMessenger) BurnGovTokensForApp(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgBurnGovTokensForApp) ([]sdk.Event, [][]byte, error) {
-	err := MsgBurnGovTokensForApp(m.tokenmintKeeper, ctx, contractAddr, a)
+	err := MsgBurnGovTokensForApp(m.tokenMintKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "BurnGovTokensForApp error")
 	}
