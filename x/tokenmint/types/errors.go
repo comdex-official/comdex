@@ -7,12 +7,7 @@ import (
 )
 
 var (
-	ErrorInvalidAmount        = errors.Register(ModuleName, 101, "invalid amount")
-	ErrorInvalidAmountIn      = errors.Register(ModuleName, 102, "invalid amount_in")
-	ErrorInvalidAmountOut     = errors.Register(ModuleName, 103, "invalid amount_out")
-	ErrorInvalidFrom          = errors.Register(ModuleName, 104, "invalid from")
-	ErrorInvalidID            = errors.Register(ModuleName, 105, "invalid id")
-	ErrorAppIstoExtendedAppId = errors.Register(ModuleName, 106, "app id does not match with extended pair app id")
+	ErrorInvalidFrom = errors.Register(ModuleName, 104, "invalid from")
 )
 
 var (
@@ -23,8 +18,4 @@ var (
 	ErrorBurningMakesSupplyLessThanZero       = errors.Register(ModuleName, 205, "Burning request reduces the the supply to 0 or less than 0 tokens")
 	ErrorMintDataNotFound                     = errors.Register(ModuleName, 206, "minted data not found")
 	ErrorMintingGenesisSupplyLessThanOne      = errors.Register(ModuleName, 207, "Mint genesis supply should be greater than zero")
-)
-
-var (
-	ErrorEmergencyShutdownIsActive = errors.Register(ModuleName, 301, "Error Emergency Shutdown Is Active for this App")
 )

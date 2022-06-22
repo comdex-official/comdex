@@ -89,7 +89,7 @@ func GetPoolKey(appID, poolID uint64) []byte {
 	return append(append(PoolKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
 }
 
-// GetAllPairsKey returns the store key to retrieve all pools.
+// GetAllPoolsKey returns the store key to retrieve all pools.
 func GetAllPoolsKey(appID uint64) []byte {
 	return append(PoolKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
@@ -196,7 +196,7 @@ func GetOrderIndexKeyPrefix(appID uint64, orderer sdk.AccAddress) []byte {
 	return append(append(OrderIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(orderer)...)
 }
 
-// GetPoolLiquidityProvidersDataKeyPrefix returns the store key to retrieve liquidity providers data from the pool id.
+// GetPoolLiquidityProvidersDataKey returns the store key to retrieve liquidity providers data from the pool id.
 func GetPoolLiquidityProvidersDataKey(appID, poolID uint64) []byte {
 	return append(append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
 }

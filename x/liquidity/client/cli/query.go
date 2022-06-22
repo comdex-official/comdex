@@ -806,7 +806,7 @@ $ %s query %s soft-lock 1 1 comdex...
 	return cmd
 }
 
-// NewQuerySoftLockCmd implements the soft lock query command.
+// NewQueryDeserializePoolCoinCmd implements the soft lock query command.
 func NewQueryDeserializePoolCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deserialize [app-id] [pool-id] [pool-coin-amount]",

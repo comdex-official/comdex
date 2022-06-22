@@ -2,7 +2,7 @@ package types
 
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
-func NewMsgWhitelistAppId(appMappingId uint64, from sdk.AccAddress) *WhitelistAppId {
+func NewMsgWhitelistAppID(appMappingId uint64, from sdk.AccAddress) *WhitelistAppId {
 	return &WhitelistAppId{
 		AppMappingId: appMappingId,
 		From:         from.String(),

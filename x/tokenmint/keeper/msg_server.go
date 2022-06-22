@@ -23,7 +23,6 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 }
 
 func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTokensRequest) (*types.MsgMintNewTokensResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(c)
 	assetData, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
@@ -66,7 +65,6 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		appData.MintedTokens = append(appData.MintedTokens, &newTokenMintAppData)
 
 		k.SetTokenMint(ctx, appData)
-
 	} else {
 		//AppData in TokenMint exists
 		_, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingData.Id, assetData.Id)
@@ -94,9 +92,6 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		newTokenMintAppData.CurrentSupply = newTokenMintAppData.GenesisSupply
 		mintData.MintedTokens = append(mintData.MintedTokens, &newTokenMintAppData)
 		k.SetTokenMint(ctx, mintData)
-
 	}
-
 	return &types.MsgMintNewTokensResponse{}, nil
-
 }

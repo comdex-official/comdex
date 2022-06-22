@@ -18,7 +18,6 @@ var (
 	ErrDepositSmallThanEpoch   = sdkerrors.Register(ModuleName, 9, "deposit amount smaller than total epochs/triggers")
 	ErrInvalidCalculatedAMount = sdkerrors.Register(ModuleName, 10, "available distribution coins smaller than calculated distribution amount")
 
-	ErrSample              = sdkerrors.Register(ModuleName, 1100, "sample error")
 	ErrAssetIDDoesNotExist = sdkerrors.Register(ModuleName, 1101, "Asset Id does not exist in locker for App_Mapping")
 	ErrNegativeTimeElapsed = sdkerrors.Register(ModuleName, 1102, "negative time elapsed since last interest time")
 	ErrAppIDExists         = sdkerrors.Register(ModuleName, 1103, "Asset Id does not exist in locker for App_Mapping")

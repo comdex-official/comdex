@@ -11,10 +11,10 @@ import (
 
 // Liquidity params default values.
 const (
-	DefaultBatchSize        uint64        = 1
-	DefaultTickPrecision    uint64        = 6
-	DefaultMaxOrderLifespan time.Duration = 24 * time.Hour
-	DefaultFeeDenom         string        = "ucmdx"
+	DefaultBatchSize        uint64 = 1
+	DefaultTickPrecision    uint64 = 6
+	DefaultMaxOrderLifespan        = 24 * time.Hour
+	DefaultFeeDenom         string = "ucmdx"
 )
 
 // Liquidity params default values.
@@ -80,7 +80,7 @@ func DeriveFeeCollectorAddress(appID uint64) sdk.AccAddress {
 		strings.Join([]string{FeeCollectorAddressPrefix, strconv.FormatUint(appID, 10)}, ModuleAddressNameSplitter))
 }
 
-// DeriveFeeCollectorAddress returns a unique address of the fee collector.
+// DeriveDustCollectorAddress returns a unique address of the fee collector.
 func DeriveDustCollectorAddress(appID uint64) sdk.AccAddress {
 	return DeriveAddress(
 		AddressType32Bytes,
@@ -88,7 +88,7 @@ func DeriveDustCollectorAddress(appID uint64) sdk.AccAddress {
 		strings.Join([]string{DustCollectorAddress, strconv.FormatUint(appID, 10)}, ModuleAddressNameSplitter))
 }
 
-// DefaultParams returns a default params for the liquidity module.
+// DefaultGenericParams returns a default params for the liquidity module.
 func DefaultGenericParams(appID uint64) GenericParams {
 	return GenericParams{
 		AppId:                    appID,

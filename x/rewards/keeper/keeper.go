@@ -78,10 +78,10 @@ func uint64InSlice(a uint64, list []uint64) bool {
 	return false
 }
 
-func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetID []uint64) error {
+func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) error {
 	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, appMappingID)
-	for i := range assetID {
-		found := uint64InSlice(assetID[i], lockerAssets.AssetIds)
+	for i := range assetIDs {
+		found := uint64InSlice(assetIDs[i], lockerAssets.AssetIds)
 		if !found {
 			return types.ErrAssetIDDoesNotExist
 		}
@@ -89,7 +89,7 @@ func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetID []u
 
 	internalRewards := types.InternalRewards{
 		App_mapping_ID: appMappingID,
-		Asset_ID:       assetID,
+		Asset_ID:       assetIDs,
 	}
 
 	k.SetReward(ctx, internalRewards)

@@ -147,7 +147,7 @@ func (k *Keeper) QueryGaugeByDuration(c context.Context, req *types.QueryGaugesB
 		return nil, status.Errorf(codes.NotFound, "no gauges for given duration %ds", req.DurationSeconds)
 	}
 
-	var gauges = []types.Gauge{}
+	var gauges []types.Gauge
 
 	for _, gaugeID := range gaugsIdsByTriggerDuration.GaugeIds {
 		gauge, found := k.GetGaugeByID(ctx, gaugeID)

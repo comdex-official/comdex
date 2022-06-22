@@ -12,7 +12,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-//IterateLocker does reward calculation for locker .
+//IterateLocker does reward calculation for locker.
 func (k Keeper) IterateLocker(ctx sdk.Context) error {
 	rewards := k.GetRewards(ctx)
 	for _, v := range rewards {
@@ -53,8 +53,8 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 							IsLocked:           locker.IsLocked,
 							AppMappingId:       locker.AppMappingId,
 						}
-						netfeecollectedData, _ := k.GetNetFeeCollectedData(ctx, locker.AppMappingId)
-						for _, p := range netfeecollectedData.AssetIdToFeeCollected {
+						netFeeCollectedData, _ := k.GetNetFeeCollectedData(ctx, locker.AppMappingId)
+						for _, p := range netFeeCollectedData.AssetIdToFeeCollected {
 							if p.AssetId == locker.AssetDepositId {
 								asset, _ := k.GetAsset(ctx, p.AssetId)
 								//updatedNetFee := p.NetFeesCollected.Sub(rewards)
@@ -67,6 +67,8 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 								if err != nil {
 									return err
 								}
+								err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, rewards)))
+
 								if err != nil {
 									return err
 								}
@@ -123,8 +125,8 @@ func (k Keeper) CalculateRewards(
 	a, _ := sdk.NewDecFromStr("1")
 	b, _ := sdk.NewDecFromStr(perc)
 	factor1 := a.Add(b).MustFloat64()
-	intPerBlockfactor := math.Pow(factor1, yearsElapsed)
-	intAccPerBlock := intPerBlockfactor - 1
+	intPerBlockFactor := math.Pow(factor1, yearsElapsed)
+	intAccPerBlock := intPerBlockFactor - 1
 	amtFloat, _ := strconv.ParseFloat(amount.String(), 64)
 	newAmount := intAccPerBlock * amtFloat
 
@@ -139,7 +141,7 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingID uint64) error {
 	}
 	for _, v := range extVaultMapping.ExtendedPairVaults {
 		vaultIds := v.VaultIds
-		for j := 0; j < len(vaultIds); j++ {
+		for j := range vaultIds {
 			vault, found := k.GetVault(ctx, vaultIds[j])
 			if !found {
 				continue
@@ -183,7 +185,7 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 							if u.AssetId == v.AssetId {
 								lockerIds := u.LockerIds
 								totalShare := u.DepositedAmount
-								for w := 0; w < len(lockerIds); w++ {
+								for w := range lockerIds {
 									locker, _ := k.GetLocker(ctx, lockerIds[w])
 
 									userShare := (locker.NetBalance.ToDec()).Quo(totalShare.ToDec())

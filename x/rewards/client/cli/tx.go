@@ -44,7 +44,7 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
-// NewCreateGaugeCmd implemets create-gauge cli transaction command.
+// NewCreateGaugeCmd implements create-gauge cli transaction command.
 func NewCreateGaugeCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-gauge [gauge-type-id] [trigger-duration] [deposit-amount] [total-triggers]",
@@ -109,7 +109,11 @@ func NewCreateGaugeCmd() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				appID, _ := cmd.Flags().GetUint64(FlagAppID)
+				appID, err := cmd.Flags().GetUint64(FlagAppID)
+
+				if err != nil {
+					return err
+				}
 				msg.AppId = appID
 				msg.Kind = &gaugeExtraData
 			}
@@ -244,7 +248,6 @@ func txRemoveWhitelistAppIDVault() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
-
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
@@ -382,10 +385,10 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 	if err != nil {
 		return types.MsgCreateGauge_LiquidityMetaData{}, err
 	}
-	childPoolIds := []uint64{}
+	var childPoolIds []uint64
 	if childPoolIdsCombined != "" {
-		childPoolIdsStrs := strings.Split(childPoolIdsCombined, ",")
-		for _, poolIDStr := range childPoolIdsStrs {
+		childPoolIdsStr := strings.Split(childPoolIdsCombined, ",")
+		for _, poolIDStr := range childPoolIdsStr {
 			poolID, err := strconv.ParseUint(poolIDStr, 10, 64)
 			if err != nil {
 				return types.MsgCreateGauge_LiquidityMetaData{}, err

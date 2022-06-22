@@ -38,7 +38,10 @@ func (k *Keeper) GetRewards(ctx sdk.Context) (lends []types.InternalRewards) {
 	)
 
 	defer func(iter sdk.Iterator) {
-		_ = iter.Close()
+		err := iter.Close()
+		if err != nil {
+			return
+		}
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
@@ -104,7 +107,10 @@ func (k *Keeper) GetExternalRewardsLockers(ctx sdk.Context) (LockerExternalRewar
 	)
 
 	defer func(iter sdk.Iterator) {
-		_ = iter.Close()
+		err := iter.Close()
+		if err != nil {
+			return
+		}
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
@@ -241,7 +247,10 @@ func (k *Keeper) GetExternalRewardVaults(ctx sdk.Context) (VaultExternalRewards 
 	)
 
 	defer func(iter sdk.Iterator) {
-		_ = iter.Close()
+		err := iter.Close()
+		if err != nil {
+			return
+		}
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
@@ -264,7 +273,7 @@ func (k *Keeper) SetExternalRewardVault(ctx sdk.Context, VaultExternalRewards ty
 
 // Wasm query checks
 
-func (k *Keeper) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetID []uint64) (found bool, err string) {
+func (k *Keeper) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) (found bool, err string) {
 	_, found = k.GetReward(ctx, appMappingID)
 	if !found {
 		return false, "not found"
@@ -280,10 +289,10 @@ func (k *Keeper) GetWhitelistAppIDVaultInterestCheck(ctx sdk.Context, appMapping
 	return true, ""
 }
 
-func (k *Keeper) GetWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetID []uint64) (found bool, err string) {
+func (k *Keeper) GetWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) (found bool, err string) {
 	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, appMappingID)
-	for i := range assetID {
-		found := uint64InSlice(assetID[i], lockerAssets.AssetIds)
+	for i := range assetIDs {
+		found := uint64InSlice(assetIDs[i], lockerAssets.AssetIds)
 		if !found {
 			return false, "assetID does not exist"
 		}

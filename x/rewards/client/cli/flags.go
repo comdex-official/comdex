@@ -9,10 +9,8 @@ import (
 
 // flags for incentives module tx commands.
 const (
-	// Global Flags.
 	FlagStartTime = "start-time"
 
-	// Msg Specific Flags - Liquidity GaugeType Flags.
 	FlagPoolID       = "pool-id"
 	FlagAppID        = "app-id"
 	FlagIsMasterPool = "is-master-pool"

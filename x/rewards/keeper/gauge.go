@@ -62,8 +62,8 @@ func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, appID, pairID uint
 	}
 
 	_, baseCoinPriceFound := k.OraclePrice(ctx, pair.BaseCoinDenom)
-	_, quoteCoinPricefound := k.OraclePrice(ctx, pair.QuoteCoinDenom)
-	if !(baseCoinPriceFound || quoteCoinPricefound) {
+	_, quoteCoinPriceFound := k.OraclePrice(ctx, pair.QuoteCoinDenom)
+	if !(baseCoinPriceFound || quoteCoinPriceFound) {
 		return sdkerrors.Wrapf(types.ErrPriceNotFound, "oracle price required for atleast %s or %s but not found", pair.QuoteCoinDenom, pair.BaseCoinDenom)
 	}
 

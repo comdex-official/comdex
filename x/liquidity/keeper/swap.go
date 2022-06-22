@@ -583,7 +583,7 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 	availablePools := k.GetAllPools(ctx, appID)
 	const poolMapPrefix = "pool_"
 
-	edges := [][]string{}
+	var edges [][]string
 	pairPoolIDMap := make(map[string]uint64)
 
 	for _, pool := range availablePools {
@@ -610,7 +610,7 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 
 		for _, balance := range availableBalances {
 			if balance.Denom != params.SwapFeeDistrDenom {
-				shortestPath, found := types.BFSShortestPath(undirectedGraph, balance.Denom, params.SwapFeeDistrDenom)
+				shortestPath, found := types.BfsShortestpath(undirectedGraph, balance.Denom, params.SwapFeeDistrDenom)
 				if found && len(shortestPath) > 1 {
 					swappablePairID := pairPoolIDMap[shortestPath[0]+shortestPath[1]]
 					swappablePoolID := pairPoolIDMap[poolMapPrefix+shortestPath[0]+shortestPath[1]]

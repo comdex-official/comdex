@@ -11,16 +11,6 @@ var (
 	_ sdk.Msg = (*MsgRemoveMarketForAssetRequest)(nil)
 )
 
-func NewMsgAddMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64, assetID uint64, rates uint64) *MsgAddMarketRequest {
-	return &MsgAddMarketRequest{
-		From:     from.String(),
-		Symbol:   symbol,
-		ScriptID: scriptID,
-		Id:       assetID,
-		Rates:    rates,
-	}
-}
-
 func (m *MsgAddMarketRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
@@ -50,15 +40,6 @@ func (m *MsgAddMarketRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateMarketRequest(from sdk.AccAddress, symbol string, scriptID uint64, rates uint64) *MsgUpdateMarketRequest {
-	return &MsgUpdateMarketRequest{
-		From:     from.String(),
-		Symbol:   symbol,
-		ScriptID: scriptID,
-		Rates:    rates,
-	}
-}
-
 func (m *MsgUpdateMarketRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
@@ -82,14 +63,6 @@ func (m *MsgUpdateMarketRequest) GetSigners() []sdk.AccAddress {
 	}
 
 	return []sdk.AccAddress{from}
-}
-
-func NewMsgRemoveMarketForAssetRequest(from sdk.AccAddress, id uint64, symbol string) *MsgRemoveMarketForAssetRequest {
-	return &MsgRemoveMarketForAssetRequest{
-		From:   from.String(),
-		Id:     id,
-		Symbol: symbol,
-	}
 }
 
 func (m *MsgRemoveMarketForAssetRequest) ValidateBasic() error {

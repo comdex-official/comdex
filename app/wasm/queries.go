@@ -60,17 +60,17 @@ func (qp QueryPlugin) GetTokenMint(ctx sdk.Context, appMappingID, assetID uint64
 	return tokenData, nil
 }
 
-func (qp QueryPlugin) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetRemoveWhitelistAppIDLockerRewardsCheck(ctx, appMappingId, assetId)
+func (qp QueryPlugin) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.GetRemoveWhitelistAppIDLockerRewardsCheck(ctx, appMappingID, assetIDs)
 	return found, err
 }
 
-func (qp QueryPlugin) GetWhitelistAppIDVaultInterestCheck(ctx sdk.Context, appMappingId uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetWhitelistAppIDVaultInterestCheck(ctx, appMappingId)
+func (qp QueryPlugin) GetWhitelistAppIDVaultInterestCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.GetWhitelistAppIDVaultInterestCheck(ctx, appMappingID)
 	return found, err
 }
-func (qp QueryPlugin) GetWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetWhitelistAppIDLockerRewardsCheck(ctx, appMappingId, assetId)
+func (qp QueryPlugin) GetWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.GetWhitelistAppIDLockerRewardsCheck(ctx, appMappingID, assetIDs)
 
 	return found, err
 }
@@ -110,27 +110,27 @@ func (qp QueryPlugin) UpdatePairsVaultQueryCheck(ctx sdk.Context, appMappingID, 
 	return found, err
 }
 
-func (qp QueryPlugin) UpdateCollectorLookupTableQueryCheck(ctx sdk.Context, appMappingID, AssetId uint64) (found bool, err string) {
-	found, err = qp.collectorKeeper.WasmUpdateCollectorLookupTableQuery(ctx, appMappingID, AssetId)
+func (qp QueryPlugin) UpdateCollectorLookupTableQueryCheck(ctx sdk.Context, appMappingID, assetID uint64) (found bool, err string) {
+	found, err = qp.collectorKeeper.WasmUpdateCollectorLookupTableQuery(ctx, appMappingID, assetID)
 	return found, err
 }
 
-func (qp QueryPlugin) WasmRemoveWhitelistAppIDVaultInterestQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAppIDVaultInterestQuery(ctx, AppMappingId)
+func (qp QueryPlugin) WasmRemoveWhitelistAppIDVaultInterestQueryCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAppIDVaultInterestQuery(ctx, appMappingID)
 	return found, err
 }
 
-func (qp QueryPlugin) WasmRemoveWhitelistAssetLockerQueryCheck(ctx sdk.Context, appMappingID, AssetId uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAssetLockerQuery(ctx, appMappingID, AssetId)
+func (qp QueryPlugin) WasmRemoveWhitelistAssetLockerQueryCheck(ctx sdk.Context, appMappingID, assetID uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.WasmRemoveWhitelistAssetLockerQuery(ctx, appMappingID, assetID)
 	return found, err
 }
 
-func (qp QueryPlugin) WasmWhitelistAppIdLiquidationQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
-	found, err = qp.liquidationKeeper.WasmWhitelistAppIdLiquidationQuery(ctx, AppMappingId)
+func (qp QueryPlugin) WasmWhitelistAppIDLiquidationQueryCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
+	found, err = qp.liquidationKeeper.WasmWhitelistAppIDLiquidationQuery(ctx, appMappingID)
 	return found, err
 }
 
-func (qp QueryPlugin) WasmRemoveWhitelistAppIdLiquidationQueryCheck(ctx sdk.Context, AppMappingId uint64) (found bool, err string) {
-	found, err = qp.liquidationKeeper.WasmRemoveWhitelistAppIdLiquidationQuery(ctx, AppMappingId)
+func (qp QueryPlugin) WasmRemoveWhitelistAppIDLiquidationQueryCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
+	found, err = qp.liquidationKeeper.WasmRemoveWhitelistAppIDLiquidationQuery(ctx, appMappingID)
 	return found, err
 }
