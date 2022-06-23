@@ -33,7 +33,7 @@ func (k *Keeper) GetUserVaultExtendedPairMapping(ctx sdk.Context, address string
 	return userVaultAssetData, true
 }
 
-//Checking if for a certain user for the app type , whether there exists a certain asset or not and if it contains a locker id or not .
+// CheckUserAppToExtendedPairMapping Checking if for a certain user for the app type , whether there exists a certain asset or not and if it contains a locker id or not .
 func (k *Keeper) CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData types.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID string, found bool) {
 	for _, vaultAppMapping := range userVaultAssetData.UserVaultApp {
 		if vaultAppMapping.AppMappingId == appMappingID {
@@ -56,7 +56,7 @@ func (k *Keeper) CheckUserToAppMapping(ctx sdk.Context, userVaultAssetData types
 	return false
 }
 
-//Set AppExtendedPairVaultMapping to check the current status of the vault by extended pair vault id .
+// SetAppExtendedPairVaultMapping Set AppExtendedPairVaultMapping to check the current status of the vault by extended pair vault id .
 func (k *Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData types.AppExtendedPairVaultMapping) error {
 	var (
 		store = k.Store(ctx)
@@ -104,8 +104,10 @@ func (k *Keeper) CheckAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID 
 		newExtendedPairVault.TokenMintedAmount = zeroVal
 		newAppExtendedPairVault.ExtendedPairVaults = append(newAppExtendedPairVault.ExtendedPairVaults, &newExtendedPairVault)
 
-		// nolint
-		k.SetAppExtendedPairVaultMapping(ctx, newAppExtendedPairVault)
+		err := k.SetAppExtendedPairVaultMapping(ctx, newAppExtendedPairVault)
+		if err != nil {
+			return 0, sdk.Int{}, 0
+		}
 
 		return newAppExtendedPairVault.Counter, newExtendedPairVault.TokenMintedAmount, 0
 	}
@@ -124,8 +126,10 @@ func (k *Keeper) CheckAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID 
 	newExtendedPairVault.TokenMintedAmount = zeroVal
 	appExtendedPairVaultData.ExtendedPairVaults = append(appExtendedPairVaultData.ExtendedPairVaults, &newExtendedPairVault)
 
-	// nolint
-	k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+	err := k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+	if err != nil {
+		return 0, sdk.Int{}, 0
+	}
 
 	return appExtendedPairVaultData.Counter, newExtendedPairVault.TokenMintedAmount, 0
 }
@@ -145,8 +149,10 @@ func (k *Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Contex
 		}
 	}
 
-	// nolint
-	k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+	err := k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+	if err != nil {
+		return
+	}
 }
 
 func (k *Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(ctx sdk.Context, counter uint64, vaultData types.StableMintVault) {
@@ -164,11 +170,13 @@ func (k *Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault
 		}
 	}
 
-	// nolint
-	k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+	err := k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+	if err != nil {
+		return
+	}
 }
 
-//Calculate Collaterlization Ratio .
+// CalculateCollaterlizationRatio Calculate Collaterlization Ratio .
 func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
 	extendedPairVault, found := k.GetPairsVault(ctx, extendedPairVaultID)
 	if !found {
@@ -257,7 +265,7 @@ func (k *Keeper) GetVault(ctx sdk.Context, id string) (vault types.Vault, found 
 	return vault, true
 }
 
-//For updating token stats of collateral .
+// UpdateCollateralLockedAmountLockerMapping For updating token stats of collateral .
 func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData types.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
 	//if Change type true = Add to collateral Locked
 	//If change type false = Subtract from the collateral Locked
@@ -273,11 +281,13 @@ func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valu
 			}
 		}
 	}
-	// nolint
-	k.SetAppExtendedPairVaultMapping(ctx, valutLookupData)
+	err := k.SetAppExtendedPairVaultMapping(ctx, valutLookupData)
+	if err != nil {
+		return
+	}
 }
 
-//For updating token stats of minted .
+// UpdateTokenMintedAmountLockerMapping For updating token stats of minted .
 func (k *Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLookupData types.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
 	//if Change type true = Add to token Locked
 	//If change type false = Subtract from the token Locked
@@ -293,8 +303,10 @@ func (k *Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLook
 			}
 		}
 	}
-	// nolint
-	k.SetAppExtendedPairVaultMapping(ctx, valutLookupData)
+	err := k.SetAppExtendedPairVaultMapping(ctx, valutLookupData)
+	if err != nil {
+		return
+	}
 }
 
 func (k *Keeper) DeleteVault(ctx sdk.Context, id string) {
@@ -312,7 +324,12 @@ func (k *Keeper) GetVaults(ctx sdk.Context) (vaults []types.Vault) {
 		iter  = sdk.KVStorePrefixIterator(store, types.VaultKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var vault types.Vault
@@ -363,8 +380,10 @@ func (k *Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, e
 				appData.VaultIds = a
 			}
 		}
-		// nolint
-		k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+		err := k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+		if err != nil {
+			return
+		}
 	}
 }
 
@@ -398,7 +417,12 @@ func (k *Keeper) GetStableMintVaults(ctx sdk.Context) (stableVaults []types.Stab
 		iter  = sdk.KVStorePrefixIterator(store, types.StableMintVaultKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var stableVault types.StableMintVault
@@ -409,8 +433,16 @@ func (k *Keeper) GetStableMintVaults(ctx sdk.Context) (stableVaults []types.Stab
 }
 
 func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, AppMappingID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
-	appMapping, _ := k.GetApp(ctx, AppMappingID)
-	extendedPairVault, _ := k.GetPairsVault(ctx, ExtendedPairVaultID)
+	appMapping, found := k.GetApp(ctx, AppMappingID)
+
+	if !found {
+		return types.ErrorAppMappingDoesNotExist
+	}
+	extendedPairVault, found := k.GetPairsVault(ctx, ExtendedPairVaultID)
+
+	if !found {
+		return types.ErrorExtendedPairVaultDoesNotExists
+	}
 	counterVal, _, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
 	zeroVal := sdk.ZeroInt()
@@ -443,23 +475,25 @@ func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, AppMappingID uint64
 		}
 	}
 
-	// nolint
-	k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+	err := k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+	if err != nil {
+		return err
+	}
 
 	// k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updated_counter, new_vault)
 
-	userVaultExtendedpairMappingData, _ := k.GetUserVaultExtendedPairMapping(ctx, From)
+	userVaultExtendedPairMappingData, _ := k.GetUserVaultExtendedPairMapping(ctx, From)
 
 	//So only need to add the locker id with asset
-	var userExtendedpairData types.ExtendedPairToVaultMapping
-	userExtendedpairData.VaultId = newVault.Id
-	userExtendedpairData.ExtendedPairId = newVault.ExtendedPairVaultID
+	var userExtendedPairData types.ExtendedPairToVaultMapping
+	userExtendedPairData.VaultId = newVault.Id
+	userExtendedPairData.ExtendedPairId = newVault.ExtendedPairVaultID
 
-	for _, appData := range userVaultExtendedpairMappingData.UserVaultApp {
+	for _, appData := range userVaultExtendedPairMappingData.UserVaultApp {
 		if appData.AppMappingId == appMapping.Id {
-			appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &userExtendedpairData)
+			appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &userExtendedPairData)
 		}
 	}
-	k.SetUserVaultExtendedPairMapping(ctx, userVaultExtendedpairMappingData)
+	k.SetUserVaultExtendedPairMapping(ctx, userVaultExtendedPairMappingData)
 	return nil
 }

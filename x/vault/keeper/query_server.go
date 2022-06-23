@@ -19,7 +19,7 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -88,10 +88,10 @@ func (q *queryServer) QueryVaultInfo(c context.Context, req *types.QueryVaultInf
 	if err != nil {
 		return nil, err
 	}
-	pairvaults, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
-	pairID, _ := q.GetPair(ctx, pairvaults.PairId)
-	assetin, _ := q.GetAsset(ctx, pairID.AssetIn)
-	assetout, _ := q.GetAsset(ctx, pairID.AssetOut)
+	pairVaults, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
+	pairID, _ := q.GetPair(ctx, pairVaults.PairId)
+	assetIn, _ := q.GetAsset(ctx, pairID.AssetIn)
+	assetOut, _ := q.GetAsset(ctx, pairID.AssetOut)
 	return &types.QueryVaultInfoResponse{
 		VaultsInfo: types.VaultInfo{
 			Id:                     req.Id,
@@ -100,11 +100,11 @@ func (q *queryServer) QueryVaultInfo(c context.Context, req *types.QueryVaultInf
 			Collateral:             vault.AmountIn,
 			Debt:                   vault.AmountOut,
 			CollateralizationRatio: collateralizationRatio,
-			ExtendedPairName:       pairvaults.PairName,
-			InterestRate:           pairvaults.StabilityFee,
-			AssetInDenom:           assetin.Denom,
-			AssetOutDenom:          assetout.Denom,
-			MinCr:                  pairvaults.MinCr,
+			ExtendedPairName:       pairVaults.PairName,
+			InterestRate:           pairVaults.StabilityFee,
+			AssetInDenom:           assetIn.Denom,
+			AssetOutDenom:          assetOut.Denom,
+			MinCr:                  pairVaults.MinCr,
 		},
 	}, nil
 }
@@ -146,10 +146,10 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 		if err != nil {
 			return nil, err
 		}
-		pairvaults, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
-		pairID, _ := q.GetPair(ctx, pairvaults.PairId)
-		assetin, _ := q.GetAsset(ctx, pairID.AssetIn)
-		assetout, _ := q.GetAsset(ctx, pairID.AssetOut)
+		pairVaults, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
+		pairID, _ := q.GetPair(ctx, pairVaults.PairId)
+		assetIn, _ := q.GetAsset(ctx, pairID.AssetIn)
+		assetOut, _ := q.GetAsset(ctx, pairID.AssetOut)
 
 		vaults := types.VaultInfo{
 			Id:                     vault.Id,
@@ -158,11 +158,11 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 			Collateral:             vault.AmountIn,
 			Debt:                   vault.AmountOut,
 			CollateralizationRatio: collateralizationRatio,
-			ExtendedPairName:       pairvaults.PairName,
-			InterestRate:           pairvaults.StabilityFee,
-			AssetInDenom:           assetin.Denom,
-			AssetOutDenom:          assetout.Denom,
-			MinCr:                  pairvaults.MinCr,
+			ExtendedPairName:       pairVaults.PairName,
+			InterestRate:           pairVaults.StabilityFee,
+			AssetInDenom:           assetIn.Denom,
+			AssetOutDenom:          assetOut.Denom,
+			MinCr:                  pairVaults.MinCr,
 		}
 		vaultsInfo = append(vaultsInfo, vaults)
 	}
