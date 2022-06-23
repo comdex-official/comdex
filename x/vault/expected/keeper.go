@@ -26,7 +26,7 @@ type AssetKeeper interface {
 	GetPairsVault(ctx sdk.Context, pairID uint64) (assettypes.ExtendedPairVault, bool)
 }
 
-type Marketkeeper interface {
+type MarketKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }
 
