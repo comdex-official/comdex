@@ -90,7 +90,7 @@ func (k *Keeper) GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID ui
 //else instantiate 1 and set it. and go for the next steps from here
 //So best way will be to create a function which will first check if AppExtendedPairVault Data exists or not. If it does. then send counted value. else create a struct save it. and send counter value.
 
-func (k *Keeper) CheckAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64, extendedPairVaultID uint64) (counter uint64, mintedStastics sdk.Int, lenVaults uint64) {
+func (k *Keeper) CheckAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64, extendedPairVaultID uint64) (counter uint64, mintedStatistics sdk.Int, lenVaults uint64) {
 	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMapping(ctx, appMappingID)
 	if !found {
 		//Initialising a new struct
