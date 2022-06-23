@@ -13,4 +13,5 @@ message Asset {
   string denom   = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
   int64 decimals = 4 [ (gogoproto.moretags) = "yaml:\"decimals\"" ];
   bool isOnchain = 5 [ (gogoproto.moretags) = "yaml:\"isOnchain\"" ];
+  bool assetOraclePrice = 6 [(gogoproto.moretags) = "yaml:\"asset_oracle_price\""];
 }
