@@ -235,6 +235,24 @@ message AssetStats{
     (gogoproto.moretags) = "yaml:\"total_lend\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
+
+  string lend_apy = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"lend_apy\""
+  ];
+
+  string borrow_apy = 6 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"borrow_apy\""
+  ];
+
+  string stable_borrow_apy = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"stable_borrow_apy\""
+  ];
 }
 
 message AssetRatesStats{
