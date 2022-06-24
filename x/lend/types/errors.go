@@ -55,4 +55,5 @@ var (
 	ErrorAssetStatsNotFound            = sdkerrors.Register(ModuleName, 1144, "Asset Stats Not Found")
 	ErrInvalidAssetIdForPool           = sdkerrors.Register(ModuleName, 1145, "Asset Id not defined in the pool")
 	ErrorAssetRatesStatsNotFound       = sdkerrors.Register(ModuleName, 1146, "Asset Rates Stats not found")
+	ErrPoolNotFound                    = sdkerrors.Register(ModuleName, 1147, "Pool Not Found")
 )

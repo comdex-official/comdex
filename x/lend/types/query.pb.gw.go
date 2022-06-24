@@ -530,15 +530,26 @@ func request_Query_QueryAssetToPairMapping_0(ctx context.Context, marshaler runt
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["asset_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
+	}
+
+	val, ok = pathParams["pool_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "pool_id")
+	}
+
+	protoReq.PoolId, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "pool_id", err)
 	}
 
 	msg, err := client.QueryAssetToPairMapping(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -557,15 +568,26 @@ func local_request_Query_QueryAssetToPairMapping_0(ctx context.Context, marshale
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["asset_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "asset_id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.AssetId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
+	}
+
+	val, ok = pathParams["pool_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "pool_id")
+	}
+
+	protoReq.PoolId, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "pool_id", err)
 	}
 
 	msg, err := server.QueryAssetToPairMapping(ctx, &protoReq)
@@ -1453,7 +1475,7 @@ var (
 
 	pattern_Query_QueryAssetToPairMappings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "asset_to_pair_mappings"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAssetToPairMapping_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "lend", "v1beta1", "asset_to_pair_mappings", "id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryAssetToPairMapping_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "lend", "v1beta1", "asset_to_pair_mappings", "asset_id", "pool_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryBorrows_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "borrows"}, "", runtime.AssumeColonVerbOpt(false)))
 

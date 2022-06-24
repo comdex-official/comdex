@@ -626,9 +626,9 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 
 func CmdAddAssetToPairProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-asset-to-pair-mapping [asset_id] [pair_id] ",
+		Use:   "add-asset-to-pair-mapping [asset_id] [pool_id] [pair_id] ",
 		Short: "Add asset to pair mapping ",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -639,8 +639,11 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
-			rawPairId, _ := ParseUint64SliceFromString(args[1], ",")
+			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			rawPairId, _ := ParseUint64SliceFromString(args[2], ",")
 			if err != nil {
 				return err
 			}
@@ -651,6 +654,7 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 			}
 			assetToPairMapping := types.AssetToPairMapping{
 				AssetId: assetId,
+				PoolId:  poolId,
 				PairId:  pairId,
 			}
 

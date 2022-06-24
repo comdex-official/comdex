@@ -174,7 +174,11 @@ message AssetToPairMapping{
     (gogoproto.customname) = "AssetId",
     (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
-  repeated uint64 pair_id = 2 [
+  uint64 pool_id = 2 [
+    (gogoproto.customname) = "PoolId",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  repeated uint64 pair_id = 3 [
     (gogoproto.customname) = "PairId",
     (gogoproto.moretags) = "yaml:\"pair_id\""
   ];

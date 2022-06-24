@@ -301,16 +301,20 @@ func queryPools() *cobra.Command {
 
 func queryAssetToPairMapping() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "asset-pair-mapping [id]",
+		Use:   "asset-pair-mapping [asset-id] [pool-id]",
 		Short: "Query Asset To Pair Mapping",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			assetId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			poolId, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -320,7 +324,8 @@ func queryAssetToPairMapping() *cobra.Command {
 			res, err := queryClient.QueryAssetToPairMapping(
 				context.Background(),
 				&types.QueryAssetToPairMappingRequest{
-					Id: id,
+					AssetId: assetId,
+					PoolId:  poolId,
 				},
 			)
 			if err != nil {

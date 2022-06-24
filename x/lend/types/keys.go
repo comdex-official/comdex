@@ -131,8 +131,8 @@ func BorrowUserKey(id uint64) []byte {
 	return append(BorrowPairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func AssetToPairMappingKey(id uint64) []byte {
-	return append(AssetToPairMappingKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func AssetToPairMappingKey(assetId, poolId uint64) []byte {
+	return append(append(AssetToPairMappingKeyPrefix, sdk.Uint64ToBigEndian(assetId)...), sdk.Uint64ToBigEndian(poolId)...)
 }
 
 func LendForAddressByAsset(address sdk.AccAddress, assetID, poolID uint64) []byte {

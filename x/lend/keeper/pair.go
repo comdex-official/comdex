@@ -59,6 +59,10 @@ func (k Keeper) AddAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMap
 	if !found {
 		return types.ErrorAssetDoesNotExist
 	}
+	_, found = k.GetPool(ctx, assetToPair.PoolId)
+	if !found {
+		return types.ErrPoolNotFound
+	}
 	for _, v := range assetToPair.PairId {
 		_, found := k.GetLendPair(ctx, v)
 		if !found {

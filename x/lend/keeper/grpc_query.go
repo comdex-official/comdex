@@ -263,9 +263,9 @@ func (q queryServer) QueryAssetToPairMapping(c context.Context, req *types.Query
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetAssetToPair(ctx, req.Id)
+	item, found := q.GetAssetToPair(ctx, req.AssetId, req.PoolId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "pairs does not exist for assetId and poolId %d", req.AssetId, req.PoolId)
 	}
 
 	return &types.QueryAssetToPairMappingResponse{

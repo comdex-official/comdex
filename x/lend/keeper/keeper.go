@@ -392,7 +392,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 		return types.ErrorDuplicateBorrow
 	}
 
-	pairMapping, _ := k.GetAssetToPair(ctx, lendPos.AssetId)
+	pairMapping, _ := k.GetAssetToPair(ctx, lendPos.AssetId, lendPos.PoolId)
 	found = uint64InSlice(pairId, pairMapping.PairId)
 	if !found {
 		return types.ErrorPairNotFound
@@ -704,11 +704,6 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowId uint64, addr string
 		return types.ErrorDuplicateBorrow
 	}
 
-	pairMapping, _ := k.GetAssetToPair(ctx, lendPos.AssetId)
-	found = uint64InSlice(pairId, pairMapping.PairId)
-	if !found {
-		return types.ErrorPairNotFound
-	}
 	pair, found := k.GetLendPair(ctx, pairId)
 	if !found {
 		return types.ErrorPairNotFound
