@@ -93,7 +93,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 							return status, err
 						}
 
-						err = k.startSurplusAuction(ctx, sellToken, buyToken, collector.BidFactor, appID, assetID, assetBuyID, assetSellID)
+						err = k.StartSurplusAuction(ctx, sellToken, buyToken, collector.BidFactor, appID, assetID, assetBuyID, assetSellID)
 						if err != nil {
 							return status, err
 						}
@@ -120,7 +120,7 @@ func (k Keeper) getSurplusBuyTokenAmount(ctx sdk.Context, AssetBuyID, AssetSellI
 	return 5, sellToken, buyToken
 }
 
-func (k Keeper) startSurplusAuction(
+func (k Keeper) StartSurplusAuction(
 	ctx sdk.Context,
 	sellToken sdk.Coin,
 	buyToken sdk.Coin,
