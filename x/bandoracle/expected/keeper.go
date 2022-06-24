@@ -11,7 +11,7 @@ import (
 type MarketKeeper interface{}
 
 type AssetKeeper interface {
-	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
+	GetAssetsForOracle(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 }
 
 type ChannelKeeper interface {

@@ -19,8 +19,8 @@ func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
 	return k.assetKeeper.HasAsset(ctx, id)
 }
 
-func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
-	return k.assetKeeper.GetAssets(ctx)
+func (k *Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []types.Asset) {
+	return k.assetKeeper.GetAssetsForOracle(ctx)
 }
 
 func (k *Keeper) GetLastFetchPriceID(ctx sdk.Context) int64 {
