@@ -56,7 +56,7 @@ func (m msgServer) RemoveWhitelist(goCtx context.Context, msg *types.RemoveWhite
 func (m msgServer) WhitelistAppVault(goCtx context.Context, msg *types.WhitelistAppIdVault) (*types.MsgWhitelistAppIdVaultResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := m.Keeper.WhitelistAppIdVault(ctx, msg.AppMappingId); err != nil {
+	if err := m.Keeper.WhitelistAppIDVault(ctx, msg.AppMappingId); err != nil {
 		return nil, err
 	}
 	return &types.MsgWhitelistAppIdVaultResponse{}, nil
@@ -65,7 +65,7 @@ func (m msgServer) WhitelistAppVault(goCtx context.Context, msg *types.Whitelist
 func (m msgServer) RemoveWhitelistAppVault(goCtx context.Context, msg *types.RemoveWhitelistAppIdVault) (*types.MsgRemoveWhitelistAppIdVaultResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := m.Keeper.RemoveWhitelistAppIdVault(ctx, msg.AppMappingId); err != nil {
+	if err := m.Keeper.RemoveWhitelistAppIDVault(ctx, msg.AppMappingId); err != nil {
 		return nil, err
 	}
 	return &types.MsgRemoveWhitelistAppIdVaultResponse{}, nil
@@ -89,7 +89,7 @@ func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.Activa
 	if err != nil {
 		return nil, err
 	}
-	if err := m.Keeper.ActExternalRewardsVaults(ctx, msg.AppMappingId, msg.Extended_Pair_Id, msg.TotalRewards, msg.DurationDays, Depositor, msg.MinLockupTimeSeconds); err != nil {
+	if err := m.Keeper.ActExternalRewardsVaults(ctx, msg.AppMappingId, msg.Extended_Pair_Id, msg.DurationDays, msg.MinLockupTimeSeconds, msg.TotalRewards, Depositor); err != nil {
 		return nil, err
 	}
 	return &types.ActivateExternalRewardsVaultResponse{}, nil

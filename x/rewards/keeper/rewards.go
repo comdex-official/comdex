@@ -40,7 +40,7 @@ func (k *Keeper) GetRewards(ctx sdk.Context) (lends []types.InternalRewards) {
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
 		if err != nil {
-
+			return
 		}
 	}(iter)
 
@@ -53,7 +53,7 @@ func (k *Keeper) GetRewards(ctx sdk.Context) (lends []types.InternalRewards) {
 	return lends
 }
 
-func (k *Keeper) SetAppId(ctx sdk.Context, AppIds types.WhitelistedAppIdsVault) {
+func (k *Keeper) SetAppID(ctx sdk.Context, AppIds types.WhitelistedAppIdsVault) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppIdsVaultKeyPrefix
@@ -63,7 +63,7 @@ func (k *Keeper) SetAppId(ctx sdk.Context, AppIds types.WhitelistedAppIdsVault) 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAppIds(ctx sdk.Context) (appIds types.WhitelistedAppIdsVault) {
+func (k *Keeper) GetAppIDs(ctx sdk.Context) (appIds types.WhitelistedAppIdsVault) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppIdsVaultKeyPrefix
@@ -87,10 +87,10 @@ func (k *Keeper) SetExternalRewardsLockers(ctx sdk.Context, LockerExternalReward
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetExternalRewardsLocker(ctx sdk.Context, Id uint64) (LockerExternalRewards types.LockerExternalRewards) {
+func (k *Keeper) GetExternalRewardsLocker(ctx sdk.Context, id uint64) (LockerExternalRewards types.LockerExternalRewards) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ExternalRewardsLockerMappingKey(Id)
+		key   = types.ExternalRewardsLockerMappingKey(id)
 		value = store.Get(key)
 	)
 	if value == nil {
@@ -109,7 +109,7 @@ func (k *Keeper) GetExternalRewardsLockers(ctx sdk.Context) (LockerExternalRewar
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
 		if err != nil {
-
+			return
 		}
 	}(iter)
 
@@ -122,7 +122,7 @@ func (k *Keeper) GetExternalRewardsLockers(ctx sdk.Context) (LockerExternalRewar
 	return LockerExternalRewards
 }
 
-func (k *Keeper) SetExternalRewardsLockersId(ctx sdk.Context, id uint64) {
+func (k *Keeper) SetExternalRewardsLockersID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ExtRewardsLockerIDKey
@@ -136,7 +136,7 @@ func (k *Keeper) SetExternalRewardsLockersId(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetExternalRewardsLockersId(ctx sdk.Context) uint64 {
+func (k *Keeper) GetExternalRewardsLockersID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.ExtRewardsLockerIDKey
@@ -153,7 +153,7 @@ func (k *Keeper) GetExternalRewardsLockersId(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) SetEpochTimeId(ctx sdk.Context, id uint64) {
+func (k *Keeper) SetEpochTimeID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.EpochTimeIDKey
@@ -167,7 +167,7 @@ func (k *Keeper) SetEpochTimeId(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetEpochTimeId(ctx sdk.Context) uint64 {
+func (k *Keeper) GetEpochTimeID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.EpochTimeIDKey
@@ -194,10 +194,10 @@ func (k *Keeper) SetEpochTime(ctx sdk.Context, epoch types.EpochTime) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetEpochTime(ctx sdk.Context, Id uint64) (epoch types.EpochTime, found bool) {
+func (k *Keeper) GetEpochTime(ctx sdk.Context, id uint64) (epoch types.EpochTime, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.EpochForLockerKey(Id)
+		key   = types.EpochForLockerKey(id)
 		value = store.Get(key)
 	)
 
@@ -209,7 +209,7 @@ func (k *Keeper) GetEpochTime(ctx sdk.Context, Id uint64) (epoch types.EpochTime
 	return epoch, true
 }
 
-func (k *Keeper) SetExternalRewardsVaultId(ctx sdk.Context, id uint64) {
+func (k *Keeper) SetExternalRewardsVaultID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ExtRewardsVaultIDKey
@@ -223,7 +223,7 @@ func (k *Keeper) SetExternalRewardsVaultId(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetExternalRewardsVaultId(ctx sdk.Context) uint64 {
+func (k *Keeper) GetExternalRewardsVaultID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.ExtRewardsVaultIDKey
@@ -249,7 +249,7 @@ func (k *Keeper) GetExternalRewardVaults(ctx sdk.Context) (VaultExternalRewards 
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
 		if err != nil {
-
+			return
 		}
 	}(iter)
 
@@ -273,46 +273,46 @@ func (k *Keeper) SetExternalRewardVault(ctx sdk.Context, VaultExternalRewards ty
 
 // Wasm query checks
 
-func (k *Keeper) GetRemoveWhitelistAppIdLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
-	_, found = k.GetReward(ctx, appMappingId)
-	if found != true {
+func (k *Keeper) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) (found bool, err string) {
+	_, found = k.GetReward(ctx, appMappingID)
+	if !found {
 		return false, "not found"
 	}
 	return true, ""
 }
 
-func (k *Keeper) GetWhitelistAppIdVaultInterestCheck(ctx sdk.Context, appMappingId uint64) (found bool, err string) {
-	found = uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIdsVaults)
+func (k *Keeper) GetWhitelistAppIDVaultInterestCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
+	found = uint64InSlice(appMappingID, k.GetAppIDs(ctx).WhitelistedAppMappingIdsVaults)
 	if found {
 		return false, "app Id already exists"
 	}
 	return true, ""
 }
 
-func (k *Keeper) GetWhitelistAppIdLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId []uint64) (found bool, err string) {
-	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, appMappingId)
-	for i := range assetId {
-		found := uint64InSlice(assetId[i], lockerAssets.AssetIds)
+func (k *Keeper) GetWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) (found bool, err string) {
+	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, appMappingID)
+	for i := range assetIDs {
+		found := uint64InSlice(assetIDs[i], lockerAssets.AssetIds)
 		if !found {
-			return false, "assetId does not exist"
+			return false, "assetID does not exist"
 		}
 	}
 	return true, ""
 }
 
-func (k *Keeper) GetExternalLockerRewardsCheck(ctx sdk.Context, appMappingId uint64, AssetId uint64) (found bool, err string) {
-	lockerAssets, found := k.GetLockerProductAssetMapping(ctx, appMappingId)
+func (k *Keeper) GetExternalLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetID uint64) (found bool, err string) {
+	lockerAssets, found := k.GetLockerProductAssetMapping(ctx, appMappingID)
 	if !found {
-		return false, "LockerProductAssetMapping Doesnt Exist"
+		return false, "locker product asset mapping doesnt exist"
 	}
 
-	found = uint64InSlice(AssetId, lockerAssets.AssetIds)
+	found = uint64InSlice(assetID, lockerAssets.AssetIds)
 	if !found {
-		return false, "AssetId does not exist"
+		return false, "asset id does not exist"
 	}
 	return true, ""
 }
 
-func (k *Keeper) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingId uint64, assetId uint64) (found bool, err string) {
+func (k *Keeper) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingID uint64, assetID uint64) (found bool, err string) {
 	return true, ""
 }

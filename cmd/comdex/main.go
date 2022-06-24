@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-
 	comdex.SetAccountAddressPrefixes()
 
 	root, _ := NewRootCmd()

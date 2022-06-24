@@ -34,13 +34,13 @@ const (
 
 // NewMsgCreatePair returns a new MsgCreatePair.
 func NewMsgCreatePair(
+	appID uint64,
 	//nolint
-	appId uint64,
 	creator sdk.AccAddress,
 	baseCoinDenom, quoteCoinDenom string,
 ) *MsgCreatePair {
 	return &MsgCreatePair{
-		AppId:          appId,
+		AppId:          appID,
 		Creator:        creator.String(),
 		BaseCoinDenom:  baseCoinDenom,
 		QuoteCoinDenom: quoteCoinDenom,
@@ -497,13 +497,13 @@ func (msg MsgCancelOrder) GetOrderer() sdk.AccAddress {
 
 // NewMsgCancelAllOrders creates a new MsgCancelAllOrders.
 func NewMsgCancelAllOrders(
-	appId uint64,
+	appID uint64,
 	//nolint
 	orderer sdk.AccAddress,
 	pairIDs []uint64,
 ) *MsgCancelAllOrders {
 	return &MsgCancelAllOrders{
-		AppId:   appId,
+		AppId:   appID,
 		Orderer: orderer.String(),
 		PairIds: pairIDs,
 	}

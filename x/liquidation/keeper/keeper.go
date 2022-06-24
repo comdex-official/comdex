@@ -75,7 +75,7 @@ func uint64InSlice(a uint64, list []uint64) bool {
 	return false
 }
 
-func (k Keeper) WhitelistAppId(ctx sdk.Context, appMappingId uint64) error {
+func (k Keeper) WhitelistAppID(ctx sdk.Context, appMappingId uint64) error {
 	found := uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIds)
 	if found {
 		return types.ErrAppIDExists
@@ -111,7 +111,7 @@ func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingID uint64) error
 
 //Wasm tx and query binding functions
 
-func (k Keeper) WasmWhitelistAppIdLiquidation(ctx sdk.Context, appMappingId uint64) error {
+func (k Keeper) WasmWhitelistAppIDLiquidation(ctx sdk.Context, appMappingId uint64) error {
 	WhitelistedAppIds := append(k.GetAppIds(ctx).WhitelistedAppMappingIds, appMappingId)
 	UpdatedWhitelistedAppIds := types.WhitelistedAppIds{
 		WhitelistedAppMappingIds: WhitelistedAppIds,
@@ -120,7 +120,7 @@ func (k Keeper) WasmWhitelistAppIdLiquidation(ctx sdk.Context, appMappingId uint
 	return nil
 }
 
-func (k Keeper) WasmWhitelistAppIdLiquidationQuery(ctx sdk.Context, appMappingId uint64) (bool, string) {
+func (k Keeper) WasmWhitelistAppIDLiquidationQuery(ctx sdk.Context, appMappingId uint64) (bool, string) {
 	found := uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIds)
 	if found {
 		return false, types.ErrAppIDExists.Error()
@@ -128,7 +128,7 @@ func (k Keeper) WasmWhitelistAppIdLiquidationQuery(ctx sdk.Context, appMappingId
 	return true, ""
 }
 
-func (k Keeper) WasmRemoveWhitelistAppIdLiquidation(ctx sdk.Context, appMappingId uint64) error {
+func (k Keeper) WasmRemoveWhitelistAppIDLiquidation(ctx sdk.Context, appMappingId uint64) error {
 	WhitelistedAppIds := k.GetAppIds(ctx).WhitelistedAppMappingIds
 	found := uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIds)
 	if !found {
@@ -149,7 +149,7 @@ func (k Keeper) WasmRemoveWhitelistAppIdLiquidation(ctx sdk.Context, appMappingI
 	return nil
 }
 
-func (k Keeper) WasmRemoveWhitelistAppIdLiquidationQuery(ctx sdk.Context, appMappingId uint64) (bool, string) {
+func (k Keeper) WasmRemoveWhitelistAppIDLiquidationQuery(ctx sdk.Context, appMappingId uint64) (bool, string) {
 	found := uint64InSlice(appMappingId, k.GetAppIds(ctx).WhitelistedAppMappingIds)
 	if !found {
 		return false, types.ErrAppIDDoesNotExists.Error()

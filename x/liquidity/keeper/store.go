@@ -8,7 +8,7 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
-// GetLastPairId returns the last pair id.
+// GetLastPairID returns the last pair id.
 func (k Keeper) GetLastPairID(ctx sdk.Context, appID uint64) (id uint64) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetLastPairIDKey(appID))
@@ -22,7 +22,7 @@ func (k Keeper) GetLastPairID(ctx sdk.Context, appID uint64) (id uint64) {
 	return
 }
 
-// SetLastPairId stores the last pair id.
+// SetLastPairID stores the last pair id.
 func (k Keeper) SetLastPairID(ctx sdk.Context, appID, id uint64) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&gogotypes.UInt64Value{Value: id})
@@ -102,7 +102,7 @@ func (k Keeper) GetAllPairs(ctx sdk.Context, appID uint64) (pairs []types.Pair) 
 	return pairs
 }
 
-// GetLastPoolId returns the last pool id.
+// GetLastPoolID returns the last pool id.
 func (k Keeper) GetLastPoolID(ctx sdk.Context, appID uint64) (id uint64) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetLastPoolIDKey(appID))
@@ -116,7 +116,7 @@ func (k Keeper) GetLastPoolID(ctx sdk.Context, appID uint64) (id uint64) {
 	return
 }
 
-// SetLastPoolId stores the last pool id.
+// SetLastPoolID stores the last pool id.
 func (k Keeper) SetLastPoolID(ctx sdk.Context, appID, id uint64) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&gogotypes.UInt64Value{Value: id})

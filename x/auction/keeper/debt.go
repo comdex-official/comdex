@@ -135,6 +135,7 @@ func (k Keeper) StartDebtAuction(
 		ActiveBiddingId:     0,
 		Bidder:              nil,
 		EndTime:             ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
+		BidEndTime:          ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
 		CurrentBidAmount:    sdk.NewCoin(auctionToken.Denom, sdk.NewInt(0)),
 		AuctionStatus:       auctiontypes.AuctionStartNoBids,
 		AppId:               appID,
@@ -190,6 +191,7 @@ func (k Keeper) RestartDebt(
 	}
 	debtAuction.ExpectedUserToken = inflowToken
 	debtAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
+	debtAuction.BidEndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
 	err := k.SetDebtAuction(ctx, debtAuction)
 	if err != nil {
 		return err

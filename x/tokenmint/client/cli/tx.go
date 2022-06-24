@@ -12,12 +12,7 @@ import (
 	"github.com/comdex-official/comdex/x/tokenmint/types"
 )
 
-const (
-	flagPacketTimeoutTimestamp = "packet-timeout-timestamp"
-	listSeparator              = ","
-)
-
-// GetTxCmd returns the transaction commands for this module
+// GetTxCmd returns the transaction commands for this module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -34,7 +29,7 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
-// Token mint txs cmd
+// Token mint txs cmd.
 func txMint() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "tokenmint [app_ID] [asset_id]",
@@ -45,18 +40,21 @@ func txMint() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := sdk.ParseUint(args[0])
-			appID := appId.Uint64()
+			appID, err := sdk.ParseUint(args[0])
 
-			assetId, err := sdk.ParseUint(args[1])
+			if err != nil {
+				return err
+			}
+			assetID, err := sdk.ParseUint(args[1])
 
-			msg := types.NewMsgMintNewTokensRequest(ctx.GetFromAddress(), appID, assetId.Uint64())
+			if err != nil {
+				return err
+			}
+			msg := types.NewMsgMintNewTokensRequest(ctx.GetFromAddress(), appID.Uint64(), assetID.Uint64())
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
-
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }

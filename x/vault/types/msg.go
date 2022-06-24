@@ -17,10 +17,13 @@ var (
 	_ sdk.Msg = (*MsgWithdrawStableMintRequest)(nil)
 )
 
-func NewMsgCreateRequest(from sdk.AccAddress, app_mapping_id uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) *MsgCreateRequest {
+func NewMsgCreateRequest(
+	// nolint
+	from sdk.AccAddress,
+	appMappingID uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) *MsgCreateRequest {
 	return &MsgCreateRequest{
 		From:                from.String(),
-		AppMappingId:        app_mapping_id,
+		AppMappingId:        appMappingID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		AmountIn:            amountIn,
 		AmountOut:           amountOut,
@@ -77,11 +80,14 @@ func (m *MsgCreateRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgDepositRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, userVaultid string, amount sdk.Int) *MsgDepositRequest {
+func NewMsgDepositRequest(
+	// nolint
+	from sdk.AccAddress,
+	appMappingID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgDepositRequest {
 	return &MsgDepositRequest{
 		From:                from.String(),
-		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultId: extended_pair_vault_id,
+		AppMappingId:        appMappingID,
+		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
 	}
@@ -131,11 +137,14 @@ func (m *MsgDepositRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgWithdrawRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, userVaultid string, amount sdk.Int) *MsgWithdrawRequest {
+func NewMsgWithdrawRequest(
+	// nolint
+	from sdk.AccAddress,
+	appMappingID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgWithdrawRequest {
 	return &MsgWithdrawRequest{
 		From:                from.String(),
-		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultId: extended_pair_vault_id,
+		AppMappingId:        appMappingID,
+		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
 	}
@@ -185,11 +194,14 @@ func (m *MsgWithdrawRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgDrawRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, userVaultid string, amount sdk.Int) *MsgDrawRequest {
+func NewMsgDrawRequest(
+	// nolint
+	from sdk.AccAddress,
+	appMappingID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgDrawRequest {
 	return &MsgDrawRequest{
 		From:                from.String(),
-		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultId: extended_pair_vault_id,
+		AppMappingId:        appMappingID,
+		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
 	}
@@ -239,11 +251,14 @@ func (m *MsgDrawRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgRepayRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, userVaultid string, amount sdk.Int) *MsgRepayRequest {
+func NewMsgRepayRequest(
+	// nolint
+	from sdk.AccAddress,
+	appMappingID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgRepayRequest {
 	return &MsgRepayRequest{
 		From:                from.String(),
-		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultId: extended_pair_vault_id,
+		AppMappingId:        appMappingID,
+		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
 	}
@@ -293,11 +308,14 @@ func (m *MsgRepayRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgLiquidateRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, userVaultid string) *MsgCloseRequest {
+func NewMsgLiquidateRequest(
+	// nolint
+	from sdk.AccAddress,
+	appMappingID uint64, extendedPairVaultID uint64, userVaultid string) *MsgCloseRequest {
 	return &MsgCloseRequest{
 		From:                from.String(),
-		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultId: extended_pair_vault_id,
+		AppMappingId:        appMappingID,
+		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 	}
 }
@@ -337,11 +355,14 @@ func (m *MsgCloseRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgCreateStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int) *MsgCreateStableMintRequest {
+func NewMsgCreateStableMintRequest(
+	// nolint
+	from sdk.AccAddress,
+	appMappingID uint64, extendedPairVaultID uint64, amount sdk.Int) *MsgCreateStableMintRequest {
 	return &MsgCreateStableMintRequest{
 		From:                from.String(),
-		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultId: extended_pair_vault_id,
+		AppMappingId:        appMappingID,
+		ExtendedPairVaultId: extendedPairVaultID,
 		Amount:              amount,
 	}
 }
@@ -387,13 +408,16 @@ func (m *MsgCreateStableMintRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgDepositStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int, stablemint_id string) *MsgDepositStableMintRequest {
+func NewMsgDepositStableMintRequest(
+	// nolint
+	from sdk.AccAddress,
+	appMappingID uint64, extendedPairVaultID uint64, amount sdk.Int, stablemintID string) *MsgDepositStableMintRequest {
 	return &MsgDepositStableMintRequest{
 		From:                from.String(),
-		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultId: extended_pair_vault_id,
+		AppMappingId:        appMappingID,
+		ExtendedPairVaultId: extendedPairVaultID,
 		Amount:              amount,
-		StableVaultId:       stablemint_id,
+		StableVaultId:       stablemintID,
 	}
 }
 
@@ -438,13 +462,16 @@ func (m *MsgDepositStableMintRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgWithdrawStableMintRequest(from sdk.AccAddress, app_mapping_id uint64, extended_pair_vault_id uint64, amount sdk.Int, stablemint_id string) *MsgWithdrawStableMintRequest {
+func NewMsgWithdrawStableMintRequest(
+	// nolint
+	from sdk.AccAddress,
+	appMappingID uint64, extendedPairVaultID uint64, amount sdk.Int, stablemintID string) *MsgWithdrawStableMintRequest {
 	return &MsgWithdrawStableMintRequest{
 		From:                from.String(),
-		AppMappingId:        app_mapping_id,
-		ExtendedPairVaultId: extended_pair_vault_id,
+		AppMappingId:        appMappingID,
+		ExtendedPairVaultId: extendedPairVaultID,
 		Amount:              amount,
-		StableVaultId:       stablemint_id,
+		StableVaultId:       stablemintID,
 	}
 }
 

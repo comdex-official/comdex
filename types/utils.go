@@ -1,9 +1,6 @@
 package types
 
 import (
-	"encoding/binary"
-	"encoding/json"
-	"fmt"
 	"math/big"
 	"math/rand"
 	"strings"
@@ -31,15 +28,6 @@ func (m StrIntMap) AddOrSet(key string, value sdk.Int) {
 	}
 }
 
-func PP(data interface{}) {
-	var p []byte
-	p, err := json.MarshalIndent(data, "", "\t")
-	if err != nil {
-		return
-	}
-	fmt.Printf("%s \n", p)
-}
-
 // DateRangesOverlap returns true if two date ranges overlap each other.
 // End time is exclusive and start time is inclusive.
 func DateRangesOverlap(startTimeA, endTimeA, startTimeB, endTimeB time.Time) bool {
@@ -58,22 +46,8 @@ func ParseDec(s string) sdk.Dec {
 }
 
 // ParseCoin parses and returns sdk.Coin.
-func ParseCoin(s string) sdk.Coin {
-	coin, err := sdk.ParseCoinNormalized(s)
-	if err != nil {
-		panic(err)
-	}
-	return coin
-}
 
 // ParseCoins parses and returns sdk.Coins.
-func ParseCoins(s string) sdk.Coins {
-	coins, err := sdk.ParseCoinsNormalized(s)
-	if err != nil {
-		panic(err)
-	}
-	return coins
-}
 
 // ParseTime parses and returns time.Time in time.RFC3339 format.
 func ParseTime(s string) time.Time {
@@ -130,40 +104,11 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins, gas uint64
 }
 
 // GenAndDeliverTxWithFees generates a transaction with given fee and delivers it.
-func GenAndDeliverTxWithFees(txCtx simulation.OperationInput, gas uint64, fees sdk.Coins) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
-	spendable := txCtx.Bankkeeper.SpendableCoins(txCtx.Context, account.GetAddress())
-
-	var err error
-
-	_, hasNeg := spendable.SafeSub(txCtx.CoinsSpentInMsg)
-	if hasNeg {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "message doesn't leave room for fees"), nil, err
-	}
-
-	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate fees"), nil, err
-	}
-	return GenAndDeliverTx(txCtx, fees, gas)
-}
 
 // ShuffleSimAccounts returns randomly shuffled simulation accounts.
-func ShuffleSimAccounts(r *rand.Rand, accs []simtypes.Account) []simtypes.Account {
-	accs2 := make([]simtypes.Account, len(accs))
-	copy(accs2, accs)
-	r.Shuffle(len(accs2), func(i, j int) {
-		accs2[i], accs2[j] = accs2[j], accs2[i]
-	})
-	return accs2
-}
 
 // TestAddress returns an address for testing purpose.
 // TestAddress returns same address when addrNum is same.
-func TestAddress(addrNum int) sdk.AccAddress {
-	addr := make(sdk.AccAddress, 20)
-	binary.PutVarint(addr, int64(addrNum))
-	return addr
-}
 
 // SafeMath runs f in safe mode, which means that any panics occurred inside f
 // gets caught by recover() and if the panic was an overflow, onOverflow is run.

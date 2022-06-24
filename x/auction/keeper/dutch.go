@@ -446,14 +446,14 @@ func (k Keeper) CloseDutchAuction(
 
 	// 		//Transfer balance from collector module to auction module
 	// 		requiredAmount := dutchAuction.InflowTokenTargetAmount.Sub(dutchAuction.InflowTokenCurrentAmount)
-	// 		_, err := k.GetAmountFromCollector(ctx, dutchAuction.AppId, dutchAuction.AssetInId, requiredAmount.Amount)
+	// 		_, err := k.GetAmountFromCollector(ctx, dutchAuction.appID, dutchAuction.AssetInId, requiredAmount.Amount)
 	// 		if err != nil {
 
 	// 			return err
 	// 		}
 
 	// 		//storing protocol loss
-	// 		k.SetProtocolStatistics(ctx, dutchAuction.AppId, dutchAuction.AssetInId, requiredAmount.Amount)
+	// 		k.SetProtocolStatistics(ctx, dutchAuction.appID, dutchAuction.AssetInId, requiredAmount.Amount)
 	// 		// burnToken.Amount = lockedVault.AmountOut
 	// }
 
@@ -554,7 +554,10 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 			inFlowTokenCurrentPrice = ExtendedPairVault.AssetOutPrice
 		}
 		//inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
-		tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
+		// tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
+		tnume := dutchAuction.OutflowTokenInitialPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds)))
+		tdeno := dutchAuction.OutflowTokenInitialPrice.Sub(dutchAuction.OutflowTokenEndPrice)
+		tau := sdk.Int(tnume.Quo(tdeno)) 
 		dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
 		seconds := sdk.NewInt(int64(dur.Seconds()))
 		outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)

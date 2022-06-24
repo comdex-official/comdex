@@ -22,7 +22,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
-// GetParams returns the parameters for the liquidity module.
+// GetGenericParams returns the parameters for the liquidity module.
 func (k Keeper) GetGenericParams(ctx sdk.Context, appID uint64) (types.GenericParams, error) {
 	genericParams, found := k.GetGenericLiquidityParams(ctx, appID)
 	if !found {

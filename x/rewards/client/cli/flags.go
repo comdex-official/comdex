@@ -9,10 +9,8 @@ import (
 
 // flags for incentives module tx commands.
 const (
-	// Global Flags.
 	FlagStartTime = "start-time"
 
-	// Msg Specific Flags - Liquidity GaugeType Flags.
 	FlagPoolID       = "pool-id"
 	FlagAppID        = "app-id"
 	FlagIsMasterPool = "is-master-pool"
@@ -35,9 +33,10 @@ func FlagSetCreateGauge() *flag.FlagSet {
 	return fs
 }
 
-func ParseUint64SliceFromString(s string, seperator string) ([]uint64, error) {
-	var parsedInts []uint64
-	for _, s := range strings.Split(s, seperator) {
+func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
+	stringSlice := strings.Split(s, separator)
+	parsedInts := make([]uint64, 0, len(stringSlice))
+	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 
 		parsed, err := strconv.ParseUint(s, 10, 64)

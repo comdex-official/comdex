@@ -137,7 +137,6 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	//types.RegisterQueryServiceServer(cfg.QueryServer(), am.keeper)
 	types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQueryServer(am.keeper))
-
 }
 
 // RegisterInvariants registers the capability module's invariants.

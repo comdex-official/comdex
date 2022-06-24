@@ -2,19 +2,17 @@ package cli
 
 import (
 	"fmt"
-	// "strings"
 	"strconv"
 
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/tokenmint/types"
 )
 
-// GetQueryCmd returns the cli query commands for this module
+// GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd() *cobra.Command {
 	// Group tokenmint queries under a subcommand
 	cmd := &cobra.Command{
@@ -35,14 +33,13 @@ func GetQueryCmd() *cobra.Command {
 	return cmd
 }
 
-// QueryAllTokenMintedForAllProducts Queries the total token minted for all the apps on comdex
+// QueryAllTokenMintedForAllProducts Queries the total token minted for all the apps on comdex.
 func QueryAllTokenMintedForAllProducts() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "total-token-minted-all-products",
 		Short: "Token minted tokens data",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -70,14 +67,13 @@ func QueryAllTokenMintedForAllProducts() *cobra.Command {
 	return cmd
 }
 
-// QueryTokenMintedByProduct queries token minted per application/product
+// QueryTokenMintedByProduct queries token minted per application/product.
 func QueryTokenMintedByProduct() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "token-minted-by-product [app_id]",
 		Short: "Token minted by product",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -87,7 +83,7 @@ func QueryTokenMintedByProduct() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -95,7 +91,7 @@ func QueryTokenMintedByProduct() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryTokenMintedByProduct(cmd.Context(), &types.QueryTokenMintedByProductRequest{
-				AppId:      appId,
+				AppId:      appID,
 				Pagination: pagination,
 			})
 
@@ -110,14 +106,13 @@ func QueryTokenMintedByProduct() *cobra.Command {
 	return cmd
 }
 
-// QueryTokenMintedByProductAndAsset queries token minted for an application/product and asset
+// QueryTokenMintedByProductAndAsset queries token minted for an application/product and asset.
 func QueryTokenMintedByProductAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "token-minted-by-product-asset [app_id] [asset_id]",
 		Short: "Token minted by product and asset data",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -127,11 +122,11 @@ func QueryTokenMintedByProductAndAsset() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -139,8 +134,8 @@ func QueryTokenMintedByProductAndAsset() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryTokenMintedByProductAndAsset(cmd.Context(), &types.QueryTokenMintedByProductAndAssetRequest{
-				AppId:      appId,
-				AssetId:    assetId,
+				AppId:      appID,
+				AssetId:    assetID,
 				Pagination: pagination,
 			})
 

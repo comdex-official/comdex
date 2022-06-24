@@ -5,16 +5,16 @@ import (
 )
 
 const (
-	ProposalAddAssets              = "AddAssets"
-	ProposalUpdateAsset            = "UpdateAsset"
-	ProposalAddPairs               = "AddPairs"
-	ProposalAddWhitelistedAssets   = "AddWhitelistedAssets"
-	ProposalUpdateWhitelistedAsset = "UpdateWhitelistedAsset"
-	ProposalAddWhitelistedPairs    = "AddWhitelistedPairs"
-	ProposalUpdateWhitelistedPair  = "UpdateWhitelistedPair"
-	ProposalAddAppMapping          = "AddAppMapping"
-	ProposalAddAssetMapping        = "AddAssetMapping"
-	ProposalAddExtendedPairsVault  = "AddExtendedPairsVault"
+	ProposalAddAssets                 = "AddAssets"
+	ProposalUpdateAsset               = "UpdateAsset"
+	ProposalAddPairs                  = "AddPairs"
+	ProposalAddWhitelistedAssets      = "AddWhitelistedAssets"
+	ProposalUpdateWhitelistedAsset    = "UpdateWhitelistedAsset"
+	ProposalAddWhitelistedPairs       = "AddWhitelistedPairs"
+	ProposalUpdateWhitelistedPair     = "UpdateWhitelistedPair"
+	ProposalAddAppMapping             = "AddAppMapping"
+	ProposalAddAssetMapping           = "AddAssetMapping"
+	ProposalAddExtendedPairsVault     = "AddExtendedPairsVault"
 	ProposalUpdateGovTimeInAppMapping = "UpdateGovTimeInAppMapping"
 )
 
@@ -357,7 +357,7 @@ func (p *AddAppMappingProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewUpdateGovTimeInAppMappingProposal(title, description string, aTime AppAndGovTime ) govtypes.Content {
+func NewUpdateGovTimeInAppMappingProposal(title, description string, aTime AppAndGovTime) govtypes.Content {
 	return &UpdateGovTimeInAppMappingProposal{
 		Title:       title,
 		Description: description,
@@ -375,7 +375,9 @@ func (p *UpdateGovTimeInAppMappingProposal) GetDescription() string {
 
 func (p *UpdateGovTimeInAppMappingProposal) ProposalRoute() string { return RouterKey }
 
-func (p *UpdateGovTimeInAppMappingProposal) ProposalType() string { return ProposalUpdateGovTimeInAppMapping }
+func (p *UpdateGovTimeInAppMappingProposal) ProposalType() string {
+	return ProposalUpdateGovTimeInAppMapping
+}
 
 func (p *UpdateGovTimeInAppMappingProposal) ValidateBasic() error {
 

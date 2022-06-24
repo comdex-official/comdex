@@ -104,7 +104,7 @@ func (k *Keeper) CheckLockerProductAssetMapping(ctx sdk.Context, assetID uint64,
 	return false
 }
 
-//For updating token locker mappping in lookup table
+// UpdateTokenLockerMapping For updating token locker mapping in lookup table
 func (k *Keeper) UpdateTokenLockerMapping(ctx sdk.Context, lockerLookupData types.LockerLookupTable, counter uint64, userLockerData types.Locker) {
 	for _, lockerData := range lockerLookupData.Lockers {
 		if lockerData.AssetId == userLockerData.AssetDepositId {
@@ -116,7 +116,7 @@ func (k *Keeper) UpdateTokenLockerMapping(ctx sdk.Context, lockerLookupData type
 	k.SetLockerLookupTable(ctx, lockerLookupData)
 }
 
-//For updating token locker mappping in lookup table
+// UpdateAmountLockerMapping For updating token locker mapping in lookup table
 func (k *Keeper) UpdateAmountLockerMapping(ctx sdk.Context, lockerLookupData types.LockerLookupTable, assetId uint64, amount sdk.Int, changeType bool) {
 
 	//if Change type true = Add to deposits
@@ -134,7 +134,7 @@ func (k *Keeper) UpdateAmountLockerMapping(ctx sdk.Context, lockerLookupData typ
 	k.SetLockerLookupTable(ctx, lockerLookupData)
 }
 
-//User Locker Functions:
+// SetUserLockerAssetMapping User Locker Functions:
 func (k *Keeper) SetUserLockerAssetMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping) {
 	var (
 		store = k.Store(ctx)
@@ -160,7 +160,7 @@ func (k *Keeper) GetUserLockerAssetMapping(ctx sdk.Context, address string) (use
 	return userLockerAssetData, true
 }
 
-//Checking if for a certain user for the app type , whether there exists a certain asset or not and if it contains a locker id or not
+// CheckUserAppToAssetMapping Checking if for a certain user for the app type , whether there exists a certain asset or not and if it contains a locker id or not
 func (k *Keeper) CheckUserAppToAssetMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping, assetID uint64, appMappingID uint64) (lockerId string, found bool) {
 
 	for _, lockerAppMapping := range userLockerAssetData.LockerAppMapping {

@@ -19,7 +19,6 @@ type Keeper struct {
 }
 
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper, bandoraclekeeper expected.BandOracleKeeper) *Keeper {
-
 	return &Keeper{
 		cdc:              cdc,
 		key:              key,

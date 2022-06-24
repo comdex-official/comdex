@@ -44,7 +44,6 @@ func (p *UpdateGenericParamsProposal) ProposalRoute() string { return RouterKey 
 func (p *UpdateGenericParamsProposal) ProposalType() string { return ProposalUpdateGenericParams }
 
 func (p *UpdateGenericParamsProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err

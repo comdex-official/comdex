@@ -18,10 +18,11 @@ var (
 	AppIDKey        = []byte{0x04}
 	PairsVaultIDKey = []byte{0x05}
 
-	AssetKeyPrefix      = []byte{0x11}
-	PairKeyPrefix       = []byte{0x14}
-	AppKeyPrefix        = []byte{0x15}
-	PairsVaultKeyPrefix = []byte{0x16}
+	AssetKeyPrefix          = []byte{0x11}
+	AssetForOracleKeyPrefix = []byte{0x12}
+	PairKeyPrefix           = []byte{0x14}
+	AppKeyPrefix            = []byte{0x15}
+	PairsVaultKeyPrefix     = []byte{0x16}
 
 	AssetForDenomKeyPrefix = []byte{0x21}
 	AppForShortNamePrefix  = []byte{0x22}
@@ -71,4 +72,8 @@ func PairKey(id uint64) []byte {
 
 func WhitelistPairKey(id uint64) []byte {
 	return append(WhitelistPairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func AssetForOracleKey(id uint64) []byte {
+	return append(AssetForOracleKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }

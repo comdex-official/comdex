@@ -147,7 +147,7 @@ func (k *Keeper) QueryGaugeByDuration(c context.Context, req *types.QueryGaugesB
 		return nil, status.Errorf(codes.NotFound, "no gauges for given duration %ds", req.DurationSeconds)
 	}
 
-	var gauges = []types.Gauge{}
+	var gauges []types.Gauge
 
 	for _, gaugeID := range gaugsIdsByTriggerDuration.GaugeIds {
 		gauge, found := k.GetGaugeByID(ctx, gaugeID)
@@ -162,7 +162,7 @@ func (k *Keeper) QueryGaugeByDuration(c context.Context, req *types.QueryGaugesB
 	}, nil
 }
 
-func (q *Keeper) QueryRewards(c context.Context, req *types.QueryRewardsRequest) (*types.QueryRewardsResponse, error) {
+func (k *Keeper) QueryRewards(c context.Context, req *types.QueryRewardsRequest) (*types.QueryRewardsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -173,11 +173,11 @@ func (q *Keeper) QueryRewards(c context.Context, req *types.QueryRewardsRequest)
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.RewardsKeyPrefix),
+		prefix.NewStore(k.Store(ctx), types.RewardsKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.InternalRewards
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
+			if err := k.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
 
@@ -199,7 +199,7 @@ func (q *Keeper) QueryRewards(c context.Context, req *types.QueryRewardsRequest)
 	}, nil
 }
 
-func (q *Keeper) QueryReward(c context.Context, req *types.QueryRewardRequest) (*types.QueryRewardResponse, error) {
+func (k *Keeper) QueryReward(c context.Context, req *types.QueryRewardRequest) (*types.QueryRewardResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -208,7 +208,7 @@ func (q *Keeper) QueryReward(c context.Context, req *types.QueryRewardRequest) (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := q.GetReward(ctx, req.Id)
+	item, found := k.GetReward(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
 	}

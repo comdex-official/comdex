@@ -5,14 +5,6 @@ import (
 )
 
 var (
-	KeyIBCPort          = []byte("IBCPort")
-	KeyIBCVersion       = []byte("IBCVersion")
-	KeyOracleAskCount   = []byte("OracleAskCount")
-	KeyOracleMinCount   = []byte("OracleMinCount")
-	KeyOracleMultiplier = []byte("OracleMultiplier")
-)
-
-var (
 	_ paramstypes.ParamSet = (*Params)(nil)
 )
 

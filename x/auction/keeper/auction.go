@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -47,19 +48,19 @@ func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultID uint
 	return nil
 }
 
-func (k Keeper) AddAuctionParams(ctx sdk.Context, appID, auctionDurationSeconds uint64, buffer, cusp sdk.Dec, step, priceFunctionType, surplusID, debtID, dutchID uint64, bidDurationSeconds uint64) error {
-	newStep := sdk.NewIntFromUint64(step)
+func (k Keeper) AddAuctionParams(ctx sdk.Context, auctionParamsBinding *bindings.MsgAddAuctionParams) error {
+	newStep := sdk.NewIntFromUint64(auctionParamsBinding.Step)
 	auctionParams := auctiontypes.AuctionParams{
-		AppId:                  appID,
-		AuctionDurationSeconds: auctionDurationSeconds,
-		Buffer:                 buffer,
-		Cusp:                   cusp,
+		AppId:                  auctionParamsBinding.AppMappingID,
+		AuctionDurationSeconds: auctionParamsBinding.AuctionDurationSeconds,
+		Buffer:                 auctionParamsBinding.Buffer,
+		Cusp:                   auctionParamsBinding.Cusp,
 		Step:                   newStep,
-		PriceFunctionType:      priceFunctionType,
-		SurplusId:              surplusID,
-		DebtId:                 debtID,
-		DutchId:                dutchID,
-		BidDurationSeconds:     bidDurationSeconds,
+		PriceFunctionType:      auctionParamsBinding.PriceFunctionType,
+		SurplusId:              auctionParamsBinding.SurplusID,
+		DebtId:                 auctionParamsBinding.DebtID,
+		DutchId:                auctionParamsBinding.DutchID,
+		BidDurationSeconds:     auctionParamsBinding.BidDurationSeconds,
 	}
 
 	k.SetAuctionParams(ctx, auctionParams)

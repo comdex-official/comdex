@@ -41,7 +41,6 @@ func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool,
 }
 
 func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
-
 	asset, found := k.assetKeeper.GetAssetForDenom(ctx, denom)
 	if !found {
 		return 0, false
@@ -78,8 +77,10 @@ func (k Keeper) CalculateLiquidityAddedValue(
 	poolSupplyX := sdk.NewDecFromInt(quoteCoinPoolBalance.Amount)
 	poolSupplyY := sdk.NewDecFromInt(baseCoinPoolBalance.Amount)
 
-	baseCoinPoolPrice := sdk.NewDec(0)
-	quoteCoinPoolPrice := sdk.NewDec(0)
+	var (
+		baseCoinPoolPrice  sdk.Dec
+		quoteCoinPoolPrice sdk.Dec
+	)
 	if oraclePriceDenom == quoteCoin.Denom {
 		baseCoinPoolPrice = poolSupplyX.Quo(poolSupplyY).Mul(oraclePrice)
 		quoteCoinPoolPrice = poolSupplyY.Quo(poolSupplyX).Mul(baseCoinPoolPrice)
@@ -162,8 +163,8 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 
 	quoteCoinPoolBalance, baseCoinPoolBalance := k.getPoolBalances(ctx, *pool, *pair)
 
-	lpAddresses := []sdk.AccAddress{}
-	lpSupplies := []sdk.Dec{}
+	var lpAddresses []sdk.AccAddress
+	var lpSupplies []sdk.Dec
 
 	for address, depositedCoins := range liquidityProvidersDataForPool.LiquidityProviders {
 		addr, err := sdk.AccAddressFromBech32(address)
@@ -187,10 +188,10 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 
 	// Logic for master pool mechanism
 	if liquidityGaugeData.IsMasterPool {
-		childPoolSupplies := []sdk.Dec{}
-		minMasterChildPoolSupplies := []sdk.Dec{}
+		var childPoolSupplies []sdk.Dec
+		var minMasterChildPoolSupplies []sdk.Dec
 
-		childPoolIds := []uint64{}
+		var childPoolIds []uint64
 		if len(liquidityGaugeData.ChildPoolIds) == 0 {
 			pools := k.GetAllPools(ctx, appID)
 			for _, pool := range pools {
@@ -208,7 +209,6 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 		}
 
 		if len(childPoolIds) != 0 {
-
 			chilPoolSuppliesData := k.GetAggregatedChildPoolContributions(ctx, appID, childPoolIds, lpAddresses)
 
 			for _, accAddress := range lpAddresses {
@@ -236,7 +236,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 				minMasterChildPoolSupplies = append(minMasterChildPoolSupplies, minSupply)
 			}
 
-			rewardData := []rewardstypes.RewardDistributionDataCollector{}
+			var rewardData []rewardstypes.RewardDistributionDataCollector
 			if !totalRewardEligibleSupply.IsZero() {
 				multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
 				for index, address := range lpAddresses {
@@ -260,7 +260,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 		totalRewardEligibleSupply = totalRewardEligibleSupply.Add(supply)
 	}
 
-	rewardData := []rewardstypes.RewardDistributionDataCollector{}
+	var rewardData []rewardstypes.RewardDistributionDataCollector
 	if !totalRewardEligibleSupply.IsZero() {
 		multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
 		for index, address := range lpAddresses {
@@ -371,7 +371,7 @@ func (k Keeper) SoftUnlockTokens(ctx sdk.Context, msg *types.MsgTokensSoftUnlock
 		return sortedQueuedLiquidityProviders[i].CreatedAt.After(sortedQueuedLiquidityProviders[j].CreatedAt)
 	})
 
-	updatedQueuedLiquidityProviders := []*types.QueuedLiquidityProvider{}
+	var updatedQueuedLiquidityProviders []*types.QueuedLiquidityProvider
 
 	refundAmount := sdk.NewCoin(msg.SoftUnlockCoin.Denom, sdk.NewInt(0))
 
@@ -487,12 +487,12 @@ func (k Keeper) ProcessQueuedLiquidityProviders(ctx sdk.Context, appID uint64) {
 			continue
 		}
 		queuedDepositRequests := poolLpData.QueuedLiquidityProviders
-		updatedQueue := []*types.QueuedLiquidityProvider{}
+		var updatedQueue []*types.QueuedLiquidityProvider
 		for _, queuedLp := range queuedDepositRequests {
 			if ctx.BlockTime().Before(queuedLp.CreatedAt.Add(minEpochDuration)) {
 				updatedQueue = append(updatedQueue, queuedLp)
 			} else {
-				suppliedCoins := []sdk.Coin{}
+				var suppliedCoins []sdk.Coin
 				for _, coin := range queuedLp.SupplyProvided {
 					suppliedCoins = append(suppliedCoins, sdk.NewCoin(coin.Denom, coin.Amount))
 				}

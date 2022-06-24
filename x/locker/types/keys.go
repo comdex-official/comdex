@@ -19,12 +19,10 @@ var (
 )
 
 var (
-	IDKey                                     = []byte{0x00}
-	LockerProductAssetMappingKeyPrefix        = []byte{0x10}
-	LockerLookupTableKeyPrefix                = []byte{0x12}
-	UserLockerAssetMappingKeyPrefix           = []byte{0x14}
-	LockerKeyPrefix                           = []byte{0x15}
-	LockerTotalRewardsByAssetAppWiseKeyPrefix = []byte{0x16}
+	LockerProductAssetMappingKeyPrefix = []byte{0x10}
+	LockerLookupTableKeyPrefix         = []byte{0x12}
+	UserLockerAssetMappingKeyPrefix    = []byte{0x14}
+	LockerKeyPrefix                    = []byte{0x15}
 )
 
 func LockerProductAssetMappingKey(id uint64) []byte {
