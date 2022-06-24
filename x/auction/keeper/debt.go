@@ -83,7 +83,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 						}
 
 						//Mint the tokens when collector module sends tokens to user
-						err := k.startDebtAuction(ctx, outflowToken, inflowToken, collector.BidFactor, appID, assetID, assetInID, assetOutID)
+						err := k.StartDebtAuction(ctx, outflowToken, inflowToken, collector.BidFactor, appID, assetID, assetInID, assetOutID)
 						if err != nil {
 							break
 						}
@@ -116,7 +116,7 @@ func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appID, AssetInID, AssetO
 	return 5, sellToken, buyToken
 }
 
-func (k Keeper) startDebtAuction(
+func (k Keeper) StartDebtAuction(
 	ctx sdk.Context,
 	auctionToken sdk.Coin, //sell token
 	expectedUserToken sdk.Coin, // buy token

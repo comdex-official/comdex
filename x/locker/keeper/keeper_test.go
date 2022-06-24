@@ -11,18 +11,20 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	chain "github.com/comdex-official/comdex/app"
-	"github.com/comdex-official/comdex/x/auction/keeper"
-	"github.com/comdex-official/comdex/x/auction/types"
+	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	lockerKeeper "github.com/comdex-official/comdex/x/locker/keeper"
+	lockerTypes "github.com/comdex-official/comdex/x/locker/types"
 )
 
 type KeeperTestSuite struct {
 	suite.Suite
 
-	app       *chain.App
-	ctx       sdk.Context
-	keeper    keeper.Keeper
-	querier   keeper.QueryServer
-	msgServer types.MsgServer
+	app          *chain.App
+	ctx          sdk.Context
+	assetKeeper  assetKeeper.Keeper
+	lockerKeeper lockerKeeper.Keeper
+	querier      lockerKeeper.QueryServer
+	msgServer    lockerTypes.MsgServer
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -32,9 +34,10 @@ func TestKeeperTestSuite(t *testing.T) {
 func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
-	s.keeper = s.app.AuctionKeeper
-	s.querier = keeper.QueryServer{Keeper: s.keeper}
-	s.msgServer = keeper.NewMsgServiceServer(s.keeper)
+	s.lockerKeeper = s.app.LockerKeeper
+	s.assetKeeper = s.app.AssetKeeper
+	s.querier = lockerKeeper.QueryServer{Keeper: s.lockerKeeper}
+	s.msgServer = lockerKeeper.NewMsgServiceServer(s.lockerKeeper)
 }
 
 //
@@ -65,11 +68,12 @@ func (s *KeeperTestSuite) SetupTest() {
 //	return addr
 //}
 
-func (s *KeeperTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
+func (s *KeeperTestSuite) fundAddr(addr string, amt sdk.Coin) {
 	s.T().Helper()
-	err := s.app.BankKeeper.MintCoins(s.ctx, types.ModuleName, amt)
+	err := s.app.BankKeeper.MintCoins(s.ctx, lockerTypes.ModuleName, sdk.NewCoins(amt))
 	s.Require().NoError(err)
-	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, types.ModuleName, addr, amt)
+	addr1, err := sdk.AccAddressFromBech32(addr)
+	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, lockerTypes.ModuleName, addr1, sdk.NewCoins(amt))
 	s.Require().NoError(err)
 }
 
