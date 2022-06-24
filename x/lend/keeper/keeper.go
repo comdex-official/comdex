@@ -87,7 +87,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetId uint64, Am
 
 	addr, _ := sdk.AccAddressFromBech32(lenderAddr)
 
-	if k.HasLendForAddressByAsset(ctx, addr, AssetId) {
+	if k.HasLendForAddressByAsset(ctx, addr, AssetId, PoolId) {
 		return types.ErrorDuplicateLend
 	}
 
@@ -135,7 +135,8 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetId uint64, Am
 
 	k.SetUserLendIDHistory(ctx, lendPos.ID)
 	k.SetLend(ctx, lendPos)
-	k.SetLendForAddressByAsset(ctx, addr, lendPos.AssetId, lendPos.ID)
+	fmt.Println()
+	k.SetLendForAddressByAsset(ctx, addr, lendPos.AssetId, lendPos.ID, lendPos.PoolId)
 	err = k.UpdateUserLendIdMapping(ctx, lenderAddr, lendPos, true)
 	if err != nil {
 		return err
@@ -352,7 +353,7 @@ func (k Keeper) CloseLend(ctx sdk.Context, addr string, lendId uint64) error {
 		return err
 	}
 
-	k.DeleteLendForAddressByAsset(ctx, lenderAddr, lendPos.AssetId)
+	k.DeleteLendForAddressByAsset(ctx, lenderAddr, lendPos.AssetId, lendPos.PoolId)
 
 	err = k.UpdateUserLendIdMapping(ctx, addr, lendPos, false)
 	if err != nil {

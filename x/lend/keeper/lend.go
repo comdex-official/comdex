@@ -191,10 +191,10 @@ func (k *Keeper) GetAssetToPair(ctx sdk.Context, id uint64) (assetToPair types.A
 	return assetToPair, true
 }
 
-func (k *Keeper) SetLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, id uint64) {
+func (k *Keeper) SetLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, id, poolID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendForAddressByAsset(address, assetID)
+		key   = types.LendForAddressByAsset(address, assetID, poolID)
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -205,19 +205,19 @@ func (k *Keeper) SetLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddres
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID uint64) bool {
+func (k *Keeper) HasLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, poolID uint64) bool {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendForAddressByAsset(address, assetID)
+		key   = types.LendForAddressByAsset(address, assetID, poolID)
 	)
 
 	return store.Has(key)
 }
 
-func (k *Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID uint64) {
+func (k *Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, poolID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendForAddressByAsset(address, assetID)
+		key   = types.LendForAddressByAsset(address, assetID, poolID)
 	)
 
 	store.Delete(key)

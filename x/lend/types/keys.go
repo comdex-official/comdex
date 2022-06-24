@@ -135,13 +135,12 @@ func AssetToPairMappingKey(id uint64) []byte {
 	return append(AssetToPairMappingKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func LendForAddressByAsset(address sdk.AccAddress, pairID uint64) []byte {
+func LendForAddressByAsset(address sdk.AccAddress, assetID, poolID uint64) []byte {
 	v := append(LendForAddressByAssetKeyPrefix, address.Bytes()...)
 	if len(v) != 1+20 {
 		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+20))
 	}
-
-	return append(v, sdk.Uint64ToBigEndian(pairID)...)
+	return append(append(v, sdk.Uint64ToBigEndian(assetID)...), sdk.Uint64ToBigEndian(poolID)...)
 }
 
 func BorrowForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
