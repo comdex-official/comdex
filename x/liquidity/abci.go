@@ -14,9 +14,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 	allApps, found := k.GetApps(ctx)
 	if found {
-
 		for _, app := range allApps {
-
 			k.DeleteOutdatedRequests(ctx, app.Id)
 			if ctx.BlockHeight()%150 == 0 {
 				k.ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx, app.Id)
@@ -30,7 +28,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	allApps, found := k.GetApps(ctx)
 	if found {
-
 		for _, app := range allApps {
 			params, err := k.GetGenericParams(ctx, app.Id)
 			if err != nil {

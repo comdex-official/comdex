@@ -34,7 +34,7 @@ var (
 )
 
 var (
-	AppId                    = "AppId"
+	AppID                    = "AppId"
 	BatchSize                = "BatchSize"
 	TickPrecision            = "TickPrecision"
 	FeeCollectorAddress      = "FeeCollectorAddress"
@@ -114,7 +114,7 @@ func DefaultGenericParams(appID uint64) GenericParams {
 
 func KeyParseValidateFuncMap() map[string][]interface{} {
 	return map[string][]interface{}{
-		AppId:                    {ParseStringToUint, validateAppID},
+		AppID:                    {ParseStringToUint, validateAppID},
 		BatchSize:                {ParseStringToUint, validateBatchSize},
 		TickPrecision:            {ParseStringToUint, validateTickPrecision},
 		FeeCollectorAddress:      {ParseString, validateFeeCollectorAddress},

@@ -17,7 +17,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 )
 
-// GetTxCmd returns the transaction commands for this module.
+var (
+	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
+)
+
+// GetTxCmd returns the transaction commands for this module .
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -27,7 +31,6 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(
 		NewCreateGaugeCmd(),
 		txWhitelistAsset(),
@@ -127,7 +130,7 @@ func NewCreateGaugeCmd() *cobra.Command {
 
 func txWhitelistAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "whitelist-asset [app_mapping_Id] [asset_Id]",
+		Use:   "whitelist-asset [appMappingID] [assetID]",
 		Short: "Add Whitelisted assetId for Locker savings rewards",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -146,12 +149,12 @@ func txWhitelistAsset() *cobra.Command {
 				return err
 			}
 
-			var newAssetID []uint64
+			var newAssetIDs []uint64
 			for i := range assetID {
-				newAssetID = append(newAssetID, assetID[i])
+				newAssetIDs = append(newAssetIDs, assetID[i])
 			}
 
-			msg := types.NewMsgWhitelistAsset(appMappingID, ctx.GetFromAddress(), newAssetID)
+			msg := types.NewMsgWhitelistAsset(appMappingID, ctx.GetFromAddress(), newAssetIDs)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -163,7 +166,7 @@ func txWhitelistAsset() *cobra.Command {
 
 func txRemoveWhitelistAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-whitelist-asset [app_mapping_Id] [asset_Id]",
+		Use:   "remove-whitelist-asset [appMappingID] [assetID]",
 		Short: "Remove Whitelisted assetId for Locker savings rewards",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -194,7 +197,7 @@ func txRemoveWhitelistAsset() *cobra.Command {
 
 func txWhitelistAppIDVault() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "whitelist-app-id-vault-interest [app_mapping_Id]",
+		Use:   "whitelist-app-id-vault-interest [appMappingID]",
 		Short: "whitelist app id vault interest",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -208,7 +211,7 @@ func txWhitelistAppIDVault() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgWhitelistAppIdVault(
+			msg := types.NewMsgWhitelistAppIDVault(
 				appMappingID,
 				ctx.GetFromAddress(),
 			)
@@ -223,7 +226,7 @@ func txWhitelistAppIDVault() *cobra.Command {
 
 func txRemoveWhitelistAppIDVault() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-whitelist-app-id-vault-interest [app_mapping_Id] ",
+		Use:   "remove-whitelist-app-id-vault-interest [appMappingID] ",
 		Short: "remove whitelist app id vault interest",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -237,7 +240,7 @@ func txRemoveWhitelistAppIDVault() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRemoveWhitelistAppIdVault(
+			msg := types.NewMsgRemoveWhitelistAppIDVault(
 				appMappingID,
 				ctx.GetFromAddress(),
 			)
@@ -251,7 +254,7 @@ func txRemoveWhitelistAppIDVault() *cobra.Command {
 
 func txActivateExternalRewardsLockers() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "activate-external-rewards-locker [app_mapping_Id] [asset_id] [total_rewards] [duration_days] [min_lockup_time_seconds]",
+		Use:   "activate-external-rewards-locker [appMappingID] [asset_id] [totalRewards] [durationDays] [minLockupTimeSeconds]",
 		Short: "activate external rewards for locker",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -304,8 +307,8 @@ func txActivateExternalRewardsLockers() *cobra.Command {
 
 func txActivateExternalVaultsLockers() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "activate-external-rewards-vault [app_mapping_Id] [extended_pair_id] [total_rewards] [duration_days] [min_lockup_time_seconds]",
-		Short: "activate external reward for vault extended_pair_id",
+		Use:   "activate-external-rewards-vault [appMappingID] [extendedPairID] [totalRewards] [durationDays] [minLockupTimeSeconds]",
+		Short: "activate external reward for vault extendedPairID",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)

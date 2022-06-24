@@ -247,7 +247,8 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 			gauge.TriggeredCount = ongoingEpochCount
 			gauge.DistributedAmount.Amount = gauge.DistributedAmount.Amount.Add(coinsDistributed.Amount)
 			k.SetGauge(ctx, gauge)
-		} else { // distribution method for swap fee
+		} else {
+			// distribution method for swap fee
 			poolID := gauge.GetLiquidityMetaData().PoolId
 
 			ongoingEpochCount := gauge.TriggeredCount + 1

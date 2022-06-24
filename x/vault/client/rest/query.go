@@ -13,7 +13,6 @@ import (
 
 func queryVault(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		vars := mux.Vars(r)
 
 		qc := types.NewQueryClient(ctx)

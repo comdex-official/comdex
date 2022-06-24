@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -15,7 +16,7 @@ type Keeper struct {
 	key       sdk.StoreKey
 	bank      expected.BankKeeper
 	asset     expected.AssetKeeper
-	oracle    expected.Marketkeeper
+	oracle    expected.MarketKeeper
 	collector expected.CollectorKeeper
 }
 
@@ -30,7 +31,7 @@ type Keeper struct {
 //	panic("implement me")
 //}
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.Marketkeeper, collector expected.CollectorKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.MarketKeeper, collector expected.CollectorKeeper) Keeper {
 	return Keeper{
 		cdc:       cdc,
 		key:       key,

@@ -247,7 +247,8 @@ message QueryAllStableVaultsRequest {
 }
 
 message QueryAllStableVaultsResponse {
-  repeated StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
+  repeated StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"",
+    (gogoproto.nullable)   = false ];
 }
 
 message QueryStableVaultByProductExtendedPairRequest {

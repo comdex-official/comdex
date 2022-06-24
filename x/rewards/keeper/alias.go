@@ -20,8 +20,8 @@ func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collecto
 	return k.collector.GetCollectorLookupTable(ctx, appID)
 }
 
-func (k Keeper) GetAppToDenomsMapping(ctx sdk.Context, AppID uint64) (appToDenom collecortypes.AppToDenomsMapping, found bool) {
-	return k.collector.GetAppToDenomsMapping(ctx, AppID)
+func (k Keeper) GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom collecortypes.AppToDenomsMapping, found bool) {
+	return k.collector.GetAppToDenomsMapping(ctx, appID)
 }
 
 func (k Keeper) GetLocker(ctx sdk.Context, lockerID string) (locker types.Locker, found bool) {
@@ -68,8 +68,8 @@ func (k *Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Contex
 	k.vault.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, counter, vaultData)
 }
 
-func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
-	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, vaultLookupData, extendedPairID, amount, changeType)
+func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, valutLookupData, extendedPairID, amount, changeType)
 }
 
 func (k *Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64) {

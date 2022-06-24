@@ -10,17 +10,18 @@ var (
 	ErrorInvalidAmountOut     = errors.Register(ModuleName, 103, "invalid amount_out")
 	ErrorInvalidFrom          = errors.Register(ModuleName, 104, "invalid from")
 	ErrorInvalidID            = errors.Register(ModuleName, 105, "invalid id")
-	ErrorAppIstoExtendedAppId = errors.Register(ModuleName, 106, "app id does not match with extended pair app id")
+	ErrorAppIstoExtendedAppID = errors.Register(ModuleName, 106, "app id does not match with extended pair app id")
 )
 
 var (
 
+	// nolint
 	// ErrorUnauthorized                  = errors.Register(ModuleName, 203, "unauthorized")
 	// ErrorDuplicateVault                = errors.Register(ModuleName, 204, "duplicate vault")
 
 	ErrorExtendedPairVaultDoesNotExists  = errors.Register(ModuleName, 201, "Extended pair vault does not exists for the given id")
 	ErrorAppMappingDoesNotExist          = errors.Register(ModuleName, 202, "App Mapping Id does not exists")
-	ErrorAppMappingIdMismatch            = errors.Register(ModuleName, 203, "App Mapping Id mismatch, use the correct App Mapping ID in request")
+	ErrorAppMappingIDMismatch            = errors.Register(ModuleName, 203, "App Mapping Id mismatch, use the correct App Mapping ID in request")
 	ErrorVaultCreationInactive           = errors.Register(ModuleName, 204, "Vault Creation Inactive")
 	ErrorUserVaultAlreadyExists          = errors.Register(ModuleName, 205, "User vault already exists for the given extended pair vault id ")
 	ErrorAmountOutLessThanDebtFloor      = errors.Register(ModuleName, 206, "Amount Out is less than Debt Floor")

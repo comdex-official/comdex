@@ -4,9 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	// "github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	// "github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -21,14 +19,13 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
 }
 
 func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVaultsRequest) (*types.QueryAllVaultsResponse, error) {
-
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -40,7 +37,6 @@ func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVault
 }
 
 func (q *queryServer) QueryAllVaultsByProduct(c context.Context, req *types.QueryAllVaultsByProductRequest) (*types.QueryAllVaultsByProductResponse, error) {
-
 	var (
 		ctx           = sdk.UnwrapSDKContext(c)
 		productVaults []types.Vault
@@ -92,10 +88,10 @@ func (q *queryServer) QueryVaultInfo(c context.Context, req *types.QueryVaultInf
 	if err != nil {
 		return nil, err
 	}
-	pairvaults, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
-	pairId, _ := q.GetPair(ctx, pairvaults.PairId)
-	assetin, _ := q.GetAsset(ctx, pairId.AssetIn)
-	assetout, _ := q.GetAsset(ctx, pairId.AssetOut)
+	pairVaults, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
+	pairID, _ := q.GetPair(ctx, pairVaults.PairId)
+	assetIn, _ := q.GetAsset(ctx, pairID.AssetIn)
+	assetOut, _ := q.GetAsset(ctx, pairID.AssetOut)
 	return &types.QueryVaultInfoResponse{
 		VaultsInfo: types.VaultInfo{
 			Id:                     req.Id,
@@ -104,11 +100,11 @@ func (q *queryServer) QueryVaultInfo(c context.Context, req *types.QueryVaultInf
 			Collateral:             vault.AmountIn,
 			Debt:                   vault.AmountOut,
 			CollateralizationRatio: collateralizationRatio,
-			ExtendedPairName:       pairvaults.PairName,
-			InterestRate:           pairvaults.StabilityFee,
-			AssetInDenom:           assetin.Denom,
-			AssetOutDenom:          assetout.Denom,
-			MinCr:                  pairvaults.MinCr,
+			ExtendedPairName:       pairVaults.PairName,
+			InterestRate:           pairVaults.StabilityFee,
+			AssetInDenom:           assetIn.Denom,
+			AssetOutDenom:          assetOut.Denom,
+			MinCr:                  pairVaults.MinCr,
 		},
 	}, nil
 }
@@ -118,6 +114,7 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
+	// nolint
 	var (
 		ctx        = sdk.UnwrapSDKContext(c)
 		vaultsIds  []string
@@ -149,10 +146,10 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 		if err != nil {
 			return nil, err
 		}
-		pairvaults, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
-		pairId, _ := q.GetPair(ctx, pairvaults.PairId)
-		assetin, _ := q.GetAsset(ctx, pairId.AssetIn)
-		assetout, _ := q.GetAsset(ctx, pairId.AssetOut)
+		pairVaults, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
+		pairID, _ := q.GetPair(ctx, pairVaults.PairId)
+		assetIn, _ := q.GetAsset(ctx, pairID.AssetIn)
+		assetOut, _ := q.GetAsset(ctx, pairID.AssetOut)
 
 		vaults := types.VaultInfo{
 			Id:                     vault.Id,
@@ -161,14 +158,13 @@ func (q *queryServer) QueryVaultInfoByAppByOwner(c context.Context, req *types.Q
 			Collateral:             vault.AmountIn,
 			Debt:                   vault.AmountOut,
 			CollateralizationRatio: collateralizationRatio,
-			ExtendedPairName:       pairvaults.PairName,
-			InterestRate:           pairvaults.StabilityFee,
-			AssetInDenom:           assetin.Denom,
-			AssetOutDenom:          assetout.Denom,
-			MinCr:                  pairvaults.MinCr,
+			ExtendedPairName:       pairVaults.PairName,
+			InterestRate:           pairVaults.StabilityFee,
+			AssetInDenom:           assetIn.Denom,
+			AssetOutDenom:          assetOut.Denom,
+			MinCr:                  pairVaults.MinCr,
 		}
 		vaultsInfo = append(vaultsInfo, vaults)
-
 	}
 	if count == 0 {
 		return &types.QueryVaultInfoByAppByOwnerResponse{}, nil
@@ -217,7 +213,7 @@ func (q *queryServer) QueryVaultOfOwnerByExtendedPair(c context.Context, req *ty
 	}
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		vaultId = ""
+		vaultID = ""
 	)
 
 	_, found := q.GetApp(ctx, req.ProductId)
@@ -239,12 +235,12 @@ func (q *queryServer) QueryVaultOfOwnerByExtendedPair(c context.Context, req *ty
 
 	for _, data := range vaultData {
 		if data.AppMappingId == req.ProductId && data.ExtendedPairVaultID == req.ExtendedPairId && data.Owner == req.Owner {
-			vaultId = data.Id
+			vaultID = data.Id
 		}
 	}
 
 	return &types.QueryVaultOfOwnerByExtendedPairResponse{
-		Vault_Id: vaultId,
+		Vault_Id: vaultID,
 	}, nil
 }
 
@@ -339,6 +335,8 @@ func (q *queryServer) QueryTokenMintedByProductAssetWise(c context.Context, req 
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
+
+	// nolint
 	var (
 		ctx        = sdk.UnwrapSDKContext(c)
 		mintedData []types.MintedDataMap
@@ -354,11 +352,11 @@ func (q *queryServer) QueryTokenMintedByProductAssetWise(c context.Context, req 
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		extPairVault, _ := q.GetPairsVault(ctx, data.ExtendedPairId)
-		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
+		pairID, _ := q.GetPair(ctx, extPairVault.PairId)
 
 		var minted types.MintedDataMap
 
-		denom, found := q.GetAsset(ctx, pairId.AssetOut)
+		denom, found := q.GetAsset(ctx, pairID.AssetOut)
 		if !found {
 			return nil, types.ErrorAssetDoesNotExist
 		}
@@ -378,8 +376,8 @@ func (q *queryServer) QueryVaultCountByProduct(c context.Context, req *types.Que
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx          = sdk.UnwrapSDKContext(c)
-		count uint64 = 0
+		ctx   = sdk.UnwrapSDKContext(c)
+		count uint64
 	)
 	_, found := q.GetApp(ctx, req.ProductId)
 	if !found {
@@ -462,9 +460,11 @@ func (q *queryServer) QueryExtendedPairIDByProduct(c context.Context, req *types
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
+
+	// nolint
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		pairIds []uint64
+		pairIDs []uint64
 	)
 	_, found := q.GetApp(ctx, req.ProductId)
 	if !found {
@@ -476,11 +476,11 @@ func (q *queryServer) QueryExtendedPairIDByProduct(c context.Context, req *types
 		return &types.QueryExtendedPairIDByProductResponse{}, nil
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
-		pairIds = append(pairIds, data.ExtendedPairId)
+		pairIDs = append(pairIDs, data.ExtendedPairId)
 	}
 
 	return &types.QueryExtendedPairIDByProductResponse{
-		ExtendedPairIds: pairIds,
+		ExtendedPairIds: pairIDs,
 	}, nil
 }
 
@@ -507,12 +507,13 @@ func (q *queryServer) QueryAllStableVaults(c context.Context, req *types.QueryAl
 	}
 	var (
 		ctx            = sdk.UnwrapSDKContext(c)
-		stableMintData []*types.StableMintVault
+		stableMintData []types.StableMintVault
 	)
 	stableMint := q.GetStableMintVaults(ctx)
+
 	for _, data := range stableMint {
 		if data.AppMappingId == req.AppId {
-			stableMintData = append(stableMintData, &data)
+			stableMintData = append(stableMintData, data)
 		}
 	}
 
@@ -541,13 +542,14 @@ func (q *queryServer) QueryStableVaultByProductExtendedPair(c context.Context, r
 	}, nil
 }
 
+// nolint
 func (q *queryServer) QueryExtendedPairVaultMappingByAppAndExtendedPairId(c context.Context, req *types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) (*types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
 		ctx                = sdk.UnwrapSDKContext(c)
-		extendedPairIdData types.ExtendedPairVaultMapping
+		extendedPairIDData types.ExtendedPairVaultMapping
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -560,12 +562,12 @@ func (q *queryServer) QueryExtendedPairVaultMappingByAppAndExtendedPairId(c cont
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		if data.ExtendedPairId == req.ExtendedPairId {
-			extendedPairIdData = *data
+			extendedPairIDData = *data
 		}
 	}
 
 	return &types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse{
-		ExtendedPairVaultMapping: &extendedPairIdData,
+		ExtendedPairVaultMapping: &extendedPairIDData,
 	}, nil
 }
 
@@ -575,7 +577,7 @@ func (q *queryServer) QueryExtendedPairVaultMappingByApp(c context.Context, req 
 	}
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		pairIds []*types.ExtendedPairVaultMapping
+		pairIDs []*types.ExtendedPairVaultMapping
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -586,10 +588,10 @@ func (q *queryServer) QueryExtendedPairVaultMappingByApp(c context.Context, req 
 	if !found {
 		return &types.QueryExtendedPairVaultMappingByAppResponse{}, nil
 	}
-	pairIds = append(pairIds, appExtendedPairVaultData.ExtendedPairVaults...)
+	pairIDs = append(pairIDs, appExtendedPairVaultData.ExtendedPairVaults...)
 
 	return &types.QueryExtendedPairVaultMappingByAppResponse{
-		ExtendedPairVaultMapping: pairIds,
+		ExtendedPairVaultMapping: pairIDs,
 	}, nil
 }
 
@@ -627,7 +629,7 @@ func (q *queryServer) QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairI
 	}
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		vaultId string
+		vaultID string
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -642,14 +644,14 @@ func (q *queryServer) QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairI
 		if data.AppMappingId == req.AppId {
 			for _, inData := range data.UserExtendedPairVault {
 				if inData.ExtendedPairId == req.ExtendedPair {
-					vaultId = inData.VaultId
+					vaultID = inData.VaultId
 				}
 			}
 		}
 	}
 
 	return &types.QueryExtendedPairVaultMappingByOwnerAndAppAndExtendedPairIDResponse{
-		VaultId: vaultId,
+		VaultId: vaultID,
 	}, nil
 }
 
@@ -657,6 +659,8 @@ func (q *queryServer) QueryTVLLockedByAppOfAllExtendedPairs(c context.Context, r
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
+
+	// nolint
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
 		tvlData []types.TvlLockedDataMap
@@ -672,11 +676,11 @@ func (q *queryServer) QueryTVLLockedByAppOfAllExtendedPairs(c context.Context, r
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		extPairVault, _ := q.GetPairsVault(ctx, data.ExtendedPairId)
-		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
+		pairID, _ := q.GetPair(ctx, extPairVault.PairId)
 
 		var tvl types.TvlLockedDataMap
 
-		denom, found := q.GetAsset(ctx, pairId.AssetIn)
+		denom, found := q.GetAsset(ctx, pairID.AssetIn)
 		if !found {
 			return nil, types.ErrorAssetDoesNotExist
 		}
@@ -710,9 +714,9 @@ func (q *queryServer) QueryTotalTVLByApp(c context.Context, req *types.QueryTota
 	}
 	for _, data := range appExtendedPairVaultData.ExtendedPairVaults {
 		extPairVault, _ := q.GetPairsVault(ctx, data.ExtendedPairId)
-		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
+		pairID, _ := q.GetPair(ctx, extPairVault.PairId)
 
-		rate, _ := q.GetPriceForAsset(ctx, pairId.AssetIn)
+		rate, _ := q.GetPriceForAsset(ctx, pairID.AssetIn)
 		locked = data.CollateralLockedAmount.Mul(sdk.NewIntFromUint64(rate)).Add(locked)
 	}
 	locked = locked.Quo(sdk.NewInt(1000000))
@@ -732,7 +736,7 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		totalLocked     = sdk.ZeroInt()
 		totalDue        = sdk.ZeroInt()
 		availableBorrow = sdk.ZeroInt()
-		averageCr       = sdk.ZeroDec()
+		averageCr       sdk.Dec
 		totalCr         = sdk.ZeroDec()
 	)
 
@@ -755,7 +759,6 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		if data.AppMappingId == req.AppId {
 			for _, inData := range data.UserExtendedPairVault {
 				vaultsIds = append(vaultsIds, inData.VaultId)
-
 			}
 		}
 	}
@@ -769,14 +772,14 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		}
 
 		extPairVault, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
-		pairId, _ := q.GetPair(ctx, extPairVault.PairId)
+		pairID, _ := q.GetPair(ctx, extPairVault.PairId)
 
-		assetInPrice, _ := q.GetPriceForAsset(ctx, pairId.AssetIn)
+		assetInPrice, _ := q.GetPriceForAsset(ctx, pairID.AssetIn)
 		var assetOutPrice uint64
 		totalLocked = vault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).Add(totalLocked)
 
 		if extPairVault.AssetOutOraclePrice {
-			assetOutPrice, _ = q.GetPriceForAsset(ctx, pairId.AssetOut)
+			assetOutPrice, _ = q.GetPriceForAsset(ctx, pairID.AssetOut)
 		} else {
 			assetOutPrice = extPairVault.AssetOutPrice
 		}
@@ -785,7 +788,6 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		collaterlizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
 		if err != nil {
 			return nil, err
-
 		}
 
 		totalCr = collaterlizationRatio.Add(totalCr)
@@ -798,7 +800,6 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 		av = av.Sub(sdk.Int(AmtOut))
 
 		availableBorrow = av.Quo(sdk.Int(sdk.OneDec())).Add(availableBorrow)
-
 	}
 	if count == 0 {
 		return &types.QueryUserMyPositionByAppResponse{}, nil
@@ -818,7 +819,6 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 }
 
 func (q *queryServer) QueryUserExtendedPairTotalData(c context.Context, req *types.QueryUserExtendedPairTotalDataRequest) (*types.QueryUserExtendedPairTotalDataResponse, error) {
-
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)

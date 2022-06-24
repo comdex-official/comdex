@@ -18,8 +18,8 @@ import (
 
 func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-assets [name] [Denom] [Decimals] [isOnChain]",
-		Args:  cobra.ExactArgs(4),
+		Use:   "add-assets [name] [Denom] [Decimals] [isOnChain] [assetOraclePrice]",
+		Args:  cobra.ExactArgs(5),
 		Short: "Submit assets",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -46,6 +46,10 @@ func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 				return err
 			}
 
+			assetOraclePrice, err := ParseStringFromString(args[4], ",")
+			if err != nil {
+				return err
+			}
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
 				return err
@@ -61,11 +65,13 @@ func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 			var assets []types.Asset
 			for i := range names {
 				newIsOnChain := ParseBoolFromString(isOnChain[i])
+				newAssetOraclePrice := ParseBoolFromString(assetOraclePrice[i])
 				assets = append(assets, types.Asset{
-					Name:      names[i],
-					Denom:     denoms[i],
-					Decimals:  decimals[i],
-					IsOnchain: newIsOnChain,
+					Name:             names[i],
+					Denom:            denoms[i],
+					Decimals:         decimals[i],
+					IsOnchain:        newIsOnChain,
+					AssetOraclePrice: newAssetOraclePrice,
 				})
 			}
 

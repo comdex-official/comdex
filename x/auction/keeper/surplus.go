@@ -139,6 +139,7 @@ func (k Keeper) startSurplusAuction(
 		Bidder:           nil,
 		Bid:              buyToken,
 		EndTime:          ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
+		BidEndTime:       ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
 		BidFactor:        bidFactor,
 		BiddingIds:       []*auctiontypes.BidOwnerMapping{},
 		AuctionStatus:    auctiontypes.AuctionStartNoBids,
@@ -193,6 +194,7 @@ func (k Keeper) RestartSurplus(
 	surplusAuction.BuyToken = buyToken
 	surplusAuction.Bid = buyToken
 	surplusAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
+	surplusAuction.BidEndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
 	err := k.SetSurplusAuction(ctx, surplusAuction)
 	if err != nil {
 		return err
