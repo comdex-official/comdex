@@ -7,14 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-/*
-func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMapping) error
-func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error
-func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error
-func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.ExtendedPairVault) error
-func (k Keeper) WhitelistAppId(ctx sdk.Context, appMappingId uint64) error
-*/
-
 func (s *KeeperTestSuite) AddAppAsset() {
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	msg1 := []assetTypes.AppMapping{{
@@ -22,6 +14,11 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900},
+		{
+			Name:             "commodo",
+			ShortName:        "commodo",
+			MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+			GovTimeInSeconds: 900},
 	}
 	err := assetKeeper.AddAppMappingRecords(*ctx, msg1...)
 	s.Require().NoError(err)
@@ -107,10 +104,47 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 		Id: "cswap2",
 	}
 	lockerInfo, err = s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &qmsg2)
+	s.Require().NoError(err)
 	s.Require().Equal(lockerInfo.LockerInfo.Depositor, msg6.Depositor)
 	s.Require().Equal(lockerInfo.LockerInfo.AppMappingId, msg6.AppMappingId)
 	s.Require().Equal(lockerInfo.LockerInfo.AssetDepositId, msg6.AssetId)
 	s.Require().Equal(lockerInfo.LockerInfo.NetBalance, msg6.Amount)
+
+	//create locker for different app and same asset
+
+	msg8 := lockerTypes.MsgAddWhiteListedAssetRequest{
+		From:         userAddress,
+		AppMappingId: 2,
+		AssetId:      1,
+	}
+	_, err = server.MsgAddWhiteListedAsset(sdk.WrapSDKContext(*ctx), &msg8)
+	s.Require().NoError(err)
+
+	msg7 := lockerTypes.MsgCreateLockerRequest{
+		Depositor:    userAddress,
+		Amount:       sdk.NewIntFromUint64(9900000),
+		AssetId:      1,
+		AppMappingId: 2,
+	}
+
+	//Insufficient balance check
+	_, err = server.MsgCreateLocker(sdk.WrapSDKContext(*ctx), &msg7)
+	s.Require().Error(err)
+
+	//create locker for first asset
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(9900000)))
+	_, err = server.MsgCreateLocker(sdk.WrapSDKContext(*ctx), &msg7)
+	s.Require().NoError(err)
+
+	qmsg3 := lockerTypes.QueryLockerInfoRequest{
+		Id: "commodo1",
+	}
+	lockerInfo, err = s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &qmsg3)
+	s.Require().NoError(err)
+	s.Require().Equal(lockerInfo.LockerInfo.Depositor, msg7.Depositor)
+	s.Require().Equal(lockerInfo.LockerInfo.AppMappingId, msg7.AppMappingId)
+	s.Require().Equal(lockerInfo.LockerInfo.AssetDepositId, msg7.AssetId)
+	s.Require().Equal(lockerInfo.LockerInfo.NetBalance, msg7.Amount)
 
 }
 
