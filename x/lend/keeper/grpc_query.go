@@ -463,3 +463,19 @@ func (q queryServer) QueryAssetRatesStat(c context.Context, req *types.QueryAsse
 		AssetRatesStat: item,
 	}, nil
 }
+
+func (q queryServer) QueryAssetStats(c context.Context, req *types.QueryAssetStatsRequest) (*types.QueryAssetStatsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	assetStatsData, found := q.GetAssetStatsByPoolIdAndAssetId(ctx, req.AssetId, req.PoolId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "assetStatsData does not exist for assetId %d and poolId %d ", req.AssetId, req.PoolId)
+	}
+
+	return &types.QueryAssetStatsResponse{
+		AssetStats: assetStatsData,
+	}, nil
+}

@@ -404,10 +404,10 @@ func (k *Keeper) DeleteLendIdToBorrowIdMapping(ctx sdk.Context, lendingId uint64
 	store.Delete(key)
 }
 
-func (k *Keeper) SetAssetStatsByPoolIdAndAssetId(ctx sdk.Context, assetID, poolId uint64, AssetStats types.AssetStats) {
+func (k *Keeper) SetAssetStatsByPoolIdAndAssetId(ctx sdk.Context, AssetStats types.AssetStats) {
 	var (
 		store = k.Store(ctx)
-		key   = types.SetAssetStatsByPoolIdAndAssetId(assetID, poolId)
+		key   = types.SetAssetStatsByPoolIdAndAssetId(AssetStats.AssetId, AssetStats.PoolId)
 		value = k.cdc.MustMarshal(&AssetStats)
 	)
 

@@ -42,8 +42,10 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryBorrow(),
 		queryBorrows(),
 		QueryAllBorrowsByOwner(),
+		QueryAllBorrowsByOwnerAndPoolId(),
 		queryAssetRatesStat(),
 		queryAssetRatesStats(),
+		QueryAssetStats(),
 	)
 
 	return cmd
@@ -517,6 +519,41 @@ func QueryAllBorrowsByOwner() *cobra.Command {
 	return cmd
 }
 
+func QueryAllBorrowsByOwnerAndPoolId() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "borrows-by-owner-pool [owner] [pool-id]",
+		Short: "borrows list for a owner",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.QueryAllBorrowByOwnerAndPool(cmd.Context(), &types.QueryAllBorrowByOwnerAndPoolRequest{
+				Owner:  args[0],
+				PoolId: poolId,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
 func queryAssetRatesStat() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "asset-rates-stat [asset-id]",
@@ -588,5 +625,45 @@ func queryAssetRatesStats() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "asset-rates-stats")
 
+	return cmd
+}
+
+func QueryAssetStats() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "asset-stats [asset-id] [pool-id]",
+		Short: "borrows list for a owner",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			assetId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.QueryAssetStats(cmd.Context(), &types.QueryAssetStatsRequest{
+				AssetId: assetId,
+				PoolId:  poolId,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }
