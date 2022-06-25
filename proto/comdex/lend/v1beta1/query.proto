@@ -193,6 +193,18 @@ message QueryAllBorrowByOwnerResponse {
     (gogoproto.moretags) = "yaml:\"borrow_ids\"" ];
 }
 
+message QueryAllBorrowByOwnerAndPoolRequest {
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
+  uint64 pool_id = 2 [ (gogoproto.moretags) = "yaml:\"pool_id\"" ];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllBorrowByOwnerAndPoolResponse {
+  repeated uint64 borrowIds = 1 [
+    (gogoproto.moretags) = "yaml:\"borrow_ids\"" ];
+}
+
 service Query {
   rpc QueryLends(QueryLendsRequest) returns (QueryLendsResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/lends";
@@ -250,6 +262,10 @@ service Query {
 
   rpc QueryAllBorrowByOwner(QueryAllBorrowByOwnerRequest) returns (QueryAllBorrowByOwnerResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/borrows-by-owner/{owner}";
+  }
+
+  rpc QueryAllBorrowByOwnerAndPool(QueryAllBorrowByOwnerAndPoolRequest) returns (QueryAllBorrowByOwnerAndPoolResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/borrows-by-owner/{owner}/{pool_id}";
   };
 }
 

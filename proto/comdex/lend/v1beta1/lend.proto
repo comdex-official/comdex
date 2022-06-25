@@ -204,6 +204,18 @@ message LendIdByOwnerAndPoolMapping{
   ];
 }
 
+message BorrowIdByOwnerAndPoolMapping{
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
+  uint64 pool_id = 2 [
+    (gogoproto.customname) = "PoolId",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  repeated uint64 borrowIds = 3 [
+    (gogoproto.customname) = "BorrowIds",
+    (gogoproto.moretags) = "yaml:\"borrow_ids\""
+  ];
+}
+
 message UserBorrowIdMapping{
   string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
   repeated uint64 borrow_ids = 2 [

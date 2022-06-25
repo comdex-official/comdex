@@ -60,6 +60,7 @@ var (
 	AssetRatesStatsKeyPrefix              = []byte{0x30}
 	KeyPrefixLastTime                     = []byte{0x31}
 	LendByUserAndPoolPrefix               = []byte{0x34}
+	BorrowByUserAndPoolPrefix             = []byte{0x35}
 )
 
 func AssetKey(id uint64) []byte {
@@ -178,4 +179,8 @@ func CreateLastInterestTimeKey() []byte {
 
 func LendByUserAndPoolKey(owner string, id uint64) []byte {
 	return append(append(LendByUserAndPoolPrefix, sdk.Uint64ToBigEndian(id)...), owner...)
+}
+
+func BorrowByUserAndPoolKey(owner string, id uint64) []byte {
+	return append(append(BorrowByUserAndPoolPrefix, sdk.Uint64ToBigEndian(id)...), owner...)
 }

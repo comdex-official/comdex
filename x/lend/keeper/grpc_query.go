@@ -132,6 +132,32 @@ func (q queryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.Qu
 	}, nil
 }
 
+func (q queryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.QueryAllBorrowByOwnerAndPoolRequest) (*types.QueryAllBorrowByOwnerAndPoolResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var (
+		ctx       = sdk.UnwrapSDKContext(c)
+		borrowIds []uint64
+	)
+
+	_, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "Address is not correct")
+	}
+
+	userVaultAssetData, _ := q.GetLendIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
+
+	for _, data := range userVaultAssetData.LendIds {
+		borrowIds = append(borrowIds, data)
+
+	}
+
+	return &types.QueryAllBorrowByOwnerAndPoolResponse{
+		BorrowIds: borrowIds,
+	}, nil
+}
+
 func (q queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest) (*types.QueryPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")

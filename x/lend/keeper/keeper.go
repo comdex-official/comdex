@@ -487,6 +487,10 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 		if err != nil {
 			return err
 		}
+		err := k.UpdateBorrowIdByOwnerAndPoolMapping(ctx, lendPos.Owner, borrowPos.ID, pair.AssetOutPoolId, true)
+		if err != nil {
+			return err
+		}
 		err = k.UpdateLendIdToBorrowIdMapping(ctx, borrowPos.LendingID, borrowPos.ID, true)
 		if err != nil {
 			return err
@@ -578,6 +582,10 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 			if err != nil {
 				return err
 			}
+			err := k.UpdateBorrowIdByOwnerAndPoolMapping(ctx, lendPos.Owner, borrowPos.ID, pair.AssetOutPoolId, true)
+			if err != nil {
+				return err
+			}
 			err = k.UpdateLendIdToBorrowIdMapping(ctx, borrowPos.LendingID, borrowPos.ID, true)
 			if err != nil {
 				return err
@@ -644,7 +652,10 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 			if err != nil {
 				return err
 			}
-
+			err := k.UpdateBorrowIdByOwnerAndPoolMapping(ctx, lendPos.Owner, borrowPos.ID, pair.AssetOutPoolId, true)
+			if err != nil {
+				return err
+			}
 			err = k.UpdateLendIdToBorrowIdMapping(ctx, borrowPos.LendingID, borrowPos.ID, true)
 			if err != nil {
 				return err
@@ -736,17 +747,7 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowId uint64, addr string
 		}
 
 		borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
-		k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 		k.SetBorrow(ctx, borrowPos)
-		k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
-		err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, true)
-		if err != nil {
-			return err
-		}
-		err = k.UpdateLendIdToBorrowIdMapping(ctx, borrowPos.LendingID, borrowPos.ID, true)
-		if err != nil {
-			return err
-		}
 
 	} else {
 		assetIn := lendPos.UpdatedAmountIn
@@ -786,18 +787,7 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowId uint64, addr string
 			}
 
 			borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
-
-			k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 			k.SetBorrow(ctx, borrowPos)
-			k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
-			err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, true)
-			if err != nil {
-				return err
-			}
-			err = k.UpdateLendIdToBorrowIdMapping(ctx, borrowPos.LendingID, borrowPos.ID, true)
-			if err != nil {
-				return err
-			}
 
 		} else if secondBridgedAssetQty.LT(secondBridgedAssetBal) {
 			// take c/Tokens from the user
@@ -819,19 +809,7 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowId uint64, addr string
 			}
 
 			borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
-
-			k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 			k.SetBorrow(ctx, borrowPos)
-			k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
-			err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, true)
-			if err != nil {
-				return err
-			}
-
-			err = k.UpdateLendIdToBorrowIdMapping(ctx, borrowPos.LendingID, borrowPos.ID, true)
-			if err != nil {
-				return err
-			}
 
 		} else {
 			return types.ErrBorrowingPoolInsufficient
@@ -898,6 +876,10 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowId uint6
 		return err
 	}
 	err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, false)
+	if err != nil {
+		return err
+	}
+	err = k.UpdateBorrowIdByOwnerAndPoolMapping(ctx, lendPos.Owner, borrowPos.ID, pair.AssetOutPoolId, false)
 	if err != nil {
 		return err
 	}
