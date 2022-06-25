@@ -86,7 +86,7 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 	}
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		lendIds []types.LendAsset
+		lendIds []uint64
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -95,13 +95,40 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 	}
 
 	userVaultAssetData, _ := q.GetUserLends(ctx, req.Owner)
-	for _, data := range userVaultAssetData.Lends {
+
+	for _, data := range userVaultAssetData.LendIds {
 		lendIds = append(lendIds, data)
 
 	}
 
 	return &types.QueryAllLendByOwnerResponse{
-		Lends: lendIds,
+		LendIds: lendIds,
+	}, nil
+}
+
+func (q queryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.QueryAllLendByOwnerAndPoolRequest) (*types.QueryAllLendByOwnerAndPoolResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var (
+		ctx     = sdk.UnwrapSDKContext(c)
+		lendIds []uint64
+	)
+
+	_, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "Address is not correct")
+	}
+
+	userVaultAssetData, _ := q.GetLendIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
+
+	for _, data := range userVaultAssetData.LendIds {
+		lendIds = append(lendIds, data)
+
+	}
+
+	return &types.QueryAllLendByOwnerAndPoolResponse{
+		LendIds: lendIds,
 	}, nil
 }
 
@@ -335,7 +362,7 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 	}
 	var (
 		ctx       = sdk.UnwrapSDKContext(c)
-		borrowIds []types.BorrowAsset
+		borrowIds []uint64
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -345,13 +372,13 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 
 	userVaultAssetData, _ := q.GetUserBorrows(ctx, req.Owner)
 
-	for _, data := range userVaultAssetData.Borrows {
+	for _, data := range userVaultAssetData.BorrowIds {
 		borrowIds = append(borrowIds, data)
 
 	}
 
 	return &types.QueryAllBorrowByOwnerResponse{
-		Borrows: borrowIds,
+		BorrowIds: borrowIds,
 	}, nil
 }
 

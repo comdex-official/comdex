@@ -186,19 +186,29 @@ message AssetToPairMapping{
 
 message UserLendIdMapping{
   string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
-  repeated LendAsset lends = 2 [
-    (gogoproto.customname) = "Lends",
-    (gogoproto.moretags) = "yaml:\"lends\"",
-    (gogoproto.nullable) = false
+  repeated uint64 lend_ids = 2 [
+    (gogoproto.customname) = "LendIds",
+    (gogoproto.moretags) = "yaml:\"lend_ids\""
+  ];
+}
+
+message LendIdByOwnerAndPoolMapping{
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
+  uint64 pool_id = 2 [
+    (gogoproto.customname) = "PoolId",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  repeated uint64 lendIds = 3 [
+    (gogoproto.customname) = "LendIds",
+    (gogoproto.moretags) = "yaml:\"lend_ids\""
   ];
 }
 
 message UserBorrowIdMapping{
   string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
-  repeated BorrowAsset borrows = 2 [
-    (gogoproto.customname) = "Borrows",
-    (gogoproto.moretags) = "yaml:\"borrows\"",
-    (gogoproto.nullable) = false
+  repeated uint64 borrow_ids = 2 [
+    (gogoproto.customname) = "BorrowIds",
+    (gogoproto.moretags) = "yaml:\"borrow_ids\""
   ];
 }
 

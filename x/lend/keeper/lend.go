@@ -226,7 +226,7 @@ func (k *Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address sdk.AccAdd
 func (k *Keeper) UpdateUserLendIdMapping(
 	ctx sdk.Context,
 	lendOwner string,
-	lend types.LendAsset,
+	lendId uint64,
 	isInsert bool,
 ) error {
 
@@ -234,21 +234,19 @@ func (k *Keeper) UpdateUserLendIdMapping(
 
 	if !found && isInsert {
 		userVaults = types.UserLendIdMapping{
-			Owner: lendOwner,
-			Lends: nil,
+			Owner:   lendOwner,
+			LendIds: nil,
 		}
 	} else if !found && !isInsert {
 		return types.ErrorLendOwnerNotFound
 	}
 
 	if isInsert {
-		userVaults.Lends = append(userVaults.Lends, lend)
+		userVaults.LendIds = append(userVaults.LendIds, lendId)
 	} else {
-
-		for index, newLend := range userVaults.Lends {
-
-			if newLend.ID == lend.ID {
-				userVaults.Lends = append(userVaults.Lends[:index], userVaults.Lends[index+1:]...)
+		for index, id := range userVaults.LendIds {
+			if id == lendId {
+				userVaults.LendIds = append(userVaults.LendIds[:index], userVaults.LendIds[index+1:]...)
 				break
 			}
 		}
@@ -277,6 +275,64 @@ func (k *Keeper) SetUserLends(ctx sdk.Context, userVaults types.UserLendIdMappin
 		store = k.Store(ctx)
 		key   = types.UserLendsForAddressKey(userVaults.Owner)
 		value = k.cdc.MustMarshal(&userVaults)
+	)
+	store.Set(key, value)
+}
+
+func (k *Keeper) UpdateLendIdByOwnerAndPoolMapping(
+	ctx sdk.Context,
+	lendOwner string,
+	lendId uint64,
+	poolId uint64,
+	isInsert bool,
+) error {
+
+	userLends, found := k.GetLendIdByOwnerAndPool(ctx, lendOwner, poolId)
+
+	if !found && isInsert {
+		userLends = types.LendIdByOwnerAndPoolMapping{
+			Owner:   lendOwner,
+			PoolId:  poolId,
+			LendIds: nil,
+		}
+	} else if !found && !isInsert {
+		return types.ErrorLendOwnerNotFound
+	}
+
+	if isInsert {
+		userLends.LendIds = append(userLends.LendIds, lendId)
+	} else {
+		for index, id := range userLends.LendIds {
+			if id == lendId {
+				userLends.LendIds = append(userLends.LendIds[:index], userLends.LendIds[index+1:]...)
+				break
+			}
+		}
+	}
+
+	k.SetLendIdByOwnerAndPool(ctx, userLends)
+	return nil
+}
+
+func (k *Keeper) GetLendIdByOwnerAndPool(ctx sdk.Context, address string, poolId uint64) (userLends types.LendIdByOwnerAndPoolMapping, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendByUserAndPoolKey(address, poolId)
+		value = store.Get(key)
+	)
+	if value == nil {
+		return userLends, false
+	}
+	k.cdc.MustUnmarshal(value, &userLends)
+
+	return userLends, true
+}
+
+func (k *Keeper) SetLendIdByOwnerAndPool(ctx sdk.Context, userLends types.LendIdByOwnerAndPoolMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendByUserAndPoolKey(userLends.Owner, userLends.PoolId)
+		value = k.cdc.MustMarshal(&userLends)
 	)
 	store.Set(key, value)
 }
@@ -380,7 +436,7 @@ func (k *Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAd
 func (k *Keeper) UpdateUserBorrowIdMapping(
 	ctx sdk.Context,
 	lendOwner string,
-	borrow types.BorrowAsset,
+	borrowId uint64,
 	isInsert bool,
 ) error {
 
@@ -388,19 +444,19 @@ func (k *Keeper) UpdateUserBorrowIdMapping(
 
 	if !found && isInsert {
 		userVaults = types.UserBorrowIdMapping{
-			Owner:   lendOwner,
-			Borrows: nil,
+			Owner:     lendOwner,
+			BorrowIds: nil,
 		}
 	} else if !found && !isInsert {
 		return types.ErrorLendOwnerNotFound
 	}
 
 	if isInsert {
-		userVaults.Borrows = append(userVaults.Borrows, borrow)
+		userVaults.BorrowIds = append(userVaults.BorrowIds, borrowId)
 	} else {
-		for index, id := range userVaults.Borrows {
-			if id.ID == borrow.ID {
-				userVaults.Borrows = append(userVaults.Borrows[:index], userVaults.Borrows[index+1:]...)
+		for index, id := range userVaults.BorrowIds {
+			if id == borrowId {
+				userVaults.BorrowIds = append(userVaults.BorrowIds[:index], userVaults.BorrowIds[index+1:]...)
 				break
 			}
 		}

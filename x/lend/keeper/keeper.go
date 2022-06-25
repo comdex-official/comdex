@@ -135,9 +135,12 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetId uint64, Am
 
 	k.SetUserLendIDHistory(ctx, lendPos.ID)
 	k.SetLend(ctx, lendPos)
-	fmt.Println()
 	k.SetLendForAddressByAsset(ctx, addr, lendPos.AssetId, lendPos.ID, lendPos.PoolId)
-	err = k.UpdateUserLendIdMapping(ctx, lenderAddr, lendPos, true)
+	err = k.UpdateUserLendIdMapping(ctx, lenderAddr, lendPos.ID, true)
+	if err != nil {
+		return err
+	}
+	err = k.UpdateLendIdByOwnerAndPoolMapping(ctx, lenderAddr, lendPos.ID, lendPos.PoolId, true)
 	if err != nil {
 		return err
 	}
@@ -355,7 +358,11 @@ func (k Keeper) CloseLend(ctx sdk.Context, addr string, lendId uint64) error {
 
 	k.DeleteLendForAddressByAsset(ctx, lenderAddr, lendPos.AssetId, lendPos.PoolId)
 
-	err = k.UpdateUserLendIdMapping(ctx, addr, lendPos, false)
+	err = k.UpdateUserLendIdMapping(ctx, addr, lendPos.ID, false)
+	if err != nil {
+		return err
+	}
+	err = k.UpdateLendIdByOwnerAndPoolMapping(ctx, addr, lendPos.ID, lendPos.PoolId, false)
 	if err != nil {
 		return err
 	}
@@ -476,7 +483,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 		k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 		k.SetBorrow(ctx, borrowPos)
 		k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
-		err = k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos, true)
+		err = k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, true)
 		if err != nil {
 			return err
 		}
@@ -567,7 +574,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 			k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 			k.SetBorrow(ctx, borrowPos)
 			k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
-			err = k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos, true)
+			err = k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, true)
 			if err != nil {
 				return err
 			}
@@ -633,7 +640,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 			k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 			k.SetBorrow(ctx, borrowPos)
 			k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
-			err = k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos, true)
+			err = k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, true)
 			if err != nil {
 				return err
 			}
@@ -732,7 +739,7 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowId uint64, addr string
 		k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 		k.SetBorrow(ctx, borrowPos)
 		k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
-		err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos, true)
+		err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, true)
 		if err != nil {
 			return err
 		}
@@ -783,7 +790,7 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowId uint64, addr string
 			k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 			k.SetBorrow(ctx, borrowPos)
 			k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
-			err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos, true)
+			err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, true)
 			if err != nil {
 				return err
 			}
@@ -816,7 +823,7 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowId uint64, addr string
 			k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 			k.SetBorrow(ctx, borrowPos)
 			k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
-			err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos, true)
+			err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, true)
 			if err != nil {
 				return err
 			}
@@ -890,7 +897,7 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowId uint6
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, amt); err != nil {
 		return err
 	}
-	err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos, false)
+	err := k.UpdateUserBorrowIdMapping(ctx, lendPos.Owner, borrowPos.ID, false)
 	if err != nil {
 		return err
 	}

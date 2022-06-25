@@ -32,6 +32,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryLend(),
 		queryLends(),
 		QueryAllLendsByOwner(),
+		QueryAllLendsByOwnerAndPoolId(),
 		queryPair(),
 		queryPairs(),
 		queryPool(),
@@ -138,6 +139,41 @@ func QueryAllLendsByOwner() *cobra.Command {
 
 			res, err := queryClient.QueryAllLendByOwner(cmd.Context(), &types.QueryAllLendByOwnerRequest{
 				Owner: args[0],
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryAllLendsByOwnerAndPoolId() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "lends-by-owner-pool [owner] [pool-id]",
+		Short: "lends list for a owner",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAllLendByOwnerAndPool(cmd.Context(), &types.QueryAllLendByOwnerAndPoolRequest{
+				Owner:  args[0],
+				PoolId: poolId,
 			})
 
 			if err != nil {
