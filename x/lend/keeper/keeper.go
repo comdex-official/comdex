@@ -142,7 +142,6 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetId uint64, Am
 		TotalLend: assetStats.TotalLend.Add(Amount.Amount),
 	}
 	k.SetAssetStatsByPoolIdAndAssetId(ctx, AssetStats)
-	k.UpdateAPR(ctx, PoolId, AssetId)
 	k.SetUserLendIDHistory(ctx, lendPos.ID)
 	k.SetLend(ctx, lendPos)
 	k.SetLendForAddressByAsset(ctx, addr, lendPos.AssetId, lendPos.ID, lendPos.PoolId)
@@ -230,8 +229,6 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendId uint64, withd
 			assetStats, _ := k.GetAssetStatsByPoolIdAndAssetId(ctx, lendPos.AssetId, lendPos.PoolId)
 			assetStats.TotalLend = assetStats.TotalLend.Sub(withdrawal.Amount)
 			k.SetAssetStatsByPoolIdAndAssetId(ctx, assetStats)
-			k.UpdateAPR(ctx, lendPos.PoolId, lendPos.AssetId)
-
 			k.SetLend(ctx, lendPos)
 
 		} else {
@@ -262,8 +259,6 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendId uint64, withd
 			assetStats, _ := k.GetAssetStatsByPoolIdAndAssetId(ctx, lendPos.AssetId, lendPos.PoolId)
 			assetStats.TotalLend = assetStats.TotalLend.Sub(withdrawal.Amount)
 			k.SetAssetStatsByPoolIdAndAssetId(ctx, assetStats)
-			k.UpdateAPR(ctx, lendPos.PoolId, lendPos.AssetId)
-
 			k.SetLend(ctx, lendPos)
 
 		} else {
@@ -324,8 +319,6 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendId uint64, deposi
 	assetStats, _ := k.GetAssetStatsByPoolIdAndAssetId(ctx, lendPos.AssetId, lendPos.PoolId)
 	assetStats.TotalLend = assetStats.TotalLend.Add(deposit.Amount)
 	k.SetAssetStatsByPoolIdAndAssetId(ctx, assetStats)
-	k.UpdateAPR(ctx, lendPos.PoolId, lendPos.AssetId)
-
 	k.SetLend(ctx, lendPos)
 
 	return nil
@@ -398,8 +391,6 @@ func (k Keeper) CloseLend(ctx sdk.Context, addr string, lendId uint64) error {
 	assetStats, _ := k.GetAssetStatsByPoolIdAndAssetId(ctx, lendPos.AssetId, lendPos.PoolId)
 	assetStats.TotalLend = assetStats.TotalLend.Sub(lendPos.UpdatedAmountIn)
 	k.SetAssetStatsByPoolIdAndAssetId(ctx, assetStats)
-	k.UpdateAPR(ctx, lendPos.PoolId, lendPos.AssetId)
-
 	k.DeleteLend(ctx, lendPos.ID)
 	return nil
 }
@@ -520,8 +511,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 			TotalBorrowed: assetStats.TotalBorrowed.Add(AmountOut.Amount),
 		}
 		k.SetAssetStatsByPoolIdAndAssetId(ctx, AssetStats)
-		k.UpdateAPR(ctx, pair.AssetOutPoolId, pair.AssetOut)
-
 		k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 		k.SetBorrow(ctx, borrowPos)
 		k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
