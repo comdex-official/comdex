@@ -510,3 +510,22 @@ func (k *Keeper) SetLends(ctx sdk.Context, userLends types.LendMapping) {
 	)
 	store.Set(key, value)
 }
+
+func (k *Keeper) GetModuleBalanceByPoolId(ctx sdk.Context, poolId uint64) (ModuleBalance types.ModuleBalance, found bool) {
+	pool, found := k.GetPool(ctx, poolId)
+	if !found {
+		return ModuleBalance, false
+	}
+	for _, v := range pool.AssetData {
+		asset, _ := k.GetAsset(ctx, v.AssetId)
+		balance := k.ModuleBalance(ctx, pool.ModuleName, asset.Denom)
+		tokenBal := sdk.NewCoin(asset.Denom, balance)
+		modBalStats := types.ModuleBalanceStats{
+			AssetId: asset.Id,
+			Balance: tokenBal,
+		}
+		ModuleBalance.PoolId = poolId
+		ModuleBalance.ModuleBalanceStats = append(ModuleBalance.ModuleBalanceStats, modBalStats)
+	}
+	return ModuleBalance, true
+}

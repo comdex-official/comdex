@@ -360,3 +360,26 @@ message BorrowMapping{
     (gogoproto.moretags) = "yaml:\"borrow_ids\""
   ];
 }
+
+message ModuleBalance{
+  uint64 pool_id = 1 [
+    (gogoproto.customname) = "PoolId",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  repeated ModuleBalanceStats module_balance_stats = 2[
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"module_balance_stats\""
+  ];
+}
+
+message ModuleBalanceStats{
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetId",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  cosmos.base.v1beta1.Coin balance = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"balance\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+}

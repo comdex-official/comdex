@@ -479,3 +479,19 @@ func (q queryServer) QueryAssetStats(c context.Context, req *types.QueryAssetSta
 		AssetStats: assetStatsData,
 	}, nil
 }
+
+func (q queryServer) QueryModuleBalance(c context.Context, req *types.QueryModuleBalanceRequest) (*types.QueryModuleBalanceResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	modBal, found := q.GetModuleBalanceByPoolId(ctx, req.PoolId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "module Balance does not exist for poolId %d ", req.PoolId)
+	}
+
+	return &types.QueryModuleBalanceResponse{
+		ModuleBalance: modBal,
+	}, nil
+}
