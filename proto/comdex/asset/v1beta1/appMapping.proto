@@ -23,7 +23,7 @@ message AppMapping {
 message MintGenesisToken {
     uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
     string genesis_supply = 2[(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"];
-    bool isgovToken = 3 [ (gogoproto.moretags) = "yaml:\"isgovToken\"" ];
+    bool is_gov_token = 3 [ (gogoproto.moretags) = "yaml:\"is_gov_token\"" ];
     string recipient = 4 [ (gogoproto.moretags) = "yaml:\"recipient\"" ];
 }
 

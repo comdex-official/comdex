@@ -61,7 +61,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	}
 
 	// Checking if this is a stableMint pair or not  -- stableMintPair == psmPair
-	if extendedPairVault.IsPsmPair {
+	if extendedPairVault.IsStableMintVault {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking
@@ -741,7 +741,7 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	}
 
 	// Checking if this is a stableMint pair or not  -- stableMintPair == psmPair
-	if !extendedPairVault.IsPsmPair {
+	if !extendedPairVault.IsStableMintVault {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking
@@ -848,7 +848,7 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultInactive
 	}
-	if !extendedPairVault.IsPsmPair {
+	if !extendedPairVault.IsStableMintVault {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
@@ -963,7 +963,7 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultInactive
 	}
-	if !extendedPairVault.IsPsmPair {
+	if !extendedPairVault.IsStableMintVault {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not

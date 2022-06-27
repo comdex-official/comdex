@@ -27,7 +27,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 
 				extPair, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 
-				liqRatio := extPair.LiquidationRatio
+				liqRatio := extPair.MinCr
 				totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
 				collateralitzationRatio, err := k.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 				if err != nil {

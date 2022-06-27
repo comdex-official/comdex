@@ -69,7 +69,7 @@ func (k *Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint
 	gen := appData.GenesisToken
 	govTimeInSeconds := int64(appData.GovTimeInSeconds)
 	for _, v := range gen {
-		if v.IsgovToken {
+		if v.IsGovToken {
 			assetID = v.AssetId
 		}
 	}
@@ -254,19 +254,23 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 			if !found {
 				return types.ErrorAssetDoesNotExist
 			}
-			if !assetData.IsOnchain {
+			if !assetData.IsOnChain {
 				return types.ErrorAssetIsOffChain
 			}
 			hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
-			if hasAsset != 0 && data.IsgovToken {
+			if hasAsset != 0 && data.IsGovToken {
 				return types.ErrorGenesisTokenExistForApp
+			}
+
+			if appdata.MinGovDeposit.Equal(sdk.ZeroInt()) {
+				return types.ErrorMinGovDepositIsZero
 			}
 
 			checkFound := k.CheckIfAssetIsAddedToAppMapping(ctx, data.AssetId)
 			if !checkFound {
 				return types.ErrorAssetAlreadyExistingApp
 			}
-			if hasAsset == 0 && data.IsgovToken {
+			if hasAsset == 0 && data.IsGovToken {
 				k.SetGenesisTokenForApp(ctx, msg.Id, data.AssetId)
 			}
 			appdata.GenesisToken = append(appdata.GenesisToken, data)

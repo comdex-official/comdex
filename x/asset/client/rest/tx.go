@@ -53,34 +53,6 @@ func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRE
 	}
 }
 
-func AddNewWhitelistedAssetsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
-	return govrest.ProposalRESTHandler{
-		SubRoute: "add-new-whitelisted-assets",
-		Handler:  AddNewAssetsRESTHandler(clientCtx),
-	}
-}
-
-func UpdateNewWhitelistedAssetsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
-	return govrest.ProposalRESTHandler{
-		SubRoute: "update-whitelisted-assets",
-		Handler:  UpdateNewAssetRESTHandler(clientCtx),
-	}
-}
-
-func AddNewWhitelistedPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
-	return govrest.ProposalRESTHandler{
-		SubRoute: "add-new-whitelisted-pairs",
-		Handler:  AddNewPairsRESTHandler(clientCtx),
-	}
-}
-
-func UpdateNewWhitelistedPairProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
-	return govrest.ProposalRESTHandler{
-		SubRoute: "update-new-whitelisted-pairs",
-		Handler:  UpdateNewPairsRESTHandler(clientCtx),
-	}
-}
-
 func AddNewAssetsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req AddNewAssetsRequest

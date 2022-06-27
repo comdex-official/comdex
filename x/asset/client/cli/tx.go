@@ -70,8 +70,8 @@ func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 					Name:             names[i],
 					Denom:            denoms[i],
 					Decimals:         decimals[i],
-					IsOnchain:        newIsOnChain,
-					AssetOraclePrice: newAssetOraclePrice,
+					IsOnChain:        newIsOnChain,
+					IsOraclePriceRequired: newAssetOraclePrice,
 				})
 			}
 
@@ -268,355 +268,6 @@ func NewCmdSubmitAddPairsProposal() *cobra.Command {
 	return cmd
 }
 
-func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "add-lend-assets [asset_id] [Collateral_Weight] [Liquidation_Threshold] [Is_Bridged_Asset]",
-		Args:  cobra.ExactArgs(4),
-		Short: "Add lend assets",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			assetIDs, err := ParseUint64SliceFromString(args[0], ",")
-			if err != nil {
-				return err
-			}
-
-			collateralWeight, err := ParseStringFromString(args[1], ",")
-			if err != nil {
-				return err
-			}
-
-			liquidationThreshold, err := ParseStringFromString(args[2], ",")
-			if err != nil {
-				return err
-			}
-
-			isBridgedAsset, err := ParseStringFromString(args[3], ",")
-			if err != nil {
-				return err
-			}
-
-			title, err := cmd.Flags().GetString(cli.FlagTitle)
-			if err != nil {
-				return err
-			}
-
-			description, err := cmd.Flags().GetString(cli.FlagDescription)
-			if err != nil {
-				return err
-			}
-
-			from := ctx.GetFromAddress()
-
-			var assets []types.ExtendedAsset
-			for i := range assetIDs {
-				newCollateralWeight, err := sdk.NewDecFromStr(collateralWeight[i])
-				if err != nil {
-					return err
-				}
-				newLiquidationThreshold, err := sdk.NewDecFromStr(liquidationThreshold[i])
-				if err != nil {
-					return err
-				}
-				newIsBridgedAsset := ParseBoolFromString(isBridgedAsset[i])
-
-				assets = append(assets, types.ExtendedAsset{
-					AssetId:              assetIDs[i],
-					CollateralWeight:     newCollateralWeight,
-					LiquidationThreshold: newLiquidationThreshold,
-					IsBridgedAsset:       newIsBridgedAsset,
-				})
-			}
-
-			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
-			if err != nil {
-				return err
-			}
-			deposit, err := sdk.ParseCoinsNormalized(depositStr)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewAddWhitelistedAssetsProposal(title, description, assets)
-
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
-
-	return cmd
-}
-
-func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-lend-asset [asset_id]",
-		Args:  cobra.ExactArgs(1),
-		Short: "Update lend assets",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			collateralWeight, err := cmd.Flags().GetString(flagCollateralWeight)
-			if err != nil {
-				return err
-			}
-			newCollateralWeight, err := sdk.NewDecFromStr(collateralWeight)
-			if err != nil {
-				return err
-			}
-
-			liquidationThreshold, err := cmd.Flags().GetString(flagLiquidationThreshold)
-			if err != nil {
-				return err
-			}
-			newLiquidationThreshold, err := sdk.NewDecFromStr(liquidationThreshold)
-			if err != nil {
-				return err
-			}
-
-			title, err := cmd.Flags().GetString(cli.FlagTitle)
-			if err != nil {
-				return err
-			}
-
-			description, err := cmd.Flags().GetString(cli.FlagDescription)
-			if err != nil {
-				return err
-			}
-
-			isBridgedAsset, err := cmd.Flags().GetString(flagIsBridgedAsset)
-			if err != nil {
-				return err
-			}
-
-			newIsBridgedAsset := ParseBoolFromString(isBridgedAsset)
-
-			from := clientCtx.GetFromAddress()
-
-			asset := types.ExtendedAsset{
-				Id:                   id,
-				CollateralWeight:     newCollateralWeight,
-				LiquidationThreshold: newLiquidationThreshold,
-				IsBridgedAsset:       newIsBridgedAsset,
-			}
-
-			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
-			if err != nil {
-				return err
-			}
-			deposit, err := sdk.ParseCoinsNormalized(depositStr)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewUpdateWhitelistedAssetProposal(title, description, asset)
-
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	cmd.Flags().String(flagName, "", "name")
-	cmd.Flags().String(flagDenom, "", "denomination")
-	cmd.Flags().String(flagCollateralWeight, "", "collateralWeight")
-	cmd.Flags().String(flagLiquidationThreshold, "", "liquidationThreshold")
-	cmd.Flags().String(flagIsBridgedAsset, "", "isBridgedAsset")
-
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
-
-	return cmd
-}
-
-func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "add-lend-asset-pairs [flags]",
-		Short: "Add lend asset pairs",
-		Long: `Must provide path to a add white listed pairs JSON file (--add-white-whitelisted-pairs-file) describing the white listed pairs to be created
-Sample json content
-{
-	"pair_id" :"",
-	"module-account" :"",
-	"base_borrow_rate_asset_1" :"",
-	"base_borrow_rate_asset_2" :"",
-	"base_lend_rate_asset_1" :"",
-	"base_lend_rate_asset_2" :"",
-	"title" :"",
-	"description" :"",
-	"deposit" :""
-}`,
-		Args: cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
-
-			txf, msg, err := NewCreateWhiteListedPairsMsg(clientCtx, txf, cmd.Flags())
-			if err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
-		},
-	}
-
-	cmd.Flags().AddFlagSet(FlagSetCreateWhiteListedPairsMapping())
-	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
-
-	return cmd
-}
-
-func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-lend-asset-pair [len_pair_id]",
-		Short: "Update a lend asset pair",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-			moduleAcc, err := cmd.Flags().GetString(flagModuleAcc)
-			if err != nil {
-				return err
-			}
-			baseBorrowRateAsset1, err := cmd.Flags().GetString(flagBaseBorrowRateAsset1)
-			if err != nil {
-				return err
-			}
-			newBaseBorrowRateAsset1, err := sdk.NewDecFromStr(baseBorrowRateAsset1)
-			if err != nil {
-				return err
-			}
-
-			baseBorrowRateAsset2, err := cmd.Flags().GetString(flagBaseBorrowRateAsset2)
-			if err != nil {
-				return err
-			}
-			newBaseBorrowRateAsset2, err := sdk.NewDecFromStr(baseBorrowRateAsset2)
-			if err != nil {
-				return err
-			}
-
-			baseLendRateAsset1, err := cmd.Flags().GetString(flagBaseLendRateAsset1)
-			if err != nil {
-				return err
-			}
-			newBaseLendRateAsset1, err := sdk.NewDecFromStr(baseLendRateAsset1)
-			if err != nil {
-				return err
-			}
-
-			baseLendRateAsset2, err := cmd.Flags().GetString(flagBaseLendRateAsset2)
-			if err != nil {
-				return err
-			}
-			newBaseLendRateAsset2, err := sdk.NewDecFromStr(baseLendRateAsset2)
-			if err != nil {
-				return err
-			}
-
-			pair := types.ExtendedPairLend{
-				Id:                    id,
-				ModuleAcc:             moduleAcc,
-				BaseBorrowRateAsset_1: newBaseBorrowRateAsset1,
-				BaseBorrowRateAsset_2: newBaseBorrowRateAsset2,
-				BaseLendRateAsset_1:   newBaseLendRateAsset1,
-				BaseLendRateAsset_2:   newBaseLendRateAsset2,
-			}
-
-			title, err := cmd.Flags().GetString(cli.FlagTitle)
-			if err != nil {
-				return err
-			}
-
-			description, err := cmd.Flags().GetString(cli.FlagDescription)
-			if err != nil {
-				return err
-			}
-
-			from := clientCtx.GetFromAddress()
-
-			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
-			if err != nil {
-				return err
-			}
-			deposit, err := sdk.ParseCoinsNormalized(depositStr)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewUpdateWhitelistedPairProposal(title, description, pair)
-
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	cmd.Flags().String(flagModuleAcc, "", "moduleAcc")
-	cmd.Flags().String(flagBaseBorrowRateAsset1, "", "base borrow rate asset1")
-	cmd.Flags().String(flagBaseBorrowRateAsset2, "", "base borrow rate asset2")
-	cmd.Flags().String(flagBaseLendRateAsset1, "", "base lend rate asset1")
-	cmd.Flags().String(flagBaseLendRateAsset2, "", "base lend rate asset2")
-
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
-
-	return cmd
-}
 
 func NewCmdSubmitAddAppMappingProposal() *cobra.Command {
 	cmd := &cobra.Command{
@@ -824,7 +475,6 @@ Sample json content
 {
 	"app_mapping_id" : "",
 	"pair_id" : "",
-	"liquidation_ratio" : "",
 	"stability_fee" : "",
 	"closing_fee" : "",
 	"liquidation_penalty" : "",
@@ -879,11 +529,6 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 	}
 
 	pairID, err := ParseUint64SliceFromString(extPairVault.PairID, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	liquidationRatio, err := ParseStringFromString(extPairVault.LiquidationRatio, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -965,10 +610,6 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 
 	var pairs []types.ExtendedPairVault
 	for i := range pairID {
-		newLiquidationRatio, err := sdk.NewDecFromStr(liquidationRatio[i])
-		if err != nil {
-			return txf, nil, err
-		}
 		newStabilityFee, err := sdk.NewDecFromStr(stabilityFee[i])
 		if err != nil {
 			return txf, nil, err
@@ -1001,12 +642,11 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 		if !ok {
 			return txf, nil, types.ErrorInvalidDebtFloor
 		}
-		newIsPsmPair := ParseBoolFromString(isPsmPair[i])
+		newIsStableMintVault := ParseBoolFromString(isPsmPair[i])
 		newAssetOutOraclePrice := ParseBoolFromString(assetOutOraclePrice[i])
 		pairs = append(pairs, types.ExtendedPairVault{
 			AppMappingId:        appMappingID,
 			PairId:              pairID[i],
-			LiquidationRatio:    newLiquidationRatio,
 			StabilityFee:        newStabilityFee,
 			ClosingFee:          newClosingFee,
 			LiquidationPenalty:  newLiquidationPenalty,
@@ -1014,7 +654,7 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 			IsVaultActive:       newIsVaultActive,
 			DebtCeiling:         debtCeiling,
 			DebtFloor:           newDebtFloor,
-			IsPsmPair:           newIsPsmPair,
+			IsStableMintVault:   newIsStableMintVault,
 			MinCr:               newMinCr,
 			PairName:            pairName[i],
 			AssetOutOraclePrice: newAssetOutOraclePrice,
@@ -1093,7 +733,7 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 
 		cmap.AssetId = assetIDs[i]
 		cmap.GenesisSupply = &newGenesisSupply
-		cmap.IsgovToken = newIsGovToken
+		cmap.IsGovToken = newIsGovToken
 		cmap.Recipient = address.String()
 
 		bMap = append(bMap, cmap)
@@ -1121,83 +761,3 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 	return txf, msg, nil
 }
 
-func NewCreateWhiteListedPairsMsg(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
-	whiteListedPairs, err := parseWhiteListedPairsFlags(fs)
-	if err != nil {
-		return txf, nil, fmt.Errorf("failed to parse whiteListedPairs: %w", err)
-	}
-
-	pairID, err := ParseUint64SliceFromString(whiteListedPairs.PairID, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	moduleAccount, err := ParseStringFromString(whiteListedPairs.ModuleAccount, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	baseBorrowRateAsset1, err := ParseStringFromString(whiteListedPairs.BaseBorrowRateAsset1, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	baseBorrowRateAsset2, err := ParseStringFromString(whiteListedPairs.BaseBorrowRateAsset2, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	baseLendRateAsset1, err := ParseStringFromString(whiteListedPairs.BaseLendRateAsset1, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	baseLendRateAsset2, err := ParseStringFromString(whiteListedPairs.BaseLendRateAsset2, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	var pairs []types.ExtendedPairLend
-	for i := range pairID {
-		newBaseBorrowRateAsset1, err := sdk.NewDecFromStr(baseBorrowRateAsset1[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newBaseBorrowRateAsset2, err := sdk.NewDecFromStr(baseBorrowRateAsset2[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newBaseLendRateAsset1, err := sdk.NewDecFromStr(baseLendRateAsset1[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newBaseLendRateAsset2, err := sdk.NewDecFromStr(baseLendRateAsset2[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		pairs = append(pairs, types.ExtendedPairLend{
-			PairId:                pairID[i],
-			ModuleAcc:             moduleAccount[i],
-			BaseBorrowRateAsset_1: newBaseBorrowRateAsset1,
-			BaseBorrowRateAsset_2: newBaseBorrowRateAsset2,
-			BaseLendRateAsset_1:   newBaseLendRateAsset1,
-			BaseLendRateAsset_2:   newBaseLendRateAsset2,
-		})
-	}
-
-	from := clientCtx.GetFromAddress()
-
-	deposit, err := sdk.ParseCoinsNormalized(whiteListedPairs.Deposit)
-	if err != nil {
-		return txf, nil, err
-	}
-
-	content := types.NewAddWhitelistedPairsProposal(whiteListedPairs.Title, whiteListedPairs.Description, pairs)
-
-	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-	if err != nil {
-		return txf, nil, err
-	}
-
-	if err = msg.ValidateBasic(); err != nil {
-		return txf, nil, err
-	}
-	return txf, msg, nil
-}
