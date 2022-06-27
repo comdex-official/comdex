@@ -262,7 +262,7 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 				return types.ErrorGenesisTokenExistForApp
 			}
 
-			if appdata.MinGovDeposit.Equal(sdk.ZeroInt()) {
+			if data.IsGovToken && appdata.MinGovDeposit.Equal(sdk.ZeroInt()) {
 				return types.ErrorMinGovDepositIsZero
 			}
 
