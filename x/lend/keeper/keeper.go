@@ -62,6 +62,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int {
 	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(moduleName), denom).Amount
 }
+
 func uint64InAssetData(a uint64, list []types.AssetDataPoolMapping) bool {
 	for _, b := range list {
 		if b.AssetId == a {
@@ -505,12 +506,23 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 		if !found {
 			assetStats.TotalBorrowed = sdk.ZeroInt()
 		}
-		AssetStats := types.AssetStats{
-			PoolId:        pair.AssetOutPoolId,
-			AssetId:       pair.AssetOut,
-			TotalBorrowed: assetStats.TotalBorrowed.Add(AmountOut.Amount),
+		if borrowPos.StableBorrowRate != sdk.ZeroDec() {
+			AssetStats := types.AssetStats{
+				PoolId:              pair.AssetOutPoolId,
+				AssetId:             pair.AssetOut,
+				TotalStableBorrowed: assetStats.TotalStableBorrowed.Add(AmountOut.Amount),
+			}
+			k.SetAssetStatsByPoolIdAndAssetId(ctx, AssetStats)
+
+		} else {
+			AssetStats := types.AssetStats{
+				PoolId:        pair.AssetOutPoolId,
+				AssetId:       pair.AssetOut,
+				TotalBorrowed: assetStats.TotalBorrowed.Add(AmountOut.Amount),
+			}
+			k.SetAssetStatsByPoolIdAndAssetId(ctx, AssetStats)
 		}
-		k.SetAssetStatsByPoolIdAndAssetId(ctx, AssetStats)
+
 		k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 		k.SetBorrow(ctx, borrowPos)
 		k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
@@ -606,6 +618,27 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 				UpdatedAmountOut:     AmountOut.Amount,
 				Interest_Accumulated: sdk.ZeroInt(),
 			}
+
+			assetStats, found := k.GetAssetStatsByPoolIdAndAssetId(ctx, pair.AssetOut, pair.AssetOutPoolId)
+			if !found {
+				assetStats.TotalBorrowed = sdk.ZeroInt()
+			}
+			if borrowPos.StableBorrowRate != sdk.ZeroDec() {
+				AssetStats := types.AssetStats{
+					PoolId:              pair.AssetOutPoolId,
+					AssetId:             pair.AssetOut,
+					TotalStableBorrowed: assetStats.TotalStableBorrowed.Add(AmountOut.Amount),
+				}
+				k.SetAssetStatsByPoolIdAndAssetId(ctx, AssetStats)
+
+			} else {
+				AssetStats := types.AssetStats{
+					PoolId:        pair.AssetOutPoolId,
+					AssetId:       pair.AssetOut,
+					TotalBorrowed: assetStats.TotalBorrowed.Add(AmountOut.Amount),
+				}
+				k.SetAssetStatsByPoolIdAndAssetId(ctx, AssetStats)
+			}
 			k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 			k.SetBorrow(ctx, borrowPos)
 			k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
@@ -676,6 +709,28 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 				UpdatedAmountOut:     AmountOut.Amount,
 				Interest_Accumulated: sdk.ZeroInt(),
 			}
+
+			assetStats, found := k.GetAssetStatsByPoolIdAndAssetId(ctx, pair.AssetOut, pair.AssetOutPoolId)
+			if !found {
+				assetStats.TotalBorrowed = sdk.ZeroInt()
+			}
+			if borrowPos.StableBorrowRate != sdk.ZeroDec() {
+				AssetStats := types.AssetStats{
+					PoolId:              pair.AssetOutPoolId,
+					AssetId:             pair.AssetOut,
+					TotalStableBorrowed: assetStats.TotalStableBorrowed.Add(AmountOut.Amount),
+				}
+				k.SetAssetStatsByPoolIdAndAssetId(ctx, AssetStats)
+
+			} else {
+				AssetStats := types.AssetStats{
+					PoolId:        pair.AssetOutPoolId,
+					AssetId:       pair.AssetOut,
+					TotalBorrowed: assetStats.TotalBorrowed.Add(AmountOut.Amount),
+				}
+				k.SetAssetStatsByPoolIdAndAssetId(ctx, AssetStats)
+			}
+
 			k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 			k.SetBorrow(ctx, borrowPos)
 			k.SetBorrowForAddressByPair(ctx, lenderAddr, pairId, borrowPos.ID)
