@@ -154,6 +154,10 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
+	"github.com/comdex-official/comdex/x/nft"
+	nftkeeper "github.com/comdex-official/comdex/x/nft/keeper"
+	nfttypes "github.com/comdex-official/comdex/x/nft/types"
+
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
 	tv1_1_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_1_0"
 )
@@ -250,6 +254,7 @@ var (
 		wasm.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
+		nft.AppModuleBasic{},
 	)
 )
 
@@ -324,6 +329,7 @@ type App struct {
 	TokenmintKeeper   tokenmintkeeper.Keeper
 	liquidityKeeper   liquiditykeeper.Keeper
 	Rewardskeeper     rewardskeeper.Keeper
+	NFTKeeper         nftkeeper.Keeper
 
 	WasmKeeper wasm.Keeper
 	// the module manager
@@ -359,7 +365,7 @@ func New(
 			vaulttypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
-			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, lendtypes.StoreKey,
+			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, lendtypes.StoreKey, nfttypes.StoreKey,
 		)
 	)
 
@@ -412,6 +418,7 @@ func New(
 	app.ParamsKeeper.Subspace(tokenminttypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
+	app.ParamsKeeper.Subspace(nfttypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -685,6 +692,11 @@ func New(
 		&app.MarketKeeper,
 	)
 
+	app.NFTKeeper = nftkeeper.NewKeeper(
+		app.cdc,
+		app.keys[nfttypes.StoreKey],
+	)
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
 	supportedFeatures := "iterator,staking,stargate,comdex"
@@ -803,6 +815,7 @@ func New(
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.AccountKeeper, app.BankKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
+		nft.NewAppModule(app.cdc, app.NFTKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -817,7 +830,7 @@ func New(
 		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName,
 		liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName,
-		govtypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName, lendtypes.ModuleName,
+		govtypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName, lendtypes.ModuleName, nfttypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -825,9 +838,9 @@ func New(
 		minttypes.ModuleName, bandoraclemoduletypes.ModuleName, markettypes.ModuleName, lockertypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		icatypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
-		wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
-		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(), lendtypes.ModuleName,
-		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName,
+		wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName, paramstypes.ModuleName,
+		capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(), lendtypes.ModuleName, assettypes.ModuleName,
+		collectortypes.ModuleName, banktypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName, nfttypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -867,6 +880,7 @@ func New(
 		paramstypes.ModuleName,
 		liquiditytypes.ModuleName,
 		rewardstypes.ModuleName,
+		nfttypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -1063,6 +1077,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:            nil,
+		nfttypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
 	}
 }
 
@@ -1112,6 +1127,7 @@ func (a *App) registerUpgradeHandlers() {
 				vaulttypes.ModuleName,
 				feegrant.ModuleName,
 				icahosttypes.StoreKey,
+				nfttypes.ModuleName,
 			},
 		}
 	}

@@ -26,7 +26,10 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-require github.com/spf13/pflag v1.0.5
+require (
+	github.com/google/uuid v1.1.2
+	github.com/spf13/pflag v1.0.5
+)
 
 require (
 	filippo.io/edwards25519 v1.0.0-beta.2 // indirect
