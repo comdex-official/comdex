@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"strconv"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 
 	"github.com/comdex-official/comdex/x/asset/types"
 )

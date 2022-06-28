@@ -25,21 +25,21 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		txCreate(),
-		txDeposit(),
-		txWithdraw(),
-		txDrawDebt(),
-		txRepayDebt(),
-		txClose(),
-		txCreateStableMint(),
-		txDepositStableMint(),
-		txWithdrawStableMint(),
+		Create(),
+		Deposit(),
+		Withdraw(),
+		DrawDebt(),
+		RepayDebt(),
+		Close(),
+		CreateStableMint(),
+		DepositStableMint(),
+		WithdrawStableMint(),
 	)
 
 	return cmd
 }
 
-func txCreate() *cobra.Command {
+func Create() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create [appMappingID] [extendedPairVaultID] [amount_in] [amount_out]",
 		Short: "create a new vault",
@@ -84,7 +84,7 @@ func txCreate() *cobra.Command {
 	return cmd
 }
 
-func txDeposit() *cobra.Command {
+func Deposit() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deposit [appMappingID] [extendedPairVaultID] [userVaultid] [amount]",
 		Short: "creates a new deposit",
@@ -123,7 +123,7 @@ func txDeposit() *cobra.Command {
 	return cmd
 }
 
-func txWithdraw() *cobra.Command {
+func Withdraw() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "withdraw [appMappingID] [extendedPairVaultID] [userVaultid] [amount]",
 		Short: "create a new withdraw",
@@ -162,7 +162,7 @@ func txWithdraw() *cobra.Command {
 	return cmd
 }
 
-func txDrawDebt() *cobra.Command {
+func DrawDebt() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "draw [appMappingID] [extendedPairVaultID] [userVaultid] [amount]",
 		Short: "draw debt",
@@ -200,7 +200,7 @@ func txDrawDebt() *cobra.Command {
 	return cmd
 }
 
-func txRepayDebt() *cobra.Command {
+func RepayDebt() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "repay [appMappingID] [extendedPairVaultID] [userVaultid] [amount]",
 		Short: "repay debt",
@@ -238,7 +238,7 @@ func txRepayDebt() *cobra.Command {
 	return cmd
 }
 
-func txClose() *cobra.Command {
+func Close() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "close [appMappingID] [extendedPairVaultID] [userVaultid]",
 		Short: "close",
@@ -271,7 +271,7 @@ func txClose() *cobra.Command {
 	return cmd
 }
 
-func txCreateStableMint() *cobra.Command {
+func CreateStableMint() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-stable-mint [appMappingID] [extendedPairVaultID] [amount] ",
 		Short: "create a new stable mint vault",
@@ -311,7 +311,7 @@ func txCreateStableMint() *cobra.Command {
 	return cmd
 }
 
-func txDepositStableMint() *cobra.Command {
+func DepositStableMint() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deposit-stable-mint [appMappingID] [extendedPairVaultID] [amount] [stablemint_id] ",
 		Short: "deposit to stable mint vault",
@@ -352,7 +352,7 @@ func txDepositStableMint() *cobra.Command {
 	return cmd
 }
 
-func txWithdrawStableMint() *cobra.Command {
+func WithdrawStableMint() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "withdraw-stable-mint [appMappingID] [extendedPairVaultID] [amount] [stablemint_id]",
 		Short: "withdraw from stable mint vault",

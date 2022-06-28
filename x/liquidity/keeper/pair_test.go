@@ -82,8 +82,6 @@ func pairAlreadyExists(s *KeeperTestSuite, appID uint64, creator sdk.AccAddress,
 }
 
 func (s *KeeperTestSuite) TestPairCreation() {
-	s.T().Helper()
-
 	apps := []string{"appOne", "appTwo", "appThree"}
 	addresses := []sdk.AccAddress{s.addr(0), s.addr(1), s.addr(2)}
 
