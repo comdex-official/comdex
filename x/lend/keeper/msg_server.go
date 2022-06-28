@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-	"fmt"
+
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -281,7 +281,6 @@ func (m msgServer) FundModuleAccounts(goCtx context.Context, accounts *types.Msg
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("goose......")
 
 	if err := m.keeper.FundModAcc(ctx, accounts.ModuleName, accounts.AssetId, lenderAddr, accounts.Amount); err != nil {
 		return nil, err
