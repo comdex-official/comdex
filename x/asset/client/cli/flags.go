@@ -89,7 +89,7 @@ type createExtPairVaultInputs struct {
 	IsVaultActive       string `json:"is_vault_active"`
 	DebtCeiling         string `json:"debt_ceiling"`
 	DebtFloor           string `json:"debt_floor"`
-	IsPsmPair           string `json:"is_psm_pair"`
+	IsStableMintVault   string `json:"is_stable_mint_vault"`
 	MinCr               string `json:"min_cr"`
 	PairName            string `json:"pair_name"`
 	AssetOutOraclePrice string `json:"asset_out_oracle_price"`

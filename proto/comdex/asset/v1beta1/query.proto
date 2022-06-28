@@ -184,13 +184,13 @@ service Query {
     option (google.api.http).get = "/comdex/asset/v1beta1/product_to_extended_pair/{app_id}";
   }
   rpc QueryAllExtendedPairStableVaultsIdByApp(QueryAllExtendedPairStableVaultsIdByAppRequest) returns (QueryAllExtendedPairStableVaultsIdByAppResponse) {
-    option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_psm_pair_wise/{app_id}";
+    option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_stable_vault_wise/{app_id}";
   }
   rpc QueryGovTokenByApp(QueryGovTokenByAppRequest) returns (QueryGovTokenByAppResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/gov_token_in_an_app/{app_id}";
   }
   rpc QueryAllExtendedPairStableVaultsDataByApp(QueryAllExtendedPairStableVaultsDataByAppRequest) returns (QueryAllExtendedPairStableVaultsDataByAppResponse) {
-    option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_psm_wise/{app_id}";
+    option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_stable_vault_wise/{app_id}";
   }
 
 }

@@ -482,7 +482,7 @@ Sample json content
 	"is_vault_active" : "",
 	"debt_ceiling" : "",
 	"debt_floor" : "",
-	"is_psm_pair" : "",
+	"is_stable_mint_vault" : "",
 	"min_cr" : "",
 	"pair_name" : "",
 	"asset_out_oracle_price" : "",
@@ -568,7 +568,7 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 		return txf, nil, err
 	}
 
-	isPsmPair, err := ParseStringFromString(extPairVault.IsPsmPair, ",")
+	isStableMintVault, err := ParseStringFromString(extPairVault.IsStableMintVault, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -642,7 +642,7 @@ func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs 
 		if !ok {
 			return txf, nil, types.ErrorInvalidDebtFloor
 		}
-		newIsStableMintVault := ParseBoolFromString(isPsmPair[i])
+		newIsStableMintVault := ParseBoolFromString(isStableMintVault[i])
 		newAssetOutOraclePrice := ParseBoolFromString(assetOutOraclePrice[i])
 		pairs = append(pairs, types.ExtendedPairVault{
 			AppMappingId:        appMappingID,

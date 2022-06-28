@@ -1221,11 +1221,11 @@ var (
 
 	pattern_Query_QueryAllExtendedPairVaultsByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "product_to_extended_pair", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllExtendedPairStableVaultsIdByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "extended_pair_psm_pair_wise", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryAllExtendedPairStableVaultsIdByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "extended_pair_stable_vault_wise", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryGovTokenByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "gov_token_in_an_app", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllExtendedPairStableVaultsDataByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "extended_pair_psm_wise", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryAllExtendedPairStableVaultsDataByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "asset", "v1beta1", "extended_pair_stable_vault_wise", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (

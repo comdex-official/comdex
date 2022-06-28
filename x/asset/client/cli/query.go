@@ -364,8 +364,8 @@ func queryAllExtendedPairVaultsByApp() *cobra.Command {
 
 func queryAllExtendedPairStableVaultsIdByApp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "extended-pair-psm-pair-wise [app_id]",
-		Short: "Query all extended pairs psm pair wise in an app",
+		Use:   "extended-pair-stable-vault-wise [app_id]",
+		Short: "Query all extended pairs stable vault wise in an app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -440,8 +440,8 @@ func queryGovTokenByApp() *cobra.Command {
 
 func queryAllExtendedPairStableVaultsDataByApp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "extended-pair-data-psm-pair-wise [app_id]",
-		Short: "Query all extended pairs data psm pair wise in an app",
+		Use:   "extended-pair-data-stable-vault-wise [app_id]",
+		Short: "Query all extended pairs data stable vault wise in an app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
