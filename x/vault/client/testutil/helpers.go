@@ -1,12 +1,56 @@
 package testutil
 
 import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
+	"github.com/comdex-official/comdex/x/vault/client/cli"
 	"github.com/comdex-official/comdex/x/vault/types"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/testutil"
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 )
+
+var commonArgs = []string{
+	fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+	fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+	fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)).String()),
+}
+
+// via cli
+func MsgCreate(
+	clientCtx client.Context,
+	appMappingID, extendedPairVaultID uint64,
+	amountIn, amountOut sdk.Int,
+	from string,
+	extraArgs ...string,
+) (testutil.BufferWriter, error) {
+	args := append(append([]string{
+		strconv.Itoa(int(appMappingID)),
+		strconv.Itoa(int(extendedPairVaultID)),
+		amountIn.String(),
+		amountOut.String(),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+	}, commonArgs...), extraArgs...)
+
+	resp, err := clitestutil.ExecTestCLICmd(clientCtx, cli.Create(), args)
+	if err != nil {
+		return resp, err
+	}
+	var respJson map[string]interface{}
+	json.Unmarshal([]byte(resp.String()), &respJson)
+	if respJson["code"] != 0 {
+		errLog, _ := respJson["raw_log"].(string)
+		err = fmt.Errorf(errLog)
+	}
+	return resp, err
+}
 
 func (s *VaultIntegrationTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
 	s.T().Helper()
