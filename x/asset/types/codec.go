@@ -13,10 +13,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&AddAssetsProposal{}, "comdex/asset/AddAssetsProposal", nil)
 	cdc.RegisterConcrete(&UpdateAssetProposal{}, "comdex/asset/UpdateAssetProposal", nil)
 	cdc.RegisterConcrete(&AddPairsProposal{}, "comdex/asset/AddPairsProposal", nil)
-	cdc.RegisterConcrete(&AddWhitelistedAssetsProposal{}, "comdex/asset/AddWhitelistedAssetsProposal", nil)
-	cdc.RegisterConcrete(&UpdateWhitelistedAssetProposal{}, "comdex/asset/UpdateWhitelistedAssetProposal", nil)
-	cdc.RegisterConcrete(&AddWhitelistedPairsProposal{}, "comdex/asset/AddWhitelistedPairsProposal", nil)
-	cdc.RegisterConcrete(&UpdateWhitelistedPairProposal{}, "comdex/asset/UpdateWhitelistedPairProposal", nil)
 	cdc.RegisterConcrete(&AddAppMappingProposal{}, "comdex/asset/AddAppMappingProposal", nil)
 	cdc.RegisterConcrete(&AddAssetMappingProposal{}, "comdex/asset/AddAssetMappingProposal", nil)
 	cdc.RegisterConcrete(&AddExtendedPairsVaultProposal{}, "comdex/asset/AddExtendedPairsVaultProposal", nil)
@@ -29,10 +25,6 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&AddAssetsProposal{},
 		&UpdateAssetProposal{},
 		&AddPairsProposal{},
-		&AddWhitelistedAssetsProposal{},
-		&UpdateWhitelistedAssetProposal{},
-		&AddWhitelistedPairsProposal{},
-		&UpdateWhitelistedPairProposal{},
 		&AddAppMappingProposal{},
 		&AddAssetMappingProposal{},
 		&AddExtendedPairsVaultProposal{},

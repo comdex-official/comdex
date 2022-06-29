@@ -9,7 +9,7 @@ import (
 func (k *Keeper) SetTokenMint(ctx sdk.Context, appTokenMintData types.TokenMint) {
 	var (
 		store = k.Store(ctx)
-		key   = types.TokenMintKey(appTokenMintData.AppMappingId)
+		key   = types.TokenMintKey(appTokenMintData.AppId)
 		value = k.cdc.MustMarshal(&appTokenMintData)
 	)
 

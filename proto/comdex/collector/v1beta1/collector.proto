@@ -97,20 +97,6 @@ message AppToDenomsMapping {
   repeated uint64 asset_ids = 2 [(gogoproto.moretags) = "yaml:\"asset_ids\""];
 }
 
-/////////////////////////////////////////////////////////2222222222222
-
-
-message HistoricalAuction {
-  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-  repeated AssetToAuctionMapping asset_to_auction = 2 [(gogoproto.moretags) = "yaml:\"asset_to_auction\""];
-}
-
-message AssetToAuctionMapping {
-  uint64 auctionId = 1 [(gogoproto.moretags) = "yaml:\"auction_id\""];
-  repeated string asset_denoms = 2 [(gogoproto.moretags) = "yaml:\"asset_denoms\""];
-}
-
-////////////////////////////////////////////////////////33333333333333
 
 // key app id -> assets  traverse this one
 message CollectorAuctionLookupTable {

@@ -39,16 +39,8 @@ func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return handleUpdateAssetProposal(ctx, k, c)
 		case *types.AddPairsProposal:
 			return handleAddPairsProposal(ctx, k, c)
-		case *types.AddWhitelistedAssetsProposal:
-			return handleAddWhitelistedAssetProposal(ctx, k, c)
-		case *types.UpdateWhitelistedAssetProposal:
-			return handleUpdateWhitelistedAssetProposal(ctx, k, c)
 		case *types.UpdateGovTimeInAppMappingProposal:
 			return handleUpdateGovTimeInAppMappingProposal(ctx, k, c)
-		case *types.AddWhitelistedPairsProposal:
-			return handleAddWhitelistedPairsProposal(ctx, k, c)
-		case *types.UpdateWhitelistedPairProposal:
-			return handleUpdateWhitelistedPairProposal(ctx, k, c)
 		case *types.AddAppMappingProposal:
 			return handleAddAppMappingProposal(ctx, k, c)
 		case *types.AddAssetMappingProposal:
@@ -74,24 +66,8 @@ func handleAddPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPairsP
 	return k.HandleProposalAddPairs(ctx, p)
 }
 
-func handleAddWhitelistedAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddWhitelistedAssetsProposal) error {
-	return k.HandleAddWhitelistedAssetRecords(ctx, p)
-}
-
-func handleUpdateWhitelistedAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateWhitelistedAssetProposal) error {
-	return k.HandleUpdateWhitelistedAssetRecords(ctx, p)
-}
-
 func handleUpdateGovTimeInAppMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateGovTimeInAppMappingProposal) error {
 	return k.HandleUpdateGovTimeInAppMapping(ctx, p)
-}
-
-func handleAddWhitelistedPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddWhitelistedPairsProposal) error {
-	return k.HandleAddWhitelistedPairsRecords(ctx, p)
-}
-
-func handleUpdateWhitelistedPairProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateWhitelistedPairProposal) error {
-	return k.HandleUpdateWhitelistedPairRecords(ctx, p)
 }
 
 func handleAddAppMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAppMappingProposal) error {

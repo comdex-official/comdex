@@ -30,24 +30,22 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type QueryAllTokenMintedForAllProductsRequest struct {
+type QueryAllTokenMintedForAllAppsRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryAllTokenMintedForAllProductsRequest) Reset() {
-	*m = QueryAllTokenMintedForAllProductsRequest{}
-}
-func (m *QueryAllTokenMintedForAllProductsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllTokenMintedForAllProductsRequest) ProtoMessage()    {}
-func (*QueryAllTokenMintedForAllProductsRequest) Descriptor() ([]byte, []int) {
+func (m *QueryAllTokenMintedForAllAppsRequest) Reset()         { *m = QueryAllTokenMintedForAllAppsRequest{} }
+func (m *QueryAllTokenMintedForAllAppsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllTokenMintedForAllAppsRequest) ProtoMessage()    {}
+func (*QueryAllTokenMintedForAllAppsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_47c1a33cde9c8705, []int{0}
 }
-func (m *QueryAllTokenMintedForAllProductsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllTokenMintedForAllAppsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllTokenMintedForAllProductsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllTokenMintedForAllAppsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllTokenMintedForAllProductsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllTokenMintedForAllAppsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -57,39 +55,35 @@ func (m *QueryAllTokenMintedForAllProductsRequest) XXX_Marshal(b []byte, determi
 		return b[:n], nil
 	}
 }
-func (m *QueryAllTokenMintedForAllProductsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllTokenMintedForAllProductsRequest.Merge(m, src)
+func (m *QueryAllTokenMintedForAllAppsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllTokenMintedForAllAppsRequest.Merge(m, src)
 }
-func (m *QueryAllTokenMintedForAllProductsRequest) XXX_Size() int {
+func (m *QueryAllTokenMintedForAllAppsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllTokenMintedForAllProductsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllTokenMintedForAllProductsRequest.DiscardUnknown(m)
+func (m *QueryAllTokenMintedForAllAppsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllTokenMintedForAllAppsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllTokenMintedForAllProductsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllTokenMintedForAllAppsRequest proto.InternalMessageInfo
 
-type QueryAllTokenMintedForAllProductsResponse struct {
+type QueryAllTokenMintedForAllAppsResponse struct {
 	TokenMint  []TokenMint         `protobuf:"bytes,1,rep,name=tokenMint,proto3" json:"tokenMint" yaml:"tokenMint"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryAllTokenMintedForAllProductsResponse) Reset() {
-	*m = QueryAllTokenMintedForAllProductsResponse{}
-}
-func (m *QueryAllTokenMintedForAllProductsResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryAllTokenMintedForAllProductsResponse) ProtoMessage() {}
-func (*QueryAllTokenMintedForAllProductsResponse) Descriptor() ([]byte, []int) {
+func (m *QueryAllTokenMintedForAllAppsResponse) Reset()         { *m = QueryAllTokenMintedForAllAppsResponse{} }
+func (m *QueryAllTokenMintedForAllAppsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllTokenMintedForAllAppsResponse) ProtoMessage()    {}
+func (*QueryAllTokenMintedForAllAppsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_47c1a33cde9c8705, []int{1}
 }
-func (m *QueryAllTokenMintedForAllProductsResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllTokenMintedForAllAppsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllTokenMintedForAllProductsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllTokenMintedForAllAppsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllTokenMintedForAllProductsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllTokenMintedForAllAppsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -99,35 +93,35 @@ func (m *QueryAllTokenMintedForAllProductsResponse) XXX_Marshal(b []byte, determ
 		return b[:n], nil
 	}
 }
-func (m *QueryAllTokenMintedForAllProductsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllTokenMintedForAllProductsResponse.Merge(m, src)
+func (m *QueryAllTokenMintedForAllAppsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllTokenMintedForAllAppsResponse.Merge(m, src)
 }
-func (m *QueryAllTokenMintedForAllProductsResponse) XXX_Size() int {
+func (m *QueryAllTokenMintedForAllAppsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllTokenMintedForAllProductsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllTokenMintedForAllProductsResponse.DiscardUnknown(m)
+func (m *QueryAllTokenMintedForAllAppsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllTokenMintedForAllAppsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllTokenMintedForAllProductsResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllTokenMintedForAllAppsResponse proto.InternalMessageInfo
 
-type QueryTokenMintedByProductRequest struct {
+type QueryTokenMintedByAppRequest struct {
 	AppId      uint64             `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryTokenMintedByProductRequest) Reset()         { *m = QueryTokenMintedByProductRequest{} }
-func (m *QueryTokenMintedByProductRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryTokenMintedByProductRequest) ProtoMessage()    {}
-func (*QueryTokenMintedByProductRequest) Descriptor() ([]byte, []int) {
+func (m *QueryTokenMintedByAppRequest) Reset()         { *m = QueryTokenMintedByAppRequest{} }
+func (m *QueryTokenMintedByAppRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenMintedByAppRequest) ProtoMessage()    {}
+func (*QueryTokenMintedByAppRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_47c1a33cde9c8705, []int{2}
 }
-func (m *QueryTokenMintedByProductRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryTokenMintedByAppRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTokenMintedByProductRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTokenMintedByAppRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTokenMintedByProductRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTokenMintedByAppRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -137,35 +131,35 @@ func (m *QueryTokenMintedByProductRequest) XXX_Marshal(b []byte, deterministic b
 		return b[:n], nil
 	}
 }
-func (m *QueryTokenMintedByProductRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTokenMintedByProductRequest.Merge(m, src)
+func (m *QueryTokenMintedByAppRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenMintedByAppRequest.Merge(m, src)
 }
-func (m *QueryTokenMintedByProductRequest) XXX_Size() int {
+func (m *QueryTokenMintedByAppRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTokenMintedByProductRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTokenMintedByProductRequest.DiscardUnknown(m)
+func (m *QueryTokenMintedByAppRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenMintedByAppRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTokenMintedByProductRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryTokenMintedByAppRequest proto.InternalMessageInfo
 
-type QueryTokenMintedByProductResponse struct {
+type QueryTokenMintedByAppResponse struct {
 	TokenMint  TokenMint           `protobuf:"bytes,1,opt,name=tokenMint,proto3" json:"tokenMint" yaml:"tokenMint"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryTokenMintedByProductResponse) Reset()         { *m = QueryTokenMintedByProductResponse{} }
-func (m *QueryTokenMintedByProductResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryTokenMintedByProductResponse) ProtoMessage()    {}
-func (*QueryTokenMintedByProductResponse) Descriptor() ([]byte, []int) {
+func (m *QueryTokenMintedByAppResponse) Reset()         { *m = QueryTokenMintedByAppResponse{} }
+func (m *QueryTokenMintedByAppResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenMintedByAppResponse) ProtoMessage()    {}
+func (*QueryTokenMintedByAppResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_47c1a33cde9c8705, []int{3}
 }
-func (m *QueryTokenMintedByProductResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryTokenMintedByAppResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTokenMintedByProductResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTokenMintedByAppResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTokenMintedByProductResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTokenMintedByAppResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -175,38 +169,36 @@ func (m *QueryTokenMintedByProductResponse) XXX_Marshal(b []byte, deterministic 
 		return b[:n], nil
 	}
 }
-func (m *QueryTokenMintedByProductResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTokenMintedByProductResponse.Merge(m, src)
+func (m *QueryTokenMintedByAppResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenMintedByAppResponse.Merge(m, src)
 }
-func (m *QueryTokenMintedByProductResponse) XXX_Size() int {
+func (m *QueryTokenMintedByAppResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTokenMintedByProductResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTokenMintedByProductResponse.DiscardUnknown(m)
+func (m *QueryTokenMintedByAppResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenMintedByAppResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTokenMintedByProductResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryTokenMintedByAppResponse proto.InternalMessageInfo
 
-type QueryTokenMintedByProductAndAssetRequest struct {
+type QueryTokenMintedByAppAndAssetRequest struct {
 	AppId      uint64             `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	AssetId    uint64             `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 	Pagination *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryTokenMintedByProductAndAssetRequest) Reset() {
-	*m = QueryTokenMintedByProductAndAssetRequest{}
-}
-func (m *QueryTokenMintedByProductAndAssetRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryTokenMintedByProductAndAssetRequest) ProtoMessage()    {}
-func (*QueryTokenMintedByProductAndAssetRequest) Descriptor() ([]byte, []int) {
+func (m *QueryTokenMintedByAppAndAssetRequest) Reset()         { *m = QueryTokenMintedByAppAndAssetRequest{} }
+func (m *QueryTokenMintedByAppAndAssetRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenMintedByAppAndAssetRequest) ProtoMessage()    {}
+func (*QueryTokenMintedByAppAndAssetRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_47c1a33cde9c8705, []int{4}
 }
-func (m *QueryTokenMintedByProductAndAssetRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryTokenMintedByAppAndAssetRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTokenMintedByProductAndAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTokenMintedByAppAndAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTokenMintedByProductAndAssetRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTokenMintedByAppAndAssetRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -216,39 +208,35 @@ func (m *QueryTokenMintedByProductAndAssetRequest) XXX_Marshal(b []byte, determi
 		return b[:n], nil
 	}
 }
-func (m *QueryTokenMintedByProductAndAssetRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTokenMintedByProductAndAssetRequest.Merge(m, src)
+func (m *QueryTokenMintedByAppAndAssetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenMintedByAppAndAssetRequest.Merge(m, src)
 }
-func (m *QueryTokenMintedByProductAndAssetRequest) XXX_Size() int {
+func (m *QueryTokenMintedByAppAndAssetRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTokenMintedByProductAndAssetRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTokenMintedByProductAndAssetRequest.DiscardUnknown(m)
+func (m *QueryTokenMintedByAppAndAssetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenMintedByAppAndAssetRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTokenMintedByProductAndAssetRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryTokenMintedByAppAndAssetRequest proto.InternalMessageInfo
 
-type QueryTokenMintedByProductAndAssetResponse struct {
+type QueryTokenMintedByAppAndAssetResponse struct {
 	MintedTokens MintedTokens        `protobuf:"bytes,1,opt,name=mintedTokens,proto3" json:"mintedTokens" yaml:"mintedTokens"`
 	Pagination   *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryTokenMintedByProductAndAssetResponse) Reset() {
-	*m = QueryTokenMintedByProductAndAssetResponse{}
-}
-func (m *QueryTokenMintedByProductAndAssetResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryTokenMintedByProductAndAssetResponse) ProtoMessage() {}
-func (*QueryTokenMintedByProductAndAssetResponse) Descriptor() ([]byte, []int) {
+func (m *QueryTokenMintedByAppAndAssetResponse) Reset()         { *m = QueryTokenMintedByAppAndAssetResponse{} }
+func (m *QueryTokenMintedByAppAndAssetResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenMintedByAppAndAssetResponse) ProtoMessage()    {}
+func (*QueryTokenMintedByAppAndAssetResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_47c1a33cde9c8705, []int{5}
 }
-func (m *QueryTokenMintedByProductAndAssetResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryTokenMintedByAppAndAssetResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTokenMintedByProductAndAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTokenMintedByAppAndAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTokenMintedByProductAndAssetResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTokenMintedByAppAndAssetResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -258,25 +246,25 @@ func (m *QueryTokenMintedByProductAndAssetResponse) XXX_Marshal(b []byte, determ
 		return b[:n], nil
 	}
 }
-func (m *QueryTokenMintedByProductAndAssetResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTokenMintedByProductAndAssetResponse.Merge(m, src)
+func (m *QueryTokenMintedByAppAndAssetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenMintedByAppAndAssetResponse.Merge(m, src)
 }
-func (m *QueryTokenMintedByProductAndAssetResponse) XXX_Size() int {
+func (m *QueryTokenMintedByAppAndAssetResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTokenMintedByProductAndAssetResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTokenMintedByProductAndAssetResponse.DiscardUnknown(m)
+func (m *QueryTokenMintedByAppAndAssetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenMintedByAppAndAssetResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTokenMintedByProductAndAssetResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryTokenMintedByAppAndAssetResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*QueryAllTokenMintedForAllProductsRequest)(nil), "comdex.tokenmint.v1beta1.QueryAllTokenMintedForAllProductsRequest")
-	proto.RegisterType((*QueryAllTokenMintedForAllProductsResponse)(nil), "comdex.tokenmint.v1beta1.QueryAllTokenMintedForAllProductsResponse")
-	proto.RegisterType((*QueryTokenMintedByProductRequest)(nil), "comdex.tokenmint.v1beta1.QueryTokenMintedByProductRequest")
-	proto.RegisterType((*QueryTokenMintedByProductResponse)(nil), "comdex.tokenmint.v1beta1.QueryTokenMintedByProductResponse")
-	proto.RegisterType((*QueryTokenMintedByProductAndAssetRequest)(nil), "comdex.tokenmint.v1beta1.QueryTokenMintedByProductAndAssetRequest")
-	proto.RegisterType((*QueryTokenMintedByProductAndAssetResponse)(nil), "comdex.tokenmint.v1beta1.QueryTokenMintedByProductAndAssetResponse")
+	proto.RegisterType((*QueryAllTokenMintedForAllAppsRequest)(nil), "comdex.tokenmint.v1beta1.QueryAllTokenMintedForAllAppsRequest")
+	proto.RegisterType((*QueryAllTokenMintedForAllAppsResponse)(nil), "comdex.tokenmint.v1beta1.QueryAllTokenMintedForAllAppsResponse")
+	proto.RegisterType((*QueryTokenMintedByAppRequest)(nil), "comdex.tokenmint.v1beta1.QueryTokenMintedByAppRequest")
+	proto.RegisterType((*QueryTokenMintedByAppResponse)(nil), "comdex.tokenmint.v1beta1.QueryTokenMintedByAppResponse")
+	proto.RegisterType((*QueryTokenMintedByAppAndAssetRequest)(nil), "comdex.tokenmint.v1beta1.QueryTokenMintedByAppAndAssetRequest")
+	proto.RegisterType((*QueryTokenMintedByAppAndAssetResponse)(nil), "comdex.tokenmint.v1beta1.QueryTokenMintedByAppAndAssetResponse")
 }
 
 func init() {
@@ -284,49 +272,49 @@ func init() {
 }
 
 var fileDescriptor_47c1a33cde9c8705 = []byte{
-	// 661 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x96, 0x41, 0x6f, 0xd3, 0x30,
-	0x18, 0x86, 0xe3, 0x8e, 0x0d, 0xf0, 0x40, 0xb0, 0x0c, 0xa4, 0x52, 0x50, 0x3a, 0x32, 0x04, 0x05,
-	0x29, 0x89, 0xb6, 0x9d, 0xe8, 0xb8, 0x34, 0x48, 0x48, 0x08, 0x55, 0x1a, 0x01, 0x2e, 0x20, 0x40,
-	0x6e, 0xe3, 0x85, 0x88, 0x34, 0xce, 0x6a, 0x17, 0x51, 0x4d, 0x3b, 0xc0, 0x8d, 0x1b, 0x12, 0x7f,
-	0x02, 0x89, 0x3f, 0xd2, 0xe3, 0x24, 0x2e, 0x3d, 0x55, 0xa3, 0xe5, 0xc0, 0x0d, 0xa9, 0xe2, 0x07,
-	0xa0, 0xd8, 0x49, 0x9b, 0xc1, 0x92, 0x96, 0x31, 0x0e, 0xdc, 0x2c, 0xf7, 0xf5, 0xeb, 0xef, 0xf1,
-	0x9b, 0xef, 0x53, 0xe1, 0x95, 0x3a, 0x69, 0xd8, 0xf8, 0xb5, 0xc1, 0xc8, 0x4b, 0xec, 0x37, 0x5c,
-	0x9f, 0x19, 0xaf, 0x56, 0x6a, 0x98, 0xa1, 0x15, 0x63, 0xab, 0x85, 0x9b, 0x6d, 0x3d, 0x68, 0x12,
-	0x46, 0xe4, 0xbc, 0x50, 0xe9, 0x23, 0x95, 0x1e, 0xa9, 0x0a, 0x37, 0xea, 0x84, 0x36, 0x08, 0x35,
-	0x6a, 0x88, 0x62, 0x71, 0x64, 0x64, 0x10, 0x20, 0xc7, 0xf5, 0x11, 0x73, 0x89, 0x2f, 0x5c, 0x0a,
-	0xcb, 0xa9, 0x77, 0x71, 0x4b, 0x21, 0x3a, 0xe7, 0x10, 0x87, 0xf0, 0xa5, 0x11, 0xae, 0xa2, 0xdd,
-	0x4b, 0x0e, 0x21, 0x8e, 0x87, 0x0d, 0x14, 0xb8, 0x06, 0xf2, 0x7d, 0xc2, 0xb8, 0x2f, 0x15, 0xbf,
-	0xaa, 0xef, 0x00, 0x2c, 0xdd, 0x0f, 0xef, 0xae, 0x78, 0xde, 0xc3, 0xd0, 0xbc, 0xea, 0xfa, 0x0c,
-	0xdb, 0x77, 0x48, 0xb3, 0xe2, 0x79, 0x1b, 0x4d, 0x62, 0xb7, 0xea, 0x8c, 0x5a, 0x78, 0xab, 0x85,
-	0x29, 0x93, 0x9f, 0x42, 0x38, 0xae, 0x2c, 0x0f, 0x96, 0x40, 0x69, 0x7e, 0xf5, 0xaa, 0x2e, 0x30,
-	0xf4, 0x10, 0x43, 0x17, 0xe4, 0x51, 0x6d, 0xfa, 0x06, 0x72, 0x70, 0x74, 0xd6, 0x3c, 0x3f, 0xec,
-	0x15, 0x17, 0xda, 0xa8, 0xe1, 0x95, 0xd5, 0xb1, 0x87, 0x6a, 0x25, 0x0c, 0xd5, 0x6f, 0x00, 0x5e,
-	0x9f, 0xa2, 0x16, 0x1a, 0x10, 0x9f, 0x62, 0xf9, 0x09, 0x3c, 0xc9, 0x62, 0x51, 0x1e, 0x2c, 0xcd,
-	0x94, 0xe6, 0x57, 0x97, 0xf5, 0xb4, 0xc7, 0xd6, 0x47, 0x7e, 0x66, 0xbe, 0xd3, 0x2b, 0x4a, 0xc3,
-	0x5e, 0xf1, 0xac, 0x28, 0x66, 0xe4, 0xa1, 0x5a, 0x63, 0x3f, 0xf9, 0xd9, 0x3e, 0xd2, 0x1c, 0x27,
-	0xbd, 0x36, 0x91, 0x54, 0x54, 0x36, 0x0d, 0xea, 0x27, 0x00, 0x97, 0x38, 0x6a, 0x82, 0xd3, 0x6c,
-	0x47, 0x8c, 0xf1, 0x73, 0x97, 0xe0, 0x1c, 0x0a, 0x82, 0xe7, 0xae, 0xcd, 0x9f, 0xfa, 0x98, 0xb9,
-	0x30, 0xec, 0x15, 0x4f, 0x0b, 0x5f, 0xb1, 0xaf, 0x5a, 0xb3, 0x28, 0x08, 0xee, 0xda, 0xbf, 0x04,
-	0x93, 0x3b, 0xea, 0x60, 0xf6, 0x00, 0xbc, 0x9c, 0x51, 0xed, 0xc1, 0x81, 0x80, 0xff, 0x2a, 0x90,
-	0x41, 0xdc, 0x07, 0x07, 0x21, 0x56, 0x7c, 0xbb, 0x42, 0x29, 0x3e, 0x44, 0x30, 0x3a, 0x3c, 0x81,
-	0xc2, 0x93, 0xa1, 0x36, 0xc7, 0xb5, 0x8b, 0xc3, 0x5e, 0xf1, 0x4c, 0xa4, 0x8d, 0x7e, 0x51, 0xad,
-	0xe3, 0x7c, 0xf9, 0x5b, 0x90, 0x33, 0x47, 0x1d, 0xe4, 0x8f, 0xb8, 0xc3, 0xb2, 0x29, 0xa3, 0x40,
-	0x1d, 0x78, 0xaa, 0xc1, 0x25, 0x5c, 0x4d, 0x13, 0x0d, 0x9f, 0x92, 0x69, 0x35, 0xa1, 0x36, 0x2f,
-	0x46, 0xb1, 0x2e, 0x8a, 0x92, 0x92, 0x4e, 0xaa, 0xb5, 0xcf, 0xf8, 0x5f, 0x87, 0xbb, 0xda, 0x9d,
-	0x85, 0xb3, 0x1c, 0x5b, 0xfe, 0x1e, 0x7f, 0xc9, 0x59, 0x23, 0x46, 0x36, 0xd3, 0x11, 0xa7, 0x9d,
-	0x95, 0x85, 0xdb, 0x7f, 0xe5, 0x21, 0xd8, 0xd4, 0xca, 0xdb, 0xcf, 0x5f, 0x3f, 0xe4, 0xd6, 0xe5,
-	0x9b, 0x46, 0xea, 0xfc, 0x67, 0x84, 0x21, 0x4f, 0xe3, 0xfb, 0x9a, 0x78, 0x54, 0x0d, 0x79, 0x9e,
-	0x16, 0xc4, 0x2c, 0x5d, 0x00, 0x2f, 0xa4, 0x46, 0x2e, 0x97, 0x27, 0x54, 0x99, 0x31, 0x9e, 0x0a,
-	0xeb, 0x87, 0x3a, 0x1b, 0x91, 0x99, 0x9c, 0xec, 0x96, 0x5c, 0xce, 0x22, 0x4b, 0x30, 0xd5, 0xda,
-	0x31, 0x92, 0xb1, 0x2d, 0x7a, 0x6c, 0x47, 0x7e, 0x93, 0xcb, 0x18, 0x4b, 0xf1, 0xd7, 0x3c, 0x31,
-	0xcc, 0x29, 0x1a, 0x7e, 0x62, 0x98, 0xd3, 0xb4, 0x93, 0xfa, 0x80, 0x23, 0x57, 0xe5, 0x7b, 0x7f,
-	0x8c, 0xac, 0xf1, 0xf1, 0x30, 0x02, 0x37, 0xb6, 0xe3, 0xc9, 0xb1, 0x63, 0x3e, 0xea, 0x7c, 0x51,
-	0xa4, 0x8f, 0x7d, 0x45, 0xea, 0xf4, 0x15, 0xb0, 0xdb, 0x57, 0xc0, 0x5e, 0x5f, 0x01, 0xef, 0x07,
-	0x8a, 0xb4, 0x3b, 0x50, 0xa4, 0xee, 0x40, 0x91, 0x1e, 0xaf, 0x39, 0x2e, 0x7b, 0xd1, 0xaa, 0x85,
-	0x04, 0xd1, 0xc5, 0x1a, 0xd9, 0xdc, 0x74, 0xeb, 0x2e, 0xf2, 0xe2, 0x42, 0x92, 0xa5, 0xb0, 0x76,
-	0x80, 0x69, 0x6d, 0x8e, 0xff, 0x3b, 0x58, 0xfb, 0x19, 0x00, 0x00, 0xff, 0xff, 0x5a, 0x2e, 0x27,
-	0xae, 0xe4, 0x08, 0x00, 0x00,
+	// 663 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x95, 0x41, 0x6b, 0xd4, 0x4e,
+	0x18, 0xc6, 0x33, 0xdb, 0x7f, 0xfb, 0xd7, 0xa9, 0xa2, 0x4d, 0x2d, 0x2c, 0x6b, 0xcd, 0x96, 0xb4,
+	0x6a, 0x11, 0x92, 0xd0, 0x16, 0x5b, 0x11, 0xac, 0x24, 0x07, 0x41, 0xa4, 0xa0, 0x51, 0x2f, 0x8a,
+	0xca, 0x6c, 0x33, 0x8d, 0xc1, 0x6c, 0x66, 0xda, 0x99, 0x8a, 0x4b, 0xe9, 0x45, 0xf0, 0x2e, 0xf8,
+	0x21, 0xf4, 0xe0, 0x07, 0xd9, 0x63, 0xc1, 0x8b, 0x07, 0xd9, 0xea, 0x6e, 0x3f, 0x80, 0x2c, 0x78,
+	0x97, 0xcc, 0x24, 0xbb, 0x69, 0x6d, 0x4c, 0x57, 0xea, 0xc1, 0x5b, 0x48, 0xde, 0x79, 0xe6, 0xf9,
+	0xcd, 0x33, 0xef, 0x1b, 0x38, 0xb3, 0x4a, 0xea, 0x1e, 0x7e, 0x65, 0x71, 0xf2, 0x02, 0x47, 0xf5,
+	0x20, 0xe2, 0xd6, 0xcb, 0xb9, 0x1a, 0xe6, 0x68, 0xce, 0x5a, 0xdf, 0xc4, 0x1b, 0x0d, 0x93, 0x6e,
+	0x10, 0x4e, 0xd4, 0xb2, 0xac, 0x32, 0x7b, 0x55, 0x66, 0x52, 0x55, 0xb9, 0xb2, 0x4a, 0x58, 0x9d,
+	0x30, 0xab, 0x86, 0x18, 0x96, 0x4b, 0x7a, 0x02, 0x14, 0xf9, 0x41, 0x84, 0x78, 0x40, 0x22, 0xa9,
+	0x52, 0x99, 0xce, 0xdd, 0x4b, 0x48, 0xca, 0xa2, 0x73, 0x3e, 0xf1, 0x89, 0x78, 0xb4, 0xe2, 0xa7,
+	0xe4, 0xed, 0xa4, 0x4f, 0x88, 0x1f, 0x62, 0x0b, 0xd1, 0xc0, 0x42, 0x51, 0x44, 0xb8, 0xd0, 0x65,
+	0xf2, 0xab, 0xfe, 0x06, 0xc0, 0x99, 0x7b, 0xf1, 0xde, 0x76, 0x18, 0x3e, 0x88, 0xc5, 0x57, 0x82,
+	0x88, 0x63, 0xef, 0x16, 0xd9, 0xb0, 0xc3, 0xd0, 0xa6, 0x94, 0xb9, 0x78, 0x7d, 0x13, 0x33, 0xae,
+	0x3e, 0x81, 0xb0, 0xef, 0xaa, 0x0c, 0xa6, 0xc0, 0xec, 0xe8, 0xfc, 0x25, 0x53, 0x22, 0x98, 0x31,
+	0x82, 0x29, 0xa9, 0x13, 0x5f, 0xe6, 0x5d, 0xe4, 0xe3, 0x64, 0xad, 0x33, 0xd1, 0x6d, 0x55, 0xc7,
+	0x1a, 0xa8, 0x1e, 0x5e, 0xd7, 0xfb, 0x1a, 0xba, 0x9b, 0x11, 0xd4, 0xf7, 0x00, 0xbc, 0x58, 0xe0,
+	0x83, 0x51, 0x12, 0x31, 0xac, 0x3e, 0x86, 0x27, 0x79, 0x5a, 0x50, 0x06, 0x53, 0x43, 0xb3, 0xa3,
+	0xf3, 0xd3, 0x66, 0xde, 0x21, 0x9b, 0x3d, 0x2d, 0xa7, 0xdc, 0x6c, 0x55, 0x95, 0x6e, 0xab, 0x7a,
+	0x56, 0x1a, 0xe9, 0x69, 0xe8, 0x6e, 0x5f, 0x4f, 0x7d, 0xba, 0x8f, 0xb2, 0x24, 0x28, 0x2f, 0x17,
+	0x52, 0x4a, 0x67, 0x47, 0xc1, 0x7c, 0x0f, 0xe0, 0xa4, 0xc0, 0xcc, 0x30, 0x3a, 0x0d, 0x9b, 0xd2,
+	0xf4, 0x98, 0x67, 0xe1, 0x08, 0xa2, 0xf4, 0x59, 0xe0, 0x89, 0x23, 0xfe, 0xcf, 0x19, 0xeb, 0xb6,
+	0xaa, 0xa7, 0xa5, 0xa6, 0x7c, 0xaf, 0xbb, 0xc3, 0x88, 0xd2, 0xdb, 0xde, 0x81, 0x40, 0x4a, 0xc7,
+	0x1d, 0xc8, 0x17, 0x00, 0x2f, 0xe4, 0x38, 0x3d, 0x3c, 0x08, 0xf0, 0x4f, 0x05, 0xb1, 0x9b, 0xde,
+	0xfb, 0x83, 0x78, 0x76, 0xe4, 0xd9, 0x8c, 0x61, 0x3e, 0x78, 0x20, 0x26, 0x3c, 0x81, 0xe2, 0x95,
+	0x71, 0x6d, 0x49, 0xd4, 0x8e, 0x77, 0x5b, 0xd5, 0x33, 0x49, 0x6d, 0xf2, 0x45, 0x77, 0xff, 0x17,
+	0x8f, 0xbf, 0x04, 0x38, 0x74, 0xdc, 0x01, 0x7e, 0x4f, 0x3b, 0x2a, 0x9f, 0x30, 0x09, 0xd2, 0x87,
+	0xa7, 0xea, 0xe2, 0xb3, 0xa8, 0x64, 0x99, 0xe6, 0xce, 0xc9, 0x72, 0x25, 0x53, 0xed, 0x9c, 0x4f,
+	0xe2, 0x1c, 0x97, 0x76, 0xb2, 0x4a, 0xba, 0xbb, 0x4f, 0xf8, 0x6f, 0x87, 0x3a, 0xff, 0x71, 0x18,
+	0x0e, 0x0b, 0x64, 0x75, 0x37, 0xbd, 0xbd, 0x79, 0xe3, 0x44, 0x5d, 0xce, 0xc7, 0x3b, 0xca, 0x3c,
+	0xac, 0xdc, 0xfc, 0xe3, 0xf5, 0x92, 0x47, 0xbf, 0xf1, 0xfa, 0xd3, 0xde, 0xbb, 0xd2, 0x92, 0x7a,
+	0xd5, 0xca, 0x9d, 0xed, 0x9c, 0x70, 0x14, 0x1a, 0xe2, 0xbd, 0x21, 0x0f, 0xd2, 0x40, 0x61, 0x68,
+	0xa0, 0xd8, 0x7f, 0x13, 0xc0, 0x89, 0x43, 0xe3, 0x55, 0x17, 0x0b, 0x9c, 0xe5, 0x8c, 0x9e, 0xca,
+	0xd2, 0xc0, 0xeb, 0x12, 0x92, 0x65, 0x41, 0x72, 0x4d, 0x5d, 0xfc, 0x1d, 0x49, 0x86, 0xa1, 0xd6,
+	0x88, 0x11, 0xac, 0x2d, 0xd9, 0x3f, 0xdb, 0xea, 0x8f, 0xbc, 0x51, 0x93, 0xde, 0xd4, 0xc2, 0xb0,
+	0x0a, 0x9a, 0xb8, 0x30, 0xac, 0xa2, 0x16, 0xd1, 0xef, 0x0b, 0xc4, 0x15, 0xf5, 0xce, 0x40, 0x88,
+	0x06, 0x8a, 0x3c, 0x43, 0xb4, 0x7b, 0x0f, 0xd6, 0xda, 0x4a, 0x27, 0xc1, 0xb6, 0xf3, 0xb0, 0xf9,
+	0x4d, 0x53, 0x3e, 0xb4, 0x35, 0xa5, 0xd9, 0xd6, 0xc0, 0x4e, 0x5b, 0x03, 0x5f, 0xdb, 0x1a, 0x78,
+	0xdb, 0xd1, 0x94, 0x9d, 0x8e, 0xa6, 0x7c, 0xee, 0x68, 0xca, 0xa3, 0x05, 0x3f, 0xe0, 0xcf, 0x37,
+	0x6b, 0xb1, 0xfb, 0x64, 0x63, 0x83, 0xac, 0xad, 0x05, 0xab, 0x01, 0x0a, 0x53, 0x23, 0x59, 0x2b,
+	0xbc, 0x41, 0x31, 0xab, 0x8d, 0x88, 0x3f, 0xfb, 0xc2, 0xcf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x2c,
+	0xb4, 0xe7, 0x43, 0xa0, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -341,9 +329,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	QueryAllTokenMintedForAllProducts(ctx context.Context, in *QueryAllTokenMintedForAllProductsRequest, opts ...grpc.CallOption) (*QueryAllTokenMintedForAllProductsResponse, error)
-	QueryTokenMintedByProduct(ctx context.Context, in *QueryTokenMintedByProductRequest, opts ...grpc.CallOption) (*QueryTokenMintedByProductResponse, error)
-	QueryTokenMintedByProductAndAsset(ctx context.Context, in *QueryTokenMintedByProductAndAssetRequest, opts ...grpc.CallOption) (*QueryTokenMintedByProductAndAssetResponse, error)
+	QueryAllTokenMintedForAllApps(ctx context.Context, in *QueryAllTokenMintedForAllAppsRequest, opts ...grpc.CallOption) (*QueryAllTokenMintedForAllAppsResponse, error)
+	QueryTokenMintedByApp(ctx context.Context, in *QueryTokenMintedByAppRequest, opts ...grpc.CallOption) (*QueryTokenMintedByAppResponse, error)
+	QueryTokenMintedByAppAndAsset(ctx context.Context, in *QueryTokenMintedByAppAndAssetRequest, opts ...grpc.CallOption) (*QueryTokenMintedByAppAndAssetResponse, error)
 }
 
 type queryClient struct {
@@ -354,27 +342,27 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) QueryAllTokenMintedForAllProducts(ctx context.Context, in *QueryAllTokenMintedForAllProductsRequest, opts ...grpc.CallOption) (*QueryAllTokenMintedForAllProductsResponse, error) {
-	out := new(QueryAllTokenMintedForAllProductsResponse)
-	err := c.cc.Invoke(ctx, "/comdex.tokenmint.v1beta1.Query/QueryAllTokenMintedForAllProducts", in, out, opts...)
+func (c *queryClient) QueryAllTokenMintedForAllApps(ctx context.Context, in *QueryAllTokenMintedForAllAppsRequest, opts ...grpc.CallOption) (*QueryAllTokenMintedForAllAppsResponse, error) {
+	out := new(QueryAllTokenMintedForAllAppsResponse)
+	err := c.cc.Invoke(ctx, "/comdex.tokenmint.v1beta1.Query/QueryAllTokenMintedForAllApps", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryTokenMintedByProduct(ctx context.Context, in *QueryTokenMintedByProductRequest, opts ...grpc.CallOption) (*QueryTokenMintedByProductResponse, error) {
-	out := new(QueryTokenMintedByProductResponse)
-	err := c.cc.Invoke(ctx, "/comdex.tokenmint.v1beta1.Query/QueryTokenMintedByProduct", in, out, opts...)
+func (c *queryClient) QueryTokenMintedByApp(ctx context.Context, in *QueryTokenMintedByAppRequest, opts ...grpc.CallOption) (*QueryTokenMintedByAppResponse, error) {
+	out := new(QueryTokenMintedByAppResponse)
+	err := c.cc.Invoke(ctx, "/comdex.tokenmint.v1beta1.Query/QueryTokenMintedByApp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryTokenMintedByProductAndAsset(ctx context.Context, in *QueryTokenMintedByProductAndAssetRequest, opts ...grpc.CallOption) (*QueryTokenMintedByProductAndAssetResponse, error) {
-	out := new(QueryTokenMintedByProductAndAssetResponse)
-	err := c.cc.Invoke(ctx, "/comdex.tokenmint.v1beta1.Query/QueryTokenMintedByProductAndAsset", in, out, opts...)
+func (c *queryClient) QueryTokenMintedByAppAndAsset(ctx context.Context, in *QueryTokenMintedByAppAndAssetRequest, opts ...grpc.CallOption) (*QueryTokenMintedByAppAndAssetResponse, error) {
+	out := new(QueryTokenMintedByAppAndAssetResponse)
+	err := c.cc.Invoke(ctx, "/comdex.tokenmint.v1beta1.Query/QueryTokenMintedByAppAndAsset", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -383,79 +371,79 @@ func (c *queryClient) QueryTokenMintedByProductAndAsset(ctx context.Context, in 
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	QueryAllTokenMintedForAllProducts(context.Context, *QueryAllTokenMintedForAllProductsRequest) (*QueryAllTokenMintedForAllProductsResponse, error)
-	QueryTokenMintedByProduct(context.Context, *QueryTokenMintedByProductRequest) (*QueryTokenMintedByProductResponse, error)
-	QueryTokenMintedByProductAndAsset(context.Context, *QueryTokenMintedByProductAndAssetRequest) (*QueryTokenMintedByProductAndAssetResponse, error)
+	QueryAllTokenMintedForAllApps(context.Context, *QueryAllTokenMintedForAllAppsRequest) (*QueryAllTokenMintedForAllAppsResponse, error)
+	QueryTokenMintedByApp(context.Context, *QueryTokenMintedByAppRequest) (*QueryTokenMintedByAppResponse, error)
+	QueryTokenMintedByAppAndAsset(context.Context, *QueryTokenMintedByAppAndAssetRequest) (*QueryTokenMintedByAppAndAssetResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) QueryAllTokenMintedForAllProducts(ctx context.Context, req *QueryAllTokenMintedForAllProductsRequest) (*QueryAllTokenMintedForAllProductsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryAllTokenMintedForAllProducts not implemented")
+func (*UnimplementedQueryServer) QueryAllTokenMintedForAllApps(ctx context.Context, req *QueryAllTokenMintedForAllAppsRequest) (*QueryAllTokenMintedForAllAppsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAllTokenMintedForAllApps not implemented")
 }
-func (*UnimplementedQueryServer) QueryTokenMintedByProduct(ctx context.Context, req *QueryTokenMintedByProductRequest) (*QueryTokenMintedByProductResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryTokenMintedByProduct not implemented")
+func (*UnimplementedQueryServer) QueryTokenMintedByApp(ctx context.Context, req *QueryTokenMintedByAppRequest) (*QueryTokenMintedByAppResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTokenMintedByApp not implemented")
 }
-func (*UnimplementedQueryServer) QueryTokenMintedByProductAndAsset(ctx context.Context, req *QueryTokenMintedByProductAndAssetRequest) (*QueryTokenMintedByProductAndAssetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryTokenMintedByProductAndAsset not implemented")
+func (*UnimplementedQueryServer) QueryTokenMintedByAppAndAsset(ctx context.Context, req *QueryTokenMintedByAppAndAssetRequest) (*QueryTokenMintedByAppAndAssetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTokenMintedByAppAndAsset not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
 }
 
-func _Query_QueryAllTokenMintedForAllProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllTokenMintedForAllProductsRequest)
+func _Query_QueryAllTokenMintedForAllApps_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllTokenMintedForAllAppsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryAllTokenMintedForAllProducts(ctx, in)
+		return srv.(QueryServer).QueryAllTokenMintedForAllApps(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.tokenmint.v1beta1.Query/QueryAllTokenMintedForAllProducts",
+		FullMethod: "/comdex.tokenmint.v1beta1.Query/QueryAllTokenMintedForAllApps",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryAllTokenMintedForAllProducts(ctx, req.(*QueryAllTokenMintedForAllProductsRequest))
+		return srv.(QueryServer).QueryAllTokenMintedForAllApps(ctx, req.(*QueryAllTokenMintedForAllAppsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryTokenMintedByProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryTokenMintedByProductRequest)
+func _Query_QueryTokenMintedByApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTokenMintedByAppRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryTokenMintedByProduct(ctx, in)
+		return srv.(QueryServer).QueryTokenMintedByApp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.tokenmint.v1beta1.Query/QueryTokenMintedByProduct",
+		FullMethod: "/comdex.tokenmint.v1beta1.Query/QueryTokenMintedByApp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryTokenMintedByProduct(ctx, req.(*QueryTokenMintedByProductRequest))
+		return srv.(QueryServer).QueryTokenMintedByApp(ctx, req.(*QueryTokenMintedByAppRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryTokenMintedByProductAndAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryTokenMintedByProductAndAssetRequest)
+func _Query_QueryTokenMintedByAppAndAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTokenMintedByAppAndAssetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryTokenMintedByProductAndAsset(ctx, in)
+		return srv.(QueryServer).QueryTokenMintedByAppAndAsset(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.tokenmint.v1beta1.Query/QueryTokenMintedByProductAndAsset",
+		FullMethod: "/comdex.tokenmint.v1beta1.Query/QueryTokenMintedByAppAndAsset",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryTokenMintedByProductAndAsset(ctx, req.(*QueryTokenMintedByProductAndAssetRequest))
+		return srv.(QueryServer).QueryTokenMintedByAppAndAsset(ctx, req.(*QueryTokenMintedByAppAndAssetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -465,23 +453,23 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "QueryAllTokenMintedForAllProducts",
-			Handler:    _Query_QueryAllTokenMintedForAllProducts_Handler,
+			MethodName: "QueryAllTokenMintedForAllApps",
+			Handler:    _Query_QueryAllTokenMintedForAllApps_Handler,
 		},
 		{
-			MethodName: "QueryTokenMintedByProduct",
-			Handler:    _Query_QueryTokenMintedByProduct_Handler,
+			MethodName: "QueryTokenMintedByApp",
+			Handler:    _Query_QueryTokenMintedByApp_Handler,
 		},
 		{
-			MethodName: "QueryTokenMintedByProductAndAsset",
-			Handler:    _Query_QueryTokenMintedByProductAndAsset_Handler,
+			MethodName: "QueryTokenMintedByAppAndAsset",
+			Handler:    _Query_QueryTokenMintedByAppAndAsset_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "comdex/tokenmint/v1beta1/query.proto",
 }
 
-func (m *QueryAllTokenMintedForAllProductsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllTokenMintedForAllAppsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -491,12 +479,12 @@ func (m *QueryAllTokenMintedForAllProductsRequest) Marshal() (dAtA []byte, err e
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllTokenMintedForAllProductsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllTokenMintedForAllAppsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllTokenMintedForAllProductsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllTokenMintedForAllAppsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -516,7 +504,7 @@ func (m *QueryAllTokenMintedForAllProductsRequest) MarshalToSizedBuffer(dAtA []b
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllTokenMintedForAllProductsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllTokenMintedForAllAppsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -526,12 +514,12 @@ func (m *QueryAllTokenMintedForAllProductsResponse) Marshal() (dAtA []byte, err 
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllTokenMintedForAllProductsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllTokenMintedForAllAppsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllTokenMintedForAllProductsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllTokenMintedForAllAppsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -565,7 +553,7 @@ func (m *QueryAllTokenMintedForAllProductsResponse) MarshalToSizedBuffer(dAtA []
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTokenMintedByProductRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryTokenMintedByAppRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -575,12 +563,12 @@ func (m *QueryTokenMintedByProductRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryTokenMintedByProductRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedByAppRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTokenMintedByProductRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedByAppRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -605,7 +593,7 @@ func (m *QueryTokenMintedByProductRequest) MarshalToSizedBuffer(dAtA []byte) (in
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTokenMintedByProductResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryTokenMintedByAppResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -615,12 +603,12 @@ func (m *QueryTokenMintedByProductResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryTokenMintedByProductResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedByAppResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTokenMintedByProductResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedByAppResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -650,7 +638,7 @@ func (m *QueryTokenMintedByProductResponse) MarshalToSizedBuffer(dAtA []byte) (i
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTokenMintedByProductAndAssetRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryTokenMintedByAppAndAssetRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -660,12 +648,12 @@ func (m *QueryTokenMintedByProductAndAssetRequest) Marshal() (dAtA []byte, err e
 	return dAtA[:n], nil
 }
 
-func (m *QueryTokenMintedByProductAndAssetRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedByAppAndAssetRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTokenMintedByProductAndAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedByAppAndAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -695,7 +683,7 @@ func (m *QueryTokenMintedByProductAndAssetRequest) MarshalToSizedBuffer(dAtA []b
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTokenMintedByProductAndAssetResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryTokenMintedByAppAndAssetResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -705,12 +693,12 @@ func (m *QueryTokenMintedByProductAndAssetResponse) Marshal() (dAtA []byte, err 
 	return dAtA[:n], nil
 }
 
-func (m *QueryTokenMintedByProductAndAssetResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedByAppAndAssetResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTokenMintedByProductAndAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTokenMintedByAppAndAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -751,7 +739,7 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *QueryAllTokenMintedForAllProductsRequest) Size() (n int) {
+func (m *QueryAllTokenMintedForAllAppsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -764,7 +752,7 @@ func (m *QueryAllTokenMintedForAllProductsRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllTokenMintedForAllProductsResponse) Size() (n int) {
+func (m *QueryAllTokenMintedForAllAppsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -783,7 +771,7 @@ func (m *QueryAllTokenMintedForAllProductsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryTokenMintedByProductRequest) Size() (n int) {
+func (m *QueryTokenMintedByAppRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -799,7 +787,7 @@ func (m *QueryTokenMintedByProductRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryTokenMintedByProductResponse) Size() (n int) {
+func (m *QueryTokenMintedByAppResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -814,7 +802,7 @@ func (m *QueryTokenMintedByProductResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryTokenMintedByProductAndAssetRequest) Size() (n int) {
+func (m *QueryTokenMintedByAppAndAssetRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -833,7 +821,7 @@ func (m *QueryTokenMintedByProductAndAssetRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryTokenMintedByProductAndAssetResponse) Size() (n int) {
+func (m *QueryTokenMintedByAppAndAssetResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -854,7 +842,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *QueryAllTokenMintedForAllProductsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryAllTokenMintedForAllAppsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -877,10 +865,10 @@ func (m *QueryAllTokenMintedForAllProductsRequest) Unmarshal(dAtA []byte) error 
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllTokenMintedForAllProductsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllTokenMintedForAllAppsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllTokenMintedForAllProductsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllTokenMintedForAllAppsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -940,7 +928,7 @@ func (m *QueryAllTokenMintedForAllProductsRequest) Unmarshal(dAtA []byte) error 
 	}
 	return nil
 }
-func (m *QueryAllTokenMintedForAllProductsResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryAllTokenMintedForAllAppsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -963,10 +951,10 @@ func (m *QueryAllTokenMintedForAllProductsResponse) Unmarshal(dAtA []byte) error
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllTokenMintedForAllProductsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllTokenMintedForAllAppsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllTokenMintedForAllProductsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllTokenMintedForAllAppsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1060,7 +1048,7 @@ func (m *QueryAllTokenMintedForAllProductsResponse) Unmarshal(dAtA []byte) error
 	}
 	return nil
 }
-func (m *QueryTokenMintedByProductRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryTokenMintedByAppRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1083,10 +1071,10 @@ func (m *QueryTokenMintedByProductRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTokenMintedByProductRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTokenMintedByAppRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTokenMintedByProductRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTokenMintedByAppRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1165,7 +1153,7 @@ func (m *QueryTokenMintedByProductRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryTokenMintedByProductResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryTokenMintedByAppResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1188,10 +1176,10 @@ func (m *QueryTokenMintedByProductResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTokenMintedByProductResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTokenMintedByAppResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTokenMintedByProductResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTokenMintedByAppResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1284,7 +1272,7 @@ func (m *QueryTokenMintedByProductResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryTokenMintedByProductAndAssetRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryTokenMintedByAppAndAssetRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1307,10 +1295,10 @@ func (m *QueryTokenMintedByProductAndAssetRequest) Unmarshal(dAtA []byte) error 
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTokenMintedByProductAndAssetRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTokenMintedByAppAndAssetRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTokenMintedByProductAndAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTokenMintedByAppAndAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1408,7 +1396,7 @@ func (m *QueryTokenMintedByProductAndAssetRequest) Unmarshal(dAtA []byte) error 
 	}
 	return nil
 }
-func (m *QueryTokenMintedByProductAndAssetResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryTokenMintedByAppAndAssetResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1431,10 +1419,10 @@ func (m *QueryTokenMintedByProductAndAssetResponse) Unmarshal(dAtA []byte) error
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTokenMintedByProductAndAssetResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTokenMintedByAppAndAssetResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTokenMintedByProductAndAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTokenMintedByAppAndAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

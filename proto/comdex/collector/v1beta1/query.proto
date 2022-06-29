@@ -15,20 +15,20 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex-official/comdex/collector/params";
   }
-  rpc QueryCollectorLookupByProduct(QueryCollectorLookupByProductRequest) returns (QueryCollectorLookupByProductResponse) {
-    option (google.api.http).get = "/comdex/collector/v1beta1/collector-lookup-by-product/{app_id}";
+  rpc QueryCollectorLookupByApp(QueryCollectorLookupByAppRequest) returns (QueryCollectorLookupByAppResponse) {
+    option (google.api.http).get = "/comdex/collector/v1beta1/collector-lookup-by-app/{app_id}";
   };
-  rpc QueryCollectorLookupByProductAndAsset(QueryCollectorLookupByProductAndAssetRequest) returns (QueryCollectorLookupByProductAndAssetResponse) {
-    option (google.api.http).get = "/comdex/collector/v1beta1/collector-lookup-by-product-and-asset/{app_id}/{asset_id}";
+  rpc QueryCollectorLookupByAppAndAsset(QueryCollectorLookupByAppAndAssetRequest) returns (QueryCollectorLookupByAppAndAssetResponse) {
+    option (google.api.http).get = "/comdex/collector/v1beta1/collector-lookup-by-app-and-asset/{app_id}/{asset_id}";
   };
-  rpc QueryCollectorDataByProductAndAsset(QueryCollectorDataByProductAndAssetRequest) returns (QueryCollectorDataByProductAndAssetResponse) {
-    option (google.api.http).get = "/comdex/collector/v1beta1/collector-data-by-product-and-asset/{app_id}/{asset_id}";
+  rpc QueryCollectorDataByAppAndAsset(QueryCollectorDataByAppAndAssetRequest) returns (QueryCollectorDataByAppAndAssetResponse) {
+    option (google.api.http).get = "/comdex/collector/v1beta1/collector-data-by-app-and-asset/{app_id}/{asset_id}";
   };
   rpc QueryAuctionMappingForAppAndAsset(QueryAuctionMappingForAppAndAssetRequest) returns (QueryAuctionMappingForAppAndAssetResponse) {
-    option (google.api.http).get = "/comdex/collector/v1beta1/auction-data-by-product-and-asset/{app_id}/{asset_id}";
+    option (google.api.http).get = "/comdex/collector/v1beta1/auction-data-by-app-and-asset/{app_id}/{asset_id}";
   };
   rpc QueryNetFeeCollectedForAppAndAsset(QueryNetFeeCollectedForAppAndAssetRequest) returns (QueryNetFeeCollectedForAppAndAssetResponse) {
-    option (google.api.http).get = "/comdex/collector/v1beta1/net-fee-data-by-product-and-asset/{app_id}/{asset_id}";
+    option (google.api.http).get = "/comdex/collector/v1beta1/net-fee-data-by-app-and-asset/{app_id}/{asset_id}";
   };
 
   // this line is used by starport scaffolding # 2
@@ -45,31 +45,31 @@ message QueryParamsResponse {
 
 // this line is used by starport scaffolding # 3
 
-message QueryCollectorLookupByProductRequest {
+message QueryCollectorLookupByAppRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
 }
-message QueryCollectorLookupByProductResponse {
+message QueryCollectorLookupByAppResponse {
   repeated CollectorLookupTable collectorLookup = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"collectorLookup\"" ];
 
 }
-message QueryCollectorLookupByProductAndAssetRequest {
+message QueryCollectorLookupByAppAndAssetRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
   uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
 }
-message QueryCollectorLookupByProductAndAssetResponse {
+message QueryCollectorLookupByAppAndAssetResponse {
   CollectorLookupTable collectorLookup = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"collectorLookup\"" ];
 
 }
 
-message QueryCollectorDataByProductAndAssetRequest {
+message QueryCollectorDataByAppAndAssetRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
   uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
 }
-message QueryCollectorDataByProductAndAssetResponse {
+message QueryCollectorDataByAppAndAssetResponse {
   CollectorData collectorData = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"collectorData\"" ];

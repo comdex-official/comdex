@@ -170,15 +170,15 @@ func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error 
 				Name:             msg.Name,
 				Denom:            msg.Denom,
 				Decimals:         msg.Decimals,
-				IsOnchain:        msg.IsOnchain,
-				AssetOraclePrice: msg.AssetOraclePrice,
+				IsOnChain:        msg.IsOnChain,
+				IsOraclePriceRequired: msg.IsOraclePriceRequired,
 			}
 		)
 
 		k.SetAssetID(ctx, asset.Id)
 		k.SetAsset(ctx, asset)
 		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
-		if msg.AssetOraclePrice {
+		if msg.IsOraclePriceRequired {
 			k.SetAssetForOracle(ctx, asset)
 		}
 	}

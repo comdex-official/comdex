@@ -24,9 +24,9 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		QueryAllTokenMintedForAllProducts(),
-		QueryTokenMintedByProduct(),
-		QueryTokenMintedByProductAndAsset(),
+		QueryAllTokenMintedForAllApps(),
+		QueryTokenMintedByApp(),
+		QueryTokenMintedByAppAndAsset(),
 	)
 	// this line is used by starport scaffolding # 1
 
@@ -34,10 +34,10 @@ func GetQueryCmd() *cobra.Command {
 }
 
 // QueryAllTokenMintedForAllProducts Queries the total token minted for all the apps on comdex.
-func QueryAllTokenMintedForAllProducts() *cobra.Command {
+func QueryAllTokenMintedForAllApps() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "total-token-minted-all-products",
-		Short: "Token minted tokens data",
+		Use:   "total-token-minted-all-apps",
+		Short: "Token minted by all apps",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pagination, err := client.ReadPageRequest(cmd.Flags())
@@ -52,7 +52,7 @@ func QueryAllTokenMintedForAllProducts() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryAllTokenMintedForAllProducts(cmd.Context(), &types.QueryAllTokenMintedForAllProductsRequest{
+			res, err := queryClient.QueryAllTokenMintedForAllApps(cmd.Context(), &types.QueryAllTokenMintedForAllAppsRequest{
 				Pagination: pagination,
 			})
 
@@ -68,10 +68,10 @@ func QueryAllTokenMintedForAllProducts() *cobra.Command {
 }
 
 // QueryTokenMintedByProduct queries token minted per application/product.
-func QueryTokenMintedByProduct() *cobra.Command {
+func QueryTokenMintedByApp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "token-minted-by-product [app_id]",
-		Short: "Token minted by product",
+		Use:   "token-minted-by-app [app_id]",
+		Short: "Token minted by app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pagination, err := client.ReadPageRequest(cmd.Flags())
@@ -90,7 +90,7 @@ func QueryTokenMintedByProduct() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryTokenMintedByProduct(cmd.Context(), &types.QueryTokenMintedByProductRequest{
+			res, err := queryClient.QueryTokenMintedByApp(cmd.Context(), &types.QueryTokenMintedByAppRequest{
 				AppId:      appID,
 				Pagination: pagination,
 			})
@@ -107,10 +107,10 @@ func QueryTokenMintedByProduct() *cobra.Command {
 }
 
 // QueryTokenMintedByProductAndAsset queries token minted for an application/product and asset.
-func QueryTokenMintedByProductAndAsset() *cobra.Command {
+func QueryTokenMintedByAppAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "token-minted-by-product-asset [app_id] [asset_id]",
-		Short: "Token minted by product and asset data",
+		Use:   "token-minted-by-app-and-asset [app_id] [asset_id]",
+		Short: "Token minted by app and asset data",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pagination, err := client.ReadPageRequest(cmd.Flags())
@@ -133,7 +133,7 @@ func QueryTokenMintedByProductAndAsset() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryTokenMintedByProductAndAsset(cmd.Context(), &types.QueryTokenMintedByProductAndAssetRequest{
+			res, err := queryClient.QueryTokenMintedByAppAndAsset(cmd.Context(), &types.QueryTokenMintedByAppAndAssetRequest{
 				AppId:      appID,
 				AssetId:    assetID,
 				Pagination: pagination,
