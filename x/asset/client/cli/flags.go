@@ -12,15 +12,8 @@ const (
 	flagDecimals                = "decimals"
 	flagCollateralWeight        = "collateralWeight"
 	flagLiquidationThreshold    = "liquidationThreshold"
-	flagIsBridgedAsset          = "isBridgedAsset"
-	flagBaseBorrowRateAsset1    = "baseBorrowRate1"
-	flagBaseBorrowRateAsset2    = "baseBorrowRate2"
-	flagBaseLendRateAsset1      = "baseLendRate1"
-	flagBaseLendRateAsset2      = "baseLendRate2"
-	flagModuleAcc               = "moduleAcc"
 	FlagExtendedPairVaultFile   = "extended-pair-vault-file"
 	FlagAddAssetMappingFile     = "add-asset-mapping-file"
-	FlagAddWhiteListedPairsFile = "add-white-whitelisted-pairs-file"
 )
 
 func ParseStringFromString(s string, separator string) ([]string, error) {
@@ -85,17 +78,10 @@ func FlagSetCreateAssetMapping() *flag.FlagSet {
 	return fs
 }
 
-func FlagSetCreateWhiteListedPairsMapping() *flag.FlagSet {
-	fs := flag.NewFlagSet("", flag.ContinueOnError)
-
-	fs.String(FlagAddWhiteListedPairsFile, "", "add white listed asset pairs json file path")
-	return fs
-}
 
 type createExtPairVaultInputs struct {
 	AppMappingID        string `json:"app_mapping_id"`
 	PairID              string `json:"pair_id"`
-	LiquidationRatio    string `json:"liquidation_ratio"`
 	StabilityFee        string `json:"stability_fee"`
 	ClosingFee          string `json:"closing_fee"`
 	LiquidationPenalty  string `json:"liquidation_penalty"`
@@ -103,7 +89,7 @@ type createExtPairVaultInputs struct {
 	IsVaultActive       string `json:"is_vault_active"`
 	DebtCeiling         string `json:"debt_ceiling"`
 	DebtFloor           string `json:"debt_floor"`
-	IsPsmPair           string `json:"is_psm_pair"`
+	IsStableMintVault   string `json:"is_stable_mint_vault"`
 	MinCr               string `json:"min_cr"`
 	PairName            string `json:"pair_name"`
 	AssetOutOraclePrice string `json:"asset_out_oracle_price"`
@@ -125,14 +111,3 @@ type createAddAssetMappingInputs struct {
 	Deposit       string
 }
 
-type createAddWhiteListedPairsInputs struct {
-	PairID               string `json:"pair_id"`
-	ModuleAccount        string `json:"module-account"`
-	BaseBorrowRateAsset1 string `json:"base_borrow_rate_asset_1"`
-	BaseBorrowRateAsset2 string `json:"base_borrow_rate_asset_2"`
-	BaseLendRateAsset1   string `json:"base_lend_rate_asset_1"`
-	BaseLendRateAsset2   string `json:"base_lend_rate_asset_2"`
-	Title                string
-	Description          string
-	Deposit              string
-}

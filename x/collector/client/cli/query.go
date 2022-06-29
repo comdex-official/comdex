@@ -26,9 +26,9 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdQueryParams(),
-		QueryCollectorLookupByProduct(),
-		QueryCollectorLookupByProductAndAsset(),
-		QueryCollectorDataByProductAndAsset(),
+		QueryCollectorLookupByApp(),
+		QueryCollectorLookupByAppAndAsset(),
+		QueryCollectorDataByAppAndAsset(),
 		QueryAuctionMappingForAppAndAsset(),
 		QueryNetFeeCollectedForAppAndAsset())
 
@@ -36,10 +36,10 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 }
 
 // QueryCollectorLookupByProduct query collector store by product
-func QueryCollectorLookupByProduct() *cobra.Command {
+func QueryCollectorLookupByApp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "collector-lookup-by-product [app-id]",
-		Short: "collector lookup for a product",
+		Use:   "collector-lookup-by-app [app-id]",
+		Short: "Query collector lookup for a app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -53,7 +53,7 @@ func QueryCollectorLookupByProduct() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryCollectorLookupByProduct(cmd.Context(), &types.QueryCollectorLookupByProductRequest{
+			res, err := queryClient.QueryCollectorLookupByApp(cmd.Context(), &types.QueryCollectorLookupByAppRequest{
 				AppId: appID,
 			})
 
@@ -69,10 +69,10 @@ func QueryCollectorLookupByProduct() *cobra.Command {
 }
 
 // QueryCollectorLookupByProductAndAsset query collector store by product and asset
-func QueryCollectorLookupByProductAndAsset() *cobra.Command {
+func QueryCollectorLookupByAppAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "collector-lookup-by-product-and-asset [app-id] [asset-id]",
-		Short: "collector lookup for a product by asset id",
+		Use:   "collector-lookup-by-app-and-asset [app-id] [asset-id]",
+		Short: "Query collector lookup for an app by asset id",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -90,7 +90,7 @@ func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryCollectorLookupByProductAndAsset(cmd.Context(), &types.QueryCollectorLookupByProductAndAssetRequest{
+			res, err := queryClient.QueryCollectorLookupByAppAndAsset(cmd.Context(), &types.QueryCollectorLookupByAppAndAssetRequest{
 				AppId:   appID,
 				AssetId: assetID,
 			})
@@ -107,10 +107,10 @@ func QueryCollectorLookupByProductAndAsset() *cobra.Command {
 }
 
 // QueryCollectorDataByProductAndAsset query collector store by product
-func QueryCollectorDataByProductAndAsset() *cobra.Command {
+func QueryCollectorDataByAppAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "collector-data-by-product-and-asset [app-id] [asset_id]",
-		Short: "collector data for a product and asset",
+		Use:   "collector-data-by-app-and-asset [app-id] [asset_id]",
+		Short: "Query collector data for an app and asset",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -128,7 +128,7 @@ func QueryCollectorDataByProductAndAsset() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryCollectorDataByProductAndAsset(cmd.Context(), &types.QueryCollectorDataByProductAndAssetRequest{
+			res, err := queryClient.QueryCollectorDataByAppAndAsset(cmd.Context(), &types.QueryCollectorDataByAppAndAssetRequest{
 				AppId:   appID,
 				AssetId: assetID,
 			})
@@ -146,8 +146,8 @@ func QueryCollectorDataByProductAndAsset() *cobra.Command {
 
 func QueryAuctionMappingForAppAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auction-data-by-product-and-asset [app-id] [asset_id]",
-		Short: "auction data for a product and asset",
+		Use:   "auction-data-by-app-and-asset [app-id] [asset_id]",
+		Short: "Query auction data for an app and asset",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -183,8 +183,8 @@ func QueryAuctionMappingForAppAndAsset() *cobra.Command {
 
 func QueryNetFeeCollectedForAppAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "net-fee-data-by-product-by-asset [app-id] [asset-id]",
-		Short: "net fee data for a product and asset",
+		Use:   "net-fee-data-by-app-by-asset [app-id] [asset-id]",
+		Short: "Query net fee data for an app and asset",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)

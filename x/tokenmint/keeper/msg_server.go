@@ -28,7 +28,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	appMappingData, found := k.GetApp(ctx, msg.AppMappingId)
+	appMappingData, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExists
 	}
@@ -39,7 +39,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		return nil, types.ErrorAssetNotWhiteListedForGenesisMinting
 	}
 
-	mintData, found := k.GetTokenMint(ctx, msg.AppMappingId)
+	mintData, found := k.GetTokenMint(ctx, msg.AppId)
 	if !found {
 		var newTokenMintAppData types.MintedTokens
 		var appData types.TokenMint
@@ -61,7 +61,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		newTokenMintAppData.GenesisSupply = *assetDataInApp.GenesisSupply
 		newTokenMintAppData.CurrentSupply = newTokenMintAppData.GenesisSupply
 
-		appData.AppMappingId = appMappingData.Id
+		appData.AppId = appMappingData.Id
 		appData.MintedTokens = append(appData.MintedTokens, &newTokenMintAppData)
 
 		k.SetTokenMint(ctx, appData)

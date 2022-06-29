@@ -4,8 +4,6 @@ package comdex.asset.v1beta1;
 import "gogoproto/gogo.proto";
 import "comdex/asset/v1beta1/asset.proto";
 import "comdex/asset/v1beta1/pair.proto";
-import "comdex/asset/v1beta1/extendedAsset.proto";
-import "comdex/asset/v1beta1/extendedLend.proto";
 import "comdex/asset/v1beta1/extendedPairVault.proto";
 import "comdex/asset/v1beta1/appMapping.proto";
 
@@ -29,30 +27,6 @@ message AddPairsProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
   repeated Pair pairs = 3 [(gogoproto.nullable) = false];
-}
-
-message AddWhitelistedAssetsProposal {
-  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
-  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  repeated ExtendedAsset assets = 3 [(gogoproto.nullable) = false];
-}
-
-message UpdateWhitelistedAssetProposal {
-  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
-  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  ExtendedAsset asset = 3 [(gogoproto.nullable) = false];
-}
-
-message AddWhitelistedPairsProposal {
-  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
-  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  repeated ExtendedPairLend pairs = 3 [(gogoproto.nullable) = false];
-}
-
-message UpdateWhitelistedPairProposal {
-  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
-  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  ExtendedPairLend pair = 3 [(gogoproto.nullable) = false];
 }
 
 message AddExtendedPairsVaultProposal {

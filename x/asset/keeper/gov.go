@@ -17,24 +17,8 @@ func (k Keeper) HandleProposalAddPairs(ctx sdk.Context, p *types.AddPairsProposa
 	return k.AddPairsRecords(ctx, p.Pairs...)
 }
 
-func (k Keeper) HandleAddWhitelistedAssetRecords(ctx sdk.Context, p *types.AddWhitelistedAssetsProposal) error {
-	return k.AddWhitelistedAssetRecords(ctx, p.Assets...)
-}
-
-func (k Keeper) HandleUpdateWhitelistedAssetRecords(ctx sdk.Context, p *types.UpdateWhitelistedAssetProposal) error {
-	return k.UpdateWhitelistedAssetRecords(ctx, p.Asset)
-}
-
 func (k Keeper) HandleUpdateGovTimeInAppMapping(ctx sdk.Context, p *types.UpdateGovTimeInAppMappingProposal) error {
 	return k.UpdateGovTimeInAppMapping(ctx, p.GovTime)
-}
-
-func (k Keeper) HandleAddWhitelistedPairsRecords(ctx sdk.Context, p *types.AddWhitelistedPairsProposal) error {
-	return k.AddWhitelistedPairsRecords(ctx, p.Pairs...)
-}
-
-func (k Keeper) HandleUpdateWhitelistedPairRecords(ctx sdk.Context, p *types.UpdateWhitelistedPairProposal) error {
-	return k.UpdateWhitelistedPairRecords(ctx, p.Pair)
 }
 
 func (k Keeper) HandleAddAppMappingRecords(ctx sdk.Context, p *types.AddAppMappingProposal) error {

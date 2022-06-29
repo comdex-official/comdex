@@ -46,7 +46,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		return nil, types.ErrorAssetDoesNotExist
 	}
 
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -61,7 +61,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	}
 
 	// Checking if this is a stableMint pair or not  -- stableMintPair == psmPair
-	if extendedPairVault.IsPsmPair {
+	if extendedPairVault.IsStableMintVault {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking
@@ -230,7 +230,7 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 	}
 
 	//Checking if appMapping_id exists
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -304,7 +304,7 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 	// }
 
 	//Checking if appMapping_id exists
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -386,7 +386,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 	}
 
 	//Checking if appMapping_id exists
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -504,7 +504,7 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 	}
 
 	//Checking if appMapping_id exists
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -629,7 +629,7 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 	}
 
 	//Checking if appMapping_id exists
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -724,7 +724,7 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 		return nil, types.ErrorAssetDoesNotExist
 	}
 	//Checking if appMapping_id exists
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -741,7 +741,7 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	}
 
 	// Checking if this is a stableMint pair or not  -- stableMintPair == psmPair
-	if !extendedPairVault.IsPsmPair {
+	if !extendedPairVault.IsStableMintVault {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking
@@ -840,7 +840,7 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 	}
 
 	//Checking if appMapping_id exists
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -848,7 +848,7 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultInactive
 	}
-	if !extendedPairVault.IsPsmPair {
+	if !extendedPairVault.IsStableMintVault {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
@@ -955,7 +955,7 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 	}
 
 	//Checking if appMapping_id exists
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -963,7 +963,7 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultInactive
 	}
-	if !extendedPairVault.IsPsmPair {
+	if !extendedPairVault.IsStableMintVault {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
