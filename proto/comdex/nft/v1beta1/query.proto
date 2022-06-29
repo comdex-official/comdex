@@ -1,0 +1,100 @@
+syntax = "proto3";
+package comdex.nft.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "comdex/nft/v1beta1/params.proto";
+import "comdex/nft/v1beta1/denom.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/comdex-official/comdex/x/nft/types";
+
+
+		service Query {
+	rpc Collection(QueryCollectionRequest) returns (QueryCollectionResponse) {
+	option (google.api.http).get = "/comdex/nft/v1beta1/collections/{denom_id}";
+			}
+
+	rpc Denom(QueryDenomRequest) returns (QueryDenomResponse) {
+	option (google.api.http).get = "/comdex/nft/v1beta1/denoms/{denom_id}";
+			}
+
+	rpc Denoms(QueryDenomsRequest) returns (QueryDenomsResponse) {
+	option (google.api.http).get = "/comdex/nft/v1beta1/denoms";
+			}
+	rpc NFT(QueryNFTRequest) returns (QueryNFTResponse) {
+	option (google.api.http).get = "/comdex/nft/v1beta1/denoms/{denom_id}/nfts/{id}";
+			}
+	rpc OwnerNFTs(QueryOwnerNFTsRequest) returns (QueryOwnerNFTsResponse) {
+	option (google.api.http).get = "/comdex/nft/v1beta1/nfts/{denom_id}/{owner}";
+			}
+	rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
+	option (google.api.http).get = "/comdex/nft/v1beta1/denoms/{denom_id}/supply";
+			}
+			}
+
+	message QueryCollectionRequest {
+	string                                denom_id   = 1 [(gogoproto.moretags) = "yaml:\"denom_id\""];
+			cosmos.base.query.v1beta1.PageRequest pagination = 2;
+			}
+
+	message QueryCollectionResponse {
+	Collection                             collection = 1;
+			cosmos.base.query.v1beta1.PageResponse pagination = 2;
+			}
+
+	message QueryDenomRequest {
+	string denom_id = 1 [(gogoproto.moretags) = "yaml:\"denom_id\""];
+			}
+
+	message QueryDenomResponse {
+	Denom denom = 1;
+			}
+
+	message QueryDenomsRequest {
+	// pagination defines an optional pagination for the request.
+			cosmos.base.query.v1beta1.PageRequest pagination = 1;
+			string                                owner      = 2;
+			}
+
+	message QueryDenomsResponse {
+	repeated Denom                         denoms     = 1 [(gogoproto.nullable) = false];
+			cosmos.base.query.v1beta1.PageResponse pagination = 2;
+			}
+
+	message QueryNFTRequest {
+	string denom_id = 1 [(gogoproto.moretags) = "yaml:\"denom_id\""];
+			string id       = 2;
+			}
+
+	message QueryNFTResponse {
+	NFT nft = 1 [(gogoproto.customname) = "NFT"];
+			}
+
+
+	message QueryOwnerNFTsRequest {
+	string                                denom_id   = 1 [(gogoproto.moretags) = "yaml:\"denom_id\""];
+			string                                owner      = 2;
+			cosmos.base.query.v1beta1.PageRequest pagination = 3;
+			}
+
+	message QueryOwnerNFTsResponse {
+	string                                 owner       = 1;
+			repeated OwnerNFTCollection           collections = 2 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination  = 3;
+			}
+
+	message QuerySupplyRequest {
+	string denom_id = 1 [(gogoproto.moretags) = "yaml:\"denom_id\""];
+			string owner    = 2;
+			}
+
+	message QuerySupplyResponse {
+	uint64 amount = 1;
+			}
+
+	message OwnerNFTCollection {
+	Denom         denom = 1  [(gogoproto.nullable) = false];
+			repeated NFT nfts = 2 [(gogoproto.nullable) = false];
+			}

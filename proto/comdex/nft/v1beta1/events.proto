@@ -1,0 +1,53 @@
+syntax = "proto3";
+package comdex.nft.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/nft/types";
+
+// EventCreateDenom is emitted on Denom Creation
+message EventCreateDenom {
+  string id      = 1;
+  string symbol  = 2;
+  string name    = 3;
+  string creator = 4;
+}
+
+// EventUpdateDenom is emitted on Denom Update
+message EventUpdateDenom {
+  string id      = 1;
+  string symbol  = 2;
+  string name    = 3;
+  string creator = 4;
+}
+
+// EventTransferDenom is emitted on Denom Transfer
+message EventTransferDenom {
+  string id        = 1;
+  string symbol    = 2;
+  string sender    = 3;
+  string recipient = 4;
+}
+
+// EventMintNFT is emitted on Mint
+message EventMintNFT {
+  string denom_id = 1 [(gogoproto.moretags) = "yaml:\"denom_id\""];
+  string id       = 2;
+  string uri      = 3 [(gogoproto.customname) = "URI"];
+  string owner    = 4;
+}
+
+// EventTransferNFT is emitted on Transfer
+message EventTransferNFT {
+  string denom_id  = 1 [(gogoproto.moretags) = "yaml:\"denom_id\""];
+  string id        = 2;
+  string sender    = 3;
+  string recipient = 4;
+}
+
+// EventBurnNFT is emitted on Burn
+message EventBurnNFT {
+  string denom_id = 1 [(gogoproto.moretags) = "yaml:\"denom_id\""];
+  string id       = 2;
+  string owner    = 3;
+}
