@@ -149,6 +149,15 @@ func (k *Keeper) GetUserBorrows(ctx sdk.Context, address string) (userBorrows ty
 	return userBorrows, true
 }
 
+func (k *Keeper) UserBorrows(ctx sdk.Context, address string) (userBorrows []types.BorrowAsset, found bool) {
+	userLendId, _ := k.GetUserBorrows(ctx, address)
+	for _, v := range userLendId.BorrowIds {
+		userBorrow, _ := k.GetBorrow(ctx, v)
+		userBorrows = append(userBorrows, userBorrow)
+	}
+	return userBorrows, true
+}
+
 func (k *Keeper) SetUserBorrows(ctx sdk.Context, userBorrows types.UserBorrowIdMapping) {
 	var (
 		store = k.Store(ctx)
@@ -204,6 +213,15 @@ func (k *Keeper) GetBorrowIdByOwnerAndPool(ctx sdk.Context, address string, pool
 	}
 	k.cdc.MustUnmarshal(value, &userBorrows)
 
+	return userBorrows, true
+}
+
+func (k *Keeper) BorrowIdByOwnerAndPool(ctx sdk.Context, address string, poolId uint64) (userBorrows []types.BorrowAsset, found bool) {
+	userLendId, _ := k.GetBorrowIdByOwnerAndPool(ctx, address, poolId)
+	for _, v := range userLendId.BorrowIds {
+		userBorrow, _ := k.GetBorrow(ctx, v)
+		userBorrows = append(userBorrows, userBorrow)
+	}
 	return userBorrows, true
 }
 

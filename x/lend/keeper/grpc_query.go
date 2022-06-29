@@ -86,7 +86,7 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 	}
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		lendIds []uint64
+		lendIds []types.LendAsset
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -94,9 +94,9 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, _ := q.GetUserLends(ctx, req.Owner)
+	userVaultAssetData, _ := q.UserLends(ctx, req.Owner)
 
-	for _, data := range userVaultAssetData.LendIds {
+	for _, data := range userVaultAssetData {
 		lendIds = append(lendIds, data)
 
 	}
@@ -112,7 +112,7 @@ func (q queryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.Qu
 	}
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		lendIds []uint64
+		lendIds []types.LendAsset
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -120,9 +120,9 @@ func (q queryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.Qu
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, _ := q.GetLendIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
+	userVaultAssetData, _ := q.LendIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
 
-	for _, data := range userVaultAssetData.LendIds {
+	for _, data := range userVaultAssetData {
 		lendIds = append(lendIds, data)
 
 	}
@@ -138,7 +138,7 @@ func (q queryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.
 	}
 	var (
 		ctx       = sdk.UnwrapSDKContext(c)
-		borrowIds []uint64
+		borrowIds []types.BorrowAsset
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -146,9 +146,9 @@ func (q queryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, _ := q.GetLendIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
+	userVaultAssetData, _ := q.BorrowIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
 
-	for _, data := range userVaultAssetData.LendIds {
+	for _, data := range userVaultAssetData {
 		borrowIds = append(borrowIds, data)
 
 	}
@@ -388,7 +388,7 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 	}
 	var (
 		ctx       = sdk.UnwrapSDKContext(c)
-		borrowIds []uint64
+		borrowIds []types.BorrowAsset
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -396,9 +396,9 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, _ := q.GetUserBorrows(ctx, req.Owner)
+	userVaultAssetData, _ := q.UserBorrows(ctx, req.Owner)
 
-	for _, data := range userVaultAssetData.BorrowIds {
+	for _, data := range userVaultAssetData {
 		borrowIds = append(borrowIds, data)
 
 	}

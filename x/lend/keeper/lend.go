@@ -270,6 +270,15 @@ func (k *Keeper) GetUserLends(ctx sdk.Context, address string) (userVaults types
 	return userVaults, true
 }
 
+func (k *Keeper) UserLends(ctx sdk.Context, address string) (userLends []types.LendAsset, found bool) {
+	userLendId, _ := k.GetUserLends(ctx, address)
+	for _, v := range userLendId.LendIds {
+		userLend, _ := k.GetLend(ctx, v)
+		userLends = append(userLends, userLend)
+	}
+	return userLends, true
+}
+
 func (k *Keeper) SetUserLends(ctx sdk.Context, userVaults types.UserLendIdMapping) {
 	var (
 		store = k.Store(ctx)
@@ -325,6 +334,15 @@ func (k *Keeper) GetLendIdByOwnerAndPool(ctx sdk.Context, address string, poolId
 	}
 	k.cdc.MustUnmarshal(value, &userLends)
 
+	return userLends, true
+}
+
+func (k *Keeper) LendIdByOwnerAndPool(ctx sdk.Context, address string, poolId uint64) (userLends []types.LendAsset, found bool) {
+	userLendId, _ := k.GetLendIdByOwnerAndPool(ctx, address, poolId)
+	for _, v := range userLendId.LendIds {
+		userLend, _ := k.GetLend(ctx, v)
+		userLends = append(userLends, userLend)
+	}
 	return userLends, true
 }
 
