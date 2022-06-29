@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/tokenmint/types"
@@ -22,7 +21,7 @@ func NewQueryServer(k Keeper) types.QueryServer {
 	}
 }
 
-func (q *QueryServer) QueryAllTokenMintedForAllProducts(c context.Context, req *types.QueryAllTokenMintedForAllProductsRequest) (*types.QueryAllTokenMintedForAllProductsResponse, error) {
+func (q *QueryServer) QueryAllTokenMintedForAllApps(c context.Context, req *types.QueryAllTokenMintedForAllAppsRequest) (*types.QueryAllTokenMintedForAllAppsResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -33,7 +32,7 @@ func (q *QueryServer) QueryAllTokenMintedForAllProducts(c context.Context, req *
 	}, nil
 }
 
-func (q *QueryServer) QueryTokenMintedByProduct(c context.Context, req *types.QueryTokenMintedByProductRequest) (*types.QueryTokenMintedByProductResponse, error) {
+func (q *QueryServer) QueryTokenMintedByApp(c context.Context, req *types.QueryTokenMintedByAppRequest) (*types.QueryTokenMintedByAppResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -47,7 +46,7 @@ func (q *QueryServer) QueryTokenMintedByProduct(c context.Context, req *types.Qu
 	}, nil
 }
 
-func (q *QueryServer) QueryTokenMintedByProductAndAsset(c context.Context, req *types.QueryTokenMintedByProductAndAssetRequest) (*types.QueryTokenMintedByProductAndAssetResponse, error) {
+func (q *QueryServer) QueryTokenMintedByAppAndAsset(c context.Context, req *types.QueryTokenMintedByAppAndAssetRequest) (*types.QueryTokenMintedByAppAndAssetResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)

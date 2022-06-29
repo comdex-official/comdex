@@ -53,13 +53,13 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		{Name: "CMDX",
 			Denom:     "ucmdx",
 			Decimals:  1000000,
-			IsOnchain: true}, {Name: "CMST",
+			IsOnChain: true}, {Name: "CMST",
 			Denom:     "ucmst",
 			Decimals:  1000000,
-			IsOnchain: true}, {Name: "HARBOR",
+			IsOnChain: true}, {Name: "HARBOR",
 			Denom:     "uharbor",
 			Decimals:  1000000,
-			IsOnchain: true},
+			IsOnChain: true},
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg2...)
 	s.Require().NoError(err)
@@ -98,36 +98,36 @@ func (s *KeeperTestSuite) TestMsgMintNewTokens() {
 		{
 			"Mint New Tokens : App ID : 1, Asset ID : 3",
 			tokenmintTypes.MsgMintNewTokensRequest{
-				From:         userAddress,
-				AppMappingId: 1,
-				AssetId:      3,
+				From:    userAddress,
+				AppId:   1,
+				AssetId: 3,
 			},
 			false,
 		},
 		{
 			"Mint New Tokens : App ID : 1, Asset ID : 2",
 			tokenmintTypes.MsgMintNewTokensRequest{
-				From:         userAddress,
-				AppMappingId: 1,
-				AssetId:      2,
+				From:    userAddress,
+				AppId:   1,
+				AssetId: 2,
 			},
 			false,
 		},
 		{
 			"Duplicate Failure Mint New Tokens : App ID : 1, Asset ID : 3",
 			tokenmintTypes.MsgMintNewTokensRequest{
-				From:         userAddress,
-				AppMappingId: 1,
-				AssetId:      3,
+				From:    userAddress,
+				AppId:   1,
+				AssetId: 3,
 			},
 			true,
 		},
 		{
 			"Mint New Tokens : App ID : 2, Asset ID : 3",
 			tokenmintTypes.MsgMintNewTokensRequest{
-				From:         userAddress,
-				AppMappingId: 2,
-				AssetId:      3,
+				From:    userAddress,
+				AppId:   2,
+				AssetId: 3,
 			},
 			false,
 		},
@@ -146,11 +146,11 @@ func (s *KeeperTestSuite) TestMsgMintNewTokens() {
 				s.Require().NoError(err)
 				ActualAmountMinted := currentCoin.Amount.Sub(previousCoin.Amount)
 				s.Require().Equal(ActualAmountMinted, genesisSupply)
-				req := tokenmintTypes.QueryTokenMintedByProductAndAssetRequest{
-					AppId:   tc.msg.AppMappingId,
+				req := tokenmintTypes.QueryTokenMintedByAppAndAssetRequest{
+					AppId:   tc.msg.AppId,
 					AssetId: tc.msg.AssetId,
 				}
-				res, err := s.querier.QueryTokenMintedByProductAndAsset(wctx, &req)
+				res, err := s.querier.QueryTokenMintedByAppAndAsset(wctx, &req)
 				s.Require().NoError(err)
 				s.Require().Equal(res.MintedTokens.AssetId, tc.msg.AssetId)
 				s.Require().Equal(res.MintedTokens.GenesisSupply, ActualAmountMinted)
@@ -195,11 +195,11 @@ func (s *KeeperTestSuite) TestMintNewTokensForApp() {
 			s.Require().True(found)
 			previousCoin, err := s.getBalance(userAddress, asset.Denom)
 			s.Require().NoError(err)
-			req := tokenmintTypes.QueryTokenMintedByProductAndAssetRequest{
+			req := tokenmintTypes.QueryTokenMintedByAppAndAssetRequest{
 				AppId:   tc.appID,
 				AssetId: tc.assetID,
 			}
-			beforeTokenMint, err := s.querier.QueryTokenMintedByProductAndAsset(wctx, &req)
+			beforeTokenMint, err := s.querier.QueryTokenMintedByAppAndAsset(wctx, &req)
 			s.Require().NoError(err)
 			err = tokenmintKeeper.MintNewTokensForApp(*ctx, tc.appID, tc.assetID, tc.address, tc.mintAmount)
 			if tc.expectedError {
@@ -210,11 +210,11 @@ func (s *KeeperTestSuite) TestMintNewTokensForApp() {
 				s.Require().NoError(err)
 				ActualAmountMinted := currentCoin.Amount.Sub(previousCoin.Amount)
 				s.Require().Equal(ActualAmountMinted, tc.mintAmount)
-				req := tokenmintTypes.QueryTokenMintedByProductAndAssetRequest{
+				req := tokenmintTypes.QueryTokenMintedByAppAndAssetRequest{
 					AppId:   tc.appID,
 					AssetId: tc.assetID,
 				}
-				res, err := s.querier.QueryTokenMintedByProductAndAsset(wctx, &req)
+				res, err := s.querier.QueryTokenMintedByAppAndAsset(wctx, &req)
 				s.Require().NoError(err)
 				s.Require().Equal(res.MintedTokens.AssetId, tc.assetID)
 				s.Require().Equal(res.MintedTokens.GenesisSupply, beforeTokenMint.MintedTokens.GenesisSupply)
@@ -266,11 +266,11 @@ func (s *KeeperTestSuite) TestBurnTokensForApp() {
 			s.Require().NoError(err)
 			err = s.app.BankKeeper.SendCoinsFromAccountToModule(*ctx, sender, "tokenmint", sdk.NewCoins(sdk.NewCoin(asset.Denom, tc.sendAmount)))
 			s.Require().NoError(err)
-			req := tokenmintTypes.QueryTokenMintedByProductAndAssetRequest{
+			req := tokenmintTypes.QueryTokenMintedByAppAndAssetRequest{
 				AppId:   tc.appID,
 				AssetId: tc.assetID,
 			}
-			beforeTokenMint, err := s.querier.QueryTokenMintedByProductAndAsset(wctx, &req)
+			beforeTokenMint, err := s.querier.QueryTokenMintedByAppAndAsset(wctx, &req)
 			s.Require().NoError(err)
 			beforeTokenMintBalance := s.auctionKeeper.GetModuleAccountBalance(*ctx, "tokenmint", asset.Denom)
 			err = tokenmintKeeper.BurnTokensForApp(*ctx, tc.appID, tc.assetID, tc.burnAmount)
@@ -280,11 +280,11 @@ func (s *KeeperTestSuite) TestBurnTokensForApp() {
 				s.Require().NoError(err)
 				afterTokenMintBalance := s.auctionKeeper.GetModuleAccountBalance(*ctx, "tokenmint", asset.Denom)
 				s.Require().NoError(err)
-				req := tokenmintTypes.QueryTokenMintedByProductAndAssetRequest{
+				req := tokenmintTypes.QueryTokenMintedByAppAndAssetRequest{
 					AppId:   tc.appID,
 					AssetId: tc.assetID,
 				}
-				res, err := s.querier.QueryTokenMintedByProductAndAsset(wctx, &req)
+				res, err := s.querier.QueryTokenMintedByAppAndAsset(wctx, &req)
 				s.Require().NoError(err)
 				s.Require().Equal(res.MintedTokens.AssetId, tc.assetID)
 				s.Require().Equal(res.MintedTokens.GenesisSupply, beforeTokenMint.MintedTokens.GenesisSupply)
@@ -332,11 +332,11 @@ func (s *KeeperTestSuite) TestBurnGovTokensForApp() {
 			sender, err := sdk.AccAddressFromBech32(tc.address)
 			s.Require().NoError(err)
 
-			req := tokenmintTypes.QueryTokenMintedByProductAndAssetRequest{
+			req := tokenmintTypes.QueryTokenMintedByAppAndAssetRequest{
 				AppId:   tc.appID,
 				AssetId: tc.assetID,
 			}
-			beforeTokenMint, err := s.querier.QueryTokenMintedByProductAndAsset(wctx, &req)
+			beforeTokenMint, err := s.querier.QueryTokenMintedByAppAndAsset(wctx, &req)
 			s.Require().NoError(err)
 			beforeUserBalance, err := s.getBalance(tc.address, asset.Denom)
 			s.Require().NoError(err)
@@ -351,11 +351,11 @@ func (s *KeeperTestSuite) TestBurnGovTokensForApp() {
 				s.Require().NoError(err)
 				afterUserBalance, err := s.getBalance(tc.address, asset.Denom)
 				s.Require().NoError(err)
-				req := tokenmintTypes.QueryTokenMintedByProductAndAssetRequest{
+				req := tokenmintTypes.QueryTokenMintedByAppAndAssetRequest{
 					AppId:   tc.appID,
 					AssetId: tc.assetID,
 				}
-				res, err := s.querier.QueryTokenMintedByProductAndAsset(wctx, &req)
+				res, err := s.querier.QueryTokenMintedByAppAndAsset(wctx, &req)
 				s.Require().NoError(err)
 				currentSupply, found := s.tokenmintKeeper.GetAssetDataInTokenMintByAppSupply(*ctx, tc.appID, tc.assetID)
 				s.Require().True(found)

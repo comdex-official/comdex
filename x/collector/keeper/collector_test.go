@@ -54,13 +54,13 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		{Name: "CMDX",
 			Denom:     "ucmdx",
 			Decimals:  1000000,
-			IsOnchain: true}, {Name: "CMST",
+			IsOnChain: true}, {Name: "CMST",
 			Denom:     "ucmst",
 			Decimals:  1000000,
-			IsOnchain: true}, {Name: "HARBOR",
+			IsOnChain: true}, {Name: "HARBOR",
 			Denom:     "uharbor",
 			Decimals:  1000000,
-			IsOnchain: true},
+			IsOnChain: true},
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg2...)
 	s.Require().NoError(err)
