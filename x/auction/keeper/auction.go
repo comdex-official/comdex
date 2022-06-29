@@ -15,6 +15,14 @@ func (k Keeper) GetModuleAccountBalance(ctx sdk.Context, moduleName string, deno
 	return k.bank.GetBalance(ctx, address, denom).Amount
 }
 
+func (k Keeper) FundModule(ctx sdk.Context, moduleName string, denom string, amt uint64) error {
+	err := k.bank.MintCoins(ctx, moduleName, sdk.NewCoins(sdk.NewCoin(denom, sdk.NewIntFromUint64(amt))))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (k Keeper) IncreaseLockedVaultAmountIn(ctx sdk.Context, lockedVaultID uint64, amount sdk.Int) error {
 	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
 	if !found {
