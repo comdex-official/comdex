@@ -51,7 +51,7 @@ message QueryAllLendByOwnerRequest {
 }
 
 message QueryAllLendByOwnerResponse {
-  repeated LendAsset lendIds = 1 [
+  repeated LendAsset lends = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"lend_ids\""];
 }
@@ -64,9 +64,9 @@ message QueryAllLendByOwnerAndPoolRequest {
 }
 
 message QueryAllLendByOwnerAndPoolResponse {
-  repeated LendAsset lendIds = 1 [
+  repeated LendAsset lends = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"lend_ids\""];
+    (gogoproto.moretags) = "yaml:\"lends\""];
 }
 message QueryPairsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
@@ -191,9 +191,9 @@ message QueryAllBorrowByOwnerRequest {
 }
 
 message QueryAllBorrowByOwnerResponse {
-  repeated BorrowAsset borrowIds = 1 [
+  repeated BorrowAsset borrows = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"borrow_ids\""];
+    (gogoproto.moretags) = "yaml:\"borrows\""];
 }
 
 message QueryAllBorrowByOwnerAndPoolRequest {
@@ -204,9 +204,9 @@ message QueryAllBorrowByOwnerAndPoolRequest {
 }
 
 message QueryAllBorrowByOwnerAndPoolResponse {
-  repeated BorrowAsset borrowIds = 1 [
+  repeated BorrowAsset borrows = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"borrow_ids\""];
+    (gogoproto.moretags) = "yaml:\"borrows\""];
 }
 
 message QueryAssetStatsRequest {

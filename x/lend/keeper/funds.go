@@ -22,7 +22,7 @@ func (k Keeper) GetReserveFunds(ctx sdk.Context, denom string) sdk.Int {
 	}
 
 	//return amount
-	return sdk.NewInt(100)
+	return sdk.NewInt(0)
 }
 
 // setReserveFunds sets the amount reserved of a specified token.

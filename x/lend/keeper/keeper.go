@@ -110,10 +110,6 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetId uint64, Am
 	if err := k.bank.MintCoins(ctx, pool.ModuleName, cTokens); err != nil {
 		return err
 	}
-	// adding to the total supply
-	if err := k.setCTokenSupply(ctx, k.GetCTokenSupply(ctx, cToken.Denom).Add(cToken)); err != nil {
-		return err
-	}
 
 	err := k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, addr, cTokens)
 	if err != nil {
@@ -302,10 +298,6 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendId uint64, deposi
 	cTokens := sdk.NewCoins(cToken)
 
 	if err = k.bank.MintCoins(ctx, pool.ModuleName, cTokens); err != nil {
-		return err
-	}
-
-	if err = k.setCTokenSupply(ctx, k.GetCTokenSupply(ctx, cToken.Denom).Add(cToken)); err != nil {
 		return err
 	}
 
@@ -1092,11 +1084,6 @@ func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, assetId uint64, l
 
 	err := k.MintCoin(ctx, moduleName, cToken)
 	if err != nil {
-		return err
-	}
-
-	currentCollateral := k.GetCollateralAmount(ctx, lenderAddr, payment.Denom)
-	if err := k.setCollateralAmount(ctx, lenderAddr, currentCollateral.Add(payment)); err != nil {
 		return err
 	}
 
