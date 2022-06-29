@@ -116,7 +116,7 @@ func (k Keeper) RebalanceStableRates(ctx sdk.Context) error {
 	for _, v := range stableBorrows.StableBorrowIds {
 		borrowPos, _ := k.GetBorrow(ctx, v)
 		pair, _ := k.GetLendPair(ctx, borrowPos.PairID)
-		assetStats, _ := k.GetAssetStatsByPoolIdAndAssetId(ctx, pair.AssetOut, pair.AssetOutPoolId)
+		assetStats, _ := k.UpdateAPR(ctx, pair.AssetOut, pair.AssetOutPoolId)
 		utilizationRatio, _ := k.GetUtilisationRatioByPoolIdAndAssetId(ctx, pair.AssetOutPoolId, pair.AssetOut)
 		perc1, _ := sdk.NewDecFromStr("0.2")
 		perc2, _ := sdk.NewDecFromStr("0.9")

@@ -470,7 +470,7 @@ func (q queryServer) QueryAssetStats(c context.Context, req *types.QueryAssetSta
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	assetStatsData, found := q.GetAssetStatsByPoolIdAndAssetId(ctx, req.AssetId, req.PoolId)
+	assetStatsData, found := q.AssetStatsByPoolIdAndAssetId(ctx, req.AssetId, req.PoolId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "assetStatsData does not exist for assetId %d and poolId %d ", req.AssetId, req.PoolId)
 	}

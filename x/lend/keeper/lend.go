@@ -429,6 +429,14 @@ func (k *Keeper) GetAssetStatsByPoolIdAndAssetId(ctx sdk.Context, assetID, poolI
 	return AssetStats, true
 }
 
+func (k *Keeper) AssetStatsByPoolIdAndAssetId(ctx sdk.Context, assetID, poolId uint64) (AssetStats types.AssetStats, found bool) {
+	AssetStats, found = k.UpdateAPR(ctx, assetID, poolId)
+	if !found {
+		return AssetStats, false
+	}
+	return AssetStats, true
+}
+
 func (k *Keeper) SetLastInterestTime(ctx sdk.Context, interestTime int64) error {
 	store := ctx.KVStore(k.storeKey)
 	timeKey := types.CreateLastInterestTimeKey()
