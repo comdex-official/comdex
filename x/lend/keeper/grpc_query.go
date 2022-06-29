@@ -85,8 +85,8 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx     = sdk.UnwrapSDKContext(c)
-		lendIds []types.LendAsset
+		ctx   = sdk.UnwrapSDKContext(c)
+		lends []types.LendAsset
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -97,12 +97,12 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 	userVaultAssetData, _ := q.UserLends(ctx, req.Owner)
 
 	for _, data := range userVaultAssetData {
-		lendIds = append(lendIds, data)
+		lends = append(lends, data)
 
 	}
 
 	return &types.QueryAllLendByOwnerResponse{
-		LendIds: lendIds,
+		Lends: lends,
 	}, nil
 }
 
@@ -111,8 +111,8 @@ func (q queryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.Qu
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx     = sdk.UnwrapSDKContext(c)
-		lendIds []types.LendAsset
+		ctx   = sdk.UnwrapSDKContext(c)
+		lends []types.LendAsset
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -123,12 +123,12 @@ func (q queryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.Qu
 	userVaultAssetData, _ := q.LendIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
 
 	for _, data := range userVaultAssetData {
-		lendIds = append(lendIds, data)
+		lends = append(lends, data)
 
 	}
 
 	return &types.QueryAllLendByOwnerAndPoolResponse{
-		LendIds: lendIds,
+		Lends: lends,
 	}, nil
 }
 
@@ -137,8 +137,8 @@ func (q queryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx       = sdk.UnwrapSDKContext(c)
-		borrowIds []types.BorrowAsset
+		ctx     = sdk.UnwrapSDKContext(c)
+		borrows []types.BorrowAsset
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -149,12 +149,12 @@ func (q queryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.
 	userVaultAssetData, _ := q.BorrowIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
 
 	for _, data := range userVaultAssetData {
-		borrowIds = append(borrowIds, data)
+		borrows = append(borrows, data)
 
 	}
 
 	return &types.QueryAllBorrowByOwnerAndPoolResponse{
-		BorrowIds: borrowIds,
+		Borrows: borrows,
 	}, nil
 }
 
@@ -387,8 +387,8 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx       = sdk.UnwrapSDKContext(c)
-		borrowIds []types.BorrowAsset
+		ctx     = sdk.UnwrapSDKContext(c)
+		borrows []types.BorrowAsset
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -399,12 +399,12 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 	userVaultAssetData, _ := q.UserBorrows(ctx, req.Owner)
 
 	for _, data := range userVaultAssetData {
-		borrowIds = append(borrowIds, data)
+		borrows = append(borrows, data)
 
 	}
 
 	return &types.QueryAllBorrowByOwnerResponse{
-		BorrowIds: borrowIds,
+		Borrows: borrows,
 	}, nil
 }
 
