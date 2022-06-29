@@ -41,7 +41,13 @@ message LendAsset {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
 
-  string reward_Accumulated = 8 [
+  string available_to_borrow = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"available_to_borrow\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  string reward_Accumulated = 9 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"reward_accumulated\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
@@ -364,6 +370,13 @@ message BorrowMapping{
   repeated uint64 borrow_ids = 1 [
     (gogoproto.customname) = "BorrowIds",
     (gogoproto.moretags) = "yaml:\"borrow_ids\""
+  ];
+}
+
+message StableBorrowMapping{
+  repeated uint64 stable_borrow_ids = 1 [
+    (gogoproto.customname) = "StableBorrowIds",
+    (gogoproto.moretags) = "yaml:\"stable_borrow_ids\""
   ];
 }
 

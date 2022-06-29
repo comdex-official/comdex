@@ -36,17 +36,17 @@ func (k *Keeper) GetUserBorrowIDHistory(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) SetBorrow(ctx sdk.Context, lend types.BorrowAsset) {
+func (k *Keeper) SetBorrow(ctx sdk.Context, borrow types.BorrowAsset) {
 	var (
 		store = k.Store(ctx)
-		key   = types.BorrowUserKey(lend.ID)
-		value = k.cdc.MustMarshal(&lend)
+		key   = types.BorrowUserKey(borrow.ID)
+		value = k.cdc.MustMarshal(&borrow)
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetBorrow(ctx sdk.Context, id uint64) (lend types.BorrowAsset, found bool) {
+func (k *Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow types.BorrowAsset, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowUserKey(id)
@@ -54,11 +54,11 @@ func (k *Keeper) GetBorrow(ctx sdk.Context, id uint64) (lend types.BorrowAsset, 
 	)
 
 	if value == nil {
-		return lend, false
+		return borrow, false
 	}
 
-	k.cdc.MustUnmarshal(value, &lend)
-	return lend, true
+	k.cdc.MustUnmarshal(value, &borrow)
+	return borrow, true
 }
 
 func (k *Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
@@ -265,6 +265,60 @@ func (k *Keeper) SetBorrows(ctx sdk.Context, userBorrows types.BorrowMapping) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowsKey
+		value = k.cdc.MustMarshal(&userBorrows)
+	)
+	store.Set(key, value)
+}
+
+func (k *Keeper) UpdateStableBorrowIdsMapping(
+	ctx sdk.Context,
+	borrowId uint64,
+	isInsert bool,
+) error {
+
+	userVaults, found := k.GetStableBorrows(ctx)
+
+	if !found && isInsert {
+		userVaults = types.StableBorrowMapping{
+			StableBorrowIds: nil,
+		}
+	} else if !found && !isInsert {
+		return types.ErrorLendOwnerNotFound
+	}
+
+	if isInsert {
+		userVaults.StableBorrowIds = append(userVaults.StableBorrowIds, borrowId)
+	} else {
+		for index, id := range userVaults.StableBorrowIds {
+			if id == borrowId {
+				userVaults.StableBorrowIds = append(userVaults.StableBorrowIds[:index], userVaults.StableBorrowIds[index+1:]...)
+				break
+			}
+		}
+	}
+
+	k.SetStableBorrows(ctx, userVaults)
+	return nil
+}
+
+func (k *Keeper) GetStableBorrows(ctx sdk.Context) (userBorrows types.StableBorrowMapping, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.StableBorrowsKey
+		value = store.Get(key)
+	)
+	if value == nil {
+		return userBorrows, false
+	}
+	k.cdc.MustUnmarshal(value, &userBorrows)
+
+	return userBorrows, true
+}
+
+func (k *Keeper) SetStableBorrows(ctx sdk.Context, userBorrows types.StableBorrowMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.StableBorrowsKey
 		value = k.cdc.MustMarshal(&userBorrows)
 	)
 	store.Set(key, value)
