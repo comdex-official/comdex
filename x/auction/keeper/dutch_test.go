@@ -91,11 +91,11 @@ func (s *KeeperTestSuite) TestLinearPriceFunction() {
 	tau := sdk.NewIntFromUint64(60)
 	dur := sdk.NewInt(0)
 	for n := 0; n <= 60; n++ {
-		fmt.Println("top tau dur seconds")
-		fmt.Println(top, tau, dur)
-		fmt.Println("price")
-		price := getPriceFromLinearDecreaseFunction(top, tau, dur)
-		fmt.Println(price)
+		//fmt.Println("top tau dur seconds")
+		//fmt.Println(top, tau, dur)
+		//fmt.Println("price")
+		//price := getPriceFromLinearDecreaseFunction(top, tau, dur)
+		//fmt.Println(price)
 		dur = dur.Add(sdk.NewInt(1))
 
 	}
