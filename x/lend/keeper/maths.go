@@ -17,7 +17,7 @@ func (k Keeper) GetUtilisationRatioByPoolIdAndAssetId(ctx sdk.Context, poolId, a
 	return utilizationRatio, nil
 }
 
-func (k Keeper) GetBorrowAPYByAssetId(ctx sdk.Context, poolId, assetId uint64, IsStableBorrow bool) (borrowAPY sdk.Dec, err error) {
+func (k Keeper) GetBorrowAPRByAssetId(ctx sdk.Context, poolId, assetId uint64, IsStableBorrow bool) (borrowAPY sdk.Dec, err error) {
 	assetRatesStats, found := k.GetAssetRatesStats(ctx, assetId)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorAssetStatsNotFound
@@ -57,12 +57,12 @@ func (k Keeper) GetBorrowAPYByAssetId(ctx sdk.Context, poolId, assetId uint64, I
 	}
 }
 
-func (k Keeper) GetLendAPYByAssetId(ctx sdk.Context, poolId, assetId uint64) (lendAPY sdk.Dec, err error) {
+func (k Keeper) GetLendAPRByAssetIdAndPoolId(ctx sdk.Context, poolId, assetId uint64) (lendAPY sdk.Dec, err error) {
 	assetRatesStats, found := k.GetAssetRatesStats(ctx, assetId)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorAssetStatsNotFound
 	}
-	borrowAPY, err := k.GetBorrowAPYByAssetId(ctx, poolId, assetId, false)
+	borrowAPY, err := k.GetBorrowAPRByAssetId(ctx, poolId, assetId, false)
 	if err != nil {
 		return sdk.ZeroDec(), err
 	}
@@ -74,4 +74,57 @@ func (k Keeper) GetLendAPYByAssetId(ctx sdk.Context, poolId, assetId uint64) (le
 	lendAPY = borrowAPY.Mul(currentUtilisationRatio).Mul(mulFactor)
 
 	return lendAPY, nil
+}
+
+func (k Keeper) GetAverageBorrowRate(ctx sdk.Context, poolId, assetId uint64) (averageBorrowRate sdk.Dec, err error) {
+
+	assetStats, _ := k.UpdateAPR(ctx, assetId, poolId)
+	factor1 := assetStats.BorrowApr.Mul(sdk.Dec(assetStats.TotalBorrowed))
+	factor2 := assetStats.StableBorrowApr.Mul(sdk.Dec(assetStats.TotalStableBorrowed))
+	numerator := factor1.Add(factor2)
+	denominator := sdk.Dec(assetStats.TotalStableBorrowed).Add(sdk.Dec(assetStats.TotalBorrowed))
+	averageBorrowRate = numerator.Quo(denominator)
+	return averageBorrowRate, nil
+}
+
+func (k Keeper) GetSavingRate(ctx sdk.Context, poolId, assetId uint64) (savingRate sdk.Dec, err error) {
+	assetRatesStats, _ := k.GetAssetRatesStats(ctx, assetId)
+	averageBorrowRate, err := k.GetAverageBorrowRate(ctx, poolId, assetId)
+	if err != nil {
+		return sdk.Dec{}, err
+	}
+	utilizationRatio, err := k.GetUtilisationRatioByPoolIdAndAssetId(ctx, poolId, assetId)
+	if err != nil {
+		return sdk.Dec{}, err
+	}
+	factor1 := sdk.OneDec().Sub(assetRatesStats.ReserveFactor)
+	savingRate = averageBorrowRate.Mul(utilizationRatio).Mul(factor1)
+	return savingRate, nil
+}
+
+func (k Keeper) GetReserveRate(ctx sdk.Context, poolId, assetId uint64) (reserveRate sdk.Dec, err error) {
+	averageBorrowRate, err := k.GetAverageBorrowRate(ctx, poolId, assetId)
+	if err != nil {
+		return sdk.Dec{}, err
+	}
+	savingRate, err := k.GetSavingRate(ctx, poolId, assetId)
+	if err != nil {
+		return sdk.Dec{}, err
+	}
+	reserveRate = averageBorrowRate.Sub(savingRate)
+	return reserveRate, nil
+}
+
+func (k Keeper) UpdateAPR(ctx sdk.Context, poolId, assetId uint64) (AssetStats types.AssetStats, found bool) {
+	lendAPR, _ := k.GetLendAPRByAssetIdAndPoolId(ctx, poolId, assetId)
+	borrowAPR, _ := k.GetBorrowAPRByAssetId(ctx, poolId, assetId, false)
+	stableBorrowAPR, _ := k.GetBorrowAPRByAssetId(ctx, poolId, assetId, true)
+	currentUtilisationRatio, _ := k.GetUtilisationRatioByPoolIdAndAssetId(ctx, poolId, assetId)
+	AssetStats = types.AssetStats{
+		LendApr:          lendAPR,
+		BorrowApr:        borrowAPR,
+		StableBorrowApr:  stableBorrowAPR,
+		UtilisationRatio: currentUtilisationRatio,
+	}
+	return AssetStats, true
 }

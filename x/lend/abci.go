@@ -15,6 +15,10 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	if err != nil {
 		return
 	}
+	err = k.RebalanceStableRates(ctx)
+	if err != nil {
+		return
+	}
 	err = k.SetLastInterestTime(ctx, ctx.BlockTime().Unix())
 	if err != nil {
 		return

@@ -322,7 +322,7 @@ func (msg *MsgDepositBorrow) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgCloseBorrow(borrower sdk.AccAddress, borrowId uint64, amount sdk.Coin) *MsgCloseBorrow {
+func NewMsgCloseBorrow(borrower sdk.AccAddress, borrowId uint64) *MsgCloseBorrow {
 	return &MsgCloseBorrow{
 		Borrower: borrower.String(),
 		BorrowId: borrowId,

@@ -32,6 +32,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryLend(),
 		queryLends(),
 		QueryAllLendsByOwner(),
+		QueryAllLendsByOwnerAndPoolId(),
 		queryPair(),
 		queryPairs(),
 		queryPool(),
@@ -41,8 +42,11 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryBorrow(),
 		queryBorrows(),
 		QueryAllBorrowsByOwner(),
+		QueryAllBorrowsByOwnerAndPoolId(),
 		queryAssetRatesStat(),
 		queryAssetRatesStats(),
+		QueryAssetStats(),
+		QueryModuleBalance(),
 	)
 
 	return cmd
@@ -138,6 +142,41 @@ func QueryAllLendsByOwner() *cobra.Command {
 
 			res, err := queryClient.QueryAllLendByOwner(cmd.Context(), &types.QueryAllLendByOwnerRequest{
 				Owner: args[0],
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryAllLendsByOwnerAndPoolId() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "lends-by-owner-pool [owner] [pool-id]",
+		Short: "lends list for a owner",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAllLendByOwnerAndPool(cmd.Context(), &types.QueryAllLendByOwnerAndPoolRequest{
+				Owner:  args[0],
+				PoolId: poolId,
 			})
 
 			if err != nil {
@@ -301,16 +340,20 @@ func queryPools() *cobra.Command {
 
 func queryAssetToPairMapping() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "asset-pair-mapping [id]",
+		Use:   "asset-pair-mapping [asset-id] [pool-id]",
 		Short: "Query Asset To Pair Mapping",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			assetId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			poolId, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -320,7 +363,8 @@ func queryAssetToPairMapping() *cobra.Command {
 			res, err := queryClient.QueryAssetToPairMapping(
 				context.Background(),
 				&types.QueryAssetToPairMappingRequest{
-					Id: id,
+					AssetId: assetId,
+					PoolId:  poolId,
 				},
 			)
 			if err != nil {
@@ -476,6 +520,41 @@ func QueryAllBorrowsByOwner() *cobra.Command {
 	return cmd
 }
 
+func QueryAllBorrowsByOwnerAndPoolId() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "borrows-by-owner-pool [owner] [pool-id]",
+		Short: "borrows list for a owner",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.QueryAllBorrowByOwnerAndPool(cmd.Context(), &types.QueryAllBorrowByOwnerAndPoolRequest{
+				Owner:  args[0],
+				PoolId: poolId,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
 func queryAssetRatesStat() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "asset-rates-stat [asset-id]",
@@ -547,5 +626,79 @@ func queryAssetRatesStats() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "asset-rates-stats")
 
+	return cmd
+}
+
+func QueryAssetStats() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "asset-stats [asset-id] [pool-id]",
+		Short: "Query asset stats for an asset-id and pool-id",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			assetId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.QueryAssetStats(cmd.Context(), &types.QueryAssetStatsRequest{
+				AssetId: assetId,
+				PoolId:  poolId,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryModuleBalance() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "module-balance [pool-id]",
+		Short: "borrows list for a owner",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.QueryModuleBalance(cmd.Context(), &types.QueryModuleBalanceRequest{
+				PoolId: poolId,
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }

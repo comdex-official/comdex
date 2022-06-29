@@ -44,6 +44,7 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 	newPool := types.Pool{
 		PoolId:               poolId + 1,
 		ModuleName:           pool.ModuleName,
+		MainAssetId:          pool.MainAssetId,
 		FirstBridgedAssetId:  pool.FirstBridgedAssetId,
 		SecondBridgedAssetId: pool.SecondBridgedAssetId,
 		AssetData:            pool.AssetData,
@@ -57,6 +58,10 @@ func (k Keeper) AddAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMap
 	_, found := k.GetAsset(ctx, assetToPair.AssetId)
 	if !found {
 		return types.ErrorAssetDoesNotExist
+	}
+	_, found = k.GetPool(ctx, assetToPair.PoolId)
+	if !found {
+		return types.ErrPoolNotFound
 	}
 	for _, v := range assetToPair.PairId {
 		_, found := k.GetLendPair(ctx, v)
@@ -159,6 +164,7 @@ func (k *Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRates
 				LiquidationThreshold: msg.LiquidationThreshold,
 				LiquidationPenalty:   msg.LiquidationPenalty,
 				ReserveFactor:        msg.ReserveFactor,
+				CAssetId:             msg.CAssetId,
 			}
 		)
 

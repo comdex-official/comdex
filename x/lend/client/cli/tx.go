@@ -34,6 +34,7 @@ func GetTxCmd() *cobra.Command {
 		txDrawAsset(),
 		txRepayAsset(), //including functionality of both repaying and closing position
 		txDepositBorrowAsset(),
+		txCloseBorrowAsset(),
 		txFundModuleAccounts(),
 	)
 
@@ -312,6 +313,33 @@ func txDepositBorrowAsset() *cobra.Command {
 
 }
 
+func txCloseBorrowAsset() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "close-borrow [borrow-id] ",
+		Short: " close borrow position",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			borrowId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgCloseBorrow(ctx.GetFromAddress(), borrowId)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
 func txFundModuleAccounts() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "fund-module [module-name] [asset_id] [amount]",
@@ -533,6 +561,11 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 
 	moduleName := newLendPool.ModuleName
 
+	mainAssetId, err := strconv.ParseUint(newLendPool.MainAssetID, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
 	firstBridgedAssetId, err := strconv.ParseUint(newLendPool.FirstBridgedAssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
@@ -564,6 +597,7 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 	}
 	pool = types.Pool{
 		ModuleName:           moduleName,
+		MainAssetId:          mainAssetId,
 		FirstBridgedAssetId:  firstBridgedAssetId,
 		SecondBridgedAssetId: secondBridgedAssetId,
 		AssetData:            assetData,
@@ -592,9 +626,9 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 
 func CmdAddAssetToPairProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-asset-to-pair-mapping [asset_id] [pair_id] ",
+		Use:   "add-asset-to-pair-mapping [asset_id] [pool_id] [pair_id] ",
 		Short: "Add asset to pair mapping ",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -605,8 +639,11 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
-			rawPairId, _ := ParseUint64SliceFromString(args[1], ",")
+			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			rawPairId, _ := ParseUint64SliceFromString(args[2], ",")
 			if err != nil {
 				return err
 			}
@@ -617,6 +654,7 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 			}
 			assetToPairMapping := types.AssetToPairMapping{
 				AssetId: assetId,
+				PoolId:  poolId,
 				PairId:  pairId,
 			}
 
@@ -720,7 +758,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 	if err != nil {
 		return txf, nil, err
 	}
-	enableStableBorrow, err := ParseUint64SliceFromString(assetRatesStatsInput.Base, ",")
+	enableStableBorrow, err := ParseUint64SliceFromString(assetRatesStatsInput.EnableStableBorrow, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -749,6 +787,10 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 		return txf, nil, err
 	}
 	reserveFactor, err := ParseStringFromString(assetRatesStatsInput.ReserveFactor, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	cAssetId, err := ParseUint64SliceFromString(assetRatesStatsInput.CAssetId, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -782,6 +824,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 			LiquidationThreshold: newLiquidationThreshold,
 			LiquidationPenalty:   newLiquidationPenalty,
 			ReserveFactor:        newReserveFactor,
+			CAssetId:             cAssetId[i],
 		},
 		)
 	}
