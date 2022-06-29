@@ -38,7 +38,6 @@ type MsgWhitelistAppIDLockerRewards struct {
 type MsgAddExtendedPairsVault struct {
 	AppMappingID        uint64  `json:"app_mapping_id"`
 	PairID              uint64  `json:"pair_id"`
-	LiquidationRatio    sdk.Dec `json:"liquidation_ratio"`
 	StabilityFee        sdk.Dec `json:"stability_fee"`
 	ClosingFee          sdk.Dec `json:"closing_fee"`
 	LiquidationPenalty  sdk.Dec `json:"liquidation_penalty"`
@@ -46,7 +45,7 @@ type MsgAddExtendedPairsVault struct {
 	IsVaultActive       bool    `json:"is_vault_active"`
 	DebtCeiling         uint64  `json:"debt_ceiling"`
 	DebtFloor           uint64  `json:"debt_floor"`
-	IsPsmPair           bool    `json:"is_psm_pair"`
+	IsStableMintVault   bool    `json:"is_stable_mint_vault"`
 	MinCr               sdk.Dec `json:"min_cr"`
 	PairName            string  `json:"pair_name"`
 	AssetOutOraclePrice bool    `json:"asset_out_oracle_price"`
@@ -78,7 +77,6 @@ type MsgSetAuctionMappingForApp struct {
 type MsgUpdatePairsVault struct {
 	AppMappingID       uint64  `json:"app_mapping_id"`
 	ExtPairID          uint64  `json:"ext_pair_id"`
-	LiquidationRatio   sdk.Dec `json:"liquidation_ratio"`
 	StabilityFee       sdk.Dec `json:"stability_fee"`
 	ClosingFee         sdk.Dec `json:"closing_fee"`
 	LiquidationPenalty sdk.Dec `json:"liquidation_penalty"`

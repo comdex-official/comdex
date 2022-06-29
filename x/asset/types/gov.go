@@ -8,10 +8,6 @@ const (
 	ProposalAddAssets                 = "AddAssets"
 	ProposalUpdateAsset               = "UpdateAsset"
 	ProposalAddPairs                  = "AddPairs"
-	ProposalAddWhitelistedAssets      = "AddWhitelistedAssets"
-	ProposalUpdateWhitelistedAsset    = "UpdateWhitelistedAsset"
-	ProposalAddWhitelistedPairs       = "AddWhitelistedPairs"
-	ProposalUpdateWhitelistedPair     = "UpdateWhitelistedPair"
 	ProposalAddAppMapping             = "AddAppMapping"
 	ProposalAddAssetMapping           = "AddAssetMapping"
 	ProposalAddExtendedPairsVault     = "AddExtendedPairsVault"
@@ -27,18 +23,6 @@ func init() {
 
 	govtypes.RegisterProposalType(ProposalAddPairs)
 	govtypes.RegisterProposalTypeCodec(&AddPairsProposal{}, "comdex/AddPairsProposal")
-
-	govtypes.RegisterProposalType(ProposalAddWhitelistedAssets)
-	govtypes.RegisterProposalTypeCodec(&AddWhitelistedAssetsProposal{}, "comdex/AddWhitelistedAssetsProposal")
-
-	govtypes.RegisterProposalType(ProposalUpdateWhitelistedAsset)
-	govtypes.RegisterProposalTypeCodec(&UpdateWhitelistedAssetProposal{}, "comdex/UpdateWhitelistedAssetProposal")
-
-	govtypes.RegisterProposalType(ProposalAddWhitelistedPairs)
-	govtypes.RegisterProposalTypeCodec(&AddWhitelistedPairsProposal{}, "comdex/AddWhitelistedPairsProposal")
-
-	govtypes.RegisterProposalType(ProposalUpdateWhitelistedPair)
-	govtypes.RegisterProposalTypeCodec(&UpdateWhitelistedPairProposal{}, "comdex/UpdateWhitelistedPairProposal")
 
 	govtypes.RegisterProposalType(ProposalUpdateGovTimeInAppMapping)
 	govtypes.RegisterProposalTypeCodec(&UpdateGovTimeInAppMappingProposal{}, "comdex/UpdateGovTimeInAppMappingProposal")
@@ -57,10 +41,6 @@ var (
 	_ govtypes.Content = &AddAssetsProposal{}
 	_ govtypes.Content = &UpdateAssetProposal{}
 	_ govtypes.Content = &AddPairsProposal{}
-	_ govtypes.Content = &AddWhitelistedAssetsProposal{}
-	_ govtypes.Content = &UpdateWhitelistedAssetProposal{}
-	_ govtypes.Content = &AddWhitelistedPairsProposal{}
-	_ govtypes.Content = &UpdateWhitelistedPairProposal{}
 	_ govtypes.Content = &UpdateGovTimeInAppMappingProposal{}
 	_ govtypes.Content = &AddAppMappingProposal{}
 	_ govtypes.Content = &AddAssetMappingProposal{}
@@ -176,153 +156,6 @@ func (p *AddPairsProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewAddWhitelistedAssetsProposal(title, description string, assets []ExtendedAsset) govtypes.Content {
-	return &AddWhitelistedAssetsProposal{
-		Title:       title,
-		Description: description,
-		Assets:      assets,
-	}
-}
-
-func (p *AddWhitelistedAssetsProposal) GetTitle() string {
-	return p.Title
-}
-
-func (p *AddWhitelistedAssetsProposal) GetDescription() string {
-	return p.Description
-}
-
-func (p *AddWhitelistedAssetsProposal) ProposalRoute() string { return RouterKey }
-
-func (p *AddWhitelistedAssetsProposal) ProposalType() string { return ProposalAddWhitelistedAssets }
-
-func (p *AddWhitelistedAssetsProposal) ValidateBasic() error {
-
-	err := govtypes.ValidateAbstract(p)
-	if err != nil {
-		return err
-	}
-	if len(p.Assets) == 0 {
-		return ErrorEmptyProposalAssets
-	}
-
-	for _, asset := range p.Assets {
-		if err := asset.Validate(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func NewUpdateWhitelistedAssetProposal(title, description string, asset ExtendedAsset) govtypes.Content {
-	return &UpdateWhitelistedAssetProposal{
-		Title:       title,
-		Description: description,
-		Asset:       asset,
-	}
-}
-
-func (p *UpdateWhitelistedAssetProposal) GetTitle() string {
-	return p.Title
-}
-
-func (p *UpdateWhitelistedAssetProposal) GetDescription() string {
-	return p.Description
-}
-
-func (p *UpdateWhitelistedAssetProposal) ProposalRoute() string { return RouterKey }
-
-func (p *UpdateWhitelistedAssetProposal) ProposalType() string { return ProposalUpdateWhitelistedAsset }
-
-func (p *UpdateWhitelistedAssetProposal) ValidateBasic() error {
-
-	err := govtypes.ValidateAbstract(p)
-	if err != nil {
-		return err
-	}
-
-	asset := p.Asset
-	if err := asset.Validate(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func NewAddWhitelistedPairsProposal(title, description string, pairs []ExtendedPairLend) govtypes.Content {
-	return &AddWhitelistedPairsProposal{
-		Title:       title,
-		Description: description,
-		Pairs:       pairs,
-	}
-}
-
-func (p *AddWhitelistedPairsProposal) GetTitle() string {
-	return p.Title
-}
-
-func (p *AddWhitelistedPairsProposal) GetDescription() string {
-	return p.Description
-}
-
-func (p *AddWhitelistedPairsProposal) ProposalRoute() string { return RouterKey }
-
-func (p *AddWhitelistedPairsProposal) ProposalType() string { return ProposalAddWhitelistedPairs }
-
-func (p *AddWhitelistedPairsProposal) ValidateBasic() error {
-
-	err := govtypes.ValidateAbstract(p)
-	if err != nil {
-		return err
-	}
-	if len(p.Pairs) == 0 {
-		return ErrorEmptyProposalAssets
-	}
-
-	for _, pair := range p.Pairs {
-		if err := pair.Validate(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func NewUpdateWhitelistedPairProposal(title, description string, pair ExtendedPairLend) govtypes.Content {
-	return &UpdateWhitelistedPairProposal{
-		Title:       title,
-		Description: description,
-		Pair:        pair,
-	}
-}
-
-func (p *UpdateWhitelistedPairProposal) GetTitle() string {
-	return p.Title
-}
-
-func (p *UpdateWhitelistedPairProposal) GetDescription() string {
-	return p.Description
-}
-
-func (p *UpdateWhitelistedPairProposal) ProposalRoute() string { return RouterKey }
-
-func (p *UpdateWhitelistedPairProposal) ProposalType() string { return ProposalUpdateWhitelistedPair }
-
-func (p *UpdateWhitelistedPairProposal) ValidateBasic() error {
-
-	err := govtypes.ValidateAbstract(p)
-	if err != nil {
-		return err
-	}
-
-	pair := p.Pair
-	if err := pair.Validate(); err != nil {
-		return err
-	}
-
-	return nil
-}
 
 func NewAddAppMapingProposa(title, description string, amap []AppMapping) govtypes.Content {
 	return &AddAppMappingProposal{

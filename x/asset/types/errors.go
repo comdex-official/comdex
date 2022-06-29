@@ -31,6 +31,7 @@ var (
 	ErrorGenesisTokenExistForApp           = errors.Register(ModuleName, 213, "Genesis Token already Exist For App")
 	ErrorFeeShouldNotBeGTOne               = errors.Register(ModuleName, 215, "Fee Should Not Be Greater than One and less than zero")
 	ErrorExtendedPairDoesNotExistForTheApp = errors.Register(ModuleName, 216, "extended pair does not exist for the app")
+	ErrorMinGovDepositIsZero               = errors.Register(ModuleName, 217, "min gov deposit is zero")
 )
 
 var (

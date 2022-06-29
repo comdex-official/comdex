@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/tokenmint/types"
@@ -27,7 +28,7 @@ func (q *QueryServer) QueryAllTokenMintedForAllProducts(c context.Context, req *
 	)
 
 	totalMintedData := q.GetTotalTokenMinted(ctx)
-	return &types.QueryAllTokenMintedForAllProductsResponse{
+	return &types.QueryAllTokenMintedForAllAppsResponse{
 		TokenMint: totalMintedData,
 	}, nil
 }
@@ -41,7 +42,7 @@ func (q *QueryServer) QueryTokenMintedByProduct(c context.Context, req *types.Qu
 		return nil, types.ErrorMintDataNotFound
 	}
 
-	return &types.QueryTokenMintedByProductResponse{
+	return &types.QueryTokenMintedByAppResponse{
 		TokenMint: tokenMint,
 	}, nil
 }
@@ -55,7 +56,7 @@ func (q *QueryServer) QueryTokenMintedByProductAndAsset(c context.Context, req *
 		return nil, types.ErrorMintDataNotFound
 	}
 
-	return &types.QueryTokenMintedByProductAndAssetResponse{
+	return &types.QueryTokenMintedByAppAndAssetResponse{
 		MintedTokens: tokenMint,
 	}, nil
 }
