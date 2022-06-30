@@ -584,3 +584,492 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		})
 	}
 }
+
+func (s *KeeperTestSuite) TestMsgDraw() {
+
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+
+	appID1 := s.CreateNewApp("appOne")
+	appID2 := s.CreateNewApp("appTwo")
+	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID)
+
+	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
+	s.msgServer.MsgCreate(sdk.WrapSDKContext(s.ctx), msg)
+
+	msg = types.NewMsgCreateRequest(addr1, appID2, extendedVaultPairID2, newInt(1000000000), newInt(200000000))
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
+	s.msgServer.MsgCreate(sdk.WrapSDKContext(s.ctx), msg)
+
+	testCases := []struct {
+		Name               string
+		Msg                types.MsgDrawRequest
+		ExpErr             error
+		ExpResp            *types.MsgDrawResponse
+		QueryResponseIndex uint64
+		QueryResponse      *types.Vault
+		AvailableBalance   sdk.Coins
+	}{
+		{
+			Name: "error invalid from address",
+			Msg: *types.NewMsgDrawRequest(
+				[]byte(""), appID1, extendedVaultPairID1, "appOne1", newInt(50000000),
+			),
+			ExpErr:             fmt.Errorf("empty address string is not allowed"),
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error extended vault pair does not exists",
+			Msg: *types.NewMsgDrawRequest(
+				addr1, appID1, 123, "appOne1", newInt(50000000),
+			),
+			ExpErr:             types.ErrorExtendedPairVaultDoesNotExists,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error invalid appID",
+			Msg: *types.NewMsgDrawRequest(
+				addr1, 69, extendedVaultPairID1, "appOne1", newInt(50000000),
+			),
+			ExpErr:             types.ErrorAppMappingDoesNotExist,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error appID mismatch",
+			Msg: *types.NewMsgDrawRequest(
+				addr1, appID2, extendedVaultPairID1, "appOne1", newInt(50000000),
+			),
+			ExpErr:             types.ErrorAppMappingIDMismatch,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error vault does not exists",
+			Msg: *types.NewMsgDrawRequest(
+				addr1, appID1, extendedVaultPairID1, "appOne2", newInt(50000000),
+			),
+			ExpErr:             types.ErrorVaultDoesNotExist,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error access unathorized",
+			Msg: *types.NewMsgDrawRequest(
+				addr2, appID1, extendedVaultPairID1, "appOne1", newInt(50000000),
+			),
+			ExpErr:             types.ErrVaultAccessUnauthorised,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error invalid collateralization ratio",
+			Msg: *types.NewMsgDrawRequest(
+				addr1, appID1, extendedVaultPairID1, "appOne1", newInt(50000000),
+			),
+			ExpErr:             types.ErrorInvalidCollateralizationRatio,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "success valid case app1 user1",
+			Msg: *types.NewMsgDrawRequest(
+				addr1, appID1, extendedVaultPairID1, "appOne1", newInt(10000000),
+			),
+			ExpErr:             nil,
+			ExpResp:            &types.MsgDrawResponse{},
+			QueryResponseIndex: 0,
+			QueryResponse: &types.Vault{
+				Id:                  "appOne1",
+				AppMappingId:        appID1,
+				ExtendedPairVaultID: extendedVaultPairID1,
+				Owner:               addr1.String(),
+				AmountIn:            newInt(1000000000),
+				AmountOut:           newInt(210000000),
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(405900000))), //198000000*2+(10000000-1%)
+		},
+		{
+			Name: "success valid case app2 user1",
+			Msg: *types.NewMsgDrawRequest(
+				addr1, appID2, extendedVaultPairID2, "appTwo1", newInt(10000000),
+			),
+			ExpErr:             nil,
+			ExpResp:            &types.MsgDrawResponse{},
+			QueryResponseIndex: 1,
+			QueryResponse: &types.Vault{
+				Id:                  "appTwo1",
+				AppMappingId:        appID2,
+				ExtendedPairVaultID: extendedVaultPairID2,
+				Owner:               addr1.String(),
+				AmountIn:            newInt(1000000000),
+				AmountOut:           newInt(210000000),
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(415800000))), //198000000*2+(10000000-1%) + (10000000-1%)
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.Name, func() {
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.msgServer.MsgDraw(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
+				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+
+				vaults := s.keeper.GetVaults(s.ctx)
+				s.Require().Len(vaults, 2)
+				s.Require().Equal(tc.QueryResponse.Id, vaults[tc.QueryResponseIndex].Id)
+				s.Require().Equal(tc.QueryResponse.Owner, vaults[tc.QueryResponseIndex].Owner)
+				s.Require().Equal(tc.QueryResponse.AmountIn, vaults[tc.QueryResponseIndex].AmountIn)
+				s.Require().Equal(tc.QueryResponse.AmountOut, vaults[tc.QueryResponseIndex].AmountOut)
+				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, vaults[tc.QueryResponseIndex].ExtendedPairVaultID)
+				s.Require().Equal(tc.QueryResponse.AppMappingId, vaults[tc.QueryResponseIndex].AppMappingId)
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestMsgRepay() {
+
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+
+	appID1 := s.CreateNewApp("appOne")
+	appID2 := s.CreateNewApp("appTwo")
+	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID)
+
+	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
+	s.msgServer.MsgCreate(sdk.WrapSDKContext(s.ctx), msg)
+
+	msg = types.NewMsgCreateRequest(addr1, appID2, extendedVaultPairID2, newInt(1000000000), newInt(200000000))
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
+	s.msgServer.MsgCreate(sdk.WrapSDKContext(s.ctx), msg)
+
+	testCases := []struct {
+		Name               string
+		Msg                types.MsgRepayRequest
+		ExpErr             error
+		ExpResp            *types.MsgRepayResponse
+		QueryResponseIndex uint64
+		QueryResponse      *types.Vault
+		AvailableBalance   sdk.Coins
+	}{
+		{
+			Name: "error invalid from address",
+			Msg: *types.NewMsgRepayRequest(
+				[]byte(""), appID1, extendedVaultPairID1, "appOne1", newInt(50000000),
+			),
+			ExpErr:             fmt.Errorf("empty address string is not allowed"),
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error extended vault pair does not exists",
+			Msg: *types.NewMsgRepayRequest(
+				addr1, appID1, 123, "appOne1", newInt(50000000),
+			),
+			ExpErr:             types.ErrorExtendedPairVaultDoesNotExists,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error invalid appID",
+			Msg: *types.NewMsgRepayRequest(
+				addr1, 69, extendedVaultPairID1, "appOne1", newInt(50000000),
+			),
+			ExpErr:             types.ErrorAppMappingDoesNotExist,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error appID mismatch",
+			Msg: *types.NewMsgRepayRequest(
+				addr1, appID2, extendedVaultPairID1, "appOne1", newInt(50000000),
+			),
+			ExpErr:             types.ErrorAppMappingIDMismatch,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error vault does not exists",
+			Msg: *types.NewMsgRepayRequest(
+				addr1, appID1, extendedVaultPairID1, "appOne2", newInt(50000000),
+			),
+			ExpErr:             types.ErrorVaultDoesNotExist,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error access unathorized",
+			Msg: *types.NewMsgRepayRequest(
+				addr2, appID1, extendedVaultPairID1, "appOne1", newInt(50000000),
+			),
+			ExpErr:             types.ErrVaultAccessUnauthorised,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error invalid amount",
+			Msg: *types.NewMsgRepayRequest(
+				addr1, appID1, extendedVaultPairID1, "appOne1", newInt(0),
+			),
+			ExpErr:             types.ErrorInvalidAmount,
+			ExpResp:            nil,
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "success valid case app1 user1",
+			Msg: *types.NewMsgRepayRequest(
+				addr1, appID1, extendedVaultPairID1, "appOne1", newInt(100000000),
+			),
+			ExpErr:             nil,
+			ExpResp:            &types.MsgRepayResponse{},
+			QueryResponseIndex: 0,
+			QueryResponse: &types.Vault{
+				Id:                  "appOne1",
+				AppMappingId:        appID1,
+				ExtendedPairVaultID: extendedVaultPairID1,
+				Owner:               addr1.String(),
+				AmountIn:            newInt(1000000000),
+				AmountOut:           newInt(100000000),
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(296000000))), //198000000*2 - 100000000
+		},
+		{
+			Name: "success valid case app2 user1",
+			Msg: *types.NewMsgRepayRequest(
+				addr1, appID2, extendedVaultPairID2, "appTwo1", newInt(100000000),
+			),
+			ExpErr:             nil,
+			ExpResp:            &types.MsgRepayResponse{},
+			QueryResponseIndex: 1,
+			QueryResponse: &types.Vault{
+				Id:                  "appTwo1",
+				AppMappingId:        appID2,
+				ExtendedPairVaultID: extendedVaultPairID2,
+				Owner:               addr1.String(),
+				AmountIn:            newInt(1000000000),
+				AmountOut:           newInt(100000000),
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(196000000))), //198000000*2 - 100000000 - 100000000
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.Name, func() {
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.msgServer.MsgRepay(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
+				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+
+				vaults := s.keeper.GetVaults(s.ctx)
+				s.Require().Len(vaults, 2)
+				s.Require().Equal(tc.QueryResponse.Id, vaults[tc.QueryResponseIndex].Id)
+				s.Require().Equal(tc.QueryResponse.Owner, vaults[tc.QueryResponseIndex].Owner)
+				s.Require().Equal(tc.QueryResponse.AmountIn, vaults[tc.QueryResponseIndex].AmountIn)
+				s.Require().Equal(tc.QueryResponse.AmountOut, vaults[tc.QueryResponseIndex].AmountOut)
+				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, vaults[tc.QueryResponseIndex].ExtendedPairVaultID)
+				s.Require().Equal(tc.QueryResponse.AppMappingId, vaults[tc.QueryResponseIndex].AppMappingId)
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestMsgClose() {
+
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+
+	appID1 := s.CreateNewApp("appOne")
+	appID2 := s.CreateNewApp("appTwo")
+	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID)
+
+	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
+	s.msgServer.MsgCreate(sdk.WrapSDKContext(s.ctx), msg)
+
+	msg = types.NewMsgCreateRequest(addr1, appID2, extendedVaultPairID2, newInt(1000000000), newInt(200000000))
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
+	s.msgServer.MsgCreate(sdk.WrapSDKContext(s.ctx), msg)
+
+	testCases := []struct {
+		Name               string
+		Msg                types.MsgCloseRequest
+		ExpErr             error
+		ExpResp            *types.MsgCloseResponse
+		AvailableVaultsLen uint64
+		AvailableBalance   sdk.Coins
+	}{
+		{
+			Name: "error invalid from address",
+			Msg: *types.NewMsgLiquidateRequest(
+				[]byte(""), appID1, extendedVaultPairID1, "appOne1",
+			),
+			ExpErr:             fmt.Errorf("empty address string is not allowed"),
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error extended vault pair does not exists",
+			Msg: *types.NewMsgLiquidateRequest(
+				addr1, appID1, 123, "appOne1",
+			),
+			ExpErr:             types.ErrorExtendedPairVaultDoesNotExists,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error invalid appID",
+			Msg: *types.NewMsgLiquidateRequest(
+				addr1, 69, extendedVaultPairID1, "appOne1",
+			),
+			ExpErr:             types.ErrorAppMappingDoesNotExist,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error appID mismatch",
+			Msg: *types.NewMsgLiquidateRequest(
+				addr1, appID2, extendedVaultPairID1, "appOne1",
+			),
+			ExpErr:             types.ErrorAppMappingIDMismatch,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error vault does not exists",
+			Msg: *types.NewMsgLiquidateRequest(
+				addr1, appID1, extendedVaultPairID1, "appOne2",
+			),
+			ExpErr:             types.ErrorVaultDoesNotExist,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		{
+			Name: "error access unathorized",
+			Msg: *types.NewMsgLiquidateRequest(
+				addr2, appID1, extendedVaultPairID1, "appOne1",
+			),
+			ExpErr:             types.ErrVaultAccessUnauthorised,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
+		},
+		// TODO - seems incorrect logic for vault closing, need to redo these below tests after verifcation of logic
+		// {
+		// 	Name: "success valid case app1 user1",
+		// 	Msg: *types.NewMsgLiquidateRequest(
+		// 		addr1, appID1, extendedVaultPairID1, "appOne1",
+		// 	),
+		// 	ExpErr:             nil,
+		// 	ExpResp:            &types.MsgCloseResponse{},
+		// 	AvailableVaultsLen: 1,
+		// 	AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000)), sdk.NewCoin("uasset2", newInt(196000000))),
+		// },
+		// {
+		// 	Name: "success valid case app2 user1",
+		// 	Msg: *types.NewMsgLiquidateRequest(
+		// 		addr1, appID2, extendedVaultPairID2, "appTwo1",
+		// 	),
+		// 	ExpErr:             nil,
+		// 	ExpResp:            &types.MsgCloseResponse{},
+		// 	AvailableVaultsLen: 0,
+		// 	AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(2000000000))),
+		// },
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.Name, func() {
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.msgServer.MsgClose(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
+				fmt.Println(availableBalances)
+				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+
+				vaults := s.keeper.GetVaults(s.ctx)
+				s.Require().Len(vaults, int(tc.AvailableVaultsLen))
+			}
+		})
+	}
+}
