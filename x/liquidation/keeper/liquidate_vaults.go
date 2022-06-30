@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 
 func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 	appIds := k.GetAppIds(ctx).WhitelistedAppMappingIds
-
+	fmt.Println("red ______ ", k.GetAppIds(ctx))
 	for i := range appIds {
 		vaultsMap, _ := k.GetAppExtendedPairVaultMapping(ctx, appIds[i])
 
