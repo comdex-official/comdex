@@ -114,11 +114,11 @@ func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
 
 func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint64 {
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
-		Name:             name,
-		Denom:            denom,
-		Decimals:         1000000,
-		IsOnchain:        true,
-		AssetOraclePrice: true,
+		Name:                  name,
+		Denom:                 denom,
+		Decimals:              1000000,
+		IsOnChain:             true,
+		IsOraclePriceRequired: true,
 	})
 	s.Require().NoError(err)
 	assets := s.app.AssetKeeper.GetAssets(s.ctx)
@@ -168,19 +168,22 @@ func (s *KeeperTestSuite) CreateNewPair(addr sdk.Address, assetIn, assetOut uint
 	return pairID
 }
 
-func (s *KeeperTestSuite) CreateNewExtendedVaultPair(pairName string, appMappingID, pairID uint64) uint64 {
+func (s *KeeperTestSuite) CreateNewExtendedVaultPair(
+	pairName string,
+	appMappingID, pairID uint64,
+	isPsmPair, isVaultActive bool,
+) uint64 {
 	err := s.app.AssetKeeper.AddExtendedPairsVaultRecords(s.ctx, assettypes.ExtendedPairVault{
 		AppMappingId:        appMappingID,
 		PairId:              pairID,
-		LiquidationRatio:    sdk.NewDecWithPrec(23, 1), // 2.3
-		StabilityFee:        sdk.NewDecWithPrec(2, 2),  // 0.02
+		StabilityFee:        sdk.NewDecWithPrec(2, 2), // 0.02
 		ClosingFee:          sdk.NewDec(0),
 		LiquidationPenalty:  sdk.NewDecWithPrec(15, 2), // 0.15
 		DrawDownFee:         sdk.NewDecWithPrec(1, 2),  // 0.01
-		IsVaultActive:       true,
+		IsVaultActive:       isVaultActive,
 		DebtCeiling:         sdk.NewInt(1000000000000000000),
 		DebtFloor:           sdk.NewInt(100000000),
-		IsPsmPair:           false,
+		IsStableMintVault:   isPsmPair,
 		MinCr:               sdk.NewDecWithPrec(23, 1), // 2.3
 		PairName:            pairName,
 		AssetOutOraclePrice: true,

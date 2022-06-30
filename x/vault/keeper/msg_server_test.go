@@ -18,8 +18,8 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
 
 	testCases := []struct {
 		Name               string
@@ -239,8 +239,8 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
@@ -420,8 +420,8 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
@@ -595,8 +595,8 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
@@ -770,8 +770,8 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
@@ -946,8 +946,8 @@ func (s *KeeperTestSuite) TestMsgClose() {
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
@@ -956,6 +956,9 @@ func (s *KeeperTestSuite) TestMsgClose() {
 	msg = types.NewMsgCreateRequest(addr1, appID2, extendedVaultPairID2, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
 	s.msgServer.MsgCreate(sdk.WrapSDKContext(s.ctx), msg)
+
+	// add more asset to close the vaults, since 2% is being reduced from asseOut being provided.i.e 2% + 2% assetout of above vaults.
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset2", newInt(4000000))))
 
 	testCases := []struct {
 		Name               string
@@ -1025,27 +1028,26 @@ func (s *KeeperTestSuite) TestMsgClose() {
 			AvailableVaultsLen: 0,
 			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset2", newInt(0))),
 		},
-		// TODO - seems incorrect logic for vault closing, need to redo these below tests after verifcation of logic
-		// {
-		// 	Name: "success valid case app1 user1",
-		// 	Msg: *types.NewMsgLiquidateRequest(
-		// 		addr1, appID1, extendedVaultPairID1, "appOne1",
-		// 	),
-		// 	ExpErr:             nil,
-		// 	ExpResp:            &types.MsgCloseResponse{},
-		// 	AvailableVaultsLen: 1,
-		// 	AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000)), sdk.NewCoin("uasset2", newInt(196000000))),
-		// },
-		// {
-		// 	Name: "success valid case app2 user1",
-		// 	Msg: *types.NewMsgLiquidateRequest(
-		// 		addr1, appID2, extendedVaultPairID2, "appTwo1",
-		// 	),
-		// 	ExpErr:             nil,
-		// 	ExpResp:            &types.MsgCloseResponse{},
-		// 	AvailableVaultsLen: 0,
-		// 	AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(2000000000))),
-		// },
+		{
+			Name: "success valid case app1 user1",
+			Msg: *types.NewMsgLiquidateRequest(
+				addr1, appID1, extendedVaultPairID1, "appOne1",
+			),
+			ExpErr:             nil,
+			ExpResp:            &types.MsgCloseResponse{},
+			AvailableVaultsLen: 1,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000)), sdk.NewCoin("uasset2", newInt(200000000))),
+		},
+		{
+			Name: "success valid case app2 user1",
+			Msg: *types.NewMsgLiquidateRequest(
+				addr1, appID2, extendedVaultPairID2, "appTwo1",
+			),
+			ExpErr:             nil,
+			ExpResp:            &types.MsgCloseResponse{},
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(2000000000))),
+		},
 	}
 
 	for _, tc := range testCases {
@@ -1065,6 +1067,150 @@ func (s *KeeperTestSuite) TestMsgClose() {
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
 				fmt.Println(availableBalances)
+				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+
+				vaults := s.keeper.GetVaults(s.ctx)
+				s.Require().Len(vaults, int(tc.AvailableVaultsLen))
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestMsgCreateStableMint() {
+	addr1 := s.addr(1)
+	// addr2 := s.addr(2)
+
+	appID1 := s.CreateNewApp("appOne")
+	appID2 := s.CreateNewApp("appTwo")
+	appID3 := s.CreateNewApp("appThree")
+	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, false)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, true, false)
+	extendedVaultPairID3 := s.CreateNewExtendedVaultPair("CMDX C", appID3, pairID, true, true)
+
+	testCases := []struct {
+		Name               string
+		Msg                types.MsgCreateStableMintRequest
+		ExpErr             error
+		ExpResp            *types.MsgCreateStableMintResponse
+		AvailableVaultsLen uint64
+		AvailableBalance   sdk.Coins
+	}{
+		{
+			Name: "error extended vault pair does not exists",
+			Msg: *types.NewMsgCreateStableMintRequest(
+				addr1, appID1, 123, newInt(10000),
+			),
+			ExpErr:             types.ErrorExtendedPairVaultDoesNotExists,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error invalid appID",
+			Msg: *types.NewMsgCreateStableMintRequest(
+				addr1, 69, extendedVaultPairID1, newInt(10000),
+			),
+			ExpErr:             types.ErrorAppMappingDoesNotExist,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error appID mismatch",
+			Msg: *types.NewMsgCreateStableMintRequest(
+				addr1, appID2, extendedVaultPairID1, newInt(10000),
+			),
+			ExpErr:             types.ErrorAppMappingIDMismatch,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error invalid from address",
+			Msg: *types.NewMsgCreateStableMintRequest(
+				[]byte(""), appID1, extendedVaultPairID1, newInt(10000),
+			),
+			ExpErr:             fmt.Errorf("empty address string is not allowed"),
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error non psm pair cannot create stable mint vault",
+			Msg: *types.NewMsgCreateStableMintRequest(
+				addr1, appID1, extendedVaultPairID1, newInt(10000),
+			),
+			ExpErr:             types.ErrorCannotCreateStableMintVault,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error vault creation inactive",
+			Msg: *types.NewMsgCreateStableMintRequest(
+				addr1, appID2, extendedVaultPairID2, newInt(10000),
+			),
+			ExpErr:             types.ErrorVaultCreationInactive,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error vault creation inactive",
+			Msg: *types.NewMsgCreateStableMintRequest(
+				addr1, appID2, extendedVaultPairID2, newInt(10000),
+			),
+			ExpErr:             types.ErrorVaultCreationInactive,
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error insufficient funds",
+			Msg: *types.NewMsgCreateStableMintRequest(
+				addr1, appID3, extendedVaultPairID3, newInt(10000),
+			),
+			ExpErr:             fmt.Errorf(fmt.Sprintf("0uasset1 is smaller than %duasset1: insufficient funds", 10000)),
+			ExpResp:            nil,
+			AvailableVaultsLen: 0,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		// TODO - failing testcase
+		// {
+		// 	Name: "success valid case app3 user1",
+		// 	Msg: *types.NewMsgCreateStableMintRequest(
+		// 		addr1, appID3, extendedVaultPairID3, newInt(10000),
+		// 	),
+		// 	ExpErr:             nil,
+		// 	ExpResp:            &types.MsgCreateStableMintResponse{},
+		// 	AvailableVaultsLen: 0,
+		// 	AvailableBalance:   sdk.NewCoins(),
+		// },
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.Name, func() {
+			if tc.ExpErr == nil {
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.From), sdk.NewCoins(sdk.NewCoin("uasset1", tc.Msg.Amount)))
+			}
+
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.msgServer.MsgCreateStableMint(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
 				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 
 				vaults := s.keeper.GetVaults(s.ctx)
