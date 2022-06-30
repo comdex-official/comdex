@@ -67,18 +67,18 @@ func FlagSetAddAssetRatesStatsMapping() *flag.FlagSet {
 }
 
 type addNewLendPairsInputs struct {
-	AssetIn          string `json:"asset_in"`
-	AssetOut         string `json:"asset_out"`
-	IsInterPool      string `json:"is_inter_pool"`
-	AssetOutPoolID   string `json:"asset_out_pool_id"`
-	LiquidationRatio string `json:"liquidation_ratio"`
-	Title            string
-	Description      string
-	Deposit          string
+	AssetIn        string `json:"asset_in"`
+	AssetOut       string `json:"asset_out"`
+	IsInterPool    string `json:"is_inter_pool"`
+	AssetOutPoolID string `json:"asset_out_pool_id"`
+	Title          string
+	Description    string
+	Deposit        string
 }
 
 type addLendPoolInputs struct {
 	ModuleName           string `json:"module_name"`
+	MainAssetID          string `json:"main_asset_id"`
 	FirstBridgedAssetID  string `json:"first_bridged_asset_id"`
 	SecondBridgedAssetID string `json:"second_bridged_asset_id"`
 	AssetID              string `json:"asset_id"`
@@ -94,6 +94,7 @@ type addAssetRatesStatsInputs struct {
 	Base                 string `json:"base"`
 	Slope1               string `json:"slope_1"`
 	Slope2               string `json:"slope_2"`
+	EnableStableBorrow   string `json:"enable_stable_borrow"`
 	StableBase           string `json:"stable_base"`
 	StableSlope1         string `json:"stable_slope_1"`
 	StableSlope2         string `json:"stable_slope_2"`
@@ -101,6 +102,7 @@ type addAssetRatesStatsInputs struct {
 	LiquidationThreshold string `json:"liquidation_threshold"`
 	LiquidationPenalty   string `json:"liquidation_penalty"`
 	ReserveFactor        string `json:"reserve_factor"`
+	CAssetId             string `json:"c_asset_id"`
 	Title                string
 	Description          string
 	Deposit              string
