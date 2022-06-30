@@ -8,31 +8,31 @@ import (
 )
 
 var (
-	_ types.QueryServer = (*queryServer)(nil)
+	_ types.QueryServer = (*QueryServer)(nil)
 )
 
-type queryServer struct {
+type QueryServer struct {
 	Keeper
 }
 
 func NewQueryServer(k Keeper) types.QueryServer {
-	return &queryServer{
+	return &QueryServer{
 		Keeper: k,
 	}
 }
 
-func (q *queryServer) QueryAllTokenMintedForAllProducts(c context.Context, req *types.QueryAllTokenMintedForAllProductsRequest) (*types.QueryAllTokenMintedForAllProductsResponse, error) {
+func (q *QueryServer) QueryAllTokenMintedForAllApps(c context.Context, req *types.QueryAllTokenMintedForAllAppsRequest) (*types.QueryAllTokenMintedForAllAppsResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
 	totalMintedData := q.GetTotalTokenMinted(ctx)
-	return &types.QueryAllTokenMintedForAllProductsResponse{
+	return &types.QueryAllTokenMintedForAllAppsResponse{
 		TokenMint: totalMintedData,
 	}, nil
 }
 
-func (q *queryServer) QueryTokenMintedByProduct(c context.Context, req *types.QueryTokenMintedByProductRequest) (*types.QueryTokenMintedByProductResponse, error) {
+func (q *QueryServer) QueryTokenMintedByApp(c context.Context, req *types.QueryTokenMintedByAppRequest) (*types.QueryTokenMintedByAppResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -41,12 +41,12 @@ func (q *queryServer) QueryTokenMintedByProduct(c context.Context, req *types.Qu
 		return nil, types.ErrorMintDataNotFound
 	}
 
-	return &types.QueryTokenMintedByProductResponse{
+	return &types.QueryTokenMintedByAppResponse{
 		TokenMint: tokenMint,
 	}, nil
 }
 
-func (q *queryServer) QueryTokenMintedByProductAndAsset(c context.Context, req *types.QueryTokenMintedByProductAndAssetRequest) (*types.QueryTokenMintedByProductAndAssetResponse, error) {
+func (q *QueryServer) QueryTokenMintedByAppAndAsset(c context.Context, req *types.QueryTokenMintedByAppAndAssetRequest) (*types.QueryTokenMintedByAppAndAssetResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -55,7 +55,7 @@ func (q *queryServer) QueryTokenMintedByProductAndAsset(c context.Context, req *
 		return nil, types.ErrorMintDataNotFound
 	}
 
-	return &types.QueryTokenMintedByProductAndAssetResponse{
+	return &types.QueryTokenMintedByAppAndAssetResponse{
 		MintedTokens: tokenMint,
 	}, nil
 }

@@ -23,7 +23,7 @@ func NewQueryServer(k Keeper) types.QueryServer {
 	}
 }
 
-func (q *QueryServer) QueryCollectorLookupByProduct(c context.Context, req *types.QueryCollectorLookupByProductRequest) (*types.QueryCollectorLookupByProductResponse, error) {
+func (q *QueryServer) QueryCollectorLookupByApp(c context.Context, req *types.QueryCollectorLookupByAppRequest) (*types.QueryCollectorLookupByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -37,15 +37,15 @@ func (q *QueryServer) QueryCollectorLookupByProduct(c context.Context, req *type
 
 	collectorLookupData, found := q.GetCollectorLookupTable(ctx, req.AppId)
 	if !found {
-		return &types.QueryCollectorLookupByProductResponse{}, nil
+		return &types.QueryCollectorLookupByAppResponse{}, nil
 	}
 
-	return &types.QueryCollectorLookupByProductResponse{
+	return &types.QueryCollectorLookupByAppResponse{
 		CollectorLookup: collectorLookupData.AssetRateInfo,
 	}, nil
 }
 
-func (q *QueryServer) QueryCollectorLookupByProductAndAsset(c context.Context, req *types.QueryCollectorLookupByProductAndAssetRequest) (*types.QueryCollectorLookupByProductAndAssetResponse, error) {
+func (q *QueryServer) QueryCollectorLookupByAppAndAsset(c context.Context, req *types.QueryCollectorLookupByAppAndAssetRequest) (*types.QueryCollectorLookupByAppAndAssetResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -59,15 +59,15 @@ func (q *QueryServer) QueryCollectorLookupByProductAndAsset(c context.Context, r
 
 	collectorLookupData, found := q.GetCollectorLookupByAsset(ctx, req.AppId, req.AssetId)
 	if !found {
-		return &types.QueryCollectorLookupByProductAndAssetResponse{}, nil
+		return &types.QueryCollectorLookupByAppAndAssetResponse{}, nil
 	}
 
-	return &types.QueryCollectorLookupByProductAndAssetResponse{
+	return &types.QueryCollectorLookupByAppAndAssetResponse{
 		CollectorLookup: collectorLookupData,
 	}, nil
 }
 
-func (q *QueryServer) QueryCollectorDataByProductAndAsset(c context.Context, req *types.QueryCollectorDataByProductAndAssetRequest) (*types.QueryCollectorDataByProductAndAssetResponse, error) {
+func (q *QueryServer) QueryCollectorDataByAppAndAsset(c context.Context, req *types.QueryCollectorDataByAppAndAssetRequest) (*types.QueryCollectorDataByAppAndAssetResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -90,7 +90,7 @@ func (q *QueryServer) QueryCollectorDataByProductAndAsset(c context.Context, req
 		}
 	}
 
-	return &types.QueryCollectorDataByProductAndAssetResponse{
+	return &types.QueryCollectorDataByAppAndAssetResponse{
 		CollectorData: collectorData,
 	}, nil
 }
@@ -147,14 +147,4 @@ func (q *QueryServer) QueryNetFeeCollectedForAppAndAsset(c context.Context, req 
 	return &types.QueryNetFeeCollectedForAppAndAssetResponse{
 		AssetIdToFeeCollected: assetIDToFeeCollected,
 	}, nil
-}
-
-func (k Keeper) QueryCollectorLookupByProduct(ctx context.Context, request *types.QueryCollectorLookupByProductRequest) (*types.QueryCollectorLookupByProductResponse, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (k Keeper) QueryCollectorLookupByProductAndAsset(ctx context.Context, request *types.QueryCollectorLookupByProductAndAssetRequest) (*types.QueryCollectorLookupByProductAndAssetResponse, error) {
-	//TODO implement me
-	panic("implement me")
 }

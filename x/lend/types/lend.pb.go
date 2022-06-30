@@ -37,7 +37,8 @@ type LendAsset struct {
 	AmountIn           github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,5,opt,name=amount_in,json=amountIn,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"amount_in" yaml:"amount_in"`
 	LendingTime        time.Time                               `protobuf:"bytes,6,opt,name=lending_time,json=lendingTime,proto3,stdtime" json:"lending_time" yaml:"lending_time"`
 	UpdatedAmountIn    github_com_cosmos_cosmos_sdk_types.Int  `protobuf:"bytes,7,opt,name=updated_amount_in,json=updatedAmountIn,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"updated_amount_in" yaml:"updated_amount_in"`
-	Reward_Accumulated github_com_cosmos_cosmos_sdk_types.Int  `protobuf:"bytes,8,opt,name=reward_Accumulated,json=rewardAccumulated,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"reward_Accumulated" yaml:"reward_accumulated"`
+	AvailableToBorrow  github_com_cosmos_cosmos_sdk_types.Int  `protobuf:"bytes,8,opt,name=available_to_borrow,json=availableToBorrow,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"available_to_borrow" yaml:"available_to_borrow"`
+	Reward_Accumulated github_com_cosmos_cosmos_sdk_types.Int  `protobuf:"bytes,9,opt,name=reward_Accumulated,json=rewardAccumulated,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"reward_Accumulated" yaml:"reward_accumulated"`
 }
 
 func (m *LendAsset) Reset()         { *m = LendAsset{} }
@@ -122,10 +123,11 @@ type BorrowAsset struct {
 	PairID               uint64                                  `protobuf:"varint,4,opt,name=pair_id,json=pairId,proto3" json:"pair_id,omitempty" yaml:"pair_id"`
 	AmountIn             github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,5,opt,name=amount_in,json=amountIn,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"amount_in" yaml:"amount_in"`
 	AmountOut            github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,6,opt,name=amount_out,json=amountOut,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"amount_out" yaml:"amount_out"`
-	BorrowingTime        time.Time                               `protobuf:"bytes,7,opt,name=borrowing_time,json=borrowingTime,proto3,stdtime" json:"borrowing_time" yaml:"borrowing_time"`
-	StableBorrowRate     github_com_cosmos_cosmos_sdk_types.Dec  `protobuf:"bytes,8,opt,name=stable_borrow_rate,json=stableBorrowRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"stable_borrow_rate" yaml:"stable_borrow_rate"`
-	UpdatedAmountOut     github_com_cosmos_cosmos_sdk_types.Int  `protobuf:"bytes,9,opt,name=updated_amount_out,json=updatedAmountOut,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"updated_amount_out" yaml:"updated_amount_out"`
-	Interest_Accumulated github_com_cosmos_cosmos_sdk_types.Int  `protobuf:"bytes,10,opt,name=interest_Accumulated,json=interestAccumulated,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"interest_Accumulated" yaml:"interest_accumulated"`
+	BridgedAssetID       uint64                                  `protobuf:"varint,7,opt,name=bridged_asset_id,json=bridgedAssetId,proto3" json:"bridged_asset_id,omitempty" yaml:"bridged_asset_id"`
+	BorrowingTime        time.Time                               `protobuf:"bytes,8,opt,name=borrowing_time,json=borrowingTime,proto3,stdtime" json:"borrowing_time" yaml:"borrowing_time"`
+	StableBorrowRate     github_com_cosmos_cosmos_sdk_types.Dec  `protobuf:"bytes,9,opt,name=stable_borrow_rate,json=stableBorrowRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"stable_borrow_rate" yaml:"stable_borrow_rate"`
+	UpdatedAmountOut     github_com_cosmos_cosmos_sdk_types.Int  `protobuf:"bytes,10,opt,name=updated_amount_out,json=updatedAmountOut,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"updated_amount_out" yaml:"updated_amount_out"`
+	Interest_Accumulated github_com_cosmos_cosmos_sdk_types.Int  `protobuf:"bytes,11,opt,name=interest_Accumulated,json=interestAccumulated,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"interest_Accumulated" yaml:"interest_accumulated"`
 }
 
 func (m *BorrowAsset) Reset()         { *m = BorrowAsset{} }
@@ -203,6 +205,13 @@ func (m *BorrowAsset) GetAmountOut() github_com_cosmos_cosmos_sdk_types.Coin {
 	return github_com_cosmos_cosmos_sdk_types.Coin{}
 }
 
+func (m *BorrowAsset) GetBridgedAssetID() uint64 {
+	if m != nil {
+		return m.BridgedAssetID
+	}
+	return 0
+}
+
 func (m *BorrowAsset) GetBorrowingTime() time.Time {
 	if m != nil {
 		return m.BorrowingTime
@@ -213,9 +222,10 @@ func (m *BorrowAsset) GetBorrowingTime() time.Time {
 type Pool struct {
 	PoolId               uint64                 `protobuf:"varint,1,opt,name=pool_id,json=poolId,proto3" json:"pool_id,omitempty" yaml:"pool_id"`
 	ModuleName           string                 `protobuf:"bytes,2,opt,name=module_name,json=moduleName,proto3" json:"module_name,omitempty" yaml:"module_name"`
-	FirstBridgedAssetId  uint64                 `protobuf:"varint,3,opt,name=first_bridged_asset_id,json=firstBridgedAssetId,proto3" json:"first_bridged_asset_id,omitempty" yaml:"first_bridged_asset_id"`
-	SecondBridgedAssetId uint64                 `protobuf:"varint,4,opt,name=second_bridged_asset_id,json=secondBridgedAssetId,proto3" json:"second_bridged_asset_id,omitempty" yaml:"second_bridged_asset_id"`
-	AssetData            []AssetDataPoolMapping `protobuf:"bytes,5,rep,name=asset_data,json=assetData,proto3" json:"asset_data" yaml:"asset_data"`
+	MainAssetId          uint64                 `protobuf:"varint,3,opt,name=main_asset_id,json=mainAssetId,proto3" json:"main_asset_id,omitempty" yaml:"main_asset_id"`
+	FirstBridgedAssetId  uint64                 `protobuf:"varint,4,opt,name=first_bridged_asset_id,json=firstBridgedAssetId,proto3" json:"first_bridged_asset_id,omitempty" yaml:"first_bridged_asset_id"`
+	SecondBridgedAssetId uint64                 `protobuf:"varint,5,opt,name=second_bridged_asset_id,json=secondBridgedAssetId,proto3" json:"second_bridged_asset_id,omitempty" yaml:"second_bridged_asset_id"`
+	AssetData            []AssetDataPoolMapping `protobuf:"bytes,6,rep,name=asset_data,json=assetData,proto3" json:"asset_data" yaml:"asset_data"`
 }
 
 func (m *Pool) Reset()         { *m = Pool{} }
@@ -263,6 +273,13 @@ func (m *Pool) GetModuleName() string {
 		return m.ModuleName
 	}
 	return ""
+}
+
+func (m *Pool) GetMainAssetId() uint64 {
+	if m != nil {
+		return m.MainAssetId
+	}
+	return 0
 }
 
 func (m *Pool) GetFirstBridgedAssetId() uint64 {
@@ -416,7 +433,8 @@ func (m *Extended_Pair) GetAssetOutPoolId() uint64 {
 
 type AssetToPairMapping struct {
 	AssetId uint64   `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	PairId  []uint64 `protobuf:"varint,2,rep,packed,name=pair_id,json=pairId,proto3" json:"pair_id,omitempty" yaml:"pair_id"`
+	PoolId  uint64   `protobuf:"varint,2,opt,name=pool_id,json=poolId,proto3" json:"pool_id,omitempty" yaml:"pool_id"`
+	PairId  []uint64 `protobuf:"varint,3,rep,packed,name=pair_id,json=pairId,proto3" json:"pair_id,omitempty" yaml:"pair_id"`
 }
 
 func (m *AssetToPairMapping) Reset()         { *m = AssetToPairMapping{} }
@@ -459,6 +477,13 @@ func (m *AssetToPairMapping) GetAssetId() uint64 {
 	return 0
 }
 
+func (m *AssetToPairMapping) GetPoolId() uint64 {
+	if m != nil {
+		return m.PoolId
+	}
+	return 0
+}
+
 func (m *AssetToPairMapping) GetPairId() []uint64 {
 	if m != nil {
 		return m.PairId
@@ -467,8 +492,8 @@ func (m *AssetToPairMapping) GetPairId() []uint64 {
 }
 
 type UserLendIdMapping struct {
-	Owner string      `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
-	Lends []LendAsset `protobuf:"bytes,2,rep,name=lends,proto3" json:"lends" yaml:"lends"`
+	Owner   string   `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+	LendIds []uint64 `protobuf:"varint,2,rep,packed,name=lend_ids,json=lendIds,proto3" json:"lend_ids,omitempty" yaml:"lend_ids"`
 }
 
 func (m *UserLendIdMapping) Reset()         { *m = UserLendIdMapping{} }
@@ -511,23 +536,143 @@ func (m *UserLendIdMapping) GetOwner() string {
 	return ""
 }
 
-func (m *UserLendIdMapping) GetLends() []LendAsset {
+func (m *UserLendIdMapping) GetLendIds() []uint64 {
 	if m != nil {
-		return m.Lends
+		return m.LendIds
+	}
+	return nil
+}
+
+type LendIdByOwnerAndPoolMapping struct {
+	Owner   string   `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+	PoolId  uint64   `protobuf:"varint,2,opt,name=pool_id,json=poolId,proto3" json:"pool_id,omitempty" yaml:"pool_id"`
+	LendIds []uint64 `protobuf:"varint,3,rep,packed,name=lendIds,proto3" json:"lendIds,omitempty" yaml:"lend_ids"`
+}
+
+func (m *LendIdByOwnerAndPoolMapping) Reset()         { *m = LendIdByOwnerAndPoolMapping{} }
+func (m *LendIdByOwnerAndPoolMapping) String() string { return proto.CompactTextString(m) }
+func (*LendIdByOwnerAndPoolMapping) ProtoMessage()    {}
+func (*LendIdByOwnerAndPoolMapping) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b87bb4bef8334ddd, []int{7}
+}
+func (m *LendIdByOwnerAndPoolMapping) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *LendIdByOwnerAndPoolMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_LendIdByOwnerAndPoolMapping.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *LendIdByOwnerAndPoolMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LendIdByOwnerAndPoolMapping.Merge(m, src)
+}
+func (m *LendIdByOwnerAndPoolMapping) XXX_Size() int {
+	return m.Size()
+}
+func (m *LendIdByOwnerAndPoolMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_LendIdByOwnerAndPoolMapping.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LendIdByOwnerAndPoolMapping proto.InternalMessageInfo
+
+func (m *LendIdByOwnerAndPoolMapping) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *LendIdByOwnerAndPoolMapping) GetPoolId() uint64 {
+	if m != nil {
+		return m.PoolId
+	}
+	return 0
+}
+
+func (m *LendIdByOwnerAndPoolMapping) GetLendIds() []uint64 {
+	if m != nil {
+		return m.LendIds
+	}
+	return nil
+}
+
+type BorrowIdByOwnerAndPoolMapping struct {
+	Owner     string   `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+	PoolId    uint64   `protobuf:"varint,2,opt,name=pool_id,json=poolId,proto3" json:"pool_id,omitempty" yaml:"pool_id"`
+	BorrowIds []uint64 `protobuf:"varint,3,rep,packed,name=borrowIds,proto3" json:"borrowIds,omitempty" yaml:"borrow_ids"`
+}
+
+func (m *BorrowIdByOwnerAndPoolMapping) Reset()         { *m = BorrowIdByOwnerAndPoolMapping{} }
+func (m *BorrowIdByOwnerAndPoolMapping) String() string { return proto.CompactTextString(m) }
+func (*BorrowIdByOwnerAndPoolMapping) ProtoMessage()    {}
+func (*BorrowIdByOwnerAndPoolMapping) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b87bb4bef8334ddd, []int{8}
+}
+func (m *BorrowIdByOwnerAndPoolMapping) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BorrowIdByOwnerAndPoolMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BorrowIdByOwnerAndPoolMapping.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BorrowIdByOwnerAndPoolMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BorrowIdByOwnerAndPoolMapping.Merge(m, src)
+}
+func (m *BorrowIdByOwnerAndPoolMapping) XXX_Size() int {
+	return m.Size()
+}
+func (m *BorrowIdByOwnerAndPoolMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_BorrowIdByOwnerAndPoolMapping.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BorrowIdByOwnerAndPoolMapping proto.InternalMessageInfo
+
+func (m *BorrowIdByOwnerAndPoolMapping) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *BorrowIdByOwnerAndPoolMapping) GetPoolId() uint64 {
+	if m != nil {
+		return m.PoolId
+	}
+	return 0
+}
+
+func (m *BorrowIdByOwnerAndPoolMapping) GetBorrowIds() []uint64 {
+	if m != nil {
+		return m.BorrowIds
 	}
 	return nil
 }
 
 type UserBorrowIdMapping struct {
-	Owner   string        `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
-	Borrows []BorrowAsset `protobuf:"bytes,2,rep,name=borrows,proto3" json:"borrows" yaml:"borrows"`
+	Owner     string   `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+	BorrowIds []uint64 `protobuf:"varint,2,rep,packed,name=borrow_ids,json=borrowIds,proto3" json:"borrow_ids,omitempty" yaml:"borrow_ids"`
 }
 
 func (m *UserBorrowIdMapping) Reset()         { *m = UserBorrowIdMapping{} }
 func (m *UserBorrowIdMapping) String() string { return proto.CompactTextString(m) }
 func (*UserBorrowIdMapping) ProtoMessage()    {}
 func (*UserBorrowIdMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b87bb4bef8334ddd, []int{7}
+	return fileDescriptor_b87bb4bef8334ddd, []int{9}
 }
 func (m *UserBorrowIdMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -563,9 +708,9 @@ func (m *UserBorrowIdMapping) GetOwner() string {
 	return ""
 }
 
-func (m *UserBorrowIdMapping) GetBorrows() []BorrowAsset {
+func (m *UserBorrowIdMapping) GetBorrowIds() []uint64 {
 	if m != nil {
-		return m.Borrows
+		return m.BorrowIds
 	}
 	return nil
 }
@@ -579,7 +724,7 @@ func (m *LendIdToBorrowIdMapping) Reset()         { *m = LendIdToBorrowIdMapping
 func (m *LendIdToBorrowIdMapping) String() string { return proto.CompactTextString(m) }
 func (*LendIdToBorrowIdMapping) ProtoMessage()    {}
 func (*LendIdToBorrowIdMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b87bb4bef8334ddd, []int{8}
+	return fileDescriptor_b87bb4bef8334ddd, []int{10}
 }
 func (m *LendIdToBorrowIdMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -623,17 +768,22 @@ func (m *LendIdToBorrowIdMapping) GetBorrowingID() []uint64 {
 }
 
 type AssetStats struct {
-	PoolId        uint64                                 `protobuf:"varint,1,opt,name=pool_id,json=poolId,proto3" json:"pool_id,omitempty" yaml:"pool_id"`
-	AssetId       uint64                                 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	TotalBorrowed github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=total_borrowed,json=totalBorrowed,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"total_borrowed" yaml:"total_borrowed"`
-	TotalLend     github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=total_lend,json=totalLend,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"total_lend" yaml:"total_lend"`
+	PoolId              uint64                                 `protobuf:"varint,1,opt,name=pool_id,json=poolId,proto3" json:"pool_id,omitempty" yaml:"pool_id"`
+	AssetId             uint64                                 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	TotalBorrowed       github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=total_borrowed,json=totalBorrowed,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"total_borrowed" yaml:"total_borrowed"`
+	TotalStableBorrowed github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=total_stable_borrowed,json=totalStableBorrowed,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"total_stable_borrowed" yaml:"total_stable_borrowed"`
+	TotalLend           github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=total_lend,json=totalLend,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"total_lend" yaml:"total_lend"`
+	LendApr             github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,6,opt,name=lend_apr,json=lendApr,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"lend_apr" yaml:"lend_apr"`
+	BorrowApr           github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,7,opt,name=borrow_apr,json=borrowApr,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"borrow_apr" yaml:"borrow_apr"`
+	StableBorrowApr     github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,8,opt,name=stable_borrow_apr,json=stableBorrowApr,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"stable_borrow_apr" yaml:"stable_borrow_apr"`
+	UtilisationRatio    github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,9,opt,name=utilisation_ratio,json=utilisationRatio,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"utilisation_ratio" yaml:"utilisation_ratio"`
 }
 
 func (m *AssetStats) Reset()         { *m = AssetStats{} }
 func (m *AssetStats) String() string { return proto.CompactTextString(m) }
 func (*AssetStats) ProtoMessage()    {}
 func (*AssetStats) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b87bb4bef8334ddd, []int{9}
+	return fileDescriptor_b87bb4bef8334ddd, []int{11}
 }
 func (m *AssetStats) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -690,13 +840,14 @@ type AssetRatesStats struct {
 	LiquidationThreshold github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,11,opt,name=liquidation_threshold,json=liquidationThreshold,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_threshold" yaml:"liquidation_threshold"`
 	LiquidationPenalty   github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,12,opt,name=liquidation_penalty,json=liquidationPenalty,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_penalty" yaml:"liquidation_penalty"`
 	ReserveFactor        github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,13,opt,name=reserve_factor,json=reserveFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve_factor" yaml:"reserve_factor"`
+	CAssetId             uint64                                 `protobuf:"varint,14,opt,name=c_asset_id,json=cAssetId,proto3" json:"c_asset_id,omitempty" yaml:"c_asset_id"`
 }
 
 func (m *AssetRatesStats) Reset()         { *m = AssetRatesStats{} }
 func (m *AssetRatesStats) String() string { return proto.CompactTextString(m) }
 func (*AssetRatesStats) ProtoMessage()    {}
 func (*AssetRatesStats) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b87bb4bef8334ddd, []int{10}
+	return fileDescriptor_b87bb4bef8334ddd, []int{12}
 }
 func (m *AssetRatesStats) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -739,6 +890,13 @@ func (m *AssetRatesStats) GetEnableStableBorrow() bool {
 	return false
 }
 
+func (m *AssetRatesStats) GetCAssetId() uint64 {
+	if m != nil {
+		return m.CAssetId
+	}
+	return 0
+}
+
 type LendMapping struct {
 	LendIds []uint64 `protobuf:"varint,1,rep,packed,name=lend_ids,json=lendIds,proto3" json:"lend_ids,omitempty" yaml:"lend_ids"`
 }
@@ -747,7 +905,7 @@ func (m *LendMapping) Reset()         { *m = LendMapping{} }
 func (m *LendMapping) String() string { return proto.CompactTextString(m) }
 func (*LendMapping) ProtoMessage()    {}
 func (*LendMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b87bb4bef8334ddd, []int{11}
+	return fileDescriptor_b87bb4bef8334ddd, []int{13}
 }
 func (m *LendMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -791,7 +949,7 @@ func (m *BorrowMapping) Reset()         { *m = BorrowMapping{} }
 func (m *BorrowMapping) String() string { return proto.CompactTextString(m) }
 func (*BorrowMapping) ProtoMessage()    {}
 func (*BorrowMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b87bb4bef8334ddd, []int{12}
+	return fileDescriptor_b87bb4bef8334ddd, []int{14}
 }
 func (m *BorrowMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -827,6 +985,154 @@ func (m *BorrowMapping) GetBorrowIds() []uint64 {
 	return nil
 }
 
+type StableBorrowMapping struct {
+	StableBorrowIds []uint64 `protobuf:"varint,1,rep,packed,name=stable_borrow_ids,json=stableBorrowIds,proto3" json:"stable_borrow_ids,omitempty" yaml:"stable_borrow_ids"`
+}
+
+func (m *StableBorrowMapping) Reset()         { *m = StableBorrowMapping{} }
+func (m *StableBorrowMapping) String() string { return proto.CompactTextString(m) }
+func (*StableBorrowMapping) ProtoMessage()    {}
+func (*StableBorrowMapping) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b87bb4bef8334ddd, []int{15}
+}
+func (m *StableBorrowMapping) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *StableBorrowMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_StableBorrowMapping.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *StableBorrowMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StableBorrowMapping.Merge(m, src)
+}
+func (m *StableBorrowMapping) XXX_Size() int {
+	return m.Size()
+}
+func (m *StableBorrowMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_StableBorrowMapping.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StableBorrowMapping proto.InternalMessageInfo
+
+func (m *StableBorrowMapping) GetStableBorrowIds() []uint64 {
+	if m != nil {
+		return m.StableBorrowIds
+	}
+	return nil
+}
+
+type ModuleBalance struct {
+	PoolId             uint64               `protobuf:"varint,1,opt,name=pool_id,json=poolId,proto3" json:"pool_id,omitempty" yaml:"pool_id"`
+	ModuleBalanceStats []ModuleBalanceStats `protobuf:"bytes,2,rep,name=module_balance_stats,json=moduleBalanceStats,proto3" json:"module_balance_stats" yaml:"module_balance_stats"`
+}
+
+func (m *ModuleBalance) Reset()         { *m = ModuleBalance{} }
+func (m *ModuleBalance) String() string { return proto.CompactTextString(m) }
+func (*ModuleBalance) ProtoMessage()    {}
+func (*ModuleBalance) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b87bb4bef8334ddd, []int{16}
+}
+func (m *ModuleBalance) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ModuleBalance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ModuleBalance.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ModuleBalance) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ModuleBalance.Merge(m, src)
+}
+func (m *ModuleBalance) XXX_Size() int {
+	return m.Size()
+}
+func (m *ModuleBalance) XXX_DiscardUnknown() {
+	xxx_messageInfo_ModuleBalance.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ModuleBalance proto.InternalMessageInfo
+
+func (m *ModuleBalance) GetPoolId() uint64 {
+	if m != nil {
+		return m.PoolId
+	}
+	return 0
+}
+
+func (m *ModuleBalance) GetModuleBalanceStats() []ModuleBalanceStats {
+	if m != nil {
+		return m.ModuleBalanceStats
+	}
+	return nil
+}
+
+type ModuleBalanceStats struct {
+	AssetId uint64                                  `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	Balance github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,2,opt,name=balance,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"balance" yaml:"balance"`
+}
+
+func (m *ModuleBalanceStats) Reset()         { *m = ModuleBalanceStats{} }
+func (m *ModuleBalanceStats) String() string { return proto.CompactTextString(m) }
+func (*ModuleBalanceStats) ProtoMessage()    {}
+func (*ModuleBalanceStats) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b87bb4bef8334ddd, []int{17}
+}
+func (m *ModuleBalanceStats) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ModuleBalanceStats) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ModuleBalanceStats.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ModuleBalanceStats) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ModuleBalanceStats.Merge(m, src)
+}
+func (m *ModuleBalanceStats) XXX_Size() int {
+	return m.Size()
+}
+func (m *ModuleBalanceStats) XXX_DiscardUnknown() {
+	xxx_messageInfo_ModuleBalanceStats.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ModuleBalanceStats proto.InternalMessageInfo
+
+func (m *ModuleBalanceStats) GetAssetId() uint64 {
+	if m != nil {
+		return m.AssetId
+	}
+	return 0
+}
+
+func (m *ModuleBalanceStats) GetBalance() github_com_cosmos_cosmos_sdk_types.Coin {
+	if m != nil {
+		return m.Balance
+	}
+	return github_com_cosmos_cosmos_sdk_types.Coin{}
+}
+
 func init() {
 	proto.RegisterType((*LendAsset)(nil), "comdex.lend.v1beta1.LendAsset")
 	proto.RegisterType((*BorrowAsset)(nil), "comdex.lend.v1beta1.BorrowAsset")
@@ -835,123 +1141,151 @@ func init() {
 	proto.RegisterType((*Extended_Pair)(nil), "comdex.lend.v1beta1.Extended_Pair")
 	proto.RegisterType((*AssetToPairMapping)(nil), "comdex.lend.v1beta1.AssetToPairMapping")
 	proto.RegisterType((*UserLendIdMapping)(nil), "comdex.lend.v1beta1.UserLendIdMapping")
+	proto.RegisterType((*LendIdByOwnerAndPoolMapping)(nil), "comdex.lend.v1beta1.LendIdByOwnerAndPoolMapping")
+	proto.RegisterType((*BorrowIdByOwnerAndPoolMapping)(nil), "comdex.lend.v1beta1.BorrowIdByOwnerAndPoolMapping")
 	proto.RegisterType((*UserBorrowIdMapping)(nil), "comdex.lend.v1beta1.UserBorrowIdMapping")
 	proto.RegisterType((*LendIdToBorrowIdMapping)(nil), "comdex.lend.v1beta1.LendIdToBorrowIdMapping")
 	proto.RegisterType((*AssetStats)(nil), "comdex.lend.v1beta1.AssetStats")
 	proto.RegisterType((*AssetRatesStats)(nil), "comdex.lend.v1beta1.AssetRatesStats")
 	proto.RegisterType((*LendMapping)(nil), "comdex.lend.v1beta1.LendMapping")
 	proto.RegisterType((*BorrowMapping)(nil), "comdex.lend.v1beta1.BorrowMapping")
+	proto.RegisterType((*StableBorrowMapping)(nil), "comdex.lend.v1beta1.StableBorrowMapping")
+	proto.RegisterType((*ModuleBalance)(nil), "comdex.lend.v1beta1.ModuleBalance")
+	proto.RegisterType((*ModuleBalanceStats)(nil), "comdex.lend.v1beta1.ModuleBalanceStats")
 }
 
 func init() { proto.RegisterFile("comdex/lend/v1beta1/lend.proto", fileDescriptor_b87bb4bef8334ddd) }
 
 var fileDescriptor_b87bb4bef8334ddd = []byte{
-	// 1666 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x58, 0xcd, 0x6f, 0x1b, 0x4d,
-	0x19, 0xcf, 0xe6, 0xcb, 0xf1, 0x38, 0x4e, 0x93, 0xb5, 0x43, 0xfd, 0xa6, 0xad, 0x37, 0x8c, 0x50,
-	0x08, 0x87, 0xda, 0x8a, 0x01, 0x09, 0xaa, 0x22, 0xc8, 0x36, 0x2d, 0x35, 0xf4, 0x73, 0x12, 0x84,
-	0x40, 0x82, 0xd5, 0xd8, 0x3b, 0x71, 0x57, 0x5d, 0xef, 0xb8, 0x3b, 0xe3, 0xb4, 0x01, 0x81, 0x90,
-	0x90, 0xe0, 0xc0, 0xa5, 0x77, 0xb8, 0x73, 0xe7, 0xaf, 0xe8, 0xb1, 0xe2, 0x54, 0x71, 0x58, 0x90,
-	0x7b, 0xe5, 0xe4, 0x23, 0x27, 0x34, 0x1f, 0xfb, 0x15, 0x9b, 0x96, 0x6d, 0x2a, 0xbd, 0xa7, 0x64,
-	0x9e, 0x8f, 0xdf, 0xf3, 0xcc, 0x33, 0xcf, 0xd7, 0x1a, 0x34, 0xfb, 0x74, 0xe8, 0x92, 0x57, 0x6d,
-	0x9f, 0x04, 0x6e, 0xfb, 0xec, 0xa0, 0x47, 0x38, 0x3e, 0x90, 0x87, 0xd6, 0x28, 0xa4, 0x9c, 0x9a,
-	0x35, 0xc5, 0x6f, 0x49, 0x92, 0xe6, 0xef, 0xd4, 0x07, 0x74, 0x40, 0x25, 0xbf, 0x2d, 0xfe, 0x53,
-	0xa2, 0x3b, 0xd6, 0x80, 0xd2, 0x81, 0x4f, 0xda, 0xf2, 0xd4, 0x1b, 0x9f, 0xb6, 0xb9, 0x37, 0x24,
-	0x8c, 0xe3, 0xe1, 0x48, 0x0b, 0x34, 0xfb, 0x94, 0x0d, 0x29, 0x6b, 0xf7, 0x30, 0x23, 0x89, 0xad,
-	0x3e, 0xf5, 0x02, 0xc5, 0x87, 0x7f, 0x5b, 0x01, 0xe5, 0x07, 0x24, 0x70, 0x0f, 0x19, 0x23, 0xdc,
-	0xbc, 0x05, 0x80, 0x30, 0xea, 0x05, 0x03, 0xc7, 0x73, 0x1b, 0xc6, 0xae, 0xb1, 0xbf, 0x6c, 0x5f,
-	0x9b, 0x44, 0xd6, 0x62, 0xf7, 0x68, 0x1a, 0x59, 0x5b, 0xe7, 0x78, 0xe8, 0xdf, 0x82, 0xa9, 0x04,
-	0x44, 0x65, 0x7d, 0xe8, 0xba, 0xe6, 0x77, 0xc1, 0x1a, 0x16, 0x20, 0x42, 0x73, 0x51, 0x6a, 0x36,
-	0x27, 0x91, 0x55, 0x92, 0xc0, 0x5d, 0x77, 0x1a, 0x59, 0x57, 0x94, 0x7a, 0x2c, 0x04, 0x51, 0x09,
-	0x2b, 0x9e, 0xf9, 0x6d, 0x50, 0x1a, 0x51, 0xea, 0x0b, 0xcd, 0x25, 0xa9, 0x79, 0x7d, 0x12, 0x59,
-	0xab, 0x4f, 0x28, 0xf5, 0xa5, 0xe2, 0x86, 0x52, 0xd4, 0x22, 0x10, 0xad, 0x8e, 0x24, 0xc7, 0xdc,
-	0x03, 0x2b, 0xf4, 0x65, 0x40, 0xc2, 0xc6, 0xf2, 0xae, 0xb1, 0x5f, 0xb6, 0x37, 0xa7, 0x91, 0xb5,
-	0xae, 0x44, 0x25, 0x19, 0x22, 0xc5, 0x36, 0x7f, 0x0d, 0xca, 0x78, 0x48, 0xc7, 0x01, 0x77, 0xbc,
-	0xa0, 0xb1, 0xb2, 0x6b, 0xec, 0x57, 0x3a, 0x5f, 0xb4, 0x54, 0x5c, 0x5a, 0x22, 0x2e, 0x71, 0x8c,
-	0x5b, 0x77, 0xa8, 0x17, 0xd8, 0x77, 0xde, 0x44, 0xd6, 0xc2, 0x34, 0xb2, 0x36, 0xb5, 0xbb, 0xb1,
-	0x26, 0xfc, 0x4f, 0x64, 0x7d, 0x7d, 0xe0, 0xf1, 0x67, 0xe3, 0x5e, 0xab, 0x4f, 0x87, 0x6d, 0x1d,
-	0x58, 0xf5, 0xe7, 0x26, 0x73, 0x9f, 0xb7, 0xf9, 0xf9, 0x88, 0x30, 0x09, 0x82, 0xd6, 0x94, 0x5a,
-	0x37, 0x30, 0x7f, 0x09, 0xd6, 0xe3, 0x80, 0x89, 0xb7, 0x69, 0xac, 0x4a, 0xfb, 0x3b, 0x2d, 0xf5,
-	0x70, 0xad, 0xf8, 0xe1, 0x5a, 0x27, 0xf1, 0xc3, 0xd9, 0x96, 0x76, 0xa0, 0x96, 0x0f, 0xb7, 0xd0,
-	0x86, 0xaf, 0xff, 0x69, 0x19, 0xa8, 0xa2, 0x49, 0x42, 0xc5, 0x3c, 0x03, 0x5b, 0xe3, 0x91, 0x8b,
-	0x39, 0x71, 0x9d, 0xf4, 0x92, 0x25, 0x19, 0x90, 0x1f, 0x09, 0xa0, 0x7f, 0x44, 0xd6, 0xde, 0xff,
-	0xe1, 0x75, 0x37, 0xe0, 0xd3, 0xc8, 0x6a, 0x28, 0x93, 0x33, 0x80, 0x10, 0x5d, 0xd1, 0xb4, 0xc3,
-	0xf8, 0x5e, 0xbf, 0x02, 0x66, 0x48, 0x5e, 0xe2, 0xd0, 0x75, 0x0e, 0xfb, 0xfd, 0xf1, 0x70, 0xec,
-	0x0b, 0x6e, 0x63, 0x4d, 0x1a, 0xfe, 0x71, 0x61, 0xc3, 0x5f, 0x28, 0xc3, 0x1a, 0x11, 0xa7, 0x88,
-	0x10, 0x6d, 0x29, 0x62, 0xc6, 0x0a, 0xfc, 0x77, 0x09, 0x54, 0x6c, 0x1a, 0x86, 0xf4, 0xa5, 0x4a,
-	0xdb, 0x1f, 0x80, 0xf5, 0x9e, 0x3c, 0xe6, 0x12, 0xf7, 0x46, 0x92, 0xb8, 0x3a, 0x92, 0x59, 0x19,
-	0x88, 0x2a, 0xc9, 0xb1, 0xeb, 0x9a, 0x87, 0xb9, 0xc4, 0x57, 0xe9, 0x0b, 0x27, 0x91, 0x25, 0x6b,
-	0x43, 0x88, 0x7c, 0x3c, 0xff, 0xef, 0x82, 0x4d, 0x8f, 0x39, 0x8c, 0xe3, 0x9e, 0x4f, 0x1c, 0x85,
-	0x2d, 0xb3, 0x79, 0xcd, 0xbe, 0x36, 0x8d, 0xac, 0xab, 0x4a, 0xf7, 0xa2, 0x04, 0x44, 0x1b, 0x1e,
-	0x3b, 0x96, 0x14, 0x75, 0x21, 0x59, 0x0b, 0xd8, 0x0b, 0x85, 0x1b, 0xcb, 0x99, 0x5a, 0xc0, 0x5e,
-	0x28, 0x7d, 0x88, 0x6b, 0x41, 0x89, 0x88, 0x5a, 0x10, 0x1c, 0xf7, 0xcb, 0xcd, 0xf1, 0xdf, 0x02,
-	0xa0, 0x21, 0xe8, 0x98, 0xeb, 0x0c, 0xff, 0x80, 0xf5, 0x23, 0x6d, 0x7d, 0x2b, 0x67, 0x9d, 0x8e,
-	0x79, 0x21, 0xf3, 0xfa, 0xbe, 0x8f, 0xc7, 0xdc, 0x74, 0xc1, 0x46, 0xfa, 0xb6, 0xb2, 0xca, 0x4a,
-	0x1f, 0xad, 0xb2, 0xaf, 0x6a, 0x27, 0xb6, 0x2f, 0xe6, 0x46, 0x5a, 0x67, 0xd5, 0x84, 0x28, 0x2b,
-	0xed, 0x1c, 0x98, 0xb9, 0xb7, 0x73, 0x42, 0xcc, 0xc9, 0x27, 0x64, 0xfc, 0x11, 0xe9, 0xa7, 0x19,
-	0x3f, 0x8b, 0x08, 0xd1, 0x26, 0xcb, 0x24, 0x04, 0xc2, 0x5c, 0x9a, 0xbe, 0x50, 0x93, 0x22, 0xd0,
-	0xe5, 0xcb, 0x15, 0xdb, 0x2c, 0x22, 0x44, 0x9b, 0xb9, 0x32, 0x17, 0xb1, 0xfd, 0x9d, 0x01, 0xea,
-	0x5e, 0xc0, 0x49, 0x48, 0x18, 0xcf, 0x95, 0x3a, 0x90, 0xd6, 0x1f, 0x16, 0xb6, 0x7e, 0x4d, 0x57,
-	0x42, 0x8c, 0x99, 0x2b, 0xf6, 0x5a, 0x4c, 0xce, 0x96, 0xfb, 0xbb, 0x25, 0xb0, 0x2c, 0x86, 0x41,
-	0x76, 0x4e, 0x18, 0x05, 0xe6, 0xc4, 0x5d, 0x50, 0x19, 0x52, 0x77, 0xec, 0x13, 0x27, 0xc0, 0x43,
-	0x22, 0xab, 0xbb, 0x6c, 0x7f, 0x6d, 0x12, 0x59, 0xe0, 0xa1, 0x24, 0x3f, 0xc2, 0x43, 0x32, 0x8d,
-	0x2c, 0x53, 0xa9, 0x67, 0x44, 0x21, 0x02, 0xc3, 0x44, 0xc2, 0x1c, 0x82, 0xaf, 0x9c, 0x7a, 0x21,
-	0xe3, 0x4e, 0x2f, 0xf4, 0xdc, 0x81, 0x08, 0x5c, 0x3c, 0xee, 0xd4, 0xd0, 0xfa, 0xce, 0x24, 0xb2,
-	0x6a, 0xf7, 0x84, 0x84, 0xad, 0x04, 0xd2, 0xd1, 0x77, 0x43, 0x41, 0xcf, 0x57, 0x87, 0xa8, 0x76,
-	0x3a, 0xab, 0x65, 0xbe, 0x00, 0x57, 0x19, 0xe9, 0xd3, 0xc0, 0x9d, 0xb5, 0xa7, 0x1a, 0xc3, 0xad,
-	0x49, 0x64, 0xd5, 0x8f, 0xa5, 0xc8, 0x8c, 0xc1, 0xa6, 0xce, 0xae, 0xf9, 0x00, 0x10, 0xd5, 0xd9,
-	0x1c, 0x3d, 0x73, 0x04, 0x80, 0x12, 0x71, 0x31, 0xc7, 0x8d, 0x95, 0xdd, 0xa5, 0xfd, 0x4a, 0xe7,
-	0x1b, 0xad, 0x39, 0xdb, 0x48, 0x4b, 0x6a, 0x1c, 0x61, 0x8e, 0x45, 0xf0, 0x1f, 0xe2, 0xd1, 0xc8,
-	0x0b, 0x06, 0xf6, 0x9e, 0xc8, 0x05, 0xd1, 0x34, 0x13, 0x6e, 0xa6, 0xc8, 0x13, 0x5c, 0x88, 0xca,
-	0x38, 0xe6, 0xc3, 0x3f, 0x1a, 0xa0, 0x3e, 0x0f, 0x2b, 0xb7, 0x4d, 0x18, 0xc5, 0xb6, 0x89, 0x6f,
-	0x01, 0xe0, 0xb1, 0xf8, 0xce, 0xf2, 0xb5, 0xd7, 0xec, 0xed, 0xd4, 0x93, 0x94, 0x07, 0x51, 0xd9,
-	0x63, 0x3a, 0x04, 0xf0, 0xcf, 0x8b, 0xa0, 0x7a, 0xf7, 0x15, 0x27, 0x81, 0x4b, 0x5c, 0x47, 0xb4,
-	0x5b, 0x73, 0x03, 0x2c, 0xc6, 0xc6, 0xd1, 0xa2, 0xe7, 0x9a, 0xad, 0xc4, 0xa5, 0x40, 0x4f, 0x88,
-	0xda, 0x8c, 0x1f, 0x41, 0xe2, 0x47, 0x60, 0x1e, 0x00, 0x75, 0x51, 0x59, 0xab, 0x2a, 0x45, 0xea,
-	0x99, 0x9e, 0x1b, 0xb3, 0x20, 0x52, 0xb0, 0xa2, 0xd8, 0x6e, 0x83, 0xaa, 0xc7, 0x1c, 0x59, 0x03,
-	0x8e, 0x48, 0x5e, 0xf9, 0xd2, 0x6b, 0x76, 0x63, 0x1a, 0x59, 0xf5, 0xc4, 0xfb, 0x94, 0x0d, 0x51,
-	0xc5, 0x63, 0x5d, 0x71, 0x94, 0xe5, 0xf1, 0x33, 0xb0, 0x95, 0xa0, 0x3a, 0x71, 0xa1, 0xac, 0x48,
-	0xc3, 0xad, 0x49, 0x64, 0x6d, 0x1c, 0x6a, 0x33, 0x49, 0xc1, 0x34, 0x2e, 0xb8, 0xe2, 0x24, 0xa5,
-	0xb3, 0x81, 0x73, 0xb2, 0xf0, 0x0f, 0x06, 0x30, 0xa5, 0xfa, 0x09, 0x15, 0xb1, 0xf9, 0x0c, 0xaf,
-	0x94, 0x99, 0x73, 0x8b, 0xbb, 0x4b, 0xb9, 0x39, 0xe7, 0xfe, 0xef, 0x39, 0x07, 0x5f, 0x1b, 0x60,
-	0xeb, 0x27, 0x8c, 0x84, 0x62, 0x2e, 0x77, 0xdd, 0xd8, 0x8f, 0x64, 0x13, 0x34, 0x3e, 0xbc, 0x09,
-	0x1e, 0x83, 0x15, 0x91, 0xc6, 0x4c, 0x9a, 0xac, 0x74, 0x9a, 0x73, 0x73, 0x3b, 0x59, 0x87, 0xed,
-	0x1b, 0x3a, 0xa1, 0x57, 0x04, 0x89, 0xa5, 0xa0, 0x12, 0x03, 0x22, 0x85, 0x05, 0xff, 0x62, 0x80,
-	0x9a, 0x70, 0x49, 0xf5, 0xeb, 0xe2, 0x4e, 0xfd, 0x02, 0x94, 0x54, 0xfb, 0x8f, 0xdd, 0xda, 0x9d,
-	0xeb, 0x56, 0x66, 0xe1, 0x51, 0xc3, 0x4b, 0x44, 0x5a, 0x11, 0x59, 0x1a, 0x30, 0x8d, 0x04, 0x51,
-	0x8c, 0x09, 0xff, 0x6a, 0x80, 0xab, 0x2a, 0x5a, 0x27, 0xf4, 0xa2, 0x8b, 0x87, 0x73, 0xf6, 0xfd,
-	0x82, 0x6b, 0x4f, 0xf7, 0xc2, 0xee, 0xa5, 0x1e, 0x73, 0x6f, 0x12, 0x59, 0x7a, 0x45, 0x8b, 0x61,
-	0x3e, 0xba, 0x84, 0xc1, 0xbf, 0x2f, 0x02, 0x20, 0xef, 0x77, 0xcc, 0x31, 0x67, 0x9f, 0xda, 0xed,
-	0x2f, 0xf1, 0x1d, 0x12, 0x80, 0x0d, 0x4e, 0x39, 0xf6, 0xf5, 0x38, 0x26, 0xaa, 0xb3, 0x97, 0xed,
-	0x1f, 0x16, 0x1e, 0x72, 0x7a, 0xab, 0xc8, 0xa3, 0x41, 0x54, 0x95, 0x04, 0x5b, 0x9f, 0xcd, 0x1e,
-	0x00, 0x4a, 0x42, 0x84, 0x53, 0x7f, 0xc5, 0xdc, 0x29, 0x6c, 0x6b, 0x2b, 0x6b, 0x4b, 0x20, 0x41,
-	0x54, 0x96, 0x07, 0xf1, 0x88, 0xf0, 0x4f, 0x00, 0x5c, 0x91, 0x77, 0x17, 0x8b, 0x04, 0x53, 0x91,
-	0xbd, 0x44, 0xd9, 0x3a, 0xa0, 0x3c, 0x76, 0xe8, 0x88, 0x7b, 0x43, 0xec, 0xeb, 0x49, 0x6a, 0x17,
-	0xde, 0x7d, 0x74, 0x0b, 0x4c, 0x80, 0x20, 0x5a, 0x1b, 0x3f, 0x56, 0xff, 0x9a, 0x4f, 0xc1, 0xb2,
-	0xd8, 0x18, 0x75, 0xe4, 0xbf, 0x57, 0x18, 0xbb, 0xa2, 0xd3, 0x0c, 0x33, 0x02, 0x91, 0x84, 0x32,
-	0x7f, 0x0a, 0x56, 0x99, 0x4f, 0x47, 0xe4, 0x40, 0x87, 0xf8, 0xfb, 0x85, 0x41, 0xab, 0x7a, 0x9c,
-	0x4a, 0x14, 0x88, 0x34, 0x5c, 0x02, 0xdc, 0x91, 0x5d, 0xf6, 0xb2, 0xc0, 0x9d, 0x18, 0xb8, 0x63,
-	0x3e, 0x05, 0x75, 0x12, 0xc8, 0xc5, 0x30, 0xff, 0x3d, 0xb1, 0x2a, 0xc7, 0x81, 0x95, 0x6e, 0x51,
-	0xf3, 0xa4, 0x20, 0x32, 0x15, 0x39, 0xf7, 0x5d, 0x41, 0x40, 0x25, 0x96, 0x12, 0xe1, 0x55, 0x5f,
-	0x88, 0x47, 0x85, 0x1d, 0x36, 0xf3, 0x6b, 0xab, 0x8c, 0x32, 0xd0, 0xfb, 0xaa, 0x88, 0xf5, 0x73,
-	0x50, 0xd5, 0x3c, 0x1d, 0x72, 0xb5, 0x1f, 0xdf, 0x2b, 0x6c, 0xa8, 0x9e, 0x33, 0x14, 0x47, 0x7e,
-	0x5d, 0x9d, 0x8f, 0x55, 0xfc, 0x2f, 0x18, 0xeb, 0xe8, 0x8d, 0xf8, 0xb3, 0x18, 0xeb, 0xe4, 0x8d,
-	0x75, 0xcc, 0x47, 0x60, 0xc9, 0xe7, 0x67, 0x7a, 0xed, 0xbd, 0x5d, 0xd8, 0x04, 0xd0, 0x5d, 0x94,
-	0x9f, 0x41, 0x24, 0x80, 0xcc, 0xdf, 0x1b, 0x60, 0xdb, 0xf7, 0x5e, 0x8c, 0x3d, 0x17, 0x73, 0x8f,
-	0x06, 0x0e, 0x7f, 0x16, 0x12, 0xf6, 0x8c, 0xfa, 0x6e, 0xa3, 0x22, 0x4d, 0x3c, 0x2a, 0x6c, 0xe2,
-	0xba, 0x36, 0x31, 0x0f, 0x14, 0xa2, 0x7a, 0x86, 0x7e, 0x12, 0x93, 0xcd, 0xdf, 0x80, 0x5a, 0x56,
-	0x7e, 0x44, 0x02, 0xec, 0xf3, 0xf3, 0xc6, 0xba, 0x74, 0xe1, 0x41, 0x61, 0x17, 0x76, 0x66, 0x5d,
-	0xd0, 0x90, 0x10, 0x99, 0x19, 0xea, 0x13, 0x45, 0x14, 0x1d, 0x37, 0x24, 0x8c, 0x84, 0x67, 0xc4,
-	0x39, 0xc5, 0x7d, 0x4e, 0xc3, 0x46, 0xb5, 0x70, 0xc7, 0x55, 0x96, 0xb7, 0xe3, 0x5f, 0x10, 0xb2,
-	0x68, 0x10, 0x55, 0x35, 0xe1, 0x9e, 0x3a, 0xdf, 0x07, 0x15, 0xd1, 0x15, 0x33, 0xfb, 0x8b, 0x68,
-	0x98, 0x8e, 0xe7, 0xb2, 0x86, 0x21, 0x07, 0x97, 0x6c, 0x84, 0x6a, 0x5c, 0xb2, 0xb4, 0x11, 0xc6,
-	0x42, 0x10, 0x95, 0x7c, 0xc5, 0x83, 0x08, 0x54, 0x55, 0x65, 0x65, 0x66, 0xa9, 0xfe, 0x8a, 0x4b,
-	0xd1, 0xe4, 0x2c, 0x8d, 0x87, 0x2e, 0x4b, 0x7b, 0x75, 0x2a, 0x08, 0x51, 0xb9, 0x17, 0xf3, 0xed,
-	0xfb, 0x6f, 0x26, 0x4d, 0xe3, 0xed, 0xa4, 0x69, 0xfc, 0x6b, 0xd2, 0x34, 0x5e, 0xbf, 0x6f, 0x2e,
-	0xbc, 0x7d, 0xdf, 0x5c, 0x78, 0xf7, 0xbe, 0xb9, 0xf0, 0xf3, 0x56, 0x2e, 0x0e, 0x62, 0x39, 0xb8,
-	0x49, 0x4f, 0x4f, 0xbd, 0xbe, 0x87, 0x7d, 0x7d, 0x6e, 0xeb, 0xdf, 0x13, 0x65, 0x4c, 0x7a, 0xab,
-	0xf2, 0x8b, 0xf7, 0x9b, 0xff, 0x0d, 0x00, 0x00, 0xff, 0xff, 0xe6, 0xec, 0x64, 0xef, 0x6b, 0x14,
-	0x00, 0x00,
+	// 2040 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x59, 0xcd, 0x6f, 0x1b, 0xc7,
+	0x15, 0xf7, 0x4a, 0xb2, 0x44, 0x3e, 0x8a, 0x94, 0x38, 0xa4, 0x6a, 0x46, 0x8a, 0xb9, 0xca, 0xb4,
+	0xb0, 0xdd, 0x83, 0x49, 0x58, 0x6d, 0x81, 0xc4, 0x48, 0x91, 0x70, 0x2d, 0xbb, 0x51, 0x13, 0xdb,
+	0xc9, 0xd8, 0x45, 0xd0, 0x0f, 0x74, 0x31, 0xe4, 0x8e, 0xe4, 0x45, 0x96, 0xbb, 0xcc, 0xee, 0x50,
+	0x8e, 0xfa, 0x11, 0x04, 0xed, 0xa1, 0x40, 0x4f, 0xb9, 0xf7, 0x5c, 0xf4, 0xda, 0x53, 0x6f, 0x05,
+	0x7a, 0x69, 0x9b, 0x43, 0x0f, 0x39, 0x16, 0x3d, 0x6c, 0x0b, 0xfa, 0x3f, 0xd0, 0xb1, 0xa7, 0x62,
+	0x3e, 0xf6, 0x4b, 0x64, 0x1d, 0xaf, 0x14, 0x20, 0x27, 0x71, 0x67, 0xde, 0xfb, 0xfd, 0xde, 0xbc,
+	0x99, 0xf7, 0x31, 0x23, 0xe8, 0x8e, 0x82, 0xb1, 0xc3, 0x3e, 0xea, 0x7b, 0xcc, 0x77, 0xfa, 0xc7,
+	0xb7, 0x86, 0x8c, 0xd3, 0x5b, 0xf2, 0xa3, 0x37, 0x09, 0x03, 0x1e, 0xa0, 0x96, 0x9a, 0xef, 0xc9,
+	0x21, 0x3d, 0xbf, 0xdd, 0x3e, 0x0a, 0x8e, 0x02, 0x39, 0xdf, 0x17, 0xbf, 0x94, 0xe8, 0xb6, 0x79,
+	0x14, 0x04, 0x47, 0x1e, 0xeb, 0xcb, 0xaf, 0xe1, 0xf4, 0xb0, 0xcf, 0xdd, 0x31, 0x8b, 0x38, 0x1d,
+	0x4f, 0xb4, 0x40, 0x77, 0x14, 0x44, 0xe3, 0x20, 0xea, 0x0f, 0x69, 0xc4, 0x52, 0xae, 0x51, 0xe0,
+	0xfa, 0x6a, 0x1e, 0xff, 0x71, 0x15, 0xaa, 0xef, 0x30, 0xdf, 0x19, 0x44, 0x11, 0xe3, 0xe8, 0x36,
+	0x80, 0x20, 0x75, 0xfd, 0x23, 0xdb, 0x75, 0x3a, 0xc6, 0xae, 0x71, 0x63, 0xc5, 0xda, 0x99, 0xc5,
+	0xe6, 0xd2, 0xc1, 0xfe, 0x69, 0x6c, 0x36, 0x4f, 0xe8, 0xd8, 0xbb, 0x8d, 0x33, 0x09, 0x4c, 0xaa,
+	0xfa, 0xe3, 0xc0, 0x41, 0xaf, 0x41, 0x85, 0x0a, 0x10, 0xa1, 0xb9, 0x24, 0x35, 0xbb, 0xb3, 0xd8,
+	0x5c, 0x93, 0xc0, 0x07, 0xce, 0x69, 0x6c, 0x6e, 0x28, 0xf5, 0x44, 0x08, 0x93, 0x35, 0xaa, 0xe6,
+	0xd0, 0x77, 0x60, 0x6d, 0x12, 0x04, 0x9e, 0xd0, 0x5c, 0x96, 0x9a, 0x2f, 0xcf, 0x62, 0x73, 0xf5,
+	0xdd, 0x20, 0xf0, 0xa4, 0x62, 0x43, 0x29, 0x6a, 0x11, 0x4c, 0x56, 0x27, 0x72, 0x06, 0x5d, 0x83,
+	0xcb, 0xc1, 0x53, 0x9f, 0x85, 0x9d, 0x95, 0x5d, 0xe3, 0x46, 0xd5, 0xda, 0x3c, 0x8d, 0xcd, 0x75,
+	0x25, 0x2a, 0x87, 0x31, 0x51, 0xd3, 0xe8, 0xe7, 0x50, 0xa5, 0xe3, 0x60, 0xea, 0x73, 0xdb, 0xf5,
+	0x3b, 0x97, 0x77, 0x8d, 0x1b, 0xb5, 0xbd, 0x97, 0x7a, 0xca, 0x2f, 0x3d, 0xe1, 0x97, 0xc4, 0xc7,
+	0xbd, 0x3b, 0x81, 0xeb, 0x5b, 0x77, 0x3e, 0x8b, 0xcd, 0x4b, 0xa7, 0xb1, 0xb9, 0xa9, 0xcd, 0x4d,
+	0x34, 0xf1, 0x7f, 0x63, 0xf3, 0xfa, 0x91, 0xcb, 0x9f, 0x4c, 0x87, 0xbd, 0x51, 0x30, 0xee, 0x6b,
+	0xc7, 0xaa, 0x3f, 0x37, 0x23, 0xe7, 0x83, 0x3e, 0x3f, 0x99, 0xb0, 0x48, 0x82, 0x90, 0x8a, 0x52,
+	0x3b, 0xf0, 0xd1, 0x4f, 0x61, 0x3d, 0x71, 0x98, 0xd8, 0x9b, 0xce, 0xaa, 0xe4, 0xdf, 0xee, 0xa9,
+	0x8d, 0xeb, 0x25, 0x1b, 0xd7, 0x7b, 0x9c, 0x6c, 0x9c, 0x65, 0x6a, 0x03, 0x5a, 0x45, 0x77, 0x0b,
+	0x6d, 0xfc, 0xe9, 0xbf, 0x4d, 0x83, 0xd4, 0xf4, 0x90, 0x50, 0x41, 0xc7, 0xd0, 0x9c, 0x4e, 0x1c,
+	0xca, 0x99, 0x63, 0x67, 0x8b, 0x5c, 0x93, 0x0e, 0xf9, 0xbe, 0x00, 0xfa, 0x57, 0x6c, 0x5e, 0x7b,
+	0x01, 0xab, 0x0f, 0x7c, 0x7e, 0x1a, 0x9b, 0x1d, 0x45, 0x39, 0x07, 0x88, 0xc9, 0x86, 0x1e, 0x1b,
+	0x24, 0xeb, 0xfa, 0x05, 0xb4, 0xe8, 0x31, 0x75, 0x3d, 0x3a, 0xf4, 0x98, 0xcd, 0x03, 0x7b, 0x18,
+	0x84, 0x61, 0xf0, 0xb4, 0x53, 0x91, 0xcc, 0xef, 0x94, 0x66, 0xde, 0xd6, 0xde, 0x9e, 0x87, 0xc4,
+	0xa4, 0x99, 0x8e, 0x3e, 0x0e, 0x2c, 0x39, 0x86, 0x7e, 0x06, 0x28, 0x64, 0x4f, 0x69, 0xe8, 0xd8,
+	0x83, 0xd1, 0x68, 0x3a, 0x9e, 0x7a, 0xc2, 0xb6, 0x4e, 0x55, 0x92, 0xbf, 0x5d, 0x9a, 0xfc, 0x25,
+	0x45, 0xae, 0x11, 0x69, 0x86, 0x88, 0x49, 0x53, 0x0d, 0xe6, 0x58, 0xf0, 0x5f, 0x2b, 0x50, 0x53,
+	0x66, 0xa8, 0xa0, 0x79, 0x13, 0xd6, 0x95, 0xa5, 0x85, 0xb0, 0xb9, 0x9a, 0x86, 0x8d, 0xde, 0xc7,
+	0xbc, 0x0c, 0x26, 0xb5, 0xf4, 0xf3, 0xc0, 0x41, 0x83, 0x42, 0xd8, 0xa9, 0xe0, 0xc1, 0xb3, 0xd8,
+	0x94, 0x91, 0x29, 0x44, 0xbe, 0x38, 0xfa, 0xee, 0xc2, 0xa6, 0x1b, 0xd9, 0x11, 0x97, 0xbe, 0xd3,
+	0x7b, 0x21, 0x62, 0xa9, 0x62, 0xed, 0x9c, 0xc6, 0xe6, 0x15, 0xa5, 0x7b, 0x56, 0x02, 0x93, 0x86,
+	0x1b, 0x3d, 0x92, 0x23, 0xda, 0xaf, 0x22, 0x12, 0xa9, 0x1b, 0x0a, 0x33, 0x56, 0x72, 0x91, 0x48,
+	0xdd, 0x50, 0xda, 0x90, 0x44, 0xa2, 0x12, 0x11, 0x91, 0x28, 0x66, 0x9c, 0xaf, 0x36, 0xc2, 0x3e,
+	0x06, 0xd0, 0x10, 0xc1, 0x94, 0xeb, 0xf8, 0x7a, 0x0e, 0xfb, 0xbe, 0x66, 0x6f, 0x16, 0xd8, 0x83,
+	0x29, 0x2f, 0x45, 0xaf, 0xd7, 0xfb, 0x70, 0xca, 0xd1, 0xfb, 0xb0, 0x39, 0x0c, 0x5d, 0xe7, 0x48,
+	0x04, 0x4c, 0x92, 0x00, 0xd7, 0xa4, 0xf3, 0x6e, 0xce, 0x62, 0xb3, 0x61, 0xa9, 0x39, 0x95, 0x07,
+	0xf7, 0xb3, 0xcd, 0x38, 0xab, 0x83, 0x49, 0x63, 0x98, 0x17, 0x75, 0x90, 0x03, 0x8d, 0xec, 0xd0,
+	0xc8, 0xe4, 0x51, 0xf9, 0xc2, 0xe4, 0xf1, 0x8a, 0x5e, 0xdd, 0xd6, 0xd9, 0x43, 0x97, 0xa5, 0x8f,
+	0x7a, 0x3a, 0x28, 0x13, 0xc8, 0x09, 0xa0, 0xc2, 0xa1, 0xb0, 0x43, 0xca, 0xd9, 0x39, 0x42, 0x69,
+	0x9f, 0x8d, 0xb2, 0x50, 0x9a, 0x47, 0xc4, 0x64, 0x33, 0xca, 0x9d, 0x34, 0x42, 0xb9, 0xa4, 0x3e,
+	0x93, 0x6a, 0xc4, 0x0e, 0xc2, 0xc5, 0xa2, 0x78, 0x1e, 0x11, 0x93, 0xcd, 0x42, 0xf6, 0x12, 0x9b,
+	0xf6, 0x89, 0x01, 0x6d, 0xd7, 0xe7, 0x2c, 0x64, 0x11, 0x2f, 0xe4, 0x90, 0x9a, 0x64, 0xbf, 0x5f,
+	0x9a, 0x7d, 0x47, 0x87, 0x58, 0x82, 0x59, 0xc8, 0x22, 0xad, 0x64, 0x38, 0x9f, 0x47, 0x7e, 0xbf,
+	0x02, 0x2b, 0xa2, 0xc6, 0xe5, 0xcb, 0x9f, 0x51, 0xa2, 0xfc, 0xdd, 0x85, 0xda, 0x38, 0x70, 0xa6,
+	0x1e, 0xb3, 0x7d, 0x3a, 0x66, 0x32, 0x6d, 0x54, 0xad, 0x6f, 0xcc, 0x62, 0x13, 0xee, 0xcb, 0xe1,
+	0x07, 0x74, 0xcc, 0x4e, 0x63, 0x13, 0x29, 0xf5, 0x9c, 0x28, 0x26, 0x30, 0x4e, 0x25, 0xd0, 0xdb,
+	0x50, 0x1f, 0x53, 0xd7, 0xcf, 0xce, 0xae, 0x2a, 0xc1, 0xd7, 0x67, 0xb1, 0x59, 0xbb, 0x4f, 0x5d,
+	0x3f, 0x2b, 0xe0, 0x6d, 0x8d, 0x94, 0x97, 0xc6, 0xa4, 0x36, 0xce, 0x84, 0xd0, 0x18, 0xbe, 0x76,
+	0xe8, 0x86, 0x11, 0xb7, 0xe7, 0x22, 0x42, 0xa5, 0x93, 0x57, 0x67, 0xb1, 0xd9, 0xba, 0x27, 0x24,
+	0x0a, 0x61, 0x21, 0xd0, 0xaf, 0x2a, 0xf4, 0xc5, 0xea, 0x98, 0xb4, 0x0e, 0xe7, 0xb5, 0xd0, 0x87,
+	0x70, 0x25, 0x62, 0xa3, 0xc0, 0x77, 0xe6, 0xf9, 0x2e, 0x4b, 0xbe, 0xdb, 0xb3, 0xd8, 0x6c, 0x3f,
+	0x92, 0x22, 0x73, 0x84, 0x5d, 0x7d, 0x54, 0x17, 0x03, 0x60, 0xd2, 0x8e, 0x16, 0xe8, 0xa1, 0x09,
+	0x80, 0x12, 0x71, 0x28, 0xa7, 0x9d, 0xd5, 0xdd, 0xe5, 0x1b, 0xb5, 0xbd, 0x6f, 0xf6, 0x16, 0x74,
+	0x6c, 0x3d, 0xa9, 0xb1, 0x4f, 0x39, 0x15, 0x3b, 0x79, 0x9f, 0x4e, 0x26, 0xae, 0x7f, 0x64, 0x5d,
+	0x13, 0x07, 0x4b, 0xa4, 0xf6, 0x74, 0x36, 0x97, 0x8a, 0x52, 0x5c, 0x4c, 0xaa, 0x34, 0x99, 0xc7,
+	0xbf, 0x31, 0xa0, 0xbd, 0x08, 0xab, 0xd0, 0x71, 0x19, 0xe5, 0x3a, 0xae, 0x6f, 0x03, 0xb8, 0x51,
+	0xb2, 0x66, 0x79, 0x74, 0x2a, 0xd6, 0x56, 0x66, 0x49, 0x36, 0x87, 0x49, 0xd5, 0x8d, 0xb4, 0x0b,
+	0xf0, 0xef, 0x96, 0xa0, 0x7e, 0xf7, 0x23, 0xce, 0x7c, 0x87, 0x39, 0xb6, 0x28, 0x0a, 0xa8, 0x01,
+	0x4b, 0x09, 0x39, 0x59, 0x72, 0x1d, 0xd4, 0x4b, 0x4d, 0xf2, 0x75, 0x1d, 0x6b, 0xcd, 0xd9, 0xe1,
+	0xa7, 0x76, 0xf8, 0xe8, 0x16, 0xa8, 0x85, 0xca, 0xc0, 0x57, 0x07, 0xaf, 0x9d, 0xab, 0x0c, 0xc9,
+	0x14, 0x26, 0x0a, 0x56, 0x44, 0xee, 0xeb, 0x50, 0x77, 0x23, 0x5b, 0x06, 0x94, 0x2d, 0x22, 0x41,
+	0x9e, 0xac, 0x8a, 0xd5, 0xc9, 0x0e, 0x68, 0x61, 0x1a, 0x93, 0x9a, 0x1b, 0x1d, 0x88, 0x4f, 0x19,
+	0x6b, 0x3f, 0x84, 0x66, 0x8a, 0x6a, 0x27, 0x51, 0xa7, 0xce, 0x4a, 0x4f, 0x64, 0xeb, 0x81, 0xa6,
+	0x49, 0xa3, 0xaf, 0x73, 0xc6, 0x14, 0x3b, 0x8d, 0xc3, 0x06, 0x2d, 0xc8, 0xe2, 0x3f, 0x1b, 0x80,
+	0xa4, 0xfa, 0xe3, 0x40, 0xf8, 0xe6, 0x4b, 0xd8, 0xa5, 0x5c, 0x62, 0x58, 0x2a, 0x91, 0x18, 0x72,
+	0x45, 0x7c, 0x79, 0x77, 0xb9, 0x50, 0xc4, 0x9d, 0xff, 0x5f, 0xc4, 0xf1, 0x31, 0x34, 0x7f, 0x10,
+	0xb1, 0x50, 0xf4, 0x1c, 0x07, 0x4e, 0x62, 0x7d, 0xda, 0x63, 0x1b, 0xcf, 0xef, 0xb1, 0x5f, 0x83,
+	0x8a, 0x38, 0xfc, 0xb6, 0xeb, 0x44, 0x9d, 0x25, 0x49, 0x2a, 0x57, 0xa9, 0xc0, 0xa2, 0x6c, 0x95,
+	0x89, 0x10, 0x26, 0x6b, 0x9e, 0x9a, 0xc3, 0x7f, 0x32, 0x60, 0x47, 0xc9, 0x59, 0x27, 0x0f, 0x05,
+	0xd8, 0xc0, 0x77, 0xf2, 0xc7, 0xfc, 0x45, 0x4d, 0x38, 0xa7, 0xb7, 0x5e, 0x85, 0xc4, 0x12, 0xed,
+	0xad, 0x17, 0x36, 0xfc, 0x2f, 0x06, 0x5c, 0x55, 0xd5, 0xec, 0x2b, 0x32, 0xfd, 0x4d, 0xa8, 0x0e,
+	0x35, 0x7f, 0x62, 0xbc, 0x6c, 0x1b, 0x13, 0xa3, 0xa2, 0x2c, 0xa2, 0x75, 0x25, 0x96, 0x0b, 0xc8,
+	0x94, 0xf0, 0x27, 0x06, 0xb4, 0xc4, 0xa6, 0x27, 0x1a, 0x65, 0x0d, 0x1f, 0x00, 0x64, 0xc8, 0x7a,
+	0xe3, 0x4b, 0x9a, 0xf0, 0x07, 0x03, 0xae, 0x28, 0x6f, 0x27, 0xdd, 0x7d, 0x66, 0xc6, 0x60, 0xc1,
+	0x7d, 0xb4, 0x64, 0x63, 0x7c, 0x70, 0xa6, 0x3b, 0x57, 0x36, 0x5e, 0x13, 0xd5, 0xcd, 0x4a, 0x5b,
+	0xf0, 0x17, 0x6a, 0xd3, 0xf1, 0x6f, 0xd7, 0x00, 0x64, 0xd8, 0x3e, 0xe2, 0x94, 0x47, 0xe7, 0x2d,
+	0xdb, 0x17, 0xb8, 0x27, 0xfb, 0xd0, 0xe0, 0x01, 0xa7, 0x9e, 0xee, 0xab, 0x98, 0xaa, 0xd5, 0x55,
+	0xeb, 0x7b, 0xa5, 0xbb, 0x15, 0xdd, 0x1e, 0x16, 0xd1, 0x30, 0xa9, 0xcb, 0x01, 0x4b, 0x7f, 0xa3,
+	0x5f, 0x19, 0xb0, 0xa5, 0x44, 0x0a, 0xfd, 0x1c, 0x73, 0xf4, 0x8d, 0xfb, 0x41, 0x69, 0xde, 0x97,
+	0xf3, 0xbc, 0x67, 0x40, 0x31, 0x69, 0xc9, 0xf1, 0xfc, 0x85, 0x84, 0x39, 0x68, 0x08, 0xa0, 0xc4,
+	0xc5, 0x9e, 0xca, 0x54, 0x5d, 0x55, 0x37, 0x88, 0x52, 0xc4, 0xcd, 0x3c, 0xb1, 0x40, 0xc2, 0xa4,
+	0x2a, 0x3f, 0xc4, 0x49, 0x42, 0x3f, 0xd1, 0xd9, 0x8b, 0x4e, 0x42, 0x79, 0x81, 0xa8, 0x5a, 0x83,
+	0xd2, 0x9d, 0x6f, 0x3e, 0x4f, 0xd0, 0x49, 0xa8, 0xf3, 0xc4, 0x60, 0x12, 0x8a, 0x15, 0xe8, 0xb3,
+	0x2f, 0xf0, 0xd7, 0x4a, 0xaf, 0x40, 0xe1, 0x17, 0xa3, 0x48, 0x32, 0xe8, 0x28, 0x12, 0x1c, 0xc7,
+	0xd0, 0x2c, 0xf6, 0xdc, 0x82, 0xaa, 0x52, 0xfa, 0x19, 0x40, 0x51, 0x75, 0x16, 0x35, 0xf1, 0x92,
+	0x71, 0x23, 0xdf, 0xc3, 0x0b, 0xde, 0xa7, 0xd0, 0x9c, 0x72, 0xd7, 0x73, 0x23, 0xca, 0xdd, 0xc0,
+	0x17, 0x9d, 0xbe, 0x1b, 0xe8, 0xcb, 0xc3, 0xb9, 0x79, 0xe7, 0x00, 0x45, 0x03, 0x9f, 0x8d, 0x11,
+	0x39, 0xf4, 0x0f, 0x80, 0x0d, 0x19, 0x33, 0xe2, 0x26, 0x11, 0xa9, 0x88, 0xbc, 0x40, 0xa9, 0xb5,
+	0xa1, 0x3a, 0xb5, 0x83, 0x09, 0x77, 0xc7, 0xd4, 0xd3, 0xad, 0xb4, 0x55, 0xda, 0x7e, 0xdd, 0xb6,
+	0xa4, 0x40, 0x98, 0x54, 0xa6, 0x0f, 0xd5, 0x4f, 0xf4, 0x1e, 0xac, 0x88, 0xbb, 0xa8, 0x8e, 0xd8,
+	0xef, 0x96, 0xc6, 0xae, 0xe9, 0xed, 0xa7, 0x11, 0xc3, 0x44, 0x42, 0xa1, 0xf7, 0x61, 0x35, 0xf2,
+	0x82, 0x09, 0xbb, 0xa5, 0xc3, 0xf1, 0x8d, 0xd2, 0xa0, 0x75, 0xbd, 0xd1, 0x12, 0x05, 0x13, 0x0d,
+	0x97, 0x02, 0xef, 0xe9, 0x70, 0xbb, 0x18, 0xf0, 0x5e, 0x02, 0xbc, 0x87, 0xde, 0x83, 0x36, 0xf3,
+	0xe5, 0xa1, 0x2a, 0xbe, 0x54, 0xac, 0xca, 0x16, 0xce, 0xcc, 0xae, 0x51, 0x8b, 0xa4, 0x30, 0x41,
+	0x6a, 0xb8, 0xf0, 0x62, 0xc1, 0xa0, 0x96, 0x48, 0x09, 0xf7, 0xaa, 0xe8, 0xda, 0x2f, 0x6d, 0x30,
+	0x2a, 0x1e, 0x79, 0xe9, 0x65, 0xd0, 0x87, 0x5d, 0xf8, 0xfa, 0x03, 0xa8, 0xeb, 0x39, 0xed, 0x72,
+	0x15, 0x5b, 0xf7, 0x4a, 0x13, 0xb5, 0x0b, 0x44, 0x89, 0xe7, 0xd7, 0xd5, 0xf7, 0x23, 0xe5, 0xff,
+	0x33, 0x64, 0x7b, 0x3a, 0xa0, 0xbe, 0x14, 0xb2, 0xbd, 0x22, 0xd9, 0x1e, 0x7a, 0x00, 0xcb, 0x1e,
+	0x3f, 0xd6, 0xb7, 0xee, 0xd7, 0x4b, 0x53, 0x80, 0x4e, 0x7b, 0xfc, 0x18, 0x13, 0x01, 0x84, 0x7e,
+	0x6d, 0xc0, 0x96, 0xe7, 0x7e, 0x38, 0x75, 0x1d, 0x15, 0xc1, 0xfc, 0x49, 0xc8, 0xa2, 0x27, 0x81,
+	0x97, 0x5c, 0xad, 0x1f, 0x94, 0xa6, 0xd0, 0x45, 0x63, 0x21, 0x28, 0x26, 0xed, 0xdc, 0xf8, 0xe3,
+	0x64, 0x18, 0xfd, 0x12, 0x5a, 0x79, 0xf9, 0x09, 0xf3, 0xa9, 0xc7, 0x4f, 0x3a, 0xeb, 0xa5, 0x9f,
+	0x27, 0x95, 0x09, 0xdb, 0xf3, 0x26, 0x68, 0x48, 0x4c, 0x50, 0x6e, 0xf4, 0x5d, 0x35, 0x28, 0x2a,
+	0x75, 0xc8, 0x22, 0x16, 0x1e, 0x33, 0xfb, 0x90, 0x8e, 0x78, 0x10, 0x76, 0xea, 0xa5, 0x2b, 0xb5,
+	0x62, 0xde, 0x4a, 0xde, 0x26, 0xf3, 0x68, 0x98, 0xd4, 0xf5, 0xc0, 0x3d, 0xf9, 0x8d, 0xde, 0x00,
+	0x18, 0x65, 0x77, 0xdf, 0x86, 0xcc, 0x7d, 0xaf, 0xcc, 0x62, 0xb3, 0x72, 0x27, 0x4b, 0x7e, 0xba,
+	0x80, 0x8c, 0x72, 0x57, 0xdc, 0xca, 0x48, 0x4f, 0xe3, 0xb7, 0xa0, 0x26, 0x2a, 0x61, 0xee, 0xd2,
+	0x92, 0xb6, 0xf3, 0x46, 0xb9, 0xae, 0x98, 0x40, 0x5d, 0x85, 0x66, 0xae, 0x89, 0xcb, 0xf5, 0x88,
+	0xc6, 0x79, 0x7a, 0xc4, 0x10, 0x5a, 0xf9, 0xa0, 0x4f, 0x90, 0x7f, 0x7c, 0xb6, 0xe8, 0x65, 0x04,
+	0xfd, 0x59, 0x6c, 0x6e, 0xe4, 0x75, 0x14, 0xcd, 0xc2, 0xca, 0x26, 0xd9, 0x0a, 0x95, 0x4d, 0x70,
+	0xfe, 0xcd, 0x80, 0xba, 0x7a, 0x48, 0xb1, 0xa8, 0x47, 0xfd, 0x11, 0x3b, 0x6f, 0xc3, 0xf7, 0x31,
+	0xb4, 0xf5, 0xe3, 0xcb, 0x50, 0x01, 0x89, 0xb4, 0xc6, 0x55, 0xb7, 0x5c, 0xdb, 0xbb, 0xbe, 0xf0,
+	0xed, 0xa0, 0x40, 0x2c, 0x8b, 0x9b, 0xf5, 0x75, 0xfd, 0xb2, 0xb7, 0x53, 0x78, 0xcf, 0x29, 0x40,
+	0x62, 0x82, 0xc6, 0x73, 0x8a, 0xf8, 0xef, 0x06, 0xa0, 0x79, 0xbc, 0x8b, 0x14, 0xcb, 0x63, 0x58,
+	0xd3, 0xbc, 0xb2, 0x54, 0x3e, 0xf7, 0xb9, 0x75, 0xa0, 0xcd, 0x6e, 0x24, 0xf5, 0x4b, 0xea, 0x95,
+	0x7a, 0x6b, 0x4d, 0xc8, 0xac, 0xb7, 0x3e, 0x9b, 0x75, 0x8d, 0xcf, 0x67, 0x5d, 0xe3, 0x3f, 0xb3,
+	0xae, 0xf1, 0xe9, 0xb3, 0xee, 0xa5, 0xcf, 0x9f, 0x75, 0x2f, 0xfd, 0xf3, 0x59, 0xf7, 0xd2, 0x8f,
+	0x7a, 0x05, 0x2c, 0xe1, 0xcf, 0x9b, 0xc1, 0xe1, 0xa1, 0x3b, 0x72, 0xa9, 0xa7, 0xbf, 0xfb, 0xfa,
+	0xff, 0x6d, 0x12, 0x77, 0xb8, 0x2a, 0x9f, 0x4e, 0xbf, 0xf5, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff,
+	0x60, 0xb6, 0x41, 0xf2, 0x8b, 0x1b, 0x00, 0x00,
 }
 
 func (m *LendAsset) Marshal() (dAtA []byte, err error) {
@@ -978,6 +1312,16 @@ func (m *LendAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		size := m.Reward_Accumulated.Size()
 		i -= size
 		if _, err := m.Reward_Accumulated.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintLend(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x4a
+	{
+		size := m.AvailableToBorrow.Size()
+		i -= size
+		if _, err := m.AvailableToBorrow.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintLend(dAtA, i, uint64(size))
@@ -1066,7 +1410,7 @@ func (m *BorrowAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintLend(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x52
+	dAtA[i] = 0x5a
 	{
 		size := m.UpdatedAmountOut.Size()
 		i -= size
@@ -1076,7 +1420,7 @@ func (m *BorrowAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintLend(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x4a
+	dAtA[i] = 0x52
 	{
 		size := m.StableBorrowRate.Size()
 		i -= size
@@ -1086,7 +1430,7 @@ func (m *BorrowAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintLend(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x42
+	dAtA[i] = 0x4a
 	n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BorrowingTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BorrowingTime):])
 	if err3 != nil {
 		return 0, err3
@@ -1094,7 +1438,12 @@ func (m *BorrowAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i -= n3
 	i = encodeVarintLend(dAtA, i, uint64(n3))
 	i--
-	dAtA[i] = 0x3a
+	dAtA[i] = 0x42
+	if m.BridgedAssetID != 0 {
+		i = encodeVarintLend(dAtA, i, uint64(m.BridgedAssetID))
+		i--
+		dAtA[i] = 0x38
+	}
 	{
 		size, err := m.AmountOut.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
@@ -1174,16 +1523,21 @@ func (m *Pool) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintLend(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x2a
+			dAtA[i] = 0x32
 		}
 	}
 	if m.SecondBridgedAssetId != 0 {
 		i = encodeVarintLend(dAtA, i, uint64(m.SecondBridgedAssetId))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x28
 	}
 	if m.FirstBridgedAssetId != 0 {
 		i = encodeVarintLend(dAtA, i, uint64(m.FirstBridgedAssetId))
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.MainAssetId != 0 {
+		i = encodeVarintLend(dAtA, i, uint64(m.MainAssetId))
 		i--
 		dAtA[i] = 0x18
 	}
@@ -1329,7 +1683,12 @@ func (m *AssetToPairMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], dAtA7[:j6])
 		i = encodeVarintLend(dAtA, i, uint64(j6))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x1a
+	}
+	if m.PoolId != 0 {
+		i = encodeVarintLend(dAtA, i, uint64(m.PoolId))
+		i--
+		dAtA[i] = 0x10
 	}
 	if m.AssetId != 0 {
 		i = encodeVarintLend(dAtA, i, uint64(m.AssetId))
@@ -1359,19 +1718,129 @@ func (m *UserLendIdMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Lends) > 0 {
-		for iNdEx := len(m.Lends) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Lends[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintLend(dAtA, i, uint64(size))
+	if len(m.LendIds) > 0 {
+		dAtA9 := make([]byte, len(m.LendIds)*10)
+		var j8 int
+		for _, num := range m.LendIds {
+			for num >= 1<<7 {
+				dAtA9[j8] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j8++
 			}
-			i--
-			dAtA[i] = 0x12
+			dAtA9[j8] = uint8(num)
+			j8++
 		}
+		i -= j8
+		copy(dAtA[i:], dAtA9[:j8])
+		i = encodeVarintLend(dAtA, i, uint64(j8))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintLend(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *LendIdByOwnerAndPoolMapping) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *LendIdByOwnerAndPoolMapping) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *LendIdByOwnerAndPoolMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.LendIds) > 0 {
+		dAtA11 := make([]byte, len(m.LendIds)*10)
+		var j10 int
+		for _, num := range m.LendIds {
+			for num >= 1<<7 {
+				dAtA11[j10] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j10++
+			}
+			dAtA11[j10] = uint8(num)
+			j10++
+		}
+		i -= j10
+		copy(dAtA[i:], dAtA11[:j10])
+		i = encodeVarintLend(dAtA, i, uint64(j10))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.PoolId != 0 {
+		i = encodeVarintLend(dAtA, i, uint64(m.PoolId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintLend(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BorrowIdByOwnerAndPoolMapping) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BorrowIdByOwnerAndPoolMapping) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BorrowIdByOwnerAndPoolMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.BorrowIds) > 0 {
+		dAtA13 := make([]byte, len(m.BorrowIds)*10)
+		var j12 int
+		for _, num := range m.BorrowIds {
+			for num >= 1<<7 {
+				dAtA13[j12] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j12++
+			}
+			dAtA13[j12] = uint8(num)
+			j12++
+		}
+		i -= j12
+		copy(dAtA[i:], dAtA13[:j12])
+		i = encodeVarintLend(dAtA, i, uint64(j12))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.PoolId != 0 {
+		i = encodeVarintLend(dAtA, i, uint64(m.PoolId))
+		i--
+		dAtA[i] = 0x10
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
@@ -1403,19 +1872,23 @@ func (m *UserBorrowIdMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Borrows) > 0 {
-		for iNdEx := len(m.Borrows) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Borrows[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintLend(dAtA, i, uint64(size))
+	if len(m.BorrowIds) > 0 {
+		dAtA15 := make([]byte, len(m.BorrowIds)*10)
+		var j14 int
+		for _, num := range m.BorrowIds {
+			for num >= 1<<7 {
+				dAtA15[j14] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j14++
 			}
-			i--
-			dAtA[i] = 0x12
+			dAtA15[j14] = uint8(num)
+			j14++
 		}
+		i -= j14
+		copy(dAtA[i:], dAtA15[:j14])
+		i = encodeVarintLend(dAtA, i, uint64(j14))
+		i--
+		dAtA[i] = 0x12
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
@@ -1448,20 +1921,20 @@ func (m *LendIdToBorrowIdMapping) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	var l int
 	_ = l
 	if len(m.BorrowingID) > 0 {
-		dAtA9 := make([]byte, len(m.BorrowingID)*10)
-		var j8 int
+		dAtA17 := make([]byte, len(m.BorrowingID)*10)
+		var j16 int
 		for _, num := range m.BorrowingID {
 			for num >= 1<<7 {
-				dAtA9[j8] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA17[j16] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j8++
+				j16++
 			}
-			dAtA9[j8] = uint8(num)
-			j8++
+			dAtA17[j16] = uint8(num)
+			j16++
 		}
-		i -= j8
-		copy(dAtA[i:], dAtA9[:j8])
-		i = encodeVarintLend(dAtA, i, uint64(j8))
+		i -= j16
+		copy(dAtA[i:], dAtA17[:j16])
+		i = encodeVarintLend(dAtA, i, uint64(j16))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1494,9 +1967,59 @@ func (m *AssetStats) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	{
+		size := m.UtilisationRatio.Size()
+		i -= size
+		if _, err := m.UtilisationRatio.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintLend(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x4a
+	{
+		size := m.StableBorrowApr.Size()
+		i -= size
+		if _, err := m.StableBorrowApr.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintLend(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x42
+	{
+		size := m.BorrowApr.Size()
+		i -= size
+		if _, err := m.BorrowApr.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintLend(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x3a
+	{
+		size := m.LendApr.Size()
+		i -= size
+		if _, err := m.LendApr.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintLend(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x32
+	{
 		size := m.TotalLend.Size()
 		i -= size
 		if _, err := m.TotalLend.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintLend(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x2a
+	{
+		size := m.TotalStableBorrowed.Size()
+		i -= size
+		if _, err := m.TotalStableBorrowed.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintLend(dAtA, i, uint64(size))
@@ -1546,6 +2069,11 @@ func (m *AssetRatesStats) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.CAssetId != 0 {
+		i = encodeVarintLend(dAtA, i, uint64(m.CAssetId))
+		i--
+		dAtA[i] = 0x70
+	}
 	{
 		size := m.ReserveFactor.Size()
 		i -= size
@@ -1695,20 +2223,20 @@ func (m *LendMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if len(m.LendIds) > 0 {
-		dAtA11 := make([]byte, len(m.LendIds)*10)
-		var j10 int
+		dAtA19 := make([]byte, len(m.LendIds)*10)
+		var j18 int
 		for _, num := range m.LendIds {
 			for num >= 1<<7 {
-				dAtA11[j10] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA19[j18] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j10++
+				j18++
 			}
-			dAtA11[j10] = uint8(num)
-			j10++
+			dAtA19[j18] = uint8(num)
+			j18++
 		}
-		i -= j10
-		copy(dAtA[i:], dAtA11[:j10])
-		i = encodeVarintLend(dAtA, i, uint64(j10))
+		i -= j18
+		copy(dAtA[i:], dAtA19[:j18])
+		i = encodeVarintLend(dAtA, i, uint64(j18))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1736,22 +2264,143 @@ func (m *BorrowMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if len(m.BorrowIds) > 0 {
-		dAtA13 := make([]byte, len(m.BorrowIds)*10)
-		var j12 int
+		dAtA21 := make([]byte, len(m.BorrowIds)*10)
+		var j20 int
 		for _, num := range m.BorrowIds {
 			for num >= 1<<7 {
-				dAtA13[j12] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA21[j20] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j12++
+				j20++
 			}
-			dAtA13[j12] = uint8(num)
-			j12++
+			dAtA21[j20] = uint8(num)
+			j20++
 		}
-		i -= j12
-		copy(dAtA[i:], dAtA13[:j12])
-		i = encodeVarintLend(dAtA, i, uint64(j12))
+		i -= j20
+		copy(dAtA[i:], dAtA21[:j20])
+		i = encodeVarintLend(dAtA, i, uint64(j20))
 		i--
 		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *StableBorrowMapping) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *StableBorrowMapping) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *StableBorrowMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.StableBorrowIds) > 0 {
+		dAtA23 := make([]byte, len(m.StableBorrowIds)*10)
+		var j22 int
+		for _, num := range m.StableBorrowIds {
+			for num >= 1<<7 {
+				dAtA23[j22] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j22++
+			}
+			dAtA23[j22] = uint8(num)
+			j22++
+		}
+		i -= j22
+		copy(dAtA[i:], dAtA23[:j22])
+		i = encodeVarintLend(dAtA, i, uint64(j22))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ModuleBalance) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ModuleBalance) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ModuleBalance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ModuleBalanceStats) > 0 {
+		for iNdEx := len(m.ModuleBalanceStats) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.ModuleBalanceStats[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintLend(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if m.PoolId != 0 {
+		i = encodeVarintLend(dAtA, i, uint64(m.PoolId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ModuleBalanceStats) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ModuleBalanceStats) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ModuleBalanceStats) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Balance.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintLend(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	if m.AssetId != 0 {
+		i = encodeVarintLend(dAtA, i, uint64(m.AssetId))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1792,6 +2441,8 @@ func (m *LendAsset) Size() (n int) {
 	n += 1 + l + sovLend(uint64(l))
 	l = m.UpdatedAmountIn.Size()
 	n += 1 + l + sovLend(uint64(l))
+	l = m.AvailableToBorrow.Size()
+	n += 1 + l + sovLend(uint64(l))
 	l = m.Reward_Accumulated.Size()
 	n += 1 + l + sovLend(uint64(l))
 	return n
@@ -1819,6 +2470,9 @@ func (m *BorrowAsset) Size() (n int) {
 	n += 1 + l + sovLend(uint64(l))
 	l = m.AmountOut.Size()
 	n += 1 + l + sovLend(uint64(l))
+	if m.BridgedAssetID != 0 {
+		n += 1 + sovLend(uint64(m.BridgedAssetID))
+	}
 	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BorrowingTime)
 	n += 1 + l + sovLend(uint64(l))
 	l = m.StableBorrowRate.Size()
@@ -1842,6 +2496,9 @@ func (m *Pool) Size() (n int) {
 	l = len(m.ModuleName)
 	if l > 0 {
 		n += 1 + l + sovLend(uint64(l))
+	}
+	if m.MainAssetId != 0 {
+		n += 1 + sovLend(uint64(m.MainAssetId))
 	}
 	if m.FirstBridgedAssetId != 0 {
 		n += 1 + sovLend(uint64(m.FirstBridgedAssetId))
@@ -1906,6 +2563,9 @@ func (m *AssetToPairMapping) Size() (n int) {
 	if m.AssetId != 0 {
 		n += 1 + sovLend(uint64(m.AssetId))
 	}
+	if m.PoolId != 0 {
+		n += 1 + sovLend(uint64(m.PoolId))
+	}
 	if len(m.PairId) > 0 {
 		l = 0
 		for _, e := range m.PairId {
@@ -1926,11 +2586,58 @@ func (m *UserLendIdMapping) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovLend(uint64(l))
 	}
-	if len(m.Lends) > 0 {
-		for _, e := range m.Lends {
-			l = e.Size()
-			n += 1 + l + sovLend(uint64(l))
+	if len(m.LendIds) > 0 {
+		l = 0
+		for _, e := range m.LendIds {
+			l += sovLend(uint64(e))
 		}
+		n += 1 + sovLend(uint64(l)) + l
+	}
+	return n
+}
+
+func (m *LendIdByOwnerAndPoolMapping) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovLend(uint64(l))
+	}
+	if m.PoolId != 0 {
+		n += 1 + sovLend(uint64(m.PoolId))
+	}
+	if len(m.LendIds) > 0 {
+		l = 0
+		for _, e := range m.LendIds {
+			l += sovLend(uint64(e))
+		}
+		n += 1 + sovLend(uint64(l)) + l
+	}
+	return n
+}
+
+func (m *BorrowIdByOwnerAndPoolMapping) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovLend(uint64(l))
+	}
+	if m.PoolId != 0 {
+		n += 1 + sovLend(uint64(m.PoolId))
+	}
+	if len(m.BorrowIds) > 0 {
+		l = 0
+		for _, e := range m.BorrowIds {
+			l += sovLend(uint64(e))
+		}
+		n += 1 + sovLend(uint64(l)) + l
 	}
 	return n
 }
@@ -1945,11 +2652,12 @@ func (m *UserBorrowIdMapping) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovLend(uint64(l))
 	}
-	if len(m.Borrows) > 0 {
-		for _, e := range m.Borrows {
-			l = e.Size()
-			n += 1 + l + sovLend(uint64(l))
+	if len(m.BorrowIds) > 0 {
+		l = 0
+		for _, e := range m.BorrowIds {
+			l += sovLend(uint64(e))
 		}
+		n += 1 + sovLend(uint64(l)) + l
 	}
 	return n
 }
@@ -1987,7 +2695,17 @@ func (m *AssetStats) Size() (n int) {
 	}
 	l = m.TotalBorrowed.Size()
 	n += 1 + l + sovLend(uint64(l))
+	l = m.TotalStableBorrowed.Size()
+	n += 1 + l + sovLend(uint64(l))
 	l = m.TotalLend.Size()
+	n += 1 + l + sovLend(uint64(l))
+	l = m.LendApr.Size()
+	n += 1 + l + sovLend(uint64(l))
+	l = m.BorrowApr.Size()
+	n += 1 + l + sovLend(uint64(l))
+	l = m.StableBorrowApr.Size()
+	n += 1 + l + sovLend(uint64(l))
+	l = m.UtilisationRatio.Size()
 	n += 1 + l + sovLend(uint64(l))
 	return n
 }
@@ -2026,6 +2744,9 @@ func (m *AssetRatesStats) Size() (n int) {
 	n += 1 + l + sovLend(uint64(l))
 	l = m.ReserveFactor.Size()
 	n += 1 + l + sovLend(uint64(l))
+	if m.CAssetId != 0 {
+		n += 1 + sovLend(uint64(m.CAssetId))
+	}
 	return n
 }
 
@@ -2058,6 +2779,54 @@ func (m *BorrowMapping) Size() (n int) {
 		}
 		n += 1 + sovLend(uint64(l)) + l
 	}
+	return n
+}
+
+func (m *StableBorrowMapping) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.StableBorrowIds) > 0 {
+		l = 0
+		for _, e := range m.StableBorrowIds {
+			l += sovLend(uint64(e))
+		}
+		n += 1 + sovLend(uint64(l)) + l
+	}
+	return n
+}
+
+func (m *ModuleBalance) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.PoolId != 0 {
+		n += 1 + sovLend(uint64(m.PoolId))
+	}
+	if len(m.ModuleBalanceStats) > 0 {
+		for _, e := range m.ModuleBalanceStats {
+			l = e.Size()
+			n += 1 + l + sovLend(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *ModuleBalanceStats) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AssetId != 0 {
+		n += 1 + sovLend(uint64(m.AssetId))
+	}
+	l = m.Balance.Size()
+	n += 1 + l + sovLend(uint64(l))
 	return n
 }
 
@@ -2287,6 +3056,40 @@ func (m *LendAsset) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 8:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AvailableToBorrow", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLend
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLend
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.AvailableToBorrow.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Reward_Accumulated", wireType)
 			}
 			var stringLen uint64
@@ -2513,6 +3316,25 @@ func (m *BorrowAsset) Unmarshal(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BridgedAssetID", wireType)
+			}
+			m.BridgedAssetID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BridgedAssetID |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BorrowingTime", wireType)
 			}
@@ -2545,7 +3367,7 @@ func (m *BorrowAsset) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 8:
+		case 9:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StableBorrowRate", wireType)
 			}
@@ -2579,7 +3401,7 @@ func (m *BorrowAsset) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 9:
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UpdatedAmountOut", wireType)
 			}
@@ -2613,7 +3435,7 @@ func (m *BorrowAsset) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 10:
+		case 11:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Interest_Accumulated", wireType)
 			}
@@ -2750,6 +3572,25 @@ func (m *Pool) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MainAssetId", wireType)
+			}
+			m.MainAssetId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MainAssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field FirstBridgedAssetId", wireType)
 			}
 			m.FirstBridgedAssetId = 0
@@ -2767,7 +3608,7 @@ func (m *Pool) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 4:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondBridgedAssetId", wireType)
 			}
@@ -2786,7 +3627,7 @@ func (m *Pool) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 5:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetData", wireType)
 			}
@@ -3125,6 +3966,25 @@ func (m *AssetToPairMapping) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PoolId", wireType)
+			}
+			m.PoolId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PoolId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
 			if wireType == 0 {
 				var v uint64
 				for shift := uint(0); ; shift += 7 {
@@ -3283,10 +4143,136 @@ func (m *UserLendIdMapping) Unmarshal(dAtA []byte) error {
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Lends", wireType)
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLend
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.LendIds = append(m.LendIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLend
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthLend
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthLend
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.LendIds) == 0 {
+					m.LendIds = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowLend
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.LendIds = append(m.LendIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field LendIds", wireType)
 			}
-			var msglen int
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLend(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthLend
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *LendIdByOwnerAndPoolMapping) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLend
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: LendIdByOwnerAndPoolMapping: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: LendIdByOwnerAndPoolMapping: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowLend
@@ -3296,26 +4282,296 @@ func (m *UserLendIdMapping) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthLend
 			}
-			postIndex := iNdEx + msglen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthLend
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Lends = append(m.Lends, LendAsset{})
-			if err := m.Lends[len(m.Lends)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PoolId", wireType)
+			}
+			m.PoolId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PoolId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLend
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.LendIds = append(m.LendIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLend
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthLend
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthLend
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.LendIds) == 0 {
+					m.LendIds = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowLend
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.LendIds = append(m.LendIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field LendIds", wireType)
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLend(dAtA[iNdEx:])
+			if err != nil {
 				return err
 			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthLend
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BorrowIdByOwnerAndPoolMapping) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLend
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BorrowIdByOwnerAndPoolMapping: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BorrowIdByOwnerAndPoolMapping: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLend
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLend
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PoolId", wireType)
+			}
+			m.PoolId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PoolId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLend
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.BorrowIds = append(m.BorrowIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLend
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthLend
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthLend
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.BorrowIds) == 0 {
+					m.BorrowIds = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowLend
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.BorrowIds = append(m.BorrowIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field BorrowIds", wireType)
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipLend(dAtA[iNdEx:])
@@ -3399,39 +4655,81 @@ func (m *UserBorrowIdMapping) Unmarshal(dAtA []byte) error {
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Borrows", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLend
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLend
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
 				}
-				if iNdEx >= l {
+				m.BorrowIds = append(m.BorrowIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLend
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthLend
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthLend
+				}
+				if postIndex > l {
 					return io.ErrUnexpectedEOF
 				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
 				}
+				elementCount = count
+				if elementCount != 0 && len(m.BorrowIds) == 0 {
+					m.BorrowIds = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowLend
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.BorrowIds = append(m.BorrowIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field BorrowIds", wireType)
 			}
-			if msglen < 0 {
-				return ErrInvalidLengthLend
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthLend
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Borrows = append(m.Borrows, BorrowAsset{})
-			if err := m.Borrows[len(m.Borrows)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipLend(dAtA[iNdEx:])
@@ -3701,6 +4999,40 @@ func (m *AssetStats) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalStableBorrowed", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLend
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLend
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.TotalStableBorrowed.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TotalLend", wireType)
 			}
 			var stringLen uint64
@@ -3730,6 +5062,142 @@ func (m *AssetStats) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.TotalLend.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LendApr", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLend
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLend
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.LendApr.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BorrowApr", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLend
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLend
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.BorrowApr.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StableBorrowApr", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLend
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLend
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.StableBorrowApr.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UtilisationRatio", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLend
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLend
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.UtilisationRatio.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4196,6 +5664,25 @@ func (m *AssetRatesStats) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 14:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CAssetId", wireType)
+			}
+			m.CAssetId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CAssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipLend(dAtA[iNdEx:])
@@ -4448,6 +5935,337 @@ func (m *BorrowMapping) Unmarshal(dAtA []byte) error {
 			} else {
 				return fmt.Errorf("proto: wrong wireType = %d for field BorrowIds", wireType)
 			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLend(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthLend
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *StableBorrowMapping) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLend
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: StableBorrowMapping: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: StableBorrowMapping: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLend
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.StableBorrowIds = append(m.StableBorrowIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowLend
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthLend
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthLend
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.StableBorrowIds) == 0 {
+					m.StableBorrowIds = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowLend
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.StableBorrowIds = append(m.StableBorrowIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field StableBorrowIds", wireType)
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLend(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthLend
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ModuleBalance) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLend
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ModuleBalance: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ModuleBalance: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PoolId", wireType)
+			}
+			m.PoolId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PoolId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ModuleBalanceStats", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthLend
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthLend
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ModuleBalanceStats = append(m.ModuleBalanceStats, ModuleBalanceStats{})
+			if err := m.ModuleBalanceStats[len(m.ModuleBalanceStats)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLend(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthLend
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ModuleBalanceStats) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLend
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ModuleBalanceStats: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ModuleBalanceStats: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
+			}
+			m.AssetId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Balance", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLend
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthLend
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthLend
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Balance.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipLend(dAtA[iNdEx:])

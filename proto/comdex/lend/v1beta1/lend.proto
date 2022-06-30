@@ -41,7 +41,13 @@ message LendAsset {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
 
-  string reward_Accumulated = 8 [
+  string available_to_borrow = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"available_to_borrow\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  string reward_Accumulated = 9 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"reward_accumulated\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
@@ -59,9 +65,11 @@ message BorrowAsset {
     (gogoproto.customname) = "LendingID",
     (gogoproto.moretags) = "yaml:\"lending_id\""
   ];
+
   bool is_stable_borrow = 3 [
     (gogoproto.moretags) = "yaml:\"is_stable_borrow\""
   ];
+
   uint64 pair_id = 4 [
     (gogoproto.customname) = "PairID",
     (gogoproto.moretags) = "yaml:\"pair_id\""
@@ -79,25 +87,30 @@ message BorrowAsset {
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 
-  google.protobuf.Timestamp borrowing_time = 7 [
+  uint64 bridged_asset_id = 7 [
+    (gogoproto.customname) = "BridgedAssetID",
+    (gogoproto.moretags) = "yaml:\"bridged_asset_id\""
+  ];
+
+  google.protobuf.Timestamp borrowing_time = 8 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"borrowing_time\""
   ];
 
-  string stable_borrow_rate = 8 [
+  string stable_borrow_rate = 9 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"stable_borrow_rate\""
   ];
 
-  string updated_amount_out = 9 [
+  string updated_amount_out = 10 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"updated_amount_out\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
 
-  string interest_Accumulated = 10 [
+  string interest_Accumulated = 11 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"interest_accumulated\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
@@ -115,17 +128,22 @@ message Pool {
     (gogoproto.moretags) = "yaml:\"module_name\""
   ];
 
-  uint64 first_bridged_asset_id = 3 [
+  uint64 main_asset_id = 3 [
+    (gogoproto.customname) = "MainAssetId",
+    (gogoproto.moretags) = "yaml:\"main_asset_id\""
+  ];
+
+  uint64 first_bridged_asset_id = 4 [
     (gogoproto.customname) = "FirstBridgedAssetId",
     (gogoproto.moretags) = "yaml:\"first_bridged_asset_id\""
   ];
 
-  uint64 second_bridged_asset_id = 4 [
+  uint64 second_bridged_asset_id = 5 [
     (gogoproto.customname) = "SecondBridgedAssetId",
     (gogoproto.moretags) = "yaml:\"second_bridged_asset_id\""
   ];
 
-  repeated AssetDataPoolMapping asset_data = 5 [
+  repeated AssetDataPoolMapping asset_data = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.customname) = "AssetData",
     (gogoproto.moretags) = "yaml:\"asset_data\""
@@ -162,7 +180,11 @@ message AssetToPairMapping{
     (gogoproto.customname) = "AssetId",
     (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
-  repeated uint64 pair_id = 2 [
+  uint64 pool_id = 2 [
+    (gogoproto.customname) = "PoolId",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  repeated uint64 pair_id = 3 [
     (gogoproto.customname) = "PairId",
     (gogoproto.moretags) = "yaml:\"pair_id\""
   ];
@@ -170,19 +192,41 @@ message AssetToPairMapping{
 
 message UserLendIdMapping{
   string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
-  repeated LendAsset lends = 2 [
-    (gogoproto.customname) = "Lends",
-    (gogoproto.moretags) = "yaml:\"lends\"",
-    (gogoproto.nullable) = false
+  repeated uint64 lend_ids = 2 [
+    (gogoproto.customname) = "LendIds",
+    (gogoproto.moretags) = "yaml:\"lend_ids\""
+  ];
+}
+
+message LendIdByOwnerAndPoolMapping{
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
+  uint64 pool_id = 2 [
+    (gogoproto.customname) = "PoolId",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  repeated uint64 lendIds = 3 [
+    (gogoproto.customname) = "LendIds",
+    (gogoproto.moretags) = "yaml:\"lend_ids\""
+  ];
+}
+
+message BorrowIdByOwnerAndPoolMapping{
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
+  uint64 pool_id = 2 [
+    (gogoproto.customname) = "PoolId",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  repeated uint64 borrowIds = 3 [
+    (gogoproto.customname) = "BorrowIds",
+    (gogoproto.moretags) = "yaml:\"borrow_ids\""
   ];
 }
 
 message UserBorrowIdMapping{
   string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
-  repeated BorrowAsset borrows = 2 [
-    (gogoproto.customname) = "Borrows",
-    (gogoproto.moretags) = "yaml:\"borrows\"",
-    (gogoproto.nullable) = false
+  repeated uint64 borrow_ids = 2 [
+    (gogoproto.customname) = "BorrowIds",
+    (gogoproto.moretags) = "yaml:\"borrow_ids\""
   ];
 }
 
@@ -214,10 +258,40 @@ message AssetStats{
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
 
-  string total_lend = 4 [
+  string total_stable_borrowed = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"total_stable_borrowed\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  string total_lend = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"total_lend\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  string lend_apr = 6 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"lend_apr\""
+  ];
+
+  string borrow_apr = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"borrow_apr\""
+  ];
+
+  string stable_borrow_apr = 8 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"stable_borrow_apr\""
+  ];
+
+  string utilisation_ratio = 9 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"utilisation_ratio\""
   ];
 }
 
@@ -284,6 +358,10 @@ message AssetRatesStats{
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"reserve_factor\""
   ];
+  uint64 c_asset_id = 14 [
+    (gogoproto.customname) = "CAssetId",
+    (gogoproto.moretags) = "yaml:\"c_asset_id\""
+  ];
 
 }
 
@@ -298,5 +376,35 @@ message BorrowMapping{
   repeated uint64 borrow_ids = 1 [
     (gogoproto.customname) = "BorrowIds",
     (gogoproto.moretags) = "yaml:\"borrow_ids\""
+  ];
+}
+
+message StableBorrowMapping{
+  repeated uint64 stable_borrow_ids = 1 [
+    (gogoproto.customname) = "StableBorrowIds",
+    (gogoproto.moretags) = "yaml:\"stable_borrow_ids\""
+  ];
+}
+
+message ModuleBalance{
+  uint64 pool_id = 1 [
+    (gogoproto.customname) = "PoolId",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  repeated ModuleBalanceStats module_balance_stats = 2[
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"module_balance_stats\""
+  ];
+}
+
+message ModuleBalanceStats{
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetId",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  cosmos.base.v1beta1.Coin balance = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"balance\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 }

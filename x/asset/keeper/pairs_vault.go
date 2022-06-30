@@ -127,7 +127,6 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 			Id:                  id + 1,
 			AppMappingId:        msg.AppMappingId,
 			PairId:              msg.PairId,
-			LiquidationRatio:    msg.LiquidationRatio,
 			StabilityFee:        msg.StabilityFee,
 			ClosingFee:          msg.ClosingFee,
 			LiquidationPenalty:  msg.LiquidationPenalty,
@@ -135,7 +134,7 @@ func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.
 			IsVaultActive:       msg.IsVaultActive,
 			DebtCeiling:         msg.DebtCeiling,
 			DebtFloor:           msg.DebtFloor,
-			IsPsmPair:           msg.IsPsmPair,
+			IsStableMintVault:   msg.IsStableMintVault,
 			MinCr:               msg.MinCr,
 			PairName:            msg.PairName,
 			AssetOutOraclePrice: msg.AssetOutOraclePrice,
@@ -189,7 +188,6 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBind
 		Id:                  id + 1,
 		AppMappingId:        pairVaultBinding.AppMappingID,
 		PairId:              pairVaultBinding.PairID,
-		LiquidationRatio:    pairVaultBinding.LiquidationRatio,
 		StabilityFee:        pairVaultBinding.StabilityFee,
 		ClosingFee:          pairVaultBinding.ClosingFee,
 		LiquidationPenalty:  pairVaultBinding.LiquidationPenalty,
@@ -197,7 +195,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBind
 		IsVaultActive:       pairVaultBinding.IsVaultActive,
 		DebtCeiling:         DebtCeiling,
 		DebtFloor:           DebtFloor,
-		IsPsmPair:           pairVaultBinding.IsPsmPair,
+		IsStableMintVault:   pairVaultBinding.IsStableMintVault,
 		MinCr:               pairVaultBinding.MinCr,
 		PairName:            pairVaultBinding.PairName,
 		AssetOutOraclePrice: pairVaultBinding.AssetOutOraclePrice,
@@ -261,7 +259,6 @@ func (k *Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings
 			ExtPairVaultData.Id = data.Id
 			ExtPairVaultData.PairId = data.PairId
 			ExtPairVaultData.AppMappingId = data.AppMappingId
-			ExtPairVaultData.LiquidationRatio = updatePairVault.LiquidationRatio
 			ExtPairVaultData.StabilityFee = updatePairVault.StabilityFee
 			ExtPairVaultData.ClosingFee = updatePairVault.ClosingFee
 			ExtPairVaultData.LiquidationPenalty = updatePairVault.LiquidationPenalty
@@ -269,7 +266,7 @@ func (k *Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings
 			ExtPairVaultData.IsVaultActive = data.IsVaultActive
 			ExtPairVaultData.DebtCeiling = sdk.NewInt(int64(updatePairVault.DebtCeiling))
 			ExtPairVaultData.DebtFloor = sdk.NewInt(int64(updatePairVault.DebtFloor))
-			ExtPairVaultData.IsPsmPair = data.IsPsmPair
+			ExtPairVaultData.IsStableMintVault = data.IsStableMintVault
 			ExtPairVaultData.MinCr = updatePairVault.MinCr
 			ExtPairVaultData.PairName = data.PairName
 			ExtPairVaultData.AssetOutOraclePrice = data.AssetOutOraclePrice
