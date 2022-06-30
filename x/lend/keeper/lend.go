@@ -407,7 +407,7 @@ func (k *Keeper) GetAssetStatsByPoolIdAndAssetId(ctx sdk.Context, assetID, poolI
 }
 
 func (k *Keeper) AssetStatsByPoolIdAndAssetId(ctx sdk.Context, assetID, poolId uint64) (AssetStats types.AssetStats, found bool) {
-	AssetStats, found = k.UpdateAPR(ctx, assetID, poolId)
+	AssetStats, found = k.UpdateAPR(ctx, poolId, assetID)
 	if !found {
 		return AssetStats, false
 	}
