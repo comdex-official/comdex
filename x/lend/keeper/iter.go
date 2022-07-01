@@ -78,6 +78,7 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 			PairID:               borrow.PairID,
 			AmountIn:             borrow.AmountIn,
 			AmountOut:            borrow.AmountOut,
+			BridgedAssetAmount:   borrow.BridgedAssetAmount,
 			BorrowingTime:        borrow.BorrowingTime,
 			StableBorrowRate:     borrow.StableBorrowRate,
 			UpdatedAmountOut:     borrow.UpdatedAmountOut.Add(interestPerBlock),
@@ -116,7 +117,7 @@ func (k Keeper) RebalanceStableRates(ctx sdk.Context) error {
 	for _, v := range stableBorrows.StableBorrowIds {
 		borrowPos, _ := k.GetBorrow(ctx, v)
 		pair, _ := k.GetLendPair(ctx, borrowPos.PairID)
-		assetStats, _ := k.UpdateAPR(ctx, pair.AssetOut, pair.AssetOutPoolId)
+		assetStats, _ := k.UpdateAPR(ctx, pair.AssetOutPoolId, pair.AssetOut)
 		utilizationRatio, _ := k.GetUtilisationRatioByPoolIdAndAssetId(ctx, pair.AssetOutPoolId, pair.AssetOut)
 		perc1, _ := sdk.NewDecFromStr("0.2")
 		perc2, _ := sdk.NewDecFromStr("0.9")
