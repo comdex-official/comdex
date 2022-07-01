@@ -10,7 +10,8 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
+func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
+
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 	k.TriggerAndUpdateEpochInfos(ctx)
 
@@ -20,10 +21,10 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 	}
 
 	appIDsVault := k.GetAppIDs(ctx).WhitelistedAppMappingIdsVaults
-	for i := range appIDsVault {
+	for i,_ := range appIDsVault {
 		err := k.IterateVaults(ctx, appIDsVault[i])
 		if err != nil {
-			return
+			continue
 		}
 	}
 
