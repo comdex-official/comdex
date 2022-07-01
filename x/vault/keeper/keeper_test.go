@@ -171,7 +171,7 @@ func (s *KeeperTestSuite) CreateNewPair(addr sdk.Address, assetIn, assetOut uint
 func (s *KeeperTestSuite) CreateNewExtendedVaultPair(
 	pairName string,
 	appMappingID, pairID uint64,
-	isPsmPair, isVaultActive bool,
+	isStableMintVault, isVaultActive bool,
 ) uint64 {
 	err := s.app.AssetKeeper.AddExtendedPairsVaultRecords(s.ctx, assettypes.ExtendedPairVault{
 		AppMappingId:        appMappingID,
@@ -183,7 +183,7 @@ func (s *KeeperTestSuite) CreateNewExtendedVaultPair(
 		IsVaultActive:       isVaultActive,
 		DebtCeiling:         sdk.NewInt(1000000000000000000),
 		DebtFloor:           sdk.NewInt(100000000),
-		IsStableMintVault:   isPsmPair,
+		IsStableMintVault:   isStableMintVault,
 		MinCr:               sdk.NewDecWithPrec(23, 1), // 2.3
 		PairName:            pairName,
 		AssetOutOraclePrice: true,
