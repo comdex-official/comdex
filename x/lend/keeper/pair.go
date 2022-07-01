@@ -7,9 +7,7 @@ import (
 )
 
 func (k *Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_Pair) error {
-
 	for _, msg := range records {
-
 		_, found := k.GetLendPair(ctx, msg.Id)
 		if found {
 			return types.ErrorDuplicateLendPair
@@ -40,9 +38,9 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		}
 	}
 
-	poolId := k.GetPoolId(ctx)
+	poolID := k.GetPoolID(ctx)
 	newPool := types.Pool{
-		PoolId:               poolId + 1,
+		PoolId:               poolID + 1,
 		ModuleName:           pool.ModuleName,
 		MainAssetId:          pool.MainAssetId,
 		FirstBridgedAssetId:  pool.FirstBridgedAssetId,
@@ -50,7 +48,7 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		AssetData:            pool.AssetData,
 	}
 	k.SetPool(ctx, newPool)
-	k.SetPoolId(ctx, newPool.PoolId)
+	k.SetPoolID(ctx, newPool.PoolId)
 	return nil
 }
 
@@ -141,9 +139,7 @@ func (k *Keeper) GetLendPairID(ctx sdk.Context) uint64 {
 }
 
 func (k *Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRatesStats) error {
-
 	for _, msg := range records {
-
 		_, found := k.GetAssetRatesStats(ctx, msg.AssetId)
 		if found {
 			return types.ErrorDuplicateAssetRatesStats
@@ -183,10 +179,10 @@ func (k *Keeper) SetAssetRatesStats(ctx sdk.Context, assetRatesStats types.Asset
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAssetRatesStats(ctx sdk.Context, assetId uint64) (assetRatesStats types.AssetRatesStats, found bool) {
+func (k *Keeper) GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRatesStats types.AssetRatesStats, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetRatesStatsKey(assetId)
+		key   = types.AssetRatesStatsKey(assetID)
 		value = store.Get(key)
 	)
 

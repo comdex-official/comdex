@@ -14,7 +14,6 @@ func (k *Keeper) VerifyCollaterlizationRatio(
 	assetOut assettypes.Asset,
 	liquidationThreshold sdk.Dec,
 ) error {
-
 	collaterlizationRatio, err := k.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
 	if err != nil {
 		return err
@@ -34,7 +33,6 @@ func (k *Keeper) CalculateCollaterlizationRatio(
 	amountOut sdk.Int,
 	assetOut assettypes.Asset,
 ) (sdk.Dec, error) {
-
 	assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorPriceInDoesNotExist

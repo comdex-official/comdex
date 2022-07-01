@@ -18,7 +18,7 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -84,7 +84,7 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
+	var ( //nolint:prealloc
 		ctx   = sdk.UnwrapSDKContext(c)
 		lends []types.LendAsset
 	)
@@ -98,11 +98,7 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 	if !found {
 		return &types.QueryAllLendByOwnerResponse{}, nil
 	}
-
-	for _, data := range userVaultAssetData {
-		lends = append(lends, data)
-
-	}
+	lends = append(lends, userVaultAssetData...)
 
 	return &types.QueryAllLendByOwnerResponse{
 		Lends: lends,
@@ -113,7 +109,7 @@ func (q queryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.Qu
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
+	var ( //nolint:prealloc
 		ctx   = sdk.UnwrapSDKContext(c)
 		lends []types.LendAsset
 	)
@@ -123,15 +119,11 @@ func (q queryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.Qu
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, found := q.LendIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
+	userVaultAssetData, found := q.LendIDByOwnerAndPool(ctx, req.Owner, req.PoolId)
 	if !found {
 		return &types.QueryAllLendByOwnerAndPoolResponse{}, nil
 	}
-
-	for _, data := range userVaultAssetData {
-		lends = append(lends, data)
-
-	}
+	lends = append(lends, userVaultAssetData...)
 
 	return &types.QueryAllLendByOwnerAndPoolResponse{
 		Lends: lends,
@@ -142,7 +134,7 @@ func (q queryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
+	var ( //nolint:prealloc
 		ctx     = sdk.UnwrapSDKContext(c)
 		borrows []types.BorrowAsset
 	)
@@ -152,15 +144,11 @@ func (q queryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, found := q.BorrowIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
+	userVaultAssetData, found := q.BorrowIDByOwnerAndPool(ctx, req.Owner, req.PoolId)
 	if !found {
 		return &types.QueryAllBorrowByOwnerAndPoolResponse{}, nil
 	}
-
-	for _, data := range userVaultAssetData {
-		borrows = append(borrows, data)
-
-	}
+	borrows = append(borrows, userVaultAssetData...)
 
 	return &types.QueryAllBorrowByOwnerAndPoolResponse{
 		Borrows: borrows,
@@ -395,7 +383,7 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
+	var ( //nolint:prealloc
 		ctx     = sdk.UnwrapSDKContext(c)
 		borrows []types.BorrowAsset
 	)
@@ -409,11 +397,7 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 	if !found {
 		return &types.QueryAllBorrowByOwnerResponse{}, nil
 	}
-
-	for _, data := range userVaultAssetData {
-		borrows = append(borrows, data)
-
-	}
+	borrows = append(borrows, userVaultAssetData...)
 
 	return &types.QueryAllBorrowByOwnerResponse{
 		Borrows: borrows,
@@ -482,7 +466,7 @@ func (q queryServer) QueryAssetStats(c context.Context, req *types.QueryAssetSta
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	assetStatsData, found := q.AssetStatsByPoolIdAndAssetId(ctx, req.AssetId, req.PoolId)
+	assetStatsData, found := q.AssetStatsByPoolIDAndAssetID(ctx, req.AssetId, req.PoolId)
 	if !found {
 		return &types.QueryAssetStatsResponse{}, nil
 	}
@@ -498,7 +482,7 @@ func (q queryServer) QueryModuleBalance(c context.Context, req *types.QueryModul
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	modBal, found := q.GetModuleBalanceByPoolId(ctx, req.PoolId)
+	modBal, found := q.GetModuleBalanceByPoolID(ctx, req.PoolId)
 	if !found {
 		return &types.QueryModuleBalanceResponse{}, nil
 	}

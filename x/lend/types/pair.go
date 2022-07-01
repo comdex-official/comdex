@@ -3,7 +3,6 @@ package types
 import "fmt"
 
 func (m *Extended_Pair) Validate() error {
-
 	if m.AssetIn == 0 {
 		return fmt.Errorf("asset_in cannot be zero")
 	}

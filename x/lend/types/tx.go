@@ -5,12 +5,12 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func NewMsgLend(lender sdk.AccAddress, assetId uint64, amount sdk.Coin, poolId uint64) *MsgLend {
+func NewMsgLend(lender sdk.AccAddress, assetID uint64, amount sdk.Coin, poolID uint64) *MsgLend {
 	return &MsgLend{
 		Lender:  lender.String(),
-		AssetId: assetId,
+		AssetId: assetID,
 		Amount:  amount,
-		PoolId:  poolId,
+		PoolId:  poolID,
 	}
 }
 
@@ -35,16 +35,16 @@ func (msg *MsgLend) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{lender}
 }
 
-// GetSignBytes get the bytes for the message signer to sign on
+// GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgLend) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgWithdraw(lender sdk.AccAddress, lendId uint64, amount sdk.Coin) *MsgWithdraw {
+func NewMsgWithdraw(lender sdk.AccAddress, lendID uint64, amount sdk.Coin) *MsgWithdraw {
 	return &MsgWithdraw{
 		Lender: lender.String(),
-		LendId: lendId,
+		LendId: lendID,
 		Amount: amount,
 	}
 }
@@ -70,17 +70,17 @@ func (msg *MsgWithdraw) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{lender}
 }
 
-// GetSignBytes get the bytes for the message signer to sign on
+// GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgWithdraw) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgBorrow(borrower sdk.AccAddress, lendId, pairId uint64, isStableBorrow bool, amountIn, amountOut sdk.Coin) *MsgBorrow {
+func NewMsgBorrow(borrower sdk.AccAddress, lendID, pairID uint64, isStableBorrow bool, amountIn, amountOut sdk.Coin) *MsgBorrow {
 	return &MsgBorrow{
 		Borrower:       borrower.String(),
-		LendId:         lendId,
-		PairId:         pairId,
+		LendId:         lendID,
+		PairId:         pairID,
 		IsStableBorrow: isStableBorrow,
 		AmountIn:       amountIn,
 		AmountOut:      amountOut,
@@ -111,16 +111,16 @@ func (msg *MsgBorrow) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{borrower}
 }
 
-// GetSignBytes get the bytes for the message signer to sign on
+// GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgBorrow) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgRepay(borrower sdk.AccAddress, borrowId uint64, amount sdk.Coin) *MsgRepay {
+func NewMsgRepay(borrower sdk.AccAddress, borrowID uint64, amount sdk.Coin) *MsgRepay {
 	return &MsgRepay{
 		Borrower: borrower.String(),
-		BorrowId: borrowId,
+		BorrowId: borrowID,
 		Amount:   amount,
 	}
 }
@@ -146,16 +146,16 @@ func (msg *MsgRepay) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{borrower}
 }
 
-// GetSignBytes get the bytes for the message signer to sign on
+// GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgRepay) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgFundModuleAccounts(moduleName string, AssetId uint64, lender sdk.AccAddress, amount sdk.Coin) *MsgFundModuleAccounts {
+func NewMsgFundModuleAccounts(moduleName string, assetID uint64, lender sdk.AccAddress, amount sdk.Coin) *MsgFundModuleAccounts {
 	return &MsgFundModuleAccounts{
 		ModuleName: moduleName,
-		AssetId:    AssetId,
+		AssetId:    assetID,
 		Lender:     lender.String(),
 		Amount:     amount,
 	}
@@ -182,16 +182,16 @@ func (msg *MsgFundModuleAccounts) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{lender}
 }
 
-// GetSignBytes get the bytes for the message signer to sign on
+// GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgFundModuleAccounts) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgDeposit(lender sdk.AccAddress, lendId uint64, amount sdk.Coin) *MsgDeposit {
+func NewMsgDeposit(lender sdk.AccAddress, lendID uint64, amount sdk.Coin) *MsgDeposit {
 	return &MsgDeposit{
 		Lender: lender.String(),
-		LendId: lendId,
+		LendId: lendID,
 		Amount: amount,
 	}
 }
@@ -217,16 +217,16 @@ func (msg *MsgDeposit) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{lender}
 }
 
-// GetSignBytes get the bytes for the message signer to sign on
+// GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgDeposit) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgCloseLend(lender sdk.AccAddress, lendId uint64) *MsgCloseLend {
+func NewMsgCloseLend(lender sdk.AccAddress, lendID uint64) *MsgCloseLend {
 	return &MsgCloseLend{
 		Lender: lender.String(),
-		LendId: lendId,
+		LendId: lendID,
 	}
 }
 
@@ -246,16 +246,16 @@ func (msg *MsgCloseLend) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{lender}
 }
 
-// GetSignBytes get the bytes for the message signer to sign on
+// GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgCloseLend) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgDraw(borrower sdk.AccAddress, borrowId uint64, amount sdk.Coin) *MsgDraw {
+func NewMsgDraw(borrower sdk.AccAddress, borrowID uint64, amount sdk.Coin) *MsgDraw {
 	return &MsgDraw{
 		Borrower: borrower.String(),
-		BorrowId: borrowId,
+		BorrowId: borrowID,
 		Amount:   amount,
 	}
 }
@@ -281,16 +281,16 @@ func (msg *MsgDraw) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{lender}
 }
 
-// GetSignBytes get the bytes for the message signer to sign on
+// GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgDraw) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgDepositBorrow(borrower sdk.AccAddress, borrowId uint64, amount sdk.Coin) *MsgDepositBorrow {
+func NewMsgDepositBorrow(borrower sdk.AccAddress, borrowID uint64, amount sdk.Coin) *MsgDepositBorrow {
 	return &MsgDepositBorrow{
 		Borrower: borrower.String(),
-		BorrowId: borrowId,
+		BorrowId: borrowID,
 		Amount:   amount,
 	}
 }
@@ -316,16 +316,16 @@ func (msg *MsgDepositBorrow) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{lender}
 }
 
-// GetSignBytes get the bytes for the message signer to sign on
+// GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgDepositBorrow) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgCloseBorrow(borrower sdk.AccAddress, borrowId uint64) *MsgCloseBorrow {
+func NewMsgCloseBorrow(borrower sdk.AccAddress, borrowID uint64) *MsgCloseBorrow {
 	return &MsgCloseBorrow{
 		Borrower: borrower.String(),
-		BorrowId: borrowId,
+		BorrowId: borrowID,
 	}
 }
 
@@ -346,7 +346,7 @@ func (msg *MsgCloseBorrow) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{lender}
 }
 
-// GetSignBytes get the bytes for the message signer to sign on
+// GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgCloseBorrow) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
