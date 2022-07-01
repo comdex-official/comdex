@@ -89,70 +89,12 @@ func (k *Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault
 	return apps, true
 }
 
-func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.ExtendedPairVault) error {
-	for _, msg := range records {
-		_, found := k.GetApp(ctx, msg.AppMappingId)
-		if !found {
-			return types.ErrorUnknownAppType
-		}
-		_, pairExists := k.GetPair(ctx, msg.PairId)
-		if !pairExists {
-			return types.ErrorPairDoesNotExist
-		}
-
-		var id = k.GetPairsVaultID(ctx)
-
-		extendedPairVault, _ := k.GetPairsVaults(ctx)
-
-		if len(extendedPairVault) > 0 {
-			for _, data := range extendedPairVault {
-				if (data.PairName == msg.PairName) && (data.AppMappingId == msg.AppMappingId) {
-					return types.ErrorPairNameForID
-				}
-			}
-		}
-		if msg.DebtFloor.GTE(msg.DebtCeiling) {
-			return types.ErrorDebtFloorIsGreaterThanDebtCeiling
-		}
-		if !(msg.StabilityFee.GTE(sdk.ZeroDec()) && msg.StabilityFee.LT(sdk.OneDec())) {
-			return types.ErrorFeeShouldNotBeGTOne
-		}
-		if !(msg.ClosingFee.GTE(sdk.ZeroDec()) && msg.ClosingFee.LT(sdk.OneDec())) {
-			return types.ErrorFeeShouldNotBeGTOne
-		}
-		if !(msg.DrawDownFee.GTE(sdk.ZeroDec()) && msg.DrawDownFee.LT(sdk.OneDec())) {
-			return types.ErrorFeeShouldNotBeGTOne
-		}
-		var app = types.ExtendedPairVault{
-			Id:                  id + 1,
-			AppMappingId:        msg.AppMappingId,
-			PairId:              msg.PairId,
-			StabilityFee:        msg.StabilityFee,
-			ClosingFee:          msg.ClosingFee,
-			LiquidationPenalty:  msg.LiquidationPenalty,
-			DrawDownFee:         msg.DrawDownFee,
-			IsVaultActive:       msg.IsVaultActive,
-			DebtCeiling:         msg.DebtCeiling,
-			DebtFloor:           msg.DebtFloor,
-			IsStableMintVault:   msg.IsStableMintVault,
-			MinCr:               msg.MinCr,
-			PairName:            msg.PairName,
-			AssetOutOraclePrice: msg.AssetOutOraclePrice,
-			AssetOutPrice:       msg.AssetOutPrice,
-			MinUsdValueLeft:     msg.MinUsdValueLeft,
-		}
-
-		k.SetPairsVaultID(ctx, app.Id)
-		k.SetPairsVault(ctx, app)
-	}
-	return nil
-}
 
 func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBinding *bindings.MsgAddExtendedPairsVault) error {
 	DebtCeiling := sdk.NewInt(int64(pairVaultBinding.DebtCeiling))
 	DebtFloor := sdk.NewInt(int64(pairVaultBinding.DebtFloor))
 
-	_, found := k.GetApp(ctx, pairVaultBinding.AppMappingID)
+	_, found := k.GetApp(ctx, pairVaultBinding.AppID)
 	if !found {
 		return types.ErrorUnknownAppType
 	}
@@ -167,7 +109,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBind
 
 	if len(extendedPairVault) > 0 {
 		for _, data := range extendedPairVault {
-			if (data.PairName == pairVaultBinding.PairName) && (data.AppMappingId == pairVaultBinding.AppMappingID) {
+			if (data.PairName == pairVaultBinding.PairName) && (data.AppId == pairVaultBinding.AppID) {
 				return types.ErrorPairNameForID
 			}
 		}
@@ -186,7 +128,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBind
 	}
 	var app = types.ExtendedPairVault{
 		Id:                  id + 1,
-		AppMappingId:        pairVaultBinding.AppMappingID,
+		AppId:               pairVaultBinding.AppID,
 		PairId:              pairVaultBinding.PairID,
 		StabilityFee:        pairVaultBinding.StabilityFee,
 		ClosingFee:          pairVaultBinding.ClosingFee,
@@ -209,11 +151,11 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBind
 	return nil
 }
 
-func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appMappingID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, debtCeiling, debtFloor uint64, PairName string) (bool, string) {
+func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, debtCeiling, debtFloor uint64, PairName string) (bool, string) {
 	DebtCeiling := sdk.NewInt(int64(debtCeiling))
 	DebtFloor := sdk.NewInt(int64(debtFloor))
 
-	_, found := k.GetApp(ctx, appMappingID)
+	_, found := k.GetApp(ctx, appID)
 	if !found {
 		return false, types.ErrorUnknownAppType.Error()
 	}
@@ -225,7 +167,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appMappi
 
 	if len(extendedPairVault) > 0 {
 		for _, data := range extendedPairVault {
-			if (data.PairName == PairName) && (data.AppMappingId == appMappingID) {
+			if (data.PairName == PairName) && (data.AppId == appID) {
 				return false, types.ErrorPairNameForID.Error()
 			}
 		}
@@ -254,11 +196,11 @@ func (k *Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings
 	}
 	var count = 0
 	for _, data := range pairVaults {
-		if data.AppMappingId == updatePairVault.AppMappingID && data.Id == updatePairVault.ExtPairID {
+		if data.AppId == updatePairVault.AppID && data.Id == updatePairVault.ExtPairID {
 			count++
 			ExtPairVaultData.Id = data.Id
 			ExtPairVaultData.PairId = data.PairId
-			ExtPairVaultData.AppMappingId = data.AppMappingId
+			ExtPairVaultData.AppId = data.AppId
 			ExtPairVaultData.StabilityFee = updatePairVault.StabilityFee
 			ExtPairVaultData.ClosingFee = updatePairVault.ClosingFee
 			ExtPairVaultData.LiquidationPenalty = updatePairVault.LiquidationPenalty
@@ -290,7 +232,7 @@ func (k *Keeper) WasmUpdatePairsVaultQuery(ctx sdk.Context, appID, exPairID uint
 	}
 	var count = 0
 	for _, data := range pairVaults {
-		if data.AppMappingId == appID && data.Id == exPairID {
+		if data.AppId == appID && data.Id == exPairID {
 			count++
 		}
 	}

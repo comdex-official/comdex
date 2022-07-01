@@ -51,7 +51,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
-	if appMapping.Id != extendedPairVault.AppMappingId {
+	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
 	}
 
@@ -146,7 +146,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 
 	newVault.ClosingFeeAccumulated = closingFeeVal
 	newVault.AmountOut = msg.AmountOut
-	newVault.AppMappingId = appMapping.Id
+	newVault.AppId = appMapping.Id
 	newVault.InterestAccumulated = zeroVal
 	newVault.Owner = msg.From
 	newVault.CreatedAt = time.Now()
@@ -167,7 +167,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 
 		userExtendedPairData.ExtendedPairId = newVault.ExtendedPairVaultID
 		userExtendedPairData.VaultId = newVault.Id
-		userAppData.AppMappingId = appMapping.Id
+		userAppData.AppId = appMapping.Id
 		userAppData.UserExtendedPairVault = append(userAppData.UserExtendedPairVault, &userExtendedPairData)
 		userMappingData.Owner = msg.From
 		userMappingData.UserVaultApp = append(userMappingData.UserVaultApp, &userAppData)
@@ -185,7 +185,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 			userExtendedPairData.ExtendedPairId = newVault.ExtendedPairVaultID
 
 			for _, appData := range userVaultExtendedPairMappingData.UserVaultApp {
-				if appData.AppMappingId == appMapping.Id {
+				if appData.AppId == appMapping.Id {
 					appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &userExtendedPairData)
 				}
 			}
@@ -196,7 +196,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 
 			userExtendedPairData.ExtendedPairId = newVault.ExtendedPairVaultID
 			userExtendedPairData.VaultId = newVault.Id
-			userAppData.AppMappingId = appMapping.Id
+			userAppData.AppId = appMapping.Id
 			userAppData.UserExtendedPairVault = append(userAppData.UserExtendedPairVault, &userExtendedPairData)
 			userVaultExtendedPairMappingData.UserVaultApp = append(userVaultExtendedPairMappingData.UserVaultApp, &userAppData)
 			k.SetUserVaultExtendedPairMapping(ctx, userVaultExtendedPairMappingData)
@@ -240,7 +240,7 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 	}
 
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
-	if appMapping.Id != extendedPairVault.AppMappingId {
+	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
 	}
 
@@ -252,7 +252,7 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 		return nil, types.ErrVaultAccessUnauthorised
 	}
 
-	if appMapping.Id != userVault.AppMappingId {
+	if appMapping.Id != userVault.AppId {
 		return nil, types.ErrorInvalidAppMappingData
 	}
 	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
@@ -313,7 +313,7 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 		return nil, types.ErrorVaultInactive
 	}
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
-	if appMapping.Id != extendedPairVault.AppMappingId {
+	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
 	}
 
@@ -325,7 +325,7 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 		return nil, types.ErrVaultAccessUnauthorised
 	}
 
-	if appMapping.Id != userVault.AppMappingId {
+	if appMapping.Id != userVault.AppId {
 		return nil, types.ErrorInvalidAppMappingData
 	}
 	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
@@ -395,7 +395,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		return nil, types.ErrorVaultInactive
 	}
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
-	if appMapping.Id != extendedPairVault.AppMappingId {
+	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
 	}
 
@@ -407,7 +407,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		return nil, types.ErrVaultAccessUnauthorised
 	}
 
-	if appMapping.Id != userVault.AppMappingId {
+	if appMapping.Id != userVault.AppId {
 		return nil, types.ErrorInvalidAppMappingData
 	}
 	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
@@ -509,11 +509,9 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if vault acccess disabled
-	if !extendedPairVault.IsVaultActive {
-		return nil, types.ErrorVaultInactive
-	}
+	
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
-	if appMapping.Id != extendedPairVault.AppMappingId {
+	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
 	}
 
@@ -525,7 +523,7 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		return nil, types.ErrVaultAccessUnauthorised
 	}
 
-	if appMapping.Id != userVault.AppMappingId {
+	if appMapping.Id != userVault.AppId {
 		return nil, types.ErrorInvalidAppMappingData
 	}
 	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
@@ -634,13 +632,10 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	// //Checking if vault acccess disabled
-	// if !extendedPairVault.IsVaultActive {
-	// 	return nil, types.ErrorVaultInactive
 
-	// }
 
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
-	if appMapping.Id != extendedPairVault.AppMappingId {
+	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
 	}
 
@@ -652,7 +647,7 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 		return nil, types.ErrVaultAccessUnauthorised
 	}
 
-	if appMapping.Id != userVault.AppMappingId {
+	if appMapping.Id != userVault.AppId {
 		return nil, types.ErrorInvalidAppMappingData
 	}
 	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
@@ -730,7 +725,7 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	}
 
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
-	if appMapping.Id != extendedPairVault.AppMappingId {
+	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
 	}
 
@@ -803,7 +798,7 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	stableVault.Id = appMapping.ShortName + strconv.FormatUint(updatedCounter, 10)
 	stableVault.AmountIn = msg.Amount
 	stableVault.AmountOut = msg.Amount
-	stableVault.AppMappingId = appMapping.Id
+	stableVault.AppId = appMapping.Id
 	stableVault.CreatedAt = time.Now()
 	stableVault.ExtendedPairVaultID = extendedPairVault.Id
 	k.SetStableMintVault(ctx, stableVault)
@@ -852,7 +847,7 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
-	if appMapping.Id != extendedPairVault.AppMappingId {
+	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
 	}
 
@@ -860,7 +855,7 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
-	if appMapping.Id != stableVault.AppMappingId {
+	if appMapping.Id != stableVault.AppId {
 		return nil, types.ErrorInvalidAppMappingData
 	}
 	if extendedPairVault.Id != stableVault.ExtendedPairVaultID {
@@ -960,14 +955,12 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if vault access disabled
-	if !extendedPairVault.IsVaultActive {
-		return nil, types.ErrorVaultInactive
-	}
+	
 	if !extendedPairVault.IsStableMintVault {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
-	if appMapping.Id != extendedPairVault.AppMappingId {
+	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
 	}
 
@@ -975,7 +968,7 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
-	if appMapping.Id != stableVault.AppMappingId {
+	if appMapping.Id != stableVault.AppId {
 		return nil, types.ErrorInvalidAppMappingData
 	}
 	if extendedPairVault.Id != stableVault.ExtendedPairVaultID {

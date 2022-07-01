@@ -49,9 +49,9 @@ func (m msgServer) Withdraw(goCtx context.Context, withdraw *types.MsgWithdraw) 
 		return nil, err
 	}
 
-	lendId := withdraw.LendId
+	lendID := withdraw.LendId
 
-	if err := m.keeper.WithdrawAsset(ctx, withdraw.Lender, lendId, withdraw.Amount); err != nil {
+	if err := m.keeper.WithdrawAsset(ctx, withdraw.Lender, lendID, withdraw.Amount); err != nil {
 		return nil, err
 	}
 
@@ -79,9 +79,9 @@ func (m msgServer) Deposit(goCtx context.Context, deposit *types.MsgDeposit) (*t
 		return nil, err
 	}
 
-	lendId := deposit.LendId
+	lendID := deposit.LendId
 
-	if err := m.keeper.DepositAsset(ctx, deposit.Lender, lendId, deposit.Amount); err != nil {
+	if err := m.keeper.DepositAsset(ctx, deposit.Lender, lendID, deposit.Amount); err != nil {
 		return nil, err
 	}
 
@@ -109,9 +109,9 @@ func (m msgServer) CloseLend(goCtx context.Context, lend *types.MsgCloseLend) (*
 		return nil, err
 	}
 
-	lendId := lend.LendId
+	lendID := lend.LendId
 
-	if err := m.keeper.CloseLend(ctx, lend.Lender, lendId); err != nil {
+	if err := m.keeper.CloseLend(ctx, lend.Lender, lendID); err != nil {
 		return nil, err
 	}
 
@@ -252,9 +252,9 @@ func (m msgServer) CloseBorrow(goCtx context.Context, borrow *types.MsgCloseBorr
 		return nil, err
 	}
 
-	BorrowId := borrow.BorrowId
+	borrowID := borrow.BorrowId
 
-	if err := m.keeper.CloseBorrow(ctx, borrow.Borrower, BorrowId); err != nil {
+	if err := m.keeper.CloseBorrow(ctx, borrow.Borrower, borrowID); err != nil {
 		return nil, err
 	}
 

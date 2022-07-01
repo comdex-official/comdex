@@ -9,7 +9,7 @@ import (
 
 func (s *KeeperTestSuite) AddAppAsset() {
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
-	msg1 := []assetTypes.AppMapping{{
+	msg1 := []assetTypes.AppData{{
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -20,7 +20,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			MinGovDeposit:    sdk.NewIntFromUint64(10000000),
 			GovTimeInSeconds: 900},
 	}
-	err := assetKeeper.AddAppMappingRecords(*ctx, msg1...)
+	err := assetKeeper.AddAppRecords(*ctx, msg1...)
 	s.Require().NoError(err)
 
 	msg2 := []assetTypes.Asset{
@@ -54,21 +54,21 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 		{"Whitelist : App1 Asset 1",
 			lockerTypes.MsgAddWhiteListedAssetRequest{
 				From:         userAddress,
-				AppMappingId: 1,
+				AppId: 1,
 				AssetId:      1,
 			},
 		},
 		{"Whitelist : App1 Asset 2",
 			lockerTypes.MsgAddWhiteListedAssetRequest{
 				From:         userAddress,
-				AppMappingId: 1,
+				AppId: 1,
 				AssetId:      2,
 			},
 		},
 		{"Whitelist : App2 Asset 1",
 			lockerTypes.MsgAddWhiteListedAssetRequest{
 				From:         userAddress,
-				AppMappingId: 2,
+				AppId: 2,
 				AssetId:      1,
 			},
 		},
@@ -92,7 +92,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				Depositor:    userAddress,
 				Amount:       sdk.NewIntFromUint64(1000000),
 				AssetId:      1,
-				AppMappingId: 1,
+				AppId: 1,
 			},
 			100000,
 			true,
@@ -105,7 +105,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				Depositor:    userAddress,
 				Amount:       sdk.NewIntFromUint64(1000000),
 				AssetId:      1,
-				AppMappingId: 1,
+				AppId: 1,
 			},
 			1000000,
 			false,
@@ -118,7 +118,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				Depositor:    userAddress,
 				Amount:       sdk.NewIntFromUint64(1000000),
 				AssetId:      1,
-				AppMappingId: 1,
+				AppId: 1,
 			},
 			1000000,
 			true,
@@ -131,7 +131,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				Depositor:    userAddress,
 				Amount:       sdk.NewIntFromUint64(2000000),
 				AssetId:      2,
-				AppMappingId: 1,
+				AppId: 1,
 			},
 			2000000,
 			false,
@@ -144,7 +144,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				Depositor:    userAddress,
 				Amount:       sdk.NewIntFromUint64(9900000),
 				AssetId:      1,
-				AppMappingId: 2,
+				AppId: 2,
 			},
 			9900000,
 			false,
@@ -167,7 +167,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
 				s.Require().NoError(err)
 				s.Require().Equal(lockerInfo.LockerInfo.Depositor, tc.msg.Depositor)
-				s.Require().Equal(lockerInfo.LockerInfo.AppMappingId, tc.msg.AppMappingId)
+				s.Require().Equal(lockerInfo.LockerInfo.AppId, tc.msg.AppId)
 				s.Require().Equal(lockerInfo.LockerInfo.AssetDepositId, tc.msg.AssetId)
 				s.Require().Equal(lockerInfo.LockerInfo.NetBalance, tc.msg.Amount)
 			}
@@ -195,7 +195,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 				LockerId:     "cswap1",
 				Amount:       sdk.NewIntFromUint64(4000000000),
 				AssetId:      1,
-				AppMappingId: 1,
+				AppId: 1,
 			},
 			lockerTypes.QueryLockerInfoRequest{
 				Id: "cswap1",
@@ -209,7 +209,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 				LockerId:     "cswap1",
 				Amount:       sdk.NewIntFromUint64(4000000),
 				AssetId:      1,
-				AppMappingId: 1,
+				AppId: 1,
 			},
 			lockerTypes.QueryLockerInfoRequest{
 				Id: "cswap1",
@@ -223,7 +223,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 				LockerId:     "commodo1",
 				Amount:       sdk.NewIntFromUint64(4000000),
 				AssetId:      1,
-				AppMappingId: 2,
+				AppId: 2,
 			},
 			lockerTypes.QueryLockerInfoRequest{
 				Id: "commodo1",
@@ -249,7 +249,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 				lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
 				s.Require().NoError(err)
 				s.Require().Equal(lockerInfo.LockerInfo.Depositor, tc.msg.Depositor)
-				s.Require().Equal(lockerInfo.LockerInfo.AppMappingId, tc.msg.AppMappingId)
+				s.Require().Equal(lockerInfo.LockerInfo.AppId, tc.msg.AppId)
 				s.Require().Equal(lockerInfo.LockerInfo.AssetDepositId, tc.msg.AssetId)
 				s.Require().Equal(lockerInfo.LockerInfo.NetBalance, tc.msg.Amount.Add(previousNetAmount))
 			}
@@ -276,7 +276,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 				LockerId:     "cswap1",
 				Amount:       sdk.NewIntFromUint64(10000000),
 				AssetId:      1,
-				AppMappingId: 1,
+				AppId: 1,
 			},
 			lockerTypes.QueryLockerInfoRequest{
 				Id: "cswap1",
@@ -290,7 +290,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 				LockerId:     "cswap1",
 				Amount:       sdk.NewIntFromUint64(100000),
 				AssetId:      1,
-				AppMappingId: 1,
+				AppId: 1,
 			},
 			lockerTypes.QueryLockerInfoRequest{
 				Id: "cswap1",
@@ -304,7 +304,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 				LockerId:     "cswap1",
 				Amount:       sdk.NewIntFromUint64(900000),
 				AssetId:      1,
-				AppMappingId: 1,
+				AppId: 1,
 			},
 			lockerTypes.QueryLockerInfoRequest{
 				Id: "cswap1",
@@ -318,7 +318,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 				LockerId:     "commodo1",
 				Amount:       sdk.NewIntFromUint64(9900000),
 				AssetId:      1,
-				AppMappingId: 2,
+				AppId: 2,
 			},
 			lockerTypes.QueryLockerInfoRequest{
 				Id: "commodo1",
@@ -339,7 +339,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 				lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
 				s.Require().NoError(err)
 				s.Require().Equal(lockerInfo.LockerInfo.Depositor, tc.msg.Depositor)
-				s.Require().Equal(lockerInfo.LockerInfo.AppMappingId, tc.msg.AppMappingId)
+				s.Require().Equal(lockerInfo.LockerInfo.AppId, tc.msg.AppId)
 				s.Require().Equal(lockerInfo.LockerInfo.AssetDepositId, tc.msg.AssetId)
 				if tc.partial {
 					s.Require().Equal(lockerInfo.LockerInfo.NetBalance, previousNetAmount.Sub(tc.msg.Amount))

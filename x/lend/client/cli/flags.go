@@ -13,7 +13,7 @@ const (
 )
 
 func ParseStringFromString(s string, separator string) ([]string, error) {
-	var parsedStrings []string
+	var parsedStrings []string //nolint:prealloc
 	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 
@@ -23,7 +23,7 @@ func ParseStringFromString(s string, separator string) ([]string, error) {
 }
 
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
-	var parsedInts []uint64
+	var parsedInts []uint64 //nolint:prealloc
 	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 
@@ -102,7 +102,7 @@ type addAssetRatesStatsInputs struct {
 	LiquidationThreshold string `json:"liquidation_threshold"`
 	LiquidationPenalty   string `json:"liquidation_penalty"`
 	ReserveFactor        string `json:"reserve_factor"`
-	CAssetId             string `json:"c_asset_id"`
+	CAssetID             string `json:"c_asset_id"`
 	Title                string
 	Description          string
 	Deposit              string

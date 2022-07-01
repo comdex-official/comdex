@@ -75,7 +75,6 @@ func txLend() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txWithdraw() *cobra.Command {
@@ -89,7 +88,7 @@ func txWithdraw() *cobra.Command {
 				return err
 			}
 
-			lendId, err := strconv.ParseUint(args[0], 10, 64)
+			lendID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -99,7 +98,7 @@ func txWithdraw() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgWithdraw(ctx.GetFromAddress(), lendId, asset)
+			msg := types.NewMsgWithdraw(ctx.GetFromAddress(), lendID, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -107,7 +106,6 @@ func txWithdraw() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txDeposit() *cobra.Command {
@@ -121,7 +119,7 @@ func txDeposit() *cobra.Command {
 				return err
 			}
 
-			lendId, err := strconv.ParseUint(args[0], 10, 64)
+			lendID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -131,7 +129,7 @@ func txDeposit() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgDeposit(ctx.GetFromAddress(), lendId, asset)
+			msg := types.NewMsgDeposit(ctx.GetFromAddress(), lendID, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -139,7 +137,6 @@ func txDeposit() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txCloseLend() *cobra.Command {
@@ -153,12 +150,12 @@ func txCloseLend() *cobra.Command {
 				return err
 			}
 
-			lendId, err := strconv.ParseUint(args[0], 10, 64)
+			lendID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgCloseLend(ctx.GetFromAddress(), lendId)
+			msg := types.NewMsgCloseLend(ctx.GetFromAddress(), lendID)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -166,7 +163,6 @@ func txCloseLend() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txBorrowAsset() *cobra.Command {
@@ -179,12 +175,12 @@ func txBorrowAsset() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			lendId, err := strconv.ParseUint(args[0], 10, 64)
+			lendID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			pairId, err := strconv.ParseUint(args[1], 10, 64)
+			pairID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -206,7 +202,7 @@ func txBorrowAsset() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgBorrow(ctx.GetFromAddress(), lendId, pairId, isStableBorrow, amountIn, amountOut)
+			msg := types.NewMsgBorrow(ctx.GetFromAddress(), lendID, pairID, isStableBorrow, amountIn, amountOut)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -228,7 +224,7 @@ func txRepayAsset() *cobra.Command {
 				return err
 			}
 
-			borrowId, err := strconv.ParseUint(args[0], 10, 64)
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -238,7 +234,7 @@ func txRepayAsset() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRepay(ctx.GetFromAddress(), borrowId, asset)
+			msg := types.NewMsgRepay(ctx.GetFromAddress(), borrowID, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -260,7 +256,7 @@ func txDrawAsset() *cobra.Command {
 				return err
 			}
 
-			borrowId, err := strconv.ParseUint(args[0], 10, 64)
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -270,7 +266,7 @@ func txDrawAsset() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgDraw(ctx.GetFromAddress(), borrowId, asset)
+			msg := types.NewMsgDraw(ctx.GetFromAddress(), borrowID, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -292,7 +288,7 @@ func txDepositBorrowAsset() *cobra.Command {
 				return err
 			}
 
-			borrowId, err := strconv.ParseUint(args[0], 10, 64)
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -302,7 +298,7 @@ func txDepositBorrowAsset() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgDepositBorrow(ctx.GetFromAddress(), borrowId, asset)
+			msg := types.NewMsgDepositBorrow(ctx.GetFromAddress(), borrowID, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -324,12 +320,12 @@ func txCloseBorrowAsset() *cobra.Command {
 				return err
 			}
 
-			borrowId, err := strconv.ParseUint(args[0], 10, 64)
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgCloseBorrow(ctx.GetFromAddress(), borrowId)
+			msg := types.NewMsgCloseBorrow(ctx.GetFromAddress(), borrowID)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -353,7 +349,7 @@ func txFundModuleAccounts() *cobra.Command {
 
 			moduleName := args[0]
 
-			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -363,7 +359,7 @@ func txFundModuleAccounts() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgFundModuleAccounts(moduleName, assetId, ctx.GetFromAddress(), amount)
+			msg := types.NewMsgFundModuleAccounts(moduleName, assetID, ctx.GetFromAddress(), amount)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -423,7 +419,7 @@ func NewCreateNewLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.Fl
 		return txf, nil, err
 	}
 
-	assetOutPoolId, err := ParseUint64SliceFromString(newLendPairs.AssetOutPoolID, ",")
+	assetOutPoolID, err := ParseUint64SliceFromString(newLendPairs.AssetOutPoolID, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -435,7 +431,7 @@ func NewCreateNewLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.Fl
 			AssetIn:        assetIn[i],
 			AssetOut:       assetOut[i],
 			IsInterPool:    interPool,
-			AssetOutPoolId: assetOutPoolId[i],
+			AssetOutPoolId: assetOutPoolID[i],
 		})
 	}
 
@@ -561,22 +557,22 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 
 	moduleName := newLendPool.ModuleName
 
-	mainAssetId, err := strconv.ParseUint(newLendPool.MainAssetID, 10, 64)
+	mainAssetID, err := strconv.ParseUint(newLendPool.MainAssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	firstBridgedAssetId, err := strconv.ParseUint(newLendPool.FirstBridgedAssetID, 10, 64)
+	firstBridgedAssetID, err := strconv.ParseUint(newLendPool.FirstBridgedAssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	secondBridgedAssetId, err := strconv.ParseUint(newLendPool.SecondBridgedAssetID, 10, 64)
+	secondBridgedAssetID, err := strconv.ParseUint(newLendPool.SecondBridgedAssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	assetId, err := ParseUint64SliceFromString(newLendPool.AssetID, ",")
+	assetID, err := ParseUint64SliceFromString(newLendPool.AssetID, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -586,20 +582,20 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 		return txf, nil, err
 	}
 	var pool types.Pool
-	var assetData []types.AssetDataPoolMapping
+	var assetData []types.AssetDataPoolMapping //nolint:prealloc
 
-	for i := range assetId {
+	for i := range assetID {
 		bridged := ParseBoolFromString(isBridgedAsset[i])
 		assetData = append(assetData, types.AssetDataPoolMapping{
-			AssetId:   assetId[i],
+			AssetId:   assetID[i],
 			IsBridged: bridged,
 		})
 	}
 	pool = types.Pool{
 		ModuleName:           moduleName,
-		MainAssetId:          mainAssetId,
-		FirstBridgedAssetId:  firstBridgedAssetId,
-		SecondBridgedAssetId: secondBridgedAssetId,
+		MainAssetId:          mainAssetID,
+		FirstBridgedAssetId:  firstBridgedAssetID,
+		SecondBridgedAssetId: secondBridgedAssetID,
 		AssetData:            assetData,
 	}
 
@@ -635,27 +631,27 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 				return err
 			}
 
-			assetId, err := strconv.ParseUint(args[0], 10, 64)
+			assetID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
-			rawPairId, _ := ParseUint64SliceFromString(args[2], ",")
+			rawPairID, _ := ParseUint64SliceFromString(args[2], ",")
 			if err != nil {
 				return err
 			}
-			var pairId []uint64
-			for i := range rawPairId {
+			var pairIDs []uint64
+			for i := range rawPairID {
 
-				pairId = append(pairId, rawPairId[i])
+				pairIDs = append(pairIDs, rawPairID[i])
 			}
 			assetToPairMapping := types.AssetToPairMapping{
-				AssetId: assetId,
-				PoolId:  poolId,
-				PairId:  pairId,
+				AssetId: assetID,
+				PoolId:  poolID,
+				PairId:  pairIDs,
 			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
@@ -737,7 +733,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 		return txf, nil, fmt.Errorf("failed to parse asset rates stats : %w", err)
 	}
 
-	assetId, err := ParseUint64SliceFromString(assetRatesStatsInput.AssetID, ",")
+	assetID, err := ParseUint64SliceFromString(assetRatesStatsInput.AssetID, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -790,13 +786,13 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 	if err != nil {
 		return txf, nil, err
 	}
-	cAssetId, err := ParseUint64SliceFromString(assetRatesStatsInput.CAssetId, ",")
+	cAssetID, err := ParseUint64SliceFromString(assetRatesStatsInput.CAssetID, ",")
 	if err != nil {
 		return txf, nil, err
 	}
 
 	var assetRatesStats []types.AssetRatesStats
-	for i := range assetId {
+	for i := range assetID {
 		newUOptimal, _ := sdk.NewDecFromStr(uOptimal[i])
 		newBase, _ := sdk.NewDecFromStr(base[i])
 		newSlope1, _ := sdk.NewDecFromStr(slope1[i])
@@ -811,7 +807,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 		newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor[i])
 
 		assetRatesStats = append(assetRatesStats, types.AssetRatesStats{
-			AssetId:              assetId[i],
+			AssetId:              assetID[i],
 			UOptimal:             newUOptimal,
 			Base:                 newBase,
 			Slope1:               newSlope1,
@@ -824,7 +820,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 			LiquidationThreshold: newLiquidationThreshold,
 			LiquidationPenalty:   newLiquidationPenalty,
 			ReserveFactor:        newReserveFactor,
-			CAssetId:             cAssetId[i],
+			CAssetId:             cAssetID[i],
 		},
 		)
 	}

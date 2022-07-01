@@ -6,29 +6,23 @@ import (
 
 var (
 	ProposalAddLendPairs       = "ProposalAddLendPairs"
-	ProposalUpdateLenddPair    = "ProposalUpdateLenddPair"
+	ProposalUpdateLendPair     = "ProposalUpdateLendPair"
 	ProposalAddPool            = "ProposalAddPool"
 	ProposalAddAssetToPair     = "ProposalAddAssetToPair"
 	ProposalAddAssetRatesStats = "ProposalAddAssetRatesStats"
 )
 
 func init() {
-
 	govtypes.RegisterProposalType(ProposalAddLendPairs)
 	govtypes.RegisterProposalTypeCodec(&LendPairsProposal{}, "comdex/AddLendPairsProposal")
-
-	govtypes.RegisterProposalType(ProposalUpdateLenddPair)
+	govtypes.RegisterProposalType(ProposalUpdateLendPair)
 	govtypes.RegisterProposalTypeCodec(&UpdatePairProposal{}, "comdex/UpdateLenddPairProposal")
-
 	govtypes.RegisterProposalType(ProposalAddPool)
 	govtypes.RegisterProposalTypeCodec(&AddPoolsProposal{}, "comdex/AddPoolsProposal")
-
 	govtypes.RegisterProposalType(ProposalAddAssetToPair)
 	govtypes.RegisterProposalTypeCodec(&AddAssetToPairProposal{}, "comdex/AddAssetToPairProposal")
-
 	govtypes.RegisterProposalType(ProposalAddAssetRatesStats)
 	govtypes.RegisterProposalTypeCodec(&AddAssetRatesStats{}, "comdex/AddAssetRatesStats")
-
 }
 
 var (
@@ -52,7 +46,6 @@ func (p *LendPairsProposal) ProposalRoute() string { return RouterKey }
 func (p *LendPairsProposal) ProposalType() string { return ProposalAddLendPairs }
 
 func (p *LendPairsProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -80,10 +73,9 @@ func NewUpdateLendPairProposal(title, description string, pair Extended_Pair) go
 
 func (p *UpdatePairProposal) ProposalRoute() string { return RouterKey }
 
-func (p *UpdatePairProposal) ProposalType() string { return ProposalUpdateLenddPair }
+func (p *UpdatePairProposal) ProposalType() string { return ProposalUpdateLendPair }
 
 func (p *UpdatePairProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err

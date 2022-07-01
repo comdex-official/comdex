@@ -29,7 +29,7 @@ type MarketKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }
 
-type BandoracleKeeper interface {
+type BandOracleKeeper interface {
 	GetOracleValidationResult(ctx sdk.Context) bool
 }
 

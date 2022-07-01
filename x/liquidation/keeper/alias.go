@@ -36,7 +36,7 @@ func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
 	return k.asset.GetAsset(ctx, id)
 }
 
-func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool) {
+func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool) {
 	return k.asset.GetApps(ctx)
 }
 
@@ -92,6 +92,3 @@ func (k *Keeper) SetVault(ctx sdk.Context, vault types.Vault) {
 	k.vault.SetVault(ctx, vault)
 }
 
-func (k *Keeper) CreteNewVault(ctx sdk.Context, From string, appMappingID uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) error {
-	return k.vault.CreteNewVault(ctx, From, appMappingID, extendedPairVaultID, amountIn, amountOut)
-}

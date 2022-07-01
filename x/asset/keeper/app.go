@@ -38,7 +38,7 @@ func (k *Keeper) SetAppID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetApp(ctx sdk.Context, app types.AppMapping) {
+func (k *Keeper) SetApp(ctx sdk.Context, app types.AppData) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppKey(app.Id)
@@ -48,7 +48,7 @@ func (k *Keeper) SetApp(ctx sdk.Context, app types.AppMapping) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppMapping, found bool) {
+func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppData, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppKey(id)
@@ -76,7 +76,7 @@ func (k *Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint
 	return minGovDeposit, govTimeInSeconds, assetID, nil
 }
 
-func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppMapping, found bool) {
+func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppData, found bool) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.AppKeyPrefix)
@@ -90,7 +90,7 @@ func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppMapping, found bool) 
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var app types.AppMapping
+		var app types.AppData
 		k.cdc.MustUnmarshal(iter.Value(), &app)
 		apps = append(apps, app)
 	}
@@ -200,7 +200,7 @@ func (k *Keeper) GetGenesisTokenForApp(ctx sdk.Context, appID uint64) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMapping) error {
+func (k *Keeper) AddAppRecords(ctx sdk.Context, records ...types.AppData) error {
 	for _, msg := range records {
 		if k.HasAppForShortName(ctx, msg.ShortName) {
 			return types.ErrorDuplicateApp
@@ -211,7 +211,7 @@ func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMappi
 
 		var (
 			id  = k.GetAppID(ctx)
-			app = types.AppMapping{
+			app = types.AppData{
 				Id:               id + 1,
 				Name:             msg.Name,
 				ShortName:        msg.ShortName,
@@ -230,7 +230,7 @@ func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMappi
 	return nil
 }
 
-func (k *Keeper) UpdateGovTimeInAppMapping(ctx sdk.Context, msg types.AppAndGovTime) error {
+func (k *Keeper) UpdateGovTimeInApp(ctx sdk.Context, msg types.AppAndGovTime) error {
 	appDetails, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return types.ErrorAssetDoesNotExist
@@ -241,7 +241,7 @@ func (k *Keeper) UpdateGovTimeInAppMapping(ctx sdk.Context, msg types.AppAndGovT
 	return nil
 }
 
-func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMapping) error {
+func (k *Keeper) AddAssetInAppRecords(ctx sdk.Context, records ...types.AppData) error {
 	for _, msg := range records {
 		appdata, found := k.GetApp(ctx, msg.Id)
 		if !found {
@@ -276,7 +276,7 @@ func (k *Keeper) AddAssetMappingRecords(ctx sdk.Context, records ...types.AppMap
 			appdata.GenesisToken = append(appdata.GenesisToken, data)
 		}
 		var (
-			app = types.AppMapping{
+			app = types.AppData{
 				Id:               msg.Id,
 				Name:             appdata.Name,
 				ShortName:        appdata.ShortName,

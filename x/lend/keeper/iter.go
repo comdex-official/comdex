@@ -15,7 +15,7 @@ func (k Keeper) IterateLends(ctx sdk.Context) error {
 	}
 	for _, v := range lends.LendIds {
 		lend, _ := k.GetLend(ctx, v)
-		lendAPY, err := k.GetLendAPRByAssetIdAndPoolId(ctx, lend.PoolId, lend.AssetId)
+		lendAPY, err := k.GetLendAPRByAssetIDAndPoolID(ctx, lend.PoolId, lend.AssetId)
 		if err != nil {
 			return err
 		}
@@ -54,7 +54,6 @@ func (k Keeper) IterateLends(ctx sdk.Context) error {
 			return err
 		}
 		k.SetLend(ctx, updatedLend)
-
 	}
 	return nil
 }
@@ -65,7 +64,7 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 		borrow, _ := k.GetBorrow(ctx, v)
 		pair, _ := k.GetLendPair(ctx, borrow.PairID)
 
-		borrowAPY, _ := k.GetBorrowAPRByAssetId(ctx, pair.AssetOutPoolId, pair.AssetOut, borrow.IsStableBorrow)
+		borrowAPY, _ := k.GetBorrowAPRByAssetID(ctx, pair.AssetOutPoolId, pair.AssetOut, borrow.IsStableBorrow)
 		interestPerBlock, err := k.CalculateRewards(ctx, borrow.AmountOut.Amount, borrowAPY)
 		if err != nil {
 			return err
@@ -85,7 +84,6 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 			Interest_Accumulated: borrow.Interest_Accumulated.Add(interestPerBlock),
 		}
 		k.SetBorrow(ctx, updatedBorrow)
-
 	}
 	return nil
 }
@@ -118,7 +116,7 @@ func (k Keeper) RebalanceStableRates(ctx sdk.Context) error {
 		borrowPos, _ := k.GetBorrow(ctx, v)
 		pair, _ := k.GetLendPair(ctx, borrowPos.PairID)
 		assetStats, _ := k.UpdateAPR(ctx, pair.AssetOutPoolId, pair.AssetOut)
-		utilizationRatio, _ := k.GetUtilisationRatioByPoolIdAndAssetId(ctx, pair.AssetOutPoolId, pair.AssetOut)
+		utilizationRatio, _ := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolId, pair.AssetOut)
 		perc1, _ := sdk.NewDecFromStr("0.2")
 		perc2, _ := sdk.NewDecFromStr("0.9")
 		if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {

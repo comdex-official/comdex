@@ -15,7 +15,7 @@ var (
 func NewMsgCreateLockerRequest(from sdk.AccAddress, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgCreateLockerRequest {
 	return &MsgCreateLockerRequest{
 		Depositor:    from.String(),
-		AppMappingId: appMappingID,
+		AppId: appMappingID,
 		AssetId:      assetID,
 		Amount:       amount,
 	}
@@ -37,7 +37,7 @@ func (m *MsgCreateLockerRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
-	if m.AppMappingId < 0 {
+	if m.AppId < 0 {
 		return errors.Wrap(ErrorInvalidAppMappingID, "app_mapping_id  cannot be negative")
 	}
 	if m.AssetId < 0 {
@@ -75,7 +75,7 @@ func NewMsgDepositAssetRequest(from sdk.AccAddress, lockerID string, amount sdk.
 		LockerId:     lockerID,
 		Amount:       amount,
 		AssetId:      assetID,
-		AppMappingId: appMappingID,
+		AppId: appMappingID,
 	}
 }
 
@@ -95,7 +95,7 @@ func (m *MsgDepositAssetRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
-	if m.AppMappingId < 0 {
+	if m.AppId < 0 {
 		return errors.Wrap(ErrorInvalidAppMappingID, "app_mapping_id  cannot be negative")
 	}
 	if m.AssetId < 0 {
@@ -136,7 +136,7 @@ func NewMsgWithdrawAssetRequest(from sdk.AccAddress, lockerID string, amount sdk
 		LockerId:     lockerID,
 		Amount:       amount,
 		AssetId:      assetID,
-		AppMappingId: appMappingID,
+		AppId: appMappingID,
 	}
 }
 
@@ -156,7 +156,7 @@ func (m *MsgWithdrawAssetRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
-	if m.AppMappingId < 0 {
+	if m.AppId < 0 {
 		return errors.Wrap(ErrorInvalidAppMappingID, "app_mapping_id  cannot be negative")
 	}
 	if m.AssetId < 0 {
@@ -194,7 +194,7 @@ func (m *MsgWithdrawAssetRequest) GetSigners() []sdk.AccAddress {
 func NewMsgAddWhiteListedAssetRequest(from sdk.AccAddress, appMappingID uint64, assetID uint64) *MsgAddWhiteListedAssetRequest {
 	return &MsgAddWhiteListedAssetRequest{
 		From:         from.String(),
-		AppMappingId: appMappingID,
+		AppId: appMappingID,
 		AssetId:      assetID,
 	}
 }
@@ -208,7 +208,7 @@ func (m *MsgAddWhiteListedAssetRequest) Type() string {
 }
 
 func (m *MsgAddWhiteListedAssetRequest) ValidateBasic() error {
-	if m.AppMappingId < 0 {
+	if m.AppId < 0 {
 		return errors.Wrap(ErrorInvalidAppMappingID, "app_mapping_id  cannot be negative")
 	}
 	if m.AssetId < 0 {

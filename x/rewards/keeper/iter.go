@@ -51,15 +51,15 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 							CreatedAt:          locker.CreatedAt,
 							AssetDepositId:     locker.AssetDepositId,
 							IsLocked:           locker.IsLocked,
-							AppMappingId:       locker.AppMappingId,
+							AppId:              locker.AppId,
 						}
-						netFeeCollectedData, _ := k.GetNetFeeCollectedData(ctx, locker.AppMappingId)
+						netFeeCollectedData, _ := k.GetNetFeeCollectedData(ctx, locker.AppId)
 						for _, p := range netFeeCollectedData.AssetIdToFeeCollected {
 							if p.AssetId == locker.AssetDepositId {
 								asset, _ := k.GetAsset(ctx, p.AssetId)
 								//updatedNetFee := p.NetFeesCollected.Sub(rewards)
 								//err := k.SetNetFeeCollectedData(ctx, locker.AppMappingId, locker.AssetDepositId, updatedNetFee)
-								err := k.DecreaseNetFeeCollectedData(ctx, locker.AppMappingId, locker.AssetDepositId, rewards)
+								err := k.DecreaseNetFeeCollectedData(ctx, locker.AppId, locker.AssetDepositId, rewards)
 								if err != nil {
 									return err
 								}
@@ -76,7 +76,7 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 
 								if !found {
 									var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
-									lockerReward.AppId = locker.AppMappingId
+									lockerReward.AppId = locker.AppId
 									lockerReward.AssetId = p.AssetId
 									lockerReward.TotalRewards = sdk.ZeroInt().Add(rewards)
 									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)

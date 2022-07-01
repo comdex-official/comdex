@@ -21,7 +21,7 @@ import (
 func (k *Keeper) SetLockerProductAssetMapping(ctx sdk.Context, lockerProductMapping types.LockerProductAssetMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LockerProductAssetMappingKey(lockerProductMapping.AppMappingId)
+		key   = types.LockerProductAssetMappingKey(lockerProductMapping.AppId)
 		value = k.cdc.MustMarshal(&lockerProductMapping)
 	)
 
@@ -71,7 +71,7 @@ func (k *Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint
 func (k *Keeper) SetLockerLookupTable(ctx sdk.Context, lockerLookupData types.LockerLookupTable) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LockerLookupTableKey(lockerLookupData.AppMappingId)
+		key   = types.LockerLookupTableKey(lockerLookupData.AppId)
 		value = k.cdc.MustMarshal(&lockerLookupData)
 	)
 
@@ -164,7 +164,7 @@ func (k *Keeper) GetUserLockerAssetMapping(ctx sdk.Context, address string) (use
 func (k *Keeper) CheckUserAppToAssetMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping, assetID uint64, appMappingID uint64) (lockerId string, found bool) {
 
 	for _, lockerAppMapping := range userLockerAssetData.LockerAppMapping {
-		if lockerAppMapping.AppMappingId == appMappingID {
+		if lockerAppMapping.AppId == appMappingID {
 			for _, assetToLockerIDMapping := range lockerAppMapping.UserAssetLocker {
 				if assetToLockerIDMapping.AssetId == assetID && len(assetToLockerIDMapping.LockerId) > 0 {
 					lockerId = assetToLockerIDMapping.LockerId
@@ -178,7 +178,7 @@ func (k *Keeper) CheckUserAppToAssetMapping(ctx sdk.Context, userLockerAssetData
 
 func (k *Keeper) CheckUserToAppMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping, appMappingID uint64) (found bool) {
 	for _, lockerAppMapping := range userLockerAssetData.LockerAppMapping {
-		if lockerAppMapping.AppMappingId == appMappingID {
+		if lockerAppMapping.AppId == appMappingID {
 			return true
 
 		}
