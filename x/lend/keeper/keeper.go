@@ -445,6 +445,10 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 	AssetOutPool, _ := k.GetPool(ctx, pair.AssetOutPoolId)
 
 	assetRatesStats, _ := k.GetAssetRatesStats(ctx, pair.AssetOut)
+	if IsStableBorrow && !assetRatesStats.EnableStableBorrow {
+		return sdkerrors.Wrap(types.ErrStableBorrowDisabled, loan.String())
+	}
+
 	err := k.VerifyCollaterlizationRatio(ctx, AmountIn.Amount, assetIn, loan.Amount, assetOut, assetRatesStats.LiquidationThreshold)
 	if err != nil {
 		return err
@@ -462,16 +466,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 
 		AmountOut := loan
 		// take c/Tokens from the user
-
-		assetRatesStat, found := k.GetAssetRatesStats(ctx, lendPos.AssetId)
-		if !found {
-			return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lendPos.AssetId, 10))
-		}
-		cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetId)
-		if AmountIn.Denom != cAsset.Denom {
-			return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, AmountIn.Denom)
-		}
-
 		if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, AssetInPool.ModuleName, AmountIn); err != nil {
 			return err
 		}
@@ -584,16 +578,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 		if firstBridgedAssetQty.LT(firstBridgedAssetBal) {
 
 			// take c/Tokens from the user
-
-			assetRatesStat, found := k.GetAssetRatesStats(ctx, lendPos.AssetId)
-			if !found {
-				return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lendPos.AssetId, 10))
-			}
-			cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetId)
-			if AmountIn.Denom != cAsset.Denom {
-				return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, AmountIn.Denom)
-			}
-
 			if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, AssetInPool.ModuleName, AmountIn); err != nil {
 				return err
 			}
@@ -687,15 +671,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendId, pairId uint64,
 
 		} else if secondBridgedAssetQty.LT(secondBridgedAssetBal) {
 			// take c/Tokens from the user
-			assetRatesStat, found := k.GetAssetRatesStats(ctx, lendPos.AssetId)
-			if !found {
-				return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lendPos.AssetId, 10))
-			}
-			cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetId)
-			if AmountIn.Denom != cAsset.Denom {
-				return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, AmountIn.Denom)
-			}
-
 			if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, AssetInPool.ModuleName, AmountIn); err != nil {
 				return err
 			}

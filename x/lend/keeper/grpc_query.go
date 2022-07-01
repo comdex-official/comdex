@@ -72,7 +72,7 @@ func (q queryServer) QueryLend(c context.Context, req *types.QueryLendRequest) (
 
 	item, found := q.GetLend(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "lend position does not exist for id %d", req.Id)
 	}
 
 	return &types.QueryLendResponse{
@@ -206,7 +206,7 @@ func (q queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (
 
 	item, found := q.GetLendPair(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", req.Id)
 	}
 
 	return &types.QueryPairResponse{
@@ -262,7 +262,7 @@ func (q queryServer) QueryPool(c context.Context, req *types.QueryPoolRequest) (
 
 	item, found := q.GetPool(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "pool does not exist for id %d", req.Id)
 	}
 
 	return &types.QueryPoolResponse{
@@ -374,7 +374,7 @@ func (q queryServer) QueryBorrow(c context.Context, req *types.QueryBorrowReques
 
 	item, found := q.GetBorrow(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "borrow does not exist for id %d", req.Id)
 	}
 
 	return &types.QueryBorrowResponse{
@@ -456,7 +456,7 @@ func (q queryServer) QueryAssetRatesStat(c context.Context, req *types.QueryAsse
 
 	item, found := q.GetAssetRatesStats(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "asset-rates-stat does not exist for id %d", req.Id)
 	}
 
 	return &types.QueryAssetRatesStatResponse{

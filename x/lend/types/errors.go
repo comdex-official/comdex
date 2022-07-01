@@ -57,4 +57,5 @@ var (
 	ErrorAssetRatesStatsNotFound       = sdkerrors.Register(ModuleName, 1146, "Asset Rates Stats not found")
 	ErrPoolNotFound                    = sdkerrors.Register(ModuleName, 1147, "Pool Not Found")
 	ErrAvailableToBorrowInsufficient   = sdkerrors.Register(ModuleName, 1148, "Available To Borrow Insufficient")
+	ErrStableBorrowDisabled            = sdkerrors.Register(ModuleName, 1149, "Stable Borrow Rate Not Enabled for This Asset")
 )
