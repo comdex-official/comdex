@@ -19,8 +19,8 @@ type BankKeeper interface {
 }
 
 type AssetKeeper interface {
-	GetApp(ctx sdk.Context, ID uint64) (assettypes.AppMapping, bool)
-	GetApps(ctx sdk.Context) ([]assettypes.AppMapping, bool)
+	GetApp(ctx sdk.Context, ID uint64) (assettypes.AppData, bool)
+	GetApps(ctx sdk.Context) ([]assettypes.AppData, bool)
 	GetAsset(ctx sdk.Context, ID uint64) (assettypes.Asset, bool)
 	GetAssetForDenom(ctx sdk.Context, denom string) (assettypes.Asset, bool)
 	GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64) (assettypes.MintGenesisToken, bool)

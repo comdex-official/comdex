@@ -1100,28 +1100,28 @@ func (m *QueryVaultCountByAppAndExtendedPairResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryVaultCountByAppAndExtendedPairResponse proto.InternalMessageInfo
 
-type QueryTotalValueLockedByAppExtendedPairRequest struct {
+type QueryTotalValueLockedByAppAndExtendedPairRequest struct {
 	AppId          uint64             `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairId uint64             `protobuf:"varint,2,opt,name=extended_pair_id,json=extendedPairId,proto3" json:"extended_pair_id,omitempty" yaml:"extended_pair_id"`
 	Pagination     *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) Reset() {
-	*m = QueryTotalValueLockedByAppExtendedPairRequest{}
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) Reset() {
+	*m = QueryTotalValueLockedByAppAndExtendedPairRequest{}
 }
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) String() string {
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryTotalValueLockedByAppExtendedPairRequest) ProtoMessage() {}
-func (*QueryTotalValueLockedByAppExtendedPairRequest) Descriptor() ([]byte, []int) {
+func (*QueryTotalValueLockedByAppAndExtendedPairRequest) ProtoMessage() {}
+func (*QueryTotalValueLockedByAppAndExtendedPairRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8d35126a97363346, []int{27}
 }
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTotalValueLockedByAppExtendedPairRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTotalValueLockedByAppAndExtendedPairRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1131,38 +1131,38 @@ func (m *QueryTotalValueLockedByAppExtendedPairRequest) XXX_Marshal(b []byte, de
 		return b[:n], nil
 	}
 }
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTotalValueLockedByAppExtendedPairRequest.Merge(m, src)
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalValueLockedByAppAndExtendedPairRequest.Merge(m, src)
 }
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) XXX_Size() int {
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTotalValueLockedByAppExtendedPairRequest.DiscardUnknown(m)
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalValueLockedByAppAndExtendedPairRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTotalValueLockedByAppExtendedPairRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryTotalValueLockedByAppAndExtendedPairRequest proto.InternalMessageInfo
 
-type QueryTotalValueLockedByAppExtendedPairResponse struct {
+type QueryTotalValueLockedByAppAndExtendedPairResponse struct {
 	ValueLocked *github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=value_locked,json=valueLocked,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"value_locked,omitempty"`
 }
 
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) Reset() {
-	*m = QueryTotalValueLockedByAppExtendedPairResponse{}
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) Reset() {
+	*m = QueryTotalValueLockedByAppAndExtendedPairResponse{}
 }
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) String() string {
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryTotalValueLockedByAppExtendedPairResponse) ProtoMessage() {}
-func (*QueryTotalValueLockedByAppExtendedPairResponse) Descriptor() ([]byte, []int) {
+func (*QueryTotalValueLockedByAppAndExtendedPairResponse) ProtoMessage() {}
+func (*QueryTotalValueLockedByAppAndExtendedPairResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8d35126a97363346, []int{28}
 }
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTotalValueLockedByAppExtendedPairResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTotalValueLockedByAppAndExtendedPairResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1172,17 +1172,17 @@ func (m *QueryTotalValueLockedByAppExtendedPairResponse) XXX_Marshal(b []byte, d
 		return b[:n], nil
 	}
 }
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTotalValueLockedByAppExtendedPairResponse.Merge(m, src)
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalValueLockedByAppAndExtendedPairResponse.Merge(m, src)
 }
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) XXX_Size() int {
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTotalValueLockedByAppExtendedPairResponse.DiscardUnknown(m)
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalValueLockedByAppAndExtendedPairResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTotalValueLockedByAppExtendedPairResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryTotalValueLockedByAppAndExtendedPairResponse proto.InternalMessageInfo
 
 type QueryExtendedPairIDsByAppRequest struct {
 	AppId      uint64             `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
@@ -1407,25 +1407,27 @@ func (m *QueryStableVaultByAppResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryStableVaultByAppResponse proto.InternalMessageInfo
 
-type QueryStableVaultByAppExtendedPairRequest struct {
+type QueryStableVaultByAppAndExtendedPairRequest struct {
 	AppId          uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairId uint64 `protobuf:"varint,2,opt,name=extended_pair_id,json=extendedPairId,proto3" json:"extended_pair_id,omitempty" yaml:"extended_pair_id"`
 }
 
-func (m *QueryStableVaultByAppExtendedPairRequest) Reset() {
-	*m = QueryStableVaultByAppExtendedPairRequest{}
+func (m *QueryStableVaultByAppAndExtendedPairRequest) Reset() {
+	*m = QueryStableVaultByAppAndExtendedPairRequest{}
 }
-func (m *QueryStableVaultByAppExtendedPairRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryStableVaultByAppExtendedPairRequest) ProtoMessage()    {}
-func (*QueryStableVaultByAppExtendedPairRequest) Descriptor() ([]byte, []int) {
+func (m *QueryStableVaultByAppAndExtendedPairRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryStableVaultByAppAndExtendedPairRequest) ProtoMessage() {}
+func (*QueryStableVaultByAppAndExtendedPairRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8d35126a97363346, []int{35}
 }
-func (m *QueryStableVaultByAppExtendedPairRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryStableVaultByAppAndExtendedPairRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryStableVaultByAppExtendedPairRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryStableVaultByAppAndExtendedPairRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryStableVaultByAppExtendedPairRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryStableVaultByAppAndExtendedPairRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1435,38 +1437,38 @@ func (m *QueryStableVaultByAppExtendedPairRequest) XXX_Marshal(b []byte, determi
 		return b[:n], nil
 	}
 }
-func (m *QueryStableVaultByAppExtendedPairRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryStableVaultByAppExtendedPairRequest.Merge(m, src)
+func (m *QueryStableVaultByAppAndExtendedPairRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryStableVaultByAppAndExtendedPairRequest.Merge(m, src)
 }
-func (m *QueryStableVaultByAppExtendedPairRequest) XXX_Size() int {
+func (m *QueryStableVaultByAppAndExtendedPairRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryStableVaultByAppExtendedPairRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryStableVaultByAppExtendedPairRequest.DiscardUnknown(m)
+func (m *QueryStableVaultByAppAndExtendedPairRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryStableVaultByAppAndExtendedPairRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryStableVaultByAppExtendedPairRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryStableVaultByAppAndExtendedPairRequest proto.InternalMessageInfo
 
-type QueryStableVaultByAppExtendedPairResponse struct {
+type QueryStableVaultByAppAndExtendedPairResponse struct {
 	StableMintVault *StableMintVault `protobuf:"bytes,1,opt,name=stable_mint_vault,json=stableMintVault,proto3" json:"stable_mint_vault,omitempty" yaml:"stable_mint_vault"`
 }
 
-func (m *QueryStableVaultByAppExtendedPairResponse) Reset() {
-	*m = QueryStableVaultByAppExtendedPairResponse{}
+func (m *QueryStableVaultByAppAndExtendedPairResponse) Reset() {
+	*m = QueryStableVaultByAppAndExtendedPairResponse{}
 }
-func (m *QueryStableVaultByAppExtendedPairResponse) String() string {
+func (m *QueryStableVaultByAppAndExtendedPairResponse) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryStableVaultByAppExtendedPairResponse) ProtoMessage() {}
-func (*QueryStableVaultByAppExtendedPairResponse) Descriptor() ([]byte, []int) {
+func (*QueryStableVaultByAppAndExtendedPairResponse) ProtoMessage() {}
+func (*QueryStableVaultByAppAndExtendedPairResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8d35126a97363346, []int{36}
 }
-func (m *QueryStableVaultByAppExtendedPairResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryStableVaultByAppAndExtendedPairResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryStableVaultByAppExtendedPairResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryStableVaultByAppAndExtendedPairResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryStableVaultByAppExtendedPairResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryStableVaultByAppAndExtendedPairResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1476,39 +1478,39 @@ func (m *QueryStableVaultByAppExtendedPairResponse) XXX_Marshal(b []byte, determ
 		return b[:n], nil
 	}
 }
-func (m *QueryStableVaultByAppExtendedPairResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryStableVaultByAppExtendedPairResponse.Merge(m, src)
+func (m *QueryStableVaultByAppAndExtendedPairResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryStableVaultByAppAndExtendedPairResponse.Merge(m, src)
 }
-func (m *QueryStableVaultByAppExtendedPairResponse) XXX_Size() int {
+func (m *QueryStableVaultByAppAndExtendedPairResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryStableVaultByAppExtendedPairResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryStableVaultByAppExtendedPairResponse.DiscardUnknown(m)
+func (m *QueryStableVaultByAppAndExtendedPairResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryStableVaultByAppAndExtendedPairResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryStableVaultByAppExtendedPairResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryStableVaultByAppAndExtendedPairResponse proto.InternalMessageInfo
 
-type QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest struct {
+type QueryExtendedPairVaultMappingByAppAndExtendedPairRequest struct {
 	AppId          uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairId uint64 `protobuf:"varint,2,opt,name=extended_pair_id,json=extendedPairId,proto3" json:"extended_pair_id,omitempty" yaml:"extended_pair_id"`
 }
 
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) Reset() {
-	*m = QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest{}
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) Reset() {
+	*m = QueryExtendedPairVaultMappingByAppAndExtendedPairRequest{}
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) String() string {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) ProtoMessage() {}
-func (*QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) Descriptor() ([]byte, []int) {
+func (*QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) ProtoMessage() {}
+func (*QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8d35126a97363346, []int{37}
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1518,38 +1520,38 @@ func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) XXX_Marshal
 		return b[:n], nil
 	}
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest.Merge(m, src)
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairRequest.Merge(m, src)
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) XXX_Size() int {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest.DiscardUnknown(m)
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairRequest proto.InternalMessageInfo
 
-type QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse struct {
+type QueryExtendedPairVaultMappingByAppAndExtendedPairResponse struct {
 	ExtendedPairVaultMapping *ExtendedPairVaultMapping `protobuf:"bytes,1,opt,name=extendedPairVaultMapping,proto3" json:"extendedPairVaultMapping,omitempty" yaml:"extendedPairVaultMapping"`
 }
 
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) Reset() {
-	*m = QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse{}
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) Reset() {
+	*m = QueryExtendedPairVaultMappingByAppAndExtendedPairResponse{}
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) String() string {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) ProtoMessage() {}
-func (*QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) Descriptor() ([]byte, []int) {
+func (*QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) ProtoMessage() {}
+func (*QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8d35126a97363346, []int{38}
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1559,17 +1561,17 @@ func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) XXX_Marsha
 		return b[:n], nil
 	}
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse.Merge(m, src)
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairResponse.Merge(m, src)
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) XXX_Size() int {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse.DiscardUnknown(m)
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryExtendedPairVaultMappingByAppAndExtendedPairResponse proto.InternalMessageInfo
 
 type QueryExtendedPairVaultMappingByAppRequest struct {
 	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
@@ -1653,26 +1655,24 @@ func (m *QueryExtendedPairVaultMappingByAppResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryExtendedPairVaultMappingByAppResponse proto.InternalMessageInfo
 
-type QueryTVLLockedByAppOfAllExtendedPairsRequest struct {
+type QueryTVLByAppOfAllExtendedPairsRequest struct {
 	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 }
 
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) Reset() {
-	*m = QueryTVLLockedByAppOfAllExtendedPairsRequest{}
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) Reset() {
+	*m = QueryTVLByAppOfAllExtendedPairsRequest{}
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryTVLLockedByAppOfAllExtendedPairsRequest) ProtoMessage() {}
-func (*QueryTVLLockedByAppOfAllExtendedPairsRequest) Descriptor() ([]byte, []int) {
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTVLByAppOfAllExtendedPairsRequest) ProtoMessage()    {}
+func (*QueryTVLByAppOfAllExtendedPairsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8d35126a97363346, []int{41}
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTVLLockedByAppOfAllExtendedPairsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTVLByAppOfAllExtendedPairsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1682,38 +1682,36 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) XXX_Marshal(b []byte, det
 		return b[:n], nil
 	}
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTVLLockedByAppOfAllExtendedPairsRequest.Merge(m, src)
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTVLByAppOfAllExtendedPairsRequest.Merge(m, src)
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) XXX_Size() int {
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTVLLockedByAppOfAllExtendedPairsRequest.DiscardUnknown(m)
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTVLByAppOfAllExtendedPairsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTVLLockedByAppOfAllExtendedPairsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryTVLByAppOfAllExtendedPairsRequest proto.InternalMessageInfo
 
-type QueryTVLLockedByAppOfAllExtendedPairsResponse struct {
+type QueryTVLByAppOfAllExtendedPairsResponse struct {
 	Tvldata []TvlLockedDataMap `protobuf:"bytes,1,rep,name=tvldata,proto3" json:"tvldata" yaml:"tvldata"`
 }
 
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) Reset() {
-	*m = QueryTVLLockedByAppOfAllExtendedPairsResponse{}
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) Reset() {
+	*m = QueryTVLByAppOfAllExtendedPairsResponse{}
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryTVLLockedByAppOfAllExtendedPairsResponse) ProtoMessage() {}
-func (*QueryTVLLockedByAppOfAllExtendedPairsResponse) Descriptor() ([]byte, []int) {
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryTVLByAppOfAllExtendedPairsResponse) ProtoMessage()    {}
+func (*QueryTVLByAppOfAllExtendedPairsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8d35126a97363346, []int{42}
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTVLLockedByAppOfAllExtendedPairsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTVLByAppOfAllExtendedPairsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1723,34 +1721,34 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) XXX_Marshal(b []byte, de
 		return b[:n], nil
 	}
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTVLLockedByAppOfAllExtendedPairsResponse.Merge(m, src)
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTVLByAppOfAllExtendedPairsResponse.Merge(m, src)
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) XXX_Size() int {
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTVLLockedByAppOfAllExtendedPairsResponse.DiscardUnknown(m)
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTVLByAppOfAllExtendedPairsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTVLLockedByAppOfAllExtendedPairsResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryTVLByAppOfAllExtendedPairsResponse proto.InternalMessageInfo
 
-type QueryTotalTVLByAppRequest struct {
+type QueryTVLByAppRequest struct {
 	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 }
 
-func (m *QueryTotalTVLByAppRequest) Reset()         { *m = QueryTotalTVLByAppRequest{} }
-func (m *QueryTotalTVLByAppRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryTotalTVLByAppRequest) ProtoMessage()    {}
-func (*QueryTotalTVLByAppRequest) Descriptor() ([]byte, []int) {
+func (m *QueryTVLByAppRequest) Reset()         { *m = QueryTVLByAppRequest{} }
+func (m *QueryTVLByAppRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTVLByAppRequest) ProtoMessage()    {}
+func (*QueryTVLByAppRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8d35126a97363346, []int{43}
 }
-func (m *QueryTotalTVLByAppRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryTVLByAppRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTotalTVLByAppRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTVLByAppRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTotalTVLByAppRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTVLByAppRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1760,34 +1758,34 @@ func (m *QueryTotalTVLByAppRequest) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *QueryTotalTVLByAppRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTotalTVLByAppRequest.Merge(m, src)
+func (m *QueryTVLByAppRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTVLByAppRequest.Merge(m, src)
 }
-func (m *QueryTotalTVLByAppRequest) XXX_Size() int {
+func (m *QueryTVLByAppRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTotalTVLByAppRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTotalTVLByAppRequest.DiscardUnknown(m)
+func (m *QueryTVLByAppRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTVLByAppRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTotalTVLByAppRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryTVLByAppRequest proto.InternalMessageInfo
 
-type QueryTotalTVLByAppResponse struct {
+type QueryTVLByAppResponse struct {
 	CollateralLocked github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=collateral_locked,json=collateralLocked,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"collateral_locked" yaml:"collateral_locked"`
 }
 
-func (m *QueryTotalTVLByAppResponse) Reset()         { *m = QueryTotalTVLByAppResponse{} }
-func (m *QueryTotalTVLByAppResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryTotalTVLByAppResponse) ProtoMessage()    {}
-func (*QueryTotalTVLByAppResponse) Descriptor() ([]byte, []int) {
+func (m *QueryTVLByAppResponse) Reset()         { *m = QueryTVLByAppResponse{} }
+func (m *QueryTVLByAppResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryTVLByAppResponse) ProtoMessage()    {}
+func (*QueryTVLByAppResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8d35126a97363346, []int{44}
 }
-func (m *QueryTotalTVLByAppResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryTVLByAppResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTotalTVLByAppResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTVLByAppResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTotalTVLByAppResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTVLByAppResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1797,17 +1795,17 @@ func (m *QueryTotalTVLByAppResponse) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *QueryTotalTVLByAppResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTotalTVLByAppResponse.Merge(m, src)
+func (m *QueryTVLByAppResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTVLByAppResponse.Merge(m, src)
 }
-func (m *QueryTotalTVLByAppResponse) XXX_Size() int {
+func (m *QueryTVLByAppResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTotalTVLByAppResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTotalTVLByAppResponse.DiscardUnknown(m)
+func (m *QueryTVLByAppResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTVLByAppResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTotalTVLByAppResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryTVLByAppResponse proto.InternalMessageInfo
 
 type QueryUserMyPositionByAppRequest struct {
 	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
@@ -1963,6 +1961,88 @@ func (m *QueryUserExtendedPairTotalDataResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryUserExtendedPairTotalDataResponse proto.InternalMessageInfo
 
+type QueryPairsLockedAndMintedStatisticByAppRequest struct {
+	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+}
+
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) Reset() {
+	*m = QueryPairsLockedAndMintedStatisticByAppRequest{}
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryPairsLockedAndMintedStatisticByAppRequest) ProtoMessage() {}
+func (*QueryPairsLockedAndMintedStatisticByAppRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8d35126a97363346, []int{49}
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPairsLockedAndMintedStatisticByAppRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPairsLockedAndMintedStatisticByAppRequest.Merge(m, src)
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPairsLockedAndMintedStatisticByAppRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPairsLockedAndMintedStatisticByAppRequest proto.InternalMessageInfo
+
+type QueryPairsLockedAndMintedStatisticByAppResponse struct {
+	PairStatisticData []PairStatisticData `protobuf:"bytes,1,rep,name=pairStatisticData,proto3" json:"pairStatisticData" yaml:"pairStatisticData"`
+}
+
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) Reset() {
+	*m = QueryPairsLockedAndMintedStatisticByAppResponse{}
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryPairsLockedAndMintedStatisticByAppResponse) ProtoMessage() {}
+func (*QueryPairsLockedAndMintedStatisticByAppResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8d35126a97363346, []int{50}
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPairsLockedAndMintedStatisticByAppResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPairsLockedAndMintedStatisticByAppResponse.Merge(m, src)
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPairsLockedAndMintedStatisticByAppResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPairsLockedAndMintedStatisticByAppResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*VaultInfo)(nil), "comdex.vault.v1beta1.VaultInfo")
 	proto.RegisterType((*QueryVaultRequest)(nil), "comdex.vault.v1beta1.QueryVaultRequest")
@@ -1991,206 +2071,213 @@ func init() {
 	proto.RegisterType((*QueryVaultCountByAppResponse)(nil), "comdex.vault.v1beta1.QueryVaultCountByAppResponse")
 	proto.RegisterType((*QueryVaultCountByAppAndExtendedPairRequest)(nil), "comdex.vault.v1beta1.QueryVaultCountByAppAndExtendedPairRequest")
 	proto.RegisterType((*QueryVaultCountByAppAndExtendedPairResponse)(nil), "comdex.vault.v1beta1.QueryVaultCountByAppAndExtendedPairResponse")
-	proto.RegisterType((*QueryTotalValueLockedByAppExtendedPairRequest)(nil), "comdex.vault.v1beta1.QueryTotalValueLockedByAppExtendedPairRequest")
-	proto.RegisterType((*QueryTotalValueLockedByAppExtendedPairResponse)(nil), "comdex.vault.v1beta1.QueryTotalValueLockedByAppExtendedPairResponse")
+	proto.RegisterType((*QueryTotalValueLockedByAppAndExtendedPairRequest)(nil), "comdex.vault.v1beta1.QueryTotalValueLockedByAppAndExtendedPairRequest")
+	proto.RegisterType((*QueryTotalValueLockedByAppAndExtendedPairResponse)(nil), "comdex.vault.v1beta1.QueryTotalValueLockedByAppAndExtendedPairResponse")
 	proto.RegisterType((*QueryExtendedPairIDsByAppRequest)(nil), "comdex.vault.v1beta1.QueryExtendedPairIDsByAppRequest")
 	proto.RegisterType((*QueryExtendedPairIDsByAppResponse)(nil), "comdex.vault.v1beta1.QueryExtendedPairIDsByAppResponse")
 	proto.RegisterType((*QueryStableVaultByVaultIdRequest)(nil), "comdex.vault.v1beta1.QueryStableVaultByVaultIdRequest")
 	proto.RegisterType((*QueryStableVaultByVaultIdResponse)(nil), "comdex.vault.v1beta1.QueryStableVaultByVaultIdResponse")
 	proto.RegisterType((*QueryStableVaultByAppRequest)(nil), "comdex.vault.v1beta1.QueryStableVaultByAppRequest")
 	proto.RegisterType((*QueryStableVaultByAppResponse)(nil), "comdex.vault.v1beta1.QueryStableVaultByAppResponse")
-	proto.RegisterType((*QueryStableVaultByAppExtendedPairRequest)(nil), "comdex.vault.v1beta1.QueryStableVaultByAppExtendedPairRequest")
-	proto.RegisterType((*QueryStableVaultByAppExtendedPairResponse)(nil), "comdex.vault.v1beta1.QueryStableVaultByAppExtendedPairResponse")
-	proto.RegisterType((*QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest)(nil), "comdex.vault.v1beta1.QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest")
-	proto.RegisterType((*QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse)(nil), "comdex.vault.v1beta1.QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse")
+	proto.RegisterType((*QueryStableVaultByAppAndExtendedPairRequest)(nil), "comdex.vault.v1beta1.QueryStableVaultByAppAndExtendedPairRequest")
+	proto.RegisterType((*QueryStableVaultByAppAndExtendedPairResponse)(nil), "comdex.vault.v1beta1.QueryStableVaultByAppAndExtendedPairResponse")
+	proto.RegisterType((*QueryExtendedPairVaultMappingByAppAndExtendedPairRequest)(nil), "comdex.vault.v1beta1.QueryExtendedPairVaultMappingByAppAndExtendedPairRequest")
+	proto.RegisterType((*QueryExtendedPairVaultMappingByAppAndExtendedPairResponse)(nil), "comdex.vault.v1beta1.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse")
 	proto.RegisterType((*QueryExtendedPairVaultMappingByAppRequest)(nil), "comdex.vault.v1beta1.QueryExtendedPairVaultMappingByAppRequest")
 	proto.RegisterType((*QueryExtendedPairVaultMappingByAppResponse)(nil), "comdex.vault.v1beta1.QueryExtendedPairVaultMappingByAppResponse")
-	proto.RegisterType((*QueryTVLLockedByAppOfAllExtendedPairsRequest)(nil), "comdex.vault.v1beta1.QueryTVLLockedByAppOfAllExtendedPairsRequest")
-	proto.RegisterType((*QueryTVLLockedByAppOfAllExtendedPairsResponse)(nil), "comdex.vault.v1beta1.QueryTVLLockedByAppOfAllExtendedPairsResponse")
-	proto.RegisterType((*QueryTotalTVLByAppRequest)(nil), "comdex.vault.v1beta1.QueryTotalTVLByAppRequest")
-	proto.RegisterType((*QueryTotalTVLByAppResponse)(nil), "comdex.vault.v1beta1.QueryTotalTVLByAppResponse")
+	proto.RegisterType((*QueryTVLByAppOfAllExtendedPairsRequest)(nil), "comdex.vault.v1beta1.QueryTVLByAppOfAllExtendedPairsRequest")
+	proto.RegisterType((*QueryTVLByAppOfAllExtendedPairsResponse)(nil), "comdex.vault.v1beta1.QueryTVLByAppOfAllExtendedPairsResponse")
+	proto.RegisterType((*QueryTVLByAppRequest)(nil), "comdex.vault.v1beta1.QueryTVLByAppRequest")
+	proto.RegisterType((*QueryTVLByAppResponse)(nil), "comdex.vault.v1beta1.QueryTVLByAppResponse")
 	proto.RegisterType((*QueryUserMyPositionByAppRequest)(nil), "comdex.vault.v1beta1.QueryUserMyPositionByAppRequest")
 	proto.RegisterType((*QueryUserMyPositionByAppResponse)(nil), "comdex.vault.v1beta1.QueryUserMyPositionByAppResponse")
 	proto.RegisterType((*QueryUserExtendedPairTotalDataRequest)(nil), "comdex.vault.v1beta1.QueryUserExtendedPairTotalDataRequest")
 	proto.RegisterType((*QueryUserExtendedPairTotalDataResponse)(nil), "comdex.vault.v1beta1.QueryUserExtendedPairTotalDataResponse")
+	proto.RegisterType((*QueryPairsLockedAndMintedStatisticByAppRequest)(nil), "comdex.vault.v1beta1.QueryPairsLockedAndMintedStatisticByAppRequest")
+	proto.RegisterType((*QueryPairsLockedAndMintedStatisticByAppResponse)(nil), "comdex.vault.v1beta1.QueryPairsLockedAndMintedStatisticByAppResponse")
 }
 
 func init() { proto.RegisterFile("comdex/vault/v1beta1/query.proto", fileDescriptor_8d35126a97363346) }
 
 var fileDescriptor_8d35126a97363346 = []byte{
-	// 2744 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe4, 0x5b, 0x5d, 0x6c, 0x14, 0xd7,
-	0xf5, 0xf7, 0xac, 0x6d, 0x82, 0xaf, 0xb1, 0xb1, 0x2f, 0x06, 0x96, 0x05, 0x76, 0xc9, 0x25, 0x01,
-	0x02, 0xcc, 0x2e, 0x36, 0x04, 0xf8, 0xf3, 0x65, 0x76, 0x6d, 0x93, 0x6c, 0x02, 0x7f, 0x60, 0x42,
-	0x4c, 0x48, 0x45, 0xb7, 0xe3, 0x9d, 0xb1, 0x33, 0x62, 0x76, 0x66, 0xb3, 0x33, 0xbb, 0xc4, 0xa5,
-	0xa8, 0x55, 0x5e, 0xaa, 0xa4, 0xea, 0x97, 0x9a, 0xaa, 0x95, 0xda, 0x97, 0xbe, 0x54, 0xa9, 0xaa,
-	0x4a, 0xe9, 0x4b, 0x5f, 0x5a, 0x55, 0xca, 0x4b, 0x45, 0x3f, 0xa4, 0x52, 0x55, 0x95, 0xaa, 0x3c,
-	0xac, 0x52, 0xd3, 0xe7, 0xb6, 0xda, 0x97, 0x4a, 0x6d, 0xa3, 0x56, 0x73, 0xef, 0x99, 0x9d, 0x99,
-	0xf5, 0xec, 0x7c, 0xac, 0x71, 0x42, 0xc4, 0x0b, 0xec, 0xce, 0xdc, 0xfb, 0x3b, 0xe7, 0x77, 0x3e,
-	0xee, 0x3d, 0xf7, 0x9e, 0x35, 0xda, 0x53, 0xd6, 0x2b, 0x92, 0xfc, 0x46, 0xae, 0x21, 0xd6, 0x55,
-	0x33, 0xd7, 0x98, 0x5c, 0x90, 0x4d, 0x71, 0x32, 0xf7, 0x7a, 0x5d, 0xae, 0x2d, 0x67, 0xab, 0x35,
-	0xdd, 0xd4, 0xf1, 0x04, 0x1b, 0x91, 0xa5, 0x23, 0xb2, 0x30, 0x22, 0x75, 0xb0, 0xac, 0x1b, 0x15,
-	0xdd, 0xc8, 0x2d, 0x88, 0x86, 0xcc, 0x86, 0xb7, 0x27, 0x57, 0xc5, 0x25, 0x45, 0x13, 0x4d, 0x45,
-	0xd7, 0x18, 0x42, 0x6a, 0x62, 0x49, 0x5f, 0xd2, 0xe9, 0xc7, 0x9c, 0xf5, 0x09, 0x9e, 0xee, 0x5a,
-	0xd2, 0xf5, 0x25, 0x55, 0xce, 0x89, 0x55, 0x25, 0x27, 0x6a, 0x9a, 0x6e, 0xd2, 0x29, 0x06, 0xbc,
-	0xf5, 0xd7, 0x8b, 0xe9, 0x40, 0x47, 0x90, 0x7f, 0x6e, 0x40, 0x43, 0xf3, 0xd6, 0xf7, 0xa2, 0xb6,
-	0xa8, 0xe3, 0x51, 0x94, 0x50, 0xa4, 0x24, 0xb7, 0x87, 0x3b, 0x30, 0x24, 0x24, 0x14, 0x09, 0x5f,
-	0x47, 0x63, 0xf2, 0x1b, 0xa6, 0xac, 0x49, 0xb2, 0x54, 0xaa, 0x8a, 0x4a, 0xad, 0xa4, 0x48, 0xc9,
-	0xc4, 0x1e, 0xee, 0xc0, 0x40, 0x81, 0x5f, 0x69, 0x66, 0x46, 0xe7, 0xe0, 0xdd, 0x15, 0x51, 0xa9,
-	0x15, 0x67, 0x5b, 0xcd, 0xcc, 0xf6, 0x65, 0xb1, 0xa2, 0x9e, 0x22, 0x9d, 0x73, 0x88, 0x30, 0x2a,
-	0xbb, 0x87, 0x4a, 0x78, 0x1f, 0x1a, 0xd4, 0x6f, 0x6b, 0x72, 0x2d, 0xd9, 0x6f, 0xc9, 0x2a, 0x8c,
-	0xb5, 0x9a, 0x99, 0x4d, 0x6c, 0x2e, 0x7d, 0x4c, 0x04, 0xf6, 0x1a, 0x97, 0x11, 0x2a, 0xeb, 0xaa,
-	0x2a, 0x9a, 0x72, 0x4d, 0x54, 0x93, 0x03, 0x74, 0xf0, 0xcc, 0xbd, 0x66, 0xa6, 0xef, 0x83, 0x66,
-	0x66, 0xdf, 0x92, 0x62, 0xbe, 0x56, 0x5f, 0xc8, 0x96, 0xf5, 0x4a, 0x0e, 0xec, 0xc8, 0xfe, 0xe3,
-	0x0d, 0xe9, 0x56, 0xce, 0x5c, 0xae, 0xca, 0x46, 0xb6, 0xa8, 0x99, 0xad, 0x66, 0x66, 0x9c, 0x41,
-	0x3b, 0x48, 0x44, 0x70, 0xc1, 0xe2, 0xab, 0x68, 0x40, 0x92, 0x17, 0xcc, 0xe4, 0x20, 0x85, 0x3f,
-	0x1b, 0x1b, 0x7e, 0x98, 0xc1, 0x5b, 0x18, 0x44, 0xa0, 0x50, 0xf8, 0x2d, 0x0e, 0x6d, 0x77, 0x24,
-	0x28, 0x9f, 0xa7, 0x5e, 0x29, 0xd5, 0xac, 0xff, 0x92, 0x1b, 0xa8, 0x98, 0x2b, 0x31, 0xc4, 0xcc,
-	0xca, 0xe5, 0x56, 0x33, 0x93, 0xee, 0x64, 0xe1, 0x81, 0x25, 0xc2, 0xb6, 0x55, 0x6f, 0x04, 0xeb,
-	0x5f, 0xfc, 0x22, 0xc2, 0x5e, 0x87, 0x68, 0x62, 0x45, 0x4e, 0x3e, 0x41, 0xb5, 0xd8, 0xdd, 0x6a,
-	0x66, 0x76, 0xf8, 0x39, 0xcd, 0x1a, 0x43, 0x84, 0x31, 0xb7, 0xdb, 0xfe, 0x5f, 0xac, 0xc8, 0xf8,
-	0x16, 0x1a, 0x51, 0x34, 0x53, 0xae, 0xc9, 0x86, 0x69, 0xc9, 0x95, 0x93, 0x1b, 0x29, 0xce, 0x85,
-	0xd8, 0x6c, 0x26, 0x98, 0x54, 0x0f, 0x18, 0x11, 0x36, 0xd9, 0xdf, 0x05, 0xd1, 0x94, 0xf1, 0x34,
-	0x1a, 0x15, 0x0d, 0x43, 0x36, 0x4b, 0x8a, 0x56, 0x92, 0x64, 0x4d, 0xaf, 0x24, 0x87, 0xa8, 0xb4,
-	0x1d, 0xad, 0x66, 0x66, 0x2b, 0x9b, 0xef, 0x7d, 0x4f, 0x84, 0x4d, 0xf4, 0x41, 0x51, 0x9b, 0xb5,
-	0xbe, 0xe2, 0x02, 0xda, 0xcc, 0x06, 0xe8, 0x75, 0x13, 0x10, 0x10, 0x45, 0x48, 0xb5, 0x9a, 0x99,
-	0x6d, 0x6e, 0x84, 0xf6, 0x00, 0x22, 0x8c, 0xd0, 0x27, 0x97, 0xeb, 0x26, 0xc3, 0x98, 0x47, 0x1b,
-	0x2a, 0x8a, 0x56, 0x2a, 0xd7, 0x92, 0xc3, 0x74, 0xea, 0x74, 0x6c, 0xaa, 0x23, 0x4c, 0x10, 0x43,
-	0x21, 0xc2, 0x60, 0x45, 0xd1, 0x66, 0x6a, 0x64, 0x0a, 0x8d, 0x5f, 0xb5, 0x32, 0x9e, 0x66, 0x9f,
-	0x20, 0xbf, 0x5e, 0x97, 0x0d, 0x13, 0xef, 0x76, 0x12, 0xb0, 0x30, 0xd2, 0x6a, 0x66, 0x86, 0xc0,
-	0x4a, 0x12, 0xb1, 0xf2, 0x91, 0xdc, 0x44, 0xd8, 0x3d, 0xc7, 0xa8, 0xea, 0x9a, 0x21, 0xe3, 0xe7,
-	0xd0, 0x20, 0x4d, 0x69, 0x3a, 0x6f, 0x78, 0x6a, 0x67, 0xd6, 0x6f, 0xad, 0xc9, 0xd2, 0x39, 0x85,
-	0x09, 0x4b, 0x7b, 0x27, 0xdb, 0xe8, 0x10, 0x22, 0xb0, 0xf9, 0x64, 0x1a, 0xa5, 0x1d, 0x78, 0x6b,
-	0x41, 0x28, 0xc0, 0x47, 0x29, 0xa2, 0x7e, 0x5f, 0xe1, 0x50, 0xa6, 0x2b, 0x02, 0x68, 0xfb, 0x1a,
-	0x42, 0x54, 0x9a, 0x61, 0xbd, 0x06, 0x95, 0x33, 0x01, 0x2a, 0x53, 0x94, 0xfd, 0x96, 0xda, 0x2b,
-	0xcd, 0x0c, 0x9a, 0x6f, 0x4f, 0x75, 0xf2, 0xda, 0x81, 0x23, 0x82, 0x0b, 0x9b, 0xd4, 0xd1, 0x93,
-	0x5e, 0x65, 0x2e, 0x2f, 0x5e, 0xb6, 0x56, 0x95, 0xc2, 0x72, 0xbe, 0x5a, 0xb5, 0x19, 0x1d, 0x40,
-	0x1b, 0xc4, 0x6a, 0xb5, 0x04, 0xac, 0x06, 0x0a, 0xe3, 0x8e, 0xc3, 0xd8, 0x73, 0x22, 0x0c, 0x8a,
-	0xd5, 0xaa, 0x7b, 0xcd, 0x4a, 0x04, 0xae, 0x59, 0xe4, 0x6f, 0x1c, 0x22, 0x41, 0x72, 0xbb, 0xd8,
-	0xa1, 0x7f, 0xbd, 0xec, 0x80, 0x3f, 0x8b, 0x90, 0xb3, 0x9b, 0x50, 0xed, 0x87, 0xa7, 0xf6, 0x67,
-	0x59, 0xb0, 0x66, 0xad, 0xad, 0x27, 0xcb, 0x76, 0x2a, 0x5b, 0xdc, 0x15, 0x71, 0x49, 0xb6, 0xd5,
-	0x2c, 0x6c, 0x75, 0xf0, 0x1d, 0x10, 0x22, 0xb8, 0x10, 0x49, 0x03, 0x6d, 0xa5, 0x7c, 0xf3, 0xaa,
-	0xca, 0xd4, 0xb2, 0x6d, 0x7b, 0xd3, 0x23, 0x98, 0xb9, 0x7a, 0x5f, 0xa8, 0x60, 0x3a, 0x37, 0x8a,
-	0xdc, 0xf7, 0x39, 0xb4, 0xad, 0x53, 0xf0, 0xea, 0x94, 0xe8, 0x5f, 0x4b, 0x4a, 0xac, 0xbb, 0xed,
-	0x2e, 0xa0, 0x94, 0x97, 0x42, 0x6f, 0xc1, 0x49, 0x7e, 0xc5, 0xa1, 0x9d, 0xbe, 0x40, 0x9f, 0x36,
-	0x83, 0xfc, 0x9b, 0x43, 0xcf, 0xf8, 0x10, 0xc9, 0x6b, 0x92, 0xbb, 0xda, 0x88, 0x9f, 0xbd, 0x73,
-	0x5d, 0x4b, 0x99, 0x9d, 0x71, 0x0a, 0x17, 0x6f, 0x48, 0xf7, 0x3f, 0xec, 0x90, 0xfe, 0x13, 0x87,
-	0x0e, 0x46, 0x61, 0xff, 0x69, 0xf3, 0xea, 0xbb, 0x09, 0x94, 0x75, 0xad, 0x89, 0x52, 0x7b, 0x45,
-	0x74, 0xd3, 0xca, 0x6b, 0xd2, 0x7a, 0x2e, 0xcc, 0xbe, 0x21, 0xd0, 0xbf, 0xd6, 0x10, 0x18, 0x78,
-	0xd8, 0x21, 0x20, 0xa2, 0x5c, 0x64, 0x4b, 0x41, 0x18, 0x64, 0xd1, 0x46, 0xea, 0xc6, 0x52, 0xd1,
-	0xde, 0x9b, 0xb7, 0xb4, 0x9a, 0x99, 0xcd, 0x2e, 0x47, 0x97, 0x8a, 0x12, 0x11, 0x9e, 0x68, 0x30,
-	0x48, 0xf2, 0x33, 0x0e, 0x1d, 0x72, 0xcb, 0x60, 0x41, 0x56, 0xd4, 0xf2, 0xaa, 0xea, 0x96, 0x62,
-	0xc4, 0x77, 0xc5, 0x4d, 0x9f, 0x38, 0x7a, 0xa8, 0xb6, 0x39, 0x1c, 0x4d, 0x6f, 0x30, 0xcc, 0x24,
-	0x1a, 0x62, 0xf4, 0x15, 0xc9, 0xa0, 0x39, 0x32, 0x54, 0x98, 0x68, 0x35, 0x33, 0x63, 0x6e, 0xcb,
-	0x28, 0x92, 0x41, 0x84, 0x8d, 0x60, 0x1a, 0x83, 0xfc, 0x88, 0x43, 0x7b, 0x3c, 0x19, 0xc8, 0xc4,
-	0x68, 0xd4, 0x0b, 0xb6, 0x41, 0xda, 0x11, 0xc7, 0x05, 0x47, 0xdc, 0x3a, 0x9b, 0x63, 0x1e, 0x0a,
-	0x1c, 0x7f, 0x55, 0x7b, 0xb7, 0xc1, 0x47, 0x76, 0x7c, 0x5c, 0xd3, 0x6f, 0xc9, 0xda, 0x25, 0xab,
-	0x26, 0x97, 0x1e, 0xa7, 0x55, 0xf8, 0xbb, 0x1c, 0xc4, 0x59, 0x28, 0xff, 0x76, 0x2d, 0xb7, 0xc9,
-	0xb4, 0x86, 0x96, 0x2a, 0x74, 0x2c, 0x84, 0xc5, 0x5c, 0xec, 0x93, 0xe4, 0x16, 0xa6, 0x97, 0x1b,
-	0x8b, 0x08, 0xc3, 0xa6, 0xa3, 0x05, 0x79, 0x8f, 0x43, 0x4f, 0x77, 0xaa, 0x96, 0xb7, 0xce, 0x2b,
-	0xd7, 0x15, 0x43, 0xee, 0xb1, 0xb0, 0x5d, 0xe7, 0x28, 0x7d, 0x9b, 0x43, 0xfb, 0xc2, 0x54, 0x06,
-	0x3b, 0x7e, 0x0e, 0x0d, 0x33, 0xd6, 0x25, 0x49, 0x34, 0x45, 0xd8, 0xd5, 0xf6, 0xfa, 0xef, 0x6a,
-	0x0c, 0x68, 0x56, 0x34, 0xc5, 0x4b, 0x62, 0xb5, 0x90, 0x82, 0xdd, 0x0d, 0xb7, 0xcf, 0x5a, 0x36,
-	0x0a, 0x11, 0x50, 0xa5, 0x3d, 0x94, 0xfc, 0xd0, 0xae, 0x93, 0x68, 0xc2, 0xcc, 0xe8, 0x75, 0xcd,
-	0x7c, 0x34, 0xad, 0x76, 0x1d, 0xed, 0xf2, 0xd7, 0x13, 0x4c, 0x75, 0x02, 0x0d, 0xb3, 0xdc, 0x2d,
-	0x5b, 0xef, 0x40, 0xdb, 0x6d, 0x8e, 0x05, 0x5c, 0x2f, 0xed, 0xd3, 0x00, 0x45, 0x21, 0xff, 0xb1,
-	0x4b, 0x8c, 0x0e, 0xe4, 0xc7, 0x24, 0xb7, 0x17, 0xdd, 0x5b, 0x5f, 0x00, 0xfb, 0xb5, 0x9a, 0xf9,
-	0xbf, 0x1c, 0xe2, 0x21, 0xea, 0x4d, 0x51, 0x9d, 0x17, 0xd5, 0xba, 0x7c, 0x51, 0x2f, 0xdf, 0x82,
-	0x85, 0xe4, 0x71, 0xb0, 0xf4, 0x17, 0xa1, 0xe4, 0x8b, 0x60, 0x00, 0x30, 0xf6, 0x25, 0xb4, 0xa9,
-	0x61, 0x8d, 0x2b, 0xa9, 0x74, 0x20, 0x2c, 0xa3, 0x07, 0xa3, 0x2f, 0xa1, 0xc2, 0x70, 0xc3, 0x91,
-	0x43, 0x7e, 0x6c, 0x6f, 0xe5, 0xde, 0x7b, 0x4a, 0xe3, 0xd1, 0x4c, 0xf8, 0x0a, 0x6c, 0xe6, 0xfe,
-	0xca, 0x82, 0x85, 0x9e, 0x47, 0xe3, 0x9d, 0x7e, 0x65, 0x9b, 0xfa, 0x40, 0x61, 0x57, 0xab, 0x99,
-	0x49, 0xfa, 0xbb, 0xde, 0x20, 0xc2, 0x66, 0xaf, 0xef, 0x0d, 0xb2, 0x08, 0xb6, 0x79, 0xc9, 0x14,
-	0x17, 0x54, 0x99, 0x1d, 0x11, 0x3a, 0x6f, 0x7b, 0x0a, 0x68, 0xb3, 0x41, 0x5f, 0x97, 0xec, 0x32,
-	0x01, 0x5c, 0xe2, 0xba, 0x3e, 0xeb, 0x18, 0x40, 0x84, 0x11, 0xc3, 0x41, 0x2c, 0x4a, 0xe4, 0x1d,
-	0x0e, 0x78, 0xf9, 0x0b, 0x02, 0x5e, 0x3a, 0x1a, 0x07, 0x20, 0x6b, 0xad, 0x2e, 0xb9, 0xaf, 0xb3,
-	0x9e, 0xf6, 0x5f, 0xfe, 0x19, 0x9c, 0xb5, 0x09, 0x30, 0x48, 0x17, 0xfd, 0x55, 0x48, 0x44, 0x00,
-	0x1e, 0xed, 0xe1, 0xe4, 0x79, 0x58, 0x5e, 0x3d, 0x5a, 0xf5, 0x74, 0xf2, 0x7e, 0x87, 0x43, 0xbb,
-	0xbb, 0x40, 0x01, 0x39, 0xc3, 0x9f, 0x5c, 0x7f, 0x74, 0x72, 0x7b, 0x60, 0x77, 0x8b, 0x41, 0xf0,
-	0x7b, 0x1c, 0x3a, 0xe0, 0xab, 0xd6, 0xa3, 0xb0, 0xf4, 0x90, 0xef, 0xdb, 0xa7, 0xfc, 0x60, 0xed,
-	0x3e, 0xa9, 0xe8, 0xf8, 0x09, 0x87, 0x4e, 0xad, 0x4a, 0x46, 0xfa, 0xea, 0x92, 0x58, 0xad, 0x2a,
-	0xda, 0x92, 0xdf, 0x9e, 0xe1, 0xe4, 0xcd, 0xc7, 0x6e, 0xce, 0xdf, 0x73, 0xe8, 0x74, 0x4f, 0xfa,
-	0x82, 0x81, 0xbf, 0xce, 0xa1, 0xa4, 0xdc, 0x65, 0x2a, 0x18, 0x3a, 0xeb, 0x6f, 0xe8, 0xae, 0x02,
-	0xf7, 0xb6, 0x9a, 0x99, 0x8c, 0x57, 0xff, 0xce, 0x31, 0x44, 0xe8, 0x2a, 0x94, 0xbc, 0x0c, 0xf1,
-	0x11, 0x48, 0x28, 0x7e, 0xb2, 0xfe, 0xd2, 0x2e, 0x7e, 0x42, 0x70, 0xa3, 0xd9, 0xa5, 0xff, 0xe3,
-	0xb7, 0xcb, 0x2b, 0xf6, 0xc9, 0x64, 0xfe, 0xa2, 0x6b, 0x37, 0xbd, 0xbc, 0xb8, 0xe6, 0xa3, 0x3b,
-	0x79, 0xab, 0x5d, 0xb0, 0x84, 0x42, 0x83, 0x75, 0x5e, 0x41, 0x4f, 0x98, 0x0d, 0xd5, 0x55, 0xa9,
-	0xef, 0xf3, 0xb7, 0xc5, 0xb5, 0x86, 0xca, 0x00, 0xed, 0x62, 0x7d, 0x1b, 0x2c, 0x67, 0xa3, 0x70,
-	0xdc, 0x61, 0x20, 0x44, 0xb0, 0xe1, 0xc8, 0x1c, 0xda, 0xe1, 0x94, 0x0e, 0xd7, 0xe6, 0x2f, 0xf6,
-	0xe8, 0xed, 0x6f, 0x73, 0x70, 0xbb, 0xda, 0x81, 0x03, 0xfa, 0xdf, 0x46, 0xe3, 0x4e, 0xcb, 0xcc,
-	0x5b, 0x73, 0xbc, 0x10, 0xfb, 0xe8, 0x96, 0xec, 0xec, 0xce, 0x01, 0x20, 0x11, 0xc6, 0x9c, 0x67,
-	0x50, 0x98, 0x18, 0xd0, 0x25, 0x79, 0xd9, 0x90, 0x6b, 0x97, 0x96, 0xaf, 0xe8, 0x86, 0x62, 0x55,
-	0x00, 0xeb, 0xdc, 0x96, 0xf8, 0x7b, 0x3f, 0xec, 0xf8, 0xbe, 0x52, 0x3f, 0x61, 0x93, 0xe0, 0x12,
-	0x1a, 0x32, 0x2d, 0x27, 0x95, 0xa4, 0xba, 0x0c, 0x4c, 0x0a, 0xb1, 0x05, 0x8e, 0xd9, 0xc7, 0x67,
-	0x00, 0x22, 0xc2, 0x46, 0xfa, 0x79, 0xb6, 0x2e, 0xe3, 0x2f, 0xa0, 0x2d, 0x62, 0x43, 0x54, 0x54,
-	0xba, 0xf8, 0x9b, 0x7a, 0x69, 0x41, 0xaf, 0xd5, 0xf4, 0xdb, 0xd0, 0x7f, 0xbe, 0x18, 0x5b, 0x54,
-	0x0a, 0x7c, 0xb1, 0x1a, 0x92, 0x08, 0xe3, 0xed, 0xa7, 0xd7, 0xf4, 0x02, 0x7d, 0x86, 0x0d, 0x34,
-	0x26, 0x36, 0xe4, 0x9a, 0xb8, 0x24, 0x97, 0xca, 0x35, 0xe8, 0x03, 0xb3, 0x6e, 0x76, 0x31, 0x76,
-	0x3b, 0x71, 0xbb, 0x2d, 0xda, 0x8b, 0x47, 0x84, 0x51, 0x78, 0x34, 0x53, 0xa3, 0x8d, 0x5f, 0x72,
-	0x19, 0xae, 0x0a, 0x2c, 0x87, 0xbb, 0x33, 0x98, 0x66, 0x83, 0x95, 0x8b, 0x31, 0xaf, 0xb3, 0xc8,
-	0x77, 0xec, 0x93, 0x7c, 0x00, 0x22, 0x04, 0x52, 0x05, 0x8d, 0xd4, 0x0d, 0xd9, 0x79, 0x01, 0xbb,
-	0xc8, 0x21, 0xff, 0x15, 0xc2, 0xc2, 0xa3, 0xcb, 0x1c, 0xbd, 0x17, 0xb0, 0x97, 0x4a, 0x57, 0x95,
-	0x69, 0x61, 0x95, 0xc0, 0xaf, 0x74, 0xa9, 0xf0, 0xa2, 0x4f, 0xfd, 0xf6, 0x20, 0x1a, 0xa4, 0x9a,
-	0xe1, 0xb7, 0x39, 0x84, 0x9c, 0x03, 0x1e, 0xde, 0xef, 0x2f, 0x70, 0x55, 0xe7, 0x35, 0x75, 0x20,
-	0x7c, 0x20, 0xa3, 0x46, 0x9e, 0x79, 0xf3, 0x8f, 0x7f, 0xfd, 0x56, 0x62, 0x2f, 0x7e, 0x32, 0xd7,
-	0xfd, 0xd7, 0x15, 0x46, 0xee, 0x8e, 0x22, 0xdd, 0xc5, 0x1f, 0x72, 0xd0, 0x51, 0xed, 0x6a, 0x30,
-	0x7c, 0x3a, 0x40, 0x6e, 0x98, 0xe3, 0x52, 0x67, 0x7a, 0x9b, 0x0c, 0x44, 0x66, 0x28, 0x91, 0xb3,
-	0xf8, 0xb4, 0x3f, 0x11, 0xcb, 0xc2, 0xbc, 0xbd, 0x11, 0xf1, 0x56, 0xed, 0xc1, 0x53, 0x0f, 0xf0,
-	0x96, 0x07, 0x72, 0x77, 0x68, 0x48, 0xdc, 0xc5, 0xef, 0x73, 0x68, 0x7b, 0x97, 0x96, 0x2f, 0x3e,
-	0x16, 0x66, 0x53, 0xbf, 0x1e, 0x73, 0xea, 0xd9, 0x98, 0xb3, 0x80, 0xcd, 0xff, 0x51, 0x36, 0x47,
-	0xf1, 0x64, 0x90, 0x5b, 0xac, 0xa9, 0xfc, 0xc2, 0x32, 0x4f, 0xbf, 0xf1, 0x8a, 0xc4, 0xdc, 0xf4,
-	0x81, 0xbd, 0x4f, 0xf8, 0x76, 0x6c, 0xf1, 0x89, 0x28, 0x0a, 0xf9, 0xf4, 0x96, 0x53, 0x27, 0xe3,
-	0x4f, 0x04, 0x32, 0x45, 0x4a, 0x66, 0x06, 0xe7, 0x43, 0xc9, 0xe8, 0x8b, 0x3c, 0xf5, 0x84, 0xc5,
-	0x4a, 0xac, 0x56, 0x73, 0x77, 0xd8, 0xf6, 0x70, 0xb7, 0xed, 0xa0, 0x6f, 0x72, 0x68, 0xd4, 0xdb,
-	0x52, 0xc2, 0x87, 0x02, 0xf4, 0xea, 0x6c, 0xe2, 0xa6, 0x0e, 0x47, 0x1b, 0x0c, 0x8a, 0x3f, 0x45,
-	0x15, 0x4f, 0xe3, 0x5d, 0x41, 0x8a, 0xe3, 0xf7, 0x38, 0xb4, 0xc5, 0xa7, 0xcd, 0x85, 0x8f, 0x44,
-	0x91, 0xe5, 0x31, 0xf1, 0x64, 0x8c, 0x19, 0xa0, 0xe2, 0x31, 0xaa, 0x62, 0x16, 0x1f, 0x0e, 0x52,
-	0xd1, 0x32, 0x67, 0xde, 0x65, 0x4e, 0xfc, 0x66, 0x02, 0xba, 0xfa, 0x81, 0x9d, 0x39, 0x3c, 0x1d,
-	0x59, 0x1f, 0xff, 0xfb, 0xb6, 0xd4, 0xf9, 0xde, 0x01, 0x80, 0xdf, 0x0d, 0xca, 0xef, 0x25, 0x7c,
-	0x35, 0x8c, 0x9f, 0x58, 0xad, 0xf2, 0xa2, 0x26, 0x79, 0x73, 0xdc, 0x15, 0x40, 0x9d, 0xe7, 0x8e,
-	0xbb, 0xf8, 0x07, 0x09, 0xb4, 0x3f, 0x62, 0x73, 0x0a, 0xcf, 0x86, 0x06, 0x7f, 0x84, 0x2e, 0x60,
-	0x6a, 0x6e, 0x8d, 0x28, 0x60, 0x13, 0x85, 0xda, 0xa4, 0x8c, 0xc5, 0x00, 0x9b, 0x78, 0x52, 0xc9,
-	0xbb, 0xee, 0x59, 0x56, 0xf2, 0x4b, 0x2e, 0x3f, 0x1b, 0xfd, 0x8b, 0x43, 0x4f, 0x45, 0x69, 0x52,
-	0xe1, 0x7c, 0x38, 0xb5, 0x90, 0xc6, 0x5c, 0xaa, 0xb0, 0x16, 0x08, 0x30, 0xcd, 0x8b, 0xd4, 0x34,
-	0x73, 0x78, 0x26, 0xc0, 0x34, 0x45, 0xa9, 0x1d, 0x30, 0x8a, 0xc6, 0x8b, 0xaa, 0xca, 0xbb, 0x0f,
-	0x28, 0x86, 0x93, 0x25, 0xbf, 0xe1, 0xa0, 0x72, 0xf7, 0x6b, 0x49, 0xe1, 0xe3, 0x11, 0x62, 0xdb,
-	0xa7, 0xdd, 0x96, 0x3a, 0x11, 0x7b, 0x1e, 0x70, 0x3b, 0x43, 0xb9, 0x1d, 0xc7, 0xc7, 0x02, 0x53,
-	0x41, 0x01, 0x76, 0x1a, 0x73, 0x7f, 0x7b, 0xe5, 0xfc, 0x5a, 0x02, 0x3c, 0x19, 0xd2, 0x06, 0x0a,
-	0xf4, 0x64, 0xb4, 0x16, 0x5a, 0xa0, 0x27, 0x23, 0x76, 0xa1, 0x48, 0x89, 0xb2, 0xbd, 0x81, 0xaf,
-	0xfb, 0xb3, 0xa5, 0x6d, 0x24, 0x9e, 0xf5, 0x42, 0x60, 0x79, 0x8b, 0x99, 0xfe, 0x2b, 0x76, 0x39,
-	0xd3, 0xb5, 0x93, 0x13, 0x58, 0xce, 0x84, 0xb5, 0xac, 0x02, 0xcb, 0x99, 0xd0, 0xe6, 0x11, 0x99,
-	0xa3, 0xf4, 0xa7, 0xf1, 0xd9, 0x08, 0xf4, 0xe9, 0x4f, 0xfc, 0xf8, 0xdb, 0x8a, 0x21, 0x77, 0xee,
-	0x9b, 0xf8, 0xe7, 0x1c, 0x9a, 0xf0, 0xeb, 0x10, 0xe0, 0xc9, 0xb0, 0x64, 0x5b, 0xd5, 0x4d, 0x4a,
-	0x4d, 0xc5, 0x99, 0x12, 0x23, 0x66, 0x79, 0xda, 0x70, 0x80, 0xa0, 0xf5, 0x6c, 0x53, 0x5f, 0x4d,
-	0xa0, 0xbd, 0x11, 0xfa, 0x1b, 0xf8, 0x7c, 0x74, 0xcd, 0xba, 0x44, 0x6c, 0x7e, 0x0d, 0x08, 0x40,
-	0x55, 0xa4, 0x54, 0x3f, 0x83, 0x6f, 0xc4, 0xa0, 0x1a, 0x33, 0x64, 0xbf, 0x9c, 0x68, 0x37, 0x1f,
-	0x43, 0xba, 0x10, 0x78, 0x26, 0x30, 0xfa, 0xa2, 0x35, 0x71, 0x52, 0xb3, 0x6b, 0x03, 0x01, 0xc3,
-	0x08, 0xd4, 0x30, 0x17, 0xf1, 0x0b, 0xdd, 0x0c, 0xa3, 0xd6, 0x65, 0x9e, 0x1d, 0xa6, 0xed, 0x4c,
-	0x0e, 0xb5, 0xc4, 0xef, 0xec, 0xa5, 0xd9, 0xaf, 0xc1, 0x10, 0xb8, 0x34, 0x07, 0xb4, 0x4f, 0x02,
-	0x97, 0xe6, 0xa0, 0x4e, 0x06, 0x39, 0x47, 0x29, 0x9e, 0xc4, 0xc7, 0xfd, 0x29, 0x5a, 0xfa, 0xd7,
-	0x34, 0x51, 0x65, 0xfb, 0xaf, 0x22, 0xad, 0xaa, 0xc7, 0xee, 0xdb, 0x74, 0xfc, 0xfa, 0x0a, 0x81,
-	0x74, 0x02, 0x3a, 0x1e, 0x81, 0x74, 0x82, 0x1a, 0x18, 0xa4, 0x40, 0xe9, 0x9c, 0xc1, 0xa7, 0xfc,
-	0xe9, 0xb0, 0x0b, 0x66, 0x38, 0x76, 0x2c, 0x2c, 0xd3, 0x93, 0x47, 0x47, 0xe7, 0xe4, 0x2e, 0xfe,
-	0x05, 0x07, 0x3f, 0xa4, 0xec, 0xbc, 0x14, 0xc7, 0x53, 0x51, 0xd5, 0x72, 0x79, 0xe6, 0x68, 0xac,
-	0x39, 0x40, 0xe3, 0x14, 0xa5, 0x71, 0x0c, 0x4f, 0x45, 0xa3, 0xe1, 0xf1, 0xc8, 0x97, 0x12, 0x7e,
-	0x9d, 0x9e, 0xce, 0x2c, 0x3b, 0x17, 0x43, 0x2d, 0xbf, 0x04, 0x9b, 0xee, 0x79, 0x3e, 0x50, 0x7c,
-	0x95, 0x52, 0xbc, 0x86, 0x85, 0xc8, 0x14, 0x3d, 0xc5, 0x4e, 0x60, 0x8e, 0xfd, 0x3a, 0x81, 0x8e,
-	0xf6, 0x70, 0x0f, 0x8f, 0xaf, 0x44, 0xcc, 0xa2, 0xc8, 0x2d, 0x88, 0xd4, 0xd5, 0x87, 0x88, 0x08,
-	0x86, 0xab, 0x50, 0xc3, 0x2d, 0x61, 0xb9, 0x7b, 0xc6, 0x7a, 0x50, 0xf9, 0x0a, 0x83, 0x75, 0xd7,
-	0x1a, 0x5e, 0xe8, 0x40, 0x5b, 0xfe, 0xc3, 0xfe, 0x19, 0x75, 0xa0, 0xba, 0x81, 0x07, 0xae, 0x28,
-	0xcd, 0x83, 0xc0, 0x03, 0x57, 0xa4, 0x2e, 0x01, 0x79, 0x8e, 0x1a, 0x26, 0x8f, 0xa7, 0x7b, 0x33,
-	0x8c, 0x93, 0x41, 0x1f, 0xb5, 0x7f, 0xdc, 0x13, 0x72, 0x05, 0x8f, 0x03, 0xcb, 0xc5, 0x68, 0xad,
-	0x81, 0xd4, 0xcc, 0x9a, 0x30, 0xa2, 0x9d, 0x1e, 0xcc, 0x86, 0xea, 0xda, 0xa7, 0xe8, 0x81, 0xd3,
-	0x75, 0x78, 0xa0, 0x8b, 0xbb, 0xeb, 0xf4, 0xf0, 0x53, 0x0e, 0xfe, 0xbe, 0xc1, 0x73, 0x5f, 0x8f,
-	0x73, 0x61, 0x7b, 0x6a, 0x47, 0x87, 0x20, 0x75, 0x24, 0xfa, 0x04, 0xa0, 0x71, 0x92, 0xd2, 0x98,
-	0xc2, 0x47, 0x22, 0xd2, 0x70, 0x74, 0xfe, 0x03, 0x87, 0x92, 0xdd, 0xae, 0xd5, 0xf1, 0xb3, 0x21,
-	0xf7, 0x73, 0xfe, 0x97, 0xff, 0xa9, 0xe3, 0x71, 0xa7, 0x01, 0x8b, 0x0b, 0x94, 0xc5, 0x79, 0x7c,
-	0x2e, 0xe0, 0x42, 0xaf, 0xb2, 0xcc, 0x57, 0x61, 0x72, 0xb7, 0x2b, 0xa3, 0xc2, 0xd5, 0x7b, 0x7f,
-	0x49, 0xf7, 0xbd, 0xbb, 0x92, 0xee, 0xbb, 0xb7, 0x92, 0xe6, 0xee, 0xaf, 0xa4, 0xb9, 0x0f, 0x57,
-	0xd2, 0xdc, 0x37, 0x1e, 0xa4, 0xfb, 0xee, 0x3f, 0x48, 0xf7, 0xfd, 0xf9, 0x41, 0xba, 0xef, 0xd5,
-	0x9c, 0xe7, 0xb6, 0xda, 0x92, 0xc5, 0xeb, 0x8b, 0x8b, 0x4a, 0x59, 0x11, 0x55, 0x5b, 0xb6, 0x2d,
-	0x9d, 0x5e, 0x5d, 0x2f, 0x6c, 0xa0, 0x7f, 0x6e, 0x76, 0xf4, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff,
-	0xea, 0x2f, 0xe7, 0x5d, 0x2a, 0x37, 0x00, 0x00,
+	// 2823 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe4, 0x5b, 0x4d, 0x6c, 0x1b, 0xc7,
+	0x15, 0xd6, 0x52, 0x92, 0x63, 0x8d, 0x2c, 0x59, 0x1a, 0x2b, 0x36, 0x43, 0xdb, 0xa4, 0x33, 0x76,
+	0xfc, 0x4f, 0x32, 0x92, 0x7f, 0xe3, 0x3f, 0x99, 0x94, 0x64, 0x87, 0x8d, 0x1d, 0xc9, 0x6b, 0x47,
+	0x8e, 0x53, 0x38, 0xec, 0x8a, 0xbb, 0x52, 0x16, 0x5e, 0xee, 0x32, 0xdc, 0x25, 0x1d, 0xd5, 0xf5,
+	0xc5, 0x3d, 0x14, 0x4d, 0xd1, 0x36, 0x45, 0x03, 0xb4, 0x40, 0xd1, 0x16, 0xbd, 0x14, 0x69, 0x73,
+	0xc9, 0xa9, 0x97, 0x16, 0x45, 0x7d, 0x29, 0x5c, 0xa0, 0x05, 0x5c, 0x14, 0x05, 0x8a, 0x1c, 0x88,
+	0x54, 0xce, 0xb9, 0x2d, 0x78, 0x29, 0xd0, 0x1f, 0xa0, 0xd8, 0x99, 0xb7, 0xdc, 0x5d, 0x6a, 0xb9,
+	0x3f, 0x94, 0xd5, 0x38, 0xf0, 0xc5, 0x26, 0x77, 0x67, 0xde, 0x7b, 0xdf, 0x9b, 0xf7, 0xde, 0xbc,
+	0x99, 0x8f, 0x42, 0xbb, 0x4a, 0x5a, 0x59, 0x94, 0xde, 0xc9, 0xd6, 0x85, 0x9a, 0x62, 0x64, 0xeb,
+	0xe3, 0x0b, 0x92, 0x21, 0x8c, 0x67, 0xdf, 0xae, 0x49, 0xd5, 0xe5, 0x4c, 0xa5, 0xaa, 0x19, 0x1a,
+	0x1e, 0x63, 0x23, 0x32, 0x74, 0x44, 0x06, 0x46, 0x24, 0x0e, 0x96, 0x34, 0xbd, 0xac, 0xe9, 0xd9,
+	0x05, 0x41, 0x97, 0xd8, 0xf0, 0xd6, 0xe4, 0x8a, 0xb0, 0x24, 0xab, 0x82, 0x21, 0x6b, 0x2a, 0x93,
+	0x90, 0x18, 0x5b, 0xd2, 0x96, 0x34, 0xfa, 0x31, 0x6b, 0x7e, 0x82, 0xa7, 0x3b, 0x96, 0x34, 0x6d,
+	0x49, 0x91, 0xb2, 0x42, 0x45, 0xce, 0x0a, 0xaa, 0xaa, 0x19, 0x74, 0x8a, 0x0e, 0x6f, 0xbd, 0xed,
+	0x62, 0x36, 0xd0, 0x11, 0xe4, 0x9f, 0x1b, 0xd0, 0xc0, 0xbc, 0xf9, 0xbd, 0xa0, 0x2e, 0x6a, 0x78,
+	0x18, 0xc5, 0x64, 0x31, 0xce, 0xed, 0xe2, 0xf6, 0x0f, 0xf0, 0x31, 0x59, 0xc4, 0xd7, 0xd1, 0x88,
+	0xf4, 0x8e, 0x21, 0xa9, 0xa2, 0x24, 0x16, 0x2b, 0x82, 0x5c, 0x2d, 0xca, 0x62, 0x3c, 0xb6, 0x8b,
+	0xdb, 0xdf, 0x97, 0x4f, 0xaf, 0x34, 0x52, 0xc3, 0x33, 0xf0, 0x6e, 0x4e, 0x90, 0xab, 0x85, 0xe9,
+	0x66, 0x23, 0xb5, 0x6d, 0x59, 0x28, 0x2b, 0xa7, 0x48, 0xfb, 0x1c, 0xc2, 0x0f, 0x4b, 0xce, 0xa1,
+	0x22, 0xde, 0x8b, 0xfa, 0xb5, 0xdb, 0xaa, 0x54, 0x8d, 0xf7, 0x9a, 0xba, 0xf2, 0x23, 0xcd, 0x46,
+	0x6a, 0x13, 0x9b, 0x4b, 0x1f, 0x13, 0x9e, 0xbd, 0xc6, 0x25, 0x84, 0x4a, 0x9a, 0xa2, 0x08, 0x86,
+	0x54, 0x15, 0x94, 0x78, 0x1f, 0x1d, 0x3c, 0xf5, 0xa0, 0x91, 0xea, 0xf9, 0xb8, 0x91, 0xda, 0xbb,
+	0x24, 0x1b, 0x6f, 0xd5, 0x16, 0x32, 0x25, 0xad, 0x9c, 0x05, 0x3f, 0xb2, 0xff, 0xd2, 0xba, 0x78,
+	0x2b, 0x6b, 0x2c, 0x57, 0x24, 0x3d, 0x53, 0x50, 0x8d, 0x66, 0x23, 0x35, 0xca, 0x44, 0xdb, 0x92,
+	0x08, 0xef, 0x10, 0x8b, 0xaf, 0xa0, 0x3e, 0x51, 0x5a, 0x30, 0xe2, 0xfd, 0x54, 0xfc, 0xd9, 0xc8,
+	0xe2, 0x07, 0x99, 0x78, 0x53, 0x06, 0xe1, 0xa9, 0x28, 0xfc, 0x75, 0x0e, 0x6d, 0xb3, 0x35, 0xc8,
+	0x5f, 0xa6, 0xab, 0x52, 0xac, 0x9a, 0xff, 0xc5, 0x37, 0x50, 0x35, 0x73, 0x11, 0xd4, 0x4c, 0x4b,
+	0xa5, 0x66, 0x23, 0x95, 0x6c, 0x47, 0xe1, 0x12, 0x4b, 0xf8, 0xad, 0xab, 0xde, 0xf0, 0xe6, 0xbf,
+	0xf8, 0x15, 0x84, 0xdd, 0x0b, 0xa2, 0x0a, 0x65, 0x29, 0xfe, 0x0c, 0xb5, 0x62, 0x67, 0xb3, 0x91,
+	0x7a, 0xce, 0x6b, 0xd1, 0xcc, 0x31, 0x84, 0x1f, 0x71, 0x2e, 0xdb, 0xab, 0x42, 0x59, 0xc2, 0xb7,
+	0xd0, 0x90, 0xac, 0x1a, 0x52, 0x55, 0xd2, 0x0d, 0x53, 0xaf, 0x14, 0xdf, 0x48, 0xe5, 0x5c, 0x88,
+	0x8c, 0x66, 0x8c, 0x69, 0x75, 0x09, 0x23, 0xfc, 0x26, 0xeb, 0x3b, 0x2f, 0x18, 0x12, 0x9e, 0x44,
+	0xc3, 0x82, 0xae, 0x4b, 0x46, 0x51, 0x56, 0x8b, 0xa2, 0xa4, 0x6a, 0xe5, 0xf8, 0x00, 0xd5, 0xf6,
+	0x5c, 0xb3, 0x91, 0x7a, 0x96, 0xcd, 0x77, 0xbf, 0x27, 0xfc, 0x26, 0xfa, 0xa0, 0xa0, 0x4e, 0x9b,
+	0x5f, 0x71, 0x1e, 0x6d, 0x66, 0x03, 0xb4, 0x9a, 0x01, 0x12, 0x10, 0x95, 0x90, 0x68, 0x36, 0x52,
+	0x5b, 0x9d, 0x12, 0x5a, 0x03, 0x08, 0x3f, 0x44, 0x9f, 0xcc, 0xd6, 0x0c, 0x26, 0x63, 0x1e, 0x6d,
+	0x28, 0xcb, 0x6a, 0xb1, 0x54, 0x8d, 0x0f, 0xd2, 0xa9, 0x93, 0x91, 0xa1, 0x0e, 0x31, 0x45, 0x4c,
+	0x0a, 0xe1, 0xfb, 0xcb, 0xb2, 0x3a, 0x55, 0x25, 0x13, 0x68, 0xf4, 0x8a, 0x99, 0xf1, 0x34, 0xfb,
+	0x78, 0xe9, 0xed, 0x9a, 0xa4, 0x1b, 0x78, 0xa7, 0x9d, 0x80, 0xf9, 0xa1, 0x66, 0x23, 0x35, 0x00,
+	0x5e, 0x12, 0x89, 0x99, 0x8f, 0xe4, 0x26, 0xc2, 0xce, 0x39, 0x7a, 0x45, 0x53, 0x75, 0x09, 0x5f,
+	0x44, 0xfd, 0x34, 0xa5, 0xe9, 0xbc, 0xc1, 0x89, 0xed, 0x19, 0xaf, 0x5a, 0x93, 0xa1, 0x73, 0xf2,
+	0x63, 0xa6, 0xf5, 0x76, 0xb6, 0xd1, 0x21, 0x84, 0x67, 0xf3, 0xc9, 0x24, 0x4a, 0xda, 0xe2, 0xcd,
+	0x82, 0x90, 0x87, 0x8f, 0x62, 0x48, 0xfb, 0xbe, 0xc1, 0xa1, 0x54, 0x47, 0x09, 0x60, 0xed, 0x5b,
+	0x08, 0x51, 0x6d, 0xba, 0xf9, 0x1a, 0x4c, 0x4e, 0xf9, 0x98, 0x4c, 0xa5, 0xec, 0x33, 0xcd, 0x5e,
+	0x69, 0xa4, 0xd0, 0x7c, 0x6b, 0xaa, 0x9d, 0xd7, 0xb6, 0x38, 0xc2, 0x3b, 0x64, 0x93, 0x1a, 0x7a,
+	0xde, 0x6d, 0xcc, 0xec, 0xe2, 0xac, 0x59, 0x55, 0xf2, 0xcb, 0xb9, 0x4a, 0xc5, 0x42, 0xb4, 0x1f,
+	0x6d, 0x10, 0x2a, 0x95, 0x22, 0xa0, 0xea, 0xcb, 0x8f, 0xda, 0x0b, 0xc6, 0x9e, 0x13, 0xbe, 0x5f,
+	0xa8, 0x54, 0x9c, 0x35, 0x2b, 0xe6, 0x5b, 0xb3, 0xc8, 0xdf, 0x38, 0x44, 0xfc, 0xf4, 0x76, 0xf0,
+	0x43, 0xef, 0x7a, 0xf9, 0x01, 0xbf, 0x89, 0x90, 0xbd, 0x9b, 0x50, 0xeb, 0x07, 0x27, 0xf6, 0x65,
+	0x58, 0xb0, 0x66, 0xcc, 0xad, 0x27, 0xc3, 0x76, 0x2a, 0x4b, 0xdd, 0x9c, 0xb0, 0x24, 0x59, 0x66,
+	0xe6, 0x9f, 0xb5, 0xe5, 0xdb, 0x42, 0x08, 0xef, 0x90, 0x48, 0xea, 0xe8, 0x59, 0x8a, 0x37, 0xa7,
+	0x28, 0xcc, 0x2c, 0xcb, 0xb7, 0x37, 0x5d, 0x8a, 0xd9, 0x52, 0xef, 0x0d, 0x54, 0x4c, 0xe7, 0x86,
+	0xd1, 0x7b, 0x9f, 0x43, 0x5b, 0xdb, 0x15, 0xaf, 0x4e, 0x89, 0xde, 0xb5, 0xa4, 0xc4, 0xba, 0xfb,
+	0xee, 0x02, 0x4a, 0xb8, 0x21, 0x74, 0x17, 0x9c, 0xe4, 0xb7, 0x1c, 0xda, 0xee, 0x29, 0xe8, 0xf3,
+	0xe6, 0x90, 0x7f, 0x73, 0xe8, 0x80, 0x07, 0x90, 0x9c, 0x2a, 0x3a, 0xbb, 0x8d, 0xe8, 0xd9, 0x3b,
+	0xd3, 0xb1, 0x95, 0xd9, 0x1e, 0xa5, 0x71, 0x71, 0x87, 0x74, 0xef, 0xe3, 0x0e, 0xe9, 0x3f, 0x73,
+	0xe8, 0x60, 0x18, 0xf4, 0x9f, 0xb7, 0x55, 0xfd, 0x20, 0x86, 0x32, 0x8e, 0x9a, 0x28, 0xb6, 0x2a,
+	0xa2, 0x13, 0x56, 0x4e, 0x15, 0xd7, 0xb3, 0x30, 0x7b, 0x86, 0x40, 0xef, 0x5a, 0x43, 0xa0, 0xef,
+	0x71, 0x87, 0x80, 0x80, 0xb2, 0xa1, 0x3d, 0x05, 0x61, 0x90, 0x41, 0x1b, 0xe9, 0x32, 0x16, 0x0b,
+	0xd6, 0xde, 0xbc, 0xa5, 0xd9, 0x48, 0x6d, 0x76, 0x2c, 0x74, 0xb1, 0x20, 0x12, 0xfe, 0x99, 0x3a,
+	0x13, 0x49, 0x7e, 0xc1, 0xa1, 0x43, 0x4e, 0x1d, 0x2c, 0xc8, 0x0a, 0x6a, 0x4e, 0x51, 0x9c, 0x5a,
+	0xf4, 0xe8, 0x4b, 0x71, 0xd3, 0x23, 0x8e, 0x1e, 0xab, 0x6f, 0x0e, 0x87, 0xb3, 0x1b, 0x1c, 0x33,
+	0x8e, 0x06, 0x18, 0x7c, 0x59, 0xd4, 0x69, 0x8e, 0x0c, 0xe4, 0xc7, 0x9a, 0x8d, 0xd4, 0x88, 0xd3,
+	0x33, 0xb2, 0xa8, 0x13, 0x7e, 0x23, 0xb8, 0x46, 0x27, 0x3f, 0xe3, 0xd0, 0x2e, 0x57, 0x06, 0x32,
+	0x35, 0x2a, 0x5d, 0x05, 0xcb, 0x21, 0xad, 0x88, 0xe3, 0xfc, 0x23, 0x6e, 0x9d, 0xdd, 0x31, 0x0f,
+	0x0d, 0x8e, 0xb7, 0xa9, 0xdd, 0xfb, 0xe0, 0xbf, 0x56, 0x7c, 0x5c, 0xd3, 0x6e, 0x49, 0xea, 0x65,
+	0xb3, 0x27, 0x17, 0x9f, 0xa6, 0x2a, 0xfc, 0x7d, 0x0e, 0xe2, 0x2c, 0x10, 0x7f, 0xab, 0x97, 0xdb,
+	0x64, 0x98, 0x43, 0x8b, 0x65, 0x3a, 0x16, 0xc2, 0x62, 0x26, 0xf2, 0x49, 0x72, 0x0b, 0xb3, 0xcb,
+	0x29, 0x8b, 0xf0, 0x83, 0x86, 0x6d, 0x05, 0xf9, 0x88, 0x43, 0x2f, 0xb4, 0x9b, 0x96, 0x33, 0xcf,
+	0x2b, 0xd7, 0x65, 0x5d, 0xea, 0xb2, 0xb1, 0x5d, 0xe7, 0x28, 0x7d, 0x97, 0x43, 0x7b, 0x83, 0x4c,
+	0x06, 0x3f, 0x7e, 0x09, 0x0d, 0x32, 0xd4, 0x45, 0x51, 0x30, 0x04, 0xd8, 0xd5, 0x76, 0x7b, 0xef,
+	0x6a, 0x4c, 0xd0, 0xb4, 0x60, 0x08, 0x97, 0x85, 0x4a, 0x3e, 0x01, 0xbb, 0x1b, 0x6e, 0x9d, 0xb5,
+	0x2c, 0x29, 0x84, 0x47, 0xe5, 0xd6, 0x50, 0xf2, 0x53, 0xab, 0x4f, 0xa2, 0x09, 0x33, 0xa5, 0xd5,
+	0x54, 0xe3, 0xc9, 0xf4, 0xda, 0x75, 0xb4, 0xc3, 0xdb, 0x4e, 0x70, 0xd5, 0x09, 0x34, 0xc8, 0x72,
+	0xb7, 0x64, 0xbe, 0x03, 0x6b, 0xb7, 0xda, 0x1e, 0x70, 0xbc, 0xb4, 0x4e, 0x03, 0x54, 0x0a, 0xf9,
+	0x8f, 0xd5, 0x62, 0xb4, 0x49, 0x7e, 0x4a, 0x72, 0x7b, 0xd1, 0xb9, 0xf5, 0xf9, 0xa0, 0x5f, 0xab,
+	0x9b, 0xef, 0xc5, 0xd0, 0x8b, 0x10, 0xf5, 0x86, 0xa0, 0xcc, 0x0b, 0x4a, 0x4d, 0xba, 0xa4, 0x95,
+	0x6e, 0x3d, 0x5d, 0x85, 0xf4, 0x1e, 0x87, 0xc6, 0x23, 0x38, 0x01, 0x7c, 0x7e, 0x19, 0x6d, 0xaa,
+	0x9b, 0x43, 0x8b, 0x0a, 0x1d, 0x0b, 0xd5, 0xf4, 0x60, 0xf8, 0x4a, 0xca, 0x0f, 0xd6, 0x6d, 0x55,
+	0xe4, 0x43, 0x6b, 0x47, 0x77, 0x5f, 0x57, 0xea, 0x4f, 0x66, 0xde, 0x97, 0x61, 0x4f, 0xf7, 0x36,
+	0x16, 0x3c, 0xf4, 0x32, 0x1a, 0x6d, 0x5f, 0x5b, 0xb6, 0xb7, 0xf7, 0xe5, 0x77, 0x34, 0x1b, 0xa9,
+	0xb8, 0xf7, 0xf2, 0xeb, 0x84, 0xdf, 0xec, 0x5e, 0x7f, 0x9d, 0x2c, 0x82, 0x6f, 0xae, 0x1a, 0xc2,
+	0x82, 0x22, 0xb1, 0x93, 0x42, 0xfb, 0xa5, 0x4f, 0x1e, 0x6d, 0xd6, 0xe9, 0xeb, 0xa2, 0xd5, 0x2d,
+	0xc0, 0x92, 0x38, 0x6e, 0xd1, 0xda, 0x06, 0x10, 0x7e, 0x48, 0xb7, 0x25, 0x16, 0x44, 0xf2, 0x3e,
+	0x07, 0xb8, 0xbc, 0x15, 0x01, 0x2e, 0x0d, 0x8d, 0x82, 0x20, 0xb3, 0x64, 0x17, 0x9d, 0xb7, 0x5a,
+	0x2f, 0x78, 0xef, 0x02, 0x4c, 0x9c, 0xb9, 0x17, 0x30, 0x91, 0x0e, 0xf8, 0xab, 0x24, 0x11, 0x1e,
+	0x70, 0xb4, 0x86, 0x93, 0x97, 0xa1, 0xca, 0xba, 0xac, 0xea, 0xea, 0x00, 0xfe, 0x3e, 0x87, 0x76,
+	0x76, 0x10, 0x05, 0xe0, 0x74, 0x6f, 0x70, 0xbd, 0xe1, 0xc1, 0xed, 0x82, 0x4d, 0x2e, 0x02, 0xc0,
+	0x1f, 0x59, 0xad, 0x5c, 0xbb, 0x59, 0x4f, 0x48, 0x05, 0x22, 0x3f, 0xb6, 0x7a, 0xad, 0x40, 0x03,
+	0x3f, 0xab, 0x18, 0xf9, 0x90, 0x43, 0x27, 0x57, 0xa5, 0x24, 0x7d, 0x75, 0x59, 0xa8, 0x54, 0x64,
+	0x75, 0xe9, 0x89, 0xf2, 0xe7, 0x1f, 0x38, 0xf4, 0x52, 0x17, 0xd6, 0x82, 0x73, 0xbf, 0xcd, 0xa1,
+	0xb8, 0xd4, 0x61, 0x22, 0x38, 0x39, 0xe3, 0xed, 0xe4, 0x8e, 0xea, 0x76, 0x37, 0x1b, 0xa9, 0x94,
+	0xdb, 0xfa, 0xf6, 0x31, 0x84, 0xef, 0xa8, 0x94, 0xbc, 0x06, 0xd7, 0x41, 0xbe, 0x70, 0xa2, 0xa7,
+	0xeb, 0xaf, 0xad, 0x2e, 0x28, 0x40, 0x6e, 0x38, 0xbf, 0xf4, 0xfe, 0xff, 0xfd, 0xc2, 0x5b, 0x4d,
+	0xf5, 0xfc, 0x25, 0x6a, 0xea, 0xec, 0xe2, 0x9a, 0x4f, 0xef, 0xe4, 0xab, 0x1c, 0xda, 0x17, 0x28,
+	0x14, 0x3c, 0xf2, 0x3a, 0x7a, 0xc6, 0xa8, 0x2b, 0x8e, 0x36, 0x7d, 0xaf, 0x37, 0xfe, 0x6b, 0x75,
+	0x85, 0xed, 0xc3, 0x56, 0xa7, 0xbe, 0x15, 0x8a, 0xd8, 0x30, 0x9c, 0x75, 0x98, 0x10, 0xc2, 0x5b,
+	0xe2, 0xc8, 0x79, 0x34, 0xe6, 0x32, 0x22, 0x3a, 0x8e, 0xf7, 0x38, 0xb8, 0x91, 0xb6, 0x45, 0x80,
+	0xd5, 0xb7, 0xd1, 0xa8, 0xcd, 0x92, 0xb9, 0xfb, 0x8b, 0x2f, 0x44, 0x3e, 0xad, 0xc5, 0xdb, 0x09,
+	0x39, 0x10, 0x48, 0xf8, 0x11, 0xfb, 0x19, 0x34, 0x21, 0x3a, 0x10, 0x23, 0xaf, 0xe9, 0x52, 0xf5,
+	0xf2, 0xf2, 0x9c, 0xa6, 0xcb, 0xe6, 0x6e, 0xbf, 0xce, 0x4c, 0xc4, 0xdf, 0x7b, 0x61, 0x77, 0xf7,
+	0xd4, 0xfa, 0x19, 0xbb, 0x04, 0x17, 0xd1, 0x80, 0x61, 0xb6, 0x85, 0x45, 0xb1, 0x26, 0x01, 0x92,
+	0x7c, 0x64, 0x85, 0x23, 0xd6, 0x89, 0x19, 0x04, 0x11, 0x7e, 0x23, 0xfd, 0x3c, 0x5d, 0x93, 0xf0,
+	0x57, 0xd0, 0x16, 0xa1, 0x2e, 0xc8, 0x0a, 0x2d, 0xf1, 0x86, 0x56, 0x5c, 0xd0, 0xaa, 0x55, 0xed,
+	0x36, 0x50, 0xce, 0x97, 0x22, 0xab, 0x4a, 0xc0, 0x5a, 0xac, 0x16, 0x49, 0xf8, 0xd1, 0xd6, 0xd3,
+	0x6b, 0x5a, 0x9e, 0x3e, 0xc3, 0x3a, 0x1a, 0x11, 0xea, 0x52, 0x55, 0x58, 0x92, 0x8a, 0xa5, 0x2a,
+	0x50, 0xbf, 0x8c, 0xc0, 0x2e, 0x44, 0x66, 0x10, 0xb7, 0x59, 0xaa, 0xdd, 0xf2, 0x08, 0x3f, 0x0c,
+	0x8f, 0xa6, 0xaa, 0x94, 0xeb, 0x25, 0xb3, 0x70, 0x3b, 0x60, 0x2e, 0xb8, 0x33, 0x6f, 0x69, 0xff,
+	0x6d, 0x66, 0x60, 0xc4, 0x1b, 0x2c, 0xf2, 0x3d, 0xeb, 0xf0, 0xee, 0x23, 0x11, 0x02, 0xa9, 0x8c,
+	0x86, 0x6a, 0xba, 0x64, 0xbf, 0x80, 0xfd, 0xe2, 0x90, 0x77, 0x5d, 0x30, 0xe5, 0xd1, 0x82, 0x46,
+	0xaf, 0x02, 0xac, 0xa2, 0xe8, 0xe8, 0x28, 0x4d, 0x59, 0x45, 0x58, 0x57, 0x5a, 0x20, 0xdc, 0xd2,
+	0xc9, 0x1b, 0x70, 0xa3, 0x4c, 0xcb, 0x12, 0x0b, 0xa9, 0x9c, 0x2a, 0xb2, 0x5b, 0x81, 0xab, 0x86,
+	0x60, 0xc8, 0xba, 0x21, 0x97, 0xba, 0x2c, 0x20, 0x3f, 0xe7, 0xe0, 0x12, 0x36, 0x8c, 0x70, 0x3b,
+	0x8f, 0xcc, 0x4d, 0xb9, 0xf5, 0x76, 0xda, 0x2e, 0x8d, 0xfb, 0xbc, 0x5d, 0x30, 0xd7, 0x3e, 0xbc,
+	0xbd, 0xc1, 0x5b, 0x25, 0x8f, 0xf0, 0xab, 0x75, 0x4c, 0xfc, 0xe6, 0x30, 0xea, 0xa7, 0xc6, 0xe2,
+	0x77, 0x39, 0x84, 0xec, 0xc3, 0x2d, 0xee, 0xa0, 0x76, 0x15, 0xeb, 0x9c, 0xd8, 0x1f, 0x3c, 0x90,
+	0x81, 0x24, 0x07, 0xee, 0xfd, 0xe9, 0xd3, 0xef, 0xc6, 0x76, 0xe3, 0xe7, 0xb3, 0x9d, 0x7f, 0x59,
+	0xa2, 0x67, 0xef, 0xc8, 0xe2, 0x5d, 0xfc, 0x09, 0x07, 0x6c, 0x72, 0xc7, 0xc8, 0xc1, 0xa7, 0x7d,
+	0xf4, 0x06, 0x45, 0x70, 0xe2, 0x4c, 0x77, 0x93, 0x01, 0xc8, 0x14, 0x05, 0x72, 0x16, 0x9f, 0xf6,
+	0x06, 0x62, 0x86, 0x5a, 0xda, 0xda, 0x7b, 0xd3, 0xa6, 0xcf, 0xd3, 0x34, 0x14, 0xd3, 0x66, 0x28,
+	0x66, 0xef, 0xd0, 0xdc, 0xb8, 0x8b, 0xef, 0x73, 0x68, 0x5b, 0x07, 0xba, 0x1b, 0x1f, 0x0d, 0xf2,
+	0xa9, 0x17, 0xbf, 0x9e, 0x38, 0x16, 0x71, 0x16, 0xa0, 0x79, 0x89, 0xa2, 0x39, 0x82, 0xc7, 0xfd,
+	0x96, 0xc5, 0x9c, 0x9a, 0x5e, 0x58, 0x4e, 0xd3, 0x6f, 0x69, 0x59, 0x64, 0xcb, 0xf4, 0x31, 0x07,
+	0x0c, 0xa4, 0x27, 0x5b, 0x8d, 0x4f, 0x84, 0x31, 0xc8, 0x83, 0x57, 0x4f, 0x9c, 0x8c, 0x3e, 0x11,
+	0xc0, 0x14, 0x28, 0x98, 0x29, 0x9c, 0x0b, 0x04, 0xa3, 0x2d, 0xa6, 0xe9, 0x4a, 0x98, 0xa8, 0x84,
+	0x4a, 0x25, 0x7b, 0x87, 0xa5, 0xf1, 0xdd, 0xd6, 0x02, 0x7d, 0x87, 0x43, 0xc3, 0x6e, 0x3a, 0x0d,
+	0x1f, 0xf2, 0xb1, 0xab, 0x9d, 0xc0, 0x4e, 0x1c, 0x0e, 0x37, 0x18, 0x0c, 0xdf, 0x43, 0x0d, 0x4f,
+	0xe2, 0x1d, 0x7e, 0x86, 0xe3, 0x8f, 0x38, 0xb4, 0xc5, 0x83, 0xe2, 0xc3, 0x2f, 0x86, 0xd1, 0xe5,
+	0x72, 0xf1, 0x78, 0x84, 0x19, 0x60, 0xe2, 0x51, 0x6a, 0x62, 0x06, 0x1f, 0xf6, 0x33, 0xd1, 0x74,
+	0x67, 0xce, 0xe1, 0x4e, 0x7c, 0x2f, 0x06, 0xbf, 0x68, 0xf0, 0x65, 0x25, 0xf1, 0x64, 0x68, 0x7b,
+	0xbc, 0x0f, 0x4b, 0x89, 0xf3, 0xdd, 0x0b, 0x00, 0x7c, 0x37, 0x28, 0xbe, 0xab, 0xf8, 0x4a, 0x10,
+	0x3e, 0xa1, 0x52, 0x49, 0x0b, 0xaa, 0xe8, 0xce, 0x71, 0x47, 0x00, 0xb5, 0x1f, 0xb4, 0xee, 0xe2,
+	0x9f, 0xc4, 0xa0, 0x39, 0x0e, 0x26, 0xe6, 0xf0, 0x74, 0x60, 0xf0, 0x87, 0x60, 0x40, 0x13, 0x33,
+	0x6b, 0x94, 0x02, 0x3e, 0x91, 0xa9, 0x4f, 0x4a, 0x58, 0xf0, 0xf1, 0x89, 0x2b, 0x95, 0xdc, 0x75,
+	0xcf, 0xf4, 0x92, 0x57, 0x72, 0x79, 0xf9, 0xe8, 0x5f, 0x1c, 0xda, 0x13, 0x86, 0xa0, 0xc3, 0xb9,
+	0x60, 0x68, 0x01, 0xa4, 0x64, 0x22, 0xbf, 0x16, 0x11, 0xe0, 0x9a, 0x57, 0xa8, 0x6b, 0x66, 0xf0,
+	0x94, 0x8f, 0x6b, 0x0a, 0x62, 0x2b, 0x60, 0x64, 0x35, 0x2d, 0x28, 0x4a, 0xda, 0x79, 0x26, 0xd3,
+	0xed, 0x2c, 0xf9, 0x1d, 0x87, 0x9e, 0xeb, 0x48, 0xc7, 0xe1, 0xe3, 0x21, 0x62, 0xdb, 0x83, 0x6a,
+	0x4c, 0x9c, 0x88, 0x3c, 0x0f, 0xb0, 0x9d, 0xa6, 0xd8, 0x8e, 0xe1, 0x23, 0x7e, 0xcb, 0x2e, 0x03,
+	0x38, 0x95, 0xad, 0x7e, 0xab, 0x70, 0x7e, 0x2b, 0x06, 0x0b, 0x19, 0xc0, 0x80, 0xf9, 0x2e, 0x64,
+	0x38, 0xf6, 0xd0, 0x77, 0x21, 0x43, 0x12, 0x70, 0xa4, 0x48, 0xc1, 0xde, 0xc0, 0xd7, 0xbd, 0xc1,
+	0x52, 0x06, 0x2d, 0xcd, 0x68, 0x20, 0xa8, 0x6e, 0x11, 0xb3, 0x7f, 0xc5, 0xea, 0x66, 0x3a, 0x92,
+	0x58, 0xbe, 0xdd, 0x4c, 0x10, 0x5b, 0xe7, 0xdb, 0xcd, 0x04, 0xf2, 0x66, 0x64, 0x86, 0xc2, 0x9f,
+	0xc4, 0x67, 0x43, 0xc0, 0xa7, 0xbf, 0x6e, 0x4c, 0xdf, 0x96, 0x75, 0xa9, 0x7d, 0xdb, 0xc4, 0xbf,
+	0xe4, 0xe0, 0xe8, 0xdd, 0x46, 0x8e, 0xe0, 0xf1, 0xa0, 0x5c, 0x5b, 0x45, 0xa4, 0x25, 0x26, 0xa2,
+	0x4c, 0x01, 0x18, 0x67, 0x28, 0x8c, 0xe3, 0xf8, 0xa8, 0x5f, 0xc8, 0x52, 0xae, 0x05, 0x82, 0xd6,
+	0xb5, 0x4b, 0x7d, 0x33, 0x86, 0x76, 0x87, 0xa0, 0x76, 0xf0, 0xf9, 0xf0, 0x96, 0x75, 0x88, 0xd8,
+	0xdc, 0x1a, 0x24, 0x00, 0x54, 0x81, 0x42, 0xfd, 0x22, 0xbe, 0x11, 0x01, 0x6a, 0xc4, 0x90, 0xfd,
+	0x61, 0x0c, 0xae, 0xce, 0xc2, 0x90, 0x2f, 0xf8, 0x82, 0x6f, 0x00, 0x86, 0xa6, 0xb0, 0x12, 0x17,
+	0xd7, 0x2c, 0x27, 0x5c, 0x4a, 0x53, 0x86, 0x27, 0xcd, 0x6e, 0x17, 0xba, 0x4b, 0xe9, 0xdf, 0x5b,
+	0xf5, 0xda, 0x8b, 0x6a, 0xf1, 0xad, 0xd7, 0x3e, 0x44, 0x92, 0x6f, 0xbd, 0xf6, 0xe3, 0x74, 0xc8,
+	0x39, 0x8a, 0xf7, 0x24, 0x3e, 0xee, 0x8d, 0xd7, 0xb4, 0xbf, 0xaa, 0x0a, 0x0a, 0xdb, 0x94, 0x65,
+	0x71, 0x55, 0x93, 0xf6, 0xd0, 0x82, 0xe3, 0xc5, 0xb0, 0xf8, 0xc2, 0xf1, 0xe1, 0x7e, 0x7c, 0xe1,
+	0xf8, 0x51, 0x39, 0x24, 0x4f, 0xe1, 0x9c, 0xc1, 0xa7, 0xbc, 0xe1, 0xb0, 0x4b, 0x76, 0x38, 0x8b,
+	0x2c, 0x2c, 0xd3, 0xe3, 0x48, 0x1b, 0x87, 0x74, 0x17, 0xff, 0xca, 0xba, 0xc7, 0x6b, 0xe7, 0x06,
+	0xf0, 0x44, 0x58, 0xb3, 0x1c, 0x2b, 0x73, 0x24, 0xd2, 0x1c, 0x80, 0x71, 0x8a, 0xc2, 0x38, 0x8a,
+	0x27, 0xc2, 0xc1, 0x68, 0x2f, 0x48, 0x7b, 0xc2, 0x50, 0x1b, 0xbe, 0x9b, 0x68, 0x38, 0xde, 0xc6,
+	0x77, 0x13, 0x0d, 0xc9, 0xac, 0x90, 0x37, 0x29, 0xd6, 0xd7, 0xf1, 0x7c, 0x68, 0xac, 0xae, 0x8c,
+	0x9b, 0x0b, 0x4a, 0xb8, 0xfb, 0x31, 0x60, 0x83, 0xa3, 0x50, 0x13, 0xf8, 0xd5, 0x90, 0x09, 0x15,
+	0x92, 0x91, 0x49, 0xcc, 0x3e, 0x36, 0x79, 0xe0, 0xb6, 0x5b, 0xd4, 0x6d, 0x12, 0x2e, 0x75, 0x4e,
+	0x5c, 0x97, 0xcc, 0x74, 0x99, 0x09, 0x75, 0xfa, 0x70, 0x26, 0xac, 0x0f, 0xff, 0x61, 0xfd, 0xb8,
+	0xdc, 0xd7, 0x54, 0xdf, 0xa3, 0x58, 0x18, 0x26, 0xc5, 0xf7, 0x28, 0x16, 0x8a, 0x32, 0x21, 0x17,
+	0xa9, 0x5b, 0x72, 0x78, 0xb2, 0x3b, 0xb7, 0xd8, 0x69, 0xf4, 0xa9, 0xf5, 0x47, 0x05, 0x9d, 0x59,
+	0x09, 0xec, 0xdb, 0x3e, 0x05, 0x31, 0x24, 0x89, 0xb3, 0x5d, 0xce, 0x06, 0xa4, 0xd3, 0x14, 0xe9,
+	0x39, 0x7c, 0xa6, 0x43, 0xf7, 0x55, 0x57, 0x5a, 0x27, 0x4e, 0xc7, 0xe9, 0x81, 0x16, 0x72, 0xc7,
+	0xf1, 0xe1, 0x07, 0x1c, 0x1a, 0x72, 0x69, 0xc4, 0x07, 0x43, 0x98, 0x65, 0x41, 0x38, 0x14, 0x6a,
+	0x2c, 0x18, 0x3c, 0x4e, 0x0d, 0x3e, 0x84, 0x0f, 0x04, 0x19, 0x6c, 0x5b, 0xf7, 0x47, 0x0e, 0xc5,
+	0x3b, 0x51, 0x09, 0xf8, 0x58, 0xc0, 0x55, 0x9c, 0x37, 0xe1, 0x91, 0x38, 0x1e, 0x75, 0x1a, 0x98,
+	0x7f, 0x81, 0x9a, 0x7f, 0x1e, 0x9f, 0xf3, 0xb9, 0xbb, 0x2b, 0x2f, 0xa7, 0x2b, 0x30, 0xb9, 0xe3,
+	0xed, 0xd0, 0xd7, 0xac, 0x13, 0x7d, 0xf0, 0x2d, 0xaf, 0xef, 0x89, 0x3e, 0xf4, 0x0d, 0xb4, 0xef,
+	0x89, 0x3e, 0xfc, 0x55, 0x33, 0x99, 0xa5, 0x0e, 0x28, 0xe0, 0x8b, 0xde, 0x0e, 0xa0, 0x81, 0x65,
+	0xb5, 0x46, 0x66, 0x75, 0x81, 0xce, 0x5f, 0xb7, 0xa4, 0xb5, 0x7b, 0x24, 0x7f, 0xe5, 0xc1, 0x5f,
+	0x93, 0x3d, 0x1f, 0xac, 0x24, 0x7b, 0x1e, 0xac, 0x24, 0xb9, 0x87, 0x2b, 0x49, 0xee, 0x93, 0x95,
+	0x24, 0xf7, 0xde, 0xa3, 0x64, 0xcf, 0xc3, 0x47, 0xc9, 0x9e, 0xbf, 0x3c, 0x4a, 0xf6, 0xbc, 0x91,
+	0x75, 0x71, 0x15, 0xa6, 0xd2, 0xb4, 0xb6, 0xb8, 0x28, 0x97, 0x64, 0x41, 0xb1, 0x8c, 0xb0, 0xcc,
+	0xa0, 0xc4, 0xc5, 0xc2, 0x06, 0xfa, 0xf7, 0x85, 0x47, 0xfe, 0x17, 0x00, 0x00, 0xff, 0xff, 0x35,
+	0xd0, 0x91, 0x1e, 0x1b, 0x39, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -2219,16 +2306,17 @@ type QueryClient interface {
 	QueryTokenMintedAssetWiseByApp(ctx context.Context, in *QueryTokenMintedAssetWiseByAppRequest, opts ...grpc.CallOption) (*QueryTokenMintedAssetWiseByAppResponse, error)
 	QueryVaultCountByApp(ctx context.Context, in *QueryVaultCountByAppRequest, opts ...grpc.CallOption) (*QueryVaultCountByAppResponse, error)
 	QueryVaultCountByAppAndExtendedPair(ctx context.Context, in *QueryVaultCountByAppAndExtendedPairRequest, opts ...grpc.CallOption) (*QueryVaultCountByAppAndExtendedPairResponse, error)
-	QueryTotalValueLockedByAppExtendedPair(ctx context.Context, in *QueryTotalValueLockedByAppExtendedPairRequest, opts ...grpc.CallOption) (*QueryTotalValueLockedByAppExtendedPairResponse, error)
+	QueryTotalValueLockedByAppAndExtendedPair(ctx context.Context, in *QueryTotalValueLockedByAppAndExtendedPairRequest, opts ...grpc.CallOption) (*QueryTotalValueLockedByAppAndExtendedPairResponse, error)
 	QueryExtendedPairIDsByApp(ctx context.Context, in *QueryExtendedPairIDsByAppRequest, opts ...grpc.CallOption) (*QueryExtendedPairIDsByAppResponse, error)
 	QueryStableVaultByVaultId(ctx context.Context, in *QueryStableVaultByVaultIdRequest, opts ...grpc.CallOption) (*QueryStableVaultByVaultIdResponse, error)
 	QueryStableVaultByApp(ctx context.Context, in *QueryStableVaultByAppRequest, opts ...grpc.CallOption) (*QueryStableVaultByAppResponse, error)
-	QueryStableVaultByAppExtendedPair(ctx context.Context, in *QueryStableVaultByAppExtendedPairRequest, opts ...grpc.CallOption) (*QueryStableVaultByAppExtendedPairResponse, error)
-	QueryExtendedPairVaultMappingByAppAndExtendedPairId(ctx context.Context, in *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest, opts ...grpc.CallOption) (*QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse, error)
+	QueryStableVaultByAppAndExtendedPair(ctx context.Context, in *QueryStableVaultByAppAndExtendedPairRequest, opts ...grpc.CallOption) (*QueryStableVaultByAppAndExtendedPairResponse, error)
+	QueryExtendedPairVaultMappingByAppAndExtendedPair(ctx context.Context, in *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest, opts ...grpc.CallOption) (*QueryExtendedPairVaultMappingByAppAndExtendedPairResponse, error)
 	QueryExtendedPairVaultMappingByApp(ctx context.Context, in *QueryExtendedPairVaultMappingByAppRequest, opts ...grpc.CallOption) (*QueryExtendedPairVaultMappingByAppResponse, error)
-	QueryTVLLockedByAppOfAllExtendedPairs(ctx context.Context, in *QueryTVLLockedByAppOfAllExtendedPairsRequest, opts ...grpc.CallOption) (*QueryTVLLockedByAppOfAllExtendedPairsResponse, error)
-	QueryTotalTVLByApp(ctx context.Context, in *QueryTotalTVLByAppRequest, opts ...grpc.CallOption) (*QueryTotalTVLByAppResponse, error)
+	QueryTVLByAppOfAllExtendedPairs(ctx context.Context, in *QueryTVLByAppOfAllExtendedPairsRequest, opts ...grpc.CallOption) (*QueryTVLByAppOfAllExtendedPairsResponse, error)
+	QueryTVLByApp(ctx context.Context, in *QueryTVLByAppRequest, opts ...grpc.CallOption) (*QueryTVLByAppResponse, error)
 	QueryUserMyPositionByApp(ctx context.Context, in *QueryUserMyPositionByAppRequest, opts ...grpc.CallOption) (*QueryUserMyPositionByAppResponse, error)
+	QueryPairsLockedAndMintedStatisticByApp(ctx context.Context, in *QueryPairsLockedAndMintedStatisticByAppRequest, opts ...grpc.CallOption) (*QueryPairsLockedAndMintedStatisticByAppResponse, error)
 }
 
 type queryClient struct {
@@ -2365,9 +2453,9 @@ func (c *queryClient) QueryVaultCountByAppAndExtendedPair(ctx context.Context, i
 	return out, nil
 }
 
-func (c *queryClient) QueryTotalValueLockedByAppExtendedPair(ctx context.Context, in *QueryTotalValueLockedByAppExtendedPairRequest, opts ...grpc.CallOption) (*QueryTotalValueLockedByAppExtendedPairResponse, error) {
-	out := new(QueryTotalValueLockedByAppExtendedPairResponse)
-	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryTotalValueLockedByAppExtendedPair", in, out, opts...)
+func (c *queryClient) QueryTotalValueLockedByAppAndExtendedPair(ctx context.Context, in *QueryTotalValueLockedByAppAndExtendedPairRequest, opts ...grpc.CallOption) (*QueryTotalValueLockedByAppAndExtendedPairResponse, error) {
+	out := new(QueryTotalValueLockedByAppAndExtendedPairResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryTotalValueLockedByAppAndExtendedPair", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2401,18 +2489,18 @@ func (c *queryClient) QueryStableVaultByApp(ctx context.Context, in *QueryStable
 	return out, nil
 }
 
-func (c *queryClient) QueryStableVaultByAppExtendedPair(ctx context.Context, in *QueryStableVaultByAppExtendedPairRequest, opts ...grpc.CallOption) (*QueryStableVaultByAppExtendedPairResponse, error) {
-	out := new(QueryStableVaultByAppExtendedPairResponse)
-	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryStableVaultByAppExtendedPair", in, out, opts...)
+func (c *queryClient) QueryStableVaultByAppAndExtendedPair(ctx context.Context, in *QueryStableVaultByAppAndExtendedPairRequest, opts ...grpc.CallOption) (*QueryStableVaultByAppAndExtendedPairResponse, error) {
+	out := new(QueryStableVaultByAppAndExtendedPairResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryStableVaultByAppAndExtendedPair", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryExtendedPairVaultMappingByAppAndExtendedPairId(ctx context.Context, in *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest, opts ...grpc.CallOption) (*QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse, error) {
-	out := new(QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse)
-	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryExtendedPairVaultMappingByAppAndExtendedPairId", in, out, opts...)
+func (c *queryClient) QueryExtendedPairVaultMappingByAppAndExtendedPair(ctx context.Context, in *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest, opts ...grpc.CallOption) (*QueryExtendedPairVaultMappingByAppAndExtendedPairResponse, error) {
+	out := new(QueryExtendedPairVaultMappingByAppAndExtendedPairResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryExtendedPairVaultMappingByAppAndExtendedPair", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2428,18 +2516,18 @@ func (c *queryClient) QueryExtendedPairVaultMappingByApp(ctx context.Context, in
 	return out, nil
 }
 
-func (c *queryClient) QueryTVLLockedByAppOfAllExtendedPairs(ctx context.Context, in *QueryTVLLockedByAppOfAllExtendedPairsRequest, opts ...grpc.CallOption) (*QueryTVLLockedByAppOfAllExtendedPairsResponse, error) {
-	out := new(QueryTVLLockedByAppOfAllExtendedPairsResponse)
-	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryTVLLockedByAppOfAllExtendedPairs", in, out, opts...)
+func (c *queryClient) QueryTVLByAppOfAllExtendedPairs(ctx context.Context, in *QueryTVLByAppOfAllExtendedPairsRequest, opts ...grpc.CallOption) (*QueryTVLByAppOfAllExtendedPairsResponse, error) {
+	out := new(QueryTVLByAppOfAllExtendedPairsResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryTVLByAppOfAllExtendedPairs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryTotalTVLByApp(ctx context.Context, in *QueryTotalTVLByAppRequest, opts ...grpc.CallOption) (*QueryTotalTVLByAppResponse, error) {
-	out := new(QueryTotalTVLByAppResponse)
-	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryTotalTVLByApp", in, out, opts...)
+func (c *queryClient) QueryTVLByApp(ctx context.Context, in *QueryTVLByAppRequest, opts ...grpc.CallOption) (*QueryTVLByAppResponse, error) {
+	out := new(QueryTVLByAppResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryTVLByApp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2449,6 +2537,15 @@ func (c *queryClient) QueryTotalTVLByApp(ctx context.Context, in *QueryTotalTVLB
 func (c *queryClient) QueryUserMyPositionByApp(ctx context.Context, in *QueryUserMyPositionByAppRequest, opts ...grpc.CallOption) (*QueryUserMyPositionByAppResponse, error) {
 	out := new(QueryUserMyPositionByAppResponse)
 	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryUserMyPositionByApp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryPairsLockedAndMintedStatisticByApp(ctx context.Context, in *QueryPairsLockedAndMintedStatisticByAppRequest, opts ...grpc.CallOption) (*QueryPairsLockedAndMintedStatisticByAppResponse, error) {
+	out := new(QueryPairsLockedAndMintedStatisticByAppResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Query/QueryPairsLockedAndMintedStatisticByApp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2471,16 +2568,17 @@ type QueryServer interface {
 	QueryTokenMintedAssetWiseByApp(context.Context, *QueryTokenMintedAssetWiseByAppRequest) (*QueryTokenMintedAssetWiseByAppResponse, error)
 	QueryVaultCountByApp(context.Context, *QueryVaultCountByAppRequest) (*QueryVaultCountByAppResponse, error)
 	QueryVaultCountByAppAndExtendedPair(context.Context, *QueryVaultCountByAppAndExtendedPairRequest) (*QueryVaultCountByAppAndExtendedPairResponse, error)
-	QueryTotalValueLockedByAppExtendedPair(context.Context, *QueryTotalValueLockedByAppExtendedPairRequest) (*QueryTotalValueLockedByAppExtendedPairResponse, error)
+	QueryTotalValueLockedByAppAndExtendedPair(context.Context, *QueryTotalValueLockedByAppAndExtendedPairRequest) (*QueryTotalValueLockedByAppAndExtendedPairResponse, error)
 	QueryExtendedPairIDsByApp(context.Context, *QueryExtendedPairIDsByAppRequest) (*QueryExtendedPairIDsByAppResponse, error)
 	QueryStableVaultByVaultId(context.Context, *QueryStableVaultByVaultIdRequest) (*QueryStableVaultByVaultIdResponse, error)
 	QueryStableVaultByApp(context.Context, *QueryStableVaultByAppRequest) (*QueryStableVaultByAppResponse, error)
-	QueryStableVaultByAppExtendedPair(context.Context, *QueryStableVaultByAppExtendedPairRequest) (*QueryStableVaultByAppExtendedPairResponse, error)
-	QueryExtendedPairVaultMappingByAppAndExtendedPairId(context.Context, *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) (*QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse, error)
+	QueryStableVaultByAppAndExtendedPair(context.Context, *QueryStableVaultByAppAndExtendedPairRequest) (*QueryStableVaultByAppAndExtendedPairResponse, error)
+	QueryExtendedPairVaultMappingByAppAndExtendedPair(context.Context, *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) (*QueryExtendedPairVaultMappingByAppAndExtendedPairResponse, error)
 	QueryExtendedPairVaultMappingByApp(context.Context, *QueryExtendedPairVaultMappingByAppRequest) (*QueryExtendedPairVaultMappingByAppResponse, error)
-	QueryTVLLockedByAppOfAllExtendedPairs(context.Context, *QueryTVLLockedByAppOfAllExtendedPairsRequest) (*QueryTVLLockedByAppOfAllExtendedPairsResponse, error)
-	QueryTotalTVLByApp(context.Context, *QueryTotalTVLByAppRequest) (*QueryTotalTVLByAppResponse, error)
+	QueryTVLByAppOfAllExtendedPairs(context.Context, *QueryTVLByAppOfAllExtendedPairsRequest) (*QueryTVLByAppOfAllExtendedPairsResponse, error)
+	QueryTVLByApp(context.Context, *QueryTVLByAppRequest) (*QueryTVLByAppResponse, error)
 	QueryUserMyPositionByApp(context.Context, *QueryUserMyPositionByAppRequest) (*QueryUserMyPositionByAppResponse, error)
+	QueryPairsLockedAndMintedStatisticByApp(context.Context, *QueryPairsLockedAndMintedStatisticByAppRequest) (*QueryPairsLockedAndMintedStatisticByAppResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -2529,8 +2627,8 @@ func (*UnimplementedQueryServer) QueryVaultCountByApp(ctx context.Context, req *
 func (*UnimplementedQueryServer) QueryVaultCountByAppAndExtendedPair(ctx context.Context, req *QueryVaultCountByAppAndExtendedPairRequest) (*QueryVaultCountByAppAndExtendedPairResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryVaultCountByAppAndExtendedPair not implemented")
 }
-func (*UnimplementedQueryServer) QueryTotalValueLockedByAppExtendedPair(ctx context.Context, req *QueryTotalValueLockedByAppExtendedPairRequest) (*QueryTotalValueLockedByAppExtendedPairResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryTotalValueLockedByAppExtendedPair not implemented")
+func (*UnimplementedQueryServer) QueryTotalValueLockedByAppAndExtendedPair(ctx context.Context, req *QueryTotalValueLockedByAppAndExtendedPairRequest) (*QueryTotalValueLockedByAppAndExtendedPairResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTotalValueLockedByAppAndExtendedPair not implemented")
 }
 func (*UnimplementedQueryServer) QueryExtendedPairIDsByApp(ctx context.Context, req *QueryExtendedPairIDsByAppRequest) (*QueryExtendedPairIDsByAppResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryExtendedPairIDsByApp not implemented")
@@ -2541,23 +2639,26 @@ func (*UnimplementedQueryServer) QueryStableVaultByVaultId(ctx context.Context, 
 func (*UnimplementedQueryServer) QueryStableVaultByApp(ctx context.Context, req *QueryStableVaultByAppRequest) (*QueryStableVaultByAppResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryStableVaultByApp not implemented")
 }
-func (*UnimplementedQueryServer) QueryStableVaultByAppExtendedPair(ctx context.Context, req *QueryStableVaultByAppExtendedPairRequest) (*QueryStableVaultByAppExtendedPairResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryStableVaultByAppExtendedPair not implemented")
+func (*UnimplementedQueryServer) QueryStableVaultByAppAndExtendedPair(ctx context.Context, req *QueryStableVaultByAppAndExtendedPairRequest) (*QueryStableVaultByAppAndExtendedPairResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryStableVaultByAppAndExtendedPair not implemented")
 }
-func (*UnimplementedQueryServer) QueryExtendedPairVaultMappingByAppAndExtendedPairId(ctx context.Context, req *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) (*QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryExtendedPairVaultMappingByAppAndExtendedPairId not implemented")
+func (*UnimplementedQueryServer) QueryExtendedPairVaultMappingByAppAndExtendedPair(ctx context.Context, req *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) (*QueryExtendedPairVaultMappingByAppAndExtendedPairResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryExtendedPairVaultMappingByAppAndExtendedPair not implemented")
 }
 func (*UnimplementedQueryServer) QueryExtendedPairVaultMappingByApp(ctx context.Context, req *QueryExtendedPairVaultMappingByAppRequest) (*QueryExtendedPairVaultMappingByAppResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryExtendedPairVaultMappingByApp not implemented")
 }
-func (*UnimplementedQueryServer) QueryTVLLockedByAppOfAllExtendedPairs(ctx context.Context, req *QueryTVLLockedByAppOfAllExtendedPairsRequest) (*QueryTVLLockedByAppOfAllExtendedPairsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryTVLLockedByAppOfAllExtendedPairs not implemented")
+func (*UnimplementedQueryServer) QueryTVLByAppOfAllExtendedPairs(ctx context.Context, req *QueryTVLByAppOfAllExtendedPairsRequest) (*QueryTVLByAppOfAllExtendedPairsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTVLByAppOfAllExtendedPairs not implemented")
 }
-func (*UnimplementedQueryServer) QueryTotalTVLByApp(ctx context.Context, req *QueryTotalTVLByAppRequest) (*QueryTotalTVLByAppResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryTotalTVLByApp not implemented")
+func (*UnimplementedQueryServer) QueryTVLByApp(ctx context.Context, req *QueryTVLByAppRequest) (*QueryTVLByAppResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTVLByApp not implemented")
 }
 func (*UnimplementedQueryServer) QueryUserMyPositionByApp(ctx context.Context, req *QueryUserMyPositionByAppRequest) (*QueryUserMyPositionByAppResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryUserMyPositionByApp not implemented")
+}
+func (*UnimplementedQueryServer) QueryPairsLockedAndMintedStatisticByApp(ctx context.Context, req *QueryPairsLockedAndMintedStatisticByAppRequest) (*QueryPairsLockedAndMintedStatisticByAppResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPairsLockedAndMintedStatisticByApp not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -2816,20 +2917,20 @@ func _Query_QueryVaultCountByAppAndExtendedPair_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryTotalValueLockedByAppExtendedPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryTotalValueLockedByAppExtendedPairRequest)
+func _Query_QueryTotalValueLockedByAppAndExtendedPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTotalValueLockedByAppAndExtendedPairRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryTotalValueLockedByAppExtendedPair(ctx, in)
+		return srv.(QueryServer).QueryTotalValueLockedByAppAndExtendedPair(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.vault.v1beta1.Query/QueryTotalValueLockedByAppExtendedPair",
+		FullMethod: "/comdex.vault.v1beta1.Query/QueryTotalValueLockedByAppAndExtendedPair",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryTotalValueLockedByAppExtendedPair(ctx, req.(*QueryTotalValueLockedByAppExtendedPairRequest))
+		return srv.(QueryServer).QueryTotalValueLockedByAppAndExtendedPair(ctx, req.(*QueryTotalValueLockedByAppAndExtendedPairRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2888,38 +2989,38 @@ func _Query_QueryStableVaultByApp_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryStableVaultByAppExtendedPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryStableVaultByAppExtendedPairRequest)
+func _Query_QueryStableVaultByAppAndExtendedPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryStableVaultByAppAndExtendedPairRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryStableVaultByAppExtendedPair(ctx, in)
+		return srv.(QueryServer).QueryStableVaultByAppAndExtendedPair(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.vault.v1beta1.Query/QueryStableVaultByAppExtendedPair",
+		FullMethod: "/comdex.vault.v1beta1.Query/QueryStableVaultByAppAndExtendedPair",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryStableVaultByAppExtendedPair(ctx, req.(*QueryStableVaultByAppExtendedPairRequest))
+		return srv.(QueryServer).QueryStableVaultByAppAndExtendedPair(ctx, req.(*QueryStableVaultByAppAndExtendedPairRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest)
+func _Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryExtendedPairVaultMappingByAppAndExtendedPairRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryExtendedPairVaultMappingByAppAndExtendedPairId(ctx, in)
+		return srv.(QueryServer).QueryExtendedPairVaultMappingByAppAndExtendedPair(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.vault.v1beta1.Query/QueryExtendedPairVaultMappingByAppAndExtendedPairId",
+		FullMethod: "/comdex.vault.v1beta1.Query/QueryExtendedPairVaultMappingByAppAndExtendedPair",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryExtendedPairVaultMappingByAppAndExtendedPairId(ctx, req.(*QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest))
+		return srv.(QueryServer).QueryExtendedPairVaultMappingByAppAndExtendedPair(ctx, req.(*QueryExtendedPairVaultMappingByAppAndExtendedPairRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2942,38 +3043,38 @@ func _Query_QueryExtendedPairVaultMappingByApp_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryTVLLockedByAppOfAllExtendedPairs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryTVLLockedByAppOfAllExtendedPairsRequest)
+func _Query_QueryTVLByAppOfAllExtendedPairs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTVLByAppOfAllExtendedPairsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryTVLLockedByAppOfAllExtendedPairs(ctx, in)
+		return srv.(QueryServer).QueryTVLByAppOfAllExtendedPairs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.vault.v1beta1.Query/QueryTVLLockedByAppOfAllExtendedPairs",
+		FullMethod: "/comdex.vault.v1beta1.Query/QueryTVLByAppOfAllExtendedPairs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryTVLLockedByAppOfAllExtendedPairs(ctx, req.(*QueryTVLLockedByAppOfAllExtendedPairsRequest))
+		return srv.(QueryServer).QueryTVLByAppOfAllExtendedPairs(ctx, req.(*QueryTVLByAppOfAllExtendedPairsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryTotalTVLByApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryTotalTVLByAppRequest)
+func _Query_QueryTVLByApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTVLByAppRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryTotalTVLByApp(ctx, in)
+		return srv.(QueryServer).QueryTVLByApp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.vault.v1beta1.Query/QueryTotalTVLByApp",
+		FullMethod: "/comdex.vault.v1beta1.Query/QueryTVLByApp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryTotalTVLByApp(ctx, req.(*QueryTotalTVLByAppRequest))
+		return srv.(QueryServer).QueryTVLByApp(ctx, req.(*QueryTVLByAppRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2992,6 +3093,24 @@ func _Query_QueryUserMyPositionByApp_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).QueryUserMyPositionByApp(ctx, req.(*QueryUserMyPositionByAppRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryPairsLockedAndMintedStatisticByApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPairsLockedAndMintedStatisticByAppRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryPairsLockedAndMintedStatisticByApp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.vault.v1beta1.Query/QueryPairsLockedAndMintedStatisticByApp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryPairsLockedAndMintedStatisticByApp(ctx, req.(*QueryPairsLockedAndMintedStatisticByAppRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3057,8 +3176,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_QueryVaultCountByAppAndExtendedPair_Handler,
 		},
 		{
-			MethodName: "QueryTotalValueLockedByAppExtendedPair",
-			Handler:    _Query_QueryTotalValueLockedByAppExtendedPair_Handler,
+			MethodName: "QueryTotalValueLockedByAppAndExtendedPair",
+			Handler:    _Query_QueryTotalValueLockedByAppAndExtendedPair_Handler,
 		},
 		{
 			MethodName: "QueryExtendedPairIDsByApp",
@@ -3073,28 +3192,32 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_QueryStableVaultByApp_Handler,
 		},
 		{
-			MethodName: "QueryStableVaultByAppExtendedPair",
-			Handler:    _Query_QueryStableVaultByAppExtendedPair_Handler,
+			MethodName: "QueryStableVaultByAppAndExtendedPair",
+			Handler:    _Query_QueryStableVaultByAppAndExtendedPair_Handler,
 		},
 		{
-			MethodName: "QueryExtendedPairVaultMappingByAppAndExtendedPairId",
-			Handler:    _Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_Handler,
+			MethodName: "QueryExtendedPairVaultMappingByAppAndExtendedPair",
+			Handler:    _Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_Handler,
 		},
 		{
 			MethodName: "QueryExtendedPairVaultMappingByApp",
 			Handler:    _Query_QueryExtendedPairVaultMappingByApp_Handler,
 		},
 		{
-			MethodName: "QueryTVLLockedByAppOfAllExtendedPairs",
-			Handler:    _Query_QueryTVLLockedByAppOfAllExtendedPairs_Handler,
+			MethodName: "QueryTVLByAppOfAllExtendedPairs",
+			Handler:    _Query_QueryTVLByAppOfAllExtendedPairs_Handler,
 		},
 		{
-			MethodName: "QueryTotalTVLByApp",
-			Handler:    _Query_QueryTotalTVLByApp_Handler,
+			MethodName: "QueryTVLByApp",
+			Handler:    _Query_QueryTVLByApp_Handler,
 		},
 		{
 			MethodName: "QueryUserMyPositionByApp",
 			Handler:    _Query_QueryUserMyPositionByApp_Handler,
+		},
+		{
+			MethodName: "QueryPairsLockedAndMintedStatisticByApp",
+			Handler:    _Query_QueryPairsLockedAndMintedStatisticByApp_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -4203,7 +4326,7 @@ func (m *QueryVaultCountByAppAndExtendedPairResponse) MarshalToSizedBuffer(dAtA 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -4213,12 +4336,12 @@ func (m *QueryTotalValueLockedByAppExtendedPairRequest) Marshal() (dAtA []byte, 
 	return dAtA[:n], nil
 }
 
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4248,7 +4371,7 @@ func (m *QueryTotalValueLockedByAppExtendedPairRequest) MarshalToSizedBuffer(dAt
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -4258,12 +4381,12 @@ func (m *QueryTotalValueLockedByAppExtendedPairResponse) Marshal() (dAtA []byte,
 	return dAtA[:n], nil
 }
 
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4494,7 +4617,7 @@ func (m *QueryStableVaultByAppResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryStableVaultByAppExtendedPairRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryStableVaultByAppAndExtendedPairRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -4504,12 +4627,12 @@ func (m *QueryStableVaultByAppExtendedPairRequest) Marshal() (dAtA []byte, err e
 	return dAtA[:n], nil
 }
 
-func (m *QueryStableVaultByAppExtendedPairRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryStableVaultByAppAndExtendedPairRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryStableVaultByAppExtendedPairRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryStableVaultByAppAndExtendedPairRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4527,7 +4650,7 @@ func (m *QueryStableVaultByAppExtendedPairRequest) MarshalToSizedBuffer(dAtA []b
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryStableVaultByAppExtendedPairResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryStableVaultByAppAndExtendedPairResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -4537,12 +4660,12 @@ func (m *QueryStableVaultByAppExtendedPairResponse) Marshal() (dAtA []byte, err 
 	return dAtA[:n], nil
 }
 
-func (m *QueryStableVaultByAppExtendedPairResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryStableVaultByAppAndExtendedPairResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryStableVaultByAppExtendedPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryStableVaultByAppAndExtendedPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4562,7 +4685,7 @@ func (m *QueryStableVaultByAppExtendedPairResponse) MarshalToSizedBuffer(dAtA []
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -4572,12 +4695,12 @@ func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) Marshal() (
 	return dAtA[:n], nil
 }
 
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4595,7 +4718,7 @@ func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) MarshalToSi
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -4605,12 +4728,12 @@ func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) Marshal() 
 	return dAtA[:n], nil
 }
 
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4695,7 +4818,7 @@ func (m *QueryExtendedPairVaultMappingByAppResponse) MarshalToSizedBuffer(dAtA [
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -4705,12 +4828,12 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) Marshal() (dAtA []byte, e
 	return dAtA[:n], nil
 }
 
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4723,7 +4846,7 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) MarshalToSizedBuffer(dAtA
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -4733,12 +4856,12 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) Marshal() (dAtA []byte, 
 	return dAtA[:n], nil
 }
 
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4760,7 +4883,7 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) MarshalToSizedBuffer(dAt
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTotalTVLByAppRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryTVLByAppRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -4770,12 +4893,12 @@ func (m *QueryTotalTVLByAppRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryTotalTVLByAppRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTVLByAppRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTotalTVLByAppRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTVLByAppRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4788,7 +4911,7 @@ func (m *QueryTotalTVLByAppRequest) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTotalTVLByAppResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryTVLByAppResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -4798,12 +4921,12 @@ func (m *QueryTotalTVLByAppResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryTotalTVLByAppResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTVLByAppResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTotalTVLByAppResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTVLByAppResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -4980,6 +5103,71 @@ func (m *QueryUserExtendedPairTotalDataResponse) MarshalToSizedBuffer(dAtA []byt
 		}
 		i--
 		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PairStatisticData) > 0 {
+		for iNdEx := len(m.PairStatisticData) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.PairStatisticData[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
 	}
 	return len(dAtA) - i, nil
 }
@@ -5440,7 +5628,7 @@ func (m *QueryVaultCountByAppAndExtendedPairResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) Size() (n int) {
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5459,7 +5647,7 @@ func (m *QueryTotalValueLockedByAppExtendedPairRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) Size() (n int) {
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5557,7 +5745,7 @@ func (m *QueryStableVaultByAppResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryStableVaultByAppExtendedPairRequest) Size() (n int) {
+func (m *QueryStableVaultByAppAndExtendedPairRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5572,7 +5760,7 @@ func (m *QueryStableVaultByAppExtendedPairRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryStableVaultByAppExtendedPairResponse) Size() (n int) {
+func (m *QueryStableVaultByAppAndExtendedPairResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5585,7 +5773,7 @@ func (m *QueryStableVaultByAppExtendedPairResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) Size() (n int) {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5600,7 +5788,7 @@ func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) Size() (n i
 	return n
 }
 
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) Size() (n int) {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5640,7 +5828,7 @@ func (m *QueryExtendedPairVaultMappingByAppResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) Size() (n int) {
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5652,7 +5840,7 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) Size() (n int) {
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5667,7 +5855,7 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryTotalTVLByAppRequest) Size() (n int) {
+func (m *QueryTVLByAppRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5679,7 +5867,7 @@ func (m *QueryTotalTVLByAppRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryTotalTVLByAppResponse) Size() (n int) {
+func (m *QueryTVLByAppResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5745,6 +5933,33 @@ func (m *QueryUserExtendedPairTotalDataResponse) Size() (n int) {
 	if m.UserTotalData != nil {
 		l = m.UserTotalData.Size()
 		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
+	}
+	return n
+}
+
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.PairStatisticData) > 0 {
+		for _, e := range m.PairStatisticData {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
 	}
 	return n
 }
@@ -8733,7 +8948,7 @@ func (m *QueryVaultCountByAppAndExtendedPairResponse) Unmarshal(dAtA []byte) err
 	}
 	return nil
 }
-func (m *QueryTotalValueLockedByAppExtendedPairRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryTotalValueLockedByAppAndExtendedPairRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -8756,10 +8971,10 @@ func (m *QueryTotalValueLockedByAppExtendedPairRequest) Unmarshal(dAtA []byte) e
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTotalValueLockedByAppExtendedPairRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTotalValueLockedByAppAndExtendedPairRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTotalValueLockedByAppExtendedPairRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTotalValueLockedByAppAndExtendedPairRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -8857,7 +9072,7 @@ func (m *QueryTotalValueLockedByAppExtendedPairRequest) Unmarshal(dAtA []byte) e
 	}
 	return nil
 }
-func (m *QueryTotalValueLockedByAppExtendedPairResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryTotalValueLockedByAppAndExtendedPairResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -8880,10 +9095,10 @@ func (m *QueryTotalValueLockedByAppExtendedPairResponse) Unmarshal(dAtA []byte) 
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTotalValueLockedByAppExtendedPairResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTotalValueLockedByAppAndExtendedPairResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTotalValueLockedByAppExtendedPairResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTotalValueLockedByAppAndExtendedPairResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -9495,7 +9710,7 @@ func (m *QueryStableVaultByAppResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryStableVaultByAppExtendedPairRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryStableVaultByAppAndExtendedPairRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -9518,10 +9733,10 @@ func (m *QueryStableVaultByAppExtendedPairRequest) Unmarshal(dAtA []byte) error 
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryStableVaultByAppExtendedPairRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryStableVaultByAppAndExtendedPairRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryStableVaultByAppExtendedPairRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryStableVaultByAppAndExtendedPairRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -9583,7 +9798,7 @@ func (m *QueryStableVaultByAppExtendedPairRequest) Unmarshal(dAtA []byte) error 
 	}
 	return nil
 }
-func (m *QueryStableVaultByAppExtendedPairResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryStableVaultByAppAndExtendedPairResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -9606,10 +9821,10 @@ func (m *QueryStableVaultByAppExtendedPairResponse) Unmarshal(dAtA []byte) error
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryStableVaultByAppExtendedPairResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryStableVaultByAppAndExtendedPairResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryStableVaultByAppExtendedPairResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryStableVaultByAppAndExtendedPairResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -9669,7 +9884,7 @@ func (m *QueryStableVaultByAppExtendedPairResponse) Unmarshal(dAtA []byte) error
 	}
 	return nil
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -9692,10 +9907,10 @@ func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) Unmarshal(d
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryExtendedPairVaultMappingByAppAndExtendedPairRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryExtendedPairVaultMappingByAppAndExtendedPairRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -9757,7 +9972,7 @@ func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) Unmarshal(d
 	}
 	return nil
 }
-func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -9780,10 +9995,10 @@ func (m *QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) Unmarshal(
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryExtendedPairVaultMappingByAppAndExtendedPairResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryExtendedPairVaultMappingByAppAndExtendedPairResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -9996,7 +10211,7 @@ func (m *QueryExtendedPairVaultMappingByAppResponse) Unmarshal(dAtA []byte) erro
 	}
 	return nil
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryTVLByAppOfAllExtendedPairsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -10019,10 +10234,10 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) Unmarshal(dAtA []byte) er
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTVLLockedByAppOfAllExtendedPairsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTVLByAppOfAllExtendedPairsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTVLLockedByAppOfAllExtendedPairsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTVLByAppOfAllExtendedPairsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -10065,7 +10280,7 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsRequest) Unmarshal(dAtA []byte) er
 	}
 	return nil
 }
-func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryTVLByAppOfAllExtendedPairsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -10088,10 +10303,10 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) Unmarshal(dAtA []byte) e
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTVLLockedByAppOfAllExtendedPairsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTVLByAppOfAllExtendedPairsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTVLLockedByAppOfAllExtendedPairsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTVLByAppOfAllExtendedPairsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -10149,7 +10364,7 @@ func (m *QueryTVLLockedByAppOfAllExtendedPairsResponse) Unmarshal(dAtA []byte) e
 	}
 	return nil
 }
-func (m *QueryTotalTVLByAppRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryTVLByAppRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -10172,10 +10387,10 @@ func (m *QueryTotalTVLByAppRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTotalTVLByAppRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTVLByAppRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTotalTVLByAppRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTVLByAppRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -10218,7 +10433,7 @@ func (m *QueryTotalTVLByAppRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryTotalTVLByAppResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryTVLByAppResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -10241,10 +10456,10 @@ func (m *QueryTotalTVLByAppResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTotalTVLByAppResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTVLByAppResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTotalTVLByAppResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTVLByAppResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -10733,6 +10948,159 @@ func (m *QueryUserExtendedPairTotalDataResponse) Unmarshal(dAtA []byte) error {
 				m.UserTotalData = &UserVaultAssetMapping{}
 			}
 			if err := m.UserTotalData.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPairsLockedAndMintedStatisticByAppRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPairsLockedAndMintedStatisticByAppRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryPairsLockedAndMintedStatisticByAppResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPairsLockedAndMintedStatisticByAppResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPairsLockedAndMintedStatisticByAppResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PairStatisticData", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PairStatisticData = append(m.PairStatisticData, PairStatisticData{})
+			if err := m.PairStatisticData[len(m.PairStatisticData)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

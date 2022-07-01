@@ -12,9 +12,9 @@ option (gogoproto.goproto_getters_all) = false;
 //app_vault_type_id will be the key for  the KVStore for this value.
 message Vault {
   string id = 1 ;
-  uint64 app_mapping_id = 2
-  [(gogoproto.customname) = "AppMappingId",
-    (gogoproto.moretags) = "yaml:\"app_mapping_id\""];
+  uint64 app_id = 2
+  [(gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""];
 
   uint64 extended_pair_vault_id = 3 [
     (gogoproto.customname) = "ExtendedPairVaultID",
@@ -60,7 +60,7 @@ message UserVaultAssetMapping {
 }
 
 message VaultToAppMapping {
-  uint64 app_mapping_id = 1;
+  uint64 app_id = 1;
   repeated ExtendedPairToVaultMapping user_extended_pair_vault = 2 [
     (gogoproto.moretags) = "yaml:\"user_extended_pair_vault\""
   ];
@@ -75,7 +75,7 @@ message ExtendedPairToVaultMapping {
 
 //app_id is the key
 message AppExtendedPairVaultMapping {
-  uint64 app_mapping_id = 1 ;
+  uint64 app_id = 1 ;
   uint64 counter = 2;
   repeated ExtendedPairVaultMapping extended_pair_vaults = 3 [(gogoproto.moretags) = "yaml:\"extended_pair_vaults\""];
 }
@@ -126,7 +126,7 @@ message StableMintVault {
     (gogoproto.moretags) = "yaml:\"amount_out\"",
     (gogoproto.nullable) = false
   ];
-  uint64 app_mapping_id = 4 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
+  uint64 app_id = 4 [(gogoproto.moretags) = "yaml:\"app_id\""];
   uint64 extended_pair_vault_id = 5 [
     (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
@@ -137,7 +137,17 @@ message StableMintVault {
   ];
 }
 
-
+message PairStatisticData {
+  string asset_in_denom = 1 [(gogoproto.moretags) = "yaml:\"asset_in_denom\""];
+  string asset_out_denom = 2 [(gogoproto.moretags) = "yaml:\"asset_out_denom\""];
+  string collateral_amount = 3 [(gogoproto.moretags) = "yaml:\"collateral_amount\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+    
+  string minted_amount = 4 [(gogoproto.moretags) = "yaml:\"minted_amount\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+}
 
 
 

@@ -29,8 +29,8 @@ message MsgCreateLockerRequest{
   uint64 asset_id  = 3 [
      (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
-  uint64 app_mapping_id = 4 [
-    (gogoproto.moretags)   = "yaml:\"app_mapping_id\""
+  uint64 app_id = 4 [
+    (gogoproto.moretags)   = "yaml:\"app_id\""
   ];
 }
 
@@ -43,8 +43,8 @@ message MsgAddWhiteListedAssetRequest {
     (gogoproto.moretags) = "yaml:\"from\""
     ];
 
-  uint64 app_mapping_id = 2 [
-    (gogoproto.moretags)   = "yaml:\"app_mapping_id\""
+  uint64 app_id = 2 [
+    (gogoproto.moretags)   = "yaml:\"app_id\""
  
   ];
   uint64 asset_id = 3 [
@@ -71,8 +71,8 @@ message MsgDepositAssetRequest {
   uint64 asset_id  = 4 [
      (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
-  uint64 app_mapping_id = 5 [
-    (gogoproto.moretags)   = "yaml:\"app_mapping_id\""
+  uint64 app_id = 5 [
+    (gogoproto.moretags)   = "yaml:\"app_id\""
 
   ];
 }
@@ -95,8 +95,8 @@ message MsgWithdrawAssetRequest {
   uint64 asset_id  = 4 [
      (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
-  uint64 app_mapping_id = 5 [
-    (gogoproto.moretags)   = "yaml:\"app_mapping_id\""
+  uint64 app_id = 5 [
+    (gogoproto.moretags)   = "yaml:\"app_id\""
   ];
 }
 

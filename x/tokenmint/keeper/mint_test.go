@@ -11,7 +11,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	genesisSupply := sdk.NewIntFromUint64(9000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
-	msg1 := []assetTypes.AppMapping{{
+	msg1 := []assetTypes.AppData{{
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -46,7 +46,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			},
 		},
 	}
-	err := assetKeeper.AddAppMappingRecords(*ctx, msg1...)
+	err := assetKeeper.AddAppRecords(*ctx, msg1...)
 	s.Require().NoError(err)
 
 	msg2 := []assetTypes.Asset{
