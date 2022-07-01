@@ -333,7 +333,7 @@ func queryAllExtendedPairVaultsByApp() *cobra.Command {
 	return cmd
 }
 
-func queryAllExtendedPairStableVaultsIdByApp() *cobra.Command {
+func queryAllExtendedPairStableVaultsIDByApp() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "extended-pair-stable-vault-wise [app_id]",
 		Short: "Query all extended pairs stable vault wise in an app",
@@ -351,9 +351,9 @@ func queryAllExtendedPairStableVaultsIdByApp() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryAllExtendedPairStableVaultsIdByApp(
+			res, err := queryClient.QueryAllExtendedPairStableVaultsIDByApp(
 				context.Background(),
-				&types.QueryAllExtendedPairStableVaultsIdByAppRequest{
+				&types.QueryAllExtendedPairStableVaultsIDByAppRequest{
 					AppId: appID,
 				},
 			)

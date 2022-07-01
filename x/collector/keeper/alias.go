@@ -33,8 +33,8 @@ func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recip
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }
 
-func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appID, assetId uint64) (mintData types.MintGenesisToken, found bool) {
-	return k.asset.GetMintGenesisTokenData(ctx, appID, assetId)
+func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64) (mintData types.MintGenesisToken, found bool) {
+	return k.asset.GetMintGenesisTokenData(ctx, appID, assetID)
 }
 
 func (k *Keeper) GetAuctionParams(ctx sdk.Context, AppID uint64) (asset auctiontypes.AuctionParams, found bool) {

@@ -142,14 +142,14 @@ func (k *Keeper) QueryGaugeByDuration(c context.Context, req *types.QueryGaugesB
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-	gaugsIdsByTriggerDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, time.Second*time.Duration(req.DurationSeconds))
+	gaugesIDsByTriggerDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, time.Second*time.Duration(req.DurationSeconds))
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "no gauges for given duration %ds", req.DurationSeconds)
 	}
 
 	var gauges []types.Gauge
 
-	for _, gaugeID := range gaugsIdsByTriggerDuration.GaugeIds {
+	for _, gaugeID := range gaugesIDsByTriggerDuration.GaugeIds {
 		gauge, found := k.GetGaugeByID(ctx, gaugeID)
 		if !found {
 			continue

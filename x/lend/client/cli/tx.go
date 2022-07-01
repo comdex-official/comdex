@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 )
 
-// GetTxCmd returns the transaction commands for this module
+// GetTxCmd returns the transaction commands for this module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -67,7 +67,7 @@ func txLend() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgLend(ctx.GetFromAddress(), pair, asset, pool)
+			msg := types.NewMsgLend(ctx.GetFromAddress().String(), pair, asset, pool)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -98,7 +98,7 @@ func txWithdraw() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgWithdraw(ctx.GetFromAddress(), lendID, asset)
+			msg := types.NewMsgWithdraw(ctx.GetFromAddress().String(), lendID, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -129,7 +129,7 @@ func txDeposit() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgDeposit(ctx.GetFromAddress(), lendID, asset)
+			msg := types.NewMsgDeposit(ctx.GetFromAddress().String(), lendID, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -155,7 +155,7 @@ func txCloseLend() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCloseLend(ctx.GetFromAddress(), lendID)
+			msg := types.NewMsgCloseLend(ctx.GetFromAddress().String(), lendID)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -202,7 +202,7 @@ func txBorrowAsset() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgBorrow(ctx.GetFromAddress(), lendID, pairID, isStableBorrow, amountIn, amountOut)
+			msg := types.NewMsgBorrow(ctx.GetFromAddress().String(), lendID, pairID, isStableBorrow, amountIn, amountOut)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -210,7 +210,6 @@ func txBorrowAsset() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txRepayAsset() *cobra.Command {
@@ -234,7 +233,7 @@ func txRepayAsset() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRepay(ctx.GetFromAddress(), borrowID, asset)
+			msg := types.NewMsgRepay(ctx.GetFromAddress().String(), borrowID, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -242,7 +241,6 @@ func txRepayAsset() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txDrawAsset() *cobra.Command {
@@ -266,7 +264,7 @@ func txDrawAsset() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgDraw(ctx.GetFromAddress(), borrowID, asset)
+			msg := types.NewMsgDraw(ctx.GetFromAddress().String(), borrowID, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -274,7 +272,6 @@ func txDrawAsset() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txDepositBorrowAsset() *cobra.Command {
@@ -298,7 +295,7 @@ func txDepositBorrowAsset() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgDepositBorrow(ctx.GetFromAddress(), borrowID, asset)
+			msg := types.NewMsgDepositBorrow(ctx.GetFromAddress().String(), borrowID, asset)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -306,7 +303,6 @@ func txDepositBorrowAsset() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txCloseBorrowAsset() *cobra.Command {
@@ -325,7 +321,7 @@ func txCloseBorrowAsset() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCloseBorrow(ctx.GetFromAddress(), borrowID)
+			msg := types.NewMsgCloseBorrow(ctx.GetFromAddress().String(), borrowID)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -333,7 +329,6 @@ func txCloseBorrowAsset() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func txFundModuleAccounts() *cobra.Command {
@@ -359,7 +354,7 @@ func txFundModuleAccounts() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgFundModuleAccounts(moduleName, assetID, ctx.GetFromAddress(), amount)
+			msg := types.NewMsgFundModuleAccounts(moduleName, assetID, ctx.GetFromAddress().String(), amount)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -527,7 +522,6 @@ func CmdAddPoolProposal() *cobra.Command {
 		Short: "Add lend pool ",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -582,7 +576,7 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 		return txf, nil, err
 	}
 	var pool types.Pool
-	var assetData []types.AssetDataPoolMapping //nolint:prealloc
+	var assetData []types.AssetDataPoolMapping
 
 	for i := range assetID {
 		bridged := ParseBoolFromString(isBridgedAsset[i])
@@ -645,7 +639,6 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 			}
 			var pairIDs []uint64
 			for i := range rawPairID {
-
 				pairIDs = append(pairIDs, rawPairID[i])
 			}
 			assetToPairMapping := types.AssetToPairMapping{
@@ -705,7 +698,6 @@ func CmdAddNewAssetRatesStatsProposal() *cobra.Command {
 		Short: "Add lend asset pairs",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err

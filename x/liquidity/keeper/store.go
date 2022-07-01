@@ -78,7 +78,12 @@ func (k Keeper) SetPairLookupIndex(ctx sdk.Context, appID uint64, denomA string,
 func (k Keeper) IterateAllPairs(ctx sdk.Context, appID uint64, cb func(pair types.Pair) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAllPairsKey(appID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		pair := types.MustUnmarshalPair(k.cdc, iter.Value())
 		stop, err := cb(pair)
@@ -172,7 +177,12 @@ func (k Keeper) SetPoolsByPairIndex(ctx sdk.Context, pool types.Pool) {
 func (k Keeper) IterateAllPools(ctx sdk.Context, appID uint64, cb func(pool types.Pool) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAllPoolsKey(appID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		pool := types.MustUnmarshalPool(k.cdc, iter.Value())
 		stop, err := cb(pool)
@@ -191,7 +201,12 @@ func (k Keeper) IterateAllPools(ctx sdk.Context, appID uint64, cb func(pool type
 func (k Keeper) IteratePoolsByPair(ctx sdk.Context, appID, pairID uint64, cb func(pool types.Pool) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetPoolsByPairIndexKeyPrefix(appID, pairID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		poolID := types.ParsePoolsByPairIndexKey(iter.Key())
 		pool, _ := k.GetPool(ctx, appID, poolID)
@@ -253,7 +268,12 @@ func (k Keeper) SetDepositRequestIndex(ctx sdk.Context, req types.DepositRequest
 func (k Keeper) IterateAllDepositRequests(ctx sdk.Context, appID uint64, cb func(req types.DepositRequest) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAllDepositRequestKey(appID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		req := types.MustUnmarshalDepositRequest(k.cdc, iter.Value())
 		stop, err := cb(req)
@@ -278,7 +298,12 @@ func (k Keeper) IterateDepositRequestsByDepositor(
 ) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetDepositRequestIndexKeyPrefix(appID, depositor))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		_, poolID, reqID := types.ParseDepositRequestIndexKey(iter.Key())
 		req, _ := k.GetDepositRequest(ctx, appID, poolID, reqID)
@@ -352,7 +377,12 @@ func (k Keeper) SetWithdrawRequestIndex(ctx sdk.Context, req types.WithdrawReque
 func (k Keeper) IterateAllWithdrawRequests(ctx sdk.Context, appID uint64, cb func(req types.WithdrawRequest) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAllWithdrawRequestKey(appID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		req := types.MustUnmarshalWithdrawRequest(k.cdc, iter.Value())
 		stop, err := cb(req)
@@ -377,7 +407,12 @@ func (k Keeper) IterateWithdrawRequestsByWithdrawer(
 ) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetWithdrawRequestIndexKeyPrefix(appID, withdrawer))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		_, poolID, reqID := types.ParseWithdrawRequestIndexKey(iter.Key())
 		req, _ := k.GetWithdrawRequest(ctx, appID, poolID, reqID)
@@ -451,7 +486,12 @@ func (k Keeper) SetOrderIndex(ctx sdk.Context, appID uint64, order types.Order) 
 func (k Keeper) IterateAllOrders(ctx sdk.Context, appID uint64, cb func(order types.Order) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAllOrdersKey(appID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		order := types.MustUnmarshalOrder(k.cdc, iter.Value())
 		stop, err := cb(order)
@@ -470,7 +510,12 @@ func (k Keeper) IterateAllOrders(ctx sdk.Context, appID uint64, cb func(order ty
 func (k Keeper) IterateOrdersByPair(ctx sdk.Context, appID, pairID uint64, cb func(order types.Order) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetOrdersByPairKeyPrefix(appID, pairID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		order := types.MustUnmarshalOrder(k.cdc, iter.Value())
 		stop, err := cb(order)
@@ -495,7 +540,12 @@ func (k Keeper) IterateOrdersByOrderer(
 ) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetOrderIndexKeyPrefix(appID, orderer))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		_, pairID, orderID := types.ParseOrderIndexKey(iter.Key())
 		order, _ := k.GetOrder(ctx, appID, pairID, orderID)

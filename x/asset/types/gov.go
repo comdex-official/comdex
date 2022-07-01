@@ -5,12 +5,12 @@ import (
 )
 
 const (
-	ProposalAddAssets                 = "AddAssets"
-	ProposalUpdateAsset               = "UpdateAsset"
-	ProposalAddPairs                  = "AddPairs"
-	ProposalAddApp                    = "AddApp"
-	ProposalAddAssetInApp             = "AddAssetInApp"
-	ProposalUpdateGovTimeInApp        = "UpdateGovTimeInApp"
+	ProposalAddAssets          = "AddAssets"
+	ProposalUpdateAsset        = "UpdateAsset"
+	ProposalAddPairs           = "AddPairs"
+	ProposalAddApp             = "AddApp"
+	ProposalAddAssetInApp      = "AddAssetInApp"
+	ProposalUpdateGovTimeInApp = "UpdateGovTimeInApp"
 )
 
 func init() {
@@ -31,7 +31,6 @@ func init() {
 
 	govtypes.RegisterProposalType(ProposalAddAssetInApp)
 	govtypes.RegisterProposalTypeCodec(&AddAssetInAppProposal{}, "comdex/AddAssetInAppProposal")
-
 }
 
 var (
@@ -62,7 +61,6 @@ func (p *AddAssetsProposal) ProposalRoute() string { return RouterKey }
 func (p *AddAssetsProposal) ProposalType() string { return ProposalAddAssets }
 
 func (p *AddAssetsProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -134,7 +132,6 @@ func (p *AddPairsProposal) ProposalRoute() string { return RouterKey }
 func (p *AddPairsProposal) ProposalType() string { return ProposalAddPairs }
 
 func (p *AddPairsProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -151,7 +148,6 @@ func (p *AddPairsProposal) ValidateBasic() error {
 
 	return nil
 }
-
 
 func NewAddAppProposal(title, description string, amap []AppData) govtypes.Content {
 	return &AddAppProposal{
@@ -174,7 +170,6 @@ func (p *AddAppProposal) ProposalRoute() string { return RouterKey }
 func (p *AddAppProposal) ProposalType() string { return ProposalAddApp }
 
 func (p *AddAppProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -209,7 +204,6 @@ func (p *UpdateGovTimeInAppProposal) ProposalType() string {
 }
 
 func (p *UpdateGovTimeInAppProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -239,7 +233,6 @@ func (p *AddAssetInAppProposal) ProposalRoute() string { return RouterKey }
 func (p *AddAssetInAppProposal) ProposalType() string { return ProposalAddAssetInApp }
 
 func (p *AddAssetInAppProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -250,4 +243,3 @@ func (p *AddAssetInAppProposal) ValidateBasic() error {
 
 	return nil
 }
-

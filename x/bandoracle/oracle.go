@@ -28,7 +28,7 @@ func (im IBCModule) handleOraclePacket(
 				"cannot decode the fetchPrice received packet")
 		}
 		im.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(modulePacketData.RequestID), fetchPriceResult)
-		// TODO: FetchPrice market data reception logic
+		// TODO: FetchPrice market data reception logic //nolint:godox
 
 	default:
 		err := sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal,

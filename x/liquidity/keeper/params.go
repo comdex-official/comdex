@@ -39,7 +39,7 @@ func (k Keeper) GetGenericParams(ctx sdk.Context, appID uint64) (types.GenericPa
 	return genericParams, nil
 }
 
-// SetParams sets the parameters for the liquidity module.
+// SetGenericParams sets the parameters for the liquidity module.
 func (k Keeper) SetGenericParams(ctx sdk.Context, genericParams types.GenericParams) {
 	k.SetGenericLiquidityParams(ctx, genericParams)
 }

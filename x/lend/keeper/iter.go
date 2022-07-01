@@ -19,7 +19,7 @@ func (k Keeper) IterateLends(ctx sdk.Context) error {
 		if err != nil {
 			return err
 		}
-		interestPerBlock, err := k.CalculateRewards(ctx, lend.AmountIn.Amount, lendAPY)
+		interestPerBlock, err := k.CalculateRewards(ctx, lend.AmountIn.Amount.String(), lendAPY)
 		if err != nil {
 			return err
 		}
@@ -65,7 +65,7 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 		pair, _ := k.GetLendPair(ctx, borrow.PairID)
 
 		borrowAPY, _ := k.GetBorrowAPRByAssetID(ctx, pair.AssetOutPoolId, pair.AssetOut, borrow.IsStableBorrow)
-		interestPerBlock, err := k.CalculateRewards(ctx, borrow.AmountOut.Amount, borrowAPY)
+		interestPerBlock, err := k.CalculateRewards(ctx, borrow.AmountOut.Amount.String(), borrowAPY)
 		if err != nil {
 			return err
 		}
@@ -88,7 +88,7 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, rate sdk.Dec) (sdk.Int, error) {
+func (k Keeper) CalculateRewards(ctx sdk.Context, amount string, rate sdk.Dec) (sdk.Int, error) {
 
 	currentTime := ctx.BlockTime().Unix()
 
@@ -102,7 +102,7 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount sdk.Int, rate sdk.Dec) 
 	}
 
 	yearsElapsed := sdk.NewDec(secondsElapsed).QuoInt64(types.SecondsPerYear).MustFloat64()
-	amtFloat, _ := strconv.ParseFloat(amount.String(), 64)
+	amtFloat, _ := strconv.ParseFloat(amount, 64)
 	perc := rate.String()
 	b, _ := sdk.NewDecFromStr(perc)
 

@@ -89,7 +89,6 @@ func (k *Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault
 	return apps, true
 }
 
-
 func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBinding *bindings.MsgAddExtendedPairsVault) error {
 	DebtCeiling := sdk.NewInt(int64(pairVaultBinding.DebtCeiling))
 	DebtFloor := sdk.NewInt(int64(pairVaultBinding.DebtFloor))

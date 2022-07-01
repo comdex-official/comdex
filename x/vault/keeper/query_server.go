@@ -38,7 +38,7 @@ func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVault
 
 func (q *queryServer) QueryAllVaultsByApp(c context.Context, req *types.QueryAllVaultsByAppRequest) (*types.QueryAllVaultsByAppResponse, error) {
 	var (
-		ctx           = sdk.UnwrapSDKContext(c)
+		ctx       = sdk.UnwrapSDKContext(c)
 		AppVaults []types.Vault
 	)
 	vaults := q.GetVaults(ctx)
@@ -70,7 +70,7 @@ func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest
 		Vault: vault,
 	}, nil
 }
-func (q *queryServer) QueryVaultInfoByVaultId(c context.Context, req *types.QueryVaultInfoByVaultIdRequest) (*types.QueryVaultInfoByVaultIdResponse, error) {
+func (q *queryServer) QueryVaultInfoByVaultID(c context.Context, req *types.QueryVaultInfoByVaultIDRequest) (*types.QueryVaultInfoByVaultIDResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -81,7 +81,7 @@ func (q *queryServer) QueryVaultInfoByVaultId(c context.Context, req *types.Quer
 
 	vault, found := q.GetVault(ctx, req.Id)
 	if !found {
-		return &types.QueryVaultInfoByVaultIdResponse{}, nil
+		return &types.QueryVaultInfoByVaultIDResponse{}, nil
 	}
 
 	collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
@@ -92,7 +92,7 @@ func (q *queryServer) QueryVaultInfoByVaultId(c context.Context, req *types.Quer
 	pairID, _ := q.GetPair(ctx, pairVaults.PairId)
 	assetIn, _ := q.GetAsset(ctx, pairID.AssetIn)
 	assetOut, _ := q.GetAsset(ctx, pairID.AssetOut)
-	return &types.QueryVaultInfoByVaultIdResponse{
+	return &types.QueryVaultInfoByVaultIDResponse{
 		VaultsInfo: types.VaultInfo{
 			Id:                     req.Id,
 			ExtendedPairID:         vault.ExtendedPairVaultID,
@@ -207,7 +207,7 @@ func (q *queryServer) QueryAllVaultsByAppAndExtendedPair(c context.Context, req 
 	}, nil
 }
 
-func (q *queryServer) QueryVaultIdOfOwnerByExtendedPairAndApp(c context.Context, req *types.QueryVaultIdOfOwnerByExtendedPairAndAppRequest) (*types.QueryVaultIdOfOwnerByExtendedPairAndAppResponse, error) {
+func (q *queryServer) QueryVaultIDOfOwnerByExtendedPairAndApp(c context.Context, req *types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest) (*types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -228,7 +228,7 @@ func (q *queryServer) QueryVaultIdOfOwnerByExtendedPairAndApp(c context.Context,
 
 	_, nfound := q.GetPairsVault(ctx, req.ExtendedPairId)
 	if !nfound {
-		return &types.QueryVaultIdOfOwnerByExtendedPairAndAppResponse{}, nil
+		return &types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse{}, nil
 	}
 
 	vaultData := q.GetVaults(ctx)
@@ -239,7 +239,7 @@ func (q *queryServer) QueryVaultIdOfOwnerByExtendedPairAndApp(c context.Context,
 		}
 	}
 
-	return &types.QueryVaultIdOfOwnerByExtendedPairAndAppResponse{
+	return &types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse{
 		Vault_Id: vaultID,
 	}, nil
 }
@@ -484,7 +484,7 @@ func (q *queryServer) QueryExtendedPairIDsByApp(c context.Context, req *types.Qu
 	}, nil
 }
 
-func (q *queryServer) QueryStableVaultByVaultId(c context.Context, req *types.QueryStableVaultByVaultIdRequest) (*types.QueryStableVaultByVaultIdResponse, error) {
+func (q *queryServer) QueryStableVaultByVaultID(c context.Context, req *types.QueryStableVaultByVaultIDRequest) (*types.QueryStableVaultByVaultIDResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -493,10 +493,10 @@ func (q *queryServer) QueryStableVaultByVaultId(c context.Context, req *types.Qu
 	)
 	stableMintData, found := q.GetStableMintVault(ctx, req.StableVaultId)
 	if !found {
-		return &types.QueryStableVaultByVaultIdResponse{}, nil
+		return &types.QueryStableVaultByVaultIDResponse{}, nil
 	}
 
-	return &types.QueryStableVaultByVaultIdResponse{
+	return &types.QueryStableVaultByVaultIDResponse{
 		StableMintVault: &stableMintData,
 	}, nil
 }
@@ -542,7 +542,7 @@ func (q *queryServer) QueryStableVaultByAppAndExtendedPair(c context.Context, re
 	}, nil
 }
 
-// nolint
+// QueryExtendedPairVaultMappingByAppAndExtendedPair to query vault by app and extended pair.
 func (q *queryServer) QueryExtendedPairVaultMappingByAppAndExtendedPair(c context.Context, req *types.QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) (*types.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -594,7 +594,6 @@ func (q *queryServer) QueryExtendedPairVaultMappingByApp(c context.Context, req 
 		ExtendedPairVaultMapping: pairIDs,
 	}, nil
 }
-
 
 func (q *queryServer) QueryTVLByAppOfAllExtendedPairs(c context.Context, req *types.QueryTVLByAppOfAllExtendedPairsRequest) (*types.QueryTVLByAppOfAllExtendedPairsResponse, error) {
 	if req == nil {
@@ -775,13 +774,12 @@ func (q *queryServer) QueryUserExtendedPairTotalData(c context.Context, req *typ
 	}, nil
 }
 
-
 func (q *queryServer) QueryPairsLockedAndMintedStatisticByApp(c context.Context, req *types.QueryPairsLockedAndMintedStatisticByAppRequest) (*types.QueryPairsLockedAndMintedStatisticByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx         = sdk.UnwrapSDKContext(c)
+		ctx            = sdk.UnwrapSDKContext(c)
 		pairStatistics []types.PairStatisticData
 	)
 
@@ -797,14 +795,13 @@ func (q *queryServer) QueryPairsLockedAndMintedStatisticByApp(c context.Context,
 		var statistics types.PairStatisticData
 		inDenom, _ := q.GetAsset(ctx, pairID.AssetIn)
 		outDenom, _ := q.GetAsset(ctx, pairID.AssetOut)
-		
+
 		statistics.AssetInDenom = inDenom.Denom
 		statistics.AssetOutDenom = outDenom.Denom
 		statistics.CollateralAmount = data.CollateralLockedAmount
 		statistics.MintedAmount = data.TokenMintedAmount
 
 		pairStatistics = append(pairStatistics, statistics)
-		
 	}
 
 	return &types.QueryPairsLockedAndMintedStatisticByAppResponse{

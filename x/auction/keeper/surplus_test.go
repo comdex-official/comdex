@@ -60,13 +60,13 @@ func (s *KeeperTestSuite) TestBidSurplusAuction() {
 	appId := uint64(1)
 	//create auction
 	s.TestCreateSurplusAuction()
-	user_tokens := ParseCoin("1000denom2")
+	userTokens := ParseCoin("1000denom2")
 	bid := ParseCoin("100denom2")
 	bidder, err := sdk.AccAddressFromBech32("cosmos155hjlwufdfu4c3hycylzz74ag9anz7lkfurxwg")
 	s.Require().NoError(err)
 
 	//fund bidder
-	s.fundAddr(bidder, sdk.NewCoins(user_tokens))
+	s.fundAddr(bidder, sdk.NewCoins(userTokens))
 
 	//place bid
 	err = k.PlaceSurplusAuctionBid(*ctx, appId, 1, 1, bidder, bid)
@@ -103,14 +103,14 @@ func (s *KeeperTestSuite) TestBidsSurplusAuction() {
 	appId := uint64(1)
 	surplusAuction := uint64(1)
 	s.TestCreateSurplusAuction()
-	user_tokens := ParseCoin("1000denom2")
+	userTokens := ParseCoin("1000denom2")
 	fmt.Println("bid 1")
 
 	//bid1
 	bid := ParseCoin("100denom2")
 	bidder, err := sdk.AccAddressFromBech32("cosmos155hjlwufdfu4c3hycylzz74ag9anz7lkfurxwg")
 	s.Require().NoError(err)
-	s.fundAddr(bidder, sdk.NewCoins(user_tokens))
+	s.fundAddr(bidder, sdk.NewCoins(userTokens))
 	//place bid1
 	err = k.PlaceSurplusAuctionBid(*ctx, appId, surplusAuction, 1, bidder, bid)
 	fmt.Println(err)
@@ -126,7 +126,7 @@ func (s *KeeperTestSuite) TestBidsSurplusAuction() {
 	s.Require().NoError(err)
 
 	//fund bidder2
-	s.fundAddr(bidder2, sdk.NewCoins(user_tokens))
+	s.fundAddr(bidder2, sdk.NewCoins(userTokens))
 	fmt.Println("bid 2")
 	bid2 := ParseCoin("120denom2")
 

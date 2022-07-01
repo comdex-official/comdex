@@ -17,11 +17,11 @@ var (
 	_ govtypes.Content = &FetchPriceProposal{}
 )
 
-func NewFetchPriceProposal(title, description string, fetchprice MsgFetchPriceData) govtypes.Content {
+func NewFetchPriceProposal(title, description string, fetchPrice MsgFetchPriceData) govtypes.Content {
 	return &FetchPriceProposal{
 		Title:       title,
 		Description: description,
-		FetchPrice:  fetchprice,
+		FetchPrice:  fetchPrice,
 	}
 }
 

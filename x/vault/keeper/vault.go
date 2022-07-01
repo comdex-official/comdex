@@ -1,7 +1,6 @@
 package keeper
 
 import (
-
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -350,7 +349,7 @@ func (k *Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPai
 					}
 				}
 
-				appData.UserExtendedPairVault=append(appData.UserExtendedPairVault[:dataIndex], appData.UserExtendedPairVault[dataIndex+1:]...)
+				appData.UserExtendedPairVault = append(appData.UserExtendedPairVault[:dataIndex], appData.UserExtendedPairVault[dataIndex+1:]...)
 				break
 			}
 		}
@@ -370,9 +369,7 @@ func (k *Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, e
 						dataIndex = index
 					}
 				}
-
-				appData.VaultIds=append(appData.VaultIds[:dataIndex], appData.VaultIds[dataIndex+1:]...)
-
+				appData.VaultIds = append(appData.VaultIds[:dataIndex], appData.VaultIds[dataIndex+1:]...)
 			}
 		}
 		err := k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)

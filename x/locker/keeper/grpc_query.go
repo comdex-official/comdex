@@ -111,7 +111,6 @@ func (q *QueryServer) QueryLockerInfoByAppID(c context.Context, request *types.Q
 	return &types.QueryLockerInfoByAppIDResponse{
 		LockerIds: lockerIds,
 	}, nil
-
 }
 
 func (q *QueryServer) QueryTotalDepositByAppAndAssetID(c context.Context, request *types.QueryTotalDepositByAppAndAssetIDRequest) (*types.QueryTotalDepositByAppAndAssetIDResponse, error) {
@@ -332,7 +331,6 @@ func (q *QueryServer) QueryLockerCountByAppID(c context.Context, request *types.
 	return &types.QueryLockerCountByAppIDResponse{
 		TotalCount: lockerCount,
 	}, nil
-
 }
 
 func (q *QueryServer) QueryLockerCountByAppToAssetID(c context.Context, request *types.QueryLockerCountByAppToAssetIDRequest) (*types.QueryLockerCountByAppToAssetIDResponse, error) {
@@ -429,8 +427,8 @@ func (q *QueryServer) QueryWhiteListedAssetByAllApps(c context.Context, request 
 				assets = append(assets, asset)
 			}
 			product = types.AppToAllAsset{
-				AppId: appData.AppId,
-				Assets:    assets,
+				AppId:  appData.AppId,
+				Assets: assets,
 			}
 		}
 
@@ -459,7 +457,7 @@ func (q *QueryServer) QueryLockerLookupTableByApp(c context.Context, req *types.
 	}, nil
 }
 
-func (q *QueryServer) QueryLockerLookupTableByAppAndAssetId(c context.Context, req *types.QueryLockerLookupTableByAppAndAssetIdRequest) (*types.QueryLockerLookupTableByAppAndAssetIdResponse, error) {
+func (q *QueryServer) QueryLockerLookupTableByAppAndAssetID(c context.Context, req *types.QueryLockerLookupTableByAppAndAssetIDRequest) (*types.QueryLockerLookupTableByAppAndAssetIDResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -479,7 +477,7 @@ func (q *QueryServer) QueryLockerLookupTableByAppAndAssetId(c context.Context, r
 		}
 	}
 
-	return &types.QueryLockerLookupTableByAppAndAssetIdResponse{
+	return &types.QueryLockerLookupTableByAppAndAssetIDResponse{
 		TokenToLockerMapping: &locker,
 	}, nil
 }

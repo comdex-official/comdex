@@ -1,4 +1,4 @@
-package v1_1_0
+package v2
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,7 +15,7 @@ import (
 	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 )
 
-// CreateUpgradeHandler creates an SDK upgrade handler for v1_1_0
+// CreateUpgradeHandler creates an SDK upgrade handler for v2
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,

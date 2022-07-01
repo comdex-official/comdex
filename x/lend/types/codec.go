@@ -6,7 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	// this line is used by starport scaffolding # 1
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
@@ -26,7 +25,6 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&AddPoolsProposal{}, "comdex/lend/add-lend-pools", nil)
 	cdc.RegisterConcrete(&AddAssetToPairProposal{}, "comdex/lend/add-asset-to-pair-mapping", nil)
 	cdc.RegisterConcrete(&AddAssetRatesStats{}, "comdex/lend/add-asset-rates-stats", nil)
-
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

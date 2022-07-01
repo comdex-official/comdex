@@ -12,11 +12,11 @@ import (
 )
 
 // NewHandler ...
-func NewHandler(k keeper.Keeper) sdk.Handler {
+func NewHandler() sdk.Handler {
 	// this line is used by starport scaffolding # handler/msgServer
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
-		ctx = ctx.WithEventManager(sdk.NewEventManager())
+		_ = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
 		// this line is used by starport scaffolding # 1

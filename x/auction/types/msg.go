@@ -11,9 +11,9 @@ var (
 	_ sdk.Msg = (*MsgPlaceSurplusBidRequest)(nil)
 )
 
-func NewMsgPlaceSurplusBid(from sdk.AccAddress, auctionID uint64, amt sdk.Coin, appID, auctionMappingID uint64) *MsgPlaceSurplusBidRequest {
+func NewMsgPlaceSurplusBid(from string, auctionID uint64, amt sdk.Coin, appID, auctionMappingID uint64) *MsgPlaceSurplusBidRequest {
 	return &MsgPlaceSurplusBidRequest{
-		Bidder:           from.String(),
+		Bidder:           from,
 		AuctionId:        auctionID,
 		Amount:           amt,
 		AppId:            appID,
@@ -44,9 +44,9 @@ func (m *MsgPlaceSurplusBidRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgPlaceDebtBid(from sdk.AccAddress, auctionID uint64, bid, amt sdk.Coin, appID, auctionMappingID uint64) *MsgPlaceDebtBidRequest {
+func NewMsgPlaceDebtBid(from string, auctionID uint64, bid, amt sdk.Coin, appID, auctionMappingID uint64) *MsgPlaceDebtBidRequest {
 	return &MsgPlaceDebtBidRequest{
-		Bidder:            from.String(),
+		Bidder:            from,
 		AuctionId:         auctionID,
 		Bid:               bid,
 		ExpectedUserToken: amt,
@@ -75,9 +75,9 @@ func (m *MsgPlaceDebtBidRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgPlaceDutchBid(from sdk.AccAddress, auctionID uint64, amt sdk.Coin, max sdk.Dec, appID, auctionMappingID uint64) *MsgPlaceDutchBidRequest {
+func NewMsgPlaceDutchBid(from string, auctionID uint64, amt sdk.Coin, max sdk.Dec, appID, auctionMappingID uint64) *MsgPlaceDutchBidRequest {
 	return &MsgPlaceDutchBidRequest{
-		Bidder:           from.String(),
+		Bidder:           from,
 		AuctionId:        auctionID,
 		Amount:           amt,
 		Max:              max,

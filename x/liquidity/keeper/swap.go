@@ -13,7 +13,7 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
-func CalculateSwapfeeAmount(ctx sdk.Context, params types.GenericParams, calculatedOfferCoinAmt sdk.Int) sdk.Int {
+func CalculateSwapFeeAmount(ctx sdk.Context, params types.GenericParams, calculatedOfferCoinAmt sdk.Int) sdk.Int {
 	return calculatedOfferCoinAmt.ToDec().MulTruncate(params.SwapFeeRate).TruncateInt()
 }
 
@@ -67,7 +67,7 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 		price = amm.PriceToDownTick(msg.Price, int(params.TickPrecision))
 
 		offerCoin = sdk.NewCoin(msg.OfferCoin.Denom, amm.OfferCoinAmount(amm.Buy, price, msg.Amount))
-		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapfeeAmount(ctx, params, offerCoin.Amount))
+		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapFeeAmount(ctx, params, offerCoin.Amount))
 
 		if msg.OfferCoin.IsLT(offerCoin.Add(swapFeeCoin)) {
 			return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(
@@ -82,7 +82,7 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 		price = amm.PriceToUpTick(msg.Price, int(params.TickPrecision))
 
 		offerCoin = sdk.NewCoin(msg.OfferCoin.Denom, msg.Amount)
-		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapfeeAmount(ctx, params, offerCoin.Amount))
+		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapFeeAmount(ctx, params, offerCoin.Amount))
 
 		if msg.OfferCoin.Amount.LT(swapFeeCoin.Amount.Add(offerCoin.Amount)) {
 			return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(
@@ -180,7 +180,7 @@ func (k Keeper) ValidateMsgMarketOrder(ctx sdk.Context, msg *types.MsgMarketOrde
 		}
 		price = amm.PriceToDownTick(lastPrice.Mul(sdk.OneDec().Add(params.MaxPriceLimitRatio)), int(params.TickPrecision))
 		offerCoin = sdk.NewCoin(msg.OfferCoin.Denom, amm.OfferCoinAmount(amm.Buy, price, msg.Amount))
-		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapfeeAmount(ctx, params, offerCoin.Amount))
+		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapFeeAmount(ctx, params, offerCoin.Amount))
 		if msg.OfferCoin.IsLT(offerCoin.Add(swapFeeCoin)) {
 			return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(
 				types.ErrInsufficientOfferCoin, "%s is smaller than %s", msg.OfferCoin, offerCoin.Add(swapFeeCoin))
@@ -193,7 +193,7 @@ func (k Keeper) ValidateMsgMarketOrder(ctx sdk.Context, msg *types.MsgMarketOrde
 		}
 		price = amm.PriceToUpTick(lastPrice.Mul(sdk.OneDec().Sub(params.MaxPriceLimitRatio)), int(params.TickPrecision))
 		offerCoin = sdk.NewCoin(msg.OfferCoin.Denom, msg.Amount)
-		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapfeeAmount(ctx, params, offerCoin.Amount))
+		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapFeeAmount(ctx, params, offerCoin.Amount))
 		if msg.OfferCoin.Amount.LT(swapFeeCoin.Amount.Add(offerCoin.Amount)) {
 			return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(
 				types.ErrInsufficientOfferCoin, "%s is smaller than %s", msg.OfferCoin, sdk.NewCoin(msg.OfferCoin.Denom, swapFeeCoin.Amount.Add(offerCoin.Amount)))
@@ -513,7 +513,7 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 	pair, _ := k.GetPair(ctx, order.AppId, order.PairId)
 
 	accumulatedSwapFee := sdk.NewCoin(order.OfferCoin.Denom, sdk.NewInt(0))
-	collectedSwapFeeAmountFromOrderer := CalculateSwapfeeAmount(ctx, params, order.OfferCoin.Amount)
+	collectedSwapFeeAmountFromOrderer := CalculateSwapFeeAmount(ctx, params, order.OfferCoin.Amount)
 
 	if order.RemainingOfferCoin.IsPositive() {
 		refundCoin := order.RemainingOfferCoin
@@ -524,7 +524,7 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 		} else {
 			// refund partial swap fees back to orderer and transfer remaining to to swap fee collector address
 			swappedCoin := order.OfferCoin.Sub(order.RemainingOfferCoin)
-			swapFeeAmt := CalculateSwapfeeAmount(ctx, params, swappedCoin.Amount)
+			swapFeeAmt := CalculateSwapFeeAmount(ctx, params, swappedCoin.Amount)
 
 			accumulatedSwapFee.Amount = accumulatedSwapFee.Amount.Add(swapFeeAmt)
 
@@ -610,7 +610,7 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 
 		for _, balance := range availableBalances {
 			if balance.Denom != params.SwapFeeDistrDenom {
-				shortestPath, found := types.BfsShortestpath(undirectedGraph, balance.Denom, params.SwapFeeDistrDenom)
+				shortestPath, found := types.BfsShortestPath(undirectedGraph, balance.Denom, params.SwapFeeDistrDenom)
 				if found && len(shortestPath) > 1 {
 					swappablePairID := pairPoolIDMap[shortestPath[0]+shortestPath[1]]
 					swappablePoolID := pairPoolIDMap[poolMapPrefix+shortestPath[0]+shortestPath[1]]
@@ -634,7 +634,7 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 					price := baseCoinPoolPrice.Add(baseCoinPoolPrice.Quo(sdk.NewDec(100)))
 
 					// amount = (availableBalance - swapfee)/price
-					amount := balance.Amount.ToDec().Sub(CalculateSwapfeeAmount(ctx, params, balance.Amount).ToDec()).Quo(price)
+					amount := balance.Amount.ToDec().Sub(CalculateSwapFeeAmount(ctx, params, balance.Amount).ToDec()).Quo(price)
 
 					// if balanceDenom is baseCoin in pair, order direction is sell (swap into quote coin)
 					// else order direction is buy (swap into base coin)
@@ -646,7 +646,7 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 						price = baseCoinPoolPrice.Sub(baseCoinPoolPrice.Quo(sdk.NewDec(100)))
 
 						// amount = amount-swapfee
-						amount = balance.Amount.ToDec().Sub(CalculateSwapfeeAmount(ctx, params, balance.Amount).ToDec())
+						amount = balance.Amount.ToDec().Sub(CalculateSwapFeeAmount(ctx, params, balance.Amount).ToDec())
 					}
 
 					newLimitOrderMsg := types.NewMsgLimitOrder(

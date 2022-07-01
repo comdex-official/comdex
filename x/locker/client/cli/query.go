@@ -64,8 +64,8 @@ func queryLockersByAppToAssetID() *cobra.Command {
 			res, err := queryClient.QueryLockersByAppToAssetID(
 				context.Background(),
 				&types.QueryLockersByAppToAssetIDRequest{
-					AppId:     appID,
-					AssetId:   assetID,
+					AppId:   appID,
+					AssetId: assetID,
 				},
 			)
 			if err != nil {
@@ -138,8 +138,8 @@ func queryTotalDepositByAppAndAssetID() *cobra.Command {
 			res, err := queryClient.QueryTotalDepositByAppAndAssetID(
 				context.Background(),
 				&types.QueryTotalDepositByAppAndAssetIDRequest{
-					AppId:     appID,
-					AssetId:   assetID,
+					AppId:   appID,
+					AssetId: assetID,
 				},
 			)
 			if err != nil {
@@ -174,8 +174,8 @@ func queryOwnerLockerByAppIDbyOwner() *cobra.Command {
 			res, err := queryClient.QueryOwnerLockerByAppIDbyOwner(
 				context.Background(),
 				&types.QueryOwnerLockerByAppIDbyOwnerRequest{
-					AppId:     appID,
-					Owner:     owner,
+					AppId: appID,
+					Owner: owner,
 				},
 			)
 			if err != nil {
@@ -211,8 +211,8 @@ func queryLockerByAppByOwner() *cobra.Command {
 			res, err := queryClient.QueryLockerByAppByOwner(
 				context.Background(),
 				&types.QueryLockerByAppByOwnerRequest{
-					AppId:     appID,
-					Owner:     owner,
+					AppId: appID,
+					Owner: owner,
 				},
 			)
 			if err != nil {
@@ -284,9 +284,9 @@ func queryOwnerLockerByAppToAssetIDbyOwner() *cobra.Command {
 			res, err := queryClient.QueryOwnerLockerByAppToAssetIDbyOwner(
 				context.Background(),
 				&types.QueryOwnerLockerByAppToAssetIDbyOwnerRequest{
-					AppId:     appID,
-					AssetId:   assetID,
-					Owner:     owner,
+					AppId:   appID,
+					AssetId: assetID,
+					Owner:   owner,
 				},
 			)
 			if err != nil {
@@ -408,8 +408,8 @@ func queryTotalLockerByAppToAssetID() *cobra.Command {
 			res, err := queryClient.QueryLockerCountByAppToAssetID(
 				context.Background(),
 				&types.QueryLockerCountByAppToAssetIDRequest{
-					AppId:     appID,
-					AssetId:   assetID,
+					AppId:   appID,
+					AssetId: assetID,
 				},
 			)
 			if err != nil {
@@ -539,9 +539,9 @@ func queryLockerLookupTableByAppAndAssetID() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.QueryLockerLookupTableByAppAndAssetId(
+			res, err := queryClient.QueryLockerLookupTableByAppAndAssetID(
 				context.Background(),
-				&types.QueryLockerLookupTableByAppAndAssetIdRequest{
+				&types.QueryLockerLookupTableByAppAndAssetIDRequest{
 					AppId:   appID,
 					AssetId: assetID,
 				},

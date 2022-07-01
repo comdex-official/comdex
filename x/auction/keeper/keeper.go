@@ -25,7 +25,7 @@ type (
 		asset       expected.AssetKeeper
 		vault       expected.VaultKeeper
 		collector   expected.CollectorKeeper
-		tokenmint   expected.TokenMintKeeper
+		tokenMint   expected.TokenMintKeeper
 	}
 )
 
@@ -41,7 +41,7 @@ func NewKeeper(
 	asset expected.AssetKeeper,
 	vault expected.VaultKeeper,
 	collector expected.CollectorKeeper,
-	tokenmint expected.TokenMintKeeper,
+	tokenMintKeeper expected.TokenMintKeeper,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -61,7 +61,7 @@ func NewKeeper(
 		asset:       asset,
 		vault:       vault,
 		collector:   collector,
-		tokenmint:   tokenmint,
+		tokenMint:   tokenMintKeeper,
 	}
 }
 

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/comdex-official/comdex/x/auction/types"
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -18,7 +17,7 @@ type QueryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &QueryServer{
 		Keeper: k,
 	}
@@ -42,7 +41,7 @@ func (q *QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySur
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item auctiontypes.SurplusAuction
+		item types.SurplusAuction
 	)
 	if req.History {
 		item, err = q.GetHistorySurplusAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
@@ -107,7 +106,7 @@ func (q *QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySu
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item []auctiontypes.SurplusBiddings
+		item []types.SurplusBiddings
 	)
 	if req.History {
 		item = q.GetHistorySurplusUserBiddings(ctx, req.Bidder, req.AppId)
@@ -127,7 +126,7 @@ func (q *QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAu
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item auctiontypes.DebtAuction
+		item types.DebtAuction
 	)
 	if req.History {
 		item, err = q.GetHistoryDebtAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
@@ -192,7 +191,7 @@ func (q *QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtB
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item []auctiontypes.DebtBiddings
+		item []types.DebtBiddings
 	)
 	if req.History {
 		item = q.GetHistoryDebtUserBiddings(ctx, req.Bidder, req.AppId)
@@ -213,7 +212,7 @@ func (q *QueryServer) QueryDutchAuction(c context.Context, req *types.QueryDutch
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item auctiontypes.DutchAuction
+		item types.DutchAuction
 	)
 	if req.History {
 		item, _ = q.GetHistoryDutchAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
@@ -275,7 +274,7 @@ func (q *QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutc
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item []auctiontypes.DutchBiddings
+		item []types.DutchBiddings
 	)
 	if req.History {
 		item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
@@ -296,7 +295,7 @@ func (q *QueryServer) QueryBiddingsForAuction(c context.Context, req *types.Quer
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item []auctiontypes.DutchBiddings
+		item []types.DutchBiddings
 	)
 	if req.History {
 		item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
@@ -350,7 +349,7 @@ func (q *QueryServer) QueryProtocolStatistics(c context.Context, req *types.Quer
 	}, nil
 }
 
-func (q *QueryServer) QueryAuctionParams(c context.Context, req *auctiontypes.QueryAuctionParamRequest) (*auctiontypes.QueryAuctionParamResponse, error) {
+func (q *QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAuctionParamRequest) (*types.QueryAuctionParamResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}

@@ -2,20 +2,15 @@ package cli
 
 import (
 	"fmt"
-	// "strings"
-
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	// "github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/comdex-official/comdex/x/bandoracle/types"
+	"github.com/cosmos/cosmos-sdk/client"
 )
 
-// GetQueryCmd returns the cli query commands for this module
+// GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd(queryRoute string) *cobra.Command {
-	// Group bandoracle queries under a subcommand
+	// Group bandoracle queries under a subcommand.
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
@@ -28,12 +23,12 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(CmdFetchPriceResult())
 	cmd.AddCommand(CmdLastFetchPriceID())
-	// this line is used by starport scaffolding # 1
+	// this line is used by starport scaffolding # 1.
 
 	return cmd
 }
 
-// GetTxCmd returns the transaction commands for this module
+// GetTxCmd returns the transaction commands for this module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -44,7 +39,7 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand()
-	// this line is used by starport scaffolding # 1
+	// this line is used by starport scaffolding # 1.
 
 	return cmd
 }

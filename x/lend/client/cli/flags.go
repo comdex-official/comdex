@@ -13,7 +13,7 @@ const (
 )
 
 func ParseStringFromString(s string, separator string) ([]string, error) {
-	var parsedStrings []string //nolint:prealloc
+	var parsedStrings []string
 	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 
@@ -23,7 +23,7 @@ func ParseStringFromString(s string, separator string) ([]string, error) {
 }
 
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
-	var parsedInts []uint64 //nolint:prealloc
+	var parsedInts []uint64
 	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 

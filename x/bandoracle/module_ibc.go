@@ -13,7 +13,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
 )
 
-// OnChanOpenInit implements the IBCModule interface
+// OnChanOpenInit implements the IBCModule interface.
 func (im IBCModule) OnChanOpenInit(
 	ctx sdk.Context,
 	order channeltypes.Order,
@@ -41,7 +41,7 @@ func (im IBCModule) OnChanOpenInit(
 	return nil
 }
 
-// OnChanOpenTry implements the IBCModule interface
+// OnChanOpenTry implements the IBCModule interface.
 func (im IBCModule) OnChanOpenTry(
 	ctx sdk.Context,
 	order channeltypes.Order,
@@ -75,7 +75,7 @@ func (im IBCModule) OnChanOpenTry(
 	return types.Version, nil
 }
 
-// OnChanOpenAck implements the IBCModule interface
+// OnChanOpenAck implements the IBCModule interface.
 func (im IBCModule) OnChanOpenAck(
 	ctx sdk.Context,
 	portID,
@@ -89,7 +89,7 @@ func (im IBCModule) OnChanOpenAck(
 	return nil
 }
 
-// OnChanOpenConfirm implements the IBCModule interface
+// OnChanOpenConfirm implements the IBCModule interface.
 func (im IBCModule) OnChanOpenConfirm(
 	ctx sdk.Context,
 	portID,
@@ -98,17 +98,17 @@ func (im IBCModule) OnChanOpenConfirm(
 	return nil
 }
 
-// OnChanCloseInit implements the IBCModule interface
+// OnChanCloseInit implements the IBCModule interface.
 func (im IBCModule) OnChanCloseInit(
 	ctx sdk.Context,
 	portID,
 	channelID string,
 ) error {
-	// Disallow user-initiated channel closing for channels
+	// Disallow user-initiated channel closing for channels.
 	return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "user cannot close channel")
 }
 
-// OnChanCloseConfirm implements the IBCModule interface
+// OnChanCloseConfirm implements the IBCModule interface.
 func (im IBCModule) OnChanCloseConfirm(
 	ctx sdk.Context,
 	portID,
@@ -117,7 +117,7 @@ func (im IBCModule) OnChanCloseConfirm(
 	return nil
 }
 
-// OnRecvPacket implements the IBCModule interface
+// OnRecvPacket implements the IBCModule interface.
 func (im IBCModule) OnRecvPacket(
 	ctx sdk.Context,
 	modulePacket channeltypes.Packet,
@@ -146,10 +146,9 @@ func (im IBCModule) OnRecvPacket(
 	}
 
 	// NOTE: acknowledgement will be written synchronously during IBC handler execution.
-	return ack
 }
 
-// OnAcknowledgementPacket implements the IBCModule interface
+// OnAcknowledgementPacket implements the IBCModule interface.
 func (im IBCModule) OnAcknowledgementPacket(
 	ctx sdk.Context,
 	modulePacket channeltypes.Packet,
@@ -186,7 +185,7 @@ func (im IBCModule) OnAcknowledgementPacket(
 		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 	}
 
-	ctx.EventManager().EmitEvent(
+	ctx.EventManager().EmitEvent( //nolint:govet
 		sdk.NewEvent(
 			eventType,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
@@ -214,7 +213,7 @@ func (im IBCModule) OnAcknowledgementPacket(
 	return nil
 }
 
-// OnTimeoutPacket implements the IBCModule interface
+// OnTimeoutPacket implements the IBCModule interface.
 func (im IBCModule) OnTimeoutPacket(
 	ctx sdk.Context,
 	modulePacket channeltypes.Packet,
@@ -232,8 +231,6 @@ func (im IBCModule) OnTimeoutPacket(
 		errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
 		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 	}
-
-	return nil
 }
 
 func (am AppModule) NegotiateAppVersion(ctx sdk.Context, order channeltypes.Order, connectionID string, portID string, counterparty channeltypes.Counterparty, proposedVersion string) (version string, err error) {

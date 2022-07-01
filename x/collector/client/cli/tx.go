@@ -10,12 +10,11 @@ import (
 	flag "github.com/spf13/pflag"
 	"strconv"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	// "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/comdex-official/comdex/x/collector/types"
+	"github.com/cosmos/cosmos-sdk/client"
 )
 
-// GetTxCmd returns the transaction commands for this module
+// GetTxCmd returns the transaction commands for this module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -27,7 +26,7 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
-// NewCmdLookupTableParams cmd for lookup table param proposal updates
+// NewCmdLookupTableParams cmd for lookup table param proposal updates.
 func NewCmdLookupTableParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "collector-lookup-params [flags]",
@@ -153,7 +152,7 @@ func NewCreateLookupTableParams(clientCtx client.Context, txf tx.Factory, fs *fl
 	return txf, msg, nil
 }
 
-// NewCmdAuctionControlProposal cmd to update controls for auction params
+// NewCmdAuctionControlProposal cmd to update controls for auction params.
 func NewCmdAuctionControlProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auction-control [flags]",

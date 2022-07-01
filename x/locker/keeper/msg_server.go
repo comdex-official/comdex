@@ -17,7 +17,7 @@ type msgServer struct {
 	Keeper
 }
 
-func NewMsgServiceServer(keeper Keeper) types.MsgServer {
+func NewMsgServer(keeper Keeper) types.MsgServer {
 	return &msgServer{
 		Keeper: keeper,
 	}
@@ -154,7 +154,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 	return &types.MsgCreateLockerResponse{}, nil
 }
 
-// MsgDepositAsset Remove asset id from Deposit & Withdraw redundant
+// MsgDepositAsset Remove asset id from Deposit & Withdraw redundant.
 func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAssetRequest) (*types.MsgDepositAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	asset, found := k.GetAsset(ctx, msg.AssetId)
@@ -224,7 +224,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	return &types.MsgDepositAssetResponse{}, nil
 }
 
-// MsgWithdrawAsset Remove asset id from Deposit & Withdraw-redundant
+// MsgWithdrawAsset Remove asset id from Deposit & Withdraw-redundant.
 func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	asset, found := k.GetAsset(ctx, msg.AssetId)
