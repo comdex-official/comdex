@@ -22,7 +22,7 @@ const (
 	// MemStoreKey defines the in-memory store key.
 	MemStoreKey = "mem_rewards"
 
-	SecondsPerYear = 31536000
+	SecondsPerYear = 31557600
 )
 
 var (
