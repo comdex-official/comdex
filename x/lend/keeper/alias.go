@@ -62,5 +62,4 @@ func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recip
 		return nil
 	}
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
-
 }

@@ -24,22 +24,3 @@ func (k Keeper) GetReserveFunds(ctx sdk.Context, denom string) sdk.Int {
 	//return amount
 	return sdk.NewInt(0)
 }
-
-// setReserveFunds sets the amount reserved of a specified token.
-func (k Keeper) setReserveFunds(ctx sdk.Context, coin sdk.Coin) error {
-	if err := coin.Validate(); err != nil {
-		return err
-	}
-
-	store := ctx.KVStore(k.storeKey)
-	reserveKey := types.ReserveFundsKey(coin.Denom)
-
-	// save the new reserve funds
-	bz, err := coin.Amount.Marshal()
-	if err != nil {
-		return err
-	}
-
-	store.Set(reserveKey, bz)
-	return nil
-}
