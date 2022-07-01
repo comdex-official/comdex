@@ -116,7 +116,7 @@ func queryLockerByAppID() *cobra.Command {
 func queryTotalDepositByAppAndAssetID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "total-deposit-per-app-assetid [app_id] [asset_id]",
-		Short: "total deposit per app to asset id",
+		Short: "Query total deposit per app to asset id",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -156,7 +156,7 @@ func queryTotalDepositByAppAndAssetID() *cobra.Command {
 func queryOwnerLockerByAppIDbyOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "owner-locker-by-app-id-and-owner [app_id] [owner]",
-		Short: "owner locker by app id by owner",
+		Short: "Query owner locker by app id by owner",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -192,7 +192,7 @@ func queryOwnerLockerByAppIDbyOwner() *cobra.Command {
 func queryLockerByAppByOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "locker-by-app-by-owner [app_id] [owner]",
-		Short: "locker by app by owner",
+		Short: "Query locker by app by owner",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -229,7 +229,7 @@ func queryLockerByAppByOwner() *cobra.Command {
 func queryOwnerLockerOfAllAppsByOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "owner-locker-by-all-apps-by-owner [owner]",
-		Short: "owner locker by all apps by owner",
+		Short: "Query owner locker by all apps by owner",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -260,7 +260,7 @@ func queryOwnerLockerOfAllAppsByOwner() *cobra.Command {
 func queryOwnerLockerByAppToAssetIDbyOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "owner-locker-by-app-to-asset-id-owner [app_id] [asset_id] [owner]",
-		Short: "owner locker by app to asset id and owner",
+		Short: "Query owner locker by app to asset id and owner",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -303,7 +303,7 @@ func queryOwnerLockerByAppToAssetIDbyOwner() *cobra.Command {
 func queryOwnerTxDetailsLockerOfAppByOwnerByAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "owner-tx-details-by-app-to-owner-by-asset [app_id] [owner] [asset_id]",
-		Short: "owner locker tx details by app to owner by asset",
+		Short: "Query owner locker tx details by app to owner by asset",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pagination, err := client.ReadPageRequest(cmd.Flags())
@@ -352,7 +352,7 @@ func queryOwnerTxDetailsLockerOfAppByOwnerByAsset() *cobra.Command {
 func queryTotalLockerByAppID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "total-locker-by-app-id [app_id]",
-		Short: "total locker by app id",
+		Short: "Query total locker by app id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -386,7 +386,7 @@ func queryTotalLockerByAppID() *cobra.Command {
 func queryTotalLockerByAppToAssetID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "total-locker-by-app-to-asset-id [app_id] [asset_id]",
-		Short: "total locker by app to asset id",
+		Short: "Query total locker by app to asset id",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -426,7 +426,7 @@ func queryTotalLockerByAppToAssetID() *cobra.Command {
 func queryWhiteListedAssetIDsByAppID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "whitelisted-assetIds-by-app-id [app_id]",
-		Short: "whitelisted asset Ids by app id",
+		Short: "Query whitelisted asset Ids by app id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -460,7 +460,7 @@ func queryWhiteListedAssetIDsByAppID() *cobra.Command {
 func queryWhiteListedAssetByAllApps() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "whitelisted-asset-all-apps",
-		Short: "query white listed asset all apps",
+		Short: "Query white listed asset all apps",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -487,7 +487,7 @@ func queryWhiteListedAssetByAllApps() *cobra.Command {
 func queryLockerLookupTableByApp() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "locker-lookup-by-app [app_id]",
-		Short: "locker lookup by app",
+		Short: "Query locker lookup by app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -521,7 +521,7 @@ func queryLockerLookupTableByApp() *cobra.Command {
 func queryLockerLookupTableByAppAndAssetID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "locker-lookup-by-app-and-assetId [app_id] [asset_id]",
-		Short: "locker lookup by app and assetId",
+		Short: "Query locker lookup by app and assetId",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -560,7 +560,7 @@ func queryLockerLookupTableByAppAndAssetID() *cobra.Command {
 func queryLockerTotalDepositedByApp() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "locker-deposited-by-app [app_id]",
-		Short: "locker deposited amount by app",
+		Short: "Query locker deposited amount by app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -594,7 +594,7 @@ func queryLockerTotalDepositedByApp() *cobra.Command {
 func queryState() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "state [address] [denom] [block_height] [target]",
-		Short: "state of an account at a block height",
+		Short: "Query state of an account at a block height",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -630,8 +630,8 @@ func queryState() *cobra.Command {
 
 func queryLockerTotalRewardsByAssetAppWise() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lockers-rewards-by-product-asset-id [app_id] [asset_id]",
-		Short: "Query all lockers rewards by product and asset id",
+		Use:   "lockers-rewards-by-app-asset-id [app_id] [asset_id]",
+		Short: "Query all lockers rewards by app and asset id",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
