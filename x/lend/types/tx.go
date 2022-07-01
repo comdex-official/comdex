@@ -5,9 +5,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func NewMsgLend(lender sdk.AccAddress, assetID uint64, amount sdk.Coin, poolID uint64) *MsgLend {
+func NewMsgLend(lender string, assetID uint64, amount sdk.Coin, poolID uint64) *MsgLend {
 	return &MsgLend{
-		Lender:  lender.String(),
+		Lender:  lender,
 		AssetId: assetID,
 		Amount:  amount,
 		PoolId:  poolID,
@@ -41,9 +41,9 @@ func (msg *MsgLend) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgWithdraw(lender sdk.AccAddress, lendID uint64, amount sdk.Coin) *MsgWithdraw {
+func NewMsgWithdraw(lender string, lendID uint64, amount sdk.Coin) *MsgWithdraw {
 	return &MsgWithdraw{
-		Lender: lender.String(),
+		Lender: lender,
 		LendId: lendID,
 		Amount: amount,
 	}
@@ -76,9 +76,9 @@ func (msg *MsgWithdraw) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgBorrow(borrower sdk.AccAddress, lendID, pairID uint64, isStableBorrow bool, amountIn, amountOut sdk.Coin) *MsgBorrow {
+func NewMsgBorrow(borrower string, lendID, pairID uint64, isStableBorrow bool, amountIn, amountOut sdk.Coin) *MsgBorrow {
 	return &MsgBorrow{
-		Borrower:       borrower.String(),
+		Borrower:       borrower,
 		LendId:         lendID,
 		PairId:         pairID,
 		IsStableBorrow: isStableBorrow,
@@ -117,9 +117,9 @@ func (msg *MsgBorrow) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgRepay(borrower sdk.AccAddress, borrowID uint64, amount sdk.Coin) *MsgRepay {
+func NewMsgRepay(borrower string, borrowID uint64, amount sdk.Coin) *MsgRepay {
 	return &MsgRepay{
-		Borrower: borrower.String(),
+		Borrower: borrower,
 		BorrowId: borrowID,
 		Amount:   amount,
 	}
@@ -152,11 +152,11 @@ func (msg *MsgRepay) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgFundModuleAccounts(moduleName string, assetID uint64, lender sdk.AccAddress, amount sdk.Coin) *MsgFundModuleAccounts {
+func NewMsgFundModuleAccounts(moduleName string, assetID uint64, lender string, amount sdk.Coin) *MsgFundModuleAccounts {
 	return &MsgFundModuleAccounts{
 		ModuleName: moduleName,
 		AssetId:    assetID,
-		Lender:     lender.String(),
+		Lender:     lender,
 		Amount:     amount,
 	}
 }
@@ -188,9 +188,9 @@ func (msg *MsgFundModuleAccounts) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgDeposit(lender sdk.AccAddress, lendID uint64, amount sdk.Coin) *MsgDeposit {
+func NewMsgDeposit(lender string, lendID uint64, amount sdk.Coin) *MsgDeposit {
 	return &MsgDeposit{
-		Lender: lender.String(),
+		Lender: lender,
 		LendId: lendID,
 		Amount: amount,
 	}
@@ -223,9 +223,9 @@ func (msg *MsgDeposit) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgCloseLend(lender sdk.AccAddress, lendID uint64) *MsgCloseLend {
+func NewMsgCloseLend(lender string, lendID uint64) *MsgCloseLend {
 	return &MsgCloseLend{
-		Lender: lender.String(),
+		Lender: lender,
 		LendId: lendID,
 	}
 }
@@ -252,9 +252,9 @@ func (msg *MsgCloseLend) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgDraw(borrower sdk.AccAddress, borrowID uint64, amount sdk.Coin) *MsgDraw {
+func NewMsgDraw(borrower string, borrowID uint64, amount sdk.Coin) *MsgDraw {
 	return &MsgDraw{
-		Borrower: borrower.String(),
+		Borrower: borrower,
 		BorrowId: borrowID,
 		Amount:   amount,
 	}
@@ -287,9 +287,9 @@ func (msg *MsgDraw) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgDepositBorrow(borrower sdk.AccAddress, borrowID uint64, amount sdk.Coin) *MsgDepositBorrow {
+func NewMsgDepositBorrow(borrower string, borrowID uint64, amount sdk.Coin) *MsgDepositBorrow {
 	return &MsgDepositBorrow{
-		Borrower: borrower.String(),
+		Borrower: borrower,
 		BorrowId: borrowID,
 		Amount:   amount,
 	}
@@ -322,9 +322,9 @@ func (msg *MsgDepositBorrow) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgCloseBorrow(borrower sdk.AccAddress, borrowID uint64) *MsgCloseBorrow {
+func NewMsgCloseBorrow(borrower string, borrowID uint64) *MsgCloseBorrow {
 	return &MsgCloseBorrow{
-		Borrower: borrower.String(),
+		Borrower: borrower,
 		BorrowId: borrowID,
 	}
 }

@@ -15,7 +15,7 @@ import (
 
 func txCreateLocker() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-locker [app_mapping_id] [asset_id] [amount]",
+		Use:   "create-locker [app_id] [asset_id] [amount]",
 		Short: "create a new locker",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -24,7 +24,7 @@ func txCreateLocker() *cobra.Command {
 				return err
 			}
 
-			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -38,7 +38,7 @@ func txCreateLocker() *cobra.Command {
 				return types.ErrorInvalidAmountIn
 			}
 
-			msg := types.NewMsgCreateLockerRequest(ctx.FromAddress, amount, assetID, appMappingID)
+			msg := types.NewMsgCreateLockerRequest(ctx.FromAddress.String(), amount, assetID, appID)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -54,7 +54,7 @@ func txCreateLocker() *cobra.Command {
 
 func txDepositAssetLocker() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit-locker [locker_id] [amount] [asset_id] [app_mapping_id] ",
+		Use:   "deposit-locker [locker_id] [amount] [asset_id] [app_id] ",
 		Short: "deposit to a locker",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -76,12 +76,12 @@ func txDepositAssetLocker() *cobra.Command {
 				return err
 			}
 
-			appMappingID, err := strconv.ParseUint(args[3], 10, 64)
+			appID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgDepositAssetRequest(ctx.FromAddress, lockerID, amount, assetID, appMappingID)
+			msg := types.NewMsgDepositAssetRequest(ctx.FromAddress.String(), lockerID, amount, assetID, appID)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -95,7 +95,7 @@ func txDepositAssetLocker() *cobra.Command {
 
 func txWithdrawAssetLocker() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw-locker [locker_id] [amount] [asset_id] [app_mapping_id] ",
+		Use:   "withdraw-locker [locker_id] [amount] [asset_id] [app_id] ",
 		Short: "withdraw from a locker",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -117,12 +117,12 @@ func txWithdrawAssetLocker() *cobra.Command {
 				return err
 			}
 
-			appMappingID, err := strconv.ParseUint(args[3], 10, 64)
+			appID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgWithdrawAssetRequest(ctx.FromAddress, lockerID, amount, assetID, appMappingID)
+			msg := types.NewMsgWithdrawAssetRequest(ctx.FromAddress.String(), lockerID, amount, assetID, appID)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -136,7 +136,7 @@ func txWithdrawAssetLocker() *cobra.Command {
 
 func txAddWhiteListedAssetLocker() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "whitelist-asset-locker [app_mapping_id][asset_id] ",
+		Use:   "whitelist-asset-locker [app_id][asset_id] ",
 		Short: "withdraw from a locker",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -145,7 +145,7 @@ func txAddWhiteListedAssetLocker() *cobra.Command {
 				return err
 			}
 
-			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -154,7 +154,7 @@ func txAddWhiteListedAssetLocker() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddWhiteListedAssetRequest(ctx.FromAddress, appMappingID, assetID)
+			msg := types.NewMsgAddWhiteListedAssetRequest(ctx.FromAddress.String(), appID, assetID)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

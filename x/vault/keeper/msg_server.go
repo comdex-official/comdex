@@ -67,7 +67,6 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	//Checking
 	if !extendedPairVault.IsVaultActive {
 		return nil, types.ErrorVaultCreationInactive
-
 	}
 	//if does then check app to extendedPair mapping has any vault key
 	//if it does throw error
@@ -76,13 +75,10 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		_, alreadyExists := k.CheckUserAppToExtendedPairMapping(ctx, userVaultExtendedPairMapping, extendedPairVault.Id, appMapping.Id)
 		if alreadyExists {
 			return nil, types.ErrorUserVaultAlreadyExists
-
 		}
 	}
 	//Call CheckAppExtendedPairVaultMapping function to get counter - it also initialised the kv store if appMapping_id does not exists, or extendedPairVault_id does not exists.
-
 	counterVal, tokenMintedStatistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
-
 	//Check debt Floor
 	if !msg.AmountOut.GTE(extendedPairVault.DebtFloor) {
 		return nil, types.ErrorAmountOutLessThanDebtFloor
@@ -509,7 +505,7 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if vault acccess disabled
-	
+
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
 	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
@@ -632,7 +628,6 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	// //Checking if vault acccess disabled
-
 
 	//Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
 	if appMapping.Id != extendedPairVault.AppId {
@@ -955,7 +950,7 @@ func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithd
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 	//Checking if vault access disabled
-	
+
 	if !extendedPairVault.IsStableMintVault {
 		return nil, types.ErrorCannotCreateStableMintVault
 	}

@@ -39,6 +39,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
 		k.GetAssets(ctx),
 		k.GetPairs(ctx),
-		k.GetParams(ctx),
+		k.GetParams(),
 	)
 }

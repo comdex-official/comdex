@@ -82,7 +82,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 
 	found := uint64InAssetData(AssetID, pool.AssetData)
 	if !found {
-		return sdkerrors.Wrap(types.ErrInvalidAssetIdForPool, strconv.FormatUint(AssetID, 10))
+		return sdkerrors.Wrap(types.ErrInvalidAssetIDForPool, strconv.FormatUint(AssetID, 10))
 	}
 
 	addr, _ := sdk.AccAddressFromBech32(lenderAddr)

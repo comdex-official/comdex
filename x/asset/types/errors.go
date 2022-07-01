@@ -11,8 +11,6 @@ var (
 	ErrorInvalidID       = errors.Register(ModuleName, 104, "invalid id")
 
 	ErrorInvalidName          = errors.Register(ModuleName, 106, "invalid name")
-	ErrorInvalidDebtFloor     = errors.Register(ModuleName, 107, "invalid Debt Floor")
-	ErrorInvalidDebtCeiling   = errors.Register(ModuleName, 108, "invalid Debt Ceiling")
 	ErrorInvalidGenesisSupply = errors.Register(ModuleName, 109, "invalid Genesis Supply")
 	ErrorInvalidMinGovSupply  = errors.Register(ModuleName, 110, "invalid min gov supply")
 )
@@ -32,10 +30,6 @@ var (
 	ErrorFeeShouldNotBeGTOne               = errors.Register(ModuleName, 215, "Fee Should Not Be Greater than One and less than zero")
 	ErrorExtendedPairDoesNotExistForTheApp = errors.Register(ModuleName, 216, "extended pair does not exist for the app")
 	ErrorMinGovDepositIsZero               = errors.Register(ModuleName, 217, "min gov deposit is zero")
-)
-
-var (
-	ErrorUnknownMsgType = errors.Register(ModuleName, 301, "unknown message type")
 )
 
 var (

@@ -76,7 +76,7 @@ service Query {
     option (google.api.http).get = "/comdex/locker/v1beta1/locker-lookup-by-app/{app_id}";
   };
 
-  rpc QueryLockerLookupTableByAppAndAssetId(QueryLockerLookupTableByAppAndAssetIdRequest) returns (QueryLockerLookupTableByAppAndAssetIdResponse) {
+  rpc QueryLockerLookupTableByAppAndAssetID(QueryLockerLookupTableByAppAndAssetIDRequest) returns (QueryLockerLookupTableByAppAndAssetIDResponse) {
     option (google.api.http).get = "/comdex/locker/v1beta1/locker-lookup-by-app-and-assetId/{app_id}/{asset_id}";
   };
 
@@ -246,12 +246,12 @@ message QueryLockerLookupTableByAppResponse {
   repeated TokenToLockerMapping token_to_locker_mapping = 1 [ (gogoproto.moretags) = "yaml:\"token_to_locker_mapping\"" ];
 }
 
-message QueryLockerLookupTableByAppAndAssetIdRequest {
+message QueryLockerLookupTableByAppAndAssetIDRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
   uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
 }
 
-message QueryLockerLookupTableByAppAndAssetIdResponse {
+message QueryLockerLookupTableByAppAndAssetIDResponse {
   TokenToLockerMapping token_to_locker_mapping = 1 [ (gogoproto.moretags) = "yaml:\"token_to_locker_mapping\"" ];
 }
 

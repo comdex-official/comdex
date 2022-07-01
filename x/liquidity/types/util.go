@@ -88,8 +88,8 @@ func BuildUndirectedGraph(edges [][]string) (graph map[string][]string) {
 	return graph
 }
 
-// BfsShortestpath returns the shortest path between two nodes in undirected graph
-func BfsShortestpath(undirectedGraph map[string][]string, start string, goal string) ([]string, bool) {
+// BfsShortestPath returns the shortest path between two nodes in undirected graph.
+func BfsShortestPath(undirectedGraph map[string][]string, start string, goal string) ([]string, bool) {
 	var explored []string
 
 	// Queue for traversing the graph in the BFS

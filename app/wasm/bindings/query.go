@@ -54,8 +54,8 @@ type StateResponse struct {
 }
 
 type MintedToken struct {
-	AppID uint64 `json:"app_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type MintedTokenResponse struct {
@@ -63,8 +63,8 @@ type MintedTokenResponse struct {
 }
 
 type RemoveWhiteListAssetLocker struct {
-	AppID uint64   `json:"app_id"`
-	AssetIDs     []uint64 `json:"asset_ids"`
+	AppID    uint64   `json:"app_id"`
+	AssetIDs []uint64 `json:"asset_ids"`
 }
 
 type RemoveWhiteListAssetResponse struct {
@@ -82,8 +82,8 @@ type WhitelistAppIDVaultInterestResponse struct {
 }
 
 type WhitelistAppIDLockerRewards struct {
-	AppID uint64   `json:"app_id"`
-	AssetID      []uint64 `json:"asset_id"`
+	AppID   uint64   `json:"app_id"`
+	AssetID []uint64 `json:"asset_id"`
 }
 
 type WhitelistAppIDLockerRewardsResponse struct {
@@ -92,8 +92,8 @@ type WhitelistAppIDLockerRewardsResponse struct {
 }
 
 type ExternalLockerRewards struct {
-	AppID uint64 `json:"app_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type ExternalLockerRewardsResponse struct {
@@ -102,8 +102,8 @@ type ExternalLockerRewardsResponse struct {
 }
 
 type ExternalVaultRewards struct {
-	AppID uint64 `json:"app_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type ExternalVaultRewardsResponse struct {
@@ -112,7 +112,7 @@ type ExternalVaultRewardsResponse struct {
 }
 
 type CollectorLookupTableQuery struct {
-	AppID     uint64 `json:"app_id"`
+	AppID            uint64 `json:"app_id"`
 	CollectorAssetID uint64 `json:"collector_asset_id"`
 	SecondaryAssetID uint64 `json:"secondary_asset_id"`
 }
@@ -123,7 +123,7 @@ type CollectorLookupTableQueryResponse struct {
 }
 
 type ExtendedPairsVaultRecordsQuery struct {
-	AppID uint64  `json:"app_id"`
+	AppID        uint64  `json:"app_id"`
 	PairID       uint64  `json:"pair_id"`
 	StabilityFee sdk.Dec `json:"stability_fee"`
 	ClosingFee   sdk.Dec `json:"closing_fee"`
@@ -148,8 +148,8 @@ type AuctionMappingForAppQueryResponse struct {
 }
 
 type WhiteListedAssetQuery struct {
-	AppID uint64 `json:"app_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type WhiteListedAssetQueryResponse struct {
@@ -158,8 +158,8 @@ type WhiteListedAssetQueryResponse struct {
 }
 
 type UpdatePairsVaultQuery struct {
-	AppID uint64 `json:"app_id"`
-	ExtPairID    uint64 `json:"ext_pair_id"`
+	AppID     uint64 `json:"app_id"`
+	ExtPairID uint64 `json:"ext_pair_id"`
 }
 
 type UpdatePairsVaultQueryResponse struct {
@@ -168,8 +168,8 @@ type UpdatePairsVaultQueryResponse struct {
 }
 
 type UpdateCollectorLookupTableQuery struct {
-	AppID uint64 `json:"app_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type UpdateCollectorLookupTableQueryResponse struct {
@@ -178,8 +178,8 @@ type UpdateCollectorLookupTableQueryResponse struct {
 }
 
 type RemoveWhitelistAssetLockerQuery struct {
-	AppID uint64 `json:"app_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type RemoveWhitelistAssetLockerQueryResponse struct {

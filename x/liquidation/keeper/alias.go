@@ -91,4 +91,3 @@ func (k *Keeper) GetAuctionParams(ctx sdk.Context) auctiontypes.Params {
 func (k *Keeper) SetVault(ctx sdk.Context, vault types.Vault) {
 	k.vault.SetVault(ctx, vault)
 }
-

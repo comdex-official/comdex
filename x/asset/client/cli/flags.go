@@ -7,13 +7,10 @@ import (
 )
 
 const (
-	flagName                    = "name"
-	flagDenom                   = "denom"
-	flagDecimals                = "decimals"
-	flagCollateralWeight        = "collateralWeight"
-	flagLiquidationThreshold    = "liquidationThreshold"
-	FlagExtendedPairVaultFile   = "extended-pair-vault-file"
-	FlagAddAssetMappingFile     = "add-asset-mapping-file"
+	flagName                = "name"
+	flagDenom               = "denom"
+	flagDecimals            = "decimals"
+	FlagAddAssetMappingFile = "add-asset-mapping-file"
 )
 
 func ParseStringFromString(s string, separator string) ([]string, error) {
@@ -27,7 +24,6 @@ func ParseStringFromString(s string, separator string) ([]string, error) {
 }
 
 func ParseBoolFromString(s string) bool {
-
 	switch s {
 	case "1":
 		return true
@@ -64,20 +60,12 @@ func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
 	return parsedInts, nil
 }
 
-func FlagSetCreateExtendedPairVault() *flag.FlagSet {
-	fs := flag.NewFlagSet("", flag.ContinueOnError)
-
-	fs.String(FlagExtendedPairVaultFile, "", "extended json file path")
-	return fs
-}
-
 func FlagSetCreateAssetMapping() *flag.FlagSet {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 
 	fs.String(FlagAddAssetMappingFile, "", "add asset mapping json file path")
 	return fs
 }
-
 
 type createExtPairVaultInputs struct {
 	AppID               string `json:"app_id"`
@@ -110,4 +98,3 @@ type createAddAssetMappingInputs struct {
 	Description   string
 	Deposit       string
 }
-

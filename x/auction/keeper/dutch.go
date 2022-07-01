@@ -274,7 +274,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		return err
 	}
 
-	biddingID, err := k.CreateNewDutchBid(ctx, appID, auctionMappingID, auctionID, bidder, inFlowTokenCoin, outFlowTokenCoin)
+	biddingID, err := k.CreateNewDutchBid(ctx, appID, auctionMappingID, auctionID, bidder.String(), inFlowTokenCoin, outFlowTokenCoin)
 	if err != nil {
 		return err
 	}
@@ -362,12 +362,12 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	return nil
 }
 
-func (k Keeper) CreateNewDutchBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder sdk.AccAddress, outFlowTokenCoin sdk.Coin, inFlowTokenCoin sdk.Coin) (biddingID uint64, err error) {
+func (k Keeper) CreateNewDutchBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder string, outFlowTokenCoin sdk.Coin, inFlowTokenCoin sdk.Coin) (biddingID uint64, err error) {
 	bidding := auctiontypes.DutchBiddings{
 		BiddingId:          k.GetUserBiddingID(ctx) + 1,
 		AuctionId:          auctionID,
 		AuctionStatus:      auctiontypes.ActiveAuctionStatus,
-		Bidder:             bidder.String(),
+		Bidder:             bidder,
 		OutflowTokenAmount: outFlowTokenCoin,
 		InflowTokenAmount:  inFlowTokenCoin,
 		BiddingTimestamp:   ctx.BlockTime(),
@@ -557,7 +557,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 		// tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
 		tnume := dutchAuction.OutflowTokenInitialPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds)))
 		tdeno := dutchAuction.OutflowTokenInitialPrice.Sub(dutchAuction.OutflowTokenEndPrice)
-		tau := sdk.Int(tnume.Quo(tdeno)) 
+		tau := sdk.Int(tnume.Quo(tdeno))
 		dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
 		seconds := sdk.NewInt(int64(dur.Seconds()))
 		outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)

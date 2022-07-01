@@ -224,7 +224,7 @@ func (k Keeper) closeSurplusAuction(
 			return err
 		}
 
-		//burn tokens by sending bid tokens from auction to tokenmint module and then call burn function
+		//burn tokens by sending bid tokens from auction to tokenMint module and then call burn function
 		err = k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, tokenminttypes.ModuleName, sdk.NewCoins(highestBidReceived))
 		if err != nil {
 			return err
@@ -306,7 +306,7 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appID, auctionMappingID,
 	if err != nil {
 		return err
 	}
-	biddingID, err := k.CreateNewSurplusBid(ctx, appID, auctionMappingID, auctionID, bidder, bid)
+	biddingID, err := k.CreateNewSurplusBid(ctx, appID, auctionMappingID, auctionID, bidder.String(), bid)
 	if err != nil {
 		return err
 	}
@@ -344,7 +344,7 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appID, auctionMappingID,
 	return nil
 }
 
-func (k Keeper) CreateNewSurplusBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder sdk.AccAddress, bid sdk.Coin) (biddingID uint64, err error) {
+func (k Keeper) CreateNewSurplusBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder string, bid sdk.Coin) (biddingID uint64, err error) {
 	auction, err := k.GetSurplusAuction(ctx, appID, auctionMappingID, auctionID)
 	if err != nil {
 		return biddingID, err
@@ -354,7 +354,7 @@ func (k Keeper) CreateNewSurplusBid(ctx sdk.Context, appID, auctionMappingID, au
 		AuctionId:           auctionID,
 		AuctionStatus:       auctiontypes.ActiveAuctionStatus,
 		AuctionedCollateral: auction.SellToken,
-		Bidder:              bidder.String(),
+		Bidder:              bidder,
 		Bid:                 bid,
 		BiddingTimestamp:    ctx.BlockTime(),
 		BiddingStatus:       auctiontypes.PlacedBiddingStatus,

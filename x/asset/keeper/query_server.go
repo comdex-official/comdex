@@ -20,7 +20,7 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -248,7 +248,7 @@ func (q *queryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *ty
 	}, nil
 }
 
-func (q *queryServer) QueryAllExtendedPairStableVaultsIdByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsIdByAppRequest) (*types.QueryAllExtendedPairStableVaultsIdByAppResponse, error) {
+func (q *queryServer) QueryAllExtendedPairStableVaultsIDByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsIDByAppRequest) (*types.QueryAllExtendedPairStableVaultsIDByAppResponse, error) {
 	var (
 		ctx               = sdk.UnwrapSDKContext(c)
 		pairVaults, found = q.GetPairsVaults(ctx)
@@ -263,7 +263,7 @@ func (q *queryServer) QueryAllExtendedPairStableVaultsIdByApp(c context.Context,
 		}
 	}
 
-	return &types.QueryAllExtendedPairStableVaultsIdByAppResponse{
+	return &types.QueryAllExtendedPairStableVaultsIDByAppResponse{
 		ExtendedPairsId: pairVault,
 	}, nil
 }

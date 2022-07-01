@@ -22,8 +22,8 @@ type ComdexMessages struct {
 }
 
 type MsgWhiteListAssetLocker struct {
-	AppID uint64 `json:"app_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type MsgWhitelistAppIDVaultInterest struct {
@@ -31,12 +31,12 @@ type MsgWhitelistAppIDVaultInterest struct {
 }
 
 type MsgWhitelistAppIDLockerRewards struct {
-	AppID uint64   `json:"app_id"`
-	AssetIDs     []uint64 `json:"asset_ids"`
+	AppID    uint64   `json:"app_id"`
+	AssetIDs []uint64 `json:"asset_ids"`
 }
 
 type MsgAddExtendedPairsVault struct {
-	AppID        uint64  `json:"app_id"`
+	AppID               uint64  `json:"app_id"`
 	PairID              uint64  `json:"pair_id"`
 	StabilityFee        sdk.Dec `json:"stability_fee"`
 	ClosingFee          sdk.Dec `json:"closing_fee"`
@@ -54,7 +54,7 @@ type MsgAddExtendedPairsVault struct {
 }
 
 type MsgSetCollectorLookupTable struct {
-	AppID     uint64  `json:"app_id"`
+	AppID            uint64  `json:"app_id"`
 	CollectorAssetID uint64  `json:"collector_asset_id"`
 	SecondaryAssetID uint64  `json:"secondary_asset_id"`
 	SurplusThreshold uint64  `json:"surplus_threshold"`
@@ -66,7 +66,7 @@ type MsgSetCollectorLookupTable struct {
 }
 
 type MsgSetAuctionMappingForApp struct {
-	AppID         uint64   `json:"app_id"`
+	AppID                uint64   `json:"app_id"`
 	AssetIDs             []uint64 `json:"asset_id"`
 	IsSurplusAuctions    []bool   `json:"is_surplus_auction"`
 	IsDebtAuctions       []bool   `json:"is_debt_auction"`
@@ -75,7 +75,7 @@ type MsgSetAuctionMappingForApp struct {
 }
 
 type MsgUpdatePairsVault struct {
-	AppID       uint64  `json:"app_id"`
+	AppID              uint64  `json:"app_id"`
 	ExtPairID          uint64  `json:"ext_pair_id"`
 	StabilityFee       sdk.Dec `json:"stability_fee"`
 	ClosingFee         sdk.Dec `json:"closing_fee"`
@@ -88,7 +88,7 @@ type MsgUpdatePairsVault struct {
 }
 
 type MsgUpdateCollectorLookupTable struct {
-	AppID     uint64  `json:"app_id"`
+	AppID            uint64  `json:"app_id"`
 	AssetID          uint64  `json:"asset_id"`
 	DebtThreshold    uint64  `json:"debt_threshold"`
 	SurplusThreshold uint64  `json:"surplus_threshold"`
@@ -99,8 +99,8 @@ type MsgUpdateCollectorLookupTable struct {
 }
 
 type MsgRemoveWhitelistAssetLocker struct {
-	AppID uint64 `json:"app_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type MsgRemoveWhitelistAppIDVaultInterest struct {
@@ -116,7 +116,7 @@ type MsgRemoveWhitelistAppIDLiquidation struct {
 }
 
 type MsgAddAuctionParams struct {
-	AppID           uint64  `json:"app_id"`
+	AppID                  uint64  `json:"app_id"`
 	AuctionDurationSeconds uint64  `json:"auction_duration_seconds"`
 	Buffer                 sdk.Dec `json:"buffer"`
 	Cusp                   sdk.Dec `json:"cusp"`
@@ -129,7 +129,7 @@ type MsgAddAuctionParams struct {
 }
 
 type MsgBurnGovTokensForApp struct {
-	AppID uint64         `json:"app_id"`
-	From         sdk.AccAddress `json:"from"`
-	Amount       sdk.Coin       `json:"amount"`
+	AppID  uint64         `json:"app_id"`
+	From   sdk.AccAddress `json:"from"`
+	Amount sdk.Coin       `json:"amount"`
 }

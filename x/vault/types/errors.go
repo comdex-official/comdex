@@ -5,12 +5,11 @@ import (
 )
 
 var (
-	ErrorInvalidAmount        = errors.Register(ModuleName, 101, "invalid amount")
-	ErrorInvalidAmountIn      = errors.Register(ModuleName, 102, "invalid amount_in")
-	ErrorInvalidAmountOut     = errors.Register(ModuleName, 103, "invalid amount_out")
-	ErrorInvalidFrom          = errors.Register(ModuleName, 104, "invalid from")
-	ErrorInvalidID            = errors.Register(ModuleName, 105, "invalid id")
-	ErrorAppIstoExtendedAppID = errors.Register(ModuleName, 106, "app id does not match with extended pair app id")
+	ErrorInvalidAmount    = errors.Register(ModuleName, 101, "invalid amount")
+	ErrorInvalidAmountIn  = errors.Register(ModuleName, 102, "invalid amount_in")
+	ErrorInvalidAmountOut = errors.Register(ModuleName, 103, "invalid amount_out")
+	ErrorInvalidFrom      = errors.Register(ModuleName, 104, "invalid from")
+	ErrorInvalidID        = errors.Register(ModuleName, 105, "invalid id")
 )
 
 var (
@@ -44,10 +43,4 @@ var (
 
 var (
 	ErrorCannotCreateStableMintVault = errors.Register(ModuleName, 401, "Cannot Create Stable Mint Vault, StableMint tx command")
-	ErrorAmtGreaterDebt              = errors.Register(ModuleName, 402, "amt should be > debt floor")
-	ErrorIdnotFound                  = errors.Register(ModuleName, 403, "not found")
-)
-
-var (
-	ErrorEmergencyShutdownIsActive = errors.Register(ModuleName, 501, "Error Emergency Shutdown Is Active for this App")
 )

@@ -15,7 +15,7 @@ var (
 	ErrorRequestedAmtExceedsCollectedFee = sdkerrors.Register(ModuleName, 407, "Requested Amt Exceeds CollectedFee")
 	ErrorAppDoesNotExist                 = sdkerrors.Register(ModuleName, 408, "app does not exist")
 	ErrorAssetNotAddedForGenesisMinting  = sdkerrors.Register(ModuleName, 409, "Asset Not Added For Genesis Minting")
-	ErrorAuctionParmsNotSet              = sdkerrors.Register(ModuleName, 410, "Auction Parms Not Set")
+	ErrorAuctionParamsNotSet             = sdkerrors.Register(ModuleName, 410, "Auction Params Not Set")
 	ErrorAmountCanNotBeNegative          = sdkerrors.Register(ModuleName, 411, "amount cannot be negative")
 	ErrorNetFeesCanNotBeNegative         = sdkerrors.Register(ModuleName, 412, "NetFees cannot be negative")
 )

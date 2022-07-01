@@ -97,11 +97,11 @@ func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, fou
 }
 
 func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, address string, amount sdk.Int) error {
-	return k.tokenmint.MintNewTokensForApp(ctx, appMappingID, assetID, address, amount)
+	return k.tokenMint.MintNewTokensForApp(ctx, appMappingID, assetID, address, amount)
 }
 
 func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error {
-	return k.tokenmint.BurnTokensForApp(ctx, appMappingID, assetID, amount)
+	return k.tokenMint.BurnTokensForApp(ctx, appMappingID, assetID, amount)
 }
 
 func (k *Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) (sdk.Int, error) {

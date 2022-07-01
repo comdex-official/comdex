@@ -173,7 +173,6 @@ func (k *Keeper) UpdateBorrowIDByOwnerAndPoolMapping(
 	poolID uint64,
 	isInsert bool,
 ) error {
-
 	userLends, found := k.GetBorrowIDByOwnerAndPool(ctx, borrowOwner, poolID)
 
 	if !found && isInsert {
@@ -216,8 +215,8 @@ func (k *Keeper) GetBorrowIDByOwnerAndPool(ctx sdk.Context, address string, pool
 }
 
 func (k *Keeper) BorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userBorrows []types.BorrowAsset, found bool) {
-	userLendId, _ := k.GetBorrowIDByOwnerAndPool(ctx, address, poolID)
-	for _, v := range userLendId.BorrowIds {
+	userLendID, _ := k.GetBorrowIDByOwnerAndPool(ctx, address, poolID)
+	for _, v := range userLendID.BorrowIds {
 		userBorrow, _ := k.GetBorrow(ctx, v)
 		userBorrows = append(userBorrows, userBorrow)
 	}
@@ -238,7 +237,6 @@ func (k *Keeper) UpdateBorrowIdsMapping(
 	borrowID uint64,
 	isInsert bool,
 ) error {
-
 	userVaults, found := k.GetBorrows(ctx)
 
 	if !found && isInsert {
@@ -292,7 +290,6 @@ func (k *Keeper) UpdateStableBorrowIdsMapping(
 	borrowID uint64,
 	isInsert bool,
 ) error {
-
 	userVaults, found := k.GetStableBorrows(ctx)
 
 	if !found && isInsert {
