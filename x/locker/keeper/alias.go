@@ -54,11 +54,11 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	return k.oracle.GetPriceForAsset(ctx, id)
 }
 
-func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppMapping, bool) {
+func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool) {
 	return k.asset.GetApp(ctx, id)
 }
 
-func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool) {
+func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool) {
 	return k.asset.GetApps(ctx)
 }
 

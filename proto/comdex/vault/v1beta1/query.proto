@@ -212,14 +212,14 @@ message QueryVaultCountByAppAndExtendedPairResponse {
   (gogoproto.moretags) = "yaml:\"vault_count\""];
 }
 
-message QueryTotalValueLockedByAppExtendedPairRequest {
+message QueryTotalValueLockedByAppAndExtendedPairRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
   uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
   cosmos.base.query.v1beta1.PageRequest pagination = 3
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryTotalValueLockedByAppExtendedPairResponse {
+message QueryTotalValueLockedByAppAndExtendedPairResponse {
   string value_locked = 1 [ 
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int" ];
 }
@@ -251,21 +251,21 @@ message QueryStableVaultByAppResponse {
     (gogoproto.nullable)   = false ];
 }
 
-message QueryStableVaultByAppExtendedPairRequest {
+message QueryStableVaultByAppAndExtendedPairRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
   uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
 }
 
-message QueryStableVaultByAppExtendedPairResponse {
+message QueryStableVaultByAppAndExtendedPairResponse {
   StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
 }
 
-message QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest {
+message QueryExtendedPairVaultMappingByAppAndExtendedPairRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
   uint64 extended_pair_id = 2 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
 }
 
-message QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse {
+message QueryExtendedPairVaultMappingByAppAndExtendedPairResponse {
  ExtendedPairVaultMapping extendedPairVaultMapping = 1 [ (gogoproto.moretags) = "yaml:\"extendedPairVaultMapping\"" ];
 }
 
@@ -277,22 +277,22 @@ message QueryExtendedPairVaultMappingByAppResponse {
  repeated ExtendedPairVaultMapping extendedPairVaultMapping = 1 [ (gogoproto.moretags) = "yaml:\"extendedPairVaultMapping\"" ];
 }
 
-message QueryTVLLockedByAppOfAllExtendedPairsRequest {
+message QueryTVLByAppOfAllExtendedPairsRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
 
 }
 
-message QueryTVLLockedByAppOfAllExtendedPairsResponse {
+message QueryTVLByAppOfAllExtendedPairsResponse {
 repeated TvlLockedDataMap tvldata = 1 [ (gogoproto.moretags) = "yaml:\"tvldata\"",
 (gogoproto.nullable)   = false ];
 }
 
-message QueryTotalTVLByAppRequest {
+message QueryTVLByAppRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
 
 }
 
-message QueryTotalTVLByAppResponse {
+message QueryTVLByAppResponse {
   string collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false];
@@ -331,6 +331,14 @@ message QueryUserExtendedPairTotalDataResponse {
 UserVaultAssetMapping userTotalData = 1 [ (gogoproto.moretags) = "yaml:\"user_total_data\"" ];
 }
 
+message QueryPairsLockedAndMintedStatisticByAppRequest {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+}
+
+message QueryPairsLockedAndMintedStatisticByAppResponse {
+ repeated PairStatisticData pairStatisticData = 1 [ (gogoproto.moretags) = "yaml:\"pairStatisticData\"" ,
+  (gogoproto.nullable)   = false ];
+}
 
 service Query {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
@@ -368,7 +376,7 @@ service Query {
   };
 
   rpc QueryAllVaultIdsByAnOwner(QueryAllVaultIdsByAnOwnerRequest) returns (QueryAllVaultIdsByAnOwnerResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vaults-ids-by-an-owner/{owner}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/vault-ids-by-an-owner/{owner}";
   };
 
   rpc QueryTokenMintedByAppAndExtendedPair(QueryTokenMintedByAppAndExtendedPairRequest) returns (QueryTokenMintedByAppAndExtendedPairResponse) {
@@ -387,8 +395,8 @@ service Query {
     option (google.api.http).get = "/comdex/vault/v1beta1/vault-count-by-an-App-and-extended-pair/{app_id}/{extended_pair_id}";
   };
 
-  rpc QueryTotalValueLockedByAppExtendedPair(QueryTotalValueLockedByAppExtendedPairRequest) returns (QueryTotalValueLockedByAppExtendedPairResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/value-locked-by-App-pair/{app_id}/{extended_pair_id}";
+  rpc QueryTotalValueLockedByAppAndExtendedPair(QueryTotalValueLockedByAppAndExtendedPairRequest) returns (QueryTotalValueLockedByAppAndExtendedPairResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/value-locked-by-App-and-extended-pair/{app_id}/{extended_pair_id}";
   };
 
   rpc QueryExtendedPairIDsByApp(QueryExtendedPairIDsByAppRequest) returns (QueryExtendedPairIDsByAppResponse) {
@@ -403,27 +411,31 @@ service Query {
     option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-App/{app_id}";
   };
 
-  rpc QueryStableVaultByAppExtendedPair(QueryStableVaultByAppExtendedPairRequest) returns (QueryStableVaultByAppExtendedPairResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-App-extendedPair/{app_id}/{extended_pair_id}";
+  rpc QueryStableVaultByAppAndExtendedPair(QueryStableVaultByAppAndExtendedPairRequest) returns (QueryStableVaultByAppAndExtendedPairResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-App-and-extendedPair/{app_id}/{extended_pair_id}";
   };
   
-  rpc QueryExtendedPairVaultMappingByAppAndExtendedPairId(QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest) returns (QueryExtendedPairVaultMappingByAppAndExtendedPairIdResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairVault-mapping-by-App-and-ExtendedPairId/{app_id}/{extended_pair_id}";
+  rpc QueryExtendedPairVaultMappingByAppAndExtendedPair(QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) returns (QueryExtendedPairVaultMappingByAppAndExtendedPairResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairVault-mapping-by-App-and-ExtendedPair/{app_id}/{extended_pair_id}";
   };
 
   rpc QueryExtendedPairVaultMappingByApp(QueryExtendedPairVaultMappingByAppRequest) returns (QueryExtendedPairVaultMappingByAppResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/extendedPairVault-mapping-by-App/{app_id}";
   };
 
-  rpc QueryTVLLockedByAppOfAllExtendedPairs(QueryTVLLockedByAppOfAllExtendedPairsRequest) returns (QueryTVLLockedByAppOfAllExtendedPairsResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/tvl-locked-by-app-all-extended-pairs/{app_id}";
+  rpc QueryTVLByAppOfAllExtendedPairs(QueryTVLByAppOfAllExtendedPairsRequest) returns (QueryTVLByAppOfAllExtendedPairsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/tvl-by-app-all-extended-pairs/{app_id}";
   };
 
-  rpc QueryTotalTVLByApp(QueryTotalTVLByAppRequest) returns (QueryTotalTVLByAppResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/tvl-locked-by-app/{app_id}";
+  rpc QueryTVLByApp(QueryTVLByAppRequest) returns (QueryTVLByAppResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/tvl-by-app/{app_id}";
   };
 
   rpc QueryUserMyPositionByApp(QueryUserMyPositionByAppRequest) returns (QueryUserMyPositionByAppResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/user-my-position-by-app/{app_id}/{owner}";
+  };
+
+  rpc QueryPairsLockedAndMintedStatisticByApp(QueryPairsLockedAndMintedStatisticByAppRequest) returns (QueryPairsLockedAndMintedStatisticByAppResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/pairs-locked-and-minted-statistic-by-app/{app_id}";
   };
 }

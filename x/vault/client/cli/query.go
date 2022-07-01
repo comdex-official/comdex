@@ -34,18 +34,19 @@ func GetQueryCmd() *cobra.Command {
 		QueryVaultCountByApp(),
 		QueryVaultCountByAppAndExtendedPair(),
 		QueryTokenMintedAssetWiseByApp(),
-		QueryTotalValueLockedByAppExtendedPair(),
+		QueryTotalValueLockedByAppAndExtendedPair(),
 		QueryExtendedPairIDsByApp(),
 		QueryStableVaultByVaultId(),
 		QueryStableVaultByApp(),
-		QueryStableVaultByAppExtendedPair(),
+		QueryStableVaultByAppAndExtendedPair(),
 		QueryExtendedPairVaultMappingByApp(),
-		QueryExtendedPairVaultMappingByAppAndExtendedPairID(),
+		QueryExtendedPairVaultMappingByAppAndExtendedPair(),
 		QueryVaultInfoOfOwnerByApp(),
-		QueryTVLLockedByAppOfAllExtendedPairs(),
-		QueryTotalTVLByApp(),
+		QueryTVLByAppOfAllExtendedPairs(),
+		QueryTVLByApp(),
 		QueryUserMyPositionByApp(),
 		QueryUserExtendedPairTotalData(),
+		QueryPairsLockedAndMintedStatisticByApp(),
 	)
 
 	return cmd
@@ -86,7 +87,7 @@ func QueryAllVaults() *cobra.Command {
 func QueryAllVaultsByApp() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vaults-by-app [appID]",
-		Short: "Query all vaults in by app id",
+		Short: "Query all vaults by app id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -335,8 +336,8 @@ func QueryVaultIdsByAppInAllExtendedPairs() *cobra.Command {
 
 func QueryAllVaultIdsByAnOwner() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vaults-ids-by-an-owner [owner]",
-		Short: "Query all vaults ids by an owner",
+		Use:   "vault-ids-by-an-owner [owner]",
+		Short: "Query all vault ids by an owner",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pagination, err := client.ReadPageRequest(cmd.Flags())
@@ -529,9 +530,9 @@ func QueryVaultCountByAppAndExtendedPair() *cobra.Command {
 	return cmd
 }
 
-func QueryTotalValueLockedByAppExtendedPair() *cobra.Command {
+func QueryTotalValueLockedByAppAndExtendedPair() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "value-locked-by-App-extended-pair [app_id] [extendedPairID]",
+		Use:   "value-locked-by-App-and-extended-pair [app_id] [extendedPairID]",
 		Short: "Query value locked in an App and extended pair",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -555,7 +556,7 @@ func QueryTotalValueLockedByAppExtendedPair() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryTotalValueLockedByAppExtendedPair(cmd.Context(), &types.QueryTotalValueLockedByAppExtendedPairRequest{
+			res, err := queryClient.QueryTotalValueLockedByAppAndExtendedPair(cmd.Context(), &types.QueryTotalValueLockedByAppAndExtendedPairRequest{
 				AppId:      appID,
 				ExtendedPairId: extendedPairID,
 				Pagination:     pagination,
@@ -670,9 +671,9 @@ func QueryStableVaultByApp() *cobra.Command {
 	return cmd
 }
 
-func QueryStableVaultByAppExtendedPair() *cobra.Command {
+func QueryStableVaultByAppAndExtendedPair() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "stable-vault-by-App-extendedPair [appID] [extendedPairID]",
+		Use:   "stable-vault-by-App-and-extendedPair [appID] [extendedPairID]",
 		Short: "Query stable vault by App and extended pair",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -691,7 +692,7 @@ func QueryStableVaultByAppExtendedPair() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryStableVaultByAppExtendedPair(cmd.Context(), &types.QueryStableVaultByAppExtendedPairRequest{
+			res, err := queryClient.QueryStableVaultByAppAndExtendedPair(cmd.Context(), &types.QueryStableVaultByAppAndExtendedPairRequest{
 				AppId:          appID,
 				ExtendedPairId: extendedPairID,
 			})
@@ -739,10 +740,10 @@ func QueryExtendedPairVaultMappingByApp() *cobra.Command {
 	return cmd
 }
 
-func QueryExtendedPairVaultMappingByAppAndExtendedPairID() *cobra.Command {
+func QueryExtendedPairVaultMappingByAppAndExtendedPair() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "extendedPairVault-mapping-by-App-and-ExtendedPairId [appID] [extendedPairID]",
-		Short: "Query ExtendedPair Vault Mapping By App And ExtendedPairId",
+		Use:   "extendedPairVault-mapping-by-App-and-ExtendedPair [appID] [extendedPairID]",
+		Short: "Query ExtendedPair Vault Mapping By App And ExtendedPair",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -760,7 +761,7 @@ func QueryExtendedPairVaultMappingByAppAndExtendedPairID() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryExtendedPairVaultMappingByAppAndExtendedPairId(cmd.Context(), &types.QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest{
+			res, err := queryClient.QueryExtendedPairVaultMappingByAppAndExtendedPair(cmd.Context(), &types.QueryExtendedPairVaultMappingByAppAndExtendedPairRequest{
 				AppId:          appID,
 				ExtendedPairId: extendedPairID,
 			})
@@ -777,10 +778,10 @@ func QueryExtendedPairVaultMappingByAppAndExtendedPairID() *cobra.Command {
 }
 
 
-func QueryTVLLockedByAppOfAllExtendedPairs() *cobra.Command {
+func QueryTVLByAppOfAllExtendedPairs() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "tvl-locked-by-app-all-extended-pairs [appID]",
-		Short: "Query tvl locked By App of all extended pairs",
+		Use:   "tvl-by-app-all-extended-pairs [appID]",
+		Short: "Query tvl By App of all extended pairs",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -794,7 +795,7 @@ func QueryTVLLockedByAppOfAllExtendedPairs() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryTVLLockedByAppOfAllExtendedPairs(cmd.Context(), &types.QueryTVLLockedByAppOfAllExtendedPairsRequest{
+			res, err := queryClient.QueryTVLByAppOfAllExtendedPairs(cmd.Context(), &types.QueryTVLByAppOfAllExtendedPairsRequest{
 				AppId: appID,
 			})
 
@@ -809,10 +810,10 @@ func QueryTVLLockedByAppOfAllExtendedPairs() *cobra.Command {
 	return cmd
 }
 
-func QueryTotalTVLByApp() *cobra.Command {
+func QueryTVLByApp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "tvl-locked-by-app [appID]",
-		Short: "Query total tvl locked by an App",
+		Use:   "tvl-by-app [appID]",
+		Short: "Query total tvl by an App",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -826,7 +827,7 @@ func QueryTotalTVLByApp() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryTotalTVLByApp(cmd.Context(), &types.QueryTotalTVLByAppRequest{
+			res, err := queryClient.QueryTVLByApp(cmd.Context(), &types.QueryTVLByAppRequest{
 				AppId: appID,
 			})
 
@@ -889,6 +890,39 @@ func QueryUserExtendedPairTotalData() *cobra.Command {
 
 			res, err := queryClient.QueryUserExtendedPairTotalData(cmd.Context(), &types.QueryUserExtendedPairTotalDataRequest{
 				Owner: args[0],
+			})
+
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryPairsLockedAndMintedStatisticByApp() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "pairs-locked-and-minted-statistic-by-app [appID]",
+		Short: "Query pairs locked and minted statistic by app",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryPairsLockedAndMintedStatisticByApp(cmd.Context(), &types.QueryPairsLockedAndMintedStatisticByAppRequest{
+				AppId: appID,
 			})
 
 			if err != nil {

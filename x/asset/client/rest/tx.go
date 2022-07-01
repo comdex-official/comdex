@@ -39,10 +39,10 @@ func UpdateNewAssetProposalRESTHandler(clientCtx client.Context) govrest.Proposa
 	}
 }
 
-func UpdateNewGovTimeInAppMappingProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+func UpdateNewGovTimeInAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "update-gov-time-app-mapping",
-		Handler:  UpdateGovTimeInAppMappingRESTHandler(clientCtx),
+		SubRoute: "update-gov-time-app",
+		Handler:  UpdateGovTimeInAppRESTHandler(clientCtx),
 	}
 }
 
@@ -97,7 +97,7 @@ func UpdateNewAssetRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	}
 }
 
-func UpdateGovTimeInAppMappingRESTHandler(clientCtx client.Context) http.HandlerFunc {
+func UpdateGovTimeInAppRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UpdateNewAssetRequest
 
@@ -127,15 +127,15 @@ func UpdateNewPairsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	}
 }
 
-func AddNewAppMappingProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+func AddNewAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "add-new-app-mapping",
+		SubRoute: "add-new-app",
 		Handler:  AddNewAssetsRESTHandler(clientCtx),
 	}
 }
-func AddNewAssetMappingProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+func AddNewAssetInAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "add-update-new-asset-mapping",
+		SubRoute: "add-update-new-asset-in-app",
 		Handler:  AddNewAssetsRESTHandler(clientCtx),
 	}
 }

@@ -29,7 +29,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -55,7 +55,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 		//Create a new instance of locker
 
 		//call Lookup table to get relevant data
-		lookupTableData, exists := k.GetLockerLookupTable(ctx, lockerProductAssetMapping.AppMappingId)
+		lookupTableData, exists := k.GetLockerLookupTable(ctx, lockerProductAssetMapping.AppId)
 		if !exists {
 			return nil, types.ErrorAppMappingDoesNotExist
 		}
@@ -77,7 +77,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 		userLocker.IsLocked = false
 		userLocker.NetBalance = msg.Amount
 		userLocker.ReturnsAccumulated = sdk.ZeroInt()
-		userLocker.AppMappingId = appMapping.Id
+		userLocker.AppId = appMapping.Id
 		k.SetLocker(ctx, userLocker)
 		//Checking if user data exits in mapping by user address
 		//if not - create a new set
@@ -98,7 +98,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 			userTxData.TxTime = time.Now()
 			userAssetData.UserData = append(userAssetData.UserData, &userTxData)
 
-			userAppData.AppMappingId = appMapping.Id
+			userAppData.AppId = appMapping.Id
 			userAppData.UserAssetLocker = append(userAppData.UserAssetLocker, &userAssetData)
 			userMappingData.Owner = msg.Depositor
 			userMappingData.LockerAppMapping = append(userMappingData.LockerAppMapping, &userAppData)
@@ -121,7 +121,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 				userAssetData.UserData = append(userAssetData.UserData, &userTxData)
 
 				for _, appData := range userLockerAssetMappingData.LockerAppMapping {
-					if appData.AppMappingId == appMapping.Id {
+					if appData.AppId == appMapping.Id {
 						appData.UserAssetLocker = append(appData.UserAssetLocker, &userAssetData)
 					}
 				}
@@ -134,7 +134,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 
 				userAssetData.AssetId = asset.Id
 				userAssetData.LockerId = userLocker.LockerId
-				userAppData.AppMappingId = appMapping.Id
+				userAppData.AppId = appMapping.Id
 				userTxData.TxType = "Create"
 				userTxData.Amount = msg.Amount
 				userTxData.Balance = msg.Amount
@@ -161,7 +161,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -177,7 +177,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	if msg.Depositor != lockerData.Depositor {
 		return nil, types.ErrorUnauthorized
 	}
-	if appMapping.Id != lockerData.AppMappingId {
+	if appMapping.Id != lockerData.AppId {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
@@ -210,7 +210,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	userHisData.Balance = lockerData.NetBalance
 	userHisData.TxTime = time.Now()
 	for _, userLockerAppData := range userLockerAssetMappingData.LockerAppMapping {
-		if userLockerAppData.AppMappingId == msg.AppMappingId {
+		if userLockerAppData.AppId == msg.AppId {
 			for _, assetData := range userLockerAppData.UserAssetLocker {
 				if assetData.AssetId == msg.AssetId {
 					assetData.UserData = append(assetData.UserData, &userHisData)
@@ -231,7 +231,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -247,7 +247,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 	if msg.Depositor != lockerData.Depositor {
 		return nil, types.ErrorUnauthorized
 	}
-	if appMapping.Id != lockerData.AppMappingId {
+	if appMapping.Id != lockerData.AppId {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
@@ -282,7 +282,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 
 	var userTxData types.UserTxData
 	for _, userLockerAppData := range userLockerAssetMappingData.LockerAppMapping {
-		if userLockerAppData.AppMappingId == msg.AppMappingId {
+		if userLockerAppData.AppId == msg.AppId {
 			for _, assetData := range userLockerAppData.UserAssetLocker {
 				if assetData.AssetId == msg.AssetId {
 					userTxData.TxType = "Withdraw"
@@ -301,7 +301,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 
 func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	appMapping, found := k.GetApp(ctx, msg.AppMappingId)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -309,13 +309,13 @@ func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddW
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	lockerProductAssetMapping, found := k.GetLockerProductAssetMapping(ctx, msg.AppMappingId)
+	lockerProductAssetMapping, found := k.GetLockerProductAssetMapping(ctx, msg.AppId)
 
 	if !found {
 		//Set a new instance of Locker Product Asset  Mapping
 
 		var locker types.LockerProductAssetMapping
-		locker.AppMappingId = appMapping.Id
+		locker.AppId = appMapping.Id
 		locker.AssetIds = append(locker.AssetIds, asset.Id)
 		k.SetLockerProductAssetMapping(ctx, locker)
 
@@ -325,7 +325,7 @@ func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddW
 
 		lockerAssetData.AssetId = asset.Id
 		lockerLookupData.Counter = 0
-		lockerLookupData.AppMappingId = appMapping.Id
+		lockerLookupData.AppId = appMapping.Id
 		lockerLookupData.Lockers = append(lockerLookupData.Lockers, &lockerAssetData)
 		k.SetLockerLookupTable(ctx, lockerLookupData)
 		return &types.MsgAddWhiteListedAssetResponse{}, nil

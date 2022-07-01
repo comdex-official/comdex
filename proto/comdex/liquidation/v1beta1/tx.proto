@@ -13,8 +13,8 @@ service Msg {
 }
 
 message WhitelistAppId {
-  uint64 app_mapping_id   = 1 [
-    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
+  uint64 app_id   = 1 [
+    (gogoproto.moretags) = "yaml:\"app_id\""
   ];
 
   string from    = 2 [
@@ -23,8 +23,8 @@ message WhitelistAppId {
 }
 
 message RemoveWhitelistAppId {
-  uint64 app_mapping_id   = 1 [
-    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
+  uint64 app_id   = 1 [
+    (gogoproto.moretags) = "yaml:\"app_id\""
   ];
 
   string from    = 2 [

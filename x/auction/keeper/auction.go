@@ -59,7 +59,7 @@ func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultID uint
 func (k Keeper) AddAuctionParams(ctx sdk.Context, auctionParamsBinding *bindings.MsgAddAuctionParams) error {
 	newStep := sdk.NewIntFromUint64(auctionParamsBinding.Step)
 	auctionParams := auctiontypes.AuctionParams{
-		AppId:                  auctionParamsBinding.AppMappingID,
+		AppId:                  auctionParamsBinding.AppID,
 		AuctionDurationSeconds: auctionParamsBinding.AuctionDurationSeconds,
 		Buffer:                 auctionParamsBinding.Buffer,
 		Cusp:                   auctionParamsBinding.Cusp,

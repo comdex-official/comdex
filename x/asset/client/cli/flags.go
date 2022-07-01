@@ -80,7 +80,7 @@ func FlagSetCreateAssetMapping() *flag.FlagSet {
 
 
 type createExtPairVaultInputs struct {
-	AppMappingID        string `json:"app_mapping_id"`
+	AppID               string `json:"app_id"`
 	PairID              string `json:"pair_id"`
 	StabilityFee        string `json:"stability_fee"`
 	ClosingFee          string `json:"closing_fee"`

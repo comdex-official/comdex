@@ -11,9 +11,8 @@ var (
 		govclient.NewProposalHandler(cli.NewCmdSubmitAddAssetsProposal, rest.AddNewAssetsProposalRESTHandler),
 		govclient.NewProposalHandler(cli.NewCmdSubmitUpdateAssetProposal, rest.UpdateNewAssetProposalRESTHandler),
 		govclient.NewProposalHandler(cli.NewCmdSubmitAddPairsProposal, rest.AddNewPairsProposalRESTHandler),
-		govclient.NewProposalHandler(cli.NewCmdSubmitAddAppMappingProposal, rest.AddNewAppMappingProposalRESTHandler),
-		govclient.NewProposalHandler(cli.NewCmdSubmitAddExtendedPairsVaultProposal, rest.AddExtendedPairsVaultProposalRESTHandler),
-		govclient.NewProposalHandler(cli.NewCmdSubmitAddAssetMappingProposal, rest.AddNewAssetMappingProposalRESTHandler),
-		govclient.NewProposalHandler(cli.NewCmdSubmitUpdateGovTimeInAppMappingProposal, rest.UpdateNewGovTimeInAppMappingProposalRESTHandler),
+		govclient.NewProposalHandler(cli.NewCmdSubmitAddAppProposal, rest.AddNewAppProposalRESTHandler),
+		govclient.NewProposalHandler(cli.NewCmdSubmitAddAssetInAppProposal, rest.AddNewAssetInAppProposalRESTHandler),
+		govclient.NewProposalHandler(cli.NewCmdSubmitUpdateGovTimeInAppProposal, rest.UpdateNewGovTimeInAppProposalRESTHandler),
 	}
 )

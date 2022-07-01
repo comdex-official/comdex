@@ -22,7 +22,7 @@ type BankKeeper interface {
 type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
-	GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool)
+	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
 	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
 }
 
@@ -37,7 +37,6 @@ type VaultKeeper interface {
 	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64)
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID string, appMappingID uint64)
 	SetVault(ctx sdk.Context, vault types.Vault)
-	CreteNewVault(ctx sdk.Context, From string, appMappingID uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) error
 }
 
 type MarketKeeper interface {

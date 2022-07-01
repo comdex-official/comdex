@@ -41,8 +41,8 @@ type LiquidationKeeper interface {
 type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
-	GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool)
-	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppMapping, found bool)
+	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
+	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool)
 	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
 }
 

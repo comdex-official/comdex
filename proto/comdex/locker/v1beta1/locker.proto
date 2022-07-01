@@ -43,8 +43,8 @@ message Locker {
   bool is_locked = 7 [
     (gogoproto.moretags)   = "yaml:\"is_locked\""
   ]; 
-  uint64 app_mapping_id =8[
-    (gogoproto.moretags)   = "yaml:\"app_mapping_id\""
+  uint64 app_id =8[
+    (gogoproto.moretags)   = "yaml:\"app_id\""
 ];
 }
 
@@ -59,7 +59,7 @@ message UserLockerAssetMapping {
 
 //This is used inside the UserLockerAssetMapping
 message LockerToAppMapping {
- uint64 app_mapping_id = 1;
+ uint64 app_id = 1;
 
  repeated AssetToLockerMapping user_asset_locker= 2[
   (gogoproto.moretags) = "yaml:\"user_asset_locker\""];
@@ -96,7 +96,7 @@ message UserTxData{
 
 //Key is app_mapping_id
 message LockerLookupTable {
-  uint64 app_mapping_id = 1[    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
+  uint64 app_id = 1[    (gogoproto.moretags) = "yaml:\"app_id\""
   ];
   repeated TokenToLockerMapping lockers = 2 [
       (gogoproto.moretags) = "yaml:\"lockers\""
@@ -118,8 +118,8 @@ message TokenToLockerMapping {
 
 //Key is app_mapping_id
 message LockerProductAssetMapping {
-  uint64 app_mapping_id = 1 [
-      (gogoproto.moretags) = "yaml:\"app_mapping_id\""
+  uint64 app_id = 1 [
+      (gogoproto.moretags) = "yaml:\"app_id\""
   ];
   
   repeated uint64 asset_ids  = 2 [
