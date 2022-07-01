@@ -1459,3 +1459,258 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		})
 	}
 }
+
+func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+	addr3 := s.addr(3)
+	addr4 := s.addr(4)
+
+	appID1 := s.CreateNewApp("appOne")
+	appID2 := s.CreateNewApp("appTwo")
+	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, false)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX A", appID1, pairID, false, true)
+	extendedVaultPairID3 := s.CreateNewExtendedVaultPair("CMDX B", appID1, pairID, true, true)
+	extendedVaultPairID4 := s.CreateNewExtendedVaultPair("CMDX D", appID2, pairID, true, true)
+
+	s.fundAddr(addr1, sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
+	_, err := s.msgServer.MsgCreateStableMint(sdk.WrapSDKContext(s.ctx), types.NewMsgCreateStableMintRequest(
+		addr1, appID1, extendedVaultPairID3, newInt(1000000000),
+	))
+	s.Require().NoError(err)
+
+	s.fundAddr(addr1, sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
+	_, err = s.msgServer.MsgCreateStableMint(sdk.WrapSDKContext(s.ctx), types.NewMsgCreateStableMintRequest(
+		addr1, appID2, extendedVaultPairID4, newInt(1000000000),
+	))
+	s.Require().NoError(err)
+
+	s.fundAddr(addr3, sdk.NewCoins(sdk.NewCoin("uasset2", newInt(5000000))))
+	s.fundAddr(addr4, sdk.NewCoins(sdk.NewCoin("uasset2", newInt(5050000))))
+
+	testCases := []struct {
+		Name             string
+		Msg              types.MsgWithdrawStableMintRequest
+		ExpErr           error
+		ExpResp          *types.MsgWithdrawStableMintResponse
+		QueryRespIndex   uint64
+		QueryResponse    *types.StableMintVault
+		AvailableBalance sdk.Coins
+	}{
+		{
+			Name: "error invalid from address",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				[]byte(""), appID1, extendedVaultPairID1, newInt(10000), "appOne1",
+			),
+			ExpErr:           fmt.Errorf("empty address string is not allowed"),
+			ExpResp:          nil,
+			QueryRespIndex:   0,
+			QueryResponse:    nil,
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "error extended vault pair does not exists",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr1, appID1, 123, newInt(10000), "appOne1",
+			),
+			ExpErr:           types.ErrorExtendedPairVaultDoesNotExists,
+			ExpResp:          nil,
+			QueryRespIndex:   0,
+			QueryResponse:    nil,
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "error invalid appID",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr1, 69, extendedVaultPairID1, newInt(10000), "appOne1",
+			),
+			ExpErr:           types.ErrorAppMappingDoesNotExist,
+			ExpResp:          nil,
+			QueryRespIndex:   0,
+			QueryResponse:    nil,
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "error vault creation inactive",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr1, appID1, extendedVaultPairID1, newInt(10000), "appOne1",
+			),
+			ExpErr:           types.ErrorVaultInactive,
+			ExpResp:          nil,
+			QueryRespIndex:   0,
+			QueryResponse:    nil,
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "error non stable mint vault cannot create stable mint vault",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr1, appID1, extendedVaultPairID2, newInt(10000), "appOne1",
+			),
+			ExpErr:           types.ErrorCannotCreateStableMintVault,
+			ExpResp:          nil,
+			QueryRespIndex:   0,
+			QueryResponse:    nil,
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "error appID mismatch",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr1, appID2, extendedVaultPairID3, newInt(10000), "appOne1",
+			),
+			ExpErr:           types.ErrorAppMappingIDMismatch,
+			ExpResp:          nil,
+			QueryRespIndex:   0,
+			QueryResponse:    nil,
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "error invalid stable mint id",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr1, appID1, extendedVaultPairID3, newInt(10000), "appOne2",
+			),
+			ExpErr:           types.ErrorVaultDoesNotExist,
+			ExpResp:          nil,
+			QueryRespIndex:   0,
+			QueryResponse:    nil,
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "error insufficient funds",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr2, appID1, extendedVaultPairID3, newInt(10000), "appOne1",
+			),
+			ExpErr:           fmt.Errorf(fmt.Sprintf("0uasset2 is smaller than %duasset2: insufficient funds", 10000)),
+			ExpResp:          nil,
+			QueryRespIndex:   0,
+			QueryResponse:    nil,
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "error invalid withdraw amount",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr1, appID1, extendedVaultPairID3, newInt(9000000000), "appOne1",
+			),
+			ExpErr:           types.ErrorInvalidAmount,
+			ExpResp:          nil,
+			QueryRespIndex:   0,
+			QueryResponse:    nil,
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "success valid case 1 app1 user1",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr1, appID1, extendedVaultPairID3, newInt(500000000), "appOne1",
+			),
+			ExpErr:         nil,
+			ExpResp:        &types.MsgWithdrawStableMintResponse{},
+			QueryRespIndex: 0,
+			QueryResponse: &types.StableMintVault{
+				Id:                  "appOne1",
+				AmountIn:            newInt(505000000),
+				AmountOut:           newInt(505000000),
+				AppMappingId:        1,
+				ExtendedPairVaultID: 3,
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(495000000)), sdk.NewCoin("uasset2", newInt((990000000*2)-500000000))),
+		},
+		{
+			Name: "success valid case 2 case app1 user1",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr1, appID1, extendedVaultPairID3, newInt(200000000), "appOne1",
+			),
+			ExpErr:         nil,
+			ExpResp:        &types.MsgWithdrawStableMintResponse{},
+			QueryRespIndex: 0,
+			QueryResponse: &types.StableMintVault{
+				Id:                  "appOne1",
+				AmountIn:            newInt(307000000),
+				AmountOut:           newInt(307000000),
+				AppMappingId:        1,
+				ExtendedPairVaultID: 3,
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(693000000)), sdk.NewCoin("uasset2", newInt((990000000*2)-500000000-200000000))),
+		},
+		{
+			Name: "success valid case 3 case app2 user1",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr1, appID2, extendedVaultPairID4, newInt(1000000000), "appTwo1",
+			),
+			ExpErr:         nil,
+			ExpResp:        &types.MsgWithdrawStableMintResponse{},
+			QueryRespIndex: 1,
+			QueryResponse: &types.StableMintVault{
+				Id:                  "appTwo1",
+				AmountIn:            newInt(10000000),
+				AmountOut:           newInt(10000000),
+				AppMappingId:        2,
+				ExtendedPairVaultID: 4,
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(693000000+990000000)), sdk.NewCoin("uasset2", newInt((990000000*2)-500000000-200000000-1000000000))),
+		},
+		{
+			Name: "success valid case 4 case app2 user3",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr3, appID2, extendedVaultPairID4, newInt(5000000), "appTwo1",
+			),
+			ExpErr:         nil,
+			ExpResp:        &types.MsgWithdrawStableMintResponse{},
+			QueryRespIndex: 1,
+			QueryResponse: &types.StableMintVault{
+				Id:                  "appTwo1",
+				AmountIn:            newInt(5050000),
+				AmountOut:           newInt(5050000),
+				AppMappingId:        2,
+				ExtendedPairVaultID: 4,
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(4950000))),
+		},
+		{
+			Name: "success valid case 5 case app2 user4",
+			Msg: *types.NewMsgWithdrawStableMintRequest(
+				addr4, appID2, extendedVaultPairID4, newInt(5050000), "appTwo1",
+			),
+			ExpErr:         nil,
+			ExpResp:        &types.MsgWithdrawStableMintResponse{},
+			QueryRespIndex: 1,
+			QueryResponse: &types.StableMintVault{
+				Id:                  "appTwo1",
+				AmountIn:            newInt(50500),
+				AmountOut:           newInt(50500),
+				AppMappingId:        2,
+				ExtendedPairVaultID: 4,
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(4999500))),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.Name, func() {
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.msgServer.MsgWithdrawStableMint(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
+				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+
+				stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
+				s.Require().Equal(tc.QueryResponse.Id, stableMintVaults[tc.QueryRespIndex].Id)
+				s.Require().Equal(tc.QueryResponse.AmountIn, stableMintVaults[tc.QueryRespIndex].AmountIn)
+				s.Require().Equal(tc.QueryResponse.AmountOut, stableMintVaults[tc.QueryRespIndex].AmountOut)
+				s.Require().Equal(tc.QueryResponse.AppMappingId, stableMintVaults[tc.QueryRespIndex].AppMappingId)
+				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, stableMintVaults[tc.QueryRespIndex].ExtendedPairVaultID)
+			}
+		})
+	}
+}
