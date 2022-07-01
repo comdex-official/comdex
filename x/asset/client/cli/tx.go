@@ -67,10 +67,10 @@ func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 				newIsOnChain := ParseBoolFromString(isOnChain[i])
 				newAssetOraclePrice := ParseBoolFromString(assetOraclePrice[i])
 				assets = append(assets, types.Asset{
-					Name:             names[i],
-					Denom:            denoms[i],
-					Decimals:         decimals[i],
-					IsOnChain:        newIsOnChain,
+					Name:                  names[i],
+					Denom:                 denoms[i],
+					Decimals:              decimals[i],
+					IsOnChain:             newIsOnChain,
 					IsOraclePriceRequired: newAssetOraclePrice,
 				})
 			}
@@ -267,7 +267,6 @@ func NewCmdSubmitAddPairsProposal() *cobra.Command {
 
 	return cmd
 }
-
 
 func NewCmdSubmitAddAppProposal() *cobra.Command {
 	cmd := &cobra.Command{
@@ -544,4 +543,3 @@ func NewCreateAssetInAppMsg(clientCtx client.Context, txf tx.Factory, fs *flag.F
 	}
 	return txf, msg, nil
 }
-

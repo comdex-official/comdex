@@ -1,5 +1,6 @@
 package cli
 
+//goland:noinspection GoLinter
 import (
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -27,7 +28,7 @@ func txWhitelistAppID() *cobra.Command {
 
 			msg := types.NewMsgWhitelistAppID(
 				appID,
-				ctx.GetFromAddress(),
+				ctx.GetFromAddress().String(),
 			)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
@@ -54,7 +55,7 @@ func txRemoveWhitelistAppID() *cobra.Command {
 
 			msg := types.NewMsgRemoveWhitelistAsset(
 				appID,
-				ctx.GetFromAddress(),
+				ctx.GetFromAddress().String(),
 			)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)

@@ -5,13 +5,12 @@ import (
 )
 
 const (
-	ModuleName            = "liquidation"
-	ParamsSubspace        = ModuleName
-	QuerierRoute          = ModuleName
-	RouterKey             = ModuleName
-	StoreKey              = ModuleName
-	MemStoreKey           = ModuleName
-	SafeLiquidationFactor = "0.15"
+	ModuleName     = "liquidation"
+	ParamsSubspace = ModuleName
+	QuerierRoute   = ModuleName
+	RouterKey      = ModuleName
+	StoreKey       = ModuleName
+	MemStoreKey    = ModuleName
 )
 
 var (
@@ -28,10 +27,6 @@ func LockedVaultKey(id uint64) []byte {
 }
 func LockedVaultHistoryKey(id uint64) []byte {
 	return append(LockedVaultKeyHistory, sdk.Uint64ToBigEndian(id)...)
-}
-
-func AppIdsKey(id uint64) []byte {
-	return append(AppIdsKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func AppLockedVaultMappingKey(appMappingID uint64) []byte {

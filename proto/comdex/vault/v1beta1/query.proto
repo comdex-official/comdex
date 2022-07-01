@@ -62,11 +62,11 @@ message QueryVaultResponse {
   ];
 }
 
-message QueryVaultInfoByVaultIdRequest {
+message QueryVaultInfoByVaultIDRequest {
   string id    = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
 }
 
-message QueryVaultInfoByVaultIdResponse {
+message QueryVaultInfoByVaultIDResponse {
   VaultInfo vaultsInfo = 1 [
     (gogoproto.customname) = "VaultsInfo",
     (gogoproto.moretags)   = "yaml:\"vaultsInfo\"",
@@ -132,7 +132,7 @@ message QueryAllVaultsByAppAndExtendedPairResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryVaultIdOfOwnerByExtendedPairAndAppRequest {
+message QueryVaultIDOfOwnerByExtendedPairAndAppRequest {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
   string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
   uint64 extended_pair_id = 3 [ (gogoproto.moretags) = "yaml:\"extended_pair_id\"" ];
@@ -140,7 +140,7 @@ message QueryVaultIdOfOwnerByExtendedPairAndAppRequest {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryVaultIdOfOwnerByExtendedPairAndAppResponse {
+message QueryVaultIDOfOwnerByExtendedPairAndAppResponse {
   string vault_Id = 1 [ (gogoproto.moretags) = "yaml:\"vault_Id\"" ];
 }
 
@@ -234,11 +234,11 @@ message QueryExtendedPairIDsByAppResponse {
   repeated uint64 extended_pair_ids = 1 [ (gogoproto.moretags) = "yaml:\"extended_pair_ids\"" ];
 }
 
-message QueryStableVaultByVaultIdRequest {
+message QueryStableVaultByVaultIDRequest {
   string stable_vault_id = 1 [ (gogoproto.moretags) = "yaml:\"stable_vault_id\"" ];
 }
 
-message QueryStableVaultByVaultIdResponse {
+message QueryStableVaultByVaultIDResponse {
   StableMintVault stable_mint_vault = 1 [ (gogoproto.moretags) = "yaml:\"stable_mint_vault\"" ];
 }
 
@@ -349,7 +349,7 @@ service Query {
     option (google.api.http).get = "/comdex/vault/v1beta1/user-extended-pair-total-data/{owner}";
   };
 
-  rpc QueryVaultInfoByVaultId(QueryVaultInfoByVaultIdRequest) returns (QueryVaultInfoByVaultIdResponse) {
+  rpc QueryVaultInfoByVaultID(QueryVaultInfoByVaultIDRequest) returns (QueryVaultInfoByVaultIDResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaultsInfo-by-vault-id/{id}";
   };
 
@@ -367,7 +367,7 @@ service Query {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults-by-app-and-extended-pair/{app_id}/{extended_pair_id}";
   };
 
-  rpc QueryVaultIdOfOwnerByExtendedPairAndApp(QueryVaultIdOfOwnerByExtendedPairAndAppRequest) returns (QueryVaultIdOfOwnerByExtendedPairAndAppResponse) {
+  rpc QueryVaultIDOfOwnerByExtendedPairAndApp(QueryVaultIDOfOwnerByExtendedPairAndAppRequest) returns (QueryVaultIDOfOwnerByExtendedPairAndAppResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vault-of-owner-by-extended-pair-and-app/{app_id}/{owner}/{extended_pair_id}";
   };
 
@@ -403,7 +403,7 @@ service Query {
     option (google.api.http).get = "/comdex/vault/v1beta1/external-pair-id-by-App/{app_id}";
   };
 
-  rpc QueryStableVaultByVaultId(QueryStableVaultByVaultIdRequest) returns (QueryStableVaultByVaultIdResponse) {
+  rpc QueryStableVaultByVaultID(QueryStableVaultByVaultIDRequest) returns (QueryStableVaultByVaultIDResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/stable-vault-by-id/{stable_vault_id}";
   };
 

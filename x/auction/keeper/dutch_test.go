@@ -87,8 +87,8 @@ func getPriceFromLinearDecreaseFunction(top sdk.Dec, tau, dur sdk.Int) sdk.Int {
 	return result3.TruncateInt()
 }
 func (s *KeeperTestSuite) TestLinearPriceFunction() {
-	top := sdk.MustNewDecFromStr("100").Mul(sdk.MustNewDecFromStr("1"))
-	tau := sdk.NewIntFromUint64(60)
+	_ = sdk.MustNewDecFromStr("100").Mul(sdk.MustNewDecFromStr("1"))
+	_ = sdk.NewIntFromUint64(60)
 	dur := sdk.NewInt(0)
 	for n := 0; n <= 60; n++ {
 		//fmt.Println("top tau dur seconds")
@@ -194,7 +194,10 @@ func (s *KeeperTestSuite) TestBidsDutchAuction() {
 	s.PrintDutchBid(bidding)
 	//close auction by advancing time
 	s.advanceseconds(advanceSeconds)
-	k.CloseDutchAuction(*ctx, auction)
+	err = k.CloseDutchAuction(*ctx, auction)
+	if err != nil {
+		return
+	}
 
 	fmt.Println(k.GetBalance(*ctx, bidder, "denom1"))
 	//check if user got collateral

@@ -26,7 +26,6 @@ const (
 	// MemStoreKey defines the in-memory store key.
 	MemStoreKey = "mem_lend"
 
-	CTokenPrefix   = "uc"
 	SecondsPerYear = 31557600
 )
 
@@ -90,8 +89,8 @@ func BorrowUserKey(id uint64) []byte {
 	return append(BorrowPairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func AssetToPairMappingKey(assetID, poolId uint64) []byte {
-	return append(append(AssetToPairMappingKeyPrefix, sdk.Uint64ToBigEndian(assetID)...), sdk.Uint64ToBigEndian(poolId)...)
+func AssetToPairMappingKey(assetID, poolID uint64) []byte {
+	return append(append(AssetToPairMappingKeyPrefix, sdk.Uint64ToBigEndian(assetID)...), sdk.Uint64ToBigEndian(poolID)...)
 }
 
 func LendForAddressByAsset(address sdk.AccAddress, assetID, poolID uint64) []byte {

@@ -82,8 +82,8 @@ func (k Keeper) UpdateLockedVaultsAppMapping(ctx sdk.Context, lockedVault types.
 	LockedVaultToApp.LockedVault = append(LockedVaultToApp.LockedVault, &lockedVault)
 
 	newLockedVaultToApp := types.LockedVaultToAppMapping{
-		AppId: lockedVault.AppId,
-		LockedVault:  LockedVaultToApp.LockedVault,
+		AppId:       lockedVault.AppId,
+		LockedVault: LockedVaultToApp.LockedVault,
 	}
 	k.SetLockedVaultByAppID(ctx, newLockedVaultToApp)
 }
@@ -155,7 +155,6 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 	}
 	return nil
 }
-
 
 func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom string) sdk.Int {
 	macc := k.GetModuleAccount(ctx, accountName)

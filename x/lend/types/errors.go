@@ -6,12 +6,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// x/lend module sentinel errors
 var (
 	ErrInvalidAsset                    = sdkerrors.Register(ModuleName, 1100, "invalid asset")
 	ErrLendingPoolInsufficient         = sdkerrors.Register(ModuleName, 1103, "lending pool insufficient")
 	ErrInvalidRepayment                = sdkerrors.Register(ModuleName, 1104, "invalid repayment")
-	ErrInvalidAddress                  = sdkerrors.Register(ModuleName, 1105, "invalid address")
 	ErrNegativeTimeElapsed             = sdkerrors.Register(ModuleName, 1111, "negative time elapsed since last interest time")
 	ErrorUnknownProposalType           = sdkerrors.Register(ModuleName, 1119, "unknown proposal type")
 	ErrorEmptyProposalAssets           = sdkerrors.Register(ModuleName, 1120, "empty assets in proposal")
@@ -37,7 +35,7 @@ var (
 	ErrAssetStatsNotFound              = sdkerrors.Register(ModuleName, 1142, "Asset Stats Not Found")
 	ErrorDuplicateAssetRatesStats      = sdkerrors.Register(ModuleName, 1143, "Duplicate Asset Rates Stats")
 	ErrorAssetStatsNotFound            = sdkerrors.Register(ModuleName, 1144, "Asset Stats Not Found")
-	ErrInvalidAssetIdForPool           = sdkerrors.Register(ModuleName, 1145, "Asset Id not defined in the pool")
+	ErrInvalidAssetIDForPool           = sdkerrors.Register(ModuleName, 1145, "Asset Id not defined in the pool")
 	ErrorAssetRatesStatsNotFound       = sdkerrors.Register(ModuleName, 1146, "Asset Rates Stats not found")
 	ErrPoolNotFound                    = sdkerrors.Register(ModuleName, 1147, "Pool Not Found")
 	ErrAvailableToBorrowInsufficient   = sdkerrors.Register(ModuleName, 1148, "Available To Borrow Insufficient")

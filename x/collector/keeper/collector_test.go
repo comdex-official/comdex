@@ -91,9 +91,9 @@ func (s *KeeperTestSuite) TestSetCollectorLookupTableAndAuctionControl() {
 
 	//Add whitelisted App Asset combinations
 	lookUpTable := collectorTypes.LookupTableParams{
-		"addAsset",
-		"addingAsset",
-		[]collectorTypes.CollectorLookupTable{
+		Title:       "addAsset",
+		Description: "addingAsset",
+		LookupTableData: []collectorTypes.CollectorLookupTable{
 			{AppId: 1,
 				CollectorAssetId: 2,
 				SecondaryAssetId: 3,
@@ -208,7 +208,7 @@ func (s *KeeperTestSuite) TestWasmUpdateCollectorLookupTable() {
 		{
 			"Wasm Update MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
 			bindings.MsgUpdateCollectorLookupTable{
-				AppID:     1,
+				AppID:            1,
 				AssetID:          2,
 				SurplusThreshold: 9999,
 				DebtThreshold:    99,
@@ -246,7 +246,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 	}{
 		{"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
 			bindings.MsgSetCollectorLookupTable{
-				AppID:     1,
+				AppID:            1,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
 				SurplusThreshold: 10000000,
@@ -259,7 +259,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 		},
 		{"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 3",
 			bindings.MsgSetCollectorLookupTable{
-				AppID:     1,
+				AppID:            1,
 				CollectorAssetID: 3,
 				SecondaryAssetID: 2,
 				SurplusThreshold: 10000000,
@@ -295,7 +295,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 		{
 			"Wasm Add Auction Control AppID 1 AssetID 2",
 			bindings.MsgSetAuctionMappingForApp{
-				AppID:         1,
+				AppID:                1,
 				AssetIDs:             []uint64{2},
 				IsSurplusAuctions:    []bool{true},
 				IsDebtAuctions:       []bool{true},
@@ -306,7 +306,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 		{
 			"Wasm Add Auction Control AppID 1 AssetID 3",
 			bindings.MsgSetAuctionMappingForApp{
-				AppID:         1,
+				AppID:                1,
 				AssetIDs:             []uint64{3},
 				IsSurplusAuctions:    []bool{true},
 				IsDebtAuctions:       []bool{false},

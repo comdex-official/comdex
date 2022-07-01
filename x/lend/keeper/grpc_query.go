@@ -84,7 +84,7 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var ( //nolint:prealloc
+	var (
 		ctx   = sdk.UnwrapSDKContext(c)
 		lends []types.LendAsset
 	)
@@ -109,7 +109,7 @@ func (q queryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.Qu
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var ( //nolint:prealloc
+	var (
 		ctx   = sdk.UnwrapSDKContext(c)
 		lends []types.LendAsset
 	)
@@ -134,7 +134,7 @@ func (q queryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var ( //nolint:prealloc
+	var (
 		ctx     = sdk.UnwrapSDKContext(c)
 		borrows []types.BorrowAsset
 	)
@@ -383,7 +383,7 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var ( //nolint:prealloc
+	var (
 		ctx     = sdk.UnwrapSDKContext(c)
 		borrows []types.BorrowAsset
 	)

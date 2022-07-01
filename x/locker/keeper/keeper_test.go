@@ -37,7 +37,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.lockerKeeper = s.app.LockerKeeper
 	s.assetKeeper = s.app.AssetKeeper
 	s.querier = lockerKeeper.QueryServer{Keeper: s.lockerKeeper}
-	s.msgServer = lockerKeeper.NewMsgServiceServer(s.lockerKeeper)
+	s.msgServer = lockerKeeper.NewMsgServer(s.lockerKeeper)
 }
 
 //

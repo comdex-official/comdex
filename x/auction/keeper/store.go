@@ -7,7 +7,7 @@ import (
 	protobuftypes "github.com/gogo/protobuf/types"
 )
 
-//Generic for all auctions
+//Generic for all auctions.
 
 func (k *Keeper) SetProtocolStatistics(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) {
 	var (

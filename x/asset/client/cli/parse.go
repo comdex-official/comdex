@@ -21,7 +21,6 @@ type XCreateAddAssetMappingInputsExceptions struct {
 	Other *string // Other won't raise an error
 }
 
-
 // UnmarshalJSON should error if there are fields unexpected.
 func (release *createExtPairVaultInputs) UnmarshalJSON(data []byte) error {
 	var createExtendedPairVaultE XCreateExtPairVaultInputsExceptions
@@ -47,28 +46,6 @@ func (release *createAddAssetMappingInputs) UnmarshalJSON(data []byte) error {
 
 	*release = createAddAssetMappingInputs(createAddAssetMappingInputsE.XCreateAddAssetMappingInputs)
 	return nil
-}
-
-func parseExtendPairVaultFlags(fs *pflag.FlagSet) (*createExtPairVaultInputs, error) {
-	extPairVault := &createExtPairVaultInputs{}
-	extPairVaultFile, _ := fs.GetString(FlagExtendedPairVaultFile)
-
-	if extPairVaultFile == "" {
-		return nil, fmt.Errorf("must pass in a Extended Pair Vault json using the --%s flag", FlagExtendedPairVaultFile)
-	}
-
-	contents, err := ioutil.ReadFile(extPairVaultFile)
-	if err != nil {
-		return nil, err
-	}
-
-	// make exception if unknown field exists
-	err = extPairVault.UnmarshalJSON(contents)
-	if err != nil {
-		return nil, err
-	}
-
-	return extPairVault, nil
 }
 
 func parseAssetMappingFlags(fs *pflag.FlagSet) (*createAddAssetMappingInputs, error) {

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/comdex-official/comdex/x/market/expected"
-	// this line is used by starport scaffolding # 1
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -42,7 +41,7 @@ type IBCModule struct {
 	keeper keeper.Keeper
 }
 
-// NewIBCModule creates a new IBCModule given the keeper
+// NewIBCModule creates a new IBCModule given the keeper.
 func NewIBCModule(k keeper.Keeper) porttypes.IBCModule {
 	return IBCModule{
 		keeper: k,
@@ -66,7 +65,7 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	types.RegisterCodec(cdc)
 }
 
-// RegisterInterfaces registers the module's interface types
+// RegisterInterfaces registers the module's interface types.
 func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 	types.RegisterInterfaces(reg)
 }

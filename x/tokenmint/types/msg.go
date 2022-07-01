@@ -9,11 +9,11 @@ var (
 	_ sdk.Msg = (*MsgMintNewTokensRequest)(nil)
 )
 
-func NewMsgMintNewTokensRequest(from sdk.AccAddress, appID uint64, assetID uint64) *MsgMintNewTokensRequest {
+func NewMsgMintNewTokensRequest(from string, appID uint64, assetID uint64) *MsgMintNewTokensRequest {
 	return &MsgMintNewTokensRequest{
-		From:         from.String(),
-		AppId:        appID,
-		AssetId:      assetID,
+		From:    from,
+		AppId:   appID,
+		AssetId: assetID,
 	}
 }
 

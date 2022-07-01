@@ -26,17 +26,15 @@ const (
 )
 
 var (
-	RewardsKeyPrefix                      = []byte{0x05}
-	KeyPrefixLastInterestTime             = []byte{0x06}
-	AppIdsVaultKeyPrefix                  = []byte{0x12}
-	ExternalRewardsLockerKeyPrefix        = []byte{0x13}
-	ExternalRewardsVaultKeyPrefix         = []byte{0x14}
-	ExtRewardsLockerIDKey                 = []byte{0x15}
-	ExtRewardsVaultIDKey                  = []byte{0x16}
-	EpochTimeIDKey                        = []byte{0x17}
-	ExternalRewardsLockerCounterKeyPrefix = []byte{0x18}
-	AssetForDenomKeyPrefix                = []byte{0x19}
-	EpochForLockerKeyPrefix               = []byte{0x20}
+	RewardsKeyPrefix               = []byte{0x05}
+	KeyPrefixLastInterestTime      = []byte{0x06}
+	AppIdsVaultKeyPrefix           = []byte{0x12}
+	ExternalRewardsLockerKeyPrefix = []byte{0x13}
+	ExternalRewardsVaultKeyPrefix  = []byte{0x14}
+	ExtRewardsLockerIDKey          = []byte{0x15}
+	ExtRewardsVaultIDKey           = []byte{0x16}
+	EpochTimeIDKey                 = []byte{0x17}
+	EpochForLockerKeyPrefix        = []byte{0x20}
 
 	// EpochInfoByDurationKeyPrefix defines the prefix to store EpochInfo by duration.
 	EpochInfoByDurationKeyPrefix = []byte{0x21}
@@ -70,10 +68,6 @@ func RewardsKey(id uint64) []byte {
 	return append(RewardsKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func KeyPrefix(p string) []byte {
-	return []byte(p)
-}
-
 func CreateLastInterestTimeKey() []byte {
 	var key []byte
 	key = append(key, KeyPrefixLastInterestTime...)
@@ -82,14 +76,6 @@ func CreateLastInterestTimeKey() []byte {
 
 func ExternalRewardsLockerMappingKey(appMappingID uint64) []byte {
 	return append(ExternalRewardsLockerKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
-}
-
-func ExternalRewardsLockersCounter(appMappingID uint64) []byte {
-	return append(ExternalRewardsLockerCounterKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
-}
-
-func AssetForDenomKey(denom uint64) []byte {
-	return append(AssetForDenomKeyPrefix, sdk.Uint64ToBigEndian(denom)...)
 }
 
 func EpochForLockerKey(denom uint64) []byte {

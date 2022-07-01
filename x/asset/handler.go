@@ -1,12 +1,12 @@
 package asset
 
+//goland:noinspection GoLinter
 import (
 	"fmt"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
@@ -15,7 +15,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 	// this line is used by starport scaffolding # handler/msgServer
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
-		ctx = ctx.WithEventManager(sdk.NewEventManager())
+		_ = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
 		// this line is used by starport scaffolding # 1
@@ -43,7 +43,7 @@ func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return handleAddAssetInAppProposal(ctx, k, c)
 
 		default:
-			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
+			return sdkerrors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}
 	}
 }
@@ -70,4 +70,3 @@ func handleAddAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAppPropo
 func handleAddAssetInAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetInAppProposal) error {
 	return k.HandleAddAssetInAppRecords(ctx, p)
 }
-

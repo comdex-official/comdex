@@ -118,11 +118,11 @@ message QueryAllExtendedPairVaultsByAppResponse {
   ];
 }
 
-message QueryAllExtendedPairStableVaultsIdByAppRequest {
+message QueryAllExtendedPairStableVaultsIDByAppRequest {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
 }
 
-message QueryAllExtendedPairStableVaultsIdByAppResponse {
+message QueryAllExtendedPairStableVaultsIDByAppResponse {
   repeated uint64 extended_pairs_id =1 [(gogoproto.moretags) = "yaml:\"extended_pairs_id\""];
 }
 
@@ -165,7 +165,7 @@ service Query {
   rpc QueryAllExtendedPairVaultsByApp(QueryAllExtendedPairVaultsByAppRequest) returns (QueryAllExtendedPairVaultsByAppResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/product_to_extended_pair/{app_id}";
   }
-  rpc QueryAllExtendedPairStableVaultsIdByApp(QueryAllExtendedPairStableVaultsIdByAppRequest) returns (QueryAllExtendedPairStableVaultsIdByAppResponse) {
+  rpc QueryAllExtendedPairStableVaultsIDByApp(QueryAllExtendedPairStableVaultsIDByAppRequest) returns (QueryAllExtendedPairStableVaultsIDByAppResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_stable_vault_wise/{app_id}";
   }
   rpc QueryGovTokenByApp(QueryGovTokenByAppRequest) returns (QueryGovTokenByAppResponse) {
