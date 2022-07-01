@@ -800,6 +800,7 @@ func (q *queryServer) QueryPairsLockedAndMintedStatisticByApp(c context.Context,
 		statistics.AssetOutDenom = outDenom.Denom
 		statistics.CollateralAmount = data.CollateralLockedAmount
 		statistics.MintedAmount = data.TokenMintedAmount
+		statistics.ExtendedPairVaultID = data.ExtendedPairId
 
 		pairStatistics = append(pairStatistics, statistics)
 	}
