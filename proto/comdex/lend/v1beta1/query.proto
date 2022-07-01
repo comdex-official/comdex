@@ -250,7 +250,7 @@ service Query {
   };
 
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/comdexofficial/comdex/lend/params";
+    option (google.api.http).get = "/comdex/lend/v1beta1/params";
   }
 
   rpc QueryPairs(QueryPairsRequest) returns (QueryPairsResponse) {
