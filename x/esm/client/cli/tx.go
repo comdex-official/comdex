@@ -178,21 +178,34 @@ func txExecuteESM() *cobra.Command {
 
 func KillSwitch() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "stop-all-actions [condition]",
-		Short: "Stop all actions",
-		Args:  cobra.ExactArgs(1),
+		Use:   "stop-all-actions [app_id] [breaker_enable] [protocol_control]",
+		Short: "Stop/Start all actions of an App",
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			condition, err := strconv.ParseBool(args[0])
+			app_id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgKillRequest(ctx.FromAddress, condition)
+			breaker_enable, err := strconv.ParseBool(args[1])
+			if err != nil {
+				return err
+			}
+			protocol_control, err := strconv.ParseBool(args[2])
+			if err != nil {
+				return err
+			}
+			var switchParams types.KillSwitchParams
+			switchParams.AppId = app_id
+			switchParams.BreakerEnable = breaker_enable
+			switchParams.ProtocolControl = protocol_control
+
+			msg := types.NewMsgKillRequest(ctx.FromAddress, switchParams)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

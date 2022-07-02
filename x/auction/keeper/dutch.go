@@ -556,10 +556,11 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 		//inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
 		// tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
 		tnume := dutchAuction.OutflowTokenInitialPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds)))
-		tdeno := dutchAuction.OutflowTokenInitialPrice.Sub(dutchAuction.OutflowTokenEndPrice)
-		tau := sdk.Int(tnume.Quo(tdeno))
-		dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
-		seconds := sdk.NewInt(int64(dur.Seconds()))
+  		tdeno := dutchAuction.OutflowTokenInitialPrice.Sub(dutchAuction.OutflowTokenEndPrice)
+  		ntau := tnume.Quo(tdeno)
+  		tau := sdk.NewInt(ntau.TruncateInt64())
+  		dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
+  		seconds := sdk.NewInt(int64(dur.Seconds()))
 		outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)
 
 		//check if auction need to be restarted

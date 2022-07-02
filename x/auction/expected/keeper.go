@@ -7,6 +7,7 @@ import (
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 type AccountKeeper interface {
@@ -70,4 +71,8 @@ type CollectorKeeper interface {
 type TokenMintKeeper interface {
 	MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, address string, amount sdk.Int) error
 	BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error
+}
+
+type EsmKeeper interface {
+	GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool)
 }

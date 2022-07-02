@@ -6,6 +6,7 @@ import (
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 type AccountKeeper interface {
@@ -45,4 +46,8 @@ type MarketKeeper interface {
 
 type AuctionKeeper interface {
 	GetParams(ctx sdk.Context) auctiontypes.Params
+}
+
+type EsmKeeper interface {
+	GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool)
 }

@@ -3,36 +3,44 @@ package keeper
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/esm/types"
 )
 
-func (k *Keeper) SetCondition(ctx sdk.Context, condition bool) {
+func (k *Keeper) SetKillSwitchData(ctx sdk.Context, switchParams types.KillSwitchParams) error {
 	var (
-		store = k.Store(ctx)
-		key   = types.Condition
-		value = k.cdc.MustMarshal(
-			&protobuftypes.BoolValue{
-				Value: condition,
-			},
-		)
+		store = ctx.KVStore(k.storeKey)
+		key   = types.KillSwitchData(switchParams.AppId)
+		value = k.cdc.MustMarshal(&switchParams)
 	)
+
+	_, found :=k.GetApp(ctx, switchParams.AppId)
+	if !found{
+		return types.ErrorAppDoesNotExists
+	}
+	// if switchParams.BreakerEnable && switchParams.ProtocolControl{
+	// 	return types.ErrBothCantbeOpen
+	// }
+
 	fmt.Println("condition setting")
 	fmt.Println(value)
 
 	store.Set(key, value)
+	return nil
 }
 
-func (k *Keeper) GetCondition(ctx sdk.Context) bool {
+func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (switchParams types.KillSwitchParams,found bool) {
 	var (
-		store = k.Store(ctx)
-		key   = types.Condition
+		store = ctx.KVStore(k.storeKey)
+		key   = types.KillSwitchData(app_id)
 		value = store.Get(key)
 	)
 
-	var id protobuftypes.BoolValue
-	k.cdc.MustUnmarshal(value, &id)
+	if value == nil {
+		return switchParams, false
+	}
 
-	return id.GetValue()
+	k.cdc.MustUnmarshal(value, &switchParams)
+
+	return switchParams, true
 }

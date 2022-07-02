@@ -7,6 +7,7 @@ import (
 	vaultttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 func (k *Keeper) GetModuleAccount(ctx sdk.Context, name string) authtypes.ModuleAccountI {
@@ -159,4 +160,8 @@ func (k *Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPai
 
 func (k Keeper) CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
 	return k.liquidation.CreateLockedVaultHistory(ctx, lockedVault)
+}
+
+func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool) {
+	return k.esm.GetKillSwitchData(ctx, app_id)
 }

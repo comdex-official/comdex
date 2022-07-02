@@ -19,4 +19,5 @@ var (
 	ErrESMAlreadyExecuted          = sdkerrors.Register(ModuleName, 1108, "ESM Already Executed")
 	ErrCircuitBreakerEnabled       = sdkerrors.Register(ModuleName, 1109, "circuit breaker is triggered")
     ErrorUnauthorized              = sdkerrors.Register(ModuleName, 1110, "unauthorized")
+	ErrorAppDoesNotExists          = sdkerrors.Register(ModuleName, 1111, "App Does Not Exists")
 )

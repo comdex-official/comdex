@@ -574,6 +574,7 @@ func New(
 		&app.AssetKeeper,
 		&app.MarketKeeper,
 		&app.CollectorKeeper,
+		&app.EsmKeeper,
 	)
 
 	app.TokenmintKeeper = tokenmintkeeper.NewKeeper(
@@ -624,6 +625,7 @@ func New(
 		&app.VaultKeeper,
 		&app.MarketKeeper,
 		&app.AuctionKeeper,
+		&app.EsmKeeper,
 	)
 
 	app.AuctionKeeper = *auctionkeeper.NewKeeper(
@@ -639,6 +641,7 @@ func New(
 		&app.VaultKeeper,
 		&app.CollectorKeeper,
 		&app.TokenmintKeeper,
+		&app.EsmKeeper,
 	)
 
 	app.CollectorKeeper = *collectorkeeper.NewKeeper(
@@ -672,6 +675,7 @@ func New(
 		&app.AssetKeeper,
 		&app.MarketKeeper,
 		&app.CollectorKeeper,
+		&app.EsmKeeper,
 	)
 
 	app.liquidityKeeper = liquiditykeeper.NewKeeper(
@@ -697,6 +701,7 @@ func New(
 		app.BankKeeper,
 		app.liquidityKeeper,
 		&app.MarketKeeper,
+		&app.EsmKeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")

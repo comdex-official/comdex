@@ -13,10 +13,10 @@ const (
 	DefaultCircuitBreakerEnabled = false
 )
 
-func NewMsgKillRequest(from sdk.AccAddress, condition bool) *MsgKillRequest {
+func NewMsgKillRequest(from sdk.AccAddress, switchParams KillSwitchParams) *MsgKillRequest {
 	return &MsgKillRequest{
 		From:          from.String(),
-		BreakerEnable: condition,
+		KillSwitchParams: &switchParams,
 	}
 
 }
