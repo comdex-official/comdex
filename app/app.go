@@ -109,7 +109,6 @@ import (
 	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector"
-	collectorclient "github.com/comdex-official/comdex/x/collector/client"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 
@@ -184,8 +183,6 @@ func GetWasmEnabledProposals() []wasm.ProposalType {
 func GetGovProposalHandlers() []govclient.ProposalHandler {
 	proposalHandlers := []govclient.ProposalHandler{
 		bandoraclemoduleclient.AddFetchPriceHandler,
-		collectorclient.AddLookupTableParamsHandlers,
-		collectorclient.AddAuctionControlParamsHandler,
 		lendclient.AddLendPairsHandler,
 		lendclient.UpdateLendPairsHandler,
 		lendclient.AddPoolHandler,
@@ -723,7 +720,6 @@ func New(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
-		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.CollectorKeeper)).
 		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
