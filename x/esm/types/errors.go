@@ -16,4 +16,5 @@ var (
 	ErrESMTriggerParamsNotFound    = sdkerrors.Register(ModuleName, 1105, "ESM Trigger Params Not Found")
 	ErrAmtExceedsTargetValue       = sdkerrors.Register(ModuleName, 1106, "Amt Exceeds Target Value")
 	ErrDepositForAppReached        = sdkerrors.Register(ModuleName, 1107, "Deposit For AppID Reached")
+	ErrESMAlreadyExecuted          = sdkerrors.Register(ModuleName, 1108, "ESM Already Executed")
 )

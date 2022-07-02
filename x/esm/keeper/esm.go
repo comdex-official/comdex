@@ -73,3 +73,28 @@ func (k *Keeper) GetCurrentDepositStats(ctx sdk.Context, id uint64) (depositStat
 	k.cdc.MustUnmarshal(value, &depositStats)
 	return depositStats, true
 }
+
+func (k *Keeper) SetESMStatus(ctx sdk.Context, esmStatus types.ESMStatus) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ESMStatusKey(esmStatus.AppId)
+		value = k.cdc.MustMarshal(&esmStatus)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmStatus types.ESMStatus, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ESMStatusKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return esmStatus, false
+	}
+
+	k.cdc.MustUnmarshal(value, &esmStatus)
+	return esmStatus, true
+}

@@ -109,6 +109,31 @@ func (k Keeper) DepositESM(ctx sdk.Context, lenderAddr string, AppID uint64, Amo
 	return nil
 }
 
-func (k Keeper) ExecuteESM(ctx sdk.Context, lenderAddr string, AppID uint64) error {
+func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error {
+
+	_, found := k.GetApp(ctx, AppID)
+	if !found {
+		return types.ErrAppDataNotFound
+	}
+	_, found = k.GetESMStatus(ctx, AppID)
+	if found {
+		return types.ErrESMAlreadyExecuted
+	}
+
+	esmTriggerParams, found := k.GetESMTriggerParams(ctx, AppID)
+	if !found {
+		return types.ErrESMTriggerParamsNotFound
+	}
+
+	currentDeposit, _ := k.GetCurrentDepositStats(ctx, AppID)
+
+	if currentDeposit.Balance.Amount.Equal(esmTriggerParams.TargetValue.Amount) {
+		ESMStatus := types.ESMStatus{
+			AppId:    AppID,
+			Executor: executor,
+			Status:   true,
+		}
+		k.SetESMStatus(ctx, ESMStatus)
+	}
 	return nil
 }

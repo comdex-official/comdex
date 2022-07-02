@@ -37,3 +37,16 @@ message CurrentDepositStats{
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 }
+
+message ESMStatus{
+  uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"id\""
+  ];
+
+  string executor = 2 [(gogoproto.moretags) = "yaml:\"executor\""];
+
+  bool status = 3 [
+    (gogoproto.moretags) = "yaml:\"status\""
+  ];
+}
