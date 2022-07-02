@@ -84,7 +84,6 @@ func (s *KeeperTestSuite) AddAuctionParams() {
 	s.auctionKeeper.SetAuctionParams(*ctx, auctionParams)
 }
 
-
 func (s *KeeperTestSuite) TestWasmUpdateCollectorLookupTable() {
 	collectorKeeper, ctx := &s.collectorKeeper, &s.ctx
 	s.TestWasmSetCollectorLookupTableAndAuctionControl()

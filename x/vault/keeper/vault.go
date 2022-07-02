@@ -348,7 +348,6 @@ func (k *Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPai
 						dataIndex = index
 					}
 				}
-
 				appData.UserExtendedPairVault = append(appData.UserExtendedPairVault[:dataIndex], appData.UserExtendedPairVault[dataIndex+1:]...)
 				break
 			}
