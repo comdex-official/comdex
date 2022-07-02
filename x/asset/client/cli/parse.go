@@ -8,13 +8,7 @@ import (
 	"io/ioutil"
 )
 
-type XCreateExtPairVaultInputs createExtPairVaultInputs
 type XCreateAddAssetMappingInputs createAddAssetMappingInputs
-
-type XCreateExtPairVaultInputsExceptions struct {
-	XCreateExtPairVaultInputs
-	Other *string // Other won't raise an error
-}
 
 type XCreateAddAssetMappingInputsExceptions struct {
 	XCreateAddAssetMappingInputs
@@ -22,18 +16,6 @@ type XCreateAddAssetMappingInputsExceptions struct {
 }
 
 // UnmarshalJSON should error if there are fields unexpected.
-func (release *createExtPairVaultInputs) UnmarshalJSON(data []byte) error {
-	var createExtendedPairVaultE XCreateExtPairVaultInputsExceptions
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.DisallowUnknownFields() // Force
-
-	if err := dec.Decode(&createExtendedPairVaultE); err != nil {
-		return err
-	}
-
-	*release = createExtPairVaultInputs(createExtendedPairVaultE.XCreateExtPairVaultInputs)
-	return nil
-}
 
 func (release *createAddAssetMappingInputs) UnmarshalJSON(data []byte) error {
 	var createAddAssetMappingInputsE XCreateAddAssetMappingInputsExceptions
