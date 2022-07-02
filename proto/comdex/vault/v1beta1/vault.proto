@@ -147,6 +147,9 @@ message PairStatisticData {
   string minted_amount = 4 [(gogoproto.moretags) = "yaml:\"minted_amount\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false];
+  uint64 extended_pair_vault_id = 5 [
+    (gogoproto.customname) = "ExtendedPairVaultID",
+    (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
 }
 
 

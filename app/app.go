@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
@@ -109,11 +110,9 @@ import (
 	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector"
-	collectorclient "github.com/comdex-official/comdex/x/collector/client"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	"github.com/comdex-official/comdex/x/esm"
-	esmclient "github.com/comdex-official/comdex/x/esm/client"
 	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 
@@ -188,9 +187,6 @@ func GetWasmEnabledProposals() []wasm.ProposalType {
 func GetGovProposalHandlers() []govclient.ProposalHandler {
 	proposalHandlers := []govclient.ProposalHandler{
 		bandoraclemoduleclient.AddFetchPriceHandler,
-		collectorclient.AddLookupTableParamsHandlers,
-		collectorclient.AddAuctionControlParamsHandler,
-		esmclient.AddESMTriggerParams,
 		lendclient.AddLendPairsHandler,
 		lendclient.UpdateLendPairsHandler,
 		lendclient.AddPoolHandler,
@@ -738,7 +734,6 @@ func New(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
-		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.CollectorKeeper)).
 		AddRoute(esmtypes.RouterKey, esm.NewESMHandler(app.EsmKeeper)).
 		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
