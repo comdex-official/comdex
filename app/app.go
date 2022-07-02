@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
@@ -58,7 +59,7 @@ import (
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
-	freegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -155,7 +156,7 @@ import (
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
-	tv1_1_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_1_0"
+	tv2 "github.com/comdex-official/comdex/app/upgrades/testnet/v2"
 )
 
 const (
@@ -286,7 +287,7 @@ type App struct {
 
 	// keepers
 	AccountKeeper     authkeeper.AccountKeeper
-	FreegrantKeeper   freegrantkeeper.Keeper
+	FeegrantKeeper    feegrantkeeper.Keeper
 	BankKeeper        bankkeeper.Keeper
 	AuthzKeeper       authzkeeper.Keeper
 	CapabilityKeeper  *capabilitykeeper.Keeper
@@ -386,7 +387,7 @@ func New(
 		app.tkeys[paramstypes.TStoreKey],
 	)
 
-	//TODO: refactor this code
+	//nolint:godox  //TODO: refactor this code
 	app.ParamsKeeper.Subspace(authtypes.ModuleName)
 	app.ParamsKeeper.Subspace(banktypes.ModuleName)
 	app.ParamsKeeper.Subspace(stakingtypes.ModuleName)
@@ -687,6 +688,10 @@ func New(
 
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
+
+	if err != nil {
+		panic(fmt.Sprintf("error while reading wasm config: %s", err))
+	}
 	supportedFeatures := "iterator,staking,stargate,comdex"
 
 	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper), wasmOpts...)
@@ -882,13 +887,18 @@ func New(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	anteHandler, err := ante.NewAnteHandler(
-		ante.HandlerOptions{
-			AccountKeeper:   app.AccountKeeper,
-			BankKeeper:      app.BankKeeper,
-			FeegrantKeeper:  app.FreegrantKeeper,
-			SignModeHandler: encoding.TxConfig.SignModeHandler(),
-			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+	anteHandler, err := NewAnteHandler(
+		HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.FeegrantKeeper,
+				SignModeHandler: encoding.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			},
+			wasmConfig:        wasmConfig,
+			txCounterStoreKey: app.GetKey(wasm.StoreKey),
+			IBCChannelKeeper:  app.IbcKeeper,
 		},
 	)
 	if err != nil {
@@ -933,12 +943,12 @@ func (a *App) BeginBlocker(ctx sdk.Context, req abcitypes.RequestBeginBlock) abc
 	return a.mm.BeginBlock(ctx, req)
 }
 
-// EndBlocker application updates every end block
+// EndBlocker application updates every end block.
 func (a *App) EndBlocker(ctx sdk.Context, req abcitypes.RequestEndBlock) abcitypes.ResponseEndBlock {
 	return a.mm.EndBlock(ctx, req)
 }
 
-// InitChainer application update at chain initialization
+// InitChainer application update at chain initialization.
 func (a *App) InitChainer(ctx sdk.Context, req abcitypes.RequestInitChain) abcitypes.ResponseInitChain {
 	var state GenesisState
 	if err := tmjson.Unmarshal(req.AppStateBytes, &state); err != nil {
@@ -948,7 +958,7 @@ func (a *App) InitChainer(ctx sdk.Context, req abcitypes.RequestInitChain) abcit
 	return a.mm.InitGenesis(ctx, a.cdc, state)
 }
 
-// LoadHeight loads a particular height
+// LoadHeight loads a particular height.
 func (a *App) LoadHeight(height int64) error {
 	return a.LoadVersion(height)
 }
@@ -979,7 +989,7 @@ func (a *App) AppCodec() codec.BinaryCodec {
 	return a.cdc
 }
 
-// InterfaceRegistry returns Gaia's InterfaceRegistry
+// InterfaceRegistry returns Gaia's InterfaceRegistry.
 func (a *App) InterfaceRegistry() codectypes.InterfaceRegistry {
 	return a.interfaceRegistry
 }
@@ -1073,8 +1083,8 @@ func (a *App) registerUpgradeHandlers() {
 	)
 
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv1_1_0.UpgradeName,
-		tv1_1_0.CreateUpgradeHandler(a.mm, a.configurator),
+		tv2.UpgradeName,
+		tv2.CreateUpgradeHandler(a.mm, a.configurator),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1094,7 +1104,7 @@ func (a *App) registerUpgradeHandlers() {
 			Added:   []string{authz.ModuleName},
 			Deleted: []string{"asset", "liquidity", "oracle", "vault"},
 		}
-	case upgradeInfo.Name == tv1_1_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tv2.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		// prepare store for testnet upgrade v1.1.0
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{

@@ -9,7 +9,7 @@ import (
 func (k *Keeper) SetUserLendIDHistory(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendHistoryIdPrefix
+		key   = types.LendHistoryIDPrefix
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -22,7 +22,7 @@ func (k *Keeper) SetUserLendIDHistory(ctx sdk.Context, id uint64) {
 func (k *Keeper) GetUserLendIDHistory(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendHistoryIdPrefix
+		key   = types.LendHistoryIDPrefix
 		value = store.Get(key)
 	)
 
@@ -70,10 +70,10 @@ func (k *Keeper) DeleteLend(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) SetPoolId(ctx sdk.Context, id uint64) {
+func (k *Keeper) SetPoolID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PoolIdPrefix
+		key   = types.PoolIDPrefix
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -83,10 +83,10 @@ func (k *Keeper) SetPoolId(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetPoolId(ctx sdk.Context) uint64 {
+func (k *Keeper) GetPoolID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.PoolIdPrefix
+		key   = types.PoolIDPrefix
 		value = store.Get(key)
 	)
 
@@ -135,10 +135,10 @@ func (k *Keeper) SetAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMa
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAssetToPair(ctx sdk.Context, assetId, poolId uint64) (assetToPair types.AssetToPairMapping, found bool) {
+func (k *Keeper) GetAssetToPair(ctx sdk.Context, assetID, poolID uint64) (assetToPair types.AssetToPairMapping, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetToPairMappingKey(assetId, poolId)
+		key   = types.AssetToPairMappingKey(assetID, poolID)
 		value = store.Get(key)
 	)
 
@@ -182,13 +182,12 @@ func (k *Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address sdk.AccAdd
 	store.Delete(key)
 }
 
-func (k *Keeper) UpdateUserLendIdMapping(
+func (k *Keeper) UpdateUserLendIDMapping(
 	ctx sdk.Context,
 	lendOwner string,
-	lendId uint64,
+	lendID uint64,
 	isInsert bool,
 ) error {
-
 	userVaults, found := k.GetUserLends(ctx, lendOwner)
 
 	if !found && isInsert {
@@ -201,10 +200,10 @@ func (k *Keeper) UpdateUserLendIdMapping(
 	}
 
 	if isInsert {
-		userVaults.LendIds = append(userVaults.LendIds, lendId)
+		userVaults.LendIds = append(userVaults.LendIds, lendID)
 	} else {
 		for index, id := range userVaults.LendIds {
-			if id == lendId {
+			if id == lendID {
 				userVaults.LendIds = append(userVaults.LendIds[:index], userVaults.LendIds[index+1:]...)
 				break
 			}
@@ -230,8 +229,8 @@ func (k *Keeper) GetUserLends(ctx sdk.Context, address string) (userVaults types
 }
 
 func (k *Keeper) UserLends(ctx sdk.Context, address string) (userLends []types.LendAsset, found bool) {
-	userLendId, _ := k.GetUserLends(ctx, address)
-	for _, v := range userLendId.LendIds {
+	userLendID, _ := k.GetUserLends(ctx, address)
+	for _, v := range userLendID.LendIds {
 		userLend, _ := k.GetLend(ctx, v)
 		userLends = append(userLends, userLend)
 	}
@@ -247,20 +246,19 @@ func (k *Keeper) SetUserLends(ctx sdk.Context, userVaults types.UserLendIdMappin
 	store.Set(key, value)
 }
 
-func (k *Keeper) UpdateLendIdByOwnerAndPoolMapping(
+func (k *Keeper) UpdateLendIDByOwnerAndPoolMapping(
 	ctx sdk.Context,
 	lendOwner string,
-	lendId uint64,
-	poolId uint64,
+	lendID uint64,
+	poolID uint64,
 	isInsert bool,
 ) error {
-
-	userLends, found := k.GetLendIdByOwnerAndPool(ctx, lendOwner, poolId)
+	userLends, found := k.GetLendIDByOwnerAndPool(ctx, lendOwner, poolID)
 
 	if !found && isInsert {
 		userLends = types.LendIdByOwnerAndPoolMapping{
 			Owner:   lendOwner,
-			PoolId:  poolId,
+			PoolId:  poolID,
 			LendIds: nil,
 		}
 	} else if !found && !isInsert {
@@ -268,24 +266,24 @@ func (k *Keeper) UpdateLendIdByOwnerAndPoolMapping(
 	}
 
 	if isInsert {
-		userLends.LendIds = append(userLends.LendIds, lendId)
+		userLends.LendIds = append(userLends.LendIds, lendID)
 	} else {
 		for index, id := range userLends.LendIds {
-			if id == lendId {
+			if id == lendID {
 				userLends.LendIds = append(userLends.LendIds[:index], userLends.LendIds[index+1:]...)
 				break
 			}
 		}
 	}
 
-	k.SetLendIdByOwnerAndPool(ctx, userLends)
+	k.SetLendIDByOwnerAndPool(ctx, userLends)
 	return nil
 }
 
-func (k *Keeper) GetLendIdByOwnerAndPool(ctx sdk.Context, address string, poolId uint64) (userLends types.LendIdByOwnerAndPoolMapping, found bool) {
+func (k *Keeper) GetLendIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userLends types.LendIdByOwnerAndPoolMapping, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendByUserAndPoolKey(address, poolId)
+		key   = types.LendByUserAndPoolKey(address, poolID)
 		value = store.Get(key)
 	)
 	if value == nil {
@@ -296,16 +294,16 @@ func (k *Keeper) GetLendIdByOwnerAndPool(ctx sdk.Context, address string, poolId
 	return userLends, true
 }
 
-func (k *Keeper) LendIdByOwnerAndPool(ctx sdk.Context, address string, poolId uint64) (userLends []types.LendAsset, found bool) {
-	userLendId, _ := k.GetLendIdByOwnerAndPool(ctx, address, poolId)
-	for _, v := range userLendId.LendIds {
+func (k *Keeper) LendIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userLends []types.LendAsset, found bool) {
+	userLendID, _ := k.GetLendIDByOwnerAndPool(ctx, address, poolID)
+	for _, v := range userLendID.LendIds {
 		userLend, _ := k.GetLend(ctx, v)
 		userLends = append(userLends, userLend)
 	}
 	return userLends, true
 }
 
-func (k *Keeper) SetLendIdByOwnerAndPool(ctx sdk.Context, userLends types.LendIdByOwnerAndPoolMapping) {
+func (k *Keeper) SetLendIDByOwnerAndPool(ctx sdk.Context, userLends types.LendIdByOwnerAndPoolMapping) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LendByUserAndPoolKey(userLends.Owner, userLends.PoolId)
@@ -314,28 +312,27 @@ func (k *Keeper) SetLendIdByOwnerAndPool(ctx sdk.Context, userLends types.LendId
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetLendIdToBorrowIdMapping(ctx sdk.Context, LendIdToBorrowIdMapping types.LendIdToBorrowIdMapping) {
+func (k *Keeper) SetLendIDToBorrowIDMapping(ctx sdk.Context, lendIDToBorrowIDMapping types.LendIdToBorrowIdMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendIdToBorrowIdMappingKey(LendIdToBorrowIdMapping.LendingID)
-		value = k.cdc.MustMarshal(&LendIdToBorrowIdMapping)
+		key   = types.LendIDToBorrowIDMappingKey(lendIDToBorrowIDMapping.LendingID)
+		value = k.cdc.MustMarshal(&lendIDToBorrowIDMapping)
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) UpdateLendIdToBorrowIdMapping(
+func (k *Keeper) UpdateLendIDToBorrowIDMapping(
 	ctx sdk.Context,
-	lendId uint64,
-	borrowId uint64,
+	lendID uint64,
+	borrowID uint64,
 	isInsert bool,
 ) error {
-
-	LendIdToBorrowIdMapping, found := k.GetLendIdToBorrowIdMapping(ctx, lendId)
+	lendIDToBorrowIDMapping, found := k.GetLendIDToBorrowIDMapping(ctx, lendID)
 
 	if !found && isInsert {
-		LendIdToBorrowIdMapping = types.LendIdToBorrowIdMapping{
-			LendingID:   lendId,
+		lendIDToBorrowIDMapping = types.LendIdToBorrowIdMapping{
+			LendingID:   lendID,
 			BorrowingID: nil,
 		}
 	} else if !found && !isInsert {
@@ -343,58 +340,58 @@ func (k *Keeper) UpdateLendIdToBorrowIdMapping(
 	}
 
 	if isInsert {
-		LendIdToBorrowIdMapping.BorrowingID = append(LendIdToBorrowIdMapping.BorrowingID, borrowId)
+		lendIDToBorrowIDMapping.BorrowingID = append(lendIDToBorrowIDMapping.BorrowingID, borrowID)
 	} else {
-		for index, id := range LendIdToBorrowIdMapping.BorrowingID {
-			if id == borrowId {
-				LendIdToBorrowIdMapping.BorrowingID = append(LendIdToBorrowIdMapping.BorrowingID[:index], LendIdToBorrowIdMapping.BorrowingID[index+1:]...)
+		for index, id := range lendIDToBorrowIDMapping.BorrowingID {
+			if id == borrowID {
+				lendIDToBorrowIDMapping.BorrowingID = append(lendIDToBorrowIDMapping.BorrowingID[:index], lendIDToBorrowIDMapping.BorrowingID[index+1:]...)
 				break
 			}
 		}
 	}
 
-	k.SetLendIdToBorrowIdMapping(ctx, LendIdToBorrowIdMapping)
+	k.SetLendIDToBorrowIDMapping(ctx, lendIDToBorrowIDMapping)
 	return nil
 }
 
-func (k *Keeper) GetLendIdToBorrowIdMapping(ctx sdk.Context, id uint64) (LendIdToBorrowIdMapping types.LendIdToBorrowIdMapping, found bool) {
+func (k *Keeper) GetLendIDToBorrowIDMapping(ctx sdk.Context, id uint64) (lendIDToBorrowIDMapping types.LendIdToBorrowIdMapping, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendIdToBorrowIdMappingKey(id)
+		key   = types.LendIDToBorrowIDMappingKey(id)
 		value = store.Get(key)
 	)
 
 	if value == nil {
-		return LendIdToBorrowIdMapping, false
+		return lendIDToBorrowIDMapping, false
 	}
 
-	k.cdc.MustUnmarshal(value, &LendIdToBorrowIdMapping)
-	return LendIdToBorrowIdMapping, true
+	k.cdc.MustUnmarshal(value, &lendIDToBorrowIDMapping)
+	return lendIDToBorrowIDMapping, true
 }
 
-func (k *Keeper) DeleteLendIdToBorrowIdMapping(ctx sdk.Context, lendingId uint64) {
+func (k *Keeper) DeleteLendIDToBorrowIDMapping(ctx sdk.Context, lendingID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendIdToBorrowIdMappingKey(lendingId)
+		key   = types.LendIDToBorrowIDMappingKey(lendingID)
 	)
 
 	store.Delete(key)
 }
 
-func (k *Keeper) SetAssetStatsByPoolIdAndAssetId(ctx sdk.Context, AssetStats types.AssetStats) {
+func (k *Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats types.AssetStats) {
 	var (
 		store = k.Store(ctx)
-		key   = types.SetAssetStatsByPoolIdAndAssetId(AssetStats.AssetId, AssetStats.PoolId)
+		key   = types.SetAssetStatsByPoolIDAndAssetID(AssetStats.AssetId, AssetStats.PoolId)
 		value = k.cdc.MustMarshal(&AssetStats)
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAssetStatsByPoolIdAndAssetId(ctx sdk.Context, assetID, poolId uint64) (AssetStats types.AssetStats, found bool) {
+func (k *Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats types.AssetStats, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.SetAssetStatsByPoolIdAndAssetId(assetID, poolId)
+		key   = types.SetAssetStatsByPoolIDAndAssetID(assetID, poolID)
 		value = store.Get(key)
 	)
 
@@ -406,8 +403,8 @@ func (k *Keeper) GetAssetStatsByPoolIdAndAssetId(ctx sdk.Context, assetID, poolI
 	return AssetStats, true
 }
 
-func (k *Keeper) AssetStatsByPoolIdAndAssetId(ctx sdk.Context, assetID, poolId uint64) (AssetStats types.AssetStats, found bool) {
-	AssetStats, found = k.UpdateAPR(ctx, assetID, poolId)
+func (k *Keeper) AssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats types.AssetStats, found bool) {
+	AssetStats, found = k.UpdateAPR(ctx, poolID, assetID)
 	if !found {
 		return AssetStats, false
 	}
@@ -442,12 +439,11 @@ func (k Keeper) GetLastInterestTime(ctx sdk.Context) int64 {
 	return val.Value
 }
 
-func (k *Keeper) UpdateLendIdsMapping(
+func (k *Keeper) UpdateLendIDsMapping(
 	ctx sdk.Context,
-	lendId uint64,
+	lendID uint64,
 	isInsert bool,
 ) error {
-
 	userVaults, found := k.GetLends(ctx)
 
 	if !found && isInsert {
@@ -459,10 +455,10 @@ func (k *Keeper) UpdateLendIdsMapping(
 	}
 
 	if isInsert {
-		userVaults.LendIds = append(userVaults.LendIds, lendId)
+		userVaults.LendIds = append(userVaults.LendIds, lendID)
 	} else {
 		for index, id := range userVaults.LendIds {
-			if id == lendId {
+			if id == lendID {
 				userVaults.LendIds = append(userVaults.LendIds[:index], userVaults.LendIds[index+1:]...)
 				break
 			}
@@ -496,8 +492,8 @@ func (k *Keeper) SetLends(ctx sdk.Context, userLends types.LendMapping) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetModuleBalanceByPoolId(ctx sdk.Context, poolId uint64) (ModuleBalance types.ModuleBalance, found bool) {
-	pool, found := k.GetPool(ctx, poolId)
+func (k *Keeper) GetModuleBalanceByPoolID(ctx sdk.Context, poolID uint64) (ModuleBalance types.ModuleBalance, found bool) {
+	pool, found := k.GetPool(ctx, poolID)
 	if !found {
 		return ModuleBalance, false
 	}
@@ -509,7 +505,7 @@ func (k *Keeper) GetModuleBalanceByPoolId(ctx sdk.Context, poolId uint64) (Modul
 			AssetId: asset.Id,
 			Balance: tokenBal,
 		}
-		ModuleBalance.PoolId = poolId
+		ModuleBalance.PoolId = poolID
 		ModuleBalance.ModuleBalanceStats = append(ModuleBalance.ModuleBalanceStats, modBalStats)
 	}
 	return ModuleBalance, true

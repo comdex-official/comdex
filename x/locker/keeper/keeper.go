@@ -7,7 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 
-	// "github.com/comdex-official/comdex/x/collector"
 	"github.com/comdex-official/comdex/x/locker/expected"
 	"github.com/comdex-official/comdex/x/locker/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"

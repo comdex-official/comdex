@@ -20,17 +20,6 @@ type Keeper struct {
 	collector expected.CollectorKeeper
 }
 
-//
-//func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error) {
-//	//TODO implement me
-//	panic("implement me")
-//}
-
-//func (k *Keeper) BurnCAssets(ctx sdk.Context, moduleName string, collateralDenom string, denom string, amount sdk.Int) error {
-//	//TODO implement me
-//	panic("implement me")
-//}
-
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.MarketKeeper, collector expected.CollectorKeeper) Keeper {
 	return Keeper{
 		cdc:       cdc,

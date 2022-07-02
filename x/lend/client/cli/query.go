@@ -6,19 +6,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"strconv"
 
-	// "strings"
-
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	// "github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/comdex-official/comdex/x/lend/types"
+	"github.com/cosmos/cosmos-sdk/client"
 )
 
-// GetQueryCmd returns the cli query commands for this module
-func GetQueryCmd(queryRoute string) *cobra.Command {
+// GetQueryCmd returns the cli query commands for this module.
+func GetQueryCmd() *cobra.Command {
 	// Group lend queries under a subcommand
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -32,7 +27,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryLend(),
 		queryLends(),
 		QueryAllLendsByOwner(),
-		QueryAllLendsByOwnerAndPoolId(),
+		QueryAllLendsByOwnerAndPoolID(),
 		queryPair(),
 		queryPairs(),
 		queryPool(),
@@ -42,7 +37,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryBorrow(),
 		queryBorrows(),
 		QueryAllBorrowsByOwner(),
-		QueryAllBorrowsByOwnerAndPoolId(),
+		QueryAllBorrowsByOwnerAndPoolID(),
 		queryAssetRatesStat(),
 		queryAssetRatesStats(),
 		QueryAssetStats(),
@@ -132,7 +127,6 @@ func QueryAllLendsByOwner() *cobra.Command {
 		Short: "lends list for a owner",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -155,19 +149,18 @@ func QueryAllLendsByOwner() *cobra.Command {
 	return cmd
 }
 
-func QueryAllLendsByOwnerAndPoolId() *cobra.Command {
+func QueryAllLendsByOwnerAndPoolID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "lends-by-owner-pool [owner] [pool-id]",
 		Short: "lends list for a owner",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -176,7 +169,7 @@ func QueryAllLendsByOwnerAndPoolId() *cobra.Command {
 
 			res, err := queryClient.QueryAllLendByOwnerAndPool(cmd.Context(), &types.QueryAllLendByOwnerAndPoolRequest{
 				Owner:  args[0],
-				PoolId: poolId,
+				PoolId: poolID,
 			})
 
 			if err != nil {
@@ -349,11 +342,11 @@ func queryAssetToPairMapping() *cobra.Command {
 				return err
 			}
 
-			assetId, err := strconv.ParseUint(args[0], 10, 64)
+			assetID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -363,8 +356,8 @@ func queryAssetToPairMapping() *cobra.Command {
 			res, err := queryClient.QueryAssetToPairMapping(
 				context.Background(),
 				&types.QueryAssetToPairMappingRequest{
-					AssetId: assetId,
-					PoolId:  poolId,
+					AssetId: assetID,
+					PoolId:  poolID,
 				},
 			)
 			if err != nil {
@@ -497,7 +490,6 @@ func QueryAllBorrowsByOwner() *cobra.Command {
 		Short: "borrows list for a owner",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -520,13 +512,12 @@ func QueryAllBorrowsByOwner() *cobra.Command {
 	return cmd
 }
 
-func QueryAllBorrowsByOwnerAndPoolId() *cobra.Command {
+func QueryAllBorrowsByOwnerAndPoolID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "borrows-by-owner-pool [owner] [pool-id]",
 		Short: "borrows list for a owner",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -534,14 +525,14 @@ func QueryAllBorrowsByOwnerAndPoolId() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			res, err := queryClient.QueryAllBorrowByOwnerAndPool(cmd.Context(), &types.QueryAllBorrowByOwnerAndPoolRequest{
 				Owner:  args[0],
-				PoolId: poolId,
+				PoolId: poolID,
 			})
 
 			if err != nil {
@@ -635,7 +626,6 @@ func QueryAssetStats() *cobra.Command {
 		Short: "Query asset stats for an asset-id and pool-id",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -643,19 +633,19 @@ func QueryAssetStats() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			assetId, err := strconv.ParseUint(args[0], 10, 64)
+			assetID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			poolId, err := strconv.ParseUint(args[1], 10, 64)
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			res, err := queryClient.QueryAssetStats(cmd.Context(), &types.QueryAssetStatsRequest{
-				AssetId: assetId,
-				PoolId:  poolId,
+				AssetId: assetID,
+				PoolId:  poolID,
 			})
 
 			if err != nil {
@@ -675,7 +665,6 @@ func QueryModuleBalance() *cobra.Command {
 		Short: "borrows list for a owner",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -683,13 +672,13 @@ func QueryModuleBalance() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			poolId, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			res, err := queryClient.QueryModuleBalance(cmd.Context(), &types.QueryModuleBalanceRequest{
-				PoolId: poolId,
+				PoolId: poolID,
 			})
 
 			if err != nil {

@@ -50,12 +50,12 @@ func (k Keeper) DutchActivator(ctx sdk.Context) error {
 		}
 		liquidationPenalty := ExtendedPairVault.LiquidationPenalty
 		if !lockedVault.IsAuctionInProgress {
-			err1 := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppMappingId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
+			err1 := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
 			if err1 != nil {
 				return err1
 			}
 		} else {
-			err2 := k.RestartDutchAuctions(ctx, lockedVault.AppMappingId)
+			err2 := k.RestartDutchAuctions(ctx, lockedVault.AppId)
 			if err2 != nil {
 				return err2
 			}
@@ -84,7 +84,7 @@ func (k Keeper) StartDutchAuction(
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
-	k.UpdateUserVaultExtendedPairMapping(ctx, lockedVault.ExtendedPairId, lockedVault.Owner, lockedVault.AppMappingId)
+	k.UpdateUserVaultExtendedPairMapping(ctx, lockedVault.ExtendedPairId, lockedVault.Owner, lockedVault.AppId)
 
 	var extendedPairVault = lockedVault.ExtendedPairId
 
@@ -274,7 +274,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		return err
 	}
 
-	biddingID, err := k.CreateNewDutchBid(ctx, appID, auctionMappingID, auctionID, bidder, inFlowTokenCoin, outFlowTokenCoin)
+	biddingID, err := k.CreateNewDutchBid(ctx, appID, auctionMappingID, auctionID, bidder.String(), inFlowTokenCoin, outFlowTokenCoin)
 	if err != nil {
 		return err
 	}
@@ -362,12 +362,12 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	return nil
 }
 
-func (k Keeper) CreateNewDutchBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder sdk.AccAddress, outFlowTokenCoin sdk.Coin, inFlowTokenCoin sdk.Coin) (biddingID uint64, err error) {
+func (k Keeper) CreateNewDutchBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder string, outFlowTokenCoin sdk.Coin, inFlowTokenCoin sdk.Coin) (biddingID uint64, err error) {
 	bidding := auctiontypes.DutchBiddings{
 		BiddingId:          k.GetUserBiddingID(ctx) + 1,
 		AuctionId:          auctionID,
 		AuctionStatus:      auctiontypes.ActiveAuctionStatus,
-		Bidder:             bidder.String(),
+		Bidder:             bidder,
 		OutflowTokenAmount: outFlowTokenCoin,
 		InflowTokenAmount:  inFlowTokenCoin,
 		BiddingTimestamp:   ctx.BlockTime(),
@@ -557,7 +557,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 		// tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
 		tnume := dutchAuction.OutflowTokenInitialPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds)))
 		tdeno := dutchAuction.OutflowTokenInitialPrice.Sub(dutchAuction.OutflowTokenEndPrice)
-		tau := sdk.Int(tnume.Quo(tdeno)) 
+		tau := sdk.Int(tnume.Quo(tdeno))
 		dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
 		seconds := sdk.NewInt(int64(dur.Seconds()))
 		outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)
@@ -600,7 +600,7 @@ func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAu
 		return auctiontypes.ErrorInvalidExtendedPairVault
 	}
 
-	appExtendedPairVaultData, found3 := k.GetAppExtendedPairVaultMapping(ctx, ExtendedPairVault.AppMappingId)
+	appExtendedPairVaultData, found3 := k.GetAppExtendedPairVaultMapping(ctx, ExtendedPairVault.AppId)
 	if !found3 {
 		return sdkerrors.ErrNotFound
 	}

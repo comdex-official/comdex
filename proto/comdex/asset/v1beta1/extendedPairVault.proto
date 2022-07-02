@@ -9,7 +9,7 @@ option (gogoproto.goproto_getters_all) = false;
 
 message ExtendedPairVault {
     uint64 id = 1;
-    uint64 app_mapping_id   = 2 [(gogoproto.moretags) = "yaml:\"app_mapping_id\""];
+    uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
     uint64 pair_id           = 3 [(gogoproto.moretags) = "yaml:\"pair_id\""];
     string stability_fee        = 4 [ 
       (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",

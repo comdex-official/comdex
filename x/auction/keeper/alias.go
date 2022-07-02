@@ -89,19 +89,19 @@ func (k *Keeper) GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collect
 func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData types.NetFeeCollectedData, found bool) {
 	return k.collector.GetNetFeeCollectedData(ctx, appID)
 }
-func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool) {
+func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool) {
 	return k.asset.GetApps(ctx)
 }
-func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app assettypes.AppMapping, found bool) {
+func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool) {
 	return k.asset.GetApp(ctx, id)
 }
 
 func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, address string, amount sdk.Int) error {
-	return k.tokenmint.MintNewTokensForApp(ctx, appMappingID, assetID, address, amount)
+	return k.tokenMint.MintNewTokensForApp(ctx, appMappingID, assetID, address, amount)
 }
 
 func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error {
-	return k.tokenmint.BurnTokensForApp(ctx, appMappingID, assetID, amount)
+	return k.tokenMint.BurnTokensForApp(ctx, appMappingID, assetID, amount)
 }
 
 func (k *Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) (sdk.Int, error) {

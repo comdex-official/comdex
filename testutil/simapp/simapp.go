@@ -22,7 +22,7 @@ func New(dir string) *comdex.App {
 	)
 
 	a := comdex.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
-		simapp.EmptyAppOptions{})
+		simapp.EmptyAppOptions{}, comdex.GetWasmEnabledProposals(), comdex.EmptyWasmOpts)
 	// InitChain updates deliverState which is required when app.NewContext is called
 	a.InitChain(abcitypes.RequestInitChain{
 		ConsensusParams: defaultConsensusParams,

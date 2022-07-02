@@ -5,19 +5,19 @@ import (
 )
 
 const (
-	// ModuleName defines the module name
+	// ModuleName defines the module name.
 	ModuleName = "collector"
 
-	// StoreKey defines the primary module store key
+	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
 
-	// RouterKey is the message route for slashing
+	// RouterKey is the message route for slashing.
 	RouterKey = ModuleName
 
-	// QuerierRoute defines the module's query routing key
+	// QuerierRoute defines the module's query routing key.
 	QuerierRoute = ModuleName
 
-	// MemStoreKey defines the in-memory store key
+	// MemStoreKey defines the in-memory store key.
 	MemStoreKey = "mem_collector"
 )
 
@@ -29,10 +29,6 @@ var (
 	NetFeeCollectedDataPrefix          = []byte{0x08}
 )
 
-func KeyPrefix(p string) []byte {
-	return []byte(p)
-}
-
 func CollectorLookupTableMappingKey(appID uint64) []byte {
 	return append(AddCollectorLookupKey, sdk.Uint64ToBigEndian(appID)...)
 }
@@ -41,8 +37,8 @@ func AppidToAssetCollectorMappingKey(appID uint64) []byte {
 	return append(AppIDToAssetCollectorMappingPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
-func AppIDToAuctionMappingKey(appId uint64) []byte {
-	return append(AppIDToAuctionMappingPrefix, sdk.Uint64ToBigEndian(appId)...)
+func AppIDToAuctionMappingKey(appID uint64) []byte {
+	return append(AppIDToAuctionMappingPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 func NetFeeCollectedDataKey(appID uint64) []byte {

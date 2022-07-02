@@ -13,10 +13,9 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&AddAssetsProposal{}, "comdex/asset/AddAssetsProposal", nil)
 	cdc.RegisterConcrete(&UpdateAssetProposal{}, "comdex/asset/UpdateAssetProposal", nil)
 	cdc.RegisterConcrete(&AddPairsProposal{}, "comdex/asset/AddPairsProposal", nil)
-	cdc.RegisterConcrete(&AddAppMappingProposal{}, "comdex/asset/AddAppMappingProposal", nil)
-	cdc.RegisterConcrete(&AddAssetMappingProposal{}, "comdex/asset/AddAssetMappingProposal", nil)
-	cdc.RegisterConcrete(&AddExtendedPairsVaultProposal{}, "comdex/asset/AddExtendedPairsVaultProposal", nil)
-	cdc.RegisterConcrete(&UpdateGovTimeInAppMappingProposal{}, "comdex/asset/UpdateGovTimeInAppMappingProposal", nil)
+	cdc.RegisterConcrete(&AddAppProposal{}, "comdex/asset/AddAppProposal", nil)
+	cdc.RegisterConcrete(&AddAssetInAppProposal{}, "comdex/asset/AddAssetInAppProposal", nil)
+	cdc.RegisterConcrete(&UpdateGovTimeInAppProposal{}, "comdex/asset/UpdateGovTimeInAppProposal", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
@@ -25,10 +24,9 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&AddAssetsProposal{},
 		&UpdateAssetProposal{},
 		&AddPairsProposal{},
-		&AddAppMappingProposal{},
-		&AddAssetMappingProposal{},
-		&AddExtendedPairsVaultProposal{},
-		&UpdateGovTimeInAppMappingProposal{},
+		&AddAppProposal{},
+		&AddAssetInAppProposal{},
+		&UpdateGovTimeInAppProposal{},
 	)
 
 	registry.RegisterImplementations(

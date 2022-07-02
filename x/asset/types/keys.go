@@ -28,11 +28,6 @@ var (
 	AppForShortNamePrefix  = []byte{0x22}
 	AppForNamePrefix       = []byte{0x23}
 	GenesisForAppPrefix    = []byte{0x24}
-
-	WhitelistAssetIDKey     = []byte{0x31}
-	WhitelistAssetKeyPrefix = []byte{0x32}
-	WhitelistPairIDKey      = []byte{0x33}
-	WhitelistPairKeyPrefix  = []byte{0x34}
 )
 
 func AppKey(id uint64) []byte {
@@ -47,10 +42,6 @@ func AssetKey(id uint64) []byte {
 	return append(AssetKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func WhitelistAssetKey(id uint64) []byte {
-	return append(WhitelistAssetKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
 func AssetForDenomKey(denom string) []byte {
 	return append(AssetForDenomKeyPrefix, []byte(denom)...)
 }
@@ -62,16 +53,12 @@ func AssetForNameKey(Name string) []byte {
 	return append(AppForNamePrefix, []byte(Name)...)
 }
 
-func GenesisForApp(appId uint64) []byte {
-	return append(GenesisForAppPrefix, sdk.Uint64ToBigEndian(appId)...)
+func GenesisForApp(appID uint64) []byte {
+	return append(GenesisForAppPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 func PairKey(id uint64) []byte {
 	return append(PairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func WhitelistPairKey(id uint64) []byte {
-	return append(WhitelistPairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func AssetForOracleKey(id uint64) []byte {

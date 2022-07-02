@@ -2,10 +2,10 @@ package types
 
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
-func NewMsgWhitelistAppID(appMappingId uint64, from sdk.AccAddress) *WhitelistAppId {
+func NewMsgWhitelistAppID(appID uint64, from string) *WhitelistAppId {
 	return &WhitelistAppId{
-		AppMappingId: appMappingId,
-		From:         from.String(),
+		AppId: appID,
+		From:  from,
 	}
 }
 
@@ -34,10 +34,10 @@ func (m *WhitelistAppId) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgRemoveWhitelistAsset(appMappingID uint64, from sdk.AccAddress) *RemoveWhitelistAppId {
+func NewMsgRemoveWhitelistAsset(appID uint64, from string) *RemoveWhitelistAppId {
 	return &RemoveWhitelistAppId{
-		AppMappingId: appMappingID,
-		From:         from.String(),
+		AppId: appID,
+		From:  from,
 	}
 }
 

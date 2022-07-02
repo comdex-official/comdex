@@ -25,7 +25,7 @@ type ComdexQuery struct {
 }
 
 type AppData struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type AppDataResponse struct {
@@ -54,8 +54,8 @@ type StateResponse struct {
 }
 
 type MintedToken struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type MintedTokenResponse struct {
@@ -63,8 +63,8 @@ type MintedTokenResponse struct {
 }
 
 type RemoveWhiteListAssetLocker struct {
-	AppMappingID uint64   `json:"app_mapping_id"`
-	AssetIDs     []uint64 `json:"asset_ids"`
+	AppID    uint64   `json:"app_id"`
+	AssetIDs []uint64 `json:"asset_ids"`
 }
 
 type RemoveWhiteListAssetResponse struct {
@@ -73,7 +73,7 @@ type RemoveWhiteListAssetResponse struct {
 }
 
 type WhitelistAppIDVaultInterest struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type WhitelistAppIDVaultInterestResponse struct {
@@ -82,8 +82,8 @@ type WhitelistAppIDVaultInterestResponse struct {
 }
 
 type WhitelistAppIDLockerRewards struct {
-	AppMappingID uint64   `json:"app_mapping_id"`
-	AssetID      []uint64 `json:"asset_id"`
+	AppID   uint64   `json:"app_id"`
+	AssetID []uint64 `json:"asset_id"`
 }
 
 type WhitelistAppIDLockerRewardsResponse struct {
@@ -92,8 +92,8 @@ type WhitelistAppIDLockerRewardsResponse struct {
 }
 
 type ExternalLockerRewards struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type ExternalLockerRewardsResponse struct {
@@ -102,8 +102,8 @@ type ExternalLockerRewardsResponse struct {
 }
 
 type ExternalVaultRewards struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type ExternalVaultRewardsResponse struct {
@@ -112,7 +112,7 @@ type ExternalVaultRewardsResponse struct {
 }
 
 type CollectorLookupTableQuery struct {
-	AppMappingID     uint64 `json:"app_mapping_id"`
+	AppID            uint64 `json:"app_id"`
 	CollectorAssetID uint64 `json:"collector_asset_id"`
 	SecondaryAssetID uint64 `json:"secondary_asset_id"`
 }
@@ -123,7 +123,7 @@ type CollectorLookupTableQueryResponse struct {
 }
 
 type ExtendedPairsVaultRecordsQuery struct {
-	AppMappingID uint64  `json:"app_mapping_id"`
+	AppID        uint64  `json:"app_id"`
 	PairID       uint64  `json:"pair_id"`
 	StabilityFee sdk.Dec `json:"stability_fee"`
 	ClosingFee   sdk.Dec `json:"closing_fee"`
@@ -139,7 +139,7 @@ type ExtendedPairsVaultRecordsQueryResponse struct {
 }
 
 type AuctionMappingForAppQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type AuctionMappingForAppQueryResponse struct {
@@ -148,8 +148,8 @@ type AuctionMappingForAppQueryResponse struct {
 }
 
 type WhiteListedAssetQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type WhiteListedAssetQueryResponse struct {
@@ -158,8 +158,8 @@ type WhiteListedAssetQueryResponse struct {
 }
 
 type UpdatePairsVaultQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	ExtPairID    uint64 `json:"ext_pair_id"`
+	AppID     uint64 `json:"app_id"`
+	ExtPairID uint64 `json:"ext_pair_id"`
 }
 
 type UpdatePairsVaultQueryResponse struct {
@@ -168,8 +168,8 @@ type UpdatePairsVaultQueryResponse struct {
 }
 
 type UpdateCollectorLookupTableQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type UpdateCollectorLookupTableQueryResponse struct {
@@ -178,8 +178,8 @@ type UpdateCollectorLookupTableQueryResponse struct {
 }
 
 type RemoveWhitelistAssetLockerQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type RemoveWhitelistAssetLockerQueryResponse struct {
@@ -188,7 +188,7 @@ type RemoveWhitelistAssetLockerQueryResponse struct {
 }
 
 type RemoveWhitelistAppIDVaultInterestQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type RemoveWhitelistAppIDVaultInterestQueryResponse struct {
@@ -197,7 +197,7 @@ type RemoveWhitelistAppIDVaultInterestQueryResponse struct {
 }
 
 type WhitelistAppIDLiquidationQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type WhitelistAppIDLiquidationQueryResponse struct {
@@ -206,7 +206,7 @@ type WhitelistAppIDLiquidationQueryResponse struct {
 }
 
 type RemoveWhitelistAppIDLiquidationQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type RemoveWhitelistAppIDLiquidationQueryResponse struct {

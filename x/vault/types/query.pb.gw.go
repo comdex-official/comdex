@@ -141,8 +141,8 @@ func local_request_Query_QueryUserExtendedPairTotalData_0(ctx context.Context, m
 
 }
 
-func request_Query_QueryVaultInfoByVaultId_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryVaultInfoByVaultIdRequest
+func request_Query_QueryVaultInfoByVaultID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryVaultInfoByVaultIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -163,13 +163,13 @@ func request_Query_QueryVaultInfoByVaultId_0(ctx context.Context, marshaler runt
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := client.QueryVaultInfoByVaultId(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryVaultInfoByVaultID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryVaultInfoByVaultId_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryVaultInfoByVaultIdRequest
+func local_request_Query_QueryVaultInfoByVaultID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryVaultInfoByVaultIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -190,7 +190,7 @@ func local_request_Query_QueryVaultInfoByVaultId_0(ctx context.Context, marshale
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := server.QueryVaultInfoByVaultId(ctx, &protoReq)
+	msg, err := server.QueryVaultInfoByVaultID(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -456,11 +456,11 @@ func local_request_Query_QueryAllVaultsByAppAndExtendedPair_0(ctx context.Contex
 }
 
 var (
-	filter_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0 = &utilities.DoubleArray{Encoding: map[string]int{"app_id": 0, "owner": 1, "extended_pair_id": 2}, Base: []int{1, 1, 2, 3, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 3, 4}}
+	filter_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0 = &utilities.DoubleArray{Encoding: map[string]int{"app_id": 0, "owner": 1, "extended_pair_id": 2}, Base: []int{1, 1, 2, 3, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 3, 4}}
 )
 
-func request_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryVaultIdOfOwnerByExtendedPairAndAppRequest
+func request_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryVaultIDOfOwnerByExtendedPairAndAppRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -506,17 +506,17 @@ func request_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0(ctx context.Context
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.QueryVaultIdOfOwnerByExtendedPairAndApp(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryVaultIDOfOwnerByExtendedPairAndApp(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryVaultIdOfOwnerByExtendedPairAndAppRequest
+func local_request_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryVaultIDOfOwnerByExtendedPairAndAppRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -562,11 +562,11 @@ func local_request_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0(ctx context.C
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.QueryVaultIdOfOwnerByExtendedPairAndApp(ctx, &protoReq)
+	msg, err := server.QueryVaultIDOfOwnerByExtendedPairAndApp(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -1048,11 +1048,11 @@ func local_request_Query_QueryVaultCountByAppAndExtendedPair_0(ctx context.Conte
 }
 
 var (
-	filter_Query_QueryTotalValueLockedByAppExtendedPair_0 = &utilities.DoubleArray{Encoding: map[string]int{"app_id": 0, "extended_pair_id": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
+	filter_Query_QueryTotalValueLockedByAppAndExtendedPair_0 = &utilities.DoubleArray{Encoding: map[string]int{"app_id": 0, "extended_pair_id": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
 )
 
-func request_Query_QueryTotalValueLockedByAppExtendedPair_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTotalValueLockedByAppExtendedPairRequest
+func request_Query_QueryTotalValueLockedByAppAndExtendedPair_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryTotalValueLockedByAppAndExtendedPairRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1087,17 +1087,17 @@ func request_Query_QueryTotalValueLockedByAppExtendedPair_0(ctx context.Context,
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryTotalValueLockedByAppExtendedPair_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryTotalValueLockedByAppAndExtendedPair_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.QueryTotalValueLockedByAppExtendedPair(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryTotalValueLockedByAppAndExtendedPair(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryTotalValueLockedByAppExtendedPair_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTotalValueLockedByAppExtendedPairRequest
+func local_request_Query_QueryTotalValueLockedByAppAndExtendedPair_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryTotalValueLockedByAppAndExtendedPairRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1132,11 +1132,11 @@ func local_request_Query_QueryTotalValueLockedByAppExtendedPair_0(ctx context.Co
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryTotalValueLockedByAppExtendedPair_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryTotalValueLockedByAppAndExtendedPair_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.QueryTotalValueLockedByAppExtendedPair(ctx, &protoReq)
+	msg, err := server.QueryTotalValueLockedByAppAndExtendedPair(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -1213,8 +1213,8 @@ func local_request_Query_QueryExtendedPairIDsByApp_0(ctx context.Context, marsha
 
 }
 
-func request_Query_QueryStableVaultByVaultId_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryStableVaultByVaultIdRequest
+func request_Query_QueryStableVaultByVaultID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryStableVaultByVaultIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1235,13 +1235,13 @@ func request_Query_QueryStableVaultByVaultId_0(ctx context.Context, marshaler ru
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "stable_vault_id", err)
 	}
 
-	msg, err := client.QueryStableVaultByVaultId(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryStableVaultByVaultID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryStableVaultByVaultId_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryStableVaultByVaultIdRequest
+func local_request_Query_QueryStableVaultByVaultID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryStableVaultByVaultIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1262,7 +1262,7 @@ func local_request_Query_QueryStableVaultByVaultId_0(ctx context.Context, marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "stable_vault_id", err)
 	}
 
-	msg, err := server.QueryStableVaultByVaultId(ctx, &protoReq)
+	msg, err := server.QueryStableVaultByVaultID(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -1321,8 +1321,8 @@ func local_request_Query_QueryStableVaultByApp_0(ctx context.Context, marshaler 
 
 }
 
-func request_Query_QueryStableVaultByAppExtendedPair_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryStableVaultByAppExtendedPairRequest
+func request_Query_QueryStableVaultByAppAndExtendedPair_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryStableVaultByAppAndExtendedPairRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1354,13 +1354,13 @@ func request_Query_QueryStableVaultByAppExtendedPair_0(ctx context.Context, mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "extended_pair_id", err)
 	}
 
-	msg, err := client.QueryStableVaultByAppExtendedPair(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryStableVaultByAppAndExtendedPair(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryStableVaultByAppExtendedPair_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryStableVaultByAppExtendedPairRequest
+func local_request_Query_QueryStableVaultByAppAndExtendedPair_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryStableVaultByAppAndExtendedPairRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1392,13 +1392,13 @@ func local_request_Query_QueryStableVaultByAppExtendedPair_0(ctx context.Context
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "extended_pair_id", err)
 	}
 
-	msg, err := server.QueryStableVaultByAppExtendedPair(ctx, &protoReq)
+	msg, err := server.QueryStableVaultByAppAndExtendedPair(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest
+func request_Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryExtendedPairVaultMappingByAppAndExtendedPairRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1430,13 +1430,13 @@ func request_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0(ctx con
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "extended_pair_id", err)
 	}
 
-	msg, err := client.QueryExtendedPairVaultMappingByAppAndExtendedPairId(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryExtendedPairVaultMappingByAppAndExtendedPair(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryExtendedPairVaultMappingByAppAndExtendedPairIdRequest
+func local_request_Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryExtendedPairVaultMappingByAppAndExtendedPairRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1468,7 +1468,7 @@ func local_request_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0(c
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "extended_pair_id", err)
 	}
 
-	msg, err := server.QueryExtendedPairVaultMappingByAppAndExtendedPairId(ctx, &protoReq)
+	msg, err := server.QueryExtendedPairVaultMappingByAppAndExtendedPair(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -1527,8 +1527,8 @@ func local_request_Query_QueryExtendedPairVaultMappingByApp_0(ctx context.Contex
 
 }
 
-func request_Query_QueryTVLLockedByAppOfAllExtendedPairs_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTVLLockedByAppOfAllExtendedPairsRequest
+func request_Query_QueryTVLByAppOfAllExtendedPairs_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryTVLByAppOfAllExtendedPairsRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1549,13 +1549,13 @@ func request_Query_QueryTVLLockedByAppOfAllExtendedPairs_0(ctx context.Context, 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
-	msg, err := client.QueryTVLLockedByAppOfAllExtendedPairs(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryTVLByAppOfAllExtendedPairs(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryTVLLockedByAppOfAllExtendedPairs_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTVLLockedByAppOfAllExtendedPairsRequest
+func local_request_Query_QueryTVLByAppOfAllExtendedPairs_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryTVLByAppOfAllExtendedPairsRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1576,13 +1576,13 @@ func local_request_Query_QueryTVLLockedByAppOfAllExtendedPairs_0(ctx context.Con
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
-	msg, err := server.QueryTVLLockedByAppOfAllExtendedPairs(ctx, &protoReq)
+	msg, err := server.QueryTVLByAppOfAllExtendedPairs(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryTotalTVLByApp_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTotalTVLByAppRequest
+func request_Query_QueryTVLByApp_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryTVLByAppRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1603,13 +1603,13 @@ func request_Query_QueryTotalTVLByApp_0(ctx context.Context, marshaler runtime.M
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
-	msg, err := client.QueryTotalTVLByApp(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryTVLByApp(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryTotalTVLByApp_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTotalTVLByAppRequest
+func local_request_Query_QueryTVLByApp_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryTVLByAppRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1630,7 +1630,7 @@ func local_request_Query_QueryTotalTVLByApp_0(ctx context.Context, marshaler run
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
-	msg, err := server.QueryTotalTVLByApp(ctx, &protoReq)
+	msg, err := server.QueryTVLByApp(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -1711,6 +1711,60 @@ func local_request_Query_QueryUserMyPositionByApp_0(ctx context.Context, marshal
 
 }
 
+func request_Query_QueryPairsLockedAndMintedStatisticByApp_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryPairsLockedAndMintedStatisticByAppRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["app_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
+	}
+
+	protoReq.AppId, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
+	}
+
+	msg, err := client.QueryPairsLockedAndMintedStatisticByApp(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_Query_QueryPairsLockedAndMintedStatisticByApp_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryPairsLockedAndMintedStatisticByAppRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["app_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
+	}
+
+	protoReq.AppId, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
+	}
+
+	msg, err := server.QueryPairsLockedAndMintedStatisticByApp(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
 // RegisterQueryHandlerServer registers the http handlers for service Query to "mux".
 // UnaryRPC     :call QueryServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
@@ -1763,7 +1817,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryVaultInfoByVaultId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryVaultInfoByVaultID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1774,7 +1828,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryVaultInfoByVaultId_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryVaultInfoByVaultID_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1782,7 +1836,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryVaultInfoByVaultId_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryVaultInfoByVaultID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1878,7 +1932,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1889,7 +1943,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1897,7 +1951,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2039,7 +2093,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryTotalValueLockedByAppExtendedPair_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryTotalValueLockedByAppAndExtendedPair_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -2050,7 +2104,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryTotalValueLockedByAppExtendedPair_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryTotalValueLockedByAppAndExtendedPair_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -2058,7 +2112,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryTotalValueLockedByAppExtendedPair_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryTotalValueLockedByAppAndExtendedPair_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2085,7 +2139,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryStableVaultByVaultId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryStableVaultByVaultID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -2096,7 +2150,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryStableVaultByVaultId_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryStableVaultByVaultID_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -2104,7 +2158,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryStableVaultByVaultId_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryStableVaultByVaultID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2131,7 +2185,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryStableVaultByAppExtendedPair_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryStableVaultByAppAndExtendedPair_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -2142,7 +2196,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryStableVaultByAppExtendedPair_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryStableVaultByAppAndExtendedPair_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -2150,11 +2204,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryStableVaultByAppExtendedPair_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryStableVaultByAppAndExtendedPair_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -2165,7 +2219,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -2173,7 +2227,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2200,7 +2254,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryTVLLockedByAppOfAllExtendedPairs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryTVLByAppOfAllExtendedPairs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -2211,7 +2265,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryTVLLockedByAppOfAllExtendedPairs_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryTVLByAppOfAllExtendedPairs_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -2219,11 +2273,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryTVLLockedByAppOfAllExtendedPairs_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryTVLByAppOfAllExtendedPairs_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryTotalTVLByApp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryTVLByApp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -2234,7 +2288,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryTotalTVLByApp_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryTVLByApp_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -2242,7 +2296,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryTotalTVLByApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryTVLByApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2266,6 +2320,29 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 		}
 
 		forward_Query_QueryUserMyPositionByApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_Query_QueryPairsLockedAndMintedStatisticByApp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Query_QueryPairsLockedAndMintedStatisticByApp_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Query_QueryPairsLockedAndMintedStatisticByApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2350,7 +2427,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryVaultInfoByVaultId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryVaultInfoByVaultID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -2359,14 +2436,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryVaultInfoByVaultId_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryVaultInfoByVaultID_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryVaultInfoByVaultId_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryVaultInfoByVaultID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2450,7 +2527,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -2459,14 +2536,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2590,7 +2667,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryTotalValueLockedByAppExtendedPair_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryTotalValueLockedByAppAndExtendedPair_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -2599,14 +2676,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryTotalValueLockedByAppExtendedPair_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryTotalValueLockedByAppAndExtendedPair_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryTotalValueLockedByAppExtendedPair_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryTotalValueLockedByAppAndExtendedPair_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2630,7 +2707,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryStableVaultByVaultId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryStableVaultByVaultID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -2639,14 +2716,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryStableVaultByVaultId_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryStableVaultByVaultID_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryStableVaultByVaultId_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryStableVaultByVaultID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2670,7 +2747,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryStableVaultByAppExtendedPair_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryStableVaultByAppAndExtendedPair_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -2679,18 +2756,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryStableVaultByAppExtendedPair_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryStableVaultByAppAndExtendedPair_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryStableVaultByAppExtendedPair_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryStableVaultByAppAndExtendedPair_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -2699,14 +2776,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2730,7 +2807,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryTVLLockedByAppOfAllExtendedPairs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryTVLByAppOfAllExtendedPairs_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -2739,18 +2816,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryTVLLockedByAppOfAllExtendedPairs_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryTVLByAppOfAllExtendedPairs_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryTVLLockedByAppOfAllExtendedPairs_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryTVLByAppOfAllExtendedPairs_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryTotalTVLByApp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryTVLByApp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -2759,14 +2836,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryTotalTVLByApp_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryTVLByApp_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryTotalTVLByApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryTVLByApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2790,6 +2867,26 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
+	mux.Handle("GET", pattern_Query_QueryPairsLockedAndMintedStatisticByApp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Query_QueryPairsLockedAndMintedStatisticByApp_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Query_QueryPairsLockedAndMintedStatisticByApp_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
 	return nil
 }
 
@@ -2798,7 +2895,7 @@ var (
 
 	pattern_Query_QueryUserExtendedPairTotalData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "user-extended-pair-total-data", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryVaultInfoByVaultId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaultsInfo-by-vault-id", "id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryVaultInfoByVaultID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaultsInfo-by-vault-id", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryVaultInfoOfOwnerByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "vaultsInfo-of-owner-by-app", "app_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
@@ -2808,11 +2905,11 @@ var (
 
 	pattern_Query_QueryAllVaultsByAppAndExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "vaults-by-app-and-extended-pair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "vault", "v1beta1", "vault-of-owner-by-extended-pair-and-app", "app_id", "owner", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "vault", "v1beta1", "vault-of-owner-by-extended-pair-and-app", "app_id", "owner", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryVaultIdsByAppInAllExtendedPairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaultIds-by-app-in-all-extendedPairs", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAllVaultIdsByAnOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vaults-ids-by-an-owner", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryAllVaultIdsByAnOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "vault-ids-by-an-owner", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryTokenMintedByAppAndExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "token-minted-by-App-and-extended-pair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
@@ -2822,25 +2919,27 @@ var (
 
 	pattern_Query_QueryVaultCountByAppAndExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "vault-count-by-an-App-and-extended-pair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTotalValueLockedByAppExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "value-locked-by-App-pair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryTotalValueLockedByAppAndExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "value-locked-by-App-and-extended-pair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryExtendedPairIDsByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "external-pair-id-by-App", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryStableVaultByVaultId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-id", "stable_vault_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryStableVaultByVaultID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-id", "stable_vault_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryStableVaultByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-App", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryStableVaultByAppExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-App-extendedPair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryStableVaultByAppAndExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "stable-vault-by-App-and-extendedPair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-mapping-by-App-and-ExtendedPairId", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-mapping-by-App-and-ExtendedPair", "app_id", "extended_pair_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryExtendedPairVaultMappingByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "extendedPairVault-mapping-by-App", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTVLLockedByAppOfAllExtendedPairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "tvl-locked-by-app-all-extended-pairs", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryTVLByAppOfAllExtendedPairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "tvl-by-app-all-extended-pairs", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTotalTVLByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "tvl-locked-by-app", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryTVLByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "tvl-by-app", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryUserMyPositionByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "vault", "v1beta1", "user-my-position-by-app", "app_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
+
+	pattern_Query_QueryPairsLockedAndMintedStatisticByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "vault", "v1beta1", "pairs-locked-and-minted-statistic-by-app", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
@@ -2848,7 +2947,7 @@ var (
 
 	forward_Query_QueryUserExtendedPairTotalData_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryVaultInfoByVaultId_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryVaultInfoByVaultID_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QueryVaultInfoOfOwnerByApp_0 = runtime.ForwardResponseMessage
 
@@ -2858,7 +2957,7 @@ var (
 
 	forward_Query_QueryAllVaultsByAppAndExtendedPair_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryVaultIdOfOwnerByExtendedPairAndApp_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryVaultIDOfOwnerByExtendedPairAndApp_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QueryVaultIdsByAppInAllExtendedPairs_0 = runtime.ForwardResponseMessage
 
@@ -2872,23 +2971,25 @@ var (
 
 	forward_Query_QueryVaultCountByAppAndExtendedPair_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryTotalValueLockedByAppExtendedPair_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryTotalValueLockedByAppAndExtendedPair_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QueryExtendedPairIDsByApp_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryStableVaultByVaultId_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryStableVaultByVaultID_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QueryStableVaultByApp_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryStableVaultByAppExtendedPair_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryStableVaultByAppAndExtendedPair_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryExtendedPairVaultMappingByAppAndExtendedPairId_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryExtendedPairVaultMappingByAppAndExtendedPair_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QueryExtendedPairVaultMappingByApp_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryTVLLockedByAppOfAllExtendedPairs_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryTVLByAppOfAllExtendedPairs_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryTotalTVLByApp_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryTVLByApp_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QueryUserMyPositionByApp_0 = runtime.ForwardResponseMessage
+
+	forward_Query_QueryPairsLockedAndMintedStatisticByApp_0 = runtime.ForwardResponseMessage
 )

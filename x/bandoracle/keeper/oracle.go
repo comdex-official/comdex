@@ -19,7 +19,7 @@ func (k Keeper) SetFetchPriceResult(ctx sdk.Context, requestID types.OracleReque
 	store.Set(types.FetchPriceResultStoreKey(requestID), k.cdc.MustMarshal(&result))
 }
 
-// GetFetchPriceResult returns the FetchPrice by requestId
+// GetFetchPriceResult returns the FetchPrice by requestId.
 func (k Keeper) GetFetchPriceResult(ctx sdk.Context, id types.OracleRequestID) (types.FetchPriceResult, error) {
 	bz := ctx.KVStore(k.storeKey).Get(types.FetchPriceResultStoreKey(id))
 	if bz == nil {
@@ -32,7 +32,7 @@ func (k Keeper) GetFetchPriceResult(ctx sdk.Context, id types.OracleRequestID) (
 	return result, nil
 }
 
-// GetLastFetchPriceID return the id from the last FetchPrice request
+// GetLastFetchPriceID return the id from the last FetchPrice request.
 func (k Keeper) GetLastFetchPriceID(ctx sdk.Context) int64 {
 	bz := ctx.KVStore(k.storeKey).Get(types.KeyPrefix(types.LastFetchPriceIDKey))
 	intV := gogotypes.Int64Value{}
@@ -40,7 +40,7 @@ func (k Keeper) GetLastFetchPriceID(ctx sdk.Context) int64 {
 	return intV.GetValue()
 }
 
-// SetLastFetchPriceID saves the id from the last FetchPrice request
+// SetLastFetchPriceID saves the id from the last FetchPrice request.
 func (k Keeper) SetLastFetchPriceID(ctx sdk.Context, id types.OracleRequestID) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.KeyPrefix(types.LastFetchPriceIDKey),
@@ -138,7 +138,7 @@ func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {
 }
 
 func (k Keeper) GetLastBlockHeight(ctx sdk.Context) int64 {
-	bz := ctx.KVStore(k.storeKey).Get(types.KeyPrefix(types.LastBlockheightKey))
+	bz := ctx.KVStore(k.storeKey).Get(types.KeyPrefix(types.LastBlockHeightKey))
 	intV := gogotypes.Int64Value{}
 	k.cdc.MustUnmarshalLengthPrefixed(bz, &intV)
 	return intV.GetValue()
@@ -146,7 +146,7 @@ func (k Keeper) GetLastBlockHeight(ctx sdk.Context) int64 {
 
 func (k Keeper) SetLastBlockHeight(ctx sdk.Context, height int64) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.KeyPrefix(types.LastBlockheightKey),
+	store.Set(types.KeyPrefix(types.LastBlockHeightKey),
 		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: height}))
 }
 
@@ -158,11 +158,8 @@ func (k Keeper) AddFetchPriceRecords(ctx sdk.Context, price types.MsgFetchPriceD
 
 func (k Keeper) OraclePriceValidationByRequestID(ctx sdk.Context, req int64) bool {
 	currentReqID := k.GetLastFetchPriceID(ctx)
-	if currentReqID != req {
-		return true
-	} else {
-		return false
-	}
+
+	return currentReqID != req
 }
 
 func (k Keeper) SetOracleValidationResult(ctx sdk.Context, res bool) {

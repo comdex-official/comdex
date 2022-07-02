@@ -23,7 +23,7 @@ func NewMsgCreateRequest(
 	appID uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) *MsgCreateRequest {
 	return &MsgCreateRequest{
 		From:                from.String(),
-		AppId:        appID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		AmountIn:            amountIn,
 		AmountOut:           amountOut,
@@ -86,7 +86,7 @@ func NewMsgDepositRequest(
 	appID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgDepositRequest {
 	return &MsgDepositRequest{
 		From:                from.String(),
-		AppId:        appID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
@@ -143,7 +143,7 @@ func NewMsgWithdrawRequest(
 	appID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgWithdrawRequest {
 	return &MsgWithdrawRequest{
 		From:                from.String(),
-		AppId:        appID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
@@ -200,7 +200,7 @@ func NewMsgDrawRequest(
 	appID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgDrawRequest {
 	return &MsgDrawRequest{
 		From:                from.String(),
-		AppId:        appID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
@@ -257,7 +257,7 @@ func NewMsgRepayRequest(
 	appID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgRepayRequest {
 	return &MsgRepayRequest{
 		From:                from.String(),
-		AppId:        appID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
@@ -314,7 +314,7 @@ func NewMsgLiquidateRequest(
 	appID uint64, extendedPairVaultID uint64, userVaultid string) *MsgCloseRequest {
 	return &MsgCloseRequest{
 		From:                from.String(),
-		AppId:        appID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 	}
@@ -361,7 +361,7 @@ func NewMsgCreateStableMintRequest(
 	appID uint64, extendedPairVaultID uint64, amount sdk.Int) *MsgCreateStableMintRequest {
 	return &MsgCreateStableMintRequest{
 		From:                from.String(),
-		AppId:        appID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		Amount:              amount,
 	}
@@ -414,7 +414,7 @@ func NewMsgDepositStableMintRequest(
 	appID uint64, extendedPairVaultID uint64, amount sdk.Int, stablemintID string) *MsgDepositStableMintRequest {
 	return &MsgDepositStableMintRequest{
 		From:                from.String(),
-		AppId:        appID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		Amount:              amount,
 		StableVaultId:       stablemintID,
@@ -468,7 +468,7 @@ func NewMsgWithdrawStableMintRequest(
 	appID uint64, extendedPairVaultID uint64, amount sdk.Int, stablemintID string) *MsgWithdrawStableMintRequest {
 	return &MsgWithdrawStableMintRequest{
 		From:                from.String(),
-		AppId:        appID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		Amount:              amount,
 		StableVaultId:       stablemintID,

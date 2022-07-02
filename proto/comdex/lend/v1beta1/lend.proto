@@ -87,9 +87,10 @@ message BorrowAsset {
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 
-  uint64 bridged_asset_id = 7 [
-    (gogoproto.customname) = "BridgedAssetID",
-    (gogoproto.moretags) = "yaml:\"bridged_asset_id\""
+  cosmos.base.v1beta1.Coin bridged_asset_amount = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"bridged_asset_amount\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 
   google.protobuf.Timestamp borrowing_time = 8 [

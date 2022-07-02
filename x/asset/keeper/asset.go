@@ -166,11 +166,11 @@ func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error 
 		var (
 			id    = k.GetAssetID(ctx)
 			asset = types.Asset{
-				Id:               id + 1,
-				Name:             msg.Name,
-				Denom:            msg.Denom,
-				Decimals:         msg.Decimals,
-				IsOnChain:        msg.IsOnChain,
+				Id:                    id + 1,
+				Name:                  msg.Name,
+				Denom:                 msg.Denom,
+				Decimals:              msg.Decimals,
+				IsOnChain:             msg.IsOnChain,
 				IsOraclePriceRequired: msg.IsOraclePriceRequired,
 			}
 		)
@@ -262,7 +262,12 @@ func (k *Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []types.Asset) {
 		iter  = sdk.KVStorePrefixIterator(store, types.AssetForOracleKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var asset types.Asset

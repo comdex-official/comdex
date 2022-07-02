@@ -6,7 +6,7 @@ import (
 )
 
 func (m *WhitelistedAppIds) ValidateBasic() error {
-	if m.WhitelistedAppMappingIds == nil {
+	if m.WhitelistedAppIds == nil {
 		return fmt.Errorf("WhitelistedAppIds cannot be empty")
 	}
 

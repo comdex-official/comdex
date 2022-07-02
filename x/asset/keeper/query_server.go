@@ -20,7 +20,7 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -172,18 +172,7 @@ func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) 
 	}, nil
 }
 
-func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	var (
-		ctx    = sdk.UnwrapSDKContext(c)
-		params = q.GetParams(ctx)
-	)
-
-	return &types.QueryParamsResponse{
-		Params: params,
-	}, nil
-}
-
-func (q *queryServer) QueryAppsMappings(c context.Context, _ *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
+func (q *queryServer) QueryApps(c context.Context, _ *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
 	var (
 		ctx         = sdk.UnwrapSDKContext(c)
 		apps, found = q.GetApps(ctx)
@@ -197,7 +186,7 @@ func (q *queryServer) QueryAppsMappings(c context.Context, _ *types.QueryAppsReq
 	}, nil
 }
 
-func (q *queryServer) QueryAppMappings(c context.Context, req *types.QueryAppRequest) (*types.QueryAppResponse, error) {
+func (q *queryServer) QueryApp(c context.Context, req *types.QueryAppRequest) (*types.QueryAppResponse, error) {
 	var (
 		ctx        = sdk.UnwrapSDKContext(c)
 		app, found = q.GetApp(ctx, req.Id)
@@ -249,7 +238,7 @@ func (q *queryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *ty
 	}
 	var pairVaultsData []types.ExtendedPairVault
 	for _, data := range pairVaults {
-		if data.AppMappingId == req.AppId {
+		if data.AppId == req.AppId {
 			pairVaultsData = append(pairVaultsData, data)
 		}
 	}
@@ -259,7 +248,7 @@ func (q *queryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *ty
 	}, nil
 }
 
-func (q *queryServer) QueryAllExtendedPairStableVaultsIdByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsIdByAppRequest) (*types.QueryAllExtendedPairStableVaultsIdByAppResponse, error) {
+func (q *queryServer) QueryAllExtendedPairStableVaultsIDByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsIDByAppRequest) (*types.QueryAllExtendedPairStableVaultsIDByAppResponse, error) {
 	var (
 		ctx               = sdk.UnwrapSDKContext(c)
 		pairVaults, found = q.GetPairsVaults(ctx)
@@ -269,12 +258,12 @@ func (q *queryServer) QueryAllExtendedPairStableVaultsIdByApp(c context.Context,
 		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
 	}
 	for _, data := range pairVaults {
-		if (data.AppMappingId == req.AppId) && (data.IsStableMintVault) {
+		if (data.AppId == req.AppId) && (data.IsStableMintVault) {
 			pairVault = append(pairVault, data.Id)
 		}
 	}
 
-	return &types.QueryAllExtendedPairStableVaultsIdByAppResponse{
+	return &types.QueryAllExtendedPairStableVaultsIDByAppResponse{
 		ExtendedPairsId: pairVault,
 	}, nil
 }
@@ -299,7 +288,7 @@ func (q *queryServer) QueryGovTokenByApp(c context.Context, req *types.QueryGovT
 	}, nil
 }
 
-func (q *queryServer) QueryAllExtendedPairStableVaultsDataByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsDataByAppRequest) (*types.QueryAllExtendedPairStableVaultsDataByAppResponse, error) {
+func (q *queryServer) QueryAllExtendedPairStableVaultsByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsByAppRequest) (*types.QueryAllExtendedPairStableVaultsByAppResponse, error) {
 	var (
 		ctx               = sdk.UnwrapSDKContext(c)
 		pairVaults, found = q.GetPairsVaults(ctx)
@@ -309,12 +298,12 @@ func (q *queryServer) QueryAllExtendedPairStableVaultsDataByApp(c context.Contex
 	}
 	var pairVaultsData []types.ExtendedPairVault
 	for _, data := range pairVaults {
-		if data.AppMappingId == req.AppId && data.IsStableMintVault {
+		if data.AppId == req.AppId && data.IsStableMintVault {
 			pairVaultsData = append(pairVaultsData, data)
 		}
 	}
 
-	return &types.QueryAllExtendedPairStableVaultsDataByAppResponse{
+	return &types.QueryAllExtendedPairStableVaultsByAppResponse{
 		ExtendedPair: pairVaultsData,
 	}, nil
 }

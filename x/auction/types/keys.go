@@ -61,8 +61,8 @@ func HistoryAuctionKey(appID uint64, auctionType string, auctionID uint64) []byt
 	return append(append(append(HistoryAuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(auctionID)...)
 }
 
-func HistoryUserKey(bidder string, appID uint64, auctionType string, bidId uint64) []byte {
-	return append(append(append(append(HistoryUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(bidId)...)
+func HistoryUserKey(bidder string, appID uint64, auctionType string, bidID uint64) []byte {
+	return append(append(append(append(HistoryUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(bidID)...)
 }
 
 func HistoryUserAuctionTypeKey(bidder string, appID uint64, auctionType string) []byte {

@@ -20,8 +20,8 @@ type BankKeeper interface {
 type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
-	GetApp(ctx sdk.Context, id uint64) (assettypes.AppMapping, bool)
-	GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool)
+	GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool)
+	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
 }
 
 type OracleKeeper interface {

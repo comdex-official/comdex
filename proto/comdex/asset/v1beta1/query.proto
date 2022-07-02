@@ -6,7 +6,8 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/asset/v1beta1/asset.proto";
 import "comdex/asset/v1beta1/params.proto";
-import "comdex/asset/v1beta1/appMapping.proto";
+import "comdex/asset/v1beta1/app.proto";
+import "comdex/asset/v1beta1/pair.proto";
 import "comdex/asset/v1beta1/extendedPairVault.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
@@ -36,13 +37,6 @@ message QueryAssetResponse {
       [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"asset\"" ];
 }
 
-message PairInfo{
-  uint64 id                = 1;
-  uint64 asset_in          = 2 [ (gogoproto.moretags) = "yaml:\"asset_in\"" ];
-  string denom_in          = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
-  uint64 asset_out         = 4 [ (gogoproto.moretags) = "yaml:\"asset_out\"" ];
-  string denom_out         = 5 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
-}
 
 message QueryPairsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
@@ -65,21 +59,12 @@ message QueryPairResponse {
       [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"pair_info\"" ];
 }
 
-message QueryParamsRequest {}
-
-message QueryParamsResponse {
-  Params params = 1 [
-    (gogoproto.moretags) = "yaml:\"params\"",
-    (gogoproto.nullable) = false
-  ];
-}
-
 message QueryAppRequest {
   uint64 id = 1;
 }
 
 message QueryAppResponse {
-  AppMapping app = 1 [
+  AppData app = 1 [
     (gogoproto.moretags) = "yaml:\"app\"",
     (gogoproto.nullable) = false
   ];
@@ -96,7 +81,7 @@ message QueryGovTokenByAppResponse {
 message QueryAppsRequest {}
 
 message QueryAppsResponse {
-  repeated AppMapping apps = 1 [
+  repeated AppData apps = 1 [
     (gogoproto.moretags) = "yaml:\"apps\"",
     (gogoproto.nullable) = false
   ];
@@ -133,19 +118,19 @@ message QueryAllExtendedPairVaultsByAppResponse {
   ];
 }
 
-message QueryAllExtendedPairStableVaultsIdByAppRequest {
+message QueryAllExtendedPairStableVaultsIDByAppRequest {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
 }
 
-message QueryAllExtendedPairStableVaultsIdByAppResponse {
+message QueryAllExtendedPairStableVaultsIDByAppResponse {
   repeated uint64 extended_pairs_id =1 [(gogoproto.moretags) = "yaml:\"extended_pairs_id\""];
 }
 
-message QueryAllExtendedPairStableVaultsDataByAppRequest {
+message QueryAllExtendedPairStableVaultsByAppRequest {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
 }
 
-message QueryAllExtendedPairStableVaultsDataByAppResponse {
+message QueryAllExtendedPairStableVaultsByAppResponse {
   repeated ExtendedPairVault extended_pair =1 [
     (gogoproto.moretags) = "yaml:\"extended_pair\"",
     (gogoproto.nullable) = false
@@ -165,13 +150,10 @@ service Query {
   rpc QueryPair(QueryPairRequest) returns (QueryPairResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/pairs/{id}";
   }
-  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/comdex/asset/v1beta1/params";
-  }
-  rpc QueryAppsMappings(QueryAppsRequest) returns (QueryAppsResponse) {
+  rpc QueryApps(QueryAppsRequest) returns (QueryAppsResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/apps";
   }
-  rpc QueryAppMappings(QueryAppRequest) returns (QueryAppResponse) {
+  rpc QueryApp(QueryAppRequest) returns (QueryAppResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/app/{id}";
   }
   rpc QueryExtendedPairVault(QueryExtendedPairVaultRequest) returns (QueryExtendedPairVaultResponse) {
@@ -183,13 +165,13 @@ service Query {
   rpc QueryAllExtendedPairVaultsByApp(QueryAllExtendedPairVaultsByAppRequest) returns (QueryAllExtendedPairVaultsByAppResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/product_to_extended_pair/{app_id}";
   }
-  rpc QueryAllExtendedPairStableVaultsIdByApp(QueryAllExtendedPairStableVaultsIdByAppRequest) returns (QueryAllExtendedPairStableVaultsIdByAppResponse) {
+  rpc QueryAllExtendedPairStableVaultsIDByApp(QueryAllExtendedPairStableVaultsIDByAppRequest) returns (QueryAllExtendedPairStableVaultsIDByAppResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_stable_vault_wise/{app_id}";
   }
   rpc QueryGovTokenByApp(QueryGovTokenByAppRequest) returns (QueryGovTokenByAppResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/gov_token_in_an_app/{app_id}";
   }
-  rpc QueryAllExtendedPairStableVaultsDataByApp(QueryAllExtendedPairStableVaultsDataByAppRequest) returns (QueryAllExtendedPairStableVaultsDataByAppResponse) {
+  rpc QueryAllExtendedPairStableVaultsByApp(QueryAllExtendedPairStableVaultsByAppRequest) returns (QueryAllExtendedPairStableVaultsByAppResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_stable_vault_wise/{app_id}";
   }
 

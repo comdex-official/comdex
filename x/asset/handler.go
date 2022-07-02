@@ -1,31 +1,27 @@
 package asset
 
+//goland:noinspection GoLinter
 import (
+	"fmt"
 	"github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
+// NewHandler ...
 func NewHandler(k keeper.Keeper) sdk.Handler {
-	server := keeper.NewMsgServiceServer(k)
+	// this line is used by starport scaffolding # handler/msgServer
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
-		ctx = ctx.WithEventManager(sdk.NewEventManager())
+		_ = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgAddAssetRequest:
-			res, err := server.MsgAddAsset(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgUpdateAssetRequest:
-			res, err := server.MsgUpdateAsset(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddPairRequest:
-			res, err := server.MsgAddPair(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
+		// this line is used by starport scaffolding # 1
 		default:
-			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
+			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
+			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 		}
 	}
 }
@@ -39,17 +35,15 @@ func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return handleUpdateAssetProposal(ctx, k, c)
 		case *types.AddPairsProposal:
 			return handleAddPairsProposal(ctx, k, c)
-		case *types.UpdateGovTimeInAppMappingProposal:
-			return handleUpdateGovTimeInAppMappingProposal(ctx, k, c)
-		case *types.AddAppMappingProposal:
-			return handleAddAppMappingProposal(ctx, k, c)
-		case *types.AddAssetMappingProposal:
-			return handleAddAssetMappingProposal(ctx, k, c)
-		case *types.AddExtendedPairsVaultProposal:
-			return handleExtendedPairsVaultProposal(ctx, k, c)
+		case *types.UpdateGovTimeInAppProposal:
+			return handleUpdateGovTimeInAppProposal(ctx, k, c)
+		case *types.AddAppProposal:
+			return handleAddAppProposal(ctx, k, c)
+		case *types.AddAssetInAppProposal:
+			return handleAddAssetInAppProposal(ctx, k, c)
 
 		default:
-			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
+			return sdkerrors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}
 	}
 }
@@ -66,17 +60,13 @@ func handleAddPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPairsP
 	return k.HandleProposalAddPairs(ctx, p)
 }
 
-func handleUpdateGovTimeInAppMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateGovTimeInAppMappingProposal) error {
-	return k.HandleUpdateGovTimeInAppMapping(ctx, p)
+func handleUpdateGovTimeInAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateGovTimeInAppProposal) error {
+	return k.HandleUpdateGovTimeInApp(ctx, p)
 }
 
-func handleAddAppMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAppMappingProposal) error {
-	return k.HandleAddAppMappingRecords(ctx, p)
+func handleAddAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAppProposal) error {
+	return k.HandleAddAppRecords(ctx, p)
 }
-func handleAddAssetMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetMappingProposal) error {
-	return k.HandleAddAssetMappingRecords(ctx, p)
-}
-
-func handleExtendedPairsVaultProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddExtendedPairsVaultProposal) error {
-	return k.HandleAddExtendedPairsVaultRecords(ctx, p)
+func handleAddAssetInAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetInAppProposal) error {
+	return k.HandleAddAssetInAppRecords(ctx, p)
 }

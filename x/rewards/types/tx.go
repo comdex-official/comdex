@@ -60,11 +60,11 @@ func (m MsgCreateGauge) ValidateBasic() error {
 		return fmt.Errorf("duration should be positive: %d < 0", m.TriggerDuration)
 	}
 	if m.DepositAmount.Amount.IsNegative() || m.DepositAmount.Amount.IsZero() {
-		return fmt.Errorf("invalid coin amount: %d < 0", m.DepositAmount.Amount)
+		return fmt.Errorf("invalid coin amount: %s < 0", m.DepositAmount.Amount)
 	}
 
 	if m.DepositAmount.Amount.LT(sdk.NewIntFromUint64(m.TotalTriggers)) {
-		return fmt.Errorf("deposit amount : %d smaller than total triggers %d", m.DepositAmount.Amount, m.TotalTriggers)
+		return fmt.Errorf("deposit amount : %s smaller than total triggers %d", m.DepositAmount.Amount, m.TotalTriggers)
 	}
 
 	return nil
