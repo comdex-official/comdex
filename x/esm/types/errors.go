@@ -17,4 +17,6 @@ var (
 	ErrAmtExceedsTargetValue       = sdkerrors.Register(ModuleName, 1106, "Amt Exceeds Target Value")
 	ErrDepositForAppReached        = sdkerrors.Register(ModuleName, 1107, "Deposit For AppID Reached")
 	ErrESMAlreadyExecuted          = sdkerrors.Register(ModuleName, 1108, "ESM Already Executed")
+	ErrCircuitBreakerEnabled       = sdkerrors.Register(ModuleName, 1109, "circuit breaker is triggered")
+    ErrorUnauthorized              = sdkerrors.Register(ModuleName, 1110, "unauthorized")
 )

@@ -9,6 +9,7 @@ option go_package = "github.com/comdex-official/comdex/x/esm/types";
 service Msg {
   rpc DepositESM(MsgDepositESM) returns (MsgDepositESMResponse);
   rpc ExecuteESM(MsgExecuteESM) returns (MsgExecuteESMResponse);
+  rpc MsgKillSwitch(MsgKillRequest) returns (MsgKillResponse);
 }
 
 message MsgDepositESM {
@@ -22,5 +23,14 @@ message MsgExecuteESM {
   string                depositor = 2;
 }
 
+message MsgKillRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  bool circuit_breaker_enable = 2 [
+    (gogoproto.customname) = "BreakerEnable",
+    (gogoproto.moretags) = "yaml:\"circuit_breaker_enabled\""
+  ];
+}
+
 message MsgDepositESMResponse {}
 message MsgExecuteESMResponse {}
+message MsgKillResponse {}

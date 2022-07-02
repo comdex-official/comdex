@@ -43,3 +43,14 @@ func (m msgServer) ExecuteESM(goCtx context.Context, execute *types.MsgExecuteES
 
 	return &types.MsgExecuteESMResponse{}, nil
 }
+
+func (m msgServer) MsgKillSwitch(c context.Context, msg *types.MsgKillRequest) (*types.MsgKillResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	if msg.From != m.keeper.Admin(ctx) {
+		return nil, types.ErrorUnauthorized
+	}
+
+	m.keeper.SetCondition(ctx, msg.BreakerEnable)
+
+	return &types.MsgKillResponse{}, nil
+}

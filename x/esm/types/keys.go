@@ -23,6 +23,7 @@ var (
 	ESMTriggerParamsKeyPrefix = []byte{0x01}
 	CurrentDepositStatsPrefix = []byte{0x02}
 	ESMStatusPrefix           = []byte{0x03}
+	Condition                 = []byte{0x04}
 )
 
 func ESMTriggerParamsKey(id uint64) []byte {

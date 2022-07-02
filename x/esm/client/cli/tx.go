@@ -37,6 +37,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(
 		txDepositESM(),
 		txExecuteESM(),
+		KillSwitch(),
 	)
 	return cmd
 }
@@ -173,4 +174,35 @@ func txExecuteESM() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
+}
+
+func KillSwitch() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "stop-all-actions [condition]",
+		Short: "Stop all actions",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			condition, err := strconv.ParseBool(args[0])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgKillRequest(ctx.FromAddress, condition)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
 }
