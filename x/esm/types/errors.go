@@ -8,6 +8,7 @@ import (
 
 // x/esm module sentinel errors
 var (
+	ErrInvalidAsset                = sdkerrors.Register(ModuleName, 1100, "invalid asset")
 	ErrorUnknownProposalType       = sdkerrors.Register(ModuleName, 1101, "unknown proposal type")
 	ErrorDuplicateESMTriggerParams = sdkerrors.Register(ModuleName, 1102, "Duplicate ESM Trigger Params for AppID")
 	ErrAppDataNotFound             = sdkerrors.Register(ModuleName, 1103, "App Data Not Found")

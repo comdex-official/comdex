@@ -22,7 +22,7 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 	}
 }
 
-func (m msgServer) Deposit(goCtx context.Context, deposit *types.MsgDeposit) (*types.MsgDepositResponse, error) {
+func (m msgServer) DepositESM(goCtx context.Context, deposit *types.MsgDepositESM) (*types.MsgDepositESMResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	appID := deposit.AppId
 
@@ -30,10 +30,10 @@ func (m msgServer) Deposit(goCtx context.Context, deposit *types.MsgDeposit) (*t
 		return nil, err
 	}
 
-	return &types.MsgDepositResponse{}, nil
+	return &types.MsgDepositESMResponse{}, nil
 }
 
-func (m msgServer) Execute(goCtx context.Context, execute *types.MsgExecute) (*types.MsgExecuteResponse, error) {
+func (m msgServer) ExecuteESM(goCtx context.Context, execute *types.MsgExecuteESM) (*types.MsgExecuteESMResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	appID := execute.AppId
 
@@ -41,5 +41,5 @@ func (m msgServer) Execute(goCtx context.Context, execute *types.MsgExecute) (*t
 		return nil, err
 	}
 
-	return &types.MsgExecuteResponse{}, nil
+	return &types.MsgExecuteESMResponse{}, nil
 }

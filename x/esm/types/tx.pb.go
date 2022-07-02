@@ -29,24 +29,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgDeposit struct {
+type MsgDepositESM struct {
 	AppId     uint64     `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
 	Depositor string     `protobuf:"bytes,2,opt,name=depositor,proto3" json:"depositor,omitempty"`
 	Amount    types.Coin `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount"`
 }
 
-func (m *MsgDeposit) Reset()         { *m = MsgDeposit{} }
-func (m *MsgDeposit) String() string { return proto.CompactTextString(m) }
-func (*MsgDeposit) ProtoMessage()    {}
-func (*MsgDeposit) Descriptor() ([]byte, []int) {
+func (m *MsgDepositESM) Reset()         { *m = MsgDepositESM{} }
+func (m *MsgDepositESM) String() string { return proto.CompactTextString(m) }
+func (*MsgDepositESM) ProtoMessage()    {}
+func (*MsgDepositESM) Descriptor() ([]byte, []int) {
 	return fileDescriptor_11f122646bf242d3, []int{0}
 }
-func (m *MsgDeposit) XXX_Unmarshal(b []byte) error {
+func (m *MsgDepositESM) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDepositESM) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDeposit.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDepositESM.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -56,56 +56,56 @@ func (m *MsgDeposit) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *MsgDeposit) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDeposit.Merge(m, src)
+func (m *MsgDepositESM) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDepositESM.Merge(m, src)
 }
-func (m *MsgDeposit) XXX_Size() int {
+func (m *MsgDepositESM) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDeposit) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDeposit.DiscardUnknown(m)
+func (m *MsgDepositESM) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDepositESM.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDeposit proto.InternalMessageInfo
+var xxx_messageInfo_MsgDepositESM proto.InternalMessageInfo
 
-func (m *MsgDeposit) GetAppId() uint64 {
+func (m *MsgDepositESM) GetAppId() uint64 {
 	if m != nil {
 		return m.AppId
 	}
 	return 0
 }
 
-func (m *MsgDeposit) GetDepositor() string {
+func (m *MsgDepositESM) GetDepositor() string {
 	if m != nil {
 		return m.Depositor
 	}
 	return ""
 }
 
-func (m *MsgDeposit) GetAmount() types.Coin {
+func (m *MsgDepositESM) GetAmount() types.Coin {
 	if m != nil {
 		return m.Amount
 	}
 	return types.Coin{}
 }
 
-type MsgExecute struct {
+type MsgExecuteESM struct {
 	AppId     uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
 	Depositor string `protobuf:"bytes,2,opt,name=depositor,proto3" json:"depositor,omitempty"`
 }
 
-func (m *MsgExecute) Reset()         { *m = MsgExecute{} }
-func (m *MsgExecute) String() string { return proto.CompactTextString(m) }
-func (*MsgExecute) ProtoMessage()    {}
-func (*MsgExecute) Descriptor() ([]byte, []int) {
+func (m *MsgExecuteESM) Reset()         { *m = MsgExecuteESM{} }
+func (m *MsgExecuteESM) String() string { return proto.CompactTextString(m) }
+func (*MsgExecuteESM) ProtoMessage()    {}
+func (*MsgExecuteESM) Descriptor() ([]byte, []int) {
 	return fileDescriptor_11f122646bf242d3, []int{1}
 }
-func (m *MsgExecute) XXX_Unmarshal(b []byte) error {
+func (m *MsgExecuteESM) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgExecute) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgExecuteESM) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgExecute.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgExecuteESM.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -115,47 +115,47 @@ func (m *MsgExecute) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *MsgExecute) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgExecute.Merge(m, src)
+func (m *MsgExecuteESM) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgExecuteESM.Merge(m, src)
 }
-func (m *MsgExecute) XXX_Size() int {
+func (m *MsgExecuteESM) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgExecute) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgExecute.DiscardUnknown(m)
+func (m *MsgExecuteESM) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgExecuteESM.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgExecute proto.InternalMessageInfo
+var xxx_messageInfo_MsgExecuteESM proto.InternalMessageInfo
 
-func (m *MsgExecute) GetAppId() uint64 {
+func (m *MsgExecuteESM) GetAppId() uint64 {
 	if m != nil {
 		return m.AppId
 	}
 	return 0
 }
 
-func (m *MsgExecute) GetDepositor() string {
+func (m *MsgExecuteESM) GetDepositor() string {
 	if m != nil {
 		return m.Depositor
 	}
 	return ""
 }
 
-type MsgDepositResponse struct {
+type MsgDepositESMResponse struct {
 }
 
-func (m *MsgDepositResponse) Reset()         { *m = MsgDepositResponse{} }
-func (m *MsgDepositResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgDepositResponse) ProtoMessage()    {}
-func (*MsgDepositResponse) Descriptor() ([]byte, []int) {
+func (m *MsgDepositESMResponse) Reset()         { *m = MsgDepositESMResponse{} }
+func (m *MsgDepositESMResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDepositESMResponse) ProtoMessage()    {}
+func (*MsgDepositESMResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_11f122646bf242d3, []int{2}
 }
-func (m *MsgDepositResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgDepositESMResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDepositResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgDepositESMResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDepositResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgDepositESMResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -165,33 +165,33 @@ func (m *MsgDepositResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *MsgDepositResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDepositResponse.Merge(m, src)
+func (m *MsgDepositESMResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDepositESMResponse.Merge(m, src)
 }
-func (m *MsgDepositResponse) XXX_Size() int {
+func (m *MsgDepositESMResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDepositResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDepositResponse.DiscardUnknown(m)
+func (m *MsgDepositESMResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDepositESMResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDepositResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgDepositESMResponse proto.InternalMessageInfo
 
-type MsgExecuteResponse struct {
+type MsgExecuteESMResponse struct {
 }
 
-func (m *MsgExecuteResponse) Reset()         { *m = MsgExecuteResponse{} }
-func (m *MsgExecuteResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgExecuteResponse) ProtoMessage()    {}
-func (*MsgExecuteResponse) Descriptor() ([]byte, []int) {
+func (m *MsgExecuteESMResponse) Reset()         { *m = MsgExecuteESMResponse{} }
+func (m *MsgExecuteESMResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgExecuteESMResponse) ProtoMessage()    {}
+func (*MsgExecuteESMResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_11f122646bf242d3, []int{3}
 }
-func (m *MsgExecuteResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgExecuteESMResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgExecuteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgExecuteESMResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgExecuteResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgExecuteESMResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -201,50 +201,50 @@ func (m *MsgExecuteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *MsgExecuteResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgExecuteResponse.Merge(m, src)
+func (m *MsgExecuteESMResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgExecuteESMResponse.Merge(m, src)
 }
-func (m *MsgExecuteResponse) XXX_Size() int {
+func (m *MsgExecuteESMResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgExecuteResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgExecuteResponse.DiscardUnknown(m)
+func (m *MsgExecuteESMResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgExecuteESMResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgExecuteResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgExecuteESMResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgDeposit)(nil), "comdex.esm.v1beta1.MsgDeposit")
-	proto.RegisterType((*MsgExecute)(nil), "comdex.esm.v1beta1.MsgExecute")
-	proto.RegisterType((*MsgDepositResponse)(nil), "comdex.esm.v1beta1.MsgDepositResponse")
-	proto.RegisterType((*MsgExecuteResponse)(nil), "comdex.esm.v1beta1.MsgExecuteResponse")
+	proto.RegisterType((*MsgDepositESM)(nil), "comdex.esm.v1beta1.MsgDepositESM")
+	proto.RegisterType((*MsgExecuteESM)(nil), "comdex.esm.v1beta1.MsgExecuteESM")
+	proto.RegisterType((*MsgDepositESMResponse)(nil), "comdex.esm.v1beta1.MsgDepositESMResponse")
+	proto.RegisterType((*MsgExecuteESMResponse)(nil), "comdex.esm.v1beta1.MsgExecuteESMResponse")
 }
 
 func init() { proto.RegisterFile("comdex/esm/v1beta1/tx.proto", fileDescriptor_11f122646bf242d3) }
 
 var fileDescriptor_11f122646bf242d3 = []byte{
-	// 330 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0x31, 0x4f, 0x32, 0x31,
-	0x18, 0xc7, 0xaf, 0x2f, 0xbc, 0x18, 0xea, 0xd6, 0x60, 0x82, 0x68, 0x2a, 0x61, 0x30, 0x2c, 0xb4,
-	0x01, 0x07, 0x67, 0x51, 0x63, 0x1c, 0x18, 0xbc, 0xd1, 0xc5, 0xf4, 0xee, 0xca, 0xd9, 0xc4, 0xbb,
-	0xa7, 0xa1, 0xc5, 0xa0, 0x9f, 0xc2, 0xef, 0xe1, 0x17, 0x61, 0x64, 0x74, 0x32, 0x06, 0xbe, 0x88,
-	0x39, 0xda, 0x93, 0x44, 0x83, 0x83, 0xdb, 0xdd, 0xf3, 0x7b, 0xf2, 0xfb, 0x3f, 0x4f, 0x5b, 0x7c,
-	0x10, 0x43, 0x96, 0xc8, 0x19, 0x97, 0x26, 0xe3, 0x8f, 0xfd, 0x48, 0x5a, 0xd1, 0xe7, 0x76, 0xc6,
-	0xf4, 0x04, 0x2c, 0x10, 0xe2, 0x20, 0x93, 0x26, 0x63, 0x1e, 0xb6, 0x1a, 0x29, 0xa4, 0xb0, 0xc6,
-	0xbc, 0xf8, 0x72, 0x9d, 0x2d, 0x1a, 0x83, 0xc9, 0xc0, 0xf0, 0x48, 0x18, 0xf9, 0xe5, 0x89, 0x41,
-	0xe5, 0x8e, 0x77, 0x9e, 0x31, 0x1e, 0x99, 0xf4, 0x42, 0x6a, 0x30, 0xca, 0x92, 0x3d, 0x5c, 0x13,
-	0x5a, 0xdf, 0xa9, 0xa4, 0x89, 0xda, 0xa8, 0x5b, 0x0d, 0xff, 0x0b, 0xad, 0xaf, 0x13, 0x72, 0x88,
-	0xeb, 0x89, 0xeb, 0x80, 0x49, 0xf3, 0x5f, 0x1b, 0x75, 0xeb, 0xe1, 0xa6, 0x40, 0x4e, 0x71, 0x4d,
-	0x64, 0x30, 0xcd, 0x6d, 0xb3, 0xd2, 0x46, 0xdd, 0xdd, 0xc1, 0x3e, 0x73, 0x99, 0xac, 0xc8, 0x2c,
-	0xc7, 0x63, 0xe7, 0xa0, 0xf2, 0x61, 0x75, 0xfe, 0x7e, 0x14, 0x84, 0xbe, 0xbd, 0x73, 0xb6, 0xce,
-	0xbe, 0x9c, 0xc9, 0x78, 0x6a, 0xe5, 0x9f, 0xb2, 0x3b, 0x0d, 0x4c, 0x36, 0xe3, 0x87, 0xd2, 0x68,
-	0xc8, 0x8d, 0xf4, 0x55, 0x2f, 0x2e, 0xab, 0x83, 0x57, 0x84, 0x2b, 0x23, 0x93, 0x92, 0x1b, 0xbc,
-	0x53, 0xee, 0x4b, 0xd9, 0xcf, 0x83, 0x64, 0x1b, 0x61, 0xeb, 0xf8, 0x77, 0x5e, 0xaa, 0x0b, 0x65,
-	0xb9, 0xc6, 0x36, 0xa5, 0xe7, 0x5b, 0x95, 0xdf, 0xa6, 0x1d, 0x5e, 0xcd, 0x97, 0x14, 0x2d, 0x96,
-	0x14, 0x7d, 0x2c, 0x29, 0x7a, 0x59, 0xd1, 0x60, 0xb1, 0xa2, 0xc1, 0xdb, 0x8a, 0x06, 0xb7, 0xbd,
-	0x54, 0xd9, 0xfb, 0x69, 0x54, 0x78, 0xb8, 0x73, 0xf5, 0x60, 0x3c, 0x56, 0xb1, 0x12, 0x0f, 0xfe,
-	0x9f, 0xbb, 0x67, 0x63, 0x9f, 0xb4, 0x34, 0x51, 0x6d, 0x7d, 0xd1, 0x27, 0x9f, 0x01, 0x00, 0x00,
-	0xff, 0xff, 0x1d, 0x9d, 0x25, 0x4d, 0x51, 0x02, 0x00, 0x00,
+	// 335 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0x31, 0x4f, 0x3a, 0x31,
+	0x18, 0xc6, 0xaf, 0x7f, 0xf8, 0x93, 0x50, 0xe3, 0x72, 0x91, 0x88, 0x68, 0x2a, 0x32, 0xe1, 0x40,
+	0x1b, 0x70, 0x70, 0x47, 0x88, 0x71, 0x60, 0x39, 0x37, 0x16, 0xd3, 0xbb, 0x2b, 0x67, 0x13, 0xef,
+	0xde, 0x86, 0x16, 0x83, 0x83, 0xdf, 0xc1, 0x2f, 0xe4, 0xce, 0xc8, 0xe8, 0x64, 0x0c, 0x7c, 0x11,
+	0x73, 0xf4, 0xf0, 0x20, 0x84, 0x98, 0xb8, 0xb5, 0x7d, 0x9e, 0xfc, 0x9e, 0xf7, 0x69, 0x5e, 0x7c,
+	0x1a, 0x40, 0x1c, 0x8a, 0x29, 0x13, 0x3a, 0x66, 0xcf, 0x6d, 0x5f, 0x18, 0xde, 0x66, 0x66, 0x4a,
+	0xd5, 0x18, 0x0c, 0xb8, 0xae, 0x15, 0xa9, 0xd0, 0x31, 0xcd, 0xc4, 0xda, 0x51, 0x04, 0x11, 0xac,
+	0x64, 0x96, 0x9e, 0xac, 0xb3, 0x46, 0x02, 0xd0, 0x31, 0x68, 0xe6, 0x73, 0x2d, 0x7e, 0x38, 0x01,
+	0xc8, 0xc4, 0xea, 0x8d, 0x57, 0x7c, 0x38, 0xd0, 0x51, 0x4f, 0x28, 0xd0, 0xd2, 0xf4, 0xef, 0x07,
+	0x6e, 0x05, 0x97, 0xb8, 0x52, 0x0f, 0x32, 0xac, 0xa2, 0x3a, 0x6a, 0x16, 0xbd, 0xff, 0x5c, 0xa9,
+	0xbb, 0xd0, 0x3d, 0xc3, 0xe5, 0xd0, 0x9a, 0x60, 0x5c, 0xfd, 0x57, 0x47, 0xcd, 0xb2, 0x97, 0x3f,
+	0xb8, 0xd7, 0xb8, 0xc4, 0x63, 0x98, 0x24, 0xa6, 0x5a, 0xa8, 0xa3, 0xe6, 0x41, 0xe7, 0x84, 0xda,
+	0x58, 0x9a, 0xc6, 0xae, 0x27, 0xa4, 0x37, 0x20, 0x93, 0x6e, 0x71, 0xf6, 0x79, 0xee, 0x78, 0x99,
+	0xbd, 0xd1, 0x5b, 0xc5, 0xf7, 0xa7, 0x22, 0x98, 0x18, 0xf1, 0xd7, 0xf8, 0xc6, 0x31, 0xae, 0x6c,
+	0x95, 0xf0, 0x84, 0x56, 0x90, 0x68, 0x91, 0x09, 0x39, 0x7e, 0x2d, 0x74, 0xde, 0x11, 0x2e, 0x0c,
+	0x74, 0xe4, 0x0e, 0x31, 0xde, 0xe8, 0x7e, 0x41, 0x77, 0xff, 0x95, 0x6e, 0x91, 0x6b, 0x97, 0xbf,
+	0x5a, 0xd6, 0x19, 0x29, 0x7b, 0xa3, 0xd8, 0x3e, 0x76, 0x6e, 0xd9, 0xcb, 0xde, 0x9d, 0xbf, 0x7b,
+	0x3b, 0x5b, 0x10, 0x34, 0x5f, 0x10, 0xf4, 0xb5, 0x20, 0xe8, 0x6d, 0x49, 0x9c, 0xf9, 0x92, 0x38,
+	0x1f, 0x4b, 0xe2, 0x0c, 0x5b, 0x91, 0x34, 0x8f, 0x13, 0x3f, 0x45, 0x31, 0x8b, 0x6b, 0xc1, 0x68,
+	0x24, 0x03, 0xc9, 0x9f, 0xb2, 0x3b, 0xb3, 0x4b, 0x65, 0x5e, 0x94, 0xd0, 0x7e, 0x69, 0xb5, 0x06,
+	0x57, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x59, 0xb9, 0x28, 0x44, 0x6f, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -259,8 +259,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	Deposit(ctx context.Context, in *MsgDeposit, opts ...grpc.CallOption) (*MsgDepositResponse, error)
-	Execute(ctx context.Context, in *MsgExecute, opts ...grpc.CallOption) (*MsgExecuteResponse, error)
+	DepositESM(ctx context.Context, in *MsgDepositESM, opts ...grpc.CallOption) (*MsgDepositESMResponse, error)
+	ExecuteESM(ctx context.Context, in *MsgExecuteESM, opts ...grpc.CallOption) (*MsgExecuteESMResponse, error)
 }
 
 type msgClient struct {
@@ -271,18 +271,18 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) Deposit(ctx context.Context, in *MsgDeposit, opts ...grpc.CallOption) (*MsgDepositResponse, error) {
-	out := new(MsgDepositResponse)
-	err := c.cc.Invoke(ctx, "/comdex.esm.v1beta1.Msg/Deposit", in, out, opts...)
+func (c *msgClient) DepositESM(ctx context.Context, in *MsgDepositESM, opts ...grpc.CallOption) (*MsgDepositESMResponse, error) {
+	out := new(MsgDepositESMResponse)
+	err := c.cc.Invoke(ctx, "/comdex.esm.v1beta1.Msg/DepositESM", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) Execute(ctx context.Context, in *MsgExecute, opts ...grpc.CallOption) (*MsgExecuteResponse, error) {
-	out := new(MsgExecuteResponse)
-	err := c.cc.Invoke(ctx, "/comdex.esm.v1beta1.Msg/Execute", in, out, opts...)
+func (c *msgClient) ExecuteESM(ctx context.Context, in *MsgExecuteESM, opts ...grpc.CallOption) (*MsgExecuteESMResponse, error) {
+	out := new(MsgExecuteESMResponse)
+	err := c.cc.Invoke(ctx, "/comdex.esm.v1beta1.Msg/ExecuteESM", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -291,57 +291,57 @@ func (c *msgClient) Execute(ctx context.Context, in *MsgExecute, opts ...grpc.Ca
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	Deposit(context.Context, *MsgDeposit) (*MsgDepositResponse, error)
-	Execute(context.Context, *MsgExecute) (*MsgExecuteResponse, error)
+	DepositESM(context.Context, *MsgDepositESM) (*MsgDepositESMResponse, error)
+	ExecuteESM(context.Context, *MsgExecuteESM) (*MsgExecuteESMResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) Deposit(ctx context.Context, req *MsgDeposit) (*MsgDepositResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Deposit not implemented")
+func (*UnimplementedMsgServer) DepositESM(ctx context.Context, req *MsgDepositESM) (*MsgDepositESMResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DepositESM not implemented")
 }
-func (*UnimplementedMsgServer) Execute(ctx context.Context, req *MsgExecute) (*MsgExecuteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Execute not implemented")
+func (*UnimplementedMsgServer) ExecuteESM(ctx context.Context, req *MsgExecuteESM) (*MsgExecuteESMResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExecuteESM not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_Deposit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDeposit)
+func _Msg_DepositESM_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDepositESM)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).Deposit(ctx, in)
+		return srv.(MsgServer).DepositESM(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.esm.v1beta1.Msg/Deposit",
+		FullMethod: "/comdex.esm.v1beta1.Msg/DepositESM",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Deposit(ctx, req.(*MsgDeposit))
+		return srv.(MsgServer).DepositESM(ctx, req.(*MsgDepositESM))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_Execute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgExecute)
+func _Msg_ExecuteESM_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgExecuteESM)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).Execute(ctx, in)
+		return srv.(MsgServer).ExecuteESM(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.esm.v1beta1.Msg/Execute",
+		FullMethod: "/comdex.esm.v1beta1.Msg/ExecuteESM",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Execute(ctx, req.(*MsgExecute))
+		return srv.(MsgServer).ExecuteESM(ctx, req.(*MsgExecuteESM))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -351,19 +351,19 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Deposit",
-			Handler:    _Msg_Deposit_Handler,
+			MethodName: "DepositESM",
+			Handler:    _Msg_DepositESM_Handler,
 		},
 		{
-			MethodName: "Execute",
-			Handler:    _Msg_Execute_Handler,
+			MethodName: "ExecuteESM",
+			Handler:    _Msg_ExecuteESM_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "comdex/esm/v1beta1/tx.proto",
 }
 
-func (m *MsgDeposit) Marshal() (dAtA []byte, err error) {
+func (m *MsgDepositESM) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -373,12 +373,12 @@ func (m *MsgDeposit) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDeposit) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDepositESM) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDepositESM) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -408,7 +408,7 @@ func (m *MsgDeposit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgExecute) Marshal() (dAtA []byte, err error) {
+func (m *MsgExecuteESM) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -418,12 +418,12 @@ func (m *MsgExecute) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgExecute) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgExecuteESM) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgExecute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgExecuteESM) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -443,7 +443,7 @@ func (m *MsgExecute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDepositResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgDepositESMResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -453,12 +453,12 @@ func (m *MsgDepositResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDepositResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgDepositESMResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDepositResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgDepositESMResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -466,7 +466,7 @@ func (m *MsgDepositResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgExecuteResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgExecuteESMResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -476,12 +476,12 @@ func (m *MsgExecuteResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgExecuteResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgExecuteESMResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgExecuteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgExecuteESMResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -500,7 +500,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgDeposit) Size() (n int) {
+func (m *MsgDepositESM) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -518,7 +518,7 @@ func (m *MsgDeposit) Size() (n int) {
 	return n
 }
 
-func (m *MsgExecute) Size() (n int) {
+func (m *MsgExecuteESM) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -534,7 +534,7 @@ func (m *MsgExecute) Size() (n int) {
 	return n
 }
 
-func (m *MsgDepositResponse) Size() (n int) {
+func (m *MsgDepositESMResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -543,7 +543,7 @@ func (m *MsgDepositResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgExecuteResponse) Size() (n int) {
+func (m *MsgExecuteESMResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -558,7 +558,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgDeposit) Unmarshal(dAtA []byte) error {
+func (m *MsgDepositESM) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -581,10 +581,10 @@ func (m *MsgDeposit) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDeposit: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDepositESM: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDeposit: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDepositESM: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -692,7 +692,7 @@ func (m *MsgDeposit) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgExecute) Unmarshal(dAtA []byte) error {
+func (m *MsgExecuteESM) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -715,10 +715,10 @@ func (m *MsgExecute) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgExecute: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgExecuteESM: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgExecute: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgExecuteESM: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -793,7 +793,7 @@ func (m *MsgExecute) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgDepositResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgDepositESMResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -816,10 +816,10 @@ func (m *MsgDepositResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDepositResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgDepositESMResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDepositResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgDepositESMResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -843,7 +843,7 @@ func (m *MsgDepositResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgExecuteResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgExecuteESMResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -866,10 +866,10 @@ func (m *MsgExecuteResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgExecuteResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgExecuteESMResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgExecuteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgExecuteESMResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
