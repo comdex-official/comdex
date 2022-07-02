@@ -182,14 +182,6 @@ func (s *KeeperTestSuite) TestSetCollectorLookupTableAndAuctionControl() {
 	//	name string
 	//	msg  collectorTypes.LookupTableParams
 	//}{
-	//	{"Add collector-lookup-params",
-	//		collectorTypes.LookupTableParams{
-	//			"addAsset",
-	//			"addingAsset",
-	//			[]collectorTypes.CollectorLookupTable{
-	//				{AppId: 1},
-	//			},
-	//		}},
 	//} {
 	//	s.Run(tc.name, func() {
 	//

@@ -1,11 +1,11 @@
 package keeper_test
 
 import (
-	"fmt"
 	"time"
 
-	"github.com/stretchr/testify/suite"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -79,7 +79,6 @@ func (s *KeeperTestSuite) fundAddr(addr string, amt sdk.Coin) {
 
 func (s *KeeperTestSuite) advanceseconds(dur int64) {
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Second * time.Duration(dur)))
-	fmt.Println(s.ctx.BlockTime())
 }
 
 // ParseCoins parses and returns sdk.Coins.

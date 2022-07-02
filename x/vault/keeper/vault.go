@@ -356,7 +356,7 @@ func (k *Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPai
 				// a = append(a, b...)
 				// appData.UserExtendedPairVault = a
 				// break
-				appData.UserExtendedPairVault=append(appData.UserExtendedPairVault[:dataIndex], appData.UserExtendedPairVault[dataIndex+1:]...)
+				appData.UserExtendedPairVault = append(appData.UserExtendedPairVault[:dataIndex], appData.UserExtendedPairVault[dataIndex+1:]...)
 				break
 			}
 		}
@@ -380,7 +380,7 @@ func (k *Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, e
 				// b := appData.VaultIds[dataIndex+1:]
 				// a = append(a, b...)
 				// appData.VaultIds = a
-				appData.VaultIds=append(appData.VaultIds[:dataIndex], appData.VaultIds[dataIndex+1:]...)
+				appData.VaultIds = append(appData.VaultIds[:dataIndex], appData.VaultIds[dataIndex+1:]...)
 
 			}
 		}

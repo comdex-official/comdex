@@ -1,11 +1,11 @@
 package keeper_test
 
 import (
-	"fmt"
 	"time"
 
-	"github.com/stretchr/testify/suite"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -15,6 +15,7 @@ import (
 	"github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	"github.com/comdex-official/comdex/x/liquidation/types"
+	marketKeeper "github.com/comdex-official/comdex/x/market/keeper"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
 )
@@ -27,6 +28,7 @@ type KeeperTestSuite struct {
 	vaultKeeper       vaultKeeper.Keeper
 	assetKeeper       assetKeeper.Keeper
 	liquidationKeeper liquidationKeeper.Keeper
+	marketKeeper      marketKeeper.Keeper
 	querier           liquidationKeeper.QueryServer
 	vaultQuerier      vaultKeeper.QueryServer
 	msgServer         types.MsgServer
@@ -47,6 +49,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.msgServer = keeper.NewMsgServiceServer(s.liquidationKeeper)
 	s.vaultMsgServer = vaultKeeper.NewMsgServer(s.vaultKeeper)
 	s.vaultQuerier = vaultKeeper.QueryServer{Keeper: s.vaultKeeper}
+	s.marketKeeper = s.app.MarketKeeper
 }
 
 //
@@ -88,7 +91,7 @@ func (s *KeeperTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coin) {
 
 func (s *KeeperTestSuite) advanceseconds(dur int64) {
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Second * time.Duration(dur)))
-	fmt.Println(s.ctx.BlockTime())
+
 }
 
 // ParseCoins parses and returns sdk.Coins.
