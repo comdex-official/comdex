@@ -46,7 +46,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.liquidationKeeper = s.app.LiquidationKeeper
 	s.assetKeeper = s.app.AssetKeeper
 	s.querier = keeper.QueryServer{Keeper: s.liquidationKeeper}
-	s.msgServer = keeper.NewMsgServiceServer(s.liquidationKeeper)
+	s.msgServer = keeper.NewMsgServer(s.liquidationKeeper)
 	s.vaultMsgServer = vaultKeeper.NewMsgServer(s.vaultKeeper)
 	s.vaultQuerier = vaultKeeper.QueryServer{Keeper: s.vaultKeeper}
 	s.marketKeeper = s.app.MarketKeeper

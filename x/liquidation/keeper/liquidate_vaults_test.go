@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	liquidationTypes "github.com/comdex-official/comdex/x/liquidation/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
@@ -27,7 +28,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 	genesisSupply := sdk.NewIntFromUint64(1000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
-	msg1 := []assetTypes.AppMapping{{
+	msg1 := []assetTypes.AppData{{
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -62,7 +63,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			},
 		},
 	}
-	err = assetKeeper.AddAppMappingRecords(*ctx, msg1...)
+	err = assetKeeper.AddAppRecords(*ctx, msg1...)
 	s.Require().NoError(err)
 
 	for index, tc := range []struct {
@@ -114,7 +115,7 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 	for _, tc := range []struct {
 		name              string
 		pair              assetTypes.Pair
-		extendedPairVault assetTypes.ExtendedPairVault
+		extendedPairVault bindings.MsgAddExtendedPairsVault
 		symbol1           string
 		symbol2           string
 	}{
@@ -123,16 +124,16 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 				AssetIn:  1,
 				AssetOut: 2,
 			},
-			assetTypes.ExtendedPairVault{
-				AppMappingId:        1,
-				PairId:              1,
+			bindings.MsgAddExtendedPairsVault{
+				AppID:               1,
+				PairID:              1,
 				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
 				ClosingFee:          sdk.MustNewDecFromStr("0"),
 				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
 				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewIntFromUint64(1000000000000),
-				DebtFloor:           sdk.NewIntFromUint64(1000000),
+				DebtCeiling:         1000000000000,
+				DebtFloor:           1000000,
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
 				PairName:            "CMDX-B",
@@ -148,7 +149,7 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 			err := assetKeeper.AddPairsRecords(*ctx, tc.pair)
 			s.Require().NoError(err)
 
-			err = assetKeeper.AddExtendedPairsVaultRecords(*ctx, tc.extendedPairVault)
+			err = assetKeeper.WasmAddExtendedPairsVaultRecords(*ctx, &tc.extendedPairVault)
 			s.Require().NoError(err)
 
 			err = liquidationKeeper.WhitelistAppID(*ctx, 1)
@@ -216,7 +217,7 @@ func (s *KeeperTestSuite) CreateVault() {
 			s.Require().NoError(err)
 			res, err := s.vaultQuerier.QueryAllVaults(sdk.WrapSDKContext(*ctx), &vaultTypes.QueryAllVaultsRequest{})
 			s.Require().NoError(err)
-			_, err = s.vaultQuerier.QueryVaultInfoByVaultId(sdk.WrapSDKContext(*ctx), &vaultTypes.QueryVaultInfoByVaultIdRequest{Id: res.Vault[index].Id})
+			_, err = s.vaultQuerier.QueryVaultInfoByVaultID(sdk.WrapSDKContext(*ctx), &vaultTypes.QueryVaultInfoByVaultIDRequest{Id: res.Vault[index].Id})
 			s.Require().NoError(err)
 		})
 	}
