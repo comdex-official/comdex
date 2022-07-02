@@ -67,26 +67,6 @@ func FlagSetCreateAssetMapping() *flag.FlagSet {
 	return fs
 }
 
-type createExtPairVaultInputs struct {
-	AppID               string `json:"app_id"`
-	PairID              string `json:"pair_id"`
-	StabilityFee        string `json:"stability_fee"`
-	ClosingFee          string `json:"closing_fee"`
-	LiquidationPenalty  string `json:"liquidation_penalty"`
-	DrawDownFee         string `json:"draw_down_fee"`
-	IsVaultActive       string `json:"is_vault_active"`
-	DebtCeiling         string `json:"debt_ceiling"`
-	DebtFloor           string `json:"debt_floor"`
-	IsStableMintVault   string `json:"is_stable_mint_vault"`
-	MinCr               string `json:"min_cr"`
-	PairName            string `json:"pair_name"`
-	AssetOutOraclePrice string `json:"asset_out_oracle_price"`
-	AssetOutPrice       string `json:"asset_out_price"`
-	MinUsdValueLeft     string `json:"min_usd_value_left"`
-	Title               string
-	Description         string
-	Deposit             string
-}
 
 type createAddAssetMappingInputs struct {
 	AppID         string `json:"app_id"`
