@@ -20,9 +20,14 @@ const (
 )
 
 var (
-	ESMTriggerParamsKeyPrefix = []byte{0x15}
+	ESMTriggerParamsKeyPrefix = []byte{0x01}
+	CurrentDepositStatsPrefix = []byte{0x02}
 )
 
 func ESMTriggerParamsKey(id uint64) []byte {
 	return append(ESMTriggerParamsKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func CurrentDepositStatsKey(id uint64) []byte {
+	return append(CurrentDepositStatsPrefix, sdk.Uint64ToBigEndian(id)...)
 }

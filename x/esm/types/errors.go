@@ -8,7 +8,11 @@ import (
 
 // x/esm module sentinel errors
 var (
-	ErrSample                      = sdkerrors.Register(ModuleName, 1100, "sample error")
 	ErrorUnknownProposalType       = sdkerrors.Register(ModuleName, 1101, "unknown proposal type")
 	ErrorDuplicateESMTriggerParams = sdkerrors.Register(ModuleName, 1102, "Duplicate ESM Trigger Params for AppID")
+	ErrAppDataNotFound             = sdkerrors.Register(ModuleName, 1103, "App Data Not Found")
+	ErrBadOfferCoinType            = sdkerrors.Register(ModuleName, 1104, "Bad Offer Coin Type")
+	ErrESMTriggerParamsNotFound    = sdkerrors.Register(ModuleName, 1105, "ESM Trigger Params Not Found")
+	ErrAmtExceedsTargetValue       = sdkerrors.Register(ModuleName, 1106, "Amt Exceeds Target Value")
+	ErrDepositForAppReached        = sdkerrors.Register(ModuleName, 1107, "Deposit For AppID Reached")
 )

@@ -24,3 +24,16 @@ message ESMTriggerParams {
   ];
 
 }
+
+message CurrentDepositStats{
+  uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"id\""
+  ];
+
+  cosmos.base.v1beta1.Coin balance = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"balance\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+}

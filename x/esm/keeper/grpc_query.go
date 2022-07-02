@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 	"github.com/comdex-official/comdex/x/esm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
@@ -33,7 +32,6 @@ func (q queryServer) QueryESMTriggerParams(c context.Context, req *types.QueryES
 	)
 
 	item, found := q.GetESMTriggerParams(ctx, req.Id)
-	fmt.Println("item.....", item)
 	if !found {
 		return &types.QueryESMTriggerParamsResponse{}, nil
 	}

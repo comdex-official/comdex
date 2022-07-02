@@ -31,9 +31,6 @@ func (k *Keeper) SetESMTriggerParams(ctx sdk.Context, esmTriggerParams types.ESM
 		key   = types.ESMTriggerParamsKey(esmTriggerParams.AppId)
 		value = k.cdc.MustMarshal(&esmTriggerParams)
 	)
-	fmt.Println("key... set", key)
-	fmt.Println("value... set", value)
-	fmt.Println("esmTriggerParams... set", esmTriggerParams)
 
 	store.Set(key, value)
 }
@@ -44,15 +41,35 @@ func (k *Keeper) GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerPara
 		key   = types.ESMTriggerParamsKey(id)
 		value = store.Get(key)
 	)
-	fmt.Println("key... get", key)
-	fmt.Println("value... get ", value)
-	fmt.Println("id... get ", id)
 
 	if value == nil {
 		return esmTriggerParams, false
 	}
-	fmt.Println("value...")
-
 	k.cdc.MustUnmarshal(value, &esmTriggerParams)
 	return esmTriggerParams, true
+}
+
+func (k *Keeper) SetCurrentDepositStats(ctx sdk.Context, depositStats types.CurrentDepositStats) {
+	var (
+		store = k.Store(ctx)
+		key   = types.CurrentDepositStatsKey(depositStats.AppId)
+		value = k.cdc.MustMarshal(&depositStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetCurrentDepositStats(ctx sdk.Context, id uint64) (depositStats types.CurrentDepositStats, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.CurrentDepositStatsKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return depositStats, false
+	}
+
+	k.cdc.MustUnmarshal(value, &depositStats)
+	return depositStats, true
 }
