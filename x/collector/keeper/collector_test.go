@@ -12,7 +12,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	genesisSupply := sdk.NewIntFromUint64(1000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
-	msg1 := []assetTypes.AppMapping{{
+	msg1 := []assetTypes.AppData{{
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -47,7 +47,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			},
 		},
 	}
-	err := assetKeeper.AddAppMappingRecords(*ctx, msg1...)
+	err := assetKeeper.AddAppRecords(*ctx, msg1...)
 	s.Require().NoError(err)
 
 	msg2 := []assetTypes.Asset{
@@ -84,120 +84,6 @@ func (s *KeeperTestSuite) AddAuctionParams() {
 	s.auctionKeeper.SetAuctionParams(*ctx, auctionParams)
 }
 
-func (s *KeeperTestSuite) TestSetCollectorLookupTableAndAuctionControl() {
-	//userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	collectorKeeper, ctx := &s.collectorKeeper, &s.ctx
-	s.AddAppAsset()
-
-	//Add whitelisted App Asset combinations
-	lookUpTable := collectorTypes.LookupTableParams{
-		"addAsset",
-		"addingAsset",
-		[]collectorTypes.CollectorLookupTable{
-			{AppId: 1,
-				CollectorAssetId: 2,
-				SecondaryAssetId: 3,
-				SurplusThreshold: 10000000,
-				DebtThreshold:    5000000,
-				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          2000000,
-				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      2000000,
-			},
-			{AppId: 1,
-				CollectorAssetId: 3,
-				SecondaryAssetId: 2,
-				SurplusThreshold: 10000000,
-				DebtThreshold:    5000000,
-				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          2000000,
-				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      2000000,
-			},
-		},
-	}
-	err := collectorKeeper.SetCollectorLookupTable(*ctx, lookUpTable.LookupTableData...)
-	s.Require().NoError(err)
-	result, found := collectorKeeper.GetCollectorLookupTable(*ctx, lookUpTable.LookupTableData[0].AppId)
-	s.Require().True(found)
-	s.Require().Equal(result.AssetRateInfo[0], lookUpTable.LookupTableData[0])
-	s.Require().Equal(result.AssetRateInfo[1], lookUpTable.LookupTableData[1])
-
-	s.AddAuctionParams()
-
-	for index, tc := range []struct {
-		name string
-		msg  collectorTypes.AuctionControlByAppIdProposal
-	}{
-		{
-			"Add Auction Control AppID 1 CollectorAssetID 2",
-			collectorTypes.AuctionControlByAppIdProposal{
-				Title:       "AddAuctionControl",
-				Description: "AddingAuctionControl",
-				CollectorAuctionLookupTable: collectorTypes.CollectorAuctionLookupTable{
-					AppId: 1,
-					AssetIdToAuctionLookup: []collectorTypes.AssetIdToAuctionLookupTable{
-						{
-							2,
-							true,
-							true,
-							false,
-							false,
-							1000000,
-						},
-					},
-				},
-			},
-		},
-		{
-			"Add Auction Control AppID 1 CollectorAssetID 3",
-			collectorTypes.AuctionControlByAppIdProposal{
-				Title:       "AddAuctionControl",
-				Description: "AddingAuctionControl",
-				CollectorAuctionLookupTable: collectorTypes.CollectorAuctionLookupTable{
-					AppId: 1,
-					AssetIdToAuctionLookup: []collectorTypes.AssetIdToAuctionLookupTable{
-						{
-							3,
-							true,
-							true,
-							false,
-							false,
-							9990000,
-						},
-					},
-				},
-			},
-		},
-	} {
-		s.Run(tc.name, func() {
-			err = collectorKeeper.SetAuctionMappingForApp(*ctx, tc.msg.CollectorAuctionLookupTable)
-			s.Require().NoError(err)
-			result1, found := collectorKeeper.GetAuctionMappingForApp(*ctx, tc.msg.CollectorAuctionLookupTable.AppId)
-			s.Require().True(found)
-			s.Require().Equal(result1.AssetIdToAuctionLookup[index], tc.msg.CollectorAuctionLookupTable.AssetIdToAuctionLookup[0])
-		})
-	}
-	//for _, tc := range []struct {
-	//	name string
-	//	msg  collectorTypes.LookupTableParams
-	//}{
-	//	{"Add collector-lookup-params",
-	//		collectorTypes.LookupTableParams{
-	//			"addAsset",
-	//			"addingAsset",
-	//			[]collectorTypes.CollectorLookupTable{
-	//				{AppId: 1},
-	//			},
-	//		}},
-	//} {
-	//	s.Run(tc.name, func() {
-	//
-	//	})
-	//}
-
-}
-
 func (s *KeeperTestSuite) TestWasmUpdateCollectorLookupTable() {
 	collectorKeeper, ctx := &s.collectorKeeper, &s.ctx
 	s.TestWasmSetCollectorLookupTableAndAuctionControl()
@@ -208,7 +94,7 @@ func (s *KeeperTestSuite) TestWasmUpdateCollectorLookupTable() {
 		{
 			"Wasm Update MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
 			bindings.MsgUpdateCollectorLookupTable{
-				AppMappingID:     1,
+				AppID:            1,
 				AssetID:          2,
 				SurplusThreshold: 9999,
 				DebtThreshold:    99,
@@ -222,9 +108,9 @@ func (s *KeeperTestSuite) TestWasmUpdateCollectorLookupTable() {
 		s.Run(tc.name, func() {
 			err := collectorKeeper.WasmUpdateCollectorLookupTable(*ctx, &tc.msg)
 			s.Require().NoError(err)
-			result, found := collectorKeeper.GetCollectorLookupByAsset(*ctx, tc.msg.AppMappingID, tc.msg.AssetID)
+			result, found := collectorKeeper.GetCollectorLookupByAsset(*ctx, tc.msg.AppID, tc.msg.AssetID)
 			s.Require().True(found)
-			s.Require().Equal(result.AppId, tc.msg.AppMappingID)
+			s.Require().Equal(result.AppId, tc.msg.AppID)
 			s.Require().Equal(result.CollectorAssetId, tc.msg.AssetID)
 			s.Require().Equal(result.SurplusThreshold, tc.msg.SurplusThreshold)
 			s.Require().Equal(result.DebtThreshold, tc.msg.DebtThreshold)
@@ -246,7 +132,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 	}{
 		{"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
 			bindings.MsgSetCollectorLookupTable{
-				AppMappingID:     1,
+				AppID:            1,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
 				SurplusThreshold: 10000000,
@@ -259,7 +145,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 		},
 		{"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 3",
 			bindings.MsgSetCollectorLookupTable{
-				AppMappingID:     1,
+				AppID:            1,
 				CollectorAssetID: 3,
 				SecondaryAssetID: 2,
 				SurplusThreshold: 10000000,
@@ -274,9 +160,9 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 		s.Run(tc.name, func() {
 			err := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &tc.msg)
 			s.Require().NoError(err)
-			result, found := collectorKeeper.GetCollectorLookupTable(*ctx, tc.msg.AppMappingID)
+			result, found := collectorKeeper.GetCollectorLookupTable(*ctx, tc.msg.AppID)
 			s.Require().True(found)
-			s.Require().Equal(result.AssetRateInfo[index].AppId, tc.msg.AppMappingID)
+			s.Require().Equal(result.AssetRateInfo[index].AppId, tc.msg.AppID)
 			s.Require().Equal(result.AssetRateInfo[index].CollectorAssetId, tc.msg.CollectorAssetID)
 			s.Require().Equal(result.AssetRateInfo[index].SecondaryAssetId, tc.msg.SecondaryAssetID)
 			s.Require().Equal(result.AssetRateInfo[index].SurplusThreshold, tc.msg.SurplusThreshold)
@@ -295,7 +181,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 		{
 			"Wasm Add Auction Control AppID 1 AssetID 2",
 			bindings.MsgSetAuctionMappingForApp{
-				AppMappingID:         1,
+				AppID:                1,
 				AssetIDs:             []uint64{2},
 				IsSurplusAuctions:    []bool{true},
 				IsDebtAuctions:       []bool{true},
@@ -306,7 +192,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 		{
 			"Wasm Add Auction Control AppID 1 AssetID 3",
 			bindings.MsgSetAuctionMappingForApp{
-				AppMappingID:         1,
+				AppID:                1,
 				AssetIDs:             []uint64{3},
 				IsSurplusAuctions:    []bool{true},
 				IsDebtAuctions:       []bool{false},
@@ -318,7 +204,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 		s.Run(tc.name, func() {
 			err := collectorKeeper.WasmSetAuctionMappingForApp(*ctx, &tc.msg)
 			s.Require().NoError(err)
-			result1, found := collectorKeeper.GetAuctionMappingForApp(*ctx, tc.msg.AppMappingID)
+			result1, found := collectorKeeper.GetAuctionMappingForApp(*ctx, tc.msg.AppID)
 			s.Require().True(found)
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetId, tc.msg.AssetIDs[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsSurplusAuction, tc.msg.IsSurplusAuctions[0])

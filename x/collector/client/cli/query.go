@@ -2,20 +2,18 @@ package cli
 
 import (
 	"fmt"
-	// "strings"
 	"strconv"
 
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/collector/types"
 )
 
-// GetQueryCmd returns the cli query commands for this module
-func GetQueryCmd(queryRoute string) *cobra.Command {
+// GetQueryCmd returns the cli query commands for this module.
+func GetQueryCmd() *cobra.Command {
 	// Group collector queries under a subcommand
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -35,11 +33,11 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	return cmd
 }
 
-// QueryCollectorLookupByProduct query collector store by product
+// QueryCollectorLookupByApp query collector store by product.
 func QueryCollectorLookupByApp() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "collector-lookup-by-app [app-id]",
-		Short: "Query collector lookup for a app",
+		Short: "Query collector lookup for an app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -68,7 +66,7 @@ func QueryCollectorLookupByApp() *cobra.Command {
 	return cmd
 }
 
-// QueryCollectorLookupByProductAndAsset query collector store by product and asset
+// QueryCollectorLookupByAppAndAsset query collector store by product and asset.
 func QueryCollectorLookupByAppAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "collector-lookup-by-app-and-asset [app-id] [asset-id]",
@@ -106,7 +104,7 @@ func QueryCollectorLookupByAppAndAsset() *cobra.Command {
 	return cmd
 }
 
-// QueryCollectorDataByProductAndAsset query collector store by product
+// QueryCollectorDataByAppAndAsset query collector store by product.
 func QueryCollectorDataByAppAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "collector-data-by-app-and-asset [app-id] [asset_id]",

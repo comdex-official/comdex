@@ -117,7 +117,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Vault{
 				Id:                  "appOne1",
-				AppMappingId:        appID1,
+				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr1.String(),
 				AmountIn:            newInt(1000000000),
@@ -135,7 +135,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
 				Id:                  "appOne2",
-				AppMappingId:        appID1,
+				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr2.String(),
 				AmountIn:            newInt(1000000000),
@@ -164,7 +164,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			QueryResponseIndex: 2,
 			QueryResponse: &types.Vault{
 				Id:                  "appTwo1",
-				AppMappingId:        appID2,
+				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
 				AmountIn:            newInt(1000000000),
@@ -182,7 +182,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			QueryResponseIndex: 3,
 			QueryResponse: &types.Vault{
 				Id:                  "appTwo2",
-				AppMappingId:        appID2,
+				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr2.String(),
 				AmountIn:            newInt(1000000000),
@@ -222,7 +222,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 				s.Require().Equal(tc.QueryResponse.AmountIn, vaults[tc.QueryResponseIndex].AmountIn)
 				s.Require().Equal(tc.QueryResponse.AmountOut, vaults[tc.QueryResponseIndex].AmountOut)
 				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, vaults[tc.QueryResponseIndex].ExtendedPairVaultID)
-				s.Require().Equal(tc.QueryResponse.AppMappingId, vaults[tc.QueryResponseIndex].AppMappingId)
+				s.Require().Equal(tc.QueryResponse.AppId, vaults[tc.QueryResponseIndex].AppId)
 			}
 		})
 	}
@@ -346,7 +346,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Vault{
 				Id:                  "appOne1",
-				AppMappingId:        appID1,
+				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr1.String(),
 				AmountIn:            newInt(1069000000),
@@ -364,7 +364,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
 				Id:                  "appTwo1",
-				AppMappingId:        appID2,
+				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr2.String(),
 				AmountIn:            newInt(1069000000),
@@ -404,7 +404,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 				s.Require().Equal(tc.QueryResponse.AmountIn, vaults[tc.QueryResponseIndex].AmountIn)
 				s.Require().Equal(tc.QueryResponse.AmountOut, vaults[tc.QueryResponseIndex].AmountOut)
 				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, vaults[tc.QueryResponseIndex].ExtendedPairVaultID)
-				s.Require().Equal(tc.QueryResponse.AppMappingId, vaults[tc.QueryResponseIndex].AppMappingId)
+				s.Require().Equal(tc.QueryResponse.AppId, vaults[tc.QueryResponseIndex].AppId)
 			}
 		})
 	}
@@ -527,7 +527,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Vault{
 				Id:                  "appOne1",
-				AppMappingId:        appID1,
+				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr1.String(),
 				AmountIn:            newInt(950000000),
@@ -545,7 +545,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
 				Id:                  "appTwo1",
-				AppMappingId:        appID2,
+				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
 				AmountIn:            newInt(950000000),
@@ -579,7 +579,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 				s.Require().Equal(tc.QueryResponse.AmountIn, vaults[tc.QueryResponseIndex].AmountIn)
 				s.Require().Equal(tc.QueryResponse.AmountOut, vaults[tc.QueryResponseIndex].AmountOut)
 				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, vaults[tc.QueryResponseIndex].ExtendedPairVaultID)
-				s.Require().Equal(tc.QueryResponse.AppMappingId, vaults[tc.QueryResponseIndex].AppMappingId)
+				s.Require().Equal(tc.QueryResponse.AppId, vaults[tc.QueryResponseIndex].AppId)
 			}
 		})
 	}
@@ -702,7 +702,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Vault{
 				Id:                  "appOne1",
-				AppMappingId:        appID1,
+				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr1.String(),
 				AmountIn:            newInt(1000000000),
@@ -720,7 +720,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
 				Id:                  "appTwo1",
-				AppMappingId:        appID2,
+				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
 				AmountIn:            newInt(1000000000),
@@ -754,7 +754,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 				s.Require().Equal(tc.QueryResponse.AmountIn, vaults[tc.QueryResponseIndex].AmountIn)
 				s.Require().Equal(tc.QueryResponse.AmountOut, vaults[tc.QueryResponseIndex].AmountOut)
 				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, vaults[tc.QueryResponseIndex].ExtendedPairVaultID)
-				s.Require().Equal(tc.QueryResponse.AppMappingId, vaults[tc.QueryResponseIndex].AppMappingId)
+				s.Require().Equal(tc.QueryResponse.AppId, vaults[tc.QueryResponseIndex].AppId)
 			}
 		})
 	}
@@ -877,7 +877,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Vault{
 				Id:                  "appOne1",
-				AppMappingId:        appID1,
+				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr1.String(),
 				AmountIn:            newInt(1000000000),
@@ -895,7 +895,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
 				Id:                  "appTwo1",
-				AppMappingId:        appID2,
+				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
 				AmountIn:            newInt(1000000000),
@@ -930,7 +930,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 				s.Require().Equal(tc.QueryResponse.AmountIn, vaults[tc.QueryResponseIndex].AmountIn)
 				s.Require().Equal(tc.QueryResponse.AmountOut, vaults[tc.QueryResponseIndex].AmountOut)
 				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, vaults[tc.QueryResponseIndex].ExtendedPairVaultID)
-				s.Require().Equal(tc.QueryResponse.AppMappingId, vaults[tc.QueryResponseIndex].AppMappingId)
+				s.Require().Equal(tc.QueryResponse.AppId, vaults[tc.QueryResponseIndex].AppId)
 			}
 		})
 	}
@@ -1066,7 +1066,6 @@ func (s *KeeperTestSuite) TestMsgClose() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
-				fmt.Println(availableBalances)
 				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 
 				vaults := s.keeper.GetVaults(s.ctx)
@@ -1212,7 +1211,7 @@ func (s *KeeperTestSuite) TestMsgCreateStableMint() {
 				Id:                  "appFour1",
 				AmountIn:            newInt(10000),
 				AmountOut:           newInt(10000),
-				AppMappingId:        4,
+				AppId:               4,
 				ExtendedPairVaultID: 4,
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(9900))),
@@ -1245,7 +1244,7 @@ func (s *KeeperTestSuite) TestMsgCreateStableMint() {
 				s.Require().Equal(tc.QueryResponse.Id, stableMintVaults[tc.QueryRespIndex].Id)
 				s.Require().Equal(tc.QueryResponse.AmountIn, stableMintVaults[tc.QueryRespIndex].AmountIn)
 				s.Require().Equal(tc.QueryResponse.AmountOut, stableMintVaults[tc.QueryRespIndex].AmountOut)
-				s.Require().Equal(tc.QueryResponse.AppMappingId, stableMintVaults[tc.QueryRespIndex].AppMappingId)
+				s.Require().Equal(tc.QueryResponse.AppId, stableMintVaults[tc.QueryRespIndex].AppId)
 				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, stableMintVaults[tc.QueryRespIndex].ExtendedPairVaultID)
 			}
 		})
@@ -1386,7 +1385,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 				Id:                  "appOne1",
 				AmountIn:            newInt(3000000000),
 				AmountOut:           newInt(3000000000),
-				AppMappingId:        1,
+				AppId:               1,
 				ExtendedPairVaultID: 3,
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(990000000*4))),
@@ -1403,7 +1402,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 				Id:                  "appOne1",
 				AmountIn:            newInt(4000000000),
 				AmountOut:           newInt(4000000000),
-				AppMappingId:        1,
+				AppId:               1,
 				ExtendedPairVaultID: 3,
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(990000000*5))),
@@ -1420,7 +1419,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 				Id:                  "appTwo1",
 				AmountIn:            newInt(10000000000),
 				AmountOut:           newInt(10000000000),
-				AppMappingId:        2,
+				AppId:               2,
 				ExtendedPairVaultID: 4,
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(990000000*14))),
@@ -1453,7 +1452,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 				s.Require().Equal(tc.QueryResponse.Id, stableMintVaults[tc.QueryRespIndex].Id)
 				s.Require().Equal(tc.QueryResponse.AmountIn, stableMintVaults[tc.QueryRespIndex].AmountIn)
 				s.Require().Equal(tc.QueryResponse.AmountOut, stableMintVaults[tc.QueryRespIndex].AmountOut)
-				s.Require().Equal(tc.QueryResponse.AppMappingId, stableMintVaults[tc.QueryRespIndex].AppMappingId)
+				s.Require().Equal(tc.QueryResponse.AppId, stableMintVaults[tc.QueryRespIndex].AppId)
 				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, stableMintVaults[tc.QueryRespIndex].ExtendedPairVaultID)
 			}
 		})
@@ -1538,7 +1537,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 			Msg: *types.NewMsgWithdrawStableMintRequest(
 				addr1, appID1, extendedVaultPairID1, newInt(10000), "appOne1",
 			),
-			ExpErr:           types.ErrorVaultInactive,
+			ExpErr:           types.ErrorCannotCreateStableMintVault,
 			ExpResp:          nil,
 			QueryRespIndex:   0,
 			QueryResponse:    nil,
@@ -1611,7 +1610,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 				Id:                  "appOne1",
 				AmountIn:            newInt(505000000),
 				AmountOut:           newInt(505000000),
-				AppMappingId:        1,
+				AppId:               1,
 				ExtendedPairVaultID: 3,
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(495000000)), sdk.NewCoin("uasset2", newInt((990000000*2)-500000000))),
@@ -1628,7 +1627,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 				Id:                  "appOne1",
 				AmountIn:            newInt(307000000),
 				AmountOut:           newInt(307000000),
-				AppMappingId:        1,
+				AppId:               1,
 				ExtendedPairVaultID: 3,
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(693000000)), sdk.NewCoin("uasset2", newInt((990000000*2)-500000000-200000000))),
@@ -1645,7 +1644,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 				Id:                  "appTwo1",
 				AmountIn:            newInt(10000000),
 				AmountOut:           newInt(10000000),
-				AppMappingId:        2,
+				AppId:               2,
 				ExtendedPairVaultID: 4,
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(693000000+990000000)), sdk.NewCoin("uasset2", newInt((990000000*2)-500000000-200000000-1000000000))),
@@ -1662,7 +1661,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 				Id:                  "appTwo1",
 				AmountIn:            newInt(5050000),
 				AmountOut:           newInt(5050000),
-				AppMappingId:        2,
+				AppId:               2,
 				ExtendedPairVaultID: 4,
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(4950000))),
@@ -1679,7 +1678,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 				Id:                  "appTwo1",
 				AmountIn:            newInt(50500),
 				AmountOut:           newInt(50500),
-				AppMappingId:        2,
+				AppId:               2,
 				ExtendedPairVaultID: 4,
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(4999500))),
@@ -1708,7 +1707,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 				s.Require().Equal(tc.QueryResponse.Id, stableMintVaults[tc.QueryRespIndex].Id)
 				s.Require().Equal(tc.QueryResponse.AmountIn, stableMintVaults[tc.QueryRespIndex].AmountIn)
 				s.Require().Equal(tc.QueryResponse.AmountOut, stableMintVaults[tc.QueryRespIndex].AmountOut)
-				s.Require().Equal(tc.QueryResponse.AppMappingId, stableMintVaults[tc.QueryRespIndex].AppMappingId)
+				s.Require().Equal(tc.QueryResponse.AppId, stableMintVaults[tc.QueryRespIndex].AppId)
 				s.Require().Equal(tc.QueryResponse.ExtendedPairVaultID, stableMintVaults[tc.QueryRespIndex].ExtendedPairVaultID)
 			}
 		})

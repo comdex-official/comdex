@@ -18,7 +18,7 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -72,7 +72,7 @@ func (q queryServer) QueryLend(c context.Context, req *types.QueryLendRequest) (
 
 	item, found := q.GetLend(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryLendResponse{}, nil
 	}
 
 	return &types.QueryLendResponse{
@@ -94,12 +94,11 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, _ := q.UserLends(ctx, req.Owner)
-
-	for _, data := range userVaultAssetData {
-		lends = append(lends, data)
-
+	userVaultAssetData, found := q.UserLends(ctx, req.Owner)
+	if !found {
+		return &types.QueryAllLendByOwnerResponse{}, nil
 	}
+	lends = append(lends, userVaultAssetData...)
 
 	return &types.QueryAllLendByOwnerResponse{
 		Lends: lends,
@@ -120,12 +119,11 @@ func (q queryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.Qu
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, _ := q.LendIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
-
-	for _, data := range userVaultAssetData {
-		lends = append(lends, data)
-
+	userVaultAssetData, found := q.LendIDByOwnerAndPool(ctx, req.Owner, req.PoolId)
+	if !found {
+		return &types.QueryAllLendByOwnerAndPoolResponse{}, nil
 	}
+	lends = append(lends, userVaultAssetData...)
 
 	return &types.QueryAllLendByOwnerAndPoolResponse{
 		Lends: lends,
@@ -146,12 +144,11 @@ func (q queryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, _ := q.BorrowIdByOwnerAndPool(ctx, req.Owner, req.PoolId)
-
-	for _, data := range userVaultAssetData {
-		borrows = append(borrows, data)
-
+	userVaultAssetData, found := q.BorrowIDByOwnerAndPool(ctx, req.Owner, req.PoolId)
+	if !found {
+		return &types.QueryAllBorrowByOwnerAndPoolResponse{}, nil
 	}
+	borrows = append(borrows, userVaultAssetData...)
 
 	return &types.QueryAllBorrowByOwnerAndPoolResponse{
 		Borrows: borrows,
@@ -206,7 +203,7 @@ func (q queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (
 
 	item, found := q.GetLendPair(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryPairResponse{}, nil
 	}
 
 	return &types.QueryPairResponse{
@@ -262,7 +259,7 @@ func (q queryServer) QueryPool(c context.Context, req *types.QueryPoolRequest) (
 
 	item, found := q.GetPool(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryPoolResponse{}, nil
 	}
 
 	return &types.QueryPoolResponse{
@@ -318,7 +315,7 @@ func (q queryServer) QueryAssetToPairMapping(c context.Context, req *types.Query
 
 	item, found := q.GetAssetToPair(ctx, req.AssetId, req.PoolId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "pairs does not exist for assetId and poolId %d", req.AssetId, req.PoolId)
+		return &types.QueryAssetToPairMappingResponse{}, nil
 	}
 
 	return &types.QueryAssetToPairMappingResponse{
@@ -374,7 +371,7 @@ func (q queryServer) QueryBorrow(c context.Context, req *types.QueryBorrowReques
 
 	item, found := q.GetBorrow(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryBorrowResponse{}, nil
 	}
 
 	return &types.QueryBorrowResponse{
@@ -396,12 +393,11 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, _ := q.UserBorrows(ctx, req.Owner)
-
-	for _, data := range userVaultAssetData {
-		borrows = append(borrows, data)
-
+	userVaultAssetData, found := q.UserBorrows(ctx, req.Owner)
+	if !found {
+		return &types.QueryAllBorrowByOwnerResponse{}, nil
 	}
+	borrows = append(borrows, userVaultAssetData...)
 
 	return &types.QueryAllBorrowByOwnerResponse{
 		Borrows: borrows,
@@ -456,7 +452,7 @@ func (q queryServer) QueryAssetRatesStat(c context.Context, req *types.QueryAsse
 
 	item, found := q.GetAssetRatesStats(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryAssetRatesStatResponse{}, nil
 	}
 
 	return &types.QueryAssetRatesStatResponse{
@@ -470,9 +466,9 @@ func (q queryServer) QueryAssetStats(c context.Context, req *types.QueryAssetSta
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	assetStatsData, found := q.AssetStatsByPoolIdAndAssetId(ctx, req.AssetId, req.PoolId)
+	assetStatsData, found := q.AssetStatsByPoolIDAndAssetID(ctx, req.AssetId, req.PoolId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "assetStatsData does not exist for assetId %d and poolId %d ", req.AssetId, req.PoolId)
+		return &types.QueryAssetStatsResponse{}, nil
 	}
 
 	return &types.QueryAssetStatsResponse{
@@ -486,9 +482,9 @@ func (q queryServer) QueryModuleBalance(c context.Context, req *types.QueryModul
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	modBal, found := q.GetModuleBalanceByPoolId(ctx, req.PoolId)
+	modBal, found := q.GetModuleBalanceByPoolID(ctx, req.PoolId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "module Balance does not exist for poolId %d ", req.PoolId)
+		return &types.QueryModuleBalanceResponse{}, nil
 	}
 
 	return &types.QueryModuleBalanceResponse{

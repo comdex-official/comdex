@@ -1,12 +1,5 @@
 package keeper
 
-import (
-	_ "fmt"
-	_ "strings"
-
-	_ "github.com/comdex-official/comdex/x/rewards/types"
-)
-
 // IntegerArrayToString converts integer slice to "," separated string.
 
 // SplitTotalAmountPerEpoch splits amount into totalEpochs

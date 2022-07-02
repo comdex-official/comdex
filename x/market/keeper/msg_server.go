@@ -14,7 +14,7 @@ type msgServer struct {
 	Keeper
 }
 
-func NewMsgServiceServer(keeper Keeper) types.MsgServer {
+func NewMsgServer(keeper Keeper) types.MsgServer {
 	return &msgServer{
 		Keeper: keeper,
 	}

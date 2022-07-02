@@ -71,7 +71,7 @@ func (s *KeeperTestSuite) TestBidDebtAuction() {
 	auctionId := uint64(1)
 	//create auction
 	s.TestCreateDebtAuction()
-	user_tokens := ParseCoin("1000denom2")
+	userTokens := ParseCoin("1000denom2")
 
 	expectedUserToken := ParseCoin("100denom2")
 	bid := ParseCoin("245denom1")
@@ -79,7 +79,7 @@ func (s *KeeperTestSuite) TestBidDebtAuction() {
 	s.Require().NoError(err)
 
 	//fund bidder
-	s.fundAddr(bidder, sdk.NewCoins(user_tokens))
+	s.fundAddr(bidder, sdk.NewCoins(userTokens))
 
 	//place bid
 	err = k.PlaceDebtAuctionBid(*ctx, appId, auctionMappingId, auctionId, bidder, bid, expectedUserToken)
@@ -122,7 +122,7 @@ func (s *KeeperTestSuite) TestBidsDebtAuction() {
 	auctionId := uint64(1)
 	//create auction
 	s.TestCreateDebtAuction()
-	user_tokens := ParseCoin("1000denom2")
+	userTokens := ParseCoin("1000denom2")
 
 	expectedUserToken := ParseCoin("100denom2")
 
@@ -132,7 +132,7 @@ func (s *KeeperTestSuite) TestBidsDebtAuction() {
 	s.Require().NoError(err)
 
 	//fund bidder
-	s.fundAddr(bidder, sdk.NewCoins(user_tokens))
+	s.fundAddr(bidder, sdk.NewCoins(userTokens))
 
 	//place bid1
 	err = k.PlaceDebtAuctionBid(*ctx, appId, auctionMappingId, auctionId, bidder, bid, expectedUserToken)
@@ -153,7 +153,7 @@ func (s *KeeperTestSuite) TestBidsDebtAuction() {
 	s.Require().NoError(err)
 
 	//fund bidder2
-	s.fundAddr(bidder2, sdk.NewCoins(user_tokens))
+	s.fundAddr(bidder2, sdk.NewCoins(userTokens))
 	bid = ParseCoin("235denom1")
 
 	//place bid

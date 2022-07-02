@@ -107,23 +107,23 @@ func (m *QueryLockerInfoResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryLockerInfoResponse proto.InternalMessageInfo
 
-type QueryLockersByProductToAssetIDRequest struct {
-	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
-	AssetId   uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+type QueryLockersByAppToAssetIDRequest struct {
+	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
-func (m *QueryLockersByProductToAssetIDRequest) Reset()         { *m = QueryLockersByProductToAssetIDRequest{} }
-func (m *QueryLockersByProductToAssetIDRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryLockersByProductToAssetIDRequest) ProtoMessage()    {}
-func (*QueryLockersByProductToAssetIDRequest) Descriptor() ([]byte, []int) {
+func (m *QueryLockersByAppToAssetIDRequest) Reset()         { *m = QueryLockersByAppToAssetIDRequest{} }
+func (m *QueryLockersByAppToAssetIDRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryLockersByAppToAssetIDRequest) ProtoMessage()    {}
+func (*QueryLockersByAppToAssetIDRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{2}
 }
-func (m *QueryLockersByProductToAssetIDRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockersByAppToAssetIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockersByProductToAssetIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockersByAppToAssetIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockersByProductToAssetIDRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockersByAppToAssetIDRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -133,36 +133,34 @@ func (m *QueryLockersByProductToAssetIDRequest) XXX_Marshal(b []byte, determinis
 		return b[:n], nil
 	}
 }
-func (m *QueryLockersByProductToAssetIDRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockersByProductToAssetIDRequest.Merge(m, src)
+func (m *QueryLockersByAppToAssetIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockersByAppToAssetIDRequest.Merge(m, src)
 }
-func (m *QueryLockersByProductToAssetIDRequest) XXX_Size() int {
+func (m *QueryLockersByAppToAssetIDRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockersByProductToAssetIDRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockersByProductToAssetIDRequest.DiscardUnknown(m)
+func (m *QueryLockersByAppToAssetIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockersByAppToAssetIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockersByProductToAssetIDRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockersByAppToAssetIDRequest proto.InternalMessageInfo
 
-type QueryLockersByProductToAssetIDResponse struct {
+type QueryLockersByAppToAssetIDResponse struct {
 	LockerIds []string `protobuf:"bytes,1,rep,name=locker_ids,json=lockerIds,proto3" json:"locker_ids,omitempty" yaml:"locker_ids"`
 }
 
-func (m *QueryLockersByProductToAssetIDResponse) Reset() {
-	*m = QueryLockersByProductToAssetIDResponse{}
-}
-func (m *QueryLockersByProductToAssetIDResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryLockersByProductToAssetIDResponse) ProtoMessage()    {}
-func (*QueryLockersByProductToAssetIDResponse) Descriptor() ([]byte, []int) {
+func (m *QueryLockersByAppToAssetIDResponse) Reset()         { *m = QueryLockersByAppToAssetIDResponse{} }
+func (m *QueryLockersByAppToAssetIDResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryLockersByAppToAssetIDResponse) ProtoMessage()    {}
+func (*QueryLockersByAppToAssetIDResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{3}
 }
-func (m *QueryLockersByProductToAssetIDResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockersByAppToAssetIDResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockersByProductToAssetIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockersByAppToAssetIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockersByProductToAssetIDResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockersByAppToAssetIDResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -172,34 +170,34 @@ func (m *QueryLockersByProductToAssetIDResponse) XXX_Marshal(b []byte, determini
 		return b[:n], nil
 	}
 }
-func (m *QueryLockersByProductToAssetIDResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockersByProductToAssetIDResponse.Merge(m, src)
+func (m *QueryLockersByAppToAssetIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockersByAppToAssetIDResponse.Merge(m, src)
 }
-func (m *QueryLockersByProductToAssetIDResponse) XXX_Size() int {
+func (m *QueryLockersByAppToAssetIDResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockersByProductToAssetIDResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockersByProductToAssetIDResponse.DiscardUnknown(m)
+func (m *QueryLockersByAppToAssetIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockersByAppToAssetIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockersByProductToAssetIDResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockersByAppToAssetIDResponse proto.InternalMessageInfo
 
-type QueryLockerInfoByProductIDRequest struct {
-	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+type QueryLockerInfoByAppIDRequest struct {
+	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 }
 
-func (m *QueryLockerInfoByProductIDRequest) Reset()         { *m = QueryLockerInfoByProductIDRequest{} }
-func (m *QueryLockerInfoByProductIDRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryLockerInfoByProductIDRequest) ProtoMessage()    {}
-func (*QueryLockerInfoByProductIDRequest) Descriptor() ([]byte, []int) {
+func (m *QueryLockerInfoByAppIDRequest) Reset()         { *m = QueryLockerInfoByAppIDRequest{} }
+func (m *QueryLockerInfoByAppIDRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryLockerInfoByAppIDRequest) ProtoMessage()    {}
+func (*QueryLockerInfoByAppIDRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{4}
 }
-func (m *QueryLockerInfoByProductIDRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockerInfoByAppIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockerInfoByProductIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockerInfoByAppIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockerInfoByProductIDRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockerInfoByAppIDRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -209,34 +207,34 @@ func (m *QueryLockerInfoByProductIDRequest) XXX_Marshal(b []byte, deterministic 
 		return b[:n], nil
 	}
 }
-func (m *QueryLockerInfoByProductIDRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockerInfoByProductIDRequest.Merge(m, src)
+func (m *QueryLockerInfoByAppIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockerInfoByAppIDRequest.Merge(m, src)
 }
-func (m *QueryLockerInfoByProductIDRequest) XXX_Size() int {
+func (m *QueryLockerInfoByAppIDRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockerInfoByProductIDRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockerInfoByProductIDRequest.DiscardUnknown(m)
+func (m *QueryLockerInfoByAppIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockerInfoByAppIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockerInfoByProductIDRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockerInfoByAppIDRequest proto.InternalMessageInfo
 
-type QueryLockerInfoByProductIDResponse struct {
+type QueryLockerInfoByAppIDResponse struct {
 	LockerIds []string `protobuf:"bytes,1,rep,name=locker_ids,json=lockerIds,proto3" json:"locker_ids,omitempty" yaml:"locker_ids"`
 }
 
-func (m *QueryLockerInfoByProductIDResponse) Reset()         { *m = QueryLockerInfoByProductIDResponse{} }
-func (m *QueryLockerInfoByProductIDResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryLockerInfoByProductIDResponse) ProtoMessage()    {}
-func (*QueryLockerInfoByProductIDResponse) Descriptor() ([]byte, []int) {
+func (m *QueryLockerInfoByAppIDResponse) Reset()         { *m = QueryLockerInfoByAppIDResponse{} }
+func (m *QueryLockerInfoByAppIDResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryLockerInfoByAppIDResponse) ProtoMessage()    {}
+func (*QueryLockerInfoByAppIDResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{5}
 }
-func (m *QueryLockerInfoByProductIDResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockerInfoByAppIDResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockerInfoByProductIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockerInfoByAppIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockerInfoByProductIDResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockerInfoByAppIDResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -246,37 +244,37 @@ func (m *QueryLockerInfoByProductIDResponse) XXX_Marshal(b []byte, deterministic
 		return b[:n], nil
 	}
 }
-func (m *QueryLockerInfoByProductIDResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockerInfoByProductIDResponse.Merge(m, src)
+func (m *QueryLockerInfoByAppIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockerInfoByAppIDResponse.Merge(m, src)
 }
-func (m *QueryLockerInfoByProductIDResponse) XXX_Size() int {
+func (m *QueryLockerInfoByAppIDResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockerInfoByProductIDResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockerInfoByProductIDResponse.DiscardUnknown(m)
+func (m *QueryLockerInfoByAppIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockerInfoByAppIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockerInfoByProductIDResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockerInfoByAppIDResponse proto.InternalMessageInfo
 
-type QueryTotalDepositByProductAssetIDRequest struct {
-	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
-	AssetId   uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+type QueryTotalDepositByAppAndAssetIDRequest struct {
+	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
-func (m *QueryTotalDepositByProductAssetIDRequest) Reset() {
-	*m = QueryTotalDepositByProductAssetIDRequest{}
+func (m *QueryTotalDepositByAppAndAssetIDRequest) Reset() {
+	*m = QueryTotalDepositByAppAndAssetIDRequest{}
 }
-func (m *QueryTotalDepositByProductAssetIDRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryTotalDepositByProductAssetIDRequest) ProtoMessage()    {}
-func (*QueryTotalDepositByProductAssetIDRequest) Descriptor() ([]byte, []int) {
+func (m *QueryTotalDepositByAppAndAssetIDRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTotalDepositByAppAndAssetIDRequest) ProtoMessage()    {}
+func (*QueryTotalDepositByAppAndAssetIDRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{6}
 }
-func (m *QueryTotalDepositByProductAssetIDRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryTotalDepositByAppAndAssetIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTotalDepositByProductAssetIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTotalDepositByAppAndAssetIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTotalDepositByProductAssetIDRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTotalDepositByAppAndAssetIDRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -286,38 +284,36 @@ func (m *QueryTotalDepositByProductAssetIDRequest) XXX_Marshal(b []byte, determi
 		return b[:n], nil
 	}
 }
-func (m *QueryTotalDepositByProductAssetIDRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTotalDepositByProductAssetIDRequest.Merge(m, src)
+func (m *QueryTotalDepositByAppAndAssetIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalDepositByAppAndAssetIDRequest.Merge(m, src)
 }
-func (m *QueryTotalDepositByProductAssetIDRequest) XXX_Size() int {
+func (m *QueryTotalDepositByAppAndAssetIDRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTotalDepositByProductAssetIDRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTotalDepositByProductAssetIDRequest.DiscardUnknown(m)
+func (m *QueryTotalDepositByAppAndAssetIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalDepositByAppAndAssetIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTotalDepositByProductAssetIDRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryTotalDepositByAppAndAssetIDRequest proto.InternalMessageInfo
 
-type QueryTotalDepositByProductAssetIDResponse struct {
+type QueryTotalDepositByAppAndAssetIDResponse struct {
 	TotalDeposit uint64 `protobuf:"varint,1,opt,name=total_deposit,json=totalDeposit,proto3" json:"total_deposit,omitempty"`
 }
 
-func (m *QueryTotalDepositByProductAssetIDResponse) Reset() {
-	*m = QueryTotalDepositByProductAssetIDResponse{}
+func (m *QueryTotalDepositByAppAndAssetIDResponse) Reset() {
+	*m = QueryTotalDepositByAppAndAssetIDResponse{}
 }
-func (m *QueryTotalDepositByProductAssetIDResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryTotalDepositByProductAssetIDResponse) ProtoMessage() {}
-func (*QueryTotalDepositByProductAssetIDResponse) Descriptor() ([]byte, []int) {
+func (m *QueryTotalDepositByAppAndAssetIDResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryTotalDepositByAppAndAssetIDResponse) ProtoMessage()    {}
+func (*QueryTotalDepositByAppAndAssetIDResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{7}
 }
-func (m *QueryTotalDepositByProductAssetIDResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryTotalDepositByAppAndAssetIDResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryTotalDepositByProductAssetIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTotalDepositByAppAndAssetIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryTotalDepositByProductAssetIDResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTotalDepositByAppAndAssetIDResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -327,39 +323,35 @@ func (m *QueryTotalDepositByProductAssetIDResponse) XXX_Marshal(b []byte, determ
 		return b[:n], nil
 	}
 }
-func (m *QueryTotalDepositByProductAssetIDResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryTotalDepositByProductAssetIDResponse.Merge(m, src)
+func (m *QueryTotalDepositByAppAndAssetIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalDepositByAppAndAssetIDResponse.Merge(m, src)
 }
-func (m *QueryTotalDepositByProductAssetIDResponse) XXX_Size() int {
+func (m *QueryTotalDepositByAppAndAssetIDResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryTotalDepositByProductAssetIDResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryTotalDepositByProductAssetIDResponse.DiscardUnknown(m)
+func (m *QueryTotalDepositByAppAndAssetIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalDepositByAppAndAssetIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryTotalDepositByProductAssetIDResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryTotalDepositByAppAndAssetIDResponse proto.InternalMessageInfo
 
-type QueryOwnerLockerByProductIDbyOwnerRequest struct {
-	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
-	Owner     string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+type QueryOwnerLockerByAppIDbyOwnerRequest struct {
+	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	Owner string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 }
 
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) Reset() {
-	*m = QueryOwnerLockerByProductIDbyOwnerRequest{}
-}
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryOwnerLockerByProductIDbyOwnerRequest) ProtoMessage() {}
-func (*QueryOwnerLockerByProductIDbyOwnerRequest) Descriptor() ([]byte, []int) {
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) Reset()         { *m = QueryOwnerLockerByAppIDbyOwnerRequest{} }
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryOwnerLockerByAppIDbyOwnerRequest) ProtoMessage()    {}
+func (*QueryOwnerLockerByAppIDbyOwnerRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{8}
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOwnerLockerByProductIDbyOwnerRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOwnerLockerByAppIDbyOwnerRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -369,38 +361,36 @@ func (m *QueryOwnerLockerByProductIDbyOwnerRequest) XXX_Marshal(b []byte, determ
 		return b[:n], nil
 	}
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOwnerLockerByProductIDbyOwnerRequest.Merge(m, src)
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnerLockerByAppIDbyOwnerRequest.Merge(m, src)
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) XXX_Size() int {
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOwnerLockerByProductIDbyOwnerRequest.DiscardUnknown(m)
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnerLockerByAppIDbyOwnerRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOwnerLockerByProductIDbyOwnerRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryOwnerLockerByAppIDbyOwnerRequest proto.InternalMessageInfo
 
-type QueryOwnerLockerByProductIDbyOwnerResponse struct {
+type QueryOwnerLockerByAppIDbyOwnerResponse struct {
 	LockerIds []string `protobuf:"bytes,1,rep,name=locker_ids,json=lockerIds,proto3" json:"locker_ids,omitempty" yaml:"locker_ids"`
 }
 
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) Reset() {
-	*m = QueryOwnerLockerByProductIDbyOwnerResponse{}
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) Reset() {
+	*m = QueryOwnerLockerByAppIDbyOwnerResponse{}
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryOwnerLockerByProductIDbyOwnerResponse) ProtoMessage() {}
-func (*QueryOwnerLockerByProductIDbyOwnerResponse) Descriptor() ([]byte, []int) {
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryOwnerLockerByAppIDbyOwnerResponse) ProtoMessage()    {}
+func (*QueryOwnerLockerByAppIDbyOwnerResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{9}
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOwnerLockerByProductIDbyOwnerResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOwnerLockerByAppIDbyOwnerResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -410,38 +400,36 @@ func (m *QueryOwnerLockerByProductIDbyOwnerResponse) XXX_Marshal(b []byte, deter
 		return b[:n], nil
 	}
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOwnerLockerByProductIDbyOwnerResponse.Merge(m, src)
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnerLockerByAppIDbyOwnerResponse.Merge(m, src)
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) XXX_Size() int {
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOwnerLockerByProductIDbyOwnerResponse.DiscardUnknown(m)
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnerLockerByAppIDbyOwnerResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOwnerLockerByProductIDbyOwnerResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryOwnerLockerByAppIDbyOwnerResponse proto.InternalMessageInfo
 
-type QueryOwnerLockerOfAllProductByOwnerRequest struct {
+type QueryOwnerLockerOfAllAppsByOwnerRequest struct {
 	Owner string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 }
 
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) Reset() {
-	*m = QueryOwnerLockerOfAllProductByOwnerRequest{}
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) Reset() {
+	*m = QueryOwnerLockerOfAllAppsByOwnerRequest{}
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryOwnerLockerOfAllProductByOwnerRequest) ProtoMessage() {}
-func (*QueryOwnerLockerOfAllProductByOwnerRequest) Descriptor() ([]byte, []int) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryOwnerLockerOfAllAppsByOwnerRequest) ProtoMessage()    {}
+func (*QueryOwnerLockerOfAllAppsByOwnerRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{10}
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOwnerLockerOfAllProductByOwnerRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOwnerLockerOfAllAppsByOwnerRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -451,38 +439,36 @@ func (m *QueryOwnerLockerOfAllProductByOwnerRequest) XXX_Marshal(b []byte, deter
 		return b[:n], nil
 	}
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOwnerLockerOfAllProductByOwnerRequest.Merge(m, src)
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnerLockerOfAllAppsByOwnerRequest.Merge(m, src)
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) XXX_Size() int {
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOwnerLockerOfAllProductByOwnerRequest.DiscardUnknown(m)
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnerLockerOfAllAppsByOwnerRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOwnerLockerOfAllProductByOwnerRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryOwnerLockerOfAllAppsByOwnerRequest proto.InternalMessageInfo
 
-type QueryOwnerLockerOfAllProductByOwnerResponse struct {
+type QueryOwnerLockerOfAllAppsByOwnerResponse struct {
 	LockerIds []string `protobuf:"bytes,1,rep,name=locker_ids,json=lockerIds,proto3" json:"locker_ids,omitempty" yaml:"locker_ids"`
 }
 
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) Reset() {
-	*m = QueryOwnerLockerOfAllProductByOwnerResponse{}
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) Reset() {
+	*m = QueryOwnerLockerOfAllAppsByOwnerResponse{}
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryOwnerLockerOfAllProductByOwnerResponse) ProtoMessage() {}
-func (*QueryOwnerLockerOfAllProductByOwnerResponse) Descriptor() ([]byte, []int) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryOwnerLockerOfAllAppsByOwnerResponse) ProtoMessage()    {}
+func (*QueryOwnerLockerOfAllAppsByOwnerResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{11}
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOwnerLockerOfAllProductByOwnerResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOwnerLockerOfAllAppsByOwnerResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -492,41 +478,41 @@ func (m *QueryOwnerLockerOfAllProductByOwnerResponse) XXX_Marshal(b []byte, dete
 		return b[:n], nil
 	}
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOwnerLockerOfAllProductByOwnerResponse.Merge(m, src)
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnerLockerOfAllAppsByOwnerResponse.Merge(m, src)
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) XXX_Size() int {
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOwnerLockerOfAllProductByOwnerResponse.DiscardUnknown(m)
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnerLockerOfAllAppsByOwnerResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOwnerLockerOfAllProductByOwnerResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryOwnerLockerOfAllAppsByOwnerResponse proto.InternalMessageInfo
 
-type QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest struct {
-	ProductId  uint64             `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+type QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest struct {
+	AppId      uint64             `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	Owner      string             `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 	AssetId    uint64             `protobuf:"varint,3,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 	Pagination *query.PageRequest `protobuf:"bytes,4,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) Reset() {
-	*m = QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest{}
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) Reset() {
+	*m = QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest{}
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) String() string {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) ProtoMessage() {}
-func (*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) Descriptor() ([]byte, []int) {
+func (*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) ProtoMessage() {}
+func (*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{12}
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -536,39 +522,39 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) XXX_Marshal(b 
 		return b[:n], nil
 	}
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest.Merge(m, src)
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest.Merge(m, src)
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) XXX_Size() int {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest.DiscardUnknown(m)
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest proto.InternalMessageInfo
 
-type QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse struct {
+type QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse struct {
 	UserTxData []*UserTxData       `protobuf:"bytes,1,rep,name=user_tx_data,json=userTxData,proto3" json:"user_tx_data,omitempty" yaml:"user_tx_data"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) Reset() {
-	*m = QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse{}
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) Reset() {
+	*m = QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse{}
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) String() string {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) ProtoMessage() {}
-func (*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) Descriptor() ([]byte, []int) {
+func (*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) ProtoMessage() {}
+func (*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{13}
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -578,40 +564,40 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) XXX_Marshal(b
 		return b[:n], nil
 	}
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse.Merge(m, src)
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse.Merge(m, src)
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) XXX_Size() int {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse.DiscardUnknown(m)
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse proto.InternalMessageInfo
 
-type QueryOwnerLockerByProductToAssetIDbyOwnerRequest struct {
-	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
-	AssetId   uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	Owner     string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+type QueryOwnerLockerByAppToAssetIDbyOwnerRequest struct {
+	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	Owner   string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 }
 
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) Reset() {
-	*m = QueryOwnerLockerByProductToAssetIDbyOwnerRequest{}
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) Reset() {
+	*m = QueryOwnerLockerByAppToAssetIDbyOwnerRequest{}
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) String() string {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryOwnerLockerByProductToAssetIDbyOwnerRequest) ProtoMessage() {}
-func (*QueryOwnerLockerByProductToAssetIDbyOwnerRequest) Descriptor() ([]byte, []int) {
+func (*QueryOwnerLockerByAppToAssetIDbyOwnerRequest) ProtoMessage() {}
+func (*QueryOwnerLockerByAppToAssetIDbyOwnerRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{14}
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOwnerLockerByProductToAssetIDbyOwnerRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOwnerLockerByAppToAssetIDbyOwnerRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -621,38 +607,38 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) XXX_Marshal(b []byte,
 		return b[:n], nil
 	}
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOwnerLockerByProductToAssetIDbyOwnerRequest.Merge(m, src)
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnerLockerByAppToAssetIDbyOwnerRequest.Merge(m, src)
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) XXX_Size() int {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOwnerLockerByProductToAssetIDbyOwnerRequest.DiscardUnknown(m)
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnerLockerByAppToAssetIDbyOwnerRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOwnerLockerByProductToAssetIDbyOwnerRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryOwnerLockerByAppToAssetIDbyOwnerRequest proto.InternalMessageInfo
 
-type QueryOwnerLockerByProductToAssetIDbyOwnerResponse struct {
+type QueryOwnerLockerByAppToAssetIDbyOwnerResponse struct {
 	LockerInfo []Locker `protobuf:"bytes,1,rep,name=locker_info,json=lockerInfo,proto3" json:"locker_info" yaml:"locker_info"`
 }
 
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) Reset() {
-	*m = QueryOwnerLockerByProductToAssetIDbyOwnerResponse{}
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) Reset() {
+	*m = QueryOwnerLockerByAppToAssetIDbyOwnerResponse{}
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) String() string {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryOwnerLockerByProductToAssetIDbyOwnerResponse) ProtoMessage() {}
-func (*QueryOwnerLockerByProductToAssetIDbyOwnerResponse) Descriptor() ([]byte, []int) {
+func (*QueryOwnerLockerByAppToAssetIDbyOwnerResponse) ProtoMessage() {}
+func (*QueryOwnerLockerByAppToAssetIDbyOwnerResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{15}
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryOwnerLockerByProductToAssetIDbyOwnerResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOwnerLockerByAppToAssetIDbyOwnerResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -662,35 +648,35 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) XXX_Marshal(b []byte
 		return b[:n], nil
 	}
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryOwnerLockerByProductToAssetIDbyOwnerResponse.Merge(m, src)
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnerLockerByAppToAssetIDbyOwnerResponse.Merge(m, src)
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) XXX_Size() int {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryOwnerLockerByProductToAssetIDbyOwnerResponse.DiscardUnknown(m)
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnerLockerByAppToAssetIDbyOwnerResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryOwnerLockerByProductToAssetIDbyOwnerResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryOwnerLockerByAppToAssetIDbyOwnerResponse proto.InternalMessageInfo
 
-type QueryLockerByProductByOwnerRequest struct {
-	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
-	Owner     string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+type QueryLockerByAppByOwnerRequest struct {
+	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	Owner string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 }
 
-func (m *QueryLockerByProductByOwnerRequest) Reset()         { *m = QueryLockerByProductByOwnerRequest{} }
-func (m *QueryLockerByProductByOwnerRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryLockerByProductByOwnerRequest) ProtoMessage()    {}
-func (*QueryLockerByProductByOwnerRequest) Descriptor() ([]byte, []int) {
+func (m *QueryLockerByAppByOwnerRequest) Reset()         { *m = QueryLockerByAppByOwnerRequest{} }
+func (m *QueryLockerByAppByOwnerRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryLockerByAppByOwnerRequest) ProtoMessage()    {}
+func (*QueryLockerByAppByOwnerRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{16}
 }
-func (m *QueryLockerByProductByOwnerRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockerByAppByOwnerRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockerByProductByOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockerByAppByOwnerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockerByProductByOwnerRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockerByAppByOwnerRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -700,34 +686,34 @@ func (m *QueryLockerByProductByOwnerRequest) XXX_Marshal(b []byte, deterministic
 		return b[:n], nil
 	}
 }
-func (m *QueryLockerByProductByOwnerRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockerByProductByOwnerRequest.Merge(m, src)
+func (m *QueryLockerByAppByOwnerRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockerByAppByOwnerRequest.Merge(m, src)
 }
-func (m *QueryLockerByProductByOwnerRequest) XXX_Size() int {
+func (m *QueryLockerByAppByOwnerRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockerByProductByOwnerRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockerByProductByOwnerRequest.DiscardUnknown(m)
+func (m *QueryLockerByAppByOwnerRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockerByAppByOwnerRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockerByProductByOwnerRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockerByAppByOwnerRequest proto.InternalMessageInfo
 
-type QueryLockerByProductByOwnerResponse struct {
+type QueryLockerByAppByOwnerResponse struct {
 	LockerInfo []Locker `protobuf:"bytes,1,rep,name=locker_info,json=lockerInfo,proto3" json:"locker_info" yaml:"locker_info"`
 }
 
-func (m *QueryLockerByProductByOwnerResponse) Reset()         { *m = QueryLockerByProductByOwnerResponse{} }
-func (m *QueryLockerByProductByOwnerResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryLockerByProductByOwnerResponse) ProtoMessage()    {}
-func (*QueryLockerByProductByOwnerResponse) Descriptor() ([]byte, []int) {
+func (m *QueryLockerByAppByOwnerResponse) Reset()         { *m = QueryLockerByAppByOwnerResponse{} }
+func (m *QueryLockerByAppByOwnerResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryLockerByAppByOwnerResponse) ProtoMessage()    {}
+func (*QueryLockerByAppByOwnerResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{17}
 }
-func (m *QueryLockerByProductByOwnerResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockerByAppByOwnerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockerByProductByOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockerByAppByOwnerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockerByProductByOwnerResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockerByAppByOwnerResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -737,34 +723,34 @@ func (m *QueryLockerByProductByOwnerResponse) XXX_Marshal(b []byte, deterministi
 		return b[:n], nil
 	}
 }
-func (m *QueryLockerByProductByOwnerResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockerByProductByOwnerResponse.Merge(m, src)
+func (m *QueryLockerByAppByOwnerResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockerByAppByOwnerResponse.Merge(m, src)
 }
-func (m *QueryLockerByProductByOwnerResponse) XXX_Size() int {
+func (m *QueryLockerByAppByOwnerResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockerByProductByOwnerResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockerByProductByOwnerResponse.DiscardUnknown(m)
+func (m *QueryLockerByAppByOwnerResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockerByAppByOwnerResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockerByProductByOwnerResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockerByAppByOwnerResponse proto.InternalMessageInfo
 
-type QueryLockerCountByProductIDRequest struct {
-	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+type QueryLockerCountByAppIDRequest struct {
+	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 }
 
-func (m *QueryLockerCountByProductIDRequest) Reset()         { *m = QueryLockerCountByProductIDRequest{} }
-func (m *QueryLockerCountByProductIDRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryLockerCountByProductIDRequest) ProtoMessage()    {}
-func (*QueryLockerCountByProductIDRequest) Descriptor() ([]byte, []int) {
+func (m *QueryLockerCountByAppIDRequest) Reset()         { *m = QueryLockerCountByAppIDRequest{} }
+func (m *QueryLockerCountByAppIDRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryLockerCountByAppIDRequest) ProtoMessage()    {}
+func (*QueryLockerCountByAppIDRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{18}
 }
-func (m *QueryLockerCountByProductIDRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockerCountByAppIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockerCountByProductIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockerCountByAppIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockerCountByProductIDRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockerCountByAppIDRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -774,34 +760,34 @@ func (m *QueryLockerCountByProductIDRequest) XXX_Marshal(b []byte, deterministic
 		return b[:n], nil
 	}
 }
-func (m *QueryLockerCountByProductIDRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockerCountByProductIDRequest.Merge(m, src)
+func (m *QueryLockerCountByAppIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockerCountByAppIDRequest.Merge(m, src)
 }
-func (m *QueryLockerCountByProductIDRequest) XXX_Size() int {
+func (m *QueryLockerCountByAppIDRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockerCountByProductIDRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockerCountByProductIDRequest.DiscardUnknown(m)
+func (m *QueryLockerCountByAppIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockerCountByAppIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockerCountByProductIDRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockerCountByAppIDRequest proto.InternalMessageInfo
 
-type QueryLockerCountByProductIDResponse struct {
+type QueryLockerCountByAppIDResponse struct {
 	TotalCount uint64 `protobuf:"varint,1,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
 }
 
-func (m *QueryLockerCountByProductIDResponse) Reset()         { *m = QueryLockerCountByProductIDResponse{} }
-func (m *QueryLockerCountByProductIDResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryLockerCountByProductIDResponse) ProtoMessage()    {}
-func (*QueryLockerCountByProductIDResponse) Descriptor() ([]byte, []int) {
+func (m *QueryLockerCountByAppIDResponse) Reset()         { *m = QueryLockerCountByAppIDResponse{} }
+func (m *QueryLockerCountByAppIDResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryLockerCountByAppIDResponse) ProtoMessage()    {}
+func (*QueryLockerCountByAppIDResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{19}
 }
-func (m *QueryLockerCountByProductIDResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockerCountByAppIDResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockerCountByProductIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockerCountByAppIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockerCountByProductIDResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockerCountByAppIDResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -811,39 +797,35 @@ func (m *QueryLockerCountByProductIDResponse) XXX_Marshal(b []byte, deterministi
 		return b[:n], nil
 	}
 }
-func (m *QueryLockerCountByProductIDResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockerCountByProductIDResponse.Merge(m, src)
+func (m *QueryLockerCountByAppIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockerCountByAppIDResponse.Merge(m, src)
 }
-func (m *QueryLockerCountByProductIDResponse) XXX_Size() int {
+func (m *QueryLockerCountByAppIDResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockerCountByProductIDResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockerCountByProductIDResponse.DiscardUnknown(m)
+func (m *QueryLockerCountByAppIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockerCountByAppIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockerCountByProductIDResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockerCountByAppIDResponse proto.InternalMessageInfo
 
-type QueryLockerCountByProductToAssetIDRequest struct {
-	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
-	AssetId   uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+type QueryLockerCountByAppToAssetIDRequest struct {
+	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
-func (m *QueryLockerCountByProductToAssetIDRequest) Reset() {
-	*m = QueryLockerCountByProductToAssetIDRequest{}
-}
-func (m *QueryLockerCountByProductToAssetIDRequest) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryLockerCountByProductToAssetIDRequest) ProtoMessage() {}
-func (*QueryLockerCountByProductToAssetIDRequest) Descriptor() ([]byte, []int) {
+func (m *QueryLockerCountByAppToAssetIDRequest) Reset()         { *m = QueryLockerCountByAppToAssetIDRequest{} }
+func (m *QueryLockerCountByAppToAssetIDRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryLockerCountByAppToAssetIDRequest) ProtoMessage()    {}
+func (*QueryLockerCountByAppToAssetIDRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{20}
 }
-func (m *QueryLockerCountByProductToAssetIDRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockerCountByAppToAssetIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockerCountByProductToAssetIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockerCountByAppToAssetIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockerCountByProductToAssetIDRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockerCountByAppToAssetIDRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -853,38 +835,36 @@ func (m *QueryLockerCountByProductToAssetIDRequest) XXX_Marshal(b []byte, determ
 		return b[:n], nil
 	}
 }
-func (m *QueryLockerCountByProductToAssetIDRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockerCountByProductToAssetIDRequest.Merge(m, src)
+func (m *QueryLockerCountByAppToAssetIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockerCountByAppToAssetIDRequest.Merge(m, src)
 }
-func (m *QueryLockerCountByProductToAssetIDRequest) XXX_Size() int {
+func (m *QueryLockerCountByAppToAssetIDRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockerCountByProductToAssetIDRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockerCountByProductToAssetIDRequest.DiscardUnknown(m)
+func (m *QueryLockerCountByAppToAssetIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockerCountByAppToAssetIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockerCountByProductToAssetIDRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockerCountByAppToAssetIDRequest proto.InternalMessageInfo
 
-type QueryLockerCountByProductToAssetIDResponse struct {
+type QueryLockerCountByAppToAssetIDResponse struct {
 	TotalCount uint64 `protobuf:"varint,1,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
 }
 
-func (m *QueryLockerCountByProductToAssetIDResponse) Reset() {
-	*m = QueryLockerCountByProductToAssetIDResponse{}
+func (m *QueryLockerCountByAppToAssetIDResponse) Reset() {
+	*m = QueryLockerCountByAppToAssetIDResponse{}
 }
-func (m *QueryLockerCountByProductToAssetIDResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryLockerCountByProductToAssetIDResponse) ProtoMessage() {}
-func (*QueryLockerCountByProductToAssetIDResponse) Descriptor() ([]byte, []int) {
+func (m *QueryLockerCountByAppToAssetIDResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryLockerCountByAppToAssetIDResponse) ProtoMessage()    {}
+func (*QueryLockerCountByAppToAssetIDResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{21}
 }
-func (m *QueryLockerCountByProductToAssetIDResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockerCountByAppToAssetIDResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockerCountByProductToAssetIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockerCountByAppToAssetIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockerCountByProductToAssetIDResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockerCountByAppToAssetIDResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -894,38 +874,36 @@ func (m *QueryLockerCountByProductToAssetIDResponse) XXX_Marshal(b []byte, deter
 		return b[:n], nil
 	}
 }
-func (m *QueryLockerCountByProductToAssetIDResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockerCountByProductToAssetIDResponse.Merge(m, src)
+func (m *QueryLockerCountByAppToAssetIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockerCountByAppToAssetIDResponse.Merge(m, src)
 }
-func (m *QueryLockerCountByProductToAssetIDResponse) XXX_Size() int {
+func (m *QueryLockerCountByAppToAssetIDResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockerCountByProductToAssetIDResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockerCountByProductToAssetIDResponse.DiscardUnknown(m)
+func (m *QueryLockerCountByAppToAssetIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockerCountByAppToAssetIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockerCountByProductToAssetIDResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockerCountByAppToAssetIDResponse proto.InternalMessageInfo
 
-type QueryWhiteListedAssetIDsByProductIDRequest struct {
-	ProductId uint64 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty" yaml:"product_id"`
+type QueryWhiteListedAssetIDsByAppIDRequest struct {
+	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 }
 
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) Reset() {
-	*m = QueryWhiteListedAssetIDsByProductIDRequest{}
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) Reset() {
+	*m = QueryWhiteListedAssetIDsByAppIDRequest{}
 }
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryWhiteListedAssetIDsByProductIDRequest) ProtoMessage() {}
-func (*QueryWhiteListedAssetIDsByProductIDRequest) Descriptor() ([]byte, []int) {
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryWhiteListedAssetIDsByAppIDRequest) ProtoMessage()    {}
+func (*QueryWhiteListedAssetIDsByAppIDRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{22}
 }
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryWhiteListedAssetIDsByProductIDRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryWhiteListedAssetIDsByAppIDRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -935,38 +913,36 @@ func (m *QueryWhiteListedAssetIDsByProductIDRequest) XXX_Marshal(b []byte, deter
 		return b[:n], nil
 	}
 }
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryWhiteListedAssetIDsByProductIDRequest.Merge(m, src)
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryWhiteListedAssetIDsByAppIDRequest.Merge(m, src)
 }
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) XXX_Size() int {
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryWhiteListedAssetIDsByProductIDRequest.DiscardUnknown(m)
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryWhiteListedAssetIDsByAppIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryWhiteListedAssetIDsByProductIDRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryWhiteListedAssetIDsByAppIDRequest proto.InternalMessageInfo
 
-type QueryWhiteListedAssetIDsByProductIDResponse struct {
+type QueryWhiteListedAssetIDsByAppIDResponse struct {
 	AssetIds []uint64 `protobuf:"varint,1,rep,packed,name=asset_ids,json=assetIds,proto3" json:"asset_ids,omitempty"`
 }
 
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) Reset() {
-	*m = QueryWhiteListedAssetIDsByProductIDResponse{}
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) Reset() {
+	*m = QueryWhiteListedAssetIDsByAppIDResponse{}
 }
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryWhiteListedAssetIDsByProductIDResponse) ProtoMessage() {}
-func (*QueryWhiteListedAssetIDsByProductIDResponse) Descriptor() ([]byte, []int) {
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryWhiteListedAssetIDsByAppIDResponse) ProtoMessage()    {}
+func (*QueryWhiteListedAssetIDsByAppIDResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{23}
 }
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryWhiteListedAssetIDsByProductIDResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryWhiteListedAssetIDsByAppIDResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -976,35 +952,33 @@ func (m *QueryWhiteListedAssetIDsByProductIDResponse) XXX_Marshal(b []byte, dete
 		return b[:n], nil
 	}
 }
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryWhiteListedAssetIDsByProductIDResponse.Merge(m, src)
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryWhiteListedAssetIDsByAppIDResponse.Merge(m, src)
 }
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) XXX_Size() int {
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryWhiteListedAssetIDsByProductIDResponse.DiscardUnknown(m)
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryWhiteListedAssetIDsByAppIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryWhiteListedAssetIDsByProductIDResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryWhiteListedAssetIDsByAppIDResponse proto.InternalMessageInfo
 
-type QueryWhiteListedAssetByAllProductRequest struct {
+type QueryWhiteListedAssetByAllAppsRequest struct {
 }
 
-func (m *QueryWhiteListedAssetByAllProductRequest) Reset() {
-	*m = QueryWhiteListedAssetByAllProductRequest{}
-}
-func (m *QueryWhiteListedAssetByAllProductRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryWhiteListedAssetByAllProductRequest) ProtoMessage()    {}
-func (*QueryWhiteListedAssetByAllProductRequest) Descriptor() ([]byte, []int) {
+func (m *QueryWhiteListedAssetByAllAppsRequest) Reset()         { *m = QueryWhiteListedAssetByAllAppsRequest{} }
+func (m *QueryWhiteListedAssetByAllAppsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryWhiteListedAssetByAllAppsRequest) ProtoMessage()    {}
+func (*QueryWhiteListedAssetByAllAppsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{24}
 }
-func (m *QueryWhiteListedAssetByAllProductRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryWhiteListedAssetByAllAppsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryWhiteListedAssetByAllProductRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryWhiteListedAssetByAllAppsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryWhiteListedAssetByAllProductRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryWhiteListedAssetByAllAppsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1014,38 +988,36 @@ func (m *QueryWhiteListedAssetByAllProductRequest) XXX_Marshal(b []byte, determi
 		return b[:n], nil
 	}
 }
-func (m *QueryWhiteListedAssetByAllProductRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryWhiteListedAssetByAllProductRequest.Merge(m, src)
+func (m *QueryWhiteListedAssetByAllAppsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryWhiteListedAssetByAllAppsRequest.Merge(m, src)
 }
-func (m *QueryWhiteListedAssetByAllProductRequest) XXX_Size() int {
+func (m *QueryWhiteListedAssetByAllAppsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryWhiteListedAssetByAllProductRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryWhiteListedAssetByAllProductRequest.DiscardUnknown(m)
+func (m *QueryWhiteListedAssetByAllAppsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryWhiteListedAssetByAllAppsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryWhiteListedAssetByAllProductRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryWhiteListedAssetByAllAppsRequest proto.InternalMessageInfo
 
-type QueryWhiteListedAssetByAllProductResponse struct {
-	ProductToAllAsset []ProductToAllAsset `protobuf:"bytes,1,rep,name=product_to_all_asset,json=productToAllAsset,proto3" json:"product_to_all_asset" yaml:"product_to_all_asset"`
+type QueryWhiteListedAssetByAllAppsResponse struct {
+	ProductToAllAsset []AppToAllAsset `protobuf:"bytes,1,rep,name=product_to_all_asset,json=productToAllAsset,proto3" json:"product_to_all_asset" yaml:"product_to_all_asset"`
 }
 
-func (m *QueryWhiteListedAssetByAllProductResponse) Reset() {
-	*m = QueryWhiteListedAssetByAllProductResponse{}
+func (m *QueryWhiteListedAssetByAllAppsResponse) Reset() {
+	*m = QueryWhiteListedAssetByAllAppsResponse{}
 }
-func (m *QueryWhiteListedAssetByAllProductResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryWhiteListedAssetByAllProductResponse) ProtoMessage() {}
-func (*QueryWhiteListedAssetByAllProductResponse) Descriptor() ([]byte, []int) {
+func (m *QueryWhiteListedAssetByAllAppsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryWhiteListedAssetByAllAppsResponse) ProtoMessage()    {}
+func (*QueryWhiteListedAssetByAllAppsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{25}
 }
-func (m *QueryWhiteListedAssetByAllProductResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryWhiteListedAssetByAllAppsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryWhiteListedAssetByAllProductResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryWhiteListedAssetByAllAppsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryWhiteListedAssetByAllProductResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryWhiteListedAssetByAllAppsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1055,35 +1027,35 @@ func (m *QueryWhiteListedAssetByAllProductResponse) XXX_Marshal(b []byte, determ
 		return b[:n], nil
 	}
 }
-func (m *QueryWhiteListedAssetByAllProductResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryWhiteListedAssetByAllProductResponse.Merge(m, src)
+func (m *QueryWhiteListedAssetByAllAppsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryWhiteListedAssetByAllAppsResponse.Merge(m, src)
 }
-func (m *QueryWhiteListedAssetByAllProductResponse) XXX_Size() int {
+func (m *QueryWhiteListedAssetByAllAppsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryWhiteListedAssetByAllProductResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryWhiteListedAssetByAllProductResponse.DiscardUnknown(m)
+func (m *QueryWhiteListedAssetByAllAppsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryWhiteListedAssetByAllAppsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryWhiteListedAssetByAllProductResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryWhiteListedAssetByAllAppsResponse proto.InternalMessageInfo
 
-type ProductToAllAsset struct {
-	ProductId uint64        `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
-	Assets    []types.Asset `protobuf:"bytes,2,rep,name=assets,proto3" json:"assets" yaml:"assets"`
+type AppToAllAsset struct {
+	AppId  uint64        `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
+	Assets []types.Asset `protobuf:"bytes,2,rep,name=assets,proto3" json:"assets" yaml:"assets"`
 }
 
-func (m *ProductToAllAsset) Reset()         { *m = ProductToAllAsset{} }
-func (m *ProductToAllAsset) String() string { return proto.CompactTextString(m) }
-func (*ProductToAllAsset) ProtoMessage()    {}
-func (*ProductToAllAsset) Descriptor() ([]byte, []int) {
+func (m *AppToAllAsset) Reset()         { *m = AppToAllAsset{} }
+func (m *AppToAllAsset) String() string { return proto.CompactTextString(m) }
+func (*AppToAllAsset) ProtoMessage()    {}
+func (*AppToAllAsset) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{26}
 }
-func (m *ProductToAllAsset) XXX_Unmarshal(b []byte) error {
+func (m *AppToAllAsset) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ProductToAllAsset) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AppToAllAsset) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ProductToAllAsset.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AppToAllAsset.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1093,17 +1065,17 @@ func (m *ProductToAllAsset) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *ProductToAllAsset) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ProductToAllAsset.Merge(m, src)
+func (m *AppToAllAsset) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AppToAllAsset.Merge(m, src)
 }
-func (m *ProductToAllAsset) XXX_Size() int {
+func (m *AppToAllAsset) XXX_Size() int {
 	return m.Size()
 }
-func (m *ProductToAllAsset) XXX_DiscardUnknown() {
-	xxx_messageInfo_ProductToAllAsset.DiscardUnknown(m)
+func (m *AppToAllAsset) XXX_DiscardUnknown() {
+	xxx_messageInfo_AppToAllAsset.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ProductToAllAsset proto.InternalMessageInfo
+var xxx_messageInfo_AppToAllAsset proto.InternalMessageInfo
 
 type QueryParamsRequest struct {
 }
@@ -1252,27 +1224,27 @@ func (m *QueryLockerLookupTableByAppResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryLockerLookupTableByAppResponse proto.InternalMessageInfo
 
-type QueryLockerLookupTableByAppAndAssetIdRequest struct {
+type QueryLockerLookupTableByAppAndAssetIDRequest struct {
 	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) Reset() {
-	*m = QueryLockerLookupTableByAppAndAssetIdRequest{}
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) Reset() {
+	*m = QueryLockerLookupTableByAppAndAssetIDRequest{}
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) String() string {
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryLockerLookupTableByAppAndAssetIdRequest) ProtoMessage() {}
-func (*QueryLockerLookupTableByAppAndAssetIdRequest) Descriptor() ([]byte, []int) {
+func (*QueryLockerLookupTableByAppAndAssetIDRequest) ProtoMessage() {}
+func (*QueryLockerLookupTableByAppAndAssetIDRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{31}
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIdRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIDRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1282,38 +1254,38 @@ func (m *QueryLockerLookupTableByAppAndAssetIdRequest) XXX_Marshal(b []byte, det
 		return b[:n], nil
 	}
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIdRequest.Merge(m, src)
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIDRequest.Merge(m, src)
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) XXX_Size() int {
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIdRequest.DiscardUnknown(m)
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIDRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIdRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIDRequest proto.InternalMessageInfo
 
-type QueryLockerLookupTableByAppAndAssetIdResponse struct {
+type QueryLockerLookupTableByAppAndAssetIDResponse struct {
 	TokenToLockerMapping *TokenToLockerMapping `protobuf:"bytes,1,opt,name=token_to_locker_mapping,json=tokenToLockerMapping,proto3" json:"token_to_locker_mapping,omitempty" yaml:"token_to_locker_mapping"`
 }
 
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) Reset() {
-	*m = QueryLockerLookupTableByAppAndAssetIdResponse{}
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) Reset() {
+	*m = QueryLockerLookupTableByAppAndAssetIDResponse{}
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) String() string {
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryLockerLookupTableByAppAndAssetIdResponse) ProtoMessage() {}
-func (*QueryLockerLookupTableByAppAndAssetIdResponse) Descriptor() ([]byte, []int) {
+func (*QueryLockerLookupTableByAppAndAssetIDResponse) ProtoMessage() {}
+func (*QueryLockerLookupTableByAppAndAssetIDResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c4f9c00f752dba84, []int{32}
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIdResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIDResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1323,17 +1295,17 @@ func (m *QueryLockerLookupTableByAppAndAssetIdResponse) XXX_Marshal(b []byte, de
 		return b[:n], nil
 	}
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIdResponse.Merge(m, src)
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIDResponse.Merge(m, src)
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) XXX_Size() int {
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIdResponse.DiscardUnknown(m)
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIDResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIdResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryLockerLookupTableByAppAndAssetIDResponse proto.InternalMessageInfo
 
 type QueryLockerTotalDepositedByAppRequest struct {
 	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
@@ -1574,37 +1546,37 @@ var xxx_messageInfo_QueryStateResponse proto.InternalMessageInfo
 func init() {
 	proto.RegisterType((*QueryLockerInfoRequest)(nil), "comdex.locker.v1beta1.QueryLockerInfoRequest")
 	proto.RegisterType((*QueryLockerInfoResponse)(nil), "comdex.locker.v1beta1.QueryLockerInfoResponse")
-	proto.RegisterType((*QueryLockersByProductToAssetIDRequest)(nil), "comdex.locker.v1beta1.QueryLockersByProductToAssetIDRequest")
-	proto.RegisterType((*QueryLockersByProductToAssetIDResponse)(nil), "comdex.locker.v1beta1.QueryLockersByProductToAssetIDResponse")
-	proto.RegisterType((*QueryLockerInfoByProductIDRequest)(nil), "comdex.locker.v1beta1.QueryLockerInfoByProductIDRequest")
-	proto.RegisterType((*QueryLockerInfoByProductIDResponse)(nil), "comdex.locker.v1beta1.QueryLockerInfoByProductIDResponse")
-	proto.RegisterType((*QueryTotalDepositByProductAssetIDRequest)(nil), "comdex.locker.v1beta1.QueryTotalDepositByProductAssetIDRequest")
-	proto.RegisterType((*QueryTotalDepositByProductAssetIDResponse)(nil), "comdex.locker.v1beta1.QueryTotalDepositByProductAssetIDResponse")
-	proto.RegisterType((*QueryOwnerLockerByProductIDbyOwnerRequest)(nil), "comdex.locker.v1beta1.QueryOwnerLockerByProductIDbyOwnerRequest")
-	proto.RegisterType((*QueryOwnerLockerByProductIDbyOwnerResponse)(nil), "comdex.locker.v1beta1.QueryOwnerLockerByProductIDbyOwnerResponse")
-	proto.RegisterType((*QueryOwnerLockerOfAllProductByOwnerRequest)(nil), "comdex.locker.v1beta1.QueryOwnerLockerOfAllProductByOwnerRequest")
-	proto.RegisterType((*QueryOwnerLockerOfAllProductByOwnerResponse)(nil), "comdex.locker.v1beta1.QueryOwnerLockerOfAllProductByOwnerResponse")
-	proto.RegisterType((*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest)(nil), "comdex.locker.v1beta1.QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest")
-	proto.RegisterType((*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse)(nil), "comdex.locker.v1beta1.QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse")
-	proto.RegisterType((*QueryOwnerLockerByProductToAssetIDbyOwnerRequest)(nil), "comdex.locker.v1beta1.QueryOwnerLockerByProductToAssetIDbyOwnerRequest")
-	proto.RegisterType((*QueryOwnerLockerByProductToAssetIDbyOwnerResponse)(nil), "comdex.locker.v1beta1.QueryOwnerLockerByProductToAssetIDbyOwnerResponse")
-	proto.RegisterType((*QueryLockerByProductByOwnerRequest)(nil), "comdex.locker.v1beta1.QueryLockerByProductByOwnerRequest")
-	proto.RegisterType((*QueryLockerByProductByOwnerResponse)(nil), "comdex.locker.v1beta1.QueryLockerByProductByOwnerResponse")
-	proto.RegisterType((*QueryLockerCountByProductIDRequest)(nil), "comdex.locker.v1beta1.QueryLockerCountByProductIDRequest")
-	proto.RegisterType((*QueryLockerCountByProductIDResponse)(nil), "comdex.locker.v1beta1.QueryLockerCountByProductIDResponse")
-	proto.RegisterType((*QueryLockerCountByProductToAssetIDRequest)(nil), "comdex.locker.v1beta1.QueryLockerCountByProductToAssetIDRequest")
-	proto.RegisterType((*QueryLockerCountByProductToAssetIDResponse)(nil), "comdex.locker.v1beta1.QueryLockerCountByProductToAssetIDResponse")
-	proto.RegisterType((*QueryWhiteListedAssetIDsByProductIDRequest)(nil), "comdex.locker.v1beta1.QueryWhiteListedAssetIDsByProductIDRequest")
-	proto.RegisterType((*QueryWhiteListedAssetIDsByProductIDResponse)(nil), "comdex.locker.v1beta1.QueryWhiteListedAssetIDsByProductIDResponse")
-	proto.RegisterType((*QueryWhiteListedAssetByAllProductRequest)(nil), "comdex.locker.v1beta1.QueryWhiteListedAssetByAllProductRequest")
-	proto.RegisterType((*QueryWhiteListedAssetByAllProductResponse)(nil), "comdex.locker.v1beta1.QueryWhiteListedAssetByAllProductResponse")
-	proto.RegisterType((*ProductToAllAsset)(nil), "comdex.locker.v1beta1.ProductToAllAsset")
+	proto.RegisterType((*QueryLockersByAppToAssetIDRequest)(nil), "comdex.locker.v1beta1.QueryLockersByAppToAssetIDRequest")
+	proto.RegisterType((*QueryLockersByAppToAssetIDResponse)(nil), "comdex.locker.v1beta1.QueryLockersByAppToAssetIDResponse")
+	proto.RegisterType((*QueryLockerInfoByAppIDRequest)(nil), "comdex.locker.v1beta1.QueryLockerInfoByAppIDRequest")
+	proto.RegisterType((*QueryLockerInfoByAppIDResponse)(nil), "comdex.locker.v1beta1.QueryLockerInfoByAppIDResponse")
+	proto.RegisterType((*QueryTotalDepositByAppAndAssetIDRequest)(nil), "comdex.locker.v1beta1.QueryTotalDepositByAppAndAssetIDRequest")
+	proto.RegisterType((*QueryTotalDepositByAppAndAssetIDResponse)(nil), "comdex.locker.v1beta1.QueryTotalDepositByAppAndAssetIDResponse")
+	proto.RegisterType((*QueryOwnerLockerByAppIDbyOwnerRequest)(nil), "comdex.locker.v1beta1.QueryOwnerLockerByAppIDbyOwnerRequest")
+	proto.RegisterType((*QueryOwnerLockerByAppIDbyOwnerResponse)(nil), "comdex.locker.v1beta1.QueryOwnerLockerByAppIDbyOwnerResponse")
+	proto.RegisterType((*QueryOwnerLockerOfAllAppsByOwnerRequest)(nil), "comdex.locker.v1beta1.QueryOwnerLockerOfAllAppsByOwnerRequest")
+	proto.RegisterType((*QueryOwnerLockerOfAllAppsByOwnerResponse)(nil), "comdex.locker.v1beta1.QueryOwnerLockerOfAllAppsByOwnerResponse")
+	proto.RegisterType((*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest)(nil), "comdex.locker.v1beta1.QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest")
+	proto.RegisterType((*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse)(nil), "comdex.locker.v1beta1.QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse")
+	proto.RegisterType((*QueryOwnerLockerByAppToAssetIDbyOwnerRequest)(nil), "comdex.locker.v1beta1.QueryOwnerLockerByAppToAssetIDbyOwnerRequest")
+	proto.RegisterType((*QueryOwnerLockerByAppToAssetIDbyOwnerResponse)(nil), "comdex.locker.v1beta1.QueryOwnerLockerByAppToAssetIDbyOwnerResponse")
+	proto.RegisterType((*QueryLockerByAppByOwnerRequest)(nil), "comdex.locker.v1beta1.QueryLockerByAppByOwnerRequest")
+	proto.RegisterType((*QueryLockerByAppByOwnerResponse)(nil), "comdex.locker.v1beta1.QueryLockerByAppByOwnerResponse")
+	proto.RegisterType((*QueryLockerCountByAppIDRequest)(nil), "comdex.locker.v1beta1.QueryLockerCountByAppIDRequest")
+	proto.RegisterType((*QueryLockerCountByAppIDResponse)(nil), "comdex.locker.v1beta1.QueryLockerCountByAppIDResponse")
+	proto.RegisterType((*QueryLockerCountByAppToAssetIDRequest)(nil), "comdex.locker.v1beta1.QueryLockerCountByAppToAssetIDRequest")
+	proto.RegisterType((*QueryLockerCountByAppToAssetIDResponse)(nil), "comdex.locker.v1beta1.QueryLockerCountByAppToAssetIDResponse")
+	proto.RegisterType((*QueryWhiteListedAssetIDsByAppIDRequest)(nil), "comdex.locker.v1beta1.QueryWhiteListedAssetIDsByAppIDRequest")
+	proto.RegisterType((*QueryWhiteListedAssetIDsByAppIDResponse)(nil), "comdex.locker.v1beta1.QueryWhiteListedAssetIDsByAppIDResponse")
+	proto.RegisterType((*QueryWhiteListedAssetByAllAppsRequest)(nil), "comdex.locker.v1beta1.QueryWhiteListedAssetByAllAppsRequest")
+	proto.RegisterType((*QueryWhiteListedAssetByAllAppsResponse)(nil), "comdex.locker.v1beta1.QueryWhiteListedAssetByAllAppsResponse")
+	proto.RegisterType((*AppToAllAsset)(nil), "comdex.locker.v1beta1.AppToAllAsset")
 	proto.RegisterType((*QueryParamsRequest)(nil), "comdex.locker.v1beta1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "comdex.locker.v1beta1.QueryParamsResponse")
 	proto.RegisterType((*QueryLockerLookupTableByAppRequest)(nil), "comdex.locker.v1beta1.QueryLockerLookupTableByAppRequest")
 	proto.RegisterType((*QueryLockerLookupTableByAppResponse)(nil), "comdex.locker.v1beta1.QueryLockerLookupTableByAppResponse")
-	proto.RegisterType((*QueryLockerLookupTableByAppAndAssetIdRequest)(nil), "comdex.locker.v1beta1.QueryLockerLookupTableByAppAndAssetIdRequest")
-	proto.RegisterType((*QueryLockerLookupTableByAppAndAssetIdResponse)(nil), "comdex.locker.v1beta1.QueryLockerLookupTableByAppAndAssetIdResponse")
+	proto.RegisterType((*QueryLockerLookupTableByAppAndAssetIDRequest)(nil), "comdex.locker.v1beta1.QueryLockerLookupTableByAppAndAssetIDRequest")
+	proto.RegisterType((*QueryLockerLookupTableByAppAndAssetIDResponse)(nil), "comdex.locker.v1beta1.QueryLockerLookupTableByAppAndAssetIDResponse")
 	proto.RegisterType((*QueryLockerTotalDepositedByAppRequest)(nil), "comdex.locker.v1beta1.QueryLockerTotalDepositedByAppRequest")
 	proto.RegisterType((*QueryLockerTotalDepositedByAppResponse)(nil), "comdex.locker.v1beta1.QueryLockerTotalDepositedByAppResponse")
 	proto.RegisterType((*QueryLockerTotalRewardsByAssetAppWiseRequest)(nil), "comdex.locker.v1beta1.QueryLockerTotalRewardsByAssetAppWiseRequest")
@@ -1616,136 +1588,134 @@ func init() {
 func init() { proto.RegisterFile("comdex/locker/v1beta1/query.proto", fileDescriptor_c4f9c00f752dba84) }
 
 var fileDescriptor_c4f9c00f752dba84 = []byte{
-	// 2058 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x5a, 0xcd, 0x6f, 0xdc, 0xc6,
-	0x15, 0x17, 0xd7, 0xb6, 0x92, 0x1d, 0xd9, 0x48, 0x35, 0x96, 0x63, 0x95, 0xb6, 0x77, 0xed, 0x31,
-	0x62, 0xcb, 0x4e, 0x77, 0x19, 0x7f, 0xb4, 0xce, 0x27, 0x62, 0xd1, 0x6a, 0x5c, 0xa5, 0x92, 0xa5,
-	0x30, 0x0a, 0xd2, 0xb8, 0x6d, 0x16, 0xb3, 0x4b, 0x6a, 0x4d, 0x98, 0x22, 0x99, 0x25, 0xb7, 0xf6,
-	0xd6, 0x50, 0x80, 0xa6, 0x40, 0x3f, 0x50, 0x14, 0x4d, 0xd1, 0xbf, 0xa0, 0x97, 0xb6, 0x40, 0x8a,
-	0x1e, 0x8b, 0x1e, 0x73, 0xf4, 0x31, 0x68, 0x81, 0x7e, 0x5c, 0x16, 0xad, 0xd5, 0x5b, 0x6f, 0x3a,
-	0x15, 0x2d, 0x82, 0x16, 0x9c, 0x79, 0xe4, 0x92, 0xbb, 0xcb, 0xd9, 0x59, 0xad, 0xe2, 0x9c, 0xec,
-	0x25, 0x67, 0xde, 0xfc, 0x7e, 0xbf, 0x79, 0x7c, 0x6f, 0xe6, 0x07, 0xa1, 0x33, 0x0d, 0x6f, 0xcb,
-	0xb4, 0xee, 0x6b, 0x8e, 0xd7, 0xb8, 0x6b, 0xb5, 0xb4, 0xef, 0x5c, 0xaa, 0x5b, 0x21, 0xbd, 0xa4,
-	0xbd, 0xd7, 0xb6, 0x5a, 0x9d, 0xaa, 0xdf, 0xf2, 0x42, 0x0f, 0x1f, 0xe3, 0x43, 0xaa, 0x7c, 0x48,
-	0x15, 0x86, 0xa8, 0x73, 0x4d, 0xaf, 0xe9, 0xb1, 0x11, 0x5a, 0xf4, 0x3f, 0x3e, 0x58, 0x3d, 0xd9,
-	0xf4, 0xbc, 0xa6, 0x63, 0x69, 0xd4, 0xb7, 0x35, 0xea, 0xba, 0x5e, 0x48, 0x43, 0xdb, 0x73, 0x03,
-	0x78, 0x4b, 0x86, 0xaf, 0x06, 0x91, 0x85, 0x63, 0x7c, 0xda, 0xa2, 0x5b, 0x71, 0x9c, 0xd3, 0x30,
-	0x86, 0x06, 0x81, 0x15, 0x26, 0x43, 0xd8, 0x2f, 0x18, 0x51, 0x6a, 0x78, 0xc1, 0x96, 0x17, 0x68,
-	0x75, 0x1a, 0x58, 0xc9, 0x80, 0x86, 0x67, 0xbb, 0xf0, 0xfe, 0x62, 0xfa, 0x3d, 0x63, 0x9b, 0x5a,
-	0xa9, 0x69, 0xbb, 0x0c, 0x36, 0x1f, 0x4b, 0xae, 0xa1, 0xa7, 0xdf, 0x88, 0x46, 0xac, 0x30, 0x44,
-	0xcb, 0xee, 0xa6, 0x67, 0x58, 0xef, 0xb5, 0xad, 0x20, 0xc4, 0xa7, 0x50, 0xc1, 0x36, 0xe7, 0x95,
-	0xd3, 0xca, 0x42, 0x51, 0x3f, 0xb2, 0xdb, 0x2d, 0x17, 0x3b, 0x74, 0xcb, 0x79, 0x91, 0xd8, 0x26,
-	0x31, 0x0a, 0xb6, 0x49, 0xda, 0xe8, 0xf8, 0xc0, 0xc4, 0xc0, 0xf7, 0xdc, 0xc0, 0xc2, 0xb7, 0xd1,
-	0x0c, 0x27, 0x58, 0xb3, 0xdd, 0x4d, 0x8f, 0x85, 0x98, 0xb9, 0x7c, 0xaa, 0x3a, 0x54, 0xea, 0x2a,
-	0x9f, 0xaf, 0xab, 0x0f, 0xbb, 0xe5, 0xa9, 0xdd, 0x6e, 0x19, 0xf3, 0x55, 0x52, 0xf3, 0x89, 0x81,
-	0x9c, 0x64, 0x0d, 0xf2, 0x53, 0x05, 0x3d, 0x93, 0x5a, 0x37, 0xd0, 0x3b, 0xeb, 0x2d, 0xcf, 0x6c,
-	0x37, 0xc2, 0x0d, 0x6f, 0x31, 0x92, 0x68, 0x79, 0x29, 0xc6, 0x7f, 0x15, 0x21, 0x9f, 0xbf, 0xaa,
-	0x01, 0x8f, 0x83, 0xfa, 0xb1, 0xdd, 0x6e, 0x79, 0x96, 0xaf, 0xd0, 0x7b, 0x47, 0x8c, 0x22, 0xfc,
-	0x58, 0x36, 0x71, 0x15, 0x3d, 0xc9, 0xa4, 0x8e, 0xe6, 0x14, 0xd8, 0x9c, 0xa3, 0xbb, 0xdd, 0xf2,
-	0x53, 0x7c, 0x4e, 0xfc, 0x86, 0x18, 0x4f, 0xb0, 0xff, 0x2e, 0x9b, 0xe4, 0x5d, 0x74, 0x6e, 0x14,
-	0x1c, 0x50, 0xe5, 0x2a, 0x42, 0x31, 0x2b, 0x33, 0x98, 0x57, 0x4e, 0x1f, 0x58, 0x28, 0xa6, 0xf1,
-	0xf4, 0xde, 0x11, 0xa3, 0x08, 0x84, 0xcd, 0x80, 0xbc, 0x83, 0xce, 0xf4, 0xc9, 0x9c, 0x2c, 0x31,
-	0x21, 0x55, 0x72, 0x1b, 0x11, 0x51, 0xe8, 0x89, 0x60, 0x7f, 0xa8, 0xa0, 0x05, 0x16, 0x7c, 0xc3,
-	0x0b, 0xa9, 0xb3, 0x64, 0xf9, 0x5e, 0x60, 0x87, 0x49, 0xf8, 0xcf, 0x65, 0xa7, 0xd6, 0xd1, 0x05,
-	0x09, 0x44, 0xc0, 0xfa, 0x2c, 0x3a, 0x12, 0x46, 0xe3, 0x6a, 0x26, 0x1f, 0xc8, 0x51, 0x19, 0x87,
-	0xc3, 0xd4, 0x64, 0xf2, 0x63, 0x05, 0x42, 0xae, 0xdd, 0x73, 0xad, 0x16, 0x24, 0x72, 0x4f, 0xc2,
-	0x3a, 0x7f, 0x3e, 0x19, 0xcb, 0x73, 0xe8, 0x90, 0x17, 0x45, 0x61, 0x14, 0x8b, 0xfa, 0x17, 0x76,
-	0xbb, 0xe5, 0xc3, 0x7c, 0x02, 0x7b, 0x4c, 0x0c, 0xfe, 0x9a, 0xd4, 0xd1, 0x45, 0x19, 0x28, 0x13,
-	0x6d, 0xea, 0xc6, 0xe0, 0x1a, 0x6b, 0x9b, 0x8b, 0x8e, 0x03, 0xcb, 0xe8, 0x59, 0xbe, 0x09, 0xf2,
-	0x03, 0x62, 0xe4, 0x0d, 0xf4, 0xac, 0x54, 0xd4, 0x89, 0xa0, 0xff, 0xaa, 0x80, 0xae, 0xf5, 0x56,
-	0xd9, 0xb8, 0xbf, 0x64, 0x85, 0xd4, 0x76, 0x82, 0x78, 0xb9, 0xec, 0x5a, 0x7a, 0x87, 0xa5, 0xc3,
-	0x63, 0xd9, 0xb8, 0x4c, 0x1a, 0x1f, 0x18, 0x9d, 0xc6, 0xf8, 0xdb, 0x08, 0xf5, 0x8a, 0xf8, 0xfc,
-	0x41, 0x56, 0x5b, 0xcf, 0x55, 0x79, 0xc5, 0xaf, 0x46, 0x15, 0xbf, 0xca, 0xfb, 0x5b, 0x5c, 0x5f,
-	0xd7, 0x69, 0xd3, 0x02, 0x26, 0x19, 0xd4, 0x49, 0x0c, 0x62, 0xa4, 0x02, 0x92, 0x7f, 0x2b, 0xe8,
-	0xf9, 0xf1, 0x85, 0x82, 0xbd, 0xf9, 0x16, 0x3a, 0xdc, 0x0e, 0xac, 0x56, 0x2d, 0xbc, 0x5f, 0x33,
-	0x69, 0x48, 0xd9, 0xee, 0xcc, 0x5c, 0x3e, 0x93, 0x53, 0xf9, 0xdf, 0x0a, 0xd8, 0x02, 0x34, 0xa4,
-	0xfa, 0xf1, 0xdd, 0x6e, 0xf9, 0x28, 0x07, 0x96, 0x0e, 0x40, 0x0c, 0xd4, 0x4e, 0x06, 0xe1, 0x77,
-	0x33, 0xcc, 0x0b, 0x8c, 0xf9, 0xf9, 0x91, 0xcc, 0x39, 0x34, 0x19, 0xea, 0x1f, 0x2b, 0xe8, 0xb9,
-	0xdc, 0x6f, 0x28, 0xa9, 0xe7, 0xfb, 0xf2, 0x55, 0x8f, 0x59, 0xbb, 0xa4, 0xbf, 0xa5, 0x9f, 0x29,
-	0xe8, 0xd2, 0x18, 0x14, 0xf2, 0xfa, 0xf5, 0x81, 0xfd, 0xeb, 0xd7, 0x1f, 0x28, 0x99, 0x2e, 0x93,
-	0x80, 0xd1, 0x1f, 0x67, 0x71, 0xfc, 0x9e, 0x82, 0xce, 0x0a, 0x41, 0x3c, 0x06, 0x21, 0xb2, 0xdd,
-	0xf6, 0x86, 0xd7, 0x76, 0xc3, 0x7d, 0xeb, 0xe4, 0xaf, 0x65, 0xe8, 0x0d, 0xc6, 0x06, 0x7a, 0x65,
-	0x34, 0xc3, 0x9b, 0x5a, 0x23, 0x1a, 0x01, 0x2d, 0x0d, 0xb1, 0x47, 0x6c, 0x0e, 0xf9, 0x79, 0xdc,
-	0xd0, 0x86, 0x05, 0xfa, 0x9c, 0x0e, 0x58, 0xab, 0xd0, 0x74, 0x46, 0x40, 0x92, 0xa5, 0x18, 0xf7,
-	0xc9, 0xb7, 0xef, 0xd8, 0xa1, 0xb5, 0x62, 0x07, 0xa1, 0x65, 0x42, 0x8c, 0x60, 0xdf, 0xb6, 0xe3,
-	0x75, 0xe8, 0x68, 0xa3, 0xd6, 0x00, 0xcc, 0x27, 0x50, 0x31, 0xe6, 0xcd, 0x1b, 0xda, 0x41, 0xe3,
-	0x49, 0x60, 0x1f, 0x90, 0x8b, 0x70, 0x8e, 0xea, 0x8f, 0xa5, 0x77, 0x7a, 0x2d, 0x12, 0xd0, 0x92,
-	0x8f, 0xe2, 0xed, 0x13, 0x0f, 0x86, 0x65, 0xdf, 0x47, 0x73, 0x31, 0xfe, 0xd0, 0xab, 0x51, 0xc7,
-	0xa9, 0xb1, 0x45, 0x21, 0xeb, 0x17, 0x72, 0xb2, 0xbe, 0xa7, 0xbc, 0xe3, 0xf0, 0xd8, 0x67, 0xe1,
-	0x03, 0x38, 0x91, 0xd5, 0x24, 0x1d, 0x93, 0x18, 0xb3, 0x7e, 0xff, 0x3c, 0xf2, 0x3e, 0x9a, 0x1d,
-	0x08, 0x86, 0x4f, 0x0d, 0x0a, 0x9e, 0x4e, 0x9e, 0xd7, 0xd1, 0x34, 0x0b, 0x18, 0xcc, 0x17, 0x18,
-	0xca, 0x13, 0x31, 0x4a, 0x7e, 0x3d, 0x8a, 0x41, 0x72, 0x60, 0xc7, 0x00, 0xd8, 0x91, 0x54, 0x6e,
-	0x05, 0xc4, 0x80, 0x08, 0x64, 0x0e, 0x61, 0x26, 0xd6, 0x3a, 0xbb, 0x7c, 0xc5, 0x1a, 0x36, 0xd0,
-	0xd1, 0xcc, 0x53, 0x10, 0x6b, 0x05, 0x4d, 0xf3, 0x4b, 0xda, 0x88, 0xdb, 0x0c, 0x9f, 0xd6, 0xbf,
-	0x34, 0x9f, 0x4a, 0x0c, 0x88, 0x41, 0x6e, 0x65, 0x6a, 0xc1, 0x8a, 0xe7, 0xdd, 0x6d, 0xfb, 0x1b,
-	0xb4, 0xee, 0x58, 0x7a, 0x67, 0xd1, 0xf7, 0xe3, 0xe4, 0x5b, 0x40, 0xd3, 0xd4, 0xf7, 0x7b, 0x89,
-	0x37, 0x9b, 0xe2, 0xc2, 0x9e, 0x13, 0xe3, 0x10, 0xf5, 0xfd, 0x65, 0x93, 0xfc, 0x2e, 0x5b, 0xdf,
-	0x06, 0x03, 0x02, 0x8b, 0x1f, 0x28, 0xe8, 0x78, 0xe8, 0xdd, 0xb5, 0xdc, 0x68, 0x77, 0xa0, 0x52,
-	0x6d, 0x51, 0xdf, 0xb7, 0xdd, 0x26, 0x6c, 0xfb, 0xb3, 0x39, 0xbc, 0x36, 0xa2, 0x59, 0x1b, 0x1e,
-	0x8f, 0xbf, 0xca, 0xa7, 0xe8, 0x64, 0xb7, 0x5b, 0x2e, 0x71, 0x40, 0x39, 0x51, 0x89, 0x31, 0x17,
-	0x0e, 0x99, 0x49, 0x7e, 0xa4, 0xa0, 0x2f, 0x09, 0x00, 0x2f, 0xba, 0xf0, 0xc1, 0x98, 0x63, 0x6b,
-	0x31, 0x76, 0x7d, 0xf9, 0x83, 0x82, 0x2a, 0x92, 0x50, 0xa4, 0x54, 0x54, 0x1e, 0x9f, 0x8a, 0x6f,
-	0x64, 0xae, 0xc2, 0xe9, 0x7b, 0x8d, 0x65, 0xee, 0x31, 0x93, 0xfe, 0xa2, 0x64, 0xee, 0xb3, 0x43,
-	0x63, 0x82, 0x0c, 0xbf, 0x55, 0xd0, 0x69, 0x86, 0xd3, 0x8c, 0x2f, 0x49, 0x96, 0x59, 0xa3, 0x5b,
-	0x51, 0x95, 0x65, 0x87, 0xb7, 0x08, 0x3d, 0x64, 0xd5, 0x15, 0x51, 0x0b, 0x35, 0x93, 0xf8, 0x8b,
-	0x6c, 0x72, 0x74, 0xd6, 0x5b, 0xa5, 0xbe, 0xae, 0xc1, 0x37, 0x74, 0x3e, 0xd5, 0x58, 0x05, 0x4b,
-	0x11, 0xe3, 0xa4, 0x23, 0x08, 0xd7, 0x9f, 0x72, 0x8c, 0x99, 0x61, 0xdd, 0xa3, 0x2d, 0x33, 0x80,
-	0x63, 0xec, 0xa2, 0xef, 0xbf, 0x6d, 0x07, 0xd6, 0x67, 0x9f, 0x72, 0x1f, 0x65, 0x53, 0x4e, 0x04,
-	0x05, 0xb4, 0xfe, 0x6e, 0x7c, 0x1d, 0x6d, 0xf1, 0x61, 0x90, 0x67, 0xd7, 0x84, 0x47, 0x93, 0xfc,
-	0xb8, 0xfa, 0x49, 0xd0, 0x76, 0x2e, 0xce, 0xbb, 0x54, 0x6c, 0x02, 0xb7, 0x5c, 0x98, 0x49, 0x02,
-	0x34, 0xcb, 0xc0, 0xbe, 0x19, 0xd2, 0x30, 0x11, 0x67, 0x1e, 0x3d, 0x41, 0x4d, 0xb3, 0x65, 0x05,
-	0x1c, 0x4a, 0xd1, 0x88, 0x7f, 0xe2, 0x39, 0x74, 0xc8, 0xb4, 0x5c, 0x6f, 0x8b, 0x9f, 0xc9, 0x0c,
-	0xfe, 0x03, 0x3f, 0x8d, 0xa6, 0xef, 0x58, 0x76, 0xf3, 0x4e, 0xc8, 0x4f, 0xb0, 0x06, 0xfc, 0x8a,
-	0x9e, 0x87, 0xb4, 0xd5, 0xb4, 0x42, 0x76, 0x93, 0x29, 0x1a, 0xf0, 0x2b, 0xba, 0x5a, 0xe3, 0xf4,
-	0xaa, 0xa0, 0x43, 0x80, 0xa6, 0xf9, 0xb6, 0x83, 0x00, 0x5f, 0xcc, 0x1c, 0xff, 0x63, 0xfa, 0x37,
-	0x3c, 0xdb, 0xd5, 0xaf, 0xf7, 0x55, 0x7f, 0x36, 0x8d, 0xfc, 0xa7, 0x5b, 0x3e, 0xdf, 0xb4, 0xc3,
-	0x3b, 0xed, 0x7a, 0x24, 0x9d, 0x06, 0x46, 0x19, 0xff, 0xa7, 0x12, 0x98, 0x77, 0xb5, 0xb0, 0xe3,
-	0x5b, 0x01, 0x8b, 0x60, 0xc0, 0x52, 0x97, 0x3f, 0x26, 0xe8, 0x10, 0xc3, 0x82, 0x7f, 0xa9, 0xa0,
-	0xa7, 0xfa, 0x2c, 0x13, 0x5c, 0xc9, 0xd9, 0x83, 0xe1, 0xae, 0x9a, 0x5a, 0x95, 0x1d, 0xce, 0x19,
-	0x13, 0xed, 0x83, 0x3f, 0xfd, 0xf3, 0x17, 0x85, 0x0b, 0xf8, 0xbc, 0x26, 0xb2, 0x17, 0xd9, 0x79,
-	0x53, 0x7b, 0x60, 0x9b, 0xdb, 0xf8, 0x5f, 0x0a, 0x2a, 0x89, 0x1d, 0x29, 0xfc, 0xf2, 0x68, 0x0c,
-	0xf9, 0xbe, 0x9a, 0xfa, 0xca, 0x1e, 0x67, 0x03, 0xa1, 0x15, 0x46, 0xe8, 0x35, 0xbc, 0x24, 0x24,
-	0x14, 0x30, 0x46, 0xb5, 0xf8, 0xe3, 0xd1, 0x1e, 0xf4, 0x4e, 0x05, 0xdb, 0xda, 0x83, 0xf8, 0xf1,
-	0x36, 0xfe, 0xb3, 0x82, 0xd4, 0x7c, 0x13, 0x0b, 0x3f, 0x2f, 0xa7, 0xf6, 0xe0, 0xc9, 0x4f, 0x7d,
-	0x61, 0x0f, 0x33, 0x81, 0xe1, 0x0d, 0xc6, 0xf0, 0x15, 0xfc, 0x92, 0x0c, 0xc3, 0x1e, 0xaf, 0x0c,
-	0x47, 0xfc, 0xa9, 0x02, 0xc6, 0x9f, 0xc8, 0xae, 0xc2, 0xaf, 0x8a, 0x50, 0x4a, 0x58, 0x6f, 0xea,
-	0xf5, 0xbd, 0x07, 0x00, 0xb6, 0x6f, 0x31, 0xb6, 0x6b, 0x78, 0x35, 0x87, 0x6d, 0xc6, 0x46, 0x4b,
-	0xe8, 0x8e, 0xdc, 0xd8, 0xef, 0x17, 0xe0, 0x8c, 0x24, 0x34, 0xb4, 0xb0, 0x10, 0xbf, 0x8c, 0x2d,
-	0xa7, 0x2e, 0x4e, 0x10, 0x01, 0x24, 0xf8, 0x06, 0x93, 0xc0, 0xc0, 0xeb, 0x39, 0x12, 0xb0, 0x4b,
-	0x68, 0xdc, 0xd3, 0xeb, 0x1d, 0x76, 0x2e, 0x8e, 0x69, 0xd7, 0x3b, 0x35, 0xf6, 0xba, 0x4f, 0x08,
-	0xf6, 0x6c, 0x1b, 0xff, 0x37, 0x3e, 0xd8, 0x89, 0xcd, 0x31, 0x2c, 0x4b, 0x22, 0xdf, 0xae, 0x53,
-	0xf5, 0x49, 0x42, 0x80, 0x10, 0xab, 0x4c, 0x88, 0x9b, 0xf8, 0xab, 0x32, 0x42, 0xb0, 0xf4, 0xef,
-	0x53, 0x03, 0xa4, 0x00, 0xf6, 0xbf, 0x2f, 0xa4, 0x0d, 0x19, 0x39, 0x2f, 0x0a, 0xdf, 0x1a, 0xc9,
-	0x63, 0x2c, 0xf7, 0x4f, 0x5d, 0xdb, 0xb7, 0x78, 0x20, 0x12, 0x65, 0x22, 0x7d, 0x13, 0xbf, 0x23,
-	0x23, 0x52, 0x78, 0xbf, 0x62, 0xf2, 0xe0, 0x91, 0x54, 0x20, 0xd3, 0xd0, 0x5c, 0x49, 0x7f, 0x3c,
-	0xbf, 0x2e, 0x08, 0x8c, 0xe9, 0x7e, 0x1b, 0x08, 0xdf, 0x1c, 0xf7, 0x0b, 0xc8, 0xf1, 0xc2, 0xd4,
-	0xaf, 0x4d, 0x1e, 0x08, 0x34, 0x6a, 0x32, 0x8d, 0x28, 0xae, 0x49, 0x27, 0x52, 0x7f, 0x61, 0x19,
-	0xfa, 0x55, 0x25, 0x0a, 0x25, 0x29, 0xb6, 0xa3, 0xa0, 0x13, 0x02, 0x67, 0x08, 0x4b, 0xb4, 0x81,
-	0x1c, 0x4b, 0x4b, 0x7d, 0x71, 0x2f, 0x53, 0x25, 0x3f, 0xa4, 0x61, 0xcc, 0x05, 0x65, 0xe4, 0x6f,
-	0x59, 0x96, 0xfd, 0x06, 0x91, 0x0c, 0xcb, 0x1c, 0xc3, 0x4a, 0x86, 0x65, 0x9e, 0x1f, 0x35, 0xb2,
-	0x51, 0xf2, 0xd6, 0x01, 0x5c, 0xf3, 0x1a, 0xe5, 0xff, 0x14, 0x81, 0xb1, 0xd6, 0x3b, 0xf3, 0x5c,
-	0x1f, 0x17, 0xe7, 0xc0, 0xb9, 0x67, 0x71, 0x82, 0x08, 0x40, 0x78, 0x83, 0x11, 0xbe, 0x85, 0x57,
-	0xc6, 0x21, 0x3c, 0xb2, 0x55, 0x7e, 0x1a, 0x37, 0x09, 0xb1, 0xdf, 0x24, 0x6e, 0x12, 0x52, 0x7e,
-	0x98, 0xb8, 0x49, 0xc8, 0xd9, 0x5d, 0x64, 0x8d, 0x89, 0xb0, 0x8c, 0x6f, 0xe6, 0x88, 0x70, 0x2f,
-	0x0a, 0xe3, 0xb0, 0x30, 0x09, 0xf7, 0x74, 0xf5, 0x1b, 0xc8, 0x80, 0x9d, 0xf8, 0xa8, 0x24, 0xb2,
-	0xbd, 0xc4, 0x47, 0x25, 0x09, 0x77, 0x4d, 0x7c, 0x54, 0x92, 0x71, 0xdc, 0xc8, 0x4b, 0x8c, 0xf9,
-	0x97, 0xf1, 0x15, 0x69, 0xe6, 0x3d, 0x9a, 0xf8, 0x27, 0x0a, 0x9a, 0x49, 0x39, 0x53, 0xf8, 0x82,
-	0x08, 0x4e, 0xc6, 0xd3, 0x52, 0x2f, 0xca, 0x0c, 0x05, 0x8c, 0xcf, 0x30, 0x8c, 0x65, 0x7c, 0x4a,
-	0x13, 0xfd, 0xa9, 0x02, 0xfe, 0x63, 0xb6, 0xa2, 0xf4, 0xbb, 0x26, 0x32, 0x15, 0x25, 0xc7, 0xf6,
-	0x92, 0xa9, 0x28, 0x79, 0x06, 0x17, 0x79, 0x99, 0xa1, 0xff, 0x0a, 0xbe, 0x2a, 0xac, 0x9b, 0x15,
-	0x87, 0xcd, 0xaf, 0xd4, 0x3b, 0x15, 0xea, 0xfb, 0xda, 0x03, 0x7e, 0x9d, 0xdf, 0xc6, 0x3f, 0x2c,
-	0x64, 0x0c, 0x95, 0x7c, 0x2b, 0x08, 0xdf, 0x18, 0x1f, 0xe3, 0x80, 0xa7, 0xa5, 0x2e, 0x4d, 0x16,
-	0x04, 0x28, 0xbf, 0xc9, 0x28, 0xaf, 0xe2, 0xaf, 0x8f, 0x41, 0xb9, 0x42, 0x5d, 0xb3, 0x02, 0x6e,
-	0x44, 0x42, 0x3f, 0x5d, 0x52, 0xfa, 0x94, 0xc8, 0x77, 0x12, 0x64, 0x94, 0x18, 0x69, 0xb5, 0xc8,
-	0x28, 0x31, 0xda, 0x24, 0x91, 0x50, 0x22, 0x12, 0x02, 0x5c, 0x0e, 0x59, 0x25, 0xba, 0xd9, 0xeb,
-	0xf4, 0x10, 0x43, 0x4c, 0xe6, 0x3a, 0x9d, 0xef, 0xcd, 0xc9, 0x5c, 0xa7, 0x05, 0x2e, 0x1c, 0x79,
-	0x95, 0x91, 0x7e, 0x01, 0x5f, 0x13, 0x6f, 0x7f, 0x62, 0x9b, 0x0d, 0x24, 0x7d, 0x03, 0xa1, 0x9e,
-	0xd1, 0x82, 0x17, 0x44, 0x68, 0xd2, 0x0e, 0x90, 0x7a, 0x41, 0x62, 0x24, 0x60, 0x9c, 0xd2, 0x8d,
-	0x87, 0xff, 0x28, 0x4d, 0xfd, 0xe6, 0x51, 0x69, 0xea, 0xe1, 0xa3, 0x92, 0xf2, 0xc9, 0xa3, 0x92,
-	0xf2, 0xf7, 0x47, 0x25, 0xe5, 0xc3, 0x9d, 0xd2, 0xd4, 0x27, 0x3b, 0xa5, 0xa9, 0xbf, 0xee, 0x94,
-	0xa6, 0x6e, 0x3f, 0x97, 0x71, 0x65, 0xa2, 0xc0, 0x15, 0x6f, 0x73, 0xd3, 0x6e, 0xd8, 0xd4, 0x89,
-	0x99, 0x25, 0xdc, 0x98, 0x47, 0x53, 0x9f, 0x66, 0x7f, 0xc0, 0x74, 0xe5, 0xff, 0x01, 0x00, 0x00,
-	0xff, 0xff, 0x33, 0xd8, 0x4e, 0x8b, 0xe6, 0x25, 0x00, 0x00,
+	// 2030 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x5a, 0x5d, 0x8c, 0xdc, 0x56,
+	0x15, 0x5e, 0x4f, 0x92, 0x6d, 0xf7, 0x6e, 0x56, 0x25, 0x37, 0x9b, 0x66, 0x71, 0x92, 0x99, 0xcd,
+	0x0d, 0xcd, 0x6e, 0x0a, 0x33, 0x26, 0x3f, 0x6d, 0x68, 0x49, 0x9a, 0xae, 0xb3, 0xfd, 0xd9, 0xed,
+	0x86, 0x24, 0xee, 0x42, 0x44, 0x04, 0x1d, 0x3c, 0x63, 0xef, 0xc4, 0x8a, 0xd7, 0x76, 0xe7, 0x7a,
+	0x48, 0x86, 0x68, 0x1f, 0x00, 0x89, 0x1f, 0xf5, 0x05, 0xa9, 0x12, 0xef, 0x48, 0x3c, 0x54, 0x02,
+	0x21, 0x1e, 0x79, 0x46, 0x42, 0xca, 0x1b, 0x15, 0x48, 0x80, 0x84, 0x34, 0x82, 0x84, 0x17, 0xc4,
+	0x03, 0xd2, 0x88, 0x27, 0x9e, 0x2a, 0x9f, 0x7b, 0xec, 0xb1, 0x67, 0xc7, 0x3f, 0x33, 0x49, 0xf6,
+	0x29, 0x63, 0xfb, 0x9c, 0x73, 0xbf, 0xef, 0xdc, 0xe3, 0x73, 0xae, 0xbf, 0x0d, 0x39, 0xd9, 0x74,
+	0xb7, 0x0d, 0xf3, 0xbe, 0x62, 0xbb, 0xcd, 0xbb, 0x66, 0x5b, 0xf9, 0xee, 0xd9, 0x86, 0xe9, 0xeb,
+	0x67, 0x95, 0x0f, 0x3b, 0x66, 0xbb, 0x5b, 0xf3, 0xda, 0xae, 0xef, 0xd2, 0x23, 0xc2, 0xa4, 0x26,
+	0x4c, 0x6a, 0x68, 0x22, 0xcf, 0xb7, 0xdc, 0x96, 0x0b, 0x16, 0x4a, 0xf0, 0x4b, 0x18, 0xcb, 0xc7,
+	0x5b, 0xae, 0xdb, 0xb2, 0x4d, 0x45, 0xf7, 0x2c, 0x45, 0x77, 0x1c, 0xd7, 0xd7, 0x7d, 0xcb, 0x75,
+	0x38, 0x3e, 0x65, 0xa3, 0x57, 0xc3, 0xc8, 0x99, 0x36, 0x9e, 0xde, 0xd6, 0xb7, 0xc3, 0x38, 0x8b,
+	0x68, 0xa3, 0x73, 0x6e, 0xfa, 0x91, 0x09, 0x5c, 0xa1, 0x45, 0xb9, 0xe9, 0xf2, 0x6d, 0x97, 0x2b,
+	0x0d, 0x9d, 0x9b, 0x91, 0x41, 0xd3, 0xb5, 0x1c, 0x7c, 0xfe, 0x72, 0xfc, 0x39, 0xb0, 0x8d, 0xad,
+	0xd4, 0xb2, 0x1c, 0x80, 0x2d, 0x6c, 0xd9, 0x45, 0xf2, 0xe2, 0xcd, 0xc0, 0x62, 0x03, 0x10, 0xad,
+	0x39, 0x5b, 0xae, 0x66, 0x7e, 0xd8, 0x31, 0xb9, 0x4f, 0x4f, 0x90, 0x92, 0x65, 0x2c, 0x48, 0x8b,
+	0xd2, 0xf2, 0x8c, 0x3a, 0xd7, 0xef, 0x55, 0x66, 0xba, 0xfa, 0xb6, 0xfd, 0x3a, 0xb3, 0x0c, 0xa6,
+	0x95, 0x2c, 0x83, 0x75, 0xc8, 0xd1, 0x5d, 0x8e, 0xdc, 0x73, 0x1d, 0x6e, 0xd2, 0xdb, 0x64, 0x56,
+	0x10, 0xac, 0x5b, 0xce, 0x96, 0x0b, 0x21, 0x66, 0xcf, 0x9d, 0xa8, 0x8d, 0x4c, 0x75, 0x4d, 0xf8,
+	0xab, 0xf2, 0xc3, 0x5e, 0x65, 0xaa, 0xdf, 0xab, 0x50, 0xb1, 0x4a, 0xcc, 0x9f, 0x69, 0xc4, 0x8e,
+	0xd6, 0x60, 0x3b, 0xe4, 0x64, 0x6c, 0x59, 0xae, 0x76, 0x57, 0x3c, 0x6f, 0xd3, 0x5d, 0x09, 0xb2,
+	0xb3, 0xb6, 0x1a, 0x42, 0x5f, 0x26, 0xd3, 0xba, 0xe7, 0xd5, 0x11, 0xfe, 0x7e, 0xf5, 0x50, 0xbf,
+	0x57, 0x99, 0x13, 0x81, 0xc5, 0x7d, 0xa6, 0x1d, 0xd0, 0x3d, 0x6f, 0xcd, 0xa0, 0x35, 0xf2, 0x3c,
+	0x64, 0x36, 0xb0, 0x2d, 0x81, 0xed, 0xe1, 0x7e, 0xaf, 0xf2, 0x02, 0xda, 0xe2, 0x13, 0xa6, 0x3d,
+	0x07, 0x3f, 0xd7, 0x0c, 0x76, 0x9b, 0xb0, 0xac, 0xe5, 0x31, 0x01, 0x17, 0x08, 0x09, 0x09, 0x18,
+	0x7c, 0x41, 0x5a, 0xdc, 0xb7, 0x3c, 0xa3, 0x1e, 0xe9, 0xf7, 0x2a, 0x87, 0x92, 0xe4, 0x0c, 0xce,
+	0xb4, 0x19, 0xe4, 0x66, 0x70, 0xb6, 0x46, 0x4e, 0x0c, 0x65, 0x14, 0xc2, 0x4f, 0x40, 0x8b, 0x7d,
+	0x83, 0x94, 0xd3, 0x42, 0x3d, 0x11, 0xc4, 0x1f, 0x4a, 0x64, 0x09, 0x02, 0x6f, 0xba, 0xbe, 0x6e,
+	0xaf, 0x9a, 0x9e, 0xcb, 0x2d, 0x1f, 0x42, 0xaf, 0x38, 0xc6, 0x9e, 0x6d, 0xc2, 0x75, 0xb2, 0x9c,
+	0x0f, 0x02, 0x79, 0x9e, 0x22, 0x73, 0x7e, 0x60, 0x56, 0x37, 0x84, 0x9d, 0x00, 0xa3, 0x1d, 0xf4,
+	0x63, 0xbe, 0xac, 0x4b, 0x5e, 0x82, 0x80, 0xd7, 0xef, 0x39, 0x66, 0x1b, 0x0b, 0x52, 0xe4, 0xab,
+	0x21, 0xee, 0x8d, 0xcf, 0xe9, 0x34, 0x39, 0xe0, 0x06, 0x9e, 0x40, 0x68, 0x46, 0xfd, 0x5c, 0xbf,
+	0x57, 0x39, 0x28, 0x0c, 0xe1, 0x36, 0xd3, 0xc4, 0x63, 0xf6, 0x01, 0x39, 0x9d, 0xb7, 0xf4, 0x13,
+	0xed, 0xd8, 0x4d, 0xdc, 0xb0, 0x58, 0xfc, 0xeb, 0x5b, 0x2b, 0xb6, 0xbd, 0xe2, 0x79, 0x5c, 0x4d,
+	0x92, 0x8b, 0x20, 0xef, 0xcb, 0x86, 0xfc, 0x1d, 0x4c, 0x7f, 0x66, 0xc8, 0x27, 0x02, 0xfd, 0xf3,
+	0x12, 0x39, 0x3f, 0x58, 0x62, 0xf3, 0xfe, 0xaa, 0xe9, 0xeb, 0x96, 0xcd, 0xa3, 0xb5, 0x3c, 0x0f,
+	0xd7, 0x51, 0xbb, 0xb0, 0xdf, 0xcf, 0x6c, 0x7b, 0x12, 0xa5, 0xb9, 0x2f, 0xbf, 0x34, 0xe9, 0xb7,
+	0x09, 0x19, 0xb4, 0xd8, 0x85, 0xfd, 0xd0, 0xf9, 0x4e, 0xd7, 0x44, 0x3f, 0xae, 0x05, 0xfd, 0xb8,
+	0x26, 0xa6, 0x4f, 0xd8, 0xfd, 0x6e, 0xe8, 0x2d, 0x13, 0xd1, 0xc7, 0xf3, 0x32, 0x88, 0xc1, 0xb4,
+	0x58, 0x40, 0xf6, 0x3f, 0x89, 0x5c, 0x18, 0x2f, 0x31, 0xb8, 0x0f, 0xdf, 0x22, 0x07, 0x3b, 0xdc,
+	0x6c, 0xd7, 0xfd, 0xfb, 0x75, 0x43, 0xf7, 0x75, 0xd8, 0x89, 0xd9, 0x73, 0x27, 0x53, 0x7a, 0xf2,
+	0xd7, 0x39, 0x04, 0xd7, 0x7d, 0x5d, 0x3d, 0xda, 0xef, 0x55, 0x0e, 0x0b, 0x50, 0xf1, 0x00, 0x4c,
+	0x23, 0x9d, 0xc8, 0x88, 0x7e, 0x90, 0x60, 0x5d, 0x02, 0xd6, 0x4b, 0xb9, 0xac, 0x05, 0xb4, 0x22,
+	0xb4, 0x7f, 0x2b, 0x91, 0x2f, 0x8d, 0x7c, 0x4b, 0xa2, 0xd6, 0x3b, 0xf1, 0x7b, 0x3a, 0x66, 0xef,
+	0x29, 0xfc, 0x92, 0x7c, 0x24, 0x91, 0x6a, 0x41, 0xc8, 0x69, 0x53, 0x73, 0xdf, 0xd3, 0x9b, 0x9a,
+	0xed, 0xc4, 0x3c, 0x00, 0x1c, 0xea, 0xb3, 0xee, 0x6c, 0x3b, 0xa4, 0x92, 0xba, 0xe6, 0x1e, 0x50,
+	0x5e, 0x4f, 0x50, 0xbe, 0xea, 0x76, 0x1c, 0x7f, 0xe2, 0x71, 0xaa, 0x26, 0xa8, 0x24, 0x63, 0x21,
+	0x95, 0x0a, 0x99, 0x15, 0x73, 0xa6, 0x19, 0x3c, 0xc5, 0x29, 0x43, 0xe0, 0x16, 0xd8, 0xb3, 0xef,
+	0x4b, 0x38, 0x64, 0x86, 0x83, 0xec, 0xe1, 0xe9, 0x65, 0x0d, 0x87, 0x4d, 0x06, 0x84, 0xa2, 0x74,
+	0x34, 0x0c, 0x75, 0xeb, 0x8e, 0xe5, 0x9b, 0x1b, 0x16, 0xf7, 0xcd, 0x70, 0xf4, 0xf2, 0x89, 0xd3,
+	0xfc, 0x36, 0xce, 0xaa, 0xac, 0x98, 0x88, 0xef, 0x18, 0x99, 0x09, 0xf9, 0x89, 0xb1, 0xb2, 0x5f,
+	0x7b, 0x1e, 0x59, 0x72, 0xb6, 0x84, 0x99, 0x1e, 0x8e, 0xa3, 0x76, 0x71, 0x4a, 0x21, 0x34, 0xf6,
+	0x4b, 0x29, 0x85, 0x45, 0xcc, 0x12, 0x17, 0xfc, 0x1e, 0x99, 0xf7, 0xda, 0xae, 0xd1, 0x69, 0xfa,
+	0x75, 0xdf, 0xad, 0xeb, 0xb6, 0x5d, 0x87, 0xe5, 0xb0, 0x66, 0xbf, 0x90, 0x52, 0xb3, 0x22, 0xb7,
+	0xb6, 0x2d, 0x82, 0x9e, 0xc2, 0xd2, 0x3d, 0x86, 0xdd, 0x6e, 0x44, 0x3c, 0xa6, 0x1d, 0xc2, 0xdb,
+	0x03, 0x3f, 0xd6, 0x26, 0x73, 0x89, 0x40, 0xf4, 0x48, 0x32, 0xa5, 0x61, 0x39, 0xac, 0x93, 0x69,
+	0x08, 0xc2, 0x17, 0x4a, 0x80, 0xea, 0x58, 0x88, 0x4a, 0x7c, 0x3c, 0x44, 0xa0, 0x00, 0xcc, 0x11,
+	0x04, 0x33, 0x17, 0xab, 0x16, 0xce, 0x34, 0x8c, 0xc0, 0xe6, 0x09, 0x85, 0xcc, 0xdc, 0x80, 0x4f,
+	0x93, 0x30, 0x61, 0x4d, 0x72, 0x38, 0x71, 0x17, 0x93, 0xb3, 0x41, 0xa6, 0xc5, 0x27, 0x4c, 0xce,
+	0x59, 0x5f, 0xb8, 0x0d, 0x2f, 0x2d, 0x5c, 0x99, 0x86, 0x31, 0xd8, 0xd7, 0x12, 0x67, 0xec, 0x0d,
+	0xd7, 0xbd, 0xdb, 0xf1, 0x36, 0xf5, 0x86, 0x6d, 0x42, 0x11, 0x8c, 0x5f, 0x56, 0xbf, 0x91, 0xc8,
+	0xa9, 0xcc, 0x80, 0xc8, 0xe2, 0x47, 0x12, 0x39, 0xea, 0xbb, 0x77, 0x4d, 0x27, 0xd8, 0x11, 0xec,
+	0x2b, 0xdb, 0xba, 0xe7, 0x59, 0x4e, 0x0b, 0xb7, 0xf9, 0x8b, 0x29, 0xbc, 0x36, 0x03, 0xaf, 0x4d,
+	0x57, 0xc4, 0xbf, 0x26, 0x5c, 0x54, 0xd6, 0xef, 0x55, 0xca, 0x02, 0x50, 0x4a, 0x54, 0xa6, 0xcd,
+	0xfb, 0x23, 0x3c, 0xd9, 0x4f, 0xc2, 0x71, 0x37, 0x1a, 0xf0, 0x5e, 0x1e, 0xb5, 0x7f, 0x17, 0x8e,
+	0xb1, 0x7c, 0x28, 0x85, 0xb2, 0x28, 0xed, 0x5d, 0x16, 0x6f, 0x26, 0xfa, 0x6d, 0xfc, 0x5b, 0xc1,
+	0x34, 0x26, 0xac, 0xa4, 0xbf, 0x4a, 0x89, 0x06, 0x3a, 0x32, 0x26, 0xa6, 0xe1, 0xd7, 0x12, 0x59,
+	0x04, 0x9c, 0x46, 0xf8, 0xe5, 0x61, 0x1a, 0x75, 0x7d, 0x3b, 0xe8, 0x9d, 0x70, 0x80, 0x0a, 0xd0,
+	0x63, 0x55, 0x9d, 0xcf, 0x1a, 0x78, 0x46, 0x14, 0x7f, 0x05, 0x9c, 0x83, 0xf3, 0xd6, 0x35, 0xdd,
+	0x53, 0x15, 0x7c, 0x87, 0x96, 0x62, 0x63, 0x30, 0x63, 0x29, 0xa6, 0x1d, 0xb7, 0x33, 0xc2, 0x0d,
+	0x97, 0x1c, 0x30, 0xd3, 0xcc, 0x7b, 0x7a, 0xdb, 0xe0, 0x78, 0x94, 0x5c, 0xf1, 0xbc, 0x5b, 0x16,
+	0x37, 0x9f, 0x7d, 0xc9, 0xfd, 0x2a, 0x59, 0x72, 0x59, 0x50, 0xa2, 0xde, 0x8c, 0xdf, 0x78, 0x6d,
+	0x61, 0x86, 0x75, 0x76, 0x31, 0xf3, 0x20, 0x91, 0x1e, 0x57, 0x3d, 0x8e, 0xb9, 0x9d, 0x0f, 0xeb,
+	0x2e, 0x16, 0x9b, 0xe1, 0xa7, 0x23, 0x7a, 0x32, 0x4e, 0x0e, 0x01, 0xd8, 0xf7, 0x7d, 0xdd, 0x8f,
+	0x92, 0xb3, 0x40, 0x9e, 0xd3, 0x0d, 0xa3, 0x6d, 0x72, 0x01, 0x65, 0x46, 0x0b, 0x2f, 0xe9, 0x3c,
+	0x39, 0x60, 0x98, 0x8e, 0xbb, 0x2d, 0x0e, 0x4f, 0x9a, 0xb8, 0xa0, 0x2f, 0x92, 0xe9, 0x3b, 0xa6,
+	0xd5, 0xba, 0xe3, 0x8b, 0x53, 0xa5, 0x86, 0x57, 0xc1, 0x7d, 0x5f, 0x6f, 0xb7, 0x4c, 0x1f, 0xbe,
+	0x24, 0x66, 0x34, 0xbc, 0x62, 0x3f, 0x95, 0xb0, 0x3b, 0xe3, 0xaa, 0x98, 0x07, 0x4e, 0xa6, 0xc5,
+	0xb6, 0x63, 0x02, 0x3e, 0x9f, 0x38, 0x82, 0x87, 0xf4, 0xaf, 0xba, 0x96, 0xa3, 0xbe, 0x39, 0xd4,
+	0xfd, 0xc1, 0x8d, 0xfd, 0xbf, 0x57, 0x59, 0x6a, 0x59, 0xfe, 0x9d, 0x4e, 0x23, 0x48, 0x9d, 0x82,
+	0x32, 0x92, 0xf8, 0xa7, 0xca, 0x8d, 0xbb, 0x8a, 0xdf, 0xf5, 0x4c, 0x0e, 0x11, 0x34, 0x5c, 0xea,
+	0x5c, 0x7f, 0x91, 0x1c, 0x00, 0x2c, 0xf4, 0x17, 0x12, 0x79, 0x61, 0x48, 0x75, 0xa0, 0xd5, 0x94,
+	0x3d, 0x18, 0xad, 0x39, 0xc9, 0xb5, 0xa2, 0xe6, 0x82, 0x31, 0x53, 0x7e, 0xf0, 0xe7, 0x7f, 0x7d,
+	0x5c, 0x3a, 0x43, 0x97, 0x94, 0x2c, 0xf1, 0x0d, 0x4e, 0x87, 0xca, 0x03, 0xcb, 0xd8, 0xa1, 0x7f,
+	0x97, 0x88, 0x9c, 0x2e, 0xe0, 0xd0, 0xaf, 0xe4, 0xaf, 0x3f, 0x5a, 0x72, 0x92, 0x5f, 0x9b, 0xc0,
+	0x13, 0x49, 0xbc, 0x0b, 0x24, 0x54, 0xfa, 0x66, 0x26, 0x09, 0x0e, 0x2c, 0xea, 0xe1, 0x0b, 0xa3,
+	0x3c, 0x10, 0xaf, 0xd9, 0x8e, 0xf2, 0x20, 0xbc, 0xb5, 0x43, 0x7f, 0x2f, 0xed, 0x52, 0xf3, 0xf0,
+	0xe0, 0x44, 0x2f, 0x14, 0xcb, 0x6c, 0xf2, 0xec, 0x26, 0xbf, 0x32, 0xa6, 0x17, 0x32, 0xfa, 0x2a,
+	0x30, 0x7a, 0x85, 0x9e, 0x2f, 0xc4, 0x08, 0x78, 0x44, 0x7c, 0x68, 0x5f, 0x22, 0x8b, 0x79, 0xf2,
+	0x0e, 0x7d, 0x23, 0x0b, 0x58, 0xbe, 0x38, 0x25, 0x5f, 0x99, 0xd8, 0x1f, 0x29, 0x5e, 0x03, 0x8a,
+	0xef, 0xd0, 0xb7, 0x52, 0x28, 0x26, 0x44, 0x27, 0xe0, 0x98, 0xb9, 0x73, 0xff, 0x95, 0xf0, 0x73,
+	0x25, 0x55, 0x07, 0xa2, 0x97, 0xb2, 0x20, 0xe7, 0x29, 0x57, 0xf2, 0xe5, 0x09, 0xbd, 0x91, 0xee,
+	0x0d, 0xa0, 0xbb, 0x4e, 0xdf, 0x4d, 0xa1, 0x0b, 0x9f, 0x7c, 0xe1, 0x60, 0x6e, 0x74, 0xc5, 0x81,
+	0xd6, 0xf3, 0x82, 0x9f, 0xf0, 0x28, 0x46, 0x1a, 0xae, 0x81, 0xf1, 0x62, 0x9e, 0x8c, 0x94, 0xbd,
+	0xcd, 0xf9, 0x92, 0x56, 0xf6, 0x36, 0x17, 0xd0, 0xaf, 0xd8, 0x3a, 0xf0, 0x5e, 0xa5, 0x6a, 0x11,
+	0xde, 0x50, 0xce, 0x03, 0xf2, 0x3c, 0xa4, 0x8e, 0x8c, 0x3f, 0x29, 0xc5, 0x55, 0x8c, 0x7c, 0xf1,
+	0x86, 0xae, 0xe7, 0xa2, 0x2f, 0x2c, 0x8d, 0xc9, 0xef, 0x3d, 0x95, 0x58, 0x98, 0x95, 0x3a, 0x64,
+	0xe5, 0x9b, 0xf4, 0x56, 0x91, 0xac, 0xf8, 0xf7, 0xab, 0x86, 0x08, 0x0c, 0xb9, 0x09, 0xdf, 0x84,
+	0x5d, 0x15, 0x11, 0x7f, 0x1d, 0x3e, 0x2e, 0xa5, 0x28, 0xb2, 0xc3, 0xea, 0x09, 0xbd, 0x3a, 0x4e,
+	0x5d, 0xa7, 0xc8, 0x45, 0xf2, 0xea, 0x93, 0x05, 0x99, 0x24, 0x2b, 0x51, 0xeb, 0x0b, 0x49, 0xef,
+	0x7a, 0x4f, 0xa2, 0x6c, 0x44, 0x05, 0xf4, 0x47, 0x29, 0xf1, 0x37, 0x97, 0xb8, 0xa4, 0x42, 0x0b,
+	0x74, 0xea, 0x11, 0xb2, 0x8f, 0xfc, 0xea, 0xb8, 0x6e, 0xc8, 0xf5, 0x2d, 0xe0, 0x7a, 0x85, 0x5e,
+	0xce, 0x1f, 0xbc, 0xc0, 0x32, 0xa5, 0x09, 0xfc, 0x21, 0xc9, 0x28, 0xae, 0xac, 0x14, 0x61, 0x34,
+	0x42, 0xd5, 0x29, 0xc2, 0x68, 0x94, 0x80, 0x93, 0x3b, 0xb3, 0x44, 0x43, 0x47, 0x5e, 0xc3, 0x33,
+	0xeb, 0x3f, 0x52, 0x8a, 0xda, 0x34, 0x38, 0x5a, 0x5c, 0x1a, 0x07, 0xd7, 0xae, 0xe3, 0xc5, 0xe5,
+	0x09, 0xbd, 0x91, 0xdc, 0x06, 0x90, 0x7b, 0x9b, 0xae, 0x16, 0x25, 0x97, 0x39, 0xac, 0xfe, 0x2d,
+	0xa1, 0x1e, 0x96, 0x2e, 0xd4, 0xd0, 0x4c, 0xc0, 0xb9, 0xa2, 0x91, 0xfc, 0xc6, 0xa4, 0xee, 0x48,
+	0xf8, 0x1d, 0x20, 0xbc, 0x42, 0xaf, 0xa4, 0x10, 0xbe, 0x17, 0x84, 0xb0, 0x21, 0x44, 0xc4, 0x35,
+	0xea, 0x4f, 0xf1, 0x9d, 0xfd, 0x4b, 0xb8, 0xb3, 0xa9, 0x12, 0x51, 0xf6, 0xce, 0xe6, 0x69, 0x50,
+	0xf2, 0xe5, 0x09, 0xbd, 0x91, 0xe8, 0x45, 0x20, 0x7a, 0x96, 0x2a, 0x85, 0x89, 0x0a, 0x66, 0xf4,
+	0x23, 0x89, 0xcc, 0xc6, 0xb4, 0x1c, 0x7a, 0x26, 0x0b, 0x47, 0x42, 0x05, 0x92, 0x5f, 0x2e, 0x62,
+	0x8a, 0xf8, 0x5e, 0x02, 0x7c, 0x15, 0x7a, 0x42, 0xc9, 0xfa, 0xd3, 0x37, 0xfd, 0x93, 0x44, 0x8e,
+	0x65, 0xe8, 0x0c, 0xb4, 0xc0, 0xf1, 0x3a, 0x45, 0x28, 0x92, 0x5f, 0x9f, 0xc4, 0x15, 0xd1, 0x5f,
+	0x02, 0xf4, 0xaf, 0xd2, 0x0b, 0x99, 0x6d, 0xae, 0x6a, 0x83, 0x7f, 0xb5, 0xd1, 0xad, 0xea, 0x9e,
+	0x37, 0xa8, 0x9d, 0x1f, 0x97, 0x12, 0x12, 0x44, 0xba, 0x78, 0x92, 0x3d, 0xc5, 0x0a, 0xaa, 0x40,
+	0xd9, 0x53, 0xac, 0xa8, 0x7e, 0xc3, 0xde, 0x07, 0xca, 0xd7, 0xe8, 0x7b, 0x63, 0x50, 0xae, 0xea,
+	0x8e, 0x51, 0xc5, 0xef, 0xf7, 0x91, 0x1d, 0x63, 0x28, 0x13, 0xe9, 0xdf, 0xde, 0x45, 0x32, 0x91,
+	0x2b, 0x4e, 0x14, 0xc9, 0x44, 0xbe, 0xac, 0x50, 0x20, 0x13, 0x41, 0x22, 0x50, 0x17, 0x28, 0x9a,
+	0x89, 0x5e, 0x72, 0x52, 0x8c, 0x90, 0x90, 0x8a, 0x4c, 0x8a, 0x74, 0x35, 0xab, 0xc8, 0xa4, 0xc8,
+	0xd0, 0xad, 0xd8, 0x15, 0x20, 0xfd, 0x1a, 0xbd, 0x98, 0xbd, 0xfd, 0x91, 0xd0, 0xb4, 0xab, 0xe8,
+	0x9b, 0x84, 0x0c, 0xa4, 0x09, 0xba, 0x9c, 0x85, 0x26, 0xae, 0x99, 0xc8, 0x67, 0x0a, 0x58, 0x22,
+	0xc6, 0x29, 0x55, 0x7b, 0xf8, 0xcf, 0xf2, 0xd4, 0x27, 0x8f, 0xca, 0x53, 0x0f, 0x1f, 0x95, 0xa5,
+	0x4f, 0x1f, 0x95, 0xa5, 0x7f, 0x3c, 0x2a, 0x4b, 0x3f, 0x7b, 0x5c, 0x9e, 0xfa, 0xf4, 0x71, 0x79,
+	0xea, 0x6f, 0x8f, 0xcb, 0x53, 0xb7, 0xbf, 0x9c, 0xd0, 0x31, 0x82, 0xc0, 0x55, 0x77, 0x6b, 0xcb,
+	0x6a, 0x5a, 0xba, 0x1d, 0x32, 0x8b, 0xb8, 0x81, 0xaa, 0xd1, 0x98, 0x86, 0xff, 0x10, 0x73, 0xfe,
+	0xb3, 0x00, 0x00, 0x00, 0xff, 0xff, 0xba, 0x2e, 0xb0, 0x8e, 0x36, 0x24, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1761,21 +1731,21 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
 	QueryLockerInfo(ctx context.Context, in *QueryLockerInfoRequest, opts ...grpc.CallOption) (*QueryLockerInfoResponse, error)
-	QueryLockersByProductToAssetID(ctx context.Context, in *QueryLockersByProductToAssetIDRequest, opts ...grpc.CallOption) (*QueryLockersByProductToAssetIDResponse, error)
-	QueryLockerInfoByProductID(ctx context.Context, in *QueryLockerInfoByProductIDRequest, opts ...grpc.CallOption) (*QueryLockerInfoByProductIDResponse, error)
-	QueryTotalDepositByProductAssetID(ctx context.Context, in *QueryTotalDepositByProductAssetIDRequest, opts ...grpc.CallOption) (*QueryTotalDepositByProductAssetIDResponse, error)
-	QueryOwnerLockerByProductIDbyOwner(ctx context.Context, in *QueryOwnerLockerByProductIDbyOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerByProductIDbyOwnerResponse, error)
-	QueryOwnerLockerOfAllProductByOwner(ctx context.Context, in *QueryOwnerLockerOfAllProductByOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerOfAllProductByOwnerResponse, error)
-	QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(ctx context.Context, in *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest, opts ...grpc.CallOption) (*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse, error)
-	QueryOwnerLockerByProductToAssetIDbyOwner(ctx context.Context, in *QueryOwnerLockerByProductToAssetIDbyOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerByProductToAssetIDbyOwnerResponse, error)
-	QueryLockerByProductByOwner(ctx context.Context, in *QueryLockerByProductByOwnerRequest, opts ...grpc.CallOption) (*QueryLockerByProductByOwnerResponse, error)
-	QueryLockerCountByProductID(ctx context.Context, in *QueryLockerCountByProductIDRequest, opts ...grpc.CallOption) (*QueryLockerCountByProductIDResponse, error)
-	QueryLockerCountByProductToAssetID(ctx context.Context, in *QueryLockerCountByProductToAssetIDRequest, opts ...grpc.CallOption) (*QueryLockerCountByProductToAssetIDResponse, error)
-	QueryWhiteListedAssetIDsByProductID(ctx context.Context, in *QueryWhiteListedAssetIDsByProductIDRequest, opts ...grpc.CallOption) (*QueryWhiteListedAssetIDsByProductIDResponse, error)
-	QueryWhiteListedAssetByAllProduct(ctx context.Context, in *QueryWhiteListedAssetByAllProductRequest, opts ...grpc.CallOption) (*QueryWhiteListedAssetByAllProductResponse, error)
+	QueryLockersByAppToAssetID(ctx context.Context, in *QueryLockersByAppToAssetIDRequest, opts ...grpc.CallOption) (*QueryLockersByAppToAssetIDResponse, error)
+	QueryLockerInfoByAppID(ctx context.Context, in *QueryLockerInfoByAppIDRequest, opts ...grpc.CallOption) (*QueryLockerInfoByAppIDResponse, error)
+	QueryTotalDepositByAppAndAssetID(ctx context.Context, in *QueryTotalDepositByAppAndAssetIDRequest, opts ...grpc.CallOption) (*QueryTotalDepositByAppAndAssetIDResponse, error)
+	QueryOwnerLockerByAppIDbyOwner(ctx context.Context, in *QueryOwnerLockerByAppIDbyOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerByAppIDbyOwnerResponse, error)
+	QueryOwnerLockerOfAllAppsByOwner(ctx context.Context, in *QueryOwnerLockerOfAllAppsByOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerOfAllAppsByOwnerResponse, error)
+	QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(ctx context.Context, in *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest, opts ...grpc.CallOption) (*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse, error)
+	QueryOwnerLockerByAppToAssetIDbyOwner(ctx context.Context, in *QueryOwnerLockerByAppToAssetIDbyOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerByAppToAssetIDbyOwnerResponse, error)
+	QueryLockerByAppByOwner(ctx context.Context, in *QueryLockerByAppByOwnerRequest, opts ...grpc.CallOption) (*QueryLockerByAppByOwnerResponse, error)
+	QueryLockerCountByAppID(ctx context.Context, in *QueryLockerCountByAppIDRequest, opts ...grpc.CallOption) (*QueryLockerCountByAppIDResponse, error)
+	QueryLockerCountByAppToAssetID(ctx context.Context, in *QueryLockerCountByAppToAssetIDRequest, opts ...grpc.CallOption) (*QueryLockerCountByAppToAssetIDResponse, error)
+	QueryWhiteListedAssetIDsByAppID(ctx context.Context, in *QueryWhiteListedAssetIDsByAppIDRequest, opts ...grpc.CallOption) (*QueryWhiteListedAssetIDsByAppIDResponse, error)
+	QueryWhiteListedAssetByAllApps(ctx context.Context, in *QueryWhiteListedAssetByAllAppsRequest, opts ...grpc.CallOption) (*QueryWhiteListedAssetByAllAppsResponse, error)
 	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	QueryLockerLookupTableByApp(ctx context.Context, in *QueryLockerLookupTableByAppRequest, opts ...grpc.CallOption) (*QueryLockerLookupTableByAppResponse, error)
-	QueryLockerLookupTableByAppAndAssetId(ctx context.Context, in *QueryLockerLookupTableByAppAndAssetIdRequest, opts ...grpc.CallOption) (*QueryLockerLookupTableByAppAndAssetIdResponse, error)
+	QueryLockerLookupTableByAppAndAssetID(ctx context.Context, in *QueryLockerLookupTableByAppAndAssetIDRequest, opts ...grpc.CallOption) (*QueryLockerLookupTableByAppAndAssetIDResponse, error)
 	QueryLockerTotalRewardsByAssetAppWise(ctx context.Context, in *QueryLockerTotalRewardsByAssetAppWiseRequest, opts ...grpc.CallOption) (*QueryLockerTotalRewardsByAssetAppWiseResponse, error)
 	QueryLockerTotalDepositedByApp(ctx context.Context, in *QueryLockerTotalDepositedByAppRequest, opts ...grpc.CallOption) (*QueryLockerTotalDepositedByAppResponse, error)
 	QueryState(ctx context.Context, in *QueryStateRequest, opts ...grpc.CallOption) (*QueryStateResponse, error)
@@ -1798,108 +1768,108 @@ func (c *queryClient) QueryLockerInfo(ctx context.Context, in *QueryLockerInfoRe
 	return out, nil
 }
 
-func (c *queryClient) QueryLockersByProductToAssetID(ctx context.Context, in *QueryLockersByProductToAssetIDRequest, opts ...grpc.CallOption) (*QueryLockersByProductToAssetIDResponse, error) {
-	out := new(QueryLockersByProductToAssetIDResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockersByProductToAssetID", in, out, opts...)
+func (c *queryClient) QueryLockersByAppToAssetID(ctx context.Context, in *QueryLockersByAppToAssetIDRequest, opts ...grpc.CallOption) (*QueryLockersByAppToAssetIDResponse, error) {
+	out := new(QueryLockersByAppToAssetIDResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockersByAppToAssetID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryLockerInfoByProductID(ctx context.Context, in *QueryLockerInfoByProductIDRequest, opts ...grpc.CallOption) (*QueryLockerInfoByProductIDResponse, error) {
-	out := new(QueryLockerInfoByProductIDResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockerInfoByProductID", in, out, opts...)
+func (c *queryClient) QueryLockerInfoByAppID(ctx context.Context, in *QueryLockerInfoByAppIDRequest, opts ...grpc.CallOption) (*QueryLockerInfoByAppIDResponse, error) {
+	out := new(QueryLockerInfoByAppIDResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockerInfoByAppID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryTotalDepositByProductAssetID(ctx context.Context, in *QueryTotalDepositByProductAssetIDRequest, opts ...grpc.CallOption) (*QueryTotalDepositByProductAssetIDResponse, error) {
-	out := new(QueryTotalDepositByProductAssetIDResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryTotalDepositByProductAssetID", in, out, opts...)
+func (c *queryClient) QueryTotalDepositByAppAndAssetID(ctx context.Context, in *QueryTotalDepositByAppAndAssetIDRequest, opts ...grpc.CallOption) (*QueryTotalDepositByAppAndAssetIDResponse, error) {
+	out := new(QueryTotalDepositByAppAndAssetIDResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryTotalDepositByAppAndAssetID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryOwnerLockerByProductIDbyOwner(ctx context.Context, in *QueryOwnerLockerByProductIDbyOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerByProductIDbyOwnerResponse, error) {
-	out := new(QueryOwnerLockerByProductIDbyOwnerResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryOwnerLockerByProductIDbyOwner", in, out, opts...)
+func (c *queryClient) QueryOwnerLockerByAppIDbyOwner(ctx context.Context, in *QueryOwnerLockerByAppIDbyOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerByAppIDbyOwnerResponse, error) {
+	out := new(QueryOwnerLockerByAppIDbyOwnerResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryOwnerLockerByAppIDbyOwner", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryOwnerLockerOfAllProductByOwner(ctx context.Context, in *QueryOwnerLockerOfAllProductByOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerOfAllProductByOwnerResponse, error) {
-	out := new(QueryOwnerLockerOfAllProductByOwnerResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryOwnerLockerOfAllProductByOwner", in, out, opts...)
+func (c *queryClient) QueryOwnerLockerOfAllAppsByOwner(ctx context.Context, in *QueryOwnerLockerOfAllAppsByOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerOfAllAppsByOwnerResponse, error) {
+	out := new(QueryOwnerLockerOfAllAppsByOwnerResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryOwnerLockerOfAllAppsByOwner", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(ctx context.Context, in *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest, opts ...grpc.CallOption) (*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse, error) {
-	out := new(QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryOwnerTxDetailsLockerOfProductByOwnerByAsset", in, out, opts...)
+func (c *queryClient) QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(ctx context.Context, in *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest, opts ...grpc.CallOption) (*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse, error) {
+	out := new(QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryOwnerTxDetailsLockerOfAppByOwnerByAsset", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryOwnerLockerByProductToAssetIDbyOwner(ctx context.Context, in *QueryOwnerLockerByProductToAssetIDbyOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerByProductToAssetIDbyOwnerResponse, error) {
-	out := new(QueryOwnerLockerByProductToAssetIDbyOwnerResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryOwnerLockerByProductToAssetIDbyOwner", in, out, opts...)
+func (c *queryClient) QueryOwnerLockerByAppToAssetIDbyOwner(ctx context.Context, in *QueryOwnerLockerByAppToAssetIDbyOwnerRequest, opts ...grpc.CallOption) (*QueryOwnerLockerByAppToAssetIDbyOwnerResponse, error) {
+	out := new(QueryOwnerLockerByAppToAssetIDbyOwnerResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryOwnerLockerByAppToAssetIDbyOwner", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryLockerByProductByOwner(ctx context.Context, in *QueryLockerByProductByOwnerRequest, opts ...grpc.CallOption) (*QueryLockerByProductByOwnerResponse, error) {
-	out := new(QueryLockerByProductByOwnerResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockerByProductByOwner", in, out, opts...)
+func (c *queryClient) QueryLockerByAppByOwner(ctx context.Context, in *QueryLockerByAppByOwnerRequest, opts ...grpc.CallOption) (*QueryLockerByAppByOwnerResponse, error) {
+	out := new(QueryLockerByAppByOwnerResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockerByAppByOwner", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryLockerCountByProductID(ctx context.Context, in *QueryLockerCountByProductIDRequest, opts ...grpc.CallOption) (*QueryLockerCountByProductIDResponse, error) {
-	out := new(QueryLockerCountByProductIDResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockerCountByProductID", in, out, opts...)
+func (c *queryClient) QueryLockerCountByAppID(ctx context.Context, in *QueryLockerCountByAppIDRequest, opts ...grpc.CallOption) (*QueryLockerCountByAppIDResponse, error) {
+	out := new(QueryLockerCountByAppIDResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockerCountByAppID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryLockerCountByProductToAssetID(ctx context.Context, in *QueryLockerCountByProductToAssetIDRequest, opts ...grpc.CallOption) (*QueryLockerCountByProductToAssetIDResponse, error) {
-	out := new(QueryLockerCountByProductToAssetIDResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockerCountByProductToAssetID", in, out, opts...)
+func (c *queryClient) QueryLockerCountByAppToAssetID(ctx context.Context, in *QueryLockerCountByAppToAssetIDRequest, opts ...grpc.CallOption) (*QueryLockerCountByAppToAssetIDResponse, error) {
+	out := new(QueryLockerCountByAppToAssetIDResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockerCountByAppToAssetID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryWhiteListedAssetIDsByProductID(ctx context.Context, in *QueryWhiteListedAssetIDsByProductIDRequest, opts ...grpc.CallOption) (*QueryWhiteListedAssetIDsByProductIDResponse, error) {
-	out := new(QueryWhiteListedAssetIDsByProductIDResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryWhiteListedAssetIDsByProductID", in, out, opts...)
+func (c *queryClient) QueryWhiteListedAssetIDsByAppID(ctx context.Context, in *QueryWhiteListedAssetIDsByAppIDRequest, opts ...grpc.CallOption) (*QueryWhiteListedAssetIDsByAppIDResponse, error) {
+	out := new(QueryWhiteListedAssetIDsByAppIDResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryWhiteListedAssetIDsByAppID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryWhiteListedAssetByAllProduct(ctx context.Context, in *QueryWhiteListedAssetByAllProductRequest, opts ...grpc.CallOption) (*QueryWhiteListedAssetByAllProductResponse, error) {
-	out := new(QueryWhiteListedAssetByAllProductResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryWhiteListedAssetByAllProduct", in, out, opts...)
+func (c *queryClient) QueryWhiteListedAssetByAllApps(ctx context.Context, in *QueryWhiteListedAssetByAllAppsRequest, opts ...grpc.CallOption) (*QueryWhiteListedAssetByAllAppsResponse, error) {
+	out := new(QueryWhiteListedAssetByAllAppsResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryWhiteListedAssetByAllApps", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1924,9 +1894,9 @@ func (c *queryClient) QueryLockerLookupTableByApp(ctx context.Context, in *Query
 	return out, nil
 }
 
-func (c *queryClient) QueryLockerLookupTableByAppAndAssetId(ctx context.Context, in *QueryLockerLookupTableByAppAndAssetIdRequest, opts ...grpc.CallOption) (*QueryLockerLookupTableByAppAndAssetIdResponse, error) {
-	out := new(QueryLockerLookupTableByAppAndAssetIdResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockerLookupTableByAppAndAssetId", in, out, opts...)
+func (c *queryClient) QueryLockerLookupTableByAppAndAssetID(ctx context.Context, in *QueryLockerLookupTableByAppAndAssetIDRequest, opts ...grpc.CallOption) (*QueryLockerLookupTableByAppAndAssetIDResponse, error) {
+	out := new(QueryLockerLookupTableByAppAndAssetIDResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Query/QueryLockerLookupTableByAppAndAssetID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1963,21 +1933,21 @@ func (c *queryClient) QueryState(ctx context.Context, in *QueryStateRequest, opt
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	QueryLockerInfo(context.Context, *QueryLockerInfoRequest) (*QueryLockerInfoResponse, error)
-	QueryLockersByProductToAssetID(context.Context, *QueryLockersByProductToAssetIDRequest) (*QueryLockersByProductToAssetIDResponse, error)
-	QueryLockerInfoByProductID(context.Context, *QueryLockerInfoByProductIDRequest) (*QueryLockerInfoByProductIDResponse, error)
-	QueryTotalDepositByProductAssetID(context.Context, *QueryTotalDepositByProductAssetIDRequest) (*QueryTotalDepositByProductAssetIDResponse, error)
-	QueryOwnerLockerByProductIDbyOwner(context.Context, *QueryOwnerLockerByProductIDbyOwnerRequest) (*QueryOwnerLockerByProductIDbyOwnerResponse, error)
-	QueryOwnerLockerOfAllProductByOwner(context.Context, *QueryOwnerLockerOfAllProductByOwnerRequest) (*QueryOwnerLockerOfAllProductByOwnerResponse, error)
-	QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(context.Context, *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) (*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse, error)
-	QueryOwnerLockerByProductToAssetIDbyOwner(context.Context, *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) (*QueryOwnerLockerByProductToAssetIDbyOwnerResponse, error)
-	QueryLockerByProductByOwner(context.Context, *QueryLockerByProductByOwnerRequest) (*QueryLockerByProductByOwnerResponse, error)
-	QueryLockerCountByProductID(context.Context, *QueryLockerCountByProductIDRequest) (*QueryLockerCountByProductIDResponse, error)
-	QueryLockerCountByProductToAssetID(context.Context, *QueryLockerCountByProductToAssetIDRequest) (*QueryLockerCountByProductToAssetIDResponse, error)
-	QueryWhiteListedAssetIDsByProductID(context.Context, *QueryWhiteListedAssetIDsByProductIDRequest) (*QueryWhiteListedAssetIDsByProductIDResponse, error)
-	QueryWhiteListedAssetByAllProduct(context.Context, *QueryWhiteListedAssetByAllProductRequest) (*QueryWhiteListedAssetByAllProductResponse, error)
+	QueryLockersByAppToAssetID(context.Context, *QueryLockersByAppToAssetIDRequest) (*QueryLockersByAppToAssetIDResponse, error)
+	QueryLockerInfoByAppID(context.Context, *QueryLockerInfoByAppIDRequest) (*QueryLockerInfoByAppIDResponse, error)
+	QueryTotalDepositByAppAndAssetID(context.Context, *QueryTotalDepositByAppAndAssetIDRequest) (*QueryTotalDepositByAppAndAssetIDResponse, error)
+	QueryOwnerLockerByAppIDbyOwner(context.Context, *QueryOwnerLockerByAppIDbyOwnerRequest) (*QueryOwnerLockerByAppIDbyOwnerResponse, error)
+	QueryOwnerLockerOfAllAppsByOwner(context.Context, *QueryOwnerLockerOfAllAppsByOwnerRequest) (*QueryOwnerLockerOfAllAppsByOwnerResponse, error)
+	QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(context.Context, *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) (*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse, error)
+	QueryOwnerLockerByAppToAssetIDbyOwner(context.Context, *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) (*QueryOwnerLockerByAppToAssetIDbyOwnerResponse, error)
+	QueryLockerByAppByOwner(context.Context, *QueryLockerByAppByOwnerRequest) (*QueryLockerByAppByOwnerResponse, error)
+	QueryLockerCountByAppID(context.Context, *QueryLockerCountByAppIDRequest) (*QueryLockerCountByAppIDResponse, error)
+	QueryLockerCountByAppToAssetID(context.Context, *QueryLockerCountByAppToAssetIDRequest) (*QueryLockerCountByAppToAssetIDResponse, error)
+	QueryWhiteListedAssetIDsByAppID(context.Context, *QueryWhiteListedAssetIDsByAppIDRequest) (*QueryWhiteListedAssetIDsByAppIDResponse, error)
+	QueryWhiteListedAssetByAllApps(context.Context, *QueryWhiteListedAssetByAllAppsRequest) (*QueryWhiteListedAssetByAllAppsResponse, error)
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	QueryLockerLookupTableByApp(context.Context, *QueryLockerLookupTableByAppRequest) (*QueryLockerLookupTableByAppResponse, error)
-	QueryLockerLookupTableByAppAndAssetId(context.Context, *QueryLockerLookupTableByAppAndAssetIdRequest) (*QueryLockerLookupTableByAppAndAssetIdResponse, error)
+	QueryLockerLookupTableByAppAndAssetID(context.Context, *QueryLockerLookupTableByAppAndAssetIDRequest) (*QueryLockerLookupTableByAppAndAssetIDResponse, error)
 	QueryLockerTotalRewardsByAssetAppWise(context.Context, *QueryLockerTotalRewardsByAssetAppWiseRequest) (*QueryLockerTotalRewardsByAssetAppWiseResponse, error)
 	QueryLockerTotalDepositedByApp(context.Context, *QueryLockerTotalDepositedByAppRequest) (*QueryLockerTotalDepositedByAppResponse, error)
 	QueryState(context.Context, *QueryStateRequest) (*QueryStateResponse, error)
@@ -1990,41 +1960,41 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) QueryLockerInfo(ctx context.Context, req *QueryLockerInfoRequest) (*QueryLockerInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerInfo not implemented")
 }
-func (*UnimplementedQueryServer) QueryLockersByProductToAssetID(ctx context.Context, req *QueryLockersByProductToAssetIDRequest) (*QueryLockersByProductToAssetIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryLockersByProductToAssetID not implemented")
+func (*UnimplementedQueryServer) QueryLockersByAppToAssetID(ctx context.Context, req *QueryLockersByAppToAssetIDRequest) (*QueryLockersByAppToAssetIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLockersByAppToAssetID not implemented")
 }
-func (*UnimplementedQueryServer) QueryLockerInfoByProductID(ctx context.Context, req *QueryLockerInfoByProductIDRequest) (*QueryLockerInfoByProductIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerInfoByProductID not implemented")
+func (*UnimplementedQueryServer) QueryLockerInfoByAppID(ctx context.Context, req *QueryLockerInfoByAppIDRequest) (*QueryLockerInfoByAppIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerInfoByAppID not implemented")
 }
-func (*UnimplementedQueryServer) QueryTotalDepositByProductAssetID(ctx context.Context, req *QueryTotalDepositByProductAssetIDRequest) (*QueryTotalDepositByProductAssetIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryTotalDepositByProductAssetID not implemented")
+func (*UnimplementedQueryServer) QueryTotalDepositByAppAndAssetID(ctx context.Context, req *QueryTotalDepositByAppAndAssetIDRequest) (*QueryTotalDepositByAppAndAssetIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTotalDepositByAppAndAssetID not implemented")
 }
-func (*UnimplementedQueryServer) QueryOwnerLockerByProductIDbyOwner(ctx context.Context, req *QueryOwnerLockerByProductIDbyOwnerRequest) (*QueryOwnerLockerByProductIDbyOwnerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryOwnerLockerByProductIDbyOwner not implemented")
+func (*UnimplementedQueryServer) QueryOwnerLockerByAppIDbyOwner(ctx context.Context, req *QueryOwnerLockerByAppIDbyOwnerRequest) (*QueryOwnerLockerByAppIDbyOwnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryOwnerLockerByAppIDbyOwner not implemented")
 }
-func (*UnimplementedQueryServer) QueryOwnerLockerOfAllProductByOwner(ctx context.Context, req *QueryOwnerLockerOfAllProductByOwnerRequest) (*QueryOwnerLockerOfAllProductByOwnerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryOwnerLockerOfAllProductByOwner not implemented")
+func (*UnimplementedQueryServer) QueryOwnerLockerOfAllAppsByOwner(ctx context.Context, req *QueryOwnerLockerOfAllAppsByOwnerRequest) (*QueryOwnerLockerOfAllAppsByOwnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryOwnerLockerOfAllAppsByOwner not implemented")
 }
-func (*UnimplementedQueryServer) QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(ctx context.Context, req *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) (*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryOwnerTxDetailsLockerOfProductByOwnerByAsset not implemented")
+func (*UnimplementedQueryServer) QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(ctx context.Context, req *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) (*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryOwnerTxDetailsLockerOfAppByOwnerByAsset not implemented")
 }
-func (*UnimplementedQueryServer) QueryOwnerLockerByProductToAssetIDbyOwner(ctx context.Context, req *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) (*QueryOwnerLockerByProductToAssetIDbyOwnerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryOwnerLockerByProductToAssetIDbyOwner not implemented")
+func (*UnimplementedQueryServer) QueryOwnerLockerByAppToAssetIDbyOwner(ctx context.Context, req *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) (*QueryOwnerLockerByAppToAssetIDbyOwnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryOwnerLockerByAppToAssetIDbyOwner not implemented")
 }
-func (*UnimplementedQueryServer) QueryLockerByProductByOwner(ctx context.Context, req *QueryLockerByProductByOwnerRequest) (*QueryLockerByProductByOwnerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerByProductByOwner not implemented")
+func (*UnimplementedQueryServer) QueryLockerByAppByOwner(ctx context.Context, req *QueryLockerByAppByOwnerRequest) (*QueryLockerByAppByOwnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerByAppByOwner not implemented")
 }
-func (*UnimplementedQueryServer) QueryLockerCountByProductID(ctx context.Context, req *QueryLockerCountByProductIDRequest) (*QueryLockerCountByProductIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerCountByProductID not implemented")
+func (*UnimplementedQueryServer) QueryLockerCountByAppID(ctx context.Context, req *QueryLockerCountByAppIDRequest) (*QueryLockerCountByAppIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerCountByAppID not implemented")
 }
-func (*UnimplementedQueryServer) QueryLockerCountByProductToAssetID(ctx context.Context, req *QueryLockerCountByProductToAssetIDRequest) (*QueryLockerCountByProductToAssetIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerCountByProductToAssetID not implemented")
+func (*UnimplementedQueryServer) QueryLockerCountByAppToAssetID(ctx context.Context, req *QueryLockerCountByAppToAssetIDRequest) (*QueryLockerCountByAppToAssetIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerCountByAppToAssetID not implemented")
 }
-func (*UnimplementedQueryServer) QueryWhiteListedAssetIDsByProductID(ctx context.Context, req *QueryWhiteListedAssetIDsByProductIDRequest) (*QueryWhiteListedAssetIDsByProductIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryWhiteListedAssetIDsByProductID not implemented")
+func (*UnimplementedQueryServer) QueryWhiteListedAssetIDsByAppID(ctx context.Context, req *QueryWhiteListedAssetIDsByAppIDRequest) (*QueryWhiteListedAssetIDsByAppIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryWhiteListedAssetIDsByAppID not implemented")
 }
-func (*UnimplementedQueryServer) QueryWhiteListedAssetByAllProduct(ctx context.Context, req *QueryWhiteListedAssetByAllProductRequest) (*QueryWhiteListedAssetByAllProductResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryWhiteListedAssetByAllProduct not implemented")
+func (*UnimplementedQueryServer) QueryWhiteListedAssetByAllApps(ctx context.Context, req *QueryWhiteListedAssetByAllAppsRequest) (*QueryWhiteListedAssetByAllAppsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryWhiteListedAssetByAllApps not implemented")
 }
 func (*UnimplementedQueryServer) QueryParams(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryParams not implemented")
@@ -2032,8 +2002,8 @@ func (*UnimplementedQueryServer) QueryParams(ctx context.Context, req *QueryPara
 func (*UnimplementedQueryServer) QueryLockerLookupTableByApp(ctx context.Context, req *QueryLockerLookupTableByAppRequest) (*QueryLockerLookupTableByAppResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerLookupTableByApp not implemented")
 }
-func (*UnimplementedQueryServer) QueryLockerLookupTableByAppAndAssetId(ctx context.Context, req *QueryLockerLookupTableByAppAndAssetIdRequest) (*QueryLockerLookupTableByAppAndAssetIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerLookupTableByAppAndAssetId not implemented")
+func (*UnimplementedQueryServer) QueryLockerLookupTableByAppAndAssetID(ctx context.Context, req *QueryLockerLookupTableByAppAndAssetIDRequest) (*QueryLockerLookupTableByAppAndAssetIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerLookupTableByAppAndAssetID not implemented")
 }
 func (*UnimplementedQueryServer) QueryLockerTotalRewardsByAssetAppWise(ctx context.Context, req *QueryLockerTotalRewardsByAssetAppWiseRequest) (*QueryLockerTotalRewardsByAssetAppWiseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryLockerTotalRewardsByAssetAppWise not implemented")
@@ -2067,218 +2037,218 @@ func _Query_QueryLockerInfo_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryLockersByProductToAssetID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryLockersByProductToAssetIDRequest)
+func _Query_QueryLockersByAppToAssetID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLockersByAppToAssetIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryLockersByProductToAssetID(ctx, in)
+		return srv.(QueryServer).QueryLockersByAppToAssetID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockersByProductToAssetID",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockersByAppToAssetID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryLockersByProductToAssetID(ctx, req.(*QueryLockersByProductToAssetIDRequest))
+		return srv.(QueryServer).QueryLockersByAppToAssetID(ctx, req.(*QueryLockersByAppToAssetIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryLockerInfoByProductID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryLockerInfoByProductIDRequest)
+func _Query_QueryLockerInfoByAppID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLockerInfoByAppIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryLockerInfoByProductID(ctx, in)
+		return srv.(QueryServer).QueryLockerInfoByAppID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockerInfoByProductID",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockerInfoByAppID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryLockerInfoByProductID(ctx, req.(*QueryLockerInfoByProductIDRequest))
+		return srv.(QueryServer).QueryLockerInfoByAppID(ctx, req.(*QueryLockerInfoByAppIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryTotalDepositByProductAssetID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryTotalDepositByProductAssetIDRequest)
+func _Query_QueryTotalDepositByAppAndAssetID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTotalDepositByAppAndAssetIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryTotalDepositByProductAssetID(ctx, in)
+		return srv.(QueryServer).QueryTotalDepositByAppAndAssetID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryTotalDepositByProductAssetID",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryTotalDepositByAppAndAssetID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryTotalDepositByProductAssetID(ctx, req.(*QueryTotalDepositByProductAssetIDRequest))
+		return srv.(QueryServer).QueryTotalDepositByAppAndAssetID(ctx, req.(*QueryTotalDepositByAppAndAssetIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryOwnerLockerByProductIDbyOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryOwnerLockerByProductIDbyOwnerRequest)
+func _Query_QueryOwnerLockerByAppIDbyOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOwnerLockerByAppIDbyOwnerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryOwnerLockerByProductIDbyOwner(ctx, in)
+		return srv.(QueryServer).QueryOwnerLockerByAppIDbyOwner(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryOwnerLockerByProductIDbyOwner",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryOwnerLockerByAppIDbyOwner",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryOwnerLockerByProductIDbyOwner(ctx, req.(*QueryOwnerLockerByProductIDbyOwnerRequest))
+		return srv.(QueryServer).QueryOwnerLockerByAppIDbyOwner(ctx, req.(*QueryOwnerLockerByAppIDbyOwnerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryOwnerLockerOfAllProductByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryOwnerLockerOfAllProductByOwnerRequest)
+func _Query_QueryOwnerLockerOfAllAppsByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOwnerLockerOfAllAppsByOwnerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryOwnerLockerOfAllProductByOwner(ctx, in)
+		return srv.(QueryServer).QueryOwnerLockerOfAllAppsByOwner(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryOwnerLockerOfAllProductByOwner",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryOwnerLockerOfAllAppsByOwner",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryOwnerLockerOfAllProductByOwner(ctx, req.(*QueryOwnerLockerOfAllProductByOwnerRequest))
+		return srv.(QueryServer).QueryOwnerLockerOfAllAppsByOwner(ctx, req.(*QueryOwnerLockerOfAllAppsByOwnerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest)
+func _Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(ctx, in)
+		return srv.(QueryServer).QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryOwnerTxDetailsLockerOfProductByOwnerByAsset",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryOwnerTxDetailsLockerOfAppByOwnerByAsset",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(ctx, req.(*QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest))
+		return srv.(QueryServer).QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(ctx, req.(*QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryOwnerLockerByProductToAssetIDbyOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryOwnerLockerByProductToAssetIDbyOwnerRequest)
+func _Query_QueryOwnerLockerByAppToAssetIDbyOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOwnerLockerByAppToAssetIDbyOwnerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryOwnerLockerByProductToAssetIDbyOwner(ctx, in)
+		return srv.(QueryServer).QueryOwnerLockerByAppToAssetIDbyOwner(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryOwnerLockerByProductToAssetIDbyOwner",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryOwnerLockerByAppToAssetIDbyOwner",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryOwnerLockerByProductToAssetIDbyOwner(ctx, req.(*QueryOwnerLockerByProductToAssetIDbyOwnerRequest))
+		return srv.(QueryServer).QueryOwnerLockerByAppToAssetIDbyOwner(ctx, req.(*QueryOwnerLockerByAppToAssetIDbyOwnerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryLockerByProductByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryLockerByProductByOwnerRequest)
+func _Query_QueryLockerByAppByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLockerByAppByOwnerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryLockerByProductByOwner(ctx, in)
+		return srv.(QueryServer).QueryLockerByAppByOwner(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockerByProductByOwner",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockerByAppByOwner",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryLockerByProductByOwner(ctx, req.(*QueryLockerByProductByOwnerRequest))
+		return srv.(QueryServer).QueryLockerByAppByOwner(ctx, req.(*QueryLockerByAppByOwnerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryLockerCountByProductID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryLockerCountByProductIDRequest)
+func _Query_QueryLockerCountByAppID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLockerCountByAppIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryLockerCountByProductID(ctx, in)
+		return srv.(QueryServer).QueryLockerCountByAppID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockerCountByProductID",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockerCountByAppID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryLockerCountByProductID(ctx, req.(*QueryLockerCountByProductIDRequest))
+		return srv.(QueryServer).QueryLockerCountByAppID(ctx, req.(*QueryLockerCountByAppIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryLockerCountByProductToAssetID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryLockerCountByProductToAssetIDRequest)
+func _Query_QueryLockerCountByAppToAssetID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLockerCountByAppToAssetIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryLockerCountByProductToAssetID(ctx, in)
+		return srv.(QueryServer).QueryLockerCountByAppToAssetID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockerCountByProductToAssetID",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockerCountByAppToAssetID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryLockerCountByProductToAssetID(ctx, req.(*QueryLockerCountByProductToAssetIDRequest))
+		return srv.(QueryServer).QueryLockerCountByAppToAssetID(ctx, req.(*QueryLockerCountByAppToAssetIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryWhiteListedAssetIDsByProductID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryWhiteListedAssetIDsByProductIDRequest)
+func _Query_QueryWhiteListedAssetIDsByAppID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryWhiteListedAssetIDsByAppIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryWhiteListedAssetIDsByProductID(ctx, in)
+		return srv.(QueryServer).QueryWhiteListedAssetIDsByAppID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryWhiteListedAssetIDsByProductID",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryWhiteListedAssetIDsByAppID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryWhiteListedAssetIDsByProductID(ctx, req.(*QueryWhiteListedAssetIDsByProductIDRequest))
+		return srv.(QueryServer).QueryWhiteListedAssetIDsByAppID(ctx, req.(*QueryWhiteListedAssetIDsByAppIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryWhiteListedAssetByAllProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryWhiteListedAssetByAllProductRequest)
+func _Query_QueryWhiteListedAssetByAllApps_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryWhiteListedAssetByAllAppsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryWhiteListedAssetByAllProduct(ctx, in)
+		return srv.(QueryServer).QueryWhiteListedAssetByAllApps(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryWhiteListedAssetByAllProduct",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryWhiteListedAssetByAllApps",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryWhiteListedAssetByAllProduct(ctx, req.(*QueryWhiteListedAssetByAllProductRequest))
+		return srv.(QueryServer).QueryWhiteListedAssetByAllApps(ctx, req.(*QueryWhiteListedAssetByAllAppsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2319,20 +2289,20 @@ func _Query_QueryLockerLookupTableByApp_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryLockerLookupTableByAppAndAssetId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryLockerLookupTableByAppAndAssetIdRequest)
+func _Query_QueryLockerLookupTableByAppAndAssetID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryLockerLookupTableByAppAndAssetIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryLockerLookupTableByAppAndAssetId(ctx, in)
+		return srv.(QueryServer).QueryLockerLookupTableByAppAndAssetID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockerLookupTableByAppAndAssetId",
+		FullMethod: "/comdex.locker.v1beta1.Query/QueryLockerLookupTableByAppAndAssetID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryLockerLookupTableByAppAndAssetId(ctx, req.(*QueryLockerLookupTableByAppAndAssetIdRequest))
+		return srv.(QueryServer).QueryLockerLookupTableByAppAndAssetID(ctx, req.(*QueryLockerLookupTableByAppAndAssetIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2400,52 +2370,52 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_QueryLockerInfo_Handler,
 		},
 		{
-			MethodName: "QueryLockersByProductToAssetID",
-			Handler:    _Query_QueryLockersByProductToAssetID_Handler,
+			MethodName: "QueryLockersByAppToAssetID",
+			Handler:    _Query_QueryLockersByAppToAssetID_Handler,
 		},
 		{
-			MethodName: "QueryLockerInfoByProductID",
-			Handler:    _Query_QueryLockerInfoByProductID_Handler,
+			MethodName: "QueryLockerInfoByAppID",
+			Handler:    _Query_QueryLockerInfoByAppID_Handler,
 		},
 		{
-			MethodName: "QueryTotalDepositByProductAssetID",
-			Handler:    _Query_QueryTotalDepositByProductAssetID_Handler,
+			MethodName: "QueryTotalDepositByAppAndAssetID",
+			Handler:    _Query_QueryTotalDepositByAppAndAssetID_Handler,
 		},
 		{
-			MethodName: "QueryOwnerLockerByProductIDbyOwner",
-			Handler:    _Query_QueryOwnerLockerByProductIDbyOwner_Handler,
+			MethodName: "QueryOwnerLockerByAppIDbyOwner",
+			Handler:    _Query_QueryOwnerLockerByAppIDbyOwner_Handler,
 		},
 		{
-			MethodName: "QueryOwnerLockerOfAllProductByOwner",
-			Handler:    _Query_QueryOwnerLockerOfAllProductByOwner_Handler,
+			MethodName: "QueryOwnerLockerOfAllAppsByOwner",
+			Handler:    _Query_QueryOwnerLockerOfAllAppsByOwner_Handler,
 		},
 		{
-			MethodName: "QueryOwnerTxDetailsLockerOfProductByOwnerByAsset",
-			Handler:    _Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_Handler,
+			MethodName: "QueryOwnerTxDetailsLockerOfAppByOwnerByAsset",
+			Handler:    _Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_Handler,
 		},
 		{
-			MethodName: "QueryOwnerLockerByProductToAssetIDbyOwner",
-			Handler:    _Query_QueryOwnerLockerByProductToAssetIDbyOwner_Handler,
+			MethodName: "QueryOwnerLockerByAppToAssetIDbyOwner",
+			Handler:    _Query_QueryOwnerLockerByAppToAssetIDbyOwner_Handler,
 		},
 		{
-			MethodName: "QueryLockerByProductByOwner",
-			Handler:    _Query_QueryLockerByProductByOwner_Handler,
+			MethodName: "QueryLockerByAppByOwner",
+			Handler:    _Query_QueryLockerByAppByOwner_Handler,
 		},
 		{
-			MethodName: "QueryLockerCountByProductID",
-			Handler:    _Query_QueryLockerCountByProductID_Handler,
+			MethodName: "QueryLockerCountByAppID",
+			Handler:    _Query_QueryLockerCountByAppID_Handler,
 		},
 		{
-			MethodName: "QueryLockerCountByProductToAssetID",
-			Handler:    _Query_QueryLockerCountByProductToAssetID_Handler,
+			MethodName: "QueryLockerCountByAppToAssetID",
+			Handler:    _Query_QueryLockerCountByAppToAssetID_Handler,
 		},
 		{
-			MethodName: "QueryWhiteListedAssetIDsByProductID",
-			Handler:    _Query_QueryWhiteListedAssetIDsByProductID_Handler,
+			MethodName: "QueryWhiteListedAssetIDsByAppID",
+			Handler:    _Query_QueryWhiteListedAssetIDsByAppID_Handler,
 		},
 		{
-			MethodName: "QueryWhiteListedAssetByAllProduct",
-			Handler:    _Query_QueryWhiteListedAssetByAllProduct_Handler,
+			MethodName: "QueryWhiteListedAssetByAllApps",
+			Handler:    _Query_QueryWhiteListedAssetByAllApps_Handler,
 		},
 		{
 			MethodName: "QueryParams",
@@ -2456,8 +2426,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_QueryLockerLookupTableByApp_Handler,
 		},
 		{
-			MethodName: "QueryLockerLookupTableByAppAndAssetId",
-			Handler:    _Query_QueryLockerLookupTableByAppAndAssetId_Handler,
+			MethodName: "QueryLockerLookupTableByAppAndAssetID",
+			Handler:    _Query_QueryLockerLookupTableByAppAndAssetID_Handler,
 		},
 		{
 			MethodName: "QueryLockerTotalRewardsByAssetAppWise",
@@ -2539,7 +2509,7 @@ func (m *QueryLockerInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockersByProductToAssetIDRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockersByAppToAssetIDRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2549,12 +2519,12 @@ func (m *QueryLockersByProductToAssetIDRequest) Marshal() (dAtA []byte, err erro
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockersByProductToAssetIDRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockersByAppToAssetIDRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockersByProductToAssetIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockersByAppToAssetIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2564,15 +2534,15 @@ func (m *QueryLockersByProductToAssetIDRequest) MarshalToSizedBuffer(dAtA []byte
 		i--
 		dAtA[i] = 0x10
 	}
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockersByProductToAssetIDResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockersByAppToAssetIDResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2582,12 +2552,12 @@ func (m *QueryLockersByProductToAssetIDResponse) Marshal() (dAtA []byte, err err
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockersByProductToAssetIDResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockersByAppToAssetIDResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockersByProductToAssetIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockersByAppToAssetIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2604,7 +2574,7 @@ func (m *QueryLockersByProductToAssetIDResponse) MarshalToSizedBuffer(dAtA []byt
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockerInfoByProductIDRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockerInfoByAppIDRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2614,25 +2584,25 @@ func (m *QueryLockerInfoByProductIDRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockerInfoByProductIDRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockerInfoByAppIDRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockerInfoByProductIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockerInfoByAppIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockerInfoByProductIDResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockerInfoByAppIDResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2642,12 +2612,12 @@ func (m *QueryLockerInfoByProductIDResponse) Marshal() (dAtA []byte, err error) 
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockerInfoByProductIDResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockerInfoByAppIDResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockerInfoByProductIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockerInfoByAppIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2664,7 +2634,7 @@ func (m *QueryLockerInfoByProductIDResponse) MarshalToSizedBuffer(dAtA []byte) (
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTotalDepositByProductAssetIDRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryTotalDepositByAppAndAssetIDRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2674,12 +2644,12 @@ func (m *QueryTotalDepositByProductAssetIDRequest) Marshal() (dAtA []byte, err e
 	return dAtA[:n], nil
 }
 
-func (m *QueryTotalDepositByProductAssetIDRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTotalDepositByAppAndAssetIDRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTotalDepositByProductAssetIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTotalDepositByAppAndAssetIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2689,15 +2659,15 @@ func (m *QueryTotalDepositByProductAssetIDRequest) MarshalToSizedBuffer(dAtA []b
 		i--
 		dAtA[i] = 0x10
 	}
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryTotalDepositByProductAssetIDResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryTotalDepositByAppAndAssetIDResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2707,12 +2677,12 @@ func (m *QueryTotalDepositByProductAssetIDResponse) Marshal() (dAtA []byte, err 
 	return dAtA[:n], nil
 }
 
-func (m *QueryTotalDepositByProductAssetIDResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTotalDepositByAppAndAssetIDResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryTotalDepositByProductAssetIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTotalDepositByAppAndAssetIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2725,7 +2695,7 @@ func (m *QueryTotalDepositByProductAssetIDResponse) MarshalToSizedBuffer(dAtA []
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2735,12 +2705,12 @@ func (m *QueryOwnerLockerByProductIDbyOwnerRequest) Marshal() (dAtA []byte, err 
 	return dAtA[:n], nil
 }
 
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2752,15 +2722,15 @@ func (m *QueryOwnerLockerByProductIDbyOwnerRequest) MarshalToSizedBuffer(dAtA []
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2770,12 +2740,12 @@ func (m *QueryOwnerLockerByProductIDbyOwnerResponse) Marshal() (dAtA []byte, err
 	return dAtA[:n], nil
 }
 
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2792,7 +2762,7 @@ func (m *QueryOwnerLockerByProductIDbyOwnerResponse) MarshalToSizedBuffer(dAtA [
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2802,12 +2772,12 @@ func (m *QueryOwnerLockerOfAllProductByOwnerRequest) Marshal() (dAtA []byte, err
 	return dAtA[:n], nil
 }
 
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2822,7 +2792,7 @@ func (m *QueryOwnerLockerOfAllProductByOwnerRequest) MarshalToSizedBuffer(dAtA [
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2832,12 +2802,12 @@ func (m *QueryOwnerLockerOfAllProductByOwnerResponse) Marshal() (dAtA []byte, er
 	return dAtA[:n], nil
 }
 
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2854,7 +2824,7 @@ func (m *QueryOwnerLockerOfAllProductByOwnerResponse) MarshalToSizedBuffer(dAtA 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2864,12 +2834,12 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) Marshal() (dAt
 	return dAtA[:n], nil
 }
 
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2898,15 +2868,15 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) MarshalToSized
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2916,12 +2886,12 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) Marshal() (dA
 	return dAtA[:n], nil
 }
 
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2955,7 +2925,7 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) MarshalToSize
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2965,12 +2935,12 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) Marshal() (dAtA []byt
 	return dAtA[:n], nil
 }
 
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2987,15 +2957,15 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) MarshalToSizedBuffer(
 		i--
 		dAtA[i] = 0x10
 	}
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3005,12 +2975,12 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) Marshal() (dAtA []by
 	return dAtA[:n], nil
 }
 
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3032,7 +3002,7 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) MarshalToSizedBuffer
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockerByProductByOwnerRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockerByAppByOwnerRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3042,12 +3012,12 @@ func (m *QueryLockerByProductByOwnerRequest) Marshal() (dAtA []byte, err error) 
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockerByProductByOwnerRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockerByAppByOwnerRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockerByProductByOwnerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockerByAppByOwnerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3059,15 +3029,15 @@ func (m *QueryLockerByProductByOwnerRequest) MarshalToSizedBuffer(dAtA []byte) (
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockerByProductByOwnerResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockerByAppByOwnerResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3077,12 +3047,12 @@ func (m *QueryLockerByProductByOwnerResponse) Marshal() (dAtA []byte, err error)
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockerByProductByOwnerResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockerByAppByOwnerResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockerByProductByOwnerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockerByAppByOwnerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3104,7 +3074,7 @@ func (m *QueryLockerByProductByOwnerResponse) MarshalToSizedBuffer(dAtA []byte) 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockerCountByProductIDRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockerCountByAppIDRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3114,25 +3084,25 @@ func (m *QueryLockerCountByProductIDRequest) Marshal() (dAtA []byte, err error) 
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockerCountByProductIDRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockerCountByAppIDRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockerCountByProductIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockerCountByAppIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockerCountByProductIDResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockerCountByAppIDResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3142,12 +3112,12 @@ func (m *QueryLockerCountByProductIDResponse) Marshal() (dAtA []byte, err error)
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockerCountByProductIDResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockerCountByAppIDResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockerCountByProductIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockerCountByAppIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3160,7 +3130,7 @@ func (m *QueryLockerCountByProductIDResponse) MarshalToSizedBuffer(dAtA []byte) 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockerCountByProductToAssetIDRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockerCountByAppToAssetIDRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3170,12 +3140,12 @@ func (m *QueryLockerCountByProductToAssetIDRequest) Marshal() (dAtA []byte, err 
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockerCountByProductToAssetIDRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockerCountByAppToAssetIDRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockerCountByProductToAssetIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockerCountByAppToAssetIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3185,15 +3155,15 @@ func (m *QueryLockerCountByProductToAssetIDRequest) MarshalToSizedBuffer(dAtA []
 		i--
 		dAtA[i] = 0x10
 	}
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockerCountByProductToAssetIDResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockerCountByAppToAssetIDResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3203,12 +3173,12 @@ func (m *QueryLockerCountByProductToAssetIDResponse) Marshal() (dAtA []byte, err
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockerCountByProductToAssetIDResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockerCountByAppToAssetIDResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockerCountByProductToAssetIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockerCountByAppToAssetIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3221,7 +3191,7 @@ func (m *QueryLockerCountByProductToAssetIDResponse) MarshalToSizedBuffer(dAtA [
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3231,25 +3201,25 @@ func (m *QueryWhiteListedAssetIDsByProductIDRequest) Marshal() (dAtA []byte, err
 	return dAtA[:n], nil
 }
 
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3259,12 +3229,12 @@ func (m *QueryWhiteListedAssetIDsByProductIDResponse) Marshal() (dAtA []byte, er
 	return dAtA[:n], nil
 }
 
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3290,7 +3260,7 @@ func (m *QueryWhiteListedAssetIDsByProductIDResponse) MarshalToSizedBuffer(dAtA 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryWhiteListedAssetByAllProductRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryWhiteListedAssetByAllAppsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3300,12 +3270,12 @@ func (m *QueryWhiteListedAssetByAllProductRequest) Marshal() (dAtA []byte, err e
 	return dAtA[:n], nil
 }
 
-func (m *QueryWhiteListedAssetByAllProductRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryWhiteListedAssetByAllAppsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryWhiteListedAssetByAllProductRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryWhiteListedAssetByAllAppsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3313,7 +3283,7 @@ func (m *QueryWhiteListedAssetByAllProductRequest) MarshalToSizedBuffer(dAtA []b
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryWhiteListedAssetByAllProductResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryWhiteListedAssetByAllAppsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3323,12 +3293,12 @@ func (m *QueryWhiteListedAssetByAllProductResponse) Marshal() (dAtA []byte, err 
 	return dAtA[:n], nil
 }
 
-func (m *QueryWhiteListedAssetByAllProductResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryWhiteListedAssetByAllAppsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryWhiteListedAssetByAllProductResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryWhiteListedAssetByAllAppsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3350,7 +3320,7 @@ func (m *QueryWhiteListedAssetByAllProductResponse) MarshalToSizedBuffer(dAtA []
 	return len(dAtA) - i, nil
 }
 
-func (m *ProductToAllAsset) Marshal() (dAtA []byte, err error) {
+func (m *AppToAllAsset) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3360,12 +3330,12 @@ func (m *ProductToAllAsset) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ProductToAllAsset) MarshalTo(dAtA []byte) (int, error) {
+func (m *AppToAllAsset) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ProductToAllAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AppToAllAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3384,8 +3354,8 @@ func (m *ProductToAllAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if m.ProductId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ProductId))
+	if m.AppId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -3513,7 +3483,7 @@ func (m *QueryLockerLookupTableByAppResponse) MarshalToSizedBuffer(dAtA []byte) 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3523,12 +3493,12 @@ func (m *QueryLockerLookupTableByAppAndAssetIdRequest) Marshal() (dAtA []byte, e
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3546,7 +3516,7 @@ func (m *QueryLockerLookupTableByAppAndAssetIdRequest) MarshalToSizedBuffer(dAtA
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3556,12 +3526,12 @@ func (m *QueryLockerLookupTableByAppAndAssetIdResponse) Marshal() (dAtA []byte, 
 	return dAtA[:n], nil
 }
 
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3831,14 +3801,14 @@ func (m *QueryLockerInfoResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryLockersByProductToAssetIDRequest) Size() (n int) {
+func (m *QueryLockersByAppToAssetIDRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	if m.AssetId != 0 {
 		n += 1 + sovQuery(uint64(m.AssetId))
@@ -3846,7 +3816,7 @@ func (m *QueryLockersByProductToAssetIDRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryLockersByProductToAssetIDResponse) Size() (n int) {
+func (m *QueryLockersByAppToAssetIDResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3861,19 +3831,19 @@ func (m *QueryLockersByProductToAssetIDResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryLockerInfoByProductIDRequest) Size() (n int) {
+func (m *QueryLockerInfoByAppIDRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	return n
 }
 
-func (m *QueryLockerInfoByProductIDResponse) Size() (n int) {
+func (m *QueryLockerInfoByAppIDResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3888,14 +3858,14 @@ func (m *QueryLockerInfoByProductIDResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryTotalDepositByProductAssetIDRequest) Size() (n int) {
+func (m *QueryTotalDepositByAppAndAssetIDRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	if m.AssetId != 0 {
 		n += 1 + sovQuery(uint64(m.AssetId))
@@ -3903,7 +3873,7 @@ func (m *QueryTotalDepositByProductAssetIDRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryTotalDepositByProductAssetIDResponse) Size() (n int) {
+func (m *QueryTotalDepositByAppAndAssetIDResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3915,14 +3885,14 @@ func (m *QueryTotalDepositByProductAssetIDResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) Size() (n int) {
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	l = len(m.Owner)
 	if l > 0 {
@@ -3931,7 +3901,7 @@ func (m *QueryOwnerLockerByProductIDbyOwnerRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) Size() (n int) {
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3946,7 +3916,7 @@ func (m *QueryOwnerLockerByProductIDbyOwnerResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) Size() (n int) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3959,7 +3929,7 @@ func (m *QueryOwnerLockerOfAllProductByOwnerRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) Size() (n int) {
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3974,14 +3944,14 @@ func (m *QueryOwnerLockerOfAllProductByOwnerResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) Size() (n int) {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	l = len(m.Owner)
 	if l > 0 {
@@ -3997,7 +3967,7 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) Size() (n int)
 	return n
 }
 
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) Size() (n int) {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4016,14 +3986,14 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) Size() (n int
 	return n
 }
 
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) Size() (n int) {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	if m.AssetId != 0 {
 		n += 1 + sovQuery(uint64(m.AssetId))
@@ -4035,7 +4005,7 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) Size() (n int) {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4050,14 +4020,14 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryLockerByProductByOwnerRequest) Size() (n int) {
+func (m *QueryLockerByAppByOwnerRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	l = len(m.Owner)
 	if l > 0 {
@@ -4066,7 +4036,7 @@ func (m *QueryLockerByProductByOwnerRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryLockerByProductByOwnerResponse) Size() (n int) {
+func (m *QueryLockerByAppByOwnerResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4081,19 +4051,19 @@ func (m *QueryLockerByProductByOwnerResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryLockerCountByProductIDRequest) Size() (n int) {
+func (m *QueryLockerCountByAppIDRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	return n
 }
 
-func (m *QueryLockerCountByProductIDResponse) Size() (n int) {
+func (m *QueryLockerCountByAppIDResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4105,14 +4075,14 @@ func (m *QueryLockerCountByProductIDResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryLockerCountByProductToAssetIDRequest) Size() (n int) {
+func (m *QueryLockerCountByAppToAssetIDRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	if m.AssetId != 0 {
 		n += 1 + sovQuery(uint64(m.AssetId))
@@ -4120,7 +4090,7 @@ func (m *QueryLockerCountByProductToAssetIDRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryLockerCountByProductToAssetIDResponse) Size() (n int) {
+func (m *QueryLockerCountByAppToAssetIDResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4132,19 +4102,19 @@ func (m *QueryLockerCountByProductToAssetIDResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) Size() (n int) {
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	return n
 }
 
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) Size() (n int) {
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4160,7 +4130,7 @@ func (m *QueryWhiteListedAssetIDsByProductIDResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryWhiteListedAssetByAllProductRequest) Size() (n int) {
+func (m *QueryWhiteListedAssetByAllAppsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4169,7 +4139,7 @@ func (m *QueryWhiteListedAssetByAllProductRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryWhiteListedAssetByAllProductResponse) Size() (n int) {
+func (m *QueryWhiteListedAssetByAllAppsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4184,14 +4154,14 @@ func (m *QueryWhiteListedAssetByAllProductResponse) Size() (n int) {
 	return n
 }
 
-func (m *ProductToAllAsset) Size() (n int) {
+func (m *AppToAllAsset) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ProductId != 0 {
-		n += 1 + sovQuery(uint64(m.ProductId))
+	if m.AppId != 0 {
+		n += 1 + sovQuery(uint64(m.AppId))
 	}
 	if len(m.Assets) > 0 {
 		for _, e := range m.Assets {
@@ -4249,7 +4219,7 @@ func (m *QueryLockerLookupTableByAppResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) Size() (n int) {
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4264,7 +4234,7 @@ func (m *QueryLockerLookupTableByAppAndAssetIdRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) Size() (n int) {
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4537,7 +4507,7 @@ func (m *QueryLockerInfoResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryLockersByProductToAssetIDRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryLockersByAppToAssetIDRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4560,17 +4530,17 @@ func (m *QueryLockersByProductToAssetIDRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockersByProductToAssetIDRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockersByAppToAssetIDRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockersByProductToAssetIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockersByAppToAssetIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -4580,7 +4550,7 @@ func (m *QueryLockersByProductToAssetIDRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4625,7 +4595,7 @@ func (m *QueryLockersByProductToAssetIDRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryLockersByProductToAssetIDResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryLockersByAppToAssetIDResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4648,10 +4618,10 @@ func (m *QueryLockersByProductToAssetIDResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockersByProductToAssetIDResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockersByAppToAssetIDResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockersByProductToAssetIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockersByAppToAssetIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -4707,7 +4677,7 @@ func (m *QueryLockersByProductToAssetIDResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryLockerInfoByProductIDRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryLockerInfoByAppIDRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4730,17 +4700,17 @@ func (m *QueryLockerInfoByProductIDRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockerInfoByProductIDRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockerInfoByAppIDRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockerInfoByProductIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockerInfoByAppIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -4750,7 +4720,7 @@ func (m *QueryLockerInfoByProductIDRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4776,7 +4746,7 @@ func (m *QueryLockerInfoByProductIDRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryLockerInfoByProductIDResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryLockerInfoByAppIDResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4799,10 +4769,10 @@ func (m *QueryLockerInfoByProductIDResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockerInfoByProductIDResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockerInfoByAppIDResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockerInfoByProductIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockerInfoByAppIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -4858,7 +4828,7 @@ func (m *QueryLockerInfoByProductIDResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryTotalDepositByProductAssetIDRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryTotalDepositByAppAndAssetIDRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4881,17 +4851,17 @@ func (m *QueryTotalDepositByProductAssetIDRequest) Unmarshal(dAtA []byte) error 
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTotalDepositByProductAssetIDRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTotalDepositByAppAndAssetIDRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTotalDepositByProductAssetIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTotalDepositByAppAndAssetIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -4901,7 +4871,7 @@ func (m *QueryTotalDepositByProductAssetIDRequest) Unmarshal(dAtA []byte) error 
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4946,7 +4916,7 @@ func (m *QueryTotalDepositByProductAssetIDRequest) Unmarshal(dAtA []byte) error 
 	}
 	return nil
 }
-func (m *QueryTotalDepositByProductAssetIDResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryTotalDepositByAppAndAssetIDResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4969,10 +4939,10 @@ func (m *QueryTotalDepositByProductAssetIDResponse) Unmarshal(dAtA []byte) error
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryTotalDepositByProductAssetIDResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTotalDepositByAppAndAssetIDResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryTotalDepositByProductAssetIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTotalDepositByAppAndAssetIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5015,7 +4985,7 @@ func (m *QueryTotalDepositByProductAssetIDResponse) Unmarshal(dAtA []byte) error
 	}
 	return nil
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryOwnerLockerByAppIDbyOwnerRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5038,17 +5008,17 @@ func (m *QueryOwnerLockerByProductIDbyOwnerRequest) Unmarshal(dAtA []byte) error
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOwnerLockerByProductIDbyOwnerRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOwnerLockerByAppIDbyOwnerRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOwnerLockerByProductIDbyOwnerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOwnerLockerByAppIDbyOwnerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -5058,7 +5028,7 @@ func (m *QueryOwnerLockerByProductIDbyOwnerRequest) Unmarshal(dAtA []byte) error
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -5116,7 +5086,7 @@ func (m *QueryOwnerLockerByProductIDbyOwnerRequest) Unmarshal(dAtA []byte) error
 	}
 	return nil
 }
-func (m *QueryOwnerLockerByProductIDbyOwnerResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryOwnerLockerByAppIDbyOwnerResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5139,10 +5109,10 @@ func (m *QueryOwnerLockerByProductIDbyOwnerResponse) Unmarshal(dAtA []byte) erro
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOwnerLockerByProductIDbyOwnerResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOwnerLockerByAppIDbyOwnerResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOwnerLockerByProductIDbyOwnerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOwnerLockerByAppIDbyOwnerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5198,7 +5168,7 @@ func (m *QueryOwnerLockerByProductIDbyOwnerResponse) Unmarshal(dAtA []byte) erro
 	}
 	return nil
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryOwnerLockerOfAllAppsByOwnerRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5221,10 +5191,10 @@ func (m *QueryOwnerLockerOfAllProductByOwnerRequest) Unmarshal(dAtA []byte) erro
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOwnerLockerOfAllProductByOwnerRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOwnerLockerOfAllAppsByOwnerRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOwnerLockerOfAllProductByOwnerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOwnerLockerOfAllAppsByOwnerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 3:
@@ -5280,7 +5250,7 @@ func (m *QueryOwnerLockerOfAllProductByOwnerRequest) Unmarshal(dAtA []byte) erro
 	}
 	return nil
 }
-func (m *QueryOwnerLockerOfAllProductByOwnerResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryOwnerLockerOfAllAppsByOwnerResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5303,10 +5273,10 @@ func (m *QueryOwnerLockerOfAllProductByOwnerResponse) Unmarshal(dAtA []byte) err
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOwnerLockerOfAllProductByOwnerResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOwnerLockerOfAllAppsByOwnerResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOwnerLockerOfAllProductByOwnerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOwnerLockerOfAllAppsByOwnerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5362,7 +5332,7 @@ func (m *QueryOwnerLockerOfAllProductByOwnerResponse) Unmarshal(dAtA []byte) err
 	}
 	return nil
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5385,17 +5355,17 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) Unmarshal(dAtA
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -5405,7 +5375,7 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) Unmarshal(dAtA
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -5518,7 +5488,7 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) Unmarshal(dAtA
 	}
 	return nil
 }
-func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5541,10 +5511,10 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) Unmarshal(dAt
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5638,7 +5608,7 @@ func (m *QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) Unmarshal(dAt
 	}
 	return nil
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5661,17 +5631,17 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) Unmarshal(dAtA []byte
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOwnerLockerByProductToAssetIDbyOwnerRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOwnerLockerByAppToAssetIDbyOwnerRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOwnerLockerByProductToAssetIDbyOwnerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOwnerLockerByAppToAssetIDbyOwnerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -5681,7 +5651,7 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) Unmarshal(dAtA []byte
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -5758,7 +5728,7 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerRequest) Unmarshal(dAtA []byte
 	}
 	return nil
 }
-func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryOwnerLockerByAppToAssetIDbyOwnerResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5781,10 +5751,10 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) Unmarshal(dAtA []byt
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryOwnerLockerByProductToAssetIDbyOwnerResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOwnerLockerByAppToAssetIDbyOwnerResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryOwnerLockerByProductToAssetIDbyOwnerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOwnerLockerByAppToAssetIDbyOwnerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5842,7 +5812,7 @@ func (m *QueryOwnerLockerByProductToAssetIDbyOwnerResponse) Unmarshal(dAtA []byt
 	}
 	return nil
 }
-func (m *QueryLockerByProductByOwnerRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryLockerByAppByOwnerRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5865,17 +5835,17 @@ func (m *QueryLockerByProductByOwnerRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockerByProductByOwnerRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockerByAppByOwnerRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockerByProductByOwnerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockerByAppByOwnerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -5885,7 +5855,7 @@ func (m *QueryLockerByProductByOwnerRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -5943,7 +5913,7 @@ func (m *QueryLockerByProductByOwnerRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryLockerByProductByOwnerResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryLockerByAppByOwnerResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5966,10 +5936,10 @@ func (m *QueryLockerByProductByOwnerResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockerByProductByOwnerResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockerByAppByOwnerResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockerByProductByOwnerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockerByAppByOwnerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -6027,7 +5997,7 @@ func (m *QueryLockerByProductByOwnerResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryLockerCountByProductIDRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryLockerCountByAppIDRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6050,17 +6020,17 @@ func (m *QueryLockerCountByProductIDRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockerCountByProductIDRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockerCountByAppIDRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockerCountByProductIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockerCountByAppIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -6070,7 +6040,7 @@ func (m *QueryLockerCountByProductIDRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -6096,7 +6066,7 @@ func (m *QueryLockerCountByProductIDRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryLockerCountByProductIDResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryLockerCountByAppIDResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6119,10 +6089,10 @@ func (m *QueryLockerCountByProductIDResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockerCountByProductIDResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockerCountByAppIDResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockerCountByProductIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockerCountByAppIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -6165,7 +6135,7 @@ func (m *QueryLockerCountByProductIDResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryLockerCountByProductToAssetIDRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryLockerCountByAppToAssetIDRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6188,17 +6158,17 @@ func (m *QueryLockerCountByProductToAssetIDRequest) Unmarshal(dAtA []byte) error
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockerCountByProductToAssetIDRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockerCountByAppToAssetIDRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockerCountByProductToAssetIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockerCountByAppToAssetIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -6208,7 +6178,7 @@ func (m *QueryLockerCountByProductToAssetIDRequest) Unmarshal(dAtA []byte) error
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -6253,7 +6223,7 @@ func (m *QueryLockerCountByProductToAssetIDRequest) Unmarshal(dAtA []byte) error
 	}
 	return nil
 }
-func (m *QueryLockerCountByProductToAssetIDResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryLockerCountByAppToAssetIDResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6276,10 +6246,10 @@ func (m *QueryLockerCountByProductToAssetIDResponse) Unmarshal(dAtA []byte) erro
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockerCountByProductToAssetIDResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockerCountByAppToAssetIDResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockerCountByProductToAssetIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockerCountByAppToAssetIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -6322,7 +6292,7 @@ func (m *QueryLockerCountByProductToAssetIDResponse) Unmarshal(dAtA []byte) erro
 	}
 	return nil
 }
-func (m *QueryWhiteListedAssetIDsByProductIDRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryWhiteListedAssetIDsByAppIDRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6345,17 +6315,17 @@ func (m *QueryWhiteListedAssetIDsByProductIDRequest) Unmarshal(dAtA []byte) erro
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryWhiteListedAssetIDsByProductIDRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryWhiteListedAssetIDsByAppIDRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryWhiteListedAssetIDsByProductIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryWhiteListedAssetIDsByAppIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -6365,7 +6335,7 @@ func (m *QueryWhiteListedAssetIDsByProductIDRequest) Unmarshal(dAtA []byte) erro
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -6391,7 +6361,7 @@ func (m *QueryWhiteListedAssetIDsByProductIDRequest) Unmarshal(dAtA []byte) erro
 	}
 	return nil
 }
-func (m *QueryWhiteListedAssetIDsByProductIDResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryWhiteListedAssetIDsByAppIDResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6414,10 +6384,10 @@ func (m *QueryWhiteListedAssetIDsByProductIDResponse) Unmarshal(dAtA []byte) err
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryWhiteListedAssetIDsByProductIDResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryWhiteListedAssetIDsByAppIDResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryWhiteListedAssetIDsByProductIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryWhiteListedAssetIDsByAppIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -6517,7 +6487,7 @@ func (m *QueryWhiteListedAssetIDsByProductIDResponse) Unmarshal(dAtA []byte) err
 	}
 	return nil
 }
-func (m *QueryWhiteListedAssetByAllProductRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryWhiteListedAssetByAllAppsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6540,10 +6510,10 @@ func (m *QueryWhiteListedAssetByAllProductRequest) Unmarshal(dAtA []byte) error 
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryWhiteListedAssetByAllProductRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryWhiteListedAssetByAllAppsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryWhiteListedAssetByAllProductRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryWhiteListedAssetByAllAppsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -6567,7 +6537,7 @@ func (m *QueryWhiteListedAssetByAllProductRequest) Unmarshal(dAtA []byte) error 
 	}
 	return nil
 }
-func (m *QueryWhiteListedAssetByAllProductResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryWhiteListedAssetByAllAppsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6590,10 +6560,10 @@ func (m *QueryWhiteListedAssetByAllProductResponse) Unmarshal(dAtA []byte) error
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryWhiteListedAssetByAllProductResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryWhiteListedAssetByAllAppsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryWhiteListedAssetByAllProductResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryWhiteListedAssetByAllAppsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -6625,7 +6595,7 @@ func (m *QueryWhiteListedAssetByAllProductResponse) Unmarshal(dAtA []byte) error
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ProductToAllAsset = append(m.ProductToAllAsset, ProductToAllAsset{})
+			m.ProductToAllAsset = append(m.ProductToAllAsset, AppToAllAsset{})
 			if err := m.ProductToAllAsset[len(m.ProductToAllAsset)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -6651,7 +6621,7 @@ func (m *QueryWhiteListedAssetByAllProductResponse) Unmarshal(dAtA []byte) error
 	}
 	return nil
 }
-func (m *ProductToAllAsset) Unmarshal(dAtA []byte) error {
+func (m *AppToAllAsset) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6674,17 +6644,17 @@ func (m *ProductToAllAsset) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ProductToAllAsset: wiretype end group for non-group")
+			return fmt.Errorf("proto: AppToAllAsset: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ProductToAllAsset: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AppToAllAsset: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProductId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.ProductId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -6694,7 +6664,7 @@ func (m *ProductToAllAsset) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProductId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -7040,7 +7010,7 @@ func (m *QueryLockerLookupTableByAppResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryLockerLookupTableByAppAndAssetIDRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -7063,10 +7033,10 @@ func (m *QueryLockerLookupTableByAppAndAssetIdRequest) Unmarshal(dAtA []byte) er
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockerLookupTableByAppAndAssetIdRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockerLookupTableByAppAndAssetIDRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockerLookupTableByAppAndAssetIdRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockerLookupTableByAppAndAssetIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -7128,7 +7098,7 @@ func (m *QueryLockerLookupTableByAppAndAssetIdRequest) Unmarshal(dAtA []byte) er
 	}
 	return nil
 }
-func (m *QueryLockerLookupTableByAppAndAssetIdResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryLockerLookupTableByAppAndAssetIDResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -7151,10 +7121,10 @@ func (m *QueryLockerLookupTableByAppAndAssetIdResponse) Unmarshal(dAtA []byte) e
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryLockerLookupTableByAppAndAssetIdResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryLockerLookupTableByAppAndAssetIDResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryLockerLookupTableByAppAndAssetIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryLockerLookupTableByAppAndAssetIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

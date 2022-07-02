@@ -19,15 +19,14 @@ func GetQueryCmd() *cobra.Command {
 		queryAssets(),
 		queryPair(),
 		queryPairs(),
-		queryParams(),
-		queryAppMappings(),
+		queryApp(),
 		queryExtendedPairVault(),
 		queryAllExtendedPairVaults(),
-		queryAppsMappings(),
+		queryApps(),
 		queryAllExtendedPairVaultsByApp(),
-		queryAllExtendedPairStableVaultsIdByApp(),
+		queryAllExtendedPairStableVaultsIDByApp(),
 		queryGovTokenByApp(),
-		queryAllExtendedPairStableVaultsDataByApp(),
+		queryAllExtendedPairStableVaultsByApp(),
 	)
 
 	return cmd

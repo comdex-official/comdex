@@ -304,7 +304,7 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appID, auctionMappingID, au
 		return err
 	}
 
-	biddingID, err := k.CreateNewDebtBid(ctx, appID, auctionMappingID, auctionID, bidder, bid, expectedUserToken)
+	biddingID, err := k.CreateNewDebtBid(ctx, appID, auctionMappingID, auctionID, bidder.String(), bid, expectedUserToken)
 	if err != nil {
 		return err
 	}
@@ -344,12 +344,12 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appID, auctionMappingID, au
 	return nil
 }
 
-func (k Keeper) CreateNewDebtBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder sdk.AccAddress, bid sdk.Coin, expectedUserToken sdk.Coin) (biddingID uint64, err error) {
+func (k Keeper) CreateNewDebtBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder string, bid sdk.Coin, expectedUserToken sdk.Coin) (biddingID uint64, err error) {
 	bidding := auctiontypes.DebtBiddings{
 		BiddingId:        k.GetUserBiddingID(ctx) + 1,
 		AuctionId:        auctionID,
 		AuctionStatus:    auctiontypes.ActiveAuctionStatus,
-		Bidder:           bidder.String(),
+		Bidder:           bidder,
 		Bid:              bid,
 		BiddingTimestamp: ctx.BlockTime(),
 		BiddingStatus:    auctiontypes.PlacedBiddingStatus,

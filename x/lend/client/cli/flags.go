@@ -102,7 +102,7 @@ type addAssetRatesStatsInputs struct {
 	LiquidationThreshold string `json:"liquidation_threshold"`
 	LiquidationPenalty   string `json:"liquidation_penalty"`
 	ReserveFactor        string `json:"reserve_factor"`
-	CAssetId             string `json:"c_asset_id"`
+	CAssetID             string `json:"c_asset_id"`
 	Title                string
 	Description          string
 	Deposit              string

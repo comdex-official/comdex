@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	"github.com/comdex-official/comdex/x/vault/client/cli"
@@ -61,7 +62,7 @@ func (s *VaultIntegrationTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins)
 }
 
 func (s *VaultIntegrationTestSuite) CreateNewApp(appName string) uint64 {
-	err := s.app.AssetKeeper.AddAppMappingRecords(s.ctx, assettypes.AppMapping{
+	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
 		ShortName:        appName,
 		MinGovDeposit:    sdk.NewInt(0),
@@ -155,16 +156,16 @@ func (s *VaultIntegrationTestSuite) CreateNewPair(assetIn, assetOut uint64) uint
 }
 
 func (s *VaultIntegrationTestSuite) CreateNewExtendedVaultPair(pairName string, appMappingID, pairID uint64) uint64 {
-	err := s.app.AssetKeeper.AddExtendedPairsVaultRecords(s.ctx, assettypes.ExtendedPairVault{
-		AppMappingId:        appMappingID,
-		PairId:              pairID,
+	err := s.app.AssetKeeper.WasmAddExtendedPairsVaultRecords(s.ctx, &bindings.MsgAddExtendedPairsVault{
+		AppID:               appMappingID,
+		PairID:              pairID,
 		StabilityFee:        sdk.NewDecWithPrec(2, 2), // 0.02
 		ClosingFee:          sdk.NewDec(0),
 		LiquidationPenalty:  sdk.NewDecWithPrec(15, 2), // 0.15
 		DrawDownFee:         sdk.NewDecWithPrec(1, 2),  // 0.01
 		IsVaultActive:       true,
-		DebtCeiling:         sdk.NewInt(1000000000000000000),
-		DebtFloor:           sdk.NewInt(100000000),
+		DebtCeiling:         1000000000000000000,
+		DebtFloor:           100000000,
 		IsStableMintVault:   false,
 		MinCr:               sdk.NewDecWithPrec(23, 1), // 2.3
 		PairName:            pairName,
@@ -179,7 +180,7 @@ func (s *VaultIntegrationTestSuite) CreateNewExtendedVaultPair(pairName string, 
 
 	var extendedVaultPairID uint64
 	for _, extendedVaultPair := range extendedVaultPairs {
-		if extendedVaultPair.PairName == pairName && extendedVaultPair.AppMappingId == appMappingID {
+		if extendedVaultPair.PairName == pairName && extendedVaultPair.AppId == appMappingID {
 			extendedVaultPairID = extendedVaultPair.Id
 			break
 		}

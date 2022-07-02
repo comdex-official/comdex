@@ -52,7 +52,7 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	types.RegisterLegacyAminoCodec(cdc)
 }
 
-// RegisterInterfaces registers the module's interface types
+// RegisterInterfaces registers the module's interface types.
 func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 	types.RegisterInterfaces(reg)
 }
@@ -139,7 +139,7 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(configurator module.Configurator) {
 	types.RegisterMsgServer(configurator.MsgServer(), keeper.NewMsgServiceServer(am.keeper))
-	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServiceServer(am.keeper))
+	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServer(am.keeper))
 }
 
 // RegisterInvariants registers the capability module's invariants.
@@ -168,7 +168,7 @@ func (AppModule) ConsensusVersion() uint64 { return 2 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
 func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
-	BeginBlocker(ctx, req, am.keeper)
+	BeginBlocker(ctx, am.keeper)
 }
 
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It

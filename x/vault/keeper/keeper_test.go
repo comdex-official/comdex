@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"testing"
 
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -24,7 +25,7 @@ type KeeperTestSuite struct {
 	app       *chain.App
 	ctx       sdk.Context
 	keeper    keeper.Keeper
-	querier   keeper.Querier
+	querier   keeper.QueryServer
 	msgServer types.MsgServer
 }
 
@@ -36,7 +37,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
 	s.keeper = s.app.VaultKeeper
-	s.querier = keeper.Querier{Keeper: s.keeper}
+	s.querier = keeper.QueryServer{Keeper: s.keeper}
 	s.msgServer = keeper.NewMsgServer(s.keeper)
 }
 
@@ -75,7 +76,7 @@ func newInt(i int64) sdk.Int {
 }
 
 func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
-	err := s.app.AssetKeeper.AddAppMappingRecords(s.ctx, assettypes.AppMapping{
+	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
 		ShortName:        appName,
 		MinGovDeposit:    sdk.NewInt(0),
@@ -173,16 +174,16 @@ func (s *KeeperTestSuite) CreateNewExtendedVaultPair(
 	appMappingID, pairID uint64,
 	isStableMintVault, isVaultActive bool,
 ) uint64 {
-	err := s.app.AssetKeeper.AddExtendedPairsVaultRecords(s.ctx, assettypes.ExtendedPairVault{
-		AppMappingId:        appMappingID,
-		PairId:              pairID,
+	err := s.app.AssetKeeper.WasmAddExtendedPairsVaultRecords(s.ctx, &bindings.MsgAddExtendedPairsVault{
+		AppID:               appMappingID,
+		PairID:              pairID,
 		StabilityFee:        sdk.NewDecWithPrec(2, 2), // 0.02
 		ClosingFee:          sdk.NewDec(0),
 		LiquidationPenalty:  sdk.NewDecWithPrec(15, 2), // 0.15
 		DrawDownFee:         sdk.NewDecWithPrec(1, 2),  // 0.01
 		IsVaultActive:       isVaultActive,
-		DebtCeiling:         sdk.NewInt(1000000000000000000),
-		DebtFloor:           sdk.NewInt(100000000),
+		DebtCeiling:         1000000000000000000,
+		DebtFloor:           100000000,
 		IsStableMintVault:   isStableMintVault,
 		MinCr:               sdk.NewDecWithPrec(23, 1), // 2.3
 		PairName:            pairName,
@@ -197,7 +198,7 @@ func (s *KeeperTestSuite) CreateNewExtendedVaultPair(
 
 	var extendedVaultPairID uint64
 	for _, extendedVaultPair := range extendedVaultPairs {
-		if extendedVaultPair.PairName == pairName && extendedVaultPair.AppMappingId == appMappingID {
+		if extendedVaultPair.PairName == pairName && extendedVaultPair.AppId == appMappingID {
 			extendedVaultPairID = extendedVaultPair.Id
 			break
 		}

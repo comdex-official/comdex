@@ -12,19 +12,27 @@ import (
 
 	chain "github.com/comdex-official/comdex/app"
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	lockerKeeper "github.com/comdex-official/comdex/x/locker/keeper"
-	lockerTypes "github.com/comdex-official/comdex/x/locker/types"
+	"github.com/comdex-official/comdex/x/liquidation/keeper"
+	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
+	"github.com/comdex-official/comdex/x/liquidation/types"
+	marketKeeper "github.com/comdex-official/comdex/x/market/keeper"
+	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
 type KeeperTestSuite struct {
 	suite.Suite
 
-	app          *chain.App
-	ctx          sdk.Context
-	assetKeeper  assetKeeper.Keeper
-	lockerKeeper lockerKeeper.Keeper
-	querier      lockerKeeper.QueryServer
-	msgServer    lockerTypes.MsgServer
+	app               *chain.App
+	ctx               sdk.Context
+	vaultKeeper       vaultKeeper.Keeper
+	assetKeeper       assetKeeper.Keeper
+	liquidationKeeper liquidationKeeper.Keeper
+	marketKeeper      marketKeeper.Keeper
+	querier           liquidationKeeper.QueryServer
+	vaultQuerier      vaultKeeper.QueryServer
+	msgServer         types.MsgServer
+	vaultMsgServer    vaultTypes.MsgServer
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -34,10 +42,14 @@ func TestKeeperTestSuite(t *testing.T) {
 func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
-	s.lockerKeeper = s.app.LockerKeeper
+	s.vaultKeeper = s.app.VaultKeeper
+	s.liquidationKeeper = s.app.LiquidationKeeper
 	s.assetKeeper = s.app.AssetKeeper
-	s.querier = lockerKeeper.QueryServer{Keeper: s.lockerKeeper}
-	s.msgServer = lockerKeeper.NewMsgServer(s.lockerKeeper)
+	s.querier = keeper.QueryServer{Keeper: s.liquidationKeeper}
+	s.msgServer = keeper.NewMsgServer(s.liquidationKeeper)
+	s.vaultMsgServer = vaultKeeper.NewMsgServer(s.vaultKeeper)
+	s.vaultQuerier = vaultKeeper.QueryServer{Keeper: s.vaultKeeper}
+	s.marketKeeper = s.app.MarketKeeper
 }
 
 //
@@ -68,17 +80,18 @@ func (s *KeeperTestSuite) SetupTest() {
 //	return addr
 //}
 
-func (s *KeeperTestSuite) fundAddr(addr string, amt sdk.Coin) {
+func (s *KeeperTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coin) {
+	amt1 := sdk.NewCoins(amt)
 	s.T().Helper()
-	err := s.app.BankKeeper.MintCoins(s.ctx, lockerTypes.ModuleName, sdk.NewCoins(amt))
+	err := s.app.BankKeeper.MintCoins(s.ctx, types.ModuleName, amt1)
 	s.Require().NoError(err)
-	addr1, err := sdk.AccAddressFromBech32(addr)
-	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, lockerTypes.ModuleName, addr1, sdk.NewCoins(amt))
+	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, types.ModuleName, addr, amt1)
 	s.Require().NoError(err)
 }
 
 func (s *KeeperTestSuite) advanceseconds(dur int64) {
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Second * time.Duration(dur)))
+
 }
 
 // ParseCoins parses and returns sdk.Coins.

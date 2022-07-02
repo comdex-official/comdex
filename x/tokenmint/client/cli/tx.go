@@ -7,9 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	// "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/comdex-official/comdex/x/tokenmint/types"
+	"github.com/cosmos/cosmos-sdk/client"
 )
 
 // GetTxCmd returns the transaction commands for this module.
@@ -50,7 +49,7 @@ func txMint() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			msg := types.NewMsgMintNewTokensRequest(ctx.GetFromAddress(), appID.Uint64(), assetID.Uint64())
+			msg := types.NewMsgMintNewTokensRequest(ctx.GetFromAddress().String(), appID.Uint64(), assetID.Uint64())
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},

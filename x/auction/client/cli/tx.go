@@ -43,7 +43,7 @@ func txPlaceSurplusBid() *cobra.Command {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			msg := types.NewMsgPlaceSurplusBid(clientCtx.GetFromAddress(), id, amt, appID, auctionMappingID)
+			msg := types.NewMsgPlaceSurplusBid(clientCtx.GetFromAddress().String(), id, amt, appID, auctionMappingID)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -91,7 +91,7 @@ func txPlaceDebtBid() *cobra.Command {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			msg := types.NewMsgPlaceDebtBid(clientCtx.GetFromAddress(), id, bid, userExpectedToken, appID, auctionMappingID)
+			msg := types.NewMsgPlaceDebtBid(clientCtx.GetFromAddress().String(), id, bid, userExpectedToken, appID, auctionMappingID)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -136,7 +136,7 @@ func txPlaceDutchBid() *cobra.Command {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			msg := types.NewMsgPlaceDutchBid(clientCtx.GetFromAddress(), auctionID, amt, max, appID, auctionMappingID)
+			msg := types.NewMsgPlaceDutchBid(clientCtx.GetFromAddress().String(), auctionID, amt, max, appID, auctionMappingID)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	// this line is used by starport scaffolding # 1
-
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -50,7 +48,7 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	types.RegisterLegacyAminoCodec(cdc)
 }
 
-// RegisterInterfaces registers the module's interface types
+// RegisterInterfaces registers the module's interface types.
 func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 	types.RegisterInterfaces(reg)
 }
@@ -136,7 +134,7 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(configurator module.Configurator) {
-	types.RegisterMsgServer(configurator.MsgServer(), keeper.NewMsgServiceServer(am.keeper))
+	types.RegisterMsgServer(configurator.MsgServer(), keeper.NewMsgServer(am.keeper))
 	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServer(am.keeper))
 }
 

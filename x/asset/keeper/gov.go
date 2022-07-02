@@ -17,17 +17,14 @@ func (k Keeper) HandleProposalAddPairs(ctx sdk.Context, p *types.AddPairsProposa
 	return k.AddPairsRecords(ctx, p.Pairs...)
 }
 
-func (k Keeper) HandleUpdateGovTimeInAppMapping(ctx sdk.Context, p *types.UpdateGovTimeInAppMappingProposal) error {
-	return k.UpdateGovTimeInAppMapping(ctx, p.GovTime)
+func (k Keeper) HandleUpdateGovTimeInApp(ctx sdk.Context, p *types.UpdateGovTimeInAppProposal) error {
+	return k.UpdateGovTimeInApp(ctx, p.GovTime)
 }
 
-func (k Keeper) HandleAddAppMappingRecords(ctx sdk.Context, p *types.AddAppMappingProposal) error {
-	return k.AddAppMappingRecords(ctx, p.App...)
-}
-func (k Keeper) HandleAddAssetMappingRecords(ctx sdk.Context, p *types.AddAssetMappingProposal) error {
-	return k.AddAssetMappingRecords(ctx, p.App...)
+func (k Keeper) HandleAddAppRecords(ctx sdk.Context, p *types.AddAppProposal) error {
+	return k.AddAppRecords(ctx, p.App...)
 }
 
-func (k Keeper) HandleAddExtendedPairsVaultRecords(ctx sdk.Context, p *types.AddExtendedPairsVaultProposal) error {
-	return k.AddExtendedPairsVaultRecords(ctx, p.Pairs...)
+func (k Keeper) HandleAddAssetInAppRecords(ctx sdk.Context, p *types.AddAssetInAppProposal) error {
+	return k.AddAssetInAppRecords(ctx, p.App...)
 }

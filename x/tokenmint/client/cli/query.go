@@ -28,12 +28,11 @@ func GetQueryCmd() *cobra.Command {
 		QueryTokenMintedByApp(),
 		QueryTokenMintedByAppAndAsset(),
 	)
-	// this line is used by starport scaffolding # 1
 
 	return cmd
 }
 
-// QueryAllTokenMintedForAllProducts Queries the total token minted for all the apps on comdex.
+// QueryAllTokenMintedForAllApps Queries the total token minted for all the apps on comdex.
 func QueryAllTokenMintedForAllApps() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "total-token-minted-all-apps",
@@ -67,7 +66,7 @@ func QueryAllTokenMintedForAllApps() *cobra.Command {
 	return cmd
 }
 
-// QueryTokenMintedByProduct queries token minted per application/product.
+// QueryTokenMintedByApp queries token minted per application/product.
 func QueryTokenMintedByApp() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "token-minted-by-app [app_id]",
@@ -106,7 +105,7 @@ func QueryTokenMintedByApp() *cobra.Command {
 	return cmd
 }
 
-// QueryTokenMintedByProductAndAsset queries token minted for an application/product and asset.
+// QueryTokenMintedByAppAndAsset queries token minted for an application/product and asset.
 func QueryTokenMintedByAppAndAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "token-minted-by-app-and-asset [app_id] [asset_id]",

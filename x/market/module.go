@@ -114,8 +114,8 @@ func (a AppModule) QuerierRoute() string {
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
-	types.RegisterMsgServer(configurator.MsgServer(), keeper.NewMsgServiceServer(a.keeper))
-	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.keeper))
+	types.RegisterMsgServer(configurator.MsgServer(), keeper.NewMsgServer(a.keeper))
+	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServer(a.keeper))
 }
 
 func (a AppModule) BeginBlock(ctx sdk.Context, req abcitypes.RequestBeginBlock) {

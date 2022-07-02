@@ -87,8 +87,8 @@ func local_request_Query_QueryLockerInfo_0(ctx context.Context, marshaler runtim
 
 }
 
-func request_Query_QueryLockersByProductToAssetID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockersByProductToAssetIDRequest
+func request_Query_QueryLockersByAppToAssetID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockersByAppToAssetIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -98,15 +98,15 @@ func request_Query_QueryLockersByProductToAssetID_0(ctx context.Context, marshal
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["asset_id"]
@@ -120,13 +120,13 @@ func request_Query_QueryLockersByProductToAssetID_0(ctx context.Context, marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
 	}
 
-	msg, err := client.QueryLockersByProductToAssetID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryLockersByAppToAssetID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryLockersByProductToAssetID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockersByProductToAssetIDRequest
+func local_request_Query_QueryLockersByAppToAssetID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockersByAppToAssetIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -136,15 +136,15 @@ func local_request_Query_QueryLockersByProductToAssetID_0(ctx context.Context, m
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["asset_id"]
@@ -158,13 +158,13 @@ func local_request_Query_QueryLockersByProductToAssetID_0(ctx context.Context, m
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
 	}
 
-	msg, err := server.QueryLockersByProductToAssetID(ctx, &protoReq)
+	msg, err := server.QueryLockersByAppToAssetID(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryLockerInfoByProductID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockerInfoByProductIDRequest
+func request_Query_QueryLockerInfoByAppID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockerInfoByAppIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -174,24 +174,24 @@ func request_Query_QueryLockerInfoByProductID_0(ctx context.Context, marshaler r
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
-	msg, err := client.QueryLockerInfoByProductID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryLockerInfoByAppID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryLockerInfoByProductID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockerInfoByProductIDRequest
+func local_request_Query_QueryLockerInfoByAppID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockerInfoByAppIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -201,24 +201,24 @@ func local_request_Query_QueryLockerInfoByProductID_0(ctx context.Context, marsh
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
-	msg, err := server.QueryLockerInfoByProductID(ctx, &protoReq)
+	msg, err := server.QueryLockerInfoByAppID(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryTotalDepositByProductAssetID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTotalDepositByProductAssetIDRequest
+func request_Query_QueryTotalDepositByAppAndAssetID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryTotalDepositByAppAndAssetIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -228,15 +228,15 @@ func request_Query_QueryTotalDepositByProductAssetID_0(ctx context.Context, mars
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["asset_id"]
@@ -250,13 +250,13 @@ func request_Query_QueryTotalDepositByProductAssetID_0(ctx context.Context, mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
 	}
 
-	msg, err := client.QueryTotalDepositByProductAssetID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryTotalDepositByAppAndAssetID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryTotalDepositByProductAssetID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryTotalDepositByProductAssetIDRequest
+func local_request_Query_QueryTotalDepositByAppAndAssetID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryTotalDepositByAppAndAssetIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -266,15 +266,15 @@ func local_request_Query_QueryTotalDepositByProductAssetID_0(ctx context.Context
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["asset_id"]
@@ -288,13 +288,13 @@ func local_request_Query_QueryTotalDepositByProductAssetID_0(ctx context.Context
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
 	}
 
-	msg, err := server.QueryTotalDepositByProductAssetID(ctx, &protoReq)
+	msg, err := server.QueryTotalDepositByAppAndAssetID(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryOwnerLockerByProductIDbyOwner_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryOwnerLockerByProductIDbyOwnerRequest
+func request_Query_QueryOwnerLockerByAppIDbyOwner_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOwnerLockerByAppIDbyOwnerRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -304,15 +304,15 @@ func request_Query_QueryOwnerLockerByProductIDbyOwner_0(ctx context.Context, mar
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["owner"]
@@ -326,13 +326,13 @@ func request_Query_QueryOwnerLockerByProductIDbyOwner_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
-	msg, err := client.QueryOwnerLockerByProductIDbyOwner(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryOwnerLockerByAppIDbyOwner(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryOwnerLockerByProductIDbyOwner_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryOwnerLockerByProductIDbyOwnerRequest
+func local_request_Query_QueryOwnerLockerByAppIDbyOwner_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOwnerLockerByAppIDbyOwnerRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -342,15 +342,15 @@ func local_request_Query_QueryOwnerLockerByProductIDbyOwner_0(ctx context.Contex
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["owner"]
@@ -364,40 +364,13 @@ func local_request_Query_QueryOwnerLockerByProductIDbyOwner_0(ctx context.Contex
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
-	msg, err := server.QueryOwnerLockerByProductIDbyOwner(ctx, &protoReq)
+	msg, err := server.QueryOwnerLockerByAppIDbyOwner(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryOwnerLockerOfAllProductByOwner_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryOwnerLockerOfAllProductByOwnerRequest
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["owner"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
-	}
-
-	protoReq.Owner, err = runtime.String(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
-	}
-
-	msg, err := client.QueryOwnerLockerOfAllProductByOwner(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_Query_QueryOwnerLockerOfAllProductByOwner_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryOwnerLockerOfAllProductByOwnerRequest
+func request_Query_QueryOwnerLockerOfAllAppsByOwner_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOwnerLockerOfAllAppsByOwnerRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -418,17 +391,44 @@ func local_request_Query_QueryOwnerLockerOfAllProductByOwner_0(ctx context.Conte
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
-	msg, err := server.QueryOwnerLockerOfAllProductByOwner(ctx, &protoReq)
+	msg, err := client.QueryOwnerLockerOfAllAppsByOwner(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_Query_QueryOwnerLockerOfAllAppsByOwner_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOwnerLockerOfAllAppsByOwnerRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["owner"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
+	}
+
+	protoReq.Owner, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
+	}
+
+	msg, err := server.QueryOwnerLockerOfAllAppsByOwner(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0 = &utilities.DoubleArray{Encoding: map[string]int{"product_id": 0, "owner": 1, "asset_id": 2}, Base: []int{1, 1, 2, 3, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 3, 4}}
+	filter_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0 = &utilities.DoubleArray{Encoding: map[string]int{"app_id": 0, "owner": 1, "asset_id": 2}, Base: []int{1, 1, 2, 3, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 3, 4}}
 )
 
-func request_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest
+func request_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -438,15 +438,15 @@ func request_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0(ctx contex
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["owner"]
@@ -474,17 +474,17 @@ func request_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0(ctx contex
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest
+func local_request_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -494,15 +494,15 @@ func local_request_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0(ctx 
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["owner"]
@@ -530,17 +530,17 @@ func local_request_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0(ctx 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(ctx, &protoReq)
+	msg, err := server.QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryOwnerLockerByProductToAssetIDbyOwnerRequest
+func request_Query_QueryOwnerLockerByAppToAssetIDbyOwner_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOwnerLockerByAppToAssetIDbyOwnerRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -550,15 +550,15 @@ func request_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0(ctx context.Conte
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["asset_id"]
@@ -583,13 +583,13 @@ func request_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0(ctx context.Conte
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
-	msg, err := client.QueryOwnerLockerByProductToAssetIDbyOwner(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryOwnerLockerByAppToAssetIDbyOwner(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryOwnerLockerByProductToAssetIDbyOwnerRequest
+func local_request_Query_QueryOwnerLockerByAppToAssetIDbyOwner_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOwnerLockerByAppToAssetIDbyOwnerRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -599,15 +599,15 @@ func local_request_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0(ctx context
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["asset_id"]
@@ -632,13 +632,13 @@ func local_request_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0(ctx context
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
-	msg, err := server.QueryOwnerLockerByProductToAssetIDbyOwner(ctx, &protoReq)
+	msg, err := server.QueryOwnerLockerByAppToAssetIDbyOwner(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryLockerByProductByOwner_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockerByProductByOwnerRequest
+func request_Query_QueryLockerByAppByOwner_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockerByAppByOwnerRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -648,15 +648,15 @@ func request_Query_QueryLockerByProductByOwner_0(ctx context.Context, marshaler 
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["owner"]
@@ -670,13 +670,13 @@ func request_Query_QueryLockerByProductByOwner_0(ctx context.Context, marshaler 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
-	msg, err := client.QueryLockerByProductByOwner(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryLockerByAppByOwner(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryLockerByProductByOwner_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockerByProductByOwnerRequest
+func local_request_Query_QueryLockerByAppByOwner_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockerByAppByOwnerRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -686,15 +686,15 @@ func local_request_Query_QueryLockerByProductByOwner_0(ctx context.Context, mars
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["owner"]
@@ -708,13 +708,13 @@ func local_request_Query_QueryLockerByProductByOwner_0(ctx context.Context, mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
-	msg, err := server.QueryLockerByProductByOwner(ctx, &protoReq)
+	msg, err := server.QueryLockerByAppByOwner(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryLockerCountByProductID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockerCountByProductIDRequest
+func request_Query_QueryLockerCountByAppID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockerCountByAppIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -724,24 +724,24 @@ func request_Query_QueryLockerCountByProductID_0(ctx context.Context, marshaler 
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
-	msg, err := client.QueryLockerCountByProductID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryLockerCountByAppID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryLockerCountByProductID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockerCountByProductIDRequest
+func local_request_Query_QueryLockerCountByAppID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockerCountByAppIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -751,24 +751,24 @@ func local_request_Query_QueryLockerCountByProductID_0(ctx context.Context, mars
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
-	msg, err := server.QueryLockerCountByProductID(ctx, &protoReq)
+	msg, err := server.QueryLockerCountByAppID(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryLockerCountByProductToAssetID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockerCountByProductToAssetIDRequest
+func request_Query_QueryLockerCountByAppToAssetID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockerCountByAppToAssetIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -778,15 +778,15 @@ func request_Query_QueryLockerCountByProductToAssetID_0(ctx context.Context, mar
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["asset_id"]
@@ -800,13 +800,13 @@ func request_Query_QueryLockerCountByProductToAssetID_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
 	}
 
-	msg, err := client.QueryLockerCountByProductToAssetID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryLockerCountByAppToAssetID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryLockerCountByProductToAssetID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockerCountByProductToAssetIDRequest
+func local_request_Query_QueryLockerCountByAppToAssetID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockerCountByAppToAssetIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -816,15 +816,15 @@ func local_request_Query_QueryLockerCountByProductToAssetID_0(ctx context.Contex
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
 	val, ok = pathParams["asset_id"]
@@ -838,13 +838,13 @@ func local_request_Query_QueryLockerCountByProductToAssetID_0(ctx context.Contex
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
 	}
 
-	msg, err := server.QueryLockerCountByProductToAssetID(ctx, &protoReq)
+	msg, err := server.QueryLockerCountByAppToAssetID(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryWhiteListedAssetIDsByProductID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryWhiteListedAssetIDsByProductIDRequest
+func request_Query_QueryWhiteListedAssetIDsByAppID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryWhiteListedAssetIDsByAppIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -854,24 +854,24 @@ func request_Query_QueryWhiteListedAssetIDsByProductID_0(ctx context.Context, ma
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
-	msg, err := client.QueryWhiteListedAssetIDsByProductID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryWhiteListedAssetIDsByAppID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryWhiteListedAssetIDsByProductID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryWhiteListedAssetIDsByProductIDRequest
+func local_request_Query_QueryWhiteListedAssetIDsByAppID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryWhiteListedAssetIDsByAppIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -881,36 +881,36 @@ func local_request_Query_QueryWhiteListedAssetIDsByProductID_0(ctx context.Conte
 		_   = err
 	)
 
-	val, ok = pathParams["product_id"]
+	val, ok = pathParams["app_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "product_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "app_id")
 	}
 
-	protoReq.ProductId, err = runtime.Uint64(val)
+	protoReq.AppId, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "product_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "app_id", err)
 	}
 
-	msg, err := server.QueryWhiteListedAssetIDsByProductID(ctx, &protoReq)
+	msg, err := server.QueryWhiteListedAssetIDsByAppID(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Query_QueryWhiteListedAssetByAllProduct_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryWhiteListedAssetByAllProductRequest
+func request_Query_QueryWhiteListedAssetByAllApps_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryWhiteListedAssetByAllAppsRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := client.QueryWhiteListedAssetByAllProduct(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryWhiteListedAssetByAllApps(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryWhiteListedAssetByAllProduct_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryWhiteListedAssetByAllProductRequest
+func local_request_Query_QueryWhiteListedAssetByAllApps_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryWhiteListedAssetByAllAppsRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := server.QueryWhiteListedAssetByAllProduct(ctx, &protoReq)
+	msg, err := server.QueryWhiteListedAssetByAllApps(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -987,8 +987,8 @@ func local_request_Query_QueryLockerLookupTableByApp_0(ctx context.Context, mars
 
 }
 
-func request_Query_QueryLockerLookupTableByAppAndAssetId_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockerLookupTableByAppAndAssetIdRequest
+func request_Query_QueryLockerLookupTableByAppAndAssetID_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockerLookupTableByAppAndAssetIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1020,13 +1020,13 @@ func request_Query_QueryLockerLookupTableByAppAndAssetId_0(ctx context.Context, 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
 	}
 
-	msg, err := client.QueryLockerLookupTableByAppAndAssetId(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryLockerLookupTableByAppAndAssetID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_QueryLockerLookupTableByAppAndAssetId_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryLockerLookupTableByAppAndAssetIdRequest
+func local_request_Query_QueryLockerLookupTableByAppAndAssetID_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryLockerLookupTableByAppAndAssetIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -1058,7 +1058,7 @@ func local_request_Query_QueryLockerLookupTableByAppAndAssetId_0(ctx context.Con
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "asset_id", err)
 	}
 
-	msg, err := server.QueryLockerLookupTableByAppAndAssetId(ctx, &protoReq)
+	msg, err := server.QueryLockerLookupTableByAppAndAssetID(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -1222,7 +1222,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockersByProductToAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockersByAppToAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1233,7 +1233,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryLockersByProductToAssetID_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryLockersByAppToAssetID_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1241,11 +1241,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryLockersByProductToAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockersByAppToAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockerInfoByProductID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockerInfoByAppID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1256,7 +1256,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryLockerInfoByProductID_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryLockerInfoByAppID_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1264,11 +1264,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryLockerInfoByProductID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockerInfoByAppID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryTotalDepositByProductAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryTotalDepositByAppAndAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1279,7 +1279,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryTotalDepositByProductAssetID_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryTotalDepositByAppAndAssetID_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1287,11 +1287,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryTotalDepositByProductAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryTotalDepositByAppAndAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryOwnerLockerByProductIDbyOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryOwnerLockerByAppIDbyOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1302,7 +1302,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryOwnerLockerByProductIDbyOwner_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryOwnerLockerByAppIDbyOwner_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1310,11 +1310,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryOwnerLockerByProductIDbyOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryOwnerLockerByAppIDbyOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryOwnerLockerOfAllProductByOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryOwnerLockerOfAllAppsByOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1325,7 +1325,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryOwnerLockerOfAllProductByOwner_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryOwnerLockerOfAllAppsByOwner_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1333,11 +1333,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryOwnerLockerOfAllProductByOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryOwnerLockerOfAllAppsByOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1348,7 +1348,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1356,11 +1356,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryOwnerLockerByAppToAssetIDbyOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1371,7 +1371,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryOwnerLockerByAppToAssetIDbyOwner_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1379,11 +1379,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryOwnerLockerByAppToAssetIDbyOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockerByProductByOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockerByAppByOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1394,7 +1394,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryLockerByProductByOwner_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryLockerByAppByOwner_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1402,11 +1402,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryLockerByProductByOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockerByAppByOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockerCountByProductID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockerCountByAppID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1417,7 +1417,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryLockerCountByProductID_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryLockerCountByAppID_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1425,11 +1425,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryLockerCountByProductID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockerCountByAppID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockerCountByProductToAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockerCountByAppToAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1440,7 +1440,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryLockerCountByProductToAssetID_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryLockerCountByAppToAssetID_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1448,11 +1448,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryLockerCountByProductToAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockerCountByAppToAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryWhiteListedAssetIDsByProductID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryWhiteListedAssetIDsByAppID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1463,7 +1463,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryWhiteListedAssetIDsByProductID_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryWhiteListedAssetIDsByAppID_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1471,11 +1471,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryWhiteListedAssetIDsByProductID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryWhiteListedAssetIDsByAppID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryWhiteListedAssetByAllProduct_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryWhiteListedAssetByAllApps_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1486,7 +1486,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryWhiteListedAssetByAllProduct_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryWhiteListedAssetByAllApps_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1494,7 +1494,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryWhiteListedAssetByAllProduct_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryWhiteListedAssetByAllApps_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1544,7 +1544,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockerLookupTableByAppAndAssetId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockerLookupTableByAppAndAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1555,7 +1555,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_QueryLockerLookupTableByAppAndAssetId_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_QueryLockerLookupTableByAppAndAssetID_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1563,7 +1563,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_QueryLockerLookupTableByAppAndAssetId_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockerLookupTableByAppAndAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1674,7 +1674,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockersByProductToAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockersByAppToAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1683,18 +1683,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryLockersByProductToAssetID_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryLockersByAppToAssetID_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryLockersByProductToAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockersByAppToAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockerInfoByProductID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockerInfoByAppID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1703,18 +1703,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryLockerInfoByProductID_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryLockerInfoByAppID_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryLockerInfoByProductID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockerInfoByAppID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryTotalDepositByProductAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryTotalDepositByAppAndAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1723,18 +1723,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryTotalDepositByProductAssetID_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryTotalDepositByAppAndAssetID_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryTotalDepositByProductAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryTotalDepositByAppAndAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryOwnerLockerByProductIDbyOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryOwnerLockerByAppIDbyOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1743,18 +1743,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryOwnerLockerByProductIDbyOwner_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryOwnerLockerByAppIDbyOwner_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryOwnerLockerByProductIDbyOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryOwnerLockerByAppIDbyOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryOwnerLockerOfAllProductByOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryOwnerLockerOfAllAppsByOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1763,18 +1763,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryOwnerLockerOfAllProductByOwner_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryOwnerLockerOfAllAppsByOwner_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryOwnerLockerOfAllProductByOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryOwnerLockerOfAllAppsByOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1783,18 +1783,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryOwnerLockerByAppToAssetIDbyOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1803,18 +1803,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryOwnerLockerByAppToAssetIDbyOwner_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryOwnerLockerByAppToAssetIDbyOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockerByProductByOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockerByAppByOwner_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1823,18 +1823,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryLockerByProductByOwner_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryLockerByAppByOwner_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryLockerByProductByOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockerByAppByOwner_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockerCountByProductID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockerCountByAppID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1843,18 +1843,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryLockerCountByProductID_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryLockerCountByAppID_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryLockerCountByProductID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockerCountByAppID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockerCountByProductToAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockerCountByAppToAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1863,18 +1863,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryLockerCountByProductToAssetID_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryLockerCountByAppToAssetID_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryLockerCountByProductToAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockerCountByAppToAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryWhiteListedAssetIDsByProductID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryWhiteListedAssetIDsByAppID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1883,18 +1883,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryWhiteListedAssetIDsByProductID_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryWhiteListedAssetIDsByAppID_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryWhiteListedAssetIDsByProductID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryWhiteListedAssetIDsByAppID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryWhiteListedAssetByAllProduct_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryWhiteListedAssetByAllApps_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1903,14 +1903,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryWhiteListedAssetByAllProduct_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryWhiteListedAssetByAllApps_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryWhiteListedAssetByAllProduct_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryWhiteListedAssetByAllApps_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1954,7 +1954,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_QueryLockerLookupTableByAppAndAssetId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_QueryLockerLookupTableByAppAndAssetID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1963,14 +1963,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_QueryLockerLookupTableByAppAndAssetId_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_QueryLockerLookupTableByAppAndAssetID_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_QueryLockerLookupTableByAppAndAssetId_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_QueryLockerLookupTableByAppAndAssetID_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -2020,35 +2020,35 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 var (
 	pattern_Query_QueryLockerInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "locker_info", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockersByProductToAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "lockers_info_asset_id", "product_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLockersByAppToAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "lockers_info_asset_id", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerInfoByProductID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "lockers_info_product_id", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLockerInfoByAppID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "lockers_info_app_id", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryTotalDepositByProductAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "total_deposit_product_asset_id", "product_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryTotalDepositByAppAndAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "total_deposit_app_asset_id", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryOwnerLockerByProductIDbyOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "owner_locker_by_all_product_by_owner", "product_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryOwnerLockerByAppIDbyOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "owner_locker_by_all_app_by_owner", "app_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryOwnerLockerOfAllProductByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "owner_locker_info_by_all_product_owner", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryOwnerLockerOfAllAppsByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "owner_locker_info_by_all_apps_owner", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "locker", "v1beta1", "owner_locker_tx-details_by_product", "product_id", "owner", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "locker", "v1beta1", "owner_locker_tx-details_by_app_asset", "app_id", "owner", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "locker", "v1beta1", "owner_locker_info_product_asset_id_owner", "product_id", "asset_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryOwnerLockerByAppToAssetIDbyOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "locker", "v1beta1", "owner_locker_info_app_asset_id_owner", "app_id", "asset_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerByProductByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "locker_info_product_owner", "product_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLockerByAppByOwner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "locker_info_app_owner", "app_id", "owner"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerCountByProductID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "total_locker_product_id", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLockerCountByAppID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "total_locker_app_id", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerCountByProductToAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "total_locker_product_asset_id", "product_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLockerCountByAppToAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "total_locker_app_asset_id", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryWhiteListedAssetIDsByProductID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "whitelisted_asset_ids_by_product_id", "product_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryWhiteListedAssetIDsByAppID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "whitelisted_asset_ids_by_app_id", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryWhiteListedAssetByAllProduct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locker", "v1beta1", "whitelisted_asset_product_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryWhiteListedAssetByAllApps_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locker", "v1beta1", "whitelisted_asset_app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "locker", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryLockerLookupTableByApp_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "locker", "v1beta1", "locker-lookup-by-app", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockerLookupTableByAppAndAssetId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "locker-lookup-by-app-and-assetId", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLockerLookupTableByAppAndAssetID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "locker-lookup-by-app-and-assetId", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryLockerTotalRewardsByAssetAppWise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "locker", "v1beta1", "loker-rewards-by-app-and-assetId", "app_id", "asset_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
@@ -2058,35 +2058,35 @@ var (
 var (
 	forward_Query_QueryLockerInfo_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryLockersByProductToAssetID_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryLockersByAppToAssetID_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryLockerInfoByProductID_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryLockerInfoByAppID_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryTotalDepositByProductAssetID_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryTotalDepositByAppAndAssetID_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryOwnerLockerByProductIDbyOwner_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryOwnerLockerByAppIDbyOwner_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryOwnerLockerOfAllProductByOwner_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryOwnerLockerOfAllAppsByOwner_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryOwnerTxDetailsLockerOfProductByOwnerByAsset_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryOwnerTxDetailsLockerOfAppByOwnerByAsset_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryOwnerLockerByProductToAssetIDbyOwner_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryOwnerLockerByAppToAssetIDbyOwner_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryLockerByProductByOwner_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryLockerByAppByOwner_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryLockerCountByProductID_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryLockerCountByAppID_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryLockerCountByProductToAssetID_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryLockerCountByAppToAssetID_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryWhiteListedAssetIDsByProductID_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryWhiteListedAssetIDsByAppID_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryWhiteListedAssetByAllProduct_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryWhiteListedAssetByAllApps_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QueryParams_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QueryLockerLookupTableByApp_0 = runtime.ForwardResponseMessage
 
-	forward_Query_QueryLockerLookupTableByAppAndAssetId_0 = runtime.ForwardResponseMessage
+	forward_Query_QueryLockerLookupTableByAppAndAssetID_0 = runtime.ForwardResponseMessage
 
 	forward_Query_QueryLockerTotalRewardsByAssetAppWise_0 = runtime.ForwardResponseMessage
 

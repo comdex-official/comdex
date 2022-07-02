@@ -5,13 +5,12 @@ import (
 )
 
 const (
-	ProposalAddAssets                 = "AddAssets"
-	ProposalUpdateAsset               = "UpdateAsset"
-	ProposalAddPairs                  = "AddPairs"
-	ProposalAddAppMapping             = "AddAppMapping"
-	ProposalAddAssetMapping           = "AddAssetMapping"
-	ProposalAddExtendedPairsVault     = "AddExtendedPairsVault"
-	ProposalUpdateGovTimeInAppMapping = "UpdateGovTimeInAppMapping"
+	ProposalAddAssets          = "AddAssets"
+	ProposalUpdateAsset        = "UpdateAsset"
+	ProposalAddPairs           = "AddPairs"
+	ProposalAddApp             = "AddApp"
+	ProposalAddAssetInApp      = "AddAssetInApp"
+	ProposalUpdateGovTimeInApp = "UpdateGovTimeInApp"
 )
 
 func init() {
@@ -24,27 +23,23 @@ func init() {
 	govtypes.RegisterProposalType(ProposalAddPairs)
 	govtypes.RegisterProposalTypeCodec(&AddPairsProposal{}, "comdex/AddPairsProposal")
 
-	govtypes.RegisterProposalType(ProposalUpdateGovTimeInAppMapping)
-	govtypes.RegisterProposalTypeCodec(&UpdateGovTimeInAppMappingProposal{}, "comdex/UpdateGovTimeInAppMappingProposal")
+	govtypes.RegisterProposalType(ProposalUpdateGovTimeInApp)
+	govtypes.RegisterProposalTypeCodec(&UpdateGovTimeInAppProposal{}, "comdex/UpdateGovTimeInAppProposal")
 
-	govtypes.RegisterProposalType(ProposalAddAppMapping)
-	govtypes.RegisterProposalTypeCodec(&AddAppMappingProposal{}, "comdex/AddAppMappingProposal")
+	govtypes.RegisterProposalType(ProposalAddApp)
+	govtypes.RegisterProposalTypeCodec(&AddAppProposal{}, "comdex/AddAppProposal")
 
-	govtypes.RegisterProposalType(ProposalAddAssetMapping)
-	govtypes.RegisterProposalTypeCodec(&AddAssetMappingProposal{}, "comdex/AddAssetMappingProposal")
-
-	govtypes.RegisterProposalType(ProposalAddExtendedPairsVault)
-	govtypes.RegisterProposalTypeCodec(&AddExtendedPairsVaultProposal{}, "comdex/AddExtendedPairsVaultProposal")
+	govtypes.RegisterProposalType(ProposalAddAssetInApp)
+	govtypes.RegisterProposalTypeCodec(&AddAssetInAppProposal{}, "comdex/AddAssetInAppProposal")
 }
 
 var (
 	_ govtypes.Content = &AddAssetsProposal{}
 	_ govtypes.Content = &UpdateAssetProposal{}
 	_ govtypes.Content = &AddPairsProposal{}
-	_ govtypes.Content = &UpdateGovTimeInAppMappingProposal{}
-	_ govtypes.Content = &AddAppMappingProposal{}
-	_ govtypes.Content = &AddAssetMappingProposal{}
-	_ govtypes.Content = &AddExtendedPairsVaultProposal{}
+	_ govtypes.Content = &UpdateGovTimeInAppProposal{}
+	_ govtypes.Content = &AddAppProposal{}
+	_ govtypes.Content = &AddAssetInAppProposal{}
 )
 
 func NewAddAssetsProposal(title, description string, assets []Asset) govtypes.Content {
@@ -66,7 +61,6 @@ func (p *AddAssetsProposal) ProposalRoute() string { return RouterKey }
 func (p *AddAssetsProposal) ProposalType() string { return ProposalAddAssets }
 
 func (p *AddAssetsProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -138,7 +132,6 @@ func (p *AddPairsProposal) ProposalRoute() string { return RouterKey }
 func (p *AddPairsProposal) ProposalType() string { return ProposalAddPairs }
 
 func (p *AddPairsProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -156,29 +149,27 @@ func (p *AddPairsProposal) ValidateBasic() error {
 	return nil
 }
 
-
-func NewAddAppMapingProposa(title, description string, amap []AppMapping) govtypes.Content {
-	return &AddAppMappingProposal{
+func NewAddAppProposal(title, description string, amap []AppData) govtypes.Content {
+	return &AddAppProposal{
 		Title:       title,
 		Description: description,
 		App:         amap,
 	}
 }
 
-func (p *AddAppMappingProposal) GetTitle() string {
+func (p *AddAppProposal) GetTitle() string {
 	return p.Title
 }
 
-func (p *AddAppMappingProposal) GetDescription() string {
+func (p *AddAppProposal) GetDescription() string {
 	return p.Description
 }
 
-func (p *AddAppMappingProposal) ProposalRoute() string { return RouterKey }
+func (p *AddAppProposal) ProposalRoute() string { return RouterKey }
 
-func (p *AddAppMappingProposal) ProposalType() string { return ProposalAddAppMapping }
+func (p *AddAppProposal) ProposalType() string { return ProposalAddApp }
 
-func (p *AddAppMappingProposal) ValidateBasic() error {
-
+func (p *AddAppProposal) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -190,30 +181,29 @@ func (p *AddAppMappingProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewUpdateGovTimeInAppMappingProposal(title, description string, aTime AppAndGovTime) govtypes.Content {
-	return &UpdateGovTimeInAppMappingProposal{
+func NewUpdateGovTimeInAppProposal(title, description string, aTime AppAndGovTime) govtypes.Content {
+	return &UpdateGovTimeInAppProposal{
 		Title:       title,
 		Description: description,
 		GovTime:     aTime,
 	}
 }
 
-func (p *UpdateGovTimeInAppMappingProposal) GetTitle() string {
+func (p *UpdateGovTimeInAppProposal) GetTitle() string {
 	return p.Title
 }
 
-func (p *UpdateGovTimeInAppMappingProposal) GetDescription() string {
+func (p *UpdateGovTimeInAppProposal) GetDescription() string {
 	return p.Description
 }
 
-func (p *UpdateGovTimeInAppMappingProposal) ProposalRoute() string { return RouterKey }
+func (p *UpdateGovTimeInAppProposal) ProposalRoute() string { return RouterKey }
 
-func (p *UpdateGovTimeInAppMappingProposal) ProposalType() string {
-	return ProposalUpdateGovTimeInAppMapping
+func (p *UpdateGovTimeInAppProposal) ProposalType() string {
+	return ProposalUpdateGovTimeInApp
 }
 
-func (p *UpdateGovTimeInAppMappingProposal) ValidateBasic() error {
-
+func (p *UpdateGovTimeInAppProposal) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -222,66 +212,32 @@ func (p *UpdateGovTimeInAppMappingProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewAddAssetMapingProposa(title, description string, amap []AppMapping) govtypes.Content {
-	return &AddAssetMappingProposal{
+func NewAddAssetInAppProposal(title, description string, amap []AppData) govtypes.Content {
+	return &AddAssetInAppProposal{
 		Title:       title,
 		Description: description,
 		App:         amap,
 	}
 }
 
-func (p *AddAssetMappingProposal) GetTitle() string {
+func (p *AddAssetInAppProposal) GetTitle() string {
 	return p.Title
 }
 
-func (p *AddAssetMappingProposal) GetDescription() string {
+func (p *AddAssetInAppProposal) GetDescription() string {
 	return p.Description
 }
 
-func (p *AddAssetMappingProposal) ProposalRoute() string { return RouterKey }
+func (p *AddAssetInAppProposal) ProposalRoute() string { return RouterKey }
 
-func (p *AddAssetMappingProposal) ProposalType() string { return ProposalAddAssetMapping }
+func (p *AddAssetInAppProposal) ProposalType() string { return ProposalAddAssetInApp }
 
-func (p *AddAssetMappingProposal) ValidateBasic() error {
-
+func (p *AddAssetInAppProposal) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
 	}
 	if len(p.App) == 0 {
-		return ErrorEmptyProposalAssets
-	}
-
-	return nil
-}
-
-func NewAddExtendedPairsVaultProposa(title, description string, pairs []ExtendedPairVault) govtypes.Content {
-	return &AddExtendedPairsVaultProposal{
-		Title:       title,
-		Description: description,
-		Pairs:       pairs,
-	}
-}
-
-func (p *AddExtendedPairsVaultProposal) GetTitle() string {
-	return p.Title
-}
-
-func (p *AddExtendedPairsVaultProposal) GetDescription() string {
-	return p.Description
-}
-
-func (p *AddExtendedPairsVaultProposal) ProposalRoute() string { return RouterKey }
-
-func (p *AddExtendedPairsVaultProposal) ProposalType() string { return ProposalAddExtendedPairsVault }
-
-func (p *AddExtendedPairsVaultProposal) ValidateBasic() error {
-
-	err := govtypes.ValidateAbstract(p)
-	if err != nil {
-		return err
-	}
-	if len(p.Pairs) == 0 {
 		return ErrorEmptyProposalAssets
 	}
 

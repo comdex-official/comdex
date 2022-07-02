@@ -8,30 +8,5 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 service Msg {
-  rpc WhitelistApp(WhitelistAppId) returns (MsgWhitelistAppIdResponse);
-  rpc RemoveWhitelistApp(RemoveWhitelistAppId) returns (MsgRemoveWhitelistAppIdResponse);
 }
 
-message WhitelistAppId {
-  uint64 app_mapping_id   = 1 [
-    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
-  ];
-
-  string from    = 2 [
-    (gogoproto.moretags) = "yaml:\"from\""
-  ];
-}
-
-message RemoveWhitelistAppId {
-  uint64 app_mapping_id   = 1 [
-    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
-  ];
-
-  string from    = 2 [
-    (gogoproto.moretags) = "yaml:\"from\""
-  ];
-}
-
-message MsgWhitelistAppIdResponse {}
-
-message MsgRemoveWhitelistAppIdResponse {}
