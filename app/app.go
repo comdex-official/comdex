@@ -159,7 +159,7 @@ import (
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
-	tv2 "github.com/comdex-official/comdex/app/upgrades/testnet/v2"
+	tv2_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v2_0_0"
 )
 
 const (
@@ -1104,8 +1104,8 @@ func (a *App) registerUpgradeHandlers() {
 	)
 
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv2.UpgradeName,
-		tv2.CreateUpgradeHandler(a.mm, a.configurator),
+		tv2_0_0.UpgradeName,
+		tv2_0_0.CreateUpgradeHandler(a.mm, a.configurator),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1125,7 +1125,7 @@ func (a *App) registerUpgradeHandlers() {
 			Added:   []string{authz.ModuleName},
 			Deleted: []string{"asset", "liquidity", "oracle", "vault"},
 		}
-	case upgradeInfo.Name == tv2.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tv2_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		// prepare store for testnet upgrade v1.1.0
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{
