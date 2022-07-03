@@ -308,7 +308,7 @@ func (SecurityScheme_Flow) EnumDescriptor() ([]byte, []int) {
 	return file_protoc_gen_openapiv2_options_openapiv2_proto_rawDescGZIP(), []int{12, 2}
 }
 
-// `Swagger` is a representation of OpenAPI v2_0_0 specification's Swagger object.
+// `Swagger` is a representation of OpenAPI v2 specification's Swagger object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#swaggerObject
 //
@@ -504,7 +504,7 @@ func (x *Swagger) GetExtensions() map[string]*_struct.Value {
 	return nil
 }
 
-// `Operation` is a representation of OpenAPI v2_0_0 specification's Operation object.
+// `Operation` is a representation of OpenAPI v2 specification's Operation object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#operationObject
 //
@@ -693,7 +693,7 @@ func (x *Operation) GetExtensions() map[string]*_struct.Value {
 	return nil
 }
 
-// `Header` is a representation of OpenAPI v2_0_0 specification's Header object.
+// `Header` is a representation of OpenAPI v2 specification's Header object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#headerObject
 //
@@ -783,7 +783,7 @@ func (x *Header) GetPattern() string {
 	return ""
 }
 
-// `Response` is a representation of OpenAPI v2_0_0 specification's Response object.
+// `Response` is a representation of OpenAPI v2 specification's Response object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#responseObject
 //
@@ -875,7 +875,7 @@ func (x *Response) GetExtensions() map[string]*_struct.Value {
 	return nil
 }
 
-// `Info` is a representation of OpenAPI v2_0_0 specification's Info object.
+// `Info` is a representation of OpenAPI v2 specification's Info object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#infoObject
 //
@@ -1002,7 +1002,7 @@ func (x *Info) GetExtensions() map[string]*_struct.Value {
 	return nil
 }
 
-// `Contact` is a representation of OpenAPI v2_0_0 specification's Contact object.
+// `Contact` is a representation of OpenAPI v2 specification's Contact object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#contactObject
 //
@@ -1089,7 +1089,7 @@ func (x *Contact) GetEmail() string {
 	return ""
 }
 
-// `License` is a representation of OpenAPI v2_0_0 specification's License object.
+// `License` is a representation of OpenAPI v2 specification's License object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#licenseObject
 //
@@ -1164,7 +1164,7 @@ func (x *License) GetUrl() string {
 	return ""
 }
 
-// `ExternalDocumentation` is a representation of OpenAPI v2_0_0 specification's
+// `ExternalDocumentation` is a representation of OpenAPI v2 specification's
 // ExternalDocumentation object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#externalDocumentationObject
@@ -1239,7 +1239,7 @@ func (x *ExternalDocumentation) GetUrl() string {
 	return ""
 }
 
-// `Schema` is a representation of OpenAPI v2_0_0 specification's Schema object.
+// `Schema` is a representation of OpenAPI v2 specification's Schema object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#schemaObject
 //
@@ -1336,9 +1336,9 @@ func (x *Schema) GetExample() string {
 }
 
 // `JSONSchema` represents properties from JSON Schema taken, and as used, in
-// the OpenAPI v2_0_0 spec.
+// the OpenAPI v2 spec.
 //
-// This includes changes made by OpenAPI v2_0_0.
+// This includes changes made by OpenAPI v2.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#schemaObject
 //
@@ -1612,7 +1612,7 @@ func (x *JSONSchema) GetEnum() []string {
 	return nil
 }
 
-// `Tag` is a representation of OpenAPI v2_0_0 specification's Tag object.
+// `Tag` is a representation of OpenAPI v2 specification's Tag object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#tagObject
 //
@@ -1674,7 +1674,7 @@ func (x *Tag) GetExternalDocs() *ExternalDocumentation {
 	return nil
 }
 
-// `SecurityDefinitions` is a representation of OpenAPI v2_0_0 specification's
+// `SecurityDefinitions` is a representation of OpenAPI v2 specification's
 // Security Definitions object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#securityDefinitionsObject
@@ -1731,7 +1731,7 @@ func (x *SecurityDefinitions) GetSecurity() map[string]*SecurityScheme {
 	return nil
 }
 
-// `SecurityScheme` is a representation of OpenAPI v2_0_0 specification's
+// `SecurityScheme` is a representation of OpenAPI v2 specification's
 // Security Scheme object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#securitySchemeObject
@@ -1870,7 +1870,7 @@ func (x *SecurityScheme) GetExtensions() map[string]*_struct.Value {
 	return nil
 }
 
-// `SecurityRequirement` is a representation of OpenAPI v2_0_0 specification's
+// `SecurityRequirement` is a representation of OpenAPI v2 specification's
 // Security Requirement object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#securityRequirementObject
@@ -1932,7 +1932,7 @@ func (x *SecurityRequirement) GetSecurityRequirement() map[string]*SecurityRequi
 	return nil
 }
 
-// `Scopes` is a representation of OpenAPI v2_0_0 specification's Scopes object.
+// `Scopes` is a representation of OpenAPI v2 specification's Scopes object.
 //
 // See: https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/2.0.md#scopesObject
 //

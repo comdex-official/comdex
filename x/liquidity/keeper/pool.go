@@ -96,7 +96,7 @@ func (k Keeper) ValidateMsgCreatePool(ctx sdk.Context, msg *types.MsgCreatePool)
 	}
 
 	// Check if there is a pool in the pair.
-	// Creating multiple pools within the same pair is disallowed, but it will be allowed in v2_0_0.
+	// Creating multiple pools within the same pair is disallowed, but it will be allowed in v2.
 	duplicate := false
 	_ = k.IteratePoolsByPair(ctx, pair.AppId, pair.Id, func(pool types.Pool) (stop bool, err error) {
 		if !pool.Disabled {
