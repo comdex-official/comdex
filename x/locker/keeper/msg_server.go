@@ -26,6 +26,14 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 
 func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLockerRequest) (*types.MsgCreateLockerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
 	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
 	if klwsParams.BreakerEnable{
 		return nil, esmtypes.ErrCircuitBreakerEnabled
@@ -162,6 +170,14 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 // MsgDepositAsset Remove asset id from Deposit & Withdraw redundant.
 func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAssetRequest) (*types.MsgDepositAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
 	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
 	if klwsParams.BreakerEnable{
 		return nil, esmtypes.ErrCircuitBreakerEnabled
@@ -314,6 +330,14 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 
 func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
 	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
 	if klwsParams.BreakerEnable{
 		return nil, esmtypes.ErrCircuitBreakerEnabled

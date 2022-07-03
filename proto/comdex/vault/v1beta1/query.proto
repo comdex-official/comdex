@@ -368,7 +368,7 @@ service Query {
   };
 
   rpc QueryVaultIDOfOwnerByExtendedPairAndApp(QueryVaultIDOfOwnerByExtendedPairAndAppRequest) returns (QueryVaultIDOfOwnerByExtendedPairAndAppResponse) {
-    option (google.api.http).get = "/comdex/vault/v1beta1/vault-of-owner-by-extended-pair-and-app/{app_id}/{owner}/{extended_pair_id}";
+    option (google.api.http).get = "/comdex/vault/v1beta1/vault-id-of-owner-by-extended-pair-and-app/{app_id}/{owner}/{extended_pair_id}";
   };
 
   rpc QueryVaultIdsByAppInAllExtendedPairs(QueryVaultIdsByAppInAllExtendedPairsRequest) returns (QueryVaultIdsByAppInAllExtendedPairsResponse) {

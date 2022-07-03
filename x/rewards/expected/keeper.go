@@ -86,4 +86,5 @@ type BankKeeper interface {
 
 type EsmKeeper interface {
 	GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool)
+	GetESMStatus(ctx sdk.Context, id uint64) (esmStatus esmtypes.ESMStatus, found bool)
 }

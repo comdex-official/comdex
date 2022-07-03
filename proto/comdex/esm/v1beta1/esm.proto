@@ -54,7 +54,6 @@ message ESMStatus{
 message KillSwitchParams{
   uint64 appId = 1 [ (gogoproto.moretags) = "yaml:\"appId\"" ];
   bool breaker_enable = 2 [ (gogoproto.moretags) = "yaml:\"breaker_enable\"" ];
-  bool protocol_control = 3 [ (gogoproto.moretags) = "yaml:\"protocol_control\"" ];
 }
 
 message UsersDepositMapping{

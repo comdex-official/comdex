@@ -22,10 +22,6 @@ var _ types.MsgServer = msgServer{}
 
 func (m msgServer) CreateGauge(goCtx context.Context, msg *types.MsgCreateGauge) (*types.MsgCreateGaugeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	klwsParams,_ := m.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
-		return nil, esmtypes.ErrCircuitBreakerEnabled
-	}
 
 	err := m.Keeper.ValidateMsgCreateCreateGauge(ctx, msg)
 	if err != nil {
@@ -46,6 +42,14 @@ func (m msgServer) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (
 	if klwsParams.BreakerEnable{
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
+	esmStatus, found := m.GetESMStatus(ctx,msg.AppMappingId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
 
 	if err := m.Keeper.WhitelistAsset(ctx, msg.AppMappingId, msg.AssetId); err != nil {
 		return nil, err
@@ -59,6 +63,14 @@ func (m msgServer) RemoveWhitelist(goCtx context.Context, msg *types.RemoveWhite
 	if klwsParams.BreakerEnable{
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
+	esmStatus, found := m.GetESMStatus(ctx,msg.AppMappingId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
 	if err := m.Keeper.RemoveWhitelistAsset(ctx, msg.AppMappingId, msg.AssetId); err != nil {
 		return nil, err
 	}
@@ -70,6 +82,14 @@ func (m msgServer) WhitelistAppVault(goCtx context.Context, msg *types.Whitelist
 	klwsParams,_ := m.GetKillSwitchData(ctx,msg.AppMappingId)
 	if klwsParams.BreakerEnable{
 		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	esmStatus, found := m.GetESMStatus(ctx,msg.AppMappingId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
 	if err := m.Keeper.WhitelistAppIDVault(ctx, msg.AppMappingId); err != nil {
 		return nil, err
@@ -83,6 +103,14 @@ func (m msgServer) RemoveWhitelistAppVault(goCtx context.Context, msg *types.Rem
 	if klwsParams.BreakerEnable{
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
+	esmStatus, found := m.GetESMStatus(ctx,msg.AppMappingId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
 	if err := m.Keeper.RemoveWhitelistAppIDVault(ctx, msg.AppMappingId); err != nil {
 		return nil, err
 	}
@@ -94,6 +122,14 @@ func (m msgServer) ExternalRewardsLockers(goCtx context.Context, msg *types.Acti
 	klwsParams,_ := m.GetKillSwitchData(ctx,msg.AppMappingId)
 	if klwsParams.BreakerEnable{
 		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	esmStatus, found := m.GetESMStatus(ctx,msg.AppMappingId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
 	Depositor, err := sdk.AccAddressFromBech32(msg.Depositor)
 	if err != nil {
@@ -110,6 +146,14 @@ func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.Activa
 	klwsParams,_ := m.GetKillSwitchData(ctx,msg.AppMappingId)
 	if klwsParams.BreakerEnable{
 		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	esmStatus, found := m.GetESMStatus(ctx,msg.AppMappingId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
 	Depositor, err := sdk.AccAddressFromBech32(msg.Depositor)
 	if err != nil {

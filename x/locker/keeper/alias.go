@@ -77,3 +77,7 @@ func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recip
 func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool) {
 	return k.esm.GetKillSwitchData(ctx, app_id)
 }
+
+func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
+	return k.esm.GetESMStatus(ctx,id)
+}

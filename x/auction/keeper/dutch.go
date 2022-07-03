@@ -108,12 +108,7 @@ func (k Keeper) StartDutchAuction(
 	if err != nil {
 		return err
 	}
-	//need to get real price instead of hard coding
 	//calculate target amount of cmst to collect
-	// inFlowTokenPrice, found1 = k.GetPriceForAsset(ctx, assetInId)
-	// if !found1 {
-	// 	return auctiontypes.ErrorPrices
-	// }
 	outFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetOutID)
 	if !found {
 		return auctiontypes.ErrorPrices
@@ -121,7 +116,7 @@ func (k Keeper) StartDutchAuction(
 	//set target amount for debt
 	inFlowTokenTargetAmount := lockedVault.AmountOut
 	mulfactor := inFlowTokenTargetAmount.ToDec().Mul(liquidationPenalty)
-	inFlowTokenTargetAmount = inFlowTokenTargetAmount.Add(mulfactor.TruncateInt())
+	inFlowTokenTargetAmount = inFlowTokenTargetAmount.Add(mulfactor.TruncateInt()).Add(lockedVault.InterestAccumulated)
 	inFlowTokenTarget := sdk.NewCoin(inFlowToken.Denom, inFlowTokenTargetAmount)
 	//These prices are in uusd
 	outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(outFlowTokenPrice), auctionParams.Buffer)
@@ -166,17 +161,6 @@ func (k Keeper) StartDutchAuction(
 	if err != nil {
 		return err
 	}
-	// isZero, err := k.DecreaseLockedVaultAmountIn(ctx, lockedVaultId, outFlowToken.Amount)
-	// if err != nil {
-	// 	return err
-	// }
-	// if isZero {
-	// 	auction.IsLockedVaultAmountInZero = true
-	// }
-	// err = k.SetDutchAuction(ctx, auction)
-	// if err != nil {
-	// 	return err
-	// }
 
 	return nil
 }
@@ -210,8 +194,6 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	a := auction.InflowTokenTargetAmount.Amount
 	b := auction.InflowTokenCurrentAmount.Amount
 	tab := a.Sub(b)
-	// extra will be send to collector
-	// extraCoin := sdk.NewCoin(auction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
 	//owe is $cmdx to be given to user
 	owe := slice.Mul(outFlowTokenCurrentPrice)
 	inFlowTokenAmount := owe.Quo(inFlowTokenCurrentPrice)
@@ -256,12 +238,6 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "either bid all the amount %d (UTOKEN) or bid amount by leaving dust greater than %d UUSD", coll, dust)
 	}
 
-	// revisit
-	// if owe.GT(tab) && !auction.IsLockedVaultAmountInZero {
-	// 	slice = tab.Quo(auction.OutflowTokenCurrentPrice.Ceil().TruncateInt())
-	// 	inFlowTokenCoin.Amount = auction.InflowTokenTargetAmount.Amount.Sub(auction.InflowTokenCurrentAmount.Amount)
-	// }
-	//
 
 	outFlowTokenCoin := sdk.NewCoin(auction.OutflowTokenInitAmount.Denom, slice)
 
@@ -413,7 +389,6 @@ func (k Keeper) CloseDutchAuction(
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}
-
 	//calculate penalty
 	penaltyCoin := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
 	// penaltyCoin.Amount = dutchAuction.InflowTokenCurrentAmount.Amount.Mul(dutchAuction.LiquidationPenalty.TruncateInt())
@@ -421,41 +396,10 @@ func (k Keeper) CloseDutchAuction(
 	burnToken := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
 	denom := dutchAuction.LiquidationPenalty.Add(sdk.MustNewDecFromStr("1"))
 	penaltyCoinDec := sdk.NewDecFromInt(dutchAuction.ToBurnAmount.Amount).Quo(denom).Mul(dutchAuction.LiquidationPenalty)
-	penaltyCoin.Amount = sdk.Int(penaltyCoinDec).Quo(sdk.NewIntFromUint64(1000000000000000000))
+	penaltyCoin.Amount = penaltyCoinDec.TruncateInt().Add(lockedVault.InterestAccumulated)
 	burnTokenDec := dutchAuction.ToBurnAmount.Amount.ToDec().Quo(denom)
-	burnToken.Amount = sdk.Int(burnTokenDec).Quo(sdk.NewIntFromUint64(1000000000000000000))
+	burnToken.Amount = burnTokenDec.TruncateInt()
 
-	// newcmstRecover := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
-	// cmstRecovered := lockedVault.CollateralToBeAuctioned.Quo(dutchAuction.LiquidationPenalty.Add(sdk.MustNewDecFromStr("1")))
-	// newcmstRecover.Amount = cmstRecovered.Quo(sdk.NewDec(1000000)).TruncateInt()
-	// sendtoCollector := dutchAuction.ToBurnAmount.Amount.ToDec().Sub(sdk.Dec(newcmstRecover.Amount))
-
-	//doing burn amount  = inflowtokencurrentamount / (1 + liq_penalty)
-	// burnToken.Amount = burnToken.Amount.Add(k.getBurnAmount(dutchAuction.InflowTokenCurrentAmount.Amount, dutchAuction.LiquidationPenalty))
-	// burnToken.Amount = dutchAuction.InflowTokenCurrentAmount.Amount.Sub(penaltyAmount)
-
-	//if amountInZero is true
-	//if burnAmount is greater than amount out
-	//add burnAmount-amountout out to penalty
-	//make burn amount = amountout
-
-	//if burnAmount is less than amount out
-	// get amountout - burnamount from collector
-	// make burnamount = amountout
-	// if dutchAuction.InflowTokenCurrentAmount.IsLT(dutchAuction.InflowTokenTargetAmount) {
-
-	// 		//Transfer balance from collector module to auction module
-	// 		requiredAmount := dutchAuction.InflowTokenTargetAmount.Sub(dutchAuction.InflowTokenCurrentAmount)
-	// 		_, err := k.GetAmountFromCollector(ctx, dutchAuction.appID, dutchAuction.AssetInId, requiredAmount.Amount)
-	// 		if err != nil {
-
-	// 			return err
-	// 		}
-
-	// 		//storing protocol loss
-	// 		k.SetProtocolStatistics(ctx, dutchAuction.appID, dutchAuction.AssetInId, requiredAmount.Amount)
-	// 		// burnToken.Amount = lockedVault.AmountOut
-	// }
 
 	//burning
 	err := k.BurnCoins(ctx, auctiontypes.ModuleName, burnToken)
@@ -479,11 +423,6 @@ func (k Keeper) CloseDutchAuction(
 	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(burnToken.Amount)
 
 	//set sell of history in locked vault
-	// outFlowToken := dutchAuction.OutflowTokenInitAmount.Sub(dutchAuction.OutflowTokenCurrentAmount)
-	// sellOfHistory := outFlowToken.String() + dutchAuction.InflowTokenCurrentAmount.String()
-	// lockedVault.SellOffHistory = append(lockedVault.SellOffHistory, sellOfHistory)
-
-	// k.SetLockedVault(ctx, lockedVault)
 	err = k.CreateLockedVaultHistory(ctx, lockedVault)
 	if err != nil {
 		return err
@@ -496,7 +435,6 @@ func (k Keeper) CloseDutchAuction(
 		return err
 	}
 
-	// k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, outFlowToken.Amount, false)
 	//update locked vault
 	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
 	if err != nil {
@@ -562,13 +500,71 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
   		dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
   		seconds := sdk.NewInt(int64(dur.Seconds()))
 		outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)
-
+		dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
+		dutchAuction.OutflowTokenCurrentPrice = outFlowTokenCurrentPrice
+		err := k.SetDutchAuction(ctx, dutchAuction)
+		if err != nil {
+			return err
+		}
 		//check if auction need to be restarted
 		if ctx.BlockTime().After(dutchAuction.EndTime) {
-			dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
-			dutchAuction.OutflowTokenCurrentPrice = outFlowTokenCurrentPrice
-			//SET initial price fetched from market module and also end price , start time , end time
-			//outFlowTokenCurrentPrice := sdk.NewIntFromUint64(10)
+			esmStatus, found := k.GetESMStatus(ctx,lockedVault.AppId)
+			status := false
+			if found{
+				status = esmStatus.Status
+			}
+
+			if status{
+				// to do function
+				// check user mapping of if vault exists for user
+				// if not create new vault of user with cmdx cmst
+				// if exists append in existing
+				// close auction func call
+
+				userVaultExtendedPairMapping, userExists := k.GetUserVaultExtendedPairMapping(ctx, string(dutchAuction.VaultOwner))
+				if userExists {
+					vaultId, alreadyExists := k.CheckUserAppToExtendedPairMapping(ctx, userVaultExtendedPairMapping, lockedVault.ExtendedPairId, lockedVault.AppId)
+					if alreadyExists {
+						// append to existing vault
+						vaultData, _ := k.GetVault(ctx, vaultId)
+						vaultData.AmountIn = vaultData.AmountIn.Add(dutchAuction.OutflowTokenCurrentAmount.Amount)
+						vaultData.AmountOut = vaultData.AmountOut.Add(dutchAuction.InflowTokenCurrentAmount.Amount)
+						k.SetVault(ctx, vaultData)
+					}
+				}else{
+					// create new vault done
+					k.CreateNewVault(ctx,dutchAuction.VaultOwner.String(),lockedVault.AppId,lockedVault.ExtendedPairId, dutchAuction.OutflowTokenCurrentAmount.Amount, dutchAuction.InflowTokenCurrentAmount.Amount)
+				}
+
+
+				dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
+
+				//update locked vault
+				err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
+				if err != nil {
+					return err
+				}
+
+				err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.LockedVaultId, false)
+				if err != nil {
+					return err
+				}
+
+				err = k.SetDutchAuction(ctx, dutchAuction)
+				if err != nil {
+					return err
+				}
+				err = k.DeleteDutchAuction(ctx, dutchAuction)
+				if err != nil {
+					return err
+				}
+				err = k.SetHistoryDutchAuction(ctx, dutchAuction)
+				if err != nil {
+					return err
+				}
+				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+
+			}else{
 			outFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
 			if !found {
 				return auctiontypes.ErrorPrices
@@ -581,10 +577,13 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 			dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
 			dutchAuction.OutflowTokenEndPrice = outFlowTokenEndPrice
 			dutchAuction.OutflowTokenCurrentPrice = outFlowTokenInitialPrice
-		}
-		err := k.SetDutchAuction(ctx, dutchAuction)
-		if err != nil {
-			return err
+			}
+			err := k.SetDutchAuction(ctx, dutchAuction)
+			if err != nil {
+				return err
+			}
+			//SET initial price fetched from market module and also end price , start time , end time
+			//outFlowTokenCurrentPrice := sdk.NewIntFromUint64(10)
 		}
 	}
 	return nil

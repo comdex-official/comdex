@@ -90,6 +90,11 @@ message LockedVault {
   repeated string selloff_history = 17 [
     (gogoproto.customname) = "SellOffHistory",
     (gogoproto.moretags) = "yaml:\"selloff_history\""];
+
+  string interest_accumulated = 18[
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"interest_accumulated\"",
+    (gogoproto.nullable) = false];
 }
 
 message LockedVaultToAppMapping {

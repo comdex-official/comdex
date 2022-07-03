@@ -15,9 +15,17 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 	appIds := k.GetAppIds(ctx).WhitelistedAppIds
 
 	for i := range appIds {
+		esmStatus, found := k.GetESMStatus(ctx,appIds[i])
+		status := false
+		if found{
+			status = esmStatus.Status
+		}
 		klwsParams,_ := k.GetKillSwitchData(ctx,appIds[i])
 		if klwsParams.BreakerEnable{
 			return esmtypes.ErrCircuitBreakerEnabled
+		}
+		if status{
+			return esmtypes.ErrESMAlreadyExecuted
 		}
 		vaultsMap, _ := k.GetAppExtendedPairVaultMapping(ctx, appIds[i])
 
@@ -74,6 +82,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 		CollateralToBeAuctioned:      sdk.ZeroDec(),
 		LiquidationTimestamp:         time.Now(),
 		SellOffHistory:               nil,
+		InterestAccumulated:          vault.InterestAccumulated,
 	}
 
 	k.SetLockedVault(ctx, value)

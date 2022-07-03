@@ -4,7 +4,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
-	vaultttypes "github.com/comdex-official/comdex/x/vault/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
@@ -125,11 +125,11 @@ func (k *Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.Ext
 	return k.asset.GetPairsVault(ctx, id)
 }
 
-func (k *Keeper) GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData vaultttypes.AppExtendedPairVaultMapping, found bool) {
+func (k *Keeper) GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping, found bool) {
 	return k.vault.GetAppExtendedPairVaultMapping(ctx, appMappingID)
 }
 
-func (k *Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData vaultttypes.AppExtendedPairVaultMapping) error {
+func (k *Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping) error {
 	return k.vault.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
 }
 
@@ -140,10 +140,10 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Colle
 	return k.collector.SetAuctionMappingForApp(ctx, records...)
 }
 
-func (k *Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaultttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
+func (k *Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
 	k.vault.UpdateTokenMintedAmountLockerMapping(ctx, vaultLookupData, extendedPairID, amount, changeType)
 }
-func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaultttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
+func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
 	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, vaultLookupData, extendedPairID, amount, changeType)
 }
 
@@ -164,4 +164,28 @@ func (k Keeper) CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidatio
 
 func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool) {
 	return k.esm.GetKillSwitchData(ctx, app_id)
+}
+
+func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
+	return k.esm.GetESMStatus(ctx,id)
+}
+
+func (k *Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
+	return k.vault.CreateNewVault(ctx, From, AppId, ExtendedPairVaultID, AmountIn, AmountOut)
+}
+
+func (k *Keeper) GetUserVaultExtendedPairMapping(ctx sdk.Context, address string) (userVaultAssetData vaulttypes.UserVaultAssetMapping, found bool){
+	return k.vault.GetUserVaultExtendedPairMapping(ctx, address)
+}
+
+func (k *Keeper) CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData vaulttypes.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID string, found bool) {
+	return k.vault.CheckUserAppToExtendedPairMapping(ctx, userVaultAssetData, extendedPairVaultID, appMappingID)
+}
+
+func (k *Keeper) SetVault(ctx sdk.Context, vault vaulttypes.Vault) {
+	k.vault.SetVault(ctx, vault)
+}
+
+func (k *Keeper) GetVault(ctx sdk.Context, id string) (vault vaulttypes.Vault, found bool){
+	return k.vault.GetVault(ctx, id)
 }

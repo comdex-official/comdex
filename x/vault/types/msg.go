@@ -372,7 +372,7 @@ func (m *MsgCreateStableMintRequest) Route() string {
 }
 
 func (m *MsgCreateStableMintRequest) Type() string {
-	return TypeMsgLiquidateRequest
+	return TypeMsgCreateStableMintRequest
 }
 
 func (m *MsgCreateStableMintRequest) ValidateBasic() error {
@@ -426,7 +426,7 @@ func (m *MsgDepositStableMintRequest) Route() string {
 }
 
 func (m *MsgDepositStableMintRequest) Type() string {
-	return TypeMsgLiquidateRequest
+	return TypeMsgDepositStableMintRequest
 }
 
 func (m *MsgDepositStableMintRequest) ValidateBasic() error {
@@ -480,7 +480,7 @@ func (m *MsgWithdrawStableMintRequest) Route() string {
 }
 
 func (m *MsgWithdrawStableMintRequest) Type() string {
-	return TypeMsgLiquidateRequest
+	return TypeMsgWithdrawStableMintRequest
 }
 
 func (m *MsgWithdrawStableMintRequest) ValidateBasic() error {
