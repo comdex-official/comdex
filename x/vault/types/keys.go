@@ -12,12 +12,15 @@ const (
 )
 
 var (
-	TypeMsgCreateRequest    = ModuleName + ":create"
-	TypeMsgDepositRequest   = ModuleName + ":deposit"
-	TypeMsgWithdrawRequest  = ModuleName + ":withdraw"
-	TypeMsgDrawRequest      = ModuleName + ":draw"
-	TypeMsgRepayRequest     = ModuleName + ":repay"
-	TypeMsgLiquidateRequest = ModuleName + ":liquidate"
+	TypeMsgCreateRequest             = ModuleName + ":create"
+	TypeMsgDepositRequest            = ModuleName + ":deposit"
+	TypeMsgWithdrawRequest           = ModuleName + ":withdraw"
+	TypeMsgDrawRequest               = ModuleName + ":draw"
+	TypeMsgRepayRequest              = ModuleName + ":repay"
+	TypeMsgLiquidateRequest          = ModuleName + ":liquidate"
+	TypeMsgCreateStableMintRequest   = ModuleName + ":create_stablemint"
+	TypeMsgDepositStableMintRequest  = ModuleName + ":deposit_stablemint"
+	TypeMsgWithdrawStableMintRequest = ModuleName + ":withdraw_stablemint"
 )
 
 var (
