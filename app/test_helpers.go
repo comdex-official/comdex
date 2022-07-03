@@ -2,6 +2,8 @@ package app
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/simapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/std"
@@ -10,7 +12,6 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
-	"time"
 )
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in

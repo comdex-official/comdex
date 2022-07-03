@@ -87,26 +87,11 @@ func (s *VaultIntegrationTestSuite) Create() {
 	pairID := s.CreateNewPair(assetInID, assetOutID)
 	extendedVaultPairID := s.CreateNewExtendedVaultPair("CMDX C", appID, pairID)
 
-	// msg := types.MsgCreateRequest{
-	// 	From:                s.val.Address.String(),
-	// 	AppMappingId:        appID,
-	// 	ExtendedPairVaultId: extendedVaultPairID,
-	// 	AmountIn:            sdk.NewInt(300000000),
-	// 	AmountOut:           sdk.NewInt(200000000),
-	// }
-	// s.fundAddr(s.val.Address, sdk.NewCoins(sdk.NewCoin("denom1", msg.AmountIn), sdk.NewCoin("denom2", msg.AmountOut)))
-
-	// _, err := s.msgServer.MsgCreate(sdk.WrapSDKContext(s.ctx), &msg)
-	// s.Require().NoError(err)
-
 	_, err := MsgCreate(s.val.ClientCtx, appID, extendedVaultPairID, sdk.NewInt(3), sdk.NewInt(2), s.val.Address.String())
 	// s.Require().NoError(err)
 
 	err = s.network.WaitForNextBlock()
 	s.Require().NoError(err)
-
-	fmt.Println("all vaults.....", s.app.VaultKeeper.GetVaults(s.ctx))
-
 }
 
 func (s *VaultIntegrationTestSuite) TestQueryPairsCmd() {
@@ -119,12 +104,11 @@ func (s *VaultIntegrationTestSuite) TestQueryPairsCmd() {
 		postRun     func(resp types.QueryAllVaultsResponse)
 	}{
 		{
-			"happy case",
+			"valid case",
 			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			"",
 			func(resp types.QueryAllVaultsResponse) {
 				// WIP - vault created but not present in the client context ? IDK how it works.
-				fmt.Println("Response....", resp)
 				// s.Require().Len(resp.Vault, 1)
 			},
 		},
