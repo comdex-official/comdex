@@ -9,7 +9,7 @@ import (
 )
 
 func NewSubApp(s *KeeperTestSuite, appName string) error {
-	return s.app.AssetKeeper.AddAppMappingRecords(s.ctx, assettypes.AppMapping{
+	return s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
 		ShortName:        appName,
 		MinGovDeposit:    sdk.NewInt(0),
@@ -34,11 +34,11 @@ func GetAppIDByAppName(s *KeeperTestSuite, appName string) uint64 {
 
 func NewAddAsset(s *KeeperTestSuite, name, denom string) error {
 	return s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
-		Name:             name,
-		Denom:            denom,
-		Decimals:         1000000,
-		IsOnchain:        true,
-		AssetOraclePrice: true,
+		Name:                  name,
+		Denom:                 denom,
+		Decimals:              1000000,
+		IsOnChain:             true,
+		IsOraclePriceRequired: true,
 	})
 }
 
