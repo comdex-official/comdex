@@ -51,8 +51,23 @@ message ESMStatus{
   ];
 }
 
-message KillSwitchParams {
+message KillSwitchParams{
   uint64 appId = 1 [ (gogoproto.moretags) = "yaml:\"appId\"" ];
   bool breaker_enable = 2 [ (gogoproto.moretags) = "yaml:\"breaker_enable\"" ];
   bool protocol_control = 3 [ (gogoproto.moretags) = "yaml:\"protocol_control\"" ];
+}
+
+message UsersDepositMapping{
+  uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"id\""
+  ];
+
+  string depositor = 2 [(gogoproto.moretags) = "yaml:\"depositor\""];
+
+  cosmos.base.v1beta1.Coin deposits = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"deposits\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
 }

@@ -56,7 +56,7 @@ func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
 
-func (k Keeper) DepositESM(ctx sdk.Context, lenderAddr string, AppID uint64, Amount sdk.Coin) error {
+func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, Amount sdk.Coin) error {
 	//TODO:
 	// burn from token_mint module
 
@@ -86,7 +86,7 @@ func (k Keeper) DepositESM(ctx sdk.Context, lenderAddr string, AppID uint64, Amo
 	if Amount.Amount.GT(esmTriggerParams.TargetValue.Amount) {
 		return types.ErrAmtExceedsTargetValue
 	}
-	addr, _ := sdk.AccAddressFromBech32(lenderAddr)
+	addr, _ := sdk.AccAddressFromBech32(depositorAddr)
 
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, types.ModuleName, sdk.NewCoins(Amount)); err != nil {
 		return err
@@ -104,6 +104,18 @@ func (k Keeper) DepositESM(ctx sdk.Context, lenderAddr string, AppID uint64, Amo
 			Balance: currentDeposit.Balance.Add(Amount),
 		}
 		k.SetCurrentDepositStats(ctx, newCurrentDeposit)
+	}
+	userDeposits, found := k.GetUserDepositByApp(ctx, depositorAddr, AppID)
+	if !found {
+		userDeposits = types.UsersDepositMapping{
+			AppId:     AppID,
+			Depositor: depositorAddr,
+			Deposits:  Amount,
+		}
+		k.SetUserDepositByApp(ctx, userDeposits)
+	} else {
+		userDeposits.Deposits = userDeposits.Deposits.Add(Amount)
+		k.SetUserDepositByApp(ctx, userDeposits)
 	}
 
 	return nil
