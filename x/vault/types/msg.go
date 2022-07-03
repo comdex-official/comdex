@@ -372,7 +372,6 @@ func (m *MsgCreateStableMintRequest) Route() string {
 }
 
 func (m *MsgCreateStableMintRequest) Type() string {
-	// TODO - change message types everywhere
 	return TypeMsgCreateStableMintRequest
 }
 
