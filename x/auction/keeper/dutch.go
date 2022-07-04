@@ -388,12 +388,12 @@ func (k Keeper) CloseDutchAuction(
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}
-		extendedPairID := lockedVault.ExtendedPairId
-		ExtendedPairVault, found := k.GetPairsVault(ctx, extendedPairID)
-		if !found {
-			return auctiontypes.ErrorInvalidExtendedPairVault
-		}
-		liquidationPenalty := ExtendedPairVault.LiquidationPenalty
+		// extendedPairID := lockedVault.ExtendedPairId
+		// ExtendedPairVault, found := k.GetPairsVault(ctx, extendedPairID)
+		// if !found {
+		// 	return auctiontypes.ErrorInvalidExtendedPairVault
+		// }
+		// liquidationPenalty := ExtendedPairVault.LiquidationPenalty
 	//calculate penalty
 	penaltyCoin := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
 	// penaltyCoin.Amount = dutchAuction.InflowTokenCurrentAmount.Amount.Mul(dutchAuction.LiquidationPenalty.TruncateInt())
@@ -404,9 +404,9 @@ func (k Keeper) CloseDutchAuction(
 	// penaltyCoin.Amount = penaltyCoinDec.TruncateInt().Add(lockedVault.InterestAccumulated)
 	// burnTokenDec := dutchAuction.ToBurnAmount.Amount.ToDec().Quo(denom)
 	// burnToken.Amount = burnTokenDec.TruncateInt()
-	burnToken.Amount = dutchAuction.InflowTokenTargetAmount.Amount
-	mulfactor := dutchAuction.InflowTokenTargetAmount.Amount.ToDec().Mul(liquidationPenalty).TruncateInt()
-	penaltyCoin.Amount = mulfactor.Add(lockedVault.InterestAccumulated)
+	burnToken.Amount = lockedVault.AmountOut
+	// mulfactor := dutchAuction.InflowTokenTargetAmount.Amount.ToDec().Mul(liquidationPenalty).TruncateInt()
+	penaltyCoin.Amount = dutchAuction.InflowTokenTargetAmount.Amount.Sub(burnToken.Amount)
 	
 	// burn inflowtarget
 	// sent to collector is.  mulfactor + interest
