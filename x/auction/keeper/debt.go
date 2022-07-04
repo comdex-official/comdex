@@ -1,11 +1,12 @@
 package keeper
 
 import (
+	"time"
+
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"time"
 )
 
 func (k Keeper) DebtActivator(ctx sdk.Context) error {
