@@ -35,8 +35,5 @@ jobs:
       - name: Get dependencies
         run: go get -v -t -d ./...
 
-      - name: Verify
-        run: make verify
-
       - name: Build Release
         run: make build
