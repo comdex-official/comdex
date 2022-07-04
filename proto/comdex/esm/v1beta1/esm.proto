@@ -2,6 +2,7 @@ syntax = "proto3";
 package comdex.esm.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/esm/types";
@@ -48,6 +49,18 @@ message ESMStatus{
 
   bool status = 3 [
     (gogoproto.moretags) = "yaml:\"status\""
+  ];
+
+  google.protobuf.Timestamp start_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"start_time\""
+  ];
+
+  google.protobuf.Timestamp end_time = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"end_time\""
   ];
 }
 

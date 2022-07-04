@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 	"github.com/comdex-official/comdex/x/esm/expected"
+	"time"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -144,9 +145,11 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 
 	if currentDeposit.Balance.Amount.Equal(esmTriggerParams.TargetValue.Amount) {
 		ESMStatus := types.ESMStatus{
-			AppId:    AppID,
-			Executor: executor,
-			Status:   true,
+			AppId:     AppID,
+			Executor:  executor,
+			Status:    true,
+			StartTime: ctx.BlockTime(),
+			EndTime:   ctx.BlockTime().Add(time.Duration(esmTriggerParams.CoolOffPeriod)),
 		}
 		k.SetESMStatus(ctx, ESMStatus)
 	}
