@@ -565,6 +565,7 @@ func New(
 		app.GetSubspace(esmtypes.ModuleName),
 		&app.AssetKeeper,
 		app.BankKeeper,
+		&app.MarketKeeper,
 	)
 
 	app.VaultKeeper = vaultkeeper.NewKeeper(

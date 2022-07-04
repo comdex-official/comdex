@@ -121,3 +121,28 @@ func (k *Keeper) SetUserDepositByApp(ctx sdk.Context, userDeposits types.UsersDe
 	)
 	store.Set(key, value)
 }
+
+func (k *Keeper) SetESMMarketForAsset(ctx sdk.Context, esmMarket types.ESMMarketPrice) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ESMSPriceKey(esmMarket.AppId)
+		value = k.cdc.MustMarshal(&esmMarket)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket types.ESMMarketPrice, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ESMSPriceKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return esmMarket, false
+	}
+
+	k.cdc.MustUnmarshal(value, &esmMarket)
+	return esmMarket, true
+}
