@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/esm/types"
@@ -18,12 +17,6 @@ func (k *Keeper) SetKillSwitchData(ctx sdk.Context, switchParams types.KillSwitc
 	if !found{
 		return types.ErrorAppDoesNotExists
 	}
-	// if switchParams.BreakerEnable && switchParams.ProtocolControl{
-	// 	return types.ErrBothCantbeOpen
-	// }
-
-	fmt.Println("condition setting")
-	fmt.Println(value)
 
 	store.Set(key, value)
 	return nil
@@ -43,4 +36,14 @@ func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (switchParams
 	k.cdc.MustUnmarshal(value, &switchParams)
 
 	return switchParams, true
+}
+
+func (k *Keeper) Admin(ctx sdk.Context, from string) bool {
+	var from_address = []string{"comdex1gvcsuex523fcwuzcpaqys99r70hajf8ffg6322", "comdex1mska4sk59e7t23r2vv3mvzljujxf9j08frl2tg", ""}
+	for _, addr := range from_address{
+		if addr == from{
+			return true
+		}
+	}
+	return false
 }

@@ -21,4 +21,5 @@ var (
 	ErrorUnauthorized              = sdkerrors.Register(ModuleName, 1110, "unauthorized")
 	ErrorAppDoesNotExists          = sdkerrors.Register(ModuleName, 1111, "App Does Not Exists")
 	ErrAppIDDoesNotExists          = sdkerrors.Register(ModuleName, 1112, "App Id Does NOt exist")
+	ErrCoolOffPeriodPassed         = sdkerrors.Register(ModuleName, 1113, "Cool off period has passed")
 )

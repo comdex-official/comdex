@@ -214,9 +214,23 @@ func (k Keeper) closeSurplusAuction(
 	surplusAuction auctiontypes.SurplusAuction,
 	statusEsm bool,
 ) error {
-	//TODO....
-	// refund harbor to last bidder and cmst to collector
-	if surplusAuction.Bidder != nil {
+	if statusEsm && surplusAuction.Bidder != nil{
+
+		err := k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, surplusAuction.Bidder, sdk.NewCoins(surplusAuction.Bid))
+		if err != nil {
+			return err
+		}
+
+		err1 := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(surplusAuction.SellToken))
+		if err1 != nil {
+			return err1
+		}
+		err2 := k.SetNetFeeCollectedData(ctx, surplusAuction.AppId, surplusAuction.AssetOutId, surplusAuction.SellToken.Amount)
+		if err2 != nil {
+			return auctiontypes.ErrorUnableToSetNetFees
+		}
+
+	}else if !statusEsm && surplusAuction.Bidder != nil {
 		highestBidReceived := surplusAuction.Bid
 
 		err := k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, surplusAuction.Bidder, sdk.NewCoins(surplusAuction.SellToken))

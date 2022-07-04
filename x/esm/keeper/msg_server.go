@@ -46,7 +46,7 @@ func (m msgServer) ExecuteESM(goCtx context.Context, execute *types.MsgExecuteES
 
 func (k msgServer) MsgKillSwitch(c context.Context, msg *types.MsgKillRequest) (*types.MsgKillResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From != k.keeper.Admin(ctx) {
+	if !k.keeper.Admin(ctx, msg.From) {
 		return nil, types.ErrorUnauthorized
 	}
 

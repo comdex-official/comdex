@@ -40,15 +40,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 func NewESMHandler(k keeper.Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
-		case *types.ESMTriggerParamsProposal:
-			return handleAddESMTriggerParamsProposal(ctx, k, c)
-
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}
 	}
-}
-
-func handleAddESMTriggerParamsProposal(ctx sdk.Context, k keeper.Keeper, p *types.ESMTriggerParamsProposal) error {
-	return k.HandleAddESMTriggerParamsRecords(ctx, p)
 }

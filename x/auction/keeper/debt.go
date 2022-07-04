@@ -1,11 +1,12 @@
 package keeper
 
 import (
+	"time"
+
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"time"
 )
 
 func (k Keeper) DebtActivator(ctx sdk.Context) error {
@@ -212,9 +213,16 @@ func (k Keeper) closeDebtAuction(
 	statusEsm bool,
 ) error { //If there are bids
 
-	//TODO....
-	// refund cmst to last bidder and close auction
-	if debtAuction.AuctionStatus != auctiontypes.AuctionStartNoBids {
+	if statusEsm && debtAuction.BiddingIds != nil {
+		bidding, err := k.GetDebtUserBidding(ctx, debtAuction.Bidder.String(), debtAuction.AppId, debtAuction.ActiveBiddingId)
+		if err != nil {
+			return err
+		}
+		err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, sdk.AccAddress(bidding.Bidder), sdk.NewCoins(debtAuction.ExpectedUserToken))
+		if err != nil {
+			return err
+		}
+	}else if (debtAuction.AuctionStatus != auctiontypes.AuctionStartNoBids)  && !statusEsm{
 		err := k.MintNewTokensForApp(ctx, debtAuction.AppId, debtAuction.AssetOutId, debtAuction.Bidder.String(), debtAuction.CurrentBidAmount.Amount)
 		if err != nil {
 			return err
