@@ -80,3 +80,11 @@ func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.Kil
 func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
 	return k.esm.GetESMStatus(ctx,id)
 }
+
+func (k *Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket esmtypes.ESMMarketPrice, found bool) {
+	return k.esm.GetESMMarketForAsset(ctx, id)
+}
+
+func (k *Keeper) GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerParams esmtypes.ESMTriggerParams, found bool) {
+	return k.esm.GetESMTriggerParams(ctx, id)
+}

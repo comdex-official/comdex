@@ -198,14 +198,45 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 	if !found {
 		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 	}
+	esmStatus, found := k.GetESMStatus(ctx,extendedPairVault.AppId)
+	statusEsm := false
+	if found{
+		statusEsm = esmStatus.Status
+	}
+	if statusEsm{
+		marketStatus, found := k.GetESMMarketForAsset(ctx, extendedPairVault.AppId)
+		if !found {
+			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+		}
+		if marketStatus.IsPriceSet{
+			for _, data := range marketStatus.Market{
+				if assetInData.Id == data.AssetID{
+					assetInPrice = data.Rates
+				}
+			}
+		}
+	}
 	var assetOutPrice uint64
 
 	if extendedPairVault.AssetOutOraclePrice {
 		//If oracle Price required for the assetOut
-		assetOutPrice, found = k.GetPriceForAsset(ctx, assetOutData.Id)
-
-		if !found {
-			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+		if statusEsm{
+			marketStatus, found := k.GetESMMarketForAsset(ctx, extendedPairVault.AppId)
+			if !found {
+				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+			}
+			if marketStatus.IsPriceSet{
+				for _, data := range marketStatus.Market{
+					if assetOutData.Id == data.AssetID{
+						assetOutPrice = data.Rates
+					}
+				}
+			}
+		}else{
+			assetOutPrice, found = k.GetPriceForAsset(ctx, assetOutData.Id)
+			if !found {
+				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+			}
 		}
 	} else {
 		//If oracle Price is not required for the assetOut
@@ -233,7 +264,7 @@ func (k *Keeper) VerifyCollaterlizationRatio(
 	statusEsm bool,
 ) error {
 
-	// calulate cr from snapshot price for esm.  TODO...........
+
 	collaterlizationRatio, err := k.CalculateCollaterlizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
 	if err != nil {
 		return err

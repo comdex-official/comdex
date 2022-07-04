@@ -94,7 +94,10 @@ func (k Keeper) StartDutchAuction(
 	}
 	if ExtendedPairVault.AssetOutOraclePrice {
 		//If oracle Price required for the assetOut
-		inFlowTokenPrice, _ = k.GetPriceForAsset(ctx, assetInID)
+		inFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetInID)
+		if !found {
+			return auctiontypes.ErrorPrices
+		}
 	} else {
 		//If oracle Price is not required for the assetOut
 		inFlowTokenPrice = ExtendedPairVault.AssetOutPrice
