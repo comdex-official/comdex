@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"time"
 	"strconv"
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
