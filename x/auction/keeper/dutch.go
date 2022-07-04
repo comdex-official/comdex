@@ -196,7 +196,6 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	owe := slice.Mul(outFlowTokenCurrentPrice)
 	inFlowTokenAmount := owe.Quo(inFlowTokenCurrentPrice)
 	if inFlowTokenAmount.GT(tab) {
-		// extraCoin.Amount = inFlowTokenAmount.Sub(tab)
 		inFlowTokenAmount = tab
 		owe = inFlowTokenAmount.Mul(inFlowTokenCurrentPrice)
 		slice = owe.Quo(outFlowTokenCurrentPrice)
@@ -272,11 +271,6 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		if err != nil {
 			return err
 		}
-		// err = k.IncreaseLockedVaultAmountIn(ctx, auction.LockedVaultId, total.Amount)
-		// if err != nil {
-		// 	return err
-		// }
-		// auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
 
 		err = k.SetDutchAuction(ctx, auction)
 		if err != nil {
@@ -297,11 +291,8 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 			return err
 		}
 
-		// auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin).Add(requiredAmount)
-
 		//storing protocol loss
 		k.SetProtocolStatistics(ctx, auction.AppId, auction.AssetInId, requiredAmount.Amount)
-		// burnToken.Amount = lockedVault.AmountOut
 
 		err = k.SetDutchAuction(ctx, auction)
 		if err != nil {
@@ -314,7 +305,6 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 			return err
 		}
 	} else if auction.OutflowTokenCurrentAmount.Amount.IsZero() { //entire collateral sold out
-		// auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
 
 		err = k.SetDutchAuction(ctx, auction)
 		if err != nil {
@@ -327,7 +317,6 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 			return err
 		}
 	} else {
-		// auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
 
 		err = k.SetDutchAuction(ctx, auction)
 		if err != nil {
@@ -388,28 +377,13 @@ func (k Keeper) CloseDutchAuction(
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}
-		// extendedPairID := lockedVault.ExtendedPairId
-		// ExtendedPairVault, found := k.GetPairsVault(ctx, extendedPairID)
-		// if !found {
-		// 	return auctiontypes.ErrorInvalidExtendedPairVault
-		// }
-		// liquidationPenalty := ExtendedPairVault.LiquidationPenalty
 	//calculate penalty
 	penaltyCoin := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
-	// penaltyCoin.Amount = dutchAuction.InflowTokenCurrentAmount.Amount.Mul(dutchAuction.LiquidationPenalty.TruncateInt())
 	// burn and send target CMST to collector
 	burnToken := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
-	// denom := dutchAuction.LiquidationPenalty.Add(sdk.MustNewDecFromStr("1"))
-	// penaltyCoinDec := sdk.NewDecFromInt(dutchAuction.ToBurnAmount.Amount).Quo(denom).Mul(dutchAuction.LiquidationPenalty)
-	// penaltyCoin.Amount = penaltyCoinDec.TruncateInt().Add(lockedVault.InterestAccumulated)
-	// burnTokenDec := dutchAuction.ToBurnAmount.Amount.ToDec().Quo(denom)
-	// burnToken.Amount = burnTokenDec.TruncateInt()
 	burnToken.Amount = lockedVault.AmountOut
-	// mulfactor := dutchAuction.InflowTokenTargetAmount.Amount.ToDec().Mul(liquidationPenalty).TruncateInt()
 	penaltyCoin.Amount = dutchAuction.InflowTokenTargetAmount.Amount.Sub(burnToken.Amount)
 	
-	// burn inflowtarget
-	// sent to collector is.  mulfactor + interest
 
 	//burning
 	err := k.BurnCoins(ctx, auctiontypes.ModuleName, burnToken)

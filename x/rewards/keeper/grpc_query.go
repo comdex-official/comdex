@@ -249,3 +249,19 @@ func (k *Keeper) QueryExternalRewardVaults(c context.Context, req *types.QueryEx
 		VaultExternalRewards: items,
 	}, nil
 }
+
+func (k *Keeper) QueryWhitelistedAppIdsVault(c context.Context, req *types.QueryWhitelistedAppIdsVaultRequest) (*types.QueryWhitelistedAppIdsVaultResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	items := k.GetAppIDs(ctx)
+
+	return &types.QueryWhitelistedAppIdsVaultResponse{
+		WhitelistedAppIdsVault: items,
+	}, nil
+}
