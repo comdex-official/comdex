@@ -15,10 +15,13 @@ Plug & play customizable Comdex modules to deliver bleeding edge dApps
 
 ## Docs
 
-checkout the documents here [docs.comdex.one](https://docs.comdex.one).
-checkout the harbour protocol documents here [docs.harborprotocol.one](http://docs.harborprotocol.one).
-checkout the commodo documents here [docs.commodo.one](http://docs.commodo.one).
-checkout the cSwap documents here [docs.cswap.one](https://docs.cswap.one).
+Checkout the documents here [docs.comdex.one](https://docs.comdex.one).
+
+Harbour protocol : [docs.harborprotocol.one](http://docs.harborprotocol.one).
+
+Commodo : [docs.commodo.one](http://docs.commodo.one).
+
+cSwap :  [docs.cswap.one](https://docs.cswap.one).
 
 
 If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](https://discord.com/invite/7vjPvWKKMT).
