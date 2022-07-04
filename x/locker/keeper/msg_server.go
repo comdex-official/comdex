@@ -252,10 +252,6 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 // MsgWithdrawAsset Remove asset id from Deposit & Withdraw-redundant.
 func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
-		return nil, esmtypes.ErrCircuitBreakerEnabled
-	}
 	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
