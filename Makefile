@@ -87,7 +87,7 @@ endif
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
 
-all: install
+all: install test
 
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/comdex
@@ -95,6 +95,18 @@ install: go.sum
 build:
 	go build $(BUILD_FLAGS) -o bin/comdex ./cmd/comdex
 
+
+###############################################################################
+###                                Linting                                  ###
+###############################################################################
+
+lint:
+	@echo "--> Running linter"
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
+
+format:
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --fix
+	@go run mvdan.cc/gofumpt -l -w x/ app/ ante/ tests/
 
 
 ###############################################################################

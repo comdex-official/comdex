@@ -1,7 +1,8 @@
+<h1 align="center">Comdex : Democratizing Finance </h1>
+
 <p align="center">
   <img src="./logo.svg" width="300">
 </p>
-<h3 align="center">Democratizing Finance </h3>
 
 <div align="center">
 <h4> An ecosystem of solutions built with an aim of bridging DeFi & CeFi </h4>
@@ -34,10 +35,10 @@ make install
 
 ## Testnet
 
-To verify latest testnet and main net version check 
+To verify latest testnet and main net version check
 [Version](https://github.com/comdex-official/networks/blob/main/README.md)
 
-For further information on joining the testnet, head over to the 
+For further information on joining the testnet, head over to the
 [Comdex Networks TestNet](https://github.com/comdex-official/networks/tree/main/testnet).
 
 The explorer for this chain is hosted [TestNet Explorer](https://comets-test.comdex.one/)
@@ -47,7 +48,7 @@ For further information on joining the mainnet, head over to the
 [Comdex Networks MainNet](https://github.com/comdex-official/networks/tree/main/mainnet).
 
 
-## Mainet Explorers 
+## Mainet Explorers
 The explorer for this chain is hosted
 
 * [Mintscan](https://www.mintscan.io/comdex/)
