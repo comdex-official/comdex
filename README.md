@@ -1,7 +1,8 @@
+<h1 align="center">Comdex : Democratizing Finance </h1>
+
 <p align="center">
   <img src="./logo.svg" width="300">
 </p>
-<h3 align="center">Democratizing Finance </h3>
 
 <div align="center">
 <h4> An ecosystem of solutions built with an aim of bridging DeFi & CeFi </h4>
@@ -14,13 +15,20 @@ Plug & play customizable Comdex modules to deliver bleeding edge dApps
 
 ## Docs
 
-checkout the documents here [docs.comdex.one](https://docs.comdex.one).
+Checkout the documents here [docs.comdex.one](https://docs.comdex.one).
+
+Harbour protocol : [docs.harborprotocol.one](http://docs.harborprotocol.one).
+
+Commodo : [docs.commodo.one](http://docs.commodo.one).
+
+cSwap :  [docs.cswap.one](https://docs.cswap.one).
+
 
 If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](https://discord.com/invite/7vjPvWKKMT).
 
 ### Installation
 
-Requires [Go 1.17+](https://golang.org/dl/)
+Requires [Go 1.18+](https://golang.org/dl/)
 
 ### Linux
 
@@ -34,20 +42,20 @@ make install
 
 ## Testnet
 
-To verify latest testnet and main net version check 
+To verify latest testnet and main net version check
 [Version](https://github.com/comdex-official/networks/blob/main/README.md)
 
-For further information on joining the testnet, head over to the 
+For further information on joining the testnet, head over to the
 [Comdex Networks TestNet](https://github.com/comdex-official/networks/tree/main/testnet).
 
 The explorer for this chain is hosted [TestNet Explorer](https://comets-test.comdex.one/)
 
-## MainNet
+## Main Net
 For further information on joining the mainnet, head over to the
 [Comdex Networks MainNet](https://github.com/comdex-official/networks/tree/main/mainnet).
 
 
-## Mainet Explorers 
+## Main Net Explorers
 The explorer for this chain is hosted
 
 * [Mintscan](https://www.mintscan.io/comdex/)
@@ -65,9 +73,12 @@ Copyright © Comdex Technologies Pte Ltd. All rights reserved.
 
 Licensed under the [Apache v2 License](LICENSE).
 
+[![Project Status: Active -- The project has reached a stable, usable
+state and is being actively developed.](https://img.shields.io/badge/repo%20status-Active-green.svg?style=flat-square)](https://www.repostatus.org/#active)
 [![version](https://img.shields.io/github/tag/comdex-official/comdex.svg)](https://github.com/comdex-official/comdex/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/comdex-official/comdex)](https://goreportcard.com/report/github.com/comdex-official/comdex)
 [![API Reference](https://godoc.org/github.com/comdex-official/comdex?status.svg)](https://godoc.org/github.com/comdex-official/comdex)
 [![GitHub](https://img.shields.io/github/license/comdex-official/comdex.svg)](https://github.com/comdex-official/comdex/blob/development/LICENSE)
+[![Lines Of Code](https://img.shields.io/tokei/lines/github/comdex-official/comdex?style=flat-square)](https://github.com/comdex-official/comdex)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ComdexOfficial?label=Follow&style=social)](https://twitter.com/ComdexOfficial)
-[![Discord Chat](https://img.shields.io/badge/discord-chat-blue)](https://discord.com/invite/7vjPvWKKMT)
+[![Discord Chat](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.com/invite/7vjPvWKKMT)
