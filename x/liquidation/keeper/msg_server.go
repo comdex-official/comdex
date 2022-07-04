@@ -1,9 +1,7 @@
 package keeper
 
 import (
-	"context"
 	"github.com/comdex-official/comdex/x/liquidation/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgServer struct {
@@ -16,20 +14,3 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-func (m msgServer) WhitelistApp(goCtx context.Context, id *types.WhitelistAppId) (*types.MsgWhitelistAppIdResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	if err := m.Keeper.WhitelistAppID(ctx, id.AppId); err != nil {
-		return nil, err
-	}
-	return &types.MsgWhitelistAppIdResponse{}, nil
-}
-
-func (m msgServer) RemoveWhitelistApp(goCtx context.Context, id *types.RemoveWhitelistAppId) (*types.MsgRemoveWhitelistAppIdResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	if err := m.Keeper.RemoveWhitelistAsset(ctx, id.AppId); err != nil {
-		return nil, err
-	}
-	return &types.MsgRemoveWhitelistAppIdResponse{}, nil
-}

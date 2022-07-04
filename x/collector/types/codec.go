@@ -10,8 +10,6 @@ import (
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// this line is used by starport scaffolding # 2
-	cdc.RegisterConcrete(&LookupTableParams{}, "comdex/collector/LookupTableParams", nil)
-	cdc.RegisterConcrete(&AuctionControlByAppIdProposal{}, "comdex/collector/AuctionControlByAppIdProposal", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -20,8 +18,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
-		&LookupTableParams{},
-		&AuctionControlByAppIdProposal{},
 	)
 }
 

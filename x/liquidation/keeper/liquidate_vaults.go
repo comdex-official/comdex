@@ -73,20 +73,20 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
-
 	return nil
 }
 
-func (k Keeper) UpdateLockedVaultsAppMapping(ctx sdk.Context, lockedVault types.LockedVault) {
-	LockedVaultToApp, _ := k.GetLockedVaultByAppID(ctx, lockedVault.AppId)
-	LockedVaultToApp.LockedVault = append(LockedVaultToApp.LockedVault, &lockedVault)
-
-	newLockedVaultToApp := types.LockedVaultToAppMapping{
-		AppId:       lockedVault.AppId,
-		LockedVault: LockedVaultToApp.LockedVault,
-	}
-	k.SetLockedVaultByAppID(ctx, newLockedVaultToApp)
-}
+//
+//func (k Keeper) UpdateLockedVaultsAppMapping(ctx sdk.Context, lockedVault types.LockedVault) {
+//	LockedVaultToApp, _ := k.GetLockedVaultByAppID(ctx, lockedVault.AppMappingId)
+//	for index, vault := range LockedVaultToApp.LockedVault {
+//		if vault.OriginalVaultId == lockedVault.OriginalVaultId {
+//			LockedVaultToApp.LockedVault[index] = &lockedVault
+//		}
+//	}
+//
+//	k.SetLockedVaultByAppID(ctx, LockedVaultToApp)
+//}
 
 func (k Keeper) SetLockedVaultByAppID(ctx sdk.Context, msg types.LockedVaultToAppMapping) {
 	var (
@@ -143,12 +143,12 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 					assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
 
 					totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
-
 					updatedLockedVault := lockedVault
 					updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 					updatedLockedVault.CollateralToBeAuctioned = totalIn
 					k.SetLockedVault(ctx, updatedLockedVault)
-					k.UpdateLockedVaultsAppMapping(ctx, updatedLockedVault)
+					//k.UpdateLockedVaultsAppMapping(ctx, updatedLockedVault)
+
 				}
 			}
 		}

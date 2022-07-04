@@ -12,20 +12,20 @@ import (
 )
 
 var (
-	_ types.QueryServer = (*queryServer)(nil)
+	_ types.QueryServer = (*QueryServer)(nil)
 )
 
-type queryServer struct {
+type QueryServer struct {
 	Keeper
 }
 
 func NewQueryServer(k Keeper) types.QueryServer {
-	return &queryServer{
+	return &QueryServer{
 		Keeper: k,
 	}
 }
 
-func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVaultsRequest) (*types.QueryAllVaultsResponse, error) {
+func (q *QueryServer) QueryAllVaults(c context.Context, req *types.QueryAllVaultsRequest) (*types.QueryAllVaultsResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -36,7 +36,7 @@ func (q *queryServer) QueryAllVaults(c context.Context, req *types.QueryAllVault
 	}, nil
 }
 
-func (q *queryServer) QueryAllVaultsByApp(c context.Context, req *types.QueryAllVaultsByAppRequest) (*types.QueryAllVaultsByAppResponse, error) {
+func (q *QueryServer) QueryAllVaultsByApp(c context.Context, req *types.QueryAllVaultsByAppRequest) (*types.QueryAllVaultsByAppResponse, error) {
 	var (
 		ctx       = sdk.UnwrapSDKContext(c)
 		AppVaults []types.Vault
@@ -53,7 +53,7 @@ func (q *queryServer) QueryAllVaultsByApp(c context.Context, req *types.QueryAll
 	}, nil
 }
 
-func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest) (*types.QueryVaultResponse, error) {
+func (q *QueryServer) QueryVault(c context.Context, req *types.QueryVaultRequest) (*types.QueryVaultResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -70,7 +70,7 @@ func (q *queryServer) QueryVault(c context.Context, req *types.QueryVaultRequest
 		Vault: vault,
 	}, nil
 }
-func (q *queryServer) QueryVaultInfoByVaultID(c context.Context, req *types.QueryVaultInfoByVaultIDRequest) (*types.QueryVaultInfoByVaultIDResponse, error) {
+func (q *QueryServer) QueryVaultInfoByVaultID(c context.Context, req *types.QueryVaultInfoByVaultIDRequest) (*types.QueryVaultInfoByVaultIDResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -109,7 +109,7 @@ func (q *queryServer) QueryVaultInfoByVaultID(c context.Context, req *types.Quer
 	}, nil
 }
 
-func (q *queryServer) QueryVaultInfoOfOwnerByApp(c context.Context, req *types.QueryVaultInfoOfOwnerByAppRequest) (*types.QueryVaultInfoOfOwnerByAppResponse, error) {
+func (q *QueryServer) QueryVaultInfoOfOwnerByApp(c context.Context, req *types.QueryVaultInfoOfOwnerByAppRequest) (*types.QueryVaultInfoOfOwnerByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -175,7 +175,7 @@ func (q *queryServer) QueryVaultInfoOfOwnerByApp(c context.Context, req *types.Q
 	}, nil
 }
 
-func (q *queryServer) QueryAllVaultsByAppAndExtendedPair(c context.Context, req *types.QueryAllVaultsByAppAndExtendedPairRequest) (*types.QueryAllVaultsByAppAndExtendedPairResponse, error) {
+func (q *QueryServer) QueryAllVaultsByAppAndExtendedPair(c context.Context, req *types.QueryAllVaultsByAppAndExtendedPairRequest) (*types.QueryAllVaultsByAppAndExtendedPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -207,7 +207,7 @@ func (q *queryServer) QueryAllVaultsByAppAndExtendedPair(c context.Context, req 
 	}, nil
 }
 
-func (q *queryServer) QueryVaultIDOfOwnerByExtendedPairAndApp(c context.Context, req *types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest) (*types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse, error) {
+func (q *QueryServer) QueryVaultIDOfOwnerByExtendedPairAndApp(c context.Context, req *types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest) (*types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -244,7 +244,7 @@ func (q *queryServer) QueryVaultIDOfOwnerByExtendedPairAndApp(c context.Context,
 	}, nil
 }
 
-func (q *queryServer) QueryVaultIdsByAppInAllExtendedPairs(c context.Context, req *types.QueryVaultIdsByAppInAllExtendedPairsRequest) (*types.QueryVaultIdsByAppInAllExtendedPairsResponse, error) {
+func (q *QueryServer) QueryVaultIdsByAppInAllExtendedPairs(c context.Context, req *types.QueryVaultIdsByAppInAllExtendedPairsRequest) (*types.QueryVaultIdsByAppInAllExtendedPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -271,7 +271,7 @@ func (q *queryServer) QueryVaultIdsByAppInAllExtendedPairs(c context.Context, re
 	}, nil
 }
 
-func (q *queryServer) QueryAllVaultIdsByAnOwner(c context.Context, req *types.QueryAllVaultIdsByAnOwnerRequest) (*types.QueryAllVaultIdsByAnOwnerResponse, error) {
+func (q *QueryServer) QueryAllVaultIdsByAnOwner(c context.Context, req *types.QueryAllVaultIdsByAnOwnerRequest) (*types.QueryAllVaultIdsByAnOwnerResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -298,7 +298,7 @@ func (q *queryServer) QueryAllVaultIdsByAnOwner(c context.Context, req *types.Qu
 	}, nil
 }
 
-func (q *queryServer) QueryTokenMintedByAppAndExtendedPair(c context.Context, req *types.QueryTokenMintedByAppAndExtendedPairRequest) (*types.QueryTokenMintedByAppAndExtendedPairResponse, error) {
+func (q *QueryServer) QueryTokenMintedByAppAndExtendedPair(c context.Context, req *types.QueryTokenMintedByAppAndExtendedPairRequest) (*types.QueryTokenMintedByAppAndExtendedPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -331,7 +331,7 @@ func (q *queryServer) QueryTokenMintedByAppAndExtendedPair(c context.Context, re
 	}, nil
 }
 
-func (q *queryServer) QueryTokenMintedAssetWiseByApp(c context.Context, req *types.QueryTokenMintedAssetWiseByAppRequest) (*types.QueryTokenMintedAssetWiseByAppResponse, error) {
+func (q *QueryServer) QueryTokenMintedAssetWiseByApp(c context.Context, req *types.QueryTokenMintedAssetWiseByAppRequest) (*types.QueryTokenMintedAssetWiseByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -371,7 +371,7 @@ func (q *queryServer) QueryTokenMintedAssetWiseByApp(c context.Context, req *typ
 	}, nil
 }
 
-func (q *queryServer) QueryVaultCountByApp(c context.Context, req *types.QueryVaultCountByAppRequest) (*types.QueryVaultCountByAppResponse, error) {
+func (q *QueryServer) QueryVaultCountByApp(c context.Context, req *types.QueryVaultCountByAppRequest) (*types.QueryVaultCountByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -396,7 +396,7 @@ func (q *queryServer) QueryVaultCountByApp(c context.Context, req *types.QueryVa
 	}, nil
 }
 
-func (q *queryServer) QueryVaultCountByAppAndExtendedPair(c context.Context, req *types.QueryVaultCountByAppAndExtendedPairRequest) (*types.QueryVaultCountByAppAndExtendedPairResponse, error) {
+func (q *QueryServer) QueryVaultCountByAppAndExtendedPair(c context.Context, req *types.QueryVaultCountByAppAndExtendedPairRequest) (*types.QueryVaultCountByAppAndExtendedPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -424,7 +424,7 @@ func (q *queryServer) QueryVaultCountByAppAndExtendedPair(c context.Context, req
 	}, nil
 }
 
-func (q *queryServer) QueryTotalValueLockedByAppAndExtendedPair(c context.Context, req *types.QueryTotalValueLockedByAppAndExtendedPairRequest) (*types.QueryTotalValueLockedByAppAndExtendedPairResponse, error) {
+func (q *QueryServer) QueryTotalValueLockedByAppAndExtendedPair(c context.Context, req *types.QueryTotalValueLockedByAppAndExtendedPairRequest) (*types.QueryTotalValueLockedByAppAndExtendedPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -456,7 +456,7 @@ func (q *queryServer) QueryTotalValueLockedByAppAndExtendedPair(c context.Contex
 	}, nil
 }
 
-func (q *queryServer) QueryExtendedPairIDsByApp(c context.Context, req *types.QueryExtendedPairIDsByAppRequest) (*types.QueryExtendedPairIDsByAppResponse, error) {
+func (q *QueryServer) QueryExtendedPairIDsByApp(c context.Context, req *types.QueryExtendedPairIDsByAppRequest) (*types.QueryExtendedPairIDsByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -484,7 +484,7 @@ func (q *queryServer) QueryExtendedPairIDsByApp(c context.Context, req *types.Qu
 	}, nil
 }
 
-func (q *queryServer) QueryStableVaultByVaultID(c context.Context, req *types.QueryStableVaultByVaultIDRequest) (*types.QueryStableVaultByVaultIDResponse, error) {
+func (q *QueryServer) QueryStableVaultByVaultID(c context.Context, req *types.QueryStableVaultByVaultIDRequest) (*types.QueryStableVaultByVaultIDResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -501,7 +501,7 @@ func (q *queryServer) QueryStableVaultByVaultID(c context.Context, req *types.Qu
 	}, nil
 }
 
-func (q *queryServer) QueryStableVaultByApp(c context.Context, req *types.QueryStableVaultByAppRequest) (*types.QueryStableVaultByAppResponse, error) {
+func (q *QueryServer) QueryStableVaultByApp(c context.Context, req *types.QueryStableVaultByAppRequest) (*types.QueryStableVaultByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -522,7 +522,7 @@ func (q *queryServer) QueryStableVaultByApp(c context.Context, req *types.QueryS
 	}, nil
 }
 
-func (q *queryServer) QueryStableVaultByAppAndExtendedPair(c context.Context, req *types.QueryStableVaultByAppAndExtendedPairRequest) (*types.QueryStableVaultByAppAndExtendedPairResponse, error) {
+func (q *QueryServer) QueryStableVaultByAppAndExtendedPair(c context.Context, req *types.QueryStableVaultByAppAndExtendedPairRequest) (*types.QueryStableVaultByAppAndExtendedPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -543,7 +543,7 @@ func (q *queryServer) QueryStableVaultByAppAndExtendedPair(c context.Context, re
 }
 
 // QueryExtendedPairVaultMappingByAppAndExtendedPair to query vault by app and extended pair.
-func (q *queryServer) QueryExtendedPairVaultMappingByAppAndExtendedPair(c context.Context, req *types.QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) (*types.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse, error) {
+func (q *QueryServer) QueryExtendedPairVaultMappingByAppAndExtendedPair(c context.Context, req *types.QueryExtendedPairVaultMappingByAppAndExtendedPairRequest) (*types.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -571,7 +571,7 @@ func (q *queryServer) QueryExtendedPairVaultMappingByAppAndExtendedPair(c contex
 	}, nil
 }
 
-func (q *queryServer) QueryExtendedPairVaultMappingByApp(c context.Context, req *types.QueryExtendedPairVaultMappingByAppRequest) (*types.QueryExtendedPairVaultMappingByAppResponse, error) {
+func (q *QueryServer) QueryExtendedPairVaultMappingByApp(c context.Context, req *types.QueryExtendedPairVaultMappingByAppRequest) (*types.QueryExtendedPairVaultMappingByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -595,7 +595,7 @@ func (q *queryServer) QueryExtendedPairVaultMappingByApp(c context.Context, req 
 	}, nil
 }
 
-func (q *queryServer) QueryTVLByAppOfAllExtendedPairs(c context.Context, req *types.QueryTVLByAppOfAllExtendedPairsRequest) (*types.QueryTVLByAppOfAllExtendedPairsResponse, error) {
+func (q *QueryServer) QueryTVLByAppOfAllExtendedPairs(c context.Context, req *types.QueryTVLByAppOfAllExtendedPairsRequest) (*types.QueryTVLByAppOfAllExtendedPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -635,7 +635,7 @@ func (q *queryServer) QueryTVLByAppOfAllExtendedPairs(c context.Context, req *ty
 	}, nil
 }
 
-func (q *queryServer) QueryTVLByApp(c context.Context, req *types.QueryTVLByAppRequest) (*types.QueryTVLByAppResponse, error) {
+func (q QueryServer) QueryTVLByApp(c context.Context, req *types.QueryTVLByAppRequest) (*types.QueryTVLByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -666,7 +666,7 @@ func (q *queryServer) QueryTVLByApp(c context.Context, req *types.QueryTVLByAppR
 	}, nil
 }
 
-func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.QueryUserMyPositionByAppRequest) (*types.QueryUserMyPositionByAppResponse, error) {
+func (q *QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.QueryUserMyPositionByAppRequest) (*types.QueryUserMyPositionByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -759,7 +759,7 @@ func (q *queryServer) QueryUserMyPositionByApp(c context.Context, req *types.Que
 	}, nil
 }
 
-func (q *queryServer) QueryUserExtendedPairTotalData(c context.Context, req *types.QueryUserExtendedPairTotalDataRequest) (*types.QueryUserExtendedPairTotalDataResponse, error) {
+func (q *QueryServer) QueryUserExtendedPairTotalData(c context.Context, req *types.QueryUserExtendedPairTotalDataRequest) (*types.QueryUserExtendedPairTotalDataResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -774,7 +774,7 @@ func (q *queryServer) QueryUserExtendedPairTotalData(c context.Context, req *typ
 	}, nil
 }
 
-func (q *queryServer) QueryPairsLockedAndMintedStatisticByApp(c context.Context, req *types.QueryPairsLockedAndMintedStatisticByAppRequest) (*types.QueryPairsLockedAndMintedStatisticByAppResponse, error) {
+func (q *QueryServer) QueryPairsLockedAndMintedStatisticByApp(c context.Context, req *types.QueryPairsLockedAndMintedStatisticByAppRequest) (*types.QueryPairsLockedAndMintedStatisticByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -800,6 +800,7 @@ func (q *queryServer) QueryPairsLockedAndMintedStatisticByApp(c context.Context,
 		statistics.AssetOutDenom = outDenom.Denom
 		statistics.CollateralAmount = data.CollateralLockedAmount
 		statistics.MintedAmount = data.TokenMintedAmount
+		statistics.ExtendedPairVaultID = data.ExtendedPairId
 
 		pairStatistics = append(pairStatistics, statistics)
 	}
