@@ -257,6 +257,8 @@ func (s *KeeperTestSuite) LiquidateVaults1() {
 	s.ChangeOraclePrice("ucmdx")
 	err = liquidationKeeper.LiquidateVaults(*ctx)
 	s.Require().NoError(err)
+	err = liquidationKeeper.UpdateLockedVaults(*ctx)
+	s.Require().NoError(err)
 	id = liquidationKeeper.GetLockedVaultID(*ctx)
 	s.Require().Equal(id, uint64(2))
 	s.Require().Equal(s.GetVaultCount(), currentVaultsCount-2)
