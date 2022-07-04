@@ -271,6 +271,19 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIDLiquidationQuery query response")
 			}
 			return bz, nil
+		} else if comdexQuery.AddESMTriggerParamsForAppQuery != nil {
+			AppID := comdexQuery.AddESMTriggerParamsForAppQuery.AppID
+
+			found, errormsg := queryPlugin.WasmAddESMTriggerParamsQueryCheck(ctx, AppID)
+			res := bindings.AddESMTriggerParamsForAppResponse{
+				Found: found,
+				Err:   errormsg,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "AddESMTriggerParamsForAppResponse query response")
+			}
+			return bz, nil
 		}
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown App Data query variant"}
 	}

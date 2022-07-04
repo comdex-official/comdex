@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"github.com/comdex-official/comdex/x/esm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -19,7 +18,6 @@ func (k *Keeper) AddESMTriggerParamsRecords(ctx sdk.Context, record types.ESMTri
 			CoolOffPeriod: record.CoolOffPeriod,
 		}
 	)
-	fmt.Println("in prop esmTriggerParams", esmTriggerParams)
 	k.SetESMTriggerParams(ctx, esmTriggerParams)
 
 	return nil
@@ -145,4 +143,26 @@ func (k *Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket typ
 
 	k.cdc.MustUnmarshal(value, &esmMarket)
 	return esmMarket, true
+}
+
+func (k *Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, AppId uint64, TargetValue sdk.Coin, CoolOffPeriod uint64) error {
+
+	var (
+		esmTriggerParams = types.ESMTriggerParams{
+			AppId:         AppId,
+			TargetValue:   TargetValue,
+			CoolOffPeriod: CoolOffPeriod,
+		}
+	)
+	k.SetESMTriggerParams(ctx, esmTriggerParams)
+
+	return nil
+}
+
+func (k Keeper) WasmAddESMTriggerParamsQuery(ctx sdk.Context, appID uint64) (bool, string) {
+	_, found := k.GetApp(ctx, appID)
+	if !found {
+		return false, types.ErrAppIDDoesNotExists.Error()
+	}
+	return true, ""
 }

@@ -18,6 +18,7 @@ var (
 	ErrDepositForAppReached        = sdkerrors.Register(ModuleName, 1107, "Deposit For AppID Reached")
 	ErrESMAlreadyExecuted          = sdkerrors.Register(ModuleName, 1108, "ESM Already Executed")
 	ErrCircuitBreakerEnabled       = sdkerrors.Register(ModuleName, 1109, "circuit breaker is triggered")
-    ErrorUnauthorized              = sdkerrors.Register(ModuleName, 1110, "unauthorized")
+	ErrorUnauthorized              = sdkerrors.Register(ModuleName, 1110, "unauthorized")
 	ErrorAppDoesNotExists          = sdkerrors.Register(ModuleName, 1111, "App Does Not Exists")
+	ErrAppIDDoesNotExists          = sdkerrors.Register(ModuleName, 1112, "App Id Does NOt exist")
 )
