@@ -1,4 +1,4 @@
-<h2 align="center">Comdex : Democratizing Finance </h2>
+<h1 align="center">Comdex : Democratizing Finance </h1>
 
 <p align="center">
   <img src="./logo.svg" width="300">
