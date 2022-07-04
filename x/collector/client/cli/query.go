@@ -37,7 +37,7 @@ func GetQueryCmd() *cobra.Command {
 func QueryCollectorLookupByApp() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "collector-lookup-by-app [app-id]",
-		Short: "Query collector lookup for a app",
+		Short: "Query collector lookup for an app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)

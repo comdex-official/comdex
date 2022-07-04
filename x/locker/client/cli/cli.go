@@ -61,7 +61,6 @@ func GetTxCmd() *cobra.Command {
 		txCreateLocker(),
 		txDepositAssetLocker(),
 		txWithdrawAssetLocker(),
-		txAddWhiteListedAssetLocker(),
 	)
 
 	return cmd

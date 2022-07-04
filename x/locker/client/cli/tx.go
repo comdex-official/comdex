@@ -133,35 +133,3 @@ func txWithdrawAssetLocker() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
-
-func txAddWhiteListedAssetLocker() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "whitelist-asset-locker [app_id][asset_id] ",
-		Short: "withdraw from a locker",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			appID, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-			assetID, err := strconv.ParseUint(args[1], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgAddWhiteListedAssetRequest(ctx.FromAddress.String(), appID, assetID)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
-}

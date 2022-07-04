@@ -109,7 +109,6 @@ import (
 	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector"
-	collectorclient "github.com/comdex-official/comdex/x/collector/client"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 
@@ -156,7 +155,7 @@ import (
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
-	tv2 "github.com/comdex-official/comdex/app/upgrades/testnet/v2"
+	tv2_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v2_0_0"
 )
 
 const (
@@ -184,8 +183,6 @@ func GetWasmEnabledProposals() []wasm.ProposalType {
 func GetGovProposalHandlers() []govclient.ProposalHandler {
 	proposalHandlers := []govclient.ProposalHandler{
 		bandoraclemoduleclient.AddFetchPriceHandler,
-		collectorclient.AddLookupTableParamsHandlers,
-		collectorclient.AddAuctionControlParamsHandler,
 		lendclient.AddLendPairsHandler,
 		lendclient.UpdateLendPairsHandler,
 		lendclient.AddPoolHandler,
@@ -323,7 +320,7 @@ type App struct {
 	ScopedWasmKeeper  capabilitykeeper.ScopedKeeper
 	AuctionKeeper     auctionkeeper.Keeper
 	TokenmintKeeper   tokenmintkeeper.Keeper
-	liquidityKeeper   liquiditykeeper.Keeper
+	LiquidityKeeper   liquiditykeeper.Keeper
 	Rewardskeeper     rewardskeeper.Keeper
 
 	WasmKeeper wasm.Keeper
@@ -661,7 +658,7 @@ func New(
 		&app.CollectorKeeper,
 	)
 
-	app.liquidityKeeper = liquiditykeeper.NewKeeper(
+	app.LiquidityKeeper = liquiditykeeper.NewKeeper(
 		app.cdc,
 		app.keys[liquiditytypes.StoreKey],
 		app.GetSubspace(liquiditytypes.ModuleName),
@@ -682,7 +679,7 @@ func New(
 		&app.VaultKeeper,
 		&app.AssetKeeper,
 		app.BankKeeper,
-		app.liquidityKeeper,
+		app.LiquidityKeeper,
 		&app.MarketKeeper,
 	)
 
@@ -723,12 +720,11 @@ func New(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
-		AddRoute(collectortypes.RouterKey, collector.NewLookupTableParamsHandlers(app.CollectorKeeper)).
 		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
-		AddRoute(liquiditytypes.RouterKey, liquidity.NewLiquidityProposalHandler(app.liquidityKeeper))
+		AddRoute(liquiditytypes.RouterKey, liquidity.NewLiquidityProposalHandler(app.LiquidityKeeper))
 
 	if len(wasmEnabledProposals) != 0 {
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, wasmEnabledProposals))
@@ -806,7 +802,7 @@ func New(
 		wasm.NewAppModule(app.cdc, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper),
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
-		liquidity.NewAppModule(app.cdc, app.liquidityKeeper, app.AccountKeeper, app.BankKeeper),
+		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
@@ -1083,8 +1079,8 @@ func (a *App) registerUpgradeHandlers() {
 	)
 
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv2.UpgradeName,
-		tv2.CreateUpgradeHandler(a.mm, a.configurator),
+		tv2_0_0.UpgradeName,
+		tv2_0_0.CreateUpgradeHandler(a.mm, a.configurator),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1104,7 +1100,7 @@ func (a *App) registerUpgradeHandlers() {
 			Added:   []string{authz.ModuleName},
 			Deleted: []string{"asset", "liquidity", "oracle", "vault"},
 		}
-	case upgradeInfo.Name == tv2.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tv2_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		// prepare store for testnet upgrade v1.1.0
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{

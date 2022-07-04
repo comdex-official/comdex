@@ -208,6 +208,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 			}
 		}
 
+		// if no child pools, than use standard mechanism for reward distribution
 		if len(childPoolIds) != 0 {
 			chilPoolSuppliesData := k.GetAggregatedChildPoolContributions(ctx, appID, childPoolIds, lpAddresses)
 
@@ -254,7 +255,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 		}
 	}
 
-	// Logic for non master pool gauges (external rewards)
+	// Logic for non master pool gauges (external rewards), (also used for masterpool if no child pool exists)
 	totalRewardEligibleSupply := sdk.NewDec(0)
 	for _, supply := range lpSupplies {
 		totalRewardEligibleSupply = totalRewardEligibleSupply.Add(supply)
