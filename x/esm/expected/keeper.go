@@ -8,6 +8,8 @@ import (
 type AssetKeeper interface {
 	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool)
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
+	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
+	GetAssetsForOracle(ctx sdk.Context) (assets []assettypes.Asset)
 }
 
 type BankKeeper interface {
@@ -22,4 +24,8 @@ type BankKeeper interface {
 	) error
 	SendCoins(ctx sdk.Context, fromAddr, toAddr sdk.AccAddress, amt sdk.Coins) error
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+}
+
+type MarketKeeper interface {
+	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }

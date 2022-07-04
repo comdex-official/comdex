@@ -35,6 +35,8 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryGaugeByDurationCmd(),
 		queryReward(),
 		queryRewards(),
+		queryExternalRewardsLockers(),
+		queryExternalRewardVaults(),
 	)
 
 	return cmd
