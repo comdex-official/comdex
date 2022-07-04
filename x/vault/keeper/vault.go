@@ -477,7 +477,7 @@ func (k *Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, Exte
 	new_vault.AppId = appMapping.Id
 	new_vault.InterestAccumulated = zero_val
 	new_vault.Owner = From
-	new_vault.CreatedAt = time.Now()
+	new_vault.CreatedAt = ctx.BlockTime()
 	new_vault.ExtendedPairVaultID = extendedPairVault.Id
 	k.SetVault(ctx, new_vault)
 
