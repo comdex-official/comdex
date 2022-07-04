@@ -1,6 +1,6 @@
 module github.com/comdex-official/comdex
 
-go 1.17
+go 1.18
 
 require (
 	github.com/CosmWasm/wasmd v0.27.0
@@ -133,7 +133,7 @@ require (
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/tools v0.1.7 // indirect
+	golang.org/x/tools v0.1.11 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.29.1 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
