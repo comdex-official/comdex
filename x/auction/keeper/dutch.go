@@ -127,13 +127,11 @@ func (k Keeper) StartDutchAuction(
 	}
 	timeNow := ctx.BlockTime()
 	inFlowTokenCurrentAmount := sdk.NewCoin(inFlowToken.Denom, sdk.NewIntFromUint64(0))
-	toBurnAmount := sdk.NewCoin(inFlowToken.Denom, sdk.NewIntFromUint64(0))
 	auction := auctiontypes.DutchAuction{
 		OutflowTokenInitAmount:    outFlowToken,
 		OutflowTokenCurrentAmount: outFlowToken,
 		InflowTokenTargetAmount:   inFlowTokenTarget,
 		InflowTokenCurrentAmount:  inFlowTokenCurrentAmount,
-		ToBurnAmount:              toBurnAmount,
 		OutflowTokenInitialPrice:  outFlowTokenInitialPrice,
 		OutflowTokenCurrentPrice:  outFlowTokenInitialPrice,
 		OutflowTokenEndPrice:      outFlowTokenEndPrice,
@@ -278,7 +276,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		// if err != nil {
 		// 	return err
 		// }
-		auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
+		// auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
 
 		err = k.SetDutchAuction(ctx, auction)
 		if err != nil {
@@ -292,13 +290,14 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 			return err
 		}
 	} else if auction.OutflowTokenCurrentAmount.Amount.IsZero() && auction.InflowTokenCurrentAmount.IsLT(auction.InflowTokenTargetAmount) { //entire collateral sold out
-		auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
 
 		requiredAmount := auction.InflowTokenTargetAmount.Sub(auction.InflowTokenCurrentAmount)
 		_, err := k.GetAmountFromCollector(ctx, auction.AppId, auction.AssetInId, requiredAmount.Amount)
 		if err != nil {
 			return err
 		}
+
+		// auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin).Add(requiredAmount)
 
 		//storing protocol loss
 		k.SetProtocolStatistics(ctx, auction.AppId, auction.AssetInId, requiredAmount.Amount)
@@ -315,7 +314,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 			return err
 		}
 	} else if auction.OutflowTokenCurrentAmount.Amount.IsZero() { //entire collateral sold out
-		auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
+		// auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
 
 		err = k.SetDutchAuction(ctx, auction)
 		if err != nil {
@@ -328,7 +327,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 			return err
 		}
 	} else {
-		auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
+		// auction.ToBurnAmount = auction.ToBurnAmount.Add(inFlowTokenCoin)
 
 		err = k.SetDutchAuction(ctx, auction)
 		if err != nil {
@@ -389,17 +388,28 @@ func (k Keeper) CloseDutchAuction(
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}
+		extendedPairID := lockedVault.ExtendedPairId
+		ExtendedPairVault, found := k.GetPairsVault(ctx, extendedPairID)
+		if !found {
+			return auctiontypes.ErrorInvalidExtendedPairVault
+		}
+		liquidationPenalty := ExtendedPairVault.LiquidationPenalty
 	//calculate penalty
 	penaltyCoin := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
 	// penaltyCoin.Amount = dutchAuction.InflowTokenCurrentAmount.Amount.Mul(dutchAuction.LiquidationPenalty.TruncateInt())
 	// burn and send target CMST to collector
 	burnToken := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
-	denom := dutchAuction.LiquidationPenalty.Add(sdk.MustNewDecFromStr("1"))
-	penaltyCoinDec := sdk.NewDecFromInt(dutchAuction.ToBurnAmount.Amount).Quo(denom).Mul(dutchAuction.LiquidationPenalty)
-	penaltyCoin.Amount = penaltyCoinDec.TruncateInt().Add(lockedVault.InterestAccumulated)
-	burnTokenDec := dutchAuction.ToBurnAmount.Amount.ToDec().Quo(denom)
-	burnToken.Amount = burnTokenDec.TruncateInt()
-
+	// denom := dutchAuction.LiquidationPenalty.Add(sdk.MustNewDecFromStr("1"))
+	// penaltyCoinDec := sdk.NewDecFromInt(dutchAuction.ToBurnAmount.Amount).Quo(denom).Mul(dutchAuction.LiquidationPenalty)
+	// penaltyCoin.Amount = penaltyCoinDec.TruncateInt().Add(lockedVault.InterestAccumulated)
+	// burnTokenDec := dutchAuction.ToBurnAmount.Amount.ToDec().Quo(denom)
+	// burnToken.Amount = burnTokenDec.TruncateInt()
+	burnToken.Amount = dutchAuction.InflowTokenTargetAmount.Amount
+	mulfactor := dutchAuction.InflowTokenTargetAmount.Amount.ToDec().Mul(liquidationPenalty).TruncateInt()
+	penaltyCoin.Amount = mulfactor.Add(lockedVault.InterestAccumulated)
+	
+	// burn inflowtarget
+	// sent to collector is.  mulfactor + interest
 
 	//burning
 	err := k.BurnCoins(ctx, auctiontypes.ModuleName, burnToken)
