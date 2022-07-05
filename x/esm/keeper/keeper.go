@@ -87,19 +87,6 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 		return types.ErrESMTriggerParamsNotFound
 	}
 	currentDeposit, found := k.GetCurrentDepositStats(ctx, AppID)
-
-	if currentDeposit.Balance.Amount.Equal(esmTriggerParams.TargetValue.Amount) {
-		return types.ErrDepositForAppReached
-	}
-	if Amount.Amount.GT(esmTriggerParams.TargetValue.Amount) {
-		return types.ErrAmtExceedsTargetValue
-	}
-	addr, _ := sdk.AccAddressFromBech32(depositorAddr)
-
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, types.ModuleName, sdk.NewCoins(Amount)); err != nil {
-		return err
-	}
-
 	if !found {
 		newCurrentDeposit := types.CurrentDepositStats{
 			AppId:   AppID,
@@ -113,6 +100,20 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 		}
 		k.SetCurrentDepositStats(ctx, newCurrentDeposit)
 	}
+	newCurrentDeposit, _ := k.GetCurrentDepositStats(ctx, AppID)
+
+	if newCurrentDeposit.Balance.Amount.Equal(esmTriggerParams.TargetValue.Amount) {
+		return types.ErrDepositForAppReached
+	}
+	if Amount.Amount.GT(esmTriggerParams.TargetValue.Amount) {
+		return types.ErrAmtExceedsTargetValue
+	}
+	addr, _ := sdk.AccAddressFromBech32(depositorAddr)
+
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, types.ModuleName, sdk.NewCoins(Amount)); err != nil {
+		return err
+	}
+
 	userDeposits, found := k.GetUserDepositByApp(ctx, depositorAddr, AppID)
 	if !found {
 		userDeposits = types.UsersDepositMapping{
@@ -147,15 +148,17 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 
 	currentDeposit, _ := k.GetCurrentDepositStats(ctx, AppID)
 
-	if currentDeposit.Balance.Amount.Equal(esmTriggerParams.TargetValue.Amount) {
+	if currentDeposit.Balance.Amount.GTE(esmTriggerParams.TargetValue.Amount) {
 		ESMStatus := types.ESMStatus{
 			AppId:     AppID,
 			Executor:  executor,
 			Status:    true,
 			StartTime: ctx.BlockTime(),
-			EndTime:   ctx.BlockTime().Add(time.Duration(esmTriggerParams.CoolOffPeriod)),
+			EndTime:   ctx.BlockTime().Add(time.Duration(esmTriggerParams.CoolOffPeriod)*time.Second),
 		}
 		k.SetESMStatus(ctx, ESMStatus)
+	} else{
+		return types.ErrCurrentDepositNotReached
 	}
 	return nil
 }
