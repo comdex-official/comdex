@@ -19,7 +19,7 @@ type ComdexMessages struct {
 	MsgRemoveWhitelistAppIDLiquidation   *MsgRemoveWhitelistAppIDLiquidation   `json:"msg_remove_whitelist_app_id_liquidation,omitempty"`
 	MsgAddAuctionParams                  *MsgAddAuctionParams                  `json:"msg_add_auction_params,omitempty"`
 	MsgBurnGovTokensForApp               *MsgBurnGovTokensForApp               `json:"msg_burn_gov_tokens_for_app,omitempty"`
-	MsgAddESMTriggerParams               *MsgAddESMTriggerParams               `json:"msg_add_esm_trigger_params,omitempty"`
+	MsgAddESMTriggerParams               *MsgAddESMTriggerParams               `json:"msg_add_e_s_m_trigger_params,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
