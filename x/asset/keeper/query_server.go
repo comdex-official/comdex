@@ -13,14 +13,14 @@ import (
 )
 
 var (
-	_ types.QueryServiceServer = (*queryServer)(nil)
+	_ types.QueryServer = (*queryServer)(nil)
 )
 
 type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &queryServer{
 		Keeper: k,
 	}
@@ -112,12 +112,11 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 			}
 
 			pairInfo := types.PairInfo{
-				Id:               pair.Id,
-				AssetIn:          pair.AssetIn,
-				DenomIn:          assetIn.Denom,
-				AssetOut:         pair.AssetOut,
-				DenomOut:         assetOut.Denom,
-				LiquidationRatio: pair.LiquidationRatio,
+				Id:       pair.Id,
+				AssetIn:  pair.AssetIn,
+				DenomIn:  assetIn.Denom,
+				AssetOut: pair.AssetOut,
+				DenomOut: assetOut.Denom,
 			}
 
 			if accumulate {
@@ -161,12 +160,11 @@ func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) 
 	}
 
 	pairInfo := types.PairInfo{
-		Id:               pair.Id,
-		AssetIn:          pair.AssetIn,
-		DenomIn:          assetIn.Denom,
-		AssetOut:         pair.AssetOut,
-		DenomOut:         assetOut.Denom,
-		LiquidationRatio: pair.LiquidationRatio,
+		Id:       pair.Id,
+		AssetIn:  pair.AssetIn,
+		DenomIn:  assetIn.Denom,
+		AssetOut: pair.AssetOut,
+		DenomOut: assetOut.Denom,
 	}
 
 	return &types.QueryPairResponse{
@@ -174,13 +172,138 @@ func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) 
 	}, nil
 }
 
-func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (q *queryServer) QueryApps(c context.Context, _ *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
 	var (
-		ctx    = sdk.UnwrapSDKContext(c)
-		params = q.GetParams(ctx)
+		ctx         = sdk.UnwrapSDKContext(c)
+		apps, found = q.GetApps(ctx)
 	)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "app does not exist for id")
+	}
 
-	return &types.QueryParamsResponse{
-		Params: params,
+	return &types.QueryAppsResponse{
+		Apps: apps,
+	}, nil
+}
+
+func (q *queryServer) QueryApp(c context.Context, req *types.QueryAppRequest) (*types.QueryAppResponse, error) {
+	var (
+		ctx        = sdk.UnwrapSDKContext(c)
+		app, found = q.GetApp(ctx, req.Id)
+	)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "app does not exist for id %d", app.Id)
+	}
+
+	return &types.QueryAppResponse{
+		App: app,
+	}, nil
+}
+
+func (q *queryServer) QueryExtendedPairVault(c context.Context, req *types.QueryExtendedPairVaultRequest) (*types.QueryExtendedPairVaultResponse, error) {
+	var (
+		ctx         = sdk.UnwrapSDKContext(c)
+		pair, found = q.GetPairsVault(ctx, req.Id)
+	)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "pair does not exist for id %d", pair.Id)
+	}
+
+	return &types.QueryExtendedPairVaultResponse{
+		PairVault: pair,
+	}, nil
+}
+
+func (q *queryServer) QueryAllExtendedPairVaults(c context.Context, _ *types.QueryAllExtendedPairVaultsRequest) (*types.QueryAllExtendedPairVaultsResponse, error) {
+	var (
+		ctx               = sdk.UnwrapSDKContext(c)
+		pairVaults, found = q.GetPairsVaults(ctx)
+	)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
+	}
+
+	return &types.QueryAllExtendedPairVaultsResponse{
+		PairVault: pairVaults,
+	}, nil
+}
+
+func (q *queryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *types.QueryAllExtendedPairVaultsByAppRequest) (*types.QueryAllExtendedPairVaultsByAppResponse, error) {
+	var (
+		ctx               = sdk.UnwrapSDKContext(c)
+		pairVaults, found = q.GetPairsVaults(ctx)
+	)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
+	}
+	var pairVaultsData []types.ExtendedPairVault
+	for _, data := range pairVaults {
+		if data.AppId == req.AppId {
+			pairVaultsData = append(pairVaultsData, data)
+		}
+	}
+
+	return &types.QueryAllExtendedPairVaultsByAppResponse{
+		ExtendedPair: pairVaultsData,
+	}, nil
+}
+
+func (q *queryServer) QueryAllExtendedPairStableVaultsIDByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsIDByAppRequest) (*types.QueryAllExtendedPairStableVaultsIDByAppResponse, error) {
+	var (
+		ctx               = sdk.UnwrapSDKContext(c)
+		pairVaults, found = q.GetPairsVaults(ctx)
+		pairVault         []uint64
+	)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
+	}
+	for _, data := range pairVaults {
+		if (data.AppId == req.AppId) && (data.IsStableMintVault) {
+			pairVault = append(pairVault, data.Id)
+		}
+	}
+
+	return &types.QueryAllExtendedPairStableVaultsIDByAppResponse{
+		ExtendedPairsId: pairVault,
+	}, nil
+}
+
+func (q *queryServer) QueryGovTokenByApp(c context.Context, req *types.QueryGovTokenByAppRequest) (*types.QueryGovTokenByAppResponse, error) {
+	var (
+		ctx     = sdk.UnwrapSDKContext(c)
+		assetID uint64
+	)
+	appData, found := q.GetApp(ctx, req.AppId)
+	if !found {
+		return nil, types.AppIdsDoesntExist
+	}
+	for _, data := range appData.GenesisToken {
+		if data.IsGovToken {
+			assetID = data.AssetId
+		}
+	}
+
+	return &types.QueryGovTokenByAppResponse{
+		GovAssetId: assetID,
+	}, nil
+}
+
+func (q *queryServer) QueryAllExtendedPairStableVaultsByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsByAppRequest) (*types.QueryAllExtendedPairStableVaultsByAppResponse, error) {
+	var (
+		ctx               = sdk.UnwrapSDKContext(c)
+		pairVaults, found = q.GetPairsVaults(ctx)
+	)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
+	}
+	var pairVaultsData []types.ExtendedPairVault
+	for _, data := range pairVaults {
+		if data.AppId == req.AppId && data.IsStableMintVault {
+			pairVaultsData = append(pairVaultsData, data)
+		}
+	}
+
+	return &types.QueryAllExtendedPairStableVaultsByAppResponse{
+		ExtendedPair: pairVaultsData,
 	}, nil
 }

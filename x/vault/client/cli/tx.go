@@ -14,7 +14,7 @@ import (
 	"github.com/comdex-official/comdex/x/vault/types"
 )
 
-// GetTxCmd returns the transaction commands for this module
+// GetTxCmd returns the transaction commands for this module .
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -25,21 +25,223 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		txCreate(),
-		txDeposit(),
-		txWithdraw(),
-		txDrawDebt(),
-		txRepayDebt(),
-		txClose(),
+		Create(),
+		Deposit(),
+		Withdraw(),
+		DrawDebt(),
+		RepayDebt(),
+		Close(),
+		CreateStableMint(),
+		DepositStableMint(),
+		WithdrawStableMint(),
 	)
 
 	return cmd
 }
 
-func txCreate() *cobra.Command {
+func Create() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create [pair_id] [amount_in] [amount_out]",
+		Use:   "create [appID] [extendedPairVaultID] [amount_in] [amount_out]",
 		Short: "create a new vault",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extendedPairVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			amountIn, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidAmountIn
+			}
+
+			amountOut, ok := sdk.NewIntFromString(args[3])
+			if !ok {
+				return types.ErrorInvalidAmountOut
+			}
+
+			msg := types.NewMsgCreateRequest(ctx.FromAddress, appID, extendedPairVaultID, amountIn, amountOut)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func Deposit() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "deposit [appID] [extendedPairVaultID] [userVaultid] [amount]",
+		Short: "creates a new deposit",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extendedPairVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			userVaultid := args[2]
+
+			amount, ok := sdk.NewIntFromString(args[3])
+			if !ok {
+				return types.ErrorInvalidAmount
+			}
+
+			msg := types.NewMsgDepositRequest(ctx.FromAddress, appID, extendedPairVaultID, userVaultid, amount)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func Withdraw() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "withdraw [appID] [extendedPairVaultID] [userVaultid] [amount]",
+		Short: "create a new withdraw",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extendedPairVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			userVaultid := args[2]
+
+			amount, ok := sdk.NewIntFromString(args[3])
+			if !ok {
+				return types.ErrorInvalidAmount
+			}
+
+			msg := types.NewMsgWithdrawRequest(ctx.FromAddress, appID, extendedPairVaultID, userVaultid, amount)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func DrawDebt() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "draw [appID] [extendedPairVaultID] [userVaultid] [amount]",
+		Short: "draw debt",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extendedPairVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			userVaultid := args[2]
+
+			amount, ok := sdk.NewIntFromString(args[3])
+			if !ok {
+				return types.ErrorInvalidAmount
+			}
+
+			msg := types.NewMsgDrawRequest(ctx.FromAddress, appID, extendedPairVaultID, userVaultid, amount)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func RepayDebt() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "repay [appID] [extendedPairVaultID] [userVaultid] [amount]",
+		Short: "repay debt",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extendedPairVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			userVaultid := args[2]
+
+			amount, ok := sdk.NewIntFromString(args[3])
+			if !ok {
+				return types.ErrorInvalidAmount
+			}
+
+			msg := types.NewMsgRepayRequest(ctx.FromAddress, appID, extendedPairVaultID, userVaultid, amount)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func Close() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "close [appID] [extendedPairVaultID] [userVaultid]",
+		Short: "close",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -47,22 +249,55 @@ func txCreate() *cobra.Command {
 				return err
 			}
 
-			pairId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			amountIn, ok := sdk.NewIntFromString(args[1])
+			extendedPairVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			userVaultid := args[2]
+
+			msg := types.NewMsgLiquidateRequest(ctx.FromAddress, appID, extendedPairVaultID, userVaultid)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func CreateStableMint() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-stable-mint [appID] [extendedPairVaultID] [amount] ",
+		Short: "create a new stable mint vault",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extendedPairVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			amount, ok := sdk.NewIntFromString(args[2])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
 
-			amountOut, ok := sdk.NewIntFromString(args[2])
-			if !ok {
-				return types.ErrorInvalidAmountOut
-			}
-
-			msg := types.NewMsgCreateRequest(ctx.FromAddress, pairId, amountIn, amountOut)
+			msg := types.NewMsgCreateStableMintRequest(ctx.FromAddress, appID, extendedPairVaultID, amount)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -74,35 +309,41 @@ func txCreate() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
-func txDeposit() *cobra.Command {
+func DepositStableMint() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit [id] [amount]",
-		Short: "creates a new deposit",
-		Args:  cobra.ExactArgs(2),
+		Use:   "deposit-stable-mint [appID] [extendedPairVaultID] [amount] [stablemint_id] ",
+		Short: "deposit to stable mint vault",
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[1])
-			if !ok {
-				return types.ErrorInvalidAmount
+			extendedPairVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
 			}
 
-			msg := types.NewMsgDepositRequest(ctx.FromAddress, id, amount)
+			amount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidAmountIn
+			}
+			stablemintID := args[3]
+
+			msg := types.NewMsgDepositStableMintRequest(ctx.FromAddress, appID, extendedPairVaultID, amount, stablemintID)
+
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
+
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
@@ -111,29 +352,35 @@ func txDeposit() *cobra.Command {
 	return cmd
 }
 
-func txWithdraw() *cobra.Command {
+func WithdrawStableMint() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw [id] [amount]",
-		Short: "create a new withdraw",
-		Args:  cobra.ExactArgs(2),
+		Use:   "withdraw-stable-mint [appID] [extendedPairVaultID] [amount] [stablemint_id]",
+		Short: "withdraw from stable mint vault",
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[1])
+			extendedPairVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			amount, ok := sdk.NewIntFromString(args[2])
 			if !ok {
-				return types.ErrorInvalidAmount
+				return types.ErrorInvalidAmountIn
 			}
+			stablemintID := args[3]
 
-			msg := types.NewMsgWithdrawRequest(ctx.FromAddress, id, amount)
+			msg := types.NewMsgWithdrawStableMintRequest(ctx.FromAddress, appID, extendedPairVaultID, amount, stablemintID)
+
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -141,100 +388,7 @@ func txWithdraw() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
-}
 
-func txDrawDebt() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "draw [id] [amount]",
-		Short: "draw debt",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			amount, ok := sdk.NewIntFromString(args[1])
-			if !ok {
-				return types.ErrorInvalidAmount
-			}
-
-			msg := types.NewMsgDrawRequest(ctx.FromAddress, id, amount)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
-}
-
-func txRepayDebt() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "repay [id] [amount]",
-		Short: "repay debt",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			amount, ok := sdk.NewIntFromString(args[1])
-			if !ok {
-				return types.ErrorInvalidAmount
-			}
-
-			msg := types.NewMsgRepayRequest(ctx.FromAddress, id, amount)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
-}
-
-func txClose() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "close [id]",
-		Short: "close",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgLiquidateRequest(ctx.FromAddress, id)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

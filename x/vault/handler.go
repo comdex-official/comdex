@@ -9,7 +9,7 @@ import (
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
-	server := keeper.NewMsgServiceServer(k)
+	server := keeper.NewMsgServer(k)
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
@@ -32,6 +32,15 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCloseRequest:
 			res, err := server.MsgClose(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgCreateStableMintRequest:
+			res, err := server.MsgCreateStableMint(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgDepositStableMintRequest:
+			res, err := server.MsgDepositStableMint(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgWithdrawStableMintRequest:
+			res, err := server.MsgWithdrawStableMint(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)

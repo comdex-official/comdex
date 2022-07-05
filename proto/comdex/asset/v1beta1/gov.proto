@@ -2,13 +2,46 @@ syntax = "proto3";
 package comdex.asset.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "comdex/asset/v1beta1/asset.proto";
+import "comdex/asset/v1beta1/pair.proto";
+import "comdex/asset/v1beta1/app.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message UpdateAdminProposal {
-  string title       = 1 [ (gogoproto.moretags) = "yaml:\"title\"" ];
-  string description = 2 [ (gogoproto.moretags) = "yaml:\"description\"" ];
-  string address     = 3 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+message AddAssetsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated Asset assets = 3 [(gogoproto.nullable) = false];
+}
+
+message UpdateAssetProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  Asset asset = 3 [(gogoproto.nullable) = false];
+}
+
+message AddPairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated Pair pairs = 3 [(gogoproto.nullable) = false];
+}
+
+message AddAppProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated AppData app = 3 [(gogoproto.nullable) = false];
+}
+
+message UpdateGovTimeInAppProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  AppAndGovTime govTime = 3 [(gogoproto.nullable) = false];
+}
+
+message AddAssetInAppProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated AppData app = 3 [(gogoproto.nullable) = false];
 }

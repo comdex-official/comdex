@@ -3,7 +3,6 @@ package rest
 import (
 	"context"
 	"net/http"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/rest"
@@ -14,16 +13,12 @@ import (
 
 func queryVault(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		vars := mux.Vars(r)
 
-		qc := types.NewQueryServiceClient(ctx)
+		qc := types.NewQueryClient(ctx)
 		idParam := vars["id"]
 
-		id, err := strconv.ParseUint(idParam, 10, 64)
-		if err != nil {
-			return
-		}
+		id := idParam
 
 		res, err := qc.QueryVault(context.Background(),
 			&types.QueryVaultRequest{

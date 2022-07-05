@@ -19,7 +19,14 @@ func GetQueryCmd() *cobra.Command {
 		queryAssets(),
 		queryPair(),
 		queryPairs(),
-		queryParams(),
+		queryApp(),
+		queryExtendedPairVault(),
+		queryAllExtendedPairVaults(),
+		queryApps(),
+		queryAllExtendedPairVaultsByApp(),
+		queryAllExtendedPairStableVaultsIDByApp(),
+		queryGovTokenByApp(),
+		queryAllExtendedPairStableVaultsByApp(),
 	)
 
 	return cmd
@@ -34,12 +41,7 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(
-		txAddAsset(),
-		txUpdateAsset(),
-		txAddPair(),
-		txUpdatePair(),
-	)
+	cmd.AddCommand()
 
 	return cmd
 }

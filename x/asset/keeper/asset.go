@@ -72,13 +72,23 @@ func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found 
 	return asset, true
 }
 
+func (k *Keeper) GetAssetDenom(ctx sdk.Context, id uint64) string {
+	asset, _ := k.GetAsset(ctx, id)
+	return asset.Denom
+}
+
 func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.AssetKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var asset types.Asset
@@ -145,4 +155,125 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	}
 
 	return k.oracle.GetPriceForMarket(ctx, market.Symbol)
+}
+
+func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error {
+	for _, msg := range records {
+		if k.HasAssetForDenom(ctx, msg.Denom) {
+			return types.ErrorDuplicateAsset
+		}
+
+		var (
+			id    = k.GetAssetID(ctx)
+			asset = types.Asset{
+				Id:                    id + 1,
+				Name:                  msg.Name,
+				Denom:                 msg.Denom,
+				Decimals:              msg.Decimals,
+				IsOnChain:             msg.IsOnChain,
+				IsOraclePriceRequired: msg.IsOraclePriceRequired,
+			}
+		)
+
+		k.SetAssetID(ctx, asset.Id)
+		k.SetAsset(ctx, asset)
+		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+		if msg.IsOraclePriceRequired {
+			k.SetAssetForOracle(ctx, asset)
+		}
+	}
+
+	return nil
+}
+
+func (k *Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
+	asset, found := k.GetAsset(ctx, msg.Id)
+	if !found {
+		return types.ErrorAssetDoesNotExist
+	}
+
+	if msg.Name != "" {
+		asset.Name = msg.Name
+	}
+	if msg.Denom != "" {
+		if k.HasAssetForDenom(ctx, msg.Denom) {
+			return types.ErrorDuplicateAsset
+		}
+
+		asset.Denom = msg.Denom
+
+		k.DeleteAssetForDenom(ctx, asset.Denom)
+		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+	}
+	if msg.Decimals >= 0 {
+		asset.Decimals = msg.Decimals
+	}
+
+	k.SetAsset(ctx, asset)
+	return nil
+}
+
+func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
+	for _, msg := range records {
+		if !k.HasAsset(ctx, msg.AssetIn) {
+			return types.ErrorAssetDoesNotExist
+		}
+		if !k.HasAsset(ctx, msg.AssetOut) {
+			return types.ErrorAssetDoesNotExist
+		}
+		if msg.AssetIn == msg.AssetOut {
+			return types.ErrorDuplicateAsset
+		}
+		pairs := k.GetPairs(ctx)
+		for _, data := range pairs {
+			if data.AssetIn == msg.AssetIn && data.AssetOut == msg.AssetOut {
+				return types.ErrorDuplicatePair
+			}
+		}
+
+		var (
+			id   = k.GetPairID(ctx)
+			pair = types.Pair{
+				Id:       id + 1,
+				AssetIn:  msg.AssetIn,
+				AssetOut: msg.AssetOut,
+			}
+		)
+
+		k.SetPairID(ctx, pair.Id)
+		k.SetPair(ctx, pair)
+	}
+	return nil
+}
+
+func (k *Keeper) SetAssetForOracle(ctx sdk.Context, asset types.Asset) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForOracleKey(asset.Id)
+		value = k.cdc.MustMarshal(&asset)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []types.Asset) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AssetForOracleKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.Asset
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		assets = append(assets, asset)
+	}
+
+	return assets
 }

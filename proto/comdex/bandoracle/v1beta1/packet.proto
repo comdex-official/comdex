@@ -1,0 +1,15 @@
+syntax = "proto3";
+package comdex.bandoracle.v1beta1;
+
+
+option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
+
+message BandoraclePacketData {
+    oneof packet {
+        NoData noData = 1;
+    }
+}
+
+message NoData {
+}
+

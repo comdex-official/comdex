@@ -1,0 +1,119 @@
+syntax = "proto3";
+package comdex.lend.v1beta1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/lend/types";
+
+service Msg {
+  // LendAsset defines a method for lending coins to the ModuleAccount.
+  rpc Lend(MsgLend) returns (MsgLendResponse);
+
+  // WithdrawAsset defines a method for withdrawing previously loaned coins from
+  // the ModuleAccount.
+  rpc Withdraw(MsgWithdraw) returns (MsgWithdrawResponse);
+
+  rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
+
+  rpc CloseLend(MsgCloseLend) returns (MsgCloseLendResponse);
+
+  // BorrowAsset defines a method for borrowing coins from the ModuleAccount.
+  rpc Borrow(MsgBorrow) returns (MsgBorrowResponse);
+
+  // RepayAsset defines a method for repaying borrowed coins to the ModuleAccount.
+  rpc Repay(MsgRepay) returns (MsgRepayResponse);
+
+  rpc DepositBorrow(MsgDepositBorrow) returns (MsgDepositBorrowResponse);
+
+  rpc Draw(MsgDraw) returns (MsgDrawResponse);
+
+  rpc CloseBorrow(MsgCloseBorrow) returns (MsgCloseBorrowResponse);
+
+  // FundModuleAccounts funds an existing module account
+  rpc FundModuleAccounts(MsgFundModuleAccounts) returns (MsgFundModuleAccountsResponse);
+}
+
+message MsgLend {
+  string                   lender = 1;
+  uint64                   asset_id = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+  uint64                   pool_id = 4;
+}
+
+message MsgWithdraw {
+  string                   lender = 1;
+  uint64                   lend_id = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgDeposit {
+  string                   lender = 1;
+  uint64                   lend_id = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgCloseLend {
+  string                   lender = 1;
+  uint64                   lend_id = 2;
+}
+
+message MsgBorrow {
+  string                   borrower = 1;
+  uint64                   lend_id = 2;
+  uint64                   pair_id = 3;
+  bool                     is_stable_borrow =4;
+  cosmos.base.v1beta1.Coin amount_in = 5 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount_out = 6 [(gogoproto.nullable) = false];
+}
+
+message MsgRepay {
+  string                   borrower = 1;
+  uint64                   borrow_id = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgDepositBorrow {
+  string                   borrower = 1;
+  uint64                   borrow_id = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgDraw {
+  string                   borrower = 1;
+  uint64                   borrow_id = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgCloseBorrow {
+  string                   borrower = 1;
+  uint64                   borrow_id = 2;
+}
+
+
+message MsgFundModuleAccounts {
+  string                   moduleName = 1;
+  uint64                   assetId =2;
+  string                   lender = 3;
+  cosmos.base.v1beta1.Coin amount = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgLendResponse {}
+
+message MsgWithdrawResponse {}
+
+message MsgDepositResponse {}
+
+message MsgCloseLendResponse {}
+
+message MsgBorrowResponse {}
+
+message MsgRepayResponse {}
+
+message MsgDepositBorrowResponse {}
+
+message MsgDrawResponse {}
+
+message MsgCloseBorrowResponse {}
+
+message MsgFundModuleAccountsResponse {}

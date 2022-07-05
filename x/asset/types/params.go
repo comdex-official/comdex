@@ -1,35 +1,19 @@
 package types
 
 import (
-	"fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-)
-
-const (
-	DefaultAdmin = ""
-)
-
-var (
-	KeyAdmin = []byte("Admin")
 )
 
 var (
 	_ paramstypes.ParamSet = (*Params)(nil)
 )
 
-func NewParams(admin string) Params {
-	return Params{
-		Admin: admin,
-	}
+func NewParams() Params {
+	return Params{}
 }
 
 func DefaultParams() Params {
-	return NewParams(
-		DefaultAdmin,
-	)
+	return NewParams()
 }
 
 func ParamKeyTable() paramstypes.KeyTable {
@@ -37,38 +21,9 @@ func ParamKeyTable() paramstypes.KeyTable {
 }
 
 func (m *Params) ParamSetPairs() paramstypes.ParamSetPairs {
-	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(
-			KeyAdmin,
-			m.Admin,
-			validateAdmin,
-		),
-	}
-}
-
-func validateAdmin(v interface{}) error {
-	value, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("invalid parameter type %T", v)
-	}
-
-	if value == "" {
-		return fmt.Errorf("admin cannot be empty")
-	}
-	if _, err := sdk.AccAddressFromBech32(value); err != nil {
-		return errors.Wrapf(err, "invalid admin %s", value)
-	}
-
-	return nil
+	return paramstypes.ParamSetPairs{}
 }
 
 func (m *Params) Validate() error {
-	if m.Admin == "" {
-		return fmt.Errorf("admin cannot be empty")
-	}
-	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
-		return errors.Wrapf(err, "invalid admin %s", m.Admin)
-	}
-
 	return nil
 }

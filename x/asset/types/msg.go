@@ -9,17 +9,7 @@ var (
 	_ sdk.Msg = (*MsgAddAssetRequest)(nil)
 	_ sdk.Msg = (*MsgUpdateAssetRequest)(nil)
 	_ sdk.Msg = (*MsgAddPairRequest)(nil)
-	_ sdk.Msg = (*MsgUpdatePairRequest)(nil)
 )
-
-func NewMsgAddPairRequest(from sdk.AccAddress, assetIn, assetOut uint64, liquidationRatio sdk.Dec) *MsgAddPairRequest {
-	return &MsgAddPairRequest{
-		From:             from.String(),
-		AssetIn:          assetIn,
-		AssetOut:         assetOut,
-		LiquidationRatio: liquidationRatio,
-	}
-}
 
 func (m *MsgAddPairRequest) ValidateBasic() error {
 	if m.From == "" {
@@ -34,12 +24,6 @@ func (m *MsgAddPairRequest) ValidateBasic() error {
 	if m.AssetOut == 0 {
 		return errors.Wrap(ErrorInvalidID, "asset_out cannot be zero")
 	}
-	if m.LiquidationRatio.IsNil() {
-		return errors.Wrap(ErrorInvalidLiquidationRatio, "liquidation_ratio cannot be nil")
-	}
-	if m.LiquidationRatio.IsNegative() {
-		return errors.Wrap(ErrorInvalidLiquidationRatio, "liquidation_ratio cannot be negative")
-	}
 
 	return nil
 }
@@ -51,48 +35,6 @@ func (m *MsgAddPairRequest) GetSigners() []sdk.AccAddress {
 	}
 
 	return []sdk.AccAddress{from}
-}
-
-func NewMsgUpdatePairRequest(from sdk.AccAddress, id uint64, liquidationRatio sdk.Dec) *MsgUpdatePairRequest {
-	return &MsgUpdatePairRequest{
-		From:             from.String(),
-		Id:               id,
-		LiquidationRatio: liquidationRatio,
-	}
-}
-
-func (m *MsgUpdatePairRequest) ValidateBasic() error {
-	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
-	}
-	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
-	}
-	if !m.LiquidationRatio.IsNil() {
-		if m.LiquidationRatio.IsNegative() {
-			return errors.Wrap(ErrorInvalidLiquidationRatio, "liquidation_ratio cannot be negative")
-		}
-	}
-
-	return nil
-}
-
-func (m *MsgUpdatePairRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.From)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{from}
-}
-
-func NewMsgAddAssetRequest(from sdk.AccAddress, name, denom string, decimals int64) *MsgAddAssetRequest {
-	return &MsgAddAssetRequest{
-		From:     from.String(),
-		Name:     name,
-		Denom:    denom,
-		Decimals: decimals,
-	}
 }
 
 func (m *MsgAddAssetRequest) ValidateBasic() error {
@@ -128,16 +70,6 @@ func (m *MsgAddAssetRequest) GetSigners() []sdk.AccAddress {
 	}
 
 	return []sdk.AccAddress{from}
-}
-
-func NewMsgUpdateAssetRequest(from sdk.AccAddress, id uint64, name, denom string, decimals int64) *MsgUpdateAssetRequest {
-	return &MsgUpdateAssetRequest{
-		From:     from.String(),
-		Id:       id,
-		Name:     name,
-		Denom:    denom,
-		Decimals: decimals,
-	}
 }
 
 func (m *MsgUpdateAssetRequest) ValidateBasic() error {

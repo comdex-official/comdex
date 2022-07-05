@@ -1,0 +1,35 @@
+syntax = "proto3";
+package comdex.esm.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "comdex/esm/v1beta1/esm.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/esm/types";
+
+service Msg {
+  rpc DepositESM(MsgDepositESM) returns (MsgDepositESMResponse);
+  rpc ExecuteESM(MsgExecuteESM) returns (MsgExecuteESMResponse);
+  rpc MsgKillSwitch(MsgKillRequest) returns (MsgKillResponse);
+}
+
+message MsgDepositESM {
+  uint64                   app_id = 1;
+  string                depositor = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgExecuteESM {
+  uint64                   app_id = 1;
+  string                depositor = 2;
+}
+
+message MsgKillRequest {
+  string from    = 1 [(gogoproto.moretags) = "yaml:\"from\"" ];
+  KillSwitchParams killSwitchParams = 2 [(gogoproto.moretags) = "yaml:\"killSwitchParams\"" ];
+
+}
+
+message MsgDepositESMResponse {}
+message MsgExecuteESMResponse {}
+message MsgKillResponse {}

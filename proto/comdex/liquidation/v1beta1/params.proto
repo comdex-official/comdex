@@ -1,0 +1,6 @@
+syntax = "proto3";
+package comdex.liquidation.v1beta1;
+
+option go_package = "github.com/comdex-official/comdex/x/liquidation/types";
+
+message Params {}

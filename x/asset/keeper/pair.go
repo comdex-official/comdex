@@ -69,7 +69,12 @@ func (k *Keeper) GetPairs(ctx sdk.Context) (pairs []types.Pair) {
 		iter  = sdk.KVStorePrefixIterator(store, types.PairKeyPrefix)
 	)
 
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
 		var pair types.Pair
@@ -78,4 +83,24 @@ func (k *Keeper) GetPairs(ctx sdk.Context) (pairs []types.Pair) {
 	}
 
 	return pairs
+}
+
+func (k *Keeper) NewAddPair(ctx sdk.Context, msg *types.MsgAddPairRequest) (*types.MsgAddPairResponse, error) {
+	if !k.HasAsset(ctx, msg.AssetIn) {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+	if !k.HasAsset(ctx, msg.AssetOut) {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+	var (
+		id   = k.GetPairID(ctx)
+		pair = types.Pair{
+			Id:       id + 1,
+			AssetIn:  msg.AssetIn,
+			AssetOut: msg.AssetOut,
+		}
+	)
+	k.SetPairID(ctx, pair.Id)
+	k.SetPair(ctx, pair)
+	return &types.MsgAddPairResponse{}, nil
 }

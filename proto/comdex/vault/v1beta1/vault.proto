@@ -2,27 +2,163 @@ syntax = "proto3";
 package comdex.vault.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+// import "cosmos/base/v1beta1/coin.proto";
 
-option go_package            = "github.com/comdex-official/comdex/x/vault/types";
+option go_package = "github.com/comdex-official/comdex/x/vault/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+//app_vault_type_id will be the key for  the KVStore for this value.
 message Vault {
-  uint64 id = 1
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  uint64 pair_id = 2 [
-    (gogoproto.customname) = "PairID",
-    (gogoproto.moretags)   = "yaml:\"pair_id\""
-  ];
-  string owner     = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-  string amount_in = 4 [
+  string id = 1 ;
+  uint64 app_id = 2
+  [(gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""];
+
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.customname) = "ExtendedPairVaultID",
+    (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
+
+  string owner = 4 [(gogoproto.moretags) = "yaml:\"owner\""];
+  string amount_in = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount_in\"",
-    (gogoproto.nullable)   = false
+    (gogoproto.moretags) = "yaml:\"amount_in\"",
+    (gogoproto.nullable) = false
   ];
-  string amount_out = 5 [
+  string amount_out = 6 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount_out\"",
-    (gogoproto.nullable)   = false
+    (gogoproto.moretags) = "yaml:\"amount_out\"",
+    (gogoproto.nullable) = false
+  ];
+  google.protobuf.Timestamp created_at = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"created_at\""
+  ];
+  string interest_accumulated = 8[
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"interest_accumulated\"",
+    (gogoproto.nullable) = false
+  ];
+  string closing_fee_accumulated = 9 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"interest_accumulated\"",
+    (gogoproto.nullable) = false
   ];
 }
+
+//user_address is the key
+message UserVaultAssetMapping {
+  string owner = 1 [
+    (gogoproto.moretags) = "yaml:\"owner\""
+  ];
+
+  repeated VaultToAppMapping  user_vault_app = 2 [
+    (gogoproto.moretags) = "yaml:\"user_vault_app\""
+  ];
+}
+
+message VaultToAppMapping {
+  uint64 app_id = 1;
+  repeated ExtendedPairToVaultMapping user_extended_pair_vault = 2 [
+    (gogoproto.moretags) = "yaml:\"user_extended_pair_vault\""
+  ];
+}
+message ExtendedPairToVaultMapping {
+  uint64 extended_pair_id = 1;
+  string vault_id = 2 [
+    (gogoproto.moretags) = "yaml:\"vault_id\""];
+
+}
+
+
+//app_id is the key
+message AppExtendedPairVaultMapping {
+  uint64 app_id = 1 ;
+  uint64 counter = 2;
+  repeated ExtendedPairVaultMapping extended_pair_vaults = 3 [(gogoproto.moretags) = "yaml:\"extended_pair_vaults\""];
+}
+
+message ExtendedPairVaultMapping
+{
+  uint64 extended_pair_id = 1 [(gogoproto.moretags) = "yaml:\"extended_pair_id\""];
+  repeated string vault_ids = 2 [(gogoproto.moretags) = "yaml:\"vault_ids\""];
+  string token_minted_amount = 3[
+    (gogoproto.moretags) = "yaml:\"token_minted_amount\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+  string collateral_locked_amount = 4[(gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+}
+
+
+
+message TvlLockedDataMap
+{
+  string asset_denom = 1 [(gogoproto.moretags) = "yaml:\"asset_denom\""];
+  string collateral_locked_amount = 2 [(gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+}
+
+message MintedDataMap
+{
+  string asset_denom = 1 [(gogoproto.moretags) = "yaml:\"asset_denom\""];
+  string minted_amount = 2 [(gogoproto.moretags) = "yaml:\"minted_amount\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+}
+
+
+message StableMintVault {
+  string id = 1[
+    (gogoproto.moretags) = "yaml:\"id\""
+  ];
+  string amount_in = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount_in\"",
+    (gogoproto.nullable) = false
+  ];
+  string amount_out = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount_out\"",
+    (gogoproto.nullable) = false
+  ];
+  uint64 app_id = 4 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 extended_pair_vault_id = 5 [
+    (gogoproto.customname) = "ExtendedPairVaultID",
+    (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
+  google.protobuf.Timestamp created_at = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"created_at\""
+  ];
+}
+
+message PairStatisticData {
+  string asset_in_denom = 1 [(gogoproto.moretags) = "yaml:\"asset_in_denom\""];
+  string asset_out_denom = 2 [(gogoproto.moretags) = "yaml:\"asset_out_denom\""];
+  string collateral_amount = 3 [(gogoproto.moretags) = "yaml:\"collateral_amount\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+    
+  string minted_amount = 4 [(gogoproto.moretags) = "yaml:\"minted_amount\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+  uint64 extended_pair_vault_id = 5 [
+    (gogoproto.customname) = "ExtendedPairVaultID",
+    (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
+}
+
+
+
+
+//StableMintVault will use the Lookup table of the vault itself for consistency
+
+
+// front end needs to know which all extended pairs have reached the the debt ceiling- write a query command.
+//Collateral Locked ExtendedPair Vault Wise
+//Collateral Locked Product Wise
+//Collateral Locked Across all Projects

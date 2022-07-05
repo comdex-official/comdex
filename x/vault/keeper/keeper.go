@@ -12,20 +12,24 @@ import (
 )
 
 type Keeper struct {
-	cdc   codec.BinaryCodec
-	key   sdk.StoreKey
-	bank  expected.BankKeeper
-	asset expected.AssetKeeper
-	oracle expected.OracleKeeper
+	cdc       codec.BinaryCodec
+	key       sdk.StoreKey
+	bank      expected.BankKeeper
+	asset     expected.AssetKeeper
+	oracle    expected.MarketKeeper
+	collector expected.CollectorKeeper
+	esm       expected.EsmKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.OracleKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.MarketKeeper, collector expected.CollectorKeeper, esm expected.EsmKeeper) Keeper {
 	return Keeper{
-		cdc:   cdc,
-		key:   key,
-		bank:  bank,
-		asset: asset,
-		oracle: oracle,
+		cdc:       cdc,
+		key:       key,
+		bank:      bank,
+		asset:     asset,
+		oracle:    oracle,
+		collector: collector,
+		esm:       esm,
 	}
 }
 

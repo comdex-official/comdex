@@ -1,0 +1,14 @@
+syntax = "proto3";
+package comdex.collector.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/collector/v1beta1/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/comdex-official/comdex/x/collector/types";
+
+// GenesisState defines the collector module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

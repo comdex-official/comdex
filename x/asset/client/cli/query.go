@@ -14,7 +14,7 @@ import (
 func queryAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "asset [id]",
-		Short: "Query an asset",
+		Short: "Query an asset data by asset id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -27,7 +27,7 @@ func queryAsset() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAsset(
 				context.Background(),
@@ -51,7 +51,7 @@ func queryAsset() *cobra.Command {
 func queryAssets() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "assets",
-		Short: "Query assets",
+		Short: "Query data of all the assets",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -63,7 +63,7 @@ func queryAssets() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAssets(
 				context.Background(),
@@ -88,7 +88,7 @@ func queryAssets() *cobra.Command {
 func queryPair() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pair [id]",
-		Short: "Query a pair",
+		Short: "Query a pair data by pair id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -101,7 +101,7 @@ func queryPair() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryPair(
 				context.Background(),
@@ -125,7 +125,7 @@ func queryPair() *cobra.Command {
 func queryPairs() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pairs",
-		Short: "Query pairs",
+		Short: "Query data of all the pairs",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -137,7 +137,7 @@ func queryPairs() *cobra.Command {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryPairs(
 				context.Background(),
@@ -159,21 +159,21 @@ func queryPairs() *cobra.Command {
 	return cmd
 }
 
-func queryParams() *cobra.Command {
+func queryApps() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "params",
-		Short: "Query module parameters",
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		Use:   "apps",
+		Short: "Query data for all the apps of the protocol",
+		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			queryClient := types.NewQueryServiceClient(ctx)
+			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryParams(
+			res, err := queryClient.QueryApps(
 				context.Background(),
-				&types.QueryParamsRequest{},
+				&types.QueryAppsRequest{},
 			)
 			if err != nil {
 				return err
@@ -184,6 +184,265 @@ func queryParams() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryApp() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "app [id]",
+		Short: "Query data for an app of the protocol by app id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryApp(
+				context.Background(),
+				&types.QueryAppRequest{
+					Id: id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryExtendedPairVault() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extended_pair_vault [id]",
+		Short: "Query an Extended pairVault by id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryExtendedPairVault(
+				context.Background(),
+				&types.QueryExtendedPairVaultRequest{
+					Id: id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryAllExtendedPairVaults() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extended_pair_vaults",
+		Short: "Query all Extended pairVaults",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAllExtendedPairVaults(
+				context.Background(),
+				&types.QueryAllExtendedPairVaultsRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryAllExtendedPairVaultsByApp() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "app-extended-pair [app_id]",
+		Short: "Query all extended pairs in an app",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAllExtendedPairVaultsByApp(
+				context.Background(),
+				&types.QueryAllExtendedPairVaultsByAppRequest{
+					AppId: appID,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryAllExtendedPairStableVaultsIDByApp() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extended-pair-stable-vault-wise [app_id]",
+		Short: "Query all extended pairs stable vault wise in an app",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAllExtendedPairStableVaultsIDByApp(
+				context.Background(),
+				&types.QueryAllExtendedPairStableVaultsIDByAppRequest{
+					AppId: appID,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryGovTokenByApp() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "check_for_gov_token_for_an_app [app_id]",
+		Short: "Query for gov token in an app",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryGovTokenByApp(
+				context.Background(),
+				&types.QueryGovTokenByAppRequest{
+					AppId: appID,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
+
+	return cmd
+}
+
+func queryAllExtendedPairStableVaultsByApp() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extended-pair-data-stable-vault-wise [app_id]",
+		Short: "Query all extended pairs data stable vault wise in an app",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAllExtendedPairStableVaultsByApp(
+				context.Background(),
+				&types.QueryAllExtendedPairStableVaultsByAppRequest{
+					AppId: appID,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "assets")
 
 	return cmd
 }
