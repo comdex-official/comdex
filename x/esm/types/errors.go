@@ -22,4 +22,5 @@ var (
 	ErrorAppDoesNotExists          = sdkerrors.Register(ModuleName, 1111, "App Does Not Exists")
 	ErrAppIDDoesNotExists          = sdkerrors.Register(ModuleName, 1112, "App Id Does NOt exist")
 	ErrCoolOffPeriodPassed         = sdkerrors.Register(ModuleName, 1113, "Cool off period has passed")
+	ErrCurrentDepositNotReached    = sdkerrors.Register(ModuleName, 1114, "Current Deposit Not Reached for App")
 )
