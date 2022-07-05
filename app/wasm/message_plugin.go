@@ -2,6 +2,7 @@ package wasm
 
 import (
 	"encoding/json"
+	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
 
 	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
@@ -22,7 +23,7 @@ import (
 
 func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper,
 	assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper,
-	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
+	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper, esmKeeper esmkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
 			wrapped:           old,
@@ -33,6 +34,7 @@ func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewa
 			liquidationKeeper: liquidationKeeper,
 			auctionKeeper:     auctionKeeper,
 			tokenMintKeeper:   tokenMintKeeper,
+			esmKeeper:         esmKeeper,
 		}
 	}
 }
@@ -46,6 +48,7 @@ type CustomMessenger struct {
 	liquidationKeeper liquidationkeeper.Keeper
 	auctionKeeper     auctionkeeper.Keeper
 	tokenMintKeeper   tokenmintkeeper.Keeper
+	esmKeeper         esmkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -99,6 +102,9 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		}
 		if comdexMsg.MsgBurnGovTokensForApp != nil {
 			return m.BurnGovTokensForApp(ctx, contractAddr, comdexMsg.MsgBurnGovTokensForApp)
+		}
+		if comdexMsg.MsgAddESMTriggerParams != nil {
+			return m.AddESMTriggerParams(ctx, contractAddr, comdexMsg.MsgAddESMTriggerParams)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
@@ -365,6 +371,23 @@ func (m *CustomMessenger) BurnGovTokensForApp(ctx sdk.Context, contractAddr sdk.
 func MsgBurnGovTokensForApp(tokenMintKeeper tokenmintkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgBurnGovTokensForApp) error {
 	err := tokenMintKeeper.BurnGovTokensForApp(ctx, a.AppID, a.From, a.Amount)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) AddESMTriggerParams(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgAddESMTriggerParams) ([]sdk.Event, [][]byte, error) {
+	err := MsgAddESMTriggerParams(m.esmKeeper, ctx, contractAddr, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "BurnGovTokensForApp error")
+	}
+	return nil, nil, nil
+}
+
+func MsgAddESMTriggerParams(esmKeeper esmkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	a *bindings.MsgAddESMTriggerParams) error {
+	err := esmKeeper.AddESMTriggerParamsForApp(ctx, a.AppID, a.TargetValue, a.CoolOffPeriod)
 	if err != nil {
 		return err
 	}

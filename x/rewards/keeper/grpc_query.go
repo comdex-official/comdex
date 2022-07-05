@@ -217,3 +217,51 @@ func (k *Keeper) QueryReward(c context.Context, req *types.QueryRewardRequest) (
 		Reward: item,
 	}, nil
 }
+
+func (k *Keeper) QueryExternalRewardsLockers(c context.Context, req *types.QueryExternalRewardsLockersRequest) (*types.QueryExternalRewardsLockersResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	items := k.GetExternalRewardsLockers(ctx)
+
+	return &types.QueryExternalRewardsLockersResponse{
+		LockerExternalRewards: items,
+	}, nil
+}
+
+func (k *Keeper) QueryExternalRewardVaults(c context.Context, req *types.QueryExternalRewardVaultsRequest) (*types.QueryExternalRewardVaultsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	items := k.GetExternalRewardVaults(ctx)
+
+	return &types.QueryExternalRewardVaultsResponse{
+		VaultExternalRewards: items,
+	}, nil
+}
+
+func (k *Keeper) QueryWhitelistedAppIdsVault(c context.Context, req *types.QueryWhitelistedAppIdsVaultRequest) (*types.QueryWhitelistedAppIdsVaultResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	items := k.GetAppIDs(ctx)
+
+	return &types.QueryWhitelistedAppIdsVaultResponse{
+		WhitelistedAppIdsVault: items,
+	}, nil
+}

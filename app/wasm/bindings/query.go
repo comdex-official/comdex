@@ -22,6 +22,7 @@ type ComdexQuery struct {
 	RemoveWhitelistAppIDVaultInterestQuery *RemoveWhitelistAppIDVaultInterestQuery `json:"remove_whitelist_app_id_vault_interest_query,omitempty"`
 	WhitelistAppIDLiquidationQuery         *WhitelistAppIDLiquidationQuery         `json:"whitelist_app_id_liquidation_query,omitempty"`
 	RemoveWhitelistAppIDLiquidationQuery   *RemoveWhitelistAppIDLiquidationQuery   `json:"remove_whitelist_app_id_liquidation_query,omitempty"`
+	AddESMTriggerParamsForAppQuery         *AddESMTriggerParamsForAppQuery         `json:"add_e_s_m_trigger_params_for_app_query,omitempty"`
 }
 
 type AppData struct {
@@ -210,6 +211,15 @@ type RemoveWhitelistAppIDLiquidationQuery struct {
 }
 
 type RemoveWhitelistAppIDLiquidationQueryResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type AddESMTriggerParamsForAppQuery struct {
+	AppID uint64 `json:"app_id"`
+}
+
+type AddESMTriggerParamsForAppResponse struct {
 	Found bool   `json:"found"`
 	Err   string `json:"err"`
 }

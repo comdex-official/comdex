@@ -6,6 +6,7 @@ import (
 	"github.com/comdex-official/comdex/x/locker/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
@@ -146,4 +147,12 @@ func (k *Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewa
 }
 func (k *Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise, found bool) {
 	return k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, appID, assetID)
+}
+
+func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool) {
+	return k.esm.GetKillSwitchData(ctx, app_id)
+}
+
+func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
+	return k.esm.GetESMStatus(ctx,id)
 }

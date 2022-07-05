@@ -347,7 +347,6 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	s.Require().Equal(auction.OutflowTokenCurrentPrice, sdk.NewDecFromInt(sdk.NewIntFromUint64(assetOutPrice)).Mul(sdk.MustNewDecFromStr("1.2")))
 	s.Require().Equal(auction.OutflowTokenEndPrice, auction.OutflowTokenInitialPrice.Mul(sdk.MustNewDecFromStr("0.6")))
 	s.Require().Equal(auction.InflowTokenCurrentPrice, sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice)))
-	s.Require().Equal(auction.ToBurnAmount.Amount, sdk.ZeroInt())
 }
 
 func (s *KeeperTestSuite) TestDutchBid() {

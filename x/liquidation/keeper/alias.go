@@ -6,6 +6,7 @@ import (
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 func (k *Keeper) GetModuleAccount(ctx sdk.Context, name string) authtypes.ModuleAccountI {
@@ -90,4 +91,12 @@ func (k *Keeper) GetAuctionParams(ctx sdk.Context) auctiontypes.Params {
 
 func (k *Keeper) SetVault(ctx sdk.Context, vault types.Vault) {
 	k.vault.SetVault(ctx, vault)
+}
+
+func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool) {
+	return k.esm.GetKillSwitchData(ctx, app_id)
+}
+
+func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
+	return k.esm.GetESMStatus(ctx,id)
 }

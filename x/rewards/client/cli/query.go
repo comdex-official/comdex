@@ -35,6 +35,9 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryGaugeByDurationCmd(),
 		queryReward(),
 		queryRewards(),
+		queryExternalRewardsLockers(),
+		queryExternalRewardVaults(),
+		queryWhitelistedAppIdsVault(),
 	)
 
 	return cmd
@@ -338,6 +341,117 @@ func queryRewards() *cobra.Command {
 			res, err := queryClient.QueryRewards(
 				context.Background(),
 				&types.QueryRewardsRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "lends")
+
+	return cmd
+}
+
+func queryExternalRewardsLockers() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "locker_external_rewards",
+		Short: "Query external-rewards of locker",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryExternalRewardsLockers(
+				context.Background(),
+				&types.QueryExternalRewardsLockersRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "lends")
+
+	return cmd
+}
+
+func queryExternalRewardVaults() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vault_external_rewards",
+		Short: "Query external-rewards of vault",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryExternalRewardVaults(
+				context.Background(),
+				&types.QueryExternalRewardVaultsRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "lends")
+
+	return cmd
+}
+
+func queryWhitelistedAppIdsVault() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "whitelisted_appids_Vault",
+		Short: "Query whitelisted appids of vault",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryWhitelistedAppIdsVault(
+				context.Background(),
+				&types.QueryWhitelistedAppIdsVaultRequest{
 					Pagination: pagination,
 				},
 			)

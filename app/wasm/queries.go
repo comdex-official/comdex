@@ -3,6 +3,7 @@ package wasm
 import (
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	esmKeeper "github.com/comdex-official/comdex/x/esm/keeper"
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
@@ -18,6 +19,7 @@ type QueryPlugin struct {
 	rewardsKeeper     *rewardsKeeper.Keeper
 	collectorKeeper   *collectorkeeper.Keeper
 	liquidationKeeper *liquidationKeeper.Keeper
+	esmKeeper         *esmKeeper.Keeper
 }
 
 func NewQueryPlugin(
@@ -27,6 +29,7 @@ func NewQueryPlugin(
 	rewardsKeeper *rewardsKeeper.Keeper,
 	collectorKeeper *collectorkeeper.Keeper,
 	liquidation *liquidationKeeper.Keeper,
+	esmKeeper *esmKeeper.Keeper,
 
 ) *QueryPlugin {
 	return &QueryPlugin{
@@ -36,6 +39,7 @@ func NewQueryPlugin(
 		rewardsKeeper:     rewardsKeeper,
 		collectorKeeper:   collectorKeeper,
 		liquidationKeeper: liquidation,
+		esmKeeper:         esmKeeper,
 	}
 }
 
@@ -132,5 +136,10 @@ func (qp QueryPlugin) WasmWhitelistAppIDLiquidationQueryCheck(ctx sdk.Context, a
 
 func (qp QueryPlugin) WasmRemoveWhitelistAppIDLiquidationQueryCheck(ctx sdk.Context, appID uint64) (found bool, err string) {
 	found, err = qp.liquidationKeeper.WasmRemoveWhitelistAppIDLiquidationQuery(ctx, appID)
+	return found, err
+}
+
+func (qp QueryPlugin) WasmAddESMTriggerParamsQueryCheck(ctx sdk.Context, appID uint64) (found bool, err string) {
+	found, err = qp.esmKeeper.WasmAddESMTriggerParamsQuery(ctx, appID)
 	return found, err
 }

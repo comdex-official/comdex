@@ -384,6 +384,15 @@ func (k Keeper) CloseLend(ctx sdk.Context, addr string, lendID uint64) error {
 	return nil
 }
 
+func uint64InSlice(a uint64, list []uint64) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
 //nolint:funlen
 func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64, IsStableBorrow bool, AmountIn, loan sdk.Coin) error {
 	lenderAddr, _ := sdk.AccAddressFromBech32(addr)
@@ -397,6 +406,11 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 	}
 
 	pair, found := k.GetLendPair(ctx, pairID)
+	if !found {
+		return types.ErrorPairNotFound
+	}
+	pairMapping, _ := k.GetAssetToPair(ctx, pair.AssetIn, lendPos.PoolId)
+	found = uint64InSlice(pairID, pairMapping.PairId)
 	if !found {
 		return types.ErrorPairNotFound
 	}
@@ -535,17 +549,23 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 			return sdkerrors.Wrap(types.ErrBorrowingPoolInsufficient, loan.String())
 		}
 		assetIn := lendPos.UpdatedAmountIn
-		priceAssetIn, _ := k.GetPriceForAsset(ctx, pair.AssetIn)
+		priceAssetIn, found := k.GetPriceForAsset(ctx, pair.AssetIn)
+		if !found {
+			return types.ErrorPriceDoesNotExist
+		}
 		amtIn := assetIn.Mul(sdk.NewIntFromUint64(priceAssetIn))
 
-		//priceFirstBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.FirstBridgedAssetId)
-		priceSecondBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.SecondBridgedAssetId)
+		priceFirstBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.FirstBridgedAssetId)
+		priceSecondBridgedAsset, found := k.GetPriceForAsset(ctx, AssetInPool.SecondBridgedAssetId)
+		if !found {
+			return types.ErrorPriceDoesNotExist
+		}
 		firstBridgedAsset, _ := k.GetAsset(ctx, AssetInPool.FirstBridgedAssetId)
 		secondBridgedAsset, _ := k.GetAsset(ctx, AssetInPool.SecondBridgedAssetId)
 
 		// qty of first and second bridged asset to be sent over different pool according to the borrow Pool
 
-		firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(1000000))
+		firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset))
 		firstBridgedAssetBal := k.ModuleBalance(ctx, AssetInPool.ModuleName, firstBridgedAsset.Denom)
 		secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
 		secondBridgedAssetBal := k.ModuleBalance(ctx, AssetInPool.ModuleName, secondBridgedAsset.Denom)
@@ -841,11 +861,20 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 		k.SetBorrow(ctx, borrowPos)
 	} else {
 		assetIn := lendPos.UpdatedAmountIn
-		priceAssetIn, _ := k.GetPriceForAsset(ctx, pair.AssetIn)
+		priceAssetIn, found := k.GetPriceForAsset(ctx, pair.AssetIn)
+		if !found {
+			return types.ErrorPriceDoesNotExist
+		}
 		amtIn := assetIn.Mul(sdk.NewIntFromUint64(priceAssetIn))
 
-		priceFirstBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.FirstBridgedAssetId)
-		priceSecondBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.SecondBridgedAssetId)
+		priceFirstBridgedAsset, found := k.GetPriceForAsset(ctx, AssetInPool.FirstBridgedAssetId)
+		if !found {
+			return types.ErrorPriceDoesNotExist
+		}
+		priceSecondBridgedAsset, found := k.GetPriceForAsset(ctx, AssetInPool.SecondBridgedAssetId)
+		if !found {
+			return types.ErrorPriceDoesNotExist
+		}
 		firstBridgedAsset, _ := k.GetAsset(ctx, AssetInPool.FirstBridgedAssetId)
 		secondBridgedAsset, _ := k.GetAsset(ctx, AssetInPool.SecondBridgedAssetId)
 

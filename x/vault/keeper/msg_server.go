@@ -8,6 +8,7 @@ import (
 	"github.com/tendermint/tendermint/types/time"
 
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/vault/types"
 )
 
@@ -28,7 +29,18 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 // MsgCreate Creating a new CDP.
 func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
+	if klwsParams.BreakerEnable{
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
 	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
 		return nil, types.ErrorExtendedPairVaultDoesNotExists
@@ -91,7 +103,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	}
 
 	//Calculate CR - make necessary changes to calculate collateralization function
-	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, msg.AmountIn, msg.AmountOut, extendedPairVault.MinCr); err != nil {
+	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, msg.AmountIn, msg.AmountOut, extendedPairVault.MinCr, status); err != nil {
 		return nil, err
 	}
 	//Take amount from user
@@ -205,7 +217,18 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 // MsgDeposit Only for depositing new collateral.
 func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
+	if klwsParams.BreakerEnable{
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -275,6 +298,25 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 // MsgWithdraw Withdrawing collateral.
 func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
+	if klwsParams.BreakerEnable{
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	
+	if ctx.BlockTime().After(esmStatus.EndTime){
+		//TODO.....
+
+		//send collateral to redemption func and calculate debt with collector check 
+		// but only once
+		
+		// TODO........
+		return nil, esmtypes.ErrCoolOffPeriodPassed
+	}
 
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
@@ -337,7 +379,7 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 	totalDebtCalculation = totalDebtCalculation.Add(userVault.ClosingFeeAccumulated)
 
 	//Calculate CR - make necessary changes to the calculate collateralization function
-	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, userVault.AmountIn, totalDebtCalculation, extendedPairVault.MinCr); err != nil {
+	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, userVault.AmountIn, totalDebtCalculation, extendedPairVault.MinCr, status); err != nil {
 		return nil, err
 	}
 
@@ -357,7 +399,18 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 // MsgDraw To borrow more amount.
 func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
+	if klwsParams.BreakerEnable{
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -426,7 +479,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
 
-	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, userVault.AmountIn, totalDebt, extendedPairVault.MinCr); err != nil {
+	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, userVault.AmountIn, totalDebt, extendedPairVault.MinCr, status); err != nil {
 		return nil, err
 	}
 
@@ -475,7 +528,18 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 
 func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
+	if klwsParams.BreakerEnable{
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -598,7 +662,18 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 
 func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
+	if klwsParams.BreakerEnable{
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -695,7 +770,18 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 
 func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateStableMintRequest) (*types.MsgCreateStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
+	if klwsParams.BreakerEnable{
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
 	//Checking if extended pair exists
 	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
 	if !found {
@@ -805,7 +891,18 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 
 func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDepositStableMintRequest) (*types.MsgDepositStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
+	if klwsParams.BreakerEnable{
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
 	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -920,7 +1017,18 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 
 func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdrawStableMintRequest) (*types.MsgWithdrawStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
+	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	status := false
+	if found{
+		status = esmStatus.Status
+	}
+	if status{
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
+	if klwsParams.BreakerEnable{
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
 	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
