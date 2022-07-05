@@ -384,6 +384,15 @@ func (k Keeper) CloseLend(ctx sdk.Context, addr string, lendID uint64) error {
 	return nil
 }
 
+func uint64InSlice(a uint64, list []uint64) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
 //nolint:funlen
 func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64, IsStableBorrow bool, AmountIn, loan sdk.Coin) error {
 	lenderAddr, _ := sdk.AccAddressFromBech32(addr)
@@ -397,6 +406,11 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 	}
 
 	pair, found := k.GetLendPair(ctx, pairID)
+	if !found {
+		return types.ErrorPairNotFound
+	}
+	pairMapping, _ := k.GetAssetToPair(ctx, pair.AssetIn, lendPos.PoolId)
+	found = uint64InSlice(pairID, pairMapping.PairId)
 	if !found {
 		return types.ErrorPairNotFound
 	}
