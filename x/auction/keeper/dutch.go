@@ -517,7 +517,10 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 					}
 				} else {
 					// create new vault done
-					k.CreateNewVault(ctx, dutchAuction.VaultOwner.String(), lockedVault.AppId, lockedVault.ExtendedPairId, dutchAuction.OutflowTokenCurrentAmount.Amount, dutchAuction.InflowTokenCurrentAmount.Amount)
+					err := k.CreateNewVault(ctx, dutchAuction.VaultOwner.String(), lockedVault.AppId, lockedVault.ExtendedPairId, dutchAuction.OutflowTokenCurrentAmount.Amount, dutchAuction.InflowTokenCurrentAmount.Amount)
+					if err != nil {
+						return err
+					}
 				}
 
 				dutchAuction.AuctionStatus = auctiontypes.AuctionEnded

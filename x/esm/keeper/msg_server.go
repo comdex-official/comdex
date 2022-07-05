@@ -50,7 +50,9 @@ func (k msgServer) MsgKillSwitch(c context.Context, msg *types.MsgKillRequest) (
 		return nil, types.ErrorUnauthorized
 	}
 
-	k.keeper.SetKillSwitchData(ctx, *msg.KillSwitchParams)
+	if err := k.keeper.SetKillSwitchData(ctx, *msg.KillSwitchParams); err != nil {
+		return nil, err
+	}
 
 	return &types.MsgKillResponse{}, nil
 }

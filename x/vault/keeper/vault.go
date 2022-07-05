@@ -497,7 +497,10 @@ func (k *Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, Exte
   		}
 	}
 	
-	k.SetAppExtendedPairVaultMapping(ctx, app_extended_pair_vault_data)
+	err := k.SetAppExtendedPairVaultMapping(ctx, app_extended_pair_vault_data)
+	if err != nil {
+		return err
+	}
 
 	//////////////////
 	// k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updated_counter, new_vault)
