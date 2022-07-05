@@ -1987,7 +1987,7 @@ var (
 
 	pattern_Query_QueryAllLendByOwnerAndPool_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "lend", "v1beta1", "lends_by_owner_pool", "owner", "pool_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdexofficial", "comdex", "lend", "params"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryPairs_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "lend", "v1beta1", "pairs"}, "", runtime.AssumeColonVerbOpt(false)))
 

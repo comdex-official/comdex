@@ -7,6 +7,7 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -74,7 +75,10 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 			govTokenID = v.AssetId
 		}
 	}
-	govAsset, _ := k.GetAsset(ctx, govTokenID)
+	govAsset, found := k.GetAsset(ctx, govTokenID)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
+	}
 	if Amount.Denom != govAsset.Denom {
 		return types.ErrBadOfferCoinType
 	}
