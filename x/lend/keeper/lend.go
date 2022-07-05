@@ -433,7 +433,7 @@ func (k Keeper) GetLastInterestTime(ctx sdk.Context) int64 {
 	val := protobuftypes.Int64Value{}
 
 	if err := k.cdc.Unmarshal(bz, &val); err != nil {
-		panic(any(err))
+		panic(err)
 	}
 
 	return val.Value
