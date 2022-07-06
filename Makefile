@@ -96,6 +96,9 @@ all: install test
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/comdex
 
+build:
+	go build $(BUILD_FLAGS) -o bin/comdex ./cmd/comdex
+
 release: install
 	mkdir -p release
 ifeq (${OS},Windows_NT)
