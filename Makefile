@@ -99,7 +99,7 @@ install: go.sum
 release: install
 	mkdir -p release
 ifeq (${OS},Windows_NT)
-	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=build/linux/amd64 comdex.exe
+	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=$(GOBIN) comdex.exe
 else
 	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=$(GOBIN) comdex
 endif
