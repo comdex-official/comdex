@@ -253,6 +253,7 @@ var (
 		wasm.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
+		ica.AppModuleBasic{},
 	)
 )
 
