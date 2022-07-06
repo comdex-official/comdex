@@ -95,6 +95,13 @@ install: go.sum
 build:
 	go build $(BUILD_FLAGS) -o bin/comdex ./cmd/comdex
 
+release: build
+	mkdir -p release
+ifeq (${OS},Windows_NT)
+	tar -czvf release/comdex-linux-amd64.tar.gz --directory=build/linux/amd64 comdex.exe
+else
+	tar -czvf release/comdex-linux-amd64.tar.gz --directory=build/linux/amd64 comdex
+endif
 
 ###############################################################################
 ###                                Linting                                  ###
