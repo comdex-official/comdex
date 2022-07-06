@@ -3,11 +3,11 @@ package app
 import (
 	"fmt"
 
-	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
+	/*ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"*/
 
 	"io"
 	"os"
@@ -253,6 +253,7 @@ var (
 		wasm.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
+		//ica.AppModuleBasic{},
 	)
 )
 
@@ -288,21 +289,21 @@ type App struct {
 	mkeys map[string]*sdk.MemoryStoreKey
 
 	// keepers
-	AccountKeeper     authkeeper.AccountKeeper
-	FeegrantKeeper    feegrantkeeper.Keeper
-	BankKeeper        bankkeeper.Keeper
-	AuthzKeeper       authzkeeper.Keeper
-	CapabilityKeeper  *capabilitykeeper.Keeper
-	StakingKeeper     stakingkeeper.Keeper
-	SlashingKeeper    slashingkeeper.Keeper
-	MintKeeper        mintkeeper.Keeper
-	DistrKeeper       distrkeeper.Keeper
-	GovKeeper         govkeeper.Keeper
-	CrisisKeeper      crisiskeeper.Keeper
-	UpgradeKeeper     upgradekeeper.Keeper
-	ParamsKeeper      paramskeeper.Keeper
-	IbcKeeper         *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	ICAHostKeeper     *icahostkeeper.Keeper
+	AccountKeeper    authkeeper.AccountKeeper
+	FeegrantKeeper   feegrantkeeper.Keeper
+	BankKeeper       bankkeeper.Keeper
+	AuthzKeeper      authzkeeper.Keeper
+	CapabilityKeeper *capabilitykeeper.Keeper
+	StakingKeeper    stakingkeeper.Keeper
+	SlashingKeeper   slashingkeeper.Keeper
+	MintKeeper       mintkeeper.Keeper
+	DistrKeeper      distrkeeper.Keeper
+	GovKeeper        govkeeper.Keeper
+	CrisisKeeper     crisiskeeper.Keeper
+	UpgradeKeeper    upgradekeeper.Keeper
+	ParamsKeeper     paramskeeper.Keeper
+	IbcKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	//ICAHostKeeper     *icahostkeeper.Keeper
 	EvidenceKeeper    evidencekeeper.Keeper
 	IbcTransferKeeper ibctransferkeeper.Keeper
 
@@ -311,7 +312,7 @@ type App struct {
 	ScopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedIBCOracleKeeper   capabilitykeeper.ScopedKeeper
 	ScopedBandoracleKeeper  capabilitykeeper.ScopedKeeper
-	ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
+	//ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
 
 	BandoracleKeeper bandoraclemodulekeeper.Keeper
 	AssetKeeper      assetkeeper.Keeper
@@ -358,7 +359,7 @@ func New(
 		keys  = sdk.NewKVStoreKeys(
 			authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, icahosttypes.StoreKey, upgradetypes.StoreKey,
+			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey /*icahosttypes.StoreKey,*/, upgradetypes.StoreKey,
 			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 			vaulttypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
@@ -402,7 +403,7 @@ func New(
 	app.ParamsKeeper.Subspace(crisistypes.ModuleName)
 	app.ParamsKeeper.Subspace(ibctransfertypes.ModuleName)
 	app.ParamsKeeper.Subspace(ibchost.ModuleName)
-	app.ParamsKeeper.Subspace(icahosttypes.SubModuleName)
+	//app.ParamsKeeper.Subspace(icahosttypes.SubModuleName)
 	app.ParamsKeeper.Subspace(vaulttypes.ModuleName)
 	app.ParamsKeeper.Subspace(assettypes.ModuleName)
 	app.ParamsKeeper.Subspace(collectortypes.ModuleName)
@@ -434,11 +435,11 @@ func New(
 
 	// grant capabilities for the ibc and ibc-transfer modules
 	var (
-		scopedIBCKeeper        = app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
-		scopedTransferKeeper   = app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
-		scopedIBCOracleKeeper  = app.CapabilityKeeper.ScopeToModule(markettypes.ModuleName)
-		scopedWasmKeeper       = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
-		scopedICAHostKeeper    = app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
+		scopedIBCKeeper       = app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
+		scopedTransferKeeper  = app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+		scopedIBCOracleKeeper = app.CapabilityKeeper.ScopeToModule(markettypes.ModuleName)
+		scopedWasmKeeper      = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
+		//scopedICAHostKeeper    = app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
 		scopedBandoracleKeeper = app.CapabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
 	)
 
@@ -528,7 +529,7 @@ func New(
 		scopedIBCKeeper,
 	)
 
-	icaHostKeeper := icahostkeeper.NewKeeper(
+	/*icaHostKeeper := icahostkeeper.NewKeeper(
 		appCodec, app.keys[icahosttypes.StoreKey],
 		app.GetSubspace(icahosttypes.SubModuleName),
 		app.IbcKeeper.ChannelKeeper,
@@ -539,7 +540,7 @@ func New(
 	)
 	app.ICAHostKeeper = &icaHostKeeper
 
-	icaHostIBCModule := icahost.NewIBCModule(*app.ICAHostKeeper)
+	icaHostIBCModule := icahost.NewIBCModule(*app.ICAHostKeeper)*/
 	app.AssetKeeper = assetkeeper.NewKeeper(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
@@ -775,7 +776,7 @@ func New(
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
 	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandOracleIBCModule)
 	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IbcKeeper.ChannelKeeper))
-	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
+	//ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
 	app.IbcKeeper.SetRouter(ibcRouter)
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
@@ -811,7 +812,7 @@ func New(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		authzmodule.NewAppModule(app.cdc, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IbcKeeper),
-		ica.NewAppModule(nil, app.ICAHostKeeper),
+		//ica.NewAppModule(nil, app.ICAHostKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		asset.NewAppModule(app.cdc, app.AssetKeeper),
@@ -836,7 +837,7 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName, icatypes.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName, /* icatypes.ModuleName,*/
 		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, lockertypes.ModuleName,
 		crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
 		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName,
@@ -849,7 +850,7 @@ func New(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
 		minttypes.ModuleName, bandoraclemoduletypes.ModuleName, markettypes.ModuleName, lockertypes.ModuleName,
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
-		icatypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
+		/*icatypes.ModuleName,*/ vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
 		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(), lendtypes.ModuleName,
 		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName, esmtypes.ModuleName,
@@ -871,7 +872,7 @@ func New(
 		minttypes.ModuleName,
 		crisistypes.ModuleName,
 		ibchost.ModuleName,
-		icatypes.ModuleName,
+		//icatypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -942,6 +943,10 @@ func New(
 		// Note that since this reads from the store, we can only perform it when
 		// `loadLatest` is set to true.
 		ctx := app.BaseApp.NewUncachedContext(true, tmprototypes.Header{})
+
+		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
+			tmos.Exit(fmt.Sprintf("failed initialize pinned codes %s", err))
+		}
 		app.CapabilityKeeper.InitMemStore(ctx)
 		app.CapabilityKeeper.Seal()
 	}
@@ -949,10 +954,11 @@ func New(
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedIBCTransferKeeper = scopedTransferKeeper
 	app.ScopedIBCOracleKeeper = scopedIBCOracleKeeper
-	app.ScopedICAHostKeeper = scopedICAHostKeeper
+	//app.ScopedICAHostKeeper = scopedICAHostKeeper
 	app.ScopedBandoracleKeeper = scopedBandoracleKeeper
 
 	app.ScopedWasmKeeper = scopedWasmKeeper
+
 	return app
 }
 
@@ -1094,7 +1100,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		wasm.ModuleName:                {authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
-		icatypes.ModuleName:            nil,
+		//icatypes.ModuleName:            nil,
 	}
 }
 
@@ -1144,7 +1150,7 @@ func (a *App) registerUpgradeHandlers() {
 				tokenminttypes.ModuleName,
 				vaulttypes.ModuleName,
 				feegrant.ModuleName,
-				icahosttypes.StoreKey,
+				//icahosttypes.StoreKey,
 			},
 		}
 	}
