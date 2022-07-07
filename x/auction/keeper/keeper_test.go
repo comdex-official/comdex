@@ -18,6 +18,7 @@ import (
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationTypes "github.com/comdex-official/comdex/x/liquidation/types"
 	marketKeeper "github.com/comdex-official/comdex/x/market/keeper"
+	tokenmintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
 )
@@ -30,6 +31,7 @@ type KeeperTestSuite struct {
 	vaultKeeper          vaultKeeper.Keeper
 	assetKeeper          assetKeeper.Keeper
 	liquidationKeeper    liquidationKeeper.Keeper
+	tokenmintKeeper      tokenmintKeeper.Keeper
 	marketKeeper         marketKeeper.Keeper
 	collectorKeeper      collectKeeper.Keeper
 	liquidationQuerier   liquidationKeeper.QueryServer
@@ -58,6 +60,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.marketKeeper = s.app.MarketKeeper
 	s.keeper = s.app.AuctionKeeper
 	s.auctionMsgServer = keeper.NewMsgServiceServer(s.keeper)
+	s.tokenmintKeeper = s.app.TokenmintKeeper
 }
 func (s *KeeperTestSuite) getBalance(addr string, denom string) (coin sdk.Coin, err error) {
 	addr1, err := sdk.AccAddressFromBech32(addr)

@@ -293,7 +293,7 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appID, auctionMappingID, au
 		change := auction.BidFactor.MulInt(auction.ExpectedMintedToken.Amount).Ceil().TruncateInt()
 		maxBidAmount := auction.ExpectedMintedToken.Amount.Sub(change)
 		if bid.Amount.GT(maxBidAmount) {
-			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", maxBidAmount)
+			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", maxBidAmount.Uint64())
 		}
 	} else {
 		if bid.Amount.GT(auction.AuctionedToken.Amount) {
