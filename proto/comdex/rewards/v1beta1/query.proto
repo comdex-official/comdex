@@ -41,6 +41,15 @@ service Query {
   rpc QueryReward(QueryRewardRequest) returns (QueryRewardResponse) {
     option (google.api.http).get = "/comdex/rewards/v1beta1/reward/{id}";
   }
+  rpc QueryExternalRewardsLockers(QueryExternalRewardsLockersRequest) returns (QueryExternalRewardsLockersResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/locker_external_rewards";
+  }
+  rpc QueryExternalRewardVaults(QueryExternalRewardVaultsRequest) returns (QueryExternalRewardVaultsResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/vault_external_rewards";
+  }
+  rpc QueryWhitelistedAppIdsVault(QueryWhitelistedAppIdsVaultRequest) returns (QueryWhitelistedAppIdsVaultResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/whitelisted_appids_Vault";
+  }
 }
 
 
@@ -127,4 +136,45 @@ message QueryRewardRequest {
 message QueryRewardResponse {
   Internal_rewards reward = 1
   [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"reward\"" ];
+}
+
+// all ExternalRewardsLockers
+
+message QueryExternalRewardsLockersRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryExternalRewardsLockersResponse {
+  repeated Locker_external_rewards locker_external_rewards = 1
+  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"locker_external_rewards\"" ];
+
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryExternalRewardVaultsRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryExternalRewardVaultsResponse {
+  repeated Vault_external_rewards vault_external_rewards = 1
+  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vault_external_rewards\"" ];
+  
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryWhitelistedAppIdsVaultRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryWhitelistedAppIdsVaultResponse {
+  WhitelistedAppIdsVault whitelistedAppIdsVault = 1
+  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"whitelistedAppIdsVault\"" ];
+  
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }

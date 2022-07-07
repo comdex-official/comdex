@@ -3,6 +3,7 @@
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
 
+
 # don't override user values
 ifeq (,$(VERSION))
   VERSION := $(shell git describe --tags)
@@ -17,6 +18,9 @@ LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
 BUILDDIR ?= $(CURDIR)/build
+GOBIN = $(shell go env GOPATH)/bin
+GOARCH = $(shell go env GOARCH)
+GOOS = $(shell go env GOOS)
 
 export GO111MODULE = on
 
@@ -87,7 +91,7 @@ endif
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
 
-all: install
+all: install test
 
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/comdex
@@ -95,6 +99,25 @@ install: go.sum
 build:
 	go build $(BUILD_FLAGS) -o bin/comdex ./cmd/comdex
 
+release: install
+	mkdir -p release
+ifeq (${OS},Windows_NT)
+	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=$(GOBIN) comdex.exe
+else
+	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=$(GOBIN) comdex
+endif
+
+###############################################################################
+###                                Linting                                  ###
+###############################################################################
+
+lint:
+	@echo "--> Running linter"
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
+
+format:
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --fix
+	@go run mvdan.cc/gofumpt -l -w x/ app/ ante/ tests/
 
 
 ###############################################################################

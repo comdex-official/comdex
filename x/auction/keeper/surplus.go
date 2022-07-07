@@ -17,13 +17,20 @@ func (k Keeper) SurplusActivator(ctx sdk.Context) error {
 	}
 	for _, data := range auctionMapData {
 		for _, inData := range data.AssetIdToAuctionLookup {
-			if inData.IsSurplusAuction && !inData.IsAuctionActive {
+			klwsParams,_ := k.GetKillSwitchData(ctx,data.AppId)
+			esmStatus, found := k.GetESMStatus(ctx,data.AppId)
+			status := false
+			if found{
+				status = esmStatus.Status
+			}
+			if inData.IsSurplusAuction && !inData.IsAuctionActive && !klwsParams.BreakerEnable && !status {
 				err := k.CreateSurplusAuction(ctx, data.AppId, inData.AssetId)
 				if err != nil {
 					return err
 				}
-			} else if inData.IsSurplusAuction && inData.IsAuctionActive {
-				err := k.SurplusAuctionClose(ctx, data.AppId)
+			}
+			if inData.IsSurplusAuction && inData.IsAuctionActive {
+				err := k.SurplusAuctionClose(ctx, data.AppId, status)
 				if err != nil {
 					return err
 				}
@@ -159,17 +166,17 @@ func (k Keeper) StartSurplusAuction(
 	return nil
 }
 
-func (k Keeper) SurplusAuctionClose(ctx sdk.Context, appID uint64) error {
+func (k Keeper) SurplusAuctionClose(ctx sdk.Context, appID uint64, statusEsm bool) error {
 	surplusAuctions := k.GetSurplusAuctions(ctx, appID)
 	for _, surplusAuction := range surplusAuctions {
-		if ctx.BlockTime().After(surplusAuction.EndTime) || ctx.BlockTime().After(surplusAuction.BidEndTime) {
-			if surplusAuction.AuctionStatus == auctiontypes.AuctionStartNoBids {
+		if ctx.BlockTime().After(surplusAuction.EndTime) || ctx.BlockTime().After(surplusAuction.BidEndTime) || statusEsm {
+			if (surplusAuction.AuctionStatus == auctiontypes.AuctionStartNoBids) && !statusEsm{
 				err := k.RestartSurplus(ctx, appID, surplusAuction)
 				if err != nil {
 					return err
 				}
 			} else {
-				err := k.closeSurplusAuction(ctx, surplusAuction)
+				err := k.closeSurplusAuction(ctx, surplusAuction, statusEsm)
 				if err != nil {
 					return err
 				}
@@ -206,8 +213,25 @@ func (k Keeper) RestartSurplus(
 func (k Keeper) closeSurplusAuction(
 	ctx sdk.Context,
 	surplusAuction auctiontypes.SurplusAuction,
+	statusEsm bool,
 ) error {
-	if surplusAuction.Bidder != nil {
+	if statusEsm && surplusAuction.Bidder != nil{
+
+		err := k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, surplusAuction.Bidder, sdk.NewCoins(surplusAuction.Bid))
+		if err != nil {
+			return err
+		}
+
+		err1 := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(surplusAuction.SellToken))
+		if err1 != nil {
+			return err1
+		}
+		err2 := k.SetNetFeeCollectedData(ctx, surplusAuction.AppId, surplusAuction.AssetOutId, surplusAuction.SellToken.Amount)
+		if err2 != nil {
+			return auctiontypes.ErrorUnableToSetNetFees
+		}
+
+	}else if !statusEsm && surplusAuction.Bidder != nil {
 		highestBidReceived := surplusAuction.Bid
 
 		err := k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, surplusAuction.Bidder, sdk.NewCoins(surplusAuction.SellToken))

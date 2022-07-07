@@ -22,7 +22,7 @@ func TestInvalidMsg(t *testing.T) {
 	app := app.Setup(false)
 
 	app.VaultKeeper = keeper.NewKeeper(
-		app.AppCodec(), app.GetKey(types.StoreKey), app.BankKeeper, &app.AssetKeeper, &app.MarketKeeper, &app.CollectorKeeper,
+		app.AppCodec(), app.GetKey(types.StoreKey), app.BankKeeper, &app.AssetKeeper, &app.MarketKeeper, &app.CollectorKeeper, &app.EsmKeeper,
 	)
 	h := vault.NewHandler(app.VaultKeeper)
 

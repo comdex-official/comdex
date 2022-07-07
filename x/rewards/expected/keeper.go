@@ -9,6 +9,7 @@ import (
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias).
@@ -81,4 +82,9 @@ type BankKeeper interface {
 
 	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
+}
+
+type EsmKeeper interface {
+	GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool)
+	GetESMStatus(ctx sdk.Context, id uint64) (esmStatus esmtypes.ESMStatus, found bool)
 }

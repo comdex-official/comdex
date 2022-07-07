@@ -16,13 +16,20 @@ func (k Keeper) DebtActivator(ctx sdk.Context) error {
 	}
 	for _, data := range auctionMapData {
 		for _, inData := range data.AssetIdToAuctionLookup {
-			if inData.IsDebtAuction && !inData.IsAuctionActive {
+			klwsParams,_ := k.GetKillSwitchData(ctx,data.AppId)
+			esmStatus, found := k.GetESMStatus(ctx,data.AppId)
+			status := false
+			if found{
+				status = esmStatus.Status
+			}
+			if inData.IsDebtAuction && !inData.IsAuctionActive && !klwsParams.BreakerEnable && !status{
 				err := k.CreateDebtAuction(ctx, data.AppId, inData.AssetId)
 				if err != nil {
 					return err
 				}
-			} else if inData.IsDebtAuction && inData.IsAuctionActive {
-				err := k.DebtAuctionClose(ctx, data.AppId)
+			}
+			if inData.IsDebtAuction && inData.IsAuctionActive && !status {
+				err := k.DebtAuctionClose(ctx, data.AppId, status)
 				if err != nil {
 					return err
 				}
@@ -156,18 +163,18 @@ func (k Keeper) StartDebtAuction(
 	return nil
 }
 
-func (k Keeper) DebtAuctionClose(ctx sdk.Context, appID uint64) error {
+func (k Keeper) DebtAuctionClose(ctx sdk.Context, appID uint64, statusEsm bool) error {
 	debtAuctions := k.GetDebtAuctions(ctx, appID)
 
 	for _, debtAuction := range debtAuctions {
-		if ctx.BlockTime().After(debtAuction.EndTime) || ctx.BlockTime().After(debtAuction.BidEndTime) {
-			if debtAuction.AuctionStatus == auctiontypes.AuctionStartNoBids {
+		if ctx.BlockTime().After(debtAuction.EndTime) || ctx.BlockTime().After(debtAuction.BidEndTime) || statusEsm {
+			if (debtAuction.AuctionStatus == auctiontypes.AuctionStartNoBids) && !statusEsm {
 				err := k.RestartDebt(ctx, appID, debtAuction)
 				if err != nil {
 					return err
 				}
 			} else {
-				err := k.closeDebtAuction(ctx, debtAuction)
+				err := k.closeDebtAuction(ctx, debtAuction, statusEsm)
 				if err != nil {
 					return err
 				}
@@ -203,8 +210,19 @@ func (k Keeper) RestartDebt(
 func (k Keeper) closeDebtAuction(
 	ctx sdk.Context,
 	debtAuction auctiontypes.DebtAuction,
+	statusEsm bool,
 ) error { //If there are bids
-	if debtAuction.AuctionStatus != auctiontypes.AuctionStartNoBids {
+
+	if statusEsm && debtAuction.BiddingIds != nil {
+		bidding, err := k.GetDebtUserBidding(ctx, debtAuction.Bidder.String(), debtAuction.AppId, debtAuction.ActiveBiddingId)
+		if err != nil {
+			return err
+		}
+		err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, sdk.AccAddress(bidding.Bidder), sdk.NewCoins(debtAuction.ExpectedUserToken))
+		if err != nil {
+			return err
+		}
+	}else if (debtAuction.AuctionStatus != auctiontypes.AuctionStartNoBids)  && !statusEsm{
 		err := k.MintNewTokensForApp(ctx, debtAuction.AppId, debtAuction.AssetOutId, debtAuction.Bidder.String(), debtAuction.CurrentBidAmount.Amount)
 		if err != nil {
 			return err

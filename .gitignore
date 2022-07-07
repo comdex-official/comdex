@@ -4,3 +4,5 @@
 /target/
 /release/
 /build/
+/cover.out
+/bin/
