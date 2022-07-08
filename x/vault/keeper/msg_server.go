@@ -308,15 +308,15 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 		status = esmStatus.Status
 	}
 	
-	if ctx.BlockTime().After(esmStatus.EndTime){
-		//TODO.....
+	// if ctx.BlockTime().After(esmStatus.EndTime){
+	// 	//TODO.....
 
-		//send collateral to redemption func and calculate debt with collector check 
-		// but only once
+	// 	//send collateral to redemption func and calculate debt with collector check 
+	// 	// but only once
 		
-		// TODO........
-		return nil, esmtypes.ErrCoolOffPeriodPassed
-	}
+	// 	// TODO........
+	// 	return nil, esmtypes.ErrCoolOffPeriodPassed
+	// }
 
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
