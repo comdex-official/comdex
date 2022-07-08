@@ -11,10 +11,13 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	chain "github.com/comdex-official/comdex/app"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/liquidity"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/keeper"
 	"github.com/comdex-official/comdex/x/liquidity/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
+	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 type KeeperTestSuite struct {
@@ -250,4 +253,79 @@ func decEq(exp, got sdk.Dec) (bool, string, string, string) {
 
 func newInt(i int64) sdk.Int {
 	return sdk.NewInt(i)
+}
+
+func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
+	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
+		Name:             appName,
+		ShortName:        appName,
+		MinGovDeposit:    sdk.NewInt(0),
+		GovTimeInSeconds: 0,
+		GenesisToken:     []assettypes.MintGenesisToken{},
+	})
+	s.Require().NoError(err)
+	found := s.app.AssetKeeper.HasAppForName(s.ctx, appName)
+	s.Require().True(found)
+
+	apps, found := s.app.AssetKeeper.GetApps(s.ctx)
+	s.Require().True(found)
+	var appID uint64
+	for _, app := range apps {
+		if app.Name == appName {
+			appID = app.Id
+			break
+		}
+	}
+	s.Require().NotZero(appID)
+	return appID
+}
+
+func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
+	var (
+		store = s.app.MarketKeeper.Store(s.ctx)
+		key   = markettypes.PriceForMarketKey(symbol)
+	)
+	value := s.app.AppCodec().MustMarshal(
+		&protobuftypes.UInt64Value{
+			Value: price,
+		},
+	)
+	store.Set(key, value)
+}
+
+func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) assettypes.Asset {
+	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
+		Name:                  name,
+		Denom:                 denom,
+		Decimals:              1000000,
+		IsOnChain:             true,
+		IsOraclePriceRequired: true,
+	})
+	s.Require().NoError(err)
+	assets := s.app.AssetKeeper.GetAssets(s.ctx)
+	var assetObj assettypes.Asset
+	for _, asset := range assets {
+		if asset.Denom == denom {
+			assetObj = asset
+			break
+		}
+	}
+	s.Require().NotZero(assetObj.Id)
+
+	market := markettypes.Market{
+		Symbol:   name,
+		ScriptID: 12,
+		Rates:    price,
+	}
+	s.app.MarketKeeper.SetMarket(s.ctx, market)
+
+	exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetObj.Id)
+	s.Suite.Require().False(exists)
+	s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetObj.Id, name)
+	exists = s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetObj.Id)
+	s.Suite.Require().True(exists)
+
+	s.SetOraclePrice(name, price)
+
+	return assetObj
 }
