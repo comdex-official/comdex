@@ -19,44 +19,14 @@ func (s *KeeperTestSuite) TestCreatePool() {
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	asset3 := s.CreateNewAsset("ASSET3", "uasset3", 3000000)
 
+	app1pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	app2pair := s.CreateNewLiquidityPair(appID2, addr1, asset1.Denom, asset2.Denom)
+	dummyPair1 := s.CreateNewLiquidityPair(appID1, addr1, asset2.Denom, asset1.Denom)
+	dummyPair2 := s.CreateNewLiquidityPair(appID1, addr1, asset2.Denom, asset3.Denom)
+
 	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
-
-	s.fundAddr(addr1, params.PairCreationFee)
-
-	app1pairMsg := types.NewMsgCreatePair(appID1, addr1, asset1.Denom, asset2.Denom)
-	app1pair, err := s.keeper.CreatePair(s.ctx, app1pairMsg, false)
-	s.Require().NoError(err)
-	s.Require().IsType(types.Pair{}, app1pair)
-
-	s.fundAddr(addr1, params.PairCreationFee)
-
-	app2pairMsg := types.NewMsgCreatePair(appID2, addr1, asset1.Denom, asset2.Denom)
-	app2pair, err := s.keeper.CreatePair(s.ctx, app2pairMsg, false)
-	s.Require().NoError(err)
-	s.Require().IsType(types.Pair{}, app2pair)
-
-	s.fundAddr(addr1, params.PairCreationFee)
-
-	dummyPair1Msg := types.NewMsgCreatePair(appID1, addr1, asset2.Denom, asset1.Denom)
-	dummyPair1, err := s.keeper.CreatePair(s.ctx, dummyPair1Msg, false)
-	s.Require().NoError(err)
-	s.Require().IsType(types.Pair{}, dummyPair1)
-
-	s.fundAddr(addr1, params.PairCreationFee)
-
-	dummyPair2Msg := types.NewMsgCreatePair(appID1, addr1, asset2.Denom, asset3.Denom)
-	dummyPair2, err := s.keeper.CreatePair(s.ctx, dummyPair2Msg, false)
-	s.Require().NoError(err)
-	s.Require().IsType(types.Pair{}, dummyPair2)
 	s.fundAddr(addr1, sdk.NewCoins(sdk.NewCoin(dummyPair2.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(dummyPair2.QuoteCoinDenom, sdk.NewInt(1000000000000))))
-
-	// s.fundAddr(addr1, params.PairCreationFee)
-
-	// pair2Msg := types.NewMsgCreatePair(appID1, addr1, asset1.Denom, asset2.Denom)
-	// pair2, err := s.keeper.CreatePair(s.ctx, pairMsg, false)
-	// s.Require().NoError(err)
-	// s.Require().IsType(types.Pair{}, pair)
 
 	testCases := []struct {
 		Name               string
@@ -291,6 +261,226 @@ func (s *KeeperTestSuite) TestCreatePool() {
 				s.Require().Equal(tc.QueryResponse.LastWithdrawRequestId, pools[tc.QueryResponseIndex].LastWithdrawRequestId)
 				s.Require().Equal(tc.QueryResponse.Disabled, pools[tc.QueryResponseIndex].Disabled)
 				s.Require().Equal(tc.QueryResponse.AppId, pools[tc.QueryResponseIndex].AppId)
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestDeposit() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appOne")
+	appID2 := s.CreateNewApp("appTwo")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	app1Pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	app1Pool := s.CreateNewLiquidityPool(appID1, app1Pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
+
+	app2Pair := s.CreateNewLiquidityPair(appID2, addr1, asset1.Denom, asset2.Denom)
+	app2Pool := s.CreateNewLiquidityPool(appID2, app2Pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
+
+	addr1AvailableBalance := sdk.NewCoins(
+		sdk.NewCoin(app1Pool.PoolCoinDenom, amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000))),
+		sdk.NewCoin(app2Pool.PoolCoinDenom, amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000))),
+	)
+
+	testCases := []struct {
+		Name               string
+		Msg                types.MsgDeposit
+		ExpErr             error
+		ExpResp            *types.DepositRequest
+		QueryResponseIndex uint64
+		QueryResponse      *types.DepositRequest
+		AvailableBalance   sdk.Coins
+	}{
+		{
+			Name: "error app id invalid",
+			Msg: *types.NewMsgDeposit(
+				69, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+			),
+			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", 69),
+			ExpResp:            &types.DepositRequest{},
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error pool id invalid",
+			Msg: *types.NewMsgDeposit(
+				appID1, addr1, 69, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+			),
+			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pool %d not found", 69),
+			ExpResp:            &types.DepositRequest{},
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error invalid deposit coin 1",
+			Msg: *types.NewMsgDeposit(
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdk.NewInt(100000000)), sdk.NewCoin("fakedenom2", sdk.NewInt(100000000))),
+			),
+			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom fakedenom1 is not in the pair"),
+			ExpResp:            &types.DepositRequest{},
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error invalid deposit coin 2",
+			Msg: *types.NewMsgDeposit(
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin("fakedenom2", sdk.NewInt(100000000))),
+			),
+			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom fakedenom2 is not in the pair"),
+			ExpResp:            &types.DepositRequest{},
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error invalid deposit coin 3",
+			Msg: *types.NewMsgDeposit(
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+			),
+			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom fakedenom1 is not in the pair"),
+			ExpResp:            &types.DepositRequest{},
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "error insufficeint deposit coins",
+			Msg: *types.NewMsgDeposit(
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+			),
+			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than 100000000%s", app1Pair.BaseCoinDenom, app1Pair.BaseCoinDenom),
+			ExpResp:            &types.DepositRequest{},
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   sdk.NewCoins(),
+		},
+		{
+			Name: "success valid case 1 app1 pool1",
+			Msg: *types.NewMsgDeposit(
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+			),
+			ExpErr: nil,
+			ExpResp: &types.DepositRequest{
+				Id:             1,
+				PoolId:         1,
+				MsgHeight:      0,
+				Depositor:      addr1.String(),
+				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+				AcceptedCoins:  nil,
+				MintedPoolCoin: sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(0)),
+				Status:         types.RequestStatusNotExecuted,
+				AppId:          appID1,
+			},
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(1000000000))),
+		},
+		{
+			Name: "success valid case 2 app1 pool1",
+			Msg: *types.NewMsgDeposit(
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(300000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(300000000))),
+			),
+			ExpErr: nil,
+			ExpResp: &types.DepositRequest{
+				Id:             2,
+				PoolId:         1,
+				MsgHeight:      0,
+				Depositor:      addr1.String(),
+				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(300000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(300000000))),
+				AcceptedCoins:  nil,
+				MintedPoolCoin: sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(0)),
+				Status:         types.RequestStatusNotExecuted,
+				AppId:          appID1,
+			},
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(3999999999))),
+		},
+		{
+			Name: "success valid case 3 app2 pool1",
+			Msg: *types.NewMsgDeposit(
+				appID2, addr1, app2Pool.Id, sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+			),
+			ExpErr: nil,
+			ExpResp: &types.DepositRequest{
+				Id:             1,
+				PoolId:         1,
+				MsgHeight:      0,
+				Depositor:      addr1.String(),
+				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+				AcceptedCoins:  nil,
+				MintedPoolCoin: sdk.NewCoin(app2Pool.PoolCoinDenom, sdk.NewInt(0)),
+				Status:         types.RequestStatusNotExecuted,
+				AppId:          appID2,
+			},
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(3999999999))).Add(sdk.NewCoin(app2Pool.PoolCoinDenom, sdk.NewInt(1000000000))),
+		},
+		{
+			Name: "success valid case 4 app2 pool1",
+			Msg: *types.NewMsgDeposit(
+				appID2, addr1, app2Pool.Id, sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdk.NewInt(700000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdk.NewInt(700000000))),
+			),
+			ExpErr: nil,
+			ExpResp: &types.DepositRequest{
+				Id:             2,
+				PoolId:         1,
+				MsgHeight:      0,
+				Depositor:      addr1.String(),
+				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdk.NewInt(700000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdk.NewInt(700000000))),
+				AcceptedCoins:  nil,
+				MintedPoolCoin: sdk.NewCoin(app2Pool.PoolCoinDenom, sdk.NewInt(0)),
+				Status:         types.RequestStatusNotExecuted,
+				AppId:          appID2,
+			},
+			QueryResponseIndex: 0,
+			QueryResponse:      nil,
+			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(3999999999))).Add(sdk.NewCoin(app2Pool.PoolCoinDenom, sdk.NewInt(7999999999))),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.Name, func() {
+
+			// add funds to acount for valid case
+			if tc.ExpErr == nil {
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Depositor), tc.Msg.DepositCoins)
+			}
+
+			depositReq, err := s.keeper.Deposit(s.ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, &depositReq)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(depositReq)
+				s.Require().Equal(tc.ExpResp, &depositReq)
+
+				err := s.keeper.ExecuteDepositRequest(s.ctx, depositReq)
+				s.Require().NoError(err)
+
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Depositor))
+				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				resp, found := s.keeper.GetDepositRequest(s.ctx, tc.Msg.AppId, tc.Msg.PoolId, depositReq.Id)
+				s.Require().True(found)
+				s.Require().Equal(tc.ExpResp.Id, resp.Id)
+				s.Require().Equal(tc.ExpResp.PoolId, resp.PoolId)
+				s.Require().Equal(tc.ExpResp.MsgHeight, resp.MsgHeight)
+				s.Require().Equal(tc.ExpResp.Depositor, resp.Depositor)
+				s.Require().Equal(tc.ExpResp.DepositCoins, resp.DepositCoins)
+				s.Require().Equal(tc.ExpResp.DepositCoins, resp.AcceptedCoins)
+				s.Require().Equal(types.RequestStatusSucceeded, resp.Status)
+				s.Require().Equal(tc.ExpResp.AppId, resp.AppId)
 			}
 		})
 	}

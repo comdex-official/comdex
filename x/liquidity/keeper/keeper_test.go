@@ -18,6 +18,8 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+
+	utils "github.com/comdex-official/comdex/types"
 )
 
 type KeeperTestSuite struct {
@@ -328,4 +330,35 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) asset
 	s.SetOraclePrice(name, price)
 
 	return assetObj
+}
+
+func (s *KeeperTestSuite) CreateNewLiquidityPair(appID uint64, creator sdk.AccAddress, baseCoinDenom, quoteCoinDenom string) types.Pair {
+	params, err := s.keeper.GetGenericParams(s.ctx, appID)
+	s.Require().NoError(err)
+
+	s.fundAddr(creator, params.PairCreationFee)
+
+	msg := types.NewMsgCreatePair(appID, creator, baseCoinDenom, quoteCoinDenom)
+	pair, err := s.keeper.CreatePair(s.ctx, msg, false)
+
+	s.Require().NoError(err)
+	s.Require().IsType(types.Pair{}, pair)
+
+	return pair
+}
+
+func (s *KeeperTestSuite) CreateNewLiquidityPool(appID, pairID uint64, creator sdk.AccAddress, depositCoins string) types.Pool {
+	params, err := s.keeper.GetGenericParams(s.ctx, appID)
+	s.Require().NoError(err)
+
+	parsedDepositCoins := utils.ParseCoins(depositCoins)
+
+	s.fundAddr(creator, params.PoolCreationFee)
+	s.fundAddr(creator, parsedDepositCoins)
+	msg := types.NewMsgCreatePool(appID, creator, pairID, parsedDepositCoins)
+	pool, err := s.keeper.CreatePool(s.ctx, msg)
+	s.Require().NoError(err)
+	s.Require().IsType(types.Pool{}, pool)
+
+	return pool
 }
