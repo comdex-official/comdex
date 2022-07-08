@@ -639,6 +639,38 @@ func (s *KeeperTestSuite) TestDepositRefundTooSmallMintedPoolCoin() {
 	s.Require().True(req.DepositCoins.IsEqual(s.getBalances(addr3)))
 }
 
+func (s *KeeperTestSuite) TestDepositToDisabledPool() {
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+	addr3 := s.addr(3)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+
+	// Create a disabled pool by sending the pool's balances to somewhere else.
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2")
+	s.sendCoins(pool.GetReserveAddress(), addr2, s.getBalances(pool.GetReserveAddress()))
+
+	// The depositor deposits coins but this will fail because the pool
+	// is treated as disabled.
+	req := s.Deposit(appID1, pool.Id, addr3, "1000000uasset1,1000000uasset2")
+	err := s.keeper.ExecuteDepositRequest(s.ctx, req)
+	s.Require().NoError(err)
+	req, _ = s.keeper.GetDepositRequest(s.ctx, appID1, pool.Id, req.Id)
+	s.Require().Equal(types.RequestStatusFailed, req.Status)
+
+	// Delete the previous request and refund coins to the depositor.
+	liquidity.BeginBlocker(s.ctx, s.keeper)
+
+	// Now any deposits will result in an error.
+	_, err = s.keeper.Deposit(s.ctx, types.NewMsgDeposit(appID1, addr2, pool.Id, req.DepositCoins))
+	s.Require().ErrorIs(err, types.ErrDisabledPool)
+}
+
 func (s *KeeperTestSuite) TestTooLargePool() {
 	addr1 := s.addr(1)
 
@@ -652,4 +684,175 @@ func (s *KeeperTestSuite) TestTooLargePool() {
 
 	_, err := s.keeper.Deposit(s.ctx, types.NewMsgDeposit(appID1, addr1, pool.Id, utils.ParseCoins("10000000000000000000000000000000000000000uasset1,10000000000000000000000000000000000000000uasset2")))
 	s.Require().ErrorIs(err, types.ErrTooLargePool)
+}
+
+func (s *KeeperTestSuite) TestWithdraw() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000uasset1,1000000000uasset2")
+
+	availablePoolBalance := s.getBalance(addr1, pool.PoolCoinDenom)
+
+	testCases := []struct {
+		Name             string
+		Msg              types.MsgWithdraw
+		ExpErr           error
+		ExpResp          *types.WithdrawRequest
+		AvailableBalance sdk.Coins
+	}{
+		{
+			Name: "error app id invalid",
+			Msg: *types.NewMsgWithdraw(
+				69, addr1, pool.Id, availablePoolBalance,
+			),
+			ExpErr:           sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", 69),
+			ExpResp:          &types.WithdrawRequest{},
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "error pool id invalid",
+			Msg: *types.NewMsgWithdraw(
+				appID1, addr1, 69, availablePoolBalance,
+			),
+			ExpErr:           sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pool %d not found", 69),
+			ExpResp:          &types.WithdrawRequest{},
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "error insufficeint pool coins",
+			Msg: *types.NewMsgWithdraw(
+				appID1, addr1, pool.Id, availablePoolBalance.Add(sdk.NewCoin(availablePoolBalance.Denom, availablePoolBalance.Amount.Add(newInt(1000)))),
+			),
+			ExpErr:           sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "%s is smaller than %s", availablePoolBalance.String(), availablePoolBalance.Add(sdk.NewCoin(availablePoolBalance.Denom, availablePoolBalance.Amount.Add(newInt(1000)))).String()),
+			ExpResp:          &types.WithdrawRequest{},
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
+			Name: "success valid case",
+			Msg: *types.NewMsgWithdraw(
+				appID1, addr1, pool.Id, availablePoolBalance,
+			),
+			ExpErr: nil,
+			ExpResp: &types.WithdrawRequest{
+				Id:             1,
+				PoolId:         1,
+				MsgHeight:      0,
+				Withdrawer:     addr1.String(),
+				PoolCoin:       availablePoolBalance,
+				WithdrawnCoins: nil,
+				Status:         types.RequestStatusNotExecuted,
+				AppId:          1,
+			},
+			AvailableBalance: sdk.NewCoins(),
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.Name, func() {
+
+			withdrawReq, err := s.keeper.Withdraw(s.ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, &withdrawReq)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(withdrawReq)
+				s.Require().Equal(tc.ExpResp, &withdrawReq)
+
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Withdrawer))
+				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+
+				depositedCoins := s.getBalances(pool.GetReserveAddress())
+				s.nextBlock()
+				s.Require().True(depositedCoins.IsEqual(s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Withdrawer))))
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestWithdrawRefund() {
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+	addr3 := s.addr(3)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000uasset1,1000000000uasset2")
+
+	s.Deposit(appID1, pool.Id, addr2, "1000000uasset1,1000000uasset2")
+	s.nextBlock()
+
+	// Make the pool depleted.
+	s.sendCoins(pool.GetReserveAddress(), addr3, s.getBalances(pool.GetReserveAddress()))
+
+	poolCoin := s.getBalance(addr2, pool.PoolCoinDenom)
+	s.Withdraw(appID1, pool.Id, addr2, poolCoin)
+	s.nextBlock()
+
+	s.Require().True(sdk.NewCoins(poolCoin).IsEqual(s.getBalances(addr2)))
+}
+
+func (s *KeeperTestSuite) TestWithdrawRefundTooSmallWithdrawCoins() {
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000uasset1,1000000000uasset2")
+
+	s.Deposit(appID1, pool.Id, addr2, "1000000uasset1,1000000uasset2")
+	s.nextBlock()
+	poolCoin := s.getBalance(addr2, pool.PoolCoinDenom)
+
+	// Withdrawing too small amount of pool coin.
+	s.Withdraw(appID1, pool.Id, addr2, utils.ParseCoin("100pool1-1"))
+	s.nextBlock()
+
+	s.Require().True(sdk.NewCoins(poolCoin).IsEqual(s.getBalances(addr2)))
+}
+
+func (s *KeeperTestSuite) TestWithdrawFromDisabledPool() {
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+
+	// Create a disabled pool by sending the pool's balances to somewhere else.
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2")
+	s.sendCoins(pool.GetReserveAddress(), addr2, s.getBalances(pool.GetReserveAddress()))
+
+	// The pool creator tries to withdraw his coins, but this will fail.
+	req := s.Withdraw(appID1, pool.Id, addr1, s.getBalance(addr1, pool.PoolCoinDenom))
+	err := s.keeper.ExecuteWithdrawRequest(s.ctx, req)
+	s.Require().NoError(err)
+	req, _ = s.keeper.GetWithdrawRequest(s.ctx, appID1, pool.Id, req.Id)
+	s.Require().Equal(types.RequestStatusFailed, req.Status)
+
+	// Delete the previous request and refund coins to the withdrawer.
+	liquidity.BeginBlocker(s.ctx, s.keeper)
+
+	// Now any withdrawals will result in an error.
+	_, err = s.keeper.Withdraw(s.ctx, types.NewMsgWithdraw(appID1, addr1, pool.Id, s.getBalance(addr1, pool.PoolCoinDenom)))
+	s.Require().ErrorIs(err, types.ErrDisabledPool)
 }
