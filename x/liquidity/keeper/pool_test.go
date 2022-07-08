@@ -1,6 +1,8 @@
 package keeper_test
 
 import (
+	utils "github.com/comdex-official/comdex/types"
+	"github.com/comdex-official/comdex/x/liquidity"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -266,6 +268,92 @@ func (s *KeeperTestSuite) TestCreatePool() {
 	}
 }
 
+func (s *KeeperTestSuite) TestDisabledPool() {
+	// A disabled pool is:
+	// 1. A pool with at least one side of its x/y coin's balance is 0.
+	// 2. A pool with 0 pool coin supply(all investors has withdrawn their coins)
+
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair2 := s.CreateNewLiquidityPair(appID1, addr1, asset2.Denom, asset1.Denom)
+
+	// Create a pool.
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2")
+	// Send the pool's balances to somewhere else.
+	s.sendCoins(pool.GetReserveAddress(), s.addr(2), s.getBalances(pool.GetReserveAddress()))
+
+	// By now, the pool is not marked as disabled automatically.
+	// When someone sends a deposit/withdraw request to the pool or
+	// the pool tries to participate in matching, then the pool
+	// is marked as disabled.
+	pool, _ = s.keeper.GetPool(s.ctx, appID1, pool.Id)
+	s.Require().False(pool.Disabled)
+
+	// A depositor tries to deposit to the pool.
+	s.Deposit(appID1, pool.Id, addr1, "10000000uasset1,10000000uasset2")
+	s.nextBlock()
+
+	// Now, the pool is disabled.
+	pool, _ = s.keeper.GetPool(s.ctx, appID1, pool.Id)
+	s.Require().True(pool.Disabled)
+
+	// Here's the second example.
+	// This time, the pool creator withdraws all his coins.
+	pool = s.CreateNewLiquidityPool(appID1, pair2.Id, addr1, "1000000uasset1,1000000uasset2")
+	s.Withdraw(appID1, pool.Id, addr1, s.getBalance(addr1, pool.PoolCoinDenom))
+	s.nextBlock()
+
+	// The pool is disabled again.
+	pool, _ = s.keeper.GetPool(s.ctx, appID1, pool.Id)
+	s.Require().True(pool.Disabled)
+}
+
+func (s *KeeperTestSuite) TestCreatePoolAfterDisabled() {
+
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+
+	// Create a disabled pool.
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2")
+	s.Withdraw(appID1, pool.Id, addr1, s.getBalance(addr1, pool.PoolCoinDenom))
+	s.nextBlock()
+
+	// Now a new pool can be created with same denom pair because
+	// all pools with same denom pair are disabled.
+	s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2")
+}
+
+func (s *KeeperTestSuite) TestPoolIndexes() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appOne")
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2")
+
+	fetchedPool, found := s.keeper.GetPoolByReserveAddress(s.ctx, appID1, pool.GetReserveAddress())
+	s.Require().True(found)
+	s.Require().Equal(pool.Id, fetchedPool.Id)
+
+	pools := s.keeper.GetPoolsByPair(s.ctx, appID1, pair.Id)
+	s.Require().Len(pools, 1)
+	s.Require().Equal(pool.Id, pools[0].Id)
+}
+
 func (s *KeeperTestSuite) TestDeposit() {
 	addr1 := s.addr(1)
 
@@ -485,4 +573,83 @@ func (s *KeeperTestSuite) TestDeposit() {
 		})
 	}
 
+}
+
+func (s *KeeperTestSuite) TestDepositRefund() {
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1500000uasset2")
+
+	req := s.Deposit(appID1, pool.Id, addr1, "20000uasset1,15000uasset2")
+	liquidity.EndBlocker(s.ctx, s.keeper)
+	req, _ = s.keeper.GetDepositRequest(s.ctx, appID1, req.PoolId, req.Id)
+	s.Require().Equal(types.RequestStatusSucceeded, req.Status)
+
+	s.Require().True(utils.ParseCoin("10000uasset1").IsEqual(s.getBalance(addr1, "uasset1")))
+	s.Require().True(utils.ParseCoin("0uasset2").IsEqual(s.getBalance(addr1, "uasset2")))
+	liquidity.BeginBlocker(s.ctx, s.keeper)
+
+	pair = s.CreateNewLiquidityPair(appID1, addr1, asset2.Denom, asset1.Denom)
+	pool = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000uasset2,1000000000000000uasset1")
+
+	req = s.Deposit(appID1, pool.Id, addr2, "1uasset1,1uasset2")
+	liquidity.EndBlocker(s.ctx, s.keeper)
+	req, _ = s.keeper.GetDepositRequest(s.ctx, appID1, req.PoolId, req.Id)
+	s.Require().Equal(types.RequestStatusFailed, req.Status)
+	s.Require().True(req.DepositCoins.IsEqual(s.getBalances(addr2)))
+}
+
+func (s *KeeperTestSuite) TestDepositRefundTooSmallMintedPoolCoin() {
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+	addr3 := s.addr(3)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1500000uasset2")
+
+	req := s.Deposit(appID1, pool.Id, addr2, "20000uasset1,15000uasset2")
+	liquidity.EndBlocker(s.ctx, s.keeper)
+	req, _ = s.keeper.GetDepositRequest(s.ctx, appID1, req.PoolId, req.Id)
+	s.Require().Equal(types.RequestStatusSucceeded, req.Status)
+
+	s.Require().True(utils.ParseCoin("10000uasset1").IsEqual(s.getBalance(addr2, "uasset1")))
+	s.Require().True(utils.ParseCoin("0uasset2").IsEqual(s.getBalance(addr2, "uasset2")))
+	liquidity.BeginBlocker(s.ctx, s.keeper)
+
+	pair = s.CreateNewLiquidityPair(appID1, addr1, asset2.Denom, asset1.Denom)
+	pool = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000uasset2,1000000000000000uasset1")
+
+	req = s.Deposit(appID1, pool.Id, addr3, "1uasset1,1uasset2")
+	liquidity.EndBlocker(s.ctx, s.keeper)
+	req, _ = s.keeper.GetDepositRequest(s.ctx, appID1, req.PoolId, req.Id)
+	s.Require().Equal(types.RequestStatusFailed, req.Status)
+
+	s.Require().True(req.DepositCoins.IsEqual(s.getBalances(addr3)))
+}
+
+func (s *KeeperTestSuite) TestTooLargePool() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2")
+
+	_, err := s.keeper.Deposit(s.ctx, types.NewMsgDeposit(appID1, addr1, pool.Id, utils.ParseCoins("10000000000000000000000000000000000000000uasset1,10000000000000000000000000000000000000000uasset2")))
+	s.Require().ErrorIs(err, types.ErrTooLargePool)
 }
