@@ -314,7 +314,7 @@ func (s *KeeperTestSuite) TestLimitOrder() {
 	}
 }
 
-func (s *KeeperTestSuite) TestLimitOrderRefundWithPool() {
+func (s *KeeperTestSuite) TestLimitOrderRefund() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appOne")
@@ -391,6 +391,262 @@ func (s *KeeperTestSuite) TestLimitOrderRefundWithPool() {
 
 			refundedCoin := balanceAfter.Sub(balanceBefore.Sub(tc.Msg.OfferCoin))
 			s.Require().True(tc.RefundedCoin.IsEqual(refundedCoin))
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,500000000000uasset2")
+
+	currentTime := time.Now()
+	s.ctx = s.ctx.WithBlockTime(currentTime)
+
+	testCases := []struct {
+		Name                  string
+		Msg                   types.MsgLimitOrder
+		ExpResp               types.Order
+		ExpOrderStatus        types.OrderStatus
+		ExpBalanceAfterExpire sdk.Coins
+	}{
+		{
+			Name: "swap at pool price buy direction",
+			Msg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(2),
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("1003000uasset2"),
+				asset1.Denom,
+				sdk.MustNewDecFromStr("0.5"),
+				newInt(2000000),
+				time.Minute*1,
+			),
+			ExpResp: types.Order{
+				Id:                 1,
+				PairId:             1,
+				MsgHeight:          0,
+				Orderer:            s.addr(2).String(),
+				Direction:          types.OrderDirectionBuy,
+				OfferCoin:          utils.ParseCoin("1000000uasset2"),
+				RemainingOfferCoin: utils.ParseCoin("1000000uasset2"),
+				ReceivedCoin:       utils.ParseCoin("0uasset1"),
+				Price:              sdk.MustNewDecFromStr("0.5"),
+				Amount:             newInt(2000000),
+				OpenAmount:         newInt(2000000),
+				BatchId:            1,
+				ExpireAt:           s.ctx.BlockTime().Add(time.Minute * 1),
+				Status:             types.OrderStatusNotExecuted,
+				AppId:              appID1,
+			},
+			ExpOrderStatus:        types.OrderStatusNotMatched,
+			ExpBalanceAfterExpire: utils.ParseCoins("1003000uasset2"),
+		},
+		{
+			Name: "swap at slight higher than pool price buy direction",
+			Msg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(3),
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("1005006uasset2"),
+				asset1.Denom,
+				sdk.MustNewDecFromStr("0.501"),
+				newInt(2000000),
+				time.Minute*1,
+			),
+			ExpResp: types.Order{
+				Id:                 2,
+				PairId:             1,
+				MsgHeight:          0,
+				Orderer:            s.addr(3).String(),
+				Direction:          types.OrderDirectionBuy,
+				OfferCoin:          utils.ParseCoin("1002000uasset2"),
+				RemainingOfferCoin: utils.ParseCoin("1002000uasset2"),
+				ReceivedCoin:       utils.ParseCoin("0uasset1"),
+				Price:              sdk.MustNewDecFromStr("0.501"),
+				Amount:             newInt(2000000),
+				OpenAmount:         newInt(2000000),
+				BatchId:            2,
+				ExpireAt:           s.ctx.BlockTime().Add(time.Minute * 1),
+				Status:             types.OrderStatusNotExecuted,
+				AppId:              appID1,
+			},
+			ExpOrderStatus:        types.OrderStatusCompleted,
+			ExpBalanceAfterExpire: utils.ParseCoins("2000000uasset1,2003uasset2"),
+		},
+		{
+			Name: "swap at slight lower than pool price buy direction",
+			Msg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(4),
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("1000994uasset2"),
+				asset1.Denom,
+				sdk.MustNewDecFromStr("0.499"),
+				newInt(2000000),
+				time.Minute*1,
+			),
+			ExpResp: types.Order{
+				Id:                 3,
+				PairId:             1,
+				MsgHeight:          0,
+				Orderer:            s.addr(4).String(),
+				Direction:          types.OrderDirectionBuy,
+				OfferCoin:          utils.ParseCoin("998000uasset2"),
+				RemainingOfferCoin: utils.ParseCoin("998000uasset2"),
+				ReceivedCoin:       utils.ParseCoin("0uasset1"),
+				Price:              sdk.MustNewDecFromStr("0.499"),
+				Amount:             newInt(2000000),
+				OpenAmount:         newInt(2000000),
+				BatchId:            3,
+				ExpireAt:           s.ctx.BlockTime().Add(time.Minute * 1),
+				Status:             types.OrderStatusNotExecuted,
+				AppId:              appID1,
+			},
+			ExpOrderStatus:        types.OrderStatusNotMatched,
+			ExpBalanceAfterExpire: utils.ParseCoins("1000994uasset2"),
+		},
+		{
+			Name: "swap at pool price sell direction",
+			Msg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(5),
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("2006000uasset1"),
+				asset2.Denom,
+				sdk.MustNewDecFromStr("0.501"),
+				newInt(2000000),
+				time.Minute*1,
+			),
+			ExpResp: types.Order{
+				Id:                 4,
+				PairId:             1,
+				MsgHeight:          0,
+				Orderer:            s.addr(5).String(),
+				Direction:          types.OrderDirectionSell,
+				OfferCoin:          utils.ParseCoin("2000000uasset1"),
+				RemainingOfferCoin: utils.ParseCoin("2000000uasset1"),
+				ReceivedCoin:       utils.ParseCoin("0uasset2"),
+				Price:              sdk.MustNewDecFromStr("0.501"),
+				Amount:             newInt(2000000),
+				OpenAmount:         newInt(2000000),
+				BatchId:            4,
+				ExpireAt:           s.ctx.BlockTime().Add(time.Minute * 1),
+				Status:             types.OrderStatusNotExecuted,
+				AppId:              appID1,
+			},
+			ExpOrderStatus:        types.OrderStatusNotMatched,
+			ExpBalanceAfterExpire: utils.ParseCoins("2006000uasset1"),
+		},
+		{
+			Name: "swap at slight higher than pool price sell direction",
+			Msg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(6),
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("2006000uasset1"),
+				asset2.Denom,
+				sdk.MustNewDecFromStr("0.51"),
+				newInt(2000000),
+				time.Minute*1,
+			),
+			ExpResp: types.Order{
+				Id:                 5,
+				PairId:             1,
+				MsgHeight:          0,
+				Orderer:            s.addr(6).String(),
+				Direction:          types.OrderDirectionSell,
+				OfferCoin:          utils.ParseCoin("2000000uasset1"),
+				RemainingOfferCoin: utils.ParseCoin("2000000uasset1"),
+				ReceivedCoin:       utils.ParseCoin("0uasset2"),
+				Price:              sdk.MustNewDecFromStr("0.51"),
+				Amount:             newInt(2000000),
+				OpenAmount:         newInt(2000000),
+				BatchId:            5,
+				ExpireAt:           s.ctx.BlockTime().Add(time.Minute * 1),
+				Status:             types.OrderStatusNotExecuted,
+				AppId:              appID1,
+			},
+			ExpOrderStatus:        types.OrderStatusNotMatched,
+			ExpBalanceAfterExpire: utils.ParseCoins("2006000uasset1"),
+		},
+		{
+			Name: "swap at slight lower than pool price sell direction",
+			Msg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(7),
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("2006000uasset1"),
+				asset2.Denom,
+				sdk.MustNewDecFromStr("0.50"),
+				newInt(2000000),
+				time.Minute*1,
+			),
+			ExpResp: types.Order{
+				Id:                 6,
+				PairId:             1,
+				MsgHeight:          0,
+				Orderer:            s.addr(7).String(),
+				Direction:          types.OrderDirectionSell,
+				OfferCoin:          utils.ParseCoin("2000000uasset1"),
+				RemainingOfferCoin: utils.ParseCoin("2000000uasset1"),
+				ReceivedCoin:       utils.ParseCoin("0uasset2"),
+				Price:              sdk.MustNewDecFromStr("0.50"),
+				Amount:             newInt(2000000),
+				OpenAmount:         newInt(2000000),
+				BatchId:            6,
+				ExpireAt:           s.ctx.BlockTime().Add(time.Minute * 1),
+				Status:             types.OrderStatusNotExecuted,
+				AppId:              appID1,
+			},
+			ExpOrderStatus:        types.OrderStatusCompleted,
+			ExpBalanceAfterExpire: utils.ParseCoins("1000002uasset2"),
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.Name, func() {
+			s.fundAddr(tc.Msg.GetOrderer(), sdk.NewCoins(tc.Msg.OfferCoin))
+
+			// order placed
+			order, err := s.keeper.LimitOrder(s.ctx, &tc.Msg)
+			s.Require().NoError(err)
+			s.Require().IsType(types.Order{}, order)
+			s.Require().Equal(tc.ExpResp, order)
+
+			// execute order request
+			s.nextBlock()
+
+			if tc.ExpOrderStatus != types.OrderStatusCompleted {
+				order, found := s.keeper.GetOrder(s.ctx, appID1, pair.Id, order.Id)
+				s.Require().True(found)
+				s.Require().Equal(tc.ExpOrderStatus, order.Status)
+
+				// make order expire
+				s.ctx = s.ctx.WithBlockTime(tc.ExpResp.ExpireAt)
+				s.nextBlock()
+			}
+
+			_, found := s.keeper.GetOrder(s.ctx, appID1, pair.Id, order.Id)
+			s.Require().False(found)
+
+			availableBalance := s.getBalances(tc.Msg.GetOrderer())
+			s.Require().True(tc.ExpBalanceAfterExpire.IsEqual(availableBalance))
+
+			// reset to default time
+			s.ctx = s.ctx.WithBlockTime(currentTime)
 		})
 	}
 }
