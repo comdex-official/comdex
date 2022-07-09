@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"encoding/binary"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 
@@ -12,6 +13,7 @@ import (
 	chain "github.com/comdex-official/comdex/app"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/liquidity"
+	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/keeper"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
@@ -209,5 +211,84 @@ func (s *KeeperTestSuite) Withdraw(appID, poolID uint64, withdrawer sdk.AccAddre
 	req, err := s.keeper.Withdraw(s.ctx, msg)
 	s.Require().NoError(err)
 	s.Require().IsType(types.WithdrawRequest{}, req)
+	return req
+}
+
+func (s *KeeperTestSuite) LimitOrder(
+	appID uint64,
+	orderer sdk.AccAddress,
+	pairId uint64,
+	dir types.OrderDirection,
+	price sdk.Dec,
+	amt sdk.Int,
+	orderLifespan time.Duration,
+) types.Order {
+	s.T().Helper()
+
+	pair, found := s.keeper.GetPair(s.ctx, appID, pairId)
+	s.Require().True(found)
+	var ammDir amm.OrderDirection
+	var offerCoinDenom, demandCoinDenom string
+	switch dir {
+	case types.OrderDirectionBuy:
+		ammDir = amm.Buy
+		offerCoinDenom, demandCoinDenom = pair.QuoteCoinDenom, pair.BaseCoinDenom
+	case types.OrderDirectionSell:
+		ammDir = amm.Sell
+		offerCoinDenom, demandCoinDenom = pair.BaseCoinDenom, pair.QuoteCoinDenom
+	}
+	offerCoin := sdk.NewCoin(offerCoinDenom, amm.OfferCoinAmount(ammDir, price, amt))
+
+	params, err := s.keeper.GetGenericParams(s.ctx, appID)
+	s.Require().NoError(err)
+
+	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, offerCoin.Amount.ToDec().Mul(params.SwapFeeRate).RoundInt()))
+	s.fundAddr(orderer, sdk.NewCoins(offerCoin))
+
+	msg := types.NewMsgLimitOrder(
+		appID, orderer, pairId, dir, offerCoin, demandCoinDenom, price, amt, orderLifespan,
+	)
+	s.Require().NoError(msg.ValidateBasic())
+	req, err := s.keeper.LimitOrder(s.ctx, msg)
+	s.Require().NoError(err)
+	return req
+}
+
+func (s *KeeperTestSuite) MarketOrder(
+	appID uint64,
+	orderer sdk.AccAddress,
+	pairId uint64,
+	dir types.OrderDirection,
+	amt sdk.Int,
+	orderLifespan time.Duration,
+) types.Order {
+	s.T().Helper()
+	pair, found := s.keeper.GetPair(s.ctx, appID, pairId)
+	s.Require().True(found)
+	s.Require().NotNil(pair.LastPrice)
+	lastPrice := *pair.LastPrice
+	params, err := s.keeper.GetGenericParams(s.ctx, appID)
+	s.Require().NoError(err)
+	var offerCoin sdk.Coin
+	var demandCoinDenom string
+	switch dir {
+	case types.OrderDirectionBuy:
+		maxPrice := lastPrice.Mul(sdk.OneDec().Add(params.MaxPriceLimitRatio))
+		offerCoin = sdk.NewCoin(pair.QuoteCoinDenom, amm.OfferCoinAmount(amm.Buy, maxPrice, amt))
+		demandCoinDenom = pair.BaseCoinDenom
+	case types.OrderDirectionSell:
+		offerCoin = sdk.NewCoin(pair.BaseCoinDenom, amt)
+		demandCoinDenom = pair.QuoteCoinDenom
+	}
+
+	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, offerCoin.Amount.ToDec().Mul(params.SwapFeeRate).RoundInt()))
+	s.fundAddr(orderer, sdk.NewCoins(offerCoin))
+
+	msg := types.NewMsgMarketOrder(
+		appID, orderer, pairId, dir, offerCoin, demandCoinDenom, amt, orderLifespan,
+	)
+	s.Require().NoError(msg.ValidateBasic())
+	req, err := s.keeper.MarketOrder(s.ctx, msg)
+	s.Require().NoError(err)
 	return req
 }

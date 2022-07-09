@@ -4,6 +4,7 @@ import (
 	"time"
 
 	utils "github.com/comdex-official/comdex/types"
+	"github.com/comdex-official/comdex/x/liquidity"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -893,4 +894,482 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 			s.ctx = s.ctx.WithBlockTime(currentTime)
 		})
 	}
+}
+
+func (s *KeeperTestSuite) TestMarketOrder() {
+	creator := s.addr(1)
+	trader := s.addr(2)
+	// escrow := s.addr(3)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
+
+	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+
+	testCases := []struct {
+		Name    string
+		Msg     types.MsgMarketOrder
+		ExpErr  error
+		ExpResp *types.Order
+	}{
+		{
+			Name: "error invalid app id",
+			Msg: *types.NewMsgMarketOrder(
+				69,
+				trader,
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("10030000uasset2"),
+				asset1.Denom,
+				newInt(10000000),
+				time.Second*10,
+			),
+			ExpErr:  sdkerrors.Wrap(sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", 69), "params retreval failed"),
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error max order life span",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("10030000uasset2"),
+				asset1.Denom,
+				newInt(10000000),
+				time.Hour*48,
+			),
+			ExpErr:  sdkerrors.Wrapf(types.ErrTooLongOrderLifespan, "%s is longer than %s", time.Hour*48, params.MaxOrderLifespan),
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error invalid pair id",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				69,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("10030000uasset2"),
+				asset1.Denom,
+				newInt(10000000),
+				time.Second*10,
+			),
+			ExpErr:  sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", 69),
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error last price not available",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("1003000uasset2"),
+				asset1.Denom,
+				newInt(1000000),
+				time.Second*10,
+			),
+			ExpErr:  types.ErrNoLastPrice,
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error invalid denom pair buy direction",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("10030000uasset1"),
+				asset2.Denom,
+				newInt(10000000),
+				time.Second*10,
+			),
+			ExpErr:  sdkerrors.Wrapf(types.ErrWrongPair, "denom pair (%s, %s) != (%s, %s)", asset2.Denom, asset1.Denom, pair.BaseCoinDenom, pair.QuoteCoinDenom),
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error invalid denom pair sell direction",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("10030000uasset2"),
+				asset1.Denom,
+				newInt(10000000),
+				time.Second*10,
+			),
+			ExpErr:  sdkerrors.Wrapf(types.ErrWrongPair, "denom pair (%s, %s) != (%s, %s)", asset2.Denom, asset1.Denom, pair.BaseCoinDenom, pair.QuoteCoinDenom),
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error insufficient offer coin buy direction",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("10000000uasset2"), // swap fee excluded, also at price = 1.1
+				asset1.Denom,
+				newInt(10000000),
+				time.Second*10,
+			),
+			ExpErr:  sdkerrors.Wrapf(types.ErrInsufficientOfferCoin, "10000000uasset2 is smaller than 11033000uasset2"),
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error insufficient offer coin sell direction",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("10000000uasset1"), // swap fee excluded
+				asset2.Denom,
+				newInt(10000000),
+				time.Second*10,
+			),
+			ExpErr:  sdkerrors.Wrapf(types.ErrInsufficientOfferCoin, "10000000uasset1 is smaller than 10030000uasset1"),
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error too small order buy direction",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("130uasset2"),
+				asset1.Denom,
+				newInt(99),
+				time.Second*10,
+			),
+			ExpErr:  types.ErrTooSmallOrder,
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error too small order sell direction",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("130uasset1"),
+				asset2.Denom,
+				newInt(99),
+				time.Second*10,
+			),
+			ExpErr:  types.ErrTooSmallOrder,
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error insufficient funds",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("1103300uasset2"),
+				asset1.Denom,
+				newInt(1000000),
+				time.Second*10,
+			),
+			ExpErr:  sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0uasset2 is smaller than 1103300uasset2"),
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "success valid case buy direction",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("1103300uasset2"),
+				asset1.Denom,
+				newInt(1000000),
+				time.Second*10,
+			),
+			ExpErr: nil,
+			ExpResp: &types.Order{
+				Id:                 3,
+				PairId:             1,
+				MsgHeight:          0,
+				Orderer:            trader.String(),
+				Direction:          types.OrderDirectionBuy,
+				OfferCoin:          utils.ParseCoin("1100000uasset2"),
+				RemainingOfferCoin: utils.ParseCoin("1100000uasset2"),
+				ReceivedCoin:       utils.ParseCoin("0uasset1"),
+				Price:              sdk.MustNewDecFromStr("1.1"),
+				Amount:             newInt(1000000),
+				OpenAmount:         newInt(1000000),
+				BatchId:            2,
+				ExpireAt:           s.ctx.BlockTime().Add(time.Second * 10),
+				Status:             types.OrderStatusNotExecuted,
+				AppId:              appID1,
+			},
+		},
+		{
+			Name: "success valid case sell direction",
+			Msg: *types.NewMsgMarketOrder(
+				appID1,
+				trader,
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("1003000uasset1"),
+				asset2.Denom,
+				newInt(1000000),
+				time.Second*10,
+			),
+			ExpErr: nil,
+			ExpResp: &types.Order{
+				Id:                 4,
+				PairId:             1,
+				MsgHeight:          0,
+				Orderer:            trader.String(),
+				Direction:          types.OrderDirectionSell,
+				OfferCoin:          utils.ParseCoin("1000000uasset1"),
+				RemainingOfferCoin: utils.ParseCoin("1000000uasset1"),
+				ReceivedCoin:       utils.ParseCoin("0uasset2"),
+				Price:              sdk.MustNewDecFromStr("0.9"),
+				Amount:             newInt(1000000),
+				OpenAmount:         newInt(1000000),
+				BatchId:            2,
+				ExpireAt:           s.ctx.BlockTime().Add(time.Second * 10),
+				Status:             types.OrderStatusNotExecuted,
+				AppId:              appID1,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.Name, func() {
+			if tc.ExpErr == nil {
+				s.fundAddr(tc.Msg.GetOrderer(), sdk.NewCoins(tc.Msg.OfferCoin))
+			}
+			order, err := s.keeper.MarketOrder(s.ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, &order)
+			} else {
+				s.Require().NoError(err)
+				s.Require().IsType(tc.ExpResp, &order)
+				s.Require().Equal(tc.ExpResp, &order)
+
+				qorder, found := s.keeper.GetOrder(s.ctx, tc.Msg.AppId, tc.Msg.PairId, order.Id)
+				s.Require().True(found)
+				s.Require().Equal(qorder, order)
+			}
+
+			// make limit order after this testcase
+			if tc.ExpErr == types.ErrNoLastPrice {
+				// When there is no last price in the pair, only limit orders can be made.
+				// These two orders will be matched.
+				s.LimitOrder(tc.Msg.AppId, creator, tc.Msg.PairId, types.OrderDirectionBuy, utils.ParseDec("1"), sdk.NewInt(10000), 0)
+				s.LimitOrder(tc.Msg.AppId, creator, tc.Msg.PairId, types.OrderDirectionSell, utils.ParseDec("1"), sdk.NewInt(10000), 0)
+				s.nextBlock()
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestMarketOrderTwo() {
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+
+	// When there is no last price in the pair, only limit orders can be made.
+	// These two orders will be matched.
+	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(10000), 0)
+	s.nextBlock()
+
+	// Now users can make market orders.
+	// In this case, addr(3) user's order takes higher priority than addr(4) user's,
+	// because market buy orders have 10% higher price than the last price(1.0).
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.08"), sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.07"), sdk.NewInt(10000), 0)
+	s.nextBlock()
+
+	// Check the result.
+	s.Require().True(utils.ParseCoin("10000uasset1").IsEqual(s.getBalance(s.addr(3), "uasset1")))
+	s.Require().True(utils.ParseCoins("10832uasset2").IsEqual(s.getBalances(s.addr(4))))
+}
+
+func (s *KeeperTestSuite) TestMarketOrderRefund() {
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	p := utils.ParseDec("1.0")
+	pair.LastPrice = &p
+	s.keeper.SetPair(s.ctx, pair)
+	orderer := s.addr(1)
+	s.fundAddr(orderer, utils.ParseCoins("1000000000denom1,1000000000denom2"))
+
+	for _, tc := range []struct {
+		msg          *types.MsgMarketOrder
+		refundedCoin sdk.Coin
+	}{
+		{
+			types.NewMsgMarketOrder(
+				appID1, orderer, pair.Id, types.OrderDirectionBuy, utils.ParseCoin("1103300denom2"), "denom1",
+				newInt(1000000), 0),
+			utils.ParseCoin("0denom2"),
+		},
+		{
+			types.NewMsgMarketOrder(
+				appID1, orderer, pair.Id, types.OrderDirectionBuy, utils.ParseCoin("1000000denom2"), "denom1",
+				newInt(10000), 0),
+			utils.ParseCoin("988967denom2"),
+		},
+		{
+			types.NewMsgMarketOrder(
+				appID1, orderer, pair.Id, types.OrderDirectionSell, utils.ParseCoin("1000000denom1"), "denom2",
+				newInt(10000), 0),
+			utils.ParseCoin("989970denom1"),
+		},
+	} {
+		s.Run("", func() {
+			s.Require().NoError(tc.msg.ValidateBasic())
+
+			balanceBefore := s.getBalance(orderer, tc.msg.OfferCoin.Denom)
+			_, err := s.keeper.MarketOrder(s.ctx, tc.msg)
+			s.Require().NoError(err)
+
+			balanceAfter := s.getBalance(orderer, tc.msg.OfferCoin.Denom)
+
+			refundedCoin := balanceAfter.Sub(balanceBefore.Sub(tc.msg.OfferCoin))
+			s.Require().True(tc.refundedCoin.IsEqual(refundedCoin))
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestMarketOrderWithNoLastPrice() {
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+
+	s.Require().Nil(pair.LastPrice)
+	offerCoin := utils.ParseCoin("10000denom2")
+	s.fundAddr(s.addr(1), sdk.NewCoins(offerCoin))
+	msg := types.NewMsgMarketOrder(
+		appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, offerCoin, "denom1", sdk.NewInt(10000), 0)
+	_, err := s.keeper.MarketOrder(s.ctx, msg)
+	s.Require().ErrorIs(err, types.ErrNoLastPrice)
+}
+
+func (s *KeeperTestSuite) TestSingleOrderNoMatch() {
+	k, ctx := s.keeper, s.ctx
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(1000000), 10*time.Second)
+	// Execute matching
+	liquidity.EndBlocker(ctx, k)
+
+	order, found := k.GetOrder(ctx, appID1, order.PairId, order.Id)
+	s.Require().True(found)
+	s.Require().Equal(types.OrderStatusNotMatched, order.Status)
+
+	ctx = ctx.WithBlockTime(ctx.BlockTime().Add(10 * time.Second))
+	// Expire the order, here BeginBlocker is not called to check
+	// the request's changed status
+	liquidity.EndBlocker(ctx, k)
+
+	order, _ = k.GetOrder(ctx, appID1, order.PairId, order.Id)
+	s.Require().Equal(types.OrderStatusExpired, order.Status)
+
+	s.Require().True(utils.ParseCoins("1003000denom2").IsEqual(s.getBalances(s.addr(1))))
+}
+
+func (s *KeeperTestSuite) TestTwoOrderExactMatch() {
+	k, ctx := s.keeper, s.ctx
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+
+	req1 := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), newInt(10000), time.Hour)
+	req2 := s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), newInt(10000), time.Hour)
+	liquidity.EndBlocker(ctx, k)
+
+	req1, _ = k.GetOrder(ctx, appID1, req1.PairId, req1.Id)
+	s.Require().Equal(types.OrderStatusCompleted, req1.Status)
+	req2, _ = k.GetOrder(ctx, appID1, req2.PairId, req2.Id)
+	s.Require().Equal(types.OrderStatusCompleted, req2.Status)
+
+	s.Require().True(utils.ParseCoins("10000denom1").IsEqual(s.getBalances(s.addr(1))))
+	s.Require().True(utils.ParseCoins("10000denom2").IsEqual(s.getBalances(s.addr(2))))
+
+	pair, _ = k.GetPair(ctx, appID1, pair.Id)
+	s.Require().NotNil(pair.LastPrice)
+	s.Require().True(utils.ParseDec("1.0").Equal(*pair.LastPrice))
+}
+
+func (s *KeeperTestSuite) TestPartialMatch() {
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Hour)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(5000), 0)
+	s.nextBlock()
+
+	order, found := s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
+	s.Require().True(found)
+	s.Require().Equal(types.OrderStatusPartiallyMatched, order.Status)
+	s.Require().True(utils.ParseCoin("5000denom2").IsEqual(order.RemainingOfferCoin))
+	s.Require().True(utils.ParseCoin("5000denom1").IsEqual(order.ReceivedCoin))
+	s.Require().True(sdk.NewInt(5000).Equal(order.OpenAmount))
+
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, sdk.NewInt(5000), 0)
+	s.nextBlock()
+
+	// Now completely matched.
+	_, found = s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
+	s.Require().False(found)
+}
+
+func (s *KeeperTestSuite) TestMatchWithLowPricePool() {
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+
+	// Create a pool with very low price.
+	s.CreateNewLiquidityPool(appID1, pair.Id, s.addr(0), "10000000000000000000000000000000000000000denom1,1000000denom2")
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.000000000001000000"), sdk.NewInt(100000000000000000), 10*time.Second)
+	liquidity.EndBlocker(s.ctx, s.keeper)
+	order, found := s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
+	s.Require().True(found)
+	s.Require().Equal(types.OrderStatusNotMatched, order.Status)
 }
