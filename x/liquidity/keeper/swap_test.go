@@ -1640,3 +1640,68 @@ func (s *KeeperTestSuite) TestSwapFeeCollectionMarketOrder() {
 
 	s.nextBlock()
 }
+
+func (s *KeeperTestSuite) TestAccumulatedSwapFeeConversion() {
+	creator := s.addr(0)
+	trader1 := s.addr(1)
+	trader2 := s.addr(2)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "ucmdx", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uharbor", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
+
+	// accumulateSwapFee in swapeecollector address by placing orders
+	s.LimitOrder(appID1, trader1, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader1, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader1, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader1, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader1, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader1, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	s.LimitOrder(appID1, trader2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+
+	// execute orders and try to convert, conversion will not take since there are no pool
+	s.nextBlock()
+	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(utils.ParseCoins("936000ucmdx,936000uharbor").IsEqual(accumulatedSwapFee))
+
+	// try to convert again, conversion will not take place since there are no pool
+	s.nextBlock()
+	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(utils.ParseCoins("936000ucmdx,936000uharbor").IsEqual(accumulatedSwapFee))
+
+	// now create pool, so that token conversion can go through this
+	_ = s.CreateNewLiquidityPool(appID1, pair.Id, creator, "1000000000000ucmdx,1000000000000uharbor")
+
+	// NOTE
+	// Eery conversion internally is an limit order based on the pool path
+
+	// retry to convert by moving to next block, this time conversin/swap will take place since pool exists
+	s.nextBlock()
+	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
+	// here order is placed for swap, hence harbor tokens are reduced and this will get executed in next block
+	s.Require().True(utils.ParseCoins("936000ucmdx,9uharbor").IsEqual(accumulatedSwapFee))
+
+	// now execute the order placed in above block, swap order for 9 uharbor placed again in next block
+	s.nextBlock()
+	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(utils.ParseCoins("1859952ucmdx").IsEqual(accumulatedSwapFee))
+
+	// now execute the order placed in above block, this block will execute the order for 9 harbor placed above
+	s.nextBlock()
+	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(utils.ParseCoins("1871844ucmdx").IsEqual(accumulatedSwapFee))
+
+	// now execute the order placed in above block, here 1uharbor is refunded back since it is very small amount for swap order.
+	// here all harbor tokens are converted into cmdx, since cmdx is the default distribution token for rewards
+	s.nextBlock()
+	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(utils.ParseCoins("1871996ucmdx,1uharbor").IsEqual(accumulatedSwapFee))
+}
