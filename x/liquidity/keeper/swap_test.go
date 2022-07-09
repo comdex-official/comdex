@@ -1373,3 +1373,166 @@ func (s *KeeperTestSuite) TestMatchWithLowPricePool() {
 	s.Require().True(found)
 	s.Require().Equal(types.OrderStatusNotMatched, order.Status)
 }
+
+func (s *KeeperTestSuite) TestCancelOrder() {
+	creator := s.addr(0)
+	dummy := s.addr(1)
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
+
+	cancelledOrder := s.LimitOrder(appID1, creator, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.1"), newInt(10000000), time.Second*10)
+	s.nextBlock()
+	msg := types.NewMsgCancelOrder(appID1, creator, pair.Id, cancelledOrder.Id)
+	err := s.keeper.CancelOrder(s.ctx, msg)
+	s.Require().NoError(err)
+
+	order := s.LimitOrder(appID1, creator, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.1"), newInt(1000000), time.Second*10)
+
+	testCases := []struct {
+		Name   string
+		Msg    types.MsgCancelOrder
+		ExpErr error
+	}{
+		{
+			Name:   "error app id invalid",
+			Msg:    *types.NewMsgCancelOrder(69, creator, pair.Id, order.Id),
+			ExpErr: sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", 69),
+		},
+		{
+			Name:   "error order id invalid",
+			Msg:    *types.NewMsgCancelOrder(appID1, creator, pair.Id, 69),
+			ExpErr: sdkerrors.Wrapf(sdkerrors.ErrNotFound, "order %d not found in pair %d", 69, pair.Id),
+		},
+		{
+			Name:   "error invalid orderer",
+			Msg:    *types.NewMsgCancelOrder(appID1, dummy, pair.Id, order.Id),
+			ExpErr: sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "mismatching orderer"),
+		},
+		{
+			Name:   "error order already cancelled",
+			Msg:    *types.NewMsgCancelOrder(appID1, creator, pair.Id, cancelledOrder.Id),
+			ExpErr: types.ErrAlreadyCanceled,
+		},
+		{
+			Name:   "error same batch",
+			Msg:    *types.NewMsgCancelOrder(appID1, creator, pair.Id, order.Id),
+			ExpErr: types.ErrSameBatch,
+		},
+		{
+			Name:   "success valid case",
+			Msg:    *types.NewMsgCancelOrder(appID1, creator, pair.Id, order.Id),
+			ExpErr: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.Name, func() {
+			if tc.ExpErr == nil {
+				// triggering new batch by going to next block
+				s.nextBlock()
+			}
+			err := s.keeper.CancelOrder(s.ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(tc.ExpErr, err.Error())
+			} else {
+				s.Require().NoError(err)
+
+				order, found := s.keeper.GetOrder(s.ctx, tc.Msg.AppId, tc.Msg.PairId, tc.Msg.OrderId)
+				s.Require().True(found)
+				s.Require().Equal(types.OrderStatusCanceled, order.Status)
+
+				s.Require().True(utils.ParseCoins("11033000denom1").IsEqual(s.getBalances(tc.Msg.GetOrderer())))
+
+				s.nextBlock()
+				_, found = s.keeper.GetOrder(s.ctx, tc.Msg.AppId, tc.Msg.PairId, tc.Msg.OrderId)
+				s.Require().False(found)
+
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestCancelOrderTwo() {
+	k, ctx := s.keeper, s.ctx
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), newInt(10000), types.DefaultMaxOrderLifespan)
+
+	// Cannot cancel an order within a same batch
+	err := k.CancelOrder(ctx, types.NewMsgCancelOrder(appID1, s.addr(1), order.PairId, order.Id))
+	s.Require().ErrorIs(err, types.ErrSameBatch)
+
+	s.nextBlock()
+
+	// Now an order can be canceled
+	err = k.CancelOrder(ctx, types.NewMsgCancelOrder(appID1, s.addr(1), order.PairId, order.Id))
+	s.Require().NoError(err)
+
+	order, found := k.GetOrder(ctx, appID1, order.PairId, order.Id)
+	s.Require().True(found)
+	s.Require().Equal(types.OrderStatusCanceled, order.Status)
+
+	// Coins are refunded
+	s.Require().True(utils.ParseCoins("10030denom2").IsEqual(s.getBalances(s.addr(1))))
+
+	s.nextBlock()
+
+	// Order is deleted
+	_, found = k.GetOrder(ctx, appID1, order.PairId, order.Id)
+	s.Require().False(found)
+}
+
+func (s *KeeperTestSuite) TestCancelAllOrders() {
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+	asset3 := s.CreateNewAsset("ASSET3", "denom3", 3000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Hour)
+	msg := types.NewMsgCancelAllOrders(appID1, s.addr(1), nil)
+	s.keeper.CancelAllOrders(s.ctx, msg) // CancelAllOrders doesn't cancel orders within in same batch
+	s.nextBlock()
+
+	// The order is still alive.
+	_, found := s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
+	s.Require().True(found)
+
+	s.keeper.CancelAllOrders(s.ctx, msg) // This time, it cancels the order.
+	order, found = s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
+	// Canceling an order doesn't delete the order immediately.
+	s.Require().True(found)
+	// Instead, the order becomes canceled.
+	s.Require().Equal(types.OrderStatusCanceled, order.Status)
+
+	// The order won't be matched with this market order, since the order is
+	// already canceled.
+	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(10000), 0)
+	s.nextBlock()
+	s.Require().True(utils.ParseCoins("10030denom2").IsEqual(s.getBalances(s.addr(1))))
+
+	pair2 := s.CreateNewLiquidityPair(appID1, s.addr(0), asset2.Denom, asset3.Denom)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Hour)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.5"), sdk.NewInt(10000), time.Hour)
+	s.LimitOrder(appID1, s.addr(2), pair2.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Hour)
+	s.nextBlock()
+
+	msg = types.NewMsgCancelAllOrders(appID1, s.addr(2), []uint64{pair.Id})
+	// CancelAllOrders can cancel orders in specific pairs.
+	s.keeper.CancelAllOrders(s.ctx, msg)
+	// Coins from first two orders are refunded, but not from the last order.
+	s.Require().True(utils.ParseCoins("10030denom2,10030denom1").IsEqual(s.getBalances(s.addr(2))))
+}
