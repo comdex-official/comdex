@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	"fmt"
 	"time"
 
 	utils "github.com/comdex-official/comdex/types"
@@ -306,7 +305,6 @@ func (s *KeeperTestSuite) TestLimitOrder() {
 				s.Require().Equal(tc.ExpResp, &order)
 
 				qorder, found := s.keeper.GetOrder(s.ctx, tc.Msg.AppId, tc.Msg.PairId, order.Id)
-				fmt.Println(qorder)
 				s.Require().True(found)
 				s.Require().Equal(qorder, order)
 			}
@@ -644,6 +642,252 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 
 			availableBalance := s.getBalances(tc.Msg.GetOrderer())
 			s.Require().True(tc.ExpBalanceAfterExpire.IsEqual(availableBalance))
+
+			// reset to default time
+			s.ctx = s.ctx.WithBlockTime(currentTime)
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
+	addr1 := s.addr(1)
+	dummyAcc := s.addr(696969)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+
+	currentTime := time.Now()
+	s.ctx = s.ctx.WithBlockTime(currentTime)
+
+	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
+
+	testCases := []struct {
+		Name               string
+		BuyMsg             types.MsgLimitOrder
+		BuyerExpBalance    sdk.Coins
+		BuyExpOrderStatus  types.OrderStatus
+		SellMsg            types.MsgLimitOrder
+		SellerExpBalance   sdk.Coins
+		SellExpOrderStatus types.OrderStatus
+		CollectedSwapFee   sdk.Coins
+	}{
+		{
+			Name: "buyer seller full order match",
+			BuyMsg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(2),
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("17552500uasset2"),
+				asset1.Denom,
+				sdk.MustNewDecFromStr("0.5"),
+				newInt(35000000),
+				time.Minute*1,
+			),
+			BuyerExpBalance:   utils.ParseCoins("35000000uasset1"),
+			BuyExpOrderStatus: types.OrderStatusCompleted,
+
+			SellMsg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(3),
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("35105000uasset1"),
+				asset2.Denom,
+				sdk.MustNewDecFromStr("0.5"),
+				newInt(35000000),
+				time.Minute*1,
+			),
+			SellerExpBalance:   utils.ParseCoins("17500000uasset2"),
+			SellExpOrderStatus: types.OrderStatusCompleted,
+			CollectedSwapFee:   utils.ParseCoins("105000uasset1,52500uasset2"),
+		},
+		{
+			Name: "buyer partial order match seller full order match",
+			BuyMsg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(2),
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("17552500uasset2"),
+				asset1.Denom,
+				sdk.MustNewDecFromStr("0.5"),
+				newInt(35000000),
+				time.Minute*1,
+			),
+			BuyerExpBalance:   utils.ParseCoins("20000000uasset1,7522500uasset2"),
+			BuyExpOrderStatus: types.OrderStatusPartiallyMatched,
+
+			SellMsg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(3),
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("20060000uasset1"),
+				asset2.Denom,
+				sdk.MustNewDecFromStr("0.5"),
+				newInt(20000000),
+				time.Minute*1,
+			),
+			SellerExpBalance:   utils.ParseCoins("10000000uasset2"),
+			SellExpOrderStatus: types.OrderStatusCompleted,
+			CollectedSwapFee:   utils.ParseCoins("60000uasset1,30000uasset2"),
+		},
+		{
+			Name: "buyer full order match seller partial order match",
+			BuyMsg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(2),
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("15045000uasset2"),
+				asset1.Denom,
+				sdk.MustNewDecFromStr("0.5"),
+				newInt(30000000),
+				time.Minute*1,
+			),
+			BuyerExpBalance:   utils.ParseCoins("30000000uasset1"),
+			BuyExpOrderStatus: types.OrderStatusCompleted,
+
+			SellMsg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(3),
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("70210000uasset1"),
+				asset2.Denom,
+				sdk.MustNewDecFromStr("0.5"),
+				newInt(70000000),
+				time.Minute*1,
+			),
+			SellerExpBalance:   utils.ParseCoins("15000000uasset2,40120000uasset1"),
+			SellExpOrderStatus: types.OrderStatusPartiallyMatched,
+			CollectedSwapFee:   utils.ParseCoins("90000uasset1,45000uasset2"),
+		},
+		{
+			Name: "buyer seller no order match",
+			BuyMsg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(2),
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("15045000uasset2"),
+				asset1.Denom,
+				sdk.MustNewDecFromStr("0.45"),
+				newInt(30000000),
+				time.Minute*1,
+			),
+			BuyerExpBalance:   utils.ParseCoins("15045000uasset2"),
+			BuyExpOrderStatus: types.OrderStatusNotMatched,
+
+			SellMsg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(3),
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("70210000uasset1"),
+				asset2.Denom,
+				sdk.MustNewDecFromStr("0.55"),
+				newInt(70000000),
+				time.Minute*1,
+			),
+			SellerExpBalance:   utils.ParseCoins("70210000uasset1"),
+			SellExpOrderStatus: types.OrderStatusNotMatched,
+			CollectedSwapFee:   utils.ParseCoins("0uasset1,0uasset2"),
+		},
+		{
+			Name: "buyer price high seller price low",
+			BuyMsg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(2),
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("16549500uasset2"),
+				asset1.Denom,
+				sdk.MustNewDecFromStr("0.55"),
+				newInt(30000000),
+				time.Minute*1,
+			),
+			BuyerExpBalance:   utils.ParseCoins("30000000uasset1,752250uasset2"),
+			BuyExpOrderStatus: types.OrderStatusCompleted,
+
+			SellMsg: *types.NewMsgLimitOrder(
+				appID1,
+				s.addr(3),
+				pair.Id,
+				types.OrderDirectionSell,
+				utils.ParseCoin("30090000uasset1"),
+				asset2.Denom,
+				sdk.MustNewDecFromStr("0.50"),
+				newInt(30000000),
+				time.Minute*1,
+			),
+			SellerExpBalance:   utils.ParseCoins("15750000uasset2"),
+			SellExpOrderStatus: types.OrderStatusCompleted,
+			CollectedSwapFee:   utils.ParseCoins("90000uasset1,47250uasset2"),
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.Name, func() {
+			s.fundAddr(tc.BuyMsg.GetOrderer(), sdk.NewCoins(tc.BuyMsg.OfferCoin))
+			s.fundAddr(tc.SellMsg.GetOrderer(), sdk.NewCoins(tc.SellMsg.OfferCoin))
+
+			// buy order placed
+			buyOrder, err := s.keeper.LimitOrder(s.ctx, &tc.BuyMsg)
+			s.Require().NoError(err)
+			s.Require().IsType(types.Order{}, buyOrder)
+			s.Require().Equal(types.OrderStatusNotExecuted, buyOrder.Status)
+
+			// buy order placed
+			sellOrder, err := s.keeper.LimitOrder(s.ctx, &tc.SellMsg)
+			s.Require().NoError(err)
+			s.Require().IsType(types.Order{}, sellOrder)
+			s.Require().Equal(types.OrderStatusNotExecuted, sellOrder.Status)
+
+			// execute order request
+			s.nextBlock()
+
+			bOrder, found := s.keeper.GetOrder(s.ctx, tc.BuyMsg.AppId, tc.BuyMsg.PairId, buyOrder.Id)
+			if tc.BuyExpOrderStatus != types.OrderStatusCompleted {
+				s.Require().True(found)
+				s.Require().Equal(tc.BuyExpOrderStatus, bOrder.Status)
+			}
+
+			sOrder, found := s.keeper.GetOrder(s.ctx, tc.SellMsg.AppId, tc.SellMsg.PairId, sellOrder.Id)
+			if tc.SellExpOrderStatus != types.OrderStatusCompleted {
+				s.Require().True(found)
+				s.Require().Equal(tc.SellExpOrderStatus, sOrder.Status)
+			}
+
+			// change blocktime, so order gets expired
+			s.ctx = s.ctx.WithBlockTime(currentTime.Add(tc.BuyMsg.OrderLifespan))
+			s.nextBlock()
+
+			_, found = s.keeper.GetOrder(s.ctx, tc.BuyMsg.AppId, tc.BuyMsg.PairId, buyOrder.Id)
+			s.Require().False(found)
+			_, found = s.keeper.GetOrder(s.ctx, tc.SellMsg.AppId, tc.SellMsg.PairId, sellOrder.Id)
+			s.Require().False(found)
+
+			buyerAvailableBalance := s.getBalances(tc.BuyMsg.GetOrderer())
+			s.Require().True(tc.BuyerExpBalance.IsEqual(buyerAvailableBalance))
+
+			selllerAvailableBalance := s.getBalances(tc.SellMsg.GetOrderer())
+			s.Require().True(tc.SellerExpBalance.IsEqual(selllerAvailableBalance))
+
+			// verify swapfee coolection
+			accumulatedSwapFee = accumulatedSwapFee.Add(tc.CollectedSwapFee...)
+			availableSwapFees := s.getBalances(pair.GetSwapFeeCollectorAddress())
+			s.Require().True(accumulatedSwapFee.IsEqual(availableSwapFees))
+
+			// transfer all funds from testing account to dummy account
+			// for reusing the accounts, leads to easy account balance calculation
+			s.sendCoins(tc.BuyMsg.GetOrderer(), dummyAcc, s.getBalances(tc.BuyMsg.GetOrderer()))
+			s.sendCoins(tc.SellMsg.GetOrderer(), dummyAcc, s.getBalances(tc.SellMsg.GetOrderer()))
 
 			// reset to default time
 			s.ctx = s.ctx.WithBlockTime(currentTime)
