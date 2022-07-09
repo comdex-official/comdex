@@ -1377,6 +1377,7 @@ func (s *KeeperTestSuite) TestMatchWithLowPricePool() {
 func (s *KeeperTestSuite) TestCancelOrder() {
 	creator := s.addr(0)
 	dummy := s.addr(1)
+	trader := s.addr(2)
 	appID1 := s.CreateNewApp("appOne")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
@@ -1390,7 +1391,7 @@ func (s *KeeperTestSuite) TestCancelOrder() {
 	err := s.keeper.CancelOrder(s.ctx, msg)
 	s.Require().NoError(err)
 
-	order := s.LimitOrder(appID1, creator, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.1"), newInt(1000000), time.Second*10)
+	order := s.LimitOrder(appID1, trader, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.1"), newInt(1000000), time.Second*10)
 
 	testCases := []struct {
 		Name   string
@@ -1419,12 +1420,12 @@ func (s *KeeperTestSuite) TestCancelOrder() {
 		},
 		{
 			Name:   "error same batch",
-			Msg:    *types.NewMsgCancelOrder(appID1, creator, pair.Id, order.Id),
+			Msg:    *types.NewMsgCancelOrder(appID1, trader, pair.Id, order.Id),
 			ExpErr: types.ErrSameBatch,
 		},
 		{
 			Name:   "success valid case",
-			Msg:    *types.NewMsgCancelOrder(appID1, creator, pair.Id, order.Id),
+			Msg:    *types.NewMsgCancelOrder(appID1, trader, pair.Id, order.Id),
 			ExpErr: nil,
 		},
 	}
@@ -1446,7 +1447,7 @@ func (s *KeeperTestSuite) TestCancelOrder() {
 				s.Require().True(found)
 				s.Require().Equal(types.OrderStatusCanceled, order.Status)
 
-				s.Require().True(utils.ParseCoins("11033000denom1").IsEqual(s.getBalances(tc.Msg.GetOrderer())))
+				s.Require().True(utils.ParseCoins("1003000denom1").IsEqual(s.getBalances(tc.Msg.GetOrderer())))
 
 				s.nextBlock()
 				_, found = s.keeper.GetOrder(s.ctx, tc.Msg.AppId, tc.Msg.PairId, tc.Msg.OrderId)
@@ -1535,4 +1536,107 @@ func (s *KeeperTestSuite) TestCancelAllOrders() {
 	s.keeper.CancelAllOrders(s.ctx, msg)
 	// Coins from first two orders are refunded, but not from the last order.
 	s.Require().True(utils.ParseCoins("10030denom2,10030denom1").IsEqual(s.getBalances(s.addr(2))))
+}
+
+func (s *KeeperTestSuite) TestSwapFeeCollectionWithoutPool() {
+	creator := s.addr(0)
+	buyer := s.addr(1)
+	seller := s.addr(2)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
+
+	buyOrder := s.LimitOrder(appID1, buyer, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+	sellOrder := s.LimitOrder(appID1, seller, pair.Id, types.OrderDirectionSell, utils.ParseDec("1"), newInt(52000000), time.Second*10)
+
+	s.nextBlock()
+
+	buyOrder, found := s.keeper.GetOrder(s.ctx, appID1, pair.Id, buyOrder.Id)
+	s.Require().False(found)
+
+	sellOrder, found = s.keeper.GetOrder(s.ctx, appID1, pair.Id, sellOrder.Id)
+	s.Require().False(found)
+
+	collectedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(utils.ParseCoins("156000denom2,156000denom1").IsEqual(collectedSwapFee))
+}
+
+func (s *KeeperTestSuite) TestSwapFeeCollectionWithPool() {
+	creator := s.addr(0)
+	buyer := s.addr(1)
+	seller := s.addr(2)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
+	_ = s.CreateNewLiquidityPool(appID1, pair.Id, creator, "100000000000denom1,100000000000denom2")
+
+	buyOrder1 := s.LimitOrder(appID1, buyer, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.001"), newInt(1000000), time.Second*10)
+	buyOrder2 := s.LimitOrder(appID1, buyer, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.001"), newInt(1000000), time.Second*10)
+
+	s.nextBlock()
+
+	buyOrder1, found := s.keeper.GetOrder(s.ctx, appID1, pair.Id, buyOrder1.Id)
+	s.Require().False(found)
+
+	buyOrder2, found = s.keeper.GetOrder(s.ctx, appID1, pair.Id, buyOrder2.Id)
+	s.Require().False(found)
+
+	sellOrder1 := s.LimitOrder(appID1, seller, pair.Id, types.OrderDirectionSell, utils.ParseDec("0.99"), newInt(1000000), time.Second*10)
+	sellOrder2 := s.LimitOrder(appID1, seller, pair.Id, types.OrderDirectionSell, utils.ParseDec("0.99"), newInt(1000000), time.Second*10)
+
+	s.nextBlock()
+
+	sellOrder1, found = s.keeper.GetOrder(s.ctx, appID1, pair.Id, sellOrder1.Id)
+	s.Require().False(found)
+
+	sellOrder2, found = s.keeper.GetOrder(s.ctx, appID1, pair.Id, sellOrder2.Id)
+	s.Require().False(found)
+
+	collectedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(utils.ParseCoins("6000denom2,6000denom1").IsEqual(collectedSwapFee))
+}
+
+func (s *KeeperTestSuite) TestSwapFeeCollectionMarketOrder() {
+	creator := s.addr(0)
+	buyer := s.addr(1)
+	trader1 := s.addr(2)
+	trader2 := s.addr(3)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
+	_ = s.CreateNewLiquidityPool(appID1, pair.Id, creator, "100000000000denom1,100000000000denom2")
+
+	buyOrder1 := s.LimitOrder(appID1, buyer, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.001"), newInt(1000000), time.Second*10)
+	s.nextBlock()
+	buyOrder1, found := s.keeper.GetOrder(s.ctx, appID1, pair.Id, buyOrder1.Id)
+	s.Require().False(found)
+
+	sellMarketOrder := s.MarketOrder(appID1, trader1, pair.Id, types.OrderDirectionSell, newInt(100000000), time.Second*10)
+	s.nextBlock()
+	_, found = s.keeper.GetOrder(s.ctx, appID1, pair.Id, sellMarketOrder.Id)
+	s.Require().False(found)
+	s.Require().True(utils.ParseCoins("99902090denom2").IsEqual(s.getBalances(trader1)))
+
+	buyMarketOrder := s.MarketOrder(appID1, trader2, pair.Id, types.OrderDirectionBuy, newInt(100000000), time.Second*10)
+	s.nextBlock()
+	_, found = s.keeper.GetOrder(s.ctx, appID1, pair.Id, buyMarketOrder.Id)
+	s.Require().False(found)
+	s.Require().True(utils.ParseCoins("100000000denom1,10020170denom2").IsEqual(s.getBalances(trader2)))
+
+	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(utils.ParseCoins("300000denom1,302706denom2").IsEqual(accumulatedSwapFee))
+
+	s.nextBlock()
 }
