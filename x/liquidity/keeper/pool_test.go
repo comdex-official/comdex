@@ -266,6 +266,8 @@ func (s *KeeperTestSuite) TestCreatePool() {
 			}
 		})
 	}
+	gauges := s.app.Rewardskeeper.GetAllGauges(s.ctx)
+	s.Require().Len(gauges, 2)
 }
 
 func (s *KeeperTestSuite) TestDisabledPool() {
