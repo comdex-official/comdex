@@ -154,10 +154,10 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 			Executor:  executor,
 			Status:    true,
 			StartTime: ctx.BlockTime(),
-			EndTime:   ctx.BlockTime().Add(time.Duration(esmTriggerParams.CoolOffPeriod)*time.Second),
+			EndTime:   ctx.BlockTime().Add(time.Duration(esmTriggerParams.CoolOffPeriod) * time.Second),
 		}
 		k.SetESMStatus(ctx, ESMStatus)
-	} else{
+	} else {
 		return types.ErrCurrentDepositNotReached
 	}
 	return nil

@@ -40,7 +40,6 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
-
 func txDepositESM() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deposit-esm [app_id] [amount]",

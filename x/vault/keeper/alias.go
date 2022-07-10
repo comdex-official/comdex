@@ -78,7 +78,7 @@ func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.Kil
 }
 
 func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
-	return k.esm.GetESMStatus(ctx,id)
+	return k.esm.GetESMStatus(ctx, id)
 }
 
 func (k *Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket esmtypes.ESMMarketPrice, found bool) {

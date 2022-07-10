@@ -21,6 +21,20 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
+
+		if err != nil {
+			return newVM, err
+		}
+		return newVM, err
+	}
+}
+
+func CreateUpgradeHandlerV2(
+	mm *module.Manager,
+	configurator module.Configurator,
+) upgradetypes.UpgradeHandler {
+	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// Refs:
 		// - https://docs.cosmos.network/master/building-modules/upgrade.html#registering-migrations
 		// - https://docs.cosmos.network/master/migrations/chain-upgrade-guide-044.html#chain-upgrade

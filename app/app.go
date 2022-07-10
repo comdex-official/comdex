@@ -536,7 +536,7 @@ func New(
 		app.IbcKeeper.ChannelKeeper,
 		&app.IbcKeeper.PortKeeper,
 		app.AccountKeeper,
-		app.ScopedICAHostKeeper,
+		scopedICAHostKeeper,
 		app.MsgServiceRouter(),
 	)
 
@@ -1100,14 +1100,10 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
-	a.UpgradeKeeper.SetUpgradeHandler(
-		tv1_0_0.UpgradeName,
-		tv1_0_0.CreateUpgradeHandler(a.mm, a.configurator, a.WasmKeeper),
-	)
 
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv2_0_0.UpgradeName,
-		tv2_0_0.CreateUpgradeHandler(a.mm, a.configurator),
+		tv2_0_0.UpgradeNameV2,
+		tv2_0_0.CreateUpgradeHandlerV2(a.mm, a.configurator),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1154,6 +1150,14 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				tokenminttypes.ModuleName,
 				vaulttypes.ModuleName,
 				feegrant.ModuleName,
+				icacontrollertypes.StoreKey,
+				icahosttypes.StoreKey,
+			},
+		}
+	case upgradeInfo.Name == tv2_0_0.UpgradeNameV2 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		// prepare store for testnet upgrade v2.1.0
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{
 				icacontrollertypes.StoreKey,
 				icahosttypes.StoreKey,
 			},

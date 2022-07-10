@@ -15,7 +15,7 @@ const (
 
 func NewMsgKillRequest(from sdk.AccAddress, switchParams KillSwitchParams) *MsgKillRequest {
 	return &MsgKillRequest{
-		From:          from.String(),
+		From:             from.String(),
 		KillSwitchParams: &switchParams,
 	}
 
