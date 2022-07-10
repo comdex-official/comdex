@@ -67,7 +67,6 @@ func FlagSetCreateAssetMapping() *flag.FlagSet {
 	return fs
 }
 
-
 type createAddAssetMappingInputs struct {
 	AppID         string `json:"app_id"`
 	AssetID       string `json:"asset_id"`

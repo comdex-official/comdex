@@ -21,7 +21,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	}
 
 	appIDsVault := k.GetAppIDs(ctx).WhitelistedAppMappingIdsVaults
-	for i,_ := range appIDsVault {
+	for i, _ := range appIDsVault {
 		err := k.IterateVaults(ctx, appIDsVault[i])
 		if err != nil {
 			continue

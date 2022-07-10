@@ -3,10 +3,10 @@ package keeper
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collecortypes "github.com/comdex-official/comdex/x/collector/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
@@ -154,5 +154,5 @@ func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.Kil
 }
 
 func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
-	return k.esm.GetESMStatus(ctx,id)
+	return k.esm.GetESMStatus(ctx, id)
 }
