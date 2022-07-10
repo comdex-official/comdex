@@ -1,12 +1,13 @@
 package keeper
 
 import (
+	"time"
+
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"time"
 )
 
 func (k Keeper) SurplusActivator(ctx sdk.Context) error {
@@ -322,7 +323,7 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appID, auctionMappingID,
 			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be greater than or equal to %d ", minBidAmount)
 		}
 	} else {
-		if bid.Amount.LT(auction.Bid.Amount) {
+		if bid.Amount.LTE(auction.Bid.Amount) {
 			return auctiontypes.ErrorLowBidAmount
 		}
 	}

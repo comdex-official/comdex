@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	"fmt"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
@@ -311,10 +310,6 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	err = k.DutchActivator(*ctx)
 	s.Require().NoError(err)
 
-	//dutchAuctions := k.GetDutchAuctions(*ctx, 1)
-	//for _, auction := range dutchAuctions {
-	//	fmt.Printf("%+v\n", auction)
-	//}
 	appId := uint64(1)
 	auctionMappingId := uint64(3)
 	auctionId := uint64(1)
@@ -322,8 +317,7 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	s.Require().NoError(err)
 	lockedVault, found := liquidationKeeper.GetLockedVault(*ctx, 1)
 	s.Require().True(found)
-	fmt.Println("before")
-	fmt.Printf("%+v\n", auction)
+
 	s.Require().Equal(auction.AppId, lockedVault.AppId)
 	s.Require().Equal(auction.AuctionId, auctionId)
 	s.Require().Equal(auction.AuctionMappingId, auctionMappingId)
@@ -459,27 +453,26 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 
 }
 
-//
-//func (s *KeeperTestSuite) TestRestartDutchAuction() {
-//	//userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-//	s.TestDutchBid()
-//	k, ctx := &s.keeper, &s.ctx
-//	appId := uint64(1)
-//	auctionMappingId := uint64(3)
-//	auctionId := uint64(1)
-//	//server := auctionKeeper.NewMsgServiceServer(*k)
-//	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
-//	s.Require().NoError(err)
-//	fmt.Println("before")
-//	fmt.Printf("%+v\n", beforeAuction)
-//	s.advanceseconds(200)
-//	afterAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
-//	err = k.DutchActivator(*ctx)
-//	s.Require().NoError(err)
-//	fmt.Println("after")
-//	fmt.Printf("%+v\n", afterAuction)
-//
-//}
+func (s *KeeperTestSuite) TestRestartDutchAuction() {
+	//userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	s.TestDutchBid()
+	k, ctx := &s.keeper, &s.ctx
+	appId := uint64(1)
+	auctionMappingId := uint64(3)
+	auctionId := uint64(1)
+	//server := auctionKeeper.NewMsgServiceServer(*k)
+	_, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	s.Require().NoError(err)
+
+	s.advanceseconds(200)
+
+	err = k.DutchActivator(*ctx)
+	s.Require().NoError(err)
+
+	_, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	s.Require().NoError(err)
+
+}
 
 //
 //func (s *KeeperTestSuite) TestDecToInt() {
