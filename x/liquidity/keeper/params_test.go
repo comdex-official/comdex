@@ -100,7 +100,6 @@ func (s *KeeperTestSuite) TestUpdateGenericParams() {
 				s.Require().Equal(params.OrderExtraGas, uint64(13))
 				s.Require().Equal(params.SwapFeeDistrDenom, "loltoken")
 				s.Require().Equal(params.SwapFeeBurnRate, utils.ParseDec("0.8"))
-
 			}
 		})
 
