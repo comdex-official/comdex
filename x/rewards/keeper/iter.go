@@ -17,16 +17,16 @@ import (
 func (k Keeper) IterateLocker(ctx sdk.Context) error {
 	rewards := k.GetRewards(ctx)
 	for _, v := range rewards {
-		klwsParams,_ := k.GetKillSwitchData(ctx,v.App_mapping_ID)
-		if klwsParams.BreakerEnable{
-			return  esmtypes.ErrCircuitBreakerEnabled
+		klwsParams, _ := k.GetKillSwitchData(ctx, v.App_mapping_ID)
+		if klwsParams.BreakerEnable {
+			return esmtypes.ErrCircuitBreakerEnabled
 		}
 		esmStatus, found := k.GetESMStatus(ctx, v.App_mapping_ID)
 		status := false
-		if found{
+		if found {
 			status = esmStatus.Status
 		}
-		if status{
+		if status {
 			return esmtypes.ErrESMAlreadyExecuted
 		}
 		appMappingID := v.App_mapping_ID
@@ -152,18 +152,18 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingID uint64) error {
 	if !found {
 		return types.ErrVaultNotFound
 	}
-		klwsParams,_ := k.GetKillSwitchData(ctx, appMappingID)
-		if klwsParams.BreakerEnable{
-			return  esmtypes.ErrCircuitBreakerEnabled
-		}
-		esmStatus, found := k.GetESMStatus(ctx, appMappingID)
-		status := false
-		if found{
-			status = esmStatus.Status
-		}
-		if status{
-			return esmtypes.ErrESMAlreadyExecuted
-		}
+	klwsParams, _ := k.GetKillSwitchData(ctx, appMappingID)
+	if klwsParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
+	esmStatus, found := k.GetESMStatus(ctx, appMappingID)
+	status := false
+	if found {
+		status = esmStatus.Status
+	}
+	if status {
+		return esmtypes.ErrESMAlreadyExecuted
+	}
 	for _, v := range extVaultMapping.ExtendedPairVaults {
 		vaultIds := v.VaultIds
 		for j := range vaultIds {
@@ -194,16 +194,16 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingID uint64) error {
 func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 	extRewards := k.GetExternalRewardsLockers(ctx)
 	for i, v := range extRewards {
-		klwsParams,_ := k.GetKillSwitchData(ctx,v.AppMappingId)
-		if klwsParams.BreakerEnable{
-			return  esmtypes.ErrCircuitBreakerEnabled
+		klwsParams, _ := k.GetKillSwitchData(ctx, v.AppMappingId)
+		if klwsParams.BreakerEnable {
+			return esmtypes.ErrCircuitBreakerEnabled
 		}
 		esmStatus, found := k.GetESMStatus(ctx, v.AppMappingId)
 		status := false
-		if found{
+		if found {
 			status = esmStatus.Status
 		}
-		if status{
+		if status {
 			return esmtypes.ErrESMAlreadyExecuted
 		}
 		if v.IsActive {
@@ -257,16 +257,16 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 	extRewards := k.GetExternalRewardVaults(ctx)
 	for i, v := range extRewards {
-		klwsParams,_ := k.GetKillSwitchData(ctx,v.AppMappingId)
-		if klwsParams.BreakerEnable{
-			return  esmtypes.ErrCircuitBreakerEnabled
+		klwsParams, _ := k.GetKillSwitchData(ctx, v.AppMappingId)
+		if klwsParams.BreakerEnable {
+			return esmtypes.ErrCircuitBreakerEnabled
 		}
 		esmStatus, found := k.GetESMStatus(ctx, v.AppMappingId)
 		status := false
-		if found{
+		if found {
 			status = esmStatus.Status
 		}
-		if status{
+		if status {
 			return esmtypes.ErrESMAlreadyExecuted
 		}
 		if v.IsActive {

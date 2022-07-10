@@ -25,7 +25,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgExecuteESM:
 			res, err := server.ExecuteESM(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		
+
 		case *types.MsgKillRequest:
 			res, err := server.MsgKillSwitch(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

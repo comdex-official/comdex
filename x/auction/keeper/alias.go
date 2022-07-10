@@ -3,11 +3,11 @@ package keeper
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/collector/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
 func (k *Keeper) GetModuleAccount(ctx sdk.Context, name string) authtypes.ModuleAccountI {
@@ -167,14 +167,14 @@ func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.Kil
 }
 
 func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
-	return k.esm.GetESMStatus(ctx,id)
+	return k.esm.GetESMStatus(ctx, id)
 }
 
 func (k *Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
 	return k.vault.CreateNewVault(ctx, From, AppId, ExtendedPairVaultID, AmountIn, AmountOut)
 }
 
-func (k *Keeper) GetUserVaultExtendedPairMapping(ctx sdk.Context, address string) (userVaultAssetData vaulttypes.UserVaultAssetMapping, found bool){
+func (k *Keeper) GetUserVaultExtendedPairMapping(ctx sdk.Context, address string) (userVaultAssetData vaulttypes.UserVaultAssetMapping, found bool) {
 	return k.vault.GetUserVaultExtendedPairMapping(ctx, address)
 }
 
@@ -186,6 +186,6 @@ func (k *Keeper) SetVault(ctx sdk.Context, vault vaulttypes.Vault) {
 	k.vault.SetVault(ctx, vault)
 }
 
-func (k *Keeper) GetVault(ctx sdk.Context, id string) (vault vaulttypes.Vault, found bool){
+func (k *Keeper) GetVault(ctx sdk.Context, id string) (vault vaulttypes.Vault, found bool) {
 	return k.vault.GetVault(ctx, id)
 }

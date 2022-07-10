@@ -40,7 +40,7 @@ package keeper
 // 	    cdc,
 // 	    storeKey,
 // 	    memStoreKey,
-// 	    paramsSubspace, 
+// 	    paramsSubspace,
 // 	)
 
 // 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())

@@ -13,8 +13,8 @@ func (k *Keeper) SetKillSwitchData(ctx sdk.Context, switchParams types.KillSwitc
 		value = k.cdc.MustMarshal(&switchParams)
 	)
 
-	_, found :=k.GetApp(ctx, switchParams.AppId)
-	if !found{
+	_, found := k.GetApp(ctx, switchParams.AppId)
+	if !found {
 		return types.ErrorAppDoesNotExists
 	}
 
@@ -22,7 +22,7 @@ func (k *Keeper) SetKillSwitchData(ctx sdk.Context, switchParams types.KillSwitc
 	return nil
 }
 
-func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (switchParams types.KillSwitchParams,found bool) {
+func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (switchParams types.KillSwitchParams, found bool) {
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.KillSwitchData(app_id)
@@ -40,8 +40,8 @@ func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (switchParams
 
 func (k *Keeper) Admin(ctx sdk.Context, from string) bool {
 	var from_address = []string{"comdex1gvcsuex523fcwuzcpaqys99r70hajf8ffg6322", "comdex1mska4sk59e7t23r2vv3mvzljujxf9j08frl2tg", ""}
-	for _, addr := range from_address{
-		if addr == from{
+	for _, addr := range from_address {
+		if addr == from {
 			return true
 		}
 	}
