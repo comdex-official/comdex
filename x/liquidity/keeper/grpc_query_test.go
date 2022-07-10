@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	"fmt"
 	"time"
 
 	utils "github.com/comdex-official/comdex/types"
@@ -1003,7 +1002,6 @@ func (s *KeeperTestSuite) TestSoftLock() {
 				s.Require().Error(err)
 				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
-				fmt.Println(resp)
 				s.Require().NoError(err)
 				s.Require().Equal(resp.ActivePoolCoin, utils.ParseCoin("5000000000pool1-1"))
 				s.Require().Equal(resp.QueuedPoolCoin[0].PoolCoin, utils.ParseCoin("5000000000pool1-1"))
@@ -1053,10 +1051,64 @@ func (s *KeeperTestSuite) TestDeserializePoolCoin() {
 				s.Require().Error(err)
 				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
-				fmt.Println(resp)
 				s.Require().NoError(err)
 				s.Require().Equal(resp.Coins[0], utils.ParseCoin("1000000000uasset2"))
 				s.Require().Equal(resp.Coins[1], utils.ParseCoin("1000000000uasset1"))
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestPoolIncentives() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appOne")
+
+	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
+
+	testCases := []struct {
+		Name   string
+		Req    *types.QueryPoolsIncentivesRequest
+		ExpErr error
+	}{
+		{
+			Name:   "error empty request",
+			Req:    nil,
+			ExpErr: status.Error(codes.InvalidArgument, "empty request"),
+		},
+		{
+			Name:   "error app id 0",
+			Req:    &types.QueryPoolsIncentivesRequest{},
+			ExpErr: status.Error(codes.InvalidArgument, "app id cannot be 0"),
+		},
+		{
+			Name:   "success only by orderer",
+			Req:    &types.QueryPoolsIncentivesRequest{AppId: appID1},
+			ExpErr: nil,
+		},
+	}
+
+	ctx := sdk.WrapSDKContext(s.ctx)
+	for _, tc := range testCases {
+		s.Run(tc.Name, func() {
+			resp, err := s.querier.PoolIncentives(ctx, tc.Req)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+			} else {
+				s.Require().NoError(err)
+				s.Require().Equal(resp.PoolIncentives[0].PoolId, pool.Id)
+				s.Require().Equal(resp.PoolIncentives[0].MasterPool, false)
+				s.Require().Equal(resp.PoolIncentives[0].TotalRewards, utils.ParseCoin("0ucmdx"))
+				s.Require().Equal(resp.PoolIncentives[0].DistributedRewards, utils.ParseCoin("0ucmdx"))
+				s.Require().Equal(resp.PoolIncentives[0].TotalEpochs, uint64(1))
+				s.Require().Equal(resp.PoolIncentives[0].EpochDuration, time.Hour*24)
+				s.Require().Equal(resp.PoolIncentives[0].IsSwapFee, true)
+				s.Require().Equal(resp.PoolIncentives[0].AppId, appID1)
 			}
 		})
 	}
@@ -1125,7 +1177,6 @@ func (s *KeeperTestSuite) TestFarmedPoolCoin() {
 				s.Require().Error(err)
 				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
-				fmt.Println(resp)
 				s.Require().NoError(err)
 				s.Require().Equal(resp.Coin, utils.ParseCoin("10000000000pool1-1"))
 			}
