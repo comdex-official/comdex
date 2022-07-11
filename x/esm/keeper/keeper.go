@@ -23,6 +23,7 @@ type (
 		asset      expected.AssetKeeper
 		bank       expected.BankKeeper
 		market     expected.MarketKeeper
+		tokenmint  expected.Tokenmint
 	}
 )
 
@@ -34,6 +35,7 @@ func NewKeeper(
 	asset expected.AssetKeeper,
 	bank expected.BankKeeper,
 	market expected.MarketKeeper,
+	tokenmint expected.Tokenmint,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -50,6 +52,7 @@ func NewKeeper(
 		asset:      asset,
 		bank:       bank,
 		market:     market,
+		tokenmint:  tokenmint,
 	}
 }
 
@@ -62,8 +65,6 @@ func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 }
 
 func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, Amount sdk.Coin) error {
-	//TODO:
-	// burn from token_mint module
 
 	appData, found := k.GetApp(ctx, AppID)
 	if !found {
@@ -110,8 +111,11 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 	}
 	addr, _ := sdk.AccAddressFromBech32(depositorAddr)
 
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, types.ModuleName, sdk.NewCoins(Amount)); err != nil {
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, "tokenmint", sdk.NewCoins(Amount)); err != nil {
 		return err
+	}
+	if err1 := k.tokenmint.BurnTokensForApp(ctx, AppID, govAsset.Id, Amount.Amount ); err1 != nil {
+		return err1
 	}
 
 	userDeposits, found := k.GetUserDepositByApp(ctx, depositorAddr, AppID)

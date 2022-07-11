@@ -29,3 +29,7 @@ type BankKeeper interface {
 type MarketKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 }
+
+type Tokenmint interface {
+	BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error
+}

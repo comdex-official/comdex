@@ -24,3 +24,7 @@ func (k *Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []assettypes.Asset)
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	return k.market.GetPriceForAsset(ctx, id)
 }
+
+func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error {
+	return k.tokenmint.BurnTokensForApp(ctx, appMappingID, assetID, amount)
+}
