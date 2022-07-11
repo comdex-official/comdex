@@ -75,7 +75,7 @@ func parseAddNewLendPairsFlags(fs *pflag.FlagSet) (*addNewLendPairsInputs, error
 		return nil, fmt.Errorf("must pass in a add new lend pairs json using the --%s flag", FlagNewLendPairFile)
 	}
 
-	contents, err := ioutil.ReadFile(addLendPairsParamsFile)
+	contents, err := ioutil.ReadFile(addLendPairsParamsFile) //nolint:gosec
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func parseAddPoolFlags(fs *pflag.FlagSet) (*addLendPoolInputs, error) {
 		return nil, fmt.Errorf("must pass in a add new pool json using the --%s flag", FlagAddLendPoolFile)
 	}
 
-	contents, err := ioutil.ReadFile(addPoolParamsParamsFile)
+	contents, err := ioutil.ReadFile(addPoolParamsParamsFile) //nolint:gosec
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func parseAssetRateStatsFlags(fs *pflag.FlagSet) (*addAssetRatesStatsInputs, err
 		return nil, fmt.Errorf("must pass in a add asset rates stats json using the --%s flag", FlagAddAssetRatesStatsFile)
 	}
 
-	contents, err := ioutil.ReadFile(addAssetRatesStatsFile)
+	contents, err := ioutil.ReadFile(addAssetRatesStatsFile) //nolint:gosec
 	if err != nil {
 		return nil, err
 	}

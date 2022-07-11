@@ -33,7 +33,7 @@ const (
 	TypeMsgCancelOrder      = "cancel_order"
 	TypeMsgCancelAllOrders  = "cancel_all_orders"
 	TypeMsgTokensSoftLock   = "tokens_soft_lock"
-	TypeMsgTokensSoftUnlock = "tokens_soft_unlock"
+	TypeMsgTokensSoftUnlock = "tokens_soft_unlock" //nolint:gosec
 )
 
 // NewMsgCreatePair returns a new MsgCreatePair.
