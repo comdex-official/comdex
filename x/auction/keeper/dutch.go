@@ -174,7 +174,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid denom %s not found", bid.Denom)
 	}
 	if bid.Amount.GT(auction.OutflowTokenCurrentAmount.Amount) {
-		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid denom can't be greater than collateral available")
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid amount can't be greater than collateral available")
 	}
 
 	max = k.GetUUSDFromUSD(ctx, max)
@@ -197,7 +197,9 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	//owe is $cmdx to be given to user
 	owe := slice.Mul(outFlowTokenCurrentPrice)
 	inFlowTokenAmount := owe.Quo(inFlowTokenCurrentPrice)
+	TargetReachedFlag := false
 	if inFlowTokenAmount.GT(tab) {
+		TargetReachedFlag = true
 		inFlowTokenAmount = tab
 		owe = inFlowTokenAmount.Mul(inFlowTokenCurrentPrice)
 		slice = owe.Quo(outFlowTokenCurrentPrice)
@@ -231,10 +233,10 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	//here tab is divided by price again so price ration is only considered , we are not using owe again in this function so no problem
 	//As tab is the amount calculated from difference of target and current inflow token we will be using same as inflow token
 
-	if amountLeftInPUSD.LT(dust) && !amountLeftInPUSD.Equal(sdk.ZeroInt()) {
+	if amountLeftInPUSD.LT(dust) && !amountLeftInPUSD.Equal(sdk.ZeroInt()) && !TargetReachedFlag {
 		coll := auction.OutflowTokenCurrentAmount.Amount.Uint64()
 		dust := dust.Uint64()
-		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "either bid all the amount %d (UTOKEN) or bid amount by leaving dust greater than %d UUSD", coll, dust)
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "either bid all the amount %d (UTOKEN) or bid amount by leaving dust greater than %d PUSD", coll, dust)
 	}
 
 	outFlowTokenCoin := sdk.NewCoin(auction.OutflowTokenInitAmount.Denom, slice)

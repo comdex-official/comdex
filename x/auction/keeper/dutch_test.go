@@ -44,7 +44,7 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 				PairName:            "CMDX-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
-				MinUsdValueLeft:     1000000,
+				MinUsdValueLeft:     1000000000000,
 			},
 			"ucmdx",
 			"ucmst",
@@ -353,61 +353,130 @@ func (s *KeeperTestSuite) TestDutchBid() {
 	biddingID := uint64(1)
 
 	server := auctionKeeper.NewMsgServiceServer(*k)
-	beforeAuction, err := k.GetDutchAuction(*ctx, appID, auctionMappingID, auctionID)
-	s.Require().NoError(err)
-	beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
-	s.Require().NoError(err)
-	beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
-	s.Require().NoError(err)
 
-	//expect error as max price is less than current price of outflow token
-	_, err = server.MsgPlaceDutchBid(sdk.WrapSDKContext(*ctx),
-		&auctionTypes.MsgPlaceDutchBidRequest{
-			AuctionId:        1,
-			Bidder:           userAddress1,
-			Amount:           ParseCoin("1000ucmdx"),
-			Max:              sdk.MustNewDecFromStr("1.1"),
-			AppId:            appID,
-			AuctionMappingId: auctionMappingID,
+	for _, tc := range []struct {
+		name            string
+		msg             auctionTypes.MsgPlaceDutchBidRequest
+		advanceSeconds  int64
+		isErrorExpected bool
+	}{
+		{
+			"Place Dutch Bid : bid more than collateral auctioned max 1.4",
+			auctionTypes.MsgPlaceDutchBidRequest{
+				AuctionId:        1,
+				Bidder:           userAddress1,
+				Amount:           ParseCoin("1000001ucmdx"),
+				Max:              sdk.MustNewDecFromStr("1.4"),
+				AppId:            appID,
+				AuctionMappingId: auctionMappingID,
+			},
+			0,
+			true,
+		},
+		{
+			"Place Dutch Bid : invalid bid denom max 1.4",
+			auctionTypes.MsgPlaceDutchBidRequest{
+				AuctionId:        1,
+				Bidder:           userAddress1,
+				Amount:           ParseCoin("1000ucmst"),
+				Max:              sdk.MustNewDecFromStr("1.4"),
+				AppId:            appID,
+				AuctionMappingId: auctionMappingID,
+			},
+			0,
+			true,
+		},
+		{
+			"Place Dutch Bid : leaving dust should fail max 1.4",
+			auctionTypes.MsgPlaceDutchBidRequest{
+				AuctionId:        1,
+				Bidder:           userAddress1,
+				Amount:           ParseCoin("1ucmdx"),
+				Max:              sdk.MustNewDecFromStr("1.4"),
+				AppId:            appID,
+				AuctionMappingId: auctionMappingID,
+			},
+			250,
+			true,
+		},
+		{
+			"Place Dutch Bid : collateral max price less than current price 1000ucmdx max 1.1",
+			auctionTypes.MsgPlaceDutchBidRequest{
+				AuctionId:        1,
+				Bidder:           userAddress1,
+				Amount:           ParseCoin("1000ucmdx"),
+				Max:              sdk.MustNewDecFromStr("1.1"),
+				AppId:            appID,
+				AuctionMappingId: auctionMappingID,
+			},
+			0,
+			true,
+		},
+		{
+			"Place Dutch Bid : collateral max price more than current price 1000ucmdx max 1.4",
+			auctionTypes.MsgPlaceDutchBidRequest{
+				AuctionId:        1,
+				Bidder:           userAddress1,
+				Amount:           ParseCoin("1000ucmdx"),
+				Max:              sdk.MustNewDecFromStr("1.4"),
+				AppId:            appID,
+				AuctionMappingId: auctionMappingID,
+			},
+			0,
+			false,
+		},
+	} {
+		s.Run(tc.name, func() {
+
+			s.advanceseconds(tc.advanceSeconds)
+			err := k.DutchActivator(*ctx)
+			s.Require().NoError(err)
+			beforeAuction, err := k.GetDutchAuction(*ctx, appID, auctionMappingID, auctionID)
+			s.Require().NoError(err)
+			beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+			s.Require().NoError(err)
+			beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
+			s.Require().NoError(err)
+
+			//dont expect error
+			_, err = server.MsgPlaceDutchBid(sdk.WrapSDKContext(*ctx), &tc.msg)
+			if tc.isErrorExpected {
+				s.advanceseconds(301 - tc.advanceSeconds)
+				err1 := k.DutchActivator(*ctx)
+				s.Require().NoError(err1)
+				s.Require().Error(err)
+			} else {
+				s.Require().NoError(err)
+
+				afterCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+				s.Require().NoError(err)
+				afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
+				s.Require().NoError(err)
+
+				afterAuction, err := k.GetDutchAuction(*ctx, appID, auctionMappingID, auctionID)
+				s.Require().NoError(err)
+
+				userBid, err := k.GetDutchUserBidding(*ctx, userAddress1, appID, biddingID)
+				userReceivableAmount := tc.msg.Amount.Amount.ToDec().Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
+				userOutflowCoin := sdk.NewCoin("ucmst", userReceivableAmount)
+				userInflowCoin := tc.msg.Amount
+				s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
+				s.Require().Equal(beforeAuction.InflowTokenCurrentAmount.Add(userOutflowCoin), afterAuction.InflowTokenCurrentAmount)
+				s.Require().Equal(beforeCmdxBalance.Add(userInflowCoin), afterCmdxBalance)
+				s.Require().Equal(beforeCmstBalance.Sub(userOutflowCoin), afterCmstBalance)
+				s.Require().Equal(userBid.BiddingId, biddingID)
+				s.Require().Equal(userBid.AppId, appID)
+				s.Require().Equal(userBid.AuctionId, auctionID)
+				s.Require().Equal(userBid.BiddingStatus, auctionTypes.SuccessBiddingStatus)
+				s.Require().Equal(userBid.AuctionStatus, auctionTypes.ActiveAuctionStatus)
+				s.Require().Equal(userBid.Bidder, userAddress1)
+				s.Require().Equal(userBid.AuctionMappingId, auctionMappingID)
+				s.Require().Equal(userBid.OutflowTokenAmount, userOutflowCoin)
+				s.Require().Equal(userBid.InflowTokenAmount, userInflowCoin)
+			}
 		})
-	s.Require().Error(err)
+	}
 
-	//dont expect error
-	_, err = server.MsgPlaceDutchBid(sdk.WrapSDKContext(*ctx),
-		&auctionTypes.MsgPlaceDutchBidRequest{
-			AuctionId:        1,
-			Bidder:           userAddress1,
-			Amount:           ParseCoin("1000ucmdx"),
-			Max:              sdk.MustNewDecFromStr("1.4"),
-			AppId:            appID,
-			AuctionMappingId: auctionMappingID,
-		})
-	s.Require().NoError(err)
-
-	afterCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
-	s.Require().NoError(err)
-	afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
-	s.Require().NoError(err)
-
-	afterAuction, err := k.GetDutchAuction(*ctx, appID, auctionMappingID, auctionID)
-	s.Require().NoError(err)
-
-	userBid, err := k.GetDutchUserBidding(*ctx, userAddress1, appID, biddingID)
-	userOutflowCoin := ParseCoin("1200ucmst")
-	userInflowCoin := ParseCoin("1000ucmdx")
-	s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
-	s.Require().Equal(beforeAuction.InflowTokenCurrentAmount.Add(userOutflowCoin), afterAuction.InflowTokenCurrentAmount)
-	s.Require().Equal(beforeCmdxBalance.Add(userInflowCoin), afterCmdxBalance)
-	s.Require().Equal(beforeCmstBalance.Sub(userOutflowCoin), afterCmstBalance)
-	s.Require().Equal(userBid.BiddingId, biddingID)
-	s.Require().Equal(userBid.AppId, appID)
-	s.Require().Equal(userBid.AuctionId, auctionID)
-	s.Require().Equal(userBid.BiddingStatus, auctionTypes.SuccessBiddingStatus)
-	s.Require().Equal(userBid.AuctionStatus, auctionTypes.ActiveAuctionStatus)
-	s.Require().Equal(userBid.Bidder, userAddress1)
-	s.Require().Equal(userBid.AuctionMappingId, auctionMappingID)
-	s.Require().Equal(userBid.OutflowTokenAmount, userOutflowCoin)
-	s.Require().Equal(userBid.InflowTokenAmount, userInflowCoin)
 }
 
 func (s *KeeperTestSuite) TestCloseDutchAuction() {
@@ -420,8 +489,8 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 	server := auctionKeeper.NewMsgServiceServer(*k)
 	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
-	//beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
-	//s.Require().NoError(err)
+	beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+	s.Require().NoError(err)
 	beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 	s.Require().NoError(err)
 
@@ -438,192 +507,139 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 
 	_, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().Error(err)
+	afterCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+	s.Require().NoError(err)
+	afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
+	s.Require().NoError(err)
+	afterAuction, err := k.GetHistoryDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	s.Require().NoError(err)
+	userOutflowCoin := beforeAuction.InflowTokenTargetAmount.Sub(beforeAuction.InflowTokenCurrentAmount)
+	userInflowCoin := beforeAuction.OutflowTokenCurrentAmount.Sub(afterAuction.OutflowTokenCurrentAmount)
+	s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
+	s.Require().Equal(afterAuction.InflowTokenTargetAmount, afterAuction.InflowTokenCurrentAmount)
+	s.Require().Equal(beforeCmdxBalance.Add(userInflowCoin), afterCmdxBalance)
+	s.Require().Equal(beforeCmstBalance.Sub(userOutflowCoin), afterCmstBalance)
+
+}
+
+func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
+	userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	s.TestDutchBid()
+	k, ctx := &s.keeper, &s.ctx
+	appId := uint64(1)
+	auctionMappingId := uint64(3)
+	auctionId := uint64(1)
+	server := auctionKeeper.NewMsgServiceServer(*k)
+	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	s.Require().NoError(err)
+	//beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+	//s.Require().NoError(err)
+	beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
+	s.Require().NoError(err)
+	s.advanceseconds(250)
+
+	err1 := k.DutchActivator(*ctx)
+	s.Require().NoError(err1)
+
+	err1 = k.FundModule(*ctx, "auction", "ucmst", 10000000)
+	s.Require().NoError(err1)
+	err = k.SendCoinsFromModuleToModule(*ctx, "auction", "collector", sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewInt(10000000))))
+	s.Require().NoError(err)
+
+	err = s.app.CollectorKeeper.SetNetFeeCollectedData(*ctx, 1, 2, sdk.NewInt(10000000))
+	s.Require().NoError(err)
+
+	_, err = server.MsgPlaceDutchBid(sdk.WrapSDKContext(*ctx),
+		&auctionTypes.MsgPlaceDutchBidRequest{
+			AuctionId:        1,
+			Bidder:           userAddress1,
+			Amount:           beforeAuction.OutflowTokenCurrentAmount,
+			Max:              sdk.MustNewDecFromStr("1.2"),
+			AppId:            appId,
+			AuctionMappingId: auctionMappingId,
+		})
+	s.Require().NoError(err)
+
+	_, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	s.Require().Error(err)
+
 	//afterCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
 	//s.Require().NoError(err)
 	afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 	s.Require().NoError(err)
 	afterAuction, err := k.GetHistoryDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
-	userOutflowCoin := beforeAuction.InflowTokenTargetAmount.Sub(beforeAuction.InflowTokenCurrentAmount)
-	//userInflowCoin := beforeAuction.OutflowTokenCurrentAmount
-	//s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
-	s.Require().Equal(afterAuction.InflowTokenTargetAmount, afterAuction.InflowTokenCurrentAmount)
-	//s.Require().Equal(beforeCmdxBalance.Add(userInflowCoin), afterCmdxBalance)
+	userOutflowCoin := afterAuction.InflowTokenCurrentAmount.Sub(beforeAuction.InflowTokenCurrentAmount)
+	s.Require().True(afterAuction.InflowTokenCurrentAmount.IsLT(afterAuction.InflowTokenTargetAmount))
+
 	s.Require().Equal(beforeCmstBalance.Sub(userOutflowCoin), afterCmstBalance)
 
+	//verify loss
+	stats, found := k.GetProtocolStat(*ctx, appId, 2)
+	s.Require().True(found)
+	loss := afterAuction.InflowTokenTargetAmount.Sub(afterAuction.InflowTokenCurrentAmount).Amount.ToDec()
+	s.Require().Equal(loss, stats.Loss)
 }
 
 func (s *KeeperTestSuite) TestRestartDutchAuction() {
-	//userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	s.TestDutchBid()
 	k, ctx := &s.keeper, &s.ctx
 	appId := uint64(1)
 	auctionMappingId := uint64(3)
 	auctionId := uint64(1)
-	//server := auctionKeeper.NewMsgServiceServer(*k)
-	_, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	auction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
-	s.advanceseconds(200)
+	//exact the auction duration
+	s.advanceseconds(300)
+
+	startPrice := auction.OutflowTokenCurrentPrice
+	err = k.DutchActivator(*ctx)
+	s.Require().NoError(err)
+
+	auction, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	s.Require().NoError(err)
+
+	s.Require().Equal(auction.OutflowTokenCurrentPrice, startPrice.Mul(sdk.MustNewDecFromStr("0.6")))
+
+	//full the auction duration RESTART
+	s.advanceseconds(1)
+	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	s.Require().NoError(err)
 
 	err = k.DutchActivator(*ctx)
 	s.Require().NoError(err)
 
-	_, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	afterAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
+	s.Require().Equal(beforeAuction.AuctionId, afterAuction.AuctionId)
+	s.Require().Equal(beforeAuction.OutflowTokenInitAmount, afterAuction.OutflowTokenInitAmount)
+	s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount, afterAuction.OutflowTokenCurrentAmount)
+	s.Require().Equal(beforeAuction.InflowTokenTargetAmount, afterAuction.InflowTokenTargetAmount)
+	s.Require().Equal(beforeAuction.InflowTokenCurrentAmount, afterAuction.InflowTokenCurrentAmount)
+	s.Require().Equal(beforeAuction.OutflowTokenInitialPrice, afterAuction.OutflowTokenInitialPrice)
+	s.Require().Equal(beforeAuction.OutflowTokenEndPrice, afterAuction.OutflowTokenEndPrice)
+	s.Require().Equal(beforeAuction.InflowTokenCurrentPrice, afterAuction.InflowTokenCurrentPrice)
+	s.Require().Equal(beforeAuction.AuctionStatus, afterAuction.AuctionStatus)
+	s.Require().Equal(beforeAuction.AuctionMappingId, afterAuction.AuctionMappingId)
+	s.Require().Equal(beforeAuction.AppId, afterAuction.AppId)
+	s.Require().Equal(beforeAuction.AssetInId, afterAuction.AssetInId)
+	s.Require().Equal(beforeAuction.AssetOutId, afterAuction.AssetOutId)
+	s.Require().Equal(beforeAuction.LockedVaultId, afterAuction.LockedVaultId)
+	s.Require().Equal(beforeAuction.VaultOwner, afterAuction.VaultOwner)
+	s.Require().Equal(beforeAuction.LiquidationPenalty, afterAuction.LiquidationPenalty)
+	s.Require().Equal(afterAuction.OutflowTokenCurrentPrice, startPrice)
+
+	//half the auction duration
+	s.advanceseconds(150)
+
+	err = k.DutchActivator(*ctx)
+	s.Require().NoError(err)
+
+	auction, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	s.Require().NoError(err)
+
+	s.Require().Equal(auction.OutflowTokenCurrentPrice, startPrice.Mul(sdk.MustNewDecFromStr("0.8")))
+
 }
-
-//
-//func (s *KeeperTestSuite) TestDecToInt() {
-//	num := sdk.MustNewDecFromStr("133333333.999999")
-//	fmt.Println(num)
-//	res := num.TruncateInt()
-//	fmt.Println(res)
-//}
-
-//
-//func (s *KeeperTestSuite) TestLinearPriceFunction() {
-//	k := &s.keeper
-//
-//	top := sdk.MustNewDecFromStr("100").Mul(sdk.MustNewDecFromStr("1"))
-//	tau := sdk.NewIntFromUint64(60)
-//	dur := sdk.NewInt(0)
-//	for n := 0; n <= 60; n++ {
-//		fmt.Println("top tau dur seconds")
-//		fmt.Println(top, tau, dur)
-//		fmt.Println("price")
-//		price := k.GetPriceFromLinearDecreaseFunction(top, tau, dur)
-//		fmt.Println(price)
-//		dur = dur.Add(sdk.NewInt(1))
-//
-//	}
-//}
-
-//
-//func (s *KeeperTestSuite) BidDutchAuction() {
-//	k, ctx := &s.keeper, &s.ctx
-//
-//	max := sdk.MustNewDecFromStr("12")
-//	//create auction
-//	s.TestDutchActivator()
-//	userTokens := ParseCoin("2500denom2")
-//
-//	bid := ParseCoin("5denom1")
-//	bidder, err := sdk.AccAddressFromBech32("cosmos155hjlwufdfu4c3hycylzz74ag9anz7lkfurxwg")
-//	s.Require().NoError(err)
-//
-//	//fund bidder
-//	s.fundAddr(bidder, userTokens)
-//
-//	//place bid
-//	err = k.PlaceDutchAuctionBid(*ctx, appId, auctionMappingId, auctionId, bidder, bid, max)
-//	s.Require().NoError(err)
-//	_, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
-//	s.Require().NoError(err)
-//	//check if user balance reduced
-//	fmt.Println(k.GetBalance(*ctx, bidder, "denom2"))
-//	//s.Require().Equal(sdk.NewInt(880), k.GetBalance(*ctx, bidder, "denom2").Amount)
-//
-//	_, err = k.GetDutchUserBidding(*ctx, bidder.String(), appId, 1)
-//	s.Require().NoError(err)
-//
-//	//close auction by advancing time
-//	//s.advanceseconds(advanceSeconds)
-//	//k.CloseDutchAuction(*ctx, auction)
-//
-//	fmt.Println(k.GetBalance(*ctx, bidder, "denom1"))
-//	fmt.Println(k.GetBalance(*ctx, bidder, "denom2"))
-//	//check if user got collateral
-//	s.Require().Equal(sdk.NewInt(10), k.GetBalance(*ctx, bidder, "denom1").Amount)
-//
-//	//check status of bid
-//	_, err = k.GetHistoryDutchUserBidding(*ctx, bidder.String(), appId, 1)
-//	s.Require().NoError(err)
-//
-//	//get closed auction
-//	_, err = k.GetHistoryDutchAuction(*ctx, appId, auctionMappingId, auctionId)
-//	s.Require().NoError(err)
-//}
-//
-//func (s *KeeperTestSuite) BidsDutchAuction() {
-//	k, ctx := &s.keeper, &s.ctx
-//	appId := uint64(1)
-//	auctionMappingId := uint64(3)
-//	auctionId := uint64(1)
-//	max := sdk.MustNewDecFromStr("12")
-//	//create auction
-//	s.TestCreateDutchAuction()
-//	userTokens := ParseCoin("1000denom2")
-//
-//	bid := ParseCoin("10denom1")
-//	bidder, err := sdk.AccAddressFromBech32("cosmos155hjlwufdfu4c3hycylzz74ag9anz7lkfurxwg")
-//	s.Require().NoError(err)
-//
-//	//fund bidder
-//	s.fundAddr(bidder, userTokens)
-//
-//	//place bid
-//	err = k.PlaceDutchAuctionBid(*ctx, appId, auctionMappingId, auctionId, bidder, bid, max)
-//	s.Require().NoError(err)
-//	auction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
-//	s.Require().NoError(err)
-//	//check if user balance reduced
-//	fmt.Println(k.GetBalance(*ctx, bidder, "denom2"))
-//	//s.Require().Equal(sdk.NewInt(880), k.GetBalance(*ctx, bidder, "denom2").Amount)
-//
-//	_, err = k.GetDutchUserBidding(*ctx, bidder.String(), appId, 1)
-//	s.Require().NoError(err)
-//
-//	//place bid
-//	err = k.PlaceDutchAuctionBid(*ctx, appId, auctionMappingId, auctionId, bidder, bid, max)
-//	s.Require().NoError(err)
-//	auction, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
-//	s.Require().NoError(err)
-//	//check if user balance reduced
-//	fmt.Println(k.GetBalance(*ctx, bidder, "denom2"))
-//	//s.Require().Equal(sdk.NewInt(880), k.GetBalance(*ctx, bidder, "denom2").Amount)
-//
-//	_, err = k.GetDutchUserBidding(*ctx, bidder.String(), appId, 1)
-//	s.Require().NoError(err)
-//
-//	//close auction by advancing time
-//	s.advanceseconds(advanceSeconds)
-//	err = k.CloseDutchAuction(*ctx, auction)
-//	if err != nil {
-//		return
-//	}
-//
-//	fmt.Println(k.GetBalance(*ctx, bidder, "denom1"))
-//	//check if user got collateral
-//	s.Require().Equal(sdk.NewInt(10), k.GetBalance(*ctx, bidder, "denom1").Amount)
-//
-//	//check status of bid
-//	_, err = k.GetHistoryDutchUserBidding(*ctx, bidder.String(), appId, 1)
-//	s.Require().NoError(err)
-//
-//	//get closed auction
-//	_, err = k.GetHistoryDutchAuction(*ctx, appId, auctionMappingId, auctionId)
-//	s.Require().NoError(err)
-//}
-//
-//func getPriceFromLinearDecreaseFunction(top sdk.Dec, tau, dur sdk.Int) sdk.Int {
-//	result1 := tau.Sub(dur)
-//	result2 := top.MulInt(result1)
-//	result3 := result2.Quo(tau.ToDec())
-//	return result3.TruncateInt()
-//}
-//func (s *KeeperTestSuite) LinearPriceFunction() {
-//	top := sdk.MustNewDecFromStr("100").Mul(sdk.MustNewDecFromStr("1"))
-//	tau := sdk.NewIntFromUint64(60)
-//	dur := sdk.NewInt(0)
-//	for n := 0; n <= 60; n++ {
-//		fmt.Println("top tau dur seconds")
-//		fmt.Println(top, tau, dur)
-//		fmt.Println("price")
-//		price := getPriceFromLinearDecreaseFunction(top, tau, dur)
-//		fmt.Println(price)
-//		dur = dur.Add(sdk.NewInt(1))
-//
-//	}
-//}
