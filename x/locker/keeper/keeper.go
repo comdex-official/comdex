@@ -32,7 +32,7 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, ps paramtypes.Subspace, 
 		asset:      asset,
 		oracle:     oracle,
 		collector:  collector,
-		esm:        esm,			
+		esm:        esm,
 	}
 }
 

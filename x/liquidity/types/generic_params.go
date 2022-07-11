@@ -135,6 +135,38 @@ func KeyParseValidateFuncMap() map[string][]interface{} {
 	}
 }
 
+// Validate validates Params.
+func (genericParams GenericParams) Validate() error {
+	for _, field := range []struct {
+		val          interface{}
+		validateFunc func(i interface{}) error
+	}{
+		{genericParams.AppId, validateAppID},
+		{genericParams.BatchSize, validateBatchSize},
+		{genericParams.TickPrecision, validateTickPrecision},
+		{genericParams.FeeCollectorAddress, validateFeeCollectorAddress},
+		{genericParams.DustCollectorAddress, validateDustCollectorAddress},
+		{genericParams.MinInitialPoolCoinSupply, validateMinInitialPoolCoinSupply},
+		{genericParams.PairCreationFee, validatePairCreationFee},
+		{genericParams.PoolCreationFee, validatePoolCreationFee},
+		{genericParams.MinInitialDepositAmount, validateMinInitialDepositAmount},
+		{genericParams.MaxPriceLimitRatio, validateMaxPriceLimitRatio},
+		{genericParams.MaxOrderLifespan, validateMaxOrderLifespan},
+		{genericParams.SwapFeeRate, validateSwapFeeRate},
+		{genericParams.WithdrawFeeRate, validateWithdrawFeeRate},
+		{genericParams.DepositExtraGas, validateExtraGas},
+		{genericParams.WithdrawExtraGas, validateExtraGas},
+		{genericParams.OrderExtraGas, validateExtraGas},
+		{genericParams.SwapFeeDistrDenom, validateSwapFeeDistrDenom},
+		{genericParams.SwapFeeBurnRate, validateSwapFeeBurnRate},
+	} {
+		if err := field.validateFunc(field.val); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func ParseString(value string) (interface{}, error) {
 	return value, nil
 }

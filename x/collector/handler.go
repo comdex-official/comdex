@@ -22,4 +22,3 @@ func NewHandler() sdk.Handler {
 		}
 	}
 }
-

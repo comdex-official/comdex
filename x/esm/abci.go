@@ -9,17 +9,17 @@ import (
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	apps, found := k.GetApps(ctx)
-	if !found{
+	if !found {
 		return
 	}
 	assets := k.GetAssetsForOracle(ctx)
 	for _, v := range apps {
 		esmMarket, found := k.GetESMMarketForAsset(ctx, v.Id)
-		if !found{
+		if !found {
 			return
 		}
 		esmStatus, found := k.GetESMStatus(ctx, v.Id)
-		if !found{
+		if !found {
 			return
 		}
 
@@ -27,7 +27,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 			var markets []types.Market
 			for _, a := range assets {
 				price, found := k.GetPriceForAsset(ctx, a.Id)
-				if !found{
+				if !found {
 					return
 				}
 				market := types.Market{
