@@ -397,13 +397,3 @@ func (s *KeeperTestSuite) TestCloseDebtAuction() {
 	}
 
 }
-
-/* 1. auction closed but no bids then auction should restart
-2. make sure code enter every if condition or every part of code
-3. make sure to change numbers
-4.test maths this where quo involved with smaller numbers and also places sdk.Int involved in quo
-5.check chost block entered
-6.advance time in dutch test so that collateral gets over but target cmst is still left
-7.make fetch price dynamic in dutch as of now linear is hard coded
-8.handle if auctiontype is empty in setters
-// */
