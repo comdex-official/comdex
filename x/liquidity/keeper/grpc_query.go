@@ -615,7 +615,7 @@ func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*
 
 	depositor, err := sdk.AccAddressFromBech32(req.Depositor)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "orderer address %s is invalid", req.Depositor)
+		return nil, status.Errorf(codes.InvalidArgument, "depositor address %s is invalid", req.Depositor)
 	}
 
 	poolID := req.PoolId

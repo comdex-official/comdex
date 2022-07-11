@@ -1,4 +1,4 @@
-package keeper_test
+package liquidity_test
 
 import (
 	"encoding/binary"
@@ -6,11 +6,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	chain "github.com/comdex-official/comdex/app"
+	utils "github.com/comdex-official/comdex/types"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/liquidity"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
@@ -18,76 +19,57 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	protobuftypes "github.com/gogo/protobuf/types"
-
-	utils "github.com/comdex-official/comdex/types"
 )
 
-type KeeperTestSuite struct {
+type ModuleTestSuite struct {
 	suite.Suite
 
-	app       *chain.App
-	ctx       sdk.Context
-	keeper    keeper.Keeper
-	querier   keeper.Querier
-	msgServer types.MsgServer
+	app     *chain.App
+	ctx     sdk.Context
+	keeper  keeper.Keeper
+	querier keeper.Querier
+	addrs   []sdk.AccAddress
 }
 
-func TestKeeperTestSuite(t *testing.T) {
-	suite.Run(t, new(KeeperTestSuite))
+func TestModuleTestSuite(t *testing.T) {
+	suite.Run(t, new(ModuleTestSuite))
 }
 
-func (s *KeeperTestSuite) SetupTest() {
-	s.app = chain.Setup(false)
-	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
-	s.keeper = s.app.LiquidityKeeper
-	s.querier = keeper.Querier{Keeper: s.keeper}
-	s.msgServer = keeper.NewMsgServerImpl(s.keeper)
-}
+func (suite *ModuleTestSuite) SetupTest() {
+	app := chain.Setup(false)
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
-// Below are just shortcuts to frequently-used functions.
-func (s *KeeperTestSuite) getBalances(addr sdk.AccAddress) sdk.Coins {
-	return s.app.BankKeeper.GetAllBalances(s.ctx, addr)
-}
-
-func (s *KeeperTestSuite) getBalance(addr sdk.AccAddress, denom string) sdk.Coin {
-	return s.app.BankKeeper.GetBalance(s.ctx, addr, denom)
-}
-
-func (s *KeeperTestSuite) sendCoins(fromAddr, toAddr sdk.AccAddress, amt sdk.Coins) {
-	s.T().Helper()
-	err := s.app.BankKeeper.SendCoins(s.ctx, fromAddr, toAddr, amt)
-	s.Require().NoError(err)
-}
-
-func (s *KeeperTestSuite) nextBlock() {
-	liquidity.EndBlocker(s.ctx, s.keeper)
-	liquidity.BeginBlocker(s.ctx, s.keeper)
+	suite.app = app
+	suite.ctx = ctx
+	suite.keeper = suite.app.LiquidityKeeper
+	suite.querier = keeper.Querier{Keeper: suite.keeper}
 }
 
 // Below are useful helpers to write test code easily.
-func (s *KeeperTestSuite) addr(addrNum int) sdk.AccAddress {
+func (suite *ModuleTestSuite) addr(addrNum int) sdk.AccAddress {
 	addr := make(sdk.AccAddress, 20)
 	binary.PutVarint(addr, int64(addrNum))
 	return addr
 }
 
-func (s *KeeperTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
-	s.T().Helper()
-	err := s.app.BankKeeper.MintCoins(s.ctx, types.ModuleName, amt)
-	s.Require().NoError(err)
-	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, types.ModuleName, addr, amt)
-	s.Require().NoError(err)
+func (s *ModuleTestSuite) nextBlock() {
+	liquidity.EndBlocker(s.ctx, s.keeper)
+	liquidity.BeginBlocker(s.ctx, s.keeper)
 }
 
-func newInt(i int64) sdk.Int {
-	return sdk.NewInt(i)
+func (suite *ModuleTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
+	suite.T().Helper()
+	err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, amt)
+	suite.Require().NoError(err)
+	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, addr, amt)
+	suite.Require().NoError(err)
 }
 
-func newDec(i int64) sdk.Dec {
-	return sdk.NewDec(i)
+func (s *ModuleTestSuite) getBalances(addr sdk.AccAddress) sdk.Coins {
+	return s.app.BankKeeper.GetAllBalances(s.ctx, addr)
 }
 
-func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
+func (s *ModuleTestSuite) CreateNewApp(appName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
 		ShortName:        appName,
@@ -112,7 +94,7 @@ func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
 	return appID
 }
 
-func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
+func (s *ModuleTestSuite) SetOraclePrice(symbol string, price uint64) {
 	var (
 		store = s.app.MarketKeeper.Store(s.ctx)
 		key   = markettypes.PriceForMarketKey(symbol)
@@ -125,7 +107,7 @@ func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
 	store.Set(key, value)
 }
 
-func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) assettypes.Asset {
+func (s *ModuleTestSuite) CreateNewAsset(name, denom string, price uint64) assettypes.Asset {
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,
@@ -162,7 +144,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) asset
 	return assetObj
 }
 
-func (s *KeeperTestSuite) CreateNewLiquidityPair(appID uint64, creator sdk.AccAddress, baseCoinDenom, quoteCoinDenom string) types.Pair {
+func (s *ModuleTestSuite) CreateNewLiquidityPair(appID uint64, creator sdk.AccAddress, baseCoinDenom, quoteCoinDenom string) types.Pair {
 	params, err := s.keeper.GetGenericParams(s.ctx, appID)
 	s.Require().NoError(err)
 
@@ -177,7 +159,7 @@ func (s *KeeperTestSuite) CreateNewLiquidityPair(appID uint64, creator sdk.AccAd
 	return pair
 }
 
-func (s *KeeperTestSuite) CreateNewLiquidityPool(appID, pairID uint64, creator sdk.AccAddress, depositCoins string) types.Pool {
+func (s *ModuleTestSuite) CreateNewLiquidityPool(appID, pairID uint64, creator sdk.AccAddress, depositCoins string) types.Pool {
 	params, err := s.keeper.GetGenericParams(s.ctx, appID)
 	s.Require().NoError(err)
 
@@ -193,7 +175,7 @@ func (s *KeeperTestSuite) CreateNewLiquidityPool(appID, pairID uint64, creator s
 	return pool
 }
 
-func (s *KeeperTestSuite) Deposit(appID, poolID uint64, depositor sdk.AccAddress, depositCoins string) types.DepositRequest {
+func (s *ModuleTestSuite) Deposit(appID, poolID uint64, depositor sdk.AccAddress, depositCoins string) types.DepositRequest {
 	msg := types.NewMsgDeposit(
 		appID, depositor, poolID, utils.ParseCoins(depositCoins),
 	)
@@ -204,7 +186,7 @@ func (s *KeeperTestSuite) Deposit(appID, poolID uint64, depositor sdk.AccAddress
 	return req
 }
 
-func (s *KeeperTestSuite) Withdraw(appID, poolID uint64, withdrawer sdk.AccAddress, poolCoin sdk.Coin) types.WithdrawRequest {
+func (s *ModuleTestSuite) Withdraw(appID, poolID uint64, withdrawer sdk.AccAddress, poolCoin sdk.Coin) types.WithdrawRequest {
 	msg := types.NewMsgWithdraw(
 		appID, withdrawer, poolID, poolCoin,
 	)
@@ -214,7 +196,7 @@ func (s *KeeperTestSuite) Withdraw(appID, poolID uint64, withdrawer sdk.AccAddre
 	return req
 }
 
-func (s *KeeperTestSuite) LimitOrder(
+func (s *ModuleTestSuite) LimitOrder(
 	appID uint64,
 	orderer sdk.AccAddress,
 	pairId uint64,
@@ -254,7 +236,7 @@ func (s *KeeperTestSuite) LimitOrder(
 	return req
 }
 
-func (s *KeeperTestSuite) MarketOrder(
+func (s *ModuleTestSuite) MarketOrder(
 	appID uint64,
 	orderer sdk.AccAddress,
 	pairId uint64,
