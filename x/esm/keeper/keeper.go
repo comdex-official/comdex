@@ -8,6 +8,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	"github.com/comdex-official/comdex/x/esm/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,6 +22,7 @@ type (
 		memKey     sdk.StoreKey
 		paramstore paramtypes.Subspace
 		asset      expected.AssetKeeper
+		vault      expected.VaultKeeper
 		bank       expected.BankKeeper
 		market     expected.MarketKeeper
 		tokenmint  expected.Tokenmint
@@ -33,6 +35,7 @@ func NewKeeper(
 	memKey sdk.StoreKey,
 	ps paramtypes.Subspace,
 	asset expected.AssetKeeper,
+	vault expected.VaultKeeper,
 	bank expected.BankKeeper,
 	market expected.MarketKeeper,
 	tokenmint expected.Tokenmint,
@@ -50,6 +53,7 @@ func NewKeeper(
 		memKey:     memKey,
 		paramstore: ps,
 		asset:      asset,
+		vault:      vault,
 		bank:       bank,
 		market:     market,
 		tokenmint:  tokenmint,
@@ -111,7 +115,7 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 	}
 	addr, _ := sdk.AccAddressFromBech32(depositorAddr)
 
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, "tokenmint", sdk.NewCoins(Amount)); err != nil {
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, tokenminttypes.ModuleName, sdk.NewCoins(Amount)); err != nil {
 		return err
 	}
 	if err1 := k.tokenmint.BurnTokensForApp(ctx, AppID, govAsset.Id, Amount.Amount ); err1 != nil {

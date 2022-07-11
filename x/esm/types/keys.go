@@ -26,10 +26,15 @@ var (
 	KillSwitchDataKey         = []byte{0x04}
 	UserDepositByAppPrefix    = []byte{0x05}
 	ESMPricePrefix            = []byte{0x06}
+	ESMDataAfterCoolOffPrefix = []byte{0x07}
 )
 
 func ESMTriggerParamsKey(id uint64) []byte {
 	return append(ESMTriggerParamsKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func ESMDataAfterCoolOff(id uint64) []byte {
+	return append(ESMDataAfterCoolOffPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func CurrentDepositStatsKey(id uint64) []byte {
