@@ -7,6 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -17,6 +18,7 @@ func (k Keeper) DutchActivator(ctx sdk.Context) error {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
 	for _, lockedVault := range lockedVaults {
+	if !lockedVault.IsAuctionInProgress{
 		extendedPair, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
 		if !found {
 			return auctiontypes.ErrorInvalidPair
@@ -49,18 +51,13 @@ func (k Keeper) DutchActivator(ctx sdk.Context) error {
 			return auctiontypes.ErrorInvalidExtendedPairVault
 		}
 		liquidationPenalty := ExtendedPairVault.LiquidationPenalty
-		if !lockedVault.IsAuctionInProgress {
-			err1 := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
-			if err1 != nil {
-				return err1
-			}
-		} else {
-			err2 := k.RestartDutchAuctions(ctx, lockedVault.AppId)
-			if err2 != nil {
-				return err2
-			}
+
+		err1 := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
+		if err1 != nil {
+			return err1
 		}
 	}
+}
 	return nil
 }
 
@@ -595,5 +592,20 @@ func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAu
 
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, burnToken.Amount, false)
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, auction.OutflowTokenInitAmount.Amount.Sub(auction.OutflowTokenCurrentAmount.Amount), false)
+	return nil
+}
+
+func (k Keeper) RestartDutch(ctx sdk.Context) error {
+	appIds, found := k.GetApps(ctx)
+	if !found {
+		return assettypes.AppIdsDoesntExist
+	}
+	for _, appId := range appIds {
+
+		err := k.RestartDutchAuctions(ctx, appId.Id)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
