@@ -149,8 +149,8 @@ func (k *Keeper) GetUserBorrows(ctx sdk.Context, address string) (userBorrows ty
 }
 
 func (k *Keeper) UserBorrows(ctx sdk.Context, address string) (userBorrows []types.BorrowAsset, found bool) {
-	userLendID, _ := k.GetUserBorrows(ctx, address)
-	for _, v := range userLendID.BorrowIds {
+	userBorrowID, _ := k.GetUserBorrows(ctx, address)
+	for _, v := range userBorrowID.BorrowIds {
 		userBorrow, _ := k.GetBorrow(ctx, v)
 		userBorrows = append(userBorrows, userBorrow)
 	}
