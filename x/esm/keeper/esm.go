@@ -261,6 +261,7 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error{
 						}
 						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
 						count = 0
+						k.SetDataAfterCoolOff(ctx, coolOffData)
 					}
 
 					for _, indata := range coolOffData.DebtAsset{
@@ -285,8 +286,8 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error{
 						}
 						coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
 						count = 0
+						k.SetDataAfterCoolOff(ctx, coolOffData)
 					}
-					k.SetDataAfterCoolOff(ctx, coolOffData)
 				}
 
 				k.DeleteVault(ctx, data.Id)
