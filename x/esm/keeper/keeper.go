@@ -26,6 +26,7 @@ type (
 		bank       expected.BankKeeper
 		market     expected.MarketKeeper
 		tokenmint  expected.Tokenmint
+		collector  expected.Collector
 	}
 )
 
@@ -39,6 +40,7 @@ func NewKeeper(
 	bank expected.BankKeeper,
 	market expected.MarketKeeper,
 	tokenmint expected.Tokenmint,
+	collector expected.Collector,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -57,6 +59,7 @@ func NewKeeper(
 		bank:       bank,
 		market:     market,
 		tokenmint:  tokenmint,
+		collector:  collector,
 	}
 }
 
@@ -171,7 +174,11 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 	return nil
 }
 
-func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff) error {
+func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff, from string) error {
+	userAddress, err := sdk.AccAddressFromBech32(from)
+	if err != nil {
+		return err
+	}
 	marketData, found := k.GetESMMarketForAsset(ctx, appId)
 	if !found {
 		return types.ErrMarketDataNotFound
@@ -225,15 +232,23 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Co
 		factor1 := Ratio.Mul(sdk.Dec(amtInPrice)).Mul(sdk.Dec(amtInPrice))
 		amountToDispatch := factor1.Quo(sdk.NewDec(int64(assetInPrice))).TruncateInt64()
 		collateralTokens := sdk.NewCoin(asset.Denom, sdk.NewInt(amountToDispatch))
-		addr, _ := sdk.AccAddressFromBech32("address")
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr, sdk.NewCoins(collateralTokens))
+
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(collateralTokens))
 		if err != nil {
 			return err
 		}
+		a.Amount = a.Amount.Sub(collateralTokens.Amount)
+		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset, a)
+		k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
 	}
 
-	//TODO:
-	// update proto for address
-	// update setDataAfterCoolOffMapping
+	for _, b := range esmDataAfterCoolOff.DebtAsset {
+		if b.AssetID == assetInID.Id{
+			b.Amount = b.Amount.Sub(amount.Amount)
+			esmDataAfterCoolOff.DebtAsset = append(esmDataAfterCoolOff.DebtAsset, b)
+			k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
+		}
+	}
+
 	return nil
 }

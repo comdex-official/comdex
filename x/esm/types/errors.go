@@ -23,4 +23,7 @@ var (
 	ErrCoolOffPeriodPassed         = sdkerrors.Register(ModuleName, 1113, "Cool off period has passed")
 	ErrCurrentDepositNotReached    = sdkerrors.Register(ModuleName, 1114, "Current Deposit Not Reached for App")
 	ErrMarketDataNotFound          = sdkerrors.Register(ModuleName, 1115, "MarketData not found for App")
+	ErrCoolOffPeriodRemains        = sdkerrors.Register(ModuleName, 1116, "Cool off period remaining")
+	ErrorInvalidAmount             = sdkerrors.Register(ModuleName, 1117, "invalid amount")
+	ErrorInvalidFrom               = sdkerrors.Register(ModuleName, 1118, "invalid from")
 )

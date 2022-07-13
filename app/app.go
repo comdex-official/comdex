@@ -569,6 +569,7 @@ func New(
 		app.BankKeeper,
 		&app.MarketKeeper,
 		&app.TokenmintKeeper,
+		&app.CollectorKeeper,
 	)
 
 	app.VaultKeeper = vaultkeeper.NewKeeper(

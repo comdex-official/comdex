@@ -146,7 +146,7 @@ func CollateralRedemption() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCollateralRedemption(appId, amount)
+			msg := types.NewMsgCollateralRedemption(appId, amount, ctx.FromAddress)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

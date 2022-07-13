@@ -261,7 +261,6 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 					}
 					coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
 					count = 0
-					k.SetDataAfterCoolOff(ctx, coolOffData)
 				}
 
 				for _, indata := range coolOffData.DebtAsset {
@@ -286,13 +285,28 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 					}
 					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
 					count = 0
-					k.SetDataAfterCoolOff(ctx, coolOffData)
 				}
+				k.SetDataAfterCoolOff(ctx, coolOffData)
 			}
 
 			k.DeleteVault(ctx, data.Id)
 			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
 		}
+	}
+	netFee, found := k.GetNetFeeCollectedData(ctx, appId)
+	coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
+	if !found{
+		return nil
+	}else {
+		for _, data := range netFee.AssetIdToFeeCollected{
+			for _, indata := range coolOffData.DebtAsset{
+				if data.AssetId == indata.AssetID{
+					indata.Amount = indata.Amount.Sub(data.NetFeesCollected)
+					coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
+				}
+			}
+		}
+		k.SetDataAfterCoolOff(ctx, coolOffData)
 	}
 	return nil
 }

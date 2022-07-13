@@ -34,6 +34,7 @@ message MsgKillRequest {
 message MsgCollateralRedemptionRequest {
   uint64                   app_id = 1;
   cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+  string                   from   = 3 [ (gogoproto.moretags) = "yaml:\"from\"" ];
 }
 
 message MsgDepositESMResponse {}
