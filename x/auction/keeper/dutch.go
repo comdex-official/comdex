@@ -562,10 +562,10 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
 				dutchAuction.OutflowTokenEndPrice = outFlowTokenEndPrice
 				dutchAuction.OutflowTokenCurrentPrice = outFlowTokenInitialPrice
-			}
-			err := k.SetDutchAuction(ctx, dutchAuction)
-			if err != nil {
-				return err
+				err := k.SetDutchAuction(ctx, dutchAuction)
+				if err != nil {
+					return err
+				}
 			}
 			//SET initial price fetched from market module and also end price , start time , end time
 			//outFlowTokenCurrentPrice := sdk.NewIntFromUint64(10)

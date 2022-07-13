@@ -269,7 +269,7 @@ func (k *Keeper) VerifyCollaterlizationRatio(
 	}
 	if collaterlizationRatio.LT(minCrRequired) && !statusEsm {
 		return types.ErrorInvalidCollateralizationRatio
-	} else if collaterlizationRatio.LT(sdk.SmallestDec()) && statusEsm {
+	} else if collaterlizationRatio.LT(sdk.MustNewDecFromStr("1")) && statusEsm {
 		return types.ErrorInvalidCollateralizationRatio
 	}
 	return nil
