@@ -296,3 +296,53 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 	}
 	return nil
 }
+
+func (k *Keeper) SetAssetToAmountValue(ctx sdk.Context, assetToAmountValue types.AssetToAmountValue) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetToAmountValueKey(assetToAmountValue.AppId, assetToAmountValue.AssetID)
+		value = k.cdc.MustMarshal(&assetToAmountValue)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetAssetToAmountValue(ctx sdk.Context, appID, assetID uint64) (assetToAmountValue types.AssetToAmountValue, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetToAmountValueKey(appID, assetID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return assetToAmountValue, false
+	}
+
+	k.cdc.MustUnmarshal(value, &assetToAmountValue)
+	return assetToAmountValue, true
+}
+
+func (k *Keeper) SetAppToAmtValue(ctx sdk.Context, appToAmt types.AppToAmountValue) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AppToAmountValueKey(appToAmt.AppId)
+		value = k.cdc.MustMarshal(&appToAmt)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetAppToAmtValue(ctx sdk.Context, id uint64) (appToAmt types.AppToAmountValue, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AppToAmountValueKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return appToAmt, false
+	}
+
+	k.cdc.MustUnmarshal(value, &appToAmt)
+	return appToAmt, true
+}

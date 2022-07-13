@@ -193,21 +193,47 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Co
 	}
 
 	amtInPrice := amount.Amount.Mul(sdk.NewIntFromUint64(assetInPrice))
-	fmt.Println(amtInPrice)
 
 	for _, u := range esmDataAfterCoolOff.CollateralAsset {
 		for _, w := range marketData.Market {
 			if u.AssetID == w.AssetID {
 				assetPrice = w.Rates
 				AppAssetValue = u.Amount.Mul(sdk.NewIntFromUint64(assetPrice))
+				assetVal := types.AssetToAmountValue{
+					AppId:                     appId,
+					AssetID:                   u.AssetID,
+					Amount:                    AppAssetValue,
+					AssetValueToAppValueRatio: sdk.ZeroDec(),
+				}
+				k.SetAssetToAmountValue(ctx, assetVal)
 			}
+			AppValue = AppValue.Add(AppAssetValue)
+			appToAmtValue := types.AppToAmountValue{
+				AppId:  appId,
+				Amount: AppValue,
+			}
+			k.SetAppToAmtValue(ctx, appToAmtValue)
 		}
-		AppValue = AppValue.Add(AppAssetValue)
 	}
+	for _, a := range esmDataAfterCoolOff.CollateralAsset {
+		assetToAmountValue, _ := k.GetAssetToAmountValue(ctx, appId, a.AssetID)
+		appToAmountValue, _ := k.GetAppToAmtValue(ctx, appId)
+		Ratio := assetToAmountValue.Amount.Quo(appToAmountValue.Amount).ToDec()
+		assetToAmountValue.AssetValueToAppValueRatio = Ratio
+		k.SetAssetToAmountValue(ctx, assetToAmountValue)
+		asset, _ := k.GetAsset(ctx, a.AssetID)
+		factor1 := Ratio.Mul(sdk.Dec(amtInPrice)).Mul(sdk.Dec(amtInPrice))
+		amountToDispatch := factor1.Quo(sdk.NewDec(int64(assetInPrice))).TruncateInt64()
+		collateralTokens := sdk.NewCoin(asset.Denom, sdk.NewInt(amountToDispatch))
+		addr, _ := sdk.AccAddressFromBech32("address")
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr, sdk.NewCoins(collateralTokens))
+		if err != nil {
+			return err
+		}
+	}
+
 	//TODO:
-	// take ratio (create proto)
 	// update proto for address
-	// send coin from modAcc to user after calculation
 	// update setDataAfterCoolOffMapping
 	return nil
 }
