@@ -100,3 +100,29 @@ message Market {
   ];
   uint64 rates = 2;
 }
+
+message DataAfterCoolOff {
+  uint64 appId = 1 [ (gogoproto.moretags) = "yaml:\"appId\"" ];
+  repeated AssetToAmount collateral_asset = 2 [
+    (gogoproto.customname) = "CollateralAsset",
+    (gogoproto.moretags) = "yaml:\"collateral_asset\"",
+    (gogoproto.nullable) = false
+  ];
+  repeated AssetToAmount debt_asset = 3 [
+    (gogoproto.customname) = "DebtAsset",
+    (gogoproto.moretags) = "yaml:\"debt_asset\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message AssetToAmount {
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
+  ];
+}

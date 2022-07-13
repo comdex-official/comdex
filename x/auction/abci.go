@@ -18,4 +18,8 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	if err3 != nil {
 		return
 	}
+	err4 := k.RestartDutch(ctx)
+	if err4 != nil {
+		return
+	}
 }
