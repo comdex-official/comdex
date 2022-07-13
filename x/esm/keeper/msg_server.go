@@ -68,6 +68,18 @@ func (k msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgColl
 	if ctx.BlockTime().After(esmStatus.EndTime) && status {
 		return nil, types.ErrCoolOffPeriodPassed
 	}
+	esmDataAfterCoolOff, _ := k.keeper.GetDataAfterCoolOff(ctx, req.AppId)
+	for _, v := range esmDataAfterCoolOff.DebtAsset {
+		debtAsset, _ := k.keeper.GetAsset(ctx, v.AssetID)
+		if req.Amount.Denom == debtAsset.Denom {
+			if err := k.keeper.CalculateCollateral(ctx, req.AppId, req.Amount, esmDataAfterCoolOff); err != nil {
+				return nil, err
+			}
+
+		} else {
+			return nil, types.ErrInvalidAsset
+		}
+	}
 
 	return nil, nil
 }

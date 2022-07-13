@@ -170,3 +170,44 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 	}
 	return nil
 }
+
+func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff) error {
+	marketData, found := k.GetESMMarketForAsset(ctx, appId)
+	if !found {
+		return types.ErrMarketDataNotFound
+	}
+
+	assetInID, _ := k.GetAssetForDenom(ctx, amount.Denom)
+	var (
+		assetInPrice uint64
+		assetPrice   uint64
+	)
+	AppValue := sdk.ZeroInt()
+	AppAssetValue := sdk.ZeroInt()
+	for _, v := range marketData.Market {
+		if assetInID.Id == v.AssetID {
+			assetInPrice = v.Rates
+		} else {
+			assetInPrice = 0
+		}
+	}
+
+	amtInPrice := amount.Amount.Mul(sdk.NewIntFromUint64(assetInPrice))
+	fmt.Println(amtInPrice)
+
+	for _, u := range esmDataAfterCoolOff.CollateralAsset {
+		for _, w := range marketData.Market {
+			if u.AssetID == w.AssetID {
+				assetPrice = w.Rates
+				AppAssetValue = u.Amount.Mul(sdk.NewIntFromUint64(assetPrice))
+			}
+		}
+		AppValue = AppValue.Add(AppAssetValue)
+	}
+	//TODO:
+	// take ratio (create proto)
+	// update proto for address
+	// send coin from modAcc to user after calculation
+	// update setDataAfterCoolOffMapping
+	return nil
+}
