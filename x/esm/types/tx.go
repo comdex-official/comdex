@@ -67,3 +67,27 @@ func (msg *MsgExecuteESM) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
+
+func NewMsgCollateralRedemption(appID uint64, amount sdk.Coin) *MsgCollateralRedemptionRequest {
+	return &MsgCollateralRedemptionRequest{
+		AppId:  appID,
+		Amount: amount,
+	}
+}
+
+func (msg MsgCollateralRedemptionRequest) Route() string { return ModuleName }
+
+func (msg *MsgCollateralRedemptionRequest) ValidateBasic() error {
+	return nil
+}
+
+func (msg *MsgCollateralRedemptionRequest) GetSigners() []sdk.AccAddress {
+	lender := msg.GetSigners()
+	return lender
+}
+
+// GetSignBytes get the bytes for the message signer to sign on.
+func (msg *MsgCollateralRedemptionRequest) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}

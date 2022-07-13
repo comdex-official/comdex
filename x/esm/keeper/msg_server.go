@@ -56,3 +56,18 @@ func (k msgServer) MsgKillSwitch(c context.Context, msg *types.MsgKillRequest) (
 
 	return &types.MsgKillResponse{}, nil
 }
+
+func (k msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgCollateralRedemptionRequest) (*types.MsgCollateralRedemptionResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	esmStatus, found := k.keeper.GetESMStatus(ctx, req.AppId)
+	status := false
+	if found {
+		status = esmStatus.Status
+	}
+
+	if ctx.BlockTime().After(esmStatus.EndTime) && status {
+		return nil, types.ErrCoolOffPeriodPassed
+	}
+
+	return nil, nil
+}
