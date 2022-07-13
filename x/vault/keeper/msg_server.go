@@ -308,7 +308,7 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 		status = esmStatus.Status
 	}
 
-	if ctx.BlockTime().After(esmStatus.EndTime) && status{
+	if ctx.BlockTime().After(esmStatus.EndTime) && status {
 		return nil, esmtypes.ErrCoolOffPeriodPassed
 	}
 

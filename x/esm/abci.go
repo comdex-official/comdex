@@ -44,9 +44,9 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 			k.SetESMMarketForAsset(ctx, em)
 		}
 
-		if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status{
+		if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status {
 			err := k.SetUpCollateralRedemption(ctx, esmStatus.AppId)
-			if err !=nil {
+			if err != nil {
 				return
 			}
 		}

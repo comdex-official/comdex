@@ -8,8 +8,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	"github.com/comdex-official/comdex/x/esm/types"
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -118,7 +118,7 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, tokenminttypes.ModuleName, sdk.NewCoins(Amount)); err != nil {
 		return err
 	}
-	if err1 := k.tokenmint.BurnTokensForApp(ctx, AppID, govAsset.Id, Amount.Amount ); err1 != nil {
+	if err1 := k.tokenmint.BurnTokensForApp(ctx, AppID, govAsset.Id, Amount.Amount); err1 != nil {
 		return err1
 	}
 

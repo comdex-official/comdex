@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/esm/types"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/esm/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -193,106 +193,106 @@ func (k *Keeper) GetDataAfterCoolOff(ctx sdk.Context, id uint64) (esmDataAfterCo
 	return esmDataAfterCoolOff, true
 }
 
-func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error{
-		totalVaults := k.GetVaults(ctx)
-		for _, data := range totalVaults{
-			if data.AppId == appId{
-				extendedPairVault, found := k.GetPairsVault(ctx, data.ExtendedPairVaultID)
-				if !found {
-					return vaulttypes.ErrorExtendedPairVaultDoesNotExists
+func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error {
+	totalVaults := k.GetVaults(ctx)
+	for _, data := range totalVaults {
+		if data.AppId == appId {
+			extendedPairVault, found := k.GetPairsVault(ctx, data.ExtendedPairVaultID)
+			if !found {
+				return vaulttypes.ErrorExtendedPairVaultDoesNotExists
+			}
+			pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
+			if !found {
+				return assettypes.ErrorPairDoesNotExist
+			}
+			assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
+			if !found {
+				return assettypes.ErrorAssetDoesNotExist
+			}
+			assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
+			if !found {
+				return assettypes.ErrorAssetDoesNotExist
+			}
+			coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
+			if !found {
+				coolOffData.AppId = appId
+				var item types.AssetToAmount
+
+				item.AssetID = assetInData.Id
+				item.Amount = data.AmountIn
+				err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
+				if err != nil {
+					return err
 				}
-				pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
-				if !found {
-					return assettypes.ErrorPairDoesNotExist
+				coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
+
+				item.AssetID = assetOutData.Id
+				item.Amount = data.AmountOut
+
+				err1 := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
+				if err1 != nil {
+					return err1
 				}
-				assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
-				if !found {
-					return assettypes.ErrorAssetDoesNotExist
+				coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
+
+				k.SetDataAfterCoolOff(ctx, coolOffData)
+			} else {
+				var count = 0
+				for _, indata := range coolOffData.CollateralAsset {
+					if indata.AssetID == assetInData.Id {
+						count++
+						indata.Amount = indata.Amount.Add(data.AmountIn)
+						err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
+						if err != nil {
+							return err
+						}
+						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, indata)
+					}
 				}
-				assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
-				if !found {
-					return assettypes.ErrorAssetDoesNotExist
-				}
-				coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
-				if !found{
-					coolOffData.AppId = appId
+				if count == 0 {
 					var item types.AssetToAmount
 
 					item.AssetID = assetInData.Id
 					item.Amount = data.AmountIn
+
 					err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
 					if err != nil {
 						return err
 					}
 					coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
-
-					item.AssetID = assetOutData.Id
-					item.Amount = data.AmountOut
-
-					err1 := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-					if err1 != nil {
-						return err1
-					}
-					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
-
+					count = 0
 					k.SetDataAfterCoolOff(ctx, coolOffData)
-				} else {
-					var count = 0
-					for _, indata := range coolOffData.CollateralAsset{
-						if indata.AssetID == assetInData.Id{
-							count ++
-							indata.Amount = indata.Amount.Add(data.AmountIn)
-							err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
-							if err != nil {
-								return err
-							}
-							coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, indata)
-						}
-					}
-					if count == 0{
-						var item types.AssetToAmount
+				}
 
-						item.AssetID = assetInData.Id
-						item.Amount = data.AmountIn
-						
-						err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
-						if err != nil {
-							return err
-						}
-						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
-						count = 0
-						k.SetDataAfterCoolOff(ctx, coolOffData)
-					}
-
-					for _, indata := range coolOffData.DebtAsset{
-						if indata.AssetID == assetOutData.Id{
-							count ++
-							indata.Amount = indata.Amount.Add(data.AmountOut)
-							err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-							if err != nil {
-								return err
-							}
-							coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
-						}
-					}
-					if count == 0{
-						var item types.AssetToAmount
-
-						item.AssetID = assetOutData.Id
-						item.Amount = data.AmountOut
+				for _, indata := range coolOffData.DebtAsset {
+					if indata.AssetID == assetOutData.Id {
+						count++
+						indata.Amount = indata.Amount.Add(data.AmountOut)
 						err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
 						if err != nil {
 							return err
 						}
-						coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
-						count = 0
-						k.SetDataAfterCoolOff(ctx, coolOffData)
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
 					}
 				}
+				if count == 0 {
+					var item types.AssetToAmount
 
-				k.DeleteVault(ctx, data.Id)
-				k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
+					item.AssetID = assetOutData.Id
+					item.Amount = data.AmountOut
+					err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
+					if err != nil {
+						return err
+					}
+					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
+					count = 0
+					k.SetDataAfterCoolOff(ctx, coolOffData)
+				}
 			}
+
+			k.DeleteVault(ctx, data.Id)
+			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
 		}
+	}
 	return nil
 }
