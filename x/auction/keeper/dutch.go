@@ -503,7 +503,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				// if not create new vault of user with cmdx cmst
 				// if exists append in existing
 				// close auction func call
-
+				var	inflowLeft = dutchAuction.InflowTokenTargetAmount.Amount.Sub(dutchAuction.InflowTokenCurrentAmount.Amount)
 				userVaultExtendedPairMapping, userExists := k.GetUserVaultExtendedPairMapping(ctx, string(dutchAuction.VaultOwner))
 				if userExists {
 					vaultId, alreadyExists := k.CheckUserAppToExtendedPairMapping(ctx, userVaultExtendedPairMapping, lockedVault.ExtendedPairId, lockedVault.AppId)
@@ -511,12 +511,12 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 						// append to existing vault
 						vaultData, _ := k.GetVault(ctx, vaultId)
 						vaultData.AmountIn = vaultData.AmountIn.Add(dutchAuction.OutflowTokenCurrentAmount.Amount)
-						vaultData.AmountOut = vaultData.AmountOut.Add(dutchAuction.InflowTokenCurrentAmount.Amount)
+						vaultData.AmountOut = vaultData.AmountOut.Add(inflowLeft)
 						k.SetVault(ctx, vaultData)
 					}
 				} else {
 					// create new vault done
-					err := k.CreateNewVault(ctx, dutchAuction.VaultOwner.String(), lockedVault.AppId, lockedVault.ExtendedPairId, dutchAuction.OutflowTokenCurrentAmount.Amount, dutchAuction.InflowTokenCurrentAmount.Amount)
+					err := k.CreateNewVault(ctx, dutchAuction.VaultOwner.String(), lockedVault.AppId, lockedVault.ExtendedPairId, dutchAuction.OutflowTokenCurrentAmount.Amount, inflowLeft)
 					if err != nil {
 						return err
 					}
