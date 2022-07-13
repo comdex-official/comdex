@@ -107,7 +107,7 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 	}
 	newCurrentDeposit, _ := k.GetCurrentDepositStats(ctx, AppID)
 
-	if newCurrentDeposit.Balance.Amount.Equal(esmTriggerParams.TargetValue.Amount) {
+	if newCurrentDeposit.Balance.Amount.GT(esmTriggerParams.TargetValue.Amount) {
 		return types.ErrDepositForAppReached
 	}
 	if Amount.Amount.GT(esmTriggerParams.TargetValue.Amount) {
