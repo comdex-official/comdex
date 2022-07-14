@@ -229,10 +229,10 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 				item.AssetID = assetOutData.Id
 				item.Amount = data.AmountOut
 
-				err1 := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-				if err1 != nil {
-					return err1
-				}
+				// err1 := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
+				// if err1 != nil {
+				// 	return err1
+				// }
 				coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
 
 				k.SetDataAfterCoolOff(ctx, coolOffData)
@@ -267,10 +267,10 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 					if indata.AssetID == assetOutData.Id {
 						count++
 						indata.Amount = indata.Amount.Add(data.AmountOut)
-						err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-						if err != nil {
-							return err
-						}
+						// err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
+						// if err != nil {
+						// 	return err
+						// }
 						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
 					}
 				}
@@ -279,10 +279,10 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 
 					item.AssetID = assetOutData.Id
 					item.Amount = data.AmountOut
-					err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-					if err != nil {
-						return err
-					}
+					// err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
+					// if err != nil {
+					// 	return err
+					// }
 					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
 					count = 0
 				}
