@@ -565,8 +565,10 @@ func New(
 		app.keys[esmtypes.StoreKey],
 		app.GetSubspace(esmtypes.ModuleName),
 		&app.AssetKeeper,
+		&app.VaultKeeper,
 		app.BankKeeper,
 		&app.MarketKeeper,
+		&app.TokenmintKeeper,
 	)
 
 	app.VaultKeeper = vaultkeeper.NewKeeper(
