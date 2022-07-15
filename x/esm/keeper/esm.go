@@ -229,16 +229,12 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 				item.AssetID = assetOutData.Id
 				item.Amount = data.AmountOut
 
-				// err1 := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-				// if err1 != nil {
-				// 	return err1
-				// }
 				coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
 
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			} else {
 				var count = 0
-				for _, indata := range coolOffData.CollateralAsset {
+				for i, indata := range coolOffData.CollateralAsset {
 					if indata.AssetID == assetInData.Id {
 						count++
 						indata.Amount = indata.Amount.Add(data.AmountIn)
@@ -246,7 +242,9 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 						if err != nil {
 							return err
 						}
+						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset[:i],coolOffData.CollateralAsset[i+1:]...)
 						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, indata)
+						break
 					}
 				}
 				if count == 0 {
@@ -263,15 +261,13 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 					count = 0
 				}
 
-				for _, indata := range coolOffData.DebtAsset {
+				for i, indata := range coolOffData.DebtAsset {
 					if indata.AssetID == assetOutData.Id {
 						count++
 						indata.Amount = indata.Amount.Add(data.AmountOut)
-						// err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-						// if err != nil {
-						// 	return err
-						// }
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i],coolOffData.DebtAsset[i+1:]...)
 						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
+						break
 					}
 				}
 				if count == 0 {
@@ -279,10 +275,6 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 
 					item.AssetID = assetOutData.Id
 					item.Amount = data.AmountOut
-					// err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-					// if err != nil {
-					// 	return err
-					// }
 					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
 					count = 0
 				}
