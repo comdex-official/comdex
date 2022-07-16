@@ -1,8 +1,6 @@
 package rewards
 
 import (
-	"time"
-
 	"github.com/comdex-official/comdex/x/rewards/keeper"
 	"github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -12,7 +10,7 @@ import (
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
+	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 	k.TriggerAndUpdateEpochInfos(ctx)
 
 	err := k.IterateLocker(ctx)

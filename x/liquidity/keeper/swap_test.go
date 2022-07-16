@@ -405,7 +405,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,500000000000uasset2")
 
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	testCases := []struct {
