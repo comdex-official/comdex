@@ -628,6 +628,7 @@ func New(
 		&app.MarketKeeper,
 		&app.AuctionKeeper,
 		&app.EsmKeeper,
+		&app.LendKeeper,
 	)
 
 	app.AuctionKeeper = *auctionkeeper.NewKeeper(

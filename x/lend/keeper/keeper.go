@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/comdex-official/comdex/x/lend/expected"
 	"github.com/comdex-official/comdex/x/lend/types"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -72,7 +73,7 @@ func uint64InAssetData(a uint64, list []types.AssetDataPoolMapping) bool {
 	return false
 }
 
-func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Amount sdk.Coin, PoolID uint64) error {
+func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Amount sdk.Coin, PoolID, AppID uint64) error {
 	asset, _ := k.GetAsset(ctx, AssetID)
 	pool, _ := k.GetPool(ctx, PoolID)
 
@@ -128,6 +129,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 		UpdatedAmountIn:    Amount.Amount,
 		AvailableToBorrow:  Amount.Amount,
 		Reward_Accumulated: sdk.ZeroInt(),
+		AppId:              AppID,
 	}
 	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, AssetID, PoolID)
 	if !found {
@@ -513,12 +515,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 			}
 			k.SetAssetStatsByPoolIDAndAssetID(ctx, AssetStats)
 		}
-		if borrowPos.IsStableBorrow {
-			err := k.UpdateStableBorrowIdsMapping(ctx, borrowPos.ID, true)
-			if err != nil {
-				return err
-			}
-		}
 		err := k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, true)
 		if err != nil {
 			return err
@@ -641,12 +637,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 				}
 				k.SetAssetStatsByPoolIDAndAssetID(ctx, AssetStats)
 			}
-			if borrowPos.IsStableBorrow {
-				err := k.UpdateStableBorrowIdsMapping(ctx, borrowPos.ID, true)
-				if err != nil {
-					return err
-				}
-			}
 			err = k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, true)
 			if err != nil {
 				return err
@@ -738,12 +728,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 				k.SetAssetStatsByPoolIDAndAssetID(ctx, AssetStats)
 			}
 
-			if borrowPos.IsStableBorrow {
-				err := k.UpdateStableBorrowIdsMapping(ctx, borrowPos.ID, true)
-				if err != nil {
-					return err
-				}
-			}
 			err = k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, true)
 			if err != nil {
 				return err
@@ -1018,12 +1002,6 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 	if err != nil {
 		return err
 	}
-	if borrowPos.IsStableBorrow {
-		err := k.UpdateStableBorrowIdsMapping(ctx, borrowPos.ID, false)
-		if err != nil {
-			return err
-		}
-	}
 	err = k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, false)
 	if err != nil {
 		return err
@@ -1078,4 +1056,9 @@ func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, assetID uint64, l
 
 func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
+}
+
+func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
+	//TODO:
+	// implement unlock borrow after auction
 }

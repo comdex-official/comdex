@@ -24,6 +24,7 @@ type Keeper struct {
 	market     expected.MarketKeeper
 	auction    expected.AuctionKeeper
 	esm        expected.EsmKeeper
+	lend       expected.LendKeeper
 }
 
 func NewKeeper(
@@ -38,6 +39,7 @@ func NewKeeper(
 	market expected.MarketKeeper,
 	auction expected.AuctionKeeper,
 	esm expected.EsmKeeper,
+	lend expected.LendKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -58,6 +60,7 @@ func NewKeeper(
 		market:     market,
 		auction:    auction,
 		esm:        esm,
+		lend:       lend,
 	}
 }
 

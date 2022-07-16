@@ -52,7 +52,8 @@ message LendAsset {
     (gogoproto.moretags) = "yaml:\"reward_accumulated\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-
+  uint64 app_id = 10
+  [(gogoproto.customname) = "AppId", (gogoproto.moretags) = "yaml:\"app_id\""];
 }
 
 message BorrowAsset {

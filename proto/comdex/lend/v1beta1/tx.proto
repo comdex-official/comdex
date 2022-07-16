@@ -39,6 +39,7 @@ message MsgLend {
   uint64                   asset_id = 2;
   cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
   uint64                   pool_id = 4;
+  uint64                   app_id = 5;
 }
 
 message MsgWithdraw {
@@ -62,7 +63,7 @@ message MsgBorrow {
   string                   borrower = 1;
   uint64                   lend_id = 2;
   uint64                   pair_id = 3;
-  bool                     is_stable_borrow =4;
+  bool                     is_stable_borrow = 4;
   cosmos.base.v1beta1.Coin amount_in = 5 [(gogoproto.nullable) = false];
   cosmos.base.v1beta1.Coin amount_out = 6 [(gogoproto.nullable) = false];
 }
@@ -93,7 +94,7 @@ message MsgCloseBorrow {
 
 message MsgFundModuleAccounts {
   string                   moduleName = 1;
-  uint64                   assetId =2;
+  uint64                   assetId = 2;
   string                   lender = 3;
   cosmos.base.v1beta1.Coin amount = 4 [(gogoproto.nullable) = false];
 }

@@ -5,12 +5,13 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func NewMsgLend(lender string, assetID uint64, amount sdk.Coin, poolID uint64) *MsgLend {
+func NewMsgLend(lender string, assetID uint64, amount sdk.Coin, poolID, appID uint64) *MsgLend {
 	return &MsgLend{
 		Lender:  lender,
 		AssetId: assetID,
 		Amount:  amount,
 		PoolId:  poolID,
+		AppId:   appID,
 	}
 }
 

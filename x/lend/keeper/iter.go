@@ -111,20 +111,23 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount string, rate sdk.Dec) (
 }
 
 func (k Keeper) RebalanceStableRates(ctx sdk.Context) error {
-	stableBorrows, _ := k.GetStableBorrows(ctx)
-	for _, v := range stableBorrows.StableBorrowIds {
+	borrows, _ := k.GetBorrows(ctx)
+	for _, v := range borrows.BorrowIds {
+
 		borrowPos, _ := k.GetBorrow(ctx, v)
-		pair, _ := k.GetLendPair(ctx, borrowPos.PairID)
-		assetStats, _ := k.UpdateAPR(ctx, pair.AssetOutPoolId, pair.AssetOut)
-		utilizationRatio, _ := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolId, pair.AssetOut)
-		perc1, _ := sdk.NewDecFromStr("0.2")
-		perc2, _ := sdk.NewDecFromStr("0.9")
-		if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {
-			borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-			k.SetBorrow(ctx, borrowPos)
-		} else if utilizationRatio.GT(perc2) && (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) {
-			borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-			k.SetBorrow(ctx, borrowPos)
+		if borrowPos.IsStableBorrow {
+			pair, _ := k.GetLendPair(ctx, borrowPos.PairID)
+			assetStats, _ := k.UpdateAPR(ctx, pair.AssetOutPoolId, pair.AssetOut)
+			utilizationRatio, _ := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolId, pair.AssetOut)
+			perc1, _ := sdk.NewDecFromStr("0.2")
+			perc2, _ := sdk.NewDecFromStr("0.9")
+			if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {
+				borrowPos.StableBorrowRate = assetStats.StableBorrowApr
+				k.SetBorrow(ctx, borrowPos)
+			} else if utilizationRatio.GT(perc2) && (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) {
+				borrowPos.StableBorrowRate = assetStats.StableBorrowApr
+				k.SetBorrow(ctx, borrowPos)
+			}
 		}
 	}
 	return nil

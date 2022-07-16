@@ -42,7 +42,6 @@ var (
 	BorrowPairKeyPrefix   = []byte{0x26}
 	LendsKey              = []byte{0x32}
 	BorrowsKey            = []byte{0x33}
-	StableBorrowsKey      = []byte{0x36}
 
 	AssetToPairMappingKeyPrefix           = []byte{0x20}
 	LendForAddressByAssetKeyPrefix        = []byte{0x22}
