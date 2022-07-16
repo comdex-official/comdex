@@ -950,7 +950,7 @@ func (s *KeeperTestSuite) TestSoftLock() {
 	s.nextBlock()
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 
-	s.ctx = s.ctx.WithBlockTime(time.Now())
+	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime())
 	msg := types.NewMsgSoftLock(appID1, liquidityProvider1, pool.Id, utils.ParseCoin("5000000000pool1-1"))
 	err := s.keeper.SoftLockTokens(s.ctx, msg)
 	s.Require().NoError(err)
@@ -1130,7 +1130,7 @@ func (s *KeeperTestSuite) TestFarmedPoolCoin() {
 	s.nextBlock()
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 
-	s.ctx = s.ctx.WithBlockTime(time.Now())
+	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime())
 	msg := types.NewMsgSoftLock(appID1, liquidityProvider1, pool.Id, utils.ParseCoin("5000000000pool1-1"))
 	err := s.keeper.SoftLockTokens(s.ctx, msg)
 	s.Require().NoError(err)

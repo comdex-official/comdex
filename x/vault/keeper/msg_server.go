@@ -4,12 +4,10 @@ import (
 	"context"
 	"strconv"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/types/time"
-
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/vault/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
@@ -157,7 +155,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	newVault.AppId = appMapping.Id
 	newVault.InterestAccumulated = zeroVal
 	newVault.Owner = msg.From
-	newVault.CreatedAt = time.Now()
+	newVault.CreatedAt = ctx.BlockTime()
 	newVault.ExtendedPairVaultID = extendedPairVault.Id
 
 	k.SetVault(ctx, newVault)
@@ -874,7 +872,7 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	stableVault.AmountIn = msg.Amount
 	stableVault.AmountOut = msg.Amount
 	stableVault.AppId = appMapping.Id
-	stableVault.CreatedAt = time.Now()
+	stableVault.CreatedAt = ctx.BlockTime()
 	stableVault.ExtendedPairVaultID = extendedPairVault.Id
 	k.SetStableMintVault(ctx, stableVault)
 	//update Locker Data 	//Update Amount

@@ -2,8 +2,6 @@ package keeper
 
 import (
 	"context"
-	"time"
-
 	"github.com/comdex-official/comdex/x/tokenmint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -57,7 +55,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		}
 
 		newTokenMintAppData.AssetId = msg.AssetId
-		newTokenMintAppData.CreatedAt = time.Now()
+		newTokenMintAppData.CreatedAt = ctx.BlockTime()
 		newTokenMintAppData.GenesisSupply = *assetDataInApp.GenesisSupply
 		newTokenMintAppData.CurrentSupply = newTokenMintAppData.GenesisSupply
 
@@ -87,7 +85,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 
 		var newTokenMintAppData types.MintedTokens
 		newTokenMintAppData.AssetId = msg.AssetId
-		newTokenMintAppData.CreatedAt = time.Now()
+		newTokenMintAppData.CreatedAt = ctx.BlockTime()
 		newTokenMintAppData.GenesisSupply = *assetDataInApp.GenesisSupply
 		newTokenMintAppData.CurrentSupply = newTokenMintAppData.GenesisSupply
 		mintData.MintedTokens = append(mintData.MintedTokens, &newTokenMintAppData)

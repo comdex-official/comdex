@@ -1,14 +1,12 @@
 package keeper
 
 import (
-	"strconv"
-	"time"
-
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+	"strconv"
 )
 
 func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
@@ -80,7 +78,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 		CrAtLiquidation:              collateralizationRatio,
 		CurrentCollaterlisationRatio: collateralizationRatio,
 		CollateralToBeAuctioned:      sdk.ZeroDec(),
-		LiquidationTimestamp:         time.Now(),
+		LiquidationTimestamp:         ctx.BlockTime(),
 		SellOffHistory:               nil,
 		InterestAccumulated:          vault.InterestAccumulated,
 	}
