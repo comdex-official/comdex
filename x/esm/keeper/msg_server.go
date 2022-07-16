@@ -56,3 +56,35 @@ func (k msgServer) MsgKillSwitch(c context.Context, msg *types.MsgKillRequest) (
 
 	return &types.MsgKillResponse{}, nil
 }
+
+func (k msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgCollateralRedemptionRequest) (*types.MsgCollateralRedemptionResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	esmStatus, found := k.keeper.GetESMStatus(ctx, req.AppId)
+	status := false
+	if found {
+		status = esmStatus.Status
+	}
+
+	if ctx.BlockTime().Before(esmStatus.EndTime) || status {
+		return nil, types.ErrCoolOffPeriodRemains
+	}
+	if ctx.BlockTime().After(esmStatus.EndTime) && status {
+		esmDataAfterCoolOff, _ := k.keeper.GetDataAfterCoolOff(ctx, req.AppId)
+		for _, v := range esmDataAfterCoolOff.DebtAsset {
+			debtAsset, _ := k.keeper.GetAsset(ctx, v.AssetID)
+			if req.Amount.Denom == debtAsset.Denom {
+				if !req.Amount.Amount.LTE(v.Amount) {
+					return nil, types.ErrorInvalidAmount
+				}
+				if err := k.keeper.CalculateCollateral(ctx, req.AppId, req.Amount, esmDataAfterCoolOff, req.From); err != nil {
+					return nil, err
+				}
+
+			} else {
+				return nil, types.ErrInvalidAsset
+			}
+		}
+	}
+
+	return nil, nil
+}

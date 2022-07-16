@@ -26,6 +26,7 @@ type (
 		bank       expected.BankKeeper
 		market     expected.MarketKeeper
 		tokenmint  expected.Tokenmint
+		collector  expected.Collector
 	}
 )
 
@@ -39,6 +40,7 @@ func NewKeeper(
 	bank expected.BankKeeper,
 	market expected.MarketKeeper,
 	tokenmint expected.Tokenmint,
+	collector expected.Collector,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -57,6 +59,7 @@ func NewKeeper(
 		bank:       bank,
 		market:     market,
 		tokenmint:  tokenmint,
+		collector:  collector,
 	}
 }
 
@@ -168,5 +171,84 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 	} else {
 		return types.ErrCurrentDepositNotReached
 	}
+	return nil
+}
+
+func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff, from string) error {
+	userAddress, err := sdk.AccAddressFromBech32(from)
+	if err != nil {
+		return err
+	}
+	marketData, found := k.GetESMMarketForAsset(ctx, appId)
+	if !found {
+		return types.ErrMarketDataNotFound
+	}
+
+	assetInID, _ := k.GetAssetForDenom(ctx, amount.Denom)
+	var (
+		assetInPrice uint64
+		assetPrice   uint64
+	)
+	AppValue := sdk.ZeroInt()
+	AppAssetValue := sdk.ZeroInt()
+	for _, v := range marketData.Market {
+		if assetInID.Id == v.AssetID {
+			assetInPrice = v.Rates
+		} else {
+			assetInPrice = 0
+		}
+	}
+
+	amtInPrice := amount.Amount.Mul(sdk.NewIntFromUint64(assetInPrice))
+
+	for _, u := range esmDataAfterCoolOff.CollateralAsset {
+		for _, w := range marketData.Market {
+			if u.AssetID == w.AssetID {
+				assetPrice = w.Rates
+				AppAssetValue = u.Amount.Mul(sdk.NewIntFromUint64(assetPrice))
+				assetVal := types.AssetToAmountValue{
+					AppId:                     appId,
+					AssetID:                   u.AssetID,
+					Amount:                    AppAssetValue,
+					AssetValueToAppValueRatio: sdk.ZeroDec(),
+				}
+				k.SetAssetToAmountValue(ctx, assetVal)
+			}
+			AppValue = AppValue.Add(AppAssetValue)
+			appToAmtValue := types.AppToAmountValue{
+				AppId:  appId,
+				Amount: AppValue,
+			}
+			k.SetAppToAmtValue(ctx, appToAmtValue)
+		}
+	}
+	for _, a := range esmDataAfterCoolOff.CollateralAsset {
+		assetToAmountValue, _ := k.GetAssetToAmountValue(ctx, appId, a.AssetID)
+		appToAmountValue, _ := k.GetAppToAmtValue(ctx, appId)
+		Ratio := assetToAmountValue.Amount.Quo(appToAmountValue.Amount).ToDec()
+		assetToAmountValue.AssetValueToAppValueRatio = Ratio
+		k.SetAssetToAmountValue(ctx, assetToAmountValue)
+		asset, _ := k.GetAsset(ctx, a.AssetID)
+		factor1 := Ratio.Mul(sdk.Dec(amtInPrice)).Mul(sdk.Dec(amtInPrice))
+		amountToDispatch := factor1.Quo(sdk.NewDec(int64(assetInPrice))).TruncateInt64()
+		collateralTokens := sdk.NewCoin(asset.Denom, sdk.NewInt(amountToDispatch))
+
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(collateralTokens))
+		if err != nil {
+			return err
+		}
+		a.Amount = a.Amount.Sub(collateralTokens.Amount)
+		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset, a)
+		k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
+	}
+
+	for _, b := range esmDataAfterCoolOff.DebtAsset {
+		if b.AssetID == assetInID.Id{
+			b.Amount = b.Amount.Sub(amount.Amount)
+			esmDataAfterCoolOff.DebtAsset = append(esmDataAfterCoolOff.DebtAsset, b)
+			k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
+		}
+	}
+
 	return nil
 }

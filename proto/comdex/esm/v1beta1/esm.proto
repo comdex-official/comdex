@@ -126,3 +126,31 @@ message AssetToAmount {
     (gogoproto.nullable) = false
   ];
 }
+
+message AssetToAmountValue {
+  uint64 appId = 1 [ (gogoproto.moretags) = "yaml:\"appId\"" ];
+
+  uint64 asset_id = 2 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  string amount = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
+  ];
+  string asset_value_to_app_value_ratio = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"asset_value_to_app_value_ratio\""
+  ];
+}
+
+message AppToAmountValue {
+  uint64 appId = 1 [ (gogoproto.moretags) = "yaml:\"appId\"" ];
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
+  ];
+}

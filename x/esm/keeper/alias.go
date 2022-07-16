@@ -3,6 +3,7 @@ package keeper
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -48,4 +49,12 @@ func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID 
 
 func (k *Keeper) GetVaults(ctx sdk.Context) (vaults []vaulttypes.Vault) {
 	return k.vault.GetVaults(ctx)
+}
+
+func (k *Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool) {
+	return k.asset.GetAssetForDenom(ctx, denom)
+}
+
+func (k *Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData collectortypes.NetFeeCollectedData, found bool) {
+	return k.collector.GetNetFeeCollectedData(ctx, appID)
 }
