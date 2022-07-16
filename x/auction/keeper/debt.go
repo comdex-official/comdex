@@ -51,11 +51,11 @@ func (k Keeper) CreateDebtAuction(ctx sdk.Context, appID, assetID uint64) error 
 	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
 		if assetToAuction.AssetId == assetID && status == auctiontypes.StartedDebtAuction {
 			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = true
+			err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
+			if err1 != nil {
+				return err1
+			}
 		}
-	}
-	err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
-	if err1 != nil {
-		return err1
 	}
 	return nil
 }

@@ -565,8 +565,11 @@ func New(
 		app.keys[esmtypes.StoreKey],
 		app.GetSubspace(esmtypes.ModuleName),
 		&app.AssetKeeper,
+		&app.VaultKeeper,
 		app.BankKeeper,
 		&app.MarketKeeper,
+		&app.TokenmintKeeper,
+		&app.CollectorKeeper,
 	)
 
 	app.VaultKeeper = vaultkeeper.NewKeeper(
@@ -744,7 +747,6 @@ func New(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
-		AddRoute(esmtypes.RouterKey, esm.NewESMHandler(app.EsmKeeper)).
 		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).

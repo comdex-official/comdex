@@ -309,6 +309,8 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 
 	err = k.DutchActivator(*ctx)
 	s.Require().NoError(err)
+	err = k.RestartDutch(*ctx)
+	s.Require().NoError(err)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(3)
@@ -431,6 +433,8 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			s.advanceseconds(tc.advanceSeconds)
 			err := k.DutchActivator(*ctx)
 			s.Require().NoError(err)
+			err = k.RestartDutch(*ctx)
+			s.Require().NoError(err)
 			beforeAuction, err := k.GetDutchAuction(*ctx, appID, auctionMappingID, auctionID)
 			s.Require().NoError(err)
 			beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
@@ -444,6 +448,8 @@ func (s *KeeperTestSuite) TestDutchBid() {
 				s.advanceseconds(301 - tc.advanceSeconds)
 				err1 := k.DutchActivator(*ctx)
 				s.Require().NoError(err1)
+				err2 := k.RestartDutch(*ctx)
+				s.Require().NoError(err2)
 				s.Require().Error(err)
 			} else {
 				s.Require().NoError(err)
@@ -540,6 +546,8 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 
 	err1 := k.DutchActivator(*ctx)
 	s.Require().NoError(err1)
+	err = k.RestartDutch(*ctx)
+	s.Require().NoError(err)
 
 	err1 = k.FundModule(*ctx, "auction", "ucmst", 10000000)
 	s.Require().NoError(err1)
@@ -596,6 +604,8 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	startPrice := auction.OutflowTokenCurrentPrice
 	err = k.DutchActivator(*ctx)
 	s.Require().NoError(err)
+	err = k.RestartDutch(*ctx)
+	s.Require().NoError(err)
 
 	auction, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
@@ -608,6 +618,8 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	s.Require().NoError(err)
 
 	err = k.DutchActivator(*ctx)
+	s.Require().NoError(err)
+	err = k.RestartDutch(*ctx)
 	s.Require().NoError(err)
 
 	afterAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
@@ -635,6 +647,8 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	s.advanceseconds(150)
 
 	err = k.DutchActivator(*ctx)
+	s.Require().NoError(err)
+	err = k.RestartDutch(*ctx)
 	s.Require().NoError(err)
 
 	auction, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
