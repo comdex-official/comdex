@@ -46,7 +46,7 @@ func (s *KeeperTestSuite) TestSoftLockTokens() {
 	s.nextBlock()
 	s.Require().True(utils.ParseCoins("9999999999pool1-1,9999999999pool2-1").IsEqual(s.getBalances(liquidityProvider2)))
 
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	testCases := []struct {
@@ -205,7 +205,7 @@ func (s *KeeperTestSuite) TestSoftUnlockTokens() {
 	s.nextBlock()
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	msg := types.NewMsgSoftLock(appID1, liquidityProvider1, pool.Id, utils.ParseCoin("10000000000pool1-1"))
@@ -284,7 +284,7 @@ func (s *KeeperTestSuite) TestSoftUnlockTokens() {
 }
 
 func (s *KeeperTestSuite) TestSoftUnlockTokensTwo() {
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	creator := s.addr(0)
@@ -631,7 +631,7 @@ func (s *KeeperTestSuite) TestSoftUnlockTokensTwo() {
 
 // liquidity provided in incrementel order
 func (s *KeeperTestSuite) TestGetFarmingRewardsDataLinearLPs() {
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	creator := s.addr(0)
@@ -734,7 +734,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataLinearLPs() {
 
 // Equal liquidity provided my by all liquidity providers
 func (s *KeeperTestSuite) TestGetFarmingRewardsDataEqualLPs() {
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	creator := s.addr(0)
@@ -837,7 +837,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataEqualLPs() {
 
 // no liquidity providers
 func (s *KeeperTestSuite) TestGetFarmingRewardsDataNoLPs() {
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	creator := s.addr(0)
@@ -881,7 +881,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataNoLPs() {
 
 // create 2 pools, one master and another child
 func (s *KeeperTestSuite) TestGetFarmingRewardsDataEqualLPsWChildPool() {
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	creator := s.addr(0)
@@ -1029,7 +1029,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataEqualLPsWChildPool() {
 
 // pool reserve sent to somewhere else, and maked pool as depleted and disabled
 func (s *KeeperTestSuite) TestGetFarmingRewardsDataErrorHandellings() {
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	creator := s.addr(0)
@@ -1074,7 +1074,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataErrorHandellings() {
 
 // LP added =>  farmed => unfarmed
 func (s *KeeperTestSuite) TestGetFarmingRewardsDataZeroLPs() {
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	creator := s.addr(0)

@@ -661,7 +661,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 
-	currentTime := time.Now()
+	currentTime := s.ctx.BlockTime()
 	s.ctx = s.ctx.WithBlockTime(currentTime)
 
 	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
