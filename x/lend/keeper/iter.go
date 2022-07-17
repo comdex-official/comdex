@@ -9,10 +9,7 @@ import (
 )
 
 func (k Keeper) IterateLends(ctx sdk.Context) error {
-	lends, found := k.GetLends(ctx)
-	if !found {
-		return types.ErrLendNotFound
-	}
+	lends, _ := k.GetLends(ctx)
 	for _, v := range lends.LendIds {
 		lend, _ := k.GetLend(ctx, v)
 		lendAPY, err := k.GetLendAPRByAssetIDAndPoolID(ctx, lend.PoolId, lend.AssetId)

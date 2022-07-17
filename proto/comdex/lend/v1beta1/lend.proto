@@ -410,3 +410,22 @@ message ModuleBalanceStats{
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 }
+
+message BalanceStats{
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetId",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  string amount = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+}
+
+message DepositStats{
+  repeated BalanceStats balance_stats = 1[
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"balance_stats\""
+  ];
+}

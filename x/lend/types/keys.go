@@ -54,6 +54,7 @@ var (
 	KeyPrefixLastTime                     = []byte{0x31}
 	LendByUserAndPoolPrefix               = []byte{0x34}
 	BorrowByUserAndPoolPrefix             = []byte{0x35}
+	DepositStatsPrefix                    = []byte{0x36}
 )
 
 func ReserveFundsKey(tokenDenom string) []byte {
