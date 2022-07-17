@@ -17,8 +17,14 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		if !found {
 			return
 		}
-		if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status && !esmStatus.RedemptionStatus{
-			err := k.SetUpCollateralRedemption(ctx, esmStatus.AppId)
+		if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status && !esmStatus.VaultRedemptionStatus{
+			err := k.SetUpCollateralRedemptionForVault(ctx, esmStatus.AppId)
+			if err != nil {
+				return
+			}
+		}
+		if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status && !esmStatus.StableVaultRedemptionStatus{
+			err := k.SetUpCollateralRedemptionForStableVault(ctx, esmStatus.AppId)
 			if err != nil {
 				return
 			}

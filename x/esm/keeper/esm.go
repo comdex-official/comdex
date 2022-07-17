@@ -203,7 +203,7 @@ func (k *Keeper) GetDataAfterCoolOff(ctx sdk.Context, id uint64) (esmDataAfterCo
 	return esmDataAfterCoolOff, true
 }
 
-func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error {
+func (k *Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64) error {
 	totalVaults := k.GetVaults(ctx)
 	for _, data := range totalVaults {
 		if data.AppId == appId {
@@ -294,7 +294,105 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 			k.DeleteVault(ctx, data.Id)
 			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
 			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
-			esmStatus.RedemptionStatus = true
+			esmStatus.VaultRedemptionStatus = true
+			k.SetESMStatus(ctx, esmStatus)
+		}
+	}
+	return nil
+}
+
+func (k *Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId uint64) error {
+	totalStableVaults := k.GetStableMintVaults(ctx)
+	for _, data := range totalStableVaults {
+		if data.AppId == appId {
+			extendedPairVault, found := k.GetPairsVault(ctx, data.ExtendedPairVaultID)
+			if !found {
+				return vaulttypes.ErrorExtendedPairVaultDoesNotExists
+			}
+			pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
+			if !found {
+				return assettypes.ErrorPairDoesNotExist
+			}
+			assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
+			if !found {
+				return assettypes.ErrorAssetDoesNotExist
+			}
+			assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
+			if !found {
+				return assettypes.ErrorAssetDoesNotExist
+			}
+			coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
+			if !found {
+				coolOffData.AppId = appId
+				var item types.AssetToAmount
+
+				item.AssetID = assetInData.Id
+				item.Amount = data.AmountIn
+				err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
+				if err != nil {
+					return err
+				}
+				coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
+
+				item.AssetID = assetOutData.Id
+				item.Amount = data.AmountOut
+
+				coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
+
+				k.SetDataAfterCoolOff(ctx, coolOffData)
+			} else {
+				var count = 0
+				for i, indata := range coolOffData.CollateralAsset {
+					if indata.AssetID == assetInData.Id {
+						count++
+						indata.Amount = indata.Amount.Add(data.AmountIn)
+						err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
+						if err != nil {
+							return err
+						}
+						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset[:i],coolOffData.CollateralAsset[i+1:]...)
+						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, indata)
+						break
+					}
+				}
+				if count == 0 {
+					var item types.AssetToAmount
+
+					item.AssetID = assetInData.Id
+					item.Amount = data.AmountIn
+
+					err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
+					if err != nil {
+						return err
+					}
+					coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
+					count = 0
+				}
+
+				for i, indata := range coolOffData.DebtAsset {
+					if indata.AssetID == assetOutData.Id {
+						count++
+						indata.Amount = indata.Amount.Add(data.AmountOut)
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i],coolOffData.DebtAsset[i+1:]...)
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
+						break
+					}
+				}
+				if count == 0 {
+					var item types.AssetToAmount
+
+					item.AssetID = assetOutData.Id
+					item.Amount = data.AmountOut
+					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
+					count = 0
+				}
+				k.SetDataAfterCoolOff(ctx, coolOffData)
+			}
+
+			k.DeleteVault(ctx, data.Id)
+			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
+			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
+			esmStatus.StableVaultRedemptionStatus = true
 			k.SetESMStatus(ctx, esmStatus)
 		}
 	}

@@ -68,8 +68,12 @@ message ESMStatus{
     (gogoproto.moretags) = "yaml:\"end_time\""
   ];
 
-  bool redemption_status = 6 [
-    (gogoproto.moretags) = "yaml:\"redemption_status\""
+  bool vault_redemption_status = 6 [
+    (gogoproto.moretags) = "yaml:\"vault_redemption_status\""
+  ];
+
+  bool stable_vault_redemption_status = 7 [
+    (gogoproto.moretags) = "yaml:\"stable_vault_redemption_status\""
   ];
 }
 
