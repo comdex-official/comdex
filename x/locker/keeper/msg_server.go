@@ -2,12 +2,10 @@ package keeper
 
 import (
 	"context"
-	"strconv"
-	"time"
-
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strconv"
 )
 
 var (
@@ -86,7 +84,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 		userLocker.LockerId = appMapping.ShortName + strconv.FormatUint(counter, 10)
 		userLocker.Depositor = msg.Depositor
 		userLocker.AssetDepositId = asset.Id
-		userLocker.CreatedAt = time.Now()
+		userLocker.CreatedAt = ctx.BlockTime()
 		userLocker.IsLocked = false
 		userLocker.NetBalance = msg.Amount
 		userLocker.ReturnsAccumulated = sdk.ZeroInt()
@@ -108,7 +106,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 			userTxData.TxType = "Create"
 			userTxData.Amount = msg.Amount
 			userTxData.Balance = msg.Amount
-			userTxData.TxTime = time.Now()
+			userTxData.TxTime = ctx.BlockTime()
 			userAssetData.UserData = append(userAssetData.UserData, &userTxData)
 
 			userAppData.AppId = appMapping.Id
@@ -130,7 +128,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 				userTxData.TxType = "Create"
 				userTxData.Amount = msg.Amount
 				userTxData.Balance = msg.Amount
-				userTxData.TxTime = time.Now()
+				userTxData.TxTime = ctx.BlockTime()
 				userAssetData.UserData = append(userAssetData.UserData, &userTxData)
 
 				for _, appData := range userLockerAssetMappingData.LockerAppMapping {
@@ -151,7 +149,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 				userTxData.TxType = "Create"
 				userTxData.Amount = msg.Amount
 				userTxData.Balance = msg.Amount
-				userTxData.TxTime = time.Now()
+				userTxData.TxTime = ctx.BlockTime()
 				userAssetData.UserData = append(userAssetData.UserData, &userTxData)
 
 				userAppData.UserAssetLocker = append(userAppData.UserAssetLocker, &userAssetData)
@@ -233,7 +231,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	userHisData.TxType = "Deposit"
 	userHisData.Amount = msg.Amount
 	userHisData.Balance = lockerData.NetBalance
-	userHisData.TxTime = time.Now()
+	userHisData.TxTime = ctx.BlockTime()
 	for _, userLockerAppData := range userLockerAssetMappingData.LockerAppMapping {
 		if userLockerAppData.AppId == msg.AppId {
 			for _, assetData := range userLockerAppData.UserAssetLocker {
@@ -313,7 +311,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 					userTxData.TxType = "Withdraw"
 					userTxData.Amount = msg.Amount
 					userTxData.Balance = lockerData.NetBalance
-					userTxData.TxTime = time.Now()
+					userTxData.TxTime = ctx.BlockTime()
 					assetData.UserData = append(assetData.UserData, &userTxData)
 				}
 			}
