@@ -12,18 +12,23 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	if !found {
 		return
 	}
-	assets := k.GetAssetsForOracle(ctx)
 	for _, v := range apps {
-		esmMarket, found := k.GetESMMarketForAsset(ctx, v.Id)
-		if found {
-			return
-		}
 		esmStatus, found := k.GetESMStatus(ctx, v.Id)
 		if !found {
 			return
 		}
-
+		if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status && !esmStatus.RedemptionStatus{
+			err := k.SetUpCollateralRedemption(ctx, esmStatus.AppId)
+			if err != nil {
+				return
+			}
+		}
+		esmMarket, found := k.GetESMMarketForAsset(ctx, v.Id)
+		if found {
+			return
+		}
 		if !esmMarket.IsPriceSet && esmStatus.Status {
+			assets := k.GetAssetsForOracle(ctx)
 			var markets []types.Market
 			for _, a := range assets {
 				price, found := k.GetPriceForAsset(ctx, a.Id)
@@ -42,13 +47,6 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 				Market:     markets,
 			}
 			k.SetESMMarketForAsset(ctx, em)
-		}
-
-		if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status {
-			err := k.SetUpCollateralRedemption(ctx, esmStatus.AppId)
-			if err != nil {
-				return
-			}
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -18,6 +19,7 @@ func (k *Keeper) AddESMTriggerParamsRecords(ctx sdk.Context, record types.ESMTri
 			AppId:         record.AppId,
 			TargetValue:   record.TargetValue,
 			CoolOffPeriod: record.CoolOffPeriod,
+			AssetsRates:   record.AssetsRates,
 		}
 	)
 	k.SetESMTriggerParams(ctx, esmTriggerParams)
@@ -147,13 +149,21 @@ func (k *Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket typ
 	return esmMarket, true
 }
 
-func (k *Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, AppId uint64, TargetValue sdk.Coin, CoolOffPeriod uint64) error {
+func (k *Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, addESMTriggerParams *bindings.MsgAddESMTriggerParams) error {
 
+	var debtRates[] types.DebtAssetsRates
+	for i := range addESMTriggerParams.AssetID{
+		var debtRate types.DebtAssetsRates
+		debtRate.AssetID = addESMTriggerParams.AssetID[i]
+		debtRate.Rates = addESMTriggerParams.Rates[i]
+		debtRates = append(debtRates, debtRate)
+	}
 	var (
 		esmTriggerParams = types.ESMTriggerParams{
-			AppId:         AppId,
-			TargetValue:   TargetValue,
-			CoolOffPeriod: CoolOffPeriod,
+			AppId:         addESMTriggerParams.AppID,
+			TargetValue:   addESMTriggerParams.TargetValue,
+			CoolOffPeriod: addESMTriggerParams.CoolOffPeriod,
+			AssetsRates:   debtRates,
 		}
 	)
 	k.SetESMTriggerParams(ctx, esmTriggerParams)
@@ -283,6 +293,9 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 
 			k.DeleteVault(ctx, data.Id)
 			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
+			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
+			esmStatus.RedemptionStatus = true
+			k.SetESMStatus(ctx, esmStatus)
 		}
 	}
 	netFee, found := k.GetNetFeeCollectedData(ctx, appId)
