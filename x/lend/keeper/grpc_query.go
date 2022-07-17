@@ -491,3 +491,83 @@ func (q queryServer) QueryModuleBalance(c context.Context, req *types.QueryModul
 		ModuleBalance: modBal,
 	}, nil
 }
+
+func (q queryServer) QueryDepositStats(c context.Context, req *types.QueryDepositStatsRequest) (*types.QueryDepositStatsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	depositStatsData, found := q.GetDepositStats(ctx)
+	if !found {
+		return &types.QueryDepositStatsResponse{}, nil
+	}
+
+	return &types.QueryDepositStatsResponse{
+		DepositStats: depositStatsData,
+	}, nil
+}
+
+func (q queryServer) QueryUserDepositStats(c context.Context, req *types.QueryUserDepositStatsRequest) (*types.QueryUserDepositStatsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	userDepositStatsData, found := q.GetUserDepositStats(ctx)
+	if !found {
+		return &types.QueryUserDepositStatsResponse{}, nil
+	}
+
+	return &types.QueryUserDepositStatsResponse{
+		UserDepositStats: userDepositStatsData,
+	}, nil
+}
+
+func (q queryServer) QueryReserveDepositStats(c context.Context, req *types.QueryReserveDepositStatsRequest) (*types.QueryReserveDepositStatsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	reserveDepositStatsData, found := q.GetReserveDepositStats(ctx)
+	if !found {
+		return &types.QueryReserveDepositStatsResponse{}, nil
+	}
+
+	return &types.QueryReserveDepositStatsResponse{
+		ReserveDepositStats: reserveDepositStatsData,
+	}, nil
+}
+
+func (q queryServer) QueryBuyBackDepositStats(c context.Context, req *types.QueryBuyBackDepositStatsRequest) (*types.QueryBuyBackDepositStatsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	buyBackDepositStatsData, found := q.GetBuyBackDepositStats(ctx)
+	if !found {
+		return &types.QueryBuyBackDepositStatsResponse{}, nil
+	}
+
+	return &types.QueryBuyBackDepositStatsResponse{
+		BuyBackDepositStats: buyBackDepositStatsData,
+	}, nil
+}
+
+func (q queryServer) QueryBorrowStats(c context.Context, req *types.QueryBorrowStatsRequest) (*types.QueryBorrowStatsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	borrowStatsData, found := q.GetBorrowStats(ctx)
+	if !found {
+		return &types.QueryBorrowStatsResponse{}, nil
+	}
+
+	return &types.QueryBorrowStatsResponse{
+		BorrowStats: borrowStatsData,
+	}, nil
+}

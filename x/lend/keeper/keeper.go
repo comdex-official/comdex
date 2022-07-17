@@ -140,6 +140,29 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 		AssetId:   AssetID,
 		TotalLend: assetStats.TotalLend.Add(Amount.Amount),
 	}
+
+	depositStats, _ := k.GetDepositStats(ctx)
+	userDepositStats, _ := k.GetUserDepositStats(ctx)
+
+	var balanceStats []types.BalanceStats
+	for _, v := range depositStats.BalanceStats {
+		if v.AssetId == AssetID {
+			v.Amount = v.Amount.Add(Amount.Amount)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetDepositStats(ctx, newDepositStats)
+	}
+
+	for _, v := range userDepositStats.BalanceStats {
+		if v.AssetId == AssetID {
+			v.Amount = v.Amount.Add(Amount.Amount)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetUserDepositStats(ctx, newDepositStats)
+
+	}
 	k.SetAssetStatsByPoolIDAndAssetID(ctx, AssetStats)
 	k.SetUserLendIDHistory(ctx, lendPos.ID)
 	k.SetLend(ctx, lendPos)
@@ -225,13 +248,37 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 			lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(withdrawal.Amount)
 			assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lendPos.AssetId, lendPos.PoolId)
 			assetStats.TotalLend = assetStats.TotalLend.Sub(withdrawal.Amount)
+
+			depositStats, _ := k.GetDepositStats(ctx)
+			userDepositStats, _ := k.GetUserDepositStats(ctx)
+
+			var balanceStats []types.BalanceStats
+			for _, v := range depositStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Sub(withdrawal.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetDepositStats(ctx, newDepositStats)
+			}
+
+			for _, v := range userDepositStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Sub(withdrawal.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetUserDepositStats(ctx, newDepositStats)
+
+			}
+
 			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 			k.SetLend(ctx, lendPos)
 		} else {
 			return nil
 		}
 	} else {
-		if withdrawal.Amount.LT(lendPos.UpdatedAmountIn) {
+		if withdrawal.Amount.LT(lendPos.AvailableToBorrow) {
 			// add CR validation
 			// lend to borrow mapping
 
@@ -255,6 +302,30 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 			lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(withdrawal.Amount)
 			assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lendPos.AssetId, lendPos.PoolId)
 			assetStats.TotalLend = assetStats.TotalLend.Sub(withdrawal.Amount)
+
+			depositStats, _ := k.GetDepositStats(ctx)
+			userDepositStats, _ := k.GetUserDepositStats(ctx)
+
+			var balanceStats []types.BalanceStats
+			for _, v := range depositStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Sub(withdrawal.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetDepositStats(ctx, newDepositStats)
+			}
+
+			for _, v := range userDepositStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Sub(withdrawal.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetUserDepositStats(ctx, newDepositStats)
+
+			}
+
 			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 			k.SetLend(ctx, lendPos)
 		} else {
@@ -310,6 +381,30 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendID uint64, deposi
 	lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Add(deposit.Amount)
 	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lendPos.AssetId, lendPos.PoolId)
 	assetStats.TotalLend = assetStats.TotalLend.Add(deposit.Amount)
+
+	depositStats, _ := k.GetDepositStats(ctx)
+	userDepositStats, _ := k.GetUserDepositStats(ctx)
+
+	var balanceStats []types.BalanceStats
+	for _, v := range depositStats.BalanceStats {
+		if v.AssetId == lendPos.AssetId {
+			v.Amount = v.Amount.Add(deposit.Amount)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetDepositStats(ctx, newDepositStats)
+	}
+
+	for _, v := range userDepositStats.BalanceStats {
+		if v.AssetId == lendPos.AssetId {
+			v.Amount = v.Amount.Add(deposit.Amount)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetUserDepositStats(ctx, newDepositStats)
+
+	}
+
 	k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 	k.SetLend(ctx, lendPos)
 
@@ -363,6 +458,29 @@ func (k Keeper) CloseLend(ctx sdk.Context, addr string, lendID uint64) error {
 
 	if err := k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, lenderAddr, tokens); err != nil {
 		return err
+	}
+
+	depositStats, _ := k.GetDepositStats(ctx)
+	userDepositStats, _ := k.GetUserDepositStats(ctx)
+
+	var balanceStats []types.BalanceStats
+	for _, v := range depositStats.BalanceStats {
+		if v.AssetId == lendPos.AssetId {
+			v.Amount = v.Amount.Sub(lendPos.UpdatedAmountIn)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetDepositStats(ctx, newDepositStats)
+	}
+
+	for _, v := range userDepositStats.BalanceStats {
+		if v.AssetId == lendPos.AssetId {
+			v.Amount = v.Amount.Sub(lendPos.UpdatedAmountIn)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetUserDepositStats(ctx, newDepositStats)
+
 	}
 
 	k.DeleteLendForAddressByAsset(ctx, lenderAddr, lendPos.AssetId, lendPos.PoolId)
@@ -522,6 +640,27 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(AmountIn.Amount)
 		k.SetLend(ctx, lendPos)
 
+		depositStats, _ := k.GetDepositStats(ctx)
+		borrowStats, _ := k.GetBorrowStats(ctx)
+		var balanceStats []types.BalanceStats
+		for _, v := range depositStats.BalanceStats {
+			if v.AssetId == lendPos.AssetId {
+				v.Amount = v.Amount.Sub(loan.Amount)
+			}
+			balanceStats = append(balanceStats, v)
+			newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+			k.SetDepositStats(ctx, newDepositStats)
+		}
+
+		for _, v := range borrowStats.BalanceStats {
+			if v.AssetId == lendPos.AssetId {
+				v.Amount = v.Amount.Add(loan.Amount)
+			}
+			balanceStats = append(balanceStats, v)
+			newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+			k.SetBorrowStats(ctx, newDepositStats)
+		}
+
 		k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
 		k.SetBorrow(ctx, borrowPos)
 		k.SetBorrowForAddressByPair(ctx, lenderAddr, pairID, borrowPos.ID)
@@ -637,6 +776,28 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 				}
 				k.SetAssetStatsByPoolIDAndAssetID(ctx, AssetStats)
 			}
+
+			depositStats, _ := k.GetDepositStats(ctx)
+			borrowStats, _ := k.GetBorrowStats(ctx)
+			var balanceStats []types.BalanceStats
+			for _, v := range depositStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Sub(loan.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetDepositStats(ctx, newDepositStats)
+			}
+
+			for _, v := range borrowStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Add(loan.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetBorrowStats(ctx, newDepositStats)
+			}
+
 			err = k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, true)
 			if err != nil {
 				return err
@@ -728,6 +889,27 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 				k.SetAssetStatsByPoolIDAndAssetID(ctx, AssetStats)
 			}
 
+			depositStats, _ := k.GetDepositStats(ctx)
+			borrowStats, _ := k.GetBorrowStats(ctx)
+			var balanceStats []types.BalanceStats
+			for _, v := range depositStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Sub(loan.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetDepositStats(ctx, newDepositStats)
+			}
+
+			for _, v := range borrowStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Add(loan.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetBorrowStats(ctx, newDepositStats)
+			}
+
 			err = k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, true)
 			if err != nil {
 				return err
@@ -780,6 +962,28 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 			}
 			borrowPos.UpdatedAmountOut = borrowPos.UpdatedAmountOut.Sub(payment.Amount)
 			borrowPos.Interest_Accumulated = borrowPos.Interest_Accumulated.Sub(payment.Amount)
+
+			depositStats, _ := k.GetDepositStats(ctx)
+			borrowStats, _ := k.GetBorrowStats(ctx)
+			var balanceStats []types.BalanceStats
+			for _, v := range depositStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Add(payment.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetDepositStats(ctx, newDepositStats)
+			}
+
+			for _, v := range borrowStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Sub(payment.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetBorrowStats(ctx, newDepositStats)
+			}
+
 			k.SetBorrow(ctx, borrowPos)
 		} else {
 			// sending repayment to moduleAcc from borrower
@@ -797,6 +1001,26 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 				return err
 			}
 
+			depositStats, _ := k.GetDepositStats(ctx)
+			borrowStats, _ := k.GetBorrowStats(ctx)
+			var balanceStats []types.BalanceStats
+			for _, v := range depositStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Add(payment.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetDepositStats(ctx, newDepositStats)
+			}
+
+			for _, v := range borrowStats.BalanceStats {
+				if v.AssetId == lendPos.AssetId {
+					v.Amount = v.Amount.Sub(payment.Amount)
+				}
+				balanceStats = append(balanceStats, v)
+				newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+				k.SetBorrowStats(ctx, newDepositStats)
+			}
 			k.SetBorrow(ctx, borrowPos)
 		}
 	} else {
@@ -959,8 +1183,28 @@ func (k Keeper) DrawAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string,
 	}
 	borrowPos.UpdatedAmountOut = borrowPos.UpdatedAmountOut.Add(payment.Amount)
 	borrowPos.AmountOut.Add(payment)
-	k.DeleteLendIDToBorrowIDMapping(ctx, borrowPos.LendingID)
 	k.SetBorrow(ctx, borrowPos)
+
+	depositStats, _ := k.GetDepositStats(ctx)
+	borrowStats, _ := k.GetBorrowStats(ctx)
+	var balanceStats []types.BalanceStats
+	for _, v := range depositStats.BalanceStats {
+		if v.AssetId == lendPos.AssetId {
+			v.Amount = v.Amount.Sub(payment.Amount)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetDepositStats(ctx, newDepositStats)
+	}
+
+	for _, v := range borrowStats.BalanceStats {
+		if v.AssetId == lendPos.AssetId {
+			v.Amount = v.Amount.Add(payment.Amount)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetBorrowStats(ctx, newDepositStats)
+	}
 
 	return nil
 }
@@ -1017,6 +1261,28 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 			return err
 		}
 	}
+
+	depositStats, _ := k.GetDepositStats(ctx)
+	borrowStats, _ := k.GetBorrowStats(ctx)
+	var balanceStats []types.BalanceStats
+	for _, v := range depositStats.BalanceStats {
+		if v.AssetId == lendPos.AssetId {
+			v.Amount = v.Amount.Add(borrowPos.UpdatedAmountOut)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetDepositStats(ctx, newDepositStats)
+	}
+
+	for _, v := range borrowStats.BalanceStats {
+		if v.AssetId == lendPos.AssetId {
+			v.Amount = v.Amount.Sub(borrowPos.UpdatedAmountOut)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetBorrowStats(ctx, newDepositStats)
+	}
+
 	lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Add(borrowPos.AmountIn.Amount)
 	k.SetLend(ctx, lendPos)
 	k.DeleteBorrow(ctx, borrowID)
@@ -1049,6 +1315,16 @@ func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, assetID uint64, l
 	err := k.MintCoin(ctx, moduleName, cToken)
 	if err != nil {
 		return err
+	}
+	depositStats, _ := k.GetDepositStats(ctx)
+	var balanceStats []types.BalanceStats
+	for _, v := range depositStats.BalanceStats {
+		if v.AssetId == assetID {
+			v.Amount = v.Amount.Add(payment.Amount)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetDepositStats(ctx, newDepositStats)
 	}
 
 	return nil

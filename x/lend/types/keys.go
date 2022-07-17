@@ -42,6 +42,7 @@ var (
 	BorrowPairKeyPrefix   = []byte{0x26}
 	LendsKey              = []byte{0x32}
 	BorrowsKey            = []byte{0x33}
+	BorrowStatsPrefix     = []byte{0x40}
 
 	AssetToPairMappingKeyPrefix           = []byte{0x20}
 	LendForAddressByAssetKeyPrefix        = []byte{0x22}
@@ -55,6 +56,9 @@ var (
 	LendByUserAndPoolPrefix               = []byte{0x34}
 	BorrowByUserAndPoolPrefix             = []byte{0x35}
 	DepositStatsPrefix                    = []byte{0x36}
+	UserDepositStatsPrefix                = []byte{0x37}
+	ReserveDepositStatsPrefix             = []byte{0x38}
+	BuyBackDepositStatsPrefix             = []byte{0x39}
 )
 
 func ReserveFundsKey(tokenDenom string) []byte {

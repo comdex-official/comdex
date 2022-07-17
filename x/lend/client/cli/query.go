@@ -42,6 +42,11 @@ func GetQueryCmd() *cobra.Command {
 		queryAssetRatesStats(),
 		QueryAssetStats(),
 		QueryModuleBalance(),
+		queryDepositStats(),
+		queryUserDepositStats(),
+		queryReserveDepositStats(),
+		queryBuyBackDepositStats(),
+		queryBorrowStats(),
 	)
 
 	return cmd
@@ -689,5 +694,155 @@ func QueryModuleBalance() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func queryDepositStats() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "deposit-stats",
+		Short: "Query deposit stats",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryDepositStats(
+				context.Background(),
+				&types.QueryDepositStatsRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "deposit-stats")
+
+	return cmd
+}
+
+func queryUserDepositStats() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "user-deposit-stats",
+		Short: "Query user deposit stats",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryUserDepositStats(
+				context.Background(),
+				&types.QueryUserDepositStatsRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "user-deposit-stats")
+
+	return cmd
+}
+
+func queryReserveDepositStats() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "reserve-deposit-stats",
+		Short: "Query reserve deposit stats",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryReserveDepositStats(
+				context.Background(),
+				&types.QueryReserveDepositStatsRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "reserve-deposit-stats")
+
+	return cmd
+}
+
+func queryBuyBackDepositStats() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "buy-back-deposit-stats",
+		Short: "Query reserve deposit stats",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryBuyBackDepositStats(
+				context.Background(),
+				&types.QueryBuyBackDepositStatsRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "buy-back-deposit-stats")
+
+	return cmd
+}
+
+func queryBorrowStats() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "borrow-stats",
+		Short: "Query borrow stats",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryBorrowStats(
+				context.Background(),
+				&types.QueryBorrowStatsRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "borrow-stats")
+
 	return cmd
 }
