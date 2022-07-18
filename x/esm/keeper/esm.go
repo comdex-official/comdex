@@ -229,16 +229,12 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 				item.AssetID = assetOutData.Id
 				item.Amount = data.AmountOut
 
-				err1 := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-				if err1 != nil {
-					return err1
-				}
 				coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
 
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			} else {
 				var count = 0
-				for _, indata := range coolOffData.CollateralAsset {
+				for i, indata := range coolOffData.CollateralAsset {
 					if indata.AssetID == assetInData.Id {
 						count++
 						indata.Amount = indata.Amount.Add(data.AmountIn)
@@ -246,7 +242,9 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 						if err != nil {
 							return err
 						}
+						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset[:i],coolOffData.CollateralAsset[i+1:]...)
 						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, indata)
+						break
 					}
 				}
 				if count == 0 {
@@ -261,18 +259,15 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 					}
 					coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
 					count = 0
-					k.SetDataAfterCoolOff(ctx, coolOffData)
 				}
 
-				for _, indata := range coolOffData.DebtAsset {
+				for i, indata := range coolOffData.DebtAsset {
 					if indata.AssetID == assetOutData.Id {
 						count++
 						indata.Amount = indata.Amount.Add(data.AmountOut)
-						err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-						if err != nil {
-							return err
-						}
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i],coolOffData.DebtAsset[i+1:]...)
 						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
+						break
 					}
 				}
 				if count == 0 {
@@ -280,19 +275,80 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 
 					item.AssetID = assetOutData.Id
 					item.Amount = data.AmountOut
-					err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, data.AmountOut)))
-					if err != nil {
-						return err
-					}
 					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
 					count = 0
-					k.SetDataAfterCoolOff(ctx, coolOffData)
 				}
+				k.SetDataAfterCoolOff(ctx, coolOffData)
 			}
 
 			k.DeleteVault(ctx, data.Id)
 			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
 		}
 	}
+	netFee, found := k.GetNetFeeCollectedData(ctx, appId)
+	coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
+	if !found{
+		return nil
+	}else {
+		for _, data := range netFee.AssetIdToFeeCollected{
+			for _, indata := range coolOffData.DebtAsset{
+				if data.AssetId == indata.AssetID{
+					indata.Amount = indata.Amount.Sub(data.NetFeesCollected)
+					coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
+				}
+			}
+		}
+		k.SetDataAfterCoolOff(ctx, coolOffData)
+	}
 	return nil
+}
+
+func (k *Keeper) SetAssetToAmountValue(ctx sdk.Context, assetToAmountValue types.AssetToAmountValue) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetToAmountValueKey(assetToAmountValue.AppId, assetToAmountValue.AssetID)
+		value = k.cdc.MustMarshal(&assetToAmountValue)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetAssetToAmountValue(ctx sdk.Context, appID, assetID uint64) (assetToAmountValue types.AssetToAmountValue, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetToAmountValueKey(appID, assetID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return assetToAmountValue, false
+	}
+
+	k.cdc.MustUnmarshal(value, &assetToAmountValue)
+	return assetToAmountValue, true
+}
+
+func (k *Keeper) SetAppToAmtValue(ctx sdk.Context, appToAmt types.AppToAmountValue) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AppToAmountValueKey(appToAmt.AppId)
+		value = k.cdc.MustMarshal(&appToAmt)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetAppToAmtValue(ctx sdk.Context, id uint64) (appToAmt types.AppToAmountValue, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AppToAmountValueKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return appToAmt, false
+	}
+
+	k.cdc.MustUnmarshal(value, &appToAmt)
+	return appToAmt, true
 }

@@ -3,6 +3,7 @@ package expected
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -13,6 +14,7 @@ type AssetKeeper interface {
 	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
 	GetAssetsForOracle(ctx sdk.Context) (assets []assettypes.Asset)
 	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
+	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
 }
 
 type VaultKeeper interface {
@@ -41,4 +43,8 @@ type MarketKeeper interface {
 
 type Tokenmint interface {
 	BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error
+}
+
+type Collector interface {
+	GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData collectortypes.NetFeeCollectedData, found bool)
 }

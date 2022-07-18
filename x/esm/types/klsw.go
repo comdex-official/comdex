@@ -9,10 +9,6 @@ var (
 	_ sdk.Msg = (*MsgKillRequest)(nil)
 )
 
-const (
-	DefaultCircuitBreakerEnabled = false
-)
-
 func NewMsgKillRequest(from sdk.AccAddress, switchParams KillSwitchParams) *MsgKillRequest {
 	return &MsgKillRequest{
 		From:             from.String(),
