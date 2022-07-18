@@ -205,7 +205,7 @@ func (k *Keeper) AddAppRecords(ctx sdk.Context, records ...types.AppData) error 
 		if k.HasAppForShortName(ctx, msg.ShortName) {
 			return types.ErrorDuplicateApp
 		}
-		if k.HasAppForName(ctx, msg.ShortName) {
+		if k.HasAppForName(ctx, msg.Name) {
 			return types.ErrorDuplicateApp
 		}
 
