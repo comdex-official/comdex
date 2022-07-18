@@ -5,6 +5,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -294,6 +295,9 @@ func (k *Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64
 			k.DeleteVault(ctx, data.Id)
 			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
 			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
+			if !found {
+				return esmtypes.ErrESMParamsNotFound
+			}
 			esmStatus.VaultRedemptionStatus = true
 			k.SetESMStatus(ctx, esmStatus)
 		}
