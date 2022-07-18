@@ -395,6 +395,7 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Colle
 				assetToAuctionUpdate.AssetId =  data.AssetId
 				assetToAuctionUpdate.IsSurplusAuction = data.IsSurplusAuction
 				assetToAuctionUpdate.IsDebtAuction = data.IsDebtAuction
+				assetToAuctionUpdate.IsAuctionActive = data.IsAuctionActive
 				assetToAuctionUpdate.AssetOutOraclePrice = data.AssetOutOraclePrice
 				assetToAuctionUpdate.AssetOutPrice = data.AssetOutPrice
 				assetIDToAuctionLookups = append(assetIDToAuctionLookups, assetToAuctionUpdate)
@@ -404,6 +405,7 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Colle
 					AssetId:             data.AssetId,
 					IsSurplusAuction:    data.IsSurplusAuction,
 					IsDebtAuction:       data.IsDebtAuction,
+					IsAuctionActive:     data.IsAuctionActive,
 					AssetOutOraclePrice: data.AssetOutOraclePrice,
 					AssetOutPrice:       data.AssetOutPrice,
 			}
@@ -643,6 +645,7 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBind
 			assetToAuctionUpdate.AssetId =  auctionMappingBinding.AssetIDs[i]
 			assetToAuctionUpdate.IsSurplusAuction = auctionMappingBinding.IsSurplusAuctions[i]
 			assetToAuctionUpdate.IsDebtAuction = auctionMappingBinding.IsDebtAuctions[i]
+			assetToAuctionUpdate.IsAuctionActive = auctionMappingBinding.IsAuctionActive[i]
 			assetToAuctionUpdate.AssetOutOraclePrice = auctionMappingBinding.AssetOutOraclePrices[i]
 			assetToAuctionUpdate.AssetOutPrice = auctionMappingBinding.AssetOutPrices[i]
 			assetIDToAuctionLookups = append(assetIDToAuctionLookups, assetToAuctionUpdate)
@@ -652,6 +655,7 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBind
 				AssetId:             auctionMappingBinding.AssetIDs[i],
 				IsSurplusAuction:    auctionMappingBinding.IsSurplusAuctions[i],
 				IsDebtAuction:       auctionMappingBinding.IsDebtAuctions[i],
+				IsAuctionActive:     auctionMappingBinding.IsAuctionActive[i],
 				AssetOutOraclePrice: auctionMappingBinding.AssetOutOraclePrices[i],
 				AssetOutPrice:       auctionMappingBinding.AssetOutPrices[i],
 		}
