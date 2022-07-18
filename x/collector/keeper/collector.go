@@ -647,7 +647,7 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBind
 			assetToAuctionUpdate.AssetId = auctionMappingBinding.AssetIDs[i]
 			assetToAuctionUpdate.IsSurplusAuction = auctionMappingBinding.IsSurplusAuctions[i]
 			assetToAuctionUpdate.IsDebtAuction = auctionMappingBinding.IsDebtAuctions[i]
-			assetToAuctionUpdate.IsAuctionActive = auctionMappingBinding.IsAuctionActive[i]
+			assetToAuctionUpdate.IsAuctionActive = false
 			assetToAuctionUpdate.AssetOutOraclePrice = auctionMappingBinding.AssetOutOraclePrices[i]
 			assetToAuctionUpdate.AssetOutPrice = auctionMappingBinding.AssetOutPrices[i]
 			assetIDToAuctionLookups = append(assetIDToAuctionLookups, assetToAuctionUpdate)
@@ -657,7 +657,7 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBind
 				AssetId:             auctionMappingBinding.AssetIDs[i],
 				IsSurplusAuction:    auctionMappingBinding.IsSurplusAuctions[i],
 				IsDebtAuction:       auctionMappingBinding.IsDebtAuctions[i],
-				IsAuctionActive:     auctionMappingBinding.IsAuctionActive[i],
+				IsAuctionActive:     false,
 				AssetOutOraclePrice: auctionMappingBinding.AssetOutOraclePrices[i],
 				AssetOutPrice:       auctionMappingBinding.AssetOutPrices[i],
 		}
