@@ -396,6 +396,9 @@ func (k *Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId 
 			k.DeleteVault(ctx, data.Id)
 			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
 			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
+			if !found {
+				return esmtypes.ErrESMParamsNotFound
+			}
 			esmStatus.StableVaultRedemptionStatus = true
 			k.SetESMStatus(ctx, esmStatus)
 		}
