@@ -194,8 +194,16 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Co
 	for _, v := range marketData.Market {
 		if assetInID.Id == v.AssetID {
 			assetInPrice = v.Rates
+			break
 		} else {
 			assetInPrice = 0
+		}
+	}
+	esmData, _ := k.GetESMTriggerParams(ctx, appId)
+	for _, data := range esmData.AssetsRates{
+		if assetInID.Id == data.AssetID {
+			assetInPrice = data.Rates
+			break
 		}
 	}
 
@@ -222,7 +230,7 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Co
 			k.SetAppToAmtValue(ctx, appToAmtValue)
 		}
 	}
-	for _, a := range esmDataAfterCoolOff.CollateralAsset {
+	for index, a := range esmDataAfterCoolOff.CollateralAsset {
 		assetToAmountValue, _ := k.GetAssetToAmountValue(ctx, appId, a.AssetID)
 		appToAmountValue, _ := k.GetAppToAmtValue(ctx, appId)
 		Ratio := assetToAmountValue.Amount.Quo(appToAmountValue.Amount).ToDec()
@@ -238,13 +246,16 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Co
 			return err
 		}
 		a.Amount = a.Amount.Sub(collateralTokens.Amount)
-		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset, a)
+		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:index],esmDataAfterCoolOff.CollateralAsset[index+1:]...)
+		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:index+1], esmDataAfterCoolOff.CollateralAsset[index:]...)
+		esmDataAfterCoolOff.CollateralAsset[index] = a
 		k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
 	}
 
-	for _, b := range esmDataAfterCoolOff.DebtAsset {
+	for i, b := range esmDataAfterCoolOff.DebtAsset {
 		if b.AssetID == assetInID.Id{
 			b.Amount = b.Amount.Sub(amount.Amount)
+			esmDataAfterCoolOff.DebtAsset = append(esmDataAfterCoolOff.DebtAsset[:i],esmDataAfterCoolOff.DebtAsset[i+1:]...)
 			esmDataAfterCoolOff.DebtAsset = append(esmDataAfterCoolOff.DebtAsset, b)
 			k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
 		}

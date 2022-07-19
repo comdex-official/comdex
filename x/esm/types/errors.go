@@ -26,4 +26,5 @@ var (
 	ErrCoolOffPeriodRemains        = sdkerrors.Register(ModuleName, 1116, "Cool off period remaining")
 	ErrorInvalidAmount             = sdkerrors.Register(ModuleName, 1117, "invalid amount")
 	ErrorInvalidFrom               = sdkerrors.Register(ModuleName, 1118, "invalid from")
+	ErrESMParamsNotFound           = sdkerrors.Register(ModuleName, 1119, "ESM Params Not Found")
 )

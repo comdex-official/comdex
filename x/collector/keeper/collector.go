@@ -403,6 +403,7 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Colle
 				continue
 			}
 			assetIDToAuctionLookup := types.AssetIdToAuctionLookupTable{
+
 				AssetId:             data.AssetId,
 				IsSurplusAuction:    data.IsSurplusAuction,
 				IsDebtAuction:       data.IsDebtAuction,
@@ -646,17 +647,19 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBind
 			assetToAuctionUpdate.AssetId = auctionMappingBinding.AssetIDs[i]
 			assetToAuctionUpdate.IsSurplusAuction = auctionMappingBinding.IsSurplusAuctions[i]
 			assetToAuctionUpdate.IsDebtAuction = auctionMappingBinding.IsDebtAuctions[i]
+			assetToAuctionUpdate.IsAuctionActive = false
 			assetToAuctionUpdate.AssetOutOraclePrice = auctionMappingBinding.AssetOutOraclePrices[i]
 			assetToAuctionUpdate.AssetOutPrice = auctionMappingBinding.AssetOutPrices[i]
 			assetIDToAuctionLookups = append(assetIDToAuctionLookups, assetToAuctionUpdate)
 			continue
 		}
 		assetIDToAuctionLookup := types.AssetIdToAuctionLookupTable{
-			AssetId:             auctionMappingBinding.AssetIDs[i],
-			IsSurplusAuction:    auctionMappingBinding.IsSurplusAuctions[i],
-			IsDebtAuction:       auctionMappingBinding.IsDebtAuctions[i],
-			AssetOutOraclePrice: auctionMappingBinding.AssetOutOraclePrices[i],
-			AssetOutPrice:       auctionMappingBinding.AssetOutPrices[i],
+				AssetId:             auctionMappingBinding.AssetIDs[i],
+				IsSurplusAuction:    auctionMappingBinding.IsSurplusAuctions[i],
+				IsDebtAuction:       auctionMappingBinding.IsDebtAuctions[i],
+				IsAuctionActive:     false,
+				AssetOutOraclePrice: auctionMappingBinding.AssetOutOraclePrices[i],
+				AssetOutPrice:       auctionMappingBinding.AssetOutPrices[i],
 		}
 		assetIDToAuctionLookups = append(assetIDToAuctionLookups, assetIDToAuctionLookup)
 	}
