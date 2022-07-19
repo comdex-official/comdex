@@ -387,7 +387,7 @@ func (m *CustomMessenger) AddESMTriggerParams(ctx sdk.Context, contractAddr sdk.
 
 func MsgAddESMTriggerParams(esmKeeper esmkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgAddESMTriggerParams) error {
-	err := esmKeeper.AddESMTriggerParamsForApp(ctx, a.AppID, a.TargetValue, a.CoolOffPeriod)
+	err := esmKeeper.AddESMTriggerParamsForApp(ctx, a)
 	if err != nil {
 		return err
 	}

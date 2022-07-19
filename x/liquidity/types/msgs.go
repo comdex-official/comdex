@@ -18,18 +18,22 @@ var (
 	_ sdk.Msg = (*MsgMarketOrder)(nil)
 	_ sdk.Msg = (*MsgCancelOrder)(nil)
 	_ sdk.Msg = (*MsgCancelAllOrders)(nil)
+	_ sdk.Msg = (*MsgTokensSoftLock)(nil)
+	_ sdk.Msg = (*MsgTokensSoftUnlock)(nil)
 )
 
 // Message types for the liquidity module.
 const (
-	TypeMsgCreatePair      = "create_pair"
-	TypeMsgCreatePool      = "create_pool"
-	TypeMsgDeposit         = "deposit"
-	TypeMsgWithdraw        = "withdraw"
-	TypeMsgLimitOrder      = "limit_order"
-	TypeMsgMarketOrder     = "market_order"
-	TypeMsgCancelOrder     = "cancel_order"
-	TypeMsgCancelAllOrders = "cancel_all_orders"
+	TypeMsgCreatePair       = "create_pair"
+	TypeMsgCreatePool       = "create_pool"
+	TypeMsgDeposit          = "deposit"
+	TypeMsgWithdraw         = "withdraw"
+	TypeMsgLimitOrder       = "limit_order"
+	TypeMsgMarketOrder      = "market_order"
+	TypeMsgCancelOrder      = "cancel_order"
+	TypeMsgCancelAllOrders  = "cancel_all_orders"
+	TypeMsgTokensSoftLock   = "tokens_soft_lock"
+	TypeMsgTokensSoftUnlock = "tokens_soft_unlock" //nolint:gosec
 )
 
 // NewMsgCreatePair returns a new MsgCreatePair.
@@ -568,7 +572,7 @@ func NewMsgSoftLock(
 
 func (msg MsgTokensSoftLock) Route() string { return RouterKey }
 
-func (msg MsgTokensSoftLock) Type() string { return TypeMsgWithdraw }
+func (msg MsgTokensSoftLock) Type() string { return TypeMsgTokensSoftLock }
 
 func (msg MsgTokensSoftLock) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Depositor); err != nil {
@@ -598,7 +602,7 @@ func (msg MsgTokensSoftLock) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-func (msg MsgTokensSoftLock) GetWithdrawer() sdk.AccAddress {
+func (msg MsgTokensSoftLock) GetDepositor() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
 	if err != nil {
 		panic(err)
@@ -624,7 +628,7 @@ func NewMsgSoftUnlock(
 
 func (msg MsgTokensSoftUnlock) Route() string { return RouterKey }
 
-func (msg MsgTokensSoftUnlock) Type() string { return TypeMsgWithdraw }
+func (msg MsgTokensSoftUnlock) Type() string { return TypeMsgTokensSoftUnlock }
 
 func (msg MsgTokensSoftUnlock) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Depositor); err != nil {
@@ -654,7 +658,7 @@ func (msg MsgTokensSoftUnlock) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-func (msg MsgTokensSoftUnlock) GetWithdrawer() sdk.AccAddress {
+func (msg MsgTokensSoftUnlock) GetDepositor() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
 	if err != nil {
 		panic(err)

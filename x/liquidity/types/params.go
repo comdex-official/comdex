@@ -1,10 +1,14 @@
 package types
 
 import (
+	"time"
+
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 const (
+	DefaultFarmingQueueDuration = time.Hour * 24
+
 	FeeCollectorAddressPrefix = "FeeCollectorAddress"
 
 	PoolReserveAddressPrefix          = "PoolReserveAddress"

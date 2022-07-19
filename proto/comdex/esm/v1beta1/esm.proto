@@ -24,6 +24,11 @@ message ESMTriggerParams {
     (gogoproto.moretags) = "yaml:\"cool_off_period\""
   ];
 
+  repeated DebtAssetsRates assetsRates = 4 [
+    (gogoproto.customname) = "AssetsRates",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"assets_rates\""
+  ];
 }
 
 message CurrentDepositStats{
@@ -62,6 +67,14 @@ message ESMStatus{
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"end_time\""
   ];
+
+  bool vault_redemption_status = 6 [
+    (gogoproto.moretags) = "yaml:\"vault_redemption_status\""
+  ];
+
+  bool stable_vault_redemption_status = 7 [
+    (gogoproto.moretags) = "yaml:\"stable_vault_redemption_status\""
+  ];
 }
 
 message KillSwitchParams{
@@ -94,6 +107,68 @@ message ESMMarketPrice{
 }
 
 message Market {
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  uint64 rates = 2;
+}
+
+message DataAfterCoolOff {
+  uint64 appId = 1 [ (gogoproto.moretags) = "yaml:\"appId\"" ];
+  repeated AssetToAmount collateral_asset = 2 [
+    (gogoproto.customname) = "CollateralAsset",
+    (gogoproto.moretags) = "yaml:\"collateral_asset\"",
+    (gogoproto.nullable) = false
+  ];
+  repeated AssetToAmount debt_asset = 3 [
+    (gogoproto.customname) = "DebtAsset",
+    (gogoproto.moretags) = "yaml:\"debt_asset\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message AssetToAmount {
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message AssetToAmountValue {
+  uint64 appId = 1 [ (gogoproto.moretags) = "yaml:\"appId\"" ];
+
+  uint64 asset_id = 2 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  string amount = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
+  ];
+  string asset_value_to_app_value_ratio = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"asset_value_to_app_value_ratio\""
+  ];
+}
+
+message AppToAmountValue {
+  uint64 appId = 1 [ (gogoproto.moretags) = "yaml:\"appId\"" ];
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message DebtAssetsRates {
   uint64 asset_id = 1 [
     (gogoproto.customname) = "AssetID",
     (gogoproto.moretags) = "yaml:\"asset_id\""

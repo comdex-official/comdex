@@ -1,8 +1,6 @@
 package liquidity
 
 import (
-	"time"
-
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -11,7 +9,7 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
+	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 	allApps, found := k.GetApps(ctx)
 	if found {
 		for _, app := range allApps {
@@ -24,7 +22,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 }
 
 func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyEndBlocker)
+	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyEndBlocker)
 
 	allApps, found := k.GetApps(ctx)
 	if found {

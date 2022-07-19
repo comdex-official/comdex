@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
@@ -253,6 +254,7 @@ var (
 		wasm.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
+		ica.AppModuleBasic{},
 	)
 )
 
@@ -302,7 +304,7 @@ type App struct {
 	UpgradeKeeper     upgradekeeper.Keeper
 	ParamsKeeper      paramskeeper.Keeper
 	IbcKeeper         *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	ICAHostKeeper     *icahostkeeper.Keeper
+	ICAHostKeeper     icahostkeeper.Keeper
 	EvidenceKeeper    evidencekeeper.Keeper
 	IbcTransferKeeper ibctransferkeeper.Keeper
 
@@ -528,18 +530,17 @@ func New(
 		scopedIBCKeeper,
 	)
 
-	icaHostKeeper := icahostkeeper.NewKeeper(
+	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec, app.keys[icahosttypes.StoreKey],
 		app.GetSubspace(icahosttypes.SubModuleName),
 		app.IbcKeeper.ChannelKeeper,
 		&app.IbcKeeper.PortKeeper,
 		app.AccountKeeper,
-		app.ScopedICAHostKeeper,
+		scopedICAHostKeeper,
 		app.MsgServiceRouter(),
 	)
-	app.ICAHostKeeper = &icaHostKeeper
 
-	icaHostIBCModule := icahost.NewIBCModule(*app.ICAHostKeeper)
+	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 	app.AssetKeeper = assetkeeper.NewKeeper(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
@@ -564,8 +565,11 @@ func New(
 		app.keys[esmtypes.StoreKey],
 		app.GetSubspace(esmtypes.ModuleName),
 		&app.AssetKeeper,
+		&app.VaultKeeper,
 		app.BankKeeper,
 		&app.MarketKeeper,
+		&app.TokenmintKeeper,
+		&app.CollectorKeeper,
 	)
 
 	app.VaultKeeper = vaultkeeper.NewKeeper(
@@ -742,7 +746,6 @@ func New(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
-		AddRoute(esmtypes.RouterKey, esm.NewESMHandler(app.EsmKeeper)).
 		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
@@ -811,7 +814,7 @@ func New(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		authzmodule.NewAppModule(app.cdc, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IbcKeeper),
-		ica.NewAppModule(nil, app.ICAHostKeeper),
+		ica.NewAppModule(nil, &app.ICAHostKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		asset.NewAppModule(app.cdc, app.AssetKeeper),
@@ -1099,14 +1102,10 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
-	a.UpgradeKeeper.SetUpgradeHandler(
-		tv1_0_0.UpgradeName,
-		tv1_0_0.CreateUpgradeHandler(a.mm, a.configurator, a.WasmKeeper),
-	)
 
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv2_0_0.UpgradeName,
-		tv2_0_0.CreateUpgradeHandler(a.mm, a.configurator),
+		tv2_0_0.UpgradeNameV2,
+		tv2_0_0.CreateUpgradeHandlerV2(a.mm, a.configurator),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1119,6 +1118,15 @@ func (a *App) registerUpgradeHandlers() {
 
 	var storeUpgrades *storetypes.StoreUpgrades
 
+	storeUpgrades = upgradeHandlers(upgradeInfo, a, storeUpgrades)
+
+	if storeUpgrades != nil {
+		// configure store loader that checks if version == upgradeHeight and applies store upgrades
+		a.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
+	}
+}
+
+func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
 	switch {
 	case upgradeInfo.Name == tv1_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		// prepare store for testnet upgrade v1.0.0
@@ -1127,7 +1135,7 @@ func (a *App) registerUpgradeHandlers() {
 			Deleted: []string{"asset", "liquidity", "oracle", "vault"},
 		}
 	case upgradeInfo.Name == tv2_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		// prepare store for testnet upgrade v1.1.0
+		// prepare store for testnet upgrade v2.0.0
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{
 				assettypes.ModuleName,
@@ -1144,13 +1152,18 @@ func (a *App) registerUpgradeHandlers() {
 				tokenminttypes.ModuleName,
 				vaulttypes.ModuleName,
 				feegrant.ModuleName,
+				icacontrollertypes.StoreKey,
+				icahosttypes.StoreKey,
+			},
+		}
+	case upgradeInfo.Name == tv2_0_0.UpgradeNameV2 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		// prepare store for testnet upgrade v2.1.0
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{
+				icacontrollertypes.StoreKey,
 				icahosttypes.StoreKey,
 			},
 		}
 	}
-
-	if storeUpgrades != nil {
-		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		a.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
-	}
+	return storeUpgrades
 }

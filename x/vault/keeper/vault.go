@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	"strconv"
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strconv"
 )
 
 func (k *Keeper) SetUserVaultExtendedPairMapping(ctx sdk.Context, userVaultAssetData types.UserVaultAssetMapping) {
@@ -197,19 +197,19 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 	if !found {
 		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 	}
-	esmStatus, found := k.GetESMStatus(ctx,extendedPairVault.AppId)
+	esmStatus, found := k.GetESMStatus(ctx, extendedPairVault.AppId)
 	statusEsm := false
-	if found{
+	if found {
 		statusEsm = esmStatus.Status
 	}
-	if statusEsm{
+	if statusEsm {
 		marketStatus, found := k.GetESMMarketForAsset(ctx, extendedPairVault.AppId)
 		if !found {
 			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 		}
-		if marketStatus.IsPriceSet{
-			for _, data := range marketStatus.Market{
-				if assetInData.Id == data.AssetID{
+		if marketStatus.IsPriceSet {
+			for _, data := range marketStatus.Market {
+				if assetInData.Id == data.AssetID {
 					assetInPrice = data.Rates
 				}
 			}
@@ -219,19 +219,19 @@ func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVau
 
 	if extendedPairVault.AssetOutOraclePrice {
 		//If oracle Price required for the assetOut
-		if statusEsm{
+		if statusEsm {
 			marketStatus, found := k.GetESMMarketForAsset(ctx, extendedPairVault.AppId)
 			if !found {
 				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 			}
-			if marketStatus.IsPriceSet{
-				for _, data := range marketStatus.Market{
-					if assetOutData.Id == data.AssetID{
+			if marketStatus.IsPriceSet {
+				for _, data := range marketStatus.Market {
+					if assetOutData.Id == data.AssetID {
 						assetOutPrice = data.Rates
 					}
 				}
 			}
-		}else{
+		} else {
 			assetOutPrice, found = k.GetPriceForAsset(ctx, assetOutData.Id)
 			if !found {
 				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
@@ -263,14 +263,13 @@ func (k *Keeper) VerifyCollaterlizationRatio(
 	statusEsm bool,
 ) error {
 
-
 	collaterlizationRatio, err := k.CalculateCollaterlizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
 	if err != nil {
 		return err
 	}
-	if collaterlizationRatio.LT(minCrRequired) && !statusEsm{
+	if collaterlizationRatio.LT(minCrRequired) && !statusEsm {
 		return types.ErrorInvalidCollateralizationRatio
-	}else if collaterlizationRatio.LT(sdk.SmallestDec()) && statusEsm{
+	} else if collaterlizationRatio.LT(sdk.MustNewDecFromStr("1")) && statusEsm {
 		return types.ErrorInvalidCollateralizationRatio
 	}
 	return nil
@@ -480,7 +479,7 @@ func (k *Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, Exte
 	new_vault.ExtendedPairVaultID = extendedPairVault.Id
 	k.SetVault(ctx, new_vault)
 
-	//get extendedpair lookup table data 
+	//get extendedpair lookup table data
 	// push the new vault id in that extended pair of the app
 	// update the counter of the extendedpair lookup tabe
 	////// ///////
@@ -491,13 +490,16 @@ func (k *Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, Exte
 
 	for _, appData := range app_extended_pair_vault_data.ExtendedPairVaults {
 
-  			if appData.ExtendedPairId == new_vault.ExtendedPairVaultID {
+		if appData.ExtendedPairId == new_vault.ExtendedPairVaultID {
 
-    		appData.VaultIds = append(appData.VaultIds, new_vault.Id)
-  		}
+			appData.VaultIds = append(appData.VaultIds, new_vault.Id)
+		}
 	}
-	
-	k.SetAppExtendedPairVaultMapping(ctx, app_extended_pair_vault_data)
+
+	err := k.SetAppExtendedPairVaultMapping(ctx, app_extended_pair_vault_data)
+	if err != nil {
+		return err
+	}
 
 	//////////////////
 	// k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updated_counter, new_vault)

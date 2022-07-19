@@ -4,12 +4,10 @@ import (
 	"context"
 	"strconv"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/types/time"
-
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/vault/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
@@ -29,16 +27,16 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 // MsgCreate Creating a new CDP.
 func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
-	if found{
+	if found {
 		status = esmStatus.Status
 	}
-	if status{
+	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
@@ -157,7 +155,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	newVault.AppId = appMapping.Id
 	newVault.InterestAccumulated = zeroVal
 	newVault.Owner = msg.From
-	newVault.CreatedAt = time.Now()
+	newVault.CreatedAt = ctx.BlockTime()
 	newVault.ExtendedPairVaultID = extendedPairVault.Id
 
 	k.SetVault(ctx, newVault)
@@ -217,16 +215,16 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 // MsgDeposit Only for depositing new collateral.
 func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
-	if found{
+	if found {
 		status = esmStatus.Status
 	}
-	if status{
+	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -298,23 +296,17 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 // MsgWithdraw Withdrawing collateral.
 func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
-	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
-	if found{
+	if found {
 		status = esmStatus.Status
 	}
-	
-	if ctx.BlockTime().After(esmStatus.EndTime){
-		//TODO.....
 
-		//send collateral to redemption func and calculate debt with collector check 
-		// but only once
-		
-		// TODO........
+	if ctx.BlockTime().After(esmStatus.EndTime) && status {
 		return nil, esmtypes.ErrCoolOffPeriodPassed
 	}
 
@@ -399,16 +391,16 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 // MsgDraw To borrow more amount.
 func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
-	if found{
+	if found {
 		status = esmStatus.Status
 	}
-	if status{
+	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -528,16 +520,16 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 
 func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
-	if found{
+	if found {
 		status = esmStatus.Status
 	}
-	if status{
+	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -662,16 +654,16 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 
 func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
-	if found{
+	if found {
 		status = esmStatus.Status
 	}
-	if status{
+	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -770,16 +762,16 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 
 func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateStableMintRequest) (*types.MsgCreateStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
-	if found{
+	if found {
 		status = esmStatus.Status
 	}
-	if status{
+	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	//Checking if extended pair exists
@@ -880,7 +872,7 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	stableVault.AmountIn = msg.Amount
 	stableVault.AmountOut = msg.Amount
 	stableVault.AppId = appMapping.Id
-	stableVault.CreatedAt = time.Now()
+	stableVault.CreatedAt = ctx.BlockTime()
 	stableVault.ExtendedPairVaultID = extendedPairVault.Id
 	k.SetStableMintVault(ctx, stableVault)
 	//update Locker Data 	//Update Amount
@@ -891,16 +883,16 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 
 func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDepositStableMintRequest) (*types.MsgDepositStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
-	if found{
+	if found {
 		status = esmStatus.Status
 	}
-	if status{
+	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
@@ -1017,16 +1009,16 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 
 func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdrawStableMintRequest) (*types.MsgWithdrawStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx,msg.AppId)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
-	if found{
+	if found {
 		status = esmStatus.Status
 	}
-	if status{
+	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams,_ := k.GetKillSwitchData(ctx,msg.AppId)
-	if klwsParams.BreakerEnable{
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)

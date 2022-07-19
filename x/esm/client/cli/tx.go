@@ -5,23 +5,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strconv"
-	"time"
-
 	"github.com/spf13/cobra"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/comdex-official/comdex/x/esm/types"
-)
-
-var (
-	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
-)
-
-const (
-	flagPacketTimeoutTimestamp = "packet-timeout-timestamp"
-	listSeparator              = ","
 )
 
 func GetTxCmd() *cobra.Command {
@@ -36,10 +25,10 @@ func GetTxCmd() *cobra.Command {
 		txDepositESM(),
 		txExecuteESM(),
 		KillSwitch(),
+		CollateralRedemption(),
 	)
 	return cmd
 }
-
 
 func txDepositESM() *cobra.Command {
 	cmd := &cobra.Command{
@@ -109,20 +98,55 @@ func KillSwitch() *cobra.Command {
 				return err
 			}
 
-			app_id, err := strconv.ParseUint(args[0], 10, 64)
+			appId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			breaker_enable, err := strconv.ParseBool(args[1])
+			breakerEnable, err := strconv.ParseBool(args[1])
 			if err != nil {
 				return err
 			}
 			var switchParams types.KillSwitchParams
-			switchParams.AppId = app_id
-			switchParams.BreakerEnable = breaker_enable
+			switchParams.AppId = appId
+			switchParams.BreakerEnable = breakerEnable
 
 			msg := types.NewMsgKillRequest(ctx.FromAddress, switchParams)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
+}
+
+func CollateralRedemption() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "redeem-collateral [app_id] [amount]",
+		Short: "redeem collateral of an App",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			amount, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgCollateralRedemption(appId, amount, ctx.FromAddress)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

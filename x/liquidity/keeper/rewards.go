@@ -471,7 +471,7 @@ func (k Keeper) GetMinimumEpochDurationFromPoolID(ctx sdk.Context, poolID uint64
 		}
 	}
 	if minEpochDuration == time.Duration(0) {
-		minEpochDuration = time.Hour * 24 // if no gauge for given pool, making 24h as default vaule
+		minEpochDuration = types.DefaultFarmingQueueDuration // if no gauge for given pool, making 24h as default vaule
 	}
 	return minEpochDuration
 }

@@ -11,10 +11,15 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	chain "github.com/comdex-official/comdex/app"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/liquidity"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/keeper"
 	"github.com/comdex-official/comdex/x/liquidity/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
+	protobuftypes "github.com/gogo/protobuf/types"
+
+	utils "github.com/comdex-official/comdex/types"
 )
 
 type KeeperTestSuite struct {
@@ -74,58 +79,152 @@ func (s *KeeperTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
 	s.Require().NoError(err)
 }
 
-func (s *KeeperTestSuite) createPair(appID uint64, creator sdk.AccAddress, baseCoinDenom, quoteCoinDenom string, fund bool) types.Pair {
-	s.T().Helper()
+func newInt(i int64) sdk.Int {
+	return sdk.NewInt(i)
+}
+
+func newDec(i int64) sdk.Dec {
+	return sdk.NewDec(i)
+}
+
+func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
+	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
+		Name:             appName,
+		ShortName:        appName,
+		MinGovDeposit:    sdk.NewInt(0),
+		GovTimeInSeconds: 0,
+		GenesisToken:     []assettypes.MintGenesisToken{},
+	})
+	s.Require().NoError(err)
+	found := s.app.AssetKeeper.HasAppForName(s.ctx, appName)
+	s.Require().True(found)
+
+	apps, found := s.app.AssetKeeper.GetApps(s.ctx)
+	s.Require().True(found)
+	var appID uint64
+	for _, app := range apps {
+		if app.Name == appName {
+			appID = app.Id
+			break
+		}
+	}
+	s.Require().NotZero(appID)
+	return appID
+}
+
+func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
+	var (
+		store = s.app.MarketKeeper.Store(s.ctx)
+		key   = markettypes.PriceForMarketKey(symbol)
+	)
+	value := s.app.AppCodec().MustMarshal(
+		&protobuftypes.UInt64Value{
+			Value: price,
+		},
+	)
+	store.Set(key, value)
+}
+
+func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) assettypes.Asset {
+	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
+		Name:                  name,
+		Denom:                 denom,
+		Decimals:              1000000,
+		IsOnChain:             true,
+		IsOraclePriceRequired: true,
+	})
+	s.Require().NoError(err)
+	assets := s.app.AssetKeeper.GetAssets(s.ctx)
+	var assetObj assettypes.Asset
+	for _, asset := range assets {
+		if asset.Denom == denom {
+			assetObj = asset
+			break
+		}
+	}
+	s.Require().NotZero(assetObj.Id)
+
+	market := markettypes.Market{
+		Symbol:   name,
+		ScriptID: 12,
+		Rates:    price,
+	}
+	s.app.MarketKeeper.SetMarket(s.ctx, market)
+
+	exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetObj.Id)
+	s.Suite.Require().False(exists)
+	s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetObj.Id, name)
+	exists = s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetObj.Id)
+	s.Suite.Require().True(exists)
+
+	s.SetOraclePrice(name, price)
+
+	return assetObj
+}
+
+func (s *KeeperTestSuite) CreateNewLiquidityPair(appID uint64, creator sdk.AccAddress, baseCoinDenom, quoteCoinDenom string) types.Pair {
 	params, err := s.keeper.GetGenericParams(s.ctx, appID)
 	s.Require().NoError(err)
-	if fund {
-		s.fundAddr(creator, params.PairCreationFee)
-	}
+
+	s.fundAddr(creator, params.PairCreationFee)
+
 	msg := types.NewMsgCreatePair(appID, creator, baseCoinDenom, quoteCoinDenom)
-	s.Require().NoError(msg.ValidateBasic())
 	pair, err := s.keeper.CreatePair(s.ctx, msg, false)
+
 	s.Require().NoError(err)
+	s.Require().IsType(types.Pair{}, pair)
+
 	return pair
 }
 
-func (s *KeeperTestSuite) createPool(appID uint64, creator sdk.AccAddress, pairId uint64, depositCoins sdk.Coins, fund bool) types.Pool {
-	s.T().Helper()
+func (s *KeeperTestSuite) CreateNewLiquidityPool(appID, pairID uint64, creator sdk.AccAddress, depositCoins string) types.Pool {
 	params, err := s.keeper.GetGenericParams(s.ctx, appID)
 	s.Require().NoError(err)
-	if fund {
-		s.fundAddr(creator, depositCoins.Add(params.PoolCreationFee...))
-	}
-	msg := types.NewMsgCreatePool(appID, creator, pairId, depositCoins)
-	s.Require().NoError(msg.ValidateBasic())
+
+	parsedDepositCoins := utils.ParseCoins(depositCoins)
+
+	s.fundAddr(creator, params.PoolCreationFee)
+	s.fundAddr(creator, parsedDepositCoins)
+	msg := types.NewMsgCreatePool(appID, creator, pairID, parsedDepositCoins)
 	pool, err := s.keeper.CreatePool(s.ctx, msg)
 	s.Require().NoError(err)
+	s.Require().IsType(types.Pool{}, pool)
+
 	return pool
 }
 
-func (s *KeeperTestSuite) deposit(appID uint64, depositor sdk.AccAddress, poolId uint64, depositCoins sdk.Coins, fund bool) types.DepositRequest {
-	s.T().Helper()
-	if fund {
-		s.fundAddr(depositor, depositCoins)
-	}
-	req, err := s.keeper.Deposit(s.ctx, types.NewMsgDeposit(appID, depositor, poolId, depositCoins))
+func (s *KeeperTestSuite) Deposit(appID, poolID uint64, depositor sdk.AccAddress, depositCoins string) types.DepositRequest {
+	msg := types.NewMsgDeposit(
+		appID, depositor, poolID, utils.ParseCoins(depositCoins),
+	)
+	s.fundAddr(depositor, msg.DepositCoins)
+	req, err := s.keeper.Deposit(s.ctx, msg)
 	s.Require().NoError(err)
+	s.Require().IsType(types.DepositRequest{}, req)
 	return req
 }
 
-func (s *KeeperTestSuite) withdraw(appID uint64, withdrawer sdk.AccAddress, poolId uint64, poolCoin sdk.Coin) types.WithdrawRequest {
-	s.T().Helper()
-	req, err := s.keeper.Withdraw(s.ctx, types.NewMsgWithdraw(appID, withdrawer, poolId, poolCoin))
+func (s *KeeperTestSuite) Withdraw(appID, poolID uint64, withdrawer sdk.AccAddress, poolCoin sdk.Coin) types.WithdrawRequest {
+	msg := types.NewMsgWithdraw(
+		appID, withdrawer, poolID, poolCoin,
+	)
+	req, err := s.keeper.Withdraw(s.ctx, msg)
 	s.Require().NoError(err)
+	s.Require().IsType(types.WithdrawRequest{}, req)
 	return req
 }
 
-func (s *KeeperTestSuite) limitOrder(
-	appID uint64, orderer sdk.AccAddress, pairId uint64, dir types.OrderDirection,
-	price sdk.Dec, amt sdk.Int, orderLifespan time.Duration, fund bool) types.Order {
+func (s *KeeperTestSuite) LimitOrder(
+	appID uint64,
+	orderer sdk.AccAddress,
+	pairId uint64,
+	dir types.OrderDirection,
+	price sdk.Dec,
+	amt sdk.Int,
+	orderLifespan time.Duration,
+) types.Order {
 	s.T().Helper()
 
-	params, err := s.keeper.GetGenericParams(s.ctx, appID)
-	s.Require().NoError(err)
 	pair, found := s.keeper.GetPair(s.ctx, appID, pairId)
 	s.Require().True(found)
 	var ammDir amm.OrderDirection
@@ -139,38 +238,30 @@ func (s *KeeperTestSuite) limitOrder(
 		offerCoinDenom, demandCoinDenom = pair.BaseCoinDenom, pair.QuoteCoinDenom
 	}
 	offerCoin := sdk.NewCoin(offerCoinDenom, amm.OfferCoinAmount(ammDir, price, amt))
-	offerCoin.Amount = offerCoin.Amount.Add(offerCoin.Amount.ToDec().Mul(params.SwapFeeRate).TruncateInt())
-	if fund {
-		s.fundAddr(orderer, sdk.NewCoins(offerCoin))
-	}
+
+	params, err := s.keeper.GetGenericParams(s.ctx, appID)
+	s.Require().NoError(err)
+
+	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, offerCoin.Amount.ToDec().Mul(params.SwapFeeRate).RoundInt()))
+	s.fundAddr(orderer, sdk.NewCoins(offerCoin))
+
 	msg := types.NewMsgLimitOrder(
-		appID, orderer, pairId, dir, offerCoin, demandCoinDenom,
-		price, amt, orderLifespan)
+		appID, orderer, pairId, dir, offerCoin, demandCoinDenom, price, amt, orderLifespan,
+	)
 	s.Require().NoError(msg.ValidateBasic())
 	req, err := s.keeper.LimitOrder(s.ctx, msg)
 	s.Require().NoError(err)
 	return req
 }
 
-func (s *KeeperTestSuite) buyLimitOrder(
-	appID uint64, orderer sdk.AccAddress, pairId uint64, price sdk.Dec,
-	amt sdk.Int, orderLifespan time.Duration, fund bool) types.Order {
-	s.T().Helper()
-	return s.limitOrder(
-		appID, orderer, pairId, types.OrderDirectionBuy, price, amt, orderLifespan, fund)
-}
-
-func (s *KeeperTestSuite) sellLimitOrder(
-	appID uint64, orderer sdk.AccAddress, pairId uint64, price sdk.Dec,
-	amt sdk.Int, orderLifespan time.Duration, fund bool) types.Order {
-	s.T().Helper()
-	return s.limitOrder(
-		appID, orderer, pairId, types.OrderDirectionSell, price, amt, orderLifespan, fund)
-}
-
-func (s *KeeperTestSuite) marketOrder(
-	appID uint64, orderer sdk.AccAddress, pairId uint64, dir types.OrderDirection,
-	amt sdk.Int, orderLifespan time.Duration, fund bool) types.Order {
+func (s *KeeperTestSuite) MarketOrder(
+	appID uint64,
+	orderer sdk.AccAddress,
+	pairId uint64,
+	dir types.OrderDirection,
+	amt sdk.Int,
+	orderLifespan time.Duration,
+) types.Order {
 	s.T().Helper()
 	pair, found := s.keeper.GetPair(s.ctx, appID, pairId)
 	s.Require().True(found)
@@ -189,65 +280,15 @@ func (s *KeeperTestSuite) marketOrder(
 		offerCoin = sdk.NewCoin(pair.BaseCoinDenom, amt)
 		demandCoinDenom = pair.QuoteCoinDenom
 	}
-	offerCoin.Amount = offerCoin.Amount.Add(offerCoin.Amount.ToDec().Mul(params.SwapFeeRate).TruncateInt())
-	if fund {
-		s.fundAddr(orderer, sdk.NewCoins(offerCoin))
-	}
+
+	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, offerCoin.Amount.ToDec().Mul(params.SwapFeeRate).RoundInt()))
+	s.fundAddr(orderer, sdk.NewCoins(offerCoin))
+
 	msg := types.NewMsgMarketOrder(
-		appID, orderer, pairId, dir, offerCoin, demandCoinDenom,
-		amt, orderLifespan)
+		appID, orderer, pairId, dir, offerCoin, demandCoinDenom, amt, orderLifespan,
+	)
 	s.Require().NoError(msg.ValidateBasic())
 	req, err := s.keeper.MarketOrder(s.ctx, msg)
 	s.Require().NoError(err)
 	return req
-}
-
-func (s *KeeperTestSuite) buyMarketOrder(
-	appID uint64, orderer sdk.AccAddress, pairId uint64,
-	amt sdk.Int, orderLifespan time.Duration, fund bool) types.Order {
-	s.T().Helper()
-	return s.marketOrder(
-		appID, orderer, pairId, types.OrderDirectionBuy, amt, orderLifespan, fund)
-}
-
-//nolint
-func (s *KeeperTestSuite) sellMarketOrder(
-	appID uint64, orderer sdk.AccAddress, pairId uint64,
-	amt sdk.Int, orderLifespan time.Duration, fund bool) types.Order {
-	s.T().Helper()
-	return s.marketOrder(
-		appID, orderer, pairId, types.OrderDirectionSell, amt, orderLifespan, fund)
-}
-
-//nolint
-func (s *KeeperTestSuite) cancelOrder(appID uint64, orderer sdk.AccAddress, pairId, orderId uint64) {
-	s.T().Helper()
-	err := s.keeper.CancelOrder(s.ctx, types.NewMsgCancelOrder(appID, orderer, pairId, orderId))
-	s.Require().NoError(err)
-}
-
-func (s *KeeperTestSuite) cancelAllOrders(appID uint64, orderer sdk.AccAddress, pairIds []uint64) {
-	s.T().Helper()
-	err := s.keeper.CancelAllOrders(s.ctx, types.NewMsgCancelAllOrders(appID, orderer, pairIds))
-	s.Require().NoError(err)
-}
-
-func coinEq(exp, got sdk.Coin) (bool, string, string, string) {
-	return exp.IsEqual(got), "expected:\t%v\ngot:\t\t%v", exp.String(), got.String()
-}
-
-func coinsEq(exp, got sdk.Coins) (bool, string, string, string) {
-	return exp.IsEqual(got), "expected:\t%v\ngot:\t\t%v", exp.String(), got.String()
-}
-
-func intEq(exp, got sdk.Int) (bool, string, string, string) {
-	return exp.Equal(got), "expected:\t%v\ngot:\t\t%v", exp.String(), got.String()
-}
-
-func decEq(exp, got sdk.Dec) (bool, string, string, string) {
-	return exp.Equal(got), "expected:\t%v\ngot:\t\t%v", exp.String(), got.String()
-}
-
-func newInt(i int64) sdk.Int {
-	return sdk.NewInt(i)
 }

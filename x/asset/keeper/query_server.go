@@ -13,20 +13,20 @@ import (
 )
 
 var (
-	_ types.QueryServer = (*queryServer)(nil)
+	_ types.QueryServer = (*QueryServer)(nil)
 )
 
-type queryServer struct {
+type QueryServer struct {
 	Keeper
 }
 
 func NewQueryServer(k Keeper) types.QueryServer {
-	return &queryServer{
+	return &QueryServer{
 		Keeper: k,
 	}
 }
 
-func (q *queryServer) QueryAssets(c context.Context, req *types.QueryAssetsRequest) (*types.QueryAssetsResponse, error) {
+func (q *QueryServer) QueryAssets(c context.Context, req *types.QueryAssetsRequest) (*types.QueryAssetsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -63,7 +63,7 @@ func (q *queryServer) QueryAssets(c context.Context, req *types.QueryAssetsReque
 	}, nil
 }
 
-func (q *queryServer) QueryAsset(c context.Context, req *types.QueryAssetRequest) (*types.QueryAssetResponse, error) {
+func (q *QueryServer) QueryAsset(c context.Context, req *types.QueryAssetRequest) (*types.QueryAssetResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -82,7 +82,7 @@ func (q *queryServer) QueryAsset(c context.Context, req *types.QueryAssetRequest
 	}, nil
 }
 
-func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest) (*types.QueryPairsResponse, error) {
+func (q *QueryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest) (*types.QueryPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -137,7 +137,7 @@ func (q *queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest
 	}, nil
 }
 
-func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (*types.QueryPairResponse, error) {
+func (q *QueryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (*types.QueryPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -172,7 +172,7 @@ func (q *queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) 
 	}, nil
 }
 
-func (q *queryServer) QueryApps(c context.Context, _ *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
+func (q *QueryServer) QueryApps(c context.Context, _ *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
 	var (
 		ctx         = sdk.UnwrapSDKContext(c)
 		apps, found = q.GetApps(ctx)
@@ -186,7 +186,7 @@ func (q *queryServer) QueryApps(c context.Context, _ *types.QueryAppsRequest) (*
 	}, nil
 }
 
-func (q *queryServer) QueryApp(c context.Context, req *types.QueryAppRequest) (*types.QueryAppResponse, error) {
+func (q *QueryServer) QueryApp(c context.Context, req *types.QueryAppRequest) (*types.QueryAppResponse, error) {
 	var (
 		ctx        = sdk.UnwrapSDKContext(c)
 		app, found = q.GetApp(ctx, req.Id)
@@ -200,7 +200,7 @@ func (q *queryServer) QueryApp(c context.Context, req *types.QueryAppRequest) (*
 	}, nil
 }
 
-func (q *queryServer) QueryExtendedPairVault(c context.Context, req *types.QueryExtendedPairVaultRequest) (*types.QueryExtendedPairVaultResponse, error) {
+func (q *QueryServer) QueryExtendedPairVault(c context.Context, req *types.QueryExtendedPairVaultRequest) (*types.QueryExtendedPairVaultResponse, error) {
 	var (
 		ctx         = sdk.UnwrapSDKContext(c)
 		pair, found = q.GetPairsVault(ctx, req.Id)
@@ -214,7 +214,7 @@ func (q *queryServer) QueryExtendedPairVault(c context.Context, req *types.Query
 	}, nil
 }
 
-func (q *queryServer) QueryAllExtendedPairVaults(c context.Context, _ *types.QueryAllExtendedPairVaultsRequest) (*types.QueryAllExtendedPairVaultsResponse, error) {
+func (q *QueryServer) QueryAllExtendedPairVaults(c context.Context, _ *types.QueryAllExtendedPairVaultsRequest) (*types.QueryAllExtendedPairVaultsResponse, error) {
 	var (
 		ctx               = sdk.UnwrapSDKContext(c)
 		pairVaults, found = q.GetPairsVaults(ctx)
@@ -228,7 +228,7 @@ func (q *queryServer) QueryAllExtendedPairVaults(c context.Context, _ *types.Que
 	}, nil
 }
 
-func (q *queryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *types.QueryAllExtendedPairVaultsByAppRequest) (*types.QueryAllExtendedPairVaultsByAppResponse, error) {
+func (q *QueryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *types.QueryAllExtendedPairVaultsByAppRequest) (*types.QueryAllExtendedPairVaultsByAppResponse, error) {
 	var (
 		ctx               = sdk.UnwrapSDKContext(c)
 		pairVaults, found = q.GetPairsVaults(ctx)
@@ -248,7 +248,7 @@ func (q *queryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *ty
 	}, nil
 }
 
-func (q *queryServer) QueryAllExtendedPairStableVaultsIDByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsIDByAppRequest) (*types.QueryAllExtendedPairStableVaultsIDByAppResponse, error) {
+func (q *QueryServer) QueryAllExtendedPairStableVaultsIDByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsIDByAppRequest) (*types.QueryAllExtendedPairStableVaultsIDByAppResponse, error) {
 	var (
 		ctx               = sdk.UnwrapSDKContext(c)
 		pairVaults, found = q.GetPairsVaults(ctx)
@@ -268,7 +268,7 @@ func (q *queryServer) QueryAllExtendedPairStableVaultsIDByApp(c context.Context,
 	}, nil
 }
 
-func (q *queryServer) QueryGovTokenByApp(c context.Context, req *types.QueryGovTokenByAppRequest) (*types.QueryGovTokenByAppResponse, error) {
+func (q *QueryServer) QueryGovTokenByApp(c context.Context, req *types.QueryGovTokenByAppRequest) (*types.QueryGovTokenByAppResponse, error) {
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
 		assetID uint64
@@ -288,7 +288,7 @@ func (q *queryServer) QueryGovTokenByApp(c context.Context, req *types.QueryGovT
 	}, nil
 }
 
-func (q *queryServer) QueryAllExtendedPairStableVaultsByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsByAppRequest) (*types.QueryAllExtendedPairStableVaultsByAppResponse, error) {
+func (q *QueryServer) QueryAllExtendedPairStableVaultsByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsByAppRequest) (*types.QueryAllExtendedPairStableVaultsByAppResponse, error) {
 	var (
 		ctx               = sdk.UnwrapSDKContext(c)
 		pairVaults, found = q.GetPairsVaults(ctx)

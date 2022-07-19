@@ -44,10 +44,13 @@ func MsgCreate(
 	if err != nil {
 		return resp, err
 	}
-	var respJson map[string]interface{}
-	json.Unmarshal([]byte(resp.String()), &respJson)
-	if respJson["code"] != 0 {
-		errLog, _ := respJson["raw_log"].(string)
+	var respJSON map[string]interface{}
+	err = json.Unmarshal([]byte(resp.String()), &respJSON)
+	if err != nil {
+		return nil, err
+	}
+	if respJSON["code"] != 0 {
+		errLog, _ := respJSON["raw_log"].(string)
 		err = fmt.Errorf(errLog)
 	}
 	return resp, err

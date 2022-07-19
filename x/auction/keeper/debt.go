@@ -16,19 +16,19 @@ func (k Keeper) DebtActivator(ctx sdk.Context) error {
 	}
 	for _, data := range auctionMapData {
 		for _, inData := range data.AssetIdToAuctionLookup {
-			klwsParams,_ := k.GetKillSwitchData(ctx,data.AppId)
-			esmStatus, found := k.GetESMStatus(ctx,data.AppId)
+			klwsParams, _ := k.GetKillSwitchData(ctx, data.AppId)
+			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
 			status := false
-			if found{
+			if found {
 				status = esmStatus.Status
 			}
-			if inData.IsDebtAuction && !inData.IsAuctionActive && !klwsParams.BreakerEnable && !status{
+			if inData.IsDebtAuction && !inData.IsAuctionActive && !klwsParams.BreakerEnable && !status {
 				err := k.CreateDebtAuction(ctx, data.AppId, inData.AssetId)
 				if err != nil {
 					return err
 				}
 			}
-			if inData.IsDebtAuction && inData.IsAuctionActive && !status {
+			if inData.IsDebtAuction && inData.IsAuctionActive {
 				err := k.DebtAuctionClose(ctx, data.AppId, status)
 				if err != nil {
 					return err
@@ -51,11 +51,11 @@ func (k Keeper) CreateDebtAuction(ctx sdk.Context, appID, assetID uint64) error 
 	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
 		if assetToAuction.AssetId == assetID && status == auctiontypes.StartedDebtAuction {
 			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = true
+			err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
+			if err1 != nil {
+				return err1
+			}
 		}
-	}
-	err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
-	if err1 != nil {
-		return err1
 	}
 	return nil
 }
@@ -222,7 +222,7 @@ func (k Keeper) closeDebtAuction(
 		if err != nil {
 			return err
 		}
-	}else if (debtAuction.AuctionStatus != auctiontypes.AuctionStartNoBids)  && !statusEsm{
+	} else if (debtAuction.AuctionStatus != auctiontypes.AuctionStartNoBids) && !statusEsm {
 		err := k.MintNewTokensForApp(ctx, debtAuction.AppId, debtAuction.AssetOutId, debtAuction.Bidder.String(), debtAuction.CurrentBidAmount.Amount)
 		if err != nil {
 			return err
@@ -311,7 +311,7 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appID, auctionMappingID, au
 		change := auction.BidFactor.MulInt(auction.ExpectedMintedToken.Amount).Ceil().TruncateInt()
 		maxBidAmount := auction.ExpectedMintedToken.Amount.Sub(change)
 		if bid.Amount.GT(maxBidAmount) {
-			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", maxBidAmount)
+			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", maxBidAmount.Uint64())
 		}
 	} else {
 		if bid.Amount.GT(auction.AuctionedToken.Amount) {

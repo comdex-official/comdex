@@ -13,4 +13,3 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 }
 
 var _ types.MsgServer = msgServer{}
-

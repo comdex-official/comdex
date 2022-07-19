@@ -1,30 +1,28 @@
 package keeper
 
 import (
-	"strconv"
-	"time"
-
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+	"strconv"
 )
 
 func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 	appIds := k.GetAppIds(ctx).WhitelistedAppIds
 
 	for i := range appIds {
-		esmStatus, found := k.GetESMStatus(ctx,appIds[i])
+		esmStatus, found := k.GetESMStatus(ctx, appIds[i])
 		status := false
-		if found{
+		if found {
 			status = esmStatus.Status
 		}
-		klwsParams,_ := k.GetKillSwitchData(ctx,appIds[i])
-		if klwsParams.BreakerEnable{
+		klwsParams, _ := k.GetKillSwitchData(ctx, appIds[i])
+		if klwsParams.BreakerEnable {
 			return esmtypes.ErrCircuitBreakerEnabled
 		}
-		if status{
+		if status {
 			return esmtypes.ErrESMAlreadyExecuted
 		}
 		vaultsMap, _ := k.GetAppExtendedPairVaultMapping(ctx, appIds[i])
@@ -80,7 +78,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 		CrAtLiquidation:              collateralizationRatio,
 		CurrentCollaterlisationRatio: collateralizationRatio,
 		CollateralToBeAuctioned:      sdk.ZeroDec(),
-		LiquidationTimestamp:         time.Now(),
+		LiquidationTimestamp:         ctx.BlockTime(),
 		SellOffHistory:               nil,
 		InterestAccumulated:          vault.InterestAccumulated,
 	}

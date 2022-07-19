@@ -7,10 +7,11 @@ import (
 )
 
 const (
-	flagName                = "name"
-	flagDenom               = "denom"
-	flagDecimals            = "decimals"
-	FlagAddAssetMappingFile = "add-asset-mapping-file"
+	flagName                 = "name"
+	flagDenom                = "denom"
+	flagDecimals             = "decimals"
+	FlagAddAssetMappingFile  = "add-asset-mapping-file"
+	FlagAddAssetsMappingFile = "add-assets-file"
 )
 
 func ParseStringFromString(s string, separator string) ([]string, error) {
@@ -67,6 +68,12 @@ func FlagSetCreateAssetMapping() *flag.FlagSet {
 	return fs
 }
 
+func FlagSetCreateAssetsMapping() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagAddAssetsMappingFile, "", "add assets json file path")
+	return fs
+}
 
 type createAddAssetMappingInputs struct {
 	AppID         string `json:"app_id"`
@@ -77,4 +84,15 @@ type createAddAssetMappingInputs struct {
 	Title         string
 	Description   string
 	Deposit       string
+}
+
+type createAddAssetsMappingInputs struct {
+	Name             string `json:"name"`
+	Denom            string `json:"denom"`
+	Decimals         string `json:"decimals"`
+	IsOnChain        string `json:"is_on_chain"`
+	AssetOraclePrice string `json:"asset_oracle_price"`
+	Title            string
+	Description      string
+	Deposit          string
 }
