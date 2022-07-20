@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -67,11 +66,14 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset, collateralizationRatio sdk.Dec, appID uint64) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 	lendPos, _ := k.GetLend(ctx, borrow.LendingID)
-	kind := types.BorrowMetaData{
-		LendingId:          borrow.LendingID,
-		IsStableBorrow:     borrow.IsStableBorrow,
-		StableBorrowRate:   borrow.StableBorrowRate,
-		BridgedAssetAmount: borrow.BridgedAssetAmount,
+
+	kind := &types.LockedVault_BorrowMetaData{
+		BorrowMetaData: &types.BorrowMetaData{
+			LendingId:          borrow.LendingID,
+			IsStableBorrow:     borrow.IsStableBorrow,
+			StableBorrowRate:   borrow.StableBorrowRate,
+			BridgedAssetAmount: borrow.BridgedAssetAmount,
+		},
 	}
 	var value = types.LockedVault{
 		LockedVaultId:                lockedVaultID + 1,
@@ -92,24 +94,16 @@ func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset
 		LiquidationTimestamp:         ctx.BlockTime(),
 		SellOffHistory:               nil,
 		InterestAccumulated:          borrow.Interest_Accumulated,
-		Kind:                         &kind,
+		Kind:                         kind,
 	}
 
-	fmt.Println("value", value)
-	fmt.Println("1.......")
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
-	fmt.Println("2.......")
 	return nil
 }
 
 func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
-	fmt.Println("3.......")
-	lv, _ := k.GetLockedVault(ctx, 2)
-	fmt.Println("lv....", lv)
 	lockedVaults := k.GetLockedVaults(ctx)
-	fmt.Println("4.......")
-	fmt.Println("lockedVaults", lockedVaults)
 	if len(lockedVaults) == 0 {
 		return nil
 	}
@@ -123,10 +117,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 
 		liqThreshold, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
 		unliquidatePointPercentage := liqThreshold.LiquidationThreshold
-		borrowMetadata := lockedVault.GetBorrowMetaData()
-		fmt.Println("borrwMetadata....", borrowMetadata)
 
-		assetRatesStats, found := k.GetAssetRatesStats(ctx, 0)
+		assetRatesStats, found := k.GetAssetRatesStats(ctx, pair.AssetIn)
 		if !found {
 			return lendtypes.ErrorAssetStatsNotFound
 		}
