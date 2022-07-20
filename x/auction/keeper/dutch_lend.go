@@ -1,14 +1,13 @@
 package keeper
 
 import (
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -98,7 +97,6 @@ func (k Keeper) StartLendDutchAuction(
 		return err
 	}
 
-	//calculate target amount of cmst to collect
 	outFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetOutID)
 	if !found {
 		return auctiontypes.ErrorPrices
@@ -165,24 +163,17 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid amount can't be greater than collateral available")
 	}
 
-	max = k.GetUUSDFromUSD(ctx, max)
-
-	//Here OutflowToken current price is in uusd and max is in uusd
-	if max.LT(auction.OutflowTokenCurrentPrice.Ceil()) {
-		return auctiontypes.ErrorInvalidDutchPrice
-	}
-
 	// slice tells amount of collateral user should be given
 	//using ceil as we need extract more from users
-	outFlowTokenCurrentPrice := auction.OutflowTokenCurrentPrice.Ceil().TruncateInt() //cmdx
-	inFlowTokenCurrentPrice := auction.InflowTokenCurrentPrice.Ceil().TruncateInt()   //cmst
+	outFlowTokenCurrentPrice := auction.OutflowTokenCurrentPrice.Ceil().TruncateInt()
+	inFlowTokenCurrentPrice := auction.InflowTokenCurrentPrice.Ceil().TruncateInt()
 
 	slice := bid.Amount //cmdx
 
 	a := auction.InflowTokenTargetAmount.Amount
 	b := auction.InflowTokenCurrentAmount.Amount
 	tab := a.Sub(b)
-	//owe is $cmdx to be given to user
+	//owe is $token to be given to user
 	owe := slice.Mul(outFlowTokenCurrentPrice)
 	inFlowTokenAmount := owe.Quo(inFlowTokenCurrentPrice)
 	TargetReachedFlag := false
@@ -329,7 +320,7 @@ func (k Keeper) CreateNewDutchLendBid(ctx sdk.Context, appID, auctionMappingID, 
 		AuctionMappingId:   auctionMappingID,
 	}
 	k.SetUserBiddingID(ctx, bidding.BiddingId)
-	err = k.SetDutchUserBidding(ctx, bidding)
+	err = k.SetDutchUserLendBidding(ctx, bidding)
 	if err != nil {
 		return biddingID, err
 	}
@@ -347,15 +338,15 @@ func (k Keeper) CloseDutchLendAuction(
 				return err
 			}
 			bidding.AuctionStatus = auctiontypes.ClosedAuctionStatus
-			err = k.SetDutchUserBidding(ctx, bidding)
+			err = k.SetDutchUserLendBidding(ctx, bidding)
 			if err != nil {
 				return err
 			}
-			err = k.DeleteDutchUserBidding(ctx, bidding)
+			err = k.DeleteDutchLendUserBidding(ctx, bidding)
 			if err != nil {
 				return err
 			}
-			err = k.SetHistoryDutchUserBidding(ctx, bidding)
+			err = k.SetHistoryDutchUserLendBidding(ctx, bidding)
 			if err != nil {
 				return err
 			}
@@ -431,7 +422,7 @@ func (k Keeper) CloseDutchLendAuction(
 }
 
 func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
-	dutchAuctions := k.GetDutchAuctions(ctx, appID)
+	dutchAuctions := k.GetDutchLendAuctions(ctx, appID)
 	auctionParams, found := k.GetAuctionParams(ctx, appID)
 	if !found {
 		return nil
@@ -469,7 +460,7 @@ func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 		outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)
 		dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
 		dutchAuction.OutflowTokenCurrentPrice = outFlowTokenCurrentPrice
-		err := k.SetDutchAuction(ctx, dutchAuction)
+		err := k.SetDutchLendAuction(ctx, dutchAuction)
 		if err != nil {
 			return err
 		}

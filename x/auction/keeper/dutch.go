@@ -6,7 +6,6 @@ import (
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -511,7 +510,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 					vaultId, alreadyExists := k.CheckUserAppToExtendedPairMapping(ctx, userVaultExtendedPairMapping, lockedVault.ExtendedPairId, lockedVault.AppId)
 					if alreadyExists {
 						vaultData, _ := k.GetVault(ctx, vaultId)
-						err := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName,vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
+						err := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
 						if err != nil {
 							return err
 						}
@@ -521,7 +520,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 						k.SetVault(ctx, vaultData)
 					}
 				} else {
-					err1 := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName,vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
+					err1 := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
 					if err1 != nil {
 						return err1
 					}
@@ -608,7 +607,7 @@ func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAu
 func (k Keeper) RestartDutch(ctx sdk.Context) error {
 	appIds, found := k.GetApps(ctx)
 	if !found {
-		return assettypes.AppIdsDoesntExist
+		return nil
 	}
 	for _, appId := range appIds {
 

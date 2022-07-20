@@ -128,8 +128,6 @@ type BorrowMetaData struct {
 	BridgedAssetAmount github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,4,opt,name=bridged_asset_amount,json=bridgedAssetAmount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"bridged_asset_amount" yaml:"bridged_asset_amount"`
 }
 
-func (m *BorrowMetaData) isLockedVault_Kind() {}
-
 func (m *BorrowMetaData) Reset()         { *m = BorrowMetaData{} }
 func (m *BorrowMetaData) String() string { return proto.CompactTextString(m) }
 func (*BorrowMetaData) ProtoMessage()    {}

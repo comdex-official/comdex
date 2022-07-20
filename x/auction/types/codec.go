@@ -12,6 +12,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgPlaceSurplusBidRequest{}, "comdex/auction/MsgPlaceSurplusBidRequest", nil)
 	cdc.RegisterConcrete(&MsgPlaceDebtBidRequest{}, "comdex/auction/MsgPlaceDebtBidRequest", nil)
 	cdc.RegisterConcrete(&MsgPlaceDutchBidRequest{}, "comdex/auction/MsgPlaceDutchBidRequest", nil)
+	cdc.RegisterConcrete(&MsgPlaceDutchLendBidRequest{}, "comdex/auction/MsgPlaceDutchLendBidRequest", nil)
 }
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
@@ -23,6 +24,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgPlaceSurplusBidRequest{},
 		&MsgPlaceDebtBidRequest{},
 		&MsgPlaceDutchBidRequest{},
+		&MsgPlaceDutchLendBidRequest{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
