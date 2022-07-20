@@ -175,6 +175,9 @@ message Extended_Pair {
     (gogoproto.customname) = "AssetOutPoolId",
     (gogoproto.moretags) = "yaml:\"asset_out_pool_id\""
   ];
+
+  uint64 min_usd_value_left = 6 [
+    (gogoproto.moretags) = "yaml:\"min_usd_value_left\"" ];
 }
 
 message AssetToPairMapping{

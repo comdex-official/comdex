@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"time"
 
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -607,7 +608,7 @@ func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAu
 func (k Keeper) RestartDutch(ctx sdk.Context) error {
 	appIds, found := k.GetApps(ctx)
 	if !found {
-		return nil
+		return assettypes.AppIdsDoesntExist
 	}
 	for _, appId := range appIds {
 

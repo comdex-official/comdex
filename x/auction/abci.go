@@ -26,4 +26,8 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	if err5 != nil {
 		return
 	}
+	err6 := k.RestartLendDutch(ctx)
+	if err6 != nil {
+		return
+	}
 }

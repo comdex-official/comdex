@@ -16,11 +16,12 @@ func (k *Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_
 		var (
 			id   = k.GetLendPairID(ctx)
 			pair = types.Extended_Pair{
-				Id:             id + 1,
-				AssetIn:        msg.AssetIn,
-				AssetOut:       msg.AssetOut,
-				IsInterPool:    msg.IsInterPool,
-				AssetOutPoolId: msg.AssetOutPoolId,
+				Id:              id + 1,
+				AssetIn:         msg.AssetIn,
+				AssetOut:        msg.AssetOut,
+				IsInterPool:     msg.IsInterPool,
+				AssetOutPoolId:  msg.AssetOutPoolId,
+				MinUsdValueLeft: msg.MinUsdValueLeft,
 			}
 		)
 
