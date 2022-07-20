@@ -4,6 +4,8 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
@@ -22,13 +24,14 @@ var _ types.MsgServer = msgServer{}
 
 // CreatePair defines a method to create a pair.
 func (m msgServer) CreatePair(goCtx context.Context, msg *types.MsgCreatePair) (*types.MsgCreatePairResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+	// ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if _, err := m.Keeper.CreatePair(ctx, msg, false); err != nil {
-		return nil, err
-	}
+	// if _, err := m.Keeper.CreatePair(ctx, msg, false); err != nil {
+	// 	return nil, err
+	// }
 
-	return &types.MsgCreatePairResponse{}, nil
+	// return &types.MsgCreatePairResponse{}, nil
+	return &types.MsgCreatePairResponse{}, status.Errorf(codes.Unavailable, "pair can be created only via governance")
 }
 
 // CreatePool defines a method to create a liquidity pool.

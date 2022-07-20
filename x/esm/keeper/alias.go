@@ -51,6 +51,10 @@ func (k *Keeper) GetVaults(ctx sdk.Context) (vaults []vaulttypes.Vault) {
 	return k.vault.GetVaults(ctx)
 }
 
+func (k *Keeper) GetStableMintVaults(ctx sdk.Context) (stableVaults []vaulttypes.StableMintVault) {
+	return k.vault.GetStableMintVaults(ctx)
+}
+
 func (k *Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool) {
 	return k.asset.GetAssetForDenom(ctx, denom)
 }

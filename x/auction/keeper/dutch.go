@@ -510,13 +510,21 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				if userExists {
 					vaultId, alreadyExists := k.CheckUserAppToExtendedPairMapping(ctx, userVaultExtendedPairMapping, lockedVault.ExtendedPairId, lockedVault.AppId)
 					if alreadyExists {
-						// append to existing vault
 						vaultData, _ := k.GetVault(ctx, vaultId)
+						err := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName,vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
+						if err != nil {
+							return err
+						}
+						// append to existing vault
 						vaultData.AmountIn = vaultData.AmountIn.Add(dutchAuction.OutflowTokenCurrentAmount.Amount)
 						vaultData.AmountOut = vaultData.AmountOut.Add(inflowLeft)
 						k.SetVault(ctx, vaultData)
 					}
 				} else {
+					err1 := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName,vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
+					if err1 != nil {
+						return err1
+					}
 					// create new vault done
 					err := k.CreateNewVault(ctx, dutchAuction.VaultOwner.String(), lockedVault.AppId, lockedVault.ExtendedPairId, dutchAuction.OutflowTokenCurrentAmount.Amount, inflowLeft)
 					if err != nil {

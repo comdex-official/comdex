@@ -1,9 +1,11 @@
 package keeper
 
 import (
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -18,6 +20,7 @@ func (k *Keeper) AddESMTriggerParamsRecords(ctx sdk.Context, record types.ESMTri
 			AppId:         record.AppId,
 			TargetValue:   record.TargetValue,
 			CoolOffPeriod: record.CoolOffPeriod,
+			AssetsRates:   record.AssetsRates,
 		}
 	)
 	k.SetESMTriggerParams(ctx, esmTriggerParams)
@@ -147,13 +150,21 @@ func (k *Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket typ
 	return esmMarket, true
 }
 
-func (k *Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, AppId uint64, TargetValue sdk.Coin, CoolOffPeriod uint64) error {
+func (k *Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, addESMTriggerParams *bindings.MsgAddESMTriggerParams) error {
 
+	var debtRates[] types.DebtAssetsRates
+	for i := range addESMTriggerParams.AssetID{
+		var debtRate types.DebtAssetsRates
+		debtRate.AssetID = addESMTriggerParams.AssetID[i]
+		debtRate.Rates = addESMTriggerParams.Rates[i]
+		debtRates = append(debtRates, debtRate)
+	}
 	var (
 		esmTriggerParams = types.ESMTriggerParams{
-			AppId:         AppId,
-			TargetValue:   TargetValue,
-			CoolOffPeriod: CoolOffPeriod,
+			AppId:         addESMTriggerParams.AppID,
+			TargetValue:   addESMTriggerParams.TargetValue,
+			CoolOffPeriod: addESMTriggerParams.CoolOffPeriod,
+			AssetsRates:   debtRates,
 		}
 	)
 	k.SetESMTriggerParams(ctx, esmTriggerParams)
@@ -193,7 +204,7 @@ func (k *Keeper) GetDataAfterCoolOff(ctx sdk.Context, id uint64) (esmDataAfterCo
 	return esmDataAfterCoolOff, true
 }
 
-func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error {
+func (k *Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64) error {
 	totalVaults := k.GetVaults(ctx)
 	for _, data := range totalVaults {
 		if data.AppId == appId {
@@ -283,6 +294,113 @@ func (k *Keeper) SetUpCollateralRedemption(ctx sdk.Context, appId uint64) error 
 
 			k.DeleteVault(ctx, data.Id)
 			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
+			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
+			if !found {
+				return esmtypes.ErrESMParamsNotFound
+			}
+			esmStatus.VaultRedemptionStatus = true
+			k.SetESMStatus(ctx, esmStatus)
+		}
+	}
+	return nil
+}
+
+func (k *Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId uint64) error {
+	totalStableVaults := k.GetStableMintVaults(ctx)
+	for _, data := range totalStableVaults {
+		if data.AppId == appId {
+			extendedPairVault, found := k.GetPairsVault(ctx, data.ExtendedPairVaultID)
+			if !found {
+				return vaulttypes.ErrorExtendedPairVaultDoesNotExists
+			}
+			pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
+			if !found {
+				return assettypes.ErrorPairDoesNotExist
+			}
+			assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
+			if !found {
+				return assettypes.ErrorAssetDoesNotExist
+			}
+			assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
+			if !found {
+				return assettypes.ErrorAssetDoesNotExist
+			}
+			coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
+			if !found {
+				coolOffData.AppId = appId
+				var item types.AssetToAmount
+
+				item.AssetID = assetInData.Id
+				item.Amount = data.AmountIn
+				err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
+				if err != nil {
+					return err
+				}
+				coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
+
+				item.AssetID = assetOutData.Id
+				item.Amount = data.AmountOut
+
+				coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
+
+				k.SetDataAfterCoolOff(ctx, coolOffData)
+			} else {
+				var count = 0
+				for i, indata := range coolOffData.CollateralAsset {
+					if indata.AssetID == assetInData.Id {
+						count++
+						indata.Amount = indata.Amount.Add(data.AmountIn)
+						err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
+						if err != nil {
+							return err
+						}
+						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset[:i],coolOffData.CollateralAsset[i+1:]...)
+						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, indata)
+						break
+					}
+				}
+				if count == 0 {
+					var item types.AssetToAmount
+
+					item.AssetID = assetInData.Id
+					item.Amount = data.AmountIn
+
+					err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
+					if err != nil {
+						return err
+					}
+					coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
+					count = 0
+				}
+
+				for i, indata := range coolOffData.DebtAsset {
+					if indata.AssetID == assetOutData.Id {
+						count++
+						indata.Amount = indata.Amount.Add(data.AmountOut)
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i],coolOffData.DebtAsset[i+1:]...)
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
+						break
+					}
+				}
+				if count == 0 {
+					var item types.AssetToAmount
+
+					item.AssetID = assetOutData.Id
+					item.Amount = data.AmountOut
+					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
+					count = 0
+				}
+				k.SetDataAfterCoolOff(ctx, coolOffData)
+			}
+
+			k.DeleteVault(ctx, data.Id)
+			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
+			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
+			if !found {
+				return esmtypes.ErrESMParamsNotFound
+			}
+			esmStatus.StableVaultRedemptionStatus = true
+			k.SetESMStatus(ctx, esmStatus)
 		}
 	}
 	netFee, found := k.GetNetFeeCollectedData(ctx, appId)

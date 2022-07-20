@@ -56,6 +56,7 @@ func (k Keeper) CreatePair(ctx sdk.Context, msg *types.MsgCreatePair, isViaProp 
 		return types.Pair{}, sdkerrors.Wrap(err, "params retreval failed")
 	}
 
+	// ignore fee collection if the request is from proposal
 	if !isViaProp {
 		// Send the pair creation fee to the fee collector.
 		feeCollectorAddr, _ := sdk.AccAddressFromBech32(params.FeeCollectorAddress)

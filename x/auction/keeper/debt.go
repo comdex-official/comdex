@@ -28,7 +28,7 @@ func (k Keeper) DebtActivator(ctx sdk.Context) error {
 					return err
 				}
 			}
-			if inData.IsDebtAuction && inData.IsAuctionActive && !status {
+			if inData.IsDebtAuction && inData.IsAuctionActive {
 				err := k.DebtAuctionClose(ctx, data.AppId, status)
 				if err != nil {
 					return err

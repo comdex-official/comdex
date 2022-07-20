@@ -139,4 +139,6 @@ type MsgAddESMTriggerParams struct {
 	AppID         uint64   `json:"app_id"`
 	TargetValue   sdk.Coin `json:"target_value"`
 	CoolOffPeriod uint64   `json:"cool_off_period"`
+	AssetID       []uint64 `json:"asset_id"`
+	Rates         []uint64 `json:"rates"`
 }

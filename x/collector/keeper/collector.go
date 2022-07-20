@@ -364,6 +364,7 @@ func (k *Keeper) GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDeno
 
 // SetAuctionMappingForApp sets auction map data for app/product.
 func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {
+
 	for _, msg := range records {
 		_, found := k.GetApp(ctx, msg.AppId)
 		if !found {
@@ -379,7 +380,7 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Colle
 		var assetIDToAuctionLookups []types.AssetIdToAuctionLookupTable
 		result1, found := k.GetAuctionMappingForApp(ctx, msg.AppId)
 
-		if found{
+		if found {
 			assetIDToAuctionLookups = result1.AssetIdToAuctionLookup
 		}
 
@@ -389,23 +390,26 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Colle
 				return types.ErrorAssetDoesNotExist
 			}
 			duplicate, index := k.DuplicateCheck(ctx, msg.AppId, data.AssetId)
-			if duplicate{
-				assetIDToAuctionLookups = append(assetIDToAuctionLookups[:index],assetIDToAuctionLookups[index+1:]...)
+			if duplicate {
+				assetIDToAuctionLookups = append(assetIDToAuctionLookups[:index], assetIDToAuctionLookups[index+1:]...)
 				var assetToAuctionUpdate types.AssetIdToAuctionLookupTable
-				assetToAuctionUpdate.AssetId =  data.AssetId
+				assetToAuctionUpdate.AssetId = data.AssetId
 				assetToAuctionUpdate.IsSurplusAuction = data.IsSurplusAuction
 				assetToAuctionUpdate.IsDebtAuction = data.IsDebtAuction
+				assetToAuctionUpdate.IsAuctionActive = data.IsAuctionActive
 				assetToAuctionUpdate.AssetOutOraclePrice = data.AssetOutOraclePrice
 				assetToAuctionUpdate.AssetOutPrice = data.AssetOutPrice
 				assetIDToAuctionLookups = append(assetIDToAuctionLookups, assetToAuctionUpdate)
 				continue
 			}
 			assetIDToAuctionLookup := types.AssetIdToAuctionLookupTable{
-					AssetId:             data.AssetId,
-					IsSurplusAuction:    data.IsSurplusAuction,
-					IsDebtAuction:       data.IsDebtAuction,
-					AssetOutOraclePrice: data.AssetOutOraclePrice,
-					AssetOutPrice:       data.AssetOutPrice,
+
+				AssetId:             data.AssetId,
+				IsSurplusAuction:    data.IsSurplusAuction,
+				IsDebtAuction:       data.IsDebtAuction,
+				IsAuctionActive:     data.IsAuctionActive,
+				AssetOutOraclePrice: data.AssetOutOraclePrice,
+				AssetOutPrice:       data.AssetOutPrice,
 			}
 			assetIDToAuctionLookups = append(assetIDToAuctionLookups, assetIDToAuctionLookup)
 		}
@@ -423,10 +427,10 @@ func (k *Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Colle
 
 func (k *Keeper) DuplicateCheck(ctx sdk.Context, appId, assetId uint64) (found bool, index int) {
 	result, found := k.GetAuctionMappingForApp(ctx, appId)
-	if !found{
+	if !found {
 		return false, 0
 	} else {
-		for i, data := range result.AssetIdToAuctionLookup{
+		for i, data := range result.AssetIdToAuctionLookup {
 			if data.AssetId == assetId {
 				return true, i
 			}
@@ -632,17 +636,18 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBind
 	var collectorAuctionLookup types.CollectorAuctionLookupTable
 	var assetIDToAuctionLookups []types.AssetIdToAuctionLookupTable
 	collectorAuctionLookup.AppId = auctionMappingBinding.AppID
-	if found{
+	if found {
 		assetIDToAuctionLookups = result1.AssetIdToAuctionLookup
 	}
 	for i := range auctionMappingBinding.AssetIDs {
 		duplicate, index := k.DuplicateCheck(ctx, auctionMappingBinding.AppID, auctionMappingBinding.AssetIDs[i])
-		if duplicate{
+		if duplicate {
 			assetIDToAuctionLookups = append(assetIDToAuctionLookups[:index], assetIDToAuctionLookups[index+1:]...)
 			var assetToAuctionUpdate types.AssetIdToAuctionLookupTable
-			assetToAuctionUpdate.AssetId =  auctionMappingBinding.AssetIDs[i]
+			assetToAuctionUpdate.AssetId = auctionMappingBinding.AssetIDs[i]
 			assetToAuctionUpdate.IsSurplusAuction = auctionMappingBinding.IsSurplusAuctions[i]
 			assetToAuctionUpdate.IsDebtAuction = auctionMappingBinding.IsDebtAuctions[i]
+			assetToAuctionUpdate.IsAuctionActive = false
 			assetToAuctionUpdate.AssetOutOraclePrice = auctionMappingBinding.AssetOutOraclePrices[i]
 			assetToAuctionUpdate.AssetOutPrice = auctionMappingBinding.AssetOutPrices[i]
 			assetIDToAuctionLookups = append(assetIDToAuctionLookups, assetToAuctionUpdate)
@@ -652,6 +657,7 @@ func (k *Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBind
 				AssetId:             auctionMappingBinding.AssetIDs[i],
 				IsSurplusAuction:    auctionMappingBinding.IsSurplusAuctions[i],
 				IsDebtAuction:       auctionMappingBinding.IsDebtAuctions[i],
+				IsAuctionActive:     false,
 				AssetOutOraclePrice: auctionMappingBinding.AssetOutOraclePrices[i],
 				AssetOutPrice:       auctionMappingBinding.AssetOutPrices[i],
 		}
