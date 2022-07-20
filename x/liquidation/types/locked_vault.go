@@ -21,5 +21,3 @@ func (m *WhitelistedAppIds) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(m)
 	return sdk.MustSortJSON(bz)
 }
-
-func (m *BorrowMetaData) isLockedVault_Kind() {}

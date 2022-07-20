@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -20,11 +21,23 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 		}
 		lendPair, _ := k.GetLendPair(ctx, borrowPos.PairID)
 		lendPos, _ := k.GetLend(ctx, borrowPos.LendingID)
+		pool, _ := k.GetPool(ctx, lendPos.PoolId)
 		assetIn, _ := k.GetAsset(ctx, lendPair.AssetIn)
 		assetOut, _ := k.GetAsset(ctx, lendPair.AssetOut)
+		var currentCollateralizationRatio sdk.Dec
 
 		liqThreshold, _ := k.GetAssetRatesStats(ctx, lendPair.AssetIn)
-		currentCollateralizationRatio, _ := k.CalculateLendCollaterlizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.UpdatedAmountOut, assetOut)
+		if borrowPos.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
+			currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.UpdatedAmountOut, assetOut)
+		} else {
+			firstBridgedAsset, _ := k.GetAsset(ctx, pool.FirstBridgedAssetId)
+			secondBridgedAsset, _ := k.GetAsset(ctx, pool.SecondBridgedAssetId)
+			if borrowPos.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
+				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.BridgedAssetAmount.Amount, firstBridgedAsset, borrowPos.UpdatedAmountOut, assetOut)
+			} else {
+				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.BridgedAssetAmount.Amount, secondBridgedAsset, borrowPos.UpdatedAmountOut, assetOut)
+			}
+		}
 
 		if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
 			err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppId)
@@ -82,14 +95,21 @@ func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset
 		Kind:                         &kind,
 	}
 
+	fmt.Println("value", value)
+	fmt.Println("1.......")
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
+	fmt.Println("2.......")
 	return nil
 }
 
 func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
-
+	fmt.Println("3.......")
+	lv, _ := k.GetLockedVault(ctx, 2)
+	fmt.Println("lv....", lv)
 	lockedVaults := k.GetLockedVaults(ctx)
+	fmt.Println("4.......")
+	fmt.Println("lockedVaults", lockedVaults)
 	if len(lockedVaults) == 0 {
 		return nil
 	}
@@ -103,9 +123,10 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 
 		liqThreshold, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
 		unliquidatePointPercentage := liqThreshold.LiquidationThreshold
-		borrwMetadata := lockedVault.GetBorrowMetaData()
+		borrowMetadata := lockedVault.GetBorrowMetaData()
+		fmt.Println("borrwMetadata....", borrowMetadata)
 
-		assetRatesStats, found := k.GetAssetRatesStats(ctx, borrwMetadata.LendingId)
+		assetRatesStats, found := k.GetAssetRatesStats(ctx, 0)
 		if !found {
 			return lendtypes.ErrorAssetStatsNotFound
 		}

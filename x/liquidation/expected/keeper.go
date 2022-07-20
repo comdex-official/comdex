@@ -70,4 +70,5 @@ type LendKeeper interface {
 	UpdateBorrowIDByOwnerAndPoolMapping(ctx sdk.Context, borrowOwner string, borrowID uint64, poolID uint64, isInsert bool) error
 	UpdateBorrowIdsMapping(ctx sdk.Context, borrowID uint64, isInsert bool) error
 	CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault)
+	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
 }

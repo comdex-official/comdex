@@ -154,3 +154,7 @@ func (k *Keeper) UpdateBorrowIdsMapping(ctx sdk.Context, borrowID uint64, isInse
 func (k *Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
 	k.lend.CreteNewBorrow(ctx, liqBorrow)
 }
+
+func (k *Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
+	return k.lend.GetPool(ctx, id)
+}

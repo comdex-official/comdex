@@ -174,7 +174,7 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingID uint64) error {
 			ExtPairVault, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 			StabilityFee := ExtPairVault.StabilityFee
 			if vault.ExtendedPairVaultID != 0 {
-				if StabilityFee != sdk.ZeroDec() {
+				if StabilityFee.GT(sdk.ZeroDec()) {
 					interest, err := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
 					if err != nil {
 						continue

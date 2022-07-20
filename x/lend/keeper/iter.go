@@ -20,37 +20,40 @@ func (k Keeper) IterateLends(ctx sdk.Context) error {
 		if err != nil {
 			return err
 		}
+		if interestPerBlock.GT(sdk.ZeroInt()) {
 
-		updatedLend := types.LendAsset{
-			ID:                 lend.ID,
-			AssetId:            lend.AssetId,
-			PoolId:             lend.PoolId,
-			Owner:              lend.Owner,
-			AmountIn:           lend.AmountIn,
-			LendingTime:        lend.LendingTime,
-			UpdatedAmountIn:    lend.UpdatedAmountIn.Add(interestPerBlock),
-			AvailableToBorrow:  lend.AvailableToBorrow.Add(interestPerBlock),
-			Reward_Accumulated: lend.Reward_Accumulated.Add(interestPerBlock),
-		}
+			updatedLend := types.LendAsset{
+				ID:                 lend.ID,
+				AssetId:            lend.AssetId,
+				PoolId:             lend.PoolId,
+				Owner:              lend.Owner,
+				AmountIn:           lend.AmountIn,
+				LendingTime:        lend.LendingTime,
+				UpdatedAmountIn:    lend.UpdatedAmountIn.Add(interestPerBlock),
+				AvailableToBorrow:  lend.AvailableToBorrow.Add(interestPerBlock),
+				Reward_Accumulated: lend.Reward_Accumulated.Add(interestPerBlock),
+				AppId:              lend.AppId,
+			}
 
-		pool, _ := k.GetPool(ctx, lend.PoolId)
-		asset, _ := k.GetAsset(ctx, lend.AssetId)
-		Amount := sdk.NewCoin(asset.Denom, interestPerBlock)
-		assetRatesStat, found := k.GetAssetRatesStats(ctx, lend.AssetId)
-		if !found {
-			return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lend.AssetId, 10))
+			pool, _ := k.GetPool(ctx, lend.PoolId)
+			asset, _ := k.GetAsset(ctx, lend.AssetId)
+			Amount := sdk.NewCoin(asset.Denom, interestPerBlock)
+			assetRatesStat, found := k.GetAssetRatesStats(ctx, lend.AssetId)
+			if !found {
+				return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lend.AssetId, 10))
+			}
+			cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetId)
+			cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
+			if err != nil {
+				return err
+			}
+			addr, _ := sdk.AccAddressFromBech32(lend.Owner)
+			err = k.SendCoinFromModuleToAccount(ctx, pool.ModuleName, addr, cToken)
+			if err != nil {
+				return err
+			}
+			k.SetLend(ctx, updatedLend)
 		}
-		cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetId)
-		cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
-		if err != nil {
-			return err
-		}
-		addr, _ := sdk.AccAddressFromBech32(lend.Owner)
-		err = k.SendCoinFromModuleToAccount(ctx, pool.ModuleName, addr, cToken)
-		if err != nil {
-			return err
-		}
-		k.SetLend(ctx, updatedLend)
 	}
 	return nil
 }
@@ -66,21 +69,23 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 		if err != nil {
 			return err
 		}
+		if interestPerBlock.GT(sdk.ZeroInt()) {
 
-		updatedBorrow := types.BorrowAsset{
-			ID:                   borrow.ID,
-			LendingID:            borrow.LendingID,
-			IsStableBorrow:       borrow.IsStableBorrow,
-			PairID:               borrow.PairID,
-			AmountIn:             borrow.AmountIn,
-			AmountOut:            borrow.AmountOut,
-			BridgedAssetAmount:   borrow.BridgedAssetAmount,
-			BorrowingTime:        borrow.BorrowingTime,
-			StableBorrowRate:     borrow.StableBorrowRate,
-			UpdatedAmountOut:     borrow.UpdatedAmountOut.Add(interestPerBlock),
-			Interest_Accumulated: borrow.Interest_Accumulated.Add(interestPerBlock),
+			updatedBorrow := types.BorrowAsset{
+				ID:                   borrow.ID,
+				LendingID:            borrow.LendingID,
+				IsStableBorrow:       borrow.IsStableBorrow,
+				PairID:               borrow.PairID,
+				AmountIn:             borrow.AmountIn,
+				AmountOut:            borrow.AmountOut,
+				BridgedAssetAmount:   borrow.BridgedAssetAmount,
+				BorrowingTime:        borrow.BorrowingTime,
+				StableBorrowRate:     borrow.StableBorrowRate,
+				UpdatedAmountOut:     borrow.UpdatedAmountOut.Add(interestPerBlock),
+				Interest_Accumulated: borrow.Interest_Accumulated.Add(interestPerBlock),
+			}
+			k.SetBorrow(ctx, updatedBorrow)
 		}
-		k.SetBorrow(ctx, updatedBorrow)
 	}
 	return nil
 }

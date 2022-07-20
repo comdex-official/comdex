@@ -39,6 +39,11 @@ var (
 	HistoryUserKeyPrefix        = []byte{0x16}
 	ProtocolStatisticsPrefixKey = []byte{0x17}
 	AuctionParamsKeyPrefix      = []byte{0x18}
+	LendAuctionIDKey            = []byte{0x19}
+	LendAuctionKeyPrefix        = []byte{0x20}
+	LendUserKeyPrefix           = []byte{0x21}
+	LendHistoryAuctionKeyPrefix = []byte{0x22}
+	LendHistoryUserKeyPrefix    = []byte{0x23}
 )
 
 func AuctionKey(appID uint64, auctionType string, auctionID uint64) []byte {
@@ -83,4 +88,36 @@ func ProtocolStatisticsAppIDKey(appID uint64) []byte {
 
 func AuctionParamsKey(id uint64) []byte {
 	return append(AuctionParamsKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func LendAuctionKey(appID uint64, auctionType string, auctionID uint64) []byte {
+	return append(append(append(LendAuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(auctionID)...)
+}
+
+func LendUserKey(bidder string, appID uint64, auctionType string, bidID uint64) []byte {
+	return append(append(append(append(LendUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(bidID)...)
+}
+
+func LendUserAuctionTypeKey(bidder string, appID uint64, auctionType string) []byte {
+	return append(append(append(LendUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...)
+}
+
+func LendAuctionTypeKey(appID uint64, auctionType string) []byte {
+	return append(append(LendAuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...)
+}
+
+func HistoryLendAuctionKey(appID uint64, auctionType string, auctionID uint64) []byte {
+	return append(append(append(LendHistoryAuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(auctionID)...)
+}
+
+func HistoryLendUserKey(bidder string, appID uint64, auctionType string, bidID uint64) []byte {
+	return append(append(append(append(LendHistoryUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...), sdk.Uint64ToBigEndian(bidID)...)
+}
+
+func HistoryLendUserAuctionTypeKey(bidder string, appID uint64, auctionType string) []byte {
+	return append(append(append(LendHistoryUserKeyPrefix, bidder...), sdk.Uint64ToBigEndian(appID)...), auctionType...)
+}
+
+func HistoryLendAuctionTypeKey(appID uint64, auctionType string) []byte {
+	return append(append(LendHistoryAuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), auctionType...)
 }

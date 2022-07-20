@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -81,6 +82,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 		LiquidationTimestamp:         ctx.BlockTime(),
 		SellOffHistory:               nil,
 		InterestAccumulated:          vault.InterestAccumulated,
+		Kind:                         nil,
 	}
 
 	k.SetLockedVault(ctx, value)
@@ -258,6 +260,8 @@ func (k *Keeper) SetLockedVault(ctx sdk.Context, lockedVault types.LockedVault) 
 		key   = types.LockedVaultKey(lockedVault.LockedVaultId)
 		value = k.cdc.MustMarshal(&lockedVault)
 	)
+	fmt.Println("value in SetLockedVault", lockedVault)
+	fmt.Println("11111111-------------")
 	store.Set(key, value)
 }
 

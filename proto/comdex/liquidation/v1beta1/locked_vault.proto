@@ -109,7 +109,7 @@ message BorrowMetaData {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"stable_borrow_rate\""
   ];
-  cosmos.base.v1beta1.Coin bridged_asset_amount = 7 [
+  cosmos.base.v1beta1.Coin bridged_asset_amount = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"bridged_asset_amount\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"

@@ -648,6 +648,7 @@ func New(
 		&app.CollectorKeeper,
 		&app.TokenmintKeeper,
 		&app.EsmKeeper,
+		&app.LendKeeper,
 	)
 
 	app.CollectorKeeper = *collectorkeeper.NewKeeper(
