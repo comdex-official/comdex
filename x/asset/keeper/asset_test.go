@@ -168,6 +168,47 @@ func (s *KeeperTestSuite) TestQueryApps() {
 	s.Require().NoError(err)
 	s.Require().Equal(len(res.Apps), 2)
 }
+func (s *KeeperTestSuite) TestUpdateAssetRecords() {
+	s.TestAddAssetRecords()
+	assetKeeper, ctx := &s.assetKeeper, &s.ctx
+	for _, tc := range []struct {
+		name            string
+		msg             assetTypes.Asset
+		assetID         uint64
+		isErrorExpected bool
+	}{
+		{"Update Asset cmdx ucmdx",
+			assetTypes.Asset{
+				Id:                    1,
+				Name:                  "CMDX",
+				Denom:                 "ucmrt",
+				Decimals:              100,
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+			},
+			1,
+			false,
+		},
+	} {
+		s.Run(tc.name, func() {
+			err := assetKeeper.UpdateAssetRecords(*ctx, tc.msg)
+			if tc.isErrorExpected {
+				s.Require().Error(err)
+			} else {
+				s.Require().NoError(err)
+				server := keeper.NewQueryServer(*assetKeeper)
+				res, err := server.QueryAsset(sdk.WrapSDKContext(*ctx), &assetTypes.QueryAssetRequest{Id: tc.assetID})
+				s.Require().NoError(err)
+				s.Require().Equal(res.Asset.Id, tc.msg.Id)
+				s.Require().Equal(res.Asset.Denom, tc.msg.Denom)
+
+				s.Require().Equal(res.Asset.Decimals, tc.msg.Decimals)
+				s.Require().Equal(res.Asset.Name, tc.msg.Name)
+
+			}
+		})
+	}
+}
 func (s *KeeperTestSuite) TestAddAssetRecords() {
 
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
@@ -293,6 +334,7 @@ func (s *KeeperTestSuite) TestGetAssetsForOracle() {
 	results := assetKeeper.GetAssetsForOracle(*ctx)
 	s.Require().Equal(len(results), 2)
 }
+
 func (s *KeeperTestSuite) TestAddPair() {
 
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
@@ -361,6 +403,73 @@ func (s *KeeperTestSuite) TestAddPair() {
 				s.Require().Equal(res.PairInfo.AssetOut, tc.pair.AssetOut)
 				s.Require().Equal(res.PairInfo.DenomIn, tc.symbol1)
 				s.Require().Equal(res.PairInfo.DenomOut, tc.symbol2)
+			}
+
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestWasmUpdatePairsVault() {
+
+	assetKeeper, ctx := &s.assetKeeper, &s.ctx
+	s.TestAddExtendedPairVault()
+	for _, tc := range []struct {
+		name                    string
+		extendedPairVault       bindings.MsgUpdatePairsVault
+		symbol1                 string
+		symbol2                 string
+		isErrorExpectedForVault bool
+		vaultID                 uint64
+	}{
+		{"Update Extended Pair Vault : cmdx cmst",
+
+			bindings.MsgUpdatePairsVault{
+				AppID:              1,
+				ExtPairID:          2,
+				StabilityFee:       sdk.MustNewDecFromStr("0.4"),
+				ClosingFee:         sdk.MustNewDecFromStr("233.23"),
+				LiquidationPenalty: sdk.MustNewDecFromStr("0.56"),
+				DrawDownFee:        sdk.MustNewDecFromStr("0.29"),
+				DebtCeiling:        1000000000,
+				DebtFloor:          1000,
+				MinCr:              sdk.MustNewDecFromStr("1.8"),
+				MinUsdValueLeft:    100000000,
+			},
+			"ucmdx",
+			"ucmst",
+			false,
+			2,
+		},
+	} {
+		s.Run(tc.name, func() {
+			server := keeper.NewQueryServer(*assetKeeper)
+
+			beforeVault, err := server.QueryExtendedPairVault(sdk.WrapSDKContext(*ctx), &assetTypes.QueryExtendedPairVaultRequest{Id: tc.vaultID})
+			s.Require().NoError(err)
+
+			err = assetKeeper.WasmUpdatePairsVault(*ctx, &tc.extendedPairVault)
+
+			if tc.isErrorExpectedForVault {
+				s.Require().Error(err)
+			} else {
+				s.Require().NoError(err)
+				afterVault, err := server.QueryExtendedPairVault(sdk.WrapSDKContext(*ctx), &assetTypes.QueryExtendedPairVaultRequest{Id: tc.vaultID})
+				s.Require().NoError(err)
+				s.Require().Equal(afterVault.PairVault.AppId, tc.extendedPairVault.AppID)
+				s.Require().Equal(afterVault.PairVault.PairId, tc.extendedPairVault.ExtPairID)
+				s.Require().Equal(afterVault.PairVault.StabilityFee, tc.extendedPairVault.StabilityFee)
+				s.Require().Equal(afterVault.PairVault.ClosingFee, tc.extendedPairVault.ClosingFee)
+				s.Require().Equal(afterVault.PairVault.LiquidationPenalty, tc.extendedPairVault.LiquidationPenalty)
+				s.Require().Equal(afterVault.PairVault.DrawDownFee, tc.extendedPairVault.DrawDownFee)
+				s.Require().Equal(afterVault.PairVault.IsVaultActive, beforeVault.PairVault.IsVaultActive)
+				s.Require().Equal(afterVault.PairVault.DebtCeiling.Uint64(), tc.extendedPairVault.DebtCeiling)
+				s.Require().Equal(afterVault.PairVault.DebtFloor.Uint64(), tc.extendedPairVault.DebtFloor)
+				s.Require().Equal(afterVault.PairVault.IsStableMintVault, beforeVault.PairVault.IsStableMintVault)
+				s.Require().Equal(afterVault.PairVault.MinCr, tc.extendedPairVault.MinCr)
+				s.Require().Equal(afterVault.PairVault.PairName, beforeVault.PairVault.PairName)
+				s.Require().Equal(afterVault.PairVault.AssetOutOraclePrice, beforeVault.PairVault.AssetOutOraclePrice)
+				s.Require().Equal(afterVault.PairVault.AssetOutPrice, beforeVault.PairVault.AssetOutPrice)
+				s.Require().Equal(afterVault.PairVault.MinUsdValueLeft, tc.extendedPairVault.MinUsdValueLeft)
 			}
 
 		})
