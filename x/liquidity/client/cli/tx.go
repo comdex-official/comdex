@@ -29,7 +29,7 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		NewCreatePairCmd(),
+		// NewCreatePairCmd(),
 		NewCreatePoolCmd(),
 		NewDepositCmd(),
 		NewWithdrawCmd(),
@@ -646,6 +646,77 @@ func NewCmdUpdateGenericParamsProposal() *cobra.Command {
 				appID,
 				keys,
 				values,
+			)
+
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
+	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
+	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	_ = cmd.MarkFlagRequired(cli.FlagTitle)
+	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+
+	return cmd
+}
+
+func NewCmdCreateNewLiquidityPairProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-liquidity-pair [app-id] [base-coin-denom] [quote-coin-denom]",
+		Args:  cobra.ExactArgs(3),
+		Short: "Create new liquidity pair in given app",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			baseCoinDenom := args[1]
+			quoteCoinDenom := args[2]
+
+			title, err := cmd.Flags().GetString(cli.FlagTitle)
+			if err != nil {
+				return err
+			}
+
+			description, err := cmd.Flags().GetString(cli.FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
+
+			content := types.NewCreateLiquidityPairProposal(
+				title,
+				description,
+				from,
+				appID,
+				baseCoinDenom,
+				quoteCoinDenom,
 			)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
