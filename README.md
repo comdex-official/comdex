@@ -48,7 +48,7 @@ To verify latest testnet and main net version check
 For further information on joining the testnet, head over to the
 [Comdex Networks TestNet](https://github.com/comdex-official/networks/tree/main/testnet).
 
-The explorer for this chain is hosted [TestNet Explorer](https://comets-test.comdex.one/)
+The explorer for this chain is hosted [Meteor - TestNet Explorer](https://meteor-explorer.comdex.one)
 
 ## Main Net
 For further information on joining the mainnet, head over to the

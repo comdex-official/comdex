@@ -3,6 +3,9 @@ package app
 import (
 	"fmt"
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
+	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
+	"net/http"
 
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
@@ -1049,7 +1052,7 @@ func (a *App) GetSubspace(moduleName string) paramstypes.Subspace {
 
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
-func (a *App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
+func (a *App) RegisterAPIRoutes(server *api.Server, apiConfig serverconfig.APIConfig) {
 	ctx := server.ClientCtx
 	rpc.RegisterRoutes(ctx, server.Router)
 	// Register legacy tx routes.
@@ -1062,6 +1065,23 @@ func (a *App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
 	// Register legacy and grpc-gateway routes for all modules.
 	ModuleBasics.RegisterRESTRoutes(ctx, server.Router)
 	ModuleBasics.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
+
+	// register swagger API from root so that other applications can override easily
+	if apiConfig.Swagger {
+		RegisterSwaggerAPI(ctx, server.Router)
+	}
+}
+
+// RegisterSwaggerAPI registers swagger route with API Server.
+func RegisterSwaggerAPI(ctx client.Context, rtr *mux.Router) {
+	statikFS, err := fs.New()
+	if err != nil {
+		panic(err)
+	}
+
+	staticServer := http.FileServer(statikFS)
+	rtr.PathPrefix("/static/").Handler(http.StripPrefix("/static/", staticServer))
+	rtr.PathPrefix("/swagger/").Handler(staticServer)
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.
