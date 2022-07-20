@@ -9,5 +9,6 @@ import (
 var (
 	LiquidityProposalHandler = []govclient.ProposalHandler{
 		govclient.NewProposalHandler(cli.NewCmdUpdateGenericParamsProposal, rest.UpdateGenericParamsProposalRESTHandler),
+		govclient.NewProposalHandler(cli.NewCmdCreateNewLiquidityPairProposal, rest.CreateNewLiquidityPairProposalRESTHandler),
 	}
 )

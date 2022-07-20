@@ -59,6 +59,8 @@ func NewLiquidityProposalHandler(k keeper.Keeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *types.UpdateGenericParamsProposal:
 			return k.HandelUpdateGenericParamsProposal(ctx, c)
+		case *types.CreateNewLiquidityPairProposal:
+			return k.HandelCreateNewLiquidityPairProposal(ctx, c)
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}

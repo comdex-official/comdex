@@ -23,6 +23,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgTokensSoftLock{}, "comdex/liquidity/MsgTokensSoftLock", nil)
 	cdc.RegisterConcrete(&MsgTokensSoftUnlock{}, "comdex/liquidity/MsgTokensSoftUnlock", nil)
 	cdc.RegisterConcrete(&UpdateGenericParamsProposal{}, "comdex/liquidity/UpdateGenericParamsProposal", nil)
+	cdc.RegisterConcrete(&CreateNewLiquidityPairProposal{}, "comdex/liquidity/CreateNewLiquidityPairProposal", nil)
 }
 
 // RegisterInterfaces registers the x/liquidity interfaces types with the
@@ -31,6 +32,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
 		&UpdateGenericParamsProposal{},
+		&CreateNewLiquidityPairProposal{},
 	)
 
 	registry.RegisterImplementations(
