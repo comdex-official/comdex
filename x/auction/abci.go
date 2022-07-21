@@ -19,11 +19,12 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				err1 := k.SurplusActivator(ctx, data, inData, killSwitchParams, status)
 				if err1 != nil {
 					ctx.Logger().Error("error in surplus activator")
+					panic(err1)
 				}
 				err2 := k.DebtActivator(ctx, data, inData, killSwitchParams, status)
 				if err2 != nil {
 					ctx.Logger().Error("error in debt activator")
-					return
+					panic(err2)
 				}
 			}
 		}
@@ -35,13 +36,13 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		err3 := k.DutchActivator(ctx, lockedVaults)
 		if err3 != nil {
 			ctx.Logger().Error("error in dutch activator")
-			return
+			panic(err3)
 		}
 
 		err5 := k.LendDutchActivator(ctx, lockedVaults)
 		if err5 != nil {
 			ctx.Logger().Error("error in lend dutch activator")
-			return
+			panic(err5)
 		}
 	}
 
@@ -52,13 +53,13 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			err4 := k.RestartDutch(ctx, app.Id)
 			if err4 != nil {
 				ctx.Logger().Error("error in restart dutch activator")
-				return
+				panic(err4)
 			}
 
 			err6 := k.RestartLendDutch(ctx, app.Id)
 			if err6 != nil {
 				ctx.Logger().Error("error in restart lend dutch activator")
-				return
+				panic(err6)
 			}
 		}
 	}
