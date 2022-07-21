@@ -121,8 +121,8 @@ func (k Keeper) UpdateAPR(ctx sdk.Context, poolID, assetID uint64) (AssetStats t
 	stableBorrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, poolID, assetID, true)
 	currentUtilisationRatio, _ := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, poolID, assetID)
 	AssetStats = types.AssetStats{
-		PoolId:              assetStats.PoolId,
-		AssetId:             assetStats.AssetId,
+		PoolID:              assetStats.PoolID,
+		AssetID:             assetStats.AssetID,
 		TotalBorrowed:       assetStats.TotalBorrowed,
 		TotalStableBorrowed: assetStats.TotalStableBorrowed,
 		TotalLend:           assetStats.TotalLend,

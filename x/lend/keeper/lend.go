@@ -103,7 +103,7 @@ func (k *Keeper) GetPoolID(ctx sdk.Context) uint64 {
 func (k *Keeper) SetPool(ctx sdk.Context, pool types.Pool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PoolKey(pool.PoolId)
+		key   = types.PoolKey(pool.PoolID)
 		value = k.cdc.MustMarshal(&pool)
 	)
 
@@ -128,7 +128,7 @@ func (k *Keeper) GetPool(ctx sdk.Context, id uint64) (pool types.Pool, found boo
 func (k *Keeper) SetAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetToPairMappingKey(assetToPair.AssetId, assetToPair.PoolId)
+		key   = types.AssetToPairMappingKey(assetToPair.AssetID, assetToPair.PoolID)
 		value = k.cdc.MustMarshal(&assetToPair)
 	)
 
@@ -193,18 +193,18 @@ func (k *Keeper) UpdateUserLendIDMapping(
 	if !found && isInsert {
 		userVaults = types.UserLendIdMapping{
 			Owner:   lendOwner,
-			LendIds: nil,
+			LendIDs: nil,
 		}
 	} else if !found && !isInsert {
 		return types.ErrorLendOwnerNotFound
 	}
 
 	if isInsert {
-		userVaults.LendIds = append(userVaults.LendIds, lendID)
+		userVaults.LendIDs = append(userVaults.LendIDs, lendID)
 	} else {
-		for index, id := range userVaults.LendIds {
+		for index, id := range userVaults.LendIDs {
 			if id == lendID {
-				userVaults.LendIds = append(userVaults.LendIds[:index], userVaults.LendIds[index+1:]...)
+				userVaults.LendIDs = append(userVaults.LendIDs[:index], userVaults.LendIDs[index+1:]...)
 				break
 			}
 		}
@@ -230,7 +230,7 @@ func (k *Keeper) GetUserLends(ctx sdk.Context, address string) (userVaults types
 
 func (k *Keeper) UserLends(ctx sdk.Context, address string) (userLends []types.LendAsset, found bool) {
 	userLendID, _ := k.GetUserLends(ctx, address)
-	for _, v := range userLendID.LendIds {
+	for _, v := range userLendID.LendIDs {
 		userLend, _ := k.GetLend(ctx, v)
 		userLends = append(userLends, userLend)
 	}
@@ -258,19 +258,19 @@ func (k *Keeper) UpdateLendIDByOwnerAndPoolMapping(
 	if !found && isInsert {
 		userLends = types.LendIdByOwnerAndPoolMapping{
 			Owner:   lendOwner,
-			PoolId:  poolID,
-			LendIds: nil,
+			PoolID:  poolID,
+			LendIDs: nil,
 		}
 	} else if !found && !isInsert {
 		return types.ErrorLendOwnerNotFound
 	}
 
 	if isInsert {
-		userLends.LendIds = append(userLends.LendIds, lendID)
+		userLends.LendIDs = append(userLends.LendIDs, lendID)
 	} else {
-		for index, id := range userLends.LendIds {
+		for index, id := range userLends.LendIDs {
 			if id == lendID {
-				userLends.LendIds = append(userLends.LendIds[:index], userLends.LendIds[index+1:]...)
+				userLends.LendIDs = append(userLends.LendIDs[:index], userLends.LendIDs[index+1:]...)
 				break
 			}
 		}
@@ -296,7 +296,7 @@ func (k *Keeper) GetLendIDByOwnerAndPool(ctx sdk.Context, address string, poolID
 
 func (k *Keeper) LendIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userLends []types.LendAsset, found bool) {
 	userLendID, _ := k.GetLendIDByOwnerAndPool(ctx, address, poolID)
-	for _, v := range userLendID.LendIds {
+	for _, v := range userLendID.LendIDs {
 		userLend, _ := k.GetLend(ctx, v)
 		userLends = append(userLends, userLend)
 	}
@@ -306,7 +306,7 @@ func (k *Keeper) LendIDByOwnerAndPool(ctx sdk.Context, address string, poolID ui
 func (k *Keeper) SetLendIDByOwnerAndPool(ctx sdk.Context, userLends types.LendIdByOwnerAndPoolMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendByUserAndPoolKey(userLends.Owner, userLends.PoolId)
+		key   = types.LendByUserAndPoolKey(userLends.Owner, userLends.PoolID)
 		value = k.cdc.MustMarshal(&userLends)
 	)
 	store.Set(key, value)
@@ -381,7 +381,7 @@ func (k *Keeper) DeleteLendIDToBorrowIDMapping(ctx sdk.Context, lendingID uint64
 func (k *Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats types.AssetStats) {
 	var (
 		store = k.Store(ctx)
-		key   = types.SetAssetStatsByPoolIDAndAssetID(AssetStats.AssetId, AssetStats.PoolId)
+		key   = types.SetAssetStatsByPoolIDAndAssetID(AssetStats.AssetID, AssetStats.PoolID)
 		value = k.cdc.MustMarshal(&AssetStats)
 	)
 
@@ -448,18 +448,18 @@ func (k *Keeper) UpdateLendIDsMapping(
 
 	if !found && isInsert {
 		userVaults = types.LendMapping{
-			LendIds: nil,
+			LendIDs: nil,
 		}
 	} else if !found && !isInsert {
 		return types.ErrorLendOwnerNotFound
 	}
 
 	if isInsert {
-		userVaults.LendIds = append(userVaults.LendIds, lendID)
+		userVaults.LendIDs = append(userVaults.LendIDs, lendID)
 	} else {
-		for index, id := range userVaults.LendIds {
+		for index, id := range userVaults.LendIDs {
 			if id == lendID {
-				userVaults.LendIds = append(userVaults.LendIds[:index], userVaults.LendIds[index+1:]...)
+				userVaults.LendIDs = append(userVaults.LendIDs[:index], userVaults.LendIDs[index+1:]...)
 				break
 			}
 		}
@@ -498,14 +498,14 @@ func (k *Keeper) GetModuleBalanceByPoolID(ctx sdk.Context, poolID uint64) (Modul
 		return ModuleBalance, false
 	}
 	for _, v := range pool.AssetData {
-		asset, _ := k.GetAsset(ctx, v.AssetId)
+		asset, _ := k.GetAsset(ctx, v.AssetID)
 		balance := k.ModuleBalance(ctx, pool.ModuleName, asset.Denom)
 		tokenBal := sdk.NewCoin(asset.Denom, balance)
 		modBalStats := types.ModuleBalanceStats{
-			AssetId: asset.Id,
+			AssetID: asset.Id,
 			Balance: tokenBal,
 		}
-		ModuleBalance.PoolId = poolID
+		ModuleBalance.PoolID = poolID
 		ModuleBalance.ModuleBalanceStats = append(ModuleBalance.ModuleBalanceStats, modBalStats)
 	}
 	return ModuleBalance, true

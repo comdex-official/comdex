@@ -73,24 +73,24 @@ func CreateReserveAmountKeyNoDenom() []byte {
 	return key
 }
 
-func LendUserKey(id uint64) []byte {
-	return append(LendUserPrefix, sdk.Uint64ToBigEndian(id)...)
+func LendUserKey(ID uint64) []byte {
+	return append(LendUserPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
-func PoolKey(id uint64) []byte {
-	return append(PoolKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func PoolKey(ID uint64) []byte {
+	return append(PoolKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
-func LendPairKey(id uint64) []byte {
-	return append(LendPairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func LendPairKey(ID uint64) []byte {
+	return append(LendPairKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
-func AssetRatesStatsKey(id uint64) []byte {
-	return append(AssetRatesStatsKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func AssetRatesStatsKey(ID uint64) []byte {
+	return append(AssetRatesStatsKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
-func BorrowUserKey(id uint64) []byte {
-	return append(BorrowPairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func BorrowUserKey(ID uint64) []byte {
+	return append(BorrowPairKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
 func AssetToPairMappingKey(assetID, poolID uint64) []byte {
@@ -122,8 +122,8 @@ func UserBorrowsForAddressKey(address string) []byte {
 	return append(UserBorrowsForAddressKeyPrefix, address...)
 }
 
-func LendIDToBorrowIDMappingKey(id uint64) []byte {
-	return append(LendIDToBorrowIDMappingKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func LendIDToBorrowIDMappingKey(ID uint64) []byte {
+	return append(LendIDToBorrowIDMappingKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
 func SetAssetStatsByPoolIDAndAssetID(assetID, pairID uint64) []byte {
@@ -137,10 +137,10 @@ func CreateLastInterestTimeKey() []byte {
 	return key
 }
 
-func LendByUserAndPoolKey(owner string, id uint64) []byte {
-	return append(append(LendByUserAndPoolPrefix, sdk.Uint64ToBigEndian(id)...), owner...)
+func LendByUserAndPoolKey(owner string, ID uint64) []byte {
+	return append(append(LendByUserAndPoolPrefix, sdk.Uint64ToBigEndian(ID)...), owner...)
 }
 
-func BorrowByUserAndPoolKey(owner string, id uint64) []byte {
-	return append(append(BorrowByUserAndPoolPrefix, sdk.Uint64ToBigEndian(id)...), owner...)
+func BorrowByUserAndPoolKey(owner string, ID uint64) []byte {
+	return append(append(BorrowByUserAndPoolPrefix, sdk.Uint64ToBigEndian(ID)...), owner...)
 }

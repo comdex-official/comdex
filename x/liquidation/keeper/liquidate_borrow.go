@@ -13,14 +13,14 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 	if !found {
 		return nil
 	}
-	for _, v := range borrowIds.BorrowIds {
+	for _, v := range borrowIds.BorrowIDs {
 		borrowPos, found := k.GetBorrow(ctx, v)
 		if !found {
 			continue
 		}
 		lendPair, _ := k.GetLendPair(ctx, borrowPos.PairID)
 		lendPos, _ := k.GetLend(ctx, borrowPos.LendingID)
-		pool, _ := k.GetPool(ctx, lendPos.PoolId)
+		pool, _ := k.GetPool(ctx, lendPos.PoolID)
 		assetIn, _ := k.GetAsset(ctx, lendPair.AssetIn)
 		assetOut, _ := k.GetAsset(ctx, lendPair.AssetOut)
 		var currentCollateralizationRatio sdk.Dec
@@ -29,8 +29,8 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 		if borrowPos.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
 			currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.UpdatedAmountOut, assetOut)
 		} else {
-			firstBridgedAsset, _ := k.GetAsset(ctx, pool.FirstBridgedAssetId)
-			secondBridgedAsset, _ := k.GetAsset(ctx, pool.SecondBridgedAssetId)
+			firstBridgedAsset, _ := k.GetAsset(ctx, pool.FirstBridgedAssetID)
+			secondBridgedAsset, _ := k.GetAsset(ctx, pool.SecondBridgedAssetID)
 			if borrowPos.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
 				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.BridgedAssetAmount.Amount, firstBridgedAsset, borrowPos.UpdatedAmountOut, assetOut)
 			} else {
@@ -39,7 +39,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 		}
 
 		if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
-			err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppId)
+			err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
 			if err != nil {
 				continue
 			}
@@ -48,7 +48,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 			if err != nil {
 				continue
 			}
-			err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, v, lendPair.AssetOutPoolId, false)
+			err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, v, lendPair.AssetOutPoolID, false)
 			if err != nil {
 				continue
 			}

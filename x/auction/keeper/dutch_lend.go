@@ -90,7 +90,7 @@ func (k Keeper) StartLendDutchAuction(
 
 	BorrowMetaData := lockedVault.GetBorrowMetaData()
 	LendPos, _ := k.GetLend(ctx, BorrowMetaData.LendingId)
-	pool, _ := k.GetPool(ctx, LendPos.PoolId)
+	pool, _ := k.GetPool(ctx, LendPos.PoolID)
 	err := k.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(outFlowToken))
 	if err != nil {
 		return err

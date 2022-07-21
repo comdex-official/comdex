@@ -6,13 +6,13 @@ import (
 	protobuftypes "github.com/gogo/protobuf/types"
 )
 
-func (k *Keeper) SetUserBorrowIDHistory(ctx sdk.Context, id uint64) {
+func (k *Keeper) SetUserBorrowIDHistory(ctx sdk.Context, ID uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowHistoryIDPrefix
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
-				Value: id,
+				Value: ID,
 			},
 		)
 	)
@@ -30,10 +30,10 @@ func (k *Keeper) GetUserBorrowIDHistory(ctx sdk.Context) uint64 {
 		return 0
 	}
 
-	var id protobuftypes.UInt64Value
-	k.cdc.MustUnmarshal(value, &id)
+	var ID protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &ID)
 
-	return id.GetValue()
+	return ID.GetValue()
 }
 
 func (k *Keeper) SetBorrow(ctx sdk.Context, borrow types.BorrowAsset) {
@@ -46,10 +46,10 @@ func (k *Keeper) SetBorrow(ctx sdk.Context, borrow types.BorrowAsset) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow types.BorrowAsset, found bool) {
+func (k *Keeper) GetBorrow(ctx sdk.Context, ID uint64) (borrow types.BorrowAsset, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.BorrowUserKey(id)
+		key   = types.BorrowUserKey(ID)
 		value = store.Get(key)
 	)
 
@@ -61,22 +61,22 @@ func (k *Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow types.BorrowAsset
 	return borrow, true
 }
 
-func (k *Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
+func (k *Keeper) DeleteBorrow(ctx sdk.Context, ID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.BorrowUserKey(id)
+		key   = types.BorrowUserKey(ID)
 	)
 
 	store.Delete(key)
 }
 
-func (k *Keeper) SetBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID, id uint64) {
+func (k *Keeper) SetBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID, ID uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowForAddressByPair(address, pairID)
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
-				Value: id,
+				Value: ID,
 			},
 		)
 	)
@@ -108,29 +108,29 @@ func (k *Keeper) UpdateUserBorrowIDMapping(
 	borrowID uint64,
 	isInsert bool,
 ) error {
-	userVaults, found := k.GetUserBorrows(ctx, lendOwner)
+	userBorrows, found := k.GetUserBorrows(ctx, lendOwner)
 
 	if !found && isInsert {
-		userVaults = types.UserBorrowIdMapping{
+		userBorrows = types.UserBorrowIdMapping{
 			Owner:     lendOwner,
-			BorrowIds: nil,
+			BorrowIDs: nil,
 		}
 	} else if !found && !isInsert {
 		return types.ErrorLendOwnerNotFound
 	}
 
 	if isInsert {
-		userVaults.BorrowIds = append(userVaults.BorrowIds, borrowID)
+		userBorrows.BorrowIDs = append(userBorrows.BorrowIDs, borrowID)
 	} else {
-		for index, id := range userVaults.BorrowIds {
+		for index, id := range userBorrows.BorrowIDs {
 			if id == borrowID {
-				userVaults.BorrowIds = append(userVaults.BorrowIds[:index], userVaults.BorrowIds[index+1:]...)
+				userBorrows.BorrowIDs = append(userBorrows.BorrowIDs[:index], userBorrows.BorrowIDs[index+1:]...)
 				break
 			}
 		}
 	}
 
-	k.SetUserBorrows(ctx, userVaults)
+	k.SetUserBorrows(ctx, userBorrows)
 	return nil
 }
 
@@ -150,7 +150,7 @@ func (k *Keeper) GetUserBorrows(ctx sdk.Context, address string) (userBorrows ty
 
 func (k *Keeper) UserBorrows(ctx sdk.Context, address string) (userBorrows []types.BorrowAsset, found bool) {
 	userBorrowID, _ := k.GetUserBorrows(ctx, address)
-	for _, v := range userBorrowID.BorrowIds {
+	for _, v := range userBorrowID.BorrowIDs {
 		userBorrow, _ := k.GetBorrow(ctx, v)
 		userBorrows = append(userBorrows, userBorrow)
 	}
@@ -173,30 +173,30 @@ func (k *Keeper) UpdateBorrowIDByOwnerAndPoolMapping(
 	poolID uint64,
 	isInsert bool,
 ) error {
-	userLends, found := k.GetBorrowIDByOwnerAndPool(ctx, borrowOwner, poolID)
+	userBorrows, found := k.GetBorrowIDByOwnerAndPool(ctx, borrowOwner, poolID)
 
 	if !found && isInsert {
-		userLends = types.BorrowIdByOwnerAndPoolMapping{
+		userBorrows = types.BorrowIdByOwnerAndPoolMapping{
 			Owner:     borrowOwner,
-			PoolId:    poolID,
-			BorrowIds: nil,
+			PoolID:    poolID,
+			BorrowIDs: nil,
 		}
 	} else if !found && !isInsert {
 		return types.ErrorLendOwnerNotFound
 	}
 
 	if isInsert {
-		userLends.BorrowIds = append(userLends.BorrowIds, borrowID)
+		userBorrows.BorrowIDs = append(userBorrows.BorrowIDs, borrowID)
 	} else {
-		for index, id := range userLends.BorrowIds {
+		for index, id := range userBorrows.BorrowIDs {
 			if id == borrowID {
-				userLends.BorrowIds = append(userLends.BorrowIds[:index], userLends.BorrowIds[index+1:]...)
+				userBorrows.BorrowIDs = append(userBorrows.BorrowIDs[:index], userBorrows.BorrowIDs[index+1:]...)
 				break
 			}
 		}
 	}
 
-	k.SetBorrowIDByOwnerAndPool(ctx, userLends)
+	k.SetBorrowIDByOwnerAndPool(ctx, userBorrows)
 	return nil
 }
 
@@ -216,7 +216,7 @@ func (k *Keeper) GetBorrowIDByOwnerAndPool(ctx sdk.Context, address string, pool
 
 func (k *Keeper) BorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userBorrows []types.BorrowAsset, found bool) {
 	userLendID, _ := k.GetBorrowIDByOwnerAndPool(ctx, address, poolID)
-	for _, v := range userLendID.BorrowIds {
+	for _, v := range userLendID.BorrowIDs {
 		userBorrow, _ := k.GetBorrow(ctx, v)
 		userBorrows = append(userBorrows, userBorrow)
 	}
@@ -226,7 +226,7 @@ func (k *Keeper) BorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolID 
 func (k *Keeper) SetBorrowIDByOwnerAndPool(ctx sdk.Context, userBorrows types.BorrowIdByOwnerAndPoolMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.BorrowByUserAndPoolKey(userBorrows.Owner, userBorrows.PoolId)
+		key   = types.BorrowByUserAndPoolKey(userBorrows.Owner, userBorrows.PoolID)
 		value = k.cdc.MustMarshal(&userBorrows)
 	)
 	store.Set(key, value)
@@ -237,28 +237,28 @@ func (k *Keeper) UpdateBorrowIdsMapping(
 	borrowID uint64,
 	isInsert bool,
 ) error {
-	userVaults, found := k.GetBorrows(ctx)
+	userBorrows, found := k.GetBorrows(ctx)
 
 	if !found && isInsert {
-		userVaults = types.BorrowMapping{
-			BorrowIds: nil,
+		userBorrows = types.BorrowMapping{
+			BorrowIDs: nil,
 		}
 	} else if !found && !isInsert {
 		return types.ErrorLendOwnerNotFound
 	}
 
 	if isInsert {
-		userVaults.BorrowIds = append(userVaults.BorrowIds, borrowID)
+		userBorrows.BorrowIDs = append(userBorrows.BorrowIDs, borrowID)
 	} else {
-		for index, id := range userVaults.BorrowIds {
+		for index, id := range userBorrows.BorrowIDs {
 			if id == borrowID {
-				userVaults.BorrowIds = append(userVaults.BorrowIds[:index], userVaults.BorrowIds[index+1:]...)
+				userBorrows.BorrowIDs = append(userBorrows.BorrowIDs[:index], userBorrows.BorrowIDs[index+1:]...)
 				break
 			}
 		}
 	}
 
-	k.SetBorrows(ctx, userVaults)
+	k.SetBorrows(ctx, userBorrows)
 	return nil
 }
 

@@ -20,7 +20,7 @@ func (k *Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_
 				AssetIn:         msg.AssetIn,
 				AssetOut:        msg.AssetOut,
 				IsInterPool:     msg.IsInterPool,
-				AssetOutPoolId:  msg.AssetOutPoolId,
+				AssetOutPoolID:  msg.AssetOutPoolID,
 				MinUsdValueLeft: msg.MinUsdValueLeft,
 			}
 		)
@@ -33,7 +33,7 @@ func (k *Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_
 
 func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 	for _, v := range pool.AssetData {
-		_, found := k.GetAsset(ctx, v.AssetId)
+		_, found := k.GetAsset(ctx, v.AssetID)
 		if !found {
 			return types.ErrorAssetDoesNotExist
 		}
@@ -47,7 +47,7 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 	if !found {
 		for _, v := range pool.AssetData {
 			balanceStat := types.BalanceStats{
-				AssetId: v.AssetId,
+				AssetID: v.AssetID,
 				Amount:  sdk.ZeroInt(),
 			}
 			balanceStats = append(balanceStats, balanceStat)
@@ -63,7 +63,7 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		}
 	} else {
 		balanceStat := types.BalanceStats{
-			AssetId: pool.MainAssetId,
+			AssetID: pool.MainAssetId,
 			Amount:  sdk.ZeroInt(),
 		}
 		balanceStats = append(depositStats.BalanceStats, balanceStat)
@@ -77,29 +77,29 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 
 	poolID := k.GetPoolID(ctx)
 	newPool := types.Pool{
-		PoolId:               poolID + 1,
+		PoolID:               poolID + 1,
 		ModuleName:           pool.ModuleName,
 		MainAssetId:          pool.MainAssetId,
-		FirstBridgedAssetId:  pool.FirstBridgedAssetId,
-		SecondBridgedAssetId: pool.SecondBridgedAssetId,
+		FirstBridgedAssetID:  pool.FirstBridgedAssetID,
+		SecondBridgedAssetID: pool.SecondBridgedAssetID,
 		CPoolName:            pool.CPoolName,
 		AssetData:            pool.AssetData,
 	}
 	k.SetPool(ctx, newPool)
-	k.SetPoolID(ctx, newPool.PoolId)
+	k.SetPoolID(ctx, newPool.PoolID)
 	return nil
 }
 
 func (k Keeper) AddAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMapping) error {
-	_, found := k.GetAsset(ctx, assetToPair.AssetId)
+	_, found := k.GetAsset(ctx, assetToPair.AssetID)
 	if !found {
 		return types.ErrorAssetDoesNotExist
 	}
-	_, found = k.GetPool(ctx, assetToPair.PoolId)
+	_, found = k.GetPool(ctx, assetToPair.PoolID)
 	if !found {
 		return types.ErrPoolNotFound
 	}
-	for _, v := range assetToPair.PairId {
+	for _, v := range assetToPair.PairID {
 		_, found := k.GetLendPair(ctx, v)
 		if !found {
 			return types.ErrorPairDoesNotExist
@@ -178,14 +178,14 @@ func (k *Keeper) GetLendPairID(ctx sdk.Context) uint64 {
 
 func (k *Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRatesStats) error {
 	for _, msg := range records {
-		_, found := k.GetAssetRatesStats(ctx, msg.AssetId)
+		_, found := k.GetAssetRatesStats(ctx, msg.AssetID)
 		if found {
 			return types.ErrorDuplicateAssetRatesStats
 		}
 
 		var (
 			assetRatesStats = types.AssetRatesStats{
-				AssetId:              msg.AssetId,
+				AssetID:              msg.AssetID,
 				UOptimal:             msg.UOptimal,
 				Base:                 msg.Base,
 				Slope1:               msg.Slope1,
@@ -199,7 +199,7 @@ func (k *Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRates
 				LiquidationPenalty:   msg.LiquidationPenalty,
 				LiquidationBonus:     msg.LiquidationBonus,
 				ReserveFactor:        msg.ReserveFactor,
-				CAssetId:             msg.CAssetId,
+				CAssetID:             msg.CAssetID,
 			}
 		)
 
@@ -211,7 +211,7 @@ func (k *Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRates
 func (k *Keeper) SetAssetRatesStats(ctx sdk.Context, assetRatesStats types.AssetRatesStats) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetRatesStatsKey(assetRatesStats.AssetId)
+		key   = types.AssetRatesStatsKey(assetRatesStats.AssetID)
 		value = k.cdc.MustMarshal(&assetRatesStats)
 	)
 

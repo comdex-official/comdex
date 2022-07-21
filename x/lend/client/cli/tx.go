@@ -436,7 +436,7 @@ func NewCreateNewLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.Fl
 			AssetIn:         assetIn[i],
 			AssetOut:        assetOut[i],
 			IsInterPool:     interPool,
-			AssetOutPoolId:  assetOutPoolID[i],
+			AssetOutPoolID:  assetOutPoolID[i],
 			MinUsdValueLeft: minUSDValueLeft[i],
 		})
 	}
@@ -593,15 +593,15 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 	for i := range assetID {
 		bridged := ParseBoolFromString(isBridgedAsset[i])
 		assetData = append(assetData, types.AssetDataPoolMapping{
-			AssetId:   assetID[i],
+			AssetID:   assetID[i],
 			IsBridged: bridged,
 		})
 	}
 	pool = types.Pool{
 		ModuleName:           moduleName,
 		MainAssetId:          mainAssetID,
-		FirstBridgedAssetId:  firstBridgedAssetID,
-		SecondBridgedAssetId: secondBridgedAssetID,
+		FirstBridgedAssetID:  firstBridgedAssetID,
+		SecondBridgedAssetID: secondBridgedAssetID,
 		CPoolName:            cPoolName,
 		AssetData:            assetData,
 	}
@@ -655,9 +655,9 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 				pairIDs = append(pairIDs, rawPairID[i])
 			}
 			assetToPairMapping := types.AssetToPairMapping{
-				AssetId: assetID,
-				PoolId:  poolID,
-				PairId:  pairIDs,
+				AssetID: assetID,
+				PoolID:  poolID,
+				PairID:  pairIDs,
 			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
@@ -817,7 +817,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 		newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor[i])
 
 		assetRatesStats = append(assetRatesStats, types.AssetRatesStats{
-			AssetId:              assetID[i],
+			AssetID:              assetID[i],
 			UOptimal:             newUOptimal,
 			Base:                 newBase,
 			Slope1:               newSlope1,
@@ -831,7 +831,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 			LiquidationPenalty:   newLiquidationPenalty,
 			LiquidationBonus:     newLiquidationBonus,
 			ReserveFactor:        newReserveFactor,
-			CAssetId:             cAssetID[i],
+			CAssetID:             cAssetID[i],
 		},
 		)
 	}
