@@ -2,8 +2,8 @@ package keeper
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
