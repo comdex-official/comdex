@@ -43,16 +43,16 @@ func GetTxCmd() *cobra.Command {
 
 func txLend() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lend [Asset_Id] [Amount] [Pool_Id]",
+		Use:   "lend [Asset_Id] [Amount] [Pool_Id] [App_Id]",
 		Short: "lend a whitelisted asset",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			pair, err := strconv.ParseUint(args[0], 10, 64)
+			assetId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -67,7 +67,12 @@ func txLend() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgLend(ctx.GetFromAddress().String(), pair, asset, pool)
+			appId, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgLend(ctx.GetFromAddress().String(), assetId, asset, pool, appId)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},

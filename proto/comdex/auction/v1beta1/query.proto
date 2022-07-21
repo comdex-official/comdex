@@ -203,6 +203,50 @@ message QueryAuctionParamResponse {
   [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction_params\"" ];
 }
 
+message QueryDutchLendAuctionRequest {
+  uint64 app_id = 1;
+  uint64 auction_mapping_id = 2;
+  uint64 auction_id = 3;
+  bool history = 4;
+}
+
+message QueryDutchLendAuctionResponse {
+  DutchAuction auction = 1
+  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction\"" ];
+}
+
+message QueryDutchLendAuctionsRequest {
+  uint64 app_id = 1;
+  bool history = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryDutchLendAuctionsResponse {
+  repeated DutchAuction auctions = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"auctions\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryDutchLendBiddingsRequest {
+  string bidder = 1;
+  uint64 app_id = 2;
+  bool history = 3;
+}
+
+message QueryDutchLendBiddingsResponse {
+  string bidder = 1 [
+    (gogoproto.moretags) = "yaml:\"bidder\""
+  ];
+  repeated DutchBiddings biddings = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"biddings\""
+  ];
+}
+
 
 service Query {
   rpc QuerySurplusAuction(QuerySurplusAuctionRequest) returns (QuerySurplusAuctionResponse) {
@@ -240,5 +284,14 @@ service Query {
   }
   rpc QueryAuctionParams(QueryAuctionParamRequest) returns (QueryAuctionParamResponse) {
     option (google.api.http).get = "/comdex/auction/v1beta1/auctionparams/{app_id}";
+  }
+  rpc QueryDutchLendAuction(QueryDutchLendAuctionRequest) returns (QueryDutchLendAuctionResponse) {
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchlendauction/{app_id}/{auction_mapping_id}/{auction_id}/{history}";
+  }
+  rpc QueryDutchLendAuctions(QueryDutchLendAuctionsRequest) returns (QueryDutchLendAuctionsResponse) {
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchlendauctions/{app_id}/{history}";
+  }
+  rpc QueryDutchLendBiddings(QueryDutchLendBiddingsRequest) returns (QueryDutchLendBiddingsResponse) {
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchlendbiddings/{bidder}/{app_id}/{history}";
   }
 }

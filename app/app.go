@@ -634,6 +634,7 @@ func New(
 		&app.MarketKeeper,
 		&app.AuctionKeeper,
 		&app.EsmKeeper,
+		&app.LendKeeper,
 	)
 
 	app.AuctionKeeper = *auctionkeeper.NewKeeper(
@@ -650,6 +651,7 @@ func New(
 		&app.CollectorKeeper,
 		&app.TokenmintKeeper,
 		&app.EsmKeeper,
+		&app.LendKeeper,
 	)
 
 	app.CollectorKeeper = *collectorkeeper.NewKeeper(

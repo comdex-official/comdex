@@ -16,11 +16,12 @@ func (k *Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_
 		var (
 			id   = k.GetLendPairID(ctx)
 			pair = types.Extended_Pair{
-				Id:             id + 1,
-				AssetIn:        msg.AssetIn,
-				AssetOut:       msg.AssetOut,
-				IsInterPool:    msg.IsInterPool,
-				AssetOutPoolId: msg.AssetOutPoolId,
+				Id:              id + 1,
+				AssetIn:         msg.AssetIn,
+				AssetOut:        msg.AssetOut,
+				IsInterPool:     msg.IsInterPool,
+				AssetOutPoolId:  msg.AssetOutPoolId,
+				MinUsdValueLeft: msg.MinUsdValueLeft,
 			}
 		)
 
@@ -36,6 +37,42 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		if !found {
 			return types.ErrorAssetDoesNotExist
 		}
+	}
+	depositStats, found := k.GetDepositStats(ctx)
+	userDepositStats, _ := k.GetUserDepositStats(ctx)
+	ReserveDepositStats, _ := k.GetReserveDepositStats(ctx)
+	BuyBackDepositStats, _ := k.GetBuyBackDepositStats(ctx)
+	BorrowStats, _ := k.GetBorrowStats(ctx)
+	var balanceStats []types.BalanceStats
+	if !found {
+		for _, v := range pool.AssetData {
+			balanceStat := types.BalanceStats{
+				AssetId: v.AssetId,
+				Amount:  sdk.ZeroInt(),
+			}
+			balanceStats = append(balanceStats, balanceStat)
+			depositStats = types.DepositStats{BalanceStats: balanceStats}
+			userDepositStats = types.DepositStats{BalanceStats: balanceStats}
+			ReserveDepositStats = types.DepositStats{BalanceStats: balanceStats}
+			BuyBackDepositStats = types.DepositStats{BalanceStats: balanceStats}
+			BorrowStats = types.DepositStats{BalanceStats: balanceStats}
+			k.SetDepositStats(ctx, depositStats)
+			k.SetUserDepositStats(ctx, depositStats)
+			k.SetReserveDepositStats(ctx, depositStats)
+			k.SetBorrowStats(ctx, depositStats)
+		}
+	} else {
+		balanceStat := types.BalanceStats{
+			AssetId: pool.MainAssetId,
+			Amount:  sdk.ZeroInt(),
+		}
+		balanceStats = append(depositStats.BalanceStats, balanceStat)
+		depositStats = types.DepositStats{BalanceStats: balanceStats}
+		k.SetDepositStats(ctx, depositStats)
+		k.SetUserDepositStats(ctx, userDepositStats)
+		k.SetReserveDepositStats(ctx, ReserveDepositStats)
+		k.SetBuyBackDepositStats(ctx, BuyBackDepositStats)
+		k.SetBorrowStats(ctx, BorrowStats)
 	}
 
 	poolID := k.GetPoolID(ctx)
@@ -192,4 +229,29 @@ func (k *Keeper) GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRates
 
 	k.cdc.MustUnmarshal(value, &assetRatesStats)
 	return assetRatesStats, true
+}
+
+func (k *Keeper) SetDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
+	var (
+		store = k.Store(ctx)
+		key   = types.DepositStatsPrefix
+		value = k.cdc.MustMarshal(&depositStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.DepositStatsPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return depositStats, false
+	}
+
+	k.cdc.MustUnmarshal(value, &depositStats)
+	return depositStats, true
 }

@@ -510,3 +510,103 @@ func (k *Keeper) GetModuleBalanceByPoolID(ctx sdk.Context, poolID uint64) (Modul
 	}
 	return ModuleBalance, true
 }
+
+func (k *Keeper) SetUserDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserDepositStatsPrefix
+		value = k.cdc.MustMarshal(&depositStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetUserDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserDepositStatsPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return depositStats, false
+	}
+
+	k.cdc.MustUnmarshal(value, &depositStats)
+	return depositStats, true
+}
+
+func (k *Keeper) SetReserveDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReserveDepositStatsPrefix
+		value = k.cdc.MustMarshal(&depositStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetReserveDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReserveDepositStatsPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return depositStats, false
+	}
+
+	k.cdc.MustUnmarshal(value, &depositStats)
+	return depositStats, true
+}
+
+func (k *Keeper) SetBuyBackDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
+	var (
+		store = k.Store(ctx)
+		key   = types.BuyBackDepositStatsPrefix
+		value = k.cdc.MustMarshal(&depositStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetBuyBackDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.BuyBackDepositStatsPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return depositStats, false
+	}
+
+	k.cdc.MustUnmarshal(value, &depositStats)
+	return depositStats, true
+}
+
+func (k *Keeper) SetBorrowStats(ctx sdk.Context, borrowStats types.DepositStats) {
+	var (
+		store = k.Store(ctx)
+		key   = types.BorrowStatsPrefix
+		value = k.cdc.MustMarshal(&borrowStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetBorrowStats(ctx sdk.Context) (borrowStats types.DepositStats, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.BorrowStatsPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return borrowStats, false
+	}
+
+	k.cdc.MustUnmarshal(value, &borrowStats)
+	return borrowStats, true
+}

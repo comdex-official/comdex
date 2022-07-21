@@ -149,8 +149,8 @@ func (k *Keeper) GetUserBorrows(ctx sdk.Context, address string) (userBorrows ty
 }
 
 func (k *Keeper) UserBorrows(ctx sdk.Context, address string) (userBorrows []types.BorrowAsset, found bool) {
-	userLendID, _ := k.GetUserBorrows(ctx, address)
-	for _, v := range userLendID.BorrowIds {
+	userBorrowID, _ := k.GetUserBorrows(ctx, address)
+	for _, v := range userBorrowID.BorrowIds {
 		userBorrow, _ := k.GetBorrow(ctx, v)
 		userBorrows = append(userBorrows, userBorrow)
 	}
@@ -285,55 +285,55 @@ func (k *Keeper) SetBorrows(ctx sdk.Context, userBorrows types.BorrowMapping) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) UpdateStableBorrowIdsMapping(
-	ctx sdk.Context,
-	borrowID uint64,
-	isInsert bool,
-) error {
-	userVaults, found := k.GetStableBorrows(ctx)
-
-	if !found && isInsert {
-		userVaults = types.StableBorrowMapping{
-			StableBorrowIds: nil,
-		}
-	} else if !found && !isInsert {
-		return types.ErrorLendOwnerNotFound
-	}
-
-	if isInsert {
-		userVaults.StableBorrowIds = append(userVaults.StableBorrowIds, borrowID)
-	} else {
-		for index, id := range userVaults.StableBorrowIds {
-			if id == borrowID {
-				userVaults.StableBorrowIds = append(userVaults.StableBorrowIds[:index], userVaults.StableBorrowIds[index+1:]...)
-				break
-			}
-		}
-	}
-
-	k.SetStableBorrows(ctx, userVaults)
-	return nil
-}
-
-func (k *Keeper) GetStableBorrows(ctx sdk.Context) (userBorrows types.StableBorrowMapping, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.StableBorrowsKey
-		value = store.Get(key)
-	)
-	if value == nil {
-		return userBorrows, false
-	}
-	k.cdc.MustUnmarshal(value, &userBorrows)
-
-	return userBorrows, true
-}
-
-func (k *Keeper) SetStableBorrows(ctx sdk.Context, userBorrows types.StableBorrowMapping) {
-	var (
-		store = k.Store(ctx)
-		key   = types.StableBorrowsKey
-		value = k.cdc.MustMarshal(&userBorrows)
-	)
-	store.Set(key, value)
-}
+//func (k *Keeper) UpdateStableBorrowIdsMapping(
+//	ctx sdk.Context,
+//	borrowID uint64,
+//	isInsert bool,
+//) error {
+//	userVaults, found := k.GetStableBorrows(ctx)
+//
+//	if !found && isInsert {
+//		userVaults = types.StableBorrowMapping{
+//			StableBorrowIds: nil,
+//		}
+//	} else if !found && !isInsert {
+//		return types.ErrorLendOwnerNotFound
+//	}
+//
+//	if isInsert {
+//		userVaults.StableBorrowIds = append(userVaults.StableBorrowIds, borrowID)
+//	} else {
+//		for index, id := range userVaults.StableBorrowIds {
+//			if id == borrowID {
+//				userVaults.StableBorrowIds = append(userVaults.StableBorrowIds[:index], userVaults.StableBorrowIds[index+1:]...)
+//				break
+//			}
+//		}
+//	}
+//
+//	k.SetStableBorrows(ctx, userVaults)
+//	return nil
+//}
+//
+//func (k *Keeper) GetStableBorrows(ctx sdk.Context) (userBorrows types.StableBorrowMapping, found bool) {
+//	var (
+//		store = k.Store(ctx)
+//		key   = types.StableBorrowsKey
+//		value = store.Get(key)
+//	)
+//	if value == nil {
+//		return userBorrows, false
+//	}
+//	k.cdc.MustUnmarshal(value, &userBorrows)
+//
+//	return userBorrows, true
+//}
+//
+//func (k *Keeper) SetStableBorrows(ctx sdk.Context, userBorrows types.StableBorrowMapping) {
+//	var (
+//		store = k.Store(ctx)
+//		key   = types.StableBorrowsKey
+//		value = k.cdc.MustMarshal(&userBorrows)
+//	)
+//	store.Set(key, value)
+//}
