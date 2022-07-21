@@ -21,7 +21,7 @@ var _ types.MsgServer = msgServer{}
 func (m msgServer) Lend(goCtx context.Context, lend *types.MsgLend) (*types.MsgLendResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := m.keeper.LendAsset(ctx, lend.Lender, lend.AssetId, lend.Amount, lend.PoolId); err != nil {
+	if err := m.keeper.LendAsset(ctx, lend.Lender, lend.AssetId, lend.Amount, lend.PoolId, lend.AppId); err != nil {
 		return nil, err
 	}
 

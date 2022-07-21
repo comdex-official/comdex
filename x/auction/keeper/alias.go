@@ -4,6 +4,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,7 +15,7 @@ func (k *Keeper) GetModuleAccount(ctx sdk.Context, name string) authtypes.Module
 	return k.account.GetModuleAccount(ctx, name)
 }
 
-func (k *Keeper) GetModuleAddress(ctx sdk.Context, name string) sdk.AccAddress {
+func (k *Keeper) GetModuleAddress(_ sdk.Context, name string) sdk.AccAddress {
 	return k.account.GetModuleAddress(name)
 }
 func (k *Keeper) GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin {
@@ -188,4 +189,60 @@ func (k *Keeper) SetVault(ctx sdk.Context, vault vaulttypes.Vault) {
 
 func (k *Keeper) GetVault(ctx sdk.Context, id string) (vault vaulttypes.Vault, found bool) {
 	return k.vault.GetVault(ctx, id)
+}
+
+func (k *Keeper) GetBorrows(ctx sdk.Context) (userBorrows lendtypes.BorrowMapping, found bool) {
+	return k.lend.GetBorrows(ctx)
+}
+
+func (k *Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool) {
+	return k.lend.GetBorrow(ctx, id)
+}
+
+func (k *Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended_Pair, found bool) {
+	return k.lend.GetLendPair(ctx, id)
+}
+
+func (k *Keeper) GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesStats, found bool) {
+	return k.lend.GetAssetRatesStats(ctx, assetID)
+}
+
+func (k *Keeper) VerifyCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error {
+	return k.lend.VerifyCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut, liquidationThreshold)
+}
+
+func (k *Keeper) CalculateLendCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error) {
+	return k.lend.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
+}
+
+func (k *Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool) {
+	return k.lend.GetLend(ctx, id)
+}
+
+func (k *Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
+	k.lend.DeleteBorrow(ctx, id)
+}
+
+func (k *Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
+	k.lend.DeleteBorrowForAddressByPair(ctx, address, pairID)
+}
+
+func (k *Keeper) UpdateUserBorrowIDMapping(ctx sdk.Context, borrowOwner string, borrowID uint64, isInsert bool) error {
+	return k.lend.UpdateUserBorrowIDMapping(ctx, borrowOwner, borrowID, isInsert)
+}
+
+func (k *Keeper) UpdateBorrowIDByOwnerAndPoolMapping(ctx sdk.Context, borrowOwner string, borrowID uint64, poolID uint64, isInsert bool) error {
+	return k.lend.UpdateBorrowIDByOwnerAndPoolMapping(ctx, borrowOwner, borrowID, poolID, isInsert)
+}
+
+func (k *Keeper) UpdateBorrowIdsMapping(ctx sdk.Context, borrowID uint64, isInsert bool) error {
+	return k.lend.UpdateBorrowIdsMapping(ctx, borrowID, isInsert)
+}
+
+func (k *Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
+	k.lend.CreteNewBorrow(ctx, liqBorrow)
+}
+
+func (k *Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
+	return k.lend.GetPool(ctx, id)
 }

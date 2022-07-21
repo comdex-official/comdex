@@ -15,4 +15,12 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 	if err != nil {
 		return
 	}
+	err = k.LiquidateBorrows(ctx)
+	if err != nil {
+		return
+	}
+	err = k.UpdateLockedBorrows(ctx)
+	if err != nil {
+		return
+	}
 }

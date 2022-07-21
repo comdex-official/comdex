@@ -3,20 +3,25 @@ package types
 import (
 	"fmt"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 const (
-	ProposalUpdateGenericParams = "UpdateGenericParams"
+	ProposalUpdateGenericParams    = "UpdateGenericParams"
+	ProposalCreateNewLiquidityPair = "CreateNewLiquidityPair"
 )
 
 func init() {
 	govtypes.RegisterProposalType(ProposalUpdateGenericParams)
+	govtypes.RegisterProposalType(ProposalCreateNewLiquidityPair)
 	govtypes.RegisterProposalTypeCodec(&UpdateGenericParamsProposal{}, "comdex/UpdateGenericParams")
+	govtypes.RegisterProposalTypeCodec(&CreateNewLiquidityPairProposal{}, "comdex/CreateNewLiquidityPair")
 }
 
 var (
 	_ govtypes.Content = &UpdateGenericParamsProposal{}
+	_ govtypes.Content = &CreateNewLiquidityPairProposal{}
 )
 
 func NewUpdateGenericParamsProposal(
@@ -71,6 +76,45 @@ func (p *UpdateGenericParamsProposal) ValidateBasic() error {
 		if !keyFound {
 			return fmt.Errorf("invalid key for update: %s", key)
 		}
+	}
+
+	return nil
+}
+
+func NewCreateLiquidityPairProposal(
+	title, description string,
+	from sdk.AccAddress,
+	appID uint64,
+	baseCoinDenom, quoteCoinDenom string,
+) govtypes.Content {
+	return &CreateNewLiquidityPairProposal{
+		Title:          title,
+		Description:    description,
+		AppId:          appID,
+		BaseCoinDenom:  baseCoinDenom,
+		QuoteCoinDenom: quoteCoinDenom,
+		From:           from.String(),
+	}
+}
+func (p *CreateNewLiquidityPairProposal) GetTitle() string {
+	return p.Title
+}
+
+func (p *CreateNewLiquidityPairProposal) GetDescription() string {
+	return p.Description
+}
+func (p *CreateNewLiquidityPairProposal) ProposalRoute() string { return RouterKey }
+
+func (p *CreateNewLiquidityPairProposal) ProposalType() string { return ProposalCreateNewLiquidityPair }
+
+func (p *CreateNewLiquidityPairProposal) ValidateBasic() error {
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
+	}
+
+	if p.AppId <= 0 {
+		return ErrInvalidAppID
 	}
 
 	return nil

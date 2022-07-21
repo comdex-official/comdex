@@ -13,6 +13,9 @@ func (k Keeper) GetUtilisationRatioByPoolIDAndAssetID(ctx sdk.Context, poolID, a
 	if !found {
 		return sdk.ZeroDec(), types.ErrAssetStatsNotFound
 	}
+	if moduleBalance.ToDec().IsZero() {
+		return sdk.ZeroDec(), nil
+	}
 	utilizationRatio := assetStats.TotalBorrowed.ToDec().Quo(moduleBalance.ToDec())
 	return utilizationRatio, nil
 }

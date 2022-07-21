@@ -14,3 +14,12 @@ message UpdateGenericParamsProposal {
     string title = 4 [(gogoproto.moretags) = "yaml:\"title\""];
     string description = 5 [(gogoproto.moretags) = "yaml:\"description\""];
 }
+
+message CreateNewLiquidityPairProposal {
+    string from = 1;
+    uint64 app_id = 2;
+    string base_coin_denom = 3;
+    string quote_coin_denom = 4;
+    string title = 5 [(gogoproto.moretags) = "yaml:\"title\""];
+    string description = 6 [(gogoproto.moretags) = "yaml:\"description\""];
+}

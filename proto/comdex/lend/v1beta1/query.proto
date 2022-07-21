@@ -233,6 +233,47 @@ message QueryModuleBalanceResponse {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"module_balance\""];
 }
+
+message QueryDepositStatsRequest {}
+
+message QueryDepositStatsResponse {
+  DepositStats DepositStats = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"deposit_stats\""];
+}
+
+message QueryUserDepositStatsRequest {}
+
+message QueryUserDepositStatsResponse {
+  DepositStats UserDepositStats = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"user_deposit_stats\""];
+}
+
+message QueryReserveDepositStatsRequest {}
+
+message QueryReserveDepositStatsResponse {
+  DepositStats ReserveDepositStats = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"reserve_deposit_stats\""];
+}
+
+message QueryBuyBackDepositStatsRequest {}
+
+message QueryBuyBackDepositStatsResponse {
+  DepositStats BuyBackDepositStats = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"buy_back_deposit_stats\""];
+}
+
+message QueryBorrowStatsRequest {}
+
+message QueryBorrowStatsResponse {
+  DepositStats BorrowStats = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"borrow_stats\""];
+}
+
 service Query {
   rpc QueryLends(QueryLendsRequest) returns (QueryLendsResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/lends";
@@ -303,5 +344,25 @@ service Query {
   rpc QueryModuleBalance(QueryModuleBalanceRequest) returns (QueryModuleBalanceResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/module_balance/{pool_id}";
   };
+
+  rpc QueryDepositStats(QueryDepositStatsRequest) returns (QueryDepositStatsResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/deposit_stats";
+  }
+
+  rpc QueryUserDepositStats(QueryUserDepositStatsRequest) returns (QueryUserDepositStatsResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/user_deposit_stats";
+  }
+
+  rpc QueryReserveDepositStats(QueryReserveDepositStatsRequest) returns (QueryReserveDepositStatsResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/reserve_deposit_stats";
+  }
+
+  rpc QueryBuyBackDepositStats(QueryBuyBackDepositStatsRequest) returns (QueryBuyBackDepositStatsResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/buy_back_deposit_stats";
+  }
+
+  rpc QueryBorrowStats(QueryBorrowStatsRequest) returns (QueryBorrowStatsResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/borrow_stats";
+  }
 }
 

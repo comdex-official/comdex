@@ -105,3 +105,34 @@ func (m *MsgPlaceDutchBidRequest) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+func NewMsgPlaceDutchLendBid(from string, auctionID uint64, amt sdk.Coin, max sdk.Dec, appID, auctionMappingID uint64) *MsgPlaceDutchLendBidRequest {
+	return &MsgPlaceDutchLendBidRequest{
+		Bidder:           from,
+		AuctionId:        auctionID,
+		Amount:           amt,
+		Max:              max,
+		AppId:            appID,
+		AuctionMappingId: auctionMappingID,
+	}
+}
+
+func (m *MsgPlaceDutchLendBidRequest) ValidateBasic() error {
+	if m.AuctionId == 0 {
+		return errors.New("auction id cannot be zero")
+	}
+	_, err := sdk.AccAddressFromBech32(m.Bidder)
+	if err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
+	}
+	return nil
+}
+
+func (m *MsgPlaceDutchLendBidRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.Bidder)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}

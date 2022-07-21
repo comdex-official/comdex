@@ -81,6 +81,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 		LiquidationTimestamp:         ctx.BlockTime(),
 		SellOffHistory:               nil,
 		InterestAccumulated:          vault.InterestAccumulated,
+		Kind:                         nil,
 	}
 
 	k.SetLockedVault(ctx, value)

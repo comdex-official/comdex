@@ -41,4 +41,5 @@ var (
 	ErrAvailableToBorrowInsufficient   = sdkerrors.Register(ModuleName, 1148, "Available To Borrow Insufficient")
 	ErrStableBorrowDisabled            = sdkerrors.Register(ModuleName, 1149, "Stable Borrow Rate Not Enabled for This Asset")
 	ErrorPriceDoesNotExist             = sdkerrors.Register(ModuleName, 1150, "Price does not exist")
+	ErrBadOfferCoinType                = sdkerrors.Register(ModuleName, 1151, "invalid offer coin Type")
 )

@@ -889,3 +889,276 @@ func (k *Keeper) GetAuctionParams(ctx sdk.Context, AppID uint64) (asset auctiont
 	k.cdc.MustUnmarshal(value, &asset)
 	return asset, true
 }
+
+func (k *Keeper) GetLendAuctionID(ctx sdk.Context) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.LendAuctionIDKey
+		value = store.Get(key)
+	)
+	if value == nil {
+		return 0
+	}
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}
+
+func (k *Keeper) SetLendAuctionID(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.LendAuctionIDKey
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) SetDutchLendAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) error {
+	auctionType, err := k.GetAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
+	if err != nil {
+		return err
+	}
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.LendAuctionKey(auction.AppId, auctionType, auction.AuctionId)
+		value = k.cdc.MustMarshal(&auction)
+	)
+
+	store.Set(key, value)
+	return nil
+}
+
+func (k *Keeper) SetHistoryDutchLendAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) error {
+	auctionType, err := k.GetAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
+	if err != nil {
+		return err
+	}
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryLendAuctionKey(auction.AppId, auctionType, auction.AuctionId)
+		value = k.cdc.MustMarshal(&auction)
+	)
+	store.Set(key, value)
+	return nil
+}
+
+func (k *Keeper) DeleteDutchLendAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) error {
+	auctionType, err := k.GetAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
+	if err != nil {
+		return err
+	}
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.LendAuctionKey(auction.AppId, auctionType, auction.AuctionId)
+	)
+	store.Delete(key)
+	return nil
+}
+
+func (k *Keeper) GetDutchLendAuction(ctx sdk.Context, appID, auctionMappingID, auctionID uint64) (auction auctiontypes.DutchAuction, err error) {
+	auctionType, err := k.GetAuctionType(ctx, auctionMappingID, appID)
+	if err != nil {
+		return auction, err
+	}
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.LendAuctionKey(appID, auctionType, auctionID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return auction, sdkerrors.ErrNotFound
+	}
+
+	k.cdc.MustUnmarshal(value, &auction)
+	return auction, nil
+}
+
+func (k *Keeper) GetHistoryDutchLendAuction(ctx sdk.Context, appID, auctionMappingID, auctionID uint64) (auction auctiontypes.DutchAuction, err error) {
+	auctionType, err := k.GetAuctionType(ctx, auctionMappingID, appID)
+	if err != nil {
+		return auction, err
+	}
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryLendAuctionKey(appID, auctionType, auctionID)
+		value = store.Get(key)
+	)
+	if value == nil {
+		return auction, sdkerrors.ErrNotFound
+	}
+
+	k.cdc.MustUnmarshal(value, &auction)
+	return auction, nil
+}
+
+func (k *Keeper) GetDutchLendAuctions(ctx sdk.Context, appID uint64) (auctions []auctiontypes.DutchAuction) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.LendAuctionTypeKey(appID, auctiontypes.DutchString)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var auction auctiontypes.DutchAuction
+		k.cdc.MustUnmarshal(iter.Value(), &auction)
+		auctions = append(auctions, auction)
+	}
+
+	return auctions
+}
+
+func (k *Keeper) GetHistoryDutchLendAuctions(ctx sdk.Context, appID uint64) (auctions []auctiontypes.DutchAuction) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryLendAuctionTypeKey(appID, auctiontypes.DutchString)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var auction auctiontypes.DutchAuction
+		k.cdc.MustUnmarshal(iter.Value(), &auction)
+		auctions = append(auctions, auction)
+	}
+
+	return auctions
+}
+
+func (k *Keeper) SetDutchUserLendBidding(ctx sdk.Context, userBiddings auctiontypes.DutchBiddings) error {
+	auctionType, err := k.GetAuctionType(ctx, userBiddings.AuctionMappingId, userBiddings.AppId)
+	if err != nil {
+		return err
+	}
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.LendUserKey(userBiddings.Bidder, userBiddings.AppId, auctionType, userBiddings.BiddingId)
+		value = k.cdc.MustMarshal(&userBiddings)
+	)
+	store.Set(key, value)
+	return nil
+}
+
+func (k *Keeper) SetHistoryDutchUserLendBidding(ctx sdk.Context, userBiddings auctiontypes.DutchBiddings) error {
+	auctionType, err := k.GetAuctionType(ctx, userBiddings.AuctionMappingId, userBiddings.AppId)
+	if err != nil {
+		return err
+	}
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryLendUserKey(userBiddings.Bidder, userBiddings.AppId, auctionType, userBiddings.BiddingId)
+		value = k.cdc.MustMarshal(&userBiddings)
+	)
+	store.Set(key, value)
+	return nil
+}
+
+func (k *Keeper) DeleteDutchLendUserBidding(ctx sdk.Context, userBiddings auctiontypes.DutchBiddings) error {
+	auctionType, err := k.GetAuctionType(ctx, userBiddings.AuctionMappingId, userBiddings.AppId)
+	if err != nil {
+		return err
+	}
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.LendUserKey(userBiddings.Bidder, userBiddings.AppId, auctionType, userBiddings.BiddingId)
+	)
+	store.Delete(key)
+	return nil
+}
+
+func (k *Keeper) GetDutchLendUserBidding(ctx sdk.Context, bidder string, appID, biddingID uint64) (userBidding auctiontypes.DutchBiddings, err error) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.LendUserKey(bidder, appID, auctiontypes.DutchString, biddingID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return userBidding, sdkerrors.ErrNotFound
+	}
+
+	k.cdc.MustUnmarshal(value, &userBidding)
+
+	return userBidding, nil
+}
+
+func (k *Keeper) GetHistoryDutchLendUserBidding(ctx sdk.Context, bidder string, appID, biddingID uint64) (userBidding auctiontypes.DutchBiddings, err error) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryLendUserKey(bidder, appID, auctiontypes.DutchString, biddingID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return userBidding, sdkerrors.ErrNotFound
+	}
+
+	k.cdc.MustUnmarshal(value, &userBidding)
+
+	return userBidding, nil
+}
+
+func (k *Keeper) GetDutchLendUserBiddings(ctx sdk.Context, bidder string, appID uint64) (userBiddings []auctiontypes.DutchBiddings) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.LendUserAuctionTypeKey(bidder, appID, auctiontypes.DutchString)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var userBidding auctiontypes.DutchBiddings
+		k.cdc.MustUnmarshal(iter.Value(), &userBidding)
+		userBiddings = append(userBiddings, userBidding)
+	}
+
+	return userBiddings
+}
+
+func (k *Keeper) GetHistoryDutchLendUserBiddings(ctx sdk.Context, bidder string, appID uint64) (userBiddings []auctiontypes.DutchBiddings) {
+	var (
+		store = k.Store(ctx)
+		key   = auctiontypes.HistoryLendUserAuctionTypeKey(bidder, appID, auctiontypes.DutchString)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var userBidding auctiontypes.DutchBiddings
+		k.cdc.MustUnmarshal(iter.Value(), &userBidding)
+		userBiddings = append(userBiddings, userBidding)
+	}
+
+	return userBiddings
+}
