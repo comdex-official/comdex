@@ -82,6 +82,7 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		MainAssetId:          pool.MainAssetId,
 		FirstBridgedAssetId:  pool.FirstBridgedAssetId,
 		SecondBridgedAssetId: pool.SecondBridgedAssetId,
+		CPoolName:            pool.CPoolName,
 		AssetData:            pool.AssetData,
 	}
 	k.SetPool(ctx, newPool)
@@ -196,6 +197,7 @@ func (k *Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRates
 				Ltv:                  msg.Ltv,
 				LiquidationThreshold: msg.LiquidationThreshold,
 				LiquidationPenalty:   msg.LiquidationPenalty,
+				LiquidationBonus:     msg.LiquidationBonus,
 				ReserveFactor:        msg.ReserveFactor,
 				CAssetId:             msg.CAssetId,
 			}

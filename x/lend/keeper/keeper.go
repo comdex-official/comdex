@@ -129,6 +129,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 		UpdatedAmountIn:    Amount.Amount,
 		AvailableToBorrow:  Amount.Amount,
 		Reward_Accumulated: sdk.ZeroInt(),
+		CPoolName:          pool.CPoolName,
 		AppId:              AppID,
 	}
 	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, AssetID, PoolID)
@@ -612,6 +613,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 			BorrowingTime:        ctx.BlockTime(),
 			UpdatedAmountOut:     AmountOut.Amount,
 			Interest_Accumulated: sdk.ZeroInt(),
+			CPoolName:            AssetOutPool.CPoolName,
 		}
 
 		assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolId)
@@ -755,6 +757,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 				BorrowingTime:        ctx.BlockTime(),
 				UpdatedAmountOut:     AmountOut.Amount,
 				Interest_Accumulated: sdk.ZeroInt(),
+				CPoolName:            AssetOutPool.CPoolName,
 			}
 
 			assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolId)
@@ -867,6 +870,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 				BorrowingTime:        ctx.BlockTime(),
 				UpdatedAmountOut:     AmountOut.Amount,
 				Interest_Accumulated: sdk.ZeroInt(),
+				CPoolName:            AssetOutPool.CPoolName,
 			}
 
 			assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolId)

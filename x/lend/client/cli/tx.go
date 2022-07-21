@@ -424,14 +424,20 @@ func NewCreateNewLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.Fl
 		return txf, nil, err
 	}
 
+	minUSDValueLeft, err := ParseUint64SliceFromString(newLendPairs.MinUSDValueLeft, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
 	var pairs []types.Extended_Pair
 	for i := range assetIn {
 		interPool := ParseBoolFromString(isInterPool[i])
 		pairs = append(pairs, types.Extended_Pair{
-			AssetIn:        assetIn[i],
-			AssetOut:       assetOut[i],
-			IsInterPool:    interPool,
-			AssetOutPoolId: assetOutPoolID[i],
+			AssetIn:         assetIn[i],
+			AssetOut:        assetOut[i],
+			IsInterPool:     interPool,
+			AssetOutPoolId:  assetOutPoolID[i],
+			MinUsdValueLeft: minUSDValueLeft[i],
 		})
 	}
 
@@ -555,6 +561,7 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 	}
 
 	moduleName := newLendPool.ModuleName
+	cPoolName := newLendPool.CPoolName
 
 	mainAssetID, err := strconv.ParseUint(newLendPool.MainAssetID, 10, 64)
 	if err != nil {
@@ -595,6 +602,7 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 		MainAssetId:          mainAssetID,
 		FirstBridgedAssetId:  firstBridgedAssetID,
 		SecondBridgedAssetId: secondBridgedAssetID,
+		CPoolName:            cPoolName,
 		AssetData:            assetData,
 	}
 
@@ -779,6 +787,10 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 	if err != nil {
 		return txf, nil, err
 	}
+	liquidationBonus, err := ParseStringFromString(assetRatesStatsInput.LiquidationPenalty, ",")
+	if err != nil {
+		return txf, nil, err
+	}
 	reserveFactor, err := ParseStringFromString(assetRatesStatsInput.ReserveFactor, ",")
 	if err != nil {
 		return txf, nil, err
@@ -801,6 +813,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 		newLTV, _ := sdk.NewDecFromStr(ltv[i])
 		newLiquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold[i])
 		newLiquidationPenalty, _ := sdk.NewDecFromStr(liquidationPenalty[i])
+		newLiquidationBonus, _ := sdk.NewDecFromStr(liquidationBonus[i])
 		newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor[i])
 
 		assetRatesStats = append(assetRatesStats, types.AssetRatesStats{
@@ -816,6 +829,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 			Ltv:                  newLTV,
 			LiquidationThreshold: newLiquidationThreshold,
 			LiquidationPenalty:   newLiquidationPenalty,
+			LiquidationBonus:     newLiquidationBonus,
 			ReserveFactor:        newReserveFactor,
 			CAssetId:             cAssetID[i],
 		},

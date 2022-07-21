@@ -67,13 +67,14 @@ func FlagSetAddAssetRatesStatsMapping() *flag.FlagSet {
 }
 
 type addNewLendPairsInputs struct {
-	AssetIn        string `json:"asset_in"`
-	AssetOut       string `json:"asset_out"`
-	IsInterPool    string `json:"is_inter_pool"`
-	AssetOutPoolID string `json:"asset_out_pool_id"`
-	Title          string
-	Description    string
-	Deposit        string
+	AssetIn         string `json:"asset_in"`
+	AssetOut        string `json:"asset_out"`
+	IsInterPool     string `json:"is_inter_pool"`
+	AssetOutPoolID  string `json:"asset_out_pool_id"`
+	MinUSDValueLeft string `json:"min_usd_value_left"`
+	Title           string
+	Description     string
+	Deposit         string
 }
 
 type addLendPoolInputs struct {
@@ -83,6 +84,7 @@ type addLendPoolInputs struct {
 	SecondBridgedAssetID string `json:"second_bridged_asset_id"`
 	AssetID              string `json:"asset_id"`
 	IsBridgedAsset       string `json:"is_bridged_asset"`
+	CPoolName            string `json:"c_pool_name"`
 	Title                string
 	Description          string
 	Deposit              string
@@ -101,6 +103,7 @@ type addAssetRatesStatsInputs struct {
 	LTV                  string `json:"ltv"`
 	LiquidationThreshold string `json:"liquidation_threshold"`
 	LiquidationPenalty   string `json:"liquidation_penalty"`
+	LiquidationBonus     string `json:"liquidation_bonus"`
 	ReserveFactor        string `json:"reserve_factor"`
 	CAssetID             string `json:"c_asset_id"`
 	Title                string
