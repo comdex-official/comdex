@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"time"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
@@ -9,34 +10,21 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) DebtActivator(ctx sdk.Context) error {
-	auctionMapData, found := k.GetAllAuctionMappingForApp(ctx)
-	if !found {
-		return nil
-	}
-	for _, data := range auctionMapData {
-		for _, inData := range data.AssetIdToAuctionLookup {
-			klwsParams, _ := k.GetKillSwitchData(ctx, data.AppId)
-			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
-			status := false
-			if found {
-				status = esmStatus.Status
-			}
-			if inData.IsDebtAuction && !inData.IsAuctionActive && !klwsParams.BreakerEnable && !status {
-				err := k.CreateDebtAuction(ctx, data.AppId, inData.AssetId)
-				if err != nil {
-					return err
-				}
-			}
-			if inData.IsDebtAuction && inData.IsAuctionActive {
-				err := k.DebtAuctionClose(ctx, data.AppId, status)
-				if err != nil {
-					return err
-				}
-			}
+func (k Keeper) DebtActivator(ctx sdk.Context, data collectortypes.CollectorAuctionLookupTable,
+	inData collectortypes.AssetIdToAuctionLookupTable, klswParams esmtypes.KillSwitchParams, status bool) error {
+
+	if inData.IsDebtAuction && !inData.IsAuctionActive && !klswParams.BreakerEnable && !status {
+		err := k.CreateDebtAuction(ctx, data.AppId, inData.AssetId)
+		if err != nil {
+			return err
 		}
 	}
-
+	if inData.IsDebtAuction && inData.IsAuctionActive {
+		err := k.DebtAuctionClose(ctx, data.AppId, status)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
