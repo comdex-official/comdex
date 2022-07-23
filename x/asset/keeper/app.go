@@ -5,6 +5,7 @@ import (
 	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
+	"regexp"
 )
 
 func (k *Keeper) GetAppID(ctx sdk.Context) uint64 {
@@ -208,6 +209,19 @@ func (k *Keeper) AddAppRecords(ctx sdk.Context, records ...types.AppData) error 
 		if k.HasAppForName(ctx, msg.Name) {
 			return types.ErrorDuplicateApp
 		}
+		var IsLetter = regexp.MustCompile(`^[a-z]+$`).MatchString
+		
+		if !IsLetter(msg.ShortName) || len(msg.ShortName) > 5 {
+			return types.ErrorShortNameDidNotMeetCriterion
+		}
+
+		if !IsLetter(msg.Name) || len(msg.Name) > 10 {
+			return types.ErrorNameDidNotMeetCriterion
+		}
+
+		if msg.MinGovDeposit.LT(sdk.ZeroInt()) || msg.GovTimeInSeconds < 0 {
+			return types.ErrorValueCantBeNegative
+		}
 
 		var (
 			id  = k.GetAppID(ctx)
@@ -256,6 +270,13 @@ func (k *Keeper) AddAssetInAppRecords(ctx sdk.Context, records ...types.AppData)
 			}
 			if !assetData.IsOnChain {
 				return types.ErrorAssetIsOffChain
+			}
+			_, err := sdk.AccAddressFromBech32(data.Recipient)
+			if err != nil {
+				return types.ErrorInvalidFrom
+			}
+			if data.GenesisSupply.LT(sdk.ZeroInt()) {
+				return types.ErrorInvalidGenesisSupply
 			}
 			hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
 			if hasAsset != 0 && data.IsGovToken {

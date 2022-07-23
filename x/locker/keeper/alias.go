@@ -4,28 +4,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
-func (k *Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
-	if coin.IsZero() {
-		return nil
-	}
-
-	return k.bank.BurnCoins(ctx, name, sdk.NewCoins(coin))
-}
-
-func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
-	if coin.IsZero() {
-		return nil
-	}
-
-	return k.bank.MintCoins(ctx, name, sdk.NewCoins(coin))
-}
 
 func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return lockertypes.SendCoinsFromAccountToModuleInLockerIsZero
 	}
 
 	return k.bank.SendCoinsFromAccountToModule(ctx, address, name, sdk.NewCoins(coin))
@@ -33,7 +19,7 @@ func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAdd
 
 func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return lockertypes.SendCoinsFromModuleToAccountInLockerIsZero
 	}
 
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
@@ -69,7 +55,7 @@ func (k *Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collect
 
 func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
-		return nil
+		return lockertypes.SendCoinsFromModuleToModuleInLockerIsZero
 	}
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }

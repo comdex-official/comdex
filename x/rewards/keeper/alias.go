@@ -6,6 +6,7 @@ import (
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -90,7 +91,7 @@ func (k *Keeper) SetVault(ctx sdk.Context, vault vaulttypes.Vault) {
 
 func (k *Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return rewardstypes.BurnCoinValueInRewardsIsZero
 	}
 
 	return k.bank.BurnCoins(ctx, name, sdk.NewCoins(coin))
@@ -98,7 +99,7 @@ func (k *Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 
 func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return rewardstypes.MintCoinValueInRewardsIsZero
 	}
 
 	return k.bank.MintCoins(ctx, name, sdk.NewCoins(coin))
@@ -106,7 +107,7 @@ func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 
 func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return rewardstypes.SendCoinsFromAccountToModuleInRewardsIsZero
 	}
 
 	return k.bank.SendCoinsFromAccountToModule(ctx, address, name, sdk.NewCoins(coin))
@@ -114,14 +115,14 @@ func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAdd
 
 func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return rewardstypes.SendCoinsFromModuleToAccountInRewardsIsZero
 	}
 
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
 func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
-		return nil
+		return rewardstypes.SendCoinsFromModuleToModuleInRewardsIsZero
 	}
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }

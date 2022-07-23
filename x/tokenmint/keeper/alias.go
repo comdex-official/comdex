@@ -9,7 +9,7 @@ import (
 
 func (k *Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return types.BurnCoinValueInTokenmintIsZero
 	}
 
 	return k.bank.BurnCoins(ctx, name, sdk.NewCoins(coin))
@@ -25,7 +25,7 @@ func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 
 func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return types.SendCoinsFromAccountToModuleInTokenmintIsZero
 	}
 
 	return k.bank.SendCoinsFromAccountToModule(ctx, address, name, sdk.NewCoins(coin))
@@ -33,14 +33,14 @@ func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAdd
 
 func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return types.SendCoinsFromModuleToAccountInTokenmintIsZero
 	}
 
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
 func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
-		return nil
+		return types.SendCoinsFromModuleToModuleInTokenmintIsZero
 	}
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }
