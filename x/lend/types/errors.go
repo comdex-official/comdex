@@ -42,4 +42,10 @@ var (
 	ErrStableBorrowDisabled            = sdkerrors.Register(ModuleName, 1149, "Stable Borrow Rate Not Enabled for This Asset")
 	ErrorPriceDoesNotExist             = sdkerrors.Register(ModuleName, 1150, "Price does not exist")
 	ErrBadOfferCoinType                = sdkerrors.Register(ModuleName, 1151, "invalid offer coin Type")
+	BurnCoinValueInLendIsZero           = sdkerrors.Register(ModuleName, 1152, "Burn Coin value in lend is zero")
+	MintCoinValueInLendIsZero           = sdkerrors.Register(ModuleName, 1153, "Mint Coin value in lend is zero")
+	SendCoinsFromModuleToModuleInLendIsZero  = sdkerrors.Register(ModuleName, 1154, "Coin value in module to module transfer in lend is zero")
+	SendCoinsFromModuleToAccountInLendIsZero = sdkerrors.Register(ModuleName, 1155, "Coin value in module to account transfer in lend is zero")
+	SendCoinsFromAccountToModuleInLendIsZero = sdkerrors.Register(ModuleName, 1156, "Coin value in account to module transfer in lend is zero")
+
 )

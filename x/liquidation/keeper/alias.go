@@ -19,18 +19,6 @@ func (k *Keeper) GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) 
 	return k.bank.GetBalance(ctx, addr, denom)
 }
 
-func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
-	if coin.IsZero() {
-		return nil
-	}
-
-	return k.bank.MintCoins(ctx, name, sdk.NewCoins(coin))
-}
-
-func (k *Keeper) SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, amt sdk.Coins) error {
-	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, amt)
-}
-
 func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool) {
 	return k.asset.GetPair(ctx, id)
 }
@@ -44,6 +32,10 @@ func (k *Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool
 }
 
 func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coin sdk.Coin) error {
+	if coin.IsZero() {
+		return liquidationtypes.SendCoinsFromModuleToAccountInLiquidationIsZero
+	}
+
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
 

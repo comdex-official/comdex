@@ -146,7 +146,6 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	newVault.Id = appMapping.ShortName + strconv.FormatUint(updatedCounter, 10)
 	newVault.AmountIn = msg.AmountIn
 
-	// closingFeeVal := (sdk.Dec(msg.AmountOut).Mul((extendedPairVault.ClosingFee)))
 
 	closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
 
@@ -328,10 +327,6 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	// assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
-	// if !found {
-	// 	return nil, types.ErrorAssetDoesNotExist
-	// }
 
 	//Checking if appMapping_id exists
 	appMapping, found := k.GetApp(ctx, msg.AppId)
@@ -417,10 +412,6 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
-	// assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
-	// if !found {
-	// 	return nil, types.ErrorAssetDoesNotExist
-	// }
 	assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
@@ -504,9 +495,6 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 		}
 	}
 
-	// if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
-	// 	return nil, err
-	// }
 	userVault.AmountOut = userVault.AmountOut.Add(msg.Amount)
 
 	k.SetVault(ctx, userVault)
@@ -546,10 +534,6 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 	if !found {
 		return nil, types.ErrorPairDoesNotExist
 	}
-	// assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
-	// if !found {
-	// 	return nil, types.ErrorAssetDoesNotExist
-	// }
 	assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
@@ -617,10 +601,6 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 		updatedUserDebt := userVault.AmountOut.Sub(updatedUserSentAmountAfterFeesDeduction)
 
 		// //If user's closing fees is a bigger amount than the debt floor, user will not close the debt floor
-		// totalUpdatedDebt:=updatedUserDebt.Add(*userVault.ClosingFeeAccumulated)
-		// if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, userVault.AmountIn, totalUpdatedDebt, extendedPairVault.MinCr); err != nil {
-		// 	return nil, err
-		// }
 
 		if !updatedUserDebt.GTE(extendedPairVault.DebtFloor) {
 			return nil, types.ErrorAmountOutLessThanDebtFloor

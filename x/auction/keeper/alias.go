@@ -2,6 +2,7 @@ package keeper
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
@@ -22,30 +23,34 @@ func (k *Keeper) GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) 
 	return k.bank.GetBalance(ctx, addr, denom)
 }
 
-func (k *Keeper) MintCoins(ctx sdk.Context, name string, coin sdk.Coin) error {
-	if coin.IsZero() {
-		return nil
-	}
-
-	return k.bank.MintCoins(ctx, name, sdk.NewCoins(coin))
-}
-
 func (k *Keeper) BurnCoins(ctx sdk.Context, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return auctiontypes.BurnCoinValueInCloseAuctionIsZero
 	}
 
 	return k.bank.BurnCoins(ctx, name, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, amt sdk.Coins) error {
-	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, amt)
+func (k *Keeper) SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, coin sdk.Coins) error {
+	if coin.IsZero() {
+		return auctiontypes.SendCoinsFromModuleToModuleInAuctionIsZero
+	}
+
+	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }
-func (k *Keeper) SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error {
-	return k.bank.SendCoinsFromModuleToAccount(ctx, senderModule, recipientAddr, amt)
+func (k *Keeper) SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, coin sdk.Coins) error {
+	if coin.IsZero() {
+		return auctiontypes.SendCoinsFromModuleToAccountInAuctionIsZero
+	}
+
+	return k.bank.SendCoinsFromModuleToAccount(ctx, senderModule, recipientAddr, coin)
 }
-func (k *Keeper) SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error {
-	return k.bank.SendCoinsFromAccountToModule(ctx, senderAddr, recipientModule, amt)
+func (k *Keeper) SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, coin sdk.Coins) error {
+	if coin.IsZero() {
+		return auctiontypes.SendCoinsFromAccountToModuleInAuctionIsZero
+	}
+
+	return k.bank.SendCoinsFromAccountToModule(ctx, senderAddr, recipientModule, coin)
 }
 
 func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {

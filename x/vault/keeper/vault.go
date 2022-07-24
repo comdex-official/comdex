@@ -299,11 +299,11 @@ func (k *Keeper) GetVault(ctx sdk.Context, id string) (vault types.Vault, found 
 }
 
 // UpdateCollateralLockedAmountLockerMapping For updating token stats of collateral .
-func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData types.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
+func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData types.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
 	//if Change type true = Add to collateral Locked
 	//If change type false = Subtract from the collateral Locked
 
-	for _, extendedPairData := range valutLookupData.ExtendedPairVaults {
+	for _, extendedPairData := range vaultLookupData.ExtendedPairVaults {
 		if extendedPairData.ExtendedPairId == extendedPairID {
 			if changeType {
 				updatedVal := extendedPairData.CollateralLockedAmount.Add(amount)
@@ -314,18 +314,18 @@ func (k *Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valu
 			}
 		}
 	}
-	err := k.SetAppExtendedPairVaultMapping(ctx, valutLookupData)
+	err := k.SetAppExtendedPairVaultMapping(ctx, vaultLookupData)
 	if err != nil {
 		return
 	}
 }
 
 // UpdateTokenMintedAmountLockerMapping For updating token stats of minted .
-func (k *Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLookupData types.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
+func (k *Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData types.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
 	//if Change type true = Add to token Locked
 	//If change type false = Subtract from the token Locked
 
-	for _, extendedPairData := range valutLookupData.ExtendedPairVaults {
+	for _, extendedPairData := range vaultLookupData.ExtendedPairVaults {
 		if extendedPairData.ExtendedPairId == extendedPairID {
 			if changeType {
 				updatedVal := extendedPairData.TokenMintedAmount.Add(amount)
@@ -336,7 +336,7 @@ func (k *Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, valutLook
 			}
 		}
 	}
-	err := k.SetAppExtendedPairVaultMapping(ctx, valutLookupData)
+	err := k.SetAppExtendedPairVaultMapping(ctx, vaultLookupData)
 	if err != nil {
 		return
 	}

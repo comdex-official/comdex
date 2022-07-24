@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 )
 
@@ -28,7 +29,7 @@ func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (types.Asset, bool) {
 
 func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
-		return nil
+		return collectortypes.SendCoinFromModuleToModuleIsZero
 	}
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }

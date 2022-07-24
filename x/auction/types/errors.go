@@ -27,6 +27,11 @@ var (
 	ErrorAssetNotFound            = sdkerrors.Register(ModuleName, 131, "asset not found for given id")
 	ErrorInvalidExtendedPairVault = sdkerrors.Register(ModuleName, 132, "extended pair vault not found for given id")
 	ErrorInvalidAuctionParams     = sdkerrors.Register(ModuleName, 136, "auction params not found for given app id")
+	BurnCoinValueInCloseAuctionIsZero           = sdkerrors.Register(ModuleName, 137, "Burn Coin value in close auction is zero")
+	SendCoinsFromModuleToModuleInAuctionIsZero  = sdkerrors.Register(ModuleName, 138, "Coin value in module to module transfer in auction is zero")
+	SendCoinsFromModuleToAccountInAuctionIsZero = sdkerrors.Register(ModuleName, 139, "Coin value in module to account transfer in auction is zero")
+	SendCoinsFromAccountToModuleInAuctionIsZero = sdkerrors.Register(ModuleName, 140, "Coin value in account to module transfer in auction is zero")
+
 )
 
 var (

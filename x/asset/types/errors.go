@@ -8,7 +8,8 @@ var (
 	ErrorInvalidDecimals = errors.Register(ModuleName, 101, "invalid decimals")
 	ErrorInvalidDenom    = errors.Register(ModuleName, 102, "invalid denom")
 	ErrorInvalidFrom     = errors.Register(ModuleName, 103, "invalid from")
-	ErrorInvalidID       = errors.Register(ModuleName, 104, "invalid id")
+	ErrorInvalidRecipient = errors.Register(ModuleName, 104, "invalid recipient address")
+	ErrorInvalidID       = errors.Register(ModuleName, 105, "invalid id")
 
 	ErrorInvalidName          = errors.Register(ModuleName, 106, "invalid name")
 	ErrorInvalidGenesisSupply = errors.Register(ModuleName, 109, "invalid Genesis Supply")
@@ -30,6 +31,11 @@ var (
 	ErrorFeeShouldNotBeGTOne               = errors.Register(ModuleName, 215, "Fee Should Not Be Greater than One and less than zero")
 	ErrorExtendedPairDoesNotExistForTheApp = errors.Register(ModuleName, 216, "extended pair does not exist for the app")
 	ErrorMinGovDepositIsZero               = errors.Register(ModuleName, 217, "min gov deposit is zero")
+	ErrorShortNameDidNotMeetCriterion      = errors.Register(ModuleName, 218, "App ShortName did't meet the criterion")
+	ErrorNameDidNotMeetCriterion           = errors.Register(ModuleName, 219, "App Name did't meet the criterion")
+	ErrorReversePairAlreadyExist           = errors.Register(ModuleName, 220, "Reverse pair already exists")
+	ErrorValueCantBeNegative               = errors.Register(ModuleName, 221, "Value can't be negative")
+
 )
 
 var (
