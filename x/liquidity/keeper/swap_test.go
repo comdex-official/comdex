@@ -5,6 +5,7 @@ import (
 
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidity"
+	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -78,38 +79,38 @@ func (s *KeeperTestSuite) TestLimitOrder() {
 			ExpErr:  sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", 69),
 			ExpResp: &types.Order{},
 		},
-		// {
-		// 	Name: "error price higher than upper limit",
-		// 	Msg: *types.NewMsgLimitOrder(
-		// 		appID1,
-		// 		addr1,
-		// 		pair.Id,
-		// 		types.OrderDirectionBuy,
-		// 		utils.ParseCoin("10030000uasset2"),
-		// 		asset1.Denom,
-		// 		amm.HighestTick(int(params.TickPrecision+1)),
-		// 		newInt(10000000),
-		// 		time.Second*10,
-		// 	),
-		// 	ExpErr:  sdkerrors.Wrapf(types.ErrPriceOutOfRange, "%s is higher than %s", amm.HighestTick(int(params.TickPrecision+1)), amm.HighestTick(int(params.TickPrecision))),
-		// 	ExpResp: &types.Order{},
-		// },
-		// {
-		// 	Name: "error price lower than lower limit",
-		// 	Msg: *types.NewMsgLimitOrder(
-		// 		appID1,
-		// 		addr1,
-		// 		pair.Id,
-		// 		types.OrderDirectionBuy,
-		// 		utils.ParseCoin("10030000uasset2"),
-		// 		asset1.Denom,
-		// 		amm.LowestTick(int(params.TickPrecision-1)),
-		// 		newInt(10000000),
-		// 		time.Second*10,
-		// 	),
-		// 	ExpErr:  sdkerrors.Wrapf(types.ErrPriceOutOfRange, "%s is lower than %s", amm.LowestTick(int(params.TickPrecision-1)), amm.LowestTick(int(params.TickPrecision))),
-		// 	ExpResp: &types.Order{},
-		// },
+		{
+			Name: "error price higher than upper limit",
+			Msg: *types.NewMsgLimitOrder(
+				appID1,
+				addr1,
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("10030000uasset2"),
+				asset1.Denom,
+				amm.HighestTick(int(params.TickPrecision+1)),
+				newInt(10000000),
+				time.Second*10,
+			),
+			ExpErr:  sdkerrors.Wrapf(types.ErrPriceOutOfRange, "%s is higher than %s", amm.HighestTick(int(params.TickPrecision+1)), amm.HighestTick(int(params.TickPrecision))),
+			ExpResp: &types.Order{},
+		},
+		{
+			Name: "error price lower than lower limit",
+			Msg: *types.NewMsgLimitOrder(
+				appID1,
+				addr1,
+				pair.Id,
+				types.OrderDirectionBuy,
+				utils.ParseCoin("10030000uasset2"),
+				asset1.Denom,
+				amm.LowestTick(int(params.TickPrecision-1)),
+				newInt(10000000),
+				time.Second*10,
+			),
+			ExpErr:  sdkerrors.Wrapf(types.ErrPriceOutOfRange, "%s is lower than %s", amm.LowestTick(int(params.TickPrecision-1)), amm.LowestTick(int(params.TickPrecision))),
+			ExpResp: &types.Order{},
+		},
 		{
 			Name: "error invalid denom pair buy direction",
 			Msg: *types.NewMsgLimitOrder(

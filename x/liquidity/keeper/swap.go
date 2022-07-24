@@ -41,24 +41,21 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
 	}
 
-	// uncomment the below code if price range limitation needs to enabled, doing so can cause partial-mismatch order issue -
-	// for the normal swap in frontend.
-
-	// var upperPriceLimit, lowerPriceLimit sdk.Dec
-	// if pair.LastPrice != nil {
-	// 	lastPrice := *pair.LastPrice
-	// 	upperPriceLimit = lastPrice.Mul(sdk.OneDec().Add(params.MaxPriceLimitRatio))
-	// 	lowerPriceLimit = lastPrice.Mul(sdk.OneDec().Sub(params.MaxPriceLimitRatio))
-	// } else {
-	// 	upperPriceLimit = amm.HighestTick(int(params.TickPrecision))
-	// 	lowerPriceLimit = amm.LowestTick(int(params.TickPrecision))
-	// }
-	// switch {
-	// case msg.Price.GT(upperPriceLimit):
-	// 	return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "%s is higher than %s", msg.Price, upperPriceLimit)
-	// case msg.Price.LT(lowerPriceLimit):
-	// 	return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "%s is lower than %s", msg.Price, lowerPriceLimit)
-	// }
+	var upperPriceLimit, lowerPriceLimit sdk.Dec
+	if pair.LastPrice != nil {
+		lastPrice := *pair.LastPrice
+		upperPriceLimit = lastPrice.Mul(sdk.OneDec().Add(params.MaxPriceLimitRatio))
+		lowerPriceLimit = lastPrice.Mul(sdk.OneDec().Sub(params.MaxPriceLimitRatio))
+	} else {
+		upperPriceLimit = amm.HighestTick(int(params.TickPrecision))
+		lowerPriceLimit = amm.LowestTick(int(params.TickPrecision))
+	}
+	switch {
+	case msg.Price.GT(upperPriceLimit):
+		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "%s is higher than %s", msg.Price, upperPriceLimit)
+	case msg.Price.LT(lowerPriceLimit):
+		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "%s is lower than %s", msg.Price, lowerPriceLimit)
+	}
 
 	switch msg.Direction {
 	case types.OrderDirectionBuy:
