@@ -157,8 +157,7 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	return k.oracle.GetPriceForMarket(ctx, market.Symbol)
 }
 
-func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error {
-	for _, msg := range records {
+func (k *Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 		if k.HasAssetForDenom(ctx, msg.Denom) {
 			return types.ErrorDuplicateAsset
 		}
@@ -181,7 +180,6 @@ func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error 
 		if msg.IsOraclePriceRequired {
 			k.SetAssetForOracle(ctx, asset)
 		}
-	}
 
 	return nil
 }
@@ -212,8 +210,7 @@ func (k *Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	return nil
 }
 
-func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
-	for _, msg := range records {
+func (k *Keeper) AddPairsRecords(ctx sdk.Context, msg types.Pair) error {
 		if !k.HasAsset(ctx, msg.AssetIn) {
 			return types.ErrorAssetDoesNotExist
 		}
@@ -243,7 +240,7 @@ func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error {
 
 		k.SetPairID(ctx, pair.Id)
 		k.SetPair(ctx, pair)
-	}
+
 	return nil
 }
 

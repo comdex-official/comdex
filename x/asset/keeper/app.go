@@ -201,8 +201,7 @@ func (k *Keeper) GetGenesisTokenForApp(ctx sdk.Context, appID uint64) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) AddAppRecords(ctx sdk.Context, records ...types.AppData) error {
-	for _, msg := range records {
+func (k *Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 		if k.HasAppForShortName(ctx, msg.ShortName) {
 			return types.ErrorDuplicateApp
 		}
@@ -239,7 +238,6 @@ func (k *Keeper) AddAppRecords(ctx sdk.Context, records ...types.AppData) error 
 		k.SetApp(ctx, app)
 		k.SetAppForShortName(ctx, app.ShortName, app.Id)
 		k.SetAppForName(ctx, app.Name, app.Id)
-	}
 
 	return nil
 }
@@ -255,8 +253,7 @@ func (k *Keeper) UpdateGovTimeInApp(ctx sdk.Context, msg types.AppAndGovTime) er
 	return nil
 }
 
-func (k *Keeper) AddAssetInAppRecords(ctx sdk.Context, records ...types.AppData) error {
-	for _, msg := range records {
+func (k *Keeper) AddAssetInAppRecords(ctx sdk.Context, msg types.AppData) error {
 		appdata, found := k.GetApp(ctx, msg.Id)
 		if !found {
 			return types.AppIdsDoesntExist
@@ -307,6 +304,5 @@ func (k *Keeper) AddAssetInAppRecords(ctx sdk.Context, records ...types.AppData)
 			}
 		)
 		k.SetApp(ctx, app)
-	}
 	return nil
 }
