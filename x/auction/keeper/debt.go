@@ -11,9 +11,8 @@ import (
 )
 
 func (k Keeper) DebtActivator(ctx sdk.Context, data collectortypes.CollectorAuctionLookupTable,
-	inData collectortypes.AssetIdToAuctionLookupTable, klswParams esmtypes.KillSwitchParams, status bool) error {
-
-	if inData.IsDebtAuction && !inData.IsAuctionActive && !klswParams.BreakerEnable && !status {
+	inData collectortypes.AssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
+	if inData.IsDebtAuction && !inData.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
 		err := k.CreateDebtAuction(ctx, data.AppId, inData.AssetId)
 		if err != nil {
 			return err

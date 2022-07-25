@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/comdex-official/comdex/x/auction"
 	"time"
 
 	"github.com/comdex-official/comdex/app/wasm/bindings"
@@ -94,14 +95,14 @@ func (s *KeeperTestSuite) TestDebtActivatorBetweenThreshholdAndLotsize() {
 
 	k, ctx := &s.keeper, &s.ctx
 
-	err := k.DebtActivator(*ctx)
-	s.Require().NoError(err)
+	auction.BeginBlocker(*ctx, s.keeper)
+	//s.Require().NoError(err)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(2)
 	auctionId := uint64(1)
 
-	_, err = k.GetDebtAuction(*ctx, appId, auctionMappingId, auctionId)
+	_, err := k.GetDebtAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().Error(err)
 }
 
@@ -117,8 +118,7 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 
 	k, collectorKeeper, ctx := &s.keeper, &s.collectorKeeper, &s.ctx
 
-	err := k.DebtActivator(*ctx)
-	s.Require().NoError(err)
+	auction.BeginBlocker(*ctx, s.keeper)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(2)
@@ -148,7 +148,7 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 
 	//Test restart debt auction
 	s.advanceseconds(301)
-	err = k.DebtActivator(*ctx)
+	auction.BeginBlocker(*ctx, s.keeper)
 	s.Require().NoError(err)
 	debtAuction1, err := k.GetDebtAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
@@ -378,20 +378,20 @@ func (s *KeeperTestSuite) TestCloseDebtAuction() {
 			beforeHarborBalance, err := s.getBalance(winnerAddress, "uharbor")
 			s.Require().NoError(err)
 
-			auction, err := k.GetDebtAuction(*ctx, appID, auctionMappingID, auctionID)
+			debtAuction, err := k.GetDebtAuction(*ctx, appID, auctionMappingID, auctionID)
 			s.Require().NoError(err)
 
 			s.advanceseconds(int64(tc.seconds))
-			err = k.DebtActivator(*ctx)
+			auction.BeginBlocker(*ctx, s.keeper)
 			s.Require().NoError(err)
 
 			afterHarborBalance, err := s.getBalance(winnerAddress, "uharbor")
 			//s.Require().NoError(err)
 			//s.Require().Equal(beforeHarborBalance.Add(auction.ExpectedMintedToken), afterHarborBalance)
 			if tc.isErrorExpected {
-				s.Require().NotEqual(beforeHarborBalance.Add(auction.ExpectedMintedToken), afterHarborBalance)
+				s.Require().NotEqual(beforeHarborBalance.Add(debtAuction.ExpectedMintedToken), afterHarborBalance)
 			} else {
-				s.Require().Equal(beforeHarborBalance.Add(auction.ExpectedMintedToken), afterHarborBalance)
+				s.Require().Equal(beforeHarborBalance.Add(debtAuction.ExpectedMintedToken), afterHarborBalance)
 			}
 		})
 	}

@@ -2,10 +2,16 @@ package auction
 
 import (
 	"github.com/comdex-official/comdex/x/auction/keeper"
+	"github.com/comdex-official/comdex/x/auction/types"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"time"
 )
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
+
 	auctionMapData, auctionMappingFound := k.GetAllAuctionMappingForApp(ctx)
 	if auctionMappingFound {
 		for _, data := range auctionMapData {
