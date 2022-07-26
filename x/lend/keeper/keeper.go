@@ -159,7 +159,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 		if v.AssetID == AssetID {
 			v.Amount = v.Amount.Add(Amount.Amount)
 		}
-		balanceStats = append(balanceStats, v)
+		//balanceStats = append(balanceStats, v)
 		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
 		k.SetUserDepositStats(ctx, newDepositStats)
 
@@ -1335,6 +1335,10 @@ func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, assetID uint64, l
 		k.SetDepositStats(ctx, newDepositStats)
 	}
 
+	return nil
+}
+
+func (k Keeper) SetReserveBalances(ctx sdk.Context, moduleName string, assetID uint64, payment sdk.Coin) error {
 	return nil
 }
 

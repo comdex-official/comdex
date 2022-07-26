@@ -125,6 +125,28 @@ func (k *Keeper) GetPool(ctx sdk.Context, id uint64) (pool types.Pool, found boo
 	return pool, true
 }
 
+func (k *Keeper) GetPools(ctx sdk.Context) (pools []types.Pool) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.PoolKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var pool types.Pool
+		k.cdc.MustUnmarshal(iter.Value(), &pool)
+		pools = append(pools, pool)
+	}
+
+	return pools
+}
+
 func (k *Keeper) SetAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMapping) {
 	var (
 		store = k.Store(ctx)

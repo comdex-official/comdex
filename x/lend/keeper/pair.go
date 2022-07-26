@@ -59,6 +59,7 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 			k.SetDepositStats(ctx, depositStats)
 			k.SetUserDepositStats(ctx, depositStats)
 			k.SetReserveDepositStats(ctx, depositStats)
+			k.SetBuyBackDepositStats(ctx, depositStats)
 			k.SetBorrowStats(ctx, depositStats)
 		}
 	} else {
@@ -157,6 +158,28 @@ func (k *Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair types.Extended_Pa
 
 	k.cdc.MustUnmarshal(value, &pair)
 	return pair, true
+}
+
+func (k *Keeper) GetLendPairs(ctx sdk.Context) (pairs []types.Extended_Pair) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.LendPairKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var pair types.Extended_Pair
+		k.cdc.MustUnmarshal(iter.Value(), &pair)
+		pairs = append(pairs, pair)
+	}
+
+	return pairs
 }
 
 func (k *Keeper) GetLendPairID(ctx sdk.Context) uint64 {
