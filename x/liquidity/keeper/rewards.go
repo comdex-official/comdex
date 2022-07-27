@@ -166,6 +166,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 	var lpAddresses []sdk.AccAddress
 	var lpSupplies []sdk.Dec
 
+	// fixing this
 	for address, depositedCoins := range liquidityProvidersDataForPool.LiquidityProviders {
 		addr, err := sdk.AccAddressFromBech32(address)
 		if err != nil {
