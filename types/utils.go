@@ -155,10 +155,10 @@ func IsOverflow(r interface{}) bool {
 	return false
 }
 
-// This function lets you run the function f, but if theres an error or panic
-// drop the state machine change and log the error.
-// If there is no error, proceeds as normal (but with some slowdown due to SDK store weirdness)
-// Try to avoid usage of iterators in f.
+// This function lets you run the function f. In case of panic recovery is done
+// if error occurs it logged into the logger.
+// further modifications can me made to avoid any state changes in case if error is returned by f -
+// eg, revert state change if error returned by f else work as normal
 func ApplyFuncIfNoError(ctx sdk.Context, f func(ctx sdk.Context) error) (err error) {
 	// Add a panic safeguard
 	defer func() {
