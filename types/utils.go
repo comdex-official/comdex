@@ -156,7 +156,7 @@ func IsOverflow(r interface{}) bool {
 }
 
 // This function lets you run the function f. In case of panic recovery is done
-// if error occurs it logged into the logger.
+// if error occurs it is logged into the logger.
 // further modifications can me made to avoid any state changes in case if error is returned by f -
 // eg, revert state change if error returned by f else work as normal
 func ApplyFuncIfNoError(ctx sdk.Context, f func(ctx sdk.Context) error) (err error) {
