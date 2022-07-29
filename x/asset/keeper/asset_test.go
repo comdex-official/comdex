@@ -37,13 +37,13 @@ func (s *KeeperTestSuite) TestAddApp() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						3,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
 					{
 						2,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -62,7 +62,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						3,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -81,7 +81,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						3,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -100,7 +100,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						3,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -660,7 +660,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						4,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -681,7 +681,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						2,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -702,7 +702,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						4,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},

@@ -9,36 +9,34 @@ import (
 
 func (s *KeeperTestSuite) AddAppAsset() {
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
-	msg1 := []assetTypes.AppData{{
+	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-		GovTimeInSeconds: 900},
-		{
-			Name:             "commodo",
-			ShortName:        "commodo",
-			MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-			GovTimeInSeconds: 900},
-	}
-	err := assetKeeper.AddAppRecords(*ctx, msg1...)
+		GovTimeInSeconds: 900}
+		// {
+		// 	Name:             "commodo",
+		// 	ShortName:        "commodo",
+		// 	MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		// 	GovTimeInSeconds: 900},
+	err := assetKeeper.AddAppRecords(*ctx, msg1)
 	s.Require().NoError(err)
 
-	msg2 := []assetTypes.Asset{
-		{Name: "CMDX",
+	msg2 := assetTypes.Asset{Name: "CMDX",
 			Denom:     "ucmdx",
 			Decimals:  1000000,
-			IsOnChain: true}, {Name: "CMST",
-			Denom:     "ucmst",
-			Decimals:  1000000,
-			IsOnChain: true}, {Name: "HARBOR",
-			Denom:     "uharbor",
-			Decimals:  1000000,
-			IsOnChain: true},
+			IsOnChain: true}
+			// , {Name: "CMST",
+			// Denom:     "ucmst",
+			// Decimals:  1000000,
+			// IsOnChain: true}, {Name: "HARBOR",
+			// Denom:     "uharbor",
+			// Decimals:  1000000,
+			// IsOnChain: true},
+			err = assetKeeper.AddAssetRecords(*ctx, msg2)
+			s.Require().NoError(err)
 	}
-	err = assetKeeper.AddAssetRecords(*ctx, msg2...)
-	s.Require().NoError(err)
-
-}
+	
 
 func (s *KeeperTestSuite) TestCreateLocker() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
