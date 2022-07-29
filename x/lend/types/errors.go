@@ -43,4 +43,5 @@ var (
 	ErrorPriceDoesNotExist             = sdkerrors.Register(ModuleName, 1150, "Price does not exist")
 	ErrBadOfferCoinType                = sdkerrors.Register(ModuleName, 1151, "invalid offer coin Type")
 	ErrInvalidLengthCPoolName          = sdkerrors.Register(ModuleName, 1152, "invalid length found during unmarshaling")
+	ErrReserveRatesNotFound            = sdkerrors.Register(ModuleName, 1153, "Reserve Rates Not found")
 )

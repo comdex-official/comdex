@@ -57,10 +57,10 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 			BuyBackDepositStats = types.DepositStats{BalanceStats: balanceStats}
 			BorrowStats = types.DepositStats{BalanceStats: balanceStats}
 			k.SetDepositStats(ctx, depositStats)
-			k.SetUserDepositStats(ctx, depositStats)
-			k.SetReserveDepositStats(ctx, depositStats)
-			k.SetBuyBackDepositStats(ctx, depositStats)
-			k.SetBorrowStats(ctx, depositStats)
+			k.SetUserDepositStats(ctx, userDepositStats)
+			k.SetReserveDepositStats(ctx, ReserveDepositStats)
+			k.SetBuyBackDepositStats(ctx, BuyBackDepositStats)
+			k.SetBorrowStats(ctx, BorrowStats)
 		}
 	} else {
 		balanceStat := types.BalanceStats{
@@ -69,6 +69,10 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		}
 		balanceStats = append(depositStats.BalanceStats, balanceStat)
 		depositStats = types.DepositStats{BalanceStats: balanceStats}
+		userDepositStats = types.DepositStats{BalanceStats: balanceStats}
+		ReserveDepositStats = types.DepositStats{BalanceStats: balanceStats}
+		BuyBackDepositStats = types.DepositStats{BalanceStats: balanceStats}
+		BorrowStats = types.DepositStats{BalanceStats: balanceStats}
 		k.SetDepositStats(ctx, depositStats)
 		k.SetUserDepositStats(ctx, userDepositStats)
 		k.SetReserveDepositStats(ctx, ReserveDepositStats)

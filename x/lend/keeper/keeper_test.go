@@ -70,6 +70,11 @@ func newInt(i int64) sdk.Int {
 	return sdk.NewInt(i)
 }
 
+func newDec(i string) sdk.Dec {
+	dec, _ := sdk.NewDecFromStr(i)
+	return dec
+}
+
 func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
 	var (
 		store = s.app.MarketKeeper.Store(s.ctx)
@@ -119,6 +124,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 
 	return assetID
 }
+
 func (s *KeeperTestSuite) CreateNewPool(moduleName, cPoolName string, mainAssetID, firstBridgedAssetID, secondBridgedAssetID uint64, assetData []types.AssetDataPoolMapping) uint64 {
 	err := s.app.LendKeeper.AddPoolRecords(s.ctx, types.Pool{
 		ModuleName:           moduleName,
@@ -142,6 +148,7 @@ func (s *KeeperTestSuite) CreateNewPool(moduleName, cPoolName string, mainAssetI
 
 	return poolID
 }
+
 func (s *KeeperTestSuite) AddAssetRatesStats(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdk.Dec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdk.Dec, CAssetID uint64) uint64 {
 	err := s.app.LendKeeper.AddAssetRatesStats(s.ctx, types.AssetRatesStats{
 		AssetID:              AssetID,
@@ -183,4 +190,13 @@ func (s *KeeperTestSuite) AddExtendedLendPair(AssetIn, AssetOut uint64, IsInterP
 	}
 	s.Require().NotZero(pairID)
 	return pairID
+}
+
+func (s *KeeperTestSuite) AddAssetToPair(AssetID, PoolID uint64, PairID []uint64) {
+	err := s.app.LendKeeper.AddAssetToPair(s.ctx, types.AssetToPairMapping{
+		AssetID: AssetID,
+		PoolID:  PoolID,
+		PairID:  PairID,
+	})
+	s.Require().NoError(err)
 }
