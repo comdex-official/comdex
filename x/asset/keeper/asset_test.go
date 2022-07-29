@@ -94,7 +94,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			"Add App commodo commodo",
 			assetTypes.AppData{
 				Name:             "commodo",
-				ShortName:        "commodo",
+				ShortName:        "comdo",
 				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
@@ -166,7 +166,7 @@ func (s *KeeperTestSuite) TestQueryApps() {
 	server := keeper.NewQueryServer(*assetKeeper)
 	res, err := server.QueryApps(sdk.WrapSDKContext(*ctx), &assetTypes.QueryAppsRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(len(res.Apps), 1)
+	s.Require().Equal(len(res.Apps), 2)
 }
 func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 	s.TestAddAssetRecords()
@@ -368,17 +368,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 			true,
 			1,
 		},
-		{"Add Pair 2 : cmst cmdx",
-			assetTypes.Pair{
-				AssetIn:  2,
-				AssetOut: 1,
-			},
-			"ucmst",
-			"ucmdx",
-			false,
-			2,
-		},
-		{"Add Pair 3 : cmst harbor",
+		{"Add Pair 2 : cmst harbor",
 			assetTypes.Pair{
 				AssetIn:  2,
 				AssetOut: 3,
@@ -386,7 +376,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 			"ucmst",
 			"uharbor",
 			false,
-			3,
+			2,
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -675,7 +665,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 			assetTypes.AppData{
 				Id:               2,
 				Name:             "commodo",
-				ShortName:        "commodo",
+				ShortName:        "comdo",
 				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
@@ -696,7 +686,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 			assetTypes.AppData{
 				Id:               2,
 				Name:             "commodo",
-				ShortName:        "commodo",
+				ShortName:        "comdo",
 				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
