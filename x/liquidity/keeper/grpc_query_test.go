@@ -20,7 +20,7 @@ func (s *KeeperTestSuite) TestParams() {
 }
 
 func (s *KeeperTestSuite) TestGenericParams() {
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	testCases := []struct {
 		Name   string
@@ -67,7 +67,7 @@ func (s *KeeperTestSuite) TestGenericParams() {
 func (s *KeeperTestSuite) TestPools() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -101,7 +101,7 @@ func (s *KeeperTestSuite) TestPools() {
 func (s *KeeperTestSuite) TestPool() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -166,7 +166,7 @@ func (s *KeeperTestSuite) TestPool() {
 func (s *KeeperTestSuite) TestPoolByReserveAddress() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -236,7 +236,7 @@ func (s *KeeperTestSuite) TestPoolByReserveAddress() {
 func (s *KeeperTestSuite) TestPoolByPoolCoinDenom() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -306,7 +306,7 @@ func (s *KeeperTestSuite) TestPoolByPoolCoinDenom() {
 func (s *KeeperTestSuite) TestPairs() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -376,7 +376,7 @@ func (s *KeeperTestSuite) TestPairs() {
 func (s *KeeperTestSuite) TestPair() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -441,7 +441,7 @@ func (s *KeeperTestSuite) TestPair() {
 func (s *KeeperTestSuite) TestDepositRequests() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -504,7 +504,7 @@ func (s *KeeperTestSuite) TestDepositRequests() {
 func (s *KeeperTestSuite) TestDepositRequest() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -577,7 +577,7 @@ func (s *KeeperTestSuite) TestDepositRequest() {
 func (s *KeeperTestSuite) TestWithdrawRequests() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -641,7 +641,7 @@ func (s *KeeperTestSuite) TestWithdrawRequests() {
 func (s *KeeperTestSuite) TestWithdrawRequest() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -715,7 +715,7 @@ func (s *KeeperTestSuite) TestWithdrawRequest() {
 func (s *KeeperTestSuite) TestOrders() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -784,7 +784,7 @@ func (s *KeeperTestSuite) TestOrders() {
 func (s *KeeperTestSuite) TestOrder() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -863,7 +863,7 @@ func (s *KeeperTestSuite) TestOrder() {
 func (s *KeeperTestSuite) TestOrdersByOrderer() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -937,7 +937,7 @@ func (s *KeeperTestSuite) TestOrdersByOrderer() {
 func (s *KeeperTestSuite) TestSoftLock() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -1013,7 +1013,7 @@ func (s *KeeperTestSuite) TestSoftLock() {
 func (s *KeeperTestSuite) TestDeserializePoolCoin() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -1062,7 +1062,7 @@ func (s *KeeperTestSuite) TestDeserializePoolCoin() {
 func (s *KeeperTestSuite) TestPoolIncentives() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -1117,7 +1117,7 @@ func (s *KeeperTestSuite) TestPoolIncentives() {
 func (s *KeeperTestSuite) TestFarmedPoolCoin() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)

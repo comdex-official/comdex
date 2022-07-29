@@ -37,7 +37,7 @@ func TestInvalidMsg(t *testing.T) {
 func (s *ModuleTestSuite) TestMsgCreate() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -69,7 +69,7 @@ func (s *ModuleTestSuite) TestMsgDeposit() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -103,7 +103,7 @@ func (s *ModuleTestSuite) TestMsgWithdraw() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -135,7 +135,7 @@ func (s *ModuleTestSuite) TestMsgDraw() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -167,7 +167,7 @@ func (s *ModuleTestSuite) TestMsgRepay() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -199,7 +199,7 @@ func (s *ModuleTestSuite) TestMsgClose() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -227,7 +227,7 @@ func (s *ModuleTestSuite) TestMsgCreateStableMint() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -253,7 +253,7 @@ func (s *ModuleTestSuite) TestMsgDepositStableMint() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -287,7 +287,7 @@ func (s *ModuleTestSuite) TestMsgWithdrawStableMint() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)

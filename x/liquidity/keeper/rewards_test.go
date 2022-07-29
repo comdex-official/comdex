@@ -14,8 +14,8 @@ import (
 func (s *KeeperTestSuite) TestSoftLockTokens() {
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -189,7 +189,7 @@ func (s *KeeperTestSuite) TestSoftLockTokens() {
 func (s *KeeperTestSuite) TestSoftUnlockTokens() {
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -289,7 +289,7 @@ func (s *KeeperTestSuite) TestSoftUnlockTokensTwo() {
 
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -636,7 +636,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataLinearLPs() {
 
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -739,7 +739,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataEqualLPs() {
 
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -842,7 +842,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataNoLPs() {
 
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -886,7 +886,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataEqualLPsWChildPool() {
 
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -1034,7 +1034,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataErrorHandellings() {
 
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -1079,7 +1079,7 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataZeroLPs() {
 
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)

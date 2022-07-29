@@ -81,7 +81,7 @@ func (s *VaultIntegrationTestSuite) TearDownSuite() {
 }
 
 func (s *VaultIntegrationTestSuite) Create() {
-	appID := s.CreateNewApp("appOne")
+	appID := s.CreateNewApp("appone")
 	assetInID := s.CreateNewAsset("asset1", "denom1", 2000000)
 	assetOutID := s.CreateNewAsset("asset2", "denom2", 1000000)
 	pairID := s.CreateNewPair(assetInID, assetOutID)

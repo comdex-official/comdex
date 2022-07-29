@@ -11,7 +11,7 @@ import (
 )
 
 func (s *KeeperTestSuite) TestUpdateGenericParams() {
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	_, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)

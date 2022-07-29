@@ -210,7 +210,7 @@ func (k *Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 		}
 		var IsLetter = regexp.MustCompile(`^[a-z]+$`).MatchString
 		
-		if !IsLetter(msg.ShortName) || len(msg.ShortName) > 5 {
+		if !IsLetter(msg.ShortName) || len(msg.ShortName) > 6 {
 			return types.ErrorShortNameDidNotMeetCriterion
 		}
 

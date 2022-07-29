@@ -166,7 +166,7 @@ func (s *KeeperTestSuite) TestQueryApps() {
 	server := keeper.NewQueryServer(*assetKeeper)
 	res, err := server.QueryApps(sdk.WrapSDKContext(*ctx), &assetTypes.QueryAppsRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(len(res.Apps), 2)
+	s.Require().Equal(len(res.Apps), 1)
 }
 func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 	s.TestAddAssetRecords()
@@ -623,7 +623,7 @@ func (s *KeeperTestSuite) TestQueryPairsAndExtendedPairVaults() {
 	server := keeper.NewQueryServer(*assetKeeper)
 	res, err := server.QueryPairs(sdk.WrapSDKContext(*ctx), &assetTypes.QueryPairsRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(len(res.PairsInfo), 3)
+	s.Require().Equal(len(res.PairsInfo), 2)
 }
 
 func (s *KeeperTestSuite) TestQueryExtendedPairVaults() {
