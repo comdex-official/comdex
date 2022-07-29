@@ -4,8 +4,8 @@ import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/types"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -152,8 +152,8 @@ func (k *Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket typ
 
 func (k *Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, addESMTriggerParams *bindings.MsgAddESMTriggerParams) error {
 
-	var debtRates[] types.DebtAssetsRates
-	for i := range addESMTriggerParams.AssetID{
+	var debtRates []types.DebtAssetsRates
+	for i := range addESMTriggerParams.AssetID {
 		var debtRate types.DebtAssetsRates
 		debtRate.AssetID = addESMTriggerParams.AssetID[i]
 		debtRate.Rates = addESMTriggerParams.Rates[i]
@@ -253,7 +253,7 @@ func (k *Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64
 						if err != nil {
 							return err
 						}
-						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset[:i],coolOffData.CollateralAsset[i+1:]...)
+						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset[:i], coolOffData.CollateralAsset[i+1:]...)
 						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, indata)
 						break
 					}
@@ -276,7 +276,7 @@ func (k *Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64
 					if indata.AssetID == assetOutData.Id {
 						count++
 						indata.Amount = indata.Amount.Add(data.AmountOut)
-						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i],coolOffData.DebtAsset[i+1:]...)
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i], coolOffData.DebtAsset[i+1:]...)
 						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
 						break
 					}
@@ -354,7 +354,7 @@ func (k *Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId 
 						if err != nil {
 							return err
 						}
-						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset[:i],coolOffData.CollateralAsset[i+1:]...)
+						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset[:i], coolOffData.CollateralAsset[i+1:]...)
 						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, indata)
 						break
 					}
@@ -377,7 +377,7 @@ func (k *Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId 
 					if indata.AssetID == assetOutData.Id {
 						count++
 						indata.Amount = indata.Amount.Add(data.AmountOut)
-						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i],coolOffData.DebtAsset[i+1:]...)
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i], coolOffData.DebtAsset[i+1:]...)
 						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
 						break
 					}
@@ -403,21 +403,20 @@ func (k *Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId 
 			k.SetESMStatus(ctx, esmStatus)
 		}
 	}
-	netFee, found := k.GetNetFeeCollectedData(ctx, appId)
+	netFee, _ := k.GetNetFeeCollectedData(ctx, appId)
 	coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
-	if !found{
+	if !found {
 		return nil
-	}else {
-		for _, data := range netFee.AssetIdToFeeCollected{
-			for _, indata := range coolOffData.DebtAsset{
-				if data.AssetId == indata.AssetID{
-					indata.Amount = indata.Amount.Sub(data.NetFeesCollected)
-					coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
-				}
+	}
+	for _, data := range netFee.AssetIdToFeeCollected {
+		for _, indata := range coolOffData.DebtAsset {
+			if data.AssetId == indata.AssetID {
+				indata.Amount = indata.Amount.Sub(data.NetFeesCollected)
+				coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
 			}
 		}
-		k.SetDataAfterCoolOff(ctx, coolOffData)
 	}
+	k.SetDataAfterCoolOff(ctx, coolOffData)
 	return nil
 }
 
