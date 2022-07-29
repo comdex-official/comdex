@@ -166,12 +166,18 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 	var lpAddresses []sdk.AccAddress
 	var lpSupplies []sdk.Dec
 
-	for address, depositedCoins := range liquidityProvidersDataForPool.LiquidityProviders {
+	// to avoid non-determinism
+	addresses := make([]string, 0)
+	for address, _ := range liquidityProvidersDataForPool.LiquidityProviders {
+		addresses = append(addresses, address)
+	}
+	sort.Strings(addresses)
+	for _, address := range addresses {
 		addr, err := sdk.AccAddressFromBech32(address)
 		if err != nil {
 			continue
 		}
-		for _, coin := range depositedCoins.Coins {
+		for _, coin := range liquidityProvidersDataForPool.LiquidityProviders[address].Coins {
 			if coin.Denom == pool.PoolCoinDenom {
 				x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, coin)
 				if err != nil {
