@@ -1059,10 +1059,6 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 		return types.ErrAvailableToBorrowInsufficient
 	}
 
-	if k.HasBorrowForAddressByPair(ctx, lenderAddr, pairID) {
-		return types.ErrorDuplicateBorrow
-	}
-
 	pair, found := k.GetLendPair(ctx, pairID)
 	if !found {
 		return types.ErrorPairNotFound
