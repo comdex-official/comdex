@@ -1067,8 +1067,6 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 	AssetOutPool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
 
 	if !pair.IsInterPool {
-		AmountIn := sdk.NewCoin(lendPos.AmountIn.Denom, AmountIn.Amount)
-		// take c/Tokens from the user
 		assetRatesStat, found := k.GetAssetRatesStats(ctx, lendPos.AssetID)
 		if !found {
 			return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lendPos.AssetID, 10))
