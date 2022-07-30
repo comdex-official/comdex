@@ -199,6 +199,10 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 		return types.ErrLendAccessUnauthorised
 	}
 
+	if withdrawal.Amount.GT(lendPos.AvailableToBorrow) {
+		return types.ErrWithdrawAmountLimitExceeds
+	}
+
 	if withdrawal.Denom != getAsset.Denom {
 		return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, withdrawal.Denom)
 	}

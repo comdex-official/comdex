@@ -44,4 +44,5 @@ var (
 	ErrBadOfferCoinType                = sdkerrors.Register(ModuleName, 1151, "invalid offer coin Type")
 	ErrInvalidLengthCPoolName          = sdkerrors.Register(ModuleName, 1152, "invalid length found during unmarshaling")
 	ErrReserveRatesNotFound            = sdkerrors.Register(ModuleName, 1153, "Reserve Rates Not found")
+	ErrWithdrawAmountLimitExceeds      = sdkerrors.Register(ModuleName, 1154, "Withdraw Amount Limit Exceeded")
 )
