@@ -24,7 +24,15 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type GenesisState struct {
-	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+	SurplusAuction     []SurplusAuction     `protobuf:"bytes,1,rep,name=surplusAuction,proto3" json:"surplusAuction" yaml:"surplusAuction"`
+	DebtAuction        []DebtAuction        `protobuf:"bytes,2,rep,name=debtAuction,proto3" json:"debtAuction" yaml:"debtAuction"`
+	DutchAuction       []DutchAuction       `protobuf:"bytes,3,rep,name=dutchAuction,proto3" json:"dutchAuction" yaml:"dutchAuction"`
+	ProtocolStatistics []ProtocolStatistics `protobuf:"bytes,4,rep,name=protocolStatistics,proto3" json:"protocolStatistics" yaml:"protocolStatistics"`
+	AuctionParams      []AuctionParams      `protobuf:"bytes,5,rep,name=auctionParams,proto3" json:"auctionParams" yaml:"auctionParams"`
+	SurplusBiddings    []SurplusBiddings    `protobuf:"bytes,6,rep,name=surplusBiddings,proto3" json:"surplusBiddings" yaml:"surplusBiddings"`
+	DebtBiddings       []DebtBiddings       `protobuf:"bytes,7,rep,name=debtBiddings,proto3" json:"debtBiddings" yaml:"debtBiddings"`
+	DutchBiddings      []DutchBiddings      `protobuf:"bytes,8,rep,name=dutchBiddings,proto3" json:"dutchBiddings" yaml:"dutchBiddings"`
+	Params             Params               `protobuf:"bytes,9,opt,name=params,proto3" json:"params"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
@@ -60,6 +68,62 @@ func (m *GenesisState) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GenesisState proto.InternalMessageInfo
 
+func (m *GenesisState) GetSurplusAuction() []SurplusAuction {
+	if m != nil {
+		return m.SurplusAuction
+	}
+	return nil
+}
+
+func (m *GenesisState) GetDebtAuction() []DebtAuction {
+	if m != nil {
+		return m.DebtAuction
+	}
+	return nil
+}
+
+func (m *GenesisState) GetDutchAuction() []DutchAuction {
+	if m != nil {
+		return m.DutchAuction
+	}
+	return nil
+}
+
+func (m *GenesisState) GetProtocolStatistics() []ProtocolStatistics {
+	if m != nil {
+		return m.ProtocolStatistics
+	}
+	return nil
+}
+
+func (m *GenesisState) GetAuctionParams() []AuctionParams {
+	if m != nil {
+		return m.AuctionParams
+	}
+	return nil
+}
+
+func (m *GenesisState) GetSurplusBiddings() []SurplusBiddings {
+	if m != nil {
+		return m.SurplusBiddings
+	}
+	return nil
+}
+
+func (m *GenesisState) GetDebtBiddings() []DebtBiddings {
+	if m != nil {
+		return m.DebtBiddings
+	}
+	return nil
+}
+
+func (m *GenesisState) GetDutchBiddings() []DutchBiddings {
+	if m != nil {
+		return m.DutchBiddings
+	}
+	return nil
+}
+
 func (m *GenesisState) GetParams() Params {
 	if m != nil {
 		return m.Params
@@ -76,20 +140,37 @@ func init() {
 }
 
 var fileDescriptor_49088f171dd3086d = []byte{
-	// 204 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x49, 0xce, 0xcf, 0x4d,
-	0x49, 0xad, 0xd0, 0x4f, 0x2c, 0x4d, 0x2e, 0xc9, 0xcc, 0xcf, 0xd3, 0x2f, 0x33, 0x4c, 0x4a, 0x2d,
-	0x49, 0x34, 0xd4, 0x4f, 0x4f, 0xcd, 0x4b, 0x2d, 0xce, 0x2c, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9,
-	0x17, 0x12, 0x83, 0xa8, 0xd2, 0x83, 0xaa, 0xd2, 0x83, 0xaa, 0x92, 0x12, 0x49, 0xcf, 0x4f, 0xcf,
-	0x07, 0x2b, 0xd1, 0x07, 0xb1, 0x20, 0xaa, 0xa5, 0x94, 0x71, 0x98, 0x59, 0x90, 0x58, 0x94, 0x98,
-	0x0b, 0x35, 0x52, 0xc9, 0x87, 0x8b, 0xc7, 0x1d, 0x62, 0x47, 0x70, 0x49, 0x62, 0x49, 0xaa, 0x90,
-	0x0d, 0x17, 0x1b, 0x44, 0x5e, 0x82, 0x51, 0x81, 0x51, 0x83, 0xdb, 0x48, 0x4e, 0x0f, 0xbb, 0x9d,
-	0x7a, 0x01, 0x60, 0x55, 0x4e, 0x2c, 0x27, 0xee, 0xc9, 0x33, 0x04, 0x41, 0xf5, 0x38, 0x79, 0x9f,
-	0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb, 0x31,
-	0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x94, 0x61, 0x7a, 0x66, 0x49, 0x46, 0x69,
-	0x12, 0xc8, 0x34, 0x7d, 0x88, 0x89, 0xba, 0xf9, 0x69, 0x69, 0x99, 0xc9, 0x99, 0x89, 0x39, 0x50,
-	0xbe, 0x3e, 0xc2, 0xa5, 0x25, 0x95, 0x05, 0xa9, 0xc5, 0x49, 0x6c, 0x60, 0x17, 0x1a, 0x03, 0x02,
-	0x00, 0x00, 0xff, 0xff, 0x2c, 0x4c, 0x05, 0x92, 0x1c, 0x01, 0x00, 0x00,
+	// 480 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x94, 0xc1, 0x6e, 0xd3, 0x30,
+	0x18, 0xc7, 0x1b, 0x36, 0x3a, 0x70, 0x07, 0x48, 0x66, 0x4c, 0xa1, 0x40, 0x36, 0xbc, 0x0d, 0x26,
+	0x24, 0x12, 0x75, 0xdc, 0x10, 0x97, 0x59, 0x93, 0x38, 0x70, 0x99, 0xbc, 0x1b, 0x37, 0x27, 0xf1,
+	0x32, 0x4b, 0x6d, 0x1d, 0x1a, 0x07, 0xb1, 0x03, 0xef, 0xc0, 0xc3, 0xf0, 0x10, 0x3b, 0xee, 0xc8,
+	0x69, 0x42, 0xed, 0x1b, 0xf0, 0x04, 0x28, 0xb6, 0xb3, 0xd9, 0xed, 0xbc, 0xde, 0x1a, 0xf9, 0xef,
+	0xdf, 0xaf, 0xfd, 0xfe, 0x5f, 0x03, 0x76, 0x33, 0x31, 0xca, 0xd9, 0x8f, 0x84, 0xd6, 0x99, 0xe4,
+	0x62, 0x9c, 0x7c, 0x1f, 0xa4, 0x4c, 0xd2, 0x41, 0x52, 0xb0, 0x31, 0xab, 0x78, 0x15, 0x97, 0x13,
+	0x21, 0x05, 0xdc, 0xd4, 0xa9, 0xd8, 0xa4, 0x62, 0x93, 0xea, 0x6f, 0x14, 0xa2, 0x10, 0x2a, 0x92,
+	0x34, 0x9f, 0x74, 0xba, 0xbf, 0xe3, 0x61, 0x96, 0x74, 0x42, 0x47, 0x06, 0xd9, 0xf7, 0x89, 0x5b,
+	0x85, 0x4e, 0xed, 0x79, 0x52, 0x29, 0xcf, 0x73, 0x3e, 0x2e, 0x0c, 0x0c, 0xfd, 0x5e, 0x03, 0xeb,
+	0x9f, 0xf5, 0x37, 0x3e, 0x91, 0x54, 0x32, 0x38, 0x02, 0x8f, 0xab, 0x7a, 0x52, 0x0e, 0xeb, 0xea,
+	0x50, 0xdf, 0x0c, 0x83, 0xed, 0x95, 0xfd, 0xde, 0xc1, 0x9b, 0xf8, 0xf6, 0x5f, 0x12, 0x9f, 0x38,
+	0x69, 0xfc, 0xea, 0xe2, 0x6a, 0xab, 0xf3, 0xef, 0x6a, 0xeb, 0xd9, 0x39, 0x1d, 0x0d, 0x3f, 0x22,
+	0x97, 0x85, 0xc8, 0x1c, 0x1c, 0x52, 0xd0, 0xcb, 0x59, 0x2a, 0x5b, 0xd7, 0x3d, 0xe5, 0xda, 0xf1,
+	0xb9, 0x8e, 0x6e, 0xa2, 0xb8, 0x6f, 0x44, 0x50, 0x8b, 0x2c, 0x0a, 0x22, 0x36, 0x13, 0x32, 0xb0,
+	0x9e, 0xd7, 0x32, 0x3b, 0x6b, 0x1d, 0x2b, 0xca, 0xb1, 0xeb, 0x75, 0x58, 0x59, 0xfc, 0xc2, 0x48,
+	0x9e, 0x1a, 0x89, 0x75, 0x86, 0x88, 0x83, 0x85, 0x3f, 0x01, 0x54, 0x23, 0xcd, 0xc4, 0xb0, 0x99,
+	0x24, 0xaf, 0x24, 0xcf, 0xaa, 0x70, 0x55, 0xc9, 0xde, 0xf9, 0x64, 0xc7, 0x0b, 0x37, 0xf0, 0x6b,
+	0xa3, 0x7c, 0xae, 0x95, 0x8b, 0x4c, 0x44, 0x6e, 0x11, 0x41, 0x0e, 0x1e, 0x19, 0xf8, 0xb1, 0x5a,
+	0x96, 0xf0, 0xbe, 0x32, 0xef, 0xf9, 0xcc, 0x87, 0x76, 0x18, 0xbf, 0x34, 0xd2, 0x0d, 0x2d, 0x75,
+	0x48, 0x88, 0xb8, 0x64, 0xf8, 0x0d, 0x3c, 0x31, 0x2d, 0x62, 0xb3, 0x4c, 0x61, 0x57, 0xc9, 0xde,
+	0x2e, 0xd9, 0x91, 0x36, 0x8e, 0x23, 0xa3, 0xdb, 0x74, 0x96, 0xa4, 0x3d, 0x46, 0x64, 0x9e, 0xaf,
+	0x3a, 0x64, 0xa9, 0xbc, 0xf6, 0xad, 0x2d, 0xe9, 0xd0, 0xca, 0x2e, 0x74, 0x68, 0x9d, 0x35, 0x1d,
+	0x5a, 0x8f, 0xcd, 0x10, 0x55, 0xa7, 0xd7, 0x9e, 0x07, 0x77, 0x0f, 0xf1, 0xc8, 0x0e, 0xcf, 0x0f,
+	0xd1, 0x21, 0x21, 0xe2, 0x92, 0xe1, 0x27, 0xd0, 0xd5, 0xff, 0xea, 0xf0, 0xe1, 0x76, 0xb0, 0xdf,
+	0x3b, 0x88, 0xbc, 0x2b, 0xa2, 0x1b, 0x5a, 0x6d, 0xe0, 0xc4, 0xdc, 0xc1, 0x5f, 0x2e, 0xa6, 0x51,
+	0x70, 0x39, 0x8d, 0x82, 0xbf, 0xd3, 0x28, 0xf8, 0x35, 0x8b, 0x3a, 0x97, 0xb3, 0xa8, 0xf3, 0x67,
+	0x16, 0x75, 0xbe, 0x0e, 0x0a, 0x2e, 0xcf, 0xea, 0xb4, 0xa1, 0x25, 0x9a, 0xf8, 0x5e, 0x9c, 0x9e,
+	0xf2, 0x8c, 0xd3, 0xa1, 0x79, 0x4e, 0x6e, 0x5e, 0x0a, 0xf2, 0xbc, 0x64, 0x55, 0xda, 0x55, 0xeb,
+	0xf4, 0xe1, 0x7f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x83, 0x91, 0x35, 0x07, 0xd2, 0x04, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -121,7 +202,119 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintGenesis(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0xa
+	dAtA[i] = 0x4a
+	if len(m.DutchBiddings) > 0 {
+		for iNdEx := len(m.DutchBiddings) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.DutchBiddings[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x42
+		}
+	}
+	if len(m.DebtBiddings) > 0 {
+		for iNdEx := len(m.DebtBiddings) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.DebtBiddings[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x3a
+		}
+	}
+	if len(m.SurplusBiddings) > 0 {
+		for iNdEx := len(m.SurplusBiddings) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SurplusBiddings[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x32
+		}
+	}
+	if len(m.AuctionParams) > 0 {
+		for iNdEx := len(m.AuctionParams) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AuctionParams[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
+	if len(m.ProtocolStatistics) > 0 {
+		for iNdEx := len(m.ProtocolStatistics) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.ProtocolStatistics[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x22
+		}
+	}
+	if len(m.DutchAuction) > 0 {
+		for iNdEx := len(m.DutchAuction) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.DutchAuction[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.DebtAuction) > 0 {
+		for iNdEx := len(m.DebtAuction) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.DebtAuction[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.SurplusAuction) > 0 {
+		for iNdEx := len(m.SurplusAuction) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SurplusAuction[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -142,6 +335,54 @@ func (m *GenesisState) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if len(m.SurplusAuction) > 0 {
+		for _, e := range m.SurplusAuction {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.DebtAuction) > 0 {
+		for _, e := range m.DebtAuction {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.DutchAuction) > 0 {
+		for _, e := range m.DutchAuction {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.ProtocolStatistics) > 0 {
+		for _, e := range m.ProtocolStatistics {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.AuctionParams) > 0 {
+		for _, e := range m.AuctionParams {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.SurplusBiddings) > 0 {
+		for _, e := range m.SurplusBiddings {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.DebtBiddings) > 0 {
+		for _, e := range m.DebtBiddings {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.DutchBiddings) > 0 {
+		for _, e := range m.DutchBiddings {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
 	l = m.Params.Size()
 	n += 1 + l + sovGenesis(uint64(l))
 	return n
@@ -183,6 +424,278 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SurplusAuction", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SurplusAuction = append(m.SurplusAuction, SurplusAuction{})
+			if err := m.SurplusAuction[len(m.SurplusAuction)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DebtAuction", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DebtAuction = append(m.DebtAuction, DebtAuction{})
+			if err := m.DebtAuction[len(m.DebtAuction)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DutchAuction", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DutchAuction = append(m.DutchAuction, DutchAuction{})
+			if err := m.DutchAuction[len(m.DutchAuction)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProtocolStatistics", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProtocolStatistics = append(m.ProtocolStatistics, ProtocolStatistics{})
+			if err := m.ProtocolStatistics[len(m.ProtocolStatistics)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionParams", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AuctionParams = append(m.AuctionParams, AuctionParams{})
+			if err := m.AuctionParams[len(m.AuctionParams)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SurplusBiddings", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SurplusBiddings = append(m.SurplusBiddings, SurplusBiddings{})
+			if err := m.SurplusBiddings[len(m.SurplusBiddings)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DebtBiddings", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DebtBiddings = append(m.DebtBiddings, DebtBiddings{})
+			if err := m.DebtBiddings[len(m.DebtBiddings)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DutchBiddings", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DutchBiddings = append(m.DutchBiddings, DutchBiddings{})
+			if err := m.DutchBiddings[len(m.DutchBiddings)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 9:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
 			}

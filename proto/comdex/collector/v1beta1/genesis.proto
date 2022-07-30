@@ -3,12 +3,23 @@ package comdex.collector.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "comdex/collector/v1beta1/params.proto";
+import "comdex/collector/v1beta1/collector.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/comdex-official/comdex/x/collector/types";
 
 // GenesisState defines the collector module's genesis state.
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
+  repeated NetFeeCollectedData netFeeCollectedData = 1
+  [ (gogoproto.moretags) = "yaml:\"netFeeCollectedData\"", (gogoproto.nullable) = false ];
+  repeated AppIdToAssetCollectorMapping appIdToAssetCollectorMapping = 2
+  [ (gogoproto.moretags) = "yaml:\"appIdToAssetCollectorMapping\"", (gogoproto.nullable) = false ];
+  repeated CollectorLookupTable collectorLookupTable = 3
+  [ (gogoproto.moretags) = "yaml:\"collectorLookupTable\"", (gogoproto.nullable) = false ];
+  repeated CollectorAuctionLookupTable collectorAuctionLookupTable = 4
+  [ (gogoproto.moretags) = "yaml:\"collectorAuctionLookupTable\"", (gogoproto.nullable) = false ];
+  repeated AppToDenomsMapping appToDenomsMapping = 5
+  [ (gogoproto.moretags) = "yaml:\"appToDenomsMapping\"", (gogoproto.nullable) = false ];
+  Params params = 6 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }
