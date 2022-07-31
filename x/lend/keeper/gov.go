@@ -24,3 +24,7 @@ func (k Keeper) HandleAddAssetToPairRecords(ctx sdk.Context, p *types.AddAssetTo
 func (k Keeper) HandleAddAssetRatesStatsRecords(ctx sdk.Context, p *types.AddAssetRatesStats) error {
 	return k.AddAssetRatesStats(ctx, p.AssetRatesStats...)
 }
+
+func (k Keeper) HandleAddAuctionParamsRecords(ctx sdk.Context, p *types.AddAuctionParamsProposal) error {
+	return k.AddAuctionParamsData(ctx, p.AuctionParams)
+}

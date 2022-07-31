@@ -23,6 +23,7 @@ type UpdateNewPairRequest struct{}
 type AddPoolRequest struct{}
 type AddAssetToPairRequest struct{}
 type AddAssetRatesStatsRequest struct{}
+type AddAuctionParamsRequest struct{}
 
 func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
@@ -56,6 +57,13 @@ func AddWNewAssetRatesStatsProposalRESTHandler(clientCtx client.Context) govrest
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-asset-rates-stats",
 		Handler:  AddAssetRatesStatsRESTHandler(clientCtx),
+	}
+}
+
+func AddNewAuctionParamsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add-auction-params",
+		Handler:  AddAuctionParamsRESTHandler(clientCtx),
 	}
 }
 
@@ -102,6 +110,16 @@ func AddAssetToPairRESTHandler(clientCtx client.Context) http.HandlerFunc {
 func AddAssetRatesStatsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req AddAssetRatesStatsRequest
+
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
+			return
+		}
+	}
+}
+
+func AddAuctionParamsRESTHandler(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req AddAuctionParamsRequest
 
 		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			return

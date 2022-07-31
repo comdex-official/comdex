@@ -242,3 +242,7 @@ func (k *Keeper) UpdateBorrowIdsMapping(ctx sdk.Context, borrowID uint64, isInse
 func (k *Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
 	return k.lend.GetPool(ctx, id)
 }
+
+func (k *Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams lendtypes.AuctionParams, found bool) {
+	return k.lend.GetAddAuctionParamsData(ctx, appID)
+}

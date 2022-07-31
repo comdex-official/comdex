@@ -10,6 +10,7 @@ var (
 	ProposalAddPool            = "ProposalAddPool"
 	ProposalAddAssetToPair     = "ProposalAddAssetToPair"
 	ProposalAddAssetRatesStats = "ProposalAddAssetRatesStats"
+	ProposalAddAuctionParams = "ProposalAddAuctionParams"
 )
 
 func init() {
@@ -23,6 +24,8 @@ func init() {
 	govtypes.RegisterProposalTypeCodec(&AddAssetToPairProposal{}, "comdex/AddAssetToPairProposal")
 	govtypes.RegisterProposalType(ProposalAddAssetRatesStats)
 	govtypes.RegisterProposalTypeCodec(&AddAssetRatesStats{}, "comdex/AddAssetRatesStats")
+	govtypes.RegisterProposalType(ProposalAddAuctionParams)
+	govtypes.RegisterProposalTypeCodec(&AddAuctionParamsProposal{}, "comdex/AddAuctionParamsProposal")
 }
 
 var (
@@ -31,6 +34,7 @@ var (
 	_ govtypes.Content = &AddPoolsProposal{}
 	_ govtypes.Content = &AddAssetToPairProposal{}
 	_ govtypes.Content = &AddAssetRatesStats{}
+	_ govtypes.Content = &AddAuctionParamsProposal{}
 )
 
 func NewAddLendPairsProposal(title, description string, pairs []Extended_Pair) govtypes.Content {
@@ -175,6 +179,31 @@ func (p *AddAssetRatesStats) ValidateBasic() error {
 		if err := assetRatesStats.Validate(); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func NewAddAuctionParams(title, description string, AddAuctionParams AuctionParams) govtypes.Content {
+	return &AddAuctionParamsProposal{
+		Title:           title,
+		Description:     description,
+		AuctionParams: AddAuctionParams,
+	}
+}
+
+func (p *AddAuctionParamsProposal) ProposalRoute() string {
+	return RouterKey
+}
+
+func (p *AddAuctionParamsProposal) ProposalType() string {
+	return ProposalAddAssetRatesStats
+}
+
+func (p *AddAuctionParamsProposal) ValidateBasic() error {
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -43,6 +43,7 @@ var (
 	LendsKey              = []byte{0x32}
 	BorrowsKey            = []byte{0x33}
 	BorrowStatsPrefix     = []byte{0x40}
+	AuctionParamPrefix     = []byte{0x41}
 
 	AssetToPairMappingKeyPrefix           = []byte{0x20}
 	LendForAddressByAssetKeyPrefix        = []byte{0x22}
@@ -83,6 +84,10 @@ func PoolKey(ID uint64) []byte {
 
 func LendPairKey(ID uint64) []byte {
 	return append(LendPairKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
+}
+
+func AuctionParamKey(ID uint64) []byte {
+	return append(AuctionParamPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
 func AssetRatesStatsKey(ID uint64) []byte {

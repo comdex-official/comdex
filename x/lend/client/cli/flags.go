@@ -10,6 +10,7 @@ const (
 	FlagNewLendPairFile        = "add-lend-pair-file"
 	FlagAddLendPoolFile        = "add-lend-pool-file"
 	FlagAddAssetRatesStatsFile = "add-asset-rates-stats-file"
+	FlagSetAuctionParamsFile   = "add-auction-params-file"
 )
 
 func ParseStringFromString(s string, separator string) ([]string, error) {
@@ -66,6 +67,13 @@ func FlagSetAddAssetRatesStatsMapping() *flag.FlagSet {
 	return fs
 }
 
+func FlagSetAuctionParams() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagSetAuctionParamsFile, "", "add auction params json file path")
+	return fs
+}
+
 type addNewLendPairsInputs struct {
 	AssetIn         string `json:"asset_in"`
 	AssetOut        string `json:"asset_out"`
@@ -109,4 +117,20 @@ type addAssetRatesStatsInputs struct {
 	Title                string
 	Description          string
 	Deposit              string
+}
+
+type addNewAuctionParamsInputs struct {
+	AppID                  string `json:"app_id"`
+	AuctionDurationSeconds string `json:"auction_duration_seconds"`
+	Buffer                 string `json:"buffer"`
+	Cusp                   string `json:"cusp"`
+	Step                   string `json:"step"`
+	PriceFunctionType      string `json:"price_function_type"`
+	SurplusId              string `json:"surplus_id"`
+	DebtId                 string `json:"debt_id"`
+	DutchId                string `json:"dutch_id"`
+	BidDurationSeconds     string `json:"bid_duration_seconds"`
+	Title                  string
+	Description            string
+	Deposit                string
 }

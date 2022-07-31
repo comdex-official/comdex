@@ -274,6 +274,15 @@ message QueryBorrowStatsResponse {
     (gogoproto.moretags) = "yaml:\"borrow_stats\""];
 }
 
+message QueryAuctionParamRequest {
+  uint64 app_id = 1;
+}
+
+message QueryAuctionParamResponse {
+  AuctionParams auctionParams = 1
+  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction_params\"" ];
+}
+
 service Query {
   rpc QueryLends(QueryLendsRequest) returns (QueryLendsResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/lends";
@@ -363,6 +372,10 @@ service Query {
 
   rpc QueryBorrowStats(QueryBorrowStatsRequest) returns (QueryBorrowStatsResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/borrow_stats";
+  }
+
+  rpc QueryAuctionParams(QueryAuctionParamRequest) returns (QueryAuctionParamResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/auctionparams/{app_id}";
   }
 }
 

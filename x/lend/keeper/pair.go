@@ -235,6 +235,33 @@ func (k *Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRates
 	return nil
 }
 
+func (k *Keeper) AddAuctionParamsData(ctx sdk.Context, param types.AuctionParams) error {
+	var (
+		store = k.Store(ctx)
+		key   = types.AuctionParamKey(param.AppId)
+		value = k.cdc.MustMarshal(&param)
+	)
+
+	store.Set(key, value)
+
+	return nil
+}
+
+func (k *Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams types.AuctionParams, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AuctionParamKey(appID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return auctionParams, false
+	}
+
+	k.cdc.MustUnmarshal(value, &auctionParams)
+	return auctionParams, true
+}
+
 func (k *Keeper) SetAssetRatesStats(ctx sdk.Context, assetRatesStats types.AssetRatesStats) {
 	var (
 		store = k.Store(ctx)

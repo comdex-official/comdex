@@ -36,3 +36,9 @@ message AddAssetRatesStats {
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
   repeated AssetRatesStats AssetRatesStats = 3 [(gogoproto.nullable) = false];
 }
+
+message AddAuctionParamsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  AuctionParams AuctionParams = 3 [(gogoproto.nullable) = false];
+}

@@ -571,3 +571,22 @@ func (q QueryServer) QueryBorrowStats(c context.Context, req *types.QueryBorrowS
 		BorrowStats: borrowStatsData,
 	}, nil
 }
+
+func (q *QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAuctionParamRequest) (*types.QueryAuctionParamResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	item, found := q.GetAddAuctionParamsData(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Auction Params not exist for id %d", req.AppId)
+	}
+
+	return &types.QueryAuctionParamResponse{
+		AuctionParams: item,
+	}, nil
+}

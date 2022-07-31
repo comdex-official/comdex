@@ -856,3 +856,108 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 
 	return txf, msg, nil
 }
+
+func CmdAddNewAuctionParamsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-auction-params [flags]",
+		Short: "Add auction params",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewAddAuctionParams(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagSetAuctionParams())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	return cmd
+}
+
+func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	auctionParamsInput, err := parseAuctionPramsFlags(fs)
+
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse auction params : %w", err)
+	}
+
+	appID, err := strconv.ParseUint(auctionParamsInput.AppID, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	auctionDurationSeconds, err := strconv.ParseUint(auctionParamsInput.AuctionDurationSeconds, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	buffer ,_ := sdk.NewDecFromStr(auctionParamsInput.Buffer) 
+
+	cusp ,_ := sdk.NewDecFromStr(auctionParamsInput.Cusp) 
+
+	step ,_ := sdk.NewIntFromString(auctionParamsInput.Step) 
+
+
+	priceFunctionType, err := strconv.ParseUint(auctionParamsInput.PriceFunctionType, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	surplusId, err := strconv.ParseUint(auctionParamsInput.SurplusId, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	debtId, err := strconv.ParseUint(auctionParamsInput.DebtId, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	dutchId, err := strconv.ParseUint(auctionParamsInput.DutchId, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	bidDurationSeconds, err := strconv.ParseUint(auctionParamsInput.BidDurationSeconds, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	auctionParams := types.AuctionParams{
+		AppId: appID,
+		AuctionDurationSeconds: auctionDurationSeconds,
+		Buffer: buffer,
+		Cusp: cusp,
+		Step: step,
+		PriceFunctionType: priceFunctionType,
+		SurplusId: surplusId,
+		DebtId: debtId,
+		DutchId: dutchId,
+		BidDurationSeconds: bidDurationSeconds,
+	}
+	
+
+	from := clientCtx.GetFromAddress()
+
+	deposit, err := sdk.ParseCoinsNormalized(auctionParamsInput.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewAddAuctionParams(auctionParamsInput.Title, auctionParamsInput.Description, auctionParams)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
+}
