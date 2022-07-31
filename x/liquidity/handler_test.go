@@ -362,7 +362,7 @@ func (s *ModuleTestSuite) TestMsgFarm() {
 	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Amount, sdk.NewInt(5000000000))
 }
 
-func (s *ModuleTestSuite) TestMsgTokensSoftUnlock() {
+func (s *ModuleTestSuite) TestMsgUnfarm() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 

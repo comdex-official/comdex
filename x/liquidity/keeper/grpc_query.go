@@ -750,7 +750,7 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 	return &types.QueryPoolIncentivesResponse{PoolIncentives: poolIncentives}, nil
 }
 
-// FarmedPoolCoin returns the total pool coin in soft-lock.
+// FarmedPoolCoin returns the total farmed pool coin .
 func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoinRequest) (*types.QueryFarmedPoolCoinResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
@@ -766,7 +766,7 @@ func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoi
 		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "pool id %d is invalid", req.PoolId)
 	}
 	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
-	softLockedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
+	farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
 
-	return &types.QueryFarmedPoolCoinResponse{Coin: softLockedCoins}, nil
+	return &types.QueryFarmedPoolCoinResponse{Coin: farmedCoins}, nil
 }

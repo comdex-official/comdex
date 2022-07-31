@@ -228,7 +228,7 @@ func (s *KeeperTestSuite) TestUnfarm() {
 			AvailableBalance: sdk.Coins{},
 		},
 		{
-			Name:             "error no soft locks present for pool",
+			Name:             "error farm not found",
 			Msg:              *types.NewMsgUnfarm(appID1, pool2.Id, liquidityProvider1, utils.ParseCoin("699000000pool1-2")),
 			ExpErr:           sdkerrors.Wrapf(types.ErrorFarmerNotFound, "no active farm found for given pool id %d", pool2.Id),
 			AvailableBalance: sdk.Coins{},
@@ -399,7 +399,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	s.Require().Equal(utils.ParseCoin("10000000pool1-1").Denom, queuedFarmers[0].QueudCoins[0].FarmedPoolCoin.Denom)
 	s.Require().Equal(utils.ParseCoin("10000000pool1-1").Amount, queuedFarmers[0].QueudCoins[0].FarmedPoolCoin.Amount)
 
-	// lp1 trying to unfarm/softUnlock more than farmed/softLocked
+	// lp1 trying to unfarm more than farmed
 	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("11000000pool1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().Error(err)
