@@ -361,7 +361,7 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 	}
 
 	if farmedCoinAmount.LT(msg.UnfarmingPoolCoin.Amount) {
-		return sdkerrors.Wrapf(types.ErrInvalidUnlockAmount, "farmed pool coin amount %d%s smaller than requested unfarming pool coin amount %d%s", farmedCoinAmount.Int64(), msg.UnfarmingPoolCoin.Denom, msg.UnfarmingPoolCoin.Amount.Int64(), msg.UnfarmingPoolCoin.Denom)
+		return sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount %d%s smaller than requested unfarming pool coin amount %d%s", farmedCoinAmount.Int64(), msg.UnfarmingPoolCoin.Denom, msg.UnfarmingPoolCoin.Amount.Int64(), msg.UnfarmingPoolCoin.Denom)
 	}
 
 	unFarmingCoin := msg.UnfarmingPoolCoin

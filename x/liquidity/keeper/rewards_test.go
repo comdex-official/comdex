@@ -236,7 +236,7 @@ func (s *KeeperTestSuite) TestUnfarm() {
 		{
 			Name:             "error insufficient farmed amounts",
 			Msg:              *types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("100000000000pool1-1")),
-			ExpErr:           sdkerrors.Wrapf(types.ErrInvalidUnlockAmount, "farmed pool coin amount 10000000000pool1-1 smaller than requested unfarming pool coin amount 100000000000pool1-1"),
+			ExpErr:           sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount 10000000000pool1-1 smaller than requested unfarming pool coin amount 100000000000pool1-1"),
 			AvailableBalance: sdk.Coins{},
 		},
 		{
@@ -334,7 +334,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	msgUnlock := types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("160000000pool1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().Error(err)
-	s.Require().EqualError(err, sdkerrors.Wrapf(types.ErrInvalidUnlockAmount, "farmed pool coin amount 150000000pool1-1 smaller than requested unfarming pool coin amount 160000000pool1-1").Error())
+	s.Require().EqualError(err, sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount 150000000pool1-1 smaller than requested unfarming pool coin amount 160000000pool1-1").Error())
 
 	// unfarming small portions, below unlock removes token from most recently added queue
 	// unlock is done from a single latest object in a queue since this object itself can satisfy the unlock requirement,
@@ -403,7 +403,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("11000000pool1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().Error(err)
-	s.Require().EqualError(err, sdkerrors.Wrapf(types.ErrInvalidUnlockAmount, "farmed pool coin amount 10000000pool1-1 smaller than requested unfarming pool coin amount 11000000pool1-1").Error())
+	s.Require().EqualError(err, sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount 10000000pool1-1 smaller than requested unfarming pool coin amount 11000000pool1-1").Error())
 
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Hour * 1))
 	// SortedByTimeFarmQueue -> [69000000pool1-1, 10000000pool1-1]
@@ -485,7 +485,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	s.nextBlock()
 	afs = s.keeper.GetAllActiveFarmers(s.ctx, appID1, pool.Id)
 	qfs = s.keeper.GetAllQueuedFarmers(s.ctx, appID1, pool.Id)
-	s.Require().Len(qfs[0].QueudCoins, 0)
+	s.Require().Len(qfs[0].QueudCoins, 2)
 	s.Require().Len(afs, 1)
 
 	// now the data is something like this
