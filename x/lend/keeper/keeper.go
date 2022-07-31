@@ -1070,12 +1070,12 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 	}
 	AssetInPool, _ := k.GetPool(ctx, lendPos.PoolID)
 	AssetOutPool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
+	assetRatesStat, found := k.GetAssetRatesStats(ctx, lendPos.AssetID)
+	if !found {
+		return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lendPos.AssetID, 10))
+	}
 
 	if !pair.IsInterPool {
-		assetRatesStat, found := k.GetAssetRatesStats(ctx, lendPos.AssetID)
-		if !found {
-			return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lendPos.AssetID, 10))
-		}
 		cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
 		if AmountIn.Denom != cAsset.Denom {
 			return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, AmountIn.Denom)
@@ -1109,56 +1109,66 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 
 		// qty of first and second bridged asset to be sent over different pool according to the borrow Pool
 
-		firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset))
+		firstBridgedAssetq := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset))
+		firstBridgedAssetQty := firstBridgedAssetq.ToDec().Mul(assetRatesStat.Ltv)
 		firstBridgedAssetBal := k.ModuleBalance(ctx, AssetInPool.ModuleName, firstBridgedAsset.Denom)
-		secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
+		secondBridgedAssetq := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
+		secondBridgedAssetQty := secondBridgedAssetq.ToDec().Mul(assetRatesStat.Ltv)
 		secondBridgedAssetBal := k.ModuleBalance(ctx, AssetInPool.ModuleName, secondBridgedAsset.Denom)
 
-		if firstBridgedAssetQty.LT(firstBridgedAssetBal) { // take c/Tokens from the user
-			assetRatesStat, found := k.GetAssetRatesStats(ctx, lendPos.AssetID)
-			if !found {
-				return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lendPos.AssetID, 10))
-			}
-			cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
-			if AmountIn.Denom != cAsset.Denom {
-				return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, AmountIn.Denom)
-			}
+		if borrowPos.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
+			if firstBridgedAssetQty.LT(firstBridgedAssetBal.ToDec()) { // take c/Tokens from the user
+				assetRatesStat, found := k.GetAssetRatesStats(ctx, lendPos.AssetID)
+				if !found {
+					return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lendPos.AssetID, 10))
+				}
+				cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
+				if AmountIn.Denom != cAsset.Denom {
+					return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, AmountIn.Denom)
+				}
 
-			if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, AssetInPool.ModuleName, AmountIn); err != nil {
-				return err
-			}
+				if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, AssetInPool.ModuleName, AmountIn); err != nil {
+					return err
+				}
 
-			if err := k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(firstBridgedAsset.Denom, firstBridgedAssetQty))); err != nil {
-				return err
+				if err := k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(firstBridgedAsset.Denom, firstBridgedAssetQty.TruncateInt()))); err != nil {
+					return err
+				}
+				lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(AmountIn.Amount)
+				k.SetLend(ctx, lendPos)
+				borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
+				borrowPos.BridgedAssetAmount.Amount = borrowPos.BridgedAssetAmount.Amount.Add(firstBridgedAssetQty.TruncateInt())
+				k.SetBorrow(ctx, borrowPos)
+			} else {
+				return types.ErrBridgeAssetQtyInsufficient
 			}
-			lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(AmountIn.Amount)
-			k.SetLend(ctx, lendPos)
-			borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
-			k.SetBorrow(ctx, borrowPos)
-		} else if secondBridgedAssetQty.LT(secondBridgedAssetBal) {
-			// take c/Tokens from the user
-			assetRatesStat, found := k.GetAssetRatesStats(ctx, lendPos.AssetID)
-			if !found {
-				return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lendPos.AssetID, 10))
-			}
-			cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
-			if AmountIn.Denom != cAsset.Denom {
-				return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, AmountIn.Denom)
-			}
-
-			if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, AssetInPool.ModuleName, AmountIn); err != nil {
-				return err
-			}
-
-			if err := k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(secondBridgedAsset.Denom, secondBridgedAssetQty))); err != nil {
-				return err
-			}
-			lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(AmountIn.Amount)
-			k.SetLend(ctx, lendPos)
-			borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
-			k.SetBorrow(ctx, borrowPos)
 		} else {
-			return types.ErrBorrowingPoolInsufficient
+			if secondBridgedAssetQty.LT(secondBridgedAssetBal.ToDec()) {
+				// take c/Tokens from the user
+				assetRatesStat, found := k.GetAssetRatesStats(ctx, lendPos.AssetID)
+				if !found {
+					return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(lendPos.AssetID, 10))
+				}
+				cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
+				if AmountIn.Denom != cAsset.Denom {
+					return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, AmountIn.Denom)
+				}
+
+				if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, AssetInPool.ModuleName, AmountIn); err != nil {
+					return err
+				}
+
+				if err := k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(secondBridgedAsset.Denom, secondBridgedAssetQty.TruncateInt()))); err != nil {
+					return err
+				}
+				lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(AmountIn.Amount)
+				k.SetLend(ctx, lendPos)
+				borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
+				borrowPos.BridgedAssetAmount.Amount = borrowPos.BridgedAssetAmount.Amount.Add(secondBridgedAssetQty.TruncateInt())
+				k.SetBorrow(ctx, borrowPos)
+			} else {
+				return types.ErrBridgeAssetQtyInsufficient
+			}
 		}
 	}
 	return nil
