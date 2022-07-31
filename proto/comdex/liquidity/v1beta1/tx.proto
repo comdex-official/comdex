@@ -35,11 +35,11 @@ service Msg {
   // CancelAllOrders defines a method for cancelling all orders
   rpc CancelAllOrders(MsgCancelAllOrders) returns (MsgCancelAllOrdersResponse);
 
-  // TokensSoftLock defines a method to soft lock the token, for incentivization
-  rpc TokensSoftLock(MsgTokensSoftLock) returns (MsgTokensSoftLockResponse);
+  // MsgFarm defines a method to farm the pool token, for incentivization
+  rpc Farm(MsgFarm) returns (MsgFarmResponse);
 
-  // TokensSoftUnlock defines a method to unlock the soft locked token, for incentivization
-  rpc TokensSoftUnlock(MsgTokensSoftUnlock) returns (MsgTokensSoftUnlockResponse);
+  // Unfarm defines a method to unfarm the farmed pool token
+  rpc Unfarm(MsgUnfarm) returns (MsgUnfarmResponse);
 
 }
 
@@ -204,45 +204,32 @@ message MsgCancelAllOrders {
 // MsgCancelAllOrdersResponse defines the Msg/CancelAllOrders response type.
 message MsgCancelAllOrdersResponse {}
 
-
-// MsgTokensSoftLock defines a SDK message for soft locking coins (i.e without bonding) for incentivisation.
-message MsgTokensSoftLock {
-  option (gogoproto.goproto_getters) = false;
-
-  // depositor defines the bech32-encoded address of the farmer
-  string depositor = 1;
+// MsgFarm defines a SDK message for farming coins (i.e without bonding) for incentivisation.
+message MsgFarm {
+  uint64 app_id = 1;
   uint64 pool_id = 2;
-
-  // soft_lock_coin specifies coins to stake
-  cosmos.base.v1beta1.Coin soft_lock_coin = 3 [
-    (gogoproto.moretags)     = "yaml:\"soft_lock_coin\"",
+  string farmer = 3;
+  cosmos.base.v1beta1.Coin farming_pool_coin = 4 [
+    (gogoproto.moretags)     = "yaml:\"farming_pool_coin\"",
     (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable)     = false
   ];
-
-  uint64 app_id = 4;
 }
 
-// MsgTokensSoftLockResponse  defines the Msg/MsgTokensSoftLockResponse response type.
-message MsgTokensSoftLockResponse {}
+// MsgFarmResponse  defines the Msg/MsgFarmResponse response type.
+message MsgFarmResponse {}
 
-// MsgTokensSoftUnlock defines a SDK message for performing unlocking of the soft locked coins
-message MsgTokensSoftUnlock {
-  option (gogoproto.goproto_getters) = false;
-
-  // depositor defines the bech32-encoded address of the farmer
-  string depositor = 1;
+// MsgUnfarm defines a SDK message for performing unfarm of the farmed coins
+message MsgUnfarm {
+  uint64 app_id = 1;
   uint64 pool_id = 2;
-
-  // soft_unlock_coin specifies coins to stake
-  cosmos.base.v1beta1.Coin soft_unlock_coin = 3 [
-    (gogoproto.moretags)     = "yaml:\"soft_unlock_coin\"",
+  string farmer = 3;
+  cosmos.base.v1beta1.Coin unfarming_pool_coin = 4 [
+    (gogoproto.moretags)     = "yaml:\"unfarming_pool_coin\"",
     (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable)     = false
   ];
-
-  uint64 app_id = 4;
 }
 
-// MsgTokensSoftUnlockResponse defines the Msg/MsgTokensSoftUnlockResponse response type.
-message MsgTokensSoftUnlockResponse {}
+// MsgUnfarmResponse defines the Msg/MsgUnfarmResponse response type.
+message MsgUnfarmResponse {}

@@ -40,8 +40,10 @@ var (
 	OrderKeyPrefix                = []byte{0xb2}
 	OrderIndexKeyPrefix           = []byte{0xb3}
 
-	PoolLiquidityProvidersDataKeyPrefix = []byte{0xb4}
-	GenericParamsKey                    = []byte{0xb5}
+	ActiveFarmerKeyPrefix = []byte{0xb4}
+	QueuedFarmerKeyPrefix = []byte{0xb5}
+
+	GenericParamsKey = []byte{0xb6}
 )
 
 // GetLastPairIDKey returns the store key to retrieve the last pair id.
@@ -196,11 +198,6 @@ func GetOrderIndexKeyPrefix(appID uint64, orderer sdk.AccAddress) []byte {
 	return append(append(OrderIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(orderer)...)
 }
 
-// GetPoolLiquidityProvidersDataKey returns the store key to retrieve liquidity providers data from the pool id.
-func GetPoolLiquidityProvidersDataKey(appID, poolID uint64) []byte {
-	return append(append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
-}
-
 // GetGenericParamsKey returns the store key to retrieve params object.
 func GetGenericParamsKey(appID uint64) []byte {
 	return append(GenericParamsKey, sdk.Uint64ToBigEndian(appID)...)
@@ -278,4 +275,24 @@ func LengthPrefixString(s string) []byte {
 		return bz
 	}
 	return append([]byte{byte(bzLen)}, bz...)
+}
+
+// GetActiveFarmerKey returns the store key to retrieve active farmer object from the app id, pool id and farmer address.
+func GetActiveFarmerKey(appID, poolID uint64, farmer sdk.AccAddress) []byte {
+	return append(append(append(ActiveFarmerKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...), address.MustLengthPrefix(farmer)...)
+}
+
+// GetAllActiveFarmerKey returns the store key to retrieve all active farmers.
+func GetAllActiveFarmersKey(appID, poolID uint64) []byte {
+	return append(append(ActiveFarmerKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
+}
+
+// GetQueuedFarmerKey returns the store key to retrieve queued farmer object from the app id, pool id and farmer address.
+func GetQueuedFarmerKey(appID, poolID uint64, farmer sdk.AccAddress) []byte {
+	return append(append(append(QueuedFarmerKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...), address.MustLengthPrefix(farmer)...)
+}
+
+// GetAllQueuedFarmerKey returns the store key to retrieve all queued farmers.
+func GetAllQueuedFarmersKey(appID, poolID uint64) []byte {
+	return append(append(QueuedFarmerKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
 }

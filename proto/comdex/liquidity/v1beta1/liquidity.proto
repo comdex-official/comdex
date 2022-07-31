@@ -244,7 +244,7 @@ message PoolLiquidityProvidersData {
 
 // FARMING STRUCTURES - QUEUE AND ACTIVE
 
-message ActiveFarmers {
+message ActiveFarmer {
   uint64 app_id = 1;
   uint64 pool_id = 2;
   string farmer = 3;
@@ -254,14 +254,22 @@ message ActiveFarmers {
   ];
 }
 
-message QueuedFarmers {
-  uint64 app_id = 1;
-  uint64 pool_id = 2;
-  string farmer = 3;
-  repeated cosmos.base.v1beta1.Coin farmed_pool_coin = 4;
-  google.protobuf.Timestamp created_at = 5 [
+
+message QueuedCoin {
+  cosmos.base.v1beta1.Coin farmed_pool_coin = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  google.protobuf.Timestamp created_at = 2 [
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"created_at\""
   ];
+}
+
+message QueuedFarmer {
+  uint64 app_id = 1;
+  uint64 pool_id = 2;
+  string farmer = 3;
+  repeated QueuedCoin queud_coins = 4;
 }

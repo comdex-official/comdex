@@ -37,7 +37,7 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryWithdrawRequestCmd(),
 		NewQueryOrdersCmd(),
 		NewQueryOrderCmd(),
-		NewQuerySoftLockCmd(),
+		NewQueryFarmerCmd(),
 		NewQueryDeserializePoolCoinCmd(),
 		NewQueryPoolIncentivesCmd(),
 		NewQueryFarmedPoolCoinCmd(),
@@ -754,16 +754,16 @@ $ %s query %s order 1 1 1
 	return cmd
 }
 
-// NewQuerySoftLockCmd implements the soft lock query command.
-func NewQuerySoftLockCmd() *cobra.Command {
+// NewQueryFarmerCmd implements the farmer query command.
+func NewQueryFarmerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "soft-lock [app-id] [pool-id] [depositor]",
+		Use:   "farmer [app-id] [pool-id] [farmer]",
 		Args:  cobra.ExactArgs(3),
-		Short: "Query details of the soft-lock",
+		Short: "Query farmer",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query details of the soft-lock in specific pool for adddress.
+			fmt.Sprintf(`Query farming status of the farmer.
 Example:
-$ %s query %s soft-lock 1 1 comdex...
+$ %s query %s farmer 1 1 comdex...
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -781,17 +781,17 @@ $ %s query %s soft-lock 1 1 comdex...
 
 			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
-				return err
+				return fmt.Errorf("parse pool id: %w", err)
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.SoftLock(
+			res, err := queryClient.Farmer(
 				cmd.Context(),
-				&types.QuerySoftLockRequest{
-					AppId:     appID,
-					PoolId:    poolID,
-					Depositor: args[2],
+				&types.QueryFarmerRequest{
+					AppId:  appID,
+					PoolId: poolID,
+					Farmer: args[2],
 				})
 			if err != nil {
 				return err
@@ -806,7 +806,7 @@ $ %s query %s soft-lock 1 1 comdex...
 	return cmd
 }
 
-// NewQueryDeserializePoolCoinCmd implements the soft lock query command.
+// NewQueryDeserializePoolCoinCmd implements the deserialize query command.
 func NewQueryDeserializePoolCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deserialize [app-id] [pool-id] [pool-coin-amount]",
@@ -913,9 +913,9 @@ func NewQueryFarmedPoolCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "farmed-coin [app-id] [pool-id]",
 		Args:  cobra.ExactArgs(2),
-		Short: "Query total coins being farmed (in soft-lock)",
+		Short: "Query total coins being farmed",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query total coins being farmed (in soft-lock).
+			fmt.Sprintf(`Query total coins being farmed.
 Example:
 $ %s query %s farmed-coin 1 1
 `,
