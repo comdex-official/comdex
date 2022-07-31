@@ -10,7 +10,7 @@ var (
 	ProposalAddPool            = "ProposalAddPool"
 	ProposalAddAssetToPair     = "ProposalAddAssetToPair"
 	ProposalAddAssetRatesStats = "ProposalAddAssetRatesStats"
-	ProposalAddAuctionParams = "ProposalAddAuctionParams"
+	ProposalAddAuctionParams   = "ProposalAddAuctionParams"
 )
 
 func init() {
@@ -186,8 +186,8 @@ func (p *AddAssetRatesStats) ValidateBasic() error {
 
 func NewAddAuctionParams(title, description string, AddAuctionParams AuctionParams) govtypes.Content {
 	return &AddAuctionParamsProposal{
-		Title:           title,
-		Description:     description,
+		Title:         title,
+		Description:   description,
 		AuctionParams: AddAuctionParams,
 	}
 }
@@ -197,7 +197,7 @@ func (p *AddAuctionParamsProposal) ProposalRoute() string {
 }
 
 func (p *AddAuctionParamsProposal) ProposalType() string {
-	return ProposalAddAssetRatesStats
+	return ProposalAddAuctionParams
 }
 
 func (p *AddAuctionParamsProposal) ValidateBasic() error {
