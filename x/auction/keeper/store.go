@@ -117,6 +117,23 @@ func (k *Keeper) GetAuctionType(ctx sdk.Context, auctionTypeID uint64, appID uin
 	return "", sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction mapping id %d not found", auctionTypeID)
 }
 
+func (k *Keeper) GetLendAuctionType(ctx sdk.Context, auctionTypeID uint64, appID uint64) (string, error) {
+	params, found := k.GetAddAuctionParamsData(ctx, appID)
+
+	if !found {
+		return "", auctiontypes.ErrorInvalidAuctionParams
+	}
+	if auctionTypeID == params.SurplusId {
+		return auctiontypes.SurplusString, nil
+	} else if auctionTypeID == params.DebtId {
+		return auctiontypes.DebtString, nil
+	} else if auctionTypeID == params.DutchId {
+		return auctiontypes.DutchString, nil
+	}
+
+	return "", sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction mapping id %d not found", auctionTypeID)
+}
+
 func (k *Keeper) GetAllAuctions(ctx sdk.Context) (auctions []auctiontypes.SurplusAuction) {
 	var (
 		store = k.Store(ctx)
@@ -920,7 +937,7 @@ func (k *Keeper) SetLendAuctionID(ctx sdk.Context, id uint64) {
 }
 
 func (k *Keeper) SetDutchLendAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) error {
-	auctionType, err := k.GetAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
+	auctionType, err := k.GetLendAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
 	if err != nil {
 		return err
 	}
@@ -935,7 +952,7 @@ func (k *Keeper) SetDutchLendAuction(ctx sdk.Context, auction auctiontypes.Dutch
 }
 
 func (k *Keeper) SetHistoryDutchLendAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) error {
-	auctionType, err := k.GetAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
+	auctionType, err := k.GetLendAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
 	if err != nil {
 		return err
 	}
@@ -949,7 +966,7 @@ func (k *Keeper) SetHistoryDutchLendAuction(ctx sdk.Context, auction auctiontype
 }
 
 func (k *Keeper) DeleteDutchLendAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) error {
-	auctionType, err := k.GetAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
+	auctionType, err := k.GetLendAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
 	if err != nil {
 		return err
 	}
@@ -962,7 +979,7 @@ func (k *Keeper) DeleteDutchLendAuction(ctx sdk.Context, auction auctiontypes.Du
 }
 
 func (k *Keeper) GetDutchLendAuction(ctx sdk.Context, appID, auctionMappingID, auctionID uint64) (auction auctiontypes.DutchAuction, err error) {
-	auctionType, err := k.GetAuctionType(ctx, auctionMappingID, appID)
+	auctionType, err := k.GetLendAuctionType(ctx, auctionMappingID, appID)
 	if err != nil {
 		return auction, err
 	}
@@ -981,7 +998,7 @@ func (k *Keeper) GetDutchLendAuction(ctx sdk.Context, appID, auctionMappingID, a
 }
 
 func (k *Keeper) GetHistoryDutchLendAuction(ctx sdk.Context, appID, auctionMappingID, auctionID uint64) (auction auctiontypes.DutchAuction, err error) {
-	auctionType, err := k.GetAuctionType(ctx, auctionMappingID, appID)
+	auctionType, err := k.GetLendAuctionType(ctx, auctionMappingID, appID)
 	if err != nil {
 		return auction, err
 	}
@@ -1045,7 +1062,7 @@ func (k *Keeper) GetHistoryDutchLendAuctions(ctx sdk.Context, appID uint64) (auc
 }
 
 func (k *Keeper) SetDutchUserLendBidding(ctx sdk.Context, userBiddings auctiontypes.DutchBiddings) error {
-	auctionType, err := k.GetAuctionType(ctx, userBiddings.AuctionMappingId, userBiddings.AppId)
+	auctionType, err := k.GetLendAuctionType(ctx, userBiddings.AuctionMappingId, userBiddings.AppId)
 	if err != nil {
 		return err
 	}
@@ -1059,7 +1076,7 @@ func (k *Keeper) SetDutchUserLendBidding(ctx sdk.Context, userBiddings auctionty
 }
 
 func (k *Keeper) SetHistoryDutchUserLendBidding(ctx sdk.Context, userBiddings auctiontypes.DutchBiddings) error {
-	auctionType, err := k.GetAuctionType(ctx, userBiddings.AuctionMappingId, userBiddings.AppId)
+	auctionType, err := k.GetLendAuctionType(ctx, userBiddings.AuctionMappingId, userBiddings.AppId)
 	if err != nil {
 		return err
 	}
@@ -1073,7 +1090,7 @@ func (k *Keeper) SetHistoryDutchUserLendBidding(ctx sdk.Context, userBiddings au
 }
 
 func (k *Keeper) DeleteDutchLendUserBidding(ctx sdk.Context, userBiddings auctiontypes.DutchBiddings) error {
-	auctionType, err := k.GetAuctionType(ctx, userBiddings.AuctionMappingId, userBiddings.AppId)
+	auctionType, err := k.GetLendAuctionType(ctx, userBiddings.AuctionMappingId, userBiddings.AppId)
 	if err != nil {
 		return err
 	}

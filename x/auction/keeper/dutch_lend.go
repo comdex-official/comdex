@@ -83,7 +83,7 @@ func (k Keeper) StartLendDutchAuction(
 		return auctiontypes.ErrorPrices
 	}
 
-	auctionParams, found := k.lend.GetAddAuctionParamsData(ctx, appID)
+	auctionParams, found := k.GetAddAuctionParamsData(ctx, appID)
 	if !found {
 		return auctiontypes.ErrorInvalidAuctionParams
 	}
