@@ -26,37 +26,83 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 		var currentCollateralizationRatio sdk.Dec
 
 		liqThreshold, _ := k.GetAssetRatesStats(ctx, lendPair.AssetIn)
+		liqThresholdBridgedAssetOne, _ := k.GetAssetRatesStats(ctx, pool.FirstBridgedAssetID)
+		liqThresholdBridgedAssetTwo, _ := k.GetAssetRatesStats(ctx, pool.SecondBridgedAssetID)
+
 		if borrowPos.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
 			currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.UpdatedAmountOut, assetOut)
+
+			if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
+				err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
+				if err != nil {
+					continue
+				}
+				k.DeleteBorrow(ctx, v)
+				err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, v, false)
+				if err != nil {
+					continue
+				}
+				err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, v, lendPair.AssetOutPoolID, false)
+				if err != nil {
+					continue
+				}
+				err = k.UpdateBorrowIdsMapping(ctx, v, false)
+				if err != nil {
+					continue
+				}
+
+			}
+
 		} else {
 			firstBridgedAsset, _ := k.GetAsset(ctx, pool.FirstBridgedAssetID)
 			secondBridgedAsset, _ := k.GetAsset(ctx, pool.SecondBridgedAssetID)
 			if borrowPos.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
 				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.BridgedAssetAmount.Amount, firstBridgedAsset, borrowPos.UpdatedAmountOut, assetOut)
+
+				if sdk.Dec.GT(currentCollateralizationRatio, liqThresholdBridgedAssetOne.LiquidationThreshold) {
+					err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
+					if err != nil {
+						continue
+					}
+					k.DeleteBorrow(ctx, v)
+					err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, v, false)
+					if err != nil {
+						continue
+					}
+					err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, v, lendPair.AssetOutPoolID, false)
+					if err != nil {
+						continue
+					}
+					err = k.UpdateBorrowIdsMapping(ctx, v, false)
+					if err != nil {
+						continue
+					}
+
+				}
 			} else {
 				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.BridgedAssetAmount.Amount, secondBridgedAsset, borrowPos.UpdatedAmountOut, assetOut)
-			}
-		}
 
-		if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
-			err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
-			if err != nil {
-				continue
-			}
-			k.DeleteBorrow(ctx, v)
-			err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, v, false)
-			if err != nil {
-				continue
-			}
-			err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, v, lendPair.AssetOutPoolID, false)
-			if err != nil {
-				continue
-			}
-			err = k.UpdateBorrowIdsMapping(ctx, v, false)
-			if err != nil {
-				continue
-			}
+				if sdk.Dec.GT(currentCollateralizationRatio, liqThresholdBridgedAssetTwo.LiquidationThreshold) {
+					err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
+					if err != nil {
+						continue
+					}
+					k.DeleteBorrow(ctx, v)
+					err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, v, false)
+					if err != nil {
+						continue
+					}
+					err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, v, lendPair.AssetOutPoolID, false)
+					if err != nil {
+						continue
+					}
+					err = k.UpdateBorrowIdsMapping(ctx, v, false)
+					if err != nil {
+						continue
+					}
 
+				}
+			}
 		}
 	}
 

@@ -63,3 +63,7 @@ func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recip
 	}
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }
+
+func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool) {
+	return k.asset.GetApp(ctx, id)
+}

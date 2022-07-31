@@ -77,11 +77,16 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 	asset, _ := k.GetAsset(ctx, AssetID)
 	pool, _ := k.GetPool(ctx, PoolID)
 
+	_, found := k.GetApp(ctx, AppID)
+	if !found {
+		return types.ErrorAppMappingDoesNotExist
+	}
+
 	if Amount.Denom != asset.Denom {
 		return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, Amount.Denom)
 	}
 
-	found := uint64InAssetData(AssetID, pool.AssetData)
+	found = uint64InAssetData(AssetID, pool.AssetData)
 	if !found {
 		return sdkerrors.Wrap(types.ErrInvalidAssetIDForPool, strconv.FormatUint(AssetID, 10))
 	}
