@@ -1390,6 +1390,42 @@ func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 }
 
 func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
-	//TODO:
-	// implement unlock borrow after auction
+	kind := liqBorrow.GetBorrowMetaData()
+	borrowID := k.GetUserBorrowIDHistory(ctx)
+	pair, _ := k.GetLendPair(ctx, liqBorrow.ExtendedPairId)
+	AssetOut, _ := k.GetAsset(ctx, pair.AssetOut)
+	AssetRatesStats, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
+	cAssetIn, _ := k.GetAsset(ctx, AssetRatesStats.CAssetID)
+	AssetOutPool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
+	lendPos, _ := k.GetLend(ctx, kind.LendingId)
+	lendPair, _ := k.GetLendPair(ctx, liqBorrow.ExtendedPairId)
+
+	borrowPos := types.BorrowAsset{
+		ID:                   borrowID + 1,
+		LendingID:            kind.LendingId,
+		PairID:               liqBorrow.ExtendedPairId,
+		AmountIn:             sdk.NewCoin(cAssetIn.Denom, liqBorrow.AmountIn),
+		AmountOut:            sdk.NewCoin(AssetOut.Denom, liqBorrow.AmountOut),
+		BridgedAssetAmount:   kind.BridgedAssetAmount,
+		IsStableBorrow:       kind.IsStableBorrow,
+		StableBorrowRate:     kind.StableBorrowRate,
+		BorrowingTime:        ctx.BlockTime(),
+		UpdatedAmountOut:     liqBorrow.AmountOut,
+		Interest_Accumulated: sdk.ZeroInt(),
+		CPoolName:            AssetOutPool.CPoolName,
+	}
+	k.SetBorrow(ctx, borrowPos)
+	k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
+	err := k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, borrowPos.ID, true)
+	if err != nil {
+		return
+	}
+	err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, borrowPos.ID, lendPair.AssetOutPoolID, true)
+	if err != nil {
+		return
+	}
+	err = k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, true)
+	if err != nil {
+		return
+	}
 }
