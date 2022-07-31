@@ -24,8 +24,8 @@ var (
 	ErrTooSmallOrder             = sdkerrors.Register(ModuleName, 17, "too small order")
 	ErrTooLargePool              = sdkerrors.Register(ModuleName, 18, "too large pool")
 	ErrInvalidPoolID             = sdkerrors.Register(ModuleName, 19, "invalid pool id")
-	ErrNoSoftLockPresent         = sdkerrors.Register(ModuleName, 20, "no soft lock created for given pool")
-	ErrInvalidUnlockAmount       = sdkerrors.Register(ModuleName, 21, "invalid soft unlock amount")
+	ErrorFarmerNotFound          = sdkerrors.Register(ModuleName, 20, "farmer not found")
+	ErrInvalidUnfarmAmount       = sdkerrors.Register(ModuleName, 21, "invalid unfarm amount")
 
 	ErrDepletedPool                  = sdkerrors.Register(ModuleName, 23, "pool is depleted")
 	ErrCalculatedPoolAmountIsZero    = sdkerrors.Register(ModuleName, 24, "calculated provided pool supply with pool tokens is zero or something went wrong while calculation")
@@ -38,4 +38,6 @@ var (
 	ErrorUnknownProposalType           = sdkerrors.Register(ModuleName, 31, "unknown proposal type")
 	ErrorEmptyKeyValueForGenericParams = sdkerrors.Register(ModuleName, 32, "keys or values empty for update generic-params")
 	ErrorLengthMismatch                = sdkerrors.Register(ModuleName, 33, "keys and values list length mismatch")
+
+	ErrorNotPositiveAmont = sdkerrors.Register(ModuleName, 34, "amount should be positive")
 )
