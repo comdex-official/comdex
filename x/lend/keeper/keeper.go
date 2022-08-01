@@ -1388,7 +1388,7 @@ func (k Keeper) SetReserveBalances(ctx sdk.Context, moduleName string, assetID u
 	var reserveBalanceStats []types.BalanceStats
 	for _, v := range reserveStats.BalanceStats {
 		if v.AssetID == assetID {
-			v.Amount = v.Amount.Sub(newAmount)
+			v.Amount = v.Amount.Add(newAmount)
 		}
 		reserveBalanceStats = append(reserveBalanceStats, v)
 		newUserDepositStats := types.DepositStats{BalanceStats: reserveBalanceStats}
