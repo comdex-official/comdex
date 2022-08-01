@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	_ types.MsgServer = (*msgServer)(nil)
+	_ types.MsgServer = msgServer{}
 )
 
 type msgServer struct {
@@ -20,7 +20,7 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 	}
 }
 
-func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTokensRequest) (*types.MsgMintNewTokensResponse, error) {
+func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTokensRequest) (*types.MsgMintNewTokensResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	assetData, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {

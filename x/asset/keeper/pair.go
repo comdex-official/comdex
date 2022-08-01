@@ -7,7 +7,7 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func (k *Keeper) SetPairID(ctx sdk.Context, id uint64) {
+func (k Keeper) SetPairID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.PairIDKey
@@ -21,7 +21,7 @@ func (k *Keeper) SetPairID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetPairID(ctx sdk.Context) uint64 {
+func (k Keeper) GetPairID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.PairIDKey
@@ -38,7 +38,7 @@ func (k *Keeper) GetPairID(ctx sdk.Context) uint64 {
 	return count.GetValue()
 }
 
-func (k *Keeper) SetPair(ctx sdk.Context, pair types.Pair) {
+func (k Keeper) SetPair(ctx sdk.Context, pair types.Pair) {
 	var (
 		store = k.Store(ctx)
 		key   = types.PairKey(pair.Id)
@@ -48,7 +48,7 @@ func (k *Keeper) SetPair(ctx sdk.Context, pair types.Pair) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found bool) {
+func (k Keeper) GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.PairKey(id)
@@ -63,7 +63,7 @@ func (k *Keeper) GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found boo
 	return pair, true
 }
 
-func (k *Keeper) GetPairs(ctx sdk.Context) (pairs []types.Pair) {
+func (k Keeper) GetPairs(ctx sdk.Context) (pairs []types.Pair) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.PairKeyPrefix)
@@ -85,7 +85,7 @@ func (k *Keeper) GetPairs(ctx sdk.Context) (pairs []types.Pair) {
 	return pairs
 }
 
-func (k *Keeper) NewAddPair(ctx sdk.Context, msg *types.MsgAddPairRequest) (*types.MsgAddPairResponse, error) {
+func (k Keeper) NewAddPair(ctx sdk.Context, msg *types.MsgAddPairRequest) (*types.MsgAddPairResponse, error) {
 	if !k.HasAsset(ctx, msg.AssetIn) {
 		return nil, types.ErrorAssetDoesNotExist
 	}

@@ -19,11 +19,11 @@ message GenesisState {
   [ (gogoproto.moretags) = "yaml:\"protocolStatistics\"", (gogoproto.nullable) = false ];
   repeated AuctionParams auctionParams = 5
   [ (gogoproto.moretags) = "yaml:\"auctionParams\"", (gogoproto.nullable) = false ];
-  repeated SurplusBiddings surplusBiddings = 6
-  [ (gogoproto.moretags) = "yaml:\"surplusBiddings\"", (gogoproto.nullable) = false ];
-  repeated DebtBiddings debtBiddings = 7
-  [ (gogoproto.moretags) = "yaml:\"debtBiddings\"", (gogoproto.nullable) = false ];
-  repeated DutchBiddings dutchBiddings = 8
-  [ (gogoproto.moretags) = "yaml:\"dutchBiddings\"", (gogoproto.nullable) = false ];
-  Params params = 9 [(gogoproto.nullable) = false];
+  // repeated SurplusBiddings surplusBiddings = 6
+  // [ (gogoproto.moretags) = "yaml:\"surplusBiddings\"", (gogoproto.nullable) = false ];
+  // repeated DebtBiddings debtBiddings = 7
+  // [ (gogoproto.moretags) = "yaml:\"debtBiddings\"", (gogoproto.nullable) = false ];
+  // repeated DutchBiddings dutchBiddings = 8
+  // [ (gogoproto.moretags) = "yaml:\"dutchBiddings\"", (gogoproto.nullable) = false ];
+  Params params = 6 [(gogoproto.nullable) = false];
 }

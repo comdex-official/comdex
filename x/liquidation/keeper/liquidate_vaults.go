@@ -111,7 +111,7 @@ func (k Keeper) SetLockedVaultByAppID(ctx sdk.Context, msg types.LockedVaultToAp
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetLockedVaultByAppID(ctx sdk.Context, appMappingID uint64) (msg types.LockedVaultToAppMapping, found bool) {
+func (k Keeper) GetLockedVaultByAppID(ctx sdk.Context, appMappingID uint64) (msg types.LockedVaultToAppMapping, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppIDLockedVaultMappingKey(appMappingID)
@@ -124,6 +124,27 @@ func (k *Keeper) GetLockedVaultByAppID(ctx sdk.Context, appMappingID uint64) (ms
 
 	k.cdc.MustUnmarshal(value, &msg)
 	return msg, true
+}
+
+func (k Keeper) GetAllLockedVaultByAppID(ctx sdk.Context) (lockedVaultToAppMapping []types.LockedVaultToAppMapping) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AppIDLockedVaultMappingKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var vault types.LockedVaultToAppMapping
+		k.cdc.MustUnmarshal(iter.Value(), &vault)
+		lockedVaultToAppMapping = append(lockedVaultToAppMapping, vault)
+	}
+	return lockedVaultToAppMapping
 }
 
 func (k Keeper) CreateLockedVaultHistory(ctx sdk.Context, lockedVault types.LockedVault) error {
@@ -177,7 +198,7 @@ func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom
 	return k.GetBalance(ctx, macc.GetAddress(), denom).Amount
 }
 
-func (k *Keeper) GetLockedVaultIDbyApp(ctx sdk.Context, appID uint64) uint64 {
+func (k Keeper) GetLockedVaultIDbyApp(ctx sdk.Context, appID uint64) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppLockedVaultMappingKey(appID)
@@ -194,7 +215,7 @@ func (k *Keeper) GetLockedVaultIDbyApp(ctx sdk.Context, appID uint64) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) GetLockedVaultIDHistory(ctx sdk.Context) uint64 {
+func (k Keeper) GetLockedVaultIDHistory(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultKeyHistory
@@ -211,7 +232,7 @@ func (k *Keeper) GetLockedVaultIDHistory(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) SetLockedVaultID(ctx sdk.Context, id uint64) {
+func (k Keeper) SetLockedVaultID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultIDKey
@@ -224,7 +245,7 @@ func (k *Keeper) SetLockedVaultID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetLockedVaultID(ctx sdk.Context) uint64 {
+func (k Keeper) GetLockedVaultID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultIDKey
@@ -240,7 +261,7 @@ func (k *Keeper) GetLockedVaultID(ctx sdk.Context) uint64 {
 
 	return id.GetValue()
 }
-func (k *Keeper) SetLockedVaultIDHistory(ctx sdk.Context, id uint64) {
+func (k Keeper) SetLockedVaultIDHistory(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultKeyHistory
@@ -253,7 +274,7 @@ func (k *Keeper) SetLockedVaultIDHistory(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetLockedVault(ctx sdk.Context, lockedVault types.LockedVault) {
+func (k Keeper) SetLockedVault(ctx sdk.Context, lockedVault types.LockedVault) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultKey(lockedVault.LockedVaultId)
@@ -262,7 +283,7 @@ func (k *Keeper) SetLockedVault(ctx sdk.Context, lockedVault types.LockedVault) 
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetLockedVaultHistory(ctx sdk.Context, lockedVault types.LockedVault, id uint64) {
+func (k Keeper) SetLockedVaultHistory(ctx sdk.Context, lockedVault types.LockedVault, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultHistoryKey(id)
@@ -271,7 +292,7 @@ func (k *Keeper) SetLockedVaultHistory(ctx sdk.Context, lockedVault types.Locked
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteLockedVault(ctx sdk.Context, id uint64) {
+func (k Keeper) DeleteLockedVault(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultKey(id)
@@ -279,7 +300,7 @@ func (k *Keeper) DeleteLockedVault(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) GetLockedVault(ctx sdk.Context, id uint64) (lockedVault types.LockedVault, found bool) {
+func (k Keeper) GetLockedVault(ctx sdk.Context, id uint64) (lockedVault types.LockedVault, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultKey(id)
@@ -294,7 +315,7 @@ func (k *Keeper) GetLockedVault(ctx sdk.Context, id uint64) (lockedVault types.L
 	return lockedVault, true
 }
 
-func (k *Keeper) GetLockedVaults(ctx sdk.Context) (lockedVaults []types.LockedVault) {
+func (k Keeper) GetLockedVaults(ctx sdk.Context) (lockedVaults []types.LockedVault) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.LockedVaultKeyPrefix)
@@ -316,7 +337,7 @@ func (k *Keeper) GetLockedVaults(ctx sdk.Context) (lockedVaults []types.LockedVa
 	return lockedVaults
 }
 
-func (k *Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag bool) error {
+func (k Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag bool) error {
 	lockedVault, found := k.GetLockedVault(ctx, id)
 	if !found {
 		return types.LockedVaultDoesNotExist
@@ -326,7 +347,7 @@ func (k *Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag boo
 	return nil
 }
 
-func (k *Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) error {
+func (k Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) error {
 	lockedVault, found := k.GetLockedVault(ctx, id)
 	if !found {
 		return types.LockedVaultDoesNotExist
@@ -336,7 +357,7 @@ func (k *Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool)
 	return nil
 }
 
-/*func (k *Keeper) UpdateAssetQuantitiesInLockedVault(
+/*func (k Keeper) UpdateAssetQuantitiesInLockedVault(
 	ctx sdk.Context,
 	collateral_auction auctiontypes.CollateralAuction,
 	amountIn sdk.Int,
@@ -361,7 +382,7 @@ func (k *Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool)
 	return nil
 }*/
 
-func (k *Keeper) SetAppID(ctx sdk.Context, AppIds types.WhitelistedAppIds) {
+func (k Keeper) SetAppID(ctx sdk.Context, AppIds types.WhitelistedAppIds) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppIdsKeyPrefix
@@ -371,7 +392,7 @@ func (k *Keeper) SetAppID(ctx sdk.Context, AppIds types.WhitelistedAppIds) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAppIds(ctx sdk.Context) (appIds types.WhitelistedAppIds) {
+func (k Keeper) GetAppIds(ctx sdk.Context) (appIds types.WhitelistedAppIds) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppIdsKeyPrefix

@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	_ types.MsgServer = (*msgServer)(nil)
+	_ types.MsgServer = msgServer{}
 )
 
 type msgServer struct {
@@ -22,7 +22,7 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 	}
 }
 
-func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLockerRequest) (*types.MsgCreateLockerResponse, error) {
+func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLockerRequest) (*types.MsgCreateLockerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -166,7 +166,7 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 }
 
 // MsgDepositAsset Remove asset id from Deposit & Withdraw redundant.
-func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAssetRequest) (*types.MsgDepositAssetResponse, error) {
+func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAssetRequest) (*types.MsgDepositAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -245,7 +245,7 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 }
 
 // MsgWithdrawAsset Remove asset id from Deposit & Withdraw-redundant.
-func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
+func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
@@ -316,7 +316,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 	return &types.MsgWithdrawAssetResponse{}, nil
 }
 
-func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
+func (k msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false

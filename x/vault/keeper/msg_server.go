@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	_ types.MsgServer = (*msgServer)(nil)
+	_ types.MsgServer = msgServer{}
 )
 
 type msgServer struct {
@@ -25,7 +25,7 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 }
 
 // MsgCreate Creating a new CDP.
-func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
+func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -212,7 +212,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 }
 
 // MsgDeposit Only for depositing new collateral.
-func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
+func (k msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (*types.MsgDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -293,7 +293,7 @@ func (k *msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) 
 }
 
 // MsgWithdraw Withdrawing collateral.
-func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
+func (k msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
 	if klwsParams.BreakerEnable {
@@ -384,7 +384,7 @@ func (k *msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest
 }
 
 // MsgDraw To borrow more amount.
-func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
+func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types.MsgDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -506,7 +506,7 @@ func (k *msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*type
 	return &types.MsgDrawResponse{}, nil
 }
 
-func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
+func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*types.MsgRepayResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -632,7 +632,7 @@ func (k *msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*ty
 	return &types.MsgRepayResponse{}, nil
 }
 
-func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
+func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*types.MsgCloseResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -740,7 +740,7 @@ func (k *msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*ty
 	return &types.MsgCloseResponse{}, nil
 }
 
-func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateStableMintRequest) (*types.MsgCreateStableMintResponse, error) {
+func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateStableMintRequest) (*types.MsgCreateStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -861,7 +861,7 @@ func (k *msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateS
 	return &types.MsgCreateStableMintResponse{}, nil
 }
 
-func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDepositStableMintRequest) (*types.MsgDepositStableMintResponse, error) {
+func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDepositStableMintRequest) (*types.MsgDepositStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -987,7 +987,7 @@ func (k *msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposi
 	return &types.MsgDepositStableMintResponse{}, nil
 }
 
-func (k *msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdrawStableMintRequest) (*types.MsgWithdrawStableMintResponse, error) {
+func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdrawStableMintRequest) (*types.MsgWithdrawStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false

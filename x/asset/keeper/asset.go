@@ -7,7 +7,7 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func (k *Keeper) SetAssetID(ctx sdk.Context, id uint64) {
+func (k Keeper) SetAssetID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetIDKey
@@ -21,7 +21,7 @@ func (k *Keeper) SetAssetID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAssetID(ctx sdk.Context) uint64 {
+func (k Keeper) GetAssetID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetIDKey
@@ -38,7 +38,7 @@ func (k *Keeper) GetAssetID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) SetAsset(ctx sdk.Context, asset types.Asset) {
+func (k Keeper) SetAsset(ctx sdk.Context, asset types.Asset) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetKey(asset.Id)
@@ -48,7 +48,7 @@ func (k *Keeper) SetAsset(ctx sdk.Context, asset types.Asset) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
+func (k Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetKey(id)
@@ -57,7 +57,7 @@ func (k *Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
 	return store.Has(key)
 }
 
-func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found bool) {
+func (k Keeper) GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetKey(id)
@@ -72,12 +72,12 @@ func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (asset types.Asset, found 
 	return asset, true
 }
 
-func (k *Keeper) GetAssetDenom(ctx sdk.Context, id uint64) string {
+func (k Keeper) GetAssetDenom(ctx sdk.Context, id uint64) string {
 	asset, _ := k.GetAsset(ctx, id)
 	return asset.Denom
 }
 
-func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
+func (k Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.AssetKeyPrefix)
@@ -99,7 +99,7 @@ func (k *Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
 	return assets
 }
 
-func (k *Keeper) SetAssetForDenom(ctx sdk.Context, denom string, id uint64) {
+func (k Keeper) SetAssetForDenom(ctx sdk.Context, denom string, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetForDenomKey(denom)
@@ -113,7 +113,7 @@ func (k *Keeper) SetAssetForDenom(ctx sdk.Context, denom string, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasAssetForDenom(ctx sdk.Context, denom string) bool {
+func (k Keeper) HasAssetForDenom(ctx sdk.Context, denom string) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetForDenomKey(denom)
@@ -122,7 +122,7 @@ func (k *Keeper) HasAssetForDenom(ctx sdk.Context, denom string) bool {
 	return store.Has(key)
 }
 
-func (k *Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (asset types.Asset, found bool) {
+func (k Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (asset types.Asset, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetForDenomKey(denom)
@@ -139,7 +139,7 @@ func (k *Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (asset types.As
 	return k.GetAsset(ctx, id.GetValue())
 }
 
-func (k *Keeper) DeleteAssetForDenom(ctx sdk.Context, denom string) {
+func (k Keeper) DeleteAssetForDenom(ctx sdk.Context, denom string) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetForDenomKey(denom)
@@ -148,7 +148,7 @@ func (k *Keeper) DeleteAssetForDenom(ctx sdk.Context, denom string) {
 	store.Delete(key)
 }
 
-func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
+func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	market, found := k.oracle.GetMarketForAsset(ctx, id)
 	if !found {
 		return 0, false
@@ -157,7 +157,7 @@ func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	return k.oracle.GetPriceForMarket(ctx, market.Symbol)
 }
 
-func (k *Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
+func (k Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 		if k.HasAssetForDenom(ctx, msg.Denom) {
 			return types.ErrorDuplicateAsset
 		}
@@ -184,7 +184,7 @@ func (k *Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	return nil
 }
 
-func (k *Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
+func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	asset, found := k.GetAsset(ctx, msg.Id)
 	if !found {
 		return types.ErrorAssetDoesNotExist
@@ -210,7 +210,7 @@ func (k *Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	return nil
 }
 
-func (k *Keeper) AddPairsRecords(ctx sdk.Context, msg types.Pair) error {
+func (k Keeper) AddPairsRecords(ctx sdk.Context, msg types.Pair) error {
 		if !k.HasAsset(ctx, msg.AssetIn) {
 			return types.ErrorAssetDoesNotExist
 		}
@@ -244,7 +244,7 @@ func (k *Keeper) AddPairsRecords(ctx sdk.Context, msg types.Pair) error {
 	return nil
 }
 
-func (k *Keeper) SetAssetForOracle(ctx sdk.Context, asset types.Asset) {
+func (k Keeper) SetAssetForOracle(ctx sdk.Context, asset types.Asset) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetForOracleKey(asset.Id)
@@ -254,7 +254,7 @@ func (k *Keeper) SetAssetForOracle(ctx sdk.Context, asset types.Asset) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []types.Asset) {
+func (k Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []types.Asset) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.AssetForOracleKeyPrefix)
