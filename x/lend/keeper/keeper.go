@@ -257,6 +257,7 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 			lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(withdrawal.Amount)
 			assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lendPos.AssetID, lendPos.PoolID)
 			assetStats.TotalLend = assetStats.TotalLend.Sub(withdrawal.Amount)
+			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 
 			depositStats, _ := k.GetDepositStats(ctx)
 			userDepositStats, _ := k.GetUserDepositStats(ctx)
@@ -281,10 +282,9 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 
 			}
 
-			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 			k.SetLend(ctx, lendPos)
 		} else {
-			return nil
+			return types.ErrWithdrawAmountLimitExceeds
 		}
 	} else {
 		if withdrawal.Amount.LT(lendPos.AvailableToBorrow) {
@@ -306,7 +306,11 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 				return err
 			}
 
-			lendPos.AmountIn = lendPos.AmountIn.Sub(withdrawal)
+			if withdrawal.Amount.LTE(lendPos.AmountIn.Amount) {
+				lendPos.AmountIn = lendPos.AmountIn.Sub(withdrawal)
+			} else {
+				lendPos.AmountIn = sdk.NewCoin(lendPos.AmountIn.Denom, sdk.ZeroInt())
+			}
 			lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(withdrawal.Amount)
 			lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(withdrawal.Amount)
 			assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lendPos.AssetID, lendPos.PoolID)
@@ -338,10 +342,9 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 			k.SetLend(ctx, lendPos)
 		} else {
-			return nil
+			return types.ErrWithdrawAmountLimitExceeds
 		}
 	}
-
 	return nil
 }
 
