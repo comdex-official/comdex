@@ -33,6 +33,7 @@ func (k Keeper) IterateLends(ctx sdk.Context) error {
 				AvailableToBorrow:  lend.AvailableToBorrow.Add(interestPerBlock),
 				Reward_Accumulated: lend.Reward_Accumulated.Add(interestPerBlock),
 				AppID:              lend.AppID,
+				CPoolName:          lend.CPoolName,
 			}
 
 			pool, _ := k.GetPool(ctx, lend.PoolID)
@@ -83,6 +84,7 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 				StableBorrowRate:     borrow.StableBorrowRate,
 				UpdatedAmountOut:     borrow.UpdatedAmountOut.Add(interestPerBlock),
 				Interest_Accumulated: borrow.Interest_Accumulated.Add(interestPerBlock),
+				CPoolName:            borrow.CPoolName,
 			}
 			k.SetBorrow(ctx, updatedBorrow)
 		}
