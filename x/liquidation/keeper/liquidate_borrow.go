@@ -55,11 +55,9 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 
 		} else {
 			firstBridgedAsset, _ := k.GetAsset(ctx, pool.FirstBridgedAssetID)
-			secondBridgedAsset, _ := k.GetAsset(ctx, pool.SecondBridgedAssetID)
 			if borrowPos.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
-				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.BridgedAssetAmount.Amount, firstBridgedAsset, borrowPos.UpdatedAmountOut, assetOut)
-
-				if sdk.Dec.GT(currentCollateralizationRatio, liqThresholdBridgedAssetOne.LiquidationThreshold) {
+				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.UpdatedAmountOut, assetOut)
+				if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetOne.LiquidationThreshold)) {
 					err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
 					if err != nil {
 						continue
@@ -80,9 +78,9 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 
 				}
 			} else {
-				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.BridgedAssetAmount.Amount, secondBridgedAsset, borrowPos.UpdatedAmountOut, assetOut)
+				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.UpdatedAmountOut, assetOut)
 
-				if sdk.Dec.GT(currentCollateralizationRatio, liqThresholdBridgedAssetTwo.LiquidationThreshold) {
+				if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetTwo.LiquidationThreshold)) {
 					err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
 					if err != nil {
 						continue
@@ -155,14 +153,29 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 	}
 
 	for _, lockedVault := range lockedVaults {
-
 		pair, found := k.GetLendPair(ctx, lockedVault.ExtendedPairId)
 		if !found {
 			continue
 		}
+		borrowMetaData := lockedVault.GetBorrowMetaData()
+		lendPos, _ := k.GetLend(ctx, borrowMetaData.LendingId)
+		pool, _ := k.GetPool(ctx, lendPos.PoolID)
+		var unliquidatePointPercentage sdk.Dec
+		firstBridgeAsset, _ := k.GetAsset(ctx, pool.FirstBridgedAssetID)
+		firstBridgeAssetStats, _ := k.GetAssetRatesStats(ctx, pool.FirstBridgedAssetID)
+		secondBridgeAssetStats, _ := k.GetAssetRatesStats(ctx, pool.SecondBridgedAssetID)
 
 		liqThreshold, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
-		unliquidatePointPercentage := liqThreshold.LiquidationThreshold
+
+		if !borrowMetaData.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
+			if borrowMetaData.BridgedAssetAmount.Denom == firstBridgeAsset.Denom {
+				unliquidatePointPercentage = liqThreshold.LiquidationThreshold.Mul(firstBridgeAssetStats.LiquidationThreshold)
+			} else {
+				unliquidatePointPercentage = liqThreshold.LiquidationThreshold.Mul(secondBridgeAssetStats.LiquidationThreshold)
+			}
+		} else {
+			unliquidatePointPercentage = liqThreshold.LiquidationThreshold
+		}
 
 		assetRatesStats, found := k.GetAssetRatesStats(ctx, pair.AssetIn)
 		if !found {
@@ -187,11 +200,22 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 			assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
 			assetOutPrice, _ := k.GetPriceForAsset(ctx, assetOut.Id)
 			deductionPercentage, _ := sdk.NewDecFromStr("1.0")
-			c := assetRatesStats.LiquidationThreshold
+
+			var c sdk.Dec
+			if !borrowMetaData.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
+				if borrowMetaData.BridgedAssetAmount.Denom == firstBridgeAsset.Denom {
+					c = assetRatesStats.LiquidationThreshold.Mul(firstBridgeAssetStats.Ltv)
+				} else {
+					c = assetRatesStats.LiquidationThreshold.Mul(secondBridgeAssetStats.Ltv)
+				}
+
+			} else {
+				c = assetRatesStats.LiquidationThreshold
+			}
+
 			b := deductionPercentage.Add(assetRatesStats.LiquidationPenalty)
 			totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
 			totalOut := lockedVault.UpdatedAmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
-
 			factor1 := c.Mul(totalIn)
 			factor2 := b.Mul(c)
 			numerator := totalOut.Sub(factor1)
