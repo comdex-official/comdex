@@ -39,7 +39,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 				}
 				if ctx.BlockHeight()%int64(params.BatchSize) == 0 {
 					k.ExecuteRequests(ctx, app.Id)
-					k.ProcessQueuedLiquidityProviders(ctx, app.Id)
+					k.ProcessQueuedFarmers(ctx, app.Id)
 				}
 			}
 		}

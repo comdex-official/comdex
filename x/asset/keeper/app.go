@@ -5,9 +5,10 @@ import (
 	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
+	"regexp"
 )
 
-func (k *Keeper) GetAppID(ctx sdk.Context) uint64 {
+func (k Keeper) GetAppID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppIDKey
@@ -24,7 +25,7 @@ func (k *Keeper) GetAppID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) SetAppID(ctx sdk.Context, id uint64) {
+func (k Keeper) SetAppID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppIDKey
@@ -38,7 +39,7 @@ func (k *Keeper) SetAppID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetApp(ctx sdk.Context, app types.AppData) {
+func (k Keeper) SetApp(ctx sdk.Context, app types.AppData) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppKey(app.Id)
@@ -48,7 +49,7 @@ func (k *Keeper) SetApp(ctx sdk.Context, app types.AppData) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppData, found bool) {
+func (k Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppData, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppKey(id)
@@ -62,7 +63,7 @@ func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppData, found bo
 	k.cdc.MustUnmarshal(value, &app)
 	return app, true
 }
-func (k *Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint64, error) {
+func (k Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint64, error) {
 	appData, _ := k.GetApp(ctx, id)
 	minGovDeposit := appData.MinGovDeposit.Int64()
 	var assetID uint64
@@ -76,7 +77,7 @@ func (k *Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint
 	return minGovDeposit, govTimeInSeconds, assetID, nil
 }
 
-func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppData, found bool) {
+func (k Keeper) GetApps(ctx sdk.Context) (apps []types.AppData, found bool) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.AppKeyPrefix)
@@ -101,7 +102,7 @@ func (k *Keeper) GetApps(ctx sdk.Context) (apps []types.AppData, found bool) {
 	return apps, true
 }
 
-func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64) (mintData types.MintGenesisToken, found bool) {
+func (k Keeper) GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64) (mintData types.MintGenesisToken, found bool) {
 	appsData, _ := k.GetApp(ctx, appID)
 
 	for _, data := range appsData.GenesisToken {
@@ -112,7 +113,7 @@ func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64)
 	return mintData, false
 }
 
-func (k *Keeper) CheckIfAssetIsAddedToAppMapping(ctx sdk.Context, assetID uint64) bool {
+func (k Keeper) CheckIfAssetIsAddedToAppMapping(ctx sdk.Context, assetID uint64) bool {
 	apps, _ := k.GetApps(ctx)
 	for _, data := range apps {
 		for _, inData := range data.GenesisToken {
@@ -124,7 +125,7 @@ func (k *Keeper) CheckIfAssetIsAddedToAppMapping(ctx sdk.Context, assetID uint64
 	return true
 }
 
-func (k *Keeper) SetAppForShortName(ctx sdk.Context, shortName string, id uint64) {
+func (k Keeper) SetAppForShortName(ctx sdk.Context, shortName string, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetForShortNameKey(shortName)
@@ -137,7 +138,7 @@ func (k *Keeper) SetAppForShortName(ctx sdk.Context, shortName string, id uint64
 
 	store.Set(key, value)
 }
-func (k *Keeper) SetAppForName(ctx sdk.Context, Name string, id uint64) {
+func (k Keeper) SetAppForName(ctx sdk.Context, Name string, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetForNameKey(Name)
@@ -151,7 +152,7 @@ func (k *Keeper) SetAppForName(ctx sdk.Context, Name string, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasAppForShortName(ctx sdk.Context, shortName string) bool {
+func (k Keeper) HasAppForShortName(ctx sdk.Context, shortName string) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetForShortNameKey(shortName)
@@ -160,7 +161,7 @@ func (k *Keeper) HasAppForShortName(ctx sdk.Context, shortName string) bool {
 	return store.Has(key)
 }
 
-func (k *Keeper) HasAppForName(ctx sdk.Context, Name string) bool {
+func (k Keeper) HasAppForName(ctx sdk.Context, Name string) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetForNameKey(Name)
@@ -169,7 +170,7 @@ func (k *Keeper) HasAppForName(ctx sdk.Context, Name string) bool {
 	return store.Has(key)
 }
 
-func (k *Keeper) SetGenesisTokenForApp(ctx sdk.Context, appID uint64, assetID uint64) {
+func (k Keeper) SetGenesisTokenForApp(ctx sdk.Context, appID uint64, assetID uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GenesisForApp(appID)
@@ -183,7 +184,7 @@ func (k *Keeper) SetGenesisTokenForApp(ctx sdk.Context, appID uint64, assetID ui
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetGenesisTokenForApp(ctx sdk.Context, appID uint64) uint64 {
+func (k Keeper) GetGenesisTokenForApp(ctx sdk.Context, appID uint64) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.GenesisForApp(appID)
@@ -200,13 +201,25 @@ func (k *Keeper) GetGenesisTokenForApp(ctx sdk.Context, appID uint64) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) AddAppRecords(ctx sdk.Context, records ...types.AppData) error {
-	for _, msg := range records {
+func (k Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 		if k.HasAppForShortName(ctx, msg.ShortName) {
 			return types.ErrorDuplicateApp
 		}
 		if k.HasAppForName(ctx, msg.Name) {
 			return types.ErrorDuplicateApp
+		}
+		var IsLetter = regexp.MustCompile(`^[a-z]+$`).MatchString
+		
+		if !IsLetter(msg.ShortName) || len(msg.ShortName) > 6 {
+			return types.ErrorShortNameDidNotMeetCriterion
+		}
+
+		if !IsLetter(msg.Name) || len(msg.Name) > 10 {
+			return types.ErrorNameDidNotMeetCriterion
+		}
+
+		if msg.MinGovDeposit.LT(sdk.ZeroInt()) || msg.GovTimeInSeconds < 0 {
+			return types.ErrorValueCantBeNegative
 		}
 
 		var (
@@ -225,12 +238,11 @@ func (k *Keeper) AddAppRecords(ctx sdk.Context, records ...types.AppData) error 
 		k.SetApp(ctx, app)
 		k.SetAppForShortName(ctx, app.ShortName, app.Id)
 		k.SetAppForName(ctx, app.Name, app.Id)
-	}
 
 	return nil
 }
 
-func (k *Keeper) UpdateGovTimeInApp(ctx sdk.Context, msg types.AppAndGovTime) error {
+func (k Keeper) UpdateGovTimeInApp(ctx sdk.Context, msg types.AppAndGovTime) error {
 	appDetails, found := k.GetApp(ctx, msg.AppId)
 	if !found {
 		return types.ErrorAssetDoesNotExist
@@ -241,8 +253,7 @@ func (k *Keeper) UpdateGovTimeInApp(ctx sdk.Context, msg types.AppAndGovTime) er
 	return nil
 }
 
-func (k *Keeper) AddAssetInAppRecords(ctx sdk.Context, records ...types.AppData) error {
-	for _, msg := range records {
+func (k Keeper) AddAssetInAppRecords(ctx sdk.Context, msg types.AppData) error {
 		appdata, found := k.GetApp(ctx, msg.Id)
 		if !found {
 			return types.AppIdsDoesntExist
@@ -256,6 +267,13 @@ func (k *Keeper) AddAssetInAppRecords(ctx sdk.Context, records ...types.AppData)
 			}
 			if !assetData.IsOnChain {
 				return types.ErrorAssetIsOffChain
+			}
+			_, err := sdk.AccAddressFromBech32(data.Recipient)
+			if err != nil {
+				return types.ErrorInvalidFrom
+			}
+			if data.GenesisSupply.LT(sdk.ZeroInt()) {
+				return types.ErrorInvalidGenesisSupply
 			}
 			hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
 			if hasAsset != 0 && data.IsGovToken {
@@ -286,6 +304,5 @@ func (k *Keeper) AddAssetInAppRecords(ctx sdk.Context, records ...types.AppData)
 			}
 		)
 		k.SetApp(ctx, app)
-	}
 	return nil
 }

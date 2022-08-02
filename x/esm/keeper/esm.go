@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k *Keeper) AddESMTriggerParamsRecords(ctx sdk.Context, record types.ESMTriggerParams) error {
+func (k Keeper) AddESMTriggerParamsRecords(ctx sdk.Context, record types.ESMTriggerParams) error {
 	_, found := k.GetESMTriggerParams(ctx, record.AppId)
 	if found {
 		return types.ErrorDuplicateESMTriggerParams
@@ -28,7 +28,7 @@ func (k *Keeper) AddESMTriggerParamsRecords(ctx sdk.Context, record types.ESMTri
 	return nil
 }
 
-func (k *Keeper) SetESMTriggerParams(ctx sdk.Context, esmTriggerParams types.ESMTriggerParams) {
+func (k Keeper) SetESMTriggerParams(ctx sdk.Context, esmTriggerParams types.ESMTriggerParams) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ESMTriggerParamsKey(esmTriggerParams.AppId)
@@ -38,7 +38,7 @@ func (k *Keeper) SetESMTriggerParams(ctx sdk.Context, esmTriggerParams types.ESM
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerParams types.ESMTriggerParams, found bool) {
+func (k Keeper) GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerParams types.ESMTriggerParams, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ESMTriggerParamsKey(id)
@@ -52,7 +52,28 @@ func (k *Keeper) GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerPara
 	return esmTriggerParams, true
 }
 
-func (k *Keeper) SetCurrentDepositStats(ctx sdk.Context, depositStats types.CurrentDepositStats) {
+func (k Keeper) GetAllESMTriggerParams(ctx sdk.Context) (eSMTriggerParams []types.ESMTriggerParams) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.ESMTriggerParamsKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var esm types.ESMTriggerParams
+		k.cdc.MustUnmarshal(iter.Value(), &esm)
+		eSMTriggerParams = append(eSMTriggerParams, esm)
+	}
+	return eSMTriggerParams
+}
+
+func (k Keeper) SetCurrentDepositStats(ctx sdk.Context, depositStats types.CurrentDepositStats) {
 	var (
 		store = k.Store(ctx)
 		key   = types.CurrentDepositStatsKey(depositStats.AppId)
@@ -62,7 +83,7 @@ func (k *Keeper) SetCurrentDepositStats(ctx sdk.Context, depositStats types.Curr
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetCurrentDepositStats(ctx sdk.Context, id uint64) (depositStats types.CurrentDepositStats, found bool) {
+func (k Keeper) GetCurrentDepositStats(ctx sdk.Context, id uint64) (depositStats types.CurrentDepositStats, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.CurrentDepositStatsKey(id)
@@ -77,7 +98,28 @@ func (k *Keeper) GetCurrentDepositStats(ctx sdk.Context, id uint64) (depositStat
 	return depositStats, true
 }
 
-func (k *Keeper) SetESMStatus(ctx sdk.Context, esmStatus types.ESMStatus) {
+func (k Keeper) GetAllCurrentDepositStats(ctx sdk.Context) (currentDepositStats []types.CurrentDepositStats) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.CurrentDepositStatsPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var esm types.CurrentDepositStats
+		k.cdc.MustUnmarshal(iter.Value(), &esm)
+		currentDepositStats = append(currentDepositStats, esm)
+	}
+	return currentDepositStats
+}
+
+func (k Keeper) SetESMStatus(ctx sdk.Context, esmStatus types.ESMStatus) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ESMStatusKey(esmStatus.AppId)
@@ -87,7 +129,7 @@ func (k *Keeper) SetESMStatus(ctx sdk.Context, esmStatus types.ESMStatus) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmStatus types.ESMStatus, found bool) {
+func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmStatus types.ESMStatus, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ESMStatusKey(id)
@@ -102,7 +144,28 @@ func (k *Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmStatus types.ESMSt
 	return esmStatus, true
 }
 
-func (k *Keeper) GetUserDepositByApp(ctx sdk.Context, address string, appID uint64) (userDeposits types.UsersDepositMapping, found bool) {
+func (k Keeper) GetAllESMStatus(ctx sdk.Context) (eSMStatus []types.ESMStatus) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.ESMStatusPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var esm types.ESMStatus
+		k.cdc.MustUnmarshal(iter.Value(), &esm)
+		eSMStatus = append(eSMStatus, esm)
+	}
+	return eSMStatus
+}
+
+func (k Keeper) GetUserDepositByApp(ctx sdk.Context, address string, appID uint64) (userDeposits types.UsersDepositMapping, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserDepositByAppKey(address, appID)
@@ -116,7 +179,7 @@ func (k *Keeper) GetUserDepositByApp(ctx sdk.Context, address string, appID uint
 	return userDeposits, true
 }
 
-func (k *Keeper) SetUserDepositByApp(ctx sdk.Context, userDeposits types.UsersDepositMapping) {
+func (k Keeper) SetUserDepositByApp(ctx sdk.Context, userDeposits types.UsersDepositMapping) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserDepositByAppKey(userDeposits.Depositor, userDeposits.AppId)
@@ -125,7 +188,28 @@ func (k *Keeper) SetUserDepositByApp(ctx sdk.Context, userDeposits types.UsersDe
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetESMMarketForAsset(ctx sdk.Context, esmMarket types.ESMMarketPrice) {
+func (k Keeper) GetAllUserDepositByApp(ctx sdk.Context) (usersDepositMapping []types.UsersDepositMapping) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.UserDepositByAppPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var esm types.UsersDepositMapping
+		k.cdc.MustUnmarshal(iter.Value(), &esm)
+		usersDepositMapping = append(usersDepositMapping, esm)
+	}
+	return usersDepositMapping
+}
+
+func (k Keeper) SetESMMarketForAsset(ctx sdk.Context, esmMarket types.ESMMarketPrice) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ESMSPriceKey(esmMarket.AppId)
@@ -135,7 +219,7 @@ func (k *Keeper) SetESMMarketForAsset(ctx sdk.Context, esmMarket types.ESMMarket
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket types.ESMMarketPrice, found bool) {
+func (k Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket types.ESMMarketPrice, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ESMSPriceKey(id)
@@ -150,7 +234,28 @@ func (k *Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket typ
 	return esmMarket, true
 }
 
-func (k *Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, addESMTriggerParams *bindings.MsgAddESMTriggerParams) error {
+func (k Keeper) GetAllESMMarketForAsset(ctx sdk.Context) (eSMMarketPrice []types.ESMMarketPrice) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.ESMPricePrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var esm types.ESMMarketPrice
+		k.cdc.MustUnmarshal(iter.Value(), &esm)
+		eSMMarketPrice = append(eSMMarketPrice, esm)
+	}
+	return eSMMarketPrice
+}
+
+func (k Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, addESMTriggerParams *bindings.MsgAddESMTriggerParams) error {
 
 	var debtRates []types.DebtAssetsRates
 	for i := range addESMTriggerParams.AssetID {
@@ -180,7 +285,7 @@ func (k Keeper) WasmAddESMTriggerParamsQuery(ctx sdk.Context, appID uint64) (boo
 	return true, ""
 }
 
-func (k *Keeper) SetDataAfterCoolOff(ctx sdk.Context, esmDataAfterCoolOff types.DataAfterCoolOff) {
+func (k Keeper) SetDataAfterCoolOff(ctx sdk.Context, esmDataAfterCoolOff types.DataAfterCoolOff) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ESMDataAfterCoolOff(esmDataAfterCoolOff.AppId)
@@ -190,7 +295,7 @@ func (k *Keeper) SetDataAfterCoolOff(ctx sdk.Context, esmDataAfterCoolOff types.
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetDataAfterCoolOff(ctx sdk.Context, id uint64) (esmDataAfterCoolOff types.DataAfterCoolOff, found bool) {
+func (k Keeper) GetDataAfterCoolOff(ctx sdk.Context, id uint64) (esmDataAfterCoolOff types.DataAfterCoolOff, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ESMDataAfterCoolOff(id)
@@ -204,7 +309,28 @@ func (k *Keeper) GetDataAfterCoolOff(ctx sdk.Context, id uint64) (esmDataAfterCo
 	return esmDataAfterCoolOff, true
 }
 
-func (k *Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64) error {
+func (k Keeper) GetAllDataAfterCoolOff(ctx sdk.Context) (dataAfterCoolOff []types.DataAfterCoolOff) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.ESMDataAfterCoolOffPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var esm types.DataAfterCoolOff
+		k.cdc.MustUnmarshal(iter.Value(), &esm)
+		dataAfterCoolOff = append(dataAfterCoolOff, esm)
+	}
+	return dataAfterCoolOff
+}
+
+func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64) error {
 	totalVaults := k.GetVaults(ctx)
 	for _, data := range totalVaults {
 		if data.AppId == appId {
@@ -305,7 +431,7 @@ func (k *Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64
 	return nil
 }
 
-func (k *Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId uint64) error {
+func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId uint64) error {
 	totalStableVaults := k.GetStableMintVaults(ctx)
 	for _, data := range totalStableVaults {
 		if data.AppId == appId {
@@ -420,7 +546,7 @@ func (k *Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId 
 	return nil
 }
 
-func (k *Keeper) SetAssetToAmountValue(ctx sdk.Context, assetToAmountValue types.AssetToAmountValue) {
+func (k Keeper) SetAssetToAmountValue(ctx sdk.Context, assetToAmountValue types.AssetToAmountValue) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetToAmountValueKey(assetToAmountValue.AppId, assetToAmountValue.AssetID)
@@ -430,7 +556,7 @@ func (k *Keeper) SetAssetToAmountValue(ctx sdk.Context, assetToAmountValue types
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAssetToAmountValue(ctx sdk.Context, appID, assetID uint64) (assetToAmountValue types.AssetToAmountValue, found bool) {
+func (k Keeper) GetAssetToAmountValue(ctx sdk.Context, appID, assetID uint64) (assetToAmountValue types.AssetToAmountValue, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetToAmountValueKey(appID, assetID)
@@ -445,7 +571,28 @@ func (k *Keeper) GetAssetToAmountValue(ctx sdk.Context, appID, assetID uint64) (
 	return assetToAmountValue, true
 }
 
-func (k *Keeper) SetAppToAmtValue(ctx sdk.Context, appToAmt types.AppToAmountValue) {
+func (k Keeper) GetAllAssetToAmountValue(ctx sdk.Context) (assetToAmountValue []types.AssetToAmountValue) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AssetToAmountValueKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var esm types.AssetToAmountValue
+		k.cdc.MustUnmarshal(iter.Value(), &esm)
+		assetToAmountValue = append(assetToAmountValue, esm)
+	}
+	return assetToAmountValue
+}
+
+func (k Keeper) SetAppToAmtValue(ctx sdk.Context, appToAmt types.AppToAmountValue) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppToAmountValueKey(appToAmt.AppId)
@@ -455,7 +602,7 @@ func (k *Keeper) SetAppToAmtValue(ctx sdk.Context, appToAmt types.AppToAmountVal
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAppToAmtValue(ctx sdk.Context, id uint64) (appToAmt types.AppToAmountValue, found bool) {
+func (k Keeper) GetAppToAmtValue(ctx sdk.Context, id uint64) (appToAmt types.AppToAmountValue, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppToAmountValueKey(id)
@@ -468,4 +615,25 @@ func (k *Keeper) GetAppToAmtValue(ctx sdk.Context, id uint64) (appToAmt types.Ap
 
 	k.cdc.MustUnmarshal(value, &appToAmt)
 	return appToAmt, true
+}
+
+func (k Keeper) GetAllAppToAmtValue(ctx sdk.Context) (appToAmountValue []types.AppToAmountValue) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AppToAmountValueKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var esm types.AppToAmountValue
+		k.cdc.MustUnmarshal(iter.Value(), &esm)
+		appToAmountValue = append(appToAmountValue, esm)
+	}
+	return appToAmountValue
 }

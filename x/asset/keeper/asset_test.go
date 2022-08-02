@@ -37,13 +37,13 @@ func (s *KeeperTestSuite) TestAddApp() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						3,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
 					{
 						2,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -62,7 +62,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						3,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -81,7 +81,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						3,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -94,13 +94,13 @@ func (s *KeeperTestSuite) TestAddApp() {
 			"Add App commodo commodo",
 			assetTypes.AppData{
 				Name:             "commodo",
-				ShortName:        "commodo",
+				ShortName:        "comdo",
 				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						3,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -368,17 +368,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 			true,
 			1,
 		},
-		{"Add Pair 2 : cmst cmdx",
-			assetTypes.Pair{
-				AssetIn:  2,
-				AssetOut: 1,
-			},
-			"ucmst",
-			"ucmdx",
-			false,
-			2,
-		},
-		{"Add Pair 3 : cmst harbor",
+		{"Add Pair 2 : cmst harbor",
 			assetTypes.Pair{
 				AssetIn:  2,
 				AssetOut: 3,
@@ -386,7 +376,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 			"ucmst",
 			"uharbor",
 			false,
-			3,
+			2,
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -623,7 +613,7 @@ func (s *KeeperTestSuite) TestQueryPairsAndExtendedPairVaults() {
 	server := keeper.NewQueryServer(*assetKeeper)
 	res, err := server.QueryPairs(sdk.WrapSDKContext(*ctx), &assetTypes.QueryPairsRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(len(res.PairsInfo), 3)
+	s.Require().Equal(len(res.PairsInfo), 2)
 }
 
 func (s *KeeperTestSuite) TestQueryExtendedPairVaults() {
@@ -660,7 +650,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						4,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -675,13 +665,13 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 			assetTypes.AppData{
 				Id:               2,
 				Name:             "commodo",
-				ShortName:        "commodo",
+				ShortName:        "comdo",
 				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						2,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},
@@ -696,13 +686,13 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 			assetTypes.AppData{
 				Id:               2,
 				Name:             "commodo",
-				ShortName:        "commodo",
+				ShortName:        "comdo",
 				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
 						4,
-						&genesisSupply,
+						genesisSupply,
 						true,
 						userAddress1,
 					},

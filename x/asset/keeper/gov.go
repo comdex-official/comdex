@@ -6,7 +6,7 @@ import (
 )
 
 func (k Keeper) HandleProposalAddAsset(ctx sdk.Context, p *types.AddAssetsProposal) error {
-	return k.AddAssetRecords(ctx, p.Assets...)
+	return k.AddAssetRecords(ctx, p.Assets)
 }
 
 func (k Keeper) HandleProposalUpdateAsset(ctx sdk.Context, p *types.UpdateAssetProposal) error {
@@ -14,7 +14,7 @@ func (k Keeper) HandleProposalUpdateAsset(ctx sdk.Context, p *types.UpdateAssetP
 }
 
 func (k Keeper) HandleProposalAddPairs(ctx sdk.Context, p *types.AddPairsProposal) error {
-	return k.AddPairsRecords(ctx, p.Pairs...)
+	return k.AddPairsRecords(ctx, p.Pairs)
 }
 
 func (k Keeper) HandleUpdateGovTimeInApp(ctx sdk.Context, p *types.UpdateGovTimeInAppProposal) error {
@@ -22,9 +22,9 @@ func (k Keeper) HandleUpdateGovTimeInApp(ctx sdk.Context, p *types.UpdateGovTime
 }
 
 func (k Keeper) HandleAddAppRecords(ctx sdk.Context, p *types.AddAppProposal) error {
-	return k.AddAppRecords(ctx, p.App...)
+	return k.AddAppRecords(ctx, p.App)
 }
 
 func (k Keeper) HandleAddAssetInAppRecords(ctx sdk.Context, p *types.AddAssetInAppProposal) error {
-	return k.AddAssetInAppRecords(ctx, p.App...)
+	return k.AddAssetInAppRecords(ctx, p.App)
 }

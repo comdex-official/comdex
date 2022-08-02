@@ -165,7 +165,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 	genesisSupply := sdk.NewIntFromUint64(1000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
-	msg1 := []assetTypes.AppData{{
+	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -173,34 +173,33 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
 				3,
-				&genesisSupply,
+				genesisSupply,
 				true,
 				userAddress1,
 			},
 			{
 				2,
-				&genesisSupply,
+				genesisSupply,
 				true,
 				userAddress1,
 			},
 		},
-	},
-		{
-			Name:             "commodo",
-			ShortName:        "commodo",
-			MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-			GovTimeInSeconds: 900,
-			GenesisToken: []assetTypes.MintGenesisToken{
-				{
-					3,
-					&genesisSupply,
-					true,
-					userAddress1,
-				},
-			},
-		},
 	}
-	err = assetKeeper.AddAppRecords(*ctx, msg1...)
+		// {
+		// 	Name:             "commodo",
+		// 	ShortName:        "commodo",
+		// 	MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		// 	GovTimeInSeconds: 900,
+		// 	GenesisToken: []assetTypes.MintGenesisToken{
+		// 		{
+		// 			3,
+		// 			genesisSupply,
+		// 			true,
+		// 			userAddress1,
+		// 		},
+		// 	},
+		// },
+	err = assetKeeper.AddAppRecords(*ctx, msg1)
 	s.Require().NoError(err)
 
 	for index, tc := range []struct {

@@ -6,7 +6,7 @@ import (
 	protobuftypes "github.com/gogo/protobuf/types"
 )
 
-func (k *Keeper) SetUserBorrowIDHistory(ctx sdk.Context, ID uint64) {
+func (k Keeper) SetUserBorrowIDHistory(ctx sdk.Context, ID uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowHistoryIDPrefix
@@ -19,7 +19,7 @@ func (k *Keeper) SetUserBorrowIDHistory(ctx sdk.Context, ID uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetUserBorrowIDHistory(ctx sdk.Context) uint64 {
+func (k Keeper) GetUserBorrowIDHistory(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowHistoryIDPrefix
@@ -36,7 +36,7 @@ func (k *Keeper) GetUserBorrowIDHistory(ctx sdk.Context) uint64 {
 	return ID.GetValue()
 }
 
-func (k *Keeper) SetBorrow(ctx sdk.Context, borrow types.BorrowAsset) {
+func (k Keeper) SetBorrow(ctx sdk.Context, borrow types.BorrowAsset) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowUserKey(borrow.ID)
@@ -46,7 +46,7 @@ func (k *Keeper) SetBorrow(ctx sdk.Context, borrow types.BorrowAsset) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetBorrow(ctx sdk.Context, ID uint64) (borrow types.BorrowAsset, found bool) {
+func (k Keeper) GetBorrow(ctx sdk.Context, ID uint64) (borrow types.BorrowAsset, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowUserKey(ID)
@@ -61,7 +61,7 @@ func (k *Keeper) GetBorrow(ctx sdk.Context, ID uint64) (borrow types.BorrowAsset
 	return borrow, true
 }
 
-func (k *Keeper) DeleteBorrow(ctx sdk.Context, ID uint64) {
+func (k Keeper) DeleteBorrow(ctx sdk.Context, ID uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowUserKey(ID)
@@ -70,7 +70,7 @@ func (k *Keeper) DeleteBorrow(ctx sdk.Context, ID uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) SetBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID, ID uint64) {
+func (k Keeper) SetBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID, ID uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowForAddressByPair(address, pairID)
@@ -84,7 +84,7 @@ func (k *Keeper) SetBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddre
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
+func (k Keeper) HasBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowForAddressByPair(address, pairID)
@@ -93,7 +93,7 @@ func (k *Keeper) HasBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddre
 	return store.Has(key)
 }
 
-func (k *Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
+func (k Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowForAddressByPair(address, pairID)
@@ -102,7 +102,7 @@ func (k *Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAd
 	store.Delete(key)
 }
 
-func (k *Keeper) UpdateUserBorrowIDMapping(
+func (k Keeper) UpdateUserBorrowIDMapping(
 	ctx sdk.Context,
 	lendOwner string,
 	borrowID uint64,
@@ -134,7 +134,7 @@ func (k *Keeper) UpdateUserBorrowIDMapping(
 	return nil
 }
 
-func (k *Keeper) GetUserBorrows(ctx sdk.Context, address string) (userBorrows types.UserBorrowIdMapping, found bool) {
+func (k Keeper) GetUserBorrows(ctx sdk.Context, address string) (userBorrows types.UserBorrowIdMapping, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserBorrowsForAddressKey(address)
@@ -148,7 +148,7 @@ func (k *Keeper) GetUserBorrows(ctx sdk.Context, address string) (userBorrows ty
 	return userBorrows, true
 }
 
-func (k *Keeper) UserBorrows(ctx sdk.Context, address string) (userBorrows []types.BorrowAsset, found bool) {
+func (k Keeper) UserBorrows(ctx sdk.Context, address string) (userBorrows []types.BorrowAsset, found bool) {
 	userBorrowID, _ := k.GetUserBorrows(ctx, address)
 	for _, v := range userBorrowID.BorrowIDs {
 		userBorrow, _ := k.GetBorrow(ctx, v)
@@ -157,7 +157,7 @@ func (k *Keeper) UserBorrows(ctx sdk.Context, address string) (userBorrows []typ
 	return userBorrows, true
 }
 
-func (k *Keeper) SetUserBorrows(ctx sdk.Context, userBorrows types.UserBorrowIdMapping) {
+func (k Keeper) SetUserBorrows(ctx sdk.Context, userBorrows types.UserBorrowIdMapping) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserBorrowsForAddressKey(userBorrows.Owner)
@@ -166,7 +166,7 @@ func (k *Keeper) SetUserBorrows(ctx sdk.Context, userBorrows types.UserBorrowIdM
 	store.Set(key, value)
 }
 
-func (k *Keeper) UpdateBorrowIDByOwnerAndPoolMapping(
+func (k Keeper) UpdateBorrowIDByOwnerAndPoolMapping(
 	ctx sdk.Context,
 	borrowOwner string,
 	borrowID uint64,
@@ -200,7 +200,7 @@ func (k *Keeper) UpdateBorrowIDByOwnerAndPoolMapping(
 	return nil
 }
 
-func (k *Keeper) GetBorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userBorrows types.BorrowIdByOwnerAndPoolMapping, found bool) {
+func (k Keeper) GetBorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userBorrows types.BorrowIdByOwnerAndPoolMapping, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowByUserAndPoolKey(address, poolID)
@@ -214,7 +214,7 @@ func (k *Keeper) GetBorrowIDByOwnerAndPool(ctx sdk.Context, address string, pool
 	return userBorrows, true
 }
 
-func (k *Keeper) BorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userBorrows []types.BorrowAsset, found bool) {
+func (k Keeper) BorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userBorrows []types.BorrowAsset, found bool) {
 	userLendID, _ := k.GetBorrowIDByOwnerAndPool(ctx, address, poolID)
 	for _, v := range userLendID.BorrowIDs {
 		userBorrow, _ := k.GetBorrow(ctx, v)
@@ -223,7 +223,7 @@ func (k *Keeper) BorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolID 
 	return userBorrows, true
 }
 
-func (k *Keeper) SetBorrowIDByOwnerAndPool(ctx sdk.Context, userBorrows types.BorrowIdByOwnerAndPoolMapping) {
+func (k Keeper) SetBorrowIDByOwnerAndPool(ctx sdk.Context, userBorrows types.BorrowIdByOwnerAndPoolMapping) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowByUserAndPoolKey(userBorrows.Owner, userBorrows.PoolID)
@@ -232,7 +232,7 @@ func (k *Keeper) SetBorrowIDByOwnerAndPool(ctx sdk.Context, userBorrows types.Bo
 	store.Set(key, value)
 }
 
-func (k *Keeper) UpdateBorrowIdsMapping(
+func (k Keeper) UpdateBorrowIdsMapping(
 	ctx sdk.Context,
 	borrowID uint64,
 	isInsert bool,
@@ -262,7 +262,7 @@ func (k *Keeper) UpdateBorrowIdsMapping(
 	return nil
 }
 
-func (k *Keeper) GetBorrows(ctx sdk.Context) (userBorrows types.BorrowMapping, found bool) {
+func (k Keeper) GetBorrows(ctx sdk.Context) (userBorrows types.BorrowMapping, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowsKey
@@ -276,7 +276,7 @@ func (k *Keeper) GetBorrows(ctx sdk.Context) (userBorrows types.BorrowMapping, f
 	return userBorrows, true
 }
 
-func (k *Keeper) SetBorrows(ctx sdk.Context, userBorrows types.BorrowMapping) {
+func (k Keeper) SetBorrows(ctx sdk.Context, userBorrows types.BorrowMapping) {
 	var (
 		store = k.Store(ctx)
 		key   = types.BorrowsKey
@@ -285,7 +285,7 @@ func (k *Keeper) SetBorrows(ctx sdk.Context, userBorrows types.BorrowMapping) {
 	store.Set(key, value)
 }
 
-//func (k *Keeper) UpdateStableBorrowIdsMapping(
+//func (k Keeper) UpdateStableBorrowIdsMapping(
 //	ctx sdk.Context,
 //	borrowID uint64,
 //	isInsert bool,
@@ -315,7 +315,7 @@ func (k *Keeper) SetBorrows(ctx sdk.Context, userBorrows types.BorrowMapping) {
 //	return nil
 //}
 //
-//func (k *Keeper) GetStableBorrows(ctx sdk.Context) (userBorrows types.StableBorrowMapping, found bool) {
+//func (k Keeper) GetStableBorrows(ctx sdk.Context) (userBorrows types.StableBorrowMapping, found bool) {
 //	var (
 //		store = k.Store(ctx)
 //		key   = types.StableBorrowsKey
@@ -329,7 +329,7 @@ func (k *Keeper) SetBorrows(ctx sdk.Context, userBorrows types.BorrowMapping) {
 //	return userBorrows, true
 //}
 //
-//func (k *Keeper) SetStableBorrows(ctx sdk.Context, userBorrows types.StableBorrowMapping) {
+//func (k Keeper) SetStableBorrows(ctx sdk.Context, userBorrows types.StableBorrowMapping) {
 //	var (
 //		store = k.Store(ctx)
 //		key   = types.StableBorrowsKey

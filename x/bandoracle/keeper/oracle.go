@@ -102,7 +102,7 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	return &types.MsgFetchPriceDataResponse{}, nil
 }
 
-func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) {
+func (k Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) {
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.MsgDataKey
@@ -123,7 +123,7 @@ func (k *Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {
+func (k Keeper) GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData {
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.MsgDataKey

@@ -554,7 +554,7 @@ func New(
 		&app.MarketKeeper,
 	)
 
-	app.LendKeeper = *lendkeeper.NewKeeper(
+	app.LendKeeper = lendkeeper.NewKeeper(
 		app.cdc,
 		app.keys[lendtypes.StoreKey],
 		app.keys[lendtypes.StoreKey],
@@ -565,7 +565,7 @@ func New(
 		&app.MarketKeeper,
 	)
 
-	app.EsmKeeper = *esmkeeper.NewKeeper(
+	app.EsmKeeper = esmkeeper.NewKeeper(
 		app.cdc,
 		app.keys[esmtypes.StoreKey],
 		app.keys[esmtypes.StoreKey],
@@ -616,7 +616,7 @@ func New(
 		app.IbcKeeper.ChannelKeeper,
 	)
 
-	app.MarketKeeper = *marketkeeper.NewKeeper(
+	app.MarketKeeper = marketkeeper.NewKeeper(
 		app.cdc,
 		app.keys[markettypes.StoreKey],
 		app.GetSubspace(markettypes.ModuleName),
@@ -625,7 +625,7 @@ func New(
 		&app.BandoracleKeeper,
 	)
 
-	app.LiquidationKeeper = *liquidationkeeper.NewKeeper(
+	app.LiquidationKeeper = liquidationkeeper.NewKeeper(
 		app.cdc,
 		keys[liquidationtypes.StoreKey],
 		keys[liquidationtypes.MemStoreKey],
@@ -640,7 +640,7 @@ func New(
 		&app.LendKeeper,
 	)
 
-	app.AuctionKeeper = *auctionkeeper.NewKeeper(
+	app.AuctionKeeper = auctionkeeper.NewKeeper(
 		app.cdc,
 		keys[auctiontypes.StoreKey],
 		keys[auctiontypes.MemStoreKey],
@@ -657,7 +657,7 @@ func New(
 		&app.LendKeeper,
 	)
 
-	app.CollectorKeeper = *collectorkeeper.NewKeeper(
+	app.CollectorKeeper = collectorkeeper.NewKeeper(
 		app.cdc,
 		app.keys[collectortypes.StoreKey],
 		app.keys[collectortypes.MemStoreKey],
@@ -702,7 +702,7 @@ func New(
 		&app.Rewardskeeper,
 	)
 
-	app.Rewardskeeper = *rewardskeeper.NewKeeper(
+	app.Rewardskeeper = rewardskeeper.NewKeeper(
 		app.cdc,
 		app.keys[rewardstypes.StoreKey],
 		app.keys[rewardstypes.MemStoreKey],

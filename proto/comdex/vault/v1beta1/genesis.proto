@@ -14,4 +14,16 @@ message GenesisState {
     (gogoproto.moretags)   = "yaml:\"vaults\"",
     (gogoproto.nullable)   = false
   ];
+  repeated StableMintVault stableMintVault = 2 [
+    (gogoproto.moretags)   = "yaml:\"stableMintVault\"",
+    (gogoproto.nullable)   = false
+  ];
+  repeated AppExtendedPairVaultMapping appExtendedPairVaultMapping = 3 [
+    (gogoproto.moretags)   = "yaml:\"appExtendedPairVaultMapping\"",
+    (gogoproto.nullable)   = false
+  ];
+  repeated UserVaultAssetMapping userVaultAssetMapping = 4 [
+    (gogoproto.moretags)   = "yaml:\"userVaultAssetMapping\"",
+    (gogoproto.nullable)   = false
+  ];
 }

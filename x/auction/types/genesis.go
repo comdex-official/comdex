@@ -1,20 +1,33 @@
 package types
 
-// DefaultIndex is the default capability global index.
-const DefaultIndex uint64 = 1
-
-// DefaultGenesis returns the default Capability genesis state.
-func DefaultGenesis() *GenesisState {
+func NewGenesisState(surplusAuction []SurplusAuction, debtAuction []DebtAuction, dutchAuction []DutchAuction, protocolStatistics []ProtocolStatistics, auctionParams []AuctionParams, params Params) *GenesisState {
 	return &GenesisState{
-		// this line is used by starport scaffolding # genesis/types/default.
-		Params: DefaultParams(),
+		SurplusAuction: surplusAuction,
+		DebtAuction: debtAuction,
+		DutchAuction: dutchAuction,
+		ProtocolStatistics: protocolStatistics,
+		AuctionParams: auctionParams,
+		// SurplusBiddings: surplusBiddings,
+		// DebtBiddings: debtBiddings,
+		// DutchBiddings: dutchBiddings,
+		Params: params,
 	}
 }
 
-// Validate performs basic genesis state validation returning an error upon any
-// failure.
-func (gs GenesisState) Validate() error {
-	// this line is used by starport scaffolding # genesis/types/validate.
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(
+		[]SurplusAuction{},
+		[]DebtAuction{},
+		[]DutchAuction{},
+		[]ProtocolStatistics{},
+		[]AuctionParams{},
+		// []SurplusBiddings{},
+		// []DebtBiddings{},
+		// []DutchBiddings{},
+		DefaultParams(),
+	)
+}
 
-	return gs.Params.Validate()
+func (m *GenesisState) Validate() error {
+	return nil
 }

@@ -3,9 +3,27 @@ package comdex.auction.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "comdex/auction/v1beta1/params.proto";
+import "comdex/auction/v1beta1/auction.proto";
+import "comdex/auction/v1beta1/biddings.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/auction/types";
 
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
+  repeated SurplusAuction surplusAuction = 1
+  [ (gogoproto.moretags) = "yaml:\"surplusAuction\"", (gogoproto.nullable) = false ];
+  repeated DebtAuction debtAuction = 2
+  [ (gogoproto.moretags) = "yaml:\"debtAuction\"", (gogoproto.nullable) = false ];
+  repeated DutchAuction dutchAuction = 3
+  [ (gogoproto.moretags) = "yaml:\"dutchAuction\"", (gogoproto.nullable) = false ];
+  repeated ProtocolStatistics protocolStatistics = 4
+  [ (gogoproto.moretags) = "yaml:\"protocolStatistics\"", (gogoproto.nullable) = false ];
+  repeated AuctionParams auctionParams = 5
+  [ (gogoproto.moretags) = "yaml:\"auctionParams\"", (gogoproto.nullable) = false ];
+  // repeated SurplusBiddings surplusBiddings = 6
+  // [ (gogoproto.moretags) = "yaml:\"surplusBiddings\"", (gogoproto.nullable) = false ];
+  // repeated DebtBiddings debtBiddings = 7
+  // [ (gogoproto.moretags) = "yaml:\"debtBiddings\"", (gogoproto.nullable) = false ];
+  // repeated DutchBiddings dutchBiddings = 8
+  // [ (gogoproto.moretags) = "yaml:\"dutchBiddings\"", (gogoproto.nullable) = false ];
+  Params params = 6 [(gogoproto.nullable) = false];
 }

@@ -18,7 +18,7 @@ type AddNewAssetsRequest struct {
 	Title       string        `json:"title" yaml:"title"`
 	Description string        `json:"description" yaml:"description"`
 	Deposit     sdk.Coins     `json:"deposit" yaml:"deposit"`
-	Asset       []types.Asset `json:"assets" yaml:"assets"`
+	Asset       types.Asset   `json:"assets" yaml:"assets"`
 }
 
 type UpdateNewAssetRequest struct{}

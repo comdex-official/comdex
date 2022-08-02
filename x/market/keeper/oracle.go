@@ -8,7 +8,7 @@ import (
 	"github.com/comdex-official/comdex/x/market/types"
 )
 
-func (k *Keeper) SetMarket(ctx sdk.Context, market types.Market) {
+func (k Keeper) SetMarket(ctx sdk.Context, market types.Market) {
 	var (
 		store = k.Store(ctx)
 		key   = types.MarketKey(market.Symbol)
@@ -17,7 +17,7 @@ func (k *Keeper) SetMarket(ctx sdk.Context, market types.Market) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasMarket(ctx sdk.Context, symbol string) bool {
+func (k Keeper) HasMarket(ctx sdk.Context, symbol string) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.MarketKey(symbol)
@@ -25,7 +25,7 @@ func (k *Keeper) HasMarket(ctx sdk.Context, symbol string) bool {
 	return store.Has(key)
 }
 
-func (k *Keeper) GetMarket(ctx sdk.Context, symbol string) (market types.Market, found bool) {
+func (k Keeper) GetMarket(ctx sdk.Context, symbol string) (market types.Market, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.MarketKey(symbol)
@@ -40,7 +40,7 @@ func (k *Keeper) GetMarket(ctx sdk.Context, symbol string) (market types.Market,
 	return market, true
 }
 
-func (k *Keeper) GetMarkets(ctx sdk.Context) (markets []types.Market) {
+func (k Keeper) GetMarkets(ctx sdk.Context) (markets []types.Market) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.MarketKeyPrefix)
@@ -62,7 +62,7 @@ func (k *Keeper) GetMarkets(ctx sdk.Context) (markets []types.Market) {
 	return markets
 }
 
-func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool) {
+func (k Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.PriceForMarketKey(symbol)
@@ -79,7 +79,7 @@ func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool
 	return price.GetValue(), true
 }
 
-func (k *Keeper) GetRates(ctx sdk.Context, symbol string) (uint64, bool) {
+func (k Keeper) GetRates(ctx sdk.Context, symbol string) (uint64, bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.PriceForMarketKey(symbol)
@@ -96,7 +96,7 @@ func (k *Keeper) GetRates(ctx sdk.Context, symbol string) (uint64, bool) {
 	return price.GetValue(), true
 }
 
-func (k *Keeper) SetRates(ctx sdk.Context, _ string) {
+func (k Keeper) SetRates(ctx sdk.Context, _ string) {
 	id := k.bandoraclekeeper.GetLastFetchPriceID(ctx)
 	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))
 
@@ -119,7 +119,7 @@ func (k *Keeper) SetRates(ctx sdk.Context, _ string) {
 	}
 }
 
-func (k *Keeper) SetMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
+func (k Keeper) SetMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
 	var (
 		store = k.Store(ctx)
 		key   = types.MarketForAssetKey(id)
@@ -133,7 +133,7 @@ func (k *Keeper) SetMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasMarketForAsset(ctx sdk.Context, id uint64) bool {
+func (k Keeper) HasMarketForAsset(ctx sdk.Context, id uint64) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.MarketForAssetKey(id)
@@ -142,7 +142,7 @@ func (k *Keeper) HasMarketForAsset(ctx sdk.Context, id uint64) bool {
 	return store.Has(key)
 }
 
-func (k *Keeper) GetMarketForAsset(ctx sdk.Context, id uint64) (market types.Market, found bool) {
+func (k Keeper) GetMarketForAsset(ctx sdk.Context, id uint64) (market types.Market, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.MarketForAssetKey(id)
@@ -159,7 +159,7 @@ func (k *Keeper) GetMarketForAsset(ctx sdk.Context, id uint64) (market types.Mar
 	return k.GetMarket(ctx, symbol.GetValue())
 }
 
-func (k *Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64) {
+func (k Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.MarketForAssetKey(id)
@@ -168,31 +168,12 @@ func (k *Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	if id == 1 {
-		return 1000000, true
-	}
-	if id == 2 {
-		return 1000000, true
-	}
-	if id == 3 {
-		return 1000000, true
-	}
-	if id == 4 {
-		return 1000000, true
-	}
-	if id == 5 {
-		return 1000000, true
-	}
-	if id == 6 {
-		return 1000000, true
+func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
+
+	market, found := k.GetMarketForAsset(ctx, id)
+	if !found {
+		return 0, false
 	}
 
-	return 0, true
-	// market, found := k.GetMarketForAsset(ctx, id)
-	// if !found {
-	//  return 2000000, true
-	// }
-
-	//return k.GetPriceForMarket(ctx, market.Symbol)
+	return k.GetPriceForMarket(ctx, market.Symbol)
 }

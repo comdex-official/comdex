@@ -42,7 +42,7 @@ var (
 	_ govtypes.Content = &AddAssetInAppProposal{}
 )
 
-func NewAddAssetsProposal(title, description string, assets []Asset) govtypes.Content {
+func NewAddAssetsProposal(title, description string, assets Asset) govtypes.Content {
 	return &AddAssetsProposal{
 		Title:       title,
 		Description: description,
@@ -65,14 +65,9 @@ func (p *AddAssetsProposal) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-	if len(p.Assets) == 0 {
-		return ErrorEmptyProposalAssets
-	}
 
-	for _, asset := range p.Assets {
-		if err := asset.Validate(); err != nil {
-			return err
-		}
+	if err := p.Assets.Validate(); err != nil {
+		return err
 	}
 
 	return nil
@@ -112,7 +107,7 @@ func (p *UpdateAssetProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewAddPairsProposal(title, description string, pairs []Pair) govtypes.Content {
+func NewAddPairsProposal(title, description string, pairs Pair) govtypes.Content {
 	return &AddPairsProposal{
 		Title:       title,
 		Description: description,
@@ -136,20 +131,15 @@ func (p *AddPairsProposal) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-	if len(p.Pairs) == 0 {
-		return ErrorEmptyProposalAssets
-	}
 
-	for _, pair := range p.Pairs {
-		if err := pair.Validate(); err != nil {
-			return err
-		}
+	if err := p.Pairs.Validate(); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func NewAddAppProposal(title, description string, amap []AppData) govtypes.Content {
+func NewAddAppProposal(title, description string, amap AppData) govtypes.Content {
 	return &AddAppProposal{
 		Title:       title,
 		Description: description,
@@ -173,9 +163,6 @@ func (p *AddAppProposal) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
-	}
-	if len(p.App) == 0 {
-		return ErrorEmptyProposalAssets
 	}
 
 	return nil
@@ -212,7 +199,7 @@ func (p *UpdateGovTimeInAppProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewAddAssetInAppProposal(title, description string, amap []AppData) govtypes.Content {
+func NewAddAssetInAppProposal(title, description string, amap AppData) govtypes.Content {
 	return &AddAssetInAppProposal{
 		Title:       title,
 		Description: description,
@@ -236,9 +223,6 @@ func (p *AddAssetInAppProposal) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
-	}
-	if len(p.App) == 0 {
-		return ErrorEmptyProposalAssets
 	}
 
 	return nil

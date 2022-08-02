@@ -24,7 +24,16 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type GenesisState struct {
-	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+	ESMTriggerParams    []ESMTriggerParams    `protobuf:"bytes,1,rep,name=eSMTriggerParams,proto3" json:"eSMTriggerParams" yaml:"eSMTriggerParams"`
+	CurrentDepositStats []CurrentDepositStats `protobuf:"bytes,2,rep,name=currentDepositStats,proto3" json:"currentDepositStats" yaml:"currentDepositStats"`
+	ESMStatus           []ESMStatus           `protobuf:"bytes,3,rep,name=eSMStatus,proto3" json:"eSMStatus" yaml:"eSMStatus"`
+	KillSwitchParams    []KillSwitchParams    `protobuf:"bytes,4,rep,name=killSwitchParams,proto3" json:"killSwitchParams" yaml:"killSwitchParams"`
+	UsersDepositMapping []UsersDepositMapping `protobuf:"bytes,5,rep,name=usersDepositMapping,proto3" json:"usersDepositMapping" yaml:"usersDepositMapping"`
+	ESMMarketPrice      []ESMMarketPrice      `protobuf:"bytes,6,rep,name=eSMMarketPrice,proto3" json:"eSMMarketPrice" yaml:"eSMMarketPrice"`
+	DataAfterCoolOff    []DataAfterCoolOff    `protobuf:"bytes,7,rep,name=dataAfterCoolOff,proto3" json:"dataAfterCoolOff" yaml:"dataAfterCoolOff"`
+	AssetToAmountValue  []AssetToAmountValue  `protobuf:"bytes,8,rep,name=assetToAmountValue,proto3" json:"assetToAmountValue" yaml:"assetToAmountValue"`
+	AppToAmountValue    []AppToAmountValue    `protobuf:"bytes,9,rep,name=appToAmountValue,proto3" json:"appToAmountValue" yaml:"appToAmountValue"`
+	Params              Params                `protobuf:"bytes,10,opt,name=params,proto3" json:"params"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
@@ -60,6 +69,69 @@ func (m *GenesisState) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GenesisState proto.InternalMessageInfo
 
+func (m *GenesisState) GetESMTriggerParams() []ESMTriggerParams {
+	if m != nil {
+		return m.ESMTriggerParams
+	}
+	return nil
+}
+
+func (m *GenesisState) GetCurrentDepositStats() []CurrentDepositStats {
+	if m != nil {
+		return m.CurrentDepositStats
+	}
+	return nil
+}
+
+func (m *GenesisState) GetESMStatus() []ESMStatus {
+	if m != nil {
+		return m.ESMStatus
+	}
+	return nil
+}
+
+func (m *GenesisState) GetKillSwitchParams() []KillSwitchParams {
+	if m != nil {
+		return m.KillSwitchParams
+	}
+	return nil
+}
+
+func (m *GenesisState) GetUsersDepositMapping() []UsersDepositMapping {
+	if m != nil {
+		return m.UsersDepositMapping
+	}
+	return nil
+}
+
+func (m *GenesisState) GetESMMarketPrice() []ESMMarketPrice {
+	if m != nil {
+		return m.ESMMarketPrice
+	}
+	return nil
+}
+
+func (m *GenesisState) GetDataAfterCoolOff() []DataAfterCoolOff {
+	if m != nil {
+		return m.DataAfterCoolOff
+	}
+	return nil
+}
+
+func (m *GenesisState) GetAssetToAmountValue() []AssetToAmountValue {
+	if m != nil {
+		return m.AssetToAmountValue
+	}
+	return nil
+}
+
+func (m *GenesisState) GetAppToAmountValue() []AppToAmountValue {
+	if m != nil {
+		return m.AppToAmountValue
+	}
+	return nil
+}
+
 func (m *GenesisState) GetParams() Params {
 	if m != nil {
 		return m.Params
@@ -74,20 +146,40 @@ func init() {
 func init() { proto.RegisterFile("comdex/esm/v1beta1/genesis.proto", fileDescriptor_f3931030e3b9ea8a) }
 
 var fileDescriptor_f3931030e3b9ea8a = []byte{
-	// 201 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x48, 0xce, 0xcf, 0x4d,
-	0x49, 0xad, 0xd0, 0x4f, 0x2d, 0xce, 0xd5, 0x2f, 0x33, 0x4c, 0x4a, 0x2d, 0x49, 0x34, 0xd4, 0x4f,
-	0x4f, 0xcd, 0x4b, 0x2d, 0xce, 0x2c, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x82, 0xa8,
-	0xd0, 0x4b, 0x2d, 0xce, 0xd5, 0x83, 0xaa, 0x90, 0x12, 0x49, 0xcf, 0x4f, 0xcf, 0x07, 0x4b, 0xeb,
-	0x83, 0x58, 0x10, 0x95, 0x52, 0xf2, 0x58, 0xcc, 0x2a, 0x48, 0x2c, 0x4a, 0xcc, 0x85, 0x1a, 0xa5,
-	0xe4, 0xc1, 0xc5, 0xe3, 0x0e, 0x31, 0x3b, 0xb8, 0x24, 0xb1, 0x24, 0x55, 0xc8, 0x82, 0x8b, 0x0d,
-	0x22, 0x2f, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x6d, 0x24, 0xa5, 0x87, 0x69, 0x97, 0x5e, 0x00, 0x58,
-	0x85, 0x13, 0xcb, 0x89, 0x7b, 0xf2, 0x0c, 0x41, 0x50, 0xf5, 0x4e, 0xee, 0x27, 0x1e, 0xc9, 0x31,
-	0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x84, 0xc7, 0x72, 0x0c, 0x17, 0x1e, 0xcb,
-	0x31, 0xdc, 0x78, 0x2c, 0xc7, 0x10, 0xa5, 0x9b, 0x9e, 0x59, 0x92, 0x51, 0x9a, 0x04, 0x32, 0x49,
-	0x1f, 0x62, 0x9a, 0x6e, 0x7e, 0x5a, 0x5a, 0x66, 0x72, 0x66, 0x62, 0x0e, 0x94, 0xaf, 0x0f, 0x71,
-	0x61, 0x49, 0x65, 0x41, 0x6a, 0x71, 0x12, 0x1b, 0xd8, 0x65, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0xa5, 0xf9, 0x58, 0xac, 0x08, 0x01, 0x00, 0x00,
+	// 517 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x94, 0xc1, 0x6e, 0xd3, 0x30,
+	0x18, 0xc7, 0x5b, 0x36, 0xc6, 0x96, 0x21, 0x34, 0x05, 0x10, 0xa1, 0x62, 0x69, 0xb1, 0x10, 0xec,
+	0xb2, 0x46, 0x1b, 0x17, 0xc4, 0xad, 0xd9, 0xd0, 0x0e, 0xa8, 0x62, 0x72, 0x37, 0x0e, 0xdc, 0xdc,
+	0xec, 0x4b, 0x66, 0x2d, 0xa9, 0x83, 0xed, 0x00, 0x3d, 0xf0, 0x0e, 0x3c, 0xd6, 0x6e, 0xec, 0xc8,
+	0x69, 0x42, 0xed, 0x1b, 0xf0, 0x04, 0xc8, 0xb1, 0x35, 0x86, 0xe3, 0xdc, 0x1c, 0x7d, 0x7f, 0xfd,
+	0x7e, 0xfe, 0xfe, 0x8a, 0xec, 0x0d, 0x12, 0x56, 0x9c, 0xc1, 0xb7, 0x08, 0x44, 0x11, 0x7d, 0xd9,
+	0x9b, 0x82, 0x24, 0x7b, 0x51, 0x06, 0x33, 0x10, 0x54, 0x0c, 0x4b, 0xce, 0x24, 0xf3, 0x7d, 0x9d,
+	0x18, 0x82, 0x28, 0x86, 0x26, 0xd1, 0x7b, 0x94, 0xb1, 0x8c, 0xd5, 0xe3, 0x48, 0x9d, 0x74, 0xb2,
+	0xd7, 0x77, 0xb0, 0x4a, 0xc2, 0x49, 0x61, 0x50, 0xbd, 0x67, 0x8e, 0x80, 0xc2, 0xd6, 0x53, 0xf4,
+	0x73, 0xdd, 0xbb, 0x7f, 0xa4, 0xd5, 0x13, 0x49, 0x24, 0xf8, 0x9f, 0xbd, 0x2d, 0x98, 0x8c, 0x4f,
+	0x38, 0xcd, 0x32, 0xe0, 0xc7, 0x35, 0x28, 0xe8, 0x0e, 0x56, 0x76, 0x36, 0xf7, 0x5f, 0x0c, 0x9b,
+	0x97, 0x1a, 0xbe, 0xb3, 0xb2, 0x71, 0xff, 0xf2, 0xba, 0xdf, 0xf9, 0x73, 0xdd, 0x7f, 0x32, 0x27,
+	0x45, 0xfe, 0x16, 0xd9, 0x2c, 0x84, 0x1b, 0x78, 0xff, 0xbb, 0xf7, 0x30, 0xa9, 0x38, 0x87, 0x99,
+	0x3c, 0x84, 0x92, 0x09, 0x2a, 0xd5, 0x4d, 0x44, 0x70, 0xa7, 0xb6, 0xbe, 0x72, 0x59, 0x0f, 0x9a,
+	0xf1, 0x18, 0x19, 0x71, 0x4f, 0x8b, 0x1d, 0x44, 0x84, 0x5d, 0x1e, 0xff, 0xd4, 0xdb, 0x80, 0xc9,
+	0x58, 0x9d, 0x2b, 0x11, 0xac, 0xd4, 0xd2, 0xed, 0x96, 0x55, 0x75, 0x28, 0x0e, 0x8c, 0x6a, 0xeb,
+	0x66, 0x47, 0x3d, 0x40, 0xf8, 0x1f, 0x49, 0x15, 0x79, 0x41, 0xf3, 0x7c, 0xf2, 0x95, 0xca, 0xe4,
+	0xdc, 0x14, 0xb9, 0xda, 0x5e, 0xe4, 0x7b, 0x2b, 0x6b, 0x17, 0x69, 0xb3, 0x10, 0x6e, 0xe0, 0x55,
+	0x91, 0x95, 0x00, 0x2e, 0xcc, 0x7a, 0x63, 0x52, 0x96, 0x74, 0x96, 0x05, 0x77, 0xdb, 0x8b, 0x3c,
+	0x6d, 0xc6, 0xed, 0x22, 0x1d, 0x44, 0x84, 0x5d, 0x1e, 0x9f, 0x7a, 0x0f, 0x60, 0x32, 0x1e, 0x13,
+	0x7e, 0x01, 0xf2, 0x98, 0xd3, 0x04, 0x82, 0xb5, 0xda, 0x8c, 0x5a, 0xda, 0xbc, 0x95, 0x8c, 0xb7,
+	0x8d, 0xf4, 0xf1, 0x4d, 0xa5, 0xb7, 0xa6, 0x08, 0x5b, 0x60, 0x55, 0xee, 0x19, 0x91, 0x64, 0x94,
+	0x4a, 0xe0, 0x07, 0x8c, 0xe5, 0x1f, 0xd2, 0x34, 0xb8, 0xd7, 0x5e, 0xee, 0xa1, 0x95, 0xb5, 0xcb,
+	0xb5, 0x59, 0x08, 0x37, 0xf0, 0xfe, 0xdc, 0xf3, 0x89, 0x10, 0x20, 0x4f, 0xd8, 0xa8, 0x60, 0xd5,
+	0x4c, 0x7e, 0x24, 0x79, 0x05, 0xc1, 0x7a, 0x2d, 0x7d, 0xe9, 0x92, 0x8e, 0x1a, 0xe9, 0xf8, 0xb9,
+	0xd1, 0x3e, 0xd5, 0xda, 0x26, 0x0f, 0x61, 0x87, 0x44, 0x6d, 0x4b, 0xca, 0xf2, 0x7f, 0xf1, 0x46,
+	0xfb, 0xb6, 0x23, 0x2b, 0x6b, 0x6f, 0x6b, 0xb3, 0x10, 0x6e, 0xe0, 0xfd, 0x37, 0xde, 0x9a, 0x7e,
+	0x45, 0x02, 0x6f, 0xd0, 0xdd, 0xd9, 0xdc, 0xef, 0xb9, 0x44, 0xe6, 0x4f, 0x5d, 0x55, 0x78, 0x6c,
+	0xf2, 0xf1, 0xd1, 0xe5, 0x22, 0xec, 0x5e, 0x2d, 0xc2, 0xee, 0xef, 0x45, 0xd8, 0xfd, 0xb1, 0x0c,
+	0x3b, 0x57, 0xcb, 0xb0, 0xf3, 0x6b, 0x19, 0x76, 0x3e, 0xed, 0x66, 0x54, 0x9e, 0x57, 0x53, 0x45,
+	0x8a, 0x34, 0x6d, 0x97, 0xa5, 0x29, 0x4d, 0x28, 0xc9, 0xcd, 0x77, 0xa4, 0x9f, 0x29, 0x39, 0x2f,
+	0x41, 0x4c, 0xd7, 0xea, 0x17, 0xea, 0xf5, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x15, 0x45, 0x9a,
+	0xfe, 0x2e, 0x05, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -119,7 +211,133 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintGenesis(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0xa
+	dAtA[i] = 0x52
+	if len(m.AppToAmountValue) > 0 {
+		for iNdEx := len(m.AppToAmountValue) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AppToAmountValue[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x4a
+		}
+	}
+	if len(m.AssetToAmountValue) > 0 {
+		for iNdEx := len(m.AssetToAmountValue) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AssetToAmountValue[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x42
+		}
+	}
+	if len(m.DataAfterCoolOff) > 0 {
+		for iNdEx := len(m.DataAfterCoolOff) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.DataAfterCoolOff[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x3a
+		}
+	}
+	if len(m.ESMMarketPrice) > 0 {
+		for iNdEx := len(m.ESMMarketPrice) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.ESMMarketPrice[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x32
+		}
+	}
+	if len(m.UsersDepositMapping) > 0 {
+		for iNdEx := len(m.UsersDepositMapping) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.UsersDepositMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
+	if len(m.KillSwitchParams) > 0 {
+		for iNdEx := len(m.KillSwitchParams) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.KillSwitchParams[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x22
+		}
+	}
+	if len(m.ESMStatus) > 0 {
+		for iNdEx := len(m.ESMStatus) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.ESMStatus[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.CurrentDepositStats) > 0 {
+		for iNdEx := len(m.CurrentDepositStats) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.CurrentDepositStats[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.ESMTriggerParams) > 0 {
+		for iNdEx := len(m.ESMTriggerParams) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.ESMTriggerParams[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -140,6 +358,60 @@ func (m *GenesisState) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if len(m.ESMTriggerParams) > 0 {
+		for _, e := range m.ESMTriggerParams {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.CurrentDepositStats) > 0 {
+		for _, e := range m.CurrentDepositStats {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.ESMStatus) > 0 {
+		for _, e := range m.ESMStatus {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.KillSwitchParams) > 0 {
+		for _, e := range m.KillSwitchParams {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.UsersDepositMapping) > 0 {
+		for _, e := range m.UsersDepositMapping {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.ESMMarketPrice) > 0 {
+		for _, e := range m.ESMMarketPrice {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.DataAfterCoolOff) > 0 {
+		for _, e := range m.DataAfterCoolOff {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.AssetToAmountValue) > 0 {
+		for _, e := range m.AssetToAmountValue {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.AppToAmountValue) > 0 {
+		for _, e := range m.AppToAmountValue {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
 	l = m.Params.Size()
 	n += 1 + l + sovGenesis(uint64(l))
 	return n
@@ -181,6 +453,312 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ESMTriggerParams", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ESMTriggerParams = append(m.ESMTriggerParams, ESMTriggerParams{})
+			if err := m.ESMTriggerParams[len(m.ESMTriggerParams)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CurrentDepositStats", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CurrentDepositStats = append(m.CurrentDepositStats, CurrentDepositStats{})
+			if err := m.CurrentDepositStats[len(m.CurrentDepositStats)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ESMStatus", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ESMStatus = append(m.ESMStatus, ESMStatus{})
+			if err := m.ESMStatus[len(m.ESMStatus)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field KillSwitchParams", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.KillSwitchParams = append(m.KillSwitchParams, KillSwitchParams{})
+			if err := m.KillSwitchParams[len(m.KillSwitchParams)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UsersDepositMapping", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UsersDepositMapping = append(m.UsersDepositMapping, UsersDepositMapping{})
+			if err := m.UsersDepositMapping[len(m.UsersDepositMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ESMMarketPrice", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ESMMarketPrice = append(m.ESMMarketPrice, ESMMarketPrice{})
+			if err := m.ESMMarketPrice[len(m.ESMMarketPrice)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DataAfterCoolOff", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DataAfterCoolOff = append(m.DataAfterCoolOff, DataAfterCoolOff{})
+			if err := m.DataAfterCoolOff[len(m.DataAfterCoolOff)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetToAmountValue", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetToAmountValue = append(m.AssetToAmountValue, AssetToAmountValue{})
+			if err := m.AssetToAmountValue[len(m.AssetToAmountValue)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppToAmountValue", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AppToAmountValue = append(m.AppToAmountValue, AppToAmountValue{})
+			if err := m.AppToAmountValue[len(m.AppToAmountValue)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 10:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
 			}

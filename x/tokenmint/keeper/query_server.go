@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	_ types.QueryServer = (*QueryServer)(nil)
+	_ types.QueryServer = QueryServer{}
 )
 
 type QueryServer struct {
@@ -21,7 +21,7 @@ func NewQueryServer(k Keeper) types.QueryServer {
 	}
 }
 
-func (q *QueryServer) QueryAllTokenMintedForAllApps(c context.Context, req *types.QueryAllTokenMintedForAllAppsRequest) (*types.QueryAllTokenMintedForAllAppsResponse, error) {
+func (q QueryServer) QueryAllTokenMintedForAllApps(c context.Context, req *types.QueryAllTokenMintedForAllAppsRequest) (*types.QueryAllTokenMintedForAllAppsResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -32,7 +32,7 @@ func (q *QueryServer) QueryAllTokenMintedForAllApps(c context.Context, req *type
 	}, nil
 }
 
-func (q *QueryServer) QueryTokenMintedByApp(c context.Context, req *types.QueryTokenMintedByAppRequest) (*types.QueryTokenMintedByAppResponse, error) {
+func (q QueryServer) QueryTokenMintedByApp(c context.Context, req *types.QueryTokenMintedByAppRequest) (*types.QueryTokenMintedByAppResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
@@ -46,7 +46,7 @@ func (q *QueryServer) QueryTokenMintedByApp(c context.Context, req *types.QueryT
 	}, nil
 }
 
-func (q *QueryServer) QueryTokenMintedByAppAndAsset(c context.Context, req *types.QueryTokenMintedByAppAndAssetRequest) (*types.QueryTokenMintedByAppAndAssetResponse, error) {
+func (q QueryServer) QueryTokenMintedByAppAndAsset(c context.Context, req *types.QueryTokenMintedByAppAndAssetRequest) (*types.QueryTokenMintedByAppAndAssetResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
