@@ -615,7 +615,7 @@ func New(
 		app.IbcKeeper.ChannelKeeper,
 	)
 
-	app.MarketKeeper = *marketkeeper.NewKeeper(
+	app.MarketKeeper = marketkeeper.NewKeeper(
 		app.cdc,
 		app.keys[markettypes.StoreKey],
 		app.GetSubspace(markettypes.ModuleName),
@@ -701,7 +701,7 @@ func New(
 		&app.Rewardskeeper,
 	)
 
-	app.Rewardskeeper = *rewardskeeper.NewKeeper(
+	app.Rewardskeeper = rewardskeeper.NewKeeper(
 		app.cdc,
 		app.keys[rewardstypes.StoreKey],
 		app.keys[rewardstypes.MemStoreKey],

@@ -6,10 +6,10 @@ import (
 	"github.com/comdex-official/comdex/x/market/types"
 )
 
-func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) {
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.params.SetParamSet(ctx, &params)
 }
 
-func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
+func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams()
 }

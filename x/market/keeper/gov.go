@@ -6,7 +6,7 @@ import (
 	"github.com/comdex-official/comdex/x/market/types"
 )
 
-func (k *Keeper) HandleUpdateAdminProposal(ctx sdk.Context, prop *types.UpdateAdminProposal) error {
+func (k Keeper) HandleUpdateAdminProposal(ctx sdk.Context, prop *types.UpdateAdminProposal) error {
 	params := k.GetParams(ctx)
 
 	k.SetParams(ctx, params)

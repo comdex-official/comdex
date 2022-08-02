@@ -5,6 +5,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k *Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []types.Asset) {
+func (k Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []types.Asset) {
 	return k.assetKeeper.GetAssetsForOracle(ctx)
 }
