@@ -47,4 +47,5 @@ var (
 	ErrWithdrawAmountLimitExceeds      = sdkerrors.Register(ModuleName, 1154, "Withdraw Amount Limit Exceeded")
 	ErrorAppMappingDoesNotExist        = sdkerrors.Register(ModuleName, 1155, "App Mapping Id does not exists")
 	ErrBridgeAssetQtyInsufficient      = sdkerrors.Register(ModuleName, 1156, "Bridge Asset Qty Insufficient")
+	ErrAverageBorrowRate               = sdkerrors.Register(ModuleName, 1157, "Average Borrow Rate Error")
 )

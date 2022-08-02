@@ -82,6 +82,9 @@ func (k Keeper) GetAverageBorrowRate(ctx sdk.Context, poolID, assetID uint64) (a
 	factor2 := assetStats.StableBorrowApr.Mul(sdk.Dec(assetStats.TotalStableBorrowed))
 	numerator := factor1.Add(factor2)
 	denominator := sdk.Dec(assetStats.TotalStableBorrowed).Add(sdk.Dec(assetStats.TotalBorrowed))
+	if denominator == sdk.ZeroDec() {
+		return sdk.Dec{}, types.ErrAverageBorrowRate
+	}
 	averageBorrowRate = numerator.Quo(denominator)
 	return averageBorrowRate, nil
 }
