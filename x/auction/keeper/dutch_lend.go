@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"
 
@@ -10,11 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) LendDutchActivator(ctx sdk.Context) error {
-	lockedVaults := k.GetLockedVaults(ctx)
-	if len(lockedVaults) == 0 {
-		return auctiontypes.ErrorInvalidLockedVault
-	}
+func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVaults []liquidationtypes.LockedVault) error {
 	for _, lockedVault := range lockedVaults {
 		if lockedVault.Kind != nil {
 			if !lockedVault.IsAuctionInProgress {
@@ -406,7 +402,7 @@ func (k Keeper) CloseDutchLendAuction(
 
 func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 	dutchAuctions := k.GetDutchLendAuctions(ctx, appID)
-	auctionParams, found := k.lend.GetAddAuctionParamsData(ctx, appID)
+	auctionParams, found := k.GetAddAuctionParamsData(ctx, appID)
 	if !found {
 		return nil
 	}
@@ -458,17 +454,10 @@ func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 	return nil
 }
 
-func (k Keeper) RestartLendDutch(ctx sdk.Context) error {
-	appIds, found := k.GetApps(ctx)
-	if !found {
-		return assettypes.AppIdsDoesntExist
-	}
-	for _, appId := range appIds {
-
-		err := k.RestartDutchLendAuctions(ctx, appId.Id)
-		if err != nil {
-			return err
-		}
+func (k Keeper) RestartLendDutch(ctx sdk.Context, appID uint64) error {
+	err := k.RestartDutchLendAuctions(ctx, appID)
+	if err != nil {
+		return err
 	}
 	return nil
 }

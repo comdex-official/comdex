@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	"time"
 
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -12,11 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) DutchActivator(ctx sdk.Context) error {
-	lockedVaults := k.GetLockedVaults(ctx)
-	if len(lockedVaults) == 0 {
-		return auctiontypes.ErrorInvalidLockedVault
-	}
+func (k Keeper) DutchActivator(ctx sdk.Context, lockedVaults []liquidationtypes.LockedVault) error {
 	for _, lockedVault := range lockedVaults {
 		if lockedVault.Kind == nil {
 			if !lockedVault.IsAuctionInProgress {
@@ -605,17 +601,10 @@ func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAu
 	return nil
 }
 
-func (k Keeper) RestartDutch(ctx sdk.Context) error {
-	appIds, found := k.GetApps(ctx)
-	if !found {
-		return assettypes.AppIdsDoesntExist
-	}
-	for _, appId := range appIds {
-
-		err := k.RestartDutchAuctions(ctx, appId.Id)
-		if err != nil {
-			return err
-		}
+func (k Keeper) RestartDutch(ctx sdk.Context, appID uint64) error {
+	err := k.RestartDutchAuctions(ctx, appID)
+	if err != nil {
+		return err
 	}
 	return nil
 }

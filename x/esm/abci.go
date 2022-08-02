@@ -5,12 +5,16 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/keeper"
 	"github.com/comdex-official/comdex/x/esm/types"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
+	
+	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
+
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
 		apps, found := k.GetApps(ctx)
 		if !found {
