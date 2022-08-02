@@ -138,7 +138,7 @@ func (k Keeper) GetAuctionType(ctx sdk.Context, auctionTypeID uint64, appID uint
 	return "", sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction mapping id %d not found", auctionTypeID)
 }
 
-func (k *Keeper) GetLendAuctionType(ctx sdk.Context, auctionTypeID uint64, appID uint64) (string, error) {
+func (k Keeper) GetLendAuctionType(ctx sdk.Context, auctionTypeID uint64, appID uint64) (string, error) {
 	params, found := k.GetAddAuctionParamsData(ctx, appID)
 
 	if !found {
