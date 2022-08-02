@@ -11,15 +11,24 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
 	for _, item := range state.SurplusAuction {
-		k.SetSurplusAuction(ctx, item)
+		err := k.SetSurplusAuction(ctx, item)
+		if err != nil {
+			return
+		}
 	}
 
 	for _, item := range state.DebtAuction {
-		k.SetDebtAuction(ctx, item)
+		err := k.SetDebtAuction(ctx, item)
+		if err != nil {
+			return
+		}
 	}
 
 	for _, item := range state.DutchAuction {
-		k.SetDutchAuction(ctx, item)
+		err := k.SetDutchAuction(ctx, item)
+		if err != nil {
+			return
+		}
 	}
 
 	for _, item := range state.ProtocolStatistics {

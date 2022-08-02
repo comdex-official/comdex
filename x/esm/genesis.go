@@ -23,7 +23,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	}
 
 	for _, item := range state.KillSwitchParams {
-		k.SetKillSwitchData(ctx, item)
+		err := k.SetKillSwitchData(ctx, item)
+		if err != nil {
+			return
+		}
 	}
 
 	for _, item := range state.UsersDepositMapping {
