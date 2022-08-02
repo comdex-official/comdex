@@ -262,6 +262,27 @@ func (k Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionP
 	return auctionParams, true
 }
 
+func (k Keeper) GetAllAddAuctionParamsData(ctx sdk.Context) (auctionParams []types.AuctionParams) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AuctionParamPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.AuctionParams
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		auctionParams = append(auctionParams, asset)
+	}
+	return auctionParams
+}
+
 func (k Keeper) SetAssetRatesStats(ctx sdk.Context, assetRatesStats types.AssetRatesStats) {
 	var (
 		store = k.Store(ctx)
@@ -285,6 +306,27 @@ func (k Keeper) GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRatesS
 
 	k.cdc.MustUnmarshal(value, &assetRatesStats)
 	return assetRatesStats, true
+}
+
+func (k Keeper) GetAllAssetRatesStats(ctx sdk.Context) (assetRatesStats []types.AssetRatesStats) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AssetRatesStatsKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.AssetRatesStats
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		assetRatesStats = append(assetRatesStats, asset)
+	}
+	return assetRatesStats
 }
 
 func (k Keeper) SetDepositStats(ctx sdk.Context, depositStats types.DepositStats) {

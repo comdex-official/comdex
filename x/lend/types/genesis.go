@@ -1,20 +1,55 @@
 package types
 
-// DefaultIndex is the default capability global index.
-const DefaultIndex uint64 = 1
-
-// DefaultGenesis returns the default Capability genesis state.
-func DefaultGenesis() *GenesisState {
+func NewGenesisState(borrowAsset []BorrowAsset, userBorrowIdMapping []UserBorrowIdMapping, borrowIdByOwnerAndPoolMapping []BorrowIdByOwnerAndPoolMapping, borrowMapping BorrowMapping, lendAsset []LendAsset, pool []Pool, assetToPairMapping []AssetToPairMapping, userLendIdMapping []UserLendIdMapping, lendIdByOwnerAndPoolMapping []LendIdByOwnerAndPoolMapping, lendIdToBorrowIdMapping []LendIdToBorrowIdMapping, assetStats []AssetStats, lendMapping LendMapping, userdepositStats DepositStats, reservedepositStats DepositStats, buybackdepositStats DepositStats, borrowdepositStats DepositStats, extended_Pair []Extended_Pair, assetRatesStats []AssetRatesStats, auctionParams []AuctionParams, params Params) *GenesisState {
 	return &GenesisState{
-		// this line is used by starport scaffolding # genesis/types/default.
-		Params: DefaultParams(),
+		BorrowAsset: borrowAsset,
+		UserBorrowIdMapping: userBorrowIdMapping,
+		BorrowIdByOwnerAndPoolMapping: borrowIdByOwnerAndPoolMapping,
+		BorrowMapping: borrowMapping,
+		LendAsset: lendAsset,
+		Pool: pool,
+		AssetToPairMapping: assetToPairMapping,
+		UserLendIdMapping: userLendIdMapping,
+		LendIdByOwnerAndPoolMapping: lendIdByOwnerAndPoolMapping,
+		LendIdToBorrowIdMapping: lendIdToBorrowIdMapping,
+		AssetStats: assetStats,
+		LendMapping: lendMapping,
+		UserDepositStats: userdepositStats,
+		ReserveDepositStats: reservedepositStats,
+		BuyBackDepositStats: buybackdepositStats,
+		BorrowDepositStats: borrowdepositStats,
+		Extended_Pair: extended_Pair,
+		AssetRatesStats: assetRatesStats,
+		AuctionParams: auctionParams,
+		Params: params,
 	}
 }
 
-// Validate performs basic genesis state validation returning an error upon any.
-// failure.
-func (gs GenesisState) Validate() error {
-	// this line is used by starport scaffolding # genesis/types/validate.
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(
+		[]BorrowAsset{},
+		[]UserBorrowIdMapping{},
+		[]BorrowIdByOwnerAndPoolMapping{},
+		BorrowMapping{},
+		[]LendAsset{},
+		[]Pool{},
+		[]AssetToPairMapping{},
+		[]UserLendIdMapping{},
+		[]LendIdByOwnerAndPoolMapping{},
+		[]LendIdToBorrowIdMapping{},
+		[]AssetStats{},
+		LendMapping{},
+		DepositStats{},
+		DepositStats{},
+		DepositStats{},
+		DepositStats{},
+		[]Extended_Pair{},
+		[]AssetRatesStats{},
+		[]AuctionParams{},
+		DefaultParams(),
+	)
+}
 
-	return gs.Params.Validate()
+func (m *GenesisState) Validate() error {
+	return nil
 }

@@ -61,6 +61,27 @@ func (k Keeper) GetBorrow(ctx sdk.Context, ID uint64) (borrow types.BorrowAsset,
 	return borrow, true
 }
 
+func (k Keeper) GetAllBorrow(ctx sdk.Context) (borrowAsset []types.BorrowAsset) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.BorrowPairKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.BorrowAsset
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		borrowAsset = append(borrowAsset, asset)
+	}
+	return borrowAsset
+}
+
 func (k Keeper) DeleteBorrow(ctx sdk.Context, ID uint64) {
 	var (
 		store = k.Store(ctx)
@@ -148,6 +169,27 @@ func (k Keeper) GetUserBorrows(ctx sdk.Context, address string) (userBorrows typ
 	return userBorrows, true
 }
 
+func (k Keeper) GetAllUserBorrows(ctx sdk.Context) (userBorrowIdMapping []types.UserBorrowIdMapping) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.UserBorrowsForAddressKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.UserBorrowIdMapping
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		userBorrowIdMapping = append(userBorrowIdMapping, asset)
+	}
+	return userBorrowIdMapping
+}
+
 func (k Keeper) UserBorrows(ctx sdk.Context, address string) (userBorrows []types.BorrowAsset, found bool) {
 	userBorrowID, _ := k.GetUserBorrows(ctx, address)
 	for _, v := range userBorrowID.BorrowIDs {
@@ -212,6 +254,27 @@ func (k Keeper) GetBorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolI
 	k.cdc.MustUnmarshal(value, &userBorrows)
 
 	return userBorrows, true
+}
+
+func (k Keeper) GetAllBorrowIDByOwnerAndPool(ctx sdk.Context) (borrowIdByOwnerAndPoolMapping []types.BorrowIdByOwnerAndPoolMapping) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.BorrowByUserAndPoolPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.BorrowIdByOwnerAndPoolMapping
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		borrowIdByOwnerAndPoolMapping = append(borrowIdByOwnerAndPoolMapping, asset)
+	}
+	return borrowIdByOwnerAndPoolMapping
 }
 
 func (k Keeper) BorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userBorrows []types.BorrowAsset, found bool) {

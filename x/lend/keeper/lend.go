@@ -61,6 +61,27 @@ func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend types.LendAsset, found
 	return lend, true
 }
 
+func (k Keeper) GetAllLend(ctx sdk.Context) (lendAsset []types.LendAsset) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.LendUserPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.LendAsset
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		lendAsset = append(lendAsset, asset)
+	}
+	return lendAsset
+}
+
 func (k Keeper) DeleteLend(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
@@ -172,6 +193,27 @@ func (k Keeper) GetAssetToPair(ctx sdk.Context, assetID, poolID uint64) (assetTo
 	return assetToPair, true
 }
 
+func (k Keeper) GetAllAssetToPair(ctx sdk.Context) (assetToPairMapping []types.AssetToPairMapping) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AssetToPairMappingKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.AssetToPairMapping
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		assetToPairMapping = append(assetToPairMapping, asset)
+	}
+	return assetToPairMapping
+}
+
 func (k Keeper) SetLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, id, poolID uint64) {
 	var (
 		store = k.Store(ctx)
@@ -250,6 +292,27 @@ func (k Keeper) GetUserLends(ctx sdk.Context, address string) (userVaults types.
 	return userVaults, true
 }
 
+func (k Keeper) GetAllUserLends(ctx sdk.Context) (userLendIdMapping []types.UserLendIdMapping) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.UserLendsForAddressKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.UserLendIdMapping
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		userLendIdMapping = append(userLendIdMapping, asset)
+	}
+	return userLendIdMapping
+}
+
 func (k Keeper) UserLends(ctx sdk.Context, address string) (userLends []types.LendAsset, found bool) {
 	userLendID, _ := k.GetUserLends(ctx, address)
 	for _, v := range userLendID.LendIDs {
@@ -314,6 +377,27 @@ func (k Keeper) GetLendIDByOwnerAndPool(ctx sdk.Context, address string, poolID 
 	k.cdc.MustUnmarshal(value, &userLends)
 
 	return userLends, true
+}
+
+func (k Keeper) GetAllLendIDByOwnerAndPool(ctx sdk.Context) (lendIdByOwnerAndPoolMapping []types.LendIdByOwnerAndPoolMapping) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.LendByUserAndPoolPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.LendIdByOwnerAndPoolMapping
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		lendIdByOwnerAndPoolMapping = append(lendIdByOwnerAndPoolMapping, asset)
+	}
+	return lendIdByOwnerAndPoolMapping
 }
 
 func (k Keeper) LendIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userLends []types.LendAsset, found bool) {
@@ -391,6 +475,27 @@ func (k Keeper) GetLendIDToBorrowIDMapping(ctx sdk.Context, id uint64) (lendIDTo
 	return lendIDToBorrowIDMapping, true
 }
 
+func (k Keeper) GetAllLendIDToBorrowIDMapping(ctx sdk.Context) (lendIdToBorrowIdMapping []types.LendIdToBorrowIdMapping) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.LendIDToBorrowIDMappingKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.LendIdToBorrowIdMapping
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		lendIdToBorrowIdMapping = append(lendIdToBorrowIdMapping, asset)
+	}
+	return lendIdToBorrowIdMapping
+}
+
 func (k Keeper) DeleteLendIDToBorrowIDMapping(ctx sdk.Context, lendingID uint64) {
 	var (
 		store = k.Store(ctx)
@@ -423,6 +528,27 @@ func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID
 
 	k.cdc.MustUnmarshal(value, &AssetStats)
 	return AssetStats, true
+}
+
+func (k Keeper) GetAllAssetStatsByPoolIDAndAssetID(ctx sdk.Context) (assetStats []types.AssetStats) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AssetStatsByPoolIDAndAssetIDKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.AssetStats
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		assetStats = append(assetStats, asset)
+	}
+	return assetStats
 }
 
 func (k Keeper) AssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats types.AssetStats, found bool) {
