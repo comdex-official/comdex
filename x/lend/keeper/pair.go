@@ -6,7 +6,7 @@ import (
 	protobuftypes "github.com/gogo/protobuf/types"
 )
 
-func (k *Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_Pair) error {
+func (k Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_Pair) error {
 	for _, msg := range records {
 		_, found := k.GetLendPair(ctx, msg.Id)
 		if found {
@@ -115,7 +115,7 @@ func (k Keeper) AddAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMap
 	return nil
 }
 
-func (k *Keeper) UpdateLendPairRecords(ctx sdk.Context, msg types.Extended_Pair) error {
+func (k Keeper) UpdateLendPairRecords(ctx sdk.Context, msg types.Extended_Pair) error {
 	pair, found := k.GetLendPair(ctx, msg.Id)
 	if !found {
 		return types.ErrorPairDoesNotExist
@@ -125,7 +125,7 @@ func (k *Keeper) UpdateLendPairRecords(ctx sdk.Context, msg types.Extended_Pair)
 	return nil
 }
 
-func (k *Keeper) SetLendPairID(ctx sdk.Context, id uint64) {
+func (k Keeper) SetLendPairID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LendPairIDKey
@@ -139,7 +139,7 @@ func (k *Keeper) SetLendPairID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetLendPair(ctx sdk.Context, pair types.Extended_Pair) {
+func (k Keeper) SetLendPair(ctx sdk.Context, pair types.Extended_Pair) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LendPairKey(pair.Id)
@@ -149,7 +149,7 @@ func (k *Keeper) SetLendPair(ctx sdk.Context, pair types.Extended_Pair) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair types.Extended_Pair, found bool) {
+func (k Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair types.Extended_Pair, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LendPairKey(id)
@@ -164,7 +164,7 @@ func (k *Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair types.Extended_Pa
 	return pair, true
 }
 
-func (k *Keeper) GetLendPairs(ctx sdk.Context) (pairs []types.Extended_Pair) {
+func (k Keeper) GetLendPairs(ctx sdk.Context) (pairs []types.Extended_Pair) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.LendPairKeyPrefix)
@@ -186,7 +186,7 @@ func (k *Keeper) GetLendPairs(ctx sdk.Context) (pairs []types.Extended_Pair) {
 	return pairs
 }
 
-func (k *Keeper) GetLendPairID(ctx sdk.Context) uint64 {
+func (k Keeper) GetLendPairID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.LendPairIDKey
@@ -203,7 +203,7 @@ func (k *Keeper) GetLendPairID(ctx sdk.Context) uint64 {
 	return count.GetValue()
 }
 
-func (k *Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRatesStats) error {
+func (k Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRatesStats) error {
 	for _, msg := range records {
 		_, found := k.GetAssetRatesStats(ctx, msg.AssetID)
 		if found {
@@ -235,7 +235,7 @@ func (k *Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRates
 	return nil
 }
 
-func (k *Keeper) AddAuctionParamsData(ctx sdk.Context, param types.AuctionParams) error {
+func (k Keeper) AddAuctionParamsData(ctx sdk.Context, param types.AuctionParams) error {
 	var (
 		store = k.Store(ctx)
 		key   = types.AuctionParamKey(param.AppId)
@@ -247,7 +247,7 @@ func (k *Keeper) AddAuctionParamsData(ctx sdk.Context, param types.AuctionParams
 	return nil
 }
 
-func (k *Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams types.AuctionParams, found bool) {
+func (k Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams types.AuctionParams, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AuctionParamKey(appID)
@@ -262,7 +262,7 @@ func (k *Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auction
 	return auctionParams, true
 }
 
-func (k *Keeper) SetAssetRatesStats(ctx sdk.Context, assetRatesStats types.AssetRatesStats) {
+func (k Keeper) SetAssetRatesStats(ctx sdk.Context, assetRatesStats types.AssetRatesStats) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetRatesStatsKey(assetRatesStats.AssetID)
@@ -272,7 +272,7 @@ func (k *Keeper) SetAssetRatesStats(ctx sdk.Context, assetRatesStats types.Asset
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRatesStats types.AssetRatesStats, found bool) {
+func (k Keeper) GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRatesStats types.AssetRatesStats, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AssetRatesStatsKey(assetID)
@@ -287,7 +287,7 @@ func (k *Keeper) GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRates
 	return assetRatesStats, true
 }
 
-func (k *Keeper) SetDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
+func (k Keeper) SetDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
 	var (
 		store = k.Store(ctx)
 		key   = types.DepositStatsPrefix
@@ -297,7 +297,7 @@ func (k *Keeper) SetDepositStats(ctx sdk.Context, depositStats types.DepositStat
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
+func (k Keeper) GetDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.DepositStatsPrefix

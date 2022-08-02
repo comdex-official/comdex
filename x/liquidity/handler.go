@@ -42,11 +42,11 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgCancelAllOrders:
 			res, err := msgServer.CancelAllOrders(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgTokensSoftLock:
-			res, err := msgServer.TokensSoftLock(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgFarm:
+			res, err := msgServer.Farm(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgTokensSoftUnlock:
-			res, err := msgServer.TokensSoftUnlock(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgUnfarm:
+			res, err := msgServer.Unfarm(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", types.ModuleName, msg)

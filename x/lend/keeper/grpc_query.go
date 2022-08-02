@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	_ types.QueryServer = (*QueryServer)(nil)
+	_ types.QueryServer = QueryServer{}
 )
 
 type QueryServer struct {
@@ -572,7 +572,7 @@ func (q QueryServer) QueryBorrowStats(c context.Context, req *types.QueryBorrowS
 	}, nil
 }
 
-func (q *QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAuctionParamRequest) (*types.QueryAuctionParamResponse, error) {
+func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAuctionParamRequest) (*types.QueryAuctionParamResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}

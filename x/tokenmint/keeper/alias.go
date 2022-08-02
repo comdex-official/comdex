@@ -7,15 +7,15 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 )
 
-func (k *Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
+func (k Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return types.BurnCoinValueInTokenmintIsZero
 	}
 
 	return k.bank.BurnCoins(ctx, name, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
+func (k Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return types.ErrorMintingGenesisSupplyLessThanOne
 	}
@@ -23,48 +23,48 @@ func (k *Keeper) MintCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 	return k.bank.MintCoins(ctx, name, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coin sdk.Coin) error {
+func (k Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return types.SendCoinsFromAccountToModuleInTokenmintIsZero
 	}
 
 	return k.bank.SendCoinsFromAccountToModule(ctx, address, name, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coin sdk.Coin) error {
+func (k Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
-		return nil
+		return types.SendCoinsFromModuleToAccountInTokenmintIsZero
 	}
 
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
-func (k *Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
+func (k Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
-		return nil
+		return types.SendCoinsFromModuleToModuleInTokenmintIsZero
 	}
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }
 
-func (k *Keeper) SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins {
+func (k Keeper) SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins {
 	return k.bank.SpendableCoins(ctx, address)
 }
 
-func (k *Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
+func (k Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
 	return k.asset.GetAsset(ctx, id)
 }
 
-func (k *Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool) {
+func (k Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool) {
 	return k.asset.GetApp(ctx, id)
 }
 
-func (k *Keeper) GetApps(ctx sdk.Context) ([]assettypes.AppData, bool) {
+func (k Keeper) GetApps(ctx sdk.Context) ([]assettypes.AppData, bool) {
 	return k.asset.GetApps(ctx)
 }
 
-func (k *Keeper) GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64) (assettypes.MintGenesisToken, bool) {
+func (k Keeper) GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64) (assettypes.MintGenesisToken, bool) {
 	return k.asset.GetMintGenesisTokenData(ctx, appID, assetID)
 }
 
-func (k *Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (assettypes.Asset, bool) {
+func (k Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (assettypes.Asset, bool) {
 	return k.asset.GetAssetForDenom(ctx, denom)
 }

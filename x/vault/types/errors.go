@@ -35,6 +35,12 @@ var (
 	ErrorInvalidExtendedPairMappingData  = errors.Register(ModuleName, 215, "Invalid Extended Pair Vault Mapping data sent as compared to data exists in vault")
 	ErrorVaultInactive                   = errors.Register(ModuleName, 216, "Vault tx Inactive")
 	ErrorStableMintVaultAlreadyCreated   = errors.Register(ModuleName, 217, "Stable Mint with this ExtendedPair Already exists, try deposit for stable mint")
+	BurnCoinValueInVaultIsZero           = errors.Register(ModuleName, 218, "Burn Coin value in vault is zero")
+	MintCoinValueInVaultIsZero           = errors.Register(ModuleName, 219, "Mint Coin value in vault is zero")
+	SendCoinsFromModuleToModuleInVaultIsZero  = errors.Register(ModuleName, 220, "Coin value in module to module transfer in vault is zero")
+	SendCoinsFromModuleToAccountInVaultIsZero = errors.Register(ModuleName, 221, "Coin value in module to account transfer in vault is zero")
+	SendCoinsFromAccountToModuleInVaultIsZero = errors.Register(ModuleName, 222, "Coin value in account to module transfer in vault is zero")
+
 )
 
 var (

@@ -47,4 +47,10 @@ var (
 	ErrWithdrawAmountLimitExceeds      = sdkerrors.Register(ModuleName, 1154, "Withdraw Amount Limit Exceeded")
 	ErrorAppMappingDoesNotExist        = sdkerrors.Register(ModuleName, 1155, "App Mapping Id does not exists")
 	ErrBridgeAssetQtyInsufficient      = sdkerrors.Register(ModuleName, 1156, "Bridge Asset Qty Insufficient")
+	BurnCoinValueInLendIsZero           = sdkerrors.Register(ModuleName, 1157, "Burn Coin value in lend is zero")
+	MintCoinValueInLendIsZero           = sdkerrors.Register(ModuleName, 1158, "Mint Coin value in lend is zero")
+	SendCoinsFromModuleToModuleInLendIsZero  = sdkerrors.Register(ModuleName, 1159, "Coin value in module to module transfer in lend is zero")
+	SendCoinsFromModuleToAccountInLendIsZero = sdkerrors.Register(ModuleName, 1160, "Coin value in module to account transfer in lend is zero")
+	SendCoinsFromAccountToModuleInLendIsZero = sdkerrors.Register(ModuleName, 1161, "Coin value in account to module transfer in lend is zero")
+
 )

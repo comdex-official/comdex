@@ -6,7 +6,7 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 )
 
-func (k *Keeper) SetLastInterestTime(ctx sdk.Context, interestTime int64) error {
+func (k Keeper) SetLastInterestTime(ctx sdk.Context, interestTime int64) error {
 	store := ctx.KVStore(k.storeKey)
 	timeKey := types.CreateLastInterestTimeKey()
 

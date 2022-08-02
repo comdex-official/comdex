@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	_ types.QueryServer = (*queryServer)(nil)
+	_ types.QueryServer = queryServer{}
 )
 
 type queryServer struct {

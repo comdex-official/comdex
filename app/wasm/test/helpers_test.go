@@ -60,7 +60,7 @@ func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 	assetKeeper, ctx := &app.AssetKeeper, &ctx1
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	genesisSupply := sdk.NewIntFromUint64(9000000)
-	msg1 := []assetTypes.AppData{{
+	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -68,33 +68,31 @@ func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
 				3,
-				&genesisSupply,
+				genesisSupply,
 				true,
 				userAddress,
 			},
 		},
-	},
-		{
-			Name:             "commodo",
-			ShortName:        "commodo",
-			MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-			GovTimeInSeconds: 900},
 	}
-	_ = assetKeeper.AddAppRecords(*ctx, msg1...)
+	_ = assetKeeper.AddAppRecords(*ctx, msg1)
 
-	msg2 := []assetTypes.Asset{
-		{Name: "CMDX",
+	msg2 := assetTypes.Asset{Name: "CMDX",
 			Denom:     "ucmdx",
 			Decimals:  1000000,
-			IsOnChain: true}, {Name: "CMST",
-			Denom:     "ucmst",
-			Decimals:  1000000,
-			IsOnChain: true}, {Name: "HARBOR",
-			Denom:     "uharbor",
-			Decimals:  1000000,
-			IsOnChain: true},
-	}
-	_ = assetKeeper.AddAssetRecords(*ctx, msg2...)
+			IsOnChain: true}
+	_ = assetKeeper.AddAssetRecords(*ctx, msg2)
+
+	msg3 := assetTypes.Asset{Name: "CMST",
+	Denom:     "ucmst",
+	Decimals:  1000000,
+	IsOnChain: true}
+	_ = assetKeeper.AddAssetRecords(*ctx, msg3)
+
+	msg4 := assetTypes.Asset{Name: "HARBOR",
+	Denom:     "uharbor",
+	Decimals:  1000000,
+	IsOnChain: true}
+	_ = assetKeeper.AddAssetRecords(*ctx, msg4)
 
 }
 

@@ -34,9 +34,9 @@ func (m StrIntMap) AddOrSet(key string, value sdk.Int) {
 
 // DateRangesOverlap returns true if two date ranges overlap each other.
 // End time is exclusive and start time is inclusive.
-func DateRangesOverlap(startTimeA, endTimeA, startTimeB, endTimeB time.Time) bool {
-	return startTimeA.Before(endTimeB) && endTimeA.After(startTimeB)
-}
+// func DateRangesOverlap(startTimeA, endTimeA, startTimeB, endTimeB time.Time) bool {
+// 	return startTimeA.Before(endTimeB) && endTimeA.After(startTimeB)
+// }
 
 // DateRangeIncludes returns true if the target date included on the start, end time range.
 // End time is exclusive and start time is inclusive.

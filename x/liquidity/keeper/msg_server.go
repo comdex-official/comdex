@@ -111,22 +111,22 @@ func (m msgServer) CancelAllOrders(goCtx context.Context, msg *types.MsgCancelAl
 	return &types.MsgCancelAllOrdersResponse{}, nil
 }
 
-func (m msgServer) TokensSoftLock(goCtx context.Context, msg *types.MsgTokensSoftLock) (*types.MsgTokensSoftLockResponse, error) {
+func (m msgServer) Farm(goCtx context.Context, msg *types.MsgFarm) (*types.MsgFarmResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := m.Keeper.SoftLockTokens(ctx, msg); err != nil {
+	if err := m.Keeper.Farm(ctx, msg); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgTokensSoftLockResponse{}, nil
+	return &types.MsgFarmResponse{}, nil
 }
 
-func (m msgServer) TokensSoftUnlock(goCtx context.Context, msg *types.MsgTokensSoftUnlock) (*types.MsgTokensSoftUnlockResponse, error) {
+func (m msgServer) Unfarm(goCtx context.Context, msg *types.MsgUnfarm) (*types.MsgUnfarmResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := m.Keeper.SoftUnlockTokens(ctx, msg); err != nil {
+	if err := m.Keeper.Unfarm(ctx, msg); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgTokensSoftUnlockResponse{}, nil
+	return &types.MsgUnfarmResponse{}, nil
 }

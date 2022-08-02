@@ -45,13 +45,13 @@ func NewKeeper(
 	marketKeeper expected.MarketKeeper,
 	esm expected.EsmKeeper,
 
-) *Keeper {
+) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
 
-	return &Keeper{
+	return Keeper{
 
 		cdc:             cdc,
 		storeKey:        storeKey,
@@ -153,7 +153,7 @@ func (k Keeper) RemoveWhitelistAppIDVault(ctx sdk.Context, appMappingID uint64) 
 	return nil
 }
 
-func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
 

@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var _ types.QueryServer = (*QueryServer)(nil)
+var _ types.QueryServer = QueryServer{}
 
 type QueryServer struct {
 	Keeper
@@ -23,7 +23,7 @@ func NewQueryServer(k Keeper) types.QueryServer {
 	}
 }
 
-func (q *QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (q QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	var (
 		ctx    = sdk.UnwrapSDKContext(c)
 		params = q.GetParams(ctx)
@@ -34,7 +34,7 @@ func (q *QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest
 	}, nil
 }
 
-func (q *QueryServer) QueryLockedVault(c context.Context, req *types.QueryLockedVaultRequest) (*types.QueryLockedVaultResponse, error) {
+func (q QueryServer) QueryLockedVault(c context.Context, req *types.QueryLockedVaultRequest) (*types.QueryLockedVaultResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -52,7 +52,7 @@ func (q *QueryServer) QueryLockedVault(c context.Context, req *types.QueryLocked
 	}, nil
 }
 
-func (q *QueryServer) QueryLockedVaults(c context.Context, req *types.QueryLockedVaultsRequest) (*types.QueryLockedVaultsResponse, error) {
+func (q QueryServer) QueryLockedVaults(c context.Context, req *types.QueryLockedVaultsRequest) (*types.QueryLockedVaultsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -89,7 +89,7 @@ func (q *QueryServer) QueryLockedVaults(c context.Context, req *types.QueryLocke
 	}, nil
 }
 
-func (q *QueryServer) QueryLockedVaultsHistory(c context.Context, req *types.QueryLockedVaultsHistoryRequest) (*types.QueryLockedVaultsHistoryResponse, error) {
+func (q QueryServer) QueryLockedVaultsHistory(c context.Context, req *types.QueryLockedVaultsHistoryRequest) (*types.QueryLockedVaultsHistoryResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -126,7 +126,7 @@ func (q *QueryServer) QueryLockedVaultsHistory(c context.Context, req *types.Que
 	}, nil
 }
 
-func (q *QueryServer) QueryUserLockedVaults(c context.Context, req *types.QueryUserLockedVaultsRequest) (*types.QueryUserLockedVaultsResponse, error) {
+func (q QueryServer) QueryUserLockedVaults(c context.Context, req *types.QueryUserLockedVaultsRequest) (*types.QueryUserLockedVaultsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -163,7 +163,7 @@ func (q *QueryServer) QueryUserLockedVaults(c context.Context, req *types.QueryU
 	}, nil
 }
 
-func (q *QueryServer) QueryUserLockedVaultsHistory(c context.Context, req *types.QueryUserLockedVaultsHistoryRequest) (*types.QueryUserLockedVaultsHistoryResponse, error) {
+func (q QueryServer) QueryUserLockedVaultsHistory(c context.Context, req *types.QueryUserLockedVaultsHistoryRequest) (*types.QueryUserLockedVaultsHistoryResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -200,7 +200,7 @@ func (q *QueryServer) QueryUserLockedVaultsHistory(c context.Context, req *types
 	}, nil
 }
 
-func (q *QueryServer) QueryLockedVaultsPair(c context.Context, req *types.QueryLockedVaultsPairRequest) (*types.QueryLockedVaultsPairResponse, error) {
+func (q QueryServer) QueryLockedVaultsPair(c context.Context, req *types.QueryLockedVaultsPairRequest) (*types.QueryLockedVaultsPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -237,7 +237,7 @@ func (q *QueryServer) QueryLockedVaultsPair(c context.Context, req *types.QueryL
 	}, nil
 }
 
-func (q *QueryServer) QueryAppIds(c context.Context, _ *types.QueryAppIdsRequest) (*types.QueryAppIdsResponse, error) {
+func (q QueryServer) QueryAppIds(c context.Context, _ *types.QueryAppIdsRequest) (*types.QueryAppIdsResponse, error) {
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)

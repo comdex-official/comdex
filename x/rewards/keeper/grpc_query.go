@@ -15,7 +15,7 @@ import (
 var _ types.QueryServer = &Keeper{}
 
 // Params queries the parameters of the incentives module.
-func (k *Keeper) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (k Keeper) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	var params types.Params
 	k.paramstore.GetParamSet(ctx, &params)
@@ -23,7 +23,7 @@ func (k *Keeper) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 }
 
 // QueryEpochInfoByDuration queries the epoch info for the given duration of seconds.
-func (k *Keeper) QueryEpochInfoByDuration(c context.Context, req *types.QueryEpochInfoByDurationRequest) (*types.QueryEpochInfoByDurationResponse, error) {
+func (k Keeper) QueryEpochInfoByDuration(c context.Context, req *types.QueryEpochInfoByDurationRequest) (*types.QueryEpochInfoByDurationResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -41,7 +41,7 @@ func (k *Keeper) QueryEpochInfoByDuration(c context.Context, req *types.QueryEpo
 }
 
 // QueryAllEpochsInfo queries all the epochs available.
-func (k *Keeper) QueryAllEpochsInfo(c context.Context, req *types.QueryAllEpochsInfoRequest) (*types.QueryAllEpochsInfoResponse, error) {
+func (k Keeper) QueryAllEpochsInfo(c context.Context, req *types.QueryAllEpochsInfoRequest) (*types.QueryAllEpochsInfoResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -79,7 +79,7 @@ func (k *Keeper) QueryAllEpochsInfo(c context.Context, req *types.QueryAllEpochs
 }
 
 // QueryAllGauges queries all the gauges available.
-func (k *Keeper) QueryAllGauges(c context.Context, req *types.QueryAllGaugesRequest) (*types.QueryAllGaugesResponse, error) {
+func (k Keeper) QueryAllGauges(c context.Context, req *types.QueryAllGaugesRequest) (*types.QueryAllGaugesResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -117,7 +117,7 @@ func (k *Keeper) QueryAllGauges(c context.Context, req *types.QueryAllGaugesRequ
 }
 
 // QueryGaugeByID queries a gauge by specific ID.
-func (k *Keeper) QueryGaugeByID(c context.Context, req *types.QueryGaugeByIdRequest) (*types.QueryGaugeByIdResponse, error) {
+func (k Keeper) QueryGaugeByID(c context.Context, req *types.QueryGaugeByIdRequest) (*types.QueryGaugeByIdResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -135,7 +135,7 @@ func (k *Keeper) QueryGaugeByID(c context.Context, req *types.QueryGaugeByIdRequ
 }
 
 // QueryGaugeByDuration queries gauges for the given duration.
-func (k *Keeper) QueryGaugeByDuration(c context.Context, req *types.QueryGaugesByDurationRequest) (*types.QueryGaugeByDurationResponse, error) {
+func (k Keeper) QueryGaugeByDuration(c context.Context, req *types.QueryGaugesByDurationRequest) (*types.QueryGaugeByDurationResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -162,7 +162,7 @@ func (k *Keeper) QueryGaugeByDuration(c context.Context, req *types.QueryGaugesB
 	}, nil
 }
 
-func (k *Keeper) QueryRewards(c context.Context, req *types.QueryRewardsRequest) (*types.QueryRewardsResponse, error) {
+func (k Keeper) QueryRewards(c context.Context, req *types.QueryRewardsRequest) (*types.QueryRewardsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -199,7 +199,7 @@ func (k *Keeper) QueryRewards(c context.Context, req *types.QueryRewardsRequest)
 	}, nil
 }
 
-func (k *Keeper) QueryReward(c context.Context, req *types.QueryRewardRequest) (*types.QueryRewardResponse, error) {
+func (k Keeper) QueryReward(c context.Context, req *types.QueryRewardRequest) (*types.QueryRewardResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -218,7 +218,7 @@ func (k *Keeper) QueryReward(c context.Context, req *types.QueryRewardRequest) (
 	}, nil
 }
 
-func (k *Keeper) QueryExternalRewardsLockers(c context.Context, req *types.QueryExternalRewardsLockersRequest) (*types.QueryExternalRewardsLockersResponse, error) {
+func (k Keeper) QueryExternalRewardsLockers(c context.Context, req *types.QueryExternalRewardsLockersRequest) (*types.QueryExternalRewardsLockersResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -234,7 +234,7 @@ func (k *Keeper) QueryExternalRewardsLockers(c context.Context, req *types.Query
 	}, nil
 }
 
-func (k *Keeper) QueryExternalRewardVaults(c context.Context, req *types.QueryExternalRewardVaultsRequest) (*types.QueryExternalRewardVaultsResponse, error) {
+func (k Keeper) QueryExternalRewardVaults(c context.Context, req *types.QueryExternalRewardVaultsRequest) (*types.QueryExternalRewardVaultsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -250,7 +250,7 @@ func (k *Keeper) QueryExternalRewardVaults(c context.Context, req *types.QueryEx
 	}, nil
 }
 
-func (k *Keeper) QueryWhitelistedAppIdsVault(c context.Context, req *types.QueryWhitelistedAppIdsVaultRequest) (*types.QueryWhitelistedAppIdsVaultResponse, error) {
+func (k Keeper) QueryWhitelistedAppIdsVault(c context.Context, req *types.QueryWhitelistedAppIdsVaultRequest) (*types.QueryWhitelistedAppIdsVaultResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}

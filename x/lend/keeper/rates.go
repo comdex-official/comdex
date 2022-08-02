@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k *Keeper) VerifyCollaterlizationRatio(
+func (k Keeper) VerifyCollaterlizationRatio(
 	ctx sdk.Context,
 	amountIn sdk.Int,
 	assetIn assettypes.Asset,
@@ -26,7 +26,7 @@ func (k *Keeper) VerifyCollaterlizationRatio(
 	return nil
 }
 
-func (k *Keeper) CalculateCollaterlizationRatio(
+func (k Keeper) CalculateCollaterlizationRatio(
 	ctx sdk.Context,
 	amountIn sdk.Int,
 	assetIn assettypes.Asset,

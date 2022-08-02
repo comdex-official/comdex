@@ -8,7 +8,7 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func (k *Keeper) GetPairsVaultID(ctx sdk.Context) uint64 {
+func (k Keeper) GetPairsVaultID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.PairsVaultIDKey
@@ -25,7 +25,7 @@ func (k *Keeper) GetPairsVaultID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k *Keeper) SetPairsVaultID(ctx sdk.Context, id uint64) {
+func (k Keeper) SetPairsVaultID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.PairsVaultIDKey
@@ -39,7 +39,7 @@ func (k *Keeper) SetPairsVaultID(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetPairsVault(ctx sdk.Context, app types.ExtendedPairVault) {
+func (k Keeper) SetPairsVault(ctx sdk.Context, app types.ExtendedPairVault) {
 	var (
 		store = k.Store(ctx)
 		key   = types.PairsKey(app.Id)
@@ -49,7 +49,7 @@ func (k *Keeper) SetPairsVault(ctx sdk.Context, app types.ExtendedPairVault) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs types.ExtendedPairVault, found bool) {
+func (k Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs types.ExtendedPairVault, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.PairsKey(id)
@@ -64,7 +64,7 @@ func (k *Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs types.Extended
 	return pairs, true
 }
 
-func (k *Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault, found bool) {
+func (k Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault, found bool) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.PairsVaultKeyPrefix)
@@ -89,7 +89,7 @@ func (k *Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault
 	return apps, true
 }
 
-func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBinding *bindings.MsgAddExtendedPairsVault) error {
+func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBinding *bindings.MsgAddExtendedPairsVault) error {
 	DebtCeiling := sdk.NewInt(int64(pairVaultBinding.DebtCeiling))
 	DebtFloor := sdk.NewInt(int64(pairVaultBinding.DebtFloor))
 
@@ -150,7 +150,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBind
 	return nil
 }
 
-func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, debtCeiling, debtFloor uint64, PairName string) (bool, string) {
+func (k Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, debtCeiling, debtFloor uint64, PairName string) (bool, string) {
 	DebtCeiling := sdk.NewInt(int64(debtCeiling))
 	DebtFloor := sdk.NewInt(int64(debtFloor))
 
@@ -187,7 +187,7 @@ func (k *Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, p
 	return true, ""
 }
 
-func (k *Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.MsgUpdatePairsVault) error {
+func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.MsgUpdatePairsVault) error {
 	var ExtPairVaultData types.ExtendedPairVault
 	pairVaults, found := k.GetPairsVaults(ctx)
 	if !found {
@@ -224,7 +224,7 @@ func (k *Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings
 	return nil
 }
 
-func (k *Keeper) WasmUpdatePairsVaultQuery(ctx sdk.Context, appID, exPairID uint64) (bool, string) {
+func (k Keeper) WasmUpdatePairsVaultQuery(ctx sdk.Context, appID, exPairID uint64) (bool, string) {
 	pairVaults, found := k.GetPairsVaults(ctx)
 	if !found {
 		return false, types.ErrorPairDoesNotExist.Error()
