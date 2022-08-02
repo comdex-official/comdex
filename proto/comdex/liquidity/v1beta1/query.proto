@@ -211,11 +211,11 @@ message PoolResponse {
   uint64 app_id = 8;
 }
 
-// QuerySoftLockRequest is request type for the Query/SoftLock RPC method.
-message QuerySoftLockRequest {
-  uint64 pool_id = 1;
-  string depositor = 2;
-  uint64 app_id = 3;
+// QueryFarmerRequest is request type for the Query/Farmer RPC method.
+message QueryFarmerRequest {
+  uint64 app_id = 1;
+  uint64 pool_id = 2;
+  string farmer = 3;
 }
 
 message QueuedPoolCoin {
@@ -231,8 +231,8 @@ message QueuedPoolCoin {
   
 }
 
-// QuerySoftLockResponse is response type for the Query/SoftLock RPC method.
-message QuerySoftLockResponse {
+// QueryFarmerResponse is response type for the Query/Farmer RPC method.
+message QueryFarmerResponse {
   cosmos.base.v1beta1.Coin active_pool_coin = 1 [
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
     (gogoproto.nullable) = false
@@ -240,7 +240,6 @@ message QuerySoftLockResponse {
   repeated QueuedPoolCoin queued_pool_coin = 2 [
     (gogoproto.nullable) = false
   ];
-  
 }
 
 // QueryDeserializePoolCoinRequest is request type for the Query/DeserializePoolCoin RPC method.
@@ -386,9 +385,9 @@ service Query {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{app_id}/{orderer}";
   }
 
-  // SoftLock returns deposited poolcoin for farming .
-  rpc SoftLock(QuerySoftLockRequest) returns (QuerySoftLockResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/softlock/{app_id}/{pool_id}/{depositor}";
+  // Farmer returns deposited poolcoin for farming .
+  rpc Farmer(QueryFarmerRequest) returns (QueryFarmerResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/farmer/{app_id}/{pool_id}/{farmer}";
   }
 
   // DeserializePoolCoin splits poolcoin into the actual provided pool assets .
@@ -401,7 +400,7 @@ service Query {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/pool_incentives/{app_id}";
   }
 
-  // FarmedPoolCoin returns the total coin in the soft-lock.
+  // FarmedPoolCoin returns the total farmed pool coins.
   rpc FarmedPoolCoin(QueryFarmedPoolCoinRequest) returns (QueryFarmedPoolCoinResponse) {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/farmed_coin/{app_id}/{pool_id}";
   }

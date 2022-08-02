@@ -18,22 +18,22 @@ var (
 	_ sdk.Msg = (*MsgMarketOrder)(nil)
 	_ sdk.Msg = (*MsgCancelOrder)(nil)
 	_ sdk.Msg = (*MsgCancelAllOrders)(nil)
-	_ sdk.Msg = (*MsgTokensSoftLock)(nil)
-	_ sdk.Msg = (*MsgTokensSoftUnlock)(nil)
+	_ sdk.Msg = (*MsgFarm)(nil)
+	_ sdk.Msg = (*MsgUnfarm)(nil)
 )
 
 // Message types for the liquidity module.
 const (
-	TypeMsgCreatePair       = "create_pair"
-	TypeMsgCreatePool       = "create_pool"
-	TypeMsgDeposit          = "deposit"
-	TypeMsgWithdraw         = "withdraw"
-	TypeMsgLimitOrder       = "limit_order"
-	TypeMsgMarketOrder      = "market_order"
-	TypeMsgCancelOrder      = "cancel_order"
-	TypeMsgCancelAllOrders  = "cancel_all_orders"
-	TypeMsgTokensSoftLock   = "tokens_soft_lock"
-	TypeMsgTokensSoftUnlock = "tokens_soft_unlock" //nolint:gosec
+	TypeMsgCreatePair      = "create_pair"
+	TypeMsgCreatePool      = "create_pool"
+	TypeMsgDeposit         = "deposit"
+	TypeMsgWithdraw        = "withdraw"
+	TypeMsgLimitOrder      = "limit_order"
+	TypeMsgMarketOrder     = "market_order"
+	TypeMsgCancelOrder     = "cancel_order"
+	TypeMsgCancelAllOrders = "cancel_all_orders"
+	TypeMsgFarm            = "farm"
+	TypeMsgUnfarm          = "unfarm" //nolint:gosec
 )
 
 // NewMsgCreatePair returns a new MsgCreatePair.
@@ -554,112 +554,118 @@ func (msg MsgCancelAllOrders) GetOrderer() sdk.AccAddress {
 	return addr
 }
 
-// NewMsgSoftLock creates a new MsgTokensSoftLock.
-func NewMsgSoftLock(
+// NewMsgFarm creates a new MsgFarm.
+func NewMsgFarm(
 	appID uint64,
-	//nolint
-	depositor sdk.AccAddress,
 	poolID uint64,
-	softLockCoin sdk.Coin,
-) *MsgTokensSoftLock {
-	return &MsgTokensSoftLock{
-		AppId:        appID,
-		Depositor:    depositor.String(),
-		PoolId:       poolID,
-		SoftLockCoin: softLockCoin,
+	//nolint
+	farmer sdk.AccAddress,
+	poolCoin sdk.Coin,
+) *MsgFarm {
+	return &MsgFarm{
+		AppId:           appID,
+		PoolId:          poolID,
+		Farmer:          farmer.String(),
+		FarmingPoolCoin: poolCoin,
 	}
 }
 
-func (msg MsgTokensSoftLock) Route() string { return RouterKey }
+func (msg MsgFarm) Route() string { return RouterKey }
 
-func (msg MsgTokensSoftLock) Type() string { return TypeMsgTokensSoftLock }
+func (msg MsgFarm) Type() string { return TypeMsgFarm }
 
-func (msg MsgTokensSoftLock) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Depositor); err != nil {
+func (msg MsgFarm) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Farmer); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid withdrawer address: %v", err)
 	}
 	if msg.PoolId == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pool id must not be 0")
 	}
-	if err := msg.SoftLockCoin.Validate(); err != nil {
+	if msg.AppId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "app id must not be 0")
+	}
+	if err := msg.FarmingPoolCoin.Validate(); err != nil {
 		return err
 	}
-	if !msg.SoftLockCoin.IsPositive() {
+	if !msg.FarmingPoolCoin.IsPositive() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "coin must be positive")
 	}
 	return nil
 }
 
-func (msg MsgTokensSoftLock) GetSignBytes() []byte {
+func (msg MsgFarm) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
-func (msg MsgTokensSoftLock) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
+func (msg MsgFarm) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Farmer)
 	if err != nil {
 		panic(err)
 	}
 	return []sdk.AccAddress{addr}
 }
 
-func (msg MsgTokensSoftLock) GetDepositor() sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
+func (msg MsgFarm) GetFarmer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Farmer)
 	if err != nil {
 		panic(err)
 	}
 	return addr
 }
 
-// NewMsgSoftUnlock creates a new MsgTokensSoftUnlock.
-func NewMsgSoftUnlock(
+// NewMsgUnfarm creates a new MsgUnfarm.
+func NewMsgUnfarm(
 	appID uint64,
-	//nolint
-	depositor sdk.AccAddress,
 	poolID uint64,
-	softUnlockCoin sdk.Coin,
-) *MsgTokensSoftUnlock {
-	return &MsgTokensSoftUnlock{
-		AppId:          appID,
-		Depositor:      depositor.String(),
-		PoolId:         poolID,
-		SoftUnlockCoin: softUnlockCoin,
+	//nolint
+	farmer sdk.AccAddress,
+	poolCoin sdk.Coin,
+) *MsgUnfarm {
+	return &MsgUnfarm{
+		AppId:             appID,
+		PoolId:            poolID,
+		Farmer:            farmer.String(),
+		UnfarmingPoolCoin: poolCoin,
 	}
 }
 
-func (msg MsgTokensSoftUnlock) Route() string { return RouterKey }
+func (msg MsgUnfarm) Route() string { return RouterKey }
 
-func (msg MsgTokensSoftUnlock) Type() string { return TypeMsgTokensSoftUnlock }
+func (msg MsgUnfarm) Type() string { return TypeMsgUnfarm }
 
-func (msg MsgTokensSoftUnlock) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Depositor); err != nil {
+func (msg MsgUnfarm) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Farmer); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid withdrawer address: %v", err)
 	}
 	if msg.PoolId == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pool id must not be 0")
 	}
-	if err := msg.SoftUnlockCoin.Validate(); err != nil {
+	if msg.AppId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "app id must not be 0")
+	}
+	if err := msg.UnfarmingPoolCoin.Validate(); err != nil {
 		return err
 	}
-	if !msg.SoftUnlockCoin.IsPositive() {
+	if !msg.UnfarmingPoolCoin.IsPositive() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "coin must be positive")
 	}
 	return nil
 }
 
-func (msg MsgTokensSoftUnlock) GetSignBytes() []byte {
+func (msg MsgUnfarm) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
-func (msg MsgTokensSoftUnlock) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
+func (msg MsgUnfarm) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Farmer)
 	if err != nil {
 		panic(err)
 	}
 	return []sdk.AccAddress{addr}
 }
 
-func (msg MsgTokensSoftUnlock) GetDepositor() sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
+func (msg MsgUnfarm) GetFarmer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Farmer)
 	if err != nil {
 		panic(err)
 	}

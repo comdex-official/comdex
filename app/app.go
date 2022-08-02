@@ -2,10 +2,12 @@ package app
 
 import (
 	"fmt"
+	"net/http"
+	"sort"
+
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
-	"net/http"
 
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
@@ -995,7 +997,13 @@ func (a *App) LoadHeight(height int64) error {
 // ModuleAccountAddrs returns all the app's module account addresses.
 func (a *App) ModuleAccountAddrs() map[string]bool {
 	accounts := make(map[string]bool)
+
+	names := make([]string, 0)
 	for name := range a.ModuleAccountsPermissions() {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
 		accounts[authtypes.NewModuleAddress(name).String()] = true
 	}
 

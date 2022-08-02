@@ -334,7 +334,7 @@ func (s *ModuleTestSuite) TestMsgCancelAllOrders() {
 	s.Require().False(found)
 }
 
-func (s *ModuleTestSuite) TestMsgTokensSoftLock() {
+func (s *ModuleTestSuite) TestMsgFarm() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
@@ -352,17 +352,17 @@ func (s *ModuleTestSuite) TestMsgTokensSoftLock() {
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime())
-	msg := types.NewMsgSoftLock(appID1, liquidityProvider1, pool.Id, utils.ParseCoin("5000000000pool1-1"))
+	msg := types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
 	_, err := handler(s.ctx, msg)
 	s.Require().NoError(err)
 
-	lpData, found := s.keeper.GetPoolLiquidityProvidersData(s.ctx, appID1, pool.Id)
+	queuedFarmer, found := s.keeper.GetQueuedFarmer(s.ctx, appID1, pool.Id, liquidityProvider1)
 	s.Require().True(found)
-	s.Require().Equal(lpData.QueuedLiquidityProviders[0].SupplyProvided[0].Denom, "pool1-1")
-	s.Require().Equal(lpData.QueuedLiquidityProviders[0].SupplyProvided[0].Amount, sdk.NewInt(5000000000))
+	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Denom, "pool1-1")
+	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Amount, sdk.NewInt(5000000000))
 }
 
-func (s *ModuleTestSuite) TestMsgTokensSoftUnlock() {
+func (s *ModuleTestSuite) TestMsgUnfarm() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
@@ -380,21 +380,21 @@ func (s *ModuleTestSuite) TestMsgTokensSoftUnlock() {
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime())
-	msg := types.NewMsgSoftLock(appID1, liquidityProvider1, pool.Id, utils.ParseCoin("5000000000pool1-1"))
+	msg := types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
 	_, err := handler(s.ctx, msg)
 	s.Require().NoError(err)
 
-	lpData, found := s.keeper.GetPoolLiquidityProvidersData(s.ctx, appID1, pool.Id)
+	queuedFarmer, found := s.keeper.GetQueuedFarmer(s.ctx, appID1, pool.Id, liquidityProvider1)
 	s.Require().True(found)
-	s.Require().Equal(lpData.QueuedLiquidityProviders[0].SupplyProvided[0].Denom, "pool1-1")
-	s.Require().Equal(lpData.QueuedLiquidityProviders[0].SupplyProvided[0].Amount, sdk.NewInt(5000000000))
+	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Denom, "pool1-1")
+	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Amount, sdk.NewInt(5000000000))
 
-	msgUnlock := types.NewMsgSoftUnlock(appID1, liquidityProvider1, pool.Id, utils.ParseCoin("5000000000pool1-1"))
+	msgUnlock := types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
 	_, err = handler(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 
-	lpData, found = s.keeper.GetPoolLiquidityProvidersData(s.ctx, appID1, pool.Id)
+	queuedFarmer, found = s.keeper.GetQueuedFarmer(s.ctx, appID1, pool.Id, liquidityProvider1)
 	s.Require().True(found)
-	s.Require().Len(lpData.QueuedLiquidityProviders, 0)
+	s.Require().Len(queuedFarmer.QueudCoins, 0)
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 }

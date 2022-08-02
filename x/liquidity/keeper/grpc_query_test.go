@@ -934,7 +934,7 @@ func (s *KeeperTestSuite) TestOrdersByOrderer() {
 	}
 }
 
-func (s *KeeperTestSuite) TestSoftLock() {
+func (s *KeeperTestSuite) TestFarmer() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
@@ -951,20 +951,20 @@ func (s *KeeperTestSuite) TestSoftLock() {
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime())
-	msg := types.NewMsgSoftLock(appID1, liquidityProvider1, pool.Id, utils.ParseCoin("5000000000pool1-1"))
-	err := s.keeper.SoftLockTokens(s.ctx, msg)
+	msg := types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
+	err := s.keeper.Farm(s.ctx, msg)
 	s.Require().NoError(err)
 
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(types.DefaultFarmingQueueDuration).Add(time.Hour * 1))
 	s.nextBlock()
 
-	msg = types.NewMsgSoftLock(appID1, liquidityProvider1, pool.Id, utils.ParseCoin("5000000000pool1-1"))
-	err = s.keeper.SoftLockTokens(s.ctx, msg)
+	msg = types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
+	err = s.keeper.Farm(s.ctx, msg)
 	s.Require().NoError(err)
 
 	testCases := []struct {
 		Name   string
-		Req    *types.QuerySoftLockRequest
+		Req    *types.QueryFarmerRequest
 		ExpErr error
 	}{
 		{
@@ -974,22 +974,22 @@ func (s *KeeperTestSuite) TestSoftLock() {
 		},
 		{
 			Name:   "error app id 0",
-			Req:    &types.QuerySoftLockRequest{},
+			Req:    &types.QueryFarmerRequest{},
 			ExpErr: status.Error(codes.InvalidArgument, "app id cannot be 0"),
 		},
 		{
 			Name:   "error invalid depositor",
-			Req:    &types.QuerySoftLockRequest{AppId: appID1, PoolId: pool.Id, Depositor: "123"},
-			ExpErr: status.Errorf(codes.InvalidArgument, "depositor address 123 is invalid"),
+			Req:    &types.QueryFarmerRequest{AppId: appID1, PoolId: pool.Id, Farmer: "123"},
+			ExpErr: status.Errorf(codes.InvalidArgument, "farmer address 123 is invalid"),
 		},
 		{
 			Name:   "error pool id invalid",
-			Req:    &types.QuerySoftLockRequest{AppId: appID1, PoolId: 123, Depositor: liquidityProvider1.String()},
+			Req:    &types.QueryFarmerRequest{AppId: appID1, PoolId: 123, Farmer: liquidityProvider1.String()},
 			ExpErr: types.ErrInvalidPoolID,
 		},
 		{
 			Name:   "success",
-			Req:    &types.QuerySoftLockRequest{AppId: appID1, PoolId: pool.Id, Depositor: liquidityProvider1.String()},
+			Req:    &types.QueryFarmerRequest{AppId: appID1, PoolId: pool.Id, Farmer: liquidityProvider1.String()},
 			ExpErr: nil,
 		},
 	}
@@ -997,7 +997,7 @@ func (s *KeeperTestSuite) TestSoftLock() {
 	ctx := sdk.WrapSDKContext(s.ctx)
 	for _, tc := range testCases {
 		s.Run(tc.Name, func() {
-			resp, err := s.querier.SoftLock(ctx, tc.Req)
+			resp, err := s.querier.Farmer(ctx, tc.Req)
 			if tc.ExpErr != nil {
 				s.Require().Error(err)
 				s.Require().EqualError(err, tc.ExpErr.Error())
@@ -1131,15 +1131,15 @@ func (s *KeeperTestSuite) TestFarmedPoolCoin() {
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime())
-	msg := types.NewMsgSoftLock(appID1, liquidityProvider1, pool.Id, utils.ParseCoin("5000000000pool1-1"))
-	err := s.keeper.SoftLockTokens(s.ctx, msg)
+	msg := types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
+	err := s.keeper.Farm(s.ctx, msg)
 	s.Require().NoError(err)
 
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(types.DefaultFarmingQueueDuration).Add(time.Hour * 1))
 	s.nextBlock()
 
-	msg = types.NewMsgSoftLock(appID1, liquidityProvider1, pool.Id, utils.ParseCoin("5000000000pool1-1"))
-	err = s.keeper.SoftLockTokens(s.ctx, msg)
+	msg = types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
+	err = s.keeper.Farm(s.ctx, msg)
 	s.Require().NoError(err)
 
 	testCases := []struct {
