@@ -63,44 +63,34 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 		return txf, nil, fmt.Errorf("failed to parse assetsMapping: %w", err)
 	}
 
-	names, err := ParseStringFromString(assetsMapping.Name, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	denoms, err := ParseStringFromString(assetsMapping.Denom, ",")
+	names := assetsMapping.Name
+
+	denoms := assetsMapping.Denom
+
+	decimals, err := strconv.ParseInt(assetsMapping.Decimals, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	decimals, err := ParseInt64SliceFromString(assetsMapping.Decimals, ",")
+	isOnChain := ParseBoolFromString(assetsMapping.IsOnChain)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	isOnChain, err := ParseStringFromString(assetsMapping.IsOnChain, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	assetOraclePrice, err := ParseStringFromString(assetsMapping.AssetOraclePrice, ",")
+	assetOraclePrice := ParseBoolFromString(assetsMapping.AssetOraclePrice)
 	if err != nil {
 		return txf, nil, err
 	}
 
 	from := clientCtx.GetFromAddress()
 
-	var assets []types.Asset
-	for i := range names {
-		newIsOnChain := ParseBoolFromString(isOnChain[i])
-		newAssetOraclePrice := ParseBoolFromString(assetOraclePrice[i])
-		assets = append(assets, types.Asset{
-			Name:                  names[i],
-			Denom:                 denoms[i],
-			Decimals:              decimals[i],
-			IsOnChain:             newIsOnChain,
-			IsOraclePriceRequired: newAssetOraclePrice,
-		})
-	}
+		assets := types.Asset{
+			Name:                  names,
+			Denom:                 denoms,
+			Decimals:              decimals,
+			IsOnChain:             isOnChain,
+			IsOraclePriceRequired: assetOraclePrice,
+		}
 
 	deposit, err := sdk.ParseCoinsNormalized(assetsMapping.Deposit)
 	if err != nil {
@@ -218,23 +208,20 @@ func NewCmdSubmitAddPairsProposal() *cobra.Command {
 				return err
 			}
 
-			assetIn, err := ParseUint64SliceFromString(args[0], ",")
+			assetIn, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			assetOut, err := ParseUint64SliceFromString(args[1], ",")
+			assetOut, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			var pairs []types.Pair
-			for i := range assetIn {
-				pairs = append(pairs, types.Pair{
-					AssetIn:  assetIn[i],
-					AssetOut: assetOut[i],
-				})
-			}
+				pairs := types.Pair{
+					AssetIn:  assetIn,
+					AssetOut: assetOut,
+				}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
@@ -315,7 +302,7 @@ func NewCmdSubmitAddAppProposal() *cobra.Command {
 
 			from := clientCtx.GetFromAddress()
 
-			var aMap []types.AppData
+			var aMap types.AppData
 			var bMap []types.MintGenesisToken
 			newMinGovDeposit, ok := sdk.NewIntFromString(minGovDeposit)
 
@@ -325,13 +312,13 @@ func NewCmdSubmitAddAppProposal() *cobra.Command {
 			if !ok {
 				return types.ErrorInvalidMinGovSupply
 			}
-			aMap = append(aMap, types.AppData{
+			aMap = types.AppData{
 				Name:             name,
 				ShortName:        shortName,
 				MinGovDeposit:    newMinGovDeposit,
 				GovTimeInSeconds: govTimeIn.Seconds(),
 				GenesisToken:     bMap,
-			})
+			}
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
 			if err != nil {
@@ -488,19 +475,18 @@ func NewCreateAssetInAppMsg(clientCtx client.Context, txf tx.Factory, fs *flag.F
 		return txf, nil, err
 	}
 
-	assetIDs, err := ParseUint64SliceFromString(assetMapping.AssetID, ",")
+	assetIDs, err := strconv.ParseUint(assetMapping.AssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
-	genesisSupply, err := ParseStringFromString(assetMapping.GenesisSupply, ",")
+
+	genesisSupply := assetMapping.GenesisSupply
+
+	isGovToken := ParseBoolFromString(assetMapping.IsGovToken)
 	if err != nil {
 		return txf, nil, err
 	}
-	isGovToken, err := ParseStringFromString(assetMapping.IsGovToken, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	recipient, err := ParseStringFromString(assetMapping.Recipient, ",")
+	recipient := assetMapping.Recipient
 	if err != nil {
 		return txf, nil, err
 	}
@@ -513,31 +499,28 @@ func NewCreateAssetInAppMsg(clientCtx client.Context, txf tx.Factory, fs *flag.F
 		return txf, nil, types.ErrorProposalDescriptionMissing
 	}
 
-	var aMap []types.AppData
 	var bMap []types.MintGenesisToken
-	for i := range assetIDs {
-		newIsGovToken := ParseBoolFromString(isGovToken[i])
-		newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply[i])
-		address, err := sdk.AccAddressFromBech32(recipient[i])
-		if err != nil {
-			panic(err)
-		}
+		newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply)
 		if !ok {
 			return txf, nil, types.ErrorInvalidGenesisSupply
 		}
+		address, err := sdk.AccAddressFromBech32(recipient)
+		if err != nil {
+			panic(err)
+		}
 		var cmap types.MintGenesisToken
 
-		cmap.AssetId = assetIDs[i]
-		cmap.GenesisSupply = &newGenesisSupply
-		cmap.IsGovToken = newIsGovToken
+		cmap.AssetId = assetIDs
+		cmap.GenesisSupply = newGenesisSupply
+		cmap.IsGovToken = isGovToken
 		cmap.Recipient = address.String()
 
 		bMap = append(bMap, cmap)
-	}
-	aMap = append(aMap, types.AppData{
+
+	aMap := types.AppData{
 		Id:           appID,
 		GenesisToken: bMap,
-	})
+	}
 
 	deposit, err := sdk.ParseCoinsNormalized(assetMapping.Deposit)
 	if err != nil {

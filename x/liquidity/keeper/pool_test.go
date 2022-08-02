@@ -14,8 +14,8 @@ func (s *KeeperTestSuite) TestCreatePool() {
 
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -277,7 +277,7 @@ func (s *KeeperTestSuite) TestDisabledPool() {
 
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -320,7 +320,7 @@ func (s *KeeperTestSuite) TestCreatePoolAfterDisabled() {
 
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -340,7 +340,7 @@ func (s *KeeperTestSuite) TestCreatePoolAfterDisabled() {
 func (s *KeeperTestSuite) TestPoolIndexes() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 
@@ -359,8 +359,8 @@ func (s *KeeperTestSuite) TestPoolIndexes() {
 func (s *KeeperTestSuite) TestDeposit() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -581,7 +581,7 @@ func (s *KeeperTestSuite) TestDepositRefund() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -613,7 +613,7 @@ func (s *KeeperTestSuite) TestDepositRefundTooSmallMintedPoolCoin() {
 	addr2 := s.addr(2)
 	addr3 := s.addr(3)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -646,7 +646,7 @@ func (s *KeeperTestSuite) TestDepositToDisabledPool() {
 	addr2 := s.addr(2)
 	addr3 := s.addr(3)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -676,7 +676,7 @@ func (s *KeeperTestSuite) TestDepositToDisabledPool() {
 func (s *KeeperTestSuite) TestTooLargePool() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -691,7 +691,7 @@ func (s *KeeperTestSuite) TestTooLargePool() {
 func (s *KeeperTestSuite) TestWithdraw() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -785,7 +785,7 @@ func (s *KeeperTestSuite) TestWithdrawRefund() {
 	addr2 := s.addr(2)
 	addr3 := s.addr(3)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -810,7 +810,7 @@ func (s *KeeperTestSuite) TestWithdrawRefundTooSmallWithdrawCoins() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -833,7 +833,7 @@ func (s *KeeperTestSuite) TestWithdrawFromDisabledPool() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)

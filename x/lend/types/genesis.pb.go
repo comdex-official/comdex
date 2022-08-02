@@ -25,7 +25,22 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // GenesisState defines the lend module's genesis state.
 type GenesisState struct {
-	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+	BorrowAsset                   []BorrowAsset                   `protobuf:"bytes,1,rep,name=borrowAsset,proto3" json:"borrowAsset" yaml:"borrowAsset"`
+	UserBorrowIdMapping           []UserBorrowIdMapping           `protobuf:"bytes,2,rep,name=userBorrowIdMapping,proto3" json:"userBorrowIdMapping" yaml:"userBorrowIdMapping"`
+	BorrowIdByOwnerAndPoolMapping []BorrowIdByOwnerAndPoolMapping `protobuf:"bytes,3,rep,name=borrowIdByOwnerAndPoolMapping,proto3" json:"borrowIdByOwnerAndPoolMapping" yaml:"borrowIdByOwnerAndPoolMapping"`
+	BorrowMapping                 []BorrowMapping                 `protobuf:"bytes,4,rep,name=borrowMapping,proto3" json:"borrowMapping" yaml:"borrowMapping"`
+	LendAsset                     []LendAsset                     `protobuf:"bytes,5,rep,name=lendAsset,proto3" json:"lendAsset" yaml:"lendAsset"`
+	Pool                          []Pool                          `protobuf:"bytes,6,rep,name=pool,proto3" json:"pool" yaml:"pool"`
+	AssetToPairMapping            []AssetToPairMapping            `protobuf:"bytes,7,rep,name=assetToPairMapping,proto3" json:"assetToPairMapping" yaml:"assetToPairMapping"`
+	UserLendIdMapping             []UserLendIdMapping             `protobuf:"bytes,8,rep,name=userLendIdMapping,proto3" json:"userLendIdMapping" yaml:"userLendIdMapping"`
+	LendIdByOwnerAndPoolMapping   []LendIdByOwnerAndPoolMapping   `protobuf:"bytes,9,rep,name=lendIdByOwnerAndPoolMapping,proto3" json:"lendIdByOwnerAndPoolMapping" yaml:"lendIdByOwnerAndPoolMapping"`
+	LendIdToBorrowIdMapping       []LendIdToBorrowIdMapping       `protobuf:"bytes,10,rep,name=lendIdToBorrowIdMapping,proto3" json:"lendIdToBorrowIdMapping" yaml:"lendIdToBorrowIdMapping"`
+	AssetStats                    []AssetStats                    `protobuf:"bytes,11,rep,name=assetStats,proto3" json:"assetStats" yaml:"assetStats"`
+	LendMapping                   []LendMapping                   `protobuf:"bytes,12,rep,name=lendMapping,proto3" json:"lendMapping" yaml:"lendMapping"`
+	DepositStats                  []DepositStats                  `protobuf:"bytes,13,rep,name=depositStats,proto3" json:"depositStats" yaml:"depositStats"`
+	Extended_Pair                 []Extended_Pair                 `protobuf:"bytes,14,rep,name=extended_Pair,json=extendedPair,proto3" json:"extended_Pair" yaml:"extended_Pair"`
+	AssetRatesStats               []AssetRatesStats               `protobuf:"bytes,15,rep,name=assetRatesStats,proto3" json:"assetRatesStats" yaml:"assetRatesStats"`
+	Params                        Params                          `protobuf:"bytes,16,opt,name=params,proto3" json:"params"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
@@ -61,6 +76,111 @@ func (m *GenesisState) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GenesisState proto.InternalMessageInfo
 
+func (m *GenesisState) GetBorrowAsset() []BorrowAsset {
+	if m != nil {
+		return m.BorrowAsset
+	}
+	return nil
+}
+
+func (m *GenesisState) GetUserBorrowIdMapping() []UserBorrowIdMapping {
+	if m != nil {
+		return m.UserBorrowIdMapping
+	}
+	return nil
+}
+
+func (m *GenesisState) GetBorrowIdByOwnerAndPoolMapping() []BorrowIdByOwnerAndPoolMapping {
+	if m != nil {
+		return m.BorrowIdByOwnerAndPoolMapping
+	}
+	return nil
+}
+
+func (m *GenesisState) GetBorrowMapping() []BorrowMapping {
+	if m != nil {
+		return m.BorrowMapping
+	}
+	return nil
+}
+
+func (m *GenesisState) GetLendAsset() []LendAsset {
+	if m != nil {
+		return m.LendAsset
+	}
+	return nil
+}
+
+func (m *GenesisState) GetPool() []Pool {
+	if m != nil {
+		return m.Pool
+	}
+	return nil
+}
+
+func (m *GenesisState) GetAssetToPairMapping() []AssetToPairMapping {
+	if m != nil {
+		return m.AssetToPairMapping
+	}
+	return nil
+}
+
+func (m *GenesisState) GetUserLendIdMapping() []UserLendIdMapping {
+	if m != nil {
+		return m.UserLendIdMapping
+	}
+	return nil
+}
+
+func (m *GenesisState) GetLendIdByOwnerAndPoolMapping() []LendIdByOwnerAndPoolMapping {
+	if m != nil {
+		return m.LendIdByOwnerAndPoolMapping
+	}
+	return nil
+}
+
+func (m *GenesisState) GetLendIdToBorrowIdMapping() []LendIdToBorrowIdMapping {
+	if m != nil {
+		return m.LendIdToBorrowIdMapping
+	}
+	return nil
+}
+
+func (m *GenesisState) GetAssetStats() []AssetStats {
+	if m != nil {
+		return m.AssetStats
+	}
+	return nil
+}
+
+func (m *GenesisState) GetLendMapping() []LendMapping {
+	if m != nil {
+		return m.LendMapping
+	}
+	return nil
+}
+
+func (m *GenesisState) GetDepositStats() []DepositStats {
+	if m != nil {
+		return m.DepositStats
+	}
+	return nil
+}
+
+func (m *GenesisState) GetExtended_Pair() []Extended_Pair {
+	if m != nil {
+		return m.Extended_Pair
+	}
+	return nil
+}
+
+func (m *GenesisState) GetAssetRatesStats() []AssetRatesStats {
+	if m != nil {
+		return m.AssetRatesStats
+	}
+	return nil
+}
+
 func (m *GenesisState) GetParams() Params {
 	if m != nil {
 		return m.Params
@@ -75,20 +195,51 @@ func init() {
 func init() { proto.RegisterFile("comdex/lend/v1beta1/genesis.proto", fileDescriptor_4df703d992154ae9) }
 
 var fileDescriptor_4df703d992154ae9 = []byte{
-	// 201 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x4c, 0xce, 0xcf, 0x4d,
-	0x49, 0xad, 0xd0, 0xcf, 0x49, 0xcd, 0x4b, 0xd1, 0x2f, 0x33, 0x4c, 0x4a, 0x2d, 0x49, 0x34, 0xd4,
-	0x4f, 0x4f, 0xcd, 0x4b, 0x2d, 0xce, 0x2c, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x86,
-	0x28, 0xd1, 0x03, 0x29, 0xd1, 0x83, 0x2a, 0x91, 0x12, 0x49, 0xcf, 0x4f, 0xcf, 0x07, 0xcb, 0xeb,
-	0x83, 0x58, 0x10, 0xa5, 0x52, 0x0a, 0xd8, 0x4c, 0x2b, 0x48, 0x2c, 0x4a, 0xcc, 0x85, 0x1a, 0xa6,
-	0xe4, 0xc9, 0xc5, 0xe3, 0x0e, 0x31, 0x3d, 0xb8, 0x24, 0xb1, 0x24, 0x55, 0xc8, 0x92, 0x8b, 0x0d,
-	0x22, 0x2f, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x6d, 0x24, 0xad, 0x87, 0xc5, 0x36, 0xbd, 0x00, 0xb0,
-	0x12, 0x27, 0x96, 0x13, 0xf7, 0xe4, 0x19, 0x82, 0xa0, 0x1a, 0x9c, 0x3c, 0x4e, 0x3c, 0x92, 0x63,
-	0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x09, 0x8f, 0xe5, 0x18, 0x2e, 0x3c, 0x96,
-	0x63, 0xb8, 0xf1, 0x58, 0x8e, 0x21, 0x4a, 0x2f, 0x3d, 0xb3, 0x24, 0xa3, 0x34, 0x09, 0x64, 0x94,
-	0x3e, 0xc4, 0x38, 0xdd, 0xfc, 0xb4, 0xb4, 0xcc, 0xe4, 0xcc, 0xc4, 0x1c, 0x28, 0x5f, 0x1f, 0xea,
-	0xc6, 0x92, 0xca, 0x82, 0xd4, 0xe2, 0x24, 0x36, 0xb0, 0xdb, 0x8c, 0x01, 0x01, 0x00, 0x00, 0xff,
-	0xff, 0xe6, 0x2d, 0x1e, 0x93, 0x0d, 0x01, 0x00, 0x00,
+	// 696 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x95, 0x4f, 0x4f, 0xd4, 0x40,
+	0x18, 0xc6, 0xb7, 0x82, 0x28, 0xb3, 0xbb, 0x02, 0xb3, 0x44, 0xcb, 0xa2, 0x65, 0x99, 0x10, 0x24,
+	0x06, 0x77, 0x05, 0x4f, 0x7a, 0x63, 0xa2, 0x51, 0x13, 0x8c, 0x64, 0x44, 0x0f, 0x1c, 0x34, 0x5d,
+	0x3a, 0xac, 0x4d, 0x4a, 0xa7, 0x69, 0xcb, 0x3f, 0x0f, 0x7e, 0x04, 0xe3, 0x27, 0xf0, 0xe8, 0x67,
+	0xe1, 0xc8, 0xd1, 0x13, 0x31, 0xec, 0x37, 0xd0, 0x2f, 0x60, 0xe6, 0x4f, 0xe9, 0xec, 0x76, 0xda,
+	0xdb, 0xb6, 0xf3, 0xbc, 0xbf, 0xe7, 0x99, 0xce, 0xbb, 0xef, 0x80, 0xe5, 0x7d, 0x76, 0xe8, 0xd1,
+	0xd3, 0x5e, 0x40, 0x43, 0xaf, 0x77, 0xbc, 0xd1, 0xa7, 0xa9, 0xbb, 0xd1, 0x1b, 0xd0, 0x90, 0x26,
+	0x7e, 0xd2, 0x8d, 0x62, 0x96, 0x32, 0xd8, 0x92, 0x92, 0x2e, 0x97, 0x74, 0x95, 0xa4, 0x3d, 0x3f,
+	0x60, 0x03, 0x26, 0xd6, 0x7b, 0xfc, 0x97, 0x94, 0xb6, 0x1d, 0x13, 0x4d, 0xd4, 0xc9, 0xf5, 0x8e,
+	0x69, 0x3d, 0x72, 0x63, 0xf7, 0x50, 0x99, 0xa1, 0x7f, 0x4d, 0xd0, 0x78, 0x25, 0xed, 0xdf, 0xa7,
+	0x6e, 0x4a, 0xe1, 0x27, 0x50, 0xef, 0xb3, 0x38, 0x66, 0x27, 0x5b, 0x49, 0x42, 0x53, 0xdb, 0xea,
+	0x4c, 0xac, 0xd5, 0x37, 0x3b, 0x5d, 0x43, 0xa6, 0x2e, 0xce, 0x75, 0xb8, 0x7d, 0x7e, 0xb9, 0x54,
+	0xfb, 0x7b, 0xb9, 0x04, 0xcf, 0xdc, 0xc3, 0xe0, 0x39, 0xd2, 0x10, 0x88, 0xe8, 0x40, 0xf8, 0x0d,
+	0xb4, 0x8e, 0x12, 0x1a, 0xcb, 0xda, 0x37, 0xde, 0x5b, 0x37, 0x8a, 0xfc, 0x70, 0x60, 0xdf, 0x10,
+	0x3e, 0x6b, 0x46, 0x9f, 0x0f, 0x45, 0x3d, 0x46, 0xca, 0xaf, 0x2d, 0xfd, 0x0c, 0x48, 0x44, 0x4c,
+	0x46, 0xf0, 0x97, 0x05, 0x1e, 0xf4, 0xd5, 0x3b, 0x7c, 0xf6, 0xee, 0x24, 0xa4, 0xf1, 0x56, 0xe8,
+	0xed, 0x30, 0x16, 0x64, 0x51, 0x26, 0x44, 0x94, 0xcd, 0x8a, 0x2d, 0x97, 0x54, 0xe2, 0x75, 0x15,
+	0x6a, 0x45, 0xff, 0x08, 0x25, 0x62, 0x44, 0xaa, 0x63, 0xc0, 0x03, 0xd0, 0x94, 0x82, 0x2c, 0xd7,
+	0xa4, 0xc8, 0x85, 0x2a, 0x72, 0x65, 0x39, 0xee, 0xab, 0x1c, 0xf3, 0x7a, 0x8e, 0x6b, 0xdf, 0x51,
+	0x2c, 0xfc, 0x08, 0xa6, 0x39, 0x4a, 0x1e, 0xf7, 0x4d, 0xe1, 0xe1, 0x18, 0x3d, 0xb6, 0x33, 0x15,
+	0xb6, 0x15, 0x7f, 0x56, 0xf2, 0xaf, 0xcb, 0x11, 0xc9, 0x51, 0x10, 0x83, 0xc9, 0x88, 0xb1, 0xc0,
+	0x9e, 0x12, 0xc8, 0x05, 0x23, 0x92, 0xef, 0x17, 0xb7, 0x14, 0xad, 0x2e, 0x69, 0xbc, 0x08, 0x11,
+	0x51, 0x0b, 0xbf, 0x02, 0xe8, 0x72, 0xd8, 0x2e, 0xdb, 0x71, 0xfd, 0x38, 0xfb, 0x10, 0xb7, 0x04,
+	0xf1, 0xa1, 0x91, 0xb8, 0x55, 0x90, 0xe3, 0x65, 0xc5, 0x5f, 0x90, 0xfc, 0x22, 0x10, 0x11, 0x83,
+	0x0b, 0x3c, 0x06, 0x73, 0xbc, 0x7f, 0xf8, 0xae, 0xf3, 0x36, 0xbd, 0x2d, 0xac, 0x57, 0x4b, 0xdb,
+	0x74, 0x44, 0x8d, 0x3b, 0xca, 0xd9, 0xce, 0x9b, 0x74, 0x44, 0x80, 0x48, 0xd1, 0x02, 0xfe, 0xb4,
+	0xc0, 0x62, 0x20, 0xde, 0x98, 0xdb, 0x73, 0x5a, 0x44, 0x78, 0x52, 0x7a, 0x44, 0x65, 0xcd, 0xf9,
+	0x48, 0x85, 0x41, 0xf9, 0xa1, 0x95, 0xb6, 0x66, 0x55, 0x00, 0xf8, 0xdd, 0x02, 0xf7, 0xe4, 0xfa,
+	0x2e, 0x1b, 0xff, 0x1b, 0x03, 0x11, 0x6e, 0xbd, 0x22, 0x5c, 0xa1, 0x06, 0xaf, 0xaa, 0x60, 0x8e,
+	0x1e, 0xac, 0x20, 0x43, 0xa4, 0xcc, 0x14, 0xee, 0x01, 0x20, 0xce, 0x8f, 0x0f, 0xb0, 0xc4, 0xae,
+	0x8b, 0x08, 0x4b, 0xe5, 0xdd, 0x21, 0x64, 0x78, 0x41, 0xb9, 0xce, 0x69, 0x5d, 0x21, 0x56, 0x10,
+	0xd1, 0x68, 0x7c, 0x1c, 0x72, 0x42, 0xb6, 0xbf, 0x46, 0xc5, 0x38, 0xdc, 0xce, 0x75, 0xe3, 0xe3,
+	0x50, 0x43, 0x20, 0xa2, 0x03, 0x61, 0x1f, 0x34, 0x3c, 0x1a, 0xb1, 0xc4, 0x57, 0xe9, 0x9b, 0xc2,
+	0x60, 0xd9, 0x68, 0xf0, 0x42, 0x13, 0xe2, 0x45, 0xe5, 0xd0, 0x92, 0x0e, 0x3a, 0x04, 0x91, 0x11,
+	0x26, 0xa4, 0xa0, 0x49, 0x4f, 0x53, 0x1a, 0x7a, 0xd4, 0xfb, 0xcc, 0x3b, 0xdc, 0xbe, 0x53, 0x31,
+	0x49, 0x5e, 0xea, 0xca, 0xf1, 0x49, 0x32, 0x82, 0x41, 0xa4, 0x91, 0x3d, 0xf3, 0x47, 0x18, 0x82,
+	0x19, 0xf1, 0xe1, 0x88, 0x9b, 0xd2, 0x44, 0xee, 0x66, 0x46, 0x18, 0xad, 0x94, 0x9f, 0x45, 0xae,
+	0xc5, 0x8e, 0xb2, 0xba, 0xab, 0x1d, 0x48, 0xbe, 0x8c, 0xc8, 0x38, 0x1c, 0x3e, 0x03, 0x53, 0xf2,
+	0x2a, 0xb3, 0x67, 0x3b, 0xd6, 0x5a, 0x7d, 0x73, 0xd1, 0x3c, 0x62, 0x84, 0x04, 0x4f, 0x72, 0x3a,
+	0x51, 0x05, 0xf8, 0xf5, 0xf9, 0x95, 0x63, 0x5d, 0x5c, 0x39, 0xd6, 0x9f, 0x2b, 0xc7, 0xfa, 0x31,
+	0x74, 0x6a, 0x17, 0x43, 0xa7, 0xf6, 0x7b, 0xe8, 0xd4, 0xf6, 0xba, 0x03, 0x3f, 0xfd, 0x72, 0xd4,
+	0xe7, 0xa8, 0x9e, 0xc4, 0x3d, 0x66, 0x07, 0x07, 0xfe, 0xbe, 0xef, 0x06, 0xea, 0xb9, 0xa7, 0xae,
+	0xd3, 0xf4, 0x2c, 0xa2, 0x49, 0x7f, 0x4a, 0x5c, 0xa3, 0x4f, 0xff, 0x07, 0x00, 0x00, 0xff, 0xff,
+	0x59, 0xf1, 0x82, 0xad, 0xd8, 0x07, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -120,7 +271,219 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintGenesis(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0xa
+	dAtA[i] = 0x1
+	i--
+	dAtA[i] = 0x82
+	if len(m.AssetRatesStats) > 0 {
+		for iNdEx := len(m.AssetRatesStats) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AssetRatesStats[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x7a
+		}
+	}
+	if len(m.Extended_Pair) > 0 {
+		for iNdEx := len(m.Extended_Pair) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Extended_Pair[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x72
+		}
+	}
+	if len(m.DepositStats) > 0 {
+		for iNdEx := len(m.DepositStats) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.DepositStats[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x6a
+		}
+	}
+	if len(m.LendMapping) > 0 {
+		for iNdEx := len(m.LendMapping) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.LendMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x62
+		}
+	}
+	if len(m.AssetStats) > 0 {
+		for iNdEx := len(m.AssetStats) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AssetStats[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x5a
+		}
+	}
+	if len(m.LendIdToBorrowIdMapping) > 0 {
+		for iNdEx := len(m.LendIdToBorrowIdMapping) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.LendIdToBorrowIdMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x52
+		}
+	}
+	if len(m.LendIdByOwnerAndPoolMapping) > 0 {
+		for iNdEx := len(m.LendIdByOwnerAndPoolMapping) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.LendIdByOwnerAndPoolMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x4a
+		}
+	}
+	if len(m.UserLendIdMapping) > 0 {
+		for iNdEx := len(m.UserLendIdMapping) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.UserLendIdMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x42
+		}
+	}
+	if len(m.AssetToPairMapping) > 0 {
+		for iNdEx := len(m.AssetToPairMapping) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AssetToPairMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x3a
+		}
+	}
+	if len(m.Pool) > 0 {
+		for iNdEx := len(m.Pool) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Pool[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x32
+		}
+	}
+	if len(m.LendAsset) > 0 {
+		for iNdEx := len(m.LendAsset) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.LendAsset[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
+	if len(m.BorrowMapping) > 0 {
+		for iNdEx := len(m.BorrowMapping) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.BorrowMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x22
+		}
+	}
+	if len(m.BorrowIdByOwnerAndPoolMapping) > 0 {
+		for iNdEx := len(m.BorrowIdByOwnerAndPoolMapping) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.BorrowIdByOwnerAndPoolMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.UserBorrowIdMapping) > 0 {
+		for iNdEx := len(m.UserBorrowIdMapping) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.UserBorrowIdMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.BorrowAsset) > 0 {
+		for iNdEx := len(m.BorrowAsset) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.BorrowAsset[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -141,8 +504,98 @@ func (m *GenesisState) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if len(m.BorrowAsset) > 0 {
+		for _, e := range m.BorrowAsset {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.UserBorrowIdMapping) > 0 {
+		for _, e := range m.UserBorrowIdMapping {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.BorrowIdByOwnerAndPoolMapping) > 0 {
+		for _, e := range m.BorrowIdByOwnerAndPoolMapping {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.BorrowMapping) > 0 {
+		for _, e := range m.BorrowMapping {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.LendAsset) > 0 {
+		for _, e := range m.LendAsset {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.Pool) > 0 {
+		for _, e := range m.Pool {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.AssetToPairMapping) > 0 {
+		for _, e := range m.AssetToPairMapping {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.UserLendIdMapping) > 0 {
+		for _, e := range m.UserLendIdMapping {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.LendIdByOwnerAndPoolMapping) > 0 {
+		for _, e := range m.LendIdByOwnerAndPoolMapping {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.LendIdToBorrowIdMapping) > 0 {
+		for _, e := range m.LendIdToBorrowIdMapping {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.AssetStats) > 0 {
+		for _, e := range m.AssetStats {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.LendMapping) > 0 {
+		for _, e := range m.LendMapping {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.DepositStats) > 0 {
+		for _, e := range m.DepositStats {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.Extended_Pair) > 0 {
+		for _, e := range m.Extended_Pair {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.AssetRatesStats) > 0 {
+		for _, e := range m.AssetRatesStats {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
 	l = m.Params.Size()
-	n += 1 + l + sovGenesis(uint64(l))
+	n += 2 + l + sovGenesis(uint64(l))
 	return n
 }
 
@@ -182,6 +635,516 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BorrowAsset", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BorrowAsset = append(m.BorrowAsset, BorrowAsset{})
+			if err := m.BorrowAsset[len(m.BorrowAsset)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserBorrowIdMapping", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UserBorrowIdMapping = append(m.UserBorrowIdMapping, UserBorrowIdMapping{})
+			if err := m.UserBorrowIdMapping[len(m.UserBorrowIdMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BorrowIdByOwnerAndPoolMapping", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BorrowIdByOwnerAndPoolMapping = append(m.BorrowIdByOwnerAndPoolMapping, BorrowIdByOwnerAndPoolMapping{})
+			if err := m.BorrowIdByOwnerAndPoolMapping[len(m.BorrowIdByOwnerAndPoolMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BorrowMapping", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BorrowMapping = append(m.BorrowMapping, BorrowMapping{})
+			if err := m.BorrowMapping[len(m.BorrowMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LendAsset", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LendAsset = append(m.LendAsset, LendAsset{})
+			if err := m.LendAsset[len(m.LendAsset)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pool", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Pool = append(m.Pool, Pool{})
+			if err := m.Pool[len(m.Pool)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetToPairMapping", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetToPairMapping = append(m.AssetToPairMapping, AssetToPairMapping{})
+			if err := m.AssetToPairMapping[len(m.AssetToPairMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserLendIdMapping", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UserLendIdMapping = append(m.UserLendIdMapping, UserLendIdMapping{})
+			if err := m.UserLendIdMapping[len(m.UserLendIdMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LendIdByOwnerAndPoolMapping", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LendIdByOwnerAndPoolMapping = append(m.LendIdByOwnerAndPoolMapping, LendIdByOwnerAndPoolMapping{})
+			if err := m.LendIdByOwnerAndPoolMapping[len(m.LendIdByOwnerAndPoolMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LendIdToBorrowIdMapping", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LendIdToBorrowIdMapping = append(m.LendIdToBorrowIdMapping, LendIdToBorrowIdMapping{})
+			if err := m.LendIdToBorrowIdMapping[len(m.LendIdToBorrowIdMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 11:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetStats", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetStats = append(m.AssetStats, AssetStats{})
+			if err := m.AssetStats[len(m.AssetStats)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 12:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LendMapping", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LendMapping = append(m.LendMapping, LendMapping{})
+			if err := m.LendMapping[len(m.LendMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 13:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DepositStats", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DepositStats = append(m.DepositStats, DepositStats{})
+			if err := m.DepositStats[len(m.DepositStats)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 14:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Extended_Pair", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Extended_Pair = append(m.Extended_Pair, Extended_Pair{})
+			if err := m.Extended_Pair[len(m.Extended_Pair)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 15:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetRatesStats", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetRatesStats = append(m.AssetRatesStats, AssetRatesStats{})
+			if err := m.AssetRatesStats[len(m.AssetRatesStats)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 16:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
 			}

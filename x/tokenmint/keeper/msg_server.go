@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	_ types.MsgServer = (*msgServer)(nil)
+	_ types.MsgServer = msgServer{}
 )
 
 type msgServer struct {
@@ -20,7 +20,7 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 	}
 }
 
-func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTokensRequest) (*types.MsgMintNewTokensResponse, error) {
+func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTokensRequest) (*types.MsgMintNewTokensResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	assetData, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
@@ -42,7 +42,7 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		var newTokenMintAppData types.MintedTokens
 		var appData types.TokenMint
 
-		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
 		userAddress, err := sdk.AccAddressFromBech32(assetDataInApp.Recipient)
@@ -50,13 +50,13 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 		if err != nil {
 			return nil, err
 		}
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
 
 		newTokenMintAppData.AssetId = msg.AssetId
 		newTokenMintAppData.CreatedAt = ctx.BlockTime()
-		newTokenMintAppData.GenesisSupply = *assetDataInApp.GenesisSupply
+		newTokenMintAppData.GenesisSupply = assetDataInApp.GenesisSupply
 		newTokenMintAppData.CurrentSupply = newTokenMintAppData.GenesisSupply
 
 		appData.AppId = appMappingData.Id
@@ -75,18 +75,18 @@ func (k *msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTok
 			return nil, err
 		}
 
-		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
 
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, *assetDataInApp.GenesisSupply)); err != nil {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
 			return nil, err
 		}
 
 		var newTokenMintAppData types.MintedTokens
 		newTokenMintAppData.AssetId = msg.AssetId
 		newTokenMintAppData.CreatedAt = ctx.BlockTime()
-		newTokenMintAppData.GenesisSupply = *assetDataInApp.GenesisSupply
+		newTokenMintAppData.GenesisSupply = assetDataInApp.GenesisSupply
 		newTokenMintAppData.CurrentSupply = newTokenMintAppData.GenesisSupply
 		mintData.MintedTokens = append(mintData.MintedTokens, &newTokenMintAppData)
 		k.SetTokenMint(ctx, mintData)

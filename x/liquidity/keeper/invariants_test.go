@@ -10,7 +10,7 @@ import (
 func (s *KeeperTestSuite) TestDepositCoinsEscrowInvariant() {
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -38,7 +38,7 @@ func (s *KeeperTestSuite) TestDepositCoinsEscrowInvariant() {
 func (s *KeeperTestSuite) TestPoolCoinEscrowInvariant() {
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -69,7 +69,7 @@ func (s *KeeperTestSuite) TestPoolCoinEscrowInvariant() {
 func (s *KeeperTestSuite) TestRemainingOfferCoinEscrowInvariant() {
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -96,7 +96,7 @@ func (s *KeeperTestSuite) TestRemainingOfferCoinEscrowInvariant() {
 func (s *KeeperTestSuite) TestPoolStatusInvariant() {
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)

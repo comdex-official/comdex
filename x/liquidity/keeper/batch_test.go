@@ -15,7 +15,7 @@ import (
 func (s *KeeperTestSuite) TestOrderExpiration() {
 	creator := s.addr(0)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)

@@ -49,7 +49,7 @@ func (s *ModuleTestSuite) TestMsgCreatePair() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 
@@ -81,7 +81,7 @@ func (s *ModuleTestSuite) TestMsgCreatePool() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -122,7 +122,7 @@ func (s *ModuleTestSuite) TestMsgDeposit() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -152,7 +152,7 @@ func (s *ModuleTestSuite) TestMsgWithdraw() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -179,7 +179,7 @@ func (s *ModuleTestSuite) TestMsgLimitOrder() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -225,7 +225,7 @@ func (s *ModuleTestSuite) TestMsgMarketOrder() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -275,7 +275,7 @@ func (s *ModuleTestSuite) TestMsgCancelOrder() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -307,7 +307,7 @@ func (s *ModuleTestSuite) TestMsgCancelAllOrders() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -338,7 +338,7 @@ func (s *ModuleTestSuite) TestMsgFarm() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
@@ -366,7 +366,7 @@ func (s *ModuleTestSuite) TestMsgUnfarm() {
 	handler := liquidity.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)

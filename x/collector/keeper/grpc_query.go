@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	_ types.QueryServer = (*QueryServer)(nil)
+	_ types.QueryServer = QueryServer{}
 )
 
 type QueryServer struct {
@@ -23,7 +23,7 @@ func NewQueryServer(k Keeper) types.QueryServer {
 	}
 }
 
-func (q *QueryServer) QueryCollectorLookupByApp(c context.Context, req *types.QueryCollectorLookupByAppRequest) (*types.QueryCollectorLookupByAppResponse, error) {
+func (q QueryServer) QueryCollectorLookupByApp(c context.Context, req *types.QueryCollectorLookupByAppRequest) (*types.QueryCollectorLookupByAppResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -45,7 +45,7 @@ func (q *QueryServer) QueryCollectorLookupByApp(c context.Context, req *types.Qu
 	}, nil
 }
 
-func (q *QueryServer) QueryCollectorLookupByAppAndAsset(c context.Context, req *types.QueryCollectorLookupByAppAndAssetRequest) (*types.QueryCollectorLookupByAppAndAssetResponse, error) {
+func (q QueryServer) QueryCollectorLookupByAppAndAsset(c context.Context, req *types.QueryCollectorLookupByAppAndAssetRequest) (*types.QueryCollectorLookupByAppAndAssetResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -67,7 +67,7 @@ func (q *QueryServer) QueryCollectorLookupByAppAndAsset(c context.Context, req *
 	}, nil
 }
 
-func (q *QueryServer) QueryCollectorDataByAppAndAsset(c context.Context, req *types.QueryCollectorDataByAppAndAssetRequest) (*types.QueryCollectorDataByAppAndAssetResponse, error) {
+func (q QueryServer) QueryCollectorDataByAppAndAsset(c context.Context, req *types.QueryCollectorDataByAppAndAssetRequest) (*types.QueryCollectorDataByAppAndAssetResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -95,7 +95,7 @@ func (q *QueryServer) QueryCollectorDataByAppAndAsset(c context.Context, req *ty
 	}, nil
 }
 
-func (q *QueryServer) QueryAuctionMappingForAppAndAsset(c context.Context, req *types.QueryAuctionMappingForAppAndAssetRequest) (*types.QueryAuctionMappingForAppAndAssetResponse, error) {
+func (q QueryServer) QueryAuctionMappingForAppAndAsset(c context.Context, req *types.QueryAuctionMappingForAppAndAssetRequest) (*types.QueryAuctionMappingForAppAndAssetResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -124,7 +124,7 @@ func (q *QueryServer) QueryAuctionMappingForAppAndAsset(c context.Context, req *
 	}, nil
 }
 
-func (q *QueryServer) QueryNetFeeCollectedForAppAndAsset(c context.Context, req *types.QueryNetFeeCollectedForAppAndAssetRequest) (*types.QueryNetFeeCollectedForAppAndAssetResponse, error) {
+func (q QueryServer) QueryNetFeeCollectedForAppAndAsset(c context.Context, req *types.QueryNetFeeCollectedForAppAndAssetRequest) (*types.QueryNetFeeCollectedForAppAndAssetResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}

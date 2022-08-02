@@ -12,8 +12,8 @@ func (s *KeeperTestSuite) TestQueryAllVaults() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -81,8 +81,8 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByApp() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -146,8 +146,8 @@ func (s *KeeperTestSuite) TestQueryVault() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -172,11 +172,11 @@ func (s *KeeperTestSuite) TestQueryVault() {
 			ExtendedVaultPairID: extendedVaultPairID1,
 			AmountIn:            newInt(1000000000),
 			AmountOut:           newInt(200000000),
-			Req:                 &types.QueryVaultRequest{Id: "appOne1"},
+			Req:                 &types.QueryVaultRequest{Id: "appone1"},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultResponse{
 				Vault: types.Vault{
-					Id:                  "appOne1",
+					Id:                  "appone1",
 					AppId:               appID1,
 					ExtendedPairVaultID: extendedVaultPairID1,
 					Owner:               addr1.String(),
@@ -192,11 +192,11 @@ func (s *KeeperTestSuite) TestQueryVault() {
 			ExtendedVaultPairID: extendedVaultPairID1,
 			AmountIn:            newInt(1000000000),
 			AmountOut:           newInt(200000000),
-			Req:                 &types.QueryVaultRequest{Id: "appOne2"},
+			Req:                 &types.QueryVaultRequest{Id: "appone2"},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultResponse{
 				Vault: types.Vault{
-					Id:                  "appOne2",
+					Id:                  "appone2",
 					AppId:               appID1,
 					ExtendedPairVaultID: extendedVaultPairID1,
 					Owner:               addr2.String(),
@@ -212,11 +212,11 @@ func (s *KeeperTestSuite) TestQueryVault() {
 			ExtendedVaultPairID: extendedVaultPairID2,
 			AmountIn:            newInt(1000000000),
 			AmountOut:           newInt(200000000),
-			Req:                 &types.QueryVaultRequest{Id: "appTwo1"},
+			Req:                 &types.QueryVaultRequest{Id: "apptwo1"},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultResponse{
 				Vault: types.Vault{
-					Id:                  "appTwo1",
+					Id:                  "apptwo1",
 					AppId:               appID2,
 					ExtendedPairVaultID: extendedVaultPairID2,
 					Owner:               addr1.String(),
@@ -232,11 +232,11 @@ func (s *KeeperTestSuite) TestQueryVault() {
 			ExtendedVaultPairID: extendedVaultPairID2,
 			AmountIn:            newInt(1000000000),
 			AmountOut:           newInt(200000000),
-			Req:                 &types.QueryVaultRequest{Id: "appTwo2"},
+			Req:                 &types.QueryVaultRequest{Id: "apptwo2"},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultResponse{
 				Vault: types.Vault{
-					Id:                  "appTwo2",
+					Id:                  "apptwo2",
 					AppId:               appID2,
 					ExtendedPairVaultID: extendedVaultPairID2,
 					Owner:               addr2.String(),
@@ -286,8 +286,8 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -312,11 +312,11 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 			ExtendedVaultPairID: extendedVaultPairID1,
 			AmountIn:            newInt(1000000000),
 			AmountOut:           newInt(200000000),
-			Req:                 &types.QueryVaultInfoByVaultIDRequest{Id: "appOne1"},
+			Req:                 &types.QueryVaultInfoByVaultIDRequest{Id: "appone1"},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultInfoByVaultIDResponse{
 				VaultsInfo: types.VaultInfo{
-					Id:               "appOne1",
+					Id:               "appone1",
 					ExtendedPairID:   extendedVaultPairID1,
 					Owner:            addr1.String(),
 					Collateral:       newInt(1000000000),
@@ -334,11 +334,11 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 			ExtendedVaultPairID: extendedVaultPairID1,
 			AmountIn:            newInt(1000000000),
 			AmountOut:           newInt(200000000),
-			Req:                 &types.QueryVaultInfoByVaultIDRequest{Id: "appOne2"},
+			Req:                 &types.QueryVaultInfoByVaultIDRequest{Id: "appone2"},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultInfoByVaultIDResponse{
 				VaultsInfo: types.VaultInfo{
-					Id:               "appOne2",
+					Id:               "appone2",
 					ExtendedPairID:   extendedVaultPairID1,
 					Owner:            addr2.String(),
 					Collateral:       newInt(1000000000),
@@ -356,11 +356,11 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 			ExtendedVaultPairID: extendedVaultPairID2,
 			AmountIn:            newInt(1000000000),
 			AmountOut:           newInt(200000000),
-			Req:                 &types.QueryVaultInfoByVaultIDRequest{Id: "appTwo1"},
+			Req:                 &types.QueryVaultInfoByVaultIDRequest{Id: "apptwo1"},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultInfoByVaultIDResponse{
 				VaultsInfo: types.VaultInfo{
-					Id:               "appTwo1",
+					Id:               "apptwo1",
 					ExtendedPairID:   extendedVaultPairID2,
 					Owner:            addr1.String(),
 					Collateral:       newInt(1000000000),
@@ -378,11 +378,11 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 			ExtendedVaultPairID: extendedVaultPairID2,
 			AmountIn:            newInt(1000000000),
 			AmountOut:           newInt(200000000),
-			Req:                 &types.QueryVaultInfoByVaultIDRequest{Id: "appTwo2"},
+			Req:                 &types.QueryVaultInfoByVaultIDRequest{Id: "apptwo2"},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultInfoByVaultIDResponse{
 				VaultsInfo: types.VaultInfo{
-					Id:               "appTwo2",
+					Id:               "apptwo2",
 					ExtendedPairID:   extendedVaultPairID2,
 					Owner:            addr2.String(),
 					Collateral:       newInt(1000000000),
@@ -437,8 +437,8 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -468,7 +468,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 			ExpResp: &types.QueryVaultInfoOfOwnerByAppResponse{
 				VaultsInfo: []types.VaultInfo{
 					{
-						Id:               "appOne1",
+						Id:               "appone1",
 						ExtendedPairID:   extendedVaultPairID1,
 						Owner:            addr1.String(),
 						Collateral:       newInt(1000000000),
@@ -492,7 +492,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 			ExpResp: &types.QueryVaultInfoOfOwnerByAppResponse{
 				VaultsInfo: []types.VaultInfo{
 					{
-						Id:               "appOne2",
+						Id:               "appone2",
 						ExtendedPairID:   extendedVaultPairID1,
 						Owner:            addr2.String(),
 						Collateral:       newInt(1000000000),
@@ -516,7 +516,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 			ExpResp: &types.QueryVaultInfoOfOwnerByAppResponse{
 				VaultsInfo: []types.VaultInfo{
 					{
-						Id:               "appTwo1",
+						Id:               "apptwo1",
 						ExtendedPairID:   extendedVaultPairID2,
 						Owner:            addr1.String(),
 						Collateral:       newInt(1000000000),
@@ -540,7 +540,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 			ExpResp: &types.QueryVaultInfoOfOwnerByAppResponse{
 				VaultsInfo: []types.VaultInfo{
 					{
-						Id:               "appTwo2",
+						Id:               "apptwo2",
 						ExtendedPairID:   extendedVaultPairID2,
 						Owner:            addr2.String(),
 						Collateral:       newInt(1000000000),
@@ -596,8 +596,8 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -645,7 +645,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 			ExpResp: &types.QueryAllVaultsByAppAndExtendedPairResponse{
 				Vault: []types.Vault{
 					{
-						Id:                  "appOne1",
+						Id:                  "appone1",
 						AppId:               appID1,
 						ExtendedPairVaultID: extendedVaultPairID1,
 						Owner:               addr1.String(),
@@ -667,7 +667,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 			ExpResp: &types.QueryAllVaultsByAppAndExtendedPairResponse{
 				Vault: []types.Vault{
 					{
-						Id:                  "appOne1",
+						Id:                  "appone1",
 						AppId:               appID1,
 						ExtendedPairVaultID: extendedVaultPairID1,
 						Owner:               addr1.String(),
@@ -675,7 +675,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 						AmountOut:           newInt(200000000),
 					},
 					{
-						Id:                  "appOne2",
+						Id:                  "appone2",
 						AppId:               appID1,
 						ExtendedPairVaultID: extendedVaultPairID1,
 						Owner:               addr2.String(),
@@ -697,7 +697,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 			ExpResp: &types.QueryAllVaultsByAppAndExtendedPairResponse{
 				Vault: []types.Vault{
 					{
-						Id:                  "appTwo1",
+						Id:                  "apptwo1",
 						AppId:               appID2,
 						ExtendedPairVaultID: extendedVaultPairID2,
 						Owner:               addr1.String(),
@@ -719,7 +719,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 			ExpResp: &types.QueryAllVaultsByAppAndExtendedPairResponse{
 				Vault: []types.Vault{
 					{
-						Id:                  "appTwo1",
+						Id:                  "apptwo1",
 						AppId:               appID2,
 						ExtendedPairVaultID: extendedVaultPairID2,
 						Owner:               addr1.String(),
@@ -727,7 +727,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 						AmountOut:           newInt(200000000),
 					},
 					{
-						Id:                  "appTwo2",
+						Id:                  "apptwo2",
 						AppId:               appID2,
 						ExtendedPairVaultID: extendedVaultPairID2,
 						Owner:               addr2.String(),
@@ -762,8 +762,8 @@ func (s *KeeperTestSuite) TestQueryVaultIDOfOwnerByExtendedPairAndApp() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -815,7 +815,7 @@ func (s *KeeperTestSuite) TestQueryVaultIDOfOwnerByExtendedPairAndApp() {
 			Req:                 &types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1, Owner: addr1.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse{
-				Vault_Id: "appOne1",
+				Vault_Id: "appone1",
 			},
 		},
 		{
@@ -828,7 +828,7 @@ func (s *KeeperTestSuite) TestQueryVaultIDOfOwnerByExtendedPairAndApp() {
 			Req:                 &types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1, Owner: addr2.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse{
-				Vault_Id: "appOne2",
+				Vault_Id: "appone2",
 			},
 		},
 		{
@@ -841,7 +841,7 @@ func (s *KeeperTestSuite) TestQueryVaultIDOfOwnerByExtendedPairAndApp() {
 			Req:                 &types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest{AppId: appID2, ExtendedPairId: extendedVaultPairID2, Owner: addr1.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse{
-				Vault_Id: "appTwo1",
+				Vault_Id: "apptwo1",
 			},
 		},
 		{
@@ -854,7 +854,7 @@ func (s *KeeperTestSuite) TestQueryVaultIDOfOwnerByExtendedPairAndApp() {
 			Req:                 &types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest{AppId: appID2, ExtendedPairId: extendedVaultPairID2, Owner: addr2.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse{
-				Vault_Id: "appTwo2",
+				Vault_Id: "apptwo2",
 			},
 		},
 	}
@@ -882,8 +882,8 @@ func (s *KeeperTestSuite) TestQueryVaultIdsByAppInAllExtendedPairs() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -929,7 +929,7 @@ func (s *KeeperTestSuite) TestQueryVaultIdsByAppInAllExtendedPairs() {
 			Req:                 &types.QueryVaultIdsByAppInAllExtendedPairsRequest{AppId: appID1},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultIdsByAppInAllExtendedPairsResponse{
-				VaultIds: []string{"appOne1"},
+				VaultIds: []string{"appone1"},
 			},
 		},
 		{
@@ -942,7 +942,7 @@ func (s *KeeperTestSuite) TestQueryVaultIdsByAppInAllExtendedPairs() {
 			Req:                 &types.QueryVaultIdsByAppInAllExtendedPairsRequest{AppId: appID1},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultIdsByAppInAllExtendedPairsResponse{
-				VaultIds: []string{"appOne1", "appOne2"},
+				VaultIds: []string{"appone1", "appone2"},
 			},
 		},
 		{
@@ -955,7 +955,7 @@ func (s *KeeperTestSuite) TestQueryVaultIdsByAppInAllExtendedPairs() {
 			Req:                 &types.QueryVaultIdsByAppInAllExtendedPairsRequest{AppId: appID2},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultIdsByAppInAllExtendedPairsResponse{
-				VaultIds: []string{"appTwo1"},
+				VaultIds: []string{"apptwo1"},
 			},
 		},
 		{
@@ -968,7 +968,7 @@ func (s *KeeperTestSuite) TestQueryVaultIdsByAppInAllExtendedPairs() {
 			Req:                 &types.QueryVaultIdsByAppInAllExtendedPairsRequest{AppId: appID2},
 			ExpErr:              nil,
 			ExpResp: &types.QueryVaultIdsByAppInAllExtendedPairsResponse{
-				VaultIds: []string{"appTwo1", "appTwo2"},
+				VaultIds: []string{"apptwo1", "apptwo2"},
 			},
 		},
 	}
@@ -995,8 +995,8 @@ func (s *KeeperTestSuite) TestQueryAllVaultIdsByAnOwner() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -1036,7 +1036,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultIdsByAnOwner() {
 			Req:                 &types.QueryAllVaultIdsByAnOwnerRequest{Owner: addr1.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryAllVaultIdsByAnOwnerResponse{
-				VaultIds: []string{"appOne1"},
+				VaultIds: []string{"appone1"},
 			},
 		},
 		{
@@ -1049,7 +1049,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultIdsByAnOwner() {
 			Req:                 &types.QueryAllVaultIdsByAnOwnerRequest{Owner: addr2.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryAllVaultIdsByAnOwnerResponse{
-				VaultIds: []string{"appOne2"},
+				VaultIds: []string{"appone2"},
 			},
 		},
 		{
@@ -1062,7 +1062,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultIdsByAnOwner() {
 			Req:                 &types.QueryAllVaultIdsByAnOwnerRequest{Owner: addr1.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryAllVaultIdsByAnOwnerResponse{
-				VaultIds: []string{"appOne1", "appTwo1"},
+				VaultIds: []string{"appone1", "apptwo1"},
 			},
 		},
 		{
@@ -1075,7 +1075,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultIdsByAnOwner() {
 			Req:                 &types.QueryAllVaultIdsByAnOwnerRequest{Owner: addr2.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryAllVaultIdsByAnOwnerResponse{
-				VaultIds: []string{"appOne2", "appTwo2"},
+				VaultIds: []string{"appone2", "apptwo2"},
 			},
 		},
 	}
@@ -1102,8 +1102,8 @@ func (s *KeeperTestSuite) TestQueryTokenMintedByAppAndExtendedPair() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -1221,8 +1221,8 @@ func (s *KeeperTestSuite) TestQueryTokenMintedAssetWiseByApp() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -1342,8 +1342,8 @@ func (s *KeeperTestSuite) TestQueryVaultCountByApp() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -1455,8 +1455,8 @@ func (s *KeeperTestSuite) TestQueryVaultCountByAppAndExtendedPair() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -1568,8 +1568,8 @@ func (s *KeeperTestSuite) TestQueryTotalValueLockedByAppAndExtendedPair() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -1679,8 +1679,8 @@ func (s *KeeperTestSuite) TestQueryExtendedPairIDsByApp() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -1792,8 +1792,8 @@ func (s *KeeperTestSuite) TestQueryStableVaultByVaultID() {
 	addr1 := s.addr(1)
 	// addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -1822,11 +1822,11 @@ func (s *KeeperTestSuite) TestQueryStableVaultByVaultID() {
 			AppID:                       appID1,
 			ExtendedVaultPairID:         extendedVaultPairID1,
 			AmountIn:                    newInt(1000000000),
-			Req:                         &types.QueryStableVaultByVaultIDRequest{StableVaultId: "appOne1"},
+			Req:                         &types.QueryStableVaultByVaultIDRequest{StableVaultId: "appone1"},
 			ExpErr:                      nil,
 			ExpResp: &types.QueryStableVaultByVaultIDResponse{
 				StableMintVault: &types.StableMintVault{
-					Id:                  "appOne1",
+					Id:                  "appone1",
 					AmountIn:            newInt(1000000000),
 					AmountOut:           newInt(1000000000),
 					AppId:               appID1,
@@ -1840,11 +1840,11 @@ func (s *KeeperTestSuite) TestQueryStableVaultByVaultID() {
 			AppID:                       appID2,
 			ExtendedVaultPairID:         extendedVaultPairID2,
 			AmountIn:                    newInt(1000000000),
-			Req:                         &types.QueryStableVaultByVaultIDRequest{StableVaultId: "appTwo1"},
+			Req:                         &types.QueryStableVaultByVaultIDRequest{StableVaultId: "apptwo1"},
 			ExpErr:                      nil,
 			ExpResp: &types.QueryStableVaultByVaultIDResponse{
 				StableMintVault: &types.StableMintVault{
-					Id:                  "appTwo1",
+					Id:                  "apptwo1",
 					AmountIn:            newInt(1000000000),
 					AmountOut:           newInt(1000000000),
 					AppId:               appID2,
@@ -1881,8 +1881,8 @@ func (s *KeeperTestSuite) TestQueryStableVaultByApp() {
 	addr1 := s.addr(1)
 	// addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -1916,7 +1916,7 @@ func (s *KeeperTestSuite) TestQueryStableVaultByApp() {
 			ExpResp: &types.QueryStableVaultByAppResponse{
 				StableMintVault: []types.StableMintVault{
 					{
-						Id:                  "appOne1",
+						Id:                  "appone1",
 						AmountIn:            newInt(1000000000),
 						AmountOut:           newInt(1000000000),
 						AppId:               appID1,
@@ -1936,7 +1936,7 @@ func (s *KeeperTestSuite) TestQueryStableVaultByApp() {
 			ExpResp: &types.QueryStableVaultByAppResponse{
 				StableMintVault: []types.StableMintVault{
 					{
-						Id:                  "appTwo1",
+						Id:                  "apptwo1",
 						AmountIn:            newInt(1000000000),
 						AmountOut:           newInt(1000000000),
 						AppId:               appID2,
@@ -1974,8 +1974,8 @@ func (s *KeeperTestSuite) TestQueryStableVaultByAppAndExtendedPair() {
 	addr1 := s.addr(1)
 	// addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -2008,7 +2008,7 @@ func (s *KeeperTestSuite) TestQueryStableVaultByAppAndExtendedPair() {
 			ExpErr:                      nil,
 			ExpResp: &types.QueryStableVaultByAppAndExtendedPairResponse{
 				StableMintVault: &types.StableMintVault{
-					Id:                  "appOne1",
+					Id:                  "appone1",
 					AmountIn:            newInt(1000000000),
 					AmountOut:           newInt(1000000000),
 					AppId:               appID1,
@@ -2026,7 +2026,7 @@ func (s *KeeperTestSuite) TestQueryStableVaultByAppAndExtendedPair() {
 			ExpErr:                      nil,
 			ExpResp: &types.QueryStableVaultByAppAndExtendedPairResponse{
 				StableMintVault: &types.StableMintVault{
-					Id:                  "appTwo1",
+					Id:                  "apptwo1",
 					AmountIn:            newInt(1000000000),
 					AmountOut:           newInt(1000000000),
 					AppId:               appID2,
@@ -2063,8 +2063,8 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByAppAndExtendedPair(
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -2106,7 +2106,7 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByAppAndExtendedPair(
 			ExpResp: &types.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse{
 				ExtendedPairVaultMapping: &types.ExtendedPairVaultMapping{
 					ExtendedPairId:         extendedVaultPairID1,
-					VaultIds:               []string{"appOne1"},
+					VaultIds:               []string{"appone1"},
 					TokenMintedAmount:      newInt(200000000),
 					CollateralLockedAmount: newInt(1000000000),
 				},
@@ -2124,7 +2124,7 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByAppAndExtendedPair(
 			ExpResp: &types.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse{
 				ExtendedPairVaultMapping: &types.ExtendedPairVaultMapping{
 					ExtendedPairId:         extendedVaultPairID1,
-					VaultIds:               []string{"appOne1", "appOne2"},
+					VaultIds:               []string{"appone1", "appone2"},
 					TokenMintedAmount:      newInt(400000000),
 					CollateralLockedAmount: newInt(2000000000),
 				},
@@ -2142,7 +2142,7 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByAppAndExtendedPair(
 			ExpResp: &types.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse{
 				ExtendedPairVaultMapping: &types.ExtendedPairVaultMapping{
 					ExtendedPairId:         extendedVaultPairID2,
-					VaultIds:               []string{"appTwo1"},
+					VaultIds:               []string{"apptwo1"},
 					TokenMintedAmount:      newInt(200000000),
 					CollateralLockedAmount: newInt(1000000000),
 				},
@@ -2160,7 +2160,7 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByAppAndExtendedPair(
 			ExpResp: &types.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse{
 				ExtendedPairVaultMapping: &types.ExtendedPairVaultMapping{
 					ExtendedPairId:         extendedVaultPairID2,
-					VaultIds:               []string{"appTwo1", "appTwo2"},
+					VaultIds:               []string{"apptwo1", "apptwo2"},
 					TokenMintedAmount:      newInt(400000000),
 					CollateralLockedAmount: newInt(2000000000),
 				},
@@ -2193,8 +2193,8 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByApp() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -2237,7 +2237,7 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByApp() {
 				ExtendedPairVaultMapping: []*types.ExtendedPairVaultMapping{
 					{
 						ExtendedPairId:         extendedVaultPairID1,
-						VaultIds:               []string{"appOne1"},
+						VaultIds:               []string{"appone1"},
 						TokenMintedAmount:      newInt(200000000),
 						CollateralLockedAmount: newInt(1000000000),
 					},
@@ -2257,7 +2257,7 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByApp() {
 				ExtendedPairVaultMapping: []*types.ExtendedPairVaultMapping{
 					{
 						ExtendedPairId:         extendedVaultPairID1,
-						VaultIds:               []string{"appOne1", "appOne2"},
+						VaultIds:               []string{"appone1", "appone2"},
 						TokenMintedAmount:      newInt(400000000),
 						CollateralLockedAmount: newInt(2000000000),
 					},
@@ -2277,7 +2277,7 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByApp() {
 				ExtendedPairVaultMapping: []*types.ExtendedPairVaultMapping{
 					{
 						ExtendedPairId:         extendedVaultPairID2,
-						VaultIds:               []string{"appTwo1"},
+						VaultIds:               []string{"apptwo1"},
 						TokenMintedAmount:      newInt(200000000),
 						CollateralLockedAmount: newInt(1000000000),
 					},
@@ -2297,7 +2297,7 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByApp() {
 				ExtendedPairVaultMapping: []*types.ExtendedPairVaultMapping{
 					{
 						ExtendedPairId:         extendedVaultPairID2,
-						VaultIds:               []string{"appTwo1", "appTwo2"},
+						VaultIds:               []string{"apptwo1", "apptwo2"},
 						TokenMintedAmount:      newInt(400000000),
 						CollateralLockedAmount: newInt(2000000000),
 					},
@@ -2331,8 +2331,8 @@ func (s *KeeperTestSuite) TestQueryTVLByAppOfAllExtendedPairs() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -2459,8 +2459,8 @@ func (s *KeeperTestSuite) TestQueryTVLByApp() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -2566,8 +2566,8 @@ func (s *KeeperTestSuite) TestQueryUserMyPositionByApp() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -2688,8 +2688,8 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
@@ -2723,7 +2723,7 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 						{
 							AppId: appID1,
 							UserExtendedPairVault: []*types.ExtendedPairToVaultMapping{
-								{ExtendedPairId: extendedVaultPairID1, VaultId: "appOne1"},
+								{ExtendedPairId: extendedVaultPairID1, VaultId: "appone1"},
 							},
 						},
 					},
@@ -2746,7 +2746,7 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 						{
 							AppId: appID1,
 							UserExtendedPairVault: []*types.ExtendedPairToVaultMapping{
-								{ExtendedPairId: extendedVaultPairID1, VaultId: "appOne2"},
+								{ExtendedPairId: extendedVaultPairID1, VaultId: "appone2"},
 							},
 						},
 					},
@@ -2769,13 +2769,13 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 						{
 							AppId: appID1,
 							UserExtendedPairVault: []*types.ExtendedPairToVaultMapping{
-								{ExtendedPairId: extendedVaultPairID1, VaultId: "appOne1"},
+								{ExtendedPairId: extendedVaultPairID1, VaultId: "appone1"},
 							},
 						},
 						{
 							AppId: appID2,
 							UserExtendedPairVault: []*types.ExtendedPairToVaultMapping{
-								{ExtendedPairId: extendedVaultPairID2, VaultId: "appTwo1"},
+								{ExtendedPairId: extendedVaultPairID2, VaultId: "apptwo1"},
 							},
 						},
 					},
@@ -2798,13 +2798,13 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 						{
 							AppId: appID1,
 							UserExtendedPairVault: []*types.ExtendedPairToVaultMapping{
-								{ExtendedPairId: extendedVaultPairID1, VaultId: "appOne2"},
+								{ExtendedPairId: extendedVaultPairID1, VaultId: "appone2"},
 							},
 						},
 						{
 							AppId: appID2,
 							UserExtendedPairVault: []*types.ExtendedPairToVaultMapping{
-								{ExtendedPairId: extendedVaultPairID2, VaultId: "appTwo2"},
+								{ExtendedPairId: extendedVaultPairID2, VaultId: "apptwo2"},
 							},
 						},
 					},
@@ -2836,8 +2836,8 @@ func (s *KeeperTestSuite) TestQueryPairsLockedAndMintedStatisticByApp() {
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
