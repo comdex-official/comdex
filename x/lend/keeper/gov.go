@@ -6,7 +6,7 @@ import (
 )
 
 func (k Keeper) HandleAddWhitelistedPairsRecords(ctx sdk.Context, p *types.LendPairsProposal) error {
-	return k.AddLendPairsRecords(ctx, p.Pairs...)
+	return k.AddLendPairsRecords(ctx, p.Pairs)
 }
 
 func (k Keeper) HandleUpdateWhitelistedPairRecords(ctx sdk.Context, p *types.UpdatePairProposal) error {
@@ -22,7 +22,7 @@ func (k Keeper) HandleAddAssetToPairRecords(ctx sdk.Context, p *types.AddAssetTo
 }
 
 func (k Keeper) HandleAddAssetRatesStatsRecords(ctx sdk.Context, p *types.AddAssetRatesStats) error {
-	return k.AddAssetRatesStats(ctx, p.AssetRatesStats...)
+	return k.AddAssetRatesStats(ctx, p.AssetRatesStats)
 }
 
 func (k Keeper) HandleAddAuctionParamsRecords(ctx sdk.Context, p *types.AddAuctionParamsProposal) error {

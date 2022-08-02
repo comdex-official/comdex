@@ -404,42 +404,39 @@ func NewCreateNewLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.Fl
 		return txf, nil, fmt.Errorf("failed to parse add lend pairs : %w", err)
 	}
 
-	assetIn, err := ParseUint64SliceFromString(newLendPairs.AssetIn, ",")
+	assetIn, err := strconv.ParseUint(newLendPairs.AssetIn, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	assetOut, err := ParseUint64SliceFromString(newLendPairs.AssetOut, ",")
+	assetOut, err := strconv.ParseUint(newLendPairs.AssetOut, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	isInterPool, err := ParseUint64SliceFromString(newLendPairs.IsInterPool, ",")
+	isInterPool, err := strconv.ParseUint(newLendPairs.IsInterPool, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	assetOutPoolID, err := ParseUint64SliceFromString(newLendPairs.AssetOutPoolID, ",")
+	assetOutPoolID, err := strconv.ParseUint(newLendPairs.AssetOutPoolID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	minUSDValueLeft, err := ParseUint64SliceFromString(newLendPairs.MinUSDValueLeft, ",")
+	minUSDValueLeft, err := strconv.ParseUint(newLendPairs.MinUSDValueLeft, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	var pairs []types.Extended_Pair
-	for i := range assetIn {
-		interPool := ParseBoolFromString(isInterPool[i])
-		pairs = append(pairs, types.Extended_Pair{
-			AssetIn:         assetIn[i],
-			AssetOut:        assetOut[i],
+		interPool := ParseBoolFromString(isInterPool)
+		pairs := types.Extended_Pair{
+			AssetIn:         assetIn,
+			AssetOut:        assetOut,
 			IsInterPool:     interPool,
-			AssetOutPoolID:  assetOutPoolID[i],
-			MinUsdValueLeft: minUSDValueLeft[i],
-		})
-	}
+			AssetOutPoolID:  assetOutPoolID,
+			MinUsdValueLeft: minUSDValueLeft,
+		}
 
 	from := clientCtx.GetFromAddress()
 
@@ -738,86 +735,60 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 		return txf, nil, fmt.Errorf("failed to parse asset rates stats : %w", err)
 	}
 
-	assetID, err := ParseUint64SliceFromString(assetRatesStatsInput.AssetID, ",")
+	assetID, err := strconv.ParseUint(assetRatesStatsInput.AssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	uOptimal, err := ParseStringFromString(assetRatesStatsInput.UOptimal, ",")
+	uOptimal:= assetRatesStatsInput.UOptimal
+
+	base := assetRatesStatsInput.Base
+
+	slope1 := assetRatesStatsInput.Slope1
+
+	slope2 := assetRatesStatsInput.Slope2
+
+	enableStableBorrow, err := strconv.ParseUint(assetRatesStatsInput.EnableStableBorrow, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
-	base, err := ParseStringFromString(assetRatesStatsInput.Base, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	slope1, err := ParseStringFromString(assetRatesStatsInput.Slope1, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	slope2, err := ParseStringFromString(assetRatesStatsInput.Slope2, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	enableStableBorrow, err := ParseUint64SliceFromString(assetRatesStatsInput.EnableStableBorrow, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	stableBase, err := ParseStringFromString(assetRatesStatsInput.StableBase, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	stableSlope1, err := ParseStringFromString(assetRatesStatsInput.StableSlope1, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	stableSlope2, err := ParseStringFromString(assetRatesStatsInput.StableSlope2, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	ltv, err := ParseStringFromString(assetRatesStatsInput.LTV, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	liquidationThreshold, err := ParseStringFromString(assetRatesStatsInput.LiquidationThreshold, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	liquidationPenalty, err := ParseStringFromString(assetRatesStatsInput.LiquidationPenalty, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	liquidationBonus, err := ParseStringFromString(assetRatesStatsInput.LiquidationPenalty, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	reserveFactor, err := ParseStringFromString(assetRatesStatsInput.ReserveFactor, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	cAssetID, err := ParseUint64SliceFromString(assetRatesStatsInput.CAssetID, ",")
+	stableBase := assetRatesStatsInput.StableBase
+
+	stableSlope1 := assetRatesStatsInput.StableSlope1
+
+	stableSlope2 := assetRatesStatsInput.StableSlope2
+
+	ltv := assetRatesStatsInput.LTV
+
+	liquidationThreshold := assetRatesStatsInput.LiquidationThreshold
+
+	liquidationPenalty := assetRatesStatsInput.LiquidationPenalty
+
+	liquidationBonus := assetRatesStatsInput.LiquidationPenalty
+
+	reserveFactor := assetRatesStatsInput.ReserveFactor
+
+	cAssetID, err := strconv.ParseUint(assetRatesStatsInput.CAssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	var assetRatesStats []types.AssetRatesStats
-	for i := range assetID {
-		newUOptimal, _ := sdk.NewDecFromStr(uOptimal[i])
-		newBase, _ := sdk.NewDecFromStr(base[i])
-		newSlope1, _ := sdk.NewDecFromStr(slope1[i])
-		newSlope2, _ := sdk.NewDecFromStr(slope2[i])
-		newEnableStableBorrow := ParseBoolFromString(enableStableBorrow[i])
-		newStableBase, _ := sdk.NewDecFromStr(stableBase[i])
-		newStableSlope1, _ := sdk.NewDecFromStr(stableSlope1[i])
-		newStableSlope2, _ := sdk.NewDecFromStr(stableSlope2[i])
-		newLTV, _ := sdk.NewDecFromStr(ltv[i])
-		newLiquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold[i])
-		newLiquidationPenalty, _ := sdk.NewDecFromStr(liquidationPenalty[i])
-		newLiquidationBonus, _ := sdk.NewDecFromStr(liquidationBonus[i])
-		newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor[i])
+		newUOptimal, _ := sdk.NewDecFromStr(uOptimal)
+		newBase, _ := sdk.NewDecFromStr(base)
+		newSlope1, _ := sdk.NewDecFromStr(slope1)
+		newSlope2, _ := sdk.NewDecFromStr(slope2)
+		newEnableStableBorrow := ParseBoolFromString(enableStableBorrow)
+		newStableBase, _ := sdk.NewDecFromStr(stableBase)
+		newStableSlope1, _ := sdk.NewDecFromStr(stableSlope1)
+		newStableSlope2, _ := sdk.NewDecFromStr(stableSlope2)
+		newLTV, _ := sdk.NewDecFromStr(ltv)
+		newLiquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold)
+		newLiquidationPenalty, _ := sdk.NewDecFromStr(liquidationPenalty)
+		newLiquidationBonus, _ := sdk.NewDecFromStr(liquidationBonus)
+		newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor)
 
-		assetRatesStats = append(assetRatesStats, types.AssetRatesStats{
-			AssetID:              assetID[i],
+		assetRatesStats := types.AssetRatesStats{
+			AssetID:              assetID,
 			UOptimal:             newUOptimal,
 			Base:                 newBase,
 			Slope1:               newSlope1,
@@ -831,10 +802,9 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 			LiquidationPenalty:   newLiquidationPenalty,
 			LiquidationBonus:     newLiquidationBonus,
 			ReserveFactor:        newReserveFactor,
-			CAssetID:             cAssetID[i],
-		},
-		)
-	}
+			CAssetID:             cAssetID,
+		}
+		
 
 	from := clientCtx.GetFromAddress()
 

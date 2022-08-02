@@ -37,7 +37,7 @@ var (
 	_ govtypes.Content = &AddAuctionParamsProposal{}
 )
 
-func NewAddLendPairsProposal(title, description string, pairs []Extended_Pair) govtypes.Content {
+func NewAddLendPairsProposal(title, description string, pairs Extended_Pair) govtypes.Content {
 	return &LendPairsProposal{
 		Title:       title,
 		Description: description,
@@ -54,14 +54,9 @@ func (p *LendPairsProposal) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-	if len(p.Pairs) == 0 {
-		return ErrorEmptyProposalAssets
-	}
 
-	for _, pair := range p.Pairs {
-		if err := pair.Validate(); err != nil {
-			return err
-		}
+	if err := p.Pairs.Validate(); err != nil {
+		return err
 	}
 
 	return nil
@@ -153,7 +148,7 @@ func (p *AddAssetToPairProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewAddAssetRatesStats(title, description string, AssetRatesStats []AssetRatesStats) govtypes.Content {
+func NewAddAssetRatesStats(title, description string, AssetRatesStats AssetRatesStats) govtypes.Content {
 	return &AddAssetRatesStats{
 		Title:           title,
 		Description:     description,
@@ -175,10 +170,8 @@ func (p *AddAssetRatesStats) ValidateBasic() error {
 		return err
 	}
 
-	for _, assetRatesStats := range p.AssetRatesStats {
-		if err := assetRatesStats.Validate(); err != nil {
-			return err
-		}
+	if err := p.AssetRatesStats.Validate(); err != nil {
+		return err
 	}
 
 	return nil
