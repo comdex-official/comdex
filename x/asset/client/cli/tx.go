@@ -24,13 +24,13 @@ func NewCmdSubmitAddAssetsProposal() *cobra.Command {
 		Long: `Must provide path to a add assets in JSON file (--add-assets) describing the asset in app to be created
 Sample json content
 {
-	"name" :"ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR",
-	"denom" :"uatom,ucmdx,ucmst,uosmo,ucatom,uccmdx,uccmst,ucosmo,uharbor",
-	"decimals" :"1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000",
-	"is_on_chain" :"0,0,0,0,0,0,0,0,1",
-	"asset_oracle_price" :"1,1,0,1,0,0,0,0,0",
+	"name" :"ATOM",
+	"denom" :"uatom",
+	"decimals" :"1000000",
+	"is_on_chain" :"0",
+	"asset_oracle_price" :"1",
 	"title" :"Add assets for applications to be deployed on comdex testnet",
-	"description" :"This proposal it to add following assets ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR to be then used on harbor, commodo and cswap apps",
+	"description" :"This proposal it to add following assets ATOM to be then used on harbor, commodo and cswap apps",
 	"deposit" :"1000000000ucmdx"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -84,13 +84,13 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 
 	from := clientCtx.GetFromAddress()
 
-		assets := types.Asset{
-			Name:                  names,
-			Denom:                 denoms,
-			Decimals:              decimals,
-			IsOnChain:             isOnChain,
-			IsOraclePriceRequired: assetOraclePrice,
-		}
+	assets := types.Asset{
+		Name:                  names,
+		Denom:                 denoms,
+		Decimals:              decimals,
+		IsOnChain:             isOnChain,
+		IsOraclePriceRequired: assetOraclePrice,
+	}
 
 	deposit, err := sdk.ParseCoinsNormalized(assetsMapping.Deposit)
 	if err != nil {
@@ -218,10 +218,10 @@ func NewCmdSubmitAddPairsProposal() *cobra.Command {
 				return err
 			}
 
-				pairs := types.Pair{
-					AssetIn:  assetIn,
-					AssetOut: assetOut,
-				}
+			pairs := types.Pair{
+				AssetIn:  assetIn,
+				AssetOut: assetOut,
+			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
@@ -500,22 +500,22 @@ func NewCreateAssetInAppMsg(clientCtx client.Context, txf tx.Factory, fs *flag.F
 	}
 
 	var bMap []types.MintGenesisToken
-		newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply)
-		if !ok {
-			return txf, nil, types.ErrorInvalidGenesisSupply
-		}
-		address, err := sdk.AccAddressFromBech32(recipient)
-		if err != nil {
-			panic(err)
-		}
-		var cmap types.MintGenesisToken
+	newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply)
+	if !ok {
+		return txf, nil, types.ErrorInvalidGenesisSupply
+	}
+	address, err := sdk.AccAddressFromBech32(recipient)
+	if err != nil {
+		panic(err)
+	}
+	var cmap types.MintGenesisToken
 
-		cmap.AssetId = assetIDs
-		cmap.GenesisSupply = newGenesisSupply
-		cmap.IsGovToken = isGovToken
-		cmap.Recipient = address.String()
+	cmap.AssetId = assetIDs
+	cmap.GenesisSupply = newGenesisSupply
+	cmap.IsGovToken = isGovToken
+	cmap.Recipient = address.String()
 
-		bMap = append(bMap, cmap)
+	bMap = append(bMap, cmap)
 
 	aMap := types.AppData{
 		Id:           appID,
