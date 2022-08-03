@@ -293,16 +293,6 @@ func (k Keeper) AddAssetInAppRecords(ctx sdk.Context, msg types.AppData) error {
 			}
 			appdata.GenesisToken = append(appdata.GenesisToken, data)
 		}
-		var (
-			app = types.AppData{
-				Id:               msg.Id,
-				Name:             appdata.Name,
-				ShortName:        appdata.ShortName,
-				MinGovDeposit:    appdata.MinGovDeposit,
-				GovTimeInSeconds: appdata.GovTimeInSeconds,
-				GenesisToken:     appdata.GenesisToken,
-			}
-		)
-		k.SetApp(ctx, app)
+		k.SetApp(ctx, appdata)
 	return nil
 }

@@ -33,6 +33,13 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 					ctx.Logger().Error("error in debt activator")
 					panic(err2)
 				}
+
+				err3 := k.DistributorActivator(ctx, data, inData, killSwitchParams, status)
+				if err3 != nil {
+					ctx.Logger().Error("error in distributor activator")
+					panic(err3)
+				}
+
 			}
 		}
 	}
