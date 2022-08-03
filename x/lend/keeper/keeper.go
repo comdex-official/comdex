@@ -1358,6 +1358,125 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 	return nil
 }
 
+func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, PoolID uint64, AmountIn sdk.Coin, PairID uint64, IsStableBorrow bool, AmountOut sdk.Coin, AppID uint64) error {
+	asset, _ := k.GetAsset(ctx, AssetID)
+	pool, _ := k.GetPool(ctx, PoolID)
+
+	_, found := k.GetApp(ctx, AppID)
+	if !found {
+		return types.ErrorAppMappingDoesNotExist
+	}
+
+	if AmountIn.Denom != asset.Denom {
+		return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, AmountIn.Denom)
+	}
+
+	found = uint64InAssetData(AssetID, pool.AssetData)
+	if !found {
+		return sdkerrors.Wrap(types.ErrInvalidAssetIDForPool, strconv.FormatUint(AssetID, 10))
+	}
+
+	addr, _ := sdk.AccAddressFromBech32(lenderAddr)
+
+	if k.HasLendForAddressByAsset(ctx, addr, AssetID, PoolID) {
+		return types.ErrorDuplicateLend
+	}
+
+	loanTokens := sdk.NewCoins(AmountIn)
+
+	assetRatesStat, found := k.GetAssetRatesStats(ctx, AssetID)
+	if !found {
+		return sdkerrors.Wrap(types.ErrorAssetRatesStatsNotFound, strconv.FormatUint(AssetID, 10))
+	}
+	cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
+	cToken := sdk.NewCoin(cAsset.Denom, AmountIn.Amount)
+
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, loanTokens); err != nil {
+		return err
+	}
+	// mint c/Token and set new total cToken supply
+
+	cTokens := sdk.NewCoins(cToken)
+	if err := k.bank.MintCoins(ctx, pool.ModuleName, cTokens); err != nil {
+		return err
+	}
+
+	err := k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, addr, cTokens)
+	if err != nil {
+		return err
+	}
+
+	lendID := k.GetUserLendIDHistory(ctx)
+
+	lendPos := types.LendAsset{
+		ID:                 lendID + 1,
+		AssetID:            AssetID,
+		PoolID:             PoolID,
+		Owner:              lenderAddr,
+		AmountIn:           AmountIn,
+		LendingTime:        ctx.BlockTime(),
+		UpdatedAmountIn:    AmountIn.Amount,
+		AvailableToBorrow:  AmountIn.Amount,
+		Reward_Accumulated: sdk.ZeroInt(),
+		CPoolName:          pool.CPoolName,
+		AppID:              AppID,
+	}
+	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, AssetID, PoolID)
+	if !found {
+		assetStats.TotalLend = sdk.ZeroInt()
+	}
+	AssetStats := types.AssetStats{
+		PoolID:    PoolID,
+		AssetID:   AssetID,
+		TotalLend: assetStats.TotalLend.Add(AmountIn.Amount),
+	}
+
+	depositStats, _ := k.GetDepositStats(ctx)
+	userDepositStats, _ := k.GetUserDepositStats(ctx)
+
+	var balanceStats []types.BalanceStats
+	for _, v := range depositStats.BalanceStats {
+		if v.AssetID == AssetID {
+			v.Amount = v.Amount.Add(AmountIn.Amount)
+		}
+		balanceStats = append(balanceStats, v)
+		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		k.SetDepositStats(ctx, newDepositStats)
+	}
+	var userBalanceStats []types.BalanceStats
+	for _, v := range userDepositStats.BalanceStats {
+		if v.AssetID == AssetID {
+			v.Amount = v.Amount.Add(AmountIn.Amount)
+		}
+		userBalanceStats = append(userBalanceStats, v)
+		newUserDepositStats := types.DepositStats{BalanceStats: userBalanceStats}
+		k.SetUserDepositStats(ctx, newUserDepositStats)
+	}
+
+	k.SetAssetStatsByPoolIDAndAssetID(ctx, AssetStats)
+	k.SetUserLendIDHistory(ctx, lendPos.ID)
+	k.SetLend(ctx, lendPos)
+	k.SetLendForAddressByAsset(ctx, addr, lendPos.AssetID, lendPos.ID, lendPos.PoolID)
+	err = k.UpdateUserLendIDMapping(ctx, lenderAddr, lendPos.ID, true)
+	if err != nil {
+		return err
+	}
+	err = k.UpdateLendIDByOwnerAndPoolMapping(ctx, lenderAddr, lendPos.ID, lendPos.PoolID, true)
+	if err != nil {
+		return err
+	}
+	err = k.UpdateLendIDsMapping(ctx, lendPos.ID, true)
+	if err != nil {
+		return err
+	}
+
+	err = k.BorrowAsset(ctx, lenderAddr, lendPos.ID, PairID, IsStableBorrow, cToken, AmountOut)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, assetID uint64, lenderAddr sdk.AccAddress, payment sdk.Coin) error {
 	loanTokens := sdk.NewCoins(payment)
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, moduleName, loanTokens); err != nil {

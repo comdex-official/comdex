@@ -55,6 +55,10 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := server.Repay(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
+		case *types.MsgBorrowAlternate:
+			res, err := server.BorrowAlternate(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
 		case *types.MsgFundModuleAccounts:
 			res, err := server.FundModuleAccounts(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

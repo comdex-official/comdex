@@ -352,3 +352,46 @@ func (msg *MsgCloseBorrow) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
+
+func NewMsgBorrowAlternate(lender string, assetID, poolID uint64, amountIn sdk.Coin, pairID uint64, stableBorrow bool, amountOut sdk.Coin, appID uint64) *MsgBorrowAlternate {
+	return &MsgBorrowAlternate{
+		Lender:         lender,
+		AssetId:        assetID,
+		PoolId:         poolID,
+		AmountIn:       amountIn,
+		PairId:         pairID,
+		IsStableBorrow: stableBorrow,
+		AmountOut:      amountOut,
+		AppId:          appID,
+	}
+}
+
+func (msg MsgBorrowAlternate) Route() string { return ModuleName }
+func (msg MsgBorrowAlternate) Type() string  { return EventTypeLoanAsset }
+
+func (msg *MsgBorrowAlternate) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		return err
+	}
+
+	if asset := msg.GetAmountIn(); !asset.IsValid() {
+		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	}
+	if assetTwo := msg.GetAmountOut(); !assetTwo.IsValid() {
+		return sdkerrors.Wrap(ErrInvalidAsset, assetTwo.String())
+	}
+
+	return nil
+}
+
+func (msg *MsgBorrowAlternate) GetSigners() []sdk.AccAddress {
+	lender, _ := sdk.AccAddressFromBech32(msg.GetLender())
+	return []sdk.AccAddress{lender}
+}
+
+// GetSignBytes get the bytes for the message signer to sign on.
+func (msg *MsgBorrowAlternate) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}

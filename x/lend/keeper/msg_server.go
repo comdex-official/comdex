@@ -273,6 +273,33 @@ func (m msgServer) CloseBorrow(goCtx context.Context, borrow *types.MsgCloseBorr
 	return &types.MsgCloseBorrowResponse{}, nil
 }
 
+func (m msgServer) BorrowAlternate(goCtx context.Context, alternate *types.MsgBorrowAlternate) (*types.MsgBorrowAlternateResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	lenderAddr, err := sdk.AccAddressFromBech32(alternate.Lender)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := m.keeper.BorrowAlternate(ctx, alternate.Lender, alternate.AssetId, alternate.PoolId, alternate.AmountIn, alternate.PairId, alternate.IsStableBorrow, alternate.AmountOut, alternate.AppId); err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeWithdrawLoanedAsset,
+			sdk.NewAttribute(types.EventAttrLender, lenderAddr.String()),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
+			sdk.NewAttribute(sdk.AttributeKeySender, lenderAddr.String()),
+		),
+	})
+
+	return &types.MsgBorrowAlternateResponse{}, nil
+}
+
 func (m msgServer) FundModuleAccounts(goCtx context.Context, accounts *types.MsgFundModuleAccounts) (*types.MsgFundModuleAccountsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
