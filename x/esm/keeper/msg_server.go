@@ -65,7 +65,7 @@ func (k msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgColl
 		status = esmStatus.Status
 	}
 
-	if ctx.BlockTime().Before(esmStatus.EndTime) || status {
+	if ctx.BlockTime().Before(esmStatus.EndTime) && status {
 		return nil, types.ErrCoolOffPeriodRemains
 	}
 	if ctx.BlockTime().After(esmStatus.EndTime) && status {
