@@ -38,6 +38,8 @@ func (m msgServer) Lend(goCtx context.Context, lend *types.MsgLend) (*types.MsgL
 		),
 	})
 
+	ctx.GasMeter().ConsumeGas(types.LendGas, "LendGas")
+
 	return &types.MsgLendResponse{}, nil
 }
 
