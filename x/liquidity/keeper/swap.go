@@ -289,6 +289,8 @@ func (k Keeper) CancelOrder(ctx sdk.Context, msg *types.MsgCancelOrder) error {
 		return err
 	}
 
+	ctx.GasMeter().ConsumeGas(types.CancelOrderGas, "CancelOrderGas")
+
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCancelOrder,
@@ -356,6 +358,8 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 			}
 		}
 	}
+
+	ctx.GasMeter().ConsumeGas(types.CancelAllOrdersGas, "CancelAllOrdersGas")
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
