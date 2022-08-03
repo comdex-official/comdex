@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"math"
+	"strconv"
 	"time"
 
 	"github.com/comdex-official/comdex/x/liquidity/amm"
@@ -307,6 +308,20 @@ func (k Keeper) Farm(ctx sdk.Context, msg *types.MsgFarm) error {
 		},
 	)
 	k.SetQueuedFarmer(ctx, queuedFarmer)
+
+	ctx.GasMeter().ConsumeGas(types.FarmGas, "FarmGas")
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeFarm,
+			sdk.NewAttribute(types.AttributeKeyFarmer, msg.Farmer),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(msg.PoolId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolCoin, msg.FarmingPoolCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyTimeStamp, ctx.BlockTime().String()),
+		),
+	})
+
 	return nil
 }
 
@@ -405,6 +420,19 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 		k.SetActiveFarmer(ctx, activeFarmer)
 	}
 	k.SetQueuedFarmer(ctx, queuedFarmer)
+
+	ctx.GasMeter().ConsumeGas(types.UnfarmGas, "UnfarmGas")
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeUnfarm,
+			sdk.NewAttribute(types.AttributeKeyFarmer, msg.Farmer),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(msg.PoolId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolCoin, msg.UnfarmingPoolCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyTimeStamp, ctx.BlockTime().String()),
+		),
+	})
 
 	return nil
 }

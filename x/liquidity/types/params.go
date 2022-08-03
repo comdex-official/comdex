@@ -3,6 +3,7 @@ package types
 import (
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -15,6 +16,15 @@ const (
 	PairSwapFeeCollectorAddressPrefix = "PairSwapFeeCollectorAddress"
 	PairEscrowAddressPrefix           = "PairEscrowAddress"
 	ModuleAddressNameSplitter         = "|"
+)
+
+const (
+	CreatePoolGas       = sdk.Gas(10000)
+	CancelOrderGas      = sdk.Gas(10000)
+	CancelAllOrdersGas  = sdk.Gas(20000)
+	FarmGas             = sdk.Gas(10000)
+	UnfarmGas           = sdk.Gas(10000)
+	gasCostPerIteration = sdk.Gas(10)
 )
 
 var (
