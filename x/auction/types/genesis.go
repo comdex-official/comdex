@@ -7,9 +7,6 @@ func NewGenesisState(surplusAuction []SurplusAuction, debtAuction []DebtAuction,
 		DutchAuction: dutchAuction,
 		ProtocolStatistics: protocolStatistics,
 		AuctionParams: auctionParams,
-		// SurplusBiddings: surplusBiddings,
-		// DebtBiddings: debtBiddings,
-		// DutchBiddings: dutchBiddings,
 		Params: params,
 	}
 }
@@ -21,9 +18,6 @@ func DefaultGenesisState() *GenesisState {
 		[]DutchAuction{},
 		[]ProtocolStatistics{},
 		[]AuctionParams{},
-		// []SurplusBiddings{},
-		// []DebtBiddings{},
-		// []DutchBiddings{},
 		DefaultParams(),
 	)
 }

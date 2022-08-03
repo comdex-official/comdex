@@ -151,14 +151,3 @@ message PairStatisticData {
     (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
 }
-
-
-
-
-//StableMintVault will use the Lookup table of the vault itself for consistency
-
-
-// front end needs to know which all extended pairs have reached the the debt ceiling- write a query command.
-//Collateral Locked ExtendedPair Vault Wise
-//Collateral Locked Product Wise
-//Collateral Locked Across all Projects

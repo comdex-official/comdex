@@ -39,18 +39,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetAuctionParams(ctx, item)
 	}
 
-	// for _, item := range state.SurplusBiddings {
-	// 	k.SetSurplusUserBidding(ctx, item)
-	// }
-
-	// for _, item := range state.DebtBiddings {
-	// 	k.SetDebtUserBidding(ctx, item)
-	// }
-
-	// for _, item := range state.DutchBiddings {
-	// 	k.SetDutchUserBidding(ctx, item)
-	// }
-
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
@@ -61,9 +49,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetAllDutchAuctions(ctx),
 		k.GetAllProtocolStat(ctx),
 		k.GetAllAuctionParams(ctx),
-		// k.GetAllSurplusUserBiddings(ctx),
-		// k.GetAllDebtUserBidding(ctx),
-		// k.GetAllDutchUserBiddings(ctx),
 		k.GetParams(ctx),
 	)
 }

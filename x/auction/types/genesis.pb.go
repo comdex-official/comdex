@@ -29,13 +29,7 @@ type GenesisState struct {
 	DutchAuction       []DutchAuction       `protobuf:"bytes,3,rep,name=dutchAuction,proto3" json:"dutchAuction" yaml:"dutchAuction"`
 	ProtocolStatistics []ProtocolStatistics `protobuf:"bytes,4,rep,name=protocolStatistics,proto3" json:"protocolStatistics" yaml:"protocolStatistics"`
 	AuctionParams      []AuctionParams      `protobuf:"bytes,5,rep,name=auctionParams,proto3" json:"auctionParams" yaml:"auctionParams"`
-	// repeated SurplusBiddings surplusBiddings = 6
-	// [ (gogoproto.moretags) = "yaml:\"surplusBiddings\"", (gogoproto.nullable) = false ];
-	// repeated DebtBiddings debtBiddings = 7
-	// [ (gogoproto.moretags) = "yaml:\"debtBiddings\"", (gogoproto.nullable) = false ];
-	// repeated DutchBiddings dutchBiddings = 8
-	// [ (gogoproto.moretags) = "yaml:\"dutchBiddings\"", (gogoproto.nullable) = false ];
-	Params Params `protobuf:"bytes,6,opt,name=params,proto3" json:"params"`
+	Params             Params               `protobuf:"bytes,6,opt,name=params,proto3" json:"params"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
