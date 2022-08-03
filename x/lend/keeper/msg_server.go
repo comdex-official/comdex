@@ -70,6 +70,9 @@ func (m msgServer) Withdraw(goCtx context.Context, withdraw *types.MsgWithdraw) 
 		),
 	})
 
+	ctx.GasMeter().ConsumeGas(types.WithdrawGas, "WithdrawGas")
+
+
 	return &types.MsgWithdrawResponse{}, nil
 }
 
@@ -100,6 +103,8 @@ func (m msgServer) Deposit(goCtx context.Context, deposit *types.MsgDeposit) (*t
 		),
 	})
 
+	ctx.GasMeter().ConsumeGas(types.DepositGas, "DepositGas")
+
 	return &types.MsgDepositResponse{}, nil
 }
 
@@ -128,6 +133,8 @@ func (m msgServer) CloseLend(goCtx context.Context, lend *types.MsgCloseLend) (*
 			sdk.NewAttribute(sdk.AttributeKeySender, lenderAddr.String()),
 		),
 	})
+
+	ctx.GasMeter().ConsumeGas(types.CloseLendGas, "CloseLendGas")
 
 	return &types.MsgCloseLendResponse{}, nil
 }
@@ -158,6 +165,8 @@ func (m msgServer) Borrow(goCtx context.Context, borrow *types.MsgBorrow) (*type
 		),
 	})
 
+	ctx.GasMeter().ConsumeGas(types.BorrowAssetGas, "BorrowAssetGas")
+
 	return &types.MsgBorrowResponse{}, nil
 }
 
@@ -186,6 +195,8 @@ func (m msgServer) Repay(goCtx context.Context, repay *types.MsgRepay) (*types.M
 		),
 	})
 
+	ctx.GasMeter().ConsumeGas(types.RepayAssetGas, "RepayAssetGas")
+
 	return &types.MsgRepayResponse{}, nil
 }
 
@@ -213,6 +224,8 @@ func (m msgServer) DepositBorrow(goCtx context.Context, borrow *types.MsgDeposit
 			sdk.NewAttribute(sdk.AttributeKeySender, borrowerAddr.String()),
 		),
 	})
+
+	ctx.GasMeter().ConsumeGas(types.DepositBorrowAssetGas, "DepositBorrowAssetGas")
 
 	return &types.MsgDepositBorrowResponse{}, nil
 }
@@ -243,6 +256,8 @@ func (m msgServer) Draw(goCtx context.Context, draw *types.MsgDraw) (*types.MsgD
 		),
 	})
 
+	ctx.GasMeter().ConsumeGas(types.DrawAssetGas, "DrawAssetGas")
+
 	return &types.MsgDrawResponse{}, nil
 }
 
@@ -272,6 +287,8 @@ func (m msgServer) CloseBorrow(goCtx context.Context, borrow *types.MsgCloseBorr
 		),
 	})
 
+	ctx.GasMeter().ConsumeGas(types.CloseBorrowAssetGas, "CloseBorrowAssetGas")
+
 	return &types.MsgCloseBorrowResponse{}, nil
 }
 
@@ -298,6 +315,8 @@ func (m msgServer) BorrowAlternate(goCtx context.Context, alternate *types.MsgBo
 			sdk.NewAttribute(sdk.AttributeKeySender, lenderAddr.String()),
 		),
 	})
+
+	ctx.GasMeter().ConsumeGas(types.BorrowAssetAlternateGas, "BorrowAssetAlternateGas")
 
 	return &types.MsgBorrowAlternateResponse{}, nil
 }
