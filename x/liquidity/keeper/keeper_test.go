@@ -292,3 +292,12 @@ func (s *KeeperTestSuite) MarketOrder(
 	s.Require().NoError(err)
 	return req
 }
+
+func (s *KeeperTestSuite) Farm(appID, poolID uint64, farmer sdk.AccAddress, farmingCoin string) {
+	msg := types.NewMsgFarm(
+		appID, poolID, farmer, utils.ParseCoin(farmingCoin),
+	)
+	s.fundAddr(farmer, sdk.NewCoins(msg.FarmingPoolCoin))
+	err := s.keeper.Farm(s.ctx, msg)
+	s.Require().NoError(err)
+}

@@ -208,6 +208,8 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 		}
 	}
 
+	ctx.GasMeter().ConsumeGas(types.CreateVaultGas, "CreateVaultGas")
+
 	return &types.MsgCreateResponse{}, nil
 }
 
@@ -288,6 +290,8 @@ func (k msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (
 	//Updating appExtendedPairvaultMappingData data -
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, msg.Amount, true)
+
+	ctx.GasMeter().ConsumeGas(types.DepositVaultGas, "DepositVaultGas")
 
 	return &types.MsgDepositResponse{}, nil
 }
@@ -379,6 +383,8 @@ func (k msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest)
 	//Updating appExtendedPairVaultMappingData
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, msg.Amount, false)
+
+	ctx.GasMeter().ConsumeGas(types.WithdrawVaultGas, "WithdrawVaultGas")
 
 	return &types.MsgWithdrawResponse{}, nil
 }
@@ -502,6 +508,8 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 	//Updating appExtendedPairVaultMappingData
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, msg.Amount, true)
+
+	ctx.GasMeter().ConsumeGas(types.DrawVaultGas, "DrawVaultGas")
 
 	return &types.MsgDrawResponse{}, nil
 }
@@ -629,6 +637,8 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 		k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, updatedUserSentAmountAfterFeesDeduction, false)
 	}
 
+	ctx.GasMeter().ConsumeGas(types.RepayVaultGas, "RepayVaultGas")
+
 	return &types.MsgRepayResponse{}, nil
 }
 
@@ -736,6 +746,8 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 
 	//Delete Vault
 	k.DeleteVault(ctx, userVault.Id)
+
+	ctx.GasMeter().ConsumeGas(types.CloseVaultGas, "CloseVaultGas")
 
 	return &types.MsgCloseResponse{}, nil
 }
@@ -857,6 +869,8 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	k.SetStableMintVault(ctx, stableVault)
 	//update Locker Data 	//Update Amount
 	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(ctx, updatedCounter, stableVault)
+
+	ctx.GasMeter().ConsumeGas(types.CreateStableVaultGas, "CreateStableVaultGas")
 
 	return &types.MsgCreateStableMintResponse{}, nil
 }
@@ -984,6 +998,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, stableVault.AmountIn, true)
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, stableVault.AmountOut, true)
 
+	ctx.GasMeter().ConsumeGas(types.DepositStableVaultGas, "DepositStableVaultGas")
 	return &types.MsgDepositStableMintResponse{}, nil
 }
 
@@ -1106,6 +1121,8 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, stableVault.AmountIn, false)
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, stableVault.AmountOut, false)
+
+	ctx.GasMeter().ConsumeGas(types.WithdrawStableVaultGas, "WithdrawStableVaultGas")
 
 	return &types.MsgWithdrawStableMintResponse{}, nil
 }

@@ -162,6 +162,9 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 		//Not a whitelisted asset , return err
 		return nil, types.ErrorLockerProductAssetMappingDoesNotExists
 	}
+
+	ctx.GasMeter().ConsumeGas(types.CreateLockerGas, "CreateLockerGas")
+
 	return &types.MsgCreateLockerResponse{}, nil
 }
 
@@ -241,6 +244,8 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 
 	k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
 
+	ctx.GasMeter().ConsumeGas(types.DepositLockerGas, "DepositLockerGas")
+
 	return &types.MsgDepositAssetResponse{}, nil
 }
 
@@ -312,6 +317,8 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 		}
 	}
 	k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
+
+	ctx.GasMeter().ConsumeGas(types.WithdrawLockerGas, "WithdrawLockerGas")
 
 	return &types.MsgWithdrawAssetResponse{}, nil
 }
