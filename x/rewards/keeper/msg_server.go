@@ -51,7 +51,7 @@ func (m msgServer) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
 
-	if err := m.Keeper.WhitelistAsset(ctx, msg.AppMappingId, msg.AssetId); err != nil {
+	if err := m.Keeper.WhitelistAsset(ctx, msg.AppMappingId, msg.AssetId, true); err != nil {
 		return nil, err
 	}
 	return &types.MsgWhitelistAssetResponse{}, nil
@@ -71,7 +71,7 @@ func (m msgServer) RemoveWhitelist(goCtx context.Context, msg *types.RemoveWhite
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	if err := m.Keeper.RemoveWhitelistAsset(ctx, msg.AppMappingId, msg.AssetId); err != nil {
+	if err := m.Keeper.RemoveWhitelistAsset(ctx, msg.AppMappingId, msg.AssetId, false); err != nil {
 		return nil, err
 	}
 	return &types.MsgRemoveWhitelistAssetResponse{}, nil

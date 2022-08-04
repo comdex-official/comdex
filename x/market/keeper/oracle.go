@@ -159,15 +159,6 @@ func (k Keeper) GetMarketForAsset(ctx sdk.Context, id uint64) (market types.Mark
 	return k.GetMarket(ctx, symbol.GetValue())
 }
 
-func (k Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.MarketForAssetKey(id)
-	)
-
-	store.Delete(key)
-}
-
 func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 
 	market, found := k.GetMarketForAsset(ctx, id)

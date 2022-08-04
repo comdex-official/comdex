@@ -27,10 +27,10 @@ var (
 	ErrInvalidAppID        = sdkerrors.Register(ModuleName, 1107, "invalid app id")
 	ErrVaultNotFound       = sdkerrors.Register(ModuleName, 1108, "vault not found")
 
-	BurnCoinValueInRewardsIsZero           = sdkerrors.Register(ModuleName, 1109, "Burn Coin value in rewards is zero")
-	MintCoinValueInRewardsIsZero           = sdkerrors.Register(ModuleName, 1110, "Mint Coin value in rewards is zero")
+	BurnCoinValueInRewardsIsZero                = sdkerrors.Register(ModuleName, 1109, "Burn Coin value in rewards is zero")
+	MintCoinValueInRewardsIsZero                = sdkerrors.Register(ModuleName, 1110, "Mint Coin value in rewards is zero")
 	SendCoinsFromModuleToModuleInRewardsIsZero  = sdkerrors.Register(ModuleName, 1111, "Coin value in module to module transfer in rewards is zero")
 	SendCoinsFromModuleToAccountInRewardsIsZero = sdkerrors.Register(ModuleName, 1112, "Coin value in module to account transfer in rewards is zero")
 	SendCoinsFromAccountToModuleInRewardsIsZero = sdkerrors.Register(ModuleName, 1113, "Coin value in account to module transfer in rewards is zero")
-
+	ErrInternalRewardsNotFound                  = sdkerrors.Register(ModuleName, 1114, "Internal rewards not found")
 )

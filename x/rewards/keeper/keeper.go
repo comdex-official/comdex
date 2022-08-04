@@ -81,7 +81,7 @@ func uint64InSlice(a uint64, list []uint64) bool {
 	return false
 }
 
-func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) error {
+func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetIDs []uint64, isInsert bool) error {
 	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, appMappingID)
 	for i := range assetIDs {
 		found := uint64InSlice(assetIDs[i], lockerAssets.AssetIds)
@@ -90,32 +90,50 @@ func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetIDs []
 		}
 	}
 
-	internalRewards := types.InternalRewards{
-		App_mapping_ID: appMappingID,
-		Asset_ID:       assetIDs,
+	for _, assetID := range assetIDs {
+		internalReward, found := k.GetReward(ctx, appMappingID)
+		if !found && isInsert {
+			internalReward = types.InternalRewards{
+				App_mapping_ID: appMappingID,
+				Asset_ID:       nil,
+			}
+		} else if internalReward.Asset_ID != nil && !isInsert {
+			return types.ErrInternalRewardsNotFound
+		}
+		if isInsert {
+			internalReward.Asset_ID = append(internalReward.Asset_ID, assetID)
+		} else {
+			for index, id := range internalReward.Asset_ID {
+				if id == assetID {
+					internalReward.Asset_ID = append(internalReward.Asset_ID[:index], internalReward.Asset_ID[index+1:]...)
+				}
+			}
+		}
+		k.SetReward(ctx, internalReward)
 	}
-
-	k.SetReward(ctx, internalRewards)
 	return nil
 }
 
-func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingID uint64, assetID uint64) error {
-	rewards, found := k.GetReward(ctx, appMappingID)
-	if !found {
-		return nil
+func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingID uint64, assetID uint64, isInsert bool) error {
+	internalReward, found := k.GetReward(ctx, appMappingID)
+	if !found && isInsert {
+		internalReward = types.InternalRewards{
+			App_mapping_ID: appMappingID,
+			Asset_ID:       nil,
+		}
+	} else if internalReward.Asset_ID != nil && !isInsert {
+		return types.ErrInternalRewardsNotFound
 	}
-	var newAssetIDs []uint64
-	for i := range rewards.Asset_ID {
-		if assetID != rewards.Asset_ID[i] {
-			newAssetID := rewards.Asset_ID[i]
-			newAssetIDs = append(newAssetIDs, newAssetID)
+	if isInsert {
+		internalReward.Asset_ID = append(internalReward.Asset_ID, assetID)
+	} else {
+		for index, id := range internalReward.Asset_ID {
+			if id == assetID {
+				internalReward.Asset_ID = append(internalReward.Asset_ID[:index], internalReward.Asset_ID[index+1:]...)
+			}
 		}
 	}
-	newRewards := types.InternalRewards{
-		App_mapping_ID: appMappingID,
-		Asset_ID:       newAssetIDs,
-	}
-	k.SetReward(ctx, newRewards)
+	k.SetReward(ctx, internalReward)
 	return nil
 }
 
