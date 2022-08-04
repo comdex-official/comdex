@@ -75,8 +75,10 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 		if err != nil {
 			return nil, err
 		}
-		if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
-			return nil, err
+		if msg.Amount.GT(sdk.ZeroInt()) {
+			if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
+				return nil, err
+			}
 		}
 		//Creating locker instance
 		var userLocker types.Locker
@@ -215,8 +217,10 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 	if err != nil {
 		return nil, err
 	}
-	if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
-		return nil, err
+	if msg.Amount.GT(sdk.ZeroInt()) {
+		if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
+			return nil, err
+		}
 	}
 
 
@@ -291,8 +295,10 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 	lockerData.NetBalance = lockerData.NetBalance.Sub(msg.Amount)
 
 
-	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
-		return nil, err
+	if msg.Amount.GT(sdk.ZeroInt()) {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
+			return nil, err
+		}
 	}
 
 	k.SetLocker(ctx, lockerData)
