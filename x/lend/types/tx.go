@@ -16,7 +16,7 @@ func NewMsgLend(lender string, assetID uint64, amount sdk.Coin, poolID, appID ui
 }
 
 func (msg MsgLend) Route() string { return ModuleName }
-func (msg MsgLend) Type() string  { return EventTypeLoanAsset }
+func (msg MsgLend) Type() string  { return TypeLendAssetRequest }
 
 func (msg *MsgLend) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
@@ -51,7 +51,7 @@ func NewMsgWithdraw(lender string, lendID uint64, amount sdk.Coin) *MsgWithdraw 
 }
 
 func (msg MsgWithdraw) Route() string { return ModuleName }
-func (msg MsgWithdraw) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgWithdraw) Type() string  { return TypeWithdrawAssetRequest }
 
 func (msg *MsgWithdraw) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
@@ -89,7 +89,7 @@ func NewMsgBorrow(borrower string, lendID, pairID uint64, isStableBorrow bool, a
 }
 
 func (msg MsgBorrow) Route() string { return ModuleName }
-func (msg MsgBorrow) Type() string  { return EventTypeBorrowAsset }
+func (msg MsgBorrow) Type() string  { return TypeBorrowAssetRequest }
 
 func (msg *MsgBorrow) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
@@ -127,7 +127,7 @@ func NewMsgRepay(borrower string, borrowID uint64, amount sdk.Coin) *MsgRepay {
 }
 
 func (msg MsgRepay) Route() string { return ModuleName }
-func (msg MsgRepay) Type() string  { return EventTypeRepayBorrowedAsset }
+func (msg MsgRepay) Type() string  { return TypeRepayAssetRequest }
 
 func (msg *MsgRepay) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
@@ -163,7 +163,7 @@ func NewMsgFundModuleAccounts(moduleName string, assetID uint64, lender string, 
 }
 
 func (msg MsgFundModuleAccounts) Route() string { return ModuleName }
-func (msg MsgFundModuleAccounts) Type() string  { return EventTypeLoanAsset }
+func (msg MsgFundModuleAccounts) Type() string  { return TypeFundModuleAccountRequest }
 
 func (msg *MsgFundModuleAccounts) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
@@ -198,7 +198,7 @@ func NewMsgDeposit(lender string, lendID uint64, amount sdk.Coin) *MsgDeposit {
 }
 
 func (msg MsgDeposit) Route() string { return ModuleName }
-func (msg MsgDeposit) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgDeposit) Type() string  { return TypeDepositAssetRequest }
 
 func (msg *MsgDeposit) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
@@ -232,7 +232,7 @@ func NewMsgCloseLend(lender string, lendID uint64) *MsgCloseLend {
 }
 
 func (msg MsgCloseLend) Route() string { return ModuleName }
-func (msg MsgCloseLend) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgCloseLend) Type() string  { return TypeCloseLendAssetRequest }
 
 func (msg *MsgCloseLend) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
@@ -262,7 +262,7 @@ func NewMsgDraw(borrower string, borrowID uint64, amount sdk.Coin) *MsgDraw {
 }
 
 func (msg MsgDraw) Route() string { return ModuleName }
-func (msg MsgDraw) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgDraw) Type() string  { return TypeDrawAssetRequest }
 
 func (msg *MsgDraw) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
@@ -297,7 +297,7 @@ func NewMsgDepositBorrow(borrower string, borrowID uint64, amount sdk.Coin) *Msg
 }
 
 func (msg MsgDepositBorrow) Route() string { return ModuleName }
-func (msg MsgDepositBorrow) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgDepositBorrow) Type() string  { return TypeDepositBorrowdAssetRequest }
 
 func (msg *MsgDepositBorrow) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
@@ -331,7 +331,7 @@ func NewMsgCloseBorrow(borrower string, borrowID uint64) *MsgCloseBorrow {
 }
 
 func (msg MsgCloseBorrow) Route() string { return ModuleName }
-func (msg MsgCloseBorrow) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgCloseBorrow) Type() string  { return TypeCloseBorrowAssetRequest }
 
 func (msg *MsgCloseBorrow) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
@@ -367,7 +367,7 @@ func NewMsgBorrowAlternate(lender string, assetID, poolID uint64, amountIn sdk.C
 }
 
 func (msg MsgBorrowAlternate) Route() string { return ModuleName }
-func (msg MsgBorrowAlternate) Type() string  { return EventTypeLoanAsset }
+func (msg MsgBorrowAlternate) Type() string  { return TypeBorrowAlternateAssetRequest }
 
 func (msg *MsgBorrowAlternate) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
