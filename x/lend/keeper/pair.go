@@ -90,6 +90,14 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		CPoolName:            pool.CPoolName,
 		AssetData:            pool.AssetData,
 	}
+	for _, v := range pool.AssetData {
+		var assetStats types.AssetStats
+		assetStats.PoolID = newPool.PoolID
+		assetStats.AssetID = v.AssetID
+		k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
+		k.UpdateAPR(ctx, newPool.PoolID, v.AssetID)
+	}
+
 	k.SetPool(ctx, newPool)
 	k.SetPoolID(ctx, newPool.PoolID)
 	return nil

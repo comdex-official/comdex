@@ -118,7 +118,10 @@ func (k Keeper) GetReserveRate(ctx sdk.Context, poolID, assetID uint64) (reserve
 }
 
 func (k Keeper) UpdateAPR(ctx sdk.Context, poolID, assetID uint64) (AssetStats types.AssetStats, found bool) {
-	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, assetID, poolID)
+	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, assetID, poolID)
+	if !found {
+		return assetStats, false
+	}
 	lendAPR, _ := k.GetLendAPRByAssetIDAndPoolID(ctx, poolID, assetID)
 	borrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, poolID, assetID, false)
 	stableBorrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, poolID, assetID, true)
