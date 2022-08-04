@@ -161,7 +161,11 @@ message Pool {
     (gogoproto.moretags) = "yaml:\"cpool_name\""
   ];
 
-  repeated AssetDataPoolMapping asset_data = 7 [
+  uint64 reserve_funds = 7 [
+    (gogoproto.moretags) = "yaml:\"reserve_funds\""
+  ];
+
+  repeated AssetDataPoolMapping asset_data = 8 [
     (gogoproto.nullable) = false,
     (gogoproto.customname) = "AssetData",
     (gogoproto.moretags) = "yaml:\"asset_data\""

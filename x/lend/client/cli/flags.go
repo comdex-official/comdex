@@ -13,18 +13,8 @@ const (
 	FlagSetAuctionParamsFile   = "add-auction-params-file"
 )
 
-func ParseStringFromString(s string, separator string) ([]string, error) {
-	var parsedStrings []string
-	for _, s := range strings.Split(s, separator) {
-		s = strings.TrimSpace(s)
-
-		parsedStrings = append(parsedStrings, s)
-	}
-	return parsedStrings, nil
-}
-
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
-	var parsedInts []uint64
+	var parsedInt []uint64
 	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 
@@ -32,9 +22,9 @@ func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
 		if err != nil {
 			return []uint64{}, err
 		}
-		parsedInts = append(parsedInts, parsed)
+		parsedInt = append(parsedInt, parsed)
 	}
-	return parsedInts, nil
+	return parsedInt, nil
 }
 
 func ParseBoolFromString(s uint64) bool {
@@ -93,6 +83,7 @@ type addLendPoolInputs struct {
 	AssetID              string `json:"asset_id"`
 	IsBridgedAsset       string `json:"is_bridged_asset"`
 	CPoolName            string `json:"c_pool_name"`
+	ReserveFunds         string `json:"reserve_funds"`
 	Title                string
 	Description          string
 	Deposit              string

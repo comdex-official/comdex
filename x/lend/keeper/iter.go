@@ -35,9 +35,6 @@ func (k Keeper) IterateLends(ctx sdk.Context) error {
 				AppID:              lend.AppID,
 				CPoolName:          lend.CPoolName,
 			}
-			assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, updatedLend.AssetID, updatedLend.PoolID)
-			assetStats.TotalLend = assetStats.TotalLend.Add(interestPerBlock)
-			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 
 			pool, _ := k.GetPool(ctx, lend.PoolID)
 			asset, _ := k.GetAsset(ctx, lend.AssetID)
@@ -89,14 +86,6 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 				Interest_Accumulated: borrow.Interest_Accumulated.Add(interestPerBlock),
 				CPoolName:            borrow.CPoolName,
 			}
-			assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolID)
-			if updatedBorrow.IsStableBorrow {
-				assetStats.TotalStableBorrowed = assetStats.TotalStableBorrowed.Add(interestPerBlock)
-				k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
-			} else {
-				assetStats.TotalBorrowed = assetStats.TotalBorrowed.Add(interestPerBlock)
-				k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
-			}
 
 			k.SetBorrow(ctx, updatedBorrow)
 		}
@@ -109,11 +98,11 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount string, rate sdk.Dec) (
 	currentTime := ctx.BlockTime().Unix()
 
 	prevInterestTime := k.GetLastInterestTime(ctx)
-	if prevInterestTime == 0 {
+	if prevInterestTime == int64(types.Uint64Zero) {
 		prevInterestTime = currentTime
 	}
 	secondsElapsed := currentTime - prevInterestTime
-	if secondsElapsed < 0 {
+	if secondsElapsed < int64(types.Uint64Zero) {
 		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrNegativeTimeElapsed, fmt.Sprintf("%d seconds", secondsElapsed))
 	}
 
@@ -126,7 +115,7 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount string, rate sdk.Dec) (
 	return sdk.NewInt(int64(newAmount)), nil
 }
 
-func (k Keeper) RebalanceStableRates(ctx sdk.Context) error {
+func (k Keeper) ReBalanceStableRates(ctx sdk.Context) error {
 	borrows, _ := k.GetBorrows(ctx)
 	for _, v := range borrows.BorrowIDs {
 
@@ -135,8 +124,8 @@ func (k Keeper) RebalanceStableRates(ctx sdk.Context) error {
 			pair, _ := k.GetLendPair(ctx, borrowPos.PairID)
 			assetStats, _ := k.UpdateAPR(ctx, pair.AssetOutPoolID, pair.AssetOut)
 			utilizationRatio, _ := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
-			perc1, _ := sdk.NewDecFromStr("0.2")
-			perc2, _ := sdk.NewDecFromStr("0.9")
+			perc1, _ := sdk.NewDecFromStr(types.Perc1)
+			perc2, _ := sdk.NewDecFromStr(types.Perc2)
 			if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {
 				borrowPos.StableBorrowRate = assetStats.StableBorrowApr
 				k.SetBorrow(ctx, borrowPos)

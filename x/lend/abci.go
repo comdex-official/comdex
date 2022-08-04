@@ -22,7 +22,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		if err != nil {
 			return err
 		}
-		err = k.RebalanceStableRates(ctx)
+		err = k.ReBalanceStableRates(ctx)
 		if err != nil {
 			return err
 		}

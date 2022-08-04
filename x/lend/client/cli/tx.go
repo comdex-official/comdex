@@ -634,6 +634,11 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 		return txf, nil, err
 	}
 
+	reserveFunds, err := strconv.ParseUint(newLendPool.ReserveFunds, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
 	assetID, err := ParseUint64SliceFromString(newLendPool.AssetID, ",")
 	if err != nil {
 		return txf, nil, err
@@ -659,6 +664,7 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 		FirstBridgedAssetID:  firstBridgedAssetID,
 		SecondBridgedAssetID: secondBridgedAssetID,
 		CPoolName:            cPoolName,
+		ReserveFunds:         reserveFunds,
 		AssetData:            assetData,
 	}
 
