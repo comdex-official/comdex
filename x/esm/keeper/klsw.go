@@ -60,7 +60,7 @@ func (k Keeper) GetAllKillSwitchData(ctx sdk.Context) (killSwitchParams []types.
 }
 
 func (k Keeper) Admin(ctx sdk.Context, from string) bool {
-	var from_address = []string{"comdex1gvcsuex523fcwuzcpaqys99r70hajf8ffg6322", "comdex1mska4sk59e7t23r2vv3mvzljujxf9j08frl2tg", ""}
+	var from_address = []string{"comdex1gvcsuex523fcwuzcpaqys99r70hajf8ffg6322", "comdex1mska4sk59e7t23r2vv3mvzljujxf9j08frl2tg"}
 	for _, addr := range from_address {
 		if addr == from {
 			return true

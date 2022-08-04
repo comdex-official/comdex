@@ -6,7 +6,6 @@ import (
 	"github.com/comdex-official/comdex/x/esm/keeper"
 	"github.com/comdex-official/comdex/x/esm/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
-	markettypes "github.com/comdex-official/comdex/x/market/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -23,23 +22,23 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		for _, v := range apps {
 			esmStatus, found := k.GetESMStatus(ctx, v.Id)
 			if !found {
-				return types.ErrESMParamsNotFound
+				continue
 			}
 			if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status && !esmStatus.VaultRedemptionStatus {
 				err := k.SetUpCollateralRedemptionForVault(ctx, esmStatus.AppId)
 				if err != nil {
-					return err
+					continue
 				}
 			}
 			if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status && !esmStatus.StableVaultRedemptionStatus {
 				err := k.SetUpCollateralRedemptionForStableVault(ctx, esmStatus.AppId)
 				if err != nil {
-					return err
+					continue
 				}
 			}
 			esmMarket, found := k.GetESMMarketForAsset(ctx, v.Id)
 			if found {
-				return types.ErrMarketDataNotFound
+				continue
 			}
 			if !esmMarket.IsPriceSet && esmStatus.Status {
 				assets := k.GetAssetsForOracle(ctx)
@@ -47,7 +46,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 				for _, a := range assets {
 					price, found := k.GetPriceForAsset(ctx, a.Id)
 					if !found {
-						return markettypes.ErrorMarketForAssetDoesNotExist
+						continue
 					}
 					market := types.Market{
 						AssetID: a.Id,

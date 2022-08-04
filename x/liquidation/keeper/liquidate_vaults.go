@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,11 +18,8 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 			status = esmStatus.Status
 		}
 		klwsParams, _ := k.GetKillSwitchData(ctx, appIds[i])
-		if klwsParams.BreakerEnable {
-			return esmtypes.ErrCircuitBreakerEnabled
-		}
-		if status {
-			return esmtypes.ErrESMAlreadyExecuted
+		if klwsParams.BreakerEnable || status{
+			continue
 		}
 		vaultsMap, _ := k.GetAppExtendedPairVaultMapping(ctx, appIds[i])
 
@@ -176,7 +172,7 @@ func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
 
 					assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 					if !found {
-						return types.ErrorPriceDoesNotExist
+						continue
 					}
 
 					totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()

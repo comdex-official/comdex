@@ -9,7 +9,7 @@ import (
 
 func (k Keeper) DistributorActivator(ctx sdk.Context, data collectortypes.CollectorAuctionLookupTable,
 	inData collectortypes.AssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
-	if inData.IsDebtAuction && !inData.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
+	if !inData.IsSurplusAuction && !inData.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
 		// to do
 		// reduce coin from collector
 		// send coin to contract
