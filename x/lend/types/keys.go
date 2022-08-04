@@ -30,6 +30,20 @@ const (
 )
 
 var (
+	TypeLendAssetRequest            = ModuleName + ":lend"
+	TypeWithdrawAssetRequest        = ModuleName + ":withdraw"
+	TypeBorrowAssetRequest          = ModuleName + ":borrow"
+	TypeRepayAssetRequest           = ModuleName + ":repay"
+	TypeFundModuleAccountRequest    = ModuleName + ":fund-module"
+	TypeDepositAssetRequest         = ModuleName + ":deposit"
+	TypeCloseLendAssetRequest       = ModuleName + ":close-lend"
+	TypeCloseBorrowAssetRequest     = ModuleName + ":close-borrow"
+	TypeDrawAssetRequest            = ModuleName + ":draw"
+	TypeDepositBorrowdAssetRequest  = ModuleName + ":deposit-borrow"
+	TypeBorrowAlternateAssetRequest = ModuleName + ":borrow-alternate"
+)
+
+var (
 	KeyPrefixReserveAmount = []byte{0x05}
 
 	PoolKeyPrefix         = []byte{0x13}
@@ -43,7 +57,7 @@ var (
 	LendsKey              = []byte{0x32}
 	BorrowsKey            = []byte{0x33}
 	BorrowStatsPrefix     = []byte{0x40}
-	AuctionParamPrefix     = []byte{0x41}
+	AuctionParamPrefix    = []byte{0x41}
 
 	AssetToPairMappingKeyPrefix           = []byte{0x20}
 	LendForAddressByAssetKeyPrefix        = []byte{0x22}
