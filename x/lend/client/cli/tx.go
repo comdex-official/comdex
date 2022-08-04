@@ -937,14 +937,6 @@ func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.Flag
 	if err != nil {
 		return txf, nil, err
 	}
-	surplusId, err := strconv.ParseUint(auctionParamsInput.SurplusId, 10, 64)
-	if err != nil {
-		return txf, nil, err
-	}
-	debtId, err := strconv.ParseUint(auctionParamsInput.DebtId, 10, 64)
-	if err != nil {
-		return txf, nil, err
-	}
 	dutchId, err := strconv.ParseUint(auctionParamsInput.DutchId, 10, 64)
 	if err != nil {
 		return txf, nil, err
@@ -961,8 +953,6 @@ func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.Flag
 		Cusp:                   cusp,
 		Step:                   step,
 		PriceFunctionType:      priceFunctionType,
-		SurplusId:              surplusId,
-		DebtId:                 debtId,
 		DutchId:                dutchId,
 		BidDurationSeconds:     bidDurationSeconds,
 	}

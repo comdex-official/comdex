@@ -144,11 +144,8 @@ func (k Keeper) GetLendAuctionType(ctx sdk.Context, auctionTypeID uint64, appID 
 	if !found {
 		return "", auctiontypes.ErrorInvalidAuctionParams
 	}
-	if auctionTypeID == params.SurplusId {
-		return auctiontypes.SurplusString, nil
-	} else if auctionTypeID == params.DebtId {
-		return auctiontypes.DebtString, nil
-	} else if auctionTypeID == params.DutchId {
+
+	if auctionTypeID == params.DutchId {
 		return auctiontypes.DutchString, nil
 	}
 

@@ -126,8 +126,6 @@ type addNewAuctionParamsInputs struct {
 	Cusp                   string `json:"cusp"`
 	Step                   string `json:"step"`
 	PriceFunctionType      string `json:"price_function_type"`
-	SurplusId              string `json:"surplus_id"`
-	DebtId                 string `json:"debt_id"`
 	DutchId                string `json:"dutch_id"`
 	BidDurationSeconds     string `json:"bid_duration_seconds"`
 	Title                  string

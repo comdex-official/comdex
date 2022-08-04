@@ -479,16 +479,10 @@ message AuctionParams{
   uint64 price_function_type = 6 [
       (gogoproto.moretags) = "yaml:\"price_function_type\""
   ];
-  uint64 surplus_id = 7 [
-      (gogoproto.moretags) = "yaml:\"surplus_id\""
-  ];
-  uint64 debt_id = 8 [
-      (gogoproto.moretags) = "yaml:\"debt_id\""
-  ];
-  uint64 dutch_id = 9 [
+  uint64 dutch_id = 7 [
       (gogoproto.moretags) = "yaml:\"dutch_id\""
   ];
-  uint64 bid_duration_seconds = 10 [
+  uint64 bid_duration_seconds = 8 [
       (gogoproto.moretags) = "yaml:\"bid_duration_seconds\""
   ];
 }
