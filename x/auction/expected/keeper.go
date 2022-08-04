@@ -37,7 +37,6 @@ type LiquidationKeeper interface {
 	SetLockedVault(ctx sdk.Context, lockedVault liquidationtypes.LockedVault)
 	DeleteLockedVault(ctx sdk.Context, id uint64)
 	CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
-	//UpdateAssetQuantitiesInLockedVault(ctx sdk.Context, collateral_auction auctiontypes.CollateralAuction, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) error
 }
 
 type AssetKeeper interface {

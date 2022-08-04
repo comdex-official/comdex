@@ -9,7 +9,6 @@ import (
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
-		// Write your abci logic here
 		return nil
 	})
 }

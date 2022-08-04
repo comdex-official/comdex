@@ -258,7 +258,6 @@ func (k Keeper) AddAssetInAppRecords(ctx sdk.Context, msg types.AppData) error {
 		if !found {
 			return types.AppIdsDoesntExist
 		}
-		// var mintGenesis []types.MintGenesisToken
 
 		for _, data := range msg.GenesisToken {
 			assetData, found := k.GetAsset(ctx, data.AssetId)
