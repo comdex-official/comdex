@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/comdex-official/comdex/x/rewards/expected"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	"github.com/comdex-official/comdex/x/rewards/expected"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -159,7 +159,7 @@ func (k Keeper) ActExternalRewardsLockers(
 		}
 	}
 
-	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*86400))
+	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*types.SecondsPerDay))
 
 	epochID := k.GetEpochTimeID(ctx)
 	epoch := types.EpochTime{
@@ -214,13 +214,13 @@ func (k Keeper) ActExternalRewardsVaults(
 		}
 	}
 
-	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*86400))
+	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*types.SecondsPerDay))
 
 	epochID := k.GetEpochTimeID(ctx)
 	epoch := types.EpochTime{
 		Id:           epochID + 1,
 		AppMappingId: appMappingID,
-		StartingTime: ctx.BlockTime().Unix() + 84600,
+		StartingTime: ctx.BlockTime().Unix() + types.SecondsPerDay,
 	}
 
 	msg := types.VaultExternalRewards{
@@ -252,7 +252,7 @@ func (k Keeper) ActExternalRewardsVaults(
 //Wasm tx and query binding functions
 
 func (k Keeper) WasmRemoveWhitelistAssetLocker(ctx sdk.Context, appMappingID uint64, assetID uint64) error {
-	
+
 	klwsParams, _ := k.GetKillSwitchData(ctx, appMappingID)
 	if klwsParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
@@ -297,7 +297,7 @@ func (k Keeper) WasmRemoveWhitelistAssetLockerQuery(ctx sdk.Context, appMappingI
 }
 
 func (k Keeper) WasmRemoveWhitelistAppIDVaultInterest(ctx sdk.Context, appMappingID uint64) error {
-	
+
 	klwsParams, _ := k.GetKillSwitchData(ctx, appMappingID)
 	if klwsParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
