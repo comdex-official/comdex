@@ -6,7 +6,6 @@ import (
 
 const (
 	MaxMarketSymbolLength = 8
-	MaxAssetNameLength    = 16
 )
 
 func (m *Market) Validate() error {
