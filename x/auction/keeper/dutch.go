@@ -18,40 +18,31 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVaults []liquidationtypes.
 			if !lockedVault.IsAuctionInProgress {
 				extendedPair, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
 				if !found {
-					return auctiontypes.ErrorInvalidPair
+					ctx.Logger().Error(auctiontypes.ErrorInvalidPair.Error(),lockedVault.LockedVaultId)
+					continue
 				}
-				pair, found := k.GetPair(ctx, extendedPair.PairId)
-				if !found {
-					return auctiontypes.ErrorInvalidPair
-				}
-				assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-				if !found {
-					return auctiontypes.ErrorAssetNotFound
-				}
+				pair, _ := k.GetPair(ctx, extendedPair.PairId)
+				
+				assetIn, _ := k.GetAsset(ctx, pair.AssetIn)
 
-				assetOut, found := k.GetAsset(ctx, pair.AssetOut)
-				if !found {
-					return auctiontypes.ErrorAssetNotFound
-				}
+				assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
+
 				assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 				if !found {
-					return auctiontypes.ErrorPrices
+					ctx.Logger().Error(auctiontypes.ErrorPrices.Error(),lockedVault.LockedVaultId)
+					continue
 				}
 				//assetInPrice is the collateral price
 				////Here collateral to be auctioned is received in ucollateral*uusd so inorder to get back amount we divide with uusd of assetIn
 				outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))).TruncateInt())
 				inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())
 
-				extendedPairID := lockedVault.ExtendedPairId
-				ExtendedPairVault, found := k.GetPairsVault(ctx, extendedPairID)
-				if !found {
-					return auctiontypes.ErrorInvalidExtendedPairVault
-				}
-				liquidationPenalty := ExtendedPairVault.LiquidationPenalty
+				liquidationPenalty := extendedPair.LiquidationPenalty
 
 				err1 := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
 				if err1 != nil {
-					return err1
+					ctx.Logger().Error(auctiontypes.ErrorInStartDutchAuction.Error(),lockedVault.LockedVaultId)
+					continue
 				}
 			}
 		}

@@ -11,10 +11,6 @@ option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 
 service Msg {
   rpc CreateGauge(MsgCreateGauge) returns (MsgCreateGaugeResponse);
-  rpc Whitelist(WhitelistAsset) returns (MsgWhitelistAssetResponse);
-  rpc RemoveWhitelist(RemoveWhitelistAsset) returns (MsgRemoveWhitelistAssetResponse);
-  rpc WhitelistAppVault(WhitelistAppIdVault) returns (MsgWhitelistAppIdVaultResponse);
-  rpc RemoveWhitelistAppVault(RemoveWhitelistAppIdVault) returns (MsgRemoveWhitelistAppIdVaultResponse);
   rpc ExternalRewardsLockers(ActivateExternalRewardsLockers) returns (ActivateExternalRewardsLockersResponse);
   rpc ExternalRewardsVault(ActivateExternalRewardsVault) returns (ActivateExternalRewardsVaultResponse);
 }

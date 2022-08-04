@@ -1,7 +1,9 @@
 package keeper
 
 import (
+	"context"
 	"github.com/comdex-official/comdex/x/rewards/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 )
@@ -315,4 +317,45 @@ func (k Keeper) GetExternalLockerRewardsCheck(ctx sdk.Context, appMappingID uint
 
 func (k Keeper) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingID uint64, assetID uint64) (found bool, err string) {
 	return true, ""
+}
+
+func (k Keeper) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (*types.MsgWhitelistAssetResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppMappingId)
+	if klwsParams.BreakerEnable {
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppMappingId)
+	status := false
+	if found {
+		status = esmStatus.Status
+	}
+	if status {
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+
+	if err := k.WhitelistAsset(ctx, msg.AppMappingId, msg.AssetId, true); err != nil {
+		return nil, err
+	}
+	return &types.MsgWhitelistAssetResponse{}, nil
+}
+
+func (k Keeper) WhitelistAppVault(goCtx context.Context, msg *types.WhitelistAppIdVault) (*types.MsgWhitelistAppIdVaultResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppMappingId)
+	if klwsParams.BreakerEnable {
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppMappingId)
+	status := false
+	if found {
+		status = esmStatus.Status
+	}
+	if status {
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	if err := k.WhitelistAppIDVault(ctx, msg.AppMappingId); err != nil {
+		return nil, err
+	}
+	return &types.MsgWhitelistAppIdVaultResponse{}, nil
 }

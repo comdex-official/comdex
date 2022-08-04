@@ -337,7 +337,7 @@ func (s *KeeperTestSuite) TestDecreaseNetFeesCollected() {
 		s.Run(tc.name, func() {
 			netFeesData1, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID)
 			s.Require().True(found)
-			err := collectorKeeper.DecreaseNetFeeCollectedData(*ctx, tc.appID, tc.assetID, tc.fee)
+			err := collectorKeeper.DecreaseNetFeeCollectedData(*ctx, tc.appID, tc.assetID, tc.fee, netFeesData1)
 			if tc.errorExpected {
 				s.Require().Error(err)
 			} else {

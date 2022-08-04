@@ -2,7 +2,7 @@ package expected
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	collecortypes "github.com/comdex-official/comdex/x/collector/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
@@ -48,13 +48,13 @@ type LockerKeeper interface {
 }
 
 type CollectorKeeper interface {
-	GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (appAssetCollectorData collecortypes.AppIdToAssetCollectorMapping, found bool)
-	GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup collecortypes.CollectorLookup, found bool)
-	GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom collecortypes.AppToDenomsMapping, found bool)
-	GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64) (collectorLookup collecortypes.CollectorLookupTable, found bool)
-	GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData collecortypes.NetFeeCollectedData, found bool)
+	GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (appAssetCollectorData collectortypes.AppIdToAssetCollectorMapping, found bool)
+	GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup collectortypes.CollectorLookup, found bool)
+	GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom collectortypes.AppToDenomsMapping, found bool)
+	GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTable, found bool)
+	GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData collectortypes.NetFeeCollectedData, found bool)
 	SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error
-	DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) error
+	DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, netFeeCollectedData collectortypes.NetFeeCollectedData) error
 }
 
 type VaultKeeper interface {

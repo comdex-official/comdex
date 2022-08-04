@@ -18,18 +18,14 @@ func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVaults []liquidationty
 				if !found {
 					return auctiontypes.ErrorInvalidPair
 				}
-				assetIn, found := k.GetAsset(ctx, extendedPair.AssetIn)
-				if !found {
-					return auctiontypes.ErrorAssetNotFound
-				}
+				assetIn, _ := k.GetAsset(ctx, extendedPair.AssetIn)
 
-				assetOut, found := k.GetAsset(ctx, extendedPair.AssetOut)
-				if !found {
-					return auctiontypes.ErrorAssetNotFound
-				}
+				assetOut, _ := k.GetAsset(ctx, extendedPair.AssetOut)
+
 				assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 				if !found {
-					return auctiontypes.ErrorPrices
+					ctx.Logger().Error(auctiontypes.ErrorPrices.Error(),lockedVault.LockedVaultId)
+					continue
 				}
 				//assetInPrice is the collateral price
 				////Here collateral to be auctioned is received in ucollateral*uusd so inorder to get back amount we divide with uusd of assetIn
@@ -38,13 +34,15 @@ func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVaults []liquidationty
 
 				AssetRatesStats, found := k.GetAssetRatesStats(ctx, extendedPair.AssetIn)
 				if !found {
-					return lendtypes.ErrAssetStatsNotFound
+					ctx.Logger().Error(auctiontypes.ErrorAssetRates.Error(),lockedVault.LockedVaultId)
+					continue
 				}
 				liquidationPenalty := AssetRatesStats.LiquidationPenalty
 
 				err1 := k.StartLendDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
 				if err1 != nil {
-					return err1
+					ctx.Logger().Error(auctiontypes.ErrorInStartDutchAuction.Error(),lockedVault.LockedVaultId)
+					continue
 				}
 			}
 		}

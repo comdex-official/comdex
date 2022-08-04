@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"google.golang.org/grpc"
@@ -386,4 +387,63 @@ func (k Keeper) WasmAddWhiteListedAssetQuery(ctx sdk.Context, appMappingID, Asse
 		}
 	}
 	return true, ""
+}
+
+
+func (k Keeper) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
+	status := false
+	if found {
+		status = esmStatus.Status
+	}
+	if status {
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	appMapping, found := k.GetApp(ctx, msg.AppId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+	asset, found := k.GetAsset(ctx, msg.AssetId)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+	lockerProductAssetMapping, found := k.GetLockerProductAssetMapping(ctx, msg.AppId)
+
+	if !found {
+		//Set a new instance of Locker Product Asset  Mapping
+
+		var locker types.LockerProductAssetMapping
+		locker.AppId = appMapping.Id
+		locker.AssetIds = append(locker.AssetIds, asset.Id)
+		k.SetLockerProductAssetMapping(ctx, locker)
+
+		//Also Create a LockerLookup table Instance and set it with the new asset id
+		var lockerLookupData types.LockerLookupTable
+		var lockerAssetData types.TokenToLockerMapping
+
+		lockerAssetData.AssetId = asset.Id
+		lockerLookupData.Counter = 0
+		lockerLookupData.AppId = appMapping.Id
+		lockerLookupData.Lockers = append(lockerLookupData.Lockers, &lockerAssetData)
+		k.SetLockerLookupTable(ctx, lockerLookupData)
+		return &types.MsgAddWhiteListedAssetResponse{}, nil
+	}
+	// Check if the asset from msg exists or not ,
+	found = k.CheckLockerProductAssetMapping(ctx, msg.AssetId, lockerProductAssetMapping)
+	if found {
+		return nil, types.ErrorLockerProductAssetMappingExists
+	}
+	lockerProductAssetMapping.AssetIds = append(lockerProductAssetMapping.AssetIds, asset.Id)
+	k.SetLockerProductAssetMapping(ctx, lockerProductAssetMapping)
+	lockerLookupTableData, _ := k.GetLockerLookupTable(ctx, appMapping.Id)
+	var lockerAssetData types.TokenToLockerMapping
+	lockerAssetData.AssetId = asset.Id
+	lockerLookupTableData.Lockers = append(lockerLookupTableData.Lockers, &lockerAssetData)
+	k.SetLockerLookupTable(ctx, lockerLookupTableData)
+	return &types.MsgAddWhiteListedAssetResponse{}, nil
 }
