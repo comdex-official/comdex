@@ -39,21 +39,27 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 }
 
 func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, collectorData types.NetFeeCollectedData) error {
+	var netCollected types.NetFeeCollectedData
+	var assetCollected types.AssetIdToFeeCollected
+	netCollected.AppId = appID
 
+	var netCollectedFee sdk.Int
 	for _, data := range collectorData.AssetIdToFeeCollected {
 		if data.AssetId == assetID {
-			data.NetFeesCollected = data.NetFeesCollected.Sub(amount)
-			if data.NetFeesCollected.IsNegative() {
+			assetCollected.AssetId = assetID
+			netCollectedFee = data.NetFeesCollected.Sub(amount)
+			if netCollectedFee.IsNegative() {
 				return types.ErrorNetFeesCanNotBeNegative
 			}
-			collectorData.AssetIdToFeeCollected = append(collectorData.AssetIdToFeeCollected, data)
+			assetCollected.NetFeesCollected = netCollectedFee
+			netCollected.AssetIdToFeeCollected = append(netCollected.AssetIdToFeeCollected, assetCollected)
 		}
 	}
 
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.NetFeeCollectedDataKey(appID)
-		value = k.cdc.MustMarshal(&collectorData)
+		value = k.cdc.MustMarshal(&netCollected)
 	)
 
 	store.Set(key, value)
@@ -98,13 +104,21 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 		for _, data := range collectorData.AssetCollector {
 			if data.AssetId == assetID {
 				check++
-				data.Collector.CollectedClosingFee = data.Collector.CollectedClosingFee.Add(collectedClosingFee)
-				data.Collector.CollectedOpeningFee = data.Collector.CollectedOpeningFee.Add(collectedOpeningFee)
-				data.Collector.CollectedStabilityFee = data.Collector.CollectedStabilityFee.Add(collectedStabilityFee)
-				data.Collector.LiquidationRewardsCollected = data.Collector.LiquidationRewardsCollected.Add(liquidationRewardsCollected)
+				var collectorNewData types.AppIdToAssetCollectorMapping
+				collectorNewData.AppId = appID
 
-				collectorData.AssetCollector = append(collectorData.AssetCollector, data)
-				k.SetAppidToAssetCollectorMapping(ctx, collectorData)
+				var assetIDCollect types.AssetIdCollectorMapping
+				assetIDCollect.AssetId = assetID
+
+				var newCollector types.CollectorData
+				newCollector.CollectedClosingFee = data.Collector.CollectedClosingFee.Add(collectedClosingFee)
+				newCollector.CollectedOpeningFee = data.Collector.CollectedOpeningFee.Add(collectedOpeningFee)
+				newCollector.CollectedStabilityFee = data.Collector.CollectedStabilityFee.Add(collectedStabilityFee)
+				newCollector.LiquidationRewardsCollected = data.Collector.LiquidationRewardsCollected.Add(liquidationRewardsCollected)
+				assetIDCollect.Collector = newCollector
+
+				collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, assetIDCollect)
+				k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
 				err := k.SetNetFeeCollectedData(ctx, appID, assetID,
 					collectedClosingFee.
 						Add(collectedOpeningFee).
@@ -543,9 +557,12 @@ func (k Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, f
 		var assetCollected types.AssetIdToFeeCollected
 		netCollected.AppId = appID
 
-		assetCollected.AssetId = assetID
+		var netCollectedFee sdk.Int
 
-		assetCollected.NetFeesCollected = fee
+		assetCollected.AssetId = assetID
+		netCollectedFee = fee
+
+		assetCollected.NetFeesCollected = netCollectedFee
 		netCollected.AssetIdToFeeCollected = append(netCollected.AssetIdToFeeCollected, assetCollected)
 		var (
 			store = ctx.KVStore(k.storeKey)
@@ -555,18 +572,23 @@ func (k Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, f
 
 		store.Set(key, value)
 	} else {
+		var netCollected types.NetFeeCollectedData
+		var assetCollected types.AssetIdToFeeCollected
+		netCollected.AppId = appID
 
+		var netCollectedFee sdk.Int
 		for _, data := range collectorData.AssetIdToFeeCollected {
 			if data.AssetId == assetID {
-				data.NetFeesCollected = data.NetFeesCollected.Add(fee)
-				collectorData.AssetIdToFeeCollected = append(collectorData.AssetIdToFeeCollected, data)
+				assetCollected.AssetId = assetID
+				netCollectedFee = data.NetFeesCollected.Add(fee)
 			}
 		}
-
+		assetCollected.NetFeesCollected = netCollectedFee
+		netCollected.AssetIdToFeeCollected = append(netCollected.AssetIdToFeeCollected, assetCollected)
 		var (
 			store = ctx.KVStore(k.storeKey)
 			key   = types.NetFeeCollectedDataKey(appID)
-			value = k.cdc.MustMarshal(&collectorData)
+			value = k.cdc.MustMarshal(&netCollected)
 		)
 
 		store.Set(key, value)

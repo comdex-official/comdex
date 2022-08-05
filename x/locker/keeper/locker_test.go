@@ -55,6 +55,39 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 	s.AddAppAsset()
 	server := keeper.NewMsgServer(*lockerKeeper)
 
+	//Add whitelisted App Asset combinations
+	for _, tc := range []struct {
+		name string
+		msg  lockerTypes.MsgAddWhiteListedAssetRequest
+	}{
+		{"Whitelist : App1 Asset 1",
+			lockerTypes.MsgAddWhiteListedAssetRequest{
+				From:    userAddress,
+				AppId:   1,
+				AssetId: 1,
+			},
+		},
+		{"Whitelist : App1 Asset 2",
+			lockerTypes.MsgAddWhiteListedAssetRequest{
+				From:    userAddress,
+				AppId:   1,
+				AssetId: 2,
+			},
+		},
+		{"Whitelist : App2 Asset 1",
+			lockerTypes.MsgAddWhiteListedAssetRequest{
+				From:    userAddress,
+				AppId:   2,
+				AssetId: 1,
+			},
+		},
+	} {
+		s.Run(tc.name, func() {
+			_, err := lockerKeeper.AddWhiteListedAsset(sdk.WrapSDKContext(*ctx), &tc.msg)
+			s.Require().NoError(err)
+		})
+	}
+
 	// create lockers for App Asset combination , query locker and validate
 	for _, tc := range []struct {
 		name          string

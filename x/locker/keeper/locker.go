@@ -390,7 +390,7 @@ func (k Keeper) WasmAddWhiteListedAssetQuery(ctx sdk.Context, appMappingID, Asse
 }
 
 
-func (k Keeper) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
+func (k Keeper) AddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false

@@ -33,7 +33,7 @@ func (s *KeeperTestSuite) TestSurplusActivatorBetweenThreshholdAndLotsize() {
 	s.AddAppAsset()
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
-	s.WasmSetCollectorLookupTableAndAuctionControl()
+	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
 	s.WasmUpdateCollectorLookupTable(19500, 1000, 501, 300)
 	s.LiquidateVaults1()
 
@@ -55,7 +55,7 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	s.AddAppAsset()
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
-	s.WasmSetCollectorLookupTableAndAuctionControl()
+	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
 	s.WasmUpdateCollectorLookupTable(1000, 19800, 100, 300)
 	s.LiquidateVaults1()
 

@@ -125,7 +125,7 @@ func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractA
 		AppId:   whiteListAsset.AppID,
 		AssetId: whiteListAsset.AssetID,
 	}
-	_, err := lockerKeeper.MsgAddWhiteListedAsset(sdk.WrapSDKContext(ctx), &msg)
+	_, err := lockerKeeper.AddWhiteListedAsset(sdk.WrapSDKContext(ctx), &msg)
 
 	if err != nil {
 		return err
