@@ -62,8 +62,9 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControl() {
 			bindings.MsgSetAuctionMappingForApp{
 				AppID:                1,
 				AssetIDs:             []uint64{2},
-				IsSurplusAuctions:    []bool{true},
+				IsSurplusAuctions:    []bool{false},
 				IsDebtAuctions:       []bool{true},
+				IsDistributor:        []bool{false},
 				AssetOutOraclePrices: []bool{false},
 				AssetOutPrices:       []uint64{1000000},
 			},
@@ -77,6 +78,7 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControl() {
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetId, tc.msg.AssetIDs[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsSurplusAuction, tc.msg.IsSurplusAuctions[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsDebtAuction, tc.msg.IsDebtAuctions[0])
+			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsDistributor, tc.msg.IsDistributor[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsAuctionActive, false)
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetOutOraclePrice, tc.msg.AssetOutOraclePrices[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetOutPrice, tc.msg.AssetOutPrices[0])
