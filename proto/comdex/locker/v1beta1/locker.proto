@@ -14,12 +14,7 @@ message Locker {
   ];
   string depositor = 2 [
       (gogoproto.moretags) = "yaml:\"depositor\""
-  ];
-  // string deposited_amount = 3 [
-  //   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-  //   (gogoproto.moretags)   = "yaml:\"deposited_amount\"",
-  //   (gogoproto.nullable)   = false
-  // ]; 
+  ]; 
 
   string returns_accumulated = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -142,10 +137,3 @@ message LockerTotalRewardsByAssetAppWise {
          (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
          (gogoproto.nullable)   = false];
 }
-
-// message LockerStatistics {
-  
-//   map<string, uint64> locked_assets = 2 [
-//     (gogoproto.moretags) = "yaml:\"locked_assets\""
-//   ];
-// }

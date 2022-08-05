@@ -1,8 +1,8 @@
 package types
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func NewMsgLend(lender string, assetID uint64, amount sdk.Coin, poolID, appID uint64) *MsgLend {
@@ -16,16 +16,24 @@ func NewMsgLend(lender string, assetID uint64, amount sdk.Coin, poolID, appID ui
 }
 
 func (msg MsgLend) Route() string { return ModuleName }
-func (msg MsgLend) Type() string  { return EventTypeLoanAsset }
+func (msg MsgLend) Type() string  { return TypeLendAssetRequest }
 
 func (msg *MsgLend) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
 	if err != nil {
 		return err
 	}
-
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.AssetId <= 0 {
+		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)
+	}
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
+	}
+	if msg.PoolId <= 0 {
+		return fmt.Errorf("pool id should be positive: %d > 0", msg.AssetId)
+	}
+	if msg.AppId <= 0 {
+		return fmt.Errorf("app id should be positive: %d > 0", msg.AppId)
 	}
 
 	return nil
@@ -51,7 +59,7 @@ func NewMsgWithdraw(lender string, lendID uint64, amount sdk.Coin) *MsgWithdraw 
 }
 
 func (msg MsgWithdraw) Route() string { return ModuleName }
-func (msg MsgWithdraw) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgWithdraw) Type() string  { return TypeWithdrawAssetRequest }
 
 func (msg *MsgWithdraw) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
@@ -59,8 +67,11 @@ func (msg *MsgWithdraw) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.LendId <= 0 {
+		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	}
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
 	}
 
 	return nil
@@ -89,7 +100,7 @@ func NewMsgBorrow(borrower string, lendID, pairID uint64, isStableBorrow bool, a
 }
 
 func (msg MsgBorrow) Route() string { return ModuleName }
-func (msg MsgBorrow) Type() string  { return EventTypeBorrowAsset }
+func (msg MsgBorrow) Type() string  { return TypeBorrowAssetRequest }
 
 func (msg *MsgBorrow) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
@@ -97,18 +108,27 @@ func (msg *MsgBorrow) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmountIn(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.LendId <= 0 {
+		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
 	}
-	if asset := msg.GetAmountOut(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.PairId <= 0 {
+		return fmt.Errorf("pair id should be positive: %d > 0", msg.PairId)
+	}
+	if msg.AmountIn.Amount.IsNegative() || msg.AmountIn.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.AmountIn.Amount)
+	}
+	if msg.AmountOut.Amount.IsNegative() || msg.AmountOut.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.AmountOut.Amount)
 	}
 
 	return nil
 }
 
 func (msg *MsgBorrow) GetSigners() []sdk.AccAddress {
-	borrower, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	borrower, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{borrower}
 }
 
@@ -127,7 +147,7 @@ func NewMsgRepay(borrower string, borrowID uint64, amount sdk.Coin) *MsgRepay {
 }
 
 func (msg MsgRepay) Route() string { return ModuleName }
-func (msg MsgRepay) Type() string  { return EventTypeRepayBorrowedAsset }
+func (msg MsgRepay) Type() string  { return TypeRepayAssetRequest }
 
 func (msg *MsgRepay) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
@@ -135,15 +155,21 @@ func (msg *MsgRepay) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.BorrowId <= 0 {
+		return fmt.Errorf("borrower id should be positive: %d > 0", msg.BorrowId)
+	}
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
 	}
 
 	return nil
 }
 
 func (msg *MsgRepay) GetSigners() []sdk.AccAddress {
-	borrower, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	borrower, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{borrower}
 }
 
@@ -163,7 +189,7 @@ func NewMsgFundModuleAccounts(moduleName string, assetID uint64, lender string, 
 }
 
 func (msg MsgFundModuleAccounts) Route() string { return ModuleName }
-func (msg MsgFundModuleAccounts) Type() string  { return EventTypeLoanAsset }
+func (msg MsgFundModuleAccounts) Type() string  { return TypeFundModuleAccountRequest }
 
 func (msg *MsgFundModuleAccounts) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
@@ -171,15 +197,21 @@ func (msg *MsgFundModuleAccounts) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.AssetId <= 0 {
+		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)
+	}
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
 	}
 
 	return nil
 }
 
 func (msg *MsgFundModuleAccounts) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetLender())
+	lender, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -198,7 +230,7 @@ func NewMsgDeposit(lender string, lendID uint64, amount sdk.Coin) *MsgDeposit {
 }
 
 func (msg MsgDeposit) Route() string { return ModuleName }
-func (msg MsgDeposit) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgDeposit) Type() string  { return TypeDepositAssetRequest }
 
 func (msg *MsgDeposit) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
@@ -206,15 +238,21 @@ func (msg *MsgDeposit) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.LendId <= 0 {
+		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	}
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
 	}
 
 	return nil
 }
 
 func (msg *MsgDeposit) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetLender())
+	lender, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -232,18 +270,25 @@ func NewMsgCloseLend(lender string, lendID uint64) *MsgCloseLend {
 }
 
 func (msg MsgCloseLend) Route() string { return ModuleName }
-func (msg MsgCloseLend) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgCloseLend) Type() string  { return TypeCloseLendAssetRequest }
 
 func (msg *MsgCloseLend) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetLender())
 	if err != nil {
 		return err
 	}
+	if msg.LendId <= 0 {
+		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	}
+
 	return nil
 }
 
 func (msg *MsgCloseLend) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetLender())
+	lender, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -262,23 +307,27 @@ func NewMsgDraw(borrower string, borrowID uint64, amount sdk.Coin) *MsgDraw {
 }
 
 func (msg MsgDraw) Route() string { return ModuleName }
-func (msg MsgDraw) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgDraw) Type() string  { return TypeDrawAssetRequest }
 
 func (msg *MsgDraw) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
 	if err != nil {
 		return err
 	}
-
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.BorrowId <= 0 {
+		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
 	}
-
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
+	}
 	return nil
 }
 
 func (msg *MsgDraw) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	lender, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -297,7 +346,7 @@ func NewMsgDepositBorrow(borrower string, borrowID uint64, amount sdk.Coin) *Msg
 }
 
 func (msg MsgDepositBorrow) Route() string { return ModuleName }
-func (msg MsgDepositBorrow) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgDepositBorrow) Type() string  { return TypeDepositBorrowdAssetRequest }
 
 func (msg *MsgDepositBorrow) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
@@ -305,15 +354,20 @@ func (msg *MsgDepositBorrow) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.BorrowId <= 0 {
+		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
 	}
-
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
+	}
 	return nil
 }
 
 func (msg *MsgDepositBorrow) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	lender, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -331,24 +385,88 @@ func NewMsgCloseBorrow(borrower string, borrowID uint64) *MsgCloseBorrow {
 }
 
 func (msg MsgCloseBorrow) Route() string { return ModuleName }
-func (msg MsgCloseBorrow) Type() string  { return EventTypeWithdrawLoanedAsset }
+func (msg MsgCloseBorrow) Type() string  { return TypeCloseBorrowAssetRequest }
 
 func (msg *MsgCloseBorrow) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
 	if err != nil {
 		return err
 	}
+	if msg.BorrowId <= 0 {
+		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
+	}
 
 	return nil
 }
 
 func (msg *MsgCloseBorrow) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	lender, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
 // GetSignBytes get the bytes for the message signer to sign on.
 func (msg *MsgCloseBorrow) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func NewMsgBorrowAlternate(lender string, assetID, poolID uint64, amountIn sdk.Coin, pairID uint64, stableBorrow bool, amountOut sdk.Coin, appID uint64) *MsgBorrowAlternate {
+	return &MsgBorrowAlternate{
+		Lender:         lender,
+		AssetId:        assetID,
+		PoolId:         poolID,
+		AmountIn:       amountIn,
+		PairId:         pairID,
+		IsStableBorrow: stableBorrow,
+		AmountOut:      amountOut,
+		AppId:          appID,
+	}
+}
+
+func (msg MsgBorrowAlternate) Route() string { return ModuleName }
+func (msg MsgBorrowAlternate) Type() string  { return TypeBorrowAlternateAssetRequest }
+
+func (msg *MsgBorrowAlternate) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		return err
+	}
+
+	if msg.AssetId <= 0 {
+		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)
+	}
+	if msg.PoolId <= 0 {
+		return fmt.Errorf("pool id should be positive: %d > 0", msg.PoolId)
+	}
+	if msg.PairId <= 0 {
+		return fmt.Errorf("pair id should be positive: %d > 0", msg.PairId)
+	}
+	if msg.AppId <= 0 {
+		return fmt.Errorf("pair id should be positive: %d > 0", msg.AppId)
+	}
+	if msg.AmountIn.Amount.IsNegative() || msg.AmountIn.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.AmountIn.Amount)
+	}
+	if msg.AmountOut.Amount.IsNegative() || msg.AmountOut.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.AmountOut.Amount)
+	}
+
+	return nil
+}
+
+func (msg *MsgBorrowAlternate) GetSigners() []sdk.AccAddress {
+	lender, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{lender}
+}
+
+// GetSignBytes get the bytes for the message signer to sign on.
+func (msg *MsgBorrowAlternate) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }

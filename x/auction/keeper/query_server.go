@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var _ types.QueryServer = (*QueryServer)(nil)
+var _ types.QueryServer = QueryServer{}
 
 type QueryServer struct {
 	Keeper
@@ -23,7 +23,7 @@ func NewQueryServer(k Keeper) types.QueryServer {
 	}
 }
 
-func (q *QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (q QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	var (
 		ctx    = sdk.UnwrapSDKContext(c)
 		params = q.GetParams(ctx)
@@ -34,7 +34,7 @@ func (q *QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest
 	}, nil
 }
 
-func (q *QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySurplusAuctionRequest) (res *types.QuerySurplusAuctionResponse, err error) {
+func (q QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySurplusAuctionRequest) (res *types.QuerySurplusAuctionResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -57,7 +57,7 @@ func (q *QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySur
 	}, nil
 }
 
-func (q *QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySurplusAuctionsRequest) (*types.QuerySurplusAuctionsResponse, error) {
+func (q QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySurplusAuctionsRequest) (*types.QuerySurplusAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -99,7 +99,7 @@ func (q *QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySu
 	}, nil
 }
 
-func (q *QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySurplusBiddingsRequest) (res *types.QuerySurplusBiddingsResponse, err error) {
+func (q QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySurplusBiddingsRequest) (res *types.QuerySurplusBiddingsResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -119,7 +119,7 @@ func (q *QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySu
 		Biddings: item,
 	}, nil
 }
-func (q *QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAuctionRequest) (res *types.QueryDebtAuctionResponse, err error) {
+func (q QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAuctionRequest) (res *types.QueryDebtAuctionResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -141,7 +141,7 @@ func (q *QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAu
 		Auction: item,
 	}, nil
 }
-func (q *QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtAuctionsRequest) (*types.QueryDebtAuctionsResponse, error) {
+func (q QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtAuctionsRequest) (*types.QueryDebtAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -184,7 +184,7 @@ func (q *QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtA
 	}, nil
 }
 
-func (q *QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtBiddingsRequest) (*types.QueryDebtBiddingsResponse, error) {
+func (q QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtBiddingsRequest) (*types.QueryDebtBiddingsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -205,7 +205,7 @@ func (q *QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtB
 	}, nil
 }
 
-func (q *QueryServer) QueryDutchAuction(c context.Context, req *types.QueryDutchAuctionRequest) (res *types.QueryDutchAuctionResponse, err error) {
+func (q QueryServer) QueryDutchAuction(c context.Context, req *types.QueryDutchAuctionRequest) (res *types.QueryDutchAuctionResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -225,7 +225,7 @@ func (q *QueryServer) QueryDutchAuction(c context.Context, req *types.QueryDutch
 	}, nil
 }
 
-func (q *QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutchAuctionsRequest) (*types.QueryDutchAuctionsResponse, error) {
+func (q QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutchAuctionsRequest) (*types.QueryDutchAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -267,7 +267,7 @@ func (q *QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutc
 	}, nil
 }
 
-func (q *QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutchBiddingsRequest) (*types.QueryDutchBiddingsResponse, error) {
+func (q QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutchBiddingsRequest) (*types.QueryDutchBiddingsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -288,7 +288,7 @@ func (q *QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutc
 	}, nil
 }
 
-func (q *QueryServer) QueryBiddingsForAuction(c context.Context, req *types.QueryDutchBiddingsRequest) (*types.QueryDutchBiddingsResponse, error) {
+func (q QueryServer) QueryBiddingsForAuction(c context.Context, req *types.QueryDutchBiddingsRequest) (*types.QueryDutchBiddingsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -309,7 +309,7 @@ func (q *QueryServer) QueryBiddingsForAuction(c context.Context, req *types.Quer
 	}, nil
 }
 
-func (q *QueryServer) QueryProtocolStatistics(c context.Context, req *types.QueryProtocolStatisticsRequest) (*types.QueryProtocolStatisticsResponse, error) {
+func (q QueryServer) QueryProtocolStatistics(c context.Context, req *types.QueryProtocolStatisticsRequest) (*types.QueryProtocolStatisticsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -349,7 +349,7 @@ func (q *QueryServer) QueryProtocolStatistics(c context.Context, req *types.Quer
 	}, nil
 }
 
-func (q *QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAuctionParamRequest) (*types.QueryAuctionParamResponse, error) {
+func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAuctionParamRequest) (*types.QueryAuctionParamResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -368,7 +368,7 @@ func (q *QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAuct
 	}, nil
 }
 
-func (q *QueryServer) QueryDutchLendAuction(c context.Context, req *types.QueryDutchLendAuctionRequest) (*types.QueryDutchLendAuctionResponse, error) {
+func (q QueryServer) QueryDutchLendAuction(c context.Context, req *types.QueryDutchLendAuctionRequest) (*types.QueryDutchLendAuctionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -388,7 +388,7 @@ func (q *QueryServer) QueryDutchLendAuction(c context.Context, req *types.QueryD
 	}, nil
 }
 
-func (q *QueryServer) QueryDutchLendAuctions(c context.Context, req *types.QueryDutchLendAuctionsRequest) (*types.QueryDutchLendAuctionsResponse, error) {
+func (q QueryServer) QueryDutchLendAuctions(c context.Context, req *types.QueryDutchLendAuctionsRequest) (*types.QueryDutchLendAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -430,7 +430,7 @@ func (q *QueryServer) QueryDutchLendAuctions(c context.Context, req *types.Query
 	}, nil
 }
 
-func (q *QueryServer) QueryDutchLendBiddings(c context.Context, req *types.QueryDutchLendBiddingsRequest) (*types.QueryDutchLendBiddingsResponse, error) {
+func (q QueryServer) QueryDutchLendBiddings(c context.Context, req *types.QueryDutchLendBiddingsRequest) (*types.QueryDutchLendBiddingsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -440,9 +440,9 @@ func (q *QueryServer) QueryDutchLendBiddings(c context.Context, req *types.Query
 		item []types.DutchBiddings
 	)
 	if req.History {
-		item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
+		item = q.GetHistoryDutchLendUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
-		item = q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)
+		item = q.GetDutchLendUserBiddings(ctx, req.Bidder, req.AppId)
 	}
 
 	return &types.QueryDutchLendBiddingsResponse{

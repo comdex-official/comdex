@@ -29,6 +29,6 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subsp
 	}
 }
 
-func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.key)
 }

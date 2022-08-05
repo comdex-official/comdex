@@ -37,8 +37,8 @@ func GetTxCmd() *cobra.Command {
 		NewMarketOrderCmd(),
 		NewCancelOrderCmd(),
 		NewCancelAllOrdersCmd(),
-		NewSoftLockTokensCmd(),
-		NewSoftUnlockTokensCmd(),
+		NewFarmCmd(),
+		NewUnfarmCmd(),
 	)
 
 	return cmd
@@ -71,6 +71,9 @@ $ %s tx %s create-pair 1 uatom stake --from mykey
 			quoteCoinDenom := args[2]
 
 			msg := types.NewMsgCreatePair(appID, clientCtx.GetFromAddress(), baseCoinDenom, quoteCoinDenom)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -116,6 +119,9 @@ $ %s tx %s create-pool 1 1 1000000000uatom,50000000000stake --from mykey
 			}
 
 			msg := types.NewMsgCreatePool(appID, clientCtx.GetFromAddress(), pairID, depositCoins)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -161,6 +167,9 @@ $ %s tx %s deposit 1 1 1000000000uatom,50000000000stake --from mykey
 			}
 
 			msg := types.NewMsgDeposit(appID, clientCtx.GetFromAddress(), poolID, depositCoins)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -211,6 +220,9 @@ $ %s tx %s withdraw 1 1 10000pool1 --from mykey
 				poolID,
 				poolCoin,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -301,6 +313,9 @@ $ %s tx %s limit-order 1 1 s 10000uatom stake 2.0 10000 --order-lifespan=10m --f
 				amt,
 				orderLifespan,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -387,6 +402,10 @@ $ %s tx %s market-order 1 1 s 10000uatom stake 10000 --order-lifespan=10m --from
 				orderLifespan,
 			)
 
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -438,6 +457,10 @@ $ %s tx %s cancel-order 1 1 1 --from mykey
 				orderID,
 			)
 
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -484,6 +507,10 @@ $ %s tx %s cancel-all-orders 1 1,3 --from mykey
 
 			msg := types.NewMsgCancelAllOrders(appID, clientCtx.GetFromAddress(), pairIDs)
 
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -493,15 +520,15 @@ $ %s tx %s cancel-all-orders 1 1,3 --from mykey
 	return cmd
 }
 
-func NewSoftLockTokensCmd() *cobra.Command {
+func NewFarmCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "soft-lock [app-id] [pool-id] [pool-coin]",
+		Use:   "farm [app-id] [pool-id] [pool-coin]",
 		Args:  cobra.ExactArgs(3),
-		Short: "soft-lock coins from the specified liquidity pool, to start earning rewards",
+		Short: "farm pool coin",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`soft-lock coins from the specified liquidity pool,  to start earning rewards
+			fmt.Sprintf(`farm pool coins to be eligible for incentivizations 
 Example:
-$ %s tx %s soft-lock 1 1 10000pool1 --from mykey
+$ %s tx %s farm 1 1 10000pool1 --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -522,17 +549,20 @@ $ %s tx %s soft-lock 1 1 10000pool1 --from mykey
 				return err
 			}
 
-			softLockCoin, err := sdk.ParseCoinNormalized(args[2])
+			farmedPoolCoin, err := sdk.ParseCoinNormalized(args[2])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSoftLock(
+			msg := types.NewMsgFarm(
 				appID,
-				clientCtx.GetFromAddress(),
 				poolID,
-				softLockCoin,
+				clientCtx.GetFromAddress(),
+				farmedPoolCoin,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -543,15 +573,15 @@ $ %s tx %s soft-lock 1 1 10000pool1 --from mykey
 	return cmd
 }
 
-func NewSoftUnlockTokensCmd() *cobra.Command {
+func NewUnfarmCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "soft-unlock [app-id] [pool-id] [pool-coin]",
+		Use:   "unfarm [app-id] [pool-id] [pool-coin]",
 		Args:  cobra.ExactArgs(3),
-		Short: "soft-unlock coins from the specified liquidity pool, to stop receiving rewards",
+		Short: "unfarm pool coin",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`soft-unlock coins from the specified liquidity pool,  to stop receiving rewards
+			fmt.Sprintf(`unfarm pool coin
 Example:
-$ %s tx %s soft-unlock 1 1 10000pool1 --from mykey
+$ %s tx %s unfarm 1 1 10000pool1 --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -572,17 +602,20 @@ $ %s tx %s soft-unlock 1 1 10000pool1 --from mykey
 				return err
 			}
 
-			softUnlockCoin, err := sdk.ParseCoinNormalized(args[2])
+			unfarmingPoolCoin, err := sdk.ParseCoinNormalized(args[2])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSoftUnlock(
+			msg := types.NewMsgUnfarm(
 				appID,
-				clientCtx.GetFromAddress(),
 				poolID,
-				softUnlockCoin,
+				clientCtx.GetFromAddress(),
+				unfarmingPoolCoin,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},

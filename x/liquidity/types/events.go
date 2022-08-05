@@ -13,11 +13,14 @@ const (
 	EventTypeDepositResult    = "deposit_result"
 	EventTypeWithdrawalResult = "withdrawal_result"
 	EventTypeOrderResult      = "order_result"
+	EventTypeFarm             = "farm"
+	EventTypeUnfarm           = "unfarm"
 
 	AttributeKeyCreator                 = "creator"
 	AttributeKeyDepositor               = "depositor"
 	AttributeKeyWithdrawer              = "withdrawer"
 	AttributeKeyOrderer                 = "orderer"
+	AttributeKeyFarmer                  = "farmer"
 	AttributeKeyBaseCoinDenom           = "base_coin_denom"
 	AttributeKeyQuoteCoinDenom          = "quote_coin_denom"
 	AttributeKeyDepositCoins            = "deposit_coins"
@@ -45,4 +48,6 @@ const (
 	AttributeKeyPairIds                 = "pair_ids"
 	AttributeKeyCanceledOrderIds        = "canceled_order_ids"
 	AttributeKeyStatus                  = "status"
+	AttributeKeyAppID                   = "app_id"
+	AttributeKeyTimeStamp               = "timestamp"
 )

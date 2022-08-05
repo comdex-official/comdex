@@ -11,14 +11,6 @@ import (
 	protobuftypes "github.com/gogo/protobuf/types"
 )
 
-/*
-func (k *Keeper) AddAppMappingRecords(ctx sdk.Context, records ...types.AppMapping) error
-func (k *Keeper) AddAssetRecords(ctx sdk.Context, records ...types.Asset) error
-func (k *Keeper) AddPairsRecords(ctx sdk.Context, records ...types.Pair) error
-func (k *Keeper) AddExtendedPairsVaultRecords(ctx sdk.Context, records ...types.ExtendedPairVault) error
-func (k Keeper) WhitelistAppId(ctx sdk.Context, appMappingId uint64) error
-*/
-
 func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 
 	assetKeeper, liquidationKeeper, ctx := &s.assetKeeper, &s.liquidationKeeper, &s.ctx
@@ -165,7 +157,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 	genesisSupply := sdk.NewIntFromUint64(1000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
-	msg1 := []assetTypes.AppData{{
+	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -173,34 +165,19 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
 				3,
-				&genesisSupply,
+				genesisSupply,
 				true,
 				userAddress1,
 			},
 			{
 				2,
-				&genesisSupply,
+				genesisSupply,
 				true,
 				userAddress1,
 			},
 		},
-	},
-		{
-			Name:             "commodo",
-			ShortName:        "commodo",
-			MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-			GovTimeInSeconds: 900,
-			GenesisToken: []assetTypes.MintGenesisToken{
-				{
-					3,
-					&genesisSupply,
-					true,
-					userAddress1,
-				},
-			},
-		},
 	}
-	err = assetKeeper.AddAppRecords(*ctx, msg1...)
+	err = assetKeeper.AddAppRecords(*ctx, msg1)
 	s.Require().NoError(err)
 
 	for index, tc := range []struct {

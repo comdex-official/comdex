@@ -10,7 +10,7 @@ import (
 )
 
 // ValidateMsgCreateCreateGauge validates types.MsgCreateGauge.
-func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCreateGauge) error {
+func (k Keeper) ValidateMsgCreateGauge(ctx sdk.Context, msg *types.MsgCreateGauge) error {
 	isValidGaugeTypeID := false
 	for _, gaugeTypeID := range types.ValidGaugeTypeIds {
 		if gaugeTypeID == msg.GaugeTypeId {

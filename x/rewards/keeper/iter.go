@@ -70,9 +70,7 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 						for _, p := range netFeeCollectedData.AssetIdToFeeCollected {
 							if p.AssetId == locker.AssetDepositId {
 								asset, _ := k.GetAsset(ctx, p.AssetId)
-								//updatedNetFee := p.NetFeesCollected.Sub(rewards)
-								//err := k.SetNetFeeCollectedData(ctx, locker.AppMappingId, locker.AssetDepositId, updatedNetFee)
-								err := k.DecreaseNetFeeCollectedData(ctx, locker.AppId, locker.AssetDepositId, rewards)
+								err := k.DecreaseNetFeeCollectedData(ctx, locker.AppId, locker.AssetDepositId, rewards, netFeeCollectedData)
 								if err != nil {
 									return err
 								}

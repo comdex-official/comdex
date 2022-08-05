@@ -11,8 +11,8 @@ func (s *KeeperTestSuite) TestCreatePair() {
 
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
-	appID2 := s.CreateNewApp("appTwo")
+	appID1 := s.CreateNewApp("appone")
+	appID2 := s.CreateNewApp("apptwo")
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
 

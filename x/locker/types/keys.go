@@ -19,10 +19,11 @@ var (
 )
 
 var (
-	LockerProductAssetMappingKeyPrefix = []byte{0x10}
-	LockerLookupTableKeyPrefix         = []byte{0x12}
-	UserLockerAssetMappingKeyPrefix    = []byte{0x14}
-	LockerKeyPrefix                    = []byte{0x15}
+	LockerProductAssetMappingKeyPrefix        = []byte{0x10}
+	LockerLookupTableKeyPrefix                = []byte{0x12}
+	UserLockerAssetMappingKeyPrefix           = []byte{0x14}
+	LockerKeyPrefix                           = []byte{0x15}
+	LockerTotalRewardsByAssetAppWiseKeyPrefix = []byte{0x16}
 )
 
 func LockerProductAssetMappingKey(id uint64) []byte {
@@ -30,7 +31,7 @@ func LockerProductAssetMappingKey(id uint64) []byte {
 }
 
 func LockerTotalRewardsByAssetAppWiseKey(appID, assetID uint64) []byte {
-	return append(append(LockerProductAssetMappingKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
+	return append(append(LockerTotalRewardsByAssetAppWiseKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
 }
 func LockerLookupTableKey(id uint64) []byte {
 	return append(LockerLookupTableKeyPrefix, sdk.Uint64ToBigEndian(id)...)

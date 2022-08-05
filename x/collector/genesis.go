@@ -6,19 +6,49 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// InitGenesis initializes the capability module's state from a provided genesis
-// state.
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	// this line is used by starport scaffolding # genesis/module/init
-	k.SetParams(ctx, genState.Params)
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
+	k.SetParams(ctx, state.Params)
+
+	for _, item := range state.NetFeeCollectedData {
+		for _, initem := range item.AssetIdToFeeCollected {
+			err := k.SetNetFeeCollectedData(ctx, item.AppId, initem.AssetId, initem.NetFeesCollected)
+			if err != nil {
+				return
+			}
+		}
+	}
+
+	for _, item := range state.AppIdToAssetCollectorMapping {
+		k.SetAppidToAssetCollectorMapping(ctx, item)
+	}
+
+	for _, item := range state.CollectorLookup {
+		err := k.SetCollectorLookupTable(ctx, item.AssetRateInfo...)
+		if err != nil {
+			return
+		}
+	}
+
+	for _, item := range state.CollectorAuctionLookupTable {
+		err := k.SetAuctionMappingForApp(ctx, item)
+		if err != nil {
+			return
+		}
+	}
+
+	for _, item := range state.AppToDenomsMapping {
+		k.SetAppToDenomsMapping(ctx, item.AppId, item)
+	}
 }
 
-// ExportGenesis returns the capability module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	genesis := types.DefaultGenesis()
-	genesis.Params = k.GetParams(ctx)
-
-	// this line is used by starport scaffolding # genesis/module/export
-
-	return genesis
+	collectorAuctionLookupTable, _ := k.GetAllAuctionMappingForApp(ctx)
+	return types.NewGenesisState(
+		k.GetAllNetFeeCollectedData(ctx),
+		k.GetAllAppidToAssetCollectorMapping(ctx),
+		k.GetAllCollectorLookupTable(ctx),
+		collectorAuctionLookupTable,
+		k.GetAllAppToDenomsMapping(ctx),
+		k.GetParams(ctx),
+	)
 }

@@ -6,19 +6,62 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// InitGenesis initializes the capability module's state from a provided genesis
-// state.
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	// this line is used by starport scaffolding # genesis/module/init
-	k.SetParams(ctx, genState.Params)
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
+
+	k.SetParams(ctx, state.Params)
+
+	for _, item := range state.ESMTriggerParams {
+		k.SetESMTriggerParams(ctx, item)
+	}
+
+	for _, item := range state.CurrentDepositStats {
+		k.SetCurrentDepositStats(ctx, item)
+	}
+
+	for _, item := range state.ESMStatus {
+		k.SetESMStatus(ctx, item)
+	}
+
+	for _, item := range state.KillSwitchParams {
+		err := k.SetKillSwitchData(ctx, item)
+		if err != nil {
+			return
+		}
+	}
+
+	for _, item := range state.UsersDepositMapping {
+		k.SetUserDepositByApp(ctx, item)
+	}
+
+	for _, item := range state.ESMMarketPrice {
+		k.SetESMMarketForAsset(ctx, item)
+	}
+
+	for _, item := range state.DataAfterCoolOff {
+		k.SetDataAfterCoolOff(ctx, item)
+	}
+
+	for _, item := range state.AssetToAmountValue {
+		k.SetAssetToAmountValue(ctx, item)
+	}
+
+	for _, item := range state.AppToAmountValue {
+		k.SetAppToAmtValue(ctx, item)
+	}
 }
 
-// ExportGenesis returns the capability module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	genesis := types.DefaultGenesis()
-	genesis.Params = k.GetParams(ctx)
 
-	// this line is used by starport scaffolding # genesis/module/export
-
-	return genesis
+	return types.NewGenesisState(
+		k.GetAllESMTriggerParams(ctx),
+		k.GetAllCurrentDepositStats(ctx),
+		k.GetAllESMStatus(ctx),
+		k.GetAllKillSwitchData(ctx),
+		k.GetAllUserDepositByApp(ctx),
+		k.GetAllESMMarketForAsset(ctx),
+		k.GetAllDataAfterCoolOff(ctx),
+		k.GetAllAssetToAmountValue(ctx),
+		k.GetAllAppToAmtValue(ctx),
+		k.GetParams(ctx),
+	)
 }

@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -14,7 +15,7 @@ import (
 
 //get locker lookup table.
 
-func (k *Keeper) SetLockerProductAssetMapping(ctx sdk.Context, lockerProductMapping types.LockerProductAssetMapping) {
+func (k Keeper) SetLockerProductAssetMapping(ctx sdk.Context, lockerProductMapping types.LockerProductAssetMapping) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerProductAssetMappingKey(lockerProductMapping.AppId)
@@ -24,7 +25,7 @@ func (k *Keeper) SetLockerProductAssetMapping(ctx sdk.Context, lockerProductMapp
 	store.Set(key, value)
 }
 
-func (k *Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error {
+func (k Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerTotalRewardsByAssetAppWiseKey(lockerRewardsMapping.AppId, lockerRewardsMapping.AssetId)
@@ -35,7 +36,7 @@ func (k *Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewa
 	return nil
 }
 
-func (k *Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise, found bool) {
+func (k Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerTotalRewardsByAssetAppWiseKey(appID, assetID)
@@ -49,7 +50,29 @@ func (k *Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, ass
 	k.cdc.MustUnmarshal(value, &lockerRewardsMapping)
 	return lockerRewardsMapping, true
 }
-func (k *Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
+
+func (k Keeper) GetAllLockerTotalRewardsByAssetAppWise(ctx sdk.Context) (lockerTotalRewardsByAssetAppWise []types.LockerTotalRewardsByAssetAppWise) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.LockerTotalRewardsByAssetAppWiseKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var lock types.LockerTotalRewardsByAssetAppWise
+		k.cdc.MustUnmarshal(iter.Value(), &lock)
+		lockerTotalRewardsByAssetAppWise = append(lockerTotalRewardsByAssetAppWise, lock)
+	}
+	return lockerTotalRewardsByAssetAppWise
+}
+
+func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerProductAssetMappingKey(appMappingID)
@@ -64,7 +87,28 @@ func (k *Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint
 	return lockerProductMapping, true
 }
 
-func (k *Keeper) SetLockerLookupTable(ctx sdk.Context, lockerLookupData types.LockerLookupTable) {
+func (k Keeper) GetAllLockerProductAssetMapping(ctx sdk.Context) (lockerProductAssetMapping []types.LockerProductAssetMapping) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.LockerProductAssetMappingKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var lock types.LockerProductAssetMapping
+		k.cdc.MustUnmarshal(iter.Value(), &lock)
+		lockerProductAssetMapping = append(lockerProductAssetMapping, lock)
+	}
+	return lockerProductAssetMapping
+}
+
+func (k Keeper) SetLockerLookupTable(ctx sdk.Context, lockerLookupData types.LockerLookupTable) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerLookupTableKey(lockerLookupData.AppId)
@@ -74,7 +118,7 @@ func (k *Keeper) SetLockerLookupTable(ctx sdk.Context, lockerLookupData types.Lo
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetLockerLookupTable(ctx sdk.Context, appMappingID uint64) (lockerLookupData types.LockerLookupTable, found bool) {
+func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appMappingID uint64) (lockerLookupData types.LockerLookupTable, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerLookupTableKey(appMappingID)
@@ -89,7 +133,28 @@ func (k *Keeper) GetLockerLookupTable(ctx sdk.Context, appMappingID uint64) (loc
 	return lockerLookupData, true
 }
 
-func (k *Keeper) CheckLockerProductAssetMapping(ctx sdk.Context, assetID uint64, lockerProductMapping types.LockerProductAssetMapping) (found bool) {
+func (k Keeper) GetAllLockerLookupTable(ctx sdk.Context) (lockerLookupTable []types.LockerLookupTable) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.LockerLookupTableKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var lock types.LockerLookupTable
+		k.cdc.MustUnmarshal(iter.Value(), &lock)
+		lockerLookupTable = append(lockerLookupTable, lock)
+	}
+	return lockerLookupTable
+}
+
+func (k Keeper) CheckLockerProductAssetMapping(ctx sdk.Context, assetID uint64, lockerProductMapping types.LockerProductAssetMapping) (found bool) {
 	for _, id := range lockerProductMapping.AssetIds {
 		if id == assetID {
 			return true
@@ -100,7 +165,7 @@ func (k *Keeper) CheckLockerProductAssetMapping(ctx sdk.Context, assetID uint64,
 }
 
 // UpdateTokenLockerMapping For updating token locker mapping in lookup table.
-func (k *Keeper) UpdateTokenLockerMapping(ctx sdk.Context, lockerLookupData types.LockerLookupTable, counter uint64, userLockerData types.Locker) {
+func (k Keeper) UpdateTokenLockerMapping(ctx sdk.Context, lockerLookupData types.LockerLookupTable, counter uint64, userLockerData types.Locker) {
 	for _, lockerData := range lockerLookupData.Lockers {
 		if lockerData.AssetId == userLockerData.AssetDepositId {
 			lockerData.DepositedAmount = lockerData.DepositedAmount.Add(userLockerData.NetBalance)
@@ -112,7 +177,7 @@ func (k *Keeper) UpdateTokenLockerMapping(ctx sdk.Context, lockerLookupData type
 }
 
 // UpdateAmountLockerMapping For updating token locker mapping in lookup table.
-func (k *Keeper) UpdateAmountLockerMapping(ctx sdk.Context, lockerLookupData types.LockerLookupTable, assetID uint64, amount sdk.Int, changeType bool) { //if Change type true = Add to deposits
+func (k Keeper) UpdateAmountLockerMapping(ctx sdk.Context, lockerLookupData types.LockerLookupTable, assetID uint64, amount sdk.Int, changeType bool) { //if Change type true = Add to deposits
 	//If change type false = Subtract from the deposits
 
 	for _, lockerData := range lockerLookupData.Lockers {
@@ -128,7 +193,7 @@ func (k *Keeper) UpdateAmountLockerMapping(ctx sdk.Context, lockerLookupData typ
 }
 
 // SetUserLockerAssetMapping User Locker Functions.
-func (k *Keeper) SetUserLockerAssetMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping) {
+func (k Keeper) SetUserLockerAssetMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLockerAssetMappingKey(userLockerAssetData.Owner)
@@ -138,7 +203,7 @@ func (k *Keeper) SetUserLockerAssetMapping(ctx sdk.Context, userLockerAssetData 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetUserLockerAssetMapping(ctx sdk.Context, address string) (userLockerAssetData types.UserLockerAssetMapping, found bool) {
+func (k Keeper) GetUserLockerAssetMapping(ctx sdk.Context, address string) (userLockerAssetData types.UserLockerAssetMapping, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLockerAssetMappingKey(address)
@@ -153,8 +218,29 @@ func (k *Keeper) GetUserLockerAssetMapping(ctx sdk.Context, address string) (use
 	return userLockerAssetData, true
 }
 
+func (k Keeper) GetAllUserLockerAssetMapping(ctx sdk.Context) (userLockerAssetMapping []types.UserLockerAssetMapping) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.UserLockerAssetMappingKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var lock types.UserLockerAssetMapping
+		k.cdc.MustUnmarshal(iter.Value(), &lock)
+		userLockerAssetMapping = append(userLockerAssetMapping, lock)
+	}
+	return userLockerAssetMapping
+}
+
 // CheckUserAppToAssetMapping Checking if for a certain user for the app type , whether there exists a certain asset or not and if it contains a locker id or not.
-func (k *Keeper) CheckUserAppToAssetMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping, assetID uint64, appID uint64) (lockerID string, found bool) {
+func (k Keeper) CheckUserAppToAssetMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping, assetID uint64, appID uint64) (lockerID string, found bool) {
 	for _, lockerAppMapping := range userLockerAssetData.LockerAppMapping {
 		if lockerAppMapping.AppId == appID {
 			for _, assetToLockerIDMapping := range lockerAppMapping.UserAssetLocker {
@@ -168,7 +254,7 @@ func (k *Keeper) CheckUserAppToAssetMapping(ctx sdk.Context, userLockerAssetData
 	return lockerID, false
 }
 
-func (k *Keeper) CheckUserToAppMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping, appID uint64) (found bool) {
+func (k Keeper) CheckUserToAppMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping, appID uint64) (found bool) {
 	for _, lockerAppMapping := range userLockerAssetData.LockerAppMapping {
 		if lockerAppMapping.AppId == appID {
 			return true
@@ -177,7 +263,7 @@ func (k *Keeper) CheckUserToAppMapping(ctx sdk.Context, userLockerAssetData type
 	return false
 }
 
-func (k *Keeper) SetLocker(ctx sdk.Context, locker types.Locker) {
+func (k Keeper) SetLocker(ctx sdk.Context, locker types.Locker) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerKey(locker.LockerId)
@@ -187,7 +273,7 @@ func (k *Keeper) SetLocker(ctx sdk.Context, locker types.Locker) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetLocker(ctx sdk.Context, lockerID string) (locker types.Locker, found bool) {
+func (k Keeper) GetLocker(ctx sdk.Context, lockerID string) (locker types.Locker, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerKey(lockerID)
@@ -202,7 +288,28 @@ func (k *Keeper) GetLocker(ctx sdk.Context, lockerID string) (locker types.Locke
 	return locker, true
 }
 
-func (k *Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
+func (k Keeper) GetLockers(ctx sdk.Context) (locker []types.Locker) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.LockerKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var lock types.Locker
+		k.cdc.MustUnmarshal(iter.Value(), &lock)
+		locker = append(locker, lock)
+	}
+	return locker
+}
+
+func (k Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerKey(locker.LockerId)
@@ -262,7 +369,7 @@ func QueryState(addr, denom, blockHeight, target string) (*sdk.Coin, error) {
 	return bankRes.GetBalance(), nil
 }
 
-func (k *Keeper) WasmAddWhiteListedAssetQuery(ctx sdk.Context, appMappingID, AssetID uint64) (bool, string) {
+func (k Keeper) WasmAddWhiteListedAssetQuery(ctx sdk.Context, appMappingID, AssetID uint64) (bool, string) {
 	_, found := k.GetApp(ctx, appMappingID)
 	if !found {
 		return false, types.ErrorAppMappingDoesNotExist.Error()
@@ -280,4 +387,62 @@ func (k *Keeper) WasmAddWhiteListedAssetQuery(ctx sdk.Context, appMappingID, Ass
 		}
 	}
 	return true, ""
+}
+
+func (k Keeper) AddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
+	status := false
+	if found {
+		status = esmStatus.Status
+	}
+	if status {
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	appMapping, found := k.GetApp(ctx, msg.AppId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+	asset, found := k.GetAsset(ctx, msg.AssetId)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+	lockerProductAssetMapping, found := k.GetLockerProductAssetMapping(ctx, msg.AppId)
+
+	if !found {
+		//Set a new instance of Locker Product Asset  Mapping
+
+		var locker types.LockerProductAssetMapping
+		locker.AppId = appMapping.Id
+		locker.AssetIds = append(locker.AssetIds, asset.Id)
+		k.SetLockerProductAssetMapping(ctx, locker)
+
+		//Also Create a LockerLookup table Instance and set it with the new asset id
+		var lockerLookupData types.LockerLookupTable
+		var lockerAssetData types.TokenToLockerMapping
+
+		lockerAssetData.AssetId = asset.Id
+		lockerLookupData.Counter = 0
+		lockerLookupData.AppId = appMapping.Id
+		lockerLookupData.Lockers = append(lockerLookupData.Lockers, &lockerAssetData)
+		k.SetLockerLookupTable(ctx, lockerLookupData)
+		return &types.MsgAddWhiteListedAssetResponse{}, nil
+	}
+	// Check if the asset from msg exists or not ,
+	found = k.CheckLockerProductAssetMapping(ctx, msg.AssetId, lockerProductAssetMapping)
+	if found {
+		return nil, types.ErrorLockerProductAssetMappingExists
+	}
+	lockerProductAssetMapping.AssetIds = append(lockerProductAssetMapping.AssetIds, asset.Id)
+	k.SetLockerProductAssetMapping(ctx, lockerProductAssetMapping)
+	lockerLookupTableData, _ := k.GetLockerLookupTable(ctx, appMapping.Id)
+	var lockerAssetData types.TokenToLockerMapping
+	lockerAssetData.AssetId = asset.Id
+	lockerLookupTableData.Lockers = append(lockerLookupTableData.Lockers, &lockerAssetData)
+	k.SetLockerLookupTable(ctx, lockerLookupTableData)
+	return &types.MsgAddWhiteListedAssetResponse{}, nil
 }

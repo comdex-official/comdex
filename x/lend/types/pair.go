@@ -1,6 +1,8 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (m *Extended_Pair) Validate() error {
 	if m.AssetIn == 0 {
@@ -14,6 +16,9 @@ func (m *Extended_Pair) Validate() error {
 }
 
 func (m *Pool) Validate() error {
+	if len(m.CPoolName) >= 16 {
+		return ErrInvalidLengthCPoolName
+	}
 	return nil
 }
 

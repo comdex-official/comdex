@@ -34,6 +34,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryESMStatus(),
 		queryCurrentDepositStats(),
 		queryUsersDepositMapping(),
+		queryDataAfterCoolOff(),
 	)
 
 	return cmd
@@ -174,6 +175,43 @@ func queryUsersDepositMapping() *cobra.Command {
 				&types.QueryUsersDepositMappingRequest{
 					Id:        id,
 					Depositor: depositor,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryDataAfterCoolOff() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "data_after_cool_off [app-id]",
+		Short: "Query data after cool off period for esm",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryDataAfterCoolOff(
+				context.Background(),
+				&types.QueryDataAfterCoolOffRequest{
+					Id: id,
 				},
 			)
 			if err != nil {

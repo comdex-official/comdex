@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	_ types.MsgServer = (*msgServer)(nil)
+	_ types.MsgServer = msgServer{}
 )
 
 type msgServer struct {
@@ -22,7 +22,7 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 	}
 }
 
-func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLockerRequest) (*types.MsgCreateLockerResponse, error) {
+func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLockerRequest) (*types.MsgCreateLockerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -75,8 +75,10 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 		if err != nil {
 			return nil, err
 		}
-		if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
-			return nil, err
+		if msg.Amount.GT(sdk.ZeroInt()) {
+			if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
+				return nil, err
+			}
 		}
 		//Creating locker instance
 		var userLocker types.Locker
@@ -162,11 +164,14 @@ func (k *msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocke
 		//Not a whitelisted asset , return err
 		return nil, types.ErrorLockerProductAssetMappingDoesNotExists
 	}
+
+	ctx.GasMeter().ConsumeGas(types.CreateLockerGas, "CreateLockerGas")
+
 	return &types.MsgCreateLockerResponse{}, nil
 }
 
 // MsgDepositAsset Remove asset id from Deposit & Withdraw redundant.
-func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAssetRequest) (*types.MsgDepositAssetResponse, error) {
+func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAssetRequest) (*types.MsgDepositAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
 	status := false
@@ -212,13 +217,11 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 	if err != nil {
 		return nil, err
 	}
-	if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
-		return nil, err
+	if msg.Amount.GT(sdk.ZeroInt()) {
+		if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
+			return nil, err
+		}
 	}
-
-	// if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
-	// 	return nil, err
-	// }
 
 	lockerData.NetBalance = lockerData.NetBalance.Add(msg.Amount)
 	k.SetLocker(ctx, lockerData)
@@ -244,11 +247,13 @@ func (k *msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsse
 
 	k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
 
+	ctx.GasMeter().ConsumeGas(types.DepositLockerGas, "DepositLockerGas")
+
 	return &types.MsgDepositAssetResponse{}, nil
 }
 
 // MsgWithdrawAsset Remove asset id from Deposit & Withdraw-redundant.
-func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
+func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	asset, found := k.GetAsset(ctx, msg.AssetId)
 	if !found {
@@ -288,12 +293,10 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 
 	lockerData.NetBalance = lockerData.NetBalance.Sub(msg.Amount)
 
-	// if err := k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
-	// 	return nil, err
-	// }
-
-	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
-		return nil, err
+	if msg.Amount.GT(sdk.ZeroInt()) {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
+			return nil, err
+		}
 	}
 
 	k.SetLocker(ctx, lockerData)
@@ -319,63 +322,7 @@ func (k *msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAs
 	}
 	k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
 
+	ctx.GasMeter().ConsumeGas(types.WithdrawLockerGas, "WithdrawLockerGas")
+
 	return &types.MsgWithdrawAssetResponse{}, nil
-}
-
-func (k *msgServer) MsgAddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
-	status := false
-	if found {
-		status = esmStatus.Status
-	}
-	if status {
-		return nil, esmtypes.ErrESMAlreadyExecuted
-	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
-		return nil, esmtypes.ErrCircuitBreakerEnabled
-	}
-	appMapping, found := k.GetApp(ctx, msg.AppId)
-	if !found {
-		return nil, types.ErrorAppMappingDoesNotExist
-	}
-	asset, found := k.GetAsset(ctx, msg.AssetId)
-	if !found {
-		return nil, types.ErrorAssetDoesNotExist
-	}
-	lockerProductAssetMapping, found := k.GetLockerProductAssetMapping(ctx, msg.AppId)
-
-	if !found {
-		//Set a new instance of Locker Product Asset  Mapping
-
-		var locker types.LockerProductAssetMapping
-		locker.AppId = appMapping.Id
-		locker.AssetIds = append(locker.AssetIds, asset.Id)
-		k.SetLockerProductAssetMapping(ctx, locker)
-
-		//Also Create a LockerLookup table Instance and set it with the new asset id
-		var lockerLookupData types.LockerLookupTable
-		var lockerAssetData types.TokenToLockerMapping
-
-		lockerAssetData.AssetId = asset.Id
-		lockerLookupData.Counter = 0
-		lockerLookupData.AppId = appMapping.Id
-		lockerLookupData.Lockers = append(lockerLookupData.Lockers, &lockerAssetData)
-		k.SetLockerLookupTable(ctx, lockerLookupData)
-		return &types.MsgAddWhiteListedAssetResponse{}, nil
-	}
-	// Check if the asset from msg exists or not ,
-	found = k.CheckLockerProductAssetMapping(ctx, msg.AssetId, lockerProductAssetMapping)
-	if found {
-		return nil, types.ErrorLockerProductAssetMappingExists
-	}
-	lockerProductAssetMapping.AssetIds = append(lockerProductAssetMapping.AssetIds, asset.Id)
-	k.SetLockerProductAssetMapping(ctx, lockerProductAssetMapping)
-	lockerLookupTableData, _ := k.GetLockerLookupTable(ctx, appMapping.Id)
-	var lockerAssetData types.TokenToLockerMapping
-	lockerAssetData.AssetId = asset.Id
-	lockerLookupTableData.Lockers = append(lockerLookupTableData.Lockers, &lockerAssetData)
-	k.SetLockerLookupTable(ctx, lockerLookupTableData)
-	return &types.MsgAddWhiteListedAssetResponse{}, nil
 }

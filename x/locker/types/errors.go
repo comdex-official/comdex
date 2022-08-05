@@ -22,6 +22,9 @@ var (
 	ErrorUserLockerAlreadyExists                = errors.Register(ModuleName, 211, "User Locker already exists, try deposit command")
 	ErrorLockerDoesNotExists                    = errors.Register(ModuleName, 212, "Locker does not exists")
 	ErrorRequestedAmountExceedsDepositAmount    = errors.Register(ModuleName, 213, "Not enough balance in locker")
+	SendCoinsFromModuleToModuleInLockerIsZero   = errors.Register(ModuleName, 214, "Coin value in module to module transfer in locker is zero")
+	SendCoinsFromModuleToAccountInLockerIsZero  = errors.Register(ModuleName, 215, "Coin value in module to account transfer in locker is zero")
+	SendCoinsFromAccountToModuleInLockerIsZero  = errors.Register(ModuleName, 216, "Coin value in account to module transfer in locker is zero")
 )
 
 var (

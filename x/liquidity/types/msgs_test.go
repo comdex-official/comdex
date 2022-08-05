@@ -582,50 +582,50 @@ func TestMsgCancelAllOrders(t *testing.T) {
 	}
 }
 
-func TestMsgSoftLock(t *testing.T) {
+func TestMsgFarm(t *testing.T) {
 	for _, tc := range []struct {
 		name        string
-		malleate    func(msg *types.MsgTokensSoftLock)
+		malleate    func(msg *types.MsgFarm)
 		expectedErr string
 	}{
 		{
 			"happy case",
-			func(msg *types.MsgTokensSoftLock) {},
+			func(msg *types.MsgFarm) {},
 			"",
 		},
 		{
-			"invalid orderer",
-			func(msg *types.MsgTokensSoftLock) {
-				msg.Depositor = "invalidaddr"
+			"invalid farmer",
+			func(msg *types.MsgFarm) {
+				msg.Farmer = "invalidaddr"
 			},
 			"invalid withdrawer address: decoding bech32 failed: invalid separator index -1: invalid address",
 		},
 		{
 			"invalid pool id",
-			func(msg *types.MsgTokensSoftLock) {
+			func(msg *types.MsgFarm) {
 				msg.PoolId = 0
 			},
 			"pool id must not be 0: invalid request",
 		},
 		{
 			"invalid pool coin",
-			func(msg *types.MsgTokensSoftLock) {
-				msg.SoftLockCoin = utils.ParseCoin("0pool1-1")
+			func(msg *types.MsgFarm) {
+				msg.FarmingPoolCoin = utils.ParseCoin("0pool1-1")
 			},
 			"coin must be positive: invalid request",
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := types.NewMsgSoftLock(1, sdk.AccAddress(crypto.AddressHash([]byte("orderer"))), 1, utils.ParseCoin("123pool1-1"))
+			msg := types.NewMsgFarm(1, 1, sdk.AccAddress(crypto.AddressHash([]byte("orderer"))), utils.ParseCoin("123pool1-1"))
 			tc.malleate(msg)
-			require.Equal(t, types.TypeMsgTokensSoftLock, msg.Type())
+			require.Equal(t, types.TypeMsgFarm, msg.Type())
 			require.Equal(t, types.RouterKey, msg.Route())
 			err := msg.ValidateBasic()
 			if tc.expectedErr == "" {
 				require.NoError(t, err)
 				signers := msg.GetSigners()
 				require.Len(t, signers, 1)
-				require.Equal(t, msg.GetDepositor(), signers[0])
+				require.Equal(t, msg.GetFarmer(), signers[0])
 			} else {
 				require.EqualError(t, err, tc.expectedErr)
 			}
@@ -633,50 +633,50 @@ func TestMsgSoftLock(t *testing.T) {
 	}
 }
 
-func TestMsgSoftUnlock(t *testing.T) {
+func TestMsgUnfarm(t *testing.T) {
 	for _, tc := range []struct {
 		name        string
-		malleate    func(msg *types.MsgTokensSoftUnlock)
+		malleate    func(msg *types.MsgUnfarm)
 		expectedErr string
 	}{
 		{
 			"happy case",
-			func(msg *types.MsgTokensSoftUnlock) {},
+			func(msg *types.MsgUnfarm) {},
 			"",
 		},
 		{
-			"invalid orderer",
-			func(msg *types.MsgTokensSoftUnlock) {
-				msg.Depositor = "invalidaddr"
+			"invalid farmer",
+			func(msg *types.MsgUnfarm) {
+				msg.Farmer = "invalidaddr"
 			},
 			"invalid withdrawer address: decoding bech32 failed: invalid separator index -1: invalid address",
 		},
 		{
 			"invalid pool id",
-			func(msg *types.MsgTokensSoftUnlock) {
+			func(msg *types.MsgUnfarm) {
 				msg.PoolId = 0
 			},
 			"pool id must not be 0: invalid request",
 		},
 		{
 			"invalid pool coin",
-			func(msg *types.MsgTokensSoftUnlock) {
-				msg.SoftUnlockCoin = utils.ParseCoin("0pool1-1")
+			func(msg *types.MsgUnfarm) {
+				msg.UnfarmingPoolCoin = utils.ParseCoin("0pool1-1")
 			},
 			"coin must be positive: invalid request",
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := types.NewMsgSoftUnlock(1, sdk.AccAddress(crypto.AddressHash([]byte("orderer"))), 1, utils.ParseCoin("123pool1-1"))
+			msg := types.NewMsgUnfarm(1, 1, sdk.AccAddress(crypto.AddressHash([]byte("orderer"))), utils.ParseCoin("123pool1-1"))
 			tc.malleate(msg)
-			require.Equal(t, types.TypeMsgTokensSoftUnlock, msg.Type())
+			require.Equal(t, types.TypeMsgUnfarm, msg.Type())
 			require.Equal(t, types.RouterKey, msg.Route())
 			err := msg.ValidateBasic()
 			if tc.expectedErr == "" {
 				require.NoError(t, err)
 				signers := msg.GetSigners()
 				require.Len(t, signers, 1)
-				require.Equal(t, msg.GetDepositor(), signers[0])
+				require.Equal(t, msg.GetFarmer(), signers[0])
 			} else {
 				require.EqualError(t, err, tc.expectedErr)
 			}

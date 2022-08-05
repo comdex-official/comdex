@@ -12,7 +12,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	genesisSupply := sdk.NewIntFromUint64(1000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
-	msg1 := []assetTypes.AppData{{
+	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -20,49 +20,54 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
 				3,
-				&genesisSupply,
+				genesisSupply,
 				true,
 				userAddress,
 			},
 			{
 				2,
-				&genesisSupply,
+				genesisSupply,
 				true,
 				userAddress,
 			},
 		},
-	},
-		{
-			Name:             "commodo",
-			ShortName:        "commodo",
-			MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-			GovTimeInSeconds: 900,
-			GenesisToken: []assetTypes.MintGenesisToken{
-				{
-					3,
-					&genesisSupply,
-					true,
-					userAddress,
-				},
-			},
-		},
 	}
-	err := assetKeeper.AddAppRecords(*ctx, msg1...)
+	// {
+	// 	Name:             "commodo",
+	// 	ShortName:        "commodo",
+	// 	MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+	// 	GovTimeInSeconds: 900,
+	// 	GenesisToken: []assetTypes.MintGenesisToken{
+	// 		{
+	// 			3,
+	// 			genesisSupply,
+	// 			true,
+	// 			userAddress,
+	// 		},
+	// 	},
+	// },
+	err := assetKeeper.AddAppRecords(*ctx, msg1)
 	s.Require().NoError(err)
 
-	msg2 := []assetTypes.Asset{
-		{Name: "CMDX",
-			Denom:     "ucmdx",
-			Decimals:  1000000,
-			IsOnChain: true}, {Name: "CMST",
-			Denom:     "ucmst",
-			Decimals:  1000000,
-			IsOnChain: true}, {Name: "HARBOR",
-			Denom:     "uharbor",
-			Decimals:  1000000,
-			IsOnChain: true},
-	}
-	err = assetKeeper.AddAssetRecords(*ctx, msg2...)
+	msg2 := assetTypes.Asset{
+		Name:      "CMDX",
+		Denom:     "ucmdx",
+		Decimals:  1000000,
+		IsOnChain: true}
+	err = assetKeeper.AddAssetRecords(*ctx, msg2)
+
+	msg3 := assetTypes.Asset{Name: "CMST",
+		Denom:     "ucmst",
+		Decimals:  1000000,
+		IsOnChain: true}
+	err = assetKeeper.AddAssetRecords(*ctx, msg3)
+
+	msg4 := assetTypes.Asset{Name: "HARBOR",
+		Denom:     "uharbor",
+		Decimals:  1000000,
+		IsOnChain: true}
+	err = assetKeeper.AddAssetRecords(*ctx, msg4)
+
 	s.Require().NoError(err)
 
 }
@@ -184,7 +189,8 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 				AppID:                1,
 				AssetIDs:             []uint64{2},
 				IsSurplusAuctions:    []bool{true},
-				IsDebtAuctions:       []bool{true},
+				IsDebtAuctions:       []bool{false},
+				IsDistributor:        []bool{false},
 				AssetOutOraclePrices: []bool{false},
 				AssetOutPrices:       []uint64{1000000},
 			},
@@ -196,6 +202,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 				AssetIDs:             []uint64{3},
 				IsSurplusAuctions:    []bool{true},
 				IsDebtAuctions:       []bool{false},
+				IsDistributor:        []bool{false},
 				AssetOutOraclePrices: []bool{false},
 				AssetOutPrices:       []uint64{100000},
 			},
@@ -209,6 +216,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetId, tc.msg.AssetIDs[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsSurplusAuction, tc.msg.IsSurplusAuctions[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsDebtAuction, tc.msg.IsDebtAuctions[0])
+			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsDistributor, tc.msg.IsDistributor[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsAuctionActive, false)
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetOutOraclePrice, tc.msg.AssetOutOraclePrices[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetOutPrice, tc.msg.AssetOutPrices[0])
@@ -332,7 +340,7 @@ func (s *KeeperTestSuite) TestDecreaseNetFeesCollected() {
 		s.Run(tc.name, func() {
 			netFeesData1, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID)
 			s.Require().True(found)
-			err := collectorKeeper.DecreaseNetFeeCollectedData(*ctx, tc.appID, tc.assetID, tc.fee)
+			err := collectorKeeper.DecreaseNetFeeCollectedData(*ctx, tc.appID, tc.assetID, tc.fee, netFeesData1)
 			if tc.errorExpected {
 				s.Require().Error(err)
 			} else {

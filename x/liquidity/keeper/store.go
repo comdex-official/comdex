@@ -600,24 +600,6 @@ func (k Keeper) DeleteOrderIndex(ctx sdk.Context, appID uint64, order types.Orde
 	store.Delete(types.GetOrderIndexKey(appID, order.GetOrderer(), order.PairId, order.Id))
 }
 
-// GetPoolLiquidityProvidersData returns the liquidity providers data by pool id.
-func (k Keeper) GetPoolLiquidityProvidersData(ctx sdk.Context, appID, poolID uint64) (liquidityProvidersData types.PoolLiquidityProvidersData, found bool) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetPoolLiquidityProvidersDataKey(appID, poolID))
-	if bz == nil {
-		return
-	}
-	liquidityProvidersData = types.MustUnmarshalPoolLiquidityProvidersData(k.cdc, bz)
-	return liquidityProvidersData, true
-}
-
-// SetPoolLiquidityProvidersData sets the liquidity providers data by pool id.
-func (k Keeper) SetPoolLiquidityProvidersData(ctx sdk.Context, liquidityProvidersData types.PoolLiquidityProvidersData) {
-	store := ctx.KVStore(k.storeKey)
-	bz := types.MustMarshalPoolLiquidityProvidersData(k.cdc, liquidityProvidersData)
-	store.Set(types.GetPoolLiquidityProvidersDataKey(liquidityProvidersData.AppId, liquidityProvidersData.PoolId), bz)
-}
-
 // GetGenericLiquidityParams returns the generic liquidity params by app id.
 func (k Keeper) GetGenericLiquidityParams(ctx sdk.Context, appID uint64) (genericLiquidityParams types.GenericParams, found bool) {
 	store := ctx.KVStore(k.storeKey)
@@ -634,4 +616,108 @@ func (k Keeper) SetGenericLiquidityParams(ctx sdk.Context, genericLiquidityParam
 	store := ctx.KVStore(k.storeKey)
 	bz := types.MustMarshalGenericLiquidityParams(k.cdc, genericLiquidityParams)
 	store.Set(types.GetGenericParamsKey(genericLiquidityParams.AppId), bz)
+}
+
+// SetActiveFarmer stores the active farmer.
+func (k Keeper) SetActiveFarmer(ctx sdk.Context, activeFarmer types.ActiveFarmer) {
+	store := ctx.KVStore(k.storeKey)
+	bz := types.MustMarshalActiveFarmer(k.cdc, activeFarmer)
+	store.Set(types.GetActiveFarmerKey(activeFarmer.AppId, activeFarmer.PoolId, sdk.MustAccAddressFromBech32(activeFarmer.Farmer)), bz)
+}
+
+// GetActiveFarmer returns active farmer object for the given app id, pool id and farmer.
+func (k Keeper) GetActiveFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (activeFarmer types.ActiveFarmer, found bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetActiveFarmerKey(appID, poolID, farmer))
+	if bz == nil {
+		return
+	}
+	activeFarmer = types.MustUnmarshalActiveFarmer(k.cdc, bz)
+	return activeFarmer, true
+}
+
+// IterateAllActiveFarmers iterates over all the stored active farmers and performs a callback function.
+// Stops iteration when callback returns true.
+func (k Keeper) IterateAllActiveFarmers(ctx sdk.Context, appID, poolID uint64, cb func(activeFarmer types.ActiveFarmer) (stop bool, err error)) error {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetAllActiveFarmersKey(appID, poolID))
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+	for ; iter.Valid(); iter.Next() {
+		activeFarmer := types.MustUnmarshalActiveFarmer(k.cdc, iter.Value())
+		stop, err := cb(activeFarmer)
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
+	}
+	return nil
+}
+
+// GetAllActiveFarmers returns all active farmers in the store.
+func (k Keeper) GetAllActiveFarmers(ctx sdk.Context, appID, poolID uint64) (activeFarmers []types.ActiveFarmer) {
+	activeFarmers = []types.ActiveFarmer{}
+	_ = k.IterateAllActiveFarmers(ctx, appID, poolID, func(activeFarmer types.ActiveFarmer) (stop bool, err error) {
+		activeFarmers = append(activeFarmers, activeFarmer)
+		return false, nil
+	})
+	return activeFarmers
+}
+
+// SetQueuedFarmer stores the queued farmer.
+func (k Keeper) SetQueuedFarmer(ctx sdk.Context, queuedFarmer types.QueuedFarmer) {
+	store := ctx.KVStore(k.storeKey)
+	bz := types.MustMarshalQueuedFarmer(k.cdc, queuedFarmer)
+	store.Set(types.GetQueuedFarmerKey(queuedFarmer.AppId, queuedFarmer.PoolId, sdk.MustAccAddressFromBech32(queuedFarmer.Farmer)), bz)
+}
+
+// GetQueuedFarmer returns queued farmer object for the given app id, pool id and farmer.
+func (k Keeper) GetQueuedFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (queuedFarmer types.QueuedFarmer, found bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetQueuedFarmerKey(appID, poolID, farmer))
+	if bz == nil {
+		return
+	}
+	queuedFarmer = types.MustUnmarshalQueuedFarmer(k.cdc, bz)
+	return queuedFarmer, true
+}
+
+// IterateAllQueuedFarmers iterates over all the stored queued farmers and performs a callback function.
+// Stops iteration when callback returns true.
+func (k Keeper) IterateAllQueuedFarmers(ctx sdk.Context, appID, poolID uint64, cb func(queuedFarmer types.QueuedFarmer) (stop bool, err error)) error {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetAllQueuedFarmersKey(appID, poolID))
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+	for ; iter.Valid(); iter.Next() {
+		queuedFarmer := types.MustUnmarshalQueuedFarmer(k.cdc, iter.Value())
+		stop, err := cb(queuedFarmer)
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
+	}
+	return nil
+}
+
+// GetAllQueuedFarmers returns all queued farmers in the store.
+func (k Keeper) GetAllQueuedFarmers(ctx sdk.Context, appID, poolID uint64) (queuedFarmers []types.QueuedFarmer) {
+	queuedFarmers = []types.QueuedFarmer{}
+	_ = k.IterateAllQueuedFarmers(ctx, appID, poolID, func(queuedFarmer types.QueuedFarmer) (stop bool, err error) {
+		queuedFarmers = append(queuedFarmers, queuedFarmer)
+		return false, nil
+	})
+	return queuedFarmers
 }

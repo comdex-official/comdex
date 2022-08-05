@@ -1,11 +1,32 @@
 package types
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
+
+const (
+	LendGas                 = sdk.Gas(102763)
+	WithdrawGas             = sdk.Gas(62763)
+	DepositGas              = sdk.Gas(72763)
+	CloseLendGas            = sdk.Gas(72763)
+	BorrowAssetGas          = sdk.Gas(72763)
+	DrawAssetGas            = sdk.Gas(72763)
+	RepayAssetGas           = sdk.Gas(72763)
+	DepositBorrowAssetGas   = sdk.Gas(72763)
+	CloseBorrowAssetGas     = sdk.Gas(72763)
+	BorrowAssetAlternateGas = sdk.Gas(72763)
+)
+
+const (
+	Uint64Zero = uint64(0)
+	Uint64Two  = uint64(2)
+	Perc1      = string("0.2")
+	Perc2      = string("0.9")
+)
 
 // ParamKeyTable the param key table for launch module.
 func ParamKeyTable() paramtypes.KeyTable {

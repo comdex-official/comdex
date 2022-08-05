@@ -81,16 +81,16 @@ func (s *VaultIntegrationTestSuite) TearDownSuite() {
 }
 
 func (s *VaultIntegrationTestSuite) Create() {
-	appID := s.CreateNewApp("appOne")
+	appID := s.CreateNewApp("appone")
 	assetInID := s.CreateNewAsset("asset1", "denom1", 2000000)
 	assetOutID := s.CreateNewAsset("asset2", "denom2", 1000000)
 	pairID := s.CreateNewPair(assetInID, assetOutID)
 	extendedVaultPairID := s.CreateNewExtendedVaultPair("CMDX C", appID, pairID)
 
-	_, err := MsgCreate(s.val.ClientCtx, appID, extendedVaultPairID, sdk.NewInt(3), sdk.NewInt(2), s.val.Address.String())
+	_, _ = MsgCreate(s.val.ClientCtx, appID, extendedVaultPairID, sdk.NewInt(3), sdk.NewInt(2), s.val.Address.String())
 	// s.Require().NoError(err)
 
-	err = s.network.WaitForNextBlock()
+	err := s.network.WaitForNextBlock()
 	s.Require().NoError(err)
 }
 

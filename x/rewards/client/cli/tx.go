@@ -110,6 +110,10 @@ func NewCreateGaugeCmd() *cobra.Command {
 				msg.Kind = &gaugeExtraData
 			}
 
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
 		},
 	}

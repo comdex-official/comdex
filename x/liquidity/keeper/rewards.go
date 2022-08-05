@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"math"
-	"sort"
+	"strconv"
 	"time"
 
 	"github.com/comdex-official/comdex/x/liquidity/amm"
@@ -100,11 +100,6 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 	poolSupplyData := make(map[string]sdk.Dec)
 
 	for _, poolID := range poolIds {
-		liquidityProvidersDataForPool, found := k.GetPoolLiquidityProvidersData(ctx, appID, poolID)
-		if !found {
-			continue
-		}
-
 		pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, poolID)
 		if err != nil {
 			continue
@@ -118,27 +113,22 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 		quoteCoinPoolBalance, baseCoinPoolBalance := k.getPoolBalances(ctx, *pool, *pair)
 
 		for _, address := range masterPoolSupplyAddresses {
-			supplyData, found := liquidityProvidersDataForPool.LiquidityProviders[address.String()]
+			activeFarmer, found := k.GetActiveFarmer(ctx, appID, poolID, address)
 			if !found {
 				continue
 			}
-			depositedCoins := supplyData.Coins
-			for _, coin := range depositedCoins {
-				if coin.Denom == pool.PoolCoinDenom {
-					x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, coin)
-					if err != nil {
-						continue
-					}
-					quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
-					baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
-					value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
-					_, found := poolSupplyData[address.String()]
-					if !found {
-						poolSupplyData[address.String()] = value
-					} else {
-						poolSupplyData[address.String()] = poolSupplyData[address.String()].Add(value)
-					}
-				}
+			x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, activeFarmer.FarmedPoolCoin)
+			if err != nil {
+				continue
+			}
+			quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
+			baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
+			value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
+			_, found = poolSupplyData[address.String()]
+			if !found {
+				poolSupplyData[address.String()] = value
+			} else {
+				poolSupplyData[address.String()] = poolSupplyData[address.String()].Add(value)
 			}
 		}
 	}
@@ -146,11 +136,6 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 }
 
 func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDistribute sdk.Coin, liquidityGaugeData rewardstypes.LiquidtyGaugeMetaData) ([]rewardstypes.RewardDistributionDataCollector, error) {
-	liquidityProvidersDataForPool, found := k.GetPoolLiquidityProvidersData(ctx, appID, liquidityGaugeData.PoolId)
-	if !found {
-		return []rewardstypes.RewardDistributionDataCollector{}, nil
-	}
-
 	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, liquidityGaugeData.PoolId)
 	if err != nil {
 		return nil, err
@@ -166,24 +151,21 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 	var lpAddresses []sdk.AccAddress
 	var lpSupplies []sdk.Dec
 
-	for address, depositedCoins := range liquidityProvidersDataForPool.LiquidityProviders {
-		addr, err := sdk.AccAddressFromBech32(address)
+	activeFarmers := k.GetAllActiveFarmers(ctx, appID, pool.Id)
+	for _, activeFarmer := range activeFarmers {
+		addr, err := sdk.AccAddressFromBech32(activeFarmer.Farmer)
 		if err != nil {
 			continue
 		}
-		for _, coin := range depositedCoins.Coins {
-			if coin.Denom == pool.PoolCoinDenom {
-				x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, coin)
-				if err != nil {
-					continue
-				}
-				quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
-				baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
-				value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
-				lpAddresses = append(lpAddresses, addr)
-				lpSupplies = append(lpSupplies, value)
-			}
+		x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, activeFarmer.FarmedPoolCoin)
+		if err != nil {
+			continue
 		}
+		quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
+		baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
+		value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
+		lpAddresses = append(lpAddresses, addr)
+		lpSupplies = append(lpSupplies, value)
 	}
 
 	// Logic for master pool mechanism
@@ -276,8 +258,8 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 	return rewardData, nil
 }
 
-func (k Keeper) ValidateMsgTokensSoftLock(ctx sdk.Context, msg *types.MsgTokensSoftLock) (sdk.AccAddress, error) {
-	depositor, err := sdk.AccAddressFromBech32(msg.Depositor)
+func (k Keeper) ValidateMsgFarm(ctx sdk.Context, msg *types.MsgFarm) (sdk.AccAddress, error) {
+	farmer, err := sdk.AccAddressFromBech32(msg.Farmer)
 	if err != nil {
 		return nil, err
 	}
@@ -292,49 +274,59 @@ func (k Keeper) ValidateMsgTokensSoftLock(ctx sdk.Context, msg *types.MsgTokensS
 		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
 	}
 
-	if msg.SoftLockCoin.Denom != pool.PoolCoinDenom {
-		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.SoftLockCoin.Denom)
+	if msg.FarmingPoolCoin.Denom != pool.PoolCoinDenom {
+		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.FarmingPoolCoin.Denom)
 	}
-	return depositor, nil
+	if !msg.FarmingPoolCoin.Amount.IsPositive() {
+		return nil, sdkerrors.Wrapf(types.ErrorNotPositiveAmont, "pool coin amount should be positive")
+	}
+	return farmer, nil
 }
 
-func (k Keeper) SoftLockTokens(ctx sdk.Context, msg *types.MsgTokensSoftLock) error {
-	depositor, err := k.ValidateMsgTokensSoftLock(ctx, msg)
+func (k Keeper) Farm(ctx sdk.Context, msg *types.MsgFarm) error {
+	farmer, err := k.ValidateMsgFarm(ctx, msg)
 	if err != nil {
 		return err
 	}
 
-	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(msg.SoftLockCoin))
+	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, farmer, types.ModuleName, sdk.NewCoins(msg.FarmingPoolCoin))
 	if err != nil {
 		return err
 	}
 
-	liquidityProvidersData, found := k.GetPoolLiquidityProvidersData(ctx, msg.AppId, msg.PoolId)
+	queuedFarmer, found := k.GetQueuedFarmer(ctx, msg.AppId, msg.PoolId, farmer)
 
 	if !found {
-		liquidityProvidersData = types.PoolLiquidityProvidersData{
-			AppId:                    msg.AppId,
-			PoolId:                   msg.PoolId,
-			BondedLockIds:            []uint64{},
-			LiquidityProviders:       make(map[string]*types.DepositsMade),
-			QueuedLiquidityProviders: []*types.QueuedLiquidityProvider{},
-		}
+		queuedFarmer = types.NewQueuedfarmer(msg.AppId, msg.PoolId, farmer)
 	}
 
-	liquidityProvidersData.QueuedLiquidityProviders = append(
-		liquidityProvidersData.QueuedLiquidityProviders,
-		&types.QueuedLiquidityProvider{
-			Address:        depositor.String(),
-			SupplyProvided: []*sdk.Coin{&msg.SoftLockCoin},
+	queuedFarmer.QueudCoins = append(
+		queuedFarmer.QueudCoins,
+		&types.QueuedCoin{
+			FarmedPoolCoin: msg.FarmingPoolCoin,
 			CreatedAt:      ctx.BlockTime(),
-		})
-	k.SetPoolLiquidityProvidersData(ctx, liquidityProvidersData)
+		},
+	)
+	k.SetQueuedFarmer(ctx, queuedFarmer)
+
+	ctx.GasMeter().ConsumeGas(types.FarmGas, "FarmGas")
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeFarm,
+			sdk.NewAttribute(types.AttributeKeyFarmer, msg.Farmer),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(msg.PoolId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolCoin, msg.FarmingPoolCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyTimeStamp, ctx.BlockTime().String()),
+		),
+	})
 
 	return nil
 }
 
-func (k Keeper) ValidateMsgTokensSoftUnlock(ctx sdk.Context, msg *types.MsgTokensSoftUnlock) (sdk.AccAddress, error) {
-	depositor, err := sdk.AccAddressFromBech32(msg.Depositor)
+func (k Keeper) ValidateMsgUnfarm(ctx sdk.Context, msg *types.MsgUnfarm) (sdk.AccAddress, error) {
+	farmer, err := sdk.AccAddressFromBech32(msg.Farmer)
 	if err != nil {
 		return nil, err
 	}
@@ -349,109 +341,98 @@ func (k Keeper) ValidateMsgTokensSoftUnlock(ctx sdk.Context, msg *types.MsgToken
 		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
 	}
 
-	if msg.SoftUnlockCoin.Denom != pool.PoolCoinDenom {
-		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.SoftUnlockCoin.Denom)
+	if msg.UnfarmingPoolCoin.Denom != pool.PoolCoinDenom {
+		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.UnfarmingPoolCoin.Denom)
 	}
-	return depositor, nil
+	if !msg.UnfarmingPoolCoin.Amount.IsPositive() {
+		return nil, sdkerrors.Wrapf(types.ErrorNotPositiveAmont, "pool coin amount should be positive")
+	}
+	return farmer, nil
 }
 
-func (k Keeper) SoftUnlockTokens(ctx sdk.Context, msg *types.MsgTokensSoftUnlock) error {
-	depositor, err := k.ValidateMsgTokensSoftUnlock(ctx, msg)
+func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
+	farmer, err := k.ValidateMsgUnfarm(ctx, msg)
 	if err != nil {
 		return err
 	}
 
-	liquidityProvidersData, found := k.GetPoolLiquidityProvidersData(ctx, msg.AppId, msg.PoolId)
+	activeFarmer, afound := k.GetActiveFarmer(ctx, msg.AppId, msg.PoolId, farmer)
+	queuedFarmer, qfound := k.GetQueuedFarmer(ctx, msg.AppId, msg.PoolId, farmer)
 
-	if !found {
-		return sdkerrors.Wrapf(types.ErrNoSoftLockPresent, "no soft locks present for given pool id %d", msg.PoolId)
+	if !afound && !qfound {
+		return sdkerrors.Wrapf(types.ErrorFarmerNotFound, "no active farm found for given pool id %d", msg.PoolId)
 	}
 
-	sortedQueuedLiquidityProviders := liquidityProvidersData.QueuedLiquidityProviders
-	sort.Slice(sortedQueuedLiquidityProviders, func(i, j int) bool {
-		return sortedQueuedLiquidityProviders[i].CreatedAt.After(sortedQueuedLiquidityProviders[j].CreatedAt)
-	})
+	farmedCoinAmount := sdk.NewInt(0)
 
-	var updatedQueuedLiquidityProviders []*types.QueuedLiquidityProvider
+	if qfound {
+		for _, qCoin := range queuedFarmer.QueudCoins {
+			farmedCoinAmount = farmedCoinAmount.Add(qCoin.FarmedPoolCoin.Amount)
+		}
+	}
 
-	refundAmount := sdk.NewCoin(msg.SoftUnlockCoin.Denom, sdk.NewInt(0))
+	if afound {
+		farmedCoinAmount = farmedCoinAmount.Add(activeFarmer.FarmedPoolCoin.Amount)
+	}
 
-	for queryIndex, queuedLiquidityProvider := range sortedQueuedLiquidityProviders {
-		if queuedLiquidityProvider.Address == depositor.String() {
-			for qindex, qcoin := range queuedLiquidityProvider.SupplyProvided {
-				if msg.SoftUnlockCoin.Denom == qcoin.Denom && !msg.SoftUnlockCoin.Amount.IsZero() {
-					if msg.SoftUnlockCoin.Amount.GTE(qcoin.Amount) {
-						msg.SoftUnlockCoin.Amount = msg.SoftUnlockCoin.Amount.Sub(qcoin.Amount)
-						refundAmount.Amount = refundAmount.Amount.Add(qcoin.Amount)
-						sortedQueuedLiquidityProviders[queryIndex].SupplyProvided[qindex].Amount = sdk.NewInt(0)
-					} else {
-						sortedQueuedLiquidityProviders[queryIndex].SupplyProvided[qindex].Amount = sortedQueuedLiquidityProviders[queryIndex].SupplyProvided[qindex].Amount.Sub(msg.SoftUnlockCoin.Amount)
-						refundAmount.Amount = refundAmount.Amount.Add(msg.SoftUnlockCoin.Amount)
-						msg.SoftUnlockCoin.Amount = sdk.NewInt(0)
-					}
-				}
-			}
+	if farmedCoinAmount.LT(msg.UnfarmingPoolCoin.Amount) {
+		return sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount %d%s smaller than requested unfarming pool coin amount %d%s", farmedCoinAmount.Int64(), msg.UnfarmingPoolCoin.Denom, msg.UnfarmingPoolCoin.Amount.Int64(), msg.UnfarmingPoolCoin.Denom)
+	}
 
-			canRemoveThisQueuedLiquidityProvider := true
-			for _, qcoin := range sortedQueuedLiquidityProviders[queryIndex].SupplyProvided {
-				if !qcoin.Amount.IsZero() {
-					canRemoveThisQueuedLiquidityProvider = false
-				}
-			}
-			if !canRemoveThisQueuedLiquidityProvider {
-				updatedQueuedLiquidityProviders = append(updatedQueuedLiquidityProviders, sortedQueuedLiquidityProviders[queryIndex])
-			}
-
-			withdrawCoinFullfilled := true
-			if !msg.SoftUnlockCoin.Amount.IsZero() {
-				withdrawCoinFullfilled = false
-			}
-
-			if withdrawCoinFullfilled {
-				updatedQueuedLiquidityProviders = append(updatedQueuedLiquidityProviders, sortedQueuedLiquidityProviders[queryIndex+1:]...)
+	unFarmingCoin := msg.UnfarmingPoolCoin
+	queuedCoins := queuedFarmer.QueudCoins
+	if qfound {
+		for i := len(queuedCoins) - 1; i >= 0; i-- {
+			if queuedCoins[i].FarmedPoolCoin.Amount.GTE(msg.UnfarmingPoolCoin.Amount) {
+				queuedCoins[i].FarmedPoolCoin.Amount = queuedCoins[i].FarmedPoolCoin.Amount.Sub(msg.UnfarmingPoolCoin.Amount)
+				msg.UnfarmingPoolCoin.Amount = sdk.NewInt(0)
 				break
+			} else {
+				msg.UnfarmingPoolCoin.Amount = msg.UnfarmingPoolCoin.Amount.Sub(queuedCoins[i].FarmedPoolCoin.Amount)
+				queuedCoins[i].FarmedPoolCoin.Amount = sdk.NewInt(0)
 			}
+		}
+	}
+
+	updatedQueuedCoins := []*types.QueuedCoin{}
+	for _, object := range queuedCoins {
+		if object.FarmedPoolCoin.Amount.IsZero() {
+			break
 		} else {
-			updatedQueuedLiquidityProviders = append(updatedQueuedLiquidityProviders, sortedQueuedLiquidityProviders[queryIndex])
+			updatedQueuedCoins = append(updatedQueuedCoins, object)
 		}
 	}
 
-	liquidityProvidersData.QueuedLiquidityProviders = updatedQueuedLiquidityProviders
+	queuedFarmer.QueudCoins = updatedQueuedCoins
 
-	coinWithdrawingFullfilled := true
-	if !msg.SoftUnlockCoin.Amount.IsZero() {
-		coinWithdrawingFullfilled = false
+	aFarmerUpdated := false
+	if !msg.UnfarmingPoolCoin.Amount.IsZero() {
+		aFarmerUpdated = true
+		activeFarmer.FarmedPoolCoin.Amount = activeFarmer.FarmedPoolCoin.Amount.Sub(msg.UnfarmingPoolCoin.Amount)
 	}
 
-	if !coinWithdrawingFullfilled {
-		if liquidityProvidersData.LiquidityProviders[depositor.String()] != nil {
-			providedSupply := liquidityProvidersData.LiquidityProviders[depositor.String()].Coins
-			for psIndex, psCoin := range providedSupply {
-				if psCoin.Denom == msg.SoftUnlockCoin.Denom {
-					if msg.SoftUnlockCoin.Amount.GTE(psCoin.Amount) {
-						liquidityProvidersData.LiquidityProviders[depositor.String()].Coins[psIndex].Amount = sdk.NewInt(0)
-						refundAmount.Amount = refundAmount.Amount.Add(psCoin.Amount)
-						msg.SoftUnlockCoin.Amount = msg.SoftUnlockCoin.Amount.Sub(psCoin.Amount)
-					} else {
-						liquidityProvidersData.LiquidityProviders[depositor.String()].Coins[psIndex].Amount = liquidityProvidersData.LiquidityProviders[depositor.String()].Coins[psIndex].Amount.Sub(msg.SoftUnlockCoin.Amount)
-						refundAmount.Amount = refundAmount.Amount.Add(msg.SoftUnlockCoin.Amount)
-						msg.SoftUnlockCoin.Amount = sdk.NewInt(0)
-					}
-				}
-			}
-		}
-	}
-
-	if msg.SoftUnlockCoin.Amount.Add(refundAmount.Amount).GT(refundAmount.Amount) {
-		return sdkerrors.Wrapf(types.ErrInvalidUnlockAmount, "available soft locked amount %d%s smaller than requested amount %d%s", refundAmount.Amount.Int64(), refundAmount.Denom, msg.SoftUnlockCoin.Amount.Add(refundAmount.Amount).Int64(), refundAmount.Denom)
-	}
-
-	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoins(refundAmount))
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, farmer, sdk.NewCoins(unFarmingCoin))
 	if err != nil {
 		return err
 	}
 
-	k.SetPoolLiquidityProvidersData(ctx, liquidityProvidersData)
+	if aFarmerUpdated {
+		k.SetActiveFarmer(ctx, activeFarmer)
+	}
+	k.SetQueuedFarmer(ctx, queuedFarmer)
+
+	ctx.GasMeter().ConsumeGas(types.UnfarmGas, "UnfarmGas")
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeUnfarm,
+			sdk.NewAttribute(types.AttributeKeyFarmer, msg.Farmer),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(msg.PoolId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolCoin, msg.UnfarmingPoolCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyTimeStamp, ctx.BlockTime().String()),
+		),
+	})
 
 	return nil
 }
@@ -476,47 +457,37 @@ func (k Keeper) GetMinimumEpochDurationFromPoolID(ctx sdk.Context, poolID uint64
 	return minEpochDuration
 }
 
-func (k Keeper) ProcessQueuedLiquidityProviders(ctx sdk.Context, appID uint64) {
+func (k Keeper) ProcessQueuedFarmers(ctx sdk.Context, appID uint64) {
 	availablePools := k.GetAllPools(ctx, appID)
 	availableLiquidityGauges := k.rewardsKeeper.GetAllGaugesByGaugeTypeID(ctx, rewardstypes.LiquidityGaugeTypeID)
 
 	for _, pool := range availablePools {
-		poolLpData, found := k.GetPoolLiquidityProvidersData(ctx, pool.AppId, pool.Id)
 		minEpochDuration := k.GetMinimumEpochDurationFromPoolID(ctx, pool.Id, availableLiquidityGauges)
+		queuedFarmers := k.GetAllQueuedFarmers(ctx, pool.AppId, pool.Id)
 
-		if !found {
-			continue
-		}
-		queuedDepositRequests := poolLpData.QueuedLiquidityProviders
-		var updatedQueue []*types.QueuedLiquidityProvider
-		for _, queuedLp := range queuedDepositRequests {
-			if ctx.BlockTime().Before(queuedLp.CreatedAt.Add(minEpochDuration)) {
-				updatedQueue = append(updatedQueue, queuedLp)
-			} else {
-				var suppliedCoins []sdk.Coin
-				for _, coin := range queuedLp.SupplyProvided {
-					suppliedCoins = append(suppliedCoins, sdk.NewCoin(coin.Denom, coin.Amount))
-				}
-				if poolLpData.LiquidityProviders[queuedLp.Address] == nil {
-					if len(poolLpData.LiquidityProviders) == 0 {
-						poolLpData.LiquidityProviders = make(map[string]*types.DepositsMade)
-					}
-					newDeposit := new(types.DepositsMade)
-					newDeposit.Coins = suppliedCoins
-					poolLpData.LiquidityProviders[queuedLp.Address] = newDeposit
+		for _, queuedFarmer := range queuedFarmers {
+
+			activeFarmer, found := k.GetActiveFarmer(ctx, queuedFarmer.AppId, queuedFarmer.PoolId, sdk.MustAccAddressFromBech32(queuedFarmer.Farmer))
+			if !found {
+				activeFarmer = types.NewActivefarmer(queuedFarmer.AppId, queuedFarmer.PoolId, sdk.MustAccAddressFromBech32(queuedFarmer.Farmer), sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)))
+			}
+
+			updatedQueue := []*types.QueuedCoin{}
+			activeFarmUpdated := false
+			for _, queuedCoin := range queuedFarmer.QueudCoins {
+				if ctx.BlockTime().Before(queuedCoin.CreatedAt.Add(minEpochDuration)) {
+					updatedQueue = append(updatedQueue, queuedCoin)
 				} else {
-					for _, coin := range suppliedCoins {
-						for lpedIndex, lpedCoin := range poolLpData.LiquidityProviders[queuedLp.Address].Coins {
-							if coin.Denom == lpedCoin.Denom {
-								poolLpData.LiquidityProviders[queuedLp.Address].Coins[lpedIndex].Amount = poolLpData.LiquidityProviders[queuedLp.Address].Coins[lpedIndex].Amount.Add(coin.Amount)
-								break
-							}
-						}
-					}
+					activeFarmUpdated = true
+					activeFarmer.FarmedPoolCoin.Amount = activeFarmer.FarmedPoolCoin.Amount.Add(queuedCoin.FarmedPoolCoin.Amount)
 				}
 			}
+			queuedFarmer.QueudCoins = updatedQueue
+
+			if activeFarmUpdated {
+				k.SetActiveFarmer(ctx, activeFarmer)
+				k.SetQueuedFarmer(ctx, queuedFarmer)
+			}
 		}
-		poolLpData.QueuedLiquidityProviders = updatedQueue
-		k.SetPoolLiquidityProvidersData(ctx, poolLpData)
 	}
 }

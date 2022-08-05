@@ -1,24 +1,35 @@
 package types
 
-import (
-// this line is used by starport scaffolding # genesis/types/import
-)
-
-// DefaultIndex is the default capability global index
-const DefaultIndex uint64 = 1
-
-// DefaultGenesis returns the default Capability genesis state
-func DefaultGenesis() *GenesisState {
+func NewGenesisState(eSMTriggerParams []ESMTriggerParams, currentDepositStats []CurrentDepositStats, eSMStatus []ESMStatus, killSwitchParams []KillSwitchParams, usersDepositMapping []UsersDepositMapping, eSMMarketPrice []ESMMarketPrice, dataAfterCoolOff []DataAfterCoolOff, assetToAmountValue []AssetToAmountValue, appToAmountValue []AppToAmountValue, params Params) *GenesisState {
 	return &GenesisState{
-		// this line is used by starport scaffolding # genesis/types/default
-		Params: DefaultParams(),
+		ESMTriggerParams:    eSMTriggerParams,
+		CurrentDepositStats: currentDepositStats,
+		ESMStatus:           eSMStatus,
+		KillSwitchParams:    killSwitchParams,
+		UsersDepositMapping: usersDepositMapping,
+		ESMMarketPrice:      eSMMarketPrice,
+		DataAfterCoolOff:    dataAfterCoolOff,
+		AssetToAmountValue:  assetToAmountValue,
+		AppToAmountValue:    appToAmountValue,
+		Params:              params,
 	}
 }
 
-// Validate performs basic genesis state validation returning an error upon any
-// failure.
-func (gs GenesisState) Validate() error {
-	// this line is used by starport scaffolding # genesis/types/validate
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(
+		[]ESMTriggerParams{},
+		[]CurrentDepositStats{},
+		[]ESMStatus{},
+		[]KillSwitchParams{},
+		[]UsersDepositMapping{},
+		[]ESMMarketPrice{},
+		[]DataAfterCoolOff{},
+		[]AssetToAmountValue{},
+		[]AppToAmountValue{},
+		DefaultParams(),
+	)
+}
 
-	return gs.Params.Validate()
+func (m *GenesisState) Validate() error {
+	return nil
 }

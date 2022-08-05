@@ -2,10 +2,12 @@ package app
 
 import (
 	"fmt"
+	"net/http"
+	"sort"
+
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
-	"net/http"
 
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
@@ -192,10 +194,10 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 	proposalHandlers := []govclient.ProposalHandler{
 		bandoraclemoduleclient.AddFetchPriceHandler,
 		lendclient.AddLendPairsHandler,
-		lendclient.UpdateLendPairsHandler,
 		lendclient.AddPoolHandler,
 		lendclient.AddAssetToPairHandler,
 		lendclient.AddAssetRatesStatsHandler,
+		lendclient.AddAuctionParamsHandler,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
@@ -551,7 +553,7 @@ func New(
 		&app.MarketKeeper,
 	)
 
-	app.LendKeeper = *lendkeeper.NewKeeper(
+	app.LendKeeper = lendkeeper.NewKeeper(
 		app.cdc,
 		app.keys[lendtypes.StoreKey],
 		app.keys[lendtypes.StoreKey],
@@ -562,7 +564,7 @@ func New(
 		&app.MarketKeeper,
 	)
 
-	app.EsmKeeper = *esmkeeper.NewKeeper(
+	app.EsmKeeper = esmkeeper.NewKeeper(
 		app.cdc,
 		app.keys[esmtypes.StoreKey],
 		app.keys[esmtypes.StoreKey],
@@ -613,7 +615,7 @@ func New(
 		app.IbcKeeper.ChannelKeeper,
 	)
 
-	app.MarketKeeper = *marketkeeper.NewKeeper(
+	app.MarketKeeper = marketkeeper.NewKeeper(
 		app.cdc,
 		app.keys[markettypes.StoreKey],
 		app.GetSubspace(markettypes.ModuleName),
@@ -622,7 +624,7 @@ func New(
 		&app.BandoracleKeeper,
 	)
 
-	app.LiquidationKeeper = *liquidationkeeper.NewKeeper(
+	app.LiquidationKeeper = liquidationkeeper.NewKeeper(
 		app.cdc,
 		keys[liquidationtypes.StoreKey],
 		keys[liquidationtypes.MemStoreKey],
@@ -637,7 +639,7 @@ func New(
 		&app.LendKeeper,
 	)
 
-	app.AuctionKeeper = *auctionkeeper.NewKeeper(
+	app.AuctionKeeper = auctionkeeper.NewKeeper(
 		app.cdc,
 		keys[auctiontypes.StoreKey],
 		keys[auctiontypes.MemStoreKey],
@@ -654,7 +656,7 @@ func New(
 		&app.LendKeeper,
 	)
 
-	app.CollectorKeeper = *collectorkeeper.NewKeeper(
+	app.CollectorKeeper = collectorkeeper.NewKeeper(
 		app.cdc,
 		app.keys[collectortypes.StoreKey],
 		app.keys[collectortypes.MemStoreKey],
@@ -699,7 +701,7 @@ func New(
 		&app.Rewardskeeper,
 	)
 
-	app.Rewardskeeper = *rewardskeeper.NewKeeper(
+	app.Rewardskeeper = rewardskeeper.NewKeeper(
 		app.cdc,
 		app.keys[rewardstypes.StoreKey],
 		app.keys[rewardstypes.MemStoreKey],
@@ -995,7 +997,13 @@ func (a *App) LoadHeight(height int64) error {
 // ModuleAccountAddrs returns all the app's module account addresses.
 func (a *App) ModuleAccountAddrs() map[string]bool {
 	accounts := make(map[string]bool)
+
+	names := make([]string, 0)
 	for name := range a.ModuleAccountsPermissions() {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
 		accounts[authtypes.NewModuleAddress(name).String()] = true
 	}
 

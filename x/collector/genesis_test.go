@@ -19,7 +19,7 @@ func TestGenesis(t *testing.T) {
 	}
 
 	k := comdexApp.CollectorKeeper
-	collector.InitGenesis(ctx, k, genesisState)
+	collector.InitGenesis(ctx, k, &genesisState)
 	got := collector.ExportGenesis(ctx, k)
 	require.NotNil(t, got)
 

@@ -15,7 +15,7 @@ import (
 func (s *KeeperTestSuite) TestLimitOrder() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -316,7 +316,7 @@ func (s *KeeperTestSuite) TestLimitOrder() {
 func (s *KeeperTestSuite) TestLimitOrderRefund() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -397,7 +397,7 @@ func (s *KeeperTestSuite) TestLimitOrderRefund() {
 func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 	addr1 := s.addr(1)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -654,7 +654,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 	addr1 := s.addr(1)
 	dummyAcc := s.addr(696969)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -901,7 +901,7 @@ func (s *KeeperTestSuite) TestMarketOrder() {
 	trader := s.addr(2)
 	// escrow := s.addr(3)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -1180,7 +1180,7 @@ func (s *KeeperTestSuite) TestMarketOrder() {
 }
 
 func (s *KeeperTestSuite) TestMarketOrderTwo() {
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
@@ -1207,7 +1207,7 @@ func (s *KeeperTestSuite) TestMarketOrderTwo() {
 }
 
 func (s *KeeperTestSuite) TestMarketOrderRefund() {
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1258,7 +1258,7 @@ func (s *KeeperTestSuite) TestMarketOrderRefund() {
 }
 
 func (s *KeeperTestSuite) TestMarketOrderWithNoLastPrice() {
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1277,7 +1277,7 @@ func (s *KeeperTestSuite) TestMarketOrderWithNoLastPrice() {
 func (s *KeeperTestSuite) TestSingleOrderNoMatch() {
 	k, ctx := s.keeper, s.ctx
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1306,7 +1306,7 @@ func (s *KeeperTestSuite) TestSingleOrderNoMatch() {
 func (s *KeeperTestSuite) TestTwoOrderExactMatch() {
 	k, ctx := s.keeper, s.ctx
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1331,7 +1331,7 @@ func (s *KeeperTestSuite) TestTwoOrderExactMatch() {
 }
 
 func (s *KeeperTestSuite) TestPartialMatch() {
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1358,7 +1358,7 @@ func (s *KeeperTestSuite) TestPartialMatch() {
 }
 
 func (s *KeeperTestSuite) TestMatchWithLowPricePool() {
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1378,7 +1378,7 @@ func (s *KeeperTestSuite) TestCancelOrder() {
 	creator := s.addr(0)
 	dummy := s.addr(1)
 	trader := s.addr(2)
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1461,7 +1461,7 @@ func (s *KeeperTestSuite) TestCancelOrder() {
 func (s *KeeperTestSuite) TestCancelOrderTwo() {
 	k, ctx := s.keeper, s.ctx
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1495,7 +1495,7 @@ func (s *KeeperTestSuite) TestCancelOrderTwo() {
 }
 
 func (s *KeeperTestSuite) TestCancelAllOrders() {
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1543,7 +1543,7 @@ func (s *KeeperTestSuite) TestSwapFeeCollectionWithoutPool() {
 	buyer := s.addr(1)
 	seller := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1570,7 +1570,7 @@ func (s *KeeperTestSuite) TestSwapFeeCollectionWithPool() {
 	buyer := s.addr(1)
 	seller := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1610,7 +1610,7 @@ func (s *KeeperTestSuite) TestSwapFeeCollectionMarketOrder() {
 	trader1 := s.addr(2)
 	trader2 := s.addr(3)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
@@ -1646,7 +1646,7 @@ func (s *KeeperTestSuite) TestAccumulatedSwapFeeConversion() {
 	trader1 := s.addr(1)
 	trader2 := s.addr(2)
 
-	appID1 := s.CreateNewApp("appOne")
+	appID1 := s.CreateNewApp("appone")
 
 	asset1 := s.CreateNewAsset("ASSET1", "ucmdx", 1000000)
 	asset2 := s.CreateNewAsset("ASSET2", "uharbor", 1000000)

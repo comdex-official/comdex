@@ -601,8 +601,8 @@ func (k Querier) OrdersByOrderer(c context.Context, req *types.QueryOrdersByOrde
 	return &types.QueryOrdersResponse{Orders: orders, Pagination: pageRes}, nil
 }
 
-// SoftLock returns softlocks created by an depositor in specific pool.
-func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*types.QuerySoftLockResponse, error) {
+// Farmer returns farming status of pool-coins farmed by address.
+func (k Querier) Farmer(c context.Context, req *types.QueryFarmerRequest) (*types.QueryFarmerResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -610,12 +610,15 @@ func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*
 	if req.AppId == 0 {
 		return nil, status.Error(codes.InvalidArgument, "app id cannot be 0")
 	}
+	if req.PoolId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "pool id cannot be 0")
+	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	depositor, err := sdk.AccAddressFromBech32(req.Depositor)
+	farmer, err := sdk.AccAddressFromBech32(req.Farmer)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "depositor address %s is invalid", req.Depositor)
+		return nil, status.Errorf(codes.InvalidArgument, "farmer address %s is invalid", req.Farmer)
 	}
 
 	poolID := req.PoolId
@@ -625,43 +628,32 @@ func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*
 		return nil, types.ErrInvalidPoolID
 	}
 
-	lpData, found := k.GetPoolLiquidityProvidersData(ctx, req.AppId, poolID)
-	if !found {
-		return &types.QuerySoftLockResponse{ActivePoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)), QueuedPoolCoin: []types.QueuedPoolCoin{}}, nil
+	activeFarmer, afound := k.GetActiveFarmer(ctx, req.AppId, req.PoolId, farmer)
+	queuedFarmer, qfound := k.GetQueuedFarmer(ctx, req.AppId, req.PoolId, farmer)
+
+	if !afound && !qfound {
+		return &types.QueryFarmerResponse{ActivePoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)), QueuedPoolCoin: []types.QueuedPoolCoin{}}, nil
 	}
 
 	availableLiquidityGauges := k.rewardsKeeper.GetAllGaugesByGaugeTypeID(ctx, rewardstypes.LiquidityGaugeTypeID)
 	minEpochDuration := k.GetMinimumEpochDurationFromPoolID(ctx, poolID, availableLiquidityGauges)
 
 	var queuedCoins []types.QueuedPoolCoin
-	for _, queuedRequest := range lpData.QueuedLiquidityProviders {
-		if queuedRequest.Address == depositor.String() {
-			poolCoin := sdk.Coin{}
-			for _, coin := range queuedRequest.SupplyProvided {
-				if coin.Denom == pool.PoolCoinDenom {
-					poolCoin = *coin
-					break
-				}
-			}
+	if qfound {
+		for _, queuedCoin := range queuedFarmer.QueudCoins {
 			queuedCoins = append(queuedCoins, types.QueuedPoolCoin{
-				PoolCoin: poolCoin,
-				DequeAt:  queuedRequest.CreatedAt.Add(minEpochDuration),
+				PoolCoin: queuedCoin.FarmedPoolCoin,
+				DequeAt:  queuedCoin.CreatedAt.Add(minEpochDuration),
 			})
 		}
 	}
 
 	activePoolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0))
-	activeCoins, found := lpData.LiquidityProviders[depositor.String()]
-	if found {
-		for _, coin := range activeCoins.Coins {
-			if coin.Denom == pool.PoolCoinDenom {
-				activePoolCoin = coin
-				break
-			}
-		}
+	if afound {
+		activePoolCoin.Amount = activePoolCoin.Amount.Add(activeFarmer.FarmedPoolCoin.Amount)
 	}
 
-	return &types.QuerySoftLockResponse{ActivePoolCoin: activePoolCoin, QueuedPoolCoin: queuedCoins}, nil
+	return &types.QueryFarmerResponse{ActivePoolCoin: activePoolCoin, QueuedPoolCoin: queuedCoins}, nil
 }
 
 // DeserializePoolCoin splits poolcoin amount into actual assets provided by depositor.
@@ -758,7 +750,7 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 	return &types.QueryPoolIncentivesResponse{PoolIncentives: poolIncentives}, nil
 }
 
-// FarmedPoolCoin returns the total pool coin in soft-lock.
+// FarmedPoolCoin returns the total farmed pool coin .
 func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoinRequest) (*types.QueryFarmedPoolCoinResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
@@ -774,7 +766,7 @@ func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoi
 		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "pool id %d is invalid", req.PoolId)
 	}
 	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
-	softLockedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
+	farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
 
-	return &types.QueryFarmedPoolCoinResponse{Coin: softLockedCoins}, nil
+	return &types.QueryFarmedPoolCoinResponse{Coin: farmedCoins}, nil
 }

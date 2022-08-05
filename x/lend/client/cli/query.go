@@ -47,6 +47,7 @@ func GetQueryCmd() *cobra.Command {
 		queryReserveDepositStats(),
 		queryBuyBackDepositStats(),
 		queryBorrowStats(),
+		queryAuctionParams(),
 	)
 
 	return cmd
@@ -843,6 +844,43 @@ func queryBorrowStats() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "borrow-stats")
+
+	return cmd
+}
+
+func queryAuctionParams() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "auction-params [id]",
+		Short: "Query auction-params",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAuctionParams(
+				context.Background(),
+				&types.QueryAuctionParamRequest{
+					AppId: id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }

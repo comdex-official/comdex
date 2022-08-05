@@ -179,6 +179,8 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 		return types.Pool{}, err
 	}
 
+	ctx.GasMeter().ConsumeGas(types.CreatePoolGas, "CreatePoolGas")
+
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCreatePool,

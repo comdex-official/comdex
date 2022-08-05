@@ -16,7 +16,7 @@ func (k Keeper) GetUtilisationRatioByPoolIDAndAssetID(ctx sdk.Context, poolID, a
 	if moduleBalance.ToDec().IsZero() {
 		return sdk.ZeroDec(), nil
 	}
-	utilizationRatio := assetStats.TotalBorrowed.ToDec().Quo(moduleBalance.ToDec())
+	utilizationRatio := assetStats.TotalBorrowed.ToDec().Quo(moduleBalance.ToDec().Add(assetStats.TotalBorrowed.ToDec()))
 	return utilizationRatio, nil
 }
 
@@ -82,6 +82,9 @@ func (k Keeper) GetAverageBorrowRate(ctx sdk.Context, poolID, assetID uint64) (a
 	factor2 := assetStats.StableBorrowApr.Mul(sdk.Dec(assetStats.TotalStableBorrowed))
 	numerator := factor1.Add(factor2)
 	denominator := sdk.Dec(assetStats.TotalStableBorrowed).Add(sdk.Dec(assetStats.TotalBorrowed))
+	if denominator == sdk.ZeroDec() {
+		return sdk.Dec{}, types.ErrAverageBorrowRate
+	}
 	averageBorrowRate = numerator.Quo(denominator)
 	return averageBorrowRate, nil
 }
@@ -115,14 +118,17 @@ func (k Keeper) GetReserveRate(ctx sdk.Context, poolID, assetID uint64) (reserve
 }
 
 func (k Keeper) UpdateAPR(ctx sdk.Context, poolID, assetID uint64) (AssetStats types.AssetStats, found bool) {
-	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, assetID, poolID)
+	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, assetID, poolID)
+	if !found {
+		return assetStats, false
+	}
 	lendAPR, _ := k.GetLendAPRByAssetIDAndPoolID(ctx, poolID, assetID)
 	borrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, poolID, assetID, false)
 	stableBorrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, poolID, assetID, true)
 	currentUtilisationRatio, _ := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, poolID, assetID)
 	AssetStats = types.AssetStats{
-		PoolId:              assetStats.PoolId,
-		AssetId:             assetStats.AssetId,
+		PoolID:              assetStats.PoolID,
+		AssetID:             assetStats.AssetID,
 		TotalBorrowed:       assetStats.TotalBorrowed,
 		TotalStableBorrowed: assetStats.TotalStableBorrowed,
 		TotalLend:           assetStats.TotalLend,

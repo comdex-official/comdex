@@ -6,7 +6,7 @@ import (
 	"github.com/comdex-official/comdex/x/tokenmint/types"
 )
 
-func (k *Keeper) SetTokenMint(ctx sdk.Context, appTokenMintData types.TokenMint) {
+func (k Keeper) SetTokenMint(ctx sdk.Context, appTokenMintData types.TokenMint) {
 	var (
 		store = k.Store(ctx)
 		key   = types.TokenMintKey(appTokenMintData.AppId)
@@ -16,7 +16,7 @@ func (k *Keeper) SetTokenMint(ctx sdk.Context, appTokenMintData types.TokenMint)
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetTokenMint(ctx sdk.Context, appMappingID uint64) (appTokenMintData types.TokenMint, found bool) {
+func (k Keeper) GetTokenMint(ctx sdk.Context, appMappingID uint64) (appTokenMintData types.TokenMint, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.TokenMintKey(appMappingID)
@@ -31,7 +31,7 @@ func (k *Keeper) GetTokenMint(ctx sdk.Context, appMappingID uint64) (appTokenMin
 	return appTokenMintData, true
 }
 
-func (k *Keeper) GetTotalTokenMinted(ctx sdk.Context) (appTokenMintData []types.TokenMint) {
+func (k Keeper) GetTotalTokenMinted(ctx sdk.Context) (appTokenMintData []types.TokenMint) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.TokenMintKeyPrefix)
@@ -53,7 +53,7 @@ func (k *Keeper) GetTotalTokenMinted(ctx sdk.Context) (appTokenMintData []types.
 	return appTokenMintData
 }
 
-func (k *Keeper) GetAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64) (tokenData types.MintedTokens, found bool) {
+func (k Keeper) GetAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64) (tokenData types.MintedTokens, found bool) {
 	mintData, found := k.GetTokenMint(ctx, appMappingID)
 	if !found {
 		return tokenData, false
@@ -68,7 +68,7 @@ func (k *Keeper) GetAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint
 	return tokenData, false
 }
 
-func (k *Keeper) GetAssetDataInTokenMintByAppSupply(ctx sdk.Context, appMappingID uint64, assetID uint64) (tokenDataSupply int64, found bool) {
+func (k Keeper) GetAssetDataInTokenMintByAppSupply(ctx sdk.Context, appMappingID uint64, assetID uint64) (tokenDataSupply int64, found bool) {
 	tokenData, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingID, assetID)
 
 	if !found {
@@ -77,7 +77,7 @@ func (k *Keeper) GetAssetDataInTokenMintByAppSupply(ctx sdk.Context, appMappingI
 	return tokenData.CurrentSupply.Int64(), found
 }
 
-func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, address string, amount sdk.Int) error {
+func (k Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, address string, amount sdk.Int) error {
 	assetData, found := k.GetAsset(ctx, assetID)
 	if !found {
 		return types.ErrorAssetDoesNotExist
@@ -107,7 +107,7 @@ func (k *Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, asset
 	return nil
 }
 
-func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error {
+func (k Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error {
 	assetData, found := k.GetAsset(ctx, assetID)
 	if !found {
 		return types.ErrorAssetDoesNotExist
@@ -135,7 +135,7 @@ func (k *Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID 
 	return nil
 }
 
-func (k *Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int) {
+func (k Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int) {
 	//ChangeType + == add to current supply
 	//Change type - == reduce from supply
 	mintData, found := k.GetTokenMint(ctx, appMappingID)
@@ -156,7 +156,7 @@ func (k *Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID u
 	}
 }
 
-func (k *Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingID uint64, from sdk.AccAddress, amount sdk.Coin) error {
+func (k Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingID uint64, from sdk.AccAddress, amount sdk.Coin) error {
 	_, found := k.GetApp(ctx, appMappingID)
 	if !found {
 		return types.ErrorAppMappingDoesNotExists
@@ -173,7 +173,7 @@ func (k *Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingID uint64, from 
 	return nil
 }
 
-func (k *Keeper) BurnFrom(ctx sdk.Context, amount sdk.Coin, burnFrom sdk.AccAddress) error {
+func (k Keeper) BurnFrom(ctx sdk.Context, amount sdk.Coin, burnFrom sdk.AccAddress) error {
 	err := k.SendCoinFromAccountToModule(ctx,
 		burnFrom,
 		types.ModuleName,

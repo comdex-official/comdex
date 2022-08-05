@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/comdex-official/comdex/x/auction"
 	"time"
 
 	"github.com/comdex-official/comdex/app/wasm/bindings"
@@ -32,20 +33,21 @@ func (s *KeeperTestSuite) TestSurplusActivatorBetweenThreshholdAndLotsize() {
 	s.AddAppAsset()
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
-	s.WasmSetCollectorLookupTableAndAuctionControl()
+	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
 	s.WasmUpdateCollectorLookupTable(19500, 1000, 501, 300)
 	s.LiquidateVaults1()
 
 	k, ctx := &s.keeper, &s.ctx
 
-	err := k.SurplusActivator(*ctx)
-	s.Require().NoError(err)
+	auction.BeginBlocker(*ctx, s.keeper)
+	//err := k.SurplusActivator(*ctx)
+	//s.Require().NoError(err)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(1)
 	auctionId := uint64(1)
 
-	_, err = k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
+	_, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().Error(err)
 }
 func (s *KeeperTestSuite) TestSurplusActivator() {
@@ -53,14 +55,14 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	s.AddAppAsset()
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
-	s.WasmSetCollectorLookupTableAndAuctionControl()
+	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
 	s.WasmUpdateCollectorLookupTable(1000, 19800, 100, 300)
 	s.LiquidateVaults1()
 
 	k, collectorKeeper, ctx := &s.keeper, &s.collectorKeeper, &s.ctx
 
-	err := k.SurplusActivator(*ctx)
-	s.Require().NoError(err)
+	auction.BeginBlocker(*ctx, s.keeper)
+	//s.Require().NoError(err)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(1)
@@ -90,7 +92,7 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 
 	//Test restart surplus auction
 	s.advanceseconds(301)
-	err = k.SurplusActivator(*ctx)
+	auction.BeginBlocker(*ctx, s.keeper)
 	s.Require().NoError(err)
 	surplusAuction1, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
@@ -300,21 +302,21 @@ func (s *KeeperTestSuite) TestCloseSurplusAuction() {
 			beforeCmstBalance, err := s.getBalance(winnerAddress, "ucmst")
 			s.Require().NoError(err)
 
-			auction, err := k.GetSurplusAuction(*ctx, appID, auctionMappingID, auctionID)
+			surplusAuction, err := k.GetSurplusAuction(*ctx, appID, auctionMappingID, auctionID)
 			s.Require().NoError(err)
 
 			s.advanceseconds(int64(tc.seconds))
-			err = k.SurplusActivator(*ctx)
+			auction.BeginBlocker(*ctx, s.keeper)
 			s.Require().NoError(err)
 
 			afterCmstBalance, err := s.getBalance(winnerAddress, "ucmst")
 			//s.Require().NoError(err)
 			//s.Require().Equal(beforeHarborBalance.Add(auction.ExpectedMintedToken), afterHarborBalance)
 			if tc.isErrorExpected {
-				s.Require().NotEqual(beforeCmstBalance.Add(auction.SellToken), afterCmstBalance)
+				s.Require().NotEqual(beforeCmstBalance.Add(surplusAuction.SellToken), afterCmstBalance)
 			} else {
 
-				s.Require().Equal(beforeCmstBalance.Add(auction.SellToken), afterCmstBalance)
+				s.Require().Equal(beforeCmstBalance.Add(surplusAuction.SellToken), afterCmstBalance)
 			}
 		})
 	}

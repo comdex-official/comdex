@@ -1,8 +1,12 @@
 package types
 
 import (
+	"errors"
+	"fmt"
 	"math/big"
 	"math/rand"
+	"runtime"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -30,9 +34,9 @@ func (m StrIntMap) AddOrSet(key string, value sdk.Int) {
 
 // DateRangesOverlap returns true if two date ranges overlap each other.
 // End time is exclusive and start time is inclusive.
-func DateRangesOverlap(startTimeA, endTimeA, startTimeB, endTimeB time.Time) bool {
-	return startTimeA.Before(endTimeB) && endTimeA.After(startTimeB)
-}
+// func DateRangesOverlap(startTimeA, endTimeA, startTimeB, endTimeB time.Time) bool {
+// 	return startTimeA.Before(endTimeB) && endTimeA.After(startTimeB)
+// }
 
 // DateRangeIncludes returns true if the target date included on the start, end time range.
 // End time is exclusive and start time is inclusive.
@@ -149,4 +153,43 @@ func IsOverflow(r interface{}) bool {
 		return strings.Contains(s, "overflow") || strings.HasSuffix(s, "out of bound")
 	}
 	return false
+}
+
+// This function lets you run the function f. In case of panic recovery is done
+// if error occurs it is logged into the logger.
+// further modifications can me made to avoid any state changes in case if error is returned by f -
+// eg, revert state change if error returned by f else work as normal
+func ApplyFuncIfNoError(ctx sdk.Context, f func(ctx sdk.Context) error) (err error) {
+	// Add a panic safeguard
+	defer func() {
+		if recoveryError := recover(); recoveryError != nil {
+			PrintPanicRecoveryError(ctx, recoveryError)
+			err = errors.New("panic occurred during execution")
+		}
+	}()
+	err = f(ctx)
+	if err != nil {
+		ctx.Logger().Error(err.Error())
+	}
+	return err
+}
+
+// PrintPanicRecoveryError error logs the recoveryError, along with the stacktrace, if it can be parsed.
+// If not emits them to stdout.
+func PrintPanicRecoveryError(ctx sdk.Context, recoveryError interface{}) {
+	errStackTrace := string(debug.Stack())
+	switch e := recoveryError.(type) {
+	case string:
+		ctx.Logger().Error("Recovering from (string) panic: " + e)
+	case runtime.Error:
+		ctx.Logger().Error("recovered (runtime.Error) panic: " + e.Error())
+	case error:
+		ctx.Logger().Error("recovered (error) panic: " + e.Error())
+	default:
+		ctx.Logger().Error("recovered (default) panic. Could not capture logs in ctx, see stdout")
+		fmt.Println("Recovering from panic ", recoveryError)
+		debug.PrintStack()
+		return
+	}
+	ctx.Logger().Error("stack trace: " + errStackTrace)
 }

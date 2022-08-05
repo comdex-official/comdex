@@ -13,7 +13,7 @@ option (gogoproto.goproto_getters_all) = false;
 message AddAssetsProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  repeated Asset assets = 3 [(gogoproto.nullable) = false];
+  Asset assets = 3 [(gogoproto.nullable) = false];
 }
 
 message UpdateAssetProposal {
@@ -25,13 +25,13 @@ message UpdateAssetProposal {
 message AddPairsProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  repeated Pair pairs = 3 [(gogoproto.nullable) = false];
+  Pair pairs = 3 [(gogoproto.nullable) = false];
 }
 
 message AddAppProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  repeated AppData app = 3 [(gogoproto.nullable) = false];
+  AppData app = 3 [(gogoproto.nullable) = false];
 }
 
 message UpdateGovTimeInAppProposal {
@@ -43,5 +43,5 @@ message UpdateGovTimeInAppProposal {
 message AddAssetInAppProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  repeated AppData app = 3 [(gogoproto.nullable) = false];
+  AppData app = 3 [(gogoproto.nullable) = false];
 }

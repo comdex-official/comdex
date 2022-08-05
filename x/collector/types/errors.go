@@ -18,4 +18,7 @@ var (
 	ErrorAuctionParamsNotSet             = sdkerrors.Register(ModuleName, 410, "Auction Params Not Set")
 	ErrorAmountCanNotBeNegative          = sdkerrors.Register(ModuleName, 411, "amount cannot be negative")
 	ErrorNetFeesCanNotBeNegative         = sdkerrors.Register(ModuleName, 412, "NetFees cannot be negative")
+	SendCoinFromModuleToModuleIsZero     = sdkerrors.Register(ModuleName, 413, "Send coin from module to module is zero")
+	ErrorSurplusDistributerCantbeTrue    = sdkerrors.Register(ModuleName, 414, "Surplus and distributer can't be true at same time")
+	ErrorSurplusDebtrCantbeTrueSameTime  = sdkerrors.Register(ModuleName, 415, "Surplus and debt can't be true at same time")
 )

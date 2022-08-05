@@ -11,7 +11,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	genesisSupply := sdk.NewIntFromUint64(9000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
-	msg1 := []assetTypes.AppData{{
+	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -19,49 +19,59 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
 				3,
-				&genesisSupply,
+				genesisSupply,
 				true,
 				userAddress,
 			},
 			{
 				2,
-				&genesisSupply,
+				genesisSupply,
 				true,
 				userAddress,
 			},
 		},
-	},
-		{
-			Name:             "commodo",
-			ShortName:        "commodo",
-			MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-			GovTimeInSeconds: 900,
-			GenesisToken: []assetTypes.MintGenesisToken{
-				{
-					3,
-					&genesisSupply,
-					true,
-					userAddress,
-				},
+	}
+	err := assetKeeper.AddAppRecords(*ctx, msg1)
+	s.Require().NoError(err)
+
+	msg2 := assetTypes.AppData{
+		Name:             "commodo",
+		ShortName:        "comdo",
+		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		GovTimeInSeconds: 900,
+		GenesisToken: []assetTypes.MintGenesisToken{
+			{
+				3,
+				genesisSupply,
+				true,
+				userAddress,
 			},
 		},
 	}
-	err := assetKeeper.AddAppRecords(*ctx, msg1...)
+	err = assetKeeper.AddAppRecords(*ctx, msg2)
 	s.Require().NoError(err)
 
-	msg2 := []assetTypes.Asset{
-		{Name: "CMDX",
-			Denom:     "ucmdx",
-			Decimals:  1000000,
-			IsOnChain: true}, {Name: "CMST",
-			Denom:     "ucmst",
-			Decimals:  1000000,
-			IsOnChain: true}, {Name: "HARBOR",
-			Denom:     "uharbor",
-			Decimals:  1000000,
-			IsOnChain: true},
-	}
-	err = assetKeeper.AddAssetRecords(*ctx, msg2...)
+	msg3 := assetTypes.Asset{Name: "CMDX",
+		Denom:     "ucmdx",
+		Decimals:  1000000,
+		IsOnChain: true}
+
+	err = assetKeeper.AddAssetRecords(*ctx, msg3)
+	s.Require().NoError(err)
+
+	msg4 := assetTypes.Asset{Name: "CMST",
+		Denom:     "ucmst",
+		Decimals:  1000000,
+		IsOnChain: true}
+	err = assetKeeper.AddAssetRecords(*ctx, msg4)
+	s.Require().NoError(err)
+
+	msg5 := assetTypes.Asset{Name: "HARBOR",
+		Denom:     "uharbor",
+		Decimals:  1000000,
+		IsOnChain: true}
+
+	err = assetKeeper.AddAssetRecords(*ctx, msg5)
 	s.Require().NoError(err)
 
 }

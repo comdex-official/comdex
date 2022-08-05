@@ -5,4 +5,6 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/esm/types";
 
-message Params {}
+message Params {
+   repeated string admin  = 1 [ (gogoproto.moretags) = "yaml:\"admin\"" ];
+}

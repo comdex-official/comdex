@@ -14,11 +14,11 @@ import (
 )
 
 type AddNewAssetsRequest struct {
-	BaseReq     rest.BaseReq  `json:"base_req" yaml:"base_req"`
-	Title       string        `json:"title" yaml:"title"`
-	Description string        `json:"description" yaml:"description"`
-	Deposit     sdk.Coins     `json:"deposit" yaml:"deposit"`
-	Asset       []types.Asset `json:"assets" yaml:"assets"`
+	BaseReq     rest.BaseReq `json:"base_req" yaml:"base_req"`
+	Title       string       `json:"title" yaml:"title"`
+	Description string       `json:"description" yaml:"description"`
+	Deposit     sdk.Coins    `json:"deposit" yaml:"deposit"`
+	Asset       types.Asset  `json:"assets" yaml:"assets"`
 }
 
 type UpdateNewAssetRequest struct{}

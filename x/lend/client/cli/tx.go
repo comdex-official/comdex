@@ -35,6 +35,7 @@ func GetTxCmd() *cobra.Command {
 		txRepayAsset(), //including functionality of both repaying and closing position
 		txDepositBorrowAsset(),
 		txCloseBorrowAsset(),
+		txBorrowAssetAlternate(),
 		txFundModuleAccounts(),
 	)
 
@@ -43,7 +44,7 @@ func GetTxCmd() *cobra.Command {
 
 func txLend() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lend [Asset_Id] [Amount] [Pool_Id] [App_Id]",
+		Use:   "lend [asset-id] [amount] [pool-id] [app-id]",
 		Short: "lend a whitelisted asset",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -84,7 +85,7 @@ func txLend() *cobra.Command {
 
 func txWithdraw() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw [lendId] [Amount]",
+		Use:   "withdraw [lend-id] [amount]",
 		Short: "withdraw lent asset",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -115,7 +116,7 @@ func txWithdraw() *cobra.Command {
 
 func txDeposit() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit [lendId] [Amount]",
+		Use:   "deposit [lend-id] [amount]",
 		Short: "deposit into a lent position",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -146,7 +147,7 @@ func txDeposit() *cobra.Command {
 
 func txCloseLend() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "close-lend [lendId]",
+		Use:   "close-lend [lend-id]",
 		Short: "close a lent position",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -336,6 +337,64 @@ func txCloseBorrowAsset() *cobra.Command {
 	return cmd
 }
 
+func txBorrowAssetAlternate() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "borrow-alternate [asset-id] [pool-id] [amount-in] [pair-id] [is-stable-borrow] [amount-out] [app-id]",
+		Short: "directly borrow from a whitelisted asset",
+		Args:  cobra.ExactArgs(7),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			assetID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			amountIn, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			pairID, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			stableBorrow, err := strconv.ParseUint(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			isStableBorrow := ParseBoolFromString(stableBorrow)
+
+			amountOut, err := sdk.ParseCoinNormalized(args[5])
+			if err != nil {
+				return err
+			}
+
+			appId, err := strconv.ParseUint(args[6], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgBorrowAlternate(ctx.GetFromAddress().String(), assetID, poolID, amountIn, pairID, isStableBorrow, amountOut, appId)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
 func txFundModuleAccounts() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "fund-module [module-name] [asset_id] [amount]",
@@ -404,35 +463,38 @@ func NewCreateNewLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.Fl
 		return txf, nil, fmt.Errorf("failed to parse add lend pairs : %w", err)
 	}
 
-	assetIn, err := ParseUint64SliceFromString(newLendPairs.AssetIn, ",")
+	assetIn, err := strconv.ParseUint(newLendPairs.AssetIn, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	assetOut, err := ParseUint64SliceFromString(newLendPairs.AssetOut, ",")
+	assetOut, err := strconv.ParseUint(newLendPairs.AssetOut, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	isInterPool, err := ParseUint64SliceFromString(newLendPairs.IsInterPool, ",")
+	isInterPool, err := strconv.ParseUint(newLendPairs.IsInterPool, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	assetOutPoolID, err := ParseUint64SliceFromString(newLendPairs.AssetOutPoolID, ",")
+	assetOutPoolID, err := strconv.ParseUint(newLendPairs.AssetOutPoolID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	var pairs []types.Extended_Pair
-	for i := range assetIn {
-		interPool := ParseBoolFromString(isInterPool[i])
-		pairs = append(pairs, types.Extended_Pair{
-			AssetIn:        assetIn[i],
-			AssetOut:       assetOut[i],
-			IsInterPool:    interPool,
-			AssetOutPoolId: assetOutPoolID[i],
-		})
+	minUSDValueLeft, err := strconv.ParseUint(newLendPairs.MinUSDValueLeft, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	interPool := ParseBoolFromString(isInterPool)
+	pairs := types.Extended_Pair{
+		AssetIn:         assetIn,
+		AssetOut:        assetOut,
+		IsInterPool:     interPool,
+		AssetOutPoolID:  assetOutPoolID,
+		MinUsdValueLeft: minUSDValueLeft,
 	}
 
 	from := clientCtx.GetFromAddress()
@@ -453,72 +515,6 @@ func NewCreateNewLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.Fl
 		return txf, nil, err
 	}
 	return txf, msg, nil
-}
-
-func CmdUpdateLendPairProposal() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-lend-pair [len_pair_id]",
-		Short: "Update a lend asset pair",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			pair := types.Extended_Pair{
-				Id: id,
-			}
-
-			title, err := cmd.Flags().GetString(cli.FlagTitle)
-			if err != nil {
-				return err
-			}
-
-			description, err := cmd.Flags().GetString(cli.FlagDescription)
-			if err != nil {
-				return err
-			}
-
-			from := clientCtx.GetFromAddress()
-
-			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
-			if err != nil {
-				return err
-			}
-			deposit, err := sdk.ParseCoinsNormalized(depositStr)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewUpdateLendPairProposal(title, description, pair)
-
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
-
-	return cmd
 }
 
 func CmdAddPoolProposal() *cobra.Command {
@@ -555,6 +551,7 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 	}
 
 	moduleName := newLendPool.ModuleName
+	cPoolName := newLendPool.CPoolName
 
 	mainAssetID, err := strconv.ParseUint(newLendPool.MainAssetID, 10, 64)
 	if err != nil {
@@ -567,6 +564,11 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 	}
 
 	secondBridgedAssetID, err := strconv.ParseUint(newLendPool.SecondBridgedAssetID, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	reserveFunds, err := strconv.ParseUint(newLendPool.ReserveFunds, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
@@ -586,15 +588,17 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 	for i := range assetID {
 		bridged := ParseBoolFromString(isBridgedAsset[i])
 		assetData = append(assetData, types.AssetDataPoolMapping{
-			AssetId:   assetID[i],
+			AssetID:   assetID[i],
 			IsBridged: bridged,
 		})
 	}
 	pool = types.Pool{
 		ModuleName:           moduleName,
 		MainAssetId:          mainAssetID,
-		FirstBridgedAssetId:  firstBridgedAssetID,
-		SecondBridgedAssetId: secondBridgedAssetID,
+		FirstBridgedAssetID:  firstBridgedAssetID,
+		SecondBridgedAssetID: secondBridgedAssetID,
+		CPoolName:            cPoolName,
+		ReserveFunds:         reserveFunds,
 		AssetData:            assetData,
 	}
 
@@ -647,9 +651,9 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 				pairIDs = append(pairIDs, rawPairID[i])
 			}
 			assetToPairMapping := types.AssetToPairMapping{
-				AssetId: assetID,
-				PoolId:  poolID,
-				PairId:  pairIDs,
+				AssetID: assetID,
+				PoolID:  poolID,
+				PairID:  pairIDs,
 			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
@@ -730,96 +734,74 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 		return txf, nil, fmt.Errorf("failed to parse asset rates stats : %w", err)
 	}
 
-	assetID, err := ParseUint64SliceFromString(assetRatesStatsInput.AssetID, ",")
+	assetID, err := strconv.ParseUint(assetRatesStatsInput.AssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	uOptimal, err := ParseStringFromString(assetRatesStatsInput.UOptimal, ",")
+	uOptimal := assetRatesStatsInput.UOptimal
+
+	base := assetRatesStatsInput.Base
+
+	slope1 := assetRatesStatsInput.Slope1
+
+	slope2 := assetRatesStatsInput.Slope2
+
+	enableStableBorrow, err := strconv.ParseUint(assetRatesStatsInput.EnableStableBorrow, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
-	base, err := ParseStringFromString(assetRatesStatsInput.Base, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	slope1, err := ParseStringFromString(assetRatesStatsInput.Slope1, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	slope2, err := ParseStringFromString(assetRatesStatsInput.Slope2, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	enableStableBorrow, err := ParseUint64SliceFromString(assetRatesStatsInput.EnableStableBorrow, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	stableBase, err := ParseStringFromString(assetRatesStatsInput.StableBase, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	stableSlope1, err := ParseStringFromString(assetRatesStatsInput.StableSlope1, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	stableSlope2, err := ParseStringFromString(assetRatesStatsInput.StableSlope2, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	ltv, err := ParseStringFromString(assetRatesStatsInput.LTV, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	liquidationThreshold, err := ParseStringFromString(assetRatesStatsInput.LiquidationThreshold, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	liquidationPenalty, err := ParseStringFromString(assetRatesStatsInput.LiquidationPenalty, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	reserveFactor, err := ParseStringFromString(assetRatesStatsInput.ReserveFactor, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	cAssetID, err := ParseUint64SliceFromString(assetRatesStatsInput.CAssetID, ",")
+	stableBase := assetRatesStatsInput.StableBase
+
+	stableSlope1 := assetRatesStatsInput.StableSlope1
+
+	stableSlope2 := assetRatesStatsInput.StableSlope2
+
+	ltv := assetRatesStatsInput.LTV
+
+	liquidationThreshold := assetRatesStatsInput.LiquidationThreshold
+
+	liquidationPenalty := assetRatesStatsInput.LiquidationPenalty
+
+	liquidationBonus := assetRatesStatsInput.LiquidationPenalty
+
+	reserveFactor := assetRatesStatsInput.ReserveFactor
+
+	cAssetID, err := strconv.ParseUint(assetRatesStatsInput.CAssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	var assetRatesStats []types.AssetRatesStats
-	for i := range assetID {
-		newUOptimal, _ := sdk.NewDecFromStr(uOptimal[i])
-		newBase, _ := sdk.NewDecFromStr(base[i])
-		newSlope1, _ := sdk.NewDecFromStr(slope1[i])
-		newSlope2, _ := sdk.NewDecFromStr(slope2[i])
-		newEnableStableBorrow := ParseBoolFromString(enableStableBorrow[i])
-		newStableBase, _ := sdk.NewDecFromStr(stableBase[i])
-		newStableSlope1, _ := sdk.NewDecFromStr(stableSlope1[i])
-		newStableSlope2, _ := sdk.NewDecFromStr(stableSlope2[i])
-		newLTV, _ := sdk.NewDecFromStr(ltv[i])
-		newLiquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold[i])
-		newLiquidationPenalty, _ := sdk.NewDecFromStr(liquidationPenalty[i])
-		newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor[i])
+	newUOptimal, _ := sdk.NewDecFromStr(uOptimal)
+	newBase, _ := sdk.NewDecFromStr(base)
+	newSlope1, _ := sdk.NewDecFromStr(slope1)
+	newSlope2, _ := sdk.NewDecFromStr(slope2)
+	newEnableStableBorrow := ParseBoolFromString(enableStableBorrow)
+	newStableBase, _ := sdk.NewDecFromStr(stableBase)
+	newStableSlope1, _ := sdk.NewDecFromStr(stableSlope1)
+	newStableSlope2, _ := sdk.NewDecFromStr(stableSlope2)
+	newLTV, _ := sdk.NewDecFromStr(ltv)
+	newLiquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold)
+	newLiquidationPenalty, _ := sdk.NewDecFromStr(liquidationPenalty)
+	newLiquidationBonus, _ := sdk.NewDecFromStr(liquidationBonus)
+	newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor)
 
-		assetRatesStats = append(assetRatesStats, types.AssetRatesStats{
-			AssetId:              assetID[i],
-			UOptimal:             newUOptimal,
-			Base:                 newBase,
-			Slope1:               newSlope1,
-			Slope2:               newSlope2,
-			EnableStableBorrow:   newEnableStableBorrow,
-			StableBase:           newStableBase,
-			StableSlope1:         newStableSlope1,
-			StableSlope2:         newStableSlope2,
-			Ltv:                  newLTV,
-			LiquidationThreshold: newLiquidationThreshold,
-			LiquidationPenalty:   newLiquidationPenalty,
-			ReserveFactor:        newReserveFactor,
-			CAssetId:             cAssetID[i],
-		},
-		)
+	assetRatesStats := types.AssetRatesStats{
+		AssetID:              assetID,
+		UOptimal:             newUOptimal,
+		Base:                 newBase,
+		Slope1:               newSlope1,
+		Slope2:               newSlope2,
+		EnableStableBorrow:   newEnableStableBorrow,
+		StableBase:           newStableBase,
+		StableSlope1:         newStableSlope1,
+		StableSlope2:         newStableSlope2,
+		Ltv:                  newLTV,
+		LiquidationThreshold: newLiquidationThreshold,
+		LiquidationPenalty:   newLiquidationPenalty,
+		LiquidationBonus:     newLiquidationBonus,
+		ReserveFactor:        newReserveFactor,
+		CAssetID:             cAssetID,
 	}
 
 	from := clientCtx.GetFromAddress()
@@ -830,6 +812,99 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 	}
 
 	content := types.NewAddAssetRatesStats(assetRatesStatsInput.Title, assetRatesStatsInput.Description, assetRatesStats)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
+}
+
+func CmdAddNewAuctionParamsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-auction-params [flags]",
+		Short: "Add auction params",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewAddAuctionParams(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagSetAuctionParams())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	return cmd
+}
+
+func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	auctionParamsInput, err := parseAuctionPramsFlags(fs)
+
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse auction params : %w", err)
+	}
+
+	appID, err := strconv.ParseUint(auctionParamsInput.AppID, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	auctionDurationSeconds, err := strconv.ParseUint(auctionParamsInput.AuctionDurationSeconds, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	buffer, _ := sdk.NewDecFromStr(auctionParamsInput.Buffer)
+
+	cusp, _ := sdk.NewDecFromStr(auctionParamsInput.Cusp)
+
+	step, _ := sdk.NewIntFromString(auctionParamsInput.Step)
+
+	priceFunctionType, err := strconv.ParseUint(auctionParamsInput.PriceFunctionType, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	dutchId, err := strconv.ParseUint(auctionParamsInput.DutchId, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	bidDurationSeconds, err := strconv.ParseUint(auctionParamsInput.BidDurationSeconds, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	auctionParams := types.AuctionParams{
+		AppId:                  appID,
+		AuctionDurationSeconds: auctionDurationSeconds,
+		Buffer:                 buffer,
+		Cusp:                   cusp,
+		Step:                   step,
+		PriceFunctionType:      priceFunctionType,
+		DutchId:                dutchId,
+		BidDurationSeconds:     bidDurationSeconds,
+	}
+
+	from := clientCtx.GetFromAddress()
+
+	deposit, err := sdk.ParseCoinsNormalized(auctionParamsInput.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewAddAuctionParams(auctionParamsInput.Title, auctionParamsInput.Description, auctionParams)
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	_ types.QueryServer = (*queryServer)(nil)
+	_ types.QueryServer = queryServer{}
 )
 
 type queryServer struct {
@@ -95,5 +95,24 @@ func (q queryServer) QueryUsersDepositMapping(c context.Context, req *types.Quer
 
 	return &types.QueryUsersDepositMappingResponse{
 		UsersDepositMapping: item,
+	}, nil
+}
+
+func (q queryServer) QueryDataAfterCoolOff(c context.Context, req *types.QueryDataAfterCoolOffRequest) (*types.QueryDataAfterCoolOffResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	item, found := q.GetDataAfterCoolOff(ctx, req.Id)
+	if !found {
+		return &types.QueryDataAfterCoolOffResponse{}, nil
+	}
+
+	return &types.QueryDataAfterCoolOffResponse{
+		DataAfterCoolOff: item,
 	}, nil
 }

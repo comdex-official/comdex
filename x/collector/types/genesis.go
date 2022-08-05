@@ -1,20 +1,27 @@
 package types
 
-// DefaultIndex is the default capability global index.
-const DefaultIndex uint64 = 1
-
-// DefaultGenesis returns the default Capability genesis state.
-func DefaultGenesis() *GenesisState {
+func NewGenesisState(netFeeCollectedData []NetFeeCollectedData, appIdToAssetCollectorMapping []AppIdToAssetCollectorMapping, collectorLookup []CollectorLookup, collectorAuctionLookupTable []CollectorAuctionLookupTable, appToDenomsMapping []AppToDenomsMapping, params Params) *GenesisState {
 	return &GenesisState{
-		// this line is used by starport scaffolding # genesis/types/default
-		Params: DefaultParams(),
+		NetFeeCollectedData:          netFeeCollectedData,
+		AppIdToAssetCollectorMapping: appIdToAssetCollectorMapping,
+		CollectorLookup:              collectorLookup,
+		CollectorAuctionLookupTable:  collectorAuctionLookupTable,
+		AppToDenomsMapping:           appToDenomsMapping,
+		Params:                       params,
 	}
 }
 
-// Validate performs basic genesis state validation returning an error upon any
-// failure.
-func (gs GenesisState) Validate() error {
-	// this line is used by starport scaffolding # genesis/types/validate
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(
+		[]NetFeeCollectedData{},
+		[]AppIdToAssetCollectorMapping{},
+		[]CollectorLookup{},
+		[]CollectorAuctionLookupTable{},
+		[]AppToDenomsMapping{},
+		DefaultParams(),
+	)
+}
 
-	return gs.Params.Validate()
+func (m *GenesisState) Validate() error {
+	return nil
 }

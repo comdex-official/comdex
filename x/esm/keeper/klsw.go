@@ -6,7 +6,7 @@ import (
 	"github.com/comdex-official/comdex/x/esm/types"
 )
 
-func (k *Keeper) SetKillSwitchData(ctx sdk.Context, switchParams types.KillSwitchParams) error {
+func (k Keeper) SetKillSwitchData(ctx sdk.Context, switchParams types.KillSwitchParams) error {
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.KillSwitchData(switchParams.AppId)
@@ -22,10 +22,10 @@ func (k *Keeper) SetKillSwitchData(ctx sdk.Context, switchParams types.KillSwitc
 	return nil
 }
 
-func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (switchParams types.KillSwitchParams, found bool) {
+func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (switchParams types.KillSwitchParams, found bool) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.KillSwitchData(app_id)
+		key   = types.KillSwitchData(appID)
 		value = store.Get(key)
 	)
 
@@ -38,9 +38,30 @@ func (k *Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (switchParams
 	return switchParams, true
 }
 
-func (k *Keeper) Admin(ctx sdk.Context, from string) bool {
-	var from_address = []string{"comdex1gvcsuex523fcwuzcpaqys99r70hajf8ffg6322", "comdex1mska4sk59e7t23r2vv3mvzljujxf9j08frl2tg", ""}
-	for _, addr := range from_address {
+func (k Keeper) GetAllKillSwitchData(ctx sdk.Context) (killSwitchParams []types.KillSwitchParams) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.KillSwitchDataKey)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var esm types.KillSwitchParams
+		k.cdc.MustUnmarshal(iter.Value(), &esm)
+		killSwitchParams = append(killSwitchParams, esm)
+	}
+	return killSwitchParams
+}
+
+func (k Keeper) Admin(ctx sdk.Context, from string) bool {
+	var fromAddress = k.AdminParam(ctx)
+	for _, addr := range fromAddress {
 		if addr == from {
 			return true
 		}
