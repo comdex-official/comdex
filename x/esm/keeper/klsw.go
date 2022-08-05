@@ -22,10 +22,10 @@ func (k Keeper) SetKillSwitchData(ctx sdk.Context, switchParams types.KillSwitch
 	return nil
 }
 
-func (k Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (switchParams types.KillSwitchParams, found bool) {
+func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (switchParams types.KillSwitchParams, found bool) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		key   = types.KillSwitchData(app_id)
+		key   = types.KillSwitchData(appID)
 		value = store.Get(key)
 	)
 
@@ -60,8 +60,8 @@ func (k Keeper) GetAllKillSwitchData(ctx sdk.Context) (killSwitchParams []types.
 }
 
 func (k Keeper) Admin(ctx sdk.Context, from string) bool {
-	var from_address = k.AdminParam(ctx)
-	for _, addr := range from_address {
+	var fromAddress = k.AdminParam(ctx)
+	for _, addr := range fromAddress {
 		if addr == from {
 			return true
 		}

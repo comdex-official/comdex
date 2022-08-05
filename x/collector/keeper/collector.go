@@ -491,15 +491,14 @@ func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Collec
 	return nil
 }
 
-func (k Keeper) DuplicateCheck(ctx sdk.Context, appId, assetId uint64) (found bool, index int) {
-	result, found := k.GetAuctionMappingForApp(ctx, appId)
+func (k Keeper) DuplicateCheck(ctx sdk.Context, appID, assetID uint64) (found bool, index int) {
+	result, found := k.GetAuctionMappingForApp(ctx, appID)
 	if !found {
 		return false, 0
-	} else {
-		for i, data := range result.AssetIdToAuctionLookup {
-			if data.AssetId == assetId {
-				return true, i
-			}
+	}
+	for i, data := range result.AssetIdToAuctionLookup {
+		if data.AssetId == assetID {
+			return true, i
 		}
 	}
 
