@@ -1473,30 +1473,61 @@ func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, assetID uint64, l
 }
 
 func (k Keeper) SetReserveBalances(ctx sdk.Context, moduleName string, assetID uint64, payment sdk.Coin) error {
+	err := k.UpdateReserveBalances(ctx, assetID, moduleName, payment, true)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
 	newAmount := payment.Amount.Quo(sdk.NewIntFromUint64(types.Uint64Two))
 	buyBackStats, _ := k.GetBuyBackDepositStats(ctx)
 	reserveStats, _ := k.GetReserveDepositStats(ctx)
-	var balanceStats []types.BalanceStats
-	for _, v := range buyBackStats.BalanceStats {
-		if v.AssetID == assetID {
-			v.Amount = v.Amount.Add(newAmount)
-		}
-		balanceStats = append(balanceStats, v)
-		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
-		k.SetBuyBackDepositStats(ctx, newDepositStats)
-	}
 	var reserveBalanceStats []types.BalanceStats
-	for _, v := range reserveStats.BalanceStats {
-		if v.AssetID == assetID {
-			v.Amount = v.Amount.Add(newAmount)
-		}
-		reserveBalanceStats = append(reserveBalanceStats, v)
-		newUserDepositStats := types.DepositStats{BalanceStats: reserveBalanceStats}
-		k.SetReserveDepositStats(ctx, newUserDepositStats)
-	}
 
-	if err := k.bank.SendCoinsFromModuleToModule(ctx, moduleName, types.ModuleName, sdk.NewCoins(payment)); err != nil {
-		return err
+	var balanceStats []types.BalanceStats
+	if inc {
+		for _, v := range buyBackStats.BalanceStats {
+			if v.AssetID == assetID {
+				v.Amount = v.Amount.Add(newAmount)
+			}
+			balanceStats = append(balanceStats, v)
+			newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+			k.SetBuyBackDepositStats(ctx, newDepositStats)
+
+		}
+		for _, v := range reserveStats.BalanceStats {
+			if v.AssetID == assetID {
+				v.Amount = v.Amount.Add(newAmount)
+			}
+			reserveBalanceStats = append(reserveBalanceStats, v)
+			newUserDepositStats := types.DepositStats{BalanceStats: reserveBalanceStats}
+			k.SetReserveDepositStats(ctx, newUserDepositStats)
+		}
+		if err := k.bank.SendCoinsFromModuleToModule(ctx, moduleName, types.ModuleName, sdk.NewCoins(payment)); err != nil {
+			return err
+		}
+	} else {
+		for _, v := range buyBackStats.BalanceStats {
+			if v.AssetID == assetID {
+				v.Amount = v.Amount.Sub(newAmount)
+			}
+			balanceStats = append(balanceStats, v)
+			newDepositStats := types.DepositStats{BalanceStats: balanceStats}
+			k.SetBuyBackDepositStats(ctx, newDepositStats)
+		}
+		for _, v := range reserveStats.BalanceStats {
+			if v.AssetID == assetID {
+				v.Amount = v.Amount.Sub(newAmount)
+			}
+			reserveBalanceStats = append(reserveBalanceStats, v)
+			newUserDepositStats := types.DepositStats{BalanceStats: reserveBalanceStats}
+			k.SetReserveDepositStats(ctx, newUserDepositStats)
+		}
+		if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, moduleName, sdk.NewCoins(payment)); err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -99,5 +99,8 @@ type LendKeeper interface {
 	UpdateBorrowIdsMapping(ctx sdk.Context, borrowID uint64, isInsert bool) error
 	CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault)
 	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
-	GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams lendtypes.AuctionParams, found bool) 
+	GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams lendtypes.AuctionParams, found bool)
+	GetReserveDepositStats(ctx sdk.Context) (depositStats lendtypes.DepositStats, found bool)
+	ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int
+	UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error
 }
