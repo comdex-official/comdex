@@ -11,7 +11,7 @@ import (
 )
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
-	
+
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {

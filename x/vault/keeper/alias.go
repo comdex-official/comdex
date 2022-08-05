@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
 func (k Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
@@ -74,8 +74,8 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, Collecte
 	return k.collector.UpdateCollector(ctx, appID, assetID, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected)
 }
 
-func (k Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool) {
-	return k.esm.GetKillSwitchData(ctx, app_id)
+func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool) {
+	return k.esm.GetKillSwitchData(ctx, appID)
 }
 
 func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {

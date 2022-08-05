@@ -2,11 +2,11 @@ package types
 
 func NewGenesisState(assets []Asset, pairs []Pair, appData []AppData, extendedPairVault []ExtendedPairVault, params Params) *GenesisState {
 	return &GenesisState{
-		Assets: assets,
-		Pairs:  pairs,
-		AppData: appData,
+		Assets:            assets,
+		Pairs:             pairs,
+		AppData:           appData,
 		ExtendedPairVault: extendedPairVault,
-		Params: params,
+		Params:            params,
 	}
 }
 

@@ -2,16 +2,16 @@ package types
 
 func NewGenesisState(eSMTriggerParams []ESMTriggerParams, currentDepositStats []CurrentDepositStats, eSMStatus []ESMStatus, killSwitchParams []KillSwitchParams, usersDepositMapping []UsersDepositMapping, eSMMarketPrice []ESMMarketPrice, dataAfterCoolOff []DataAfterCoolOff, assetToAmountValue []AssetToAmountValue, appToAmountValue []AppToAmountValue, params Params) *GenesisState {
 	return &GenesisState{
-		ESMTriggerParams: eSMTriggerParams,
+		ESMTriggerParams:    eSMTriggerParams,
 		CurrentDepositStats: currentDepositStats,
-		ESMStatus: eSMStatus,
-		KillSwitchParams: killSwitchParams,
+		ESMStatus:           eSMStatus,
+		KillSwitchParams:    killSwitchParams,
 		UsersDepositMapping: usersDepositMapping,
-		ESMMarketPrice: eSMMarketPrice,
-		DataAfterCoolOff: dataAfterCoolOff,
-		AssetToAmountValue: assetToAmountValue,
-		AppToAmountValue: appToAmountValue,
-		Params: params,
+		ESMMarketPrice:      eSMMarketPrice,
+		DataAfterCoolOff:    dataAfterCoolOff,
+		AssetToAmountValue:  assetToAmountValue,
+		AppToAmountValue:    appToAmountValue,
+		Params:              params,
 	}
 }
 

@@ -18,36 +18,35 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 
 	msg2 := assetTypes.AppData{
-			Name:             "commodo",
-			ShortName:        "comdo",
-			MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-			GovTimeInSeconds: 900}
+		Name:             "commodo",
+		ShortName:        "comdo",
+		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		GovTimeInSeconds: 900}
 	err = assetKeeper.AddAppRecords(*ctx, msg2)
 	s.Require().NoError(err)
 
 	msg3 := assetTypes.Asset{Name: "CMDX",
-			Denom:     "ucmdx",
-			Decimals:  1000000,
-			IsOnChain: true}
+		Denom:     "ucmdx",
+		Decimals:  1000000,
+		IsOnChain: true}
 
-			err = assetKeeper.AddAssetRecords(*ctx, msg3)
-			s.Require().NoError(err)
+	err = assetKeeper.AddAssetRecords(*ctx, msg3)
+	s.Require().NoError(err)
 
 	msg4 := assetTypes.Asset{Name: "CMST",
-	Denom:     "ucmst",
-	Decimals:  1000000,
-	IsOnChain: true}
+		Denom:     "ucmst",
+		Decimals:  1000000,
+		IsOnChain: true}
 	err = assetKeeper.AddAssetRecords(*ctx, msg4)
 	s.Require().NoError(err)
 
 	msg5 := assetTypes.Asset{Name: "HARBOR",
-	Denom:     "uharbor",
-	Decimals:  1000000,
-	IsOnChain: true}
+		Denom:     "uharbor",
+		Decimals:  1000000,
+		IsOnChain: true}
 	err = assetKeeper.AddAssetRecords(*ctx, msg5)
 	s.Require().NoError(err)
 }
-	
 
 func (s *KeeperTestSuite) TestCreateLocker() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"

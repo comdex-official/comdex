@@ -173,7 +173,7 @@ func TestMsgSetAuctionMappingForApp(t *testing.T) {
 				AssetIDs:             []uint64{2},
 				IsSurplusAuctions:    []bool{true},
 				IsDebtAuctions:       []bool{false},
-				IsDistributor:		  []bool{false},
+				IsDistributor:        []bool{false},
 				AssetOutOraclePrices: []bool{false},
 				AssetOutPrices:       []uint64{1000000},
 			},

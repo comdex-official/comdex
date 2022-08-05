@@ -202,42 +202,42 @@ func (k Keeper) GetGenesisTokenForApp(ctx sdk.Context, appID uint64) uint64 {
 }
 
 func (k Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
-		if k.HasAppForShortName(ctx, msg.ShortName) {
-			return types.ErrorDuplicateApp
-		}
-		if k.HasAppForName(ctx, msg.Name) {
-			return types.ErrorDuplicateApp
-		}
-		var IsLetter = regexp.MustCompile(`^[a-z]+$`).MatchString
-		
-		if !IsLetter(msg.ShortName) || len(msg.ShortName) > 6 {
-			return types.ErrorShortNameDidNotMeetCriterion
-		}
+	if k.HasAppForShortName(ctx, msg.ShortName) {
+		return types.ErrorDuplicateApp
+	}
+	if k.HasAppForName(ctx, msg.Name) {
+		return types.ErrorDuplicateApp
+	}
+	var IsLetter = regexp.MustCompile(`^[a-z]+$`).MatchString
 
-		if !IsLetter(msg.Name) || len(msg.Name) > 10 {
-			return types.ErrorNameDidNotMeetCriterion
+	if !IsLetter(msg.ShortName) || len(msg.ShortName) > 6 {
+		return types.ErrorShortNameDidNotMeetCriterion
+	}
+
+	if !IsLetter(msg.Name) || len(msg.Name) > 10 {
+		return types.ErrorNameDidNotMeetCriterion
+	}
+
+	if msg.MinGovDeposit.LT(sdk.ZeroInt()) || msg.GovTimeInSeconds < 0 {
+		return types.ErrorValueCantBeNegative
+	}
+
+	var (
+		id  = k.GetAppID(ctx)
+		app = types.AppData{
+			Id:               id + 1,
+			Name:             msg.Name,
+			ShortName:        msg.ShortName,
+			MinGovDeposit:    msg.MinGovDeposit,
+			GovTimeInSeconds: msg.GovTimeInSeconds,
+			GenesisToken:     msg.GenesisToken,
 		}
+	)
 
-		if msg.MinGovDeposit.LT(sdk.ZeroInt()) || msg.GovTimeInSeconds < 0 {
-			return types.ErrorValueCantBeNegative
-		}
-
-		var (
-			id  = k.GetAppID(ctx)
-			app = types.AppData{
-				Id:               id + 1,
-				Name:             msg.Name,
-				ShortName:        msg.ShortName,
-				MinGovDeposit:    msg.MinGovDeposit,
-				GovTimeInSeconds: msg.GovTimeInSeconds,
-				GenesisToken:     msg.GenesisToken,
-			}
-		)
-
-		k.SetAppID(ctx, app.Id)
-		k.SetApp(ctx, app)
-		k.SetAppForShortName(ctx, app.ShortName, app.Id)
-		k.SetAppForName(ctx, app.Name, app.Id)
+	k.SetAppID(ctx, app.Id)
+	k.SetApp(ctx, app)
+	k.SetAppForShortName(ctx, app.ShortName, app.Id)
+	k.SetAppForName(ctx, app.Name, app.Id)
 
 	return nil
 }
@@ -254,44 +254,44 @@ func (k Keeper) UpdateGovTimeInApp(ctx sdk.Context, msg types.AppAndGovTime) err
 }
 
 func (k Keeper) AddAssetInAppRecords(ctx sdk.Context, msg types.AppData) error {
-		appdata, found := k.GetApp(ctx, msg.Id)
+	appdata, found := k.GetApp(ctx, msg.Id)
+	if !found {
+		return types.AppIdsDoesntExist
+	}
+
+	for _, data := range msg.GenesisToken {
+		assetData, found := k.GetAsset(ctx, data.AssetId)
 		if !found {
-			return types.AppIdsDoesntExist
+			return types.ErrorAssetDoesNotExist
+		}
+		if !assetData.IsOnChain {
+			return types.ErrorAssetIsOffChain
+		}
+		_, err := sdk.AccAddressFromBech32(data.Recipient)
+		if err != nil {
+			return types.ErrorInvalidFrom
+		}
+		if data.GenesisSupply.LT(sdk.ZeroInt()) {
+			return types.ErrorInvalidGenesisSupply
+		}
+		hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
+		if hasAsset != 0 && data.IsGovToken {
+			return types.ErrorGenesisTokenExistForApp
 		}
 
-		for _, data := range msg.GenesisToken {
-			assetData, found := k.GetAsset(ctx, data.AssetId)
-			if !found {
-				return types.ErrorAssetDoesNotExist
-			}
-			if !assetData.IsOnChain {
-				return types.ErrorAssetIsOffChain
-			}
-			_, err := sdk.AccAddressFromBech32(data.Recipient)
-			if err != nil {
-				return types.ErrorInvalidFrom
-			}
-			if data.GenesisSupply.LT(sdk.ZeroInt()) {
-				return types.ErrorInvalidGenesisSupply
-			}
-			hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
-			if hasAsset != 0 && data.IsGovToken {
-				return types.ErrorGenesisTokenExistForApp
-			}
-
-			if data.IsGovToken && appdata.MinGovDeposit.Equal(sdk.ZeroInt()) {
-				return types.ErrorMinGovDepositIsZero
-			}
-
-			checkFound := k.CheckIfAssetIsAddedToAppMapping(ctx, data.AssetId)
-			if !checkFound {
-				return types.ErrorAssetAlreadyExistingApp
-			}
-			if hasAsset == 0 && data.IsGovToken {
-				k.SetGenesisTokenForApp(ctx, msg.Id, data.AssetId)
-			}
-			appdata.GenesisToken = append(appdata.GenesisToken, data)
+		if data.IsGovToken && appdata.MinGovDeposit.Equal(sdk.ZeroInt()) {
+			return types.ErrorMinGovDepositIsZero
 		}
-		k.SetApp(ctx, appdata)
+
+		checkFound := k.CheckIfAssetIsAddedToAppMapping(ctx, data.AssetId)
+		if !checkFound {
+			return types.ErrorAssetAlreadyExistingApp
+		}
+		if hasAsset == 0 && data.IsGovToken {
+			k.SetGenesisTokenForApp(ctx, msg.Id, data.AssetId)
+		}
+		appdata.GenesisToken = append(appdata.GenesisToken, data)
+	}
+	k.SetApp(ctx, appdata)
 	return nil
 }

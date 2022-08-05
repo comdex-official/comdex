@@ -5,11 +5,11 @@ import (
 )
 
 var (
-	ErrorInvalidDecimals = errors.Register(ModuleName, 101, "invalid decimals")
-	ErrorInvalidDenom    = errors.Register(ModuleName, 102, "invalid denom")
-	ErrorInvalidFrom     = errors.Register(ModuleName, 103, "invalid from")
+	ErrorInvalidDecimals  = errors.Register(ModuleName, 101, "invalid decimals")
+	ErrorInvalidDenom     = errors.Register(ModuleName, 102, "invalid denom")
+	ErrorInvalidFrom      = errors.Register(ModuleName, 103, "invalid from")
 	ErrorInvalidRecipient = errors.Register(ModuleName, 104, "invalid recipient address")
-	ErrorInvalidID       = errors.Register(ModuleName, 105, "invalid id")
+	ErrorInvalidID        = errors.Register(ModuleName, 105, "invalid id")
 
 	ErrorInvalidName          = errors.Register(ModuleName, 106, "invalid name")
 	ErrorInvalidGenesisSupply = errors.Register(ModuleName, 109, "invalid Genesis Supply")
@@ -35,7 +35,6 @@ var (
 	ErrorNameDidNotMeetCriterion           = errors.Register(ModuleName, 219, "App Name did't meet the criterion")
 	ErrorReversePairAlreadyExist           = errors.Register(ModuleName, 220, "Reverse pair already exists")
 	ErrorValueCantBeNegative               = errors.Register(ModuleName, 221, "Value can't be negative")
-
 )
 
 var (

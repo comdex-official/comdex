@@ -2,8 +2,8 @@ package keeper
 
 import (
 	"context"
-	"github.com/comdex-official/comdex/x/rewards/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 )

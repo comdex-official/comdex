@@ -730,7 +730,7 @@ func (k Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBindi
 		if auctionMappingBinding.IsSurplusAuctions[i] && auctionMappingBinding.IsDistributor[i] {
 			return types.ErrorSurplusDistributerCantbeTrue
 		}
-		if auctionMappingBinding.IsSurplusAuctions[i] && auctionMappingBinding.IsDebtAuctions[i]  {
+		if auctionMappingBinding.IsSurplusAuctions[i] && auctionMappingBinding.IsDebtAuctions[i] {
 			return types.ErrorSurplusDebtrCantbeTrueSameTime
 		}
 		duplicate, index := k.DuplicateCheck(ctx, auctionMappingBinding.AppID, auctionMappingBinding.AssetIDs[i])
