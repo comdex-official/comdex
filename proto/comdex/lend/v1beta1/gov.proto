@@ -13,12 +13,6 @@ message LendPairsProposal {
   Extended_Pair pairs = 3 [(gogoproto.nullable) = false];
 }
 
-message UpdatePairProposal {
-  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
-  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  Extended_Pair pair = 3 [(gogoproto.nullable) = false];
-}
-
 message AddPoolsProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];

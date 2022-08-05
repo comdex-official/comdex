@@ -6,7 +6,6 @@ import (
 
 var (
 	ProposalAddLendPairs       = "ProposalAddLendPairs"
-	ProposalUpdateLendPair     = "ProposalUpdateLendPair"
 	ProposalAddPool            = "ProposalAddPool"
 	ProposalAddAssetToPair     = "ProposalAddAssetToPair"
 	ProposalAddAssetRatesStats = "ProposalAddAssetRatesStats"
@@ -16,8 +15,6 @@ var (
 func init() {
 	govtypes.RegisterProposalType(ProposalAddLendPairs)
 	govtypes.RegisterProposalTypeCodec(&LendPairsProposal{}, "comdex/AddLendPairsProposal")
-	govtypes.RegisterProposalType(ProposalUpdateLendPair)
-	govtypes.RegisterProposalTypeCodec(&UpdatePairProposal{}, "comdex/UpdateLenddPairProposal")
 	govtypes.RegisterProposalType(ProposalAddPool)
 	govtypes.RegisterProposalTypeCodec(&AddPoolsProposal{}, "comdex/AddPoolsProposal")
 	govtypes.RegisterProposalType(ProposalAddAssetToPair)
@@ -30,7 +27,6 @@ func init() {
 
 var (
 	_ govtypes.Content = &LendPairsProposal{}
-	_ govtypes.Content = &UpdatePairProposal{}
 	_ govtypes.Content = &AddPoolsProposal{}
 	_ govtypes.Content = &AddAssetToPairProposal{}
 	_ govtypes.Content = &AddAssetRatesStats{}
@@ -56,32 +52,6 @@ func (p *LendPairsProposal) ValidateBasic() error {
 	}
 
 	if err := p.Pairs.Validate(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func NewUpdateLendPairProposal(title, description string, pair Extended_Pair) govtypes.Content {
-	return &UpdatePairProposal{
-		Title:       title,
-		Description: description,
-		Pair:        pair,
-	}
-}
-
-func (p *UpdatePairProposal) ProposalRoute() string { return RouterKey }
-
-func (p *UpdatePairProposal) ProposalType() string { return ProposalUpdateLendPair }
-
-func (p *UpdatePairProposal) ValidateBasic() error {
-	err := govtypes.ValidateAbstract(p)
-	if err != nil {
-		return err
-	}
-
-	pair := p.Pair
-	if err := pair.Validate(); err != nil {
 		return err
 	}
 

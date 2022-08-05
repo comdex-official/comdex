@@ -124,16 +124,6 @@ func (k Keeper) AddAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMap
 	return nil
 }
 
-func (k Keeper) UpdateLendPairRecords(ctx sdk.Context, msg types.Extended_Pair) error {
-	pair, found := k.GetLendPair(ctx, msg.Id)
-	if !found {
-		return types.ErrorPairDoesNotExist
-	}
-
-	k.SetLendPair(ctx, pair)
-	return nil
-}
-
 func (k Keeper) SetLendPairID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
