@@ -331,6 +331,10 @@ func (k Keeper) GetAllDataAfterCoolOff(ctx sdk.Context) (dataAfterCoolOff []type
 
 func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64) error {
 	totalVaults := k.GetVaults(ctx)
+	esmStatus, found := k.GetESMStatus(ctx, appId)
+	if !found {
+		return types.ErrESMParamsNotFound
+	}
 	for _, data := range totalVaults {
 		if data.AppId == appId {
 			extendedPairVault, found := k.GetPairsVault(ctx, data.ExtendedPairVaultID)
@@ -394,44 +398,44 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64)
 						return err
 					}
 					coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
-					count = 0
 				}
-
-				for i, indata := range coolOffData.DebtAsset {
-					if indata.AssetID == assetOutData.Id {
+				count = 0
+				for i, indatadebt := range coolOffData.DebtAsset {
+					if indatadebt.AssetID == assetOutData.Id {
 						count++
-						indata.Amount = indata.Amount.Add(data.AmountOut)
+						indatadebt.Amount = indatadebt.Amount.Add(data.AmountOut)
 						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i], coolOffData.DebtAsset[i+1:]...)
-						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indatadebt)
 						break
 					}
 				}
 				if count == 0 {
+				
 					var item types.AssetToAmount
 
 					item.AssetID = assetOutData.Id
 					item.Amount = data.AmountOut
 					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
-					count = 0
 				}
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			}
 
 			k.DeleteVault(ctx, data.Id)
 			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
-			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
-			if !found {
-				return types.ErrESMParamsNotFound
-			}
-			esmStatus.VaultRedemptionStatus = true
-			k.SetESMStatus(ctx, esmStatus)
 		}
 	}
+	esmStatus.VaultRedemptionStatus = true
+	k.SetESMStatus(ctx, esmStatus)
+
 	return nil
 }
 
 func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId uint64) error {
 	totalStableVaults := k.GetStableMintVaults(ctx)
+	esmStatus, found := k.GetESMStatus(ctx, appId)
+	if !found {
+		return types.ErrESMParamsNotFound
+	}
 	for _, data := range totalStableVaults {
 		if data.AppId == appId {
 			extendedPairVault, found := k.GetPairsVault(ctx, data.ExtendedPairVaultID)
@@ -495,15 +499,14 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId u
 						return err
 					}
 					coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
-					count = 0
 				}
-
-				for i, indata := range coolOffData.DebtAsset {
-					if indata.AssetID == assetOutData.Id {
+				count = 0
+				for i, indatadebt := range coolOffData.DebtAsset {
+					if indatadebt.AssetID == assetOutData.Id {
 						count++
-						indata.Amount = indata.Amount.Add(data.AmountOut)
+						indatadebt.Amount = indatadebt.Amount.Add(data.AmountOut)
 						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i], coolOffData.DebtAsset[i+1:]...)
-						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
+						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indatadebt)
 						break
 					}
 				}
@@ -513,34 +516,30 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId u
 					item.AssetID = assetOutData.Id
 					item.Amount = data.AmountOut
 					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
-					count = 0
 				}
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			}
 
-			k.DeleteVault(ctx, data.Id)
-			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
-			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
-			if !found {
-				return types.ErrESMParamsNotFound
-			}
-			esmStatus.StableVaultRedemptionStatus = true
-			k.SetESMStatus(ctx, esmStatus)
 		}
 	}
-	netFee, _ := k.GetNetFeeCollectedData(ctx, appId)
+	netFee, found1 := k.GetNetFeeCollectedData(ctx, appId)
 	coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
 	if !found {
 		return nil
 	}
-	for _, data := range netFee.AssetIdToFeeCollected {
-		for _, indata := range coolOffData.DebtAsset {
-			if data.AssetId == indata.AssetID {
-				indata.Amount = indata.Amount.Sub(data.NetFeesCollected)
-				coolOffData.DebtAsset = append(coolOffData.DebtAsset, indata)
+	if found1{
+		for _, data := range netFee.AssetIdToFeeCollected {
+			for i, indatanet := range coolOffData.DebtAsset {
+				if data.AssetId == indatanet.AssetID {
+					indatanet.Amount = indatanet.Amount.Sub(data.NetFeesCollected)
+					coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i], coolOffData.DebtAsset[i+1:]...)
+					coolOffData.DebtAsset = append(coolOffData.DebtAsset, indatanet)
+				}
 			}
 		}
 	}
+	esmStatus.StableVaultRedemptionStatus = true
+	k.SetESMStatus(ctx, esmStatus)
 	k.SetDataAfterCoolOff(ctx, coolOffData)
 	return nil
 }
