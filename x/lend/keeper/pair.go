@@ -95,6 +95,9 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		var assetStats types.AssetStats
 		assetStats.PoolID = newPool.PoolID
 		assetStats.AssetID = v.AssetID
+		assetStats.TotalBorrowed = sdk.ZeroInt()
+		assetStats.TotalStableBorrowed = sdk.ZeroInt()
+		assetStats.TotalLend = sdk.ZeroInt()
 		k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 		k.UpdateAPR(ctx, newPool.PoolID, v.AssetID)
 	}
