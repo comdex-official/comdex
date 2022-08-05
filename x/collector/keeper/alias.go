@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 )
 
 func (k Keeper) HasAssetForDenom(ctx sdk.Context, id string) bool {

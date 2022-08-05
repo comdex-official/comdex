@@ -176,7 +176,7 @@ func (k Keeper) GetAllAuctions(ctx sdk.Context) (auctions []auctiontypes.Surplus
 
 func (k Keeper) GetAllSurplusAuctions(ctx sdk.Context) (surplusAuction []auctiontypes.SurplusAuction) {
 
-	apps,_ := k.GetApps(ctx)
+	apps, _ := k.GetApps(ctx)
 
 	for _, item := range apps {
 		auction := k.GetSurplusAuctions(ctx, item.Id)
@@ -550,7 +550,7 @@ func (k Keeper) GetDebtAuctions(ctx sdk.Context, appID uint64) (auctions []aucti
 
 func (k Keeper) GetAllDebtAuctions(ctx sdk.Context) (debtAuction []auctiontypes.DebtAuction) {
 
-	apps,_ := k.GetApps(ctx)
+	apps, _ := k.GetApps(ctx)
 
 	for _, item := range apps {
 		auction := k.GetDebtAuctions(ctx, item.Id)
@@ -821,7 +821,7 @@ func (k Keeper) GetDutchAuctions(ctx sdk.Context, appID uint64) (auctions []auct
 }
 
 func (k Keeper) GetAllDutchAuctions(ctx sdk.Context) (dutchAuction []auctiontypes.DutchAuction) {
-	apps,_ := k.GetApps(ctx)
+	apps, _ := k.GetApps(ctx)
 
 	for _, item := range apps {
 		auction := k.GetDutchAuctions(ctx, item.Id)

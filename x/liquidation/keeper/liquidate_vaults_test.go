@@ -185,20 +185,20 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			},
 		},
 	}
-		// {
-		// 	Name:             "commodo",
-		// 	ShortName:        "commodo",
-		// 	MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-		// 	GovTimeInSeconds: 900,
-		// 	GenesisToken: []assetTypes.MintGenesisToken{
-		// 		{
-		// 			3,
-		// 			genesisSupply,
-		// 			true,
-		// 			userAddress1,
-		// 		},
-		// 	},
-		// },
+	// {
+	// 	Name:             "commodo",
+	// 	ShortName:        "commodo",
+	// 	MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+	// 	GovTimeInSeconds: 900,
+	// 	GenesisToken: []assetTypes.MintGenesisToken{
+	// 		{
+	// 			3,
+	// 			genesisSupply,
+	// 			true,
+	// 			userAddress1,
+	// 		},
+	// 	},
+	// },
 	err = assetKeeper.AddAppRecords(*ctx, msg1)
 	s.Require().NoError(err)
 

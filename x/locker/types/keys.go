@@ -19,10 +19,10 @@ var (
 )
 
 var (
-	LockerProductAssetMappingKeyPrefix = []byte{0x10}
-	LockerLookupTableKeyPrefix         = []byte{0x12}
-	UserLockerAssetMappingKeyPrefix    = []byte{0x14}
-	LockerKeyPrefix                    = []byte{0x15}
+	LockerProductAssetMappingKeyPrefix        = []byte{0x10}
+	LockerLookupTableKeyPrefix                = []byte{0x12}
+	UserLockerAssetMappingKeyPrefix           = []byte{0x14}
+	LockerKeyPrefix                           = []byte{0x15}
 	LockerTotalRewardsByAssetAppWiseKeyPrefix = []byte{0x16}
 )
 

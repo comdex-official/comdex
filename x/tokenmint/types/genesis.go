@@ -3,7 +3,7 @@ package types
 func NewGenesisState(tokenMint []TokenMint, params Params) *GenesisState {
 	return &GenesisState{
 		TokenMint: tokenMint,
-		Params: params,
+		Params:    params,
 	}
 }
 

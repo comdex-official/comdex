@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
 func (k Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {

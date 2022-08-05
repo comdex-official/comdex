@@ -9,9 +9,9 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	var (
-		assetID uint64 = 0
-		pairID  uint64 = 0
-		appID uint64 = 0
+		assetID        uint64 = 0
+		pairID         uint64 = 0
+		appID          uint64 = 0
 		extendedPairID uint64 = 0
 	)
 

@@ -18,7 +18,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 			status = esmStatus.Status
 		}
 		klwsParams, _ := k.GetKillSwitchData(ctx, appIds[i])
-		if klwsParams.BreakerEnable || status{
+		if klwsParams.BreakerEnable || status {
 			continue
 		}
 		vaultsMap, _ := k.GetAppExtendedPairVaultMapping(ctx, appIds[i])
