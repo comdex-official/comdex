@@ -93,5 +93,7 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 		mintData.MintedTokens = append(mintData.MintedTokens, &newTokenMintAppData)
 		k.SetTokenMint(ctx, mintData)
 	}
+	ctx.GasMeter().ConsumeGas(types.TokenmintGas, "TokenmintGas")
+
 	return &types.MsgMintNewTokensResponse{}, nil
 }

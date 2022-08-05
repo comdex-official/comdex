@@ -2,16 +2,23 @@ package types
 
 import (
 	"fmt"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 var (
 	_ paramstypes.ParamSet = (*Params)(nil)
 
-	KeyAdmin = []byte("AdminKey")
-	DefaultAdmin = []string{"comdex1gvcsuex523fcwuzcpaqys99r70hajf8ffg6322" , "comdex1lanra8mnwsxkzjnewtzgrynudxucr7tlfe4xnn"}
+	KeyAdmin     = []byte("AdminKey")
+	DefaultAdmin = []string{"comdex1gvcsuex523fcwuzcpaqys99r70hajf8ffg6322", "comdex1lanra8mnwsxkzjnewtzgrynudxucr7tlfe4xnn"}
+)
+
+const (
+	DepositESMGas              = sdk.Gas(66329)
+	ExecuteESMGas              = sdk.Gas(53554)
+	MsgKillSwitchGas           = sdk.Gas(76473)
+	MsgCollateralRedemptionGas = sdk.Gas(87559)
 )
 
 func NewParams(admin []string) Params {
@@ -50,7 +57,6 @@ func (k Params) Validate() error {
 
 	return nil
 }
-
 
 func validateAdmin(v interface{}) error {
 
