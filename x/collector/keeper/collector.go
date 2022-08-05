@@ -14,6 +14,9 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 	if !found {
 		return returnedFee, types.ErrorDataDoesNotExists
 	}
+	if amount.IsNegative() {
+		return returnedFee, types.ErrorAmountCanNotBeNegative
+	}
 
 	for _, data := range netFeeData.AssetIdToFeeCollected {
 		if data.AssetId == assetID {
@@ -25,7 +28,7 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 			if err != nil {
 				return returnedFee, err
 			}
-			err = k.DecreaseNetFeeCollectedData(ctx, appID, assetID, amount)
+			err = k.DecreaseNetFeeCollectedData(ctx, appID, assetID, amount, netFeeData)
 			if err != nil {
 				return sdk.Int{}, err
 			}
@@ -35,14 +38,7 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 	return returnedFee, nil
 }
 
-func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) error {
-	if amount.IsNegative() {
-		return types.ErrorAmountCanNotBeNegative
-	}
-	collectorData, found := k.GetNetFeeCollectedData(ctx, appID)
-	if !found {
-		return types.ErrorDataDoesNotExists
-	}
+func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, collectorData types.NetFeeCollectedData) error {
 	var netCollected types.NetFeeCollectedData
 	var assetCollected types.AssetIdToFeeCollected
 	netCollected.AppId = appID
@@ -55,10 +51,11 @@ func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint
 			if netCollectedFee.IsNegative() {
 				return types.ErrorNetFeesCanNotBeNegative
 			}
+			assetCollected.NetFeesCollected = netCollectedFee
+			netCollected.AssetIdToFeeCollected = append(netCollected.AssetIdToFeeCollected, assetCollected)
 		}
 	}
-	assetCollected.NetFeesCollected = netCollectedFee
-	netCollected.AssetIdToFeeCollected = append(netCollected.AssetIdToFeeCollected, assetCollected)
+
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.NetFeeCollectedDataKey(appID)
@@ -136,7 +133,6 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 		}
 
 		if check == 0 {
-			collectorNewData := collectorData
 			var assetIDCollect types.AssetIdCollectorMapping
 			assetIDCollect.AssetId = assetID
 			var newCollector types.CollectorData
@@ -147,9 +143,9 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 			newCollector.LiquidationRewardsCollected = liquidationRewardsCollected
 			assetIDCollect.Collector = newCollector
 
-			collectorNewData.AssetCollector = append(collectorNewData.AssetCollector, assetIDCollect)
+			collectorData.AssetCollector = append(collectorData.AssetCollector, assetIDCollect)
 
-			k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
+			k.SetAppidToAssetCollectorMapping(ctx, collectorData)
 			err := k.SetNetFeeCollectedData(ctx, appID, assetID,
 				newCollector.CollectedClosingFee.
 					Add(newCollector.CollectedOpeningFee).
@@ -283,7 +279,6 @@ func (k Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.Collec
 			DebtLotSize:      msg.DebtLotSize,
 		}
 		accmLookup, _ := k.GetCollectorLookupTable(ctx, msg.AppId)
-		accmLookup.AppId = msg.AppId
 		accmLookup.AssetRateInfo = append(accmLookup.AssetRateInfo, Collector)
 
 		var (
@@ -452,6 +447,12 @@ func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Collec
 			if !found {
 				return types.ErrorAssetDoesNotExist
 			}
+			if data.IsSurplusAuction && data.IsDistributor {
+				return types.ErrorSurplusDistributerCantbeTrue
+			}
+			if data.IsSurplusAuction && data.IsDebtAuction {
+				return types.ErrorSurplusDebtrCantbeTrueSameTime
+			}
 			duplicate, index := k.DuplicateCheck(ctx, msg.AppId, data.AssetId)
 			if duplicate {
 				assetIDToAuctionLookups = append(assetIDToAuctionLookups[:index], assetIDToAuctionLookups[index+1:]...)
@@ -459,6 +460,7 @@ func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Collec
 				assetToAuctionUpdate.AssetId = data.AssetId
 				assetToAuctionUpdate.IsSurplusAuction = data.IsSurplusAuction
 				assetToAuctionUpdate.IsDebtAuction = data.IsDebtAuction
+				assetToAuctionUpdate.IsDistributor = data.IsDistributor
 				assetToAuctionUpdate.IsAuctionActive = data.IsAuctionActive
 				assetToAuctionUpdate.AssetOutOraclePrice = data.AssetOutOraclePrice
 				assetToAuctionUpdate.AssetOutPrice = data.AssetOutPrice
@@ -470,6 +472,7 @@ func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Collec
 				AssetId:             data.AssetId,
 				IsSurplusAuction:    data.IsSurplusAuction,
 				IsDebtAuction:       data.IsDebtAuction,
+				IsDistributor:       data.IsDistributor,
 				IsAuctionActive:     data.IsAuctionActive,
 				AssetOutOraclePrice: data.AssetOutOraclePrice,
 				AssetOutPrice:       data.AssetOutPrice,
@@ -724,6 +727,12 @@ func (k Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBindi
 		assetIDToAuctionLookups = result1.AssetIdToAuctionLookup
 	}
 	for i := range auctionMappingBinding.AssetIDs {
+		if auctionMappingBinding.IsSurplusAuctions[i] && auctionMappingBinding.IsDistributor[i] {
+			return types.ErrorSurplusDistributerCantbeTrue
+		}
+		if auctionMappingBinding.IsSurplusAuctions[i] && auctionMappingBinding.IsDebtAuctions[i]  {
+			return types.ErrorSurplusDebtrCantbeTrueSameTime
+		}
 		duplicate, index := k.DuplicateCheck(ctx, auctionMappingBinding.AppID, auctionMappingBinding.AssetIDs[i])
 		if duplicate {
 			assetIDToAuctionLookups = append(assetIDToAuctionLookups[:index], assetIDToAuctionLookups[index+1:]...)
@@ -731,6 +740,7 @@ func (k Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBindi
 			assetToAuctionUpdate.AssetId = auctionMappingBinding.AssetIDs[i]
 			assetToAuctionUpdate.IsSurplusAuction = auctionMappingBinding.IsSurplusAuctions[i]
 			assetToAuctionUpdate.IsDebtAuction = auctionMappingBinding.IsDebtAuctions[i]
+			assetToAuctionUpdate.IsDistributor = auctionMappingBinding.IsDistributor[i]
 			assetToAuctionUpdate.IsAuctionActive = false
 			assetToAuctionUpdate.AssetOutOraclePrice = auctionMappingBinding.AssetOutOraclePrices[i]
 			assetToAuctionUpdate.AssetOutPrice = auctionMappingBinding.AssetOutPrices[i]
@@ -741,6 +751,7 @@ func (k Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBindi
 			AssetId:             auctionMappingBinding.AssetIDs[i],
 			IsSurplusAuction:    auctionMappingBinding.IsSurplusAuctions[i],
 			IsDebtAuction:       auctionMappingBinding.IsDebtAuctions[i],
+			IsDistributor:       auctionMappingBinding.IsDistributor[i],
 			IsAuctionActive:     false,
 			AssetOutOraclePrice: auctionMappingBinding.AssetOutOraclePrices[i],
 			AssetOutPrice:       auctionMappingBinding.AssetOutPrices[i],

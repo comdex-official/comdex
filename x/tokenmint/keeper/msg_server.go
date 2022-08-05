@@ -50,8 +50,10 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 		if err != nil {
 			return nil, err
 		}
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
-			return nil, err
+		if assetDataInApp.GenesisSupply.GT(sdk.ZeroInt()) {
+			if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
+				return nil, err
+			}
 		}
 
 		newTokenMintAppData.AssetId = msg.AssetId
@@ -74,13 +76,13 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 		if err != nil {
 			return nil, err
 		}
-
-		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
-			return nil, err
-		}
-
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
-			return nil, err
+		if assetDataInApp.GenesisSupply.GT(sdk.ZeroInt()) {
+			if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
+				return nil, err
+			}
+			if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
+				return nil, err
+			}
 		}
 
 		var newTokenMintAppData types.MintedTokens
@@ -91,5 +93,7 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 		mintData.MintedTokens = append(mintData.MintedTokens, &newTokenMintAppData)
 		k.SetTokenMint(ctx, mintData)
 	}
+	ctx.GasMeter().ConsumeGas(types.TokenmintGas, "TokenmintGas")
+
 	return &types.MsgMintNewTokensResponse{}, nil
 }

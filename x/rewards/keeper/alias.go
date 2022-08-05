@@ -2,11 +2,11 @@ package keeper
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	collecortypes "github.com/comdex-official/comdex/x/collector/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/locker/types"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -14,15 +14,15 @@ func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint6
 	return k.locker.GetLockerProductAssetMapping(ctx, appMappingID)
 }
 
-func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (appAssetCollectorData collecortypes.AppIdToAssetCollectorMapping, found bool) {
+func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (appAssetCollectorData collectortypes.AppIdToAssetCollectorMapping, found bool) {
 	return k.collector.GetAppidToAssetCollectorMapping(ctx, appID)
 }
 
-func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup collecortypes.CollectorLookup, found bool) {
+func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup collectortypes.CollectorLookup, found bool) {
 	return k.collector.GetCollectorLookupTable(ctx, appID)
 }
 
-func (k Keeper) GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom collecortypes.AppToDenomsMapping, found bool) {
+func (k Keeper) GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom collectortypes.AppToDenomsMapping, found bool) {
 	return k.collector.GetAppToDenomsMapping(ctx, appID)
 }
 
@@ -38,7 +38,7 @@ func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appMappingID uint64) (lock
 	return k.locker.GetLockerLookupTable(ctx, appMappingID)
 }
 
-func (k Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64) (collectorLookup collecortypes.CollectorLookupTable, found bool) {
+func (k Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTable, found bool) {
 	return k.collector.GetCollectorLookupByAsset(ctx, appID, assetID)
 }
 
@@ -70,8 +70,8 @@ func (k Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context
 	k.vault.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, counter, vaultData)
 }
 
-func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, valutLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
-	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, valutLookupData, extendedPairID, amount, changeType)
+func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, vaultLookupData, extendedPairID, amount, changeType)
 }
 
 func (k Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64) {
@@ -131,7 +131,7 @@ func (k Keeper) SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coin
 	return k.bank.SpendableCoins(ctx, address)
 }
 
-func (k Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData collecortypes.NetFeeCollectedData, found bool) {
+func (k Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData collectortypes.NetFeeCollectedData, found bool) {
 	return k.collector.GetNetFeeCollectedData(ctx, appID)
 }
 
@@ -139,8 +139,8 @@ func (k Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, f
 	return k.collector.SetNetFeeCollectedData(ctx, appID, assetID, fee)
 }
 
-func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error {
-	return k.collector.DecreaseNetFeeCollectedData(ctx, appID, assetID, fee)
+func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int, netFeeCollectedData collectortypes.NetFeeCollectedData) error {
+	return k.collector.DecreaseNetFeeCollectedData(ctx, appID, assetID, fee, netFeeCollectedData)
 }
 
 func (k Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error {

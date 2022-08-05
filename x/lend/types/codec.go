@@ -19,22 +19,23 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgDraw{}, "comdex/lend/draw", nil)
 	cdc.RegisterConcrete(&MsgCloseBorrow{}, "comdex/lend/close-borrow", nil)
 	cdc.RegisterConcrete(&MsgRepay{}, "comdex/lend/repay", nil)
+	cdc.RegisterConcrete(&MsgBorrowAlternate{}, "comdex/lend/borrow-alternate", nil)
 	cdc.RegisterConcrete(&MsgFundModuleAccounts{}, "comdex/lend/fund-module", nil)
 	cdc.RegisterConcrete(&LendPairsProposal{}, "comdex/lend/add-lend-pairs", nil)
-	cdc.RegisterConcrete(&UpdatePairProposal{}, "comdex/lend/update-lend-pairs", nil)
 	cdc.RegisterConcrete(&AddPoolsProposal{}, "comdex/lend/add-lend-pools", nil)
 	cdc.RegisterConcrete(&AddAssetToPairProposal{}, "comdex/lend/add-asset-to-pair-mapping", nil)
 	cdc.RegisterConcrete(&AddAssetRatesStats{}, "comdex/lend/add-asset-rates-stats", nil)
+	cdc.RegisterConcrete(&AddAuctionParamsProposal{}, "comdex/lend/add-auction-params", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
 		&LendPairsProposal{},
-		&UpdatePairProposal{},
 		&AddPoolsProposal{},
 		&AddAssetToPairProposal{},
 		&AddAssetRatesStats{},
+		&AddAuctionParamsProposal{},
 	)
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
@@ -47,6 +48,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgDraw{},
 		&MsgCloseBorrow{},
 		&MsgRepay{},
+		&MsgBorrowAlternate{},
 		&MsgFundModuleAccounts{},
 	)
 

@@ -189,7 +189,8 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 				AppID:                1,
 				AssetIDs:             []uint64{2},
 				IsSurplusAuctions:    []bool{true},
-				IsDebtAuctions:       []bool{true},
+				IsDebtAuctions:       []bool{false},
+				IsDistributor:        []bool{false},
 				AssetOutOraclePrices: []bool{false},
 				AssetOutPrices:       []uint64{1000000},
 			},
@@ -201,6 +202,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 				AssetIDs:             []uint64{3},
 				IsSurplusAuctions:    []bool{true},
 				IsDebtAuctions:       []bool{false},
+				IsDistributor:        []bool{false},
 				AssetOutOraclePrices: []bool{false},
 				AssetOutPrices:       []uint64{100000},
 			},
@@ -214,6 +216,7 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetId, tc.msg.AssetIDs[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsSurplusAuction, tc.msg.IsSurplusAuctions[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsDebtAuction, tc.msg.IsDebtAuctions[0])
+			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsDistributor, tc.msg.IsDistributor[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsAuctionActive, false)
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetOutOraclePrice, tc.msg.AssetOutOraclePrices[0])
 			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetOutPrice, tc.msg.AssetOutPrices[0])
@@ -337,7 +340,7 @@ func (s *KeeperTestSuite) TestDecreaseNetFeesCollected() {
 		s.Run(tc.name, func() {
 			netFeesData1, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID)
 			s.Require().True(found)
-			err := collectorKeeper.DecreaseNetFeeCollectedData(*ctx, tc.appID, tc.assetID, tc.fee)
+			err := collectorKeeper.DecreaseNetFeeCollectedData(*ctx, tc.appID, tc.assetID, tc.fee, netFeesData1)
 			if tc.errorExpected {
 				s.Require().Error(err)
 			} else {

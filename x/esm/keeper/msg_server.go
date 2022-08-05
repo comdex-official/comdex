@@ -29,6 +29,7 @@ func (m msgServer) DepositESM(goCtx context.Context, deposit *types.MsgDepositES
 	if err := m.keeper.DepositESM(ctx, deposit.Depositor, appID, deposit.Amount); err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.DepositESMGas, "DepositESMGas")
 
 	return &types.MsgDepositESMResponse{}, nil
 }
@@ -40,6 +41,7 @@ func (m msgServer) ExecuteESM(goCtx context.Context, execute *types.MsgExecuteES
 	if err := m.keeper.ExecuteESM(ctx, execute.Depositor, appID); err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.ExecuteESMGas, "ExecuteESMGas")
 
 	return &types.MsgExecuteESMResponse{}, nil
 }
@@ -53,6 +55,7 @@ func (k msgServer) MsgKillSwitch(c context.Context, msg *types.MsgKillRequest) (
 	if err := k.keeper.SetKillSwitchData(ctx, *msg.KillSwitchParams); err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.MsgKillSwitchGas, "MsgKillSwitchGas")
 
 	return &types.MsgKillResponse{}, nil
 }
@@ -65,7 +68,7 @@ func (k msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgColl
 		status = esmStatus.Status
 	}
 
-	if ctx.BlockTime().Before(esmStatus.EndTime) || status {
+	if ctx.BlockTime().Before(esmStatus.EndTime) && status {
 		return nil, types.ErrCoolOffPeriodRemains
 	}
 	if ctx.BlockTime().After(esmStatus.EndTime) && status {
@@ -85,6 +88,8 @@ func (k msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgColl
 			}
 		}
 	}
+
+	ctx.GasMeter().ConsumeGas(types.MsgCollateralRedemptionGas, "MsgCollateralRedemptionGas")
 
 	return nil, nil
 }

@@ -194,10 +194,10 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 	proposalHandlers := []govclient.ProposalHandler{
 		bandoraclemoduleclient.AddFetchPriceHandler,
 		lendclient.AddLendPairsHandler,
-		lendclient.UpdateLendPairsHandler,
 		lendclient.AddPoolHandler,
 		lendclient.AddAssetToPairHandler,
 		lendclient.AddAssetRatesStatsHandler,
+		lendclient.AddAuctionParamsHandler,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
@@ -553,7 +553,7 @@ func New(
 		&app.MarketKeeper,
 	)
 
-	app.LendKeeper = *lendkeeper.NewKeeper(
+	app.LendKeeper = lendkeeper.NewKeeper(
 		app.cdc,
 		app.keys[lendtypes.StoreKey],
 		app.keys[lendtypes.StoreKey],

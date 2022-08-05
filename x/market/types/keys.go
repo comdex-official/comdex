@@ -13,8 +13,7 @@ const (
 )
 
 var (
-	MarketKeyPrefix = []byte{0x13}
-
+	MarketKeyPrefix         = []byte{0x13}
 	MarketForAssetKeyPrefix = []byte{0x22}
 	PriceForMarketKeyPrefix = []byte{0x23}
 )

@@ -11,6 +11,7 @@ import (
 type XAddNewLendPairsInputs addNewLendPairsInputs
 type XAddLendPoolInputs addLendPoolInputs
 type XAddAssetRatesStatsInputs addAssetRatesStatsInputs
+type XSetAuctionParamsInputs addNewAuctionParamsInputs
 
 type XAddNewLendPairsInputsExceptions struct {
 	XAddNewLendPairsInputs
@@ -23,6 +24,11 @@ type XAddPoolInputsExceptions struct {
 }
 type XAddAssetRatesStatsInputsExceptions struct {
 	XAddAssetRatesStatsInputs
+	Other *string // Other won't raise an error
+}
+
+type XSetAuctionParamsInputsExceptions struct {
+	XSetAuctionParamsInputs
 	Other *string // Other won't raise an error
 }
 
@@ -64,6 +70,20 @@ func (release *addAssetRatesStatsInputs) UnmarshalJSON(data []byte) error {
 	}
 
 	*release = addAssetRatesStatsInputs(addAssetRatesStatsE.XAddAssetRatesStatsInputs)
+	return nil
+}
+
+// UnmarshalJSON should error if there are fields unexpected.
+func (release *addNewAuctionParamsInputs) UnmarshalJSON(data []byte) error {
+	var setAuctionParamsE XSetAuctionParamsInputsExceptions
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields() // Force
+
+	if err := dec.Decode(&setAuctionParamsE); err != nil {
+		return err
+	}
+
+	*release = addNewAuctionParamsInputs(setAuctionParamsE.XSetAuctionParamsInputs)
 	return nil
 }
 
@@ -131,4 +151,26 @@ func parseAssetRateStatsFlags(fs *pflag.FlagSet) (*addAssetRatesStatsInputs, err
 	}
 
 	return addAssetRatesStats, nil
+}
+
+func parseAuctionPramsFlags(fs *pflag.FlagSet) (*addNewAuctionParamsInputs, error) {
+	addNewAuctionParams := &addNewAuctionParamsInputs{}
+	addNewAuctionParamsFile, _ := fs.GetString(FlagSetAuctionParamsFile)
+
+	if addNewAuctionParamsFile == "" {
+		return nil, fmt.Errorf("must pass in a add auction params json using the --%s flag", FlagSetAuctionParamsFile)
+	}
+
+	contents, err := ioutil.ReadFile(addNewAuctionParamsFile) //nolint:gosec
+	if err != nil {
+		return nil, err
+	}
+
+	// make exception if unknown field exists
+	err = addNewAuctionParams.UnmarshalJSON(contents)
+	if err != nil {
+		return nil, err
+	}
+
+	return addNewAuctionParams, nil
 }

@@ -23,6 +23,7 @@ const (
 	MemStoreKey = "mem_rewards"
 
 	SecondsPerYear = 31557600
+	SecondsPerDay  = 86400
 )
 
 var (

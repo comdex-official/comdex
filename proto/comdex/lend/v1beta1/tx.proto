@@ -30,6 +30,8 @@ service Msg {
 
   rpc CloseBorrow(MsgCloseBorrow) returns (MsgCloseBorrowResponse);
 
+  rpc BorrowAlternate(MsgBorrowAlternate) returns (MsgBorrowAlternateResponse);
+
   // FundModuleAccounts funds an existing module account
   rpc FundModuleAccounts(MsgFundModuleAccounts) returns (MsgFundModuleAccountsResponse);
 }
@@ -91,6 +93,16 @@ message MsgCloseBorrow {
   uint64                   borrow_id = 2;
 }
 
+message MsgBorrowAlternate {
+  string                   lender = 1;
+  uint64                   asset_id = 2;
+  uint64                   pool_id = 3;
+  cosmos.base.v1beta1.Coin amount_in = 4 [(gogoproto.nullable) = false];
+  uint64                   pair_id = 5;
+  bool                     is_stable_borrow = 6;
+  cosmos.base.v1beta1.Coin amount_out = 7 [(gogoproto.nullable) = false];
+  uint64                   app_id = 8;
+}
 
 message MsgFundModuleAccounts {
   string                   moduleName = 1;
@@ -116,5 +128,7 @@ message MsgDepositBorrowResponse {}
 message MsgDrawResponse {}
 
 message MsgCloseBorrowResponse {}
+
+message MsgBorrowAlternateResponse {}
 
 message MsgFundModuleAccountsResponse {}

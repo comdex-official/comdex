@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"time"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
@@ -10,34 +11,21 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) SurplusActivator(ctx sdk.Context) error {
-	auctionMapData, found := k.GetAllAuctionMappingForApp(ctx)
-	if !found {
-		return nil
-	}
-	for _, data := range auctionMapData {
-		for _, inData := range data.AssetIdToAuctionLookup {
-			klwsParams, _ := k.GetKillSwitchData(ctx, data.AppId)
-			esmStatus, found := k.GetESMStatus(ctx, data.AppId)
-			status := false
-			if found {
-				status = esmStatus.Status
-			}
-			if inData.IsSurplusAuction && !inData.IsAuctionActive && !klwsParams.BreakerEnable && !status {
-				err := k.CreateSurplusAuction(ctx, data.AppId, inData.AssetId)
-				if err != nil {
-					return err
-				}
-			}
-			if inData.IsSurplusAuction && inData.IsAuctionActive {
-				err := k.SurplusAuctionClose(ctx, data.AppId, status)
-				if err != nil {
-					return err
-				}
-			}
+func (k Keeper) SurplusActivator(ctx sdk.Context, data collectortypes.CollectorAuctionLookupTable,
+	inData collectortypes.AssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
+
+	if inData.IsSurplusAuction && !inData.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
+		err := k.CreateSurplusAuction(ctx, data.AppId, inData.AssetId)
+		if err != nil {
+			return err
 		}
 	}
-
+	if inData.IsSurplusAuction && inData.IsAuctionActive {
+		err := k.SurplusAuctionClose(ctx, data.AppId, status)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

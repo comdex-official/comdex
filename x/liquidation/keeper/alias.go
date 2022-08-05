@@ -150,3 +150,23 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
 	return k.lend.GetPool(ctx, id)
 }
+
+func (k Keeper) GetBorrowStats(ctx sdk.Context) (borrowStats lendtypes.DepositStats, found bool) {
+	return k.lend.GetBorrowStats(ctx)
+}
+
+func (k Keeper) SetBorrowStats(ctx sdk.Context, borrowStats lendtypes.DepositStats) {
+	k.lend.SetBorrowStats(ctx, borrowStats)
+}
+
+func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats lendtypes.AssetStats, found bool) {
+	return k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, assetID, poolID)
+}
+
+func (k Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats lendtypes.AssetStats) {
+	k.lend.SetAssetStatsByPoolIDAndAssetID(ctx, AssetStats)
+}
+
+func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, borrowPos lendtypes.BorrowAsset, amount sdk.Int, inc bool) {
+	k.lend.UpdateBorrowStats(ctx, pair, borrowPos, amount, inc)
+}

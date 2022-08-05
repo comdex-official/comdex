@@ -10,20 +10,11 @@ const (
 	FlagNewLendPairFile        = "add-lend-pair-file"
 	FlagAddLendPoolFile        = "add-lend-pool-file"
 	FlagAddAssetRatesStatsFile = "add-asset-rates-stats-file"
+	FlagSetAuctionParamsFile   = "add-auction-params-file"
 )
 
-func ParseStringFromString(s string, separator string) ([]string, error) {
-	var parsedStrings []string
-	for _, s := range strings.Split(s, separator) {
-		s = strings.TrimSpace(s)
-
-		parsedStrings = append(parsedStrings, s)
-	}
-	return parsedStrings, nil
-}
-
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
-	var parsedInts []uint64
+	var parsedInt []uint64
 	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 
@@ -31,9 +22,9 @@ func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
 		if err != nil {
 			return []uint64{}, err
 		}
-		parsedInts = append(parsedInts, parsed)
+		parsedInt = append(parsedInt, parsed)
 	}
-	return parsedInts, nil
+	return parsedInt, nil
 }
 
 func ParseBoolFromString(s uint64) bool {
@@ -66,14 +57,22 @@ func FlagSetAddAssetRatesStatsMapping() *flag.FlagSet {
 	return fs
 }
 
+func FlagSetAuctionParams() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagSetAuctionParamsFile, "", "add auction params json file path")
+	return fs
+}
+
 type addNewLendPairsInputs struct {
-	AssetIn        string `json:"asset_in"`
-	AssetOut       string `json:"asset_out"`
-	IsInterPool    string `json:"is_inter_pool"`
-	AssetOutPoolID string `json:"asset_out_pool_id"`
-	Title          string
-	Description    string
-	Deposit        string
+	AssetIn         string `json:"asset_in"`
+	AssetOut        string `json:"asset_out"`
+	IsInterPool     string `json:"is_inter_pool"`
+	AssetOutPoolID  string `json:"asset_out_pool_id"`
+	MinUSDValueLeft string `json:"min_usd_value_left"`
+	Title           string
+	Description     string
+	Deposit         string
 }
 
 type addLendPoolInputs struct {
@@ -83,6 +82,8 @@ type addLendPoolInputs struct {
 	SecondBridgedAssetID string `json:"second_bridged_asset_id"`
 	AssetID              string `json:"asset_id"`
 	IsBridgedAsset       string `json:"is_bridged_asset"`
+	CPoolName            string `json:"c_pool_name"`
+	ReserveFunds         string `json:"reserve_funds"`
 	Title                string
 	Description          string
 	Deposit              string
@@ -101,9 +102,24 @@ type addAssetRatesStatsInputs struct {
 	LTV                  string `json:"ltv"`
 	LiquidationThreshold string `json:"liquidation_threshold"`
 	LiquidationPenalty   string `json:"liquidation_penalty"`
+	LiquidationBonus     string `json:"liquidation_bonus"`
 	ReserveFactor        string `json:"reserve_factor"`
 	CAssetID             string `json:"c_asset_id"`
 	Title                string
 	Description          string
 	Deposit              string
+}
+
+type addNewAuctionParamsInputs struct {
+	AppID                  string `json:"app_id"`
+	AuctionDurationSeconds string `json:"auction_duration_seconds"`
+	Buffer                 string `json:"buffer"`
+	Cusp                   string `json:"cusp"`
+	Step                   string `json:"step"`
+	PriceFunctionType      string `json:"price_function_type"`
+	DutchId                string `json:"dutch_id"`
+	BidDurationSeconds     string `json:"bid_duration_seconds"`
+	Title                  string
+	Description            string
+	Deposit                string
 }

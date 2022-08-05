@@ -18,9 +18,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgCreateLockerRequest:
 			res, err := server.MsgCreateLocker(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddWhiteListedAssetRequest:
-			res, err := server.MsgAddWhiteListedAsset(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgDepositAssetRequest:
 			res, err := server.MsgDepositAsset(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

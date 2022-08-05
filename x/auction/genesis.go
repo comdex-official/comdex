@@ -11,15 +11,24 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
 	for _, item := range state.SurplusAuction {
-		k.SetSurplusAuction(ctx, item)
+		err := k.SetSurplusAuction(ctx, item)
+		if err != nil {
+			return
+		}
 	}
 
 	for _, item := range state.DebtAuction {
-		k.SetDebtAuction(ctx, item)
+		err := k.SetDebtAuction(ctx, item)
+		if err != nil {
+			return
+		}
 	}
 
 	for _, item := range state.DutchAuction {
-		k.SetDutchAuction(ctx, item)
+		err := k.SetDutchAuction(ctx, item)
+		if err != nil {
+			return
+		}
 	}
 
 	for _, item := range state.ProtocolStatistics {
@@ -29,18 +38,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	for _, item := range state.AuctionParams {
 		k.SetAuctionParams(ctx, item)
 	}
-
-	// for _, item := range state.SurplusBiddings {
-	// 	k.SetSurplusUserBidding(ctx, item)
-	// }
-
-	// for _, item := range state.DebtBiddings {
-	// 	k.SetDebtUserBidding(ctx, item)
-	// }
-
-	// for _, item := range state.DutchBiddings {
-	// 	k.SetDutchUserBidding(ctx, item)
-	// }
 
 }
 
@@ -52,9 +49,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetAllDutchAuctions(ctx),
 		k.GetAllProtocolStat(ctx),
 		k.GetAllAuctionParams(ctx),
-		// k.GetAllSurplusUserBiddings(ctx),
-		// k.GetAllDebtUserBidding(ctx),
-		// k.GetAllDutchUserBiddings(ctx),
 		k.GetParams(ctx),
 	)
 }

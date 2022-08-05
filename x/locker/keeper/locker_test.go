@@ -29,13 +29,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			Denom:     "ucmdx",
 			Decimals:  1000000,
 			IsOnChain: true}
-			// , {Name: "CMST",
-			// Denom:     "ucmst",
-			// Decimals:  1000000,
-			// IsOnChain: true}, {Name: "HARBOR",
-			// Denom:     "uharbor",
-			// Decimals:  1000000,
-			// IsOnChain: true},
+
 			err = assetKeeper.AddAssetRecords(*ctx, msg3)
 			s.Require().NoError(err)
 
@@ -44,6 +38,13 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	Decimals:  1000000,
 	IsOnChain: true}
 	err = assetKeeper.AddAssetRecords(*ctx, msg4)
+	s.Require().NoError(err)
+
+	msg5 := assetTypes.Asset{Name: "HARBOR",
+	Denom:     "uharbor",
+	Decimals:  1000000,
+	IsOnChain: true}
+	err = assetKeeper.AddAssetRecords(*ctx, msg5)
 	s.Require().NoError(err)
 }
 	
@@ -82,7 +83,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 		},
 	} {
 		s.Run(tc.name, func() {
-			_, err := server.MsgAddWhiteListedAsset(sdk.WrapSDKContext(*ctx), &tc.msg)
+			_, err := lockerKeeper.AddWhiteListedAsset(sdk.WrapSDKContext(*ctx), &tc.msg)
 			s.Require().NoError(err)
 		})
 	}

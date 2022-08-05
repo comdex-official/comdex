@@ -71,6 +71,7 @@ type MsgSetAuctionMappingForApp struct {
 	AssetIDs             []uint64 `json:"asset_id"`
 	IsSurplusAuctions    []bool   `json:"is_surplus_auction"`
 	IsDebtAuctions       []bool   `json:"is_debt_auction"`
+	IsDistributor        []bool   `json:"is_distributor"`
 	AssetOutOraclePrices []bool   `json:"asset_out_oracle_price"`
 	AssetOutPrices       []uint64 `json:"asset_out_price"`
 }

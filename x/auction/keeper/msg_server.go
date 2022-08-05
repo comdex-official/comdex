@@ -27,6 +27,7 @@ func (k msgServer) MsgPlaceSurplusBid(goCtx context.Context, msg *types.MsgPlace
 	if err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.SurplusBidGas, "SurplusBidGas")
 	return &types.MsgPlaceSurplusBidResponse{}, nil
 }
 
@@ -40,6 +41,7 @@ func (k msgServer) MsgPlaceDebtBid(goCtx context.Context, msg *types.MsgPlaceDeb
 	if err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.DebtBidGas, "DebtBidGas")
 	return &types.MsgPlaceDebtBidResponse{}, nil
 }
 
@@ -53,6 +55,7 @@ func (k msgServer) MsgPlaceDutchBid(goCtx context.Context, msg *types.MsgPlaceDu
 	if err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.DutchBidGas, "DutchBidGas")
 	return &types.MsgPlaceDutchBidResponse{}, nil
 }
 
@@ -66,5 +69,6 @@ func (k msgServer) MsgPlaceDutchLendBid(goCtx context.Context, msg *types.MsgPla
 	if err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.DutchLendBidGas, "DutchLendBidGas")
 	return &types.MsgPlaceDutchLendBidResponse{}, nil
 }

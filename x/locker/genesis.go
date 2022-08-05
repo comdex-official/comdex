@@ -19,7 +19,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	}
 
 	for _, item := range state.LockerTotalRewardsByAssetAppWise {
-		k.SetLockerTotalRewardsByAssetAppWise(ctx, item)
+		err := k.SetLockerTotalRewardsByAssetAppWise(ctx, item)
+		if err != nil {
+			return
+		}
 	}
 
 	for _, item := range state.LockerLookupTable {

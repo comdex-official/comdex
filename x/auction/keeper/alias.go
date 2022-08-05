@@ -251,3 +251,19 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
 	return k.lend.GetPool(ctx, id)
 }
+
+func (k Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams lendtypes.AuctionParams, found bool) {
+	return k.lend.GetAddAuctionParamsData(ctx, appID)
+}
+
+func (k Keeper) GetReserveDepositStats(ctx sdk.Context) (depositStats lendtypes.DepositStats, found bool) {
+	return k.lend.GetReserveDepositStats(ctx)
+}
+
+func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int {
+	return k.lend.ModuleBalance(ctx, moduleName, denom)
+}
+
+func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
+	return k.lend.UpdateReserveBalances(ctx, assetID, moduleName, payment, inc)
+}

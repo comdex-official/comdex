@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"
 
@@ -10,11 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) LendDutchActivator(ctx sdk.Context) error {
-	lockedVaults := k.GetLockedVaults(ctx)
-	if len(lockedVaults) == 0 {
-		return auctiontypes.ErrorInvalidLockedVault
-	}
+func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVaults []liquidationtypes.LockedVault) error {
 	for _, lockedVault := range lockedVaults {
 		if lockedVault.Kind != nil {
 			if !lockedVault.IsAuctionInProgress {
@@ -22,33 +18,36 @@ func (k Keeper) LendDutchActivator(ctx sdk.Context) error {
 				if !found {
 					return auctiontypes.ErrorInvalidPair
 				}
-				assetIn, found := k.GetAsset(ctx, extendedPair.AssetIn)
-				if !found {
-					return auctiontypes.ErrorAssetNotFound
-				}
+				assetIn, _ := k.GetAsset(ctx, extendedPair.AssetIn)
 
-				assetOut, found := k.GetAsset(ctx, extendedPair.AssetOut)
-				if !found {
-					return auctiontypes.ErrorAssetNotFound
-				}
+				assetOut, _ := k.GetAsset(ctx, extendedPair.AssetOut)
+
 				assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 				if !found {
-					return auctiontypes.ErrorPrices
+					ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
+					continue
 				}
 				//assetInPrice is the collateral price
 				////Here collateral to be auctioned is received in ucollateral*uusd so inorder to get back amount we divide with uusd of assetIn
-				outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))).TruncateInt())
+				AssetInPrice := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))
+				if AssetInPrice.Equal(sdk.ZeroDec()) {
+					ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
+					continue
+				}
+				outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(AssetInPrice).TruncateInt())
 				inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())
 
 				AssetRatesStats, found := k.GetAssetRatesStats(ctx, extendedPair.AssetIn)
 				if !found {
-					return lendtypes.ErrAssetStatsNotFound
+					ctx.Logger().Error(auctiontypes.ErrorAssetRates.Error(), lockedVault.LockedVaultId)
+					continue
 				}
 				liquidationPenalty := AssetRatesStats.LiquidationPenalty
 
 				err1 := k.StartLendDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
 				if err1 != nil {
-					return err1
+					ctx.Logger().Error(auctiontypes.ErrorInStartDutchAuction.Error(), lockedVault.LockedVaultId)
+					continue
 				}
 			}
 		}
@@ -83,14 +82,14 @@ func (k Keeper) StartLendDutchAuction(
 		return auctiontypes.ErrorPrices
 	}
 
-	auctionParams, found := k.GetAuctionParams(ctx, appID)
+	auctionParams, found := k.GetAddAuctionParamsData(ctx, appID)
 	if !found {
 		return auctiontypes.ErrorInvalidAuctionParams
 	}
 
 	BorrowMetaData := lockedVault.GetBorrowMetaData()
 	LendPos, _ := k.GetLend(ctx, BorrowMetaData.LendingId)
-	pool, _ := k.GetPool(ctx, LendPos.PoolId)
+	pool, _ := k.GetPool(ctx, LendPos.PoolID)
 	err := k.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(outFlowToken))
 	if err != nil {
 		return err
@@ -150,7 +149,7 @@ func (k Keeper) StartLendDutchAuction(
 	return nil
 }
 
-func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder sdk.AccAddress, bid sdk.Coin, _ sdk.Dec) error {
+func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder sdk.AccAddress, bid sdk.Coin, max sdk.Dec) error {
 	auction, err := k.GetDutchLendAuction(ctx, appID, auctionMappingID, auctionID)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction id %d not found", auctionID)
@@ -160,6 +159,13 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 	}
 	if bid.Amount.GT(auction.OutflowTokenCurrentAmount.Amount) {
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid amount can't be greater than collateral available")
+	}
+
+	max = k.GetUUSDFromUSD(ctx, max)
+
+	//Here OutflowToken current price is in uusd and max is in uusd
+	if max.LT(auction.OutflowTokenCurrentPrice.Ceil()) {
+		return auctiontypes.ErrorInvalidDutchPrice
 	}
 
 	// slice tells amount of collateral user should be given
@@ -248,7 +254,7 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 		//send left overcollateral to vault owner as target cmst reached and also
 
 		total := auction.OutflowTokenCurrentAmount
-		err := k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, sdk.AccAddress(lockedVault.Owner), sdk.NewCoins(total))
+		err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, sdk.AccAddress(lockedVault.Owner), sdk.NewCoins(total))
 		if err != nil {
 			return err
 		}
@@ -268,11 +274,21 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 
 		// take requiredAmount from reserve-pool
 		requiredAmount := auction.InflowTokenTargetAmount.Sub(auction.InflowTokenCurrentAmount)
-		err := k.SendCoinsFromModuleToModule(ctx, lendtypes.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(requiredAmount))
+		//get reserve balance if the requiredAmount is available in the reserves or not
+		modBal := k.ModuleBalance(ctx, lendtypes.ModuleName, requiredAmount.Denom)
+		if modBal.LT(requiredAmount.Amount) {
+			return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "Reserve pool having insufficient balance for this bid")
+		}
+
+		// reduce the qty from reserve pool
+		pairID := lockedVault.ExtendedPairId
+		lendPair, _ := k.GetLendPair(ctx, pairID)
+		inFlowTokenAssetID := lendPair.AssetOut
+
+		err = k.UpdateReserveBalances(ctx, inFlowTokenAssetID, lendtypes.ModuleName, requiredAmount, false)
 		if err != nil {
 			return err
 		}
-
 		err = k.SetDutchLendAuction(ctx, auction)
 		if err != nil {
 			return err
@@ -362,7 +378,12 @@ func (k Keeper) CloseDutchLendAuction(
 	penaltyCoin := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
 
 	// send penalty
-	err := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, lendtypes.ModuleName, sdk.NewCoins(penaltyCoin))
+
+	pairID := lockedVault.ExtendedPairId
+	lendPair, _ := k.GetLendPair(ctx, pairID)
+	inFlowTokenAssetID := lendPair.AssetOut
+
+	err := k.UpdateReserveBalances(ctx, inFlowTokenAssetID, auctiontypes.ModuleName, penaltyCoin, true)
 	if err != nil {
 		return err
 	}
@@ -406,7 +427,7 @@ func (k Keeper) CloseDutchLendAuction(
 
 func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 	dutchAuctions := k.GetDutchLendAuctions(ctx, appID)
-	auctionParams, found := k.GetAuctionParams(ctx, appID)
+	auctionParams, found := k.GetAddAuctionParamsData(ctx, appID)
 	if !found {
 		return nil
 	}
@@ -435,19 +456,19 @@ func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 		}
 		//check if auction need to be restarted
 		if ctx.BlockTime().After(dutchAuction.EndTime) {
-			outFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
+			OutFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
 			if !found {
 				return auctiontypes.ErrorPrices
 			}
 			timeNow := ctx.BlockTime()
 			dutchAuction.StartTime = timeNow
 			dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
-			outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(outFlowTokenCurrentPrice), auctionParams.Buffer)
+			outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(OutFlowTokenCurrentPrice), auctionParams.Buffer)
 			outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
 			dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
 			dutchAuction.OutflowTokenEndPrice = outFlowTokenEndPrice
 			dutchAuction.OutflowTokenCurrentPrice = outFlowTokenInitialPrice
-			err := k.SetDutchLendAuction(ctx, dutchAuction)
+			err = k.SetDutchLendAuction(ctx, dutchAuction)
 			if err != nil {
 				return err
 			}
@@ -458,17 +479,10 @@ func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 	return nil
 }
 
-func (k Keeper) RestartLendDutch(ctx sdk.Context) error {
-	appIds, found := k.GetApps(ctx)
-	if !found {
-		return assettypes.AppIdsDoesntExist
-	}
-	for _, appId := range appIds {
-
-		err := k.RestartDutchLendAuctions(ctx, appId.Id)
-		if err != nil {
-			return err
-		}
+func (k Keeper) RestartLendDutch(ctx sdk.Context, appID uint64) error {
+	err := k.RestartDutchLendAuctions(ctx, appID)
+	if err != nil {
+		return err
 	}
 	return nil
 }

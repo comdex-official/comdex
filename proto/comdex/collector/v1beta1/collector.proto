@@ -24,7 +24,7 @@ message CollectorData {
     (gogoproto.moretags)   = "yaml:\"collected_opening_fee\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  string liquidation_rewards_collected = 5 [
+  string liquidation_rewards_collected = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags)   = "yaml:\"liquidation_rewards_collected\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
@@ -110,8 +110,9 @@ message AssetIdToAuctionLookupTable {
   uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
   bool is_surplus_auction = 2 [(gogoproto.moretags) = "yaml:\"is_surplus_auction\""];
   bool is_debt_auction = 3 [(gogoproto.moretags) = "yaml:\"is_debt_auction\""];
-  bool is_auction_active = 4 [(gogoproto.moretags) = "yaml:\"is_auction_active\""];
-  bool asset_out_oracle_price = 5 [ (gogoproto.moretags) = "yaml:\"asset_out_oracle_price\"" ];
-  uint64 asset_out_price     = 6 [ 
+  bool is_distributor = 4 [(gogoproto.moretags) = "yaml:\"is_distributor\""];
+  bool is_auction_active = 5 [(gogoproto.moretags) = "yaml:\"is_auction_active\""];
+  bool asset_out_oracle_price = 6 [ (gogoproto.moretags) = "yaml:\"asset_out_oracle_price\"" ];
+  uint64 asset_out_price     = 7 [ 
     (gogoproto.moretags) = "yaml:\"asset_out_price\"" ];
 }

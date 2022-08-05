@@ -440,9 +440,9 @@ func (q QueryServer) QueryDutchLendBiddings(c context.Context, req *types.QueryD
 		item []types.DutchBiddings
 	)
 	if req.History {
-		item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
+		item = q.GetHistoryDutchLendUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
-		item = q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)
+		item = q.GetDutchLendUserBiddings(ctx, req.Bidder, req.AppId)
 	}
 
 	return &types.QueryDutchLendBiddingsResponse{
