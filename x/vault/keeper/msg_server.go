@@ -35,8 +35,8 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
@@ -110,7 +110,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 			return nil, err
 		}
 	}
-	
+
 	//Mint Tokens for user
 	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.AmountOut)); err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	if extendedPairVault.DrawDownFee.IsZero() && msg.AmountOut.GT(sdk.ZeroInt()) { //Send Rest to user
 		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetOutData.Denom, msg.AmountOut)); err != nil {
 			return nil, err
-	}
+		}
 	} else {
 		//If not zero deduct send to collector//////////
 		//one approach could be
@@ -131,7 +131,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 			if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 				return nil, err
 			}
-		
+
 			err := k.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
 			if err != nil {
 				return nil, err
@@ -153,7 +153,6 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	updatedCounter := counterVal + 1
 	newVault.Id = appMapping.ShortName + strconv.FormatUint(updatedCounter, 10)
 	newVault.AmountIn = msg.AmountIn
-
 
 	closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
 
@@ -308,8 +307,8 @@ func (k msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (
 // MsgWithdraw Withdrawing collateral.
 func (k msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
@@ -410,8 +409,8 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -538,8 +537,8 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -607,7 +606,7 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 			if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
 				return nil, err
 			}
-		//			SEND TO COLLECTOR- msg.Amount
+			//			SEND TO COLLECTOR- msg.Amount
 			if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.Amount))); err != nil {
 				return nil, err
 			}
@@ -650,8 +649,8 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 		}
 
 		userVault.AmountOut = updatedUserDebt
-		zeroval := sdk.ZeroInt()
-		userVault.InterestAccumulated = zeroval
+		zeroVal := sdk.ZeroInt()
+		userVault.InterestAccumulated = zeroVal
 		k.SetVault(ctx, userVault)
 		appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
 		k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, updatedUserSentAmountAfterFeesDeduction, false)
@@ -672,8 +671,8 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -791,8 +790,8 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	//Checking if extended pair exists
@@ -853,18 +852,18 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	}
 
 	if msg.Amount.GT(sdk.ZeroInt()) {
-	//Take amount from user
+		//Take amount from user
 		if err := k.SendCoinFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
 			return nil, err
 		}
-	//Mint Tokens for user
+		//Mint Tokens for user
 
 		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
 			return nil, err
 		}
 	}
 
-	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdk.ZeroInt())  {
+	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdk.ZeroInt()) {
 		//Send Rest to user
 		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetOutData.Denom, msg.Amount)); err != nil {
 			return nil, err
@@ -921,8 +920,8 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
@@ -1007,10 +1006,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 		}
 	} else {
 		//If not zero deduct send to collector//////////
-		//
 		//			COLLECTOR FUNCTION
-		//
-		//
 		/////////////////////////////////////////////////
 
 		collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
@@ -1054,8 +1050,8 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
@@ -1132,10 +1128,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 		updatedAmount = msg.Amount
 	} else {
 		//If not zero deduct send to collector//////////
-		//
 		//			COLLECTOR FUNCTION
-		//
-		//
 		/////////////////////////////////////////////////
 		collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
 		if collectorShare.GT(sdk.ZeroInt()) {
@@ -1151,7 +1144,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 		updatedAmount = msg.Amount.Sub(collectorShare)
 
 		if updatedAmount.GT(sdk.ZeroInt()) {
-		//BurnTokens for user
+			//BurnTokens for user
 			if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, updatedAmount)); err != nil {
 				return nil, err
 			}

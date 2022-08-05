@@ -47,8 +47,8 @@ func ESMStatusKey(id uint64) []byte {
 	return append(ESMStatusPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func KillSwitchData(appId uint64) []byte {
-	return append(KillSwitchDataKey, sdk.Uint64ToBigEndian(appId)...)
+func KillSwitchData(appID uint64) []byte {
+	return append(KillSwitchDataKey, sdk.Uint64ToBigEndian(appID)...)
 }
 
 func UserDepositByAppKey(owner string, id uint64) []byte {

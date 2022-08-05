@@ -211,7 +211,7 @@ func queryDataAfterCoolOff() *cobra.Command {
 			res, err := queryClient.QueryDataAfterCoolOff(
 				context.Background(),
 				&types.QueryDataAfterCoolOffRequest{
-					Id:        id,
+					Id: id,
 				},
 			)
 			if err != nil {

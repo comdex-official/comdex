@@ -71,6 +71,9 @@ $ %s tx %s create-pair 1 uatom stake --from mykey
 			quoteCoinDenom := args[2]
 
 			msg := types.NewMsgCreatePair(appID, clientCtx.GetFromAddress(), baseCoinDenom, quoteCoinDenom)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -116,6 +119,9 @@ $ %s tx %s create-pool 1 1 1000000000uatom,50000000000stake --from mykey
 			}
 
 			msg := types.NewMsgCreatePool(appID, clientCtx.GetFromAddress(), pairID, depositCoins)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -161,6 +167,9 @@ $ %s tx %s deposit 1 1 1000000000uatom,50000000000stake --from mykey
 			}
 
 			msg := types.NewMsgDeposit(appID, clientCtx.GetFromAddress(), poolID, depositCoins)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -211,6 +220,9 @@ $ %s tx %s withdraw 1 1 10000pool1 --from mykey
 				poolID,
 				poolCoin,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -301,6 +313,9 @@ $ %s tx %s limit-order 1 1 s 10000uatom stake 2.0 10000 --order-lifespan=10m --f
 				amt,
 				orderLifespan,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -387,6 +402,10 @@ $ %s tx %s market-order 1 1 s 10000uatom stake 10000 --order-lifespan=10m --from
 				orderLifespan,
 			)
 
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -438,6 +457,10 @@ $ %s tx %s cancel-order 1 1 1 --from mykey
 				orderID,
 			)
 
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -483,6 +506,10 @@ $ %s tx %s cancel-all-orders 1 1,3 --from mykey
 			}
 
 			msg := types.NewMsgCancelAllOrders(appID, clientCtx.GetFromAddress(), pairIDs)
+
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -533,6 +560,9 @@ $ %s tx %s farm 1 1 10000pool1 --from mykey
 				clientCtx.GetFromAddress(),
 				farmedPoolCoin,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -583,6 +613,9 @@ $ %s tx %s unfarm 1 1 10000pool1 --from mykey
 				clientCtx.GetFromAddress(),
 				unfarmingPoolCoin,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},

@@ -2,10 +2,10 @@ package types
 
 func NewGenesisState(lockedVault []LockedVault, lockedVaultToAppMapping []LockedVaultToAppMapping, whitelistedAppIds WhitelistedAppIds, params Params) *GenesisState {
 	return &GenesisState{
-		LockedVault: lockedVault,
+		LockedVault:             lockedVault,
 		LockedVaultToAppMapping: lockedVaultToAppMapping,
-		WhitelistedAppIds: whitelistedAppIds,
-		Params: params,
+		WhitelistedAppIds:       whitelistedAppIds,
+		Params:                  params,
 	}
 }
 

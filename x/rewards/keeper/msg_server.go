@@ -23,7 +23,7 @@ var _ types.MsgServer = msgServer{}
 func (m msgServer) CreateGauge(goCtx context.Context, msg *types.MsgCreateGauge) (*types.MsgCreateGaugeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	err := m.Keeper.ValidateMsgCreateCreateGauge(ctx, msg)
+	err := m.Keeper.ValidateMsgCreateGauge(ctx, msg)
 	if err != nil {
 		return nil, err
 	}

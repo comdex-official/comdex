@@ -18,18 +18,18 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVaults []liquidationtypes.
 			if !lockedVault.IsAuctionInProgress {
 				extendedPair, found := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
 				if !found {
-					ctx.Logger().Error(auctiontypes.ErrorInvalidPair.Error(),lockedVault.LockedVaultId)
+					ctx.Logger().Error(auctiontypes.ErrorInvalidPair.Error(), lockedVault.LockedVaultId)
 					continue
 				}
 				pair, _ := k.GetPair(ctx, extendedPair.PairId)
-				
+
 				assetIn, _ := k.GetAsset(ctx, pair.AssetIn)
 
 				assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
 
 				assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
 				if !found {
-					ctx.Logger().Error(auctiontypes.ErrorPrices.Error(),lockedVault.LockedVaultId)
+					ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
 					continue
 				}
 				//assetInPrice is the collateral price
@@ -41,7 +41,7 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVaults []liquidationtypes.
 
 				err1 := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
 				if err1 != nil {
-					ctx.Logger().Error(auctiontypes.ErrorInStartDutchAuction.Error(),lockedVault.LockedVaultId)
+					ctx.Logger().Error(auctiontypes.ErrorInStartDutchAuction.Error(), lockedVault.LockedVaultId)
 					continue
 				}
 			}

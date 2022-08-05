@@ -491,15 +491,14 @@ func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.Collec
 	return nil
 }
 
-func (k Keeper) DuplicateCheck(ctx sdk.Context, appId, assetId uint64) (found bool, index int) {
-	result, found := k.GetAuctionMappingForApp(ctx, appId)
+func (k Keeper) DuplicateCheck(ctx sdk.Context, appID, assetID uint64) (found bool, index int) {
+	result, found := k.GetAuctionMappingForApp(ctx, appID)
 	if !found {
 		return false, 0
-	} else {
-		for i, data := range result.AssetIdToAuctionLookup {
-			if data.AssetId == assetId {
-				return true, i
-			}
+	}
+	for i, data := range result.AssetIdToAuctionLookup {
+		if data.AssetId == assetID {
+			return true, i
 		}
 	}
 
@@ -730,7 +729,7 @@ func (k Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBindi
 		if auctionMappingBinding.IsSurplusAuctions[i] && auctionMappingBinding.IsDistributor[i] {
 			return types.ErrorSurplusDistributerCantbeTrue
 		}
-		if auctionMappingBinding.IsSurplusAuctions[i] && auctionMappingBinding.IsDebtAuctions[i]  {
+		if auctionMappingBinding.IsSurplusAuctions[i] && auctionMappingBinding.IsDebtAuctions[i] {
 			return types.ErrorSurplusDebtrCantbeTrueSameTime
 		}
 		duplicate, index := k.DuplicateCheck(ctx, auctionMappingBinding.AppID, auctionMappingBinding.AssetIDs[i])

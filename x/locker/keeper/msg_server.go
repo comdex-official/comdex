@@ -223,7 +223,6 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 		}
 	}
 
-
 	lockerData.NetBalance = lockerData.NetBalance.Add(msg.Amount)
 	k.SetLocker(ctx, lockerData)
 
@@ -293,7 +292,6 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 	}
 
 	lockerData.NetBalance = lockerData.NetBalance.Sub(msg.Amount)
-
 
 	if msg.Amount.GT(sdk.ZeroInt()) {
 		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {

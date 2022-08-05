@@ -304,7 +304,6 @@ func (k Keeper) VerifyCollaterlizationRatio(
 	minCrRequired sdk.Dec,
 	statusEsm bool,
 ) error {
-
 	collaterlizationRatio, err := k.CalculateCollaterlizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
 	if err != nil {
 		return err
@@ -506,39 +505,39 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, Exten
 	extendedPairVault, _ := k.GetPairsVault(ctx, ExtendedPairVaultID)
 	counterVal, _, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
-	zero_val := sdk.ZeroInt()
-	var new_vault types.Vault
-	updated_counter := counterVal + 1
-	new_vault.Id = appMapping.ShortName + strconv.FormatUint(updated_counter, 10)
-	new_vault.AmountIn = AmountIn
+	zeroVal := sdk.ZeroInt()
+	var newVault types.Vault
+	updatedCounter := counterVal + 1
+	newVault.Id = appMapping.ShortName + strconv.FormatUint(updatedCounter, 10)
+	newVault.AmountIn = AmountIn
 
-	new_vault.ClosingFeeAccumulated = zero_val
-	new_vault.AmountOut = AmountOut
-	new_vault.AppId = appMapping.Id
-	new_vault.InterestAccumulated = zero_val
-	new_vault.Owner = From
-	new_vault.CreatedAt = ctx.BlockTime()
-	new_vault.ExtendedPairVaultID = extendedPairVault.Id
-	k.SetVault(ctx, new_vault)
+	newVault.ClosingFeeAccumulated = zeroVal
+	newVault.AmountOut = AmountOut
+	newVault.AppId = appMapping.Id
+	newVault.InterestAccumulated = zeroVal
+	newVault.Owner = From
+	newVault.CreatedAt = ctx.BlockTime()
+	newVault.ExtendedPairVaultID = extendedPairVault.Id
+	k.SetVault(ctx, newVault)
 
 	//get extendedpair lookup table data
 	// push the new vault id in that extended pair of the app
 	// update the counter of the extendedpair lookup tabe
 	////// ///////
 
-	app_extended_pair_vault_data, _ := k.GetAppExtendedPairVaultMapping(ctx, AppId)
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, AppId)
 
-	app_extended_pair_vault_data.Counter = updated_counter
+	appExtendedPairVaultData.Counter = updatedCounter
 
-	for _, appData := range app_extended_pair_vault_data.ExtendedPairVaults {
+	for _, appData := range appExtendedPairVaultData.ExtendedPairVaults {
 
-		if appData.ExtendedPairId == new_vault.ExtendedPairVaultID {
+		if appData.ExtendedPairId == newVault.ExtendedPairVaultID {
 
-			appData.VaultIds = append(appData.VaultIds, new_vault.Id)
+			appData.VaultIds = append(appData.VaultIds, newVault.Id)
 		}
 	}
 
-	err := k.SetAppExtendedPairVaultMapping(ctx, app_extended_pair_vault_data)
+	err := k.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
 	if err != nil {
 		return err
 	}
@@ -546,21 +545,21 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, Exten
 	//////////////////
 	// k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, updated_counter, new_vault)
 
-	userVaultExtendedpairMappingData, _ := k.GetUserVaultExtendedPairMapping(ctx, From)
+	userVaultExtendedPairMappingData, _ := k.GetUserVaultExtendedPairMapping(ctx, From)
 
 	//So only need to add the locker id with asset
-	var userExtendedpairData types.ExtendedPairToVaultMapping
-	userExtendedpairData.VaultId = new_vault.Id
-	userExtendedpairData.ExtendedPairId = new_vault.ExtendedPairVaultID
+	var userExtendedPairData types.ExtendedPairToVaultMapping
+	userExtendedPairData.VaultId = newVault.Id
+	userExtendedPairData.ExtendedPairId = newVault.ExtendedPairVaultID
 
-	for _, appData := range userVaultExtendedpairMappingData.UserVaultApp {
+	for _, appData := range userVaultExtendedPairMappingData.UserVaultApp {
 		if appData.AppId == appMapping.Id {
 
-			appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &userExtendedpairData)
+			appData.UserExtendedPairVault = append(appData.UserExtendedPairVault, &userExtendedPairData)
 		}
 
 	}
-	k.SetUserVaultExtendedPairMapping(ctx, userVaultExtendedpairMappingData)
+	k.SetUserVaultExtendedPairMapping(ctx, userVaultExtendedPairMappingData)
 
 	return nil
 }

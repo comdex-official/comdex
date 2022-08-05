@@ -4,10 +4,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 )
-
 
 func (k Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coin sdk.Coin) error {
 	if coin.IsZero() {

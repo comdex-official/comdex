@@ -2,12 +2,12 @@ package types
 
 func NewGenesisState(surplusAuction []SurplusAuction, debtAuction []DebtAuction, dutchAuction []DutchAuction, protocolStatistics []ProtocolStatistics, auctionParams []AuctionParams, params Params) *GenesisState {
 	return &GenesisState{
-		SurplusAuction: surplusAuction,
-		DebtAuction: debtAuction,
-		DutchAuction: dutchAuction,
+		SurplusAuction:     surplusAuction,
+		DebtAuction:        debtAuction,
+		DutchAuction:       dutchAuction,
 		ProtocolStatistics: protocolStatistics,
-		AuctionParams: auctionParams,
-		Params: params,
+		AuctionParams:      auctionParams,
+		Params:             params,
 	}
 }
 
