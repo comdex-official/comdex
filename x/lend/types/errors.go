@@ -53,4 +53,5 @@ var (
 	SendCoinsFromModuleToAccountInLendIsZero = sdkerrors.Register(ModuleName, 1160, "Coin value in module to account transfer in lend is zero")
 	SendCoinsFromAccountToModuleInLendIsZero = sdkerrors.Register(ModuleName, 1161, "Coin value in account to module transfer in lend is zero")
 	ErrAverageBorrowRate                     = sdkerrors.Register(ModuleName, 1162, "Average Borrow Rate Error")
+	ErrInsufficientFunds                     = sdkerrors.Register(ModuleName, 1163, "Insufficient Funds")
 )

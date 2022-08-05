@@ -977,8 +977,10 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 	}
 	lenderAddr, _ := sdk.AccAddressFromBech32(lendPos.Owner)
 
+	if borrowPos.UpdatedAmountOut.LTE(sdk.NewInt(int64(types.Uint64Zero))) {
+		return types.ErrInsufficientFunds
+	}
 	amt := sdk.NewCoins(sdk.NewCoin(assetOut.Denom, borrowPos.UpdatedAmountOut))
-
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, amt); err != nil {
 		return err
 	}
@@ -991,6 +993,9 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 		return types.ErrReserveRatesNotFound
 	}
 	amtToReservePool := sdk.NewDec(int64(borrowPos.AmountOut.Amount.Uint64())).Mul(reserveRates)
+	if sdk.NewInt(amtToReservePool.TruncateInt64()).LTE(sdk.NewInt(int64(types.Uint64Zero))) {
+		return types.ErrReserveRatesNotFound
+	}
 	amount := sdk.NewCoin(assetOut.Denom, sdk.NewInt(amtToReservePool.TruncateInt64()))
 	err = k.SetReserveBalances(ctx, pool.ModuleName, pair.AssetOut, amount)
 	if err != nil {
