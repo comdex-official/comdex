@@ -10,7 +10,7 @@ import (
 var (
 	_ paramstypes.ParamSet = (*Params)(nil)
 
-	KeyAdmin     = []byte("AdminKey")
+	KeyAdmin     = []byte("admin")
 	DefaultAdmin = []string{"comdex1gvcsuex523fcwuzcpaqys99r70hajf8ffg6322", "comdex1lanra8mnwsxkzjnewtzgrynudxucr7tlfe4xnn"}
 )
 
