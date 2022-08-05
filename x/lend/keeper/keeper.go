@@ -1106,35 +1106,7 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 		CPoolName:          pool.CPoolName,
 		AppID:              AppID,
 	}
-	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, AssetID, PoolID)
-	if !found {
-		assetStats.TotalLend = sdk.ZeroInt()
-	}
-	assetStats.TotalLend = assetStats.TotalLend.Add(AmountIn.Amount)
-
-	depositStats, _ := k.GetDepositStats(ctx)
-	userDepositStats, _ := k.GetUserDepositStats(ctx)
-
-	var balanceStats []types.BalanceStats
-	for _, v := range depositStats.BalanceStats {
-		if v.AssetID == AssetID {
-			v.Amount = v.Amount.Add(AmountIn.Amount)
-		}
-		balanceStats = append(balanceStats, v)
-		newDepositStats := types.DepositStats{BalanceStats: balanceStats}
-		k.SetDepositStats(ctx, newDepositStats)
-	}
-	var userBalanceStats []types.BalanceStats
-	for _, v := range userDepositStats.BalanceStats {
-		if v.AssetID == AssetID {
-			v.Amount = v.Amount.Add(AmountIn.Amount)
-		}
-		userBalanceStats = append(userBalanceStats, v)
-		newUserDepositStats := types.DepositStats{BalanceStats: userBalanceStats}
-		k.SetUserDepositStats(ctx, newUserDepositStats)
-	}
-
-	k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
+	k.UpdateLendStats(ctx, AssetID, PoolID, AmountIn.Amount, true)
 	k.SetUserLendIDHistory(ctx, lendPos.ID)
 	k.SetLend(ctx, lendPos)
 	k.SetLendForAddressByAsset(ctx, addr, lendPos.AssetID, lendPos.ID, lendPos.PoolID)

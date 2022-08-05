@@ -1,8 +1,8 @@
 package types
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func NewMsgLend(lender string, assetID uint64, amount sdk.Coin, poolID, appID uint64) *MsgLend {
@@ -23,9 +23,17 @@ func (msg *MsgLend) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.AssetId <= 0 {
+		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)
+	}
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
+	}
+	if msg.PoolId <= 0 {
+		return fmt.Errorf("pool id should be positive: %d > 0", msg.AssetId)
+	}
+	if msg.AppId <= 0 {
+		return fmt.Errorf("app id should be positive: %d > 0", msg.AppId)
 	}
 
 	return nil
@@ -59,8 +67,11 @@ func (msg *MsgWithdraw) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.LendId <= 0 {
+		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	}
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
 	}
 
 	return nil
@@ -97,11 +108,17 @@ func (msg *MsgBorrow) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmountIn(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.LendId <= 0 {
+		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
 	}
-	if asset := msg.GetAmountOut(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.PairId <= 0 {
+		return fmt.Errorf("pair id should be positive: %d > 0", msg.PairId)
+	}
+	if msg.AmountIn.Amount.IsNegative() || msg.AmountIn.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.AmountIn.Amount)
+	}
+	if msg.AmountOut.Amount.IsNegative() || msg.AmountOut.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.AmountOut.Amount)
 	}
 
 	return nil
@@ -138,8 +155,11 @@ func (msg *MsgRepay) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.BorrowId <= 0 {
+		return fmt.Errorf("borrower id should be positive: %d > 0", msg.BorrowId)
+	}
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
 	}
 
 	return nil
@@ -177,8 +197,11 @@ func (msg *MsgFundModuleAccounts) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.AssetId <= 0 {
+		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)
+	}
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
 	}
 
 	return nil
@@ -215,8 +238,11 @@ func (msg *MsgDeposit) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.LendId <= 0 {
+		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	}
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
 	}
 
 	return nil
@@ -251,6 +277,10 @@ func (msg *MsgCloseLend) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
+	if msg.LendId <= 0 {
+		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	}
+
 	return nil
 }
 
@@ -284,11 +314,12 @@ func (msg *MsgDraw) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.BorrowId <= 0 {
+		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
 	}
-
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
+	}
 	return nil
 }
 
@@ -323,10 +354,12 @@ func (msg *MsgDepositBorrow) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.BorrowId <= 0 {
+		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
 	}
-
+	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
+	}
 	return nil
 }
 
@@ -358,6 +391,9 @@ func (msg *MsgCloseBorrow) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
 	if err != nil {
 		return err
+	}
+	if msg.BorrowId <= 0 {
+		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
 	}
 
 	return nil
@@ -399,11 +435,23 @@ func (msg *MsgBorrowAlternate) ValidateBasic() error {
 		return err
 	}
 
-	if asset := msg.GetAmountIn(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+	if msg.AssetId <= 0 {
+		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)
 	}
-	if assetTwo := msg.GetAmountOut(); !assetTwo.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, assetTwo.String())
+	if msg.PoolId <= 0 {
+		return fmt.Errorf("pool id should be positive: %d > 0", msg.PoolId)
+	}
+	if msg.PairId <= 0 {
+		return fmt.Errorf("pair id should be positive: %d > 0", msg.PairId)
+	}
+	if msg.AppId <= 0 {
+		return fmt.Errorf("pair id should be positive: %d > 0", msg.AppId)
+	}
+	if msg.AmountIn.Amount.IsNegative() || msg.AmountIn.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.AmountIn.Amount)
+	}
+	if msg.AmountOut.Amount.IsNegative() || msg.AmountOut.Amount.IsZero() {
+		return fmt.Errorf("invalid coin amount: %s < 0", msg.AmountOut.Amount)
 	}
 
 	return nil
