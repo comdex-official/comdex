@@ -28,7 +28,6 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 		liqThreshold, _ := k.GetAssetRatesStats(ctx, lendPair.AssetIn)
 		liqThresholdBridgedAssetOne, _ := k.GetAssetRatesStats(ctx, pool.FirstBridgedAssetID)
 		liqThresholdBridgedAssetTwo, _ := k.GetAssetRatesStats(ctx, pool.SecondBridgedAssetID)
-		k.UpdateBorrowStats(ctx, lendPair, borrowPos, borrowPos.AmountOut.Amount, false)
 
 		if borrowPos.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
 			currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.UpdatedAmountOut, assetOut)
@@ -38,6 +37,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 				if err != nil {
 					continue
 				}
+				k.UpdateBorrowStats(ctx, lendPair, borrowPos, borrowPos.AmountOut.Amount, false)
 				k.DeleteBorrow(ctx, v)
 				err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, v, false)
 				if err != nil {
@@ -63,6 +63,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					if err != nil {
 						continue
 					}
+					k.UpdateBorrowStats(ctx, lendPair, borrowPos, borrowPos.AmountOut.Amount, false)
 					k.DeleteBorrow(ctx, v)
 					err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, v, false)
 					if err != nil {
@@ -86,6 +87,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					if err != nil {
 						continue
 					}
+					k.UpdateBorrowStats(ctx, lendPair, borrowPos, borrowPos.AmountOut.Amount, false)
 					k.DeleteBorrow(ctx, v)
 					err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, v, false)
 					if err != nil {
