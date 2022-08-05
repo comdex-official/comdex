@@ -28,10 +28,11 @@ linters:
     - bodyclose
     - deadcode
     - depguard
-    - dogsled
+    # - dogsled
     #- dupl
     - errcheck
-    - funlen
+    #- funlen
+    - forcetypeassert
     #- gochecknoglobals
     #- gochecknoinits
     #- gocognit
@@ -58,7 +59,7 @@ linters:
     - nakedret
     #- nestif
     #- nolintlint
-    - prealloc
+    #- prealloc
     - rowserrcheck
     - scopelint
     - staticcheck
@@ -67,7 +68,7 @@ linters:
     - testpackage
     - typecheck
     - unconvert
-    - unparam
+    #- unparam
     - unused
     - varcheck
     - whitespace
