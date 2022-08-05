@@ -108,6 +108,22 @@ func (m *ActivateExternalRewardsLockers) Type() string {
 }
 
 func (m *ActivateExternalRewardsLockers) ValidateBasic() error {
+
+	if m.AppMappingId <= 0 {
+		return fmt.Errorf("app id should be positive: %d > 0", m.AppMappingId)
+	}
+	if m.AssetId <= 0 {
+		return fmt.Errorf("asset id should be positive: %d > 0", m.AssetId)
+	}
+	if m.TotalRewards.IsZero() {
+		return fmt.Errorf("TotalRewards should be positive: > 0")
+	}
+	if m.DurationDays <= 0 {
+		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
+	}
+	if m.MinLockupTimeSeconds <= 0 {
+		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.MinLockupTimeSeconds)
+	}
 	return nil
 }
 
@@ -116,7 +132,7 @@ func (m *ActivateExternalRewardsLockers) GetSignBytes() []byte {
 }
 
 func (m *ActivateExternalRewardsLockers) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.Depositor)
+	from, err := sdk.AccAddressFromBech32(m.GetDepositor())
 	if err != nil {
 		panic(err)
 	}
@@ -151,6 +167,21 @@ func (m *ActivateExternalRewardsVault) Type() string {
 }
 
 func (m *ActivateExternalRewardsVault) ValidateBasic() error {
+	if m.AppMappingId <= 0 {
+		return fmt.Errorf("app id should be positive: %d > 0", m.AppMappingId)
+	}
+	if m.Extended_Pair_Id <= 0 {
+		return fmt.Errorf("asset id should be positive: %d > 0", m.Extended_Pair_Id)
+	}
+	if m.TotalRewards.IsZero() {
+		return fmt.Errorf("TotalRewards should be positive: > 0")
+	}
+	if m.DurationDays <= 0 {
+		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
+	}
+	if m.MinLockupTimeSeconds <= 0 {
+		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.MinLockupTimeSeconds)
+	}
 	return nil
 }
 
@@ -159,7 +190,7 @@ func (m *ActivateExternalRewardsVault) GetSignBytes() []byte {
 }
 
 func (m *ActivateExternalRewardsVault) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.Depositor)
+	from, err := sdk.AccAddressFromBech32(m.GetDepositor())
 	if err != nil {
 		panic(err)
 	}

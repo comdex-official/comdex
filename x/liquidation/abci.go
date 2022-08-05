@@ -16,19 +16,19 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
 		err := k.LiquidateVaults(ctx)
 		if err != nil {
-			return err
+			ctx.Logger().Error("error in LiquidateVaults")
 		}
 		err = k.UpdateLockedVaults(ctx)
 		if err != nil {
-			return err
+			ctx.Logger().Error("error in UpdateLockedVaults")
 		}
 		err = k.LiquidateBorrows(ctx)
 		if err != nil {
-			return err
+			ctx.Logger().Error("error in LiquidateBorrows")
 		}
 		err = k.UpdateLockedBorrows(ctx)
 		if err != nil {
-			return err
+			ctx.Logger().Error("error in UpdateLockedBorrows")
 		}
 		return nil
 	})

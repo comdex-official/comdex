@@ -6,7 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 	k.SetParams(ctx, state.Params)
@@ -53,18 +52,15 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetAssetStatsByPoolIDAndAssetID(ctx, item)
 	}
 
-
 	k.SetLends(ctx, state.LendMapping)
 
 	k.SetUserDepositStats(ctx, state.UserDepositStats)
-
 
 	k.SetReserveDepositStats(ctx, state.ReserveDepositStats)
 
 	k.SetBuyBackDepositStats(ctx, state.BuyBackDepositStats)
 
 	k.SetBorrowStats(ctx, state.BorrowDepositStats)
-	
 
 	for _, item := range state.Extended_Pair {
 		k.SetLendPair(ctx, item)
@@ -75,7 +71,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	}
 
 	for _, item := range state.AuctionParams {
-		k.AddAuctionParamsData(ctx, item)
+		err := k.AddAuctionParamsData(ctx, item)
+		if err != nil {
+			return
+		}
 	}
 
 }

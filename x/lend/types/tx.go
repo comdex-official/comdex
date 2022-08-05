@@ -108,7 +108,10 @@ func (msg *MsgBorrow) ValidateBasic() error {
 }
 
 func (msg *MsgBorrow) GetSigners() []sdk.AccAddress {
-	borrower, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	borrower, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{borrower}
 }
 
@@ -143,7 +146,10 @@ func (msg *MsgRepay) ValidateBasic() error {
 }
 
 func (msg *MsgRepay) GetSigners() []sdk.AccAddress {
-	borrower, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	borrower, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{borrower}
 }
 
@@ -179,7 +185,10 @@ func (msg *MsgFundModuleAccounts) ValidateBasic() error {
 }
 
 func (msg *MsgFundModuleAccounts) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetLender())
+	lender, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -214,7 +223,10 @@ func (msg *MsgDeposit) ValidateBasic() error {
 }
 
 func (msg *MsgDeposit) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetLender())
+	lender, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -243,7 +255,10 @@ func (msg *MsgCloseLend) ValidateBasic() error {
 }
 
 func (msg *MsgCloseLend) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetLender())
+	lender, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -278,7 +293,10 @@ func (msg *MsgDraw) ValidateBasic() error {
 }
 
 func (msg *MsgDraw) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	lender, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -313,7 +331,10 @@ func (msg *MsgDepositBorrow) ValidateBasic() error {
 }
 
 func (msg *MsgDepositBorrow) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	lender, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -343,7 +364,10 @@ func (msg *MsgCloseBorrow) ValidateBasic() error {
 }
 
 func (msg *MsgCloseBorrow) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetBorrower())
+	lender, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 
@@ -386,7 +410,10 @@ func (msg *MsgBorrowAlternate) ValidateBasic() error {
 }
 
 func (msg *MsgBorrowAlternate) GetSigners() []sdk.AccAddress {
-	lender, _ := sdk.AccAddressFromBech32(msg.GetLender())
+	lender, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		panic(err)
+	}
 	return []sdk.AccAddress{lender}
 }
 

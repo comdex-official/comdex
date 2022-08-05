@@ -16,7 +16,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		k.TriggerAndUpdateEpochInfos(ctx)
 		err := k.IterateLocker(ctx)
 		if err != nil {
-			return err
+			ctx.Logger().Error("error in IterateLocker")
 		}
 
 		appIDsVault := k.GetAppIDs(ctx).WhitelistedAppMappingIdsVaults
@@ -29,16 +29,16 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 
 		err = k.DistributeExtRewardLocker(ctx)
 		if err != nil {
-			return err
+			ctx.Logger().Error("error in DistributeExtRewardLocker")
 		}
 		err = k.DistributeExtRewardVault(ctx)
 		if err != nil {
-			return err
+			ctx.Logger().Error("error in DistributeExtRewardVault")
 		}
 
 		err = k.SetLastInterestTime(ctx, ctx.BlockTime().Unix())
 		if err != nil {
-			return err
+			ctx.Logger().Error("error in SetLastInterestTime")
 		}
 		return nil
 	})
