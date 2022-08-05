@@ -547,14 +547,14 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
 
 			} else {
-				outFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
+				OutFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
 				if !found {
 					return auctiontypes.ErrorPrices
 				}
 				timeNow := ctx.BlockTime()
 				dutchAuction.StartTime = timeNow
 				dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
-				outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(outFlowTokenCurrentPrice), auctionParams.Buffer)
+				outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(OutFlowTokenCurrentPrice), auctionParams.Buffer)
 				outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
 				dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
 				dutchAuction.OutflowTokenEndPrice = outFlowTokenEndPrice
