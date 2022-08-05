@@ -93,6 +93,20 @@ endif
 
 all: install test
 
+go-mod-cache: go.sum
+	@echo "--> Download go modules to local cache"
+	@go mod download
+
+go.sum: go.mod
+	@echo "--> Ensure dependencies have not been modified"
+	@go mod verify
+
+clean:
+	rm -rf $(CURDIR)/artifacts/
+
+distclean: clean
+	rm -rf vendor/
+
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/comdex
 
