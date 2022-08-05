@@ -35,8 +35,8 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
@@ -307,8 +307,8 @@ func (k msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (
 // MsgWithdraw Withdrawing collateral.
 func (k msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
@@ -409,8 +409,8 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -537,8 +537,8 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -649,8 +649,8 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 		}
 
 		userVault.AmountOut = updatedUserDebt
-		zeroval := sdk.ZeroInt()
-		userVault.InterestAccumulated = zeroval
+		zeroVal := sdk.ZeroInt()
+		userVault.InterestAccumulated = zeroVal
 		k.SetVault(ctx, userVault)
 		appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, appMapping.Id)
 		k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, extendedPairVault.Id, updatedUserSentAmountAfterFeesDeduction, false)
@@ -671,8 +671,8 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositor, err := sdk.AccAddressFromBech32(msg.From)
@@ -790,8 +790,8 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	//Checking if extended pair exists
@@ -920,8 +920,8 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
@@ -1006,10 +1006,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 		}
 	} else {
 		//If not zero deduct send to collector//////////
-		//
 		//			COLLECTOR FUNCTION
-		//
-		//
 		/////////////////////////////////////////////////
 
 		collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
@@ -1053,8 +1050,8 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if klwsParams.BreakerEnable {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	if killSwitchParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
 	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
@@ -1131,10 +1128,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 		updatedAmount = msg.Amount
 	} else {
 		//If not zero deduct send to collector//////////
-		//
 		//			COLLECTOR FUNCTION
-		//
-		//
 		/////////////////////////////////////////////////
 		collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
 		if collectorShare.GT(sdk.ZeroInt()) {
