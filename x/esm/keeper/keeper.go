@@ -157,7 +157,10 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 		return types.ErrESMTriggerParamsNotFound
 	}
 
-	currentDeposit, _ := k.GetCurrentDepositStats(ctx, AppID)
+	currentDeposit, found := k.GetCurrentDepositStats(ctx, AppID)
+	if !found {
+		return types.ErrDepositForAppNotFound
+	}
 
 	if currentDeposit.Balance.Amount.GTE(esmTriggerParams.TargetValue.Amount) {
 		ESMStatus := types.ESMStatus{
@@ -233,17 +236,27 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Co
 	for index, a := range esmDataAfterCoolOff.CollateralAsset {
 		assetToAmountValue, _ := k.GetAssetToAmountValue(ctx, appId, a.AssetID)
 		appToAmountValue, _ := k.GetAppToAmtValue(ctx, appId)
-		Ratio := assetToAmountValue.Amount.Quo(appToAmountValue.Amount).ToDec()
+		nume := assetToAmountValue.Amount.ToDec()
+		deno := appToAmountValue.Amount.ToDec()
+		Ratio := nume.Quo(deno)
 		assetToAmountValue.AssetValueToAppValueRatio = Ratio
 		k.SetAssetToAmountValue(ctx, assetToAmountValue)
 		asset, _ := k.GetAsset(ctx, a.AssetID)
-		factor1 := Ratio.Mul(sdk.Dec(amtInPrice)).Mul(sdk.Dec(amtInPrice))
-		amountToDispatch := factor1.Quo(sdk.NewDec(int64(assetInPrice))).TruncateInt64()
-		collateralTokens := sdk.NewCoin(asset.Denom, sdk.NewInt(amountToDispatch))
+		factor1 := Ratio.Mul(amtInPrice.ToDec())
+		amountToDispatch := factor1.Quo(sdk.NewIntFromUint64(assetInPrice).ToDec())
+		collateralTokens := sdk.NewCoin(asset.Denom, amountToDispatch.TruncateInt())
 
+		err1 := k.bank.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, sdk.NewCoins(amount))
+		if err1 != nil {
+			return err1
+		}
 		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(collateralTokens))
 		if err != nil {
 			return err
+		}
+		err2 := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(amount))
+		if err2 != nil {
+			return err2
 		}
 		a.Amount = a.Amount.Sub(collateralTokens.Amount)
 		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:index], esmDataAfterCoolOff.CollateralAsset[index+1:]...)
