@@ -329,14 +329,14 @@ func (k Keeper) GetAllDataAfterCoolOff(ctx sdk.Context) (dataAfterCoolOff []type
 	return dataAfterCoolOff
 }
 
-func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64) error {
+func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64) error {
 	totalVaults := k.GetVaults(ctx)
-	esmStatus, found := k.GetESMStatus(ctx, appId)
+	esmStatus, found := k.GetESMStatus(ctx, appID)
 	if !found {
 		return types.ErrESMParamsNotFound
 	}
 	for _, data := range totalVaults {
-		if data.AppId == appId {
+		if data.AppId == appID {
 			extendedPairVault, found := k.GetPairsVault(ctx, data.ExtendedPairVaultID)
 			if !found {
 				return vaulttypes.ErrorExtendedPairVaultDoesNotExists
@@ -353,9 +353,9 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64)
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
-			coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
+			coolOffData, found := k.GetDataAfterCoolOff(ctx, appID)
 			if !found {
-				coolOffData.AppId = appId
+				coolOffData.AppId = appID
 				var item types.AssetToAmount
 
 				item.AssetID = assetInData.Id
@@ -430,14 +430,14 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appId uint64)
 	return nil
 }
 
-func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId uint64) error {
+func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID uint64) error {
 	totalStableVaults := k.GetStableMintVaults(ctx)
-	esmStatus, found := k.GetESMStatus(ctx, appId)
+	esmStatus, found := k.GetESMStatus(ctx, appID)
 	if !found {
 		return types.ErrESMParamsNotFound
 	}
 	for _, data := range totalStableVaults {
-		if data.AppId == appId {
+		if data.AppId == appID {
 			extendedPairVault, found := k.GetPairsVault(ctx, data.ExtendedPairVaultID)
 			if !found {
 				return vaulttypes.ErrorExtendedPairVaultDoesNotExists
@@ -454,9 +454,9 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId u
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
-			coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
+			coolOffData, found := k.GetDataAfterCoolOff(ctx, appID)
 			if !found {
-				coolOffData.AppId = appId
+				coolOffData.AppId = appID
 				var item types.AssetToAmount
 
 				item.AssetID = assetInData.Id
@@ -522,8 +522,8 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appId u
 
 		}
 	}
-	netFee, found1 := k.GetNetFeeCollectedData(ctx, appId)
-	coolOffData, found := k.GetDataAfterCoolOff(ctx, appId)
+	netFee, found1 := k.GetNetFeeCollectedData(ctx, appID)
+	coolOffData, found := k.GetDataAfterCoolOff(ctx, appID)
 	if !found {
 		return nil
 	}

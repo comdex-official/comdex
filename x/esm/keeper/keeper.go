@@ -177,12 +177,12 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 	return nil
 }
 
-func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff, from string) error {
+func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff, from string) error {
 	userAddress, err := sdk.AccAddressFromBech32(from)
 	if err != nil {
 		return err
 	}
-	marketData, found := k.GetESMMarketForAsset(ctx, appId)
+	marketData, found := k.GetESMMarketForAsset(ctx, appID)
 	if !found {
 		return types.ErrMarketDataNotFound
 	}
@@ -202,7 +202,7 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Co
 			assetInPrice = 0
 		}
 	}
-	esmData, _ := k.GetESMTriggerParams(ctx, appId)
+	esmData, _ := k.GetESMTriggerParams(ctx, appID)
 	for _, data := range esmData.AssetsRates {
 		if assetInID.Id == data.AssetID {
 			assetInPrice = data.Rates
@@ -218,7 +218,7 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Co
 				assetPrice = w.Rates
 				AppAssetValue = u.Amount.Mul(sdk.NewIntFromUint64(assetPrice))
 				assetVal := types.AssetToAmountValue{
-					AppId:                     appId,
+					AppId:                     appID,
 					AssetID:                   u.AssetID,
 					Amount:                    AppAssetValue,
 					AssetValueToAppValueRatio: sdk.ZeroDec(),
@@ -227,15 +227,15 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appId uint64, amount sdk.Co
 			}
 			AppValue = AppValue.Add(AppAssetValue)
 			appToAmtValue := types.AppToAmountValue{
-				AppId:  appId,
+				AppId:  appID,
 				Amount: AppValue,
 			}
 			k.SetAppToAmtValue(ctx, appToAmtValue)
 		}
 	}
 	for index, a := range esmDataAfterCoolOff.CollateralAsset {
-		assetToAmountValue, _ := k.GetAssetToAmountValue(ctx, appId, a.AssetID)
-		appToAmountValue, _ := k.GetAppToAmtValue(ctx, appId)
+		assetToAmountValue, _ := k.GetAssetToAmountValue(ctx, appID, a.AssetID)
+		appToAmountValue, _ := k.GetAppToAmtValue(ctx, appID)
 		nume := assetToAmountValue.Amount.ToDec()
 		deno := appToAmountValue.Amount.ToDec()
 		Ratio := nume.Quo(deno)

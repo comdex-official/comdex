@@ -500,8 +500,8 @@ func (k Keeper) GetStableMintVaults(ctx sdk.Context) (stableVaults []types.Stabl
 	return stableVaults
 }
 
-func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
-	appMapping, _ := k.GetApp(ctx, AppId)
+func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
+	appMapping, _ := k.GetApp(ctx, AppID)
 	extendedPairVault, _ := k.GetPairsVault(ctx, ExtendedPairVaultID)
 	counterVal, _, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
@@ -525,7 +525,7 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, Exten
 	// update the counter of the extendedpair lookup tabe
 	////// ///////
 
-	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, AppId)
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, AppID)
 
 	appExtendedPairVaultData.Counter = updatedCounter
 
