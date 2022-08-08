@@ -31,7 +31,6 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 
 		if borrowPos.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
 			currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.UpdatedAmountOut, assetOut)
-
 			if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
 				err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
 				if err != nil {
@@ -244,36 +243,23 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) UnliquidateLockedBorrows(ctx sdk.Context) error {
-	lockedVaults := k.GetLockedVaults(ctx)
-	if len(lockedVaults) == 0 {
-		return nil
-	}
-	for _, lockedVault := range lockedVaults {
+func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
+	lockedVault, _ := k.GetLockedVault(ctx, id)
+	borrowMetadata := lockedVault.GetBorrowMetaData()
+	lendPos, _ := k.GetLend(ctx, borrowMetadata.LendingId)
+	assetInPool, _ := k.GetPool(ctx, lendPos.PoolID)
+	firstBridgedAsset, _ := k.GetAsset(ctx, assetInPool.FirstBridgedAssetID)
+	userAddress, _ := sdk.AccAddressFromBech32(lockedVault.Owner)
+	pair, _ := k.GetLendPair(ctx, lockedVault.ExtendedPairId)
+	assetIn, _ := k.GetAsset(ctx, pair.AssetIn)
+	assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
 
-		if lockedVault.IsAuctionComplete {
-			//also calculate the current collaterlization ration to ensure there is no sudden changes
-			userAddress, err := sdk.AccAddressFromBech32(lockedVault.Owner)
-			if err != nil {
-				continue
-			}
-
-			pair, found := k.GetLendPair(ctx, lockedVault.ExtendedPairId)
-			if !found {
-				continue
-			}
-
+	if lockedVault.IsAuctionComplete {
+		if borrowMetadata.BridgedAssetAmount.IsZero() {
+			//also calculate the current collaterlization ratio to ensure there is no sudden changes
 			liqThreshold, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
 			unliquidatePointPercentage := liqThreshold.LiquidationThreshold
 
-			assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-			if !found {
-				continue
-			}
-			assetOut, found := k.GetAsset(ctx, pair.AssetOut)
-			if !found {
-				continue
-			}
 			if lockedVault.AmountOut.IsZero() {
 				err := k.CreateLockedVaultHistory(ctx, lockedVault)
 				if err != nil {
@@ -281,20 +267,15 @@ func (k Keeper) UnliquidateLockedBorrows(ctx sdk.Context) error {
 				}
 				k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
-				if err := k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
-					continue
+				if err = k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
+					return err
 				}
-				continue
 			}
-			newCalculatedCollateralizationRatio, err := k.CalculateLendCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
-			if err != nil {
-				continue
-			}
+			newCalculatedCollateralizationRatio, _ := k.CalculateLendCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
 			if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
 				updatedLockedVault := lockedVault
 				updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
 				k.SetLockedVault(ctx, updatedLockedVault)
-				continue
 			}
 			if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
 				err := k.CreateLockedVaultHistory(ctx, lockedVault)
@@ -304,6 +285,73 @@ func (k Keeper) UnliquidateLockedBorrows(ctx sdk.Context) error {
 				k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
 				k.CreteNewBorrow(ctx, lockedVault)
 				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+			}
+		} else {
+			if borrowMetadata.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
+
+				liqThresholdAssetIn, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
+				liqThresholdFirstBridgedAsset, _ := k.GetAssetRatesStats(ctx, assetInPool.FirstBridgedAssetID)
+				liqThreshold := liqThresholdAssetIn.LiquidationThreshold.Mul(liqThresholdFirstBridgedAsset.LiquidationThreshold)
+				unliquidatePointPercentage := liqThreshold
+
+				if lockedVault.AmountOut.IsZero() {
+					err := k.CreateLockedVaultHistory(ctx, lockedVault)
+					if err != nil {
+						return err
+					}
+					k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
+					k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+					if err = k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
+						return err
+					}
+				}
+				newCalculatedCollateralizationRatio, _ := k.CalculateLendCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
+				if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
+					updatedLockedVault := lockedVault
+					updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
+					k.SetLockedVault(ctx, updatedLockedVault)
+				}
+				if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
+					err := k.CreateLockedVaultHistory(ctx, lockedVault)
+					if err != nil {
+						return err
+					}
+					k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
+					k.CreteNewBorrow(ctx, lockedVault)
+					k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+				}
+			} else {
+				liqThresholdAssetIn, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
+				liqThresholdSecondBridgedAsset, _ := k.GetAssetRatesStats(ctx, assetInPool.SecondBridgedAssetID)
+				liqThreshold := liqThresholdAssetIn.LiquidationThreshold.Mul(liqThresholdSecondBridgedAsset.LiquidationThreshold)
+				unliquidatePointPercentage := liqThreshold
+
+				if lockedVault.AmountOut.IsZero() {
+					err := k.CreateLockedVaultHistory(ctx, lockedVault)
+					if err != nil {
+						return err
+					}
+					k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
+					k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+					if err = k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
+						return err
+					}
+				}
+				newCalculatedCollateralizationRatio, _ := k.CalculateLendCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
+				if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
+					updatedLockedVault := lockedVault
+					updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
+					k.SetLockedVault(ctx, updatedLockedVault)
+				}
+				if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
+					err := k.CreateLockedVaultHistory(ctx, lockedVault)
+					if err != nil {
+						return err
+					}
+					k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
+					k.CreteNewBorrow(ctx, lockedVault)
+					k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+				}
 			}
 		}
 	}

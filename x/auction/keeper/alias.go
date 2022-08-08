@@ -267,3 +267,6 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
 	return k.lend.UpdateReserveBalances(ctx, assetID, moduleName, payment, inc)
 }
+func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
+	return k.liquidation.UnLiquidateLockedBorrows(ctx, id)
+}

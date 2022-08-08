@@ -37,6 +37,7 @@ type LiquidationKeeper interface {
 	SetLockedVault(ctx sdk.Context, lockedVault liquidationtypes.LockedVault)
 	DeleteLockedVault(ctx sdk.Context, id uint64)
 	CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
+	UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error
 }
 
 type AssetKeeper interface {
