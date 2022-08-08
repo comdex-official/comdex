@@ -139,7 +139,7 @@ func (q QueryServer) QueryVaultInfoOfOwnerByApp(c context.Context, req *types.Qu
 	// nolint
 	var (
 		ctx        = sdk.UnwrapSDKContext(c)
-		vaultsIds  []string
+		vaultsIds  []uint64
 		vaultsInfo []types.VaultInfo
 	)
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -235,7 +235,7 @@ func (q QueryServer) QueryVaultIDOfOwnerByExtendedPairAndApp(c context.Context, 
 	}
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		vaultID = ""
+		vaultID uint64
 	)
 
 	_, found := q.GetApp(ctx, req.AppId)
@@ -272,7 +272,7 @@ func (q QueryServer) QueryVaultIdsByAppInAllExtendedPairs(c context.Context, req
 	}
 	var (
 		ctx       = sdk.UnwrapSDKContext(c)
-		vaultsIds []string
+		vaultsIds []uint64
 	)
 
 	_, found := q.GetApp(ctx, req.AppId)
@@ -299,7 +299,7 @@ func (q QueryServer) QueryAllVaultIdsByAnOwner(c context.Context, req *types.Que
 	}
 	var (
 		ctx       = sdk.UnwrapSDKContext(c)
-		vaultsIds []string
+		vaultsIds []uint64
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -694,7 +694,7 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 	}
 	var (
 		ctx             = sdk.UnwrapSDKContext(c)
-		vaultsIds       []string
+		vaultsIds       []uint64
 		totalLocked     = sdk.ZeroInt()
 		totalDue        = sdk.ZeroInt()
 		availableBorrow = sdk.ZeroInt()

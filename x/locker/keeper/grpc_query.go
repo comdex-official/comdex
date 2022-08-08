@@ -72,7 +72,7 @@ func (q QueryServer) QueryLockersByAppToAssetID(c context.Context, request *type
 		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
 	}
 
-	var lockerIds []string
+	var lockerIds []uint64
 	for _, locker := range lockerLookupData.Lockers {
 		if request.AssetId == locker.AssetId {
 			lockerIds = append(lockerIds, locker.LockerIds...)
@@ -104,7 +104,7 @@ func (q QueryServer) QueryLockerInfoByAppID(c context.Context, request *types.Qu
 		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
 	}
 
-	var lockerIds []string
+	var lockerIds []uint64
 	for _, locker := range lockerLookupData.Lockers {
 		lockerIds = locker.LockerIds
 	}
@@ -198,7 +198,7 @@ func (q QueryServer) QueryOwnerLockerByAppIDbyOwner(c context.Context, request *
 
 	lockerLookupData, _ := q.GetLockerLookupTable(ctx, app.Id)
 
-	var lockerIds []string
+	var lockerIds []uint64
 	for _, locker := range lockerLookupData.Lockers {
 		for _, lockerID := range locker.LockerIds {
 			locker1, _ := q.GetLocker(ctx, lockerID)
@@ -223,7 +223,7 @@ func (q QueryServer) QueryOwnerLockerOfAllAppsByOwner(c context.Context, request
 	)
 	userLockerLookupData, _ := q.GetUserLockerAssetMapping(ctx, request.Owner)
 
-	var lockerIds []string
+	var lockerIds []uint64
 	for _, locker := range userLockerLookupData.LockerAppMapping {
 		for _, data := range locker.UserAssetLocker {
 			lockerIds = append(lockerIds, data.LockerId)

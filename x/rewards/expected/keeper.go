@@ -40,7 +40,7 @@ type MarketKeeper interface {
 
 type LockerKeeper interface {
 	GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint64) (lockerProductMapping lockertypes.LockerProductAssetMapping, found bool)
-	GetLocker(ctx sdk.Context, lockerID string) (locker lockertypes.Locker, found bool)
+	GetLocker(ctx sdk.Context, lockerID uint64) (locker lockertypes.Locker, found bool)
 	GetLockerLookupTable(ctx sdk.Context, appMappingID uint64) (lockerLookupData lockertypes.LockerLookupTable, found bool)
 	UpdateLocker(ctx sdk.Context, locker lockertypes.Locker)
 	SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise) error
@@ -60,13 +60,13 @@ type CollectorKeeper interface {
 type VaultKeeper interface {
 	GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping, found bool)
 	CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error)
-	GetVault(ctx sdk.Context, id string) (vault vaulttypes.Vault, found bool)
-	DeleteVault(ctx sdk.Context, id string)
+	GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool)
+	DeleteVault(ctx sdk.Context, id uint64)
 	UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context, counter uint64, vaultData vaulttypes.Vault)
 	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool)
 	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool)
 	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64)
-	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID string, appMappingID uint64)
+	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64)
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
 }
 

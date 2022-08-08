@@ -11,7 +11,7 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message VaultInfo{
-  string id = 1;
+  uint64 id = 1;
   uint64 extended_pair_id = 2 [
     (gogoproto.customname) = "ExtendedPairID",
     (gogoproto.moretags) = "yaml:\"extended_pair_id\""
@@ -52,7 +52,7 @@ message VaultInfo{
 }
 
 message QueryVaultRequest {
-  string id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
+  uint64 id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
 }
 
 message QueryVaultResponse {
@@ -63,7 +63,7 @@ message QueryVaultResponse {
 }
 
 message QueryVaultInfoByVaultIDRequest {
-  string id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
+  uint64 id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
 }
 
 message QueryVaultInfoByVaultIDResponse {
@@ -145,7 +145,7 @@ message QueryVaultIDOfOwnerByExtendedPairAndAppRequest {
 }
 
 message QueryVaultIDOfOwnerByExtendedPairAndAppResponse {
-  string vault_Id = 1 [(gogoproto.moretags) = "yaml:\"vault_Id\""];
+  uint64 vault_Id = 1 [(gogoproto.moretags) = "yaml:\"vault_Id\""];
 }
 
 message QueryVaultIdsByAppInAllExtendedPairsRequest {
@@ -155,7 +155,7 @@ message QueryVaultIdsByAppInAllExtendedPairsRequest {
 }
 
 message QueryVaultIdsByAppInAllExtendedPairsResponse {
-  repeated string vault_ids = 1 [(gogoproto.moretags) = "yaml:\"vault_ids\""];
+  repeated uint64 vault_ids = 1 [(gogoproto.moretags) = "yaml:\"vault_ids\""];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
@@ -167,7 +167,7 @@ message QueryAllVaultIdsByAnOwnerRequest {
 }
 
 message QueryAllVaultIdsByAnOwnerResponse {
-  repeated string vault_ids = 1 [(gogoproto.moretags) = "yaml:\"vault_ids\""];
+  repeated uint64 vault_ids = 1 [(gogoproto.moretags) = "yaml:\"vault_ids\""];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
@@ -245,7 +245,7 @@ message QueryExtendedPairIDsByAppResponse {
 }
 
 message QueryStableVaultByVaultIDRequest {
-  string stable_vault_id = 1 [(gogoproto.moretags) = "yaml:\"stable_vault_id\""];
+  uint64 stable_vault_id = 1 [(gogoproto.moretags) = "yaml:\"stable_vault_id\""];
 }
 
 message QueryStableVaultByVaultIDResponse {

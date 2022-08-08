@@ -56,9 +56,9 @@ type VaultKeeper interface {
 	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64)
 	CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error
 	GetUserVaultExtendedPairMapping(ctx sdk.Context, address string) (userVaultAssetData vaulttypes.UserVaultAssetMapping, found bool)
-	CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData vaulttypes.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID string, found bool)
+	CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData vaulttypes.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID uint64, found bool)
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
-	GetVault(ctx sdk.Context, id string) (vault vaulttypes.Vault, found bool)
+	GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool)
 }
 
 type CollectorKeeper interface {

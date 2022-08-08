@@ -1209,8 +1209,8 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 		Interest_Accumulated: sdk.ZeroInt(),
 		CPoolName:            AssetOutPool.CPoolName,
 	}
-	OriginalBorrowID, _ := sdk.NewIntFromString(liqBorrow.OriginalVaultId)
-	err := k.UpdateLendIDToBorrowIDMapping(ctx, kind.LendingId, OriginalBorrowID.Uint64(), false)
+	OriginalBorrowID := liqBorrow.OriginalVaultId
+	err := k.UpdateLendIDToBorrowIDMapping(ctx, kind.LendingId, OriginalBorrowID, false)
 	if err != nil {
 		return
 	}

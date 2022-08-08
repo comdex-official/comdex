@@ -92,7 +92,7 @@ service Query {
 }
 
 message QueryLockerInfoRequest {
-  string id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
+  uint64 id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
 }
 
 message QueryLockerInfoResponse {
@@ -110,7 +110,7 @@ message QueryLockersByAppToAssetIDRequest {
 }
 
 message QueryLockersByAppToAssetIDResponse {
-  repeated string locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
+  repeated uint64 locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
@@ -122,7 +122,7 @@ message QueryLockerInfoByAppIDRequest {
 }
 
 message QueryLockerInfoByAppIDResponse {
-  repeated string locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
+  repeated uint64 locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
@@ -144,7 +144,7 @@ message QueryOwnerLockerByAppIDbyOwnerRequest {
 }
 
 message QueryOwnerLockerByAppIDbyOwnerResponse {
-  repeated string locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
+  repeated uint64 locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
@@ -156,7 +156,7 @@ message QueryOwnerLockerOfAllAppsByOwnerRequest {
 }
 
 message QueryOwnerLockerOfAllAppsByOwnerResponse {
-  repeated string locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
+  repeated uint64 locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }

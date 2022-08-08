@@ -184,7 +184,7 @@ func (k Keeper) GetUserVaultExtendedPairMapping(ctx sdk.Context, address string)
 	return k.vault.GetUserVaultExtendedPairMapping(ctx, address)
 }
 
-func (k Keeper) CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData vaulttypes.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID string, found bool) {
+func (k Keeper) CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData vaulttypes.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID uint64, found bool) {
 	return k.vault.CheckUserAppToExtendedPairMapping(ctx, userVaultAssetData, extendedPairVaultID, appMappingID)
 }
 
@@ -192,7 +192,7 @@ func (k Keeper) SetVault(ctx sdk.Context, vault vaulttypes.Vault) {
 	k.vault.SetVault(ctx, vault)
 }
 
-func (k Keeper) GetVault(ctx sdk.Context, id string) (vault vaulttypes.Vault, found bool) {
+func (k Keeper) GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool) {
 	return k.vault.GetVault(ctx, id)
 }
 

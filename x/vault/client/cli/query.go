@@ -132,7 +132,10 @@ func QueryVault() *cobra.Command {
 				return err
 			}
 
-			id := args[0]
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			queryClient := types.NewQueryClient(ctx)
 
@@ -287,10 +290,15 @@ func QueryVaultInfoByVaultID() *cobra.Command {
 				return err
 			}
 
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryVaultInfoByVaultID(cmd.Context(), &types.QueryVaultInfoByVaultIDRequest{
-				Id: args[0],
+				Id: id,
 			})
 
 			if err != nil {
@@ -617,10 +625,15 @@ func QueryStableVaultByVaultID() *cobra.Command {
 				return err
 			}
 
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryStableVaultByVaultID(cmd.Context(), &types.QueryStableVaultByVaultIDRequest{
-				StableVaultId: args[0],
+				StableVaultId: id,
 			})
 
 			if err != nil {

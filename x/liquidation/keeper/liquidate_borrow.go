@@ -125,7 +125,7 @@ func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset
 		LockedVaultId:                lockedVaultID + 1,
 		AppId:                        appID,
 		AppVaultTypeId:               strconv.FormatUint(appID, 10),
-		OriginalVaultId:              strconv.FormatUint(borrow.ID, 10),
+		OriginalVaultId:              borrow.ID,
 		ExtendedPairId:               borrow.PairID,
 		Owner:                        lendPos.Owner,
 		AmountIn:                     borrow.AmountIn.Amount,

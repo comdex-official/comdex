@@ -240,11 +240,11 @@ func (k Keeper) GetAllUserLockerAssetMapping(ctx sdk.Context) (userLockerAssetMa
 }
 
 // CheckUserAppToAssetMapping Checking if for a certain user for the app type , whether there exists a certain asset or not and if it contains a locker id or not.
-func (k Keeper) CheckUserAppToAssetMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping, assetID uint64, appID uint64) (lockerID string, found bool) {
+func (k Keeper) CheckUserAppToAssetMapping(ctx sdk.Context, userLockerAssetData types.UserLockerAssetMapping, assetID uint64, appID uint64) (lockerID uint64, found bool) {
 	for _, lockerAppMapping := range userLockerAssetData.LockerAppMapping {
 		if lockerAppMapping.AppId == appID {
 			for _, assetToLockerIDMapping := range lockerAppMapping.UserAssetLocker {
-				if assetToLockerIDMapping.AssetId == assetID && len(assetToLockerIDMapping.LockerId) > 0 {
+				if assetToLockerIDMapping.AssetId == assetID && assetToLockerIDMapping.LockerId > 0 {
 					lockerID = assetToLockerIDMapping.LockerId
 					return lockerID, true
 				}
@@ -273,7 +273,7 @@ func (k Keeper) SetLocker(ctx sdk.Context, locker types.Locker) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetLocker(ctx sdk.Context, lockerID string) (locker types.Locker, found bool) {
+func (k Keeper) GetLocker(ctx sdk.Context, lockerID uint64) (locker types.Locker, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerKey(lockerID)

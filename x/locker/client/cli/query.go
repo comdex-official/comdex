@@ -20,7 +20,10 @@ func queryLockedVault() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			id := args[0]
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
 			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLockerInfo(
 				context.Background(),
