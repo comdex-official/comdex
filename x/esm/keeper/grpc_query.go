@@ -9,20 +9,20 @@ import (
 )
 
 var (
-	_ types.QueryServer = queryServer{}
+	_ types.QueryServer = QueryServer{}
 )
 
-type queryServer struct {
+type QueryServer struct {
 	Keeper
 }
 
 func NewQueryServer(k Keeper) types.QueryServer {
-	return &queryServer{
+	return &QueryServer{
 		Keeper: k,
 	}
 }
 
-func (q queryServer) QueryESMTriggerParams(c context.Context, req *types.QueryESMTriggerParamsRequest) (*types.QueryESMTriggerParamsResponse, error) {
+func (q QueryServer) QueryESMTriggerParams(c context.Context, req *types.QueryESMTriggerParamsRequest) (*types.QueryESMTriggerParamsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -41,7 +41,7 @@ func (q queryServer) QueryESMTriggerParams(c context.Context, req *types.QueryES
 	}, nil
 }
 
-func (q queryServer) QueryESMStatus(c context.Context, req *types.QueryESMStatusRequest) (*types.QueryESMStatusResponse, error) {
+func (q QueryServer) QueryESMStatus(c context.Context, req *types.QueryESMStatusRequest) (*types.QueryESMStatusResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -60,7 +60,7 @@ func (q queryServer) QueryESMStatus(c context.Context, req *types.QueryESMStatus
 	}, nil
 }
 
-func (q queryServer) QueryCurrentDepositStats(c context.Context, req *types.QueryCurrentDepositStatsRequest) (*types.QueryCurrentDepositStatsResponse, error) {
+func (q QueryServer) QueryCurrentDepositStats(c context.Context, req *types.QueryCurrentDepositStatsRequest) (*types.QueryCurrentDepositStatsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -79,7 +79,7 @@ func (q queryServer) QueryCurrentDepositStats(c context.Context, req *types.Quer
 	}, nil
 }
 
-func (q queryServer) QueryUsersDepositMapping(c context.Context, req *types.QueryUsersDepositMappingRequest) (*types.QueryUsersDepositMappingResponse, error) {
+func (q QueryServer) QueryUsersDepositMapping(c context.Context, req *types.QueryUsersDepositMappingRequest) (*types.QueryUsersDepositMappingResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -98,7 +98,7 @@ func (q queryServer) QueryUsersDepositMapping(c context.Context, req *types.Quer
 	}, nil
 }
 
-func (q queryServer) QueryDataAfterCoolOff(c context.Context, req *types.QueryDataAfterCoolOffRequest) (*types.QueryDataAfterCoolOffResponse, error) {
+func (q QueryServer) QueryDataAfterCoolOff(c context.Context, req *types.QueryDataAfterCoolOffRequest) (*types.QueryDataAfterCoolOffResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
