@@ -43,7 +43,7 @@ func (q QueryServer) QueryLockerInfo(c context.Context, req *types.QueryLockerIn
 	)
 	item, found := q.GetLocker(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %s", req.Id)
+		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.Id)
 	}
 
 	return &types.QueryLockerInfoResponse{

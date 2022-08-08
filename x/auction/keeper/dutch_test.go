@@ -243,7 +243,7 @@ func (s *KeeperTestSuite) LiquidateVaults1() {
 	currentVaultsCount := 2
 	s.Require().Equal(s.GetVaultCount(), currentVaultsCount)
 	s.Require().Equal(s.GetVaultCountForExtendedPairIDbyAppID(uint64(1)), currentVaultsCount)
-	beforeVault, found := liquidationKeeper.GetVault(*ctx, "cswap1")
+	beforeVault, found := liquidationKeeper.GetVault(*ctx, 1)
 	s.Require().True(found)
 
 	// Liquidation shouldn't happen as price not changed

@@ -99,42 +99,42 @@ func TestNewMsgDepositRequest(t *testing.T) {
 		{
 			name: "empty from",
 			msg: types.NewMsgDepositRequest(
-				sdk.AccAddress([]byte("")), 1, 1, "appone1", sdk.NewInt(50),
+				sdk.AccAddress([]byte("")), 1, 1, 1, sdk.NewInt(50),
 			),
 			isErrExp: true,
 		},
 		{
-			name: "vaultID null",
+			name: "vaultID zero",
 			msg: types.NewMsgDepositRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(50),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 0, sdk.NewInt(50),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount nil",
 			msg: types.NewMsgDepositRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "appone1", sdk.Int{},
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.Int{},
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount negative",
 			msg: types.NewMsgDepositRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(-50),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(-50),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount Zero",
 			msg: types.NewMsgDepositRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(0),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(0),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "valid case",
 			msg: types.NewMsgDepositRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "appone1", sdk.NewInt(25),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(25),
 			),
 			isErrExp: false,
 		},
@@ -167,42 +167,42 @@ func TestNewMsgWithdrawRequest(t *testing.T) {
 		{
 			name: "empty from",
 			msg: types.NewMsgWithdrawRequest(
-				sdk.AccAddress([]byte("")), 1, 1, "appone1", sdk.NewInt(50),
+				sdk.AccAddress([]byte("")), 1, 1, 1, sdk.NewInt(50),
 			),
 			isErrExp: true,
 		},
 		{
-			name: "vaultID null",
+			name: "vaultID zero",
 			msg: types.NewMsgWithdrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(50),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 0, sdk.NewInt(50),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount nil",
 			msg: types.NewMsgWithdrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "appone1", sdk.Int{},
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.Int{},
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount negative",
 			msg: types.NewMsgWithdrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(-50),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(-50),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount Zero",
 			msg: types.NewMsgWithdrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(0),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1,1, sdk.NewInt(0),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "valid case",
 			msg: types.NewMsgWithdrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "appone1", sdk.NewInt(25),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(25),
 			),
 			isErrExp: false,
 		},
@@ -235,42 +235,42 @@ func TestNewMsgDrawRequest(t *testing.T) {
 		{
 			name: "empty from",
 			msg: types.NewMsgDrawRequest(
-				sdk.AccAddress([]byte("")), 1, 1, "appone1", sdk.NewInt(50),
+				sdk.AccAddress([]byte("")), 1, 1, 1, sdk.NewInt(50),
 			),
 			isErrExp: true,
 		},
 		{
-			name: "vaultID null",
+			name: "vaultID zero",
 			msg: types.NewMsgDrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(50),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 0, sdk.NewInt(50),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount nil",
 			msg: types.NewMsgDrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "appone1", sdk.Int{},
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.Int{},
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount negative",
 			msg: types.NewMsgDrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(-50),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(-50),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount Zero",
 			msg: types.NewMsgDrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(0),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(0),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "valid case",
 			msg: types.NewMsgDrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "appone1", sdk.NewInt(25),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(25),
 			),
 			isErrExp: false,
 		},
@@ -303,42 +303,42 @@ func TestNewMsgRepayRequest(t *testing.T) {
 		{
 			name: "empty from",
 			msg: types.NewMsgRepayRequest(
-				sdk.AccAddress([]byte("")), 1, 1, "appone1", sdk.NewInt(50),
+				sdk.AccAddress([]byte("")), 1, 1, 1, sdk.NewInt(50),
 			),
 			isErrExp: true,
 		},
 		{
-			name: "vaultID null",
+			name: "vaultID zero",
 			msg: types.NewMsgRepayRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(50),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 0, sdk.NewInt(50),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount nil",
 			msg: types.NewMsgRepayRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "appone1", sdk.Int{},
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.Int{},
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount negative",
 			msg: types.NewMsgRepayRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(-50),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(-50),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount Zero",
 			msg: types.NewMsgRepayRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "", sdk.NewInt(0),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(0),
 			),
 			isErrExp: true,
 		},
 		{
 			name: "valid case",
 			msg: types.NewMsgRepayRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "appone1", sdk.NewInt(25),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(25),
 			),
 			isErrExp: false,
 		},
@@ -371,21 +371,21 @@ func TestNewMsgLiquidateRequest(t *testing.T) {
 		{
 			name: "empty from",
 			msg: types.NewMsgLiquidateRequest(
-				sdk.AccAddress([]byte("")), 1, 1, "appone1",
+				sdk.AccAddress([]byte("")), 1, 1, 1,
 			),
 			isErrExp: true,
 		},
 		{
-			name: "vaultID null",
+			name: "vaultID zero",
 			msg: types.NewMsgLiquidateRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "",
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 0,
 			),
 			isErrExp: true,
 		},
 		{
 			name: "valid case",
 			msg: types.NewMsgLiquidateRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, "appone1",
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1,
 			),
 			isErrExp: false,
 		},
@@ -479,35 +479,35 @@ func TestNewMsgDepositStableMintRequest(t *testing.T) {
 		{
 			name: "empty from",
 			msg: types.NewMsgDepositStableMintRequest(
-				sdk.AccAddress([]byte("")), 1, 1, sdk.NewInt(50), "appone1",
+				sdk.AccAddress([]byte("")), 1, 1, sdk.NewInt(50), 1,
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount nil",
 			msg: types.NewMsgDepositStableMintRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.Int{}, "appone1",
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.Int{}, 1,
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount negative",
 			msg: types.NewMsgDepositStableMintRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(-50), "appone1",
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(-50), 1,
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount Zero",
 			msg: types.NewMsgDepositStableMintRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(0), "appone1",
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(0), 1,
 			),
 			isErrExp: true,
 		},
 		{
 			name: "valid case",
 			msg: types.NewMsgDepositStableMintRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(25), "appone1",
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(25), 1,
 			),
 			isErrExp: false,
 		},
@@ -540,35 +540,35 @@ func TestNewMsgWithdrawStableMintRequest(t *testing.T) {
 		{
 			name: "empty from",
 			msg: types.NewMsgWithdrawStableMintRequest(
-				sdk.AccAddress([]byte("")), 1, 1, sdk.NewInt(50), "appone1",
+				sdk.AccAddress([]byte("")), 1, 1, sdk.NewInt(50), 1,
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount nil",
 			msg: types.NewMsgWithdrawStableMintRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.Int{}, "appone1",
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.Int{}, 1,
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount negative",
 			msg: types.NewMsgWithdrawStableMintRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(-50), "appone1",
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(-50), 1,
 			),
 			isErrExp: true,
 		},
 		{
 			name: "amount Zero",
 			msg: types.NewMsgWithdrawStableMintRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(0), "appone1",
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(0), 1,
 			),
 			isErrExp: true,
 		},
 		{
 			name: "valid case",
 			msg: types.NewMsgWithdrawStableMintRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(25), "appone1",
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, sdk.NewInt(25), 1,
 			),
 			isErrExp: false,
 		},
