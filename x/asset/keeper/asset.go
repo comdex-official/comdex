@@ -205,6 +205,7 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	if msg.Decimals >= 0 {
 		asset.Decimals = msg.Decimals
 	}
+	asset.IsOraclePriceRequired = msg.IsOraclePriceRequired
 
 	k.SetAsset(ctx, asset)
 	return nil
