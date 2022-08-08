@@ -90,6 +90,10 @@ func QueryAllVaultsByApp() *cobra.Command {
 		Short: "Query all vaults by app id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -102,7 +106,8 @@ func QueryAllVaultsByApp() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllVaultsByApp(cmd.Context(), &types.QueryAllVaultsByAppRequest{
-				AppId: appID,
+				AppId:      appID,
+				Pagination: pagination,
 			})
 
 			if err != nil {
@@ -197,6 +202,10 @@ func QueryVaultInfoOfOwnerByApp() *cobra.Command {
 		Short: "Query vaultsInfo of an owner by App",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -209,8 +218,9 @@ func QueryVaultInfoOfOwnerByApp() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryVaultInfoOfOwnerByApp(cmd.Context(), &types.QueryVaultInfoOfOwnerByAppRequest{
-				AppId: appID,
-				Owner: args[1],
+				AppId:      appID,
+				Owner:      args[1],
+				Pagination: pagination,
 			})
 
 			if err != nil {
@@ -234,7 +244,6 @@ func QueryAllVaultsByAppAndExtendedPair() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -243,7 +252,6 @@ func QueryAllVaultsByAppAndExtendedPair() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			extendedPairID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
@@ -306,7 +314,6 @@ func QueryVaultIdsByAppInAllExtendedPairs() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -344,12 +351,10 @@ func QueryAllVaultIdsByAnOwner() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllVaultIdsByAnOwner(cmd.Context(), &types.QueryAllVaultIdsByAnOwnerRequest{
@@ -378,7 +383,6 @@ func QueryTokenMintedByAppAndExtendedPair() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -421,7 +425,6 @@ func QueryTokenMintedAssetWiseByApp() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -455,11 +458,6 @@ func QueryVaultCountByApp() *cobra.Command {
 		Short: "Query vault count by an App",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pagination, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -472,8 +470,7 @@ func QueryVaultCountByApp() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryVaultCountByApp(cmd.Context(), &types.QueryVaultCountByAppRequest{
-				AppId:      appID,
-				Pagination: pagination,
+				AppId: appID,
 			})
 
 			if err != nil {
@@ -540,7 +537,6 @@ func QueryTotalValueLockedByAppAndExtendedPair() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -583,7 +579,6 @@ func QueryExtendedPairIDsByApp() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -645,6 +640,10 @@ func QueryStableVaultByApp() *cobra.Command {
 		Short: "Query stable vault by App",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -657,7 +656,8 @@ func QueryStableVaultByApp() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryStableVaultByApp(cmd.Context(), &types.QueryStableVaultByAppRequest{
-				AppId: appID,
+				AppId:      appID,
+				Pagination: pagination,
 			})
 
 			if err != nil {
@@ -714,6 +714,10 @@ func QueryExtendedPairVaultMappingByApp() *cobra.Command {
 		Short: "Query ExtendedPair Vault Mapping By App",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -726,7 +730,8 @@ func QueryExtendedPairVaultMappingByApp() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryExtendedPairVaultMappingByApp(cmd.Context(), &types.QueryExtendedPairVaultMappingByAppRequest{
-				AppId: appID,
+				AppId:      appID,
+				Pagination: pagination,
 			})
 
 			if err != nil {
@@ -783,6 +788,10 @@ func QueryTVLByAppOfAllExtendedPairs() *cobra.Command {
 		Short: "Query tvl By App of all extended pairs",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -795,7 +804,8 @@ func QueryTVLByAppOfAllExtendedPairs() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryTVLByAppOfAllExtendedPairs(cmd.Context(), &types.QueryTVLByAppOfAllExtendedPairsRequest{
-				AppId: appID,
+				AppId:      appID,
+				Pagination: pagination,
 			})
 
 			if err != nil {
@@ -908,6 +918,10 @@ func QueryPairsLockedAndMintedStatisticByApp() *cobra.Command {
 		Short: "Query pairs locked and minted statistic by app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -921,7 +935,8 @@ func QueryPairsLockedAndMintedStatisticByApp() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryPairsLockedAndMintedStatisticByApp(cmd.Context(), &types.QueryPairsLockedAndMintedStatisticByAppRequest{
-				AppId: appID,
+				AppId:      appID,
+				Pagination: pagination,
 			})
 
 			if err != nil {

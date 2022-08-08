@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"context"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -27,12 +29,32 @@ func NewQueryServer(k Keeper) types.QueryServer {
 
 func (q QueryServer) QueryAllVaults(c context.Context, req *types.QueryAllVaultsRequest) (*types.QueryAllVaultsResponse, error) {
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		items []types.Vault
+		ctx   = sdk.UnwrapSDKContext(c)
 	)
-	vaults := q.GetVaults(ctx)
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), types.VaultKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.Vault
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
 	return &types.QueryAllVaultsResponse{
-		Vault: vaults,
+		Vault:      items,
+		Pagination: pagination,
 	}, nil
 }
 

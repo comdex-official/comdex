@@ -116,7 +116,7 @@ message QueryDepositRequestsResponse {
 // QueryDepositRequestRequest is request type for the Query/DepositRequest RPC method.
 message QueryDepositRequestRequest {
   uint64 pool_id = 1;
-  uint64 id      = 2;
+  uint64 id = 2;
   uint64 app_id = 3;
 }
 
@@ -143,7 +143,7 @@ message QueryWithdrawRequestsResponse {
 // QueryWithdrawRequestRequest is request type for the Query/WithdrawRequest RPC method.
 message QueryWithdrawRequestRequest {
   uint64 pool_id = 1;
-  uint64 id      = 2;
+  uint64 id = 2;
   uint64 app_id = 3;
 }
 
@@ -170,7 +170,7 @@ message QueryOrdersResponse {
 // QueryOrderRequest is request type for the Query/Order RPC method.
 message QueryOrderRequest {
   uint64 pair_id = 1;
-  uint64 id      = 2;
+  uint64 id = 2;
   uint64 app_id = 3;
 }
 
@@ -181,8 +181,8 @@ message QueryOrderResponse {
 
 // QueryOrdersByOrdererRequest is request type for the Query/OrdersByOrderer RPC method.
 message QueryOrdersByOrdererRequest {
-  string                                orderer    = 1;
-  uint64                                pair_id    = 2;
+  string                                orderer = 1;
+  uint64                                pair_id = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
   uint64 app_id = 4;
 }
@@ -202,7 +202,7 @@ message PoolResponse {
   string pool_coin_denom = 4;
 
   repeated cosmos.base.v1beta1.Coin balances = 5
-      [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
+  [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
 
   uint64 last_deposit_request_id = 6;
 
@@ -220,7 +220,7 @@ message QueryFarmerRequest {
 
 message QueuedPoolCoin {
   cosmos.base.v1beta1.Coin pool_coin = 1 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
   google.protobuf.Timestamp deque_at = 2 [
@@ -228,13 +228,13 @@ message QueuedPoolCoin {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"deque_at\""
   ];
-  
+
 }
 
 // QueryFarmerResponse is response type for the Query/Farmer RPC method.
 message QueryFarmerResponse {
   cosmos.base.v1beta1.Coin active_pool_coin = 1 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
   repeated QueuedPoolCoin queued_pool_coin = 2 [
@@ -252,7 +252,7 @@ message QueryDeserializePoolCoinRequest {
 // QueryDeserializePoolCoinResponse is response type for the Query/DeserializePoolCoin RPC method.
 message QueryDeserializePoolCoinResponse {
   repeated cosmos.base.v1beta1.Coin coins = 1 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
     (gogoproto.nullable) = false
   ];
 }
@@ -267,21 +267,21 @@ message PoolIncentive {
   bool master_pool = 2;
   repeated uint64 child_pool_ids = 3;
   cosmos.base.v1beta1.Coin total_rewards = 4 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
   cosmos.base.v1beta1.Coin distributed_rewards = 5 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
   uint64 total_epochs = 6;
   uint64 filled_epochs = 7;
   google.protobuf.Duration epoch_duration = 8 [
-      (gogoproto.nullable) = false,
-      (gogoproto.stdduration) = true,
-      (gogoproto.jsontag) = "epoch_duration,omitempty",
-      (gogoproto.moretags) = "yaml:\"epoch_duration\""
-    ];
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true,
+    (gogoproto.jsontag) = "epoch_duration,omitempty",
+    (gogoproto.moretags) = "yaml:\"epoch_duration\""
+  ];
   google.protobuf.Timestamp next_distribution = 9 [
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = false,
@@ -303,7 +303,7 @@ message QueryFarmedPoolCoinRequest {
 
 message QueryFarmedPoolCoinResponse {
   cosmos.base.v1beta1.Coin coin = 1 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
 }
