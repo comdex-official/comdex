@@ -87,8 +87,8 @@ func (k Keeper) SetVault(ctx sdk.Context, vault types.Vault) {
 	k.vault.SetVault(ctx, vault)
 }
 
-func (k Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool) {
-	return k.esm.GetKillSwitchData(ctx, app_id)
+func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool) {
+	return k.esm.GetKillSwitchData(ctx, appID)
 }
 
 func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {

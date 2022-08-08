@@ -123,7 +123,6 @@ func KillSwitch() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func CollateralRedemption() *cobra.Command {
@@ -158,5 +157,4 @@ func CollateralRedemption() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }

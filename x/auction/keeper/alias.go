@@ -168,16 +168,16 @@ func (k Keeper) CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidatio
 	return k.liquidation.CreateLockedVaultHistory(ctx, lockedVault)
 }
 
-func (k Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool) {
-	return k.esm.GetKillSwitchData(ctx, app_id)
+func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool) {
+	return k.esm.GetKillSwitchData(ctx, appID)
 }
 
 func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
 	return k.esm.GetESMStatus(ctx, id)
 }
 
-func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppId uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
-	return k.vault.CreateNewVault(ctx, From, AppId, ExtendedPairVaultID, AmountIn, AmountOut)
+func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
+	return k.vault.CreateNewVault(ctx, From, AppID, ExtendedPairVaultID, AmountIn, AmountOut)
 }
 
 func (k Keeper) GetUserVaultExtendedPairMapping(ctx sdk.Context, address string) (userVaultAssetData vaulttypes.UserVaultAssetMapping, found bool) {

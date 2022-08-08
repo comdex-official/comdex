@@ -8,9 +8,7 @@ import (
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
-	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
-		ctx = ctx.WithEventManager(sdk.NewEventManager())
-
+	return func(_ sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		switch msg := msg.(type) {
 		default:
 			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)

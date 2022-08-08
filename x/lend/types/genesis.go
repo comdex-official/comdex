@@ -1,10 +1,10 @@
 package types
 
-func NewGenesisState(borrowAsset []BorrowAsset, userBorrowIDMapping []UserBorrowIdMapping, borrowIdByOwnerAndPoolMapping []BorrowIdByOwnerAndPoolMapping, borrowMapping BorrowMapping, lendAsset []LendAsset, pool []Pool, assetToPairMapping []AssetToPairMapping, userLendIdMapping []UserLendIdMapping, lendIdByOwnerAndPoolMapping []LendIdByOwnerAndPoolMapping, lendIdToBorrowIdMapping []LendIdToBorrowIdMapping, assetStats []AssetStats, lendMapping LendMapping, userdepositStats DepositStats, reservedepositStats DepositStats, buybackdepositStats DepositStats, borrowdepositStats DepositStats, extended_Pair []Extended_Pair, assetRatesStats []AssetRatesStats, auctionParams []AuctionParams, params Params) *GenesisState {
+func NewGenesisState(borrowAsset []BorrowAsset, userBorrowIDMapping []UserBorrowIdMapping, borrowIDByOwnerAndPoolMapping []BorrowIdByOwnerAndPoolMapping, borrowMapping BorrowMapping, lendAsset []LendAsset, pool []Pool, assetToPairMapping []AssetToPairMapping, userLendIdMapping []UserLendIdMapping, lendIdByOwnerAndPoolMapping []LendIdByOwnerAndPoolMapping, lendIdToBorrowIdMapping []LendIdToBorrowIdMapping, assetStats []AssetStats, lendMapping LendMapping, userdepositStats DepositStats, reservedepositStats DepositStats, buybackdepositStats DepositStats, borrowdepositStats DepositStats, extended_Pair []Extended_Pair, assetRatesStats []AssetRatesStats, auctionParams []AuctionParams, params Params) *GenesisState {
 	return &GenesisState{
 		BorrowAsset:                   borrowAsset,
 		UserBorrowIdMapping:           userBorrowIDMapping,
-		BorrowIdByOwnerAndPoolMapping: borrowIdByOwnerAndPoolMapping,
+		BorrowIdByOwnerAndPoolMapping: borrowIDByOwnerAndPoolMapping,
 		BorrowMapping:                 borrowMapping,
 		LendAsset:                     lendAsset,
 		Pool:                          pool,

@@ -14,11 +14,9 @@ func NewMsgKillRequest(from sdk.AccAddress, switchParams KillSwitchParams) *MsgK
 		From:             from.String(),
 		KillSwitchParams: &switchParams,
 	}
-
 }
 
 func (m *MsgKillRequest) ValidateBasic() error {
-
 	if m.From == "" {
 		return errors.Wrap(errors.ErrInvalidAddress, "from cannot be empty")
 	}
