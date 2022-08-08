@@ -57,7 +57,7 @@ func (s *ModuleTestSuite) TestMsgCreate() {
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
-	s.Require().Equal(1, vaults[0].Id)
+	s.Require().Equal(uint64(1), vaults[0].Id)
 	s.Require().Equal(addr1.String(), vaults[0].Owner)
 	s.Require().Equal(msg.AmountIn, vaults[0].AmountIn)
 	s.Require().Equal(msg.AmountOut, vaults[0].AmountOut)
@@ -91,7 +91,7 @@ func (s *ModuleTestSuite) TestMsgDeposit() {
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
-	s.Require().Equal(1, vaults[0].Id)
+	s.Require().Equal(uint64(1), vaults[0].Id)
 	s.Require().Equal(addr1.String(), vaults[0].Owner)
 	s.Require().Equal(msgCreate.AmountIn.Add(msgDeposit.Amount), vaults[0].AmountIn)
 	s.Require().Equal(msgCreate.AmountOut, vaults[0].AmountOut)
@@ -123,7 +123,7 @@ func (s *ModuleTestSuite) TestMsgWithdraw() {
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
-	s.Require().Equal(1, vaults[0].Id)
+	s.Require().Equal(uint64(1), vaults[0].Id)
 	s.Require().Equal(addr1.String(), vaults[0].Owner)
 	s.Require().Equal(msgCreate.AmountIn.Sub(msgWithdraw.Amount), vaults[0].AmountIn)
 	s.Require().Equal(msgCreate.AmountOut, vaults[0].AmountOut)
@@ -155,7 +155,7 @@ func (s *ModuleTestSuite) TestMsgDraw() {
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
-	s.Require().Equal(1, vaults[0].Id)
+	s.Require().Equal(uint64(1), vaults[0].Id)
 	s.Require().Equal(addr1.String(), vaults[0].Owner)
 	s.Require().Equal(msgCreate.AmountIn, vaults[0].AmountIn)
 	s.Require().Equal(msgCreate.AmountOut.Add(msgDraw.Amount), vaults[0].AmountOut)
@@ -187,7 +187,7 @@ func (s *ModuleTestSuite) TestMsgRepay() {
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
-	s.Require().Equal(1, vaults[0].Id)
+	s.Require().Equal(uint64(1), vaults[0].Id)
 	s.Require().Equal(addr1.String(), vaults[0].Owner)
 	s.Require().Equal(msgCreate.AmountIn, vaults[0].AmountIn)
 	s.Require().Equal(msgCreate.AmountOut.Sub(msgRepay.Amount), vaults[0].AmountOut)
@@ -242,7 +242,7 @@ func (s *ModuleTestSuite) TestMsgCreateStableMint() {
 	s.Require().NoError(err)
 
 	stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
-	s.Require().Equal(1, stableMintVaults[0].Id)
+	s.Require().Equal(uint64(1), stableMintVaults[0].Id)
 	s.Require().Equal(msgStableMintCreate.Amount, stableMintVaults[0].AmountIn)
 	s.Require().Equal(msgStableMintCreate.Amount, stableMintVaults[0].AmountOut)
 	s.Require().Equal(appID1, stableMintVaults[0].AppId)
@@ -276,7 +276,7 @@ func (s *ModuleTestSuite) TestMsgDepositStableMint() {
 	s.Require().NoError(err)
 
 	stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
-	s.Require().Equal(1, stableMintVaults[0].Id)
+	s.Require().Equal(uint64(1), stableMintVaults[0].Id)
 	s.Require().Equal(msgStableMintCreate.Amount.Add(msgStableMintDeposit.Amount), stableMintVaults[0].AmountIn)
 	s.Require().Equal(msgStableMintCreate.Amount.Add(msgStableMintDeposit.Amount), stableMintVaults[0].AmountOut)
 	s.Require().Equal(appID1, stableMintVaults[0].AppId)
@@ -310,7 +310,7 @@ func (s *ModuleTestSuite) TestMsgWithdrawStableMint() {
 	s.Require().NoError(err)
 
 	stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
-	s.Require().Equal(1, stableMintVaults[0].Id)
+	s.Require().Equal(uint64(1), stableMintVaults[0].Id)
 	s.Require().Equal(sdk.NewInt(505000000), stableMintVaults[0].AmountIn)
 	s.Require().Equal(sdk.NewInt(505000000), stableMintVaults[0].AmountOut)
 	s.Require().Equal(appID1, stableMintVaults[0].AppId)
