@@ -85,18 +85,6 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 	return nil
 }
 
-//
-//func (k Keeper) UpdateLockedVaultsAppMapping(ctx sdk.Context, lockedVault types.LockedVault) {
-//	LockedVaultToApp, _ := k.GetLockedVaultByAppID(ctx, lockedVault.AppMappingId)
-//	for index, vault := range LockedVaultToApp.LockedVault {
-//		if vault.OriginalVaultId == lockedVault.OriginalVaultId {
-//			LockedVaultToApp.LockedVault[index] = &lockedVault
-//		}
-//	}
-//
-//	k.SetLockedVaultByAppID(ctx, LockedVaultToApp)
-//}
-
 func (k Keeper) SetLockedVaultByAppID(ctx sdk.Context, msg types.LockedVaultToAppMapping) {
 	var (
 		store = k.Store(ctx)
@@ -352,31 +340,6 @@ func (k Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) 
 	k.SetLockedVault(ctx, lockedVault)
 	return nil
 }
-
-/*func (k Keeper) UpdateAssetQuantitiesInLockedVault(
-	ctx sdk.Context,
-	collateral_auction auctiontypes.CollateralAuction,
-	amountIn sdk.Int,
-	assetIn assettypes.Asset,
-	amountOut sdk.Int,
-	assetOut assettypes.Asset,
-) error {
-
-	locked_vault, found := k.GetLockedVault(ctx, collateral_auction.LockedVaultId)
-	if !found {
-		return types.LockedVaultDoesNotExist
-	}
-	updatedAmountIn := locked_vault.AmountIn.Sub(amountIn)
-	updatedAmountOut := locked_vault.AmountOut.Sub(amountOut)
-	updatedCollateralizationRatio, _ := k.CalculateCollaterlizationRatio(ctx, updatedAmountIn, assetIn, updatedAmountOut, assetOut)
-
-	locked_vault.AmountIn = updatedAmountIn
-	locked_vault.AmountOut = updatedAmountOut
-	locked_vault.CurrentCollaterlisationRatio = updatedCollateralizationRatio
-	locked_vault.SellOffHistory = append(locked_vault.SellOffHistory, collateral_auction.String())
-	k.SetLockedVault(ctx, locked_vault)
-	return nil
-}*/
 
 func (k Keeper) SetAppID(ctx sdk.Context, AppIds types.WhitelistedAppIds) {
 	var (

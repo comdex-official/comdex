@@ -389,8 +389,7 @@ func (k Keeper) CloseDutchAuction(
 	if err != nil {
 		return err
 	}
-	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount.Sub(dutchAuction.OutflowTokenCurrentAmount.Amount))
-
+	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
 	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount)
 	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(burnToken.Amount)
 
