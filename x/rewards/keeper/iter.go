@@ -72,38 +72,37 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 						k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 						locker.NetBalance = locker.NetBalance.Add(newReward)
 						locker.ReturnsAccumulated = returnsAcc.Add(newReward)
-						netFeeCollectedData, _ := k.GetNetFeeCollectedData(ctx, locker.AppId)
-						for _, p := range netFeeCollectedData.AssetIdToFeeCollected {
-							if p.AssetId == locker.AssetDepositId {
-								asset, _ := k.GetAsset(ctx, p.AssetId)
-								err = k.DecreaseNetFeeCollectedData(ctx, locker.AppId, locker.AssetDepositId, newReward, netFeeCollectedData)
-								if err != nil {
-									return err
-								}
-								if newReward.GT(sdk.ZeroInt()) {
-									err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, newReward)))
-									if err != nil {
-										continue
-									}
-								}
-								lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appMappingID, p.AssetId)
-								if !found {
-									var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
-									lockerReward.AppId = locker.AppId
-									lockerReward.AssetId = p.AssetId
-									lockerReward.TotalRewards = sdk.ZeroInt().Add(newReward)
-									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
-									if err != nil {
-										continue
-									}
-								} else {
-									lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
+						netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, locker.AppId)
+						if !found {
+							continue
+						}
+						asset, _ := k.GetAsset(ctx, locker.AssetDepositId)
+						err = k.DecreaseNetFeeCollectedData(ctx, locker.AppId, locker.AssetDepositId, newReward, netFeeCollectedData)
+						if err != nil {
+							continue
+						}
+						if newReward.GT(sdk.ZeroInt()) {
+							err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, newReward)))
+							if err != nil {
+								continue
+							}
+						}
+						lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appMappingID, locker.AssetDepositId)
+						if !found {
+							var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
+							lockerReward.AppId = locker.AppId
+							lockerReward.AssetId = locker.AssetDepositId
+							lockerReward.TotalRewards = sdk.ZeroInt().Add(newReward)
+							err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
+							if err != nil {
+								continue
+							}
+						} else {
+							lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
 
-									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
-									if err != nil {
-										continue
-									}
-								}
+							err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+							if err != nil {
+								continue
 							}
 						}
 						k.UpdateLocker(ctx, locker)
