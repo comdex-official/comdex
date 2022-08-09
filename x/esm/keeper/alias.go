@@ -35,11 +35,11 @@ func (k Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.Exte
 	return k.asset.GetPairsVault(ctx, id)
 }
 
-func (k Keeper) DeleteVault(ctx sdk.Context, id string) {
+func (k Keeper) DeleteVault(ctx sdk.Context, id uint64) {
 	k.vault.DeleteVault(ctx, id)
 }
 
-func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID string, appMappingID uint64) {
+func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64) {
 	k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, extendedPairID, userVaultID, appMappingID)
 }
 

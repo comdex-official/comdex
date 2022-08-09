@@ -57,7 +57,7 @@ func (s *ModuleTestSuite) TestMsgCreate() {
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
-	s.Require().Equal("appone1", vaults[0].Id)
+	s.Require().Equal(uint64(1), vaults[0].Id)
 	s.Require().Equal(addr1.String(), vaults[0].Owner)
 	s.Require().Equal(msg.AmountIn, vaults[0].AmountIn)
 	s.Require().Equal(msg.AmountOut, vaults[0].AmountOut)
@@ -82,7 +82,7 @@ func (s *ModuleTestSuite) TestMsgDeposit() {
 	s.Require().NoError(err)
 
 	msgDeposit := types.NewMsgDepositRequest(
-		addr1, appID1, extendedVaultPairID1, "appone1", sdk.NewInt(69000000),
+		addr1, appID1, extendedVaultPairID1, 1, sdk.NewInt(69000000),
 	)
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgDeposit.Amount)))
 
@@ -91,7 +91,7 @@ func (s *ModuleTestSuite) TestMsgDeposit() {
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
-	s.Require().Equal("appone1", vaults[0].Id)
+	s.Require().Equal(uint64(1), vaults[0].Id)
 	s.Require().Equal(addr1.String(), vaults[0].Owner)
 	s.Require().Equal(msgCreate.AmountIn.Add(msgDeposit.Amount), vaults[0].AmountIn)
 	s.Require().Equal(msgCreate.AmountOut, vaults[0].AmountOut)
@@ -116,14 +116,14 @@ func (s *ModuleTestSuite) TestMsgWithdraw() {
 	s.Require().NoError(err)
 
 	msgWithdraw := types.NewMsgWithdrawRequest(
-		addr1, appID1, extendedVaultPairID1, "appone1", sdk.NewInt(50000000),
+		addr1, appID1, extendedVaultPairID1, 1, sdk.NewInt(50000000),
 	)
 	_, err = handler(s.ctx, msgWithdraw)
 	s.Require().NoError(err)
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
-	s.Require().Equal("appone1", vaults[0].Id)
+	s.Require().Equal(uint64(1), vaults[0].Id)
 	s.Require().Equal(addr1.String(), vaults[0].Owner)
 	s.Require().Equal(msgCreate.AmountIn.Sub(msgWithdraw.Amount), vaults[0].AmountIn)
 	s.Require().Equal(msgCreate.AmountOut, vaults[0].AmountOut)
@@ -148,14 +148,14 @@ func (s *ModuleTestSuite) TestMsgDraw() {
 	s.Require().NoError(err)
 
 	msgDraw := types.NewMsgDrawRequest(
-		addr1, appID1, extendedVaultPairID1, "appone1", sdk.NewInt(10000000),
+		addr1, appID1, extendedVaultPairID1, 1, sdk.NewInt(10000000),
 	)
 	_, err = handler(s.ctx, msgDraw)
 	s.Require().NoError(err)
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
-	s.Require().Equal("appone1", vaults[0].Id)
+	s.Require().Equal(uint64(1), vaults[0].Id)
 	s.Require().Equal(addr1.String(), vaults[0].Owner)
 	s.Require().Equal(msgCreate.AmountIn, vaults[0].AmountIn)
 	s.Require().Equal(msgCreate.AmountOut.Add(msgDraw.Amount), vaults[0].AmountOut)
@@ -180,14 +180,14 @@ func (s *ModuleTestSuite) TestMsgRepay() {
 	s.Require().NoError(err)
 
 	msgRepay := types.NewMsgRepayRequest(
-		addr1, appID1, extendedVaultPairID1, "appone1", sdk.NewInt(100000000),
+		addr1, appID1, extendedVaultPairID1, 1, sdk.NewInt(100000000),
 	)
 	_, err = handler(s.ctx, msgRepay)
 	s.Require().NoError(err)
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
-	s.Require().Equal("appone1", vaults[0].Id)
+	s.Require().Equal(uint64(1), vaults[0].Id)
 	s.Require().Equal(addr1.String(), vaults[0].Owner)
 	s.Require().Equal(msgCreate.AmountIn, vaults[0].AmountIn)
 	s.Require().Equal(msgCreate.AmountOut.Sub(msgRepay.Amount), vaults[0].AmountOut)
@@ -214,7 +214,7 @@ func (s *ModuleTestSuite) TestMsgClose() {
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset2", sdk.NewInt(2000000))))
 
 	msgRepay := types.NewMsgLiquidateRequest(
-		addr1, appID1, extendedVaultPairID1, "appone1",
+		addr1, appID1, extendedVaultPairID1, 1,
 	)
 	_, err = handler(s.ctx, msgRepay)
 	s.Require().NoError(err)
@@ -242,7 +242,7 @@ func (s *ModuleTestSuite) TestMsgCreateStableMint() {
 	s.Require().NoError(err)
 
 	stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
-	s.Require().Equal("appone1", stableMintVaults[0].Id)
+	s.Require().Equal(uint64(1), stableMintVaults[0].Id)
 	s.Require().Equal(msgStableMintCreate.Amount, stableMintVaults[0].AmountIn)
 	s.Require().Equal(msgStableMintCreate.Amount, stableMintVaults[0].AmountOut)
 	s.Require().Equal(appID1, stableMintVaults[0].AppId)
@@ -268,7 +268,7 @@ func (s *ModuleTestSuite) TestMsgDepositStableMint() {
 	s.Require().NoError(err)
 
 	msgStableMintDeposit := types.NewMsgDepositStableMintRequest(
-		addr1, appID1, extendedVaultPairID1, sdk.NewInt(2000000000), "appone1",
+		addr1, appID1, extendedVaultPairID1, sdk.NewInt(2000000000), 1,
 	)
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgStableMintDeposit.Amount)))
 
@@ -276,7 +276,7 @@ func (s *ModuleTestSuite) TestMsgDepositStableMint() {
 	s.Require().NoError(err)
 
 	stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
-	s.Require().Equal("appone1", stableMintVaults[0].Id)
+	s.Require().Equal(uint64(1), stableMintVaults[0].Id)
 	s.Require().Equal(msgStableMintCreate.Amount.Add(msgStableMintDeposit.Amount), stableMintVaults[0].AmountIn)
 	s.Require().Equal(msgStableMintCreate.Amount.Add(msgStableMintDeposit.Amount), stableMintVaults[0].AmountOut)
 	s.Require().Equal(appID1, stableMintVaults[0].AppId)
@@ -302,7 +302,7 @@ func (s *ModuleTestSuite) TestMsgWithdrawStableMint() {
 	s.Require().NoError(err)
 
 	msgStableMintWithdraw := types.NewMsgWithdrawStableMintRequest(
-		addr1, appID1, extendedVaultPairID1, sdk.NewInt(500000000), "appone1",
+		addr1, appID1, extendedVaultPairID1, sdk.NewInt(500000000), 1,
 	)
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgStableMintWithdraw.Amount)))
 
@@ -310,7 +310,7 @@ func (s *ModuleTestSuite) TestMsgWithdrawStableMint() {
 	s.Require().NoError(err)
 
 	stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
-	s.Require().Equal("appone1", stableMintVaults[0].Id)
+	s.Require().Equal(uint64(1), stableMintVaults[0].Id)
 	s.Require().Equal(sdk.NewInt(505000000), stableMintVaults[0].AmountIn)
 	s.Require().Equal(sdk.NewInt(505000000), stableMintVaults[0].AmountOut)
 	s.Require().Equal(appID1, stableMintVaults[0].AppId)

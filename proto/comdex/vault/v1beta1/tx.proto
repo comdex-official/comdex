@@ -36,7 +36,7 @@ message MsgDepositRequest {
   uint64 extended_pair_vault_id = 3 [
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string user_vault_id   = 4
+  uint64 user_vault_id   = 4
       [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -53,7 +53,7 @@ message MsgWithdrawRequest {
   uint64 extended_pair_vault_id = 3 [
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string user_vault_id   = 4
+  uint64 user_vault_id   = 4
       [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -70,7 +70,7 @@ message MsgDrawRequest {
   uint64 extended_pair_vault_id = 3 [
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string user_vault_id   = 4
+  uint64 user_vault_id   = 4
       [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -87,7 +87,7 @@ message MsgRepayRequest {
   uint64 extended_pair_vault_id = 3 [
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string user_vault_id   = 4
+  uint64 user_vault_id   = 4
       [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -104,7 +104,7 @@ message MsgCloseRequest {
   uint64 extended_pair_vault_id = 3 [
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
-  string user_vault_id   = 4
+  uint64 user_vault_id   = 4
       [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
 }
 
@@ -138,7 +138,7 @@ message MsgDepositStableMintRequest {
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
-  string stable_vault_id   = 5
+  uint64 stable_vault_id   = 5
   [ (gogoproto.moretags) = "yaml:\"stable_vault_id\"" ];
 }
 
@@ -159,7 +159,7 @@ message MsgWithdrawStableMintRequest {
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
-  string stable_vault_id   = 5
+  uint64 stable_vault_id   = 5
   [ (gogoproto.moretags) = "yaml:\"stable_vault_id\"" ];
 }
 

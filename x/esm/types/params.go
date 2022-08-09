@@ -59,7 +59,6 @@ func (k Params) Validate() error {
 }
 
 func validateAdmin(v interface{}) error {
-
 	if v == "" {
 		return fmt.Errorf("admin cannot be empty")
 	}

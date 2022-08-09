@@ -74,6 +74,7 @@ var (
 	UserDepositStatsPrefix                = []byte{0x37}
 	ReserveDepositStatsPrefix             = []byte{0x38}
 	BuyBackDepositStatsPrefix             = []byte{0x39}
+	ReservePoolRecordsForBorrowKeyPrefix  = []byte{0x42}
 )
 
 func ReserveFundsKey(tokenDenom string) []byte {
@@ -110,6 +111,10 @@ func AssetRatesStatsKey(ID uint64) []byte {
 
 func BorrowUserKey(ID uint64) []byte {
 	return append(BorrowPairKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
+}
+
+func ReservePoolRecordsForBorrowKey(ID uint64) []byte {
+	return append(ReservePoolRecordsForBorrowKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
 func AssetToPairMappingKey(assetID, poolID uint64) []byte {

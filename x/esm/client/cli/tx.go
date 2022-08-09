@@ -98,7 +98,7 @@ func KillSwitch() *cobra.Command {
 				return err
 			}
 
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -108,7 +108,7 @@ func KillSwitch() *cobra.Command {
 				return err
 			}
 			var switchParams types.KillSwitchParams
-			switchParams.AppId = appId
+			switchParams.AppId = appID
 			switchParams.BreakerEnable = breakerEnable
 
 			msg := types.NewMsgKillRequest(ctx.FromAddress, switchParams)
@@ -123,7 +123,6 @@ func KillSwitch() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }
 
 func CollateralRedemption() *cobra.Command {
@@ -137,7 +136,7 @@ func CollateralRedemption() *cobra.Command {
 				return err
 			}
 
-			appId, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -146,7 +145,7 @@ func CollateralRedemption() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCollateralRedemption(appId, amount, ctx.FromAddress)
+			msg := types.NewMsgCollateralRedemption(appID, amount, ctx.FromAddress)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -158,5 +157,4 @@ func CollateralRedemption() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
-
 }

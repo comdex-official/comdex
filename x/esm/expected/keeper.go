@@ -19,8 +19,8 @@ type AssetKeeper interface {
 
 type VaultKeeper interface {
 	GetVaults(ctx sdk.Context) (vaults []vaulttypes.Vault)
-	DeleteVault(ctx sdk.Context, id string)
-	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID string, appMappingID uint64)
+	DeleteVault(ctx sdk.Context, id uint64)
+	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64)
 	GetStableMintVaults(ctx sdk.Context) (stableVaults []vaulttypes.StableMintVault)
 }
 

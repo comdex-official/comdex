@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"strconv"
 
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
@@ -151,7 +150,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	zeroVal := sdk.ZeroInt()
 	var newVault types.Vault
 	updatedCounter := counterVal + 1
-	newVault.Id = appMapping.ShortName + strconv.FormatUint(updatedCounter, 10)
+	newVault.Id = updatedCounter
 	newVault.AmountIn = msg.AmountIn
 
 	closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
@@ -895,7 +894,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	var stableVault types.StableMintVault
 	updatedCounter := counterVal + 1
 
-	stableVault.Id = appMapping.ShortName + strconv.FormatUint(updatedCounter, 10)
+	stableVault.Id = updatedCounter
 	stableVault.AmountIn = msg.Amount
 	stableVault.AmountOut = msg.Amount
 	stableVault.AppId = appMapping.Id

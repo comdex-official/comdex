@@ -169,7 +169,7 @@ func (k Keeper) GetUserBorrows(ctx sdk.Context, address string) (userBorrows typ
 	return userBorrows, true
 }
 
-func (k Keeper) GetAllUserBorrows(ctx sdk.Context) (userBorrowIdMapping []types.UserBorrowIdMapping) {
+func (k Keeper) GetAllUserBorrows(ctx sdk.Context) (userBorrowIDMapping []types.UserBorrowIdMapping) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.UserBorrowsForAddressKeyPrefix)
@@ -185,9 +185,9 @@ func (k Keeper) GetAllUserBorrows(ctx sdk.Context) (userBorrowIdMapping []types.
 	for ; iter.Valid(); iter.Next() {
 		var asset types.UserBorrowIdMapping
 		k.cdc.MustUnmarshal(iter.Value(), &asset)
-		userBorrowIdMapping = append(userBorrowIdMapping, asset)
+		userBorrowIDMapping = append(userBorrowIDMapping, asset)
 	}
-	return userBorrowIdMapping
+	return userBorrowIDMapping
 }
 
 func (k Keeper) UserBorrows(ctx sdk.Context, address string) (userBorrows []types.BorrowAsset, found bool) {
@@ -256,7 +256,7 @@ func (k Keeper) GetBorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolI
 	return userBorrows, true
 }
 
-func (k Keeper) GetAllBorrowIDByOwnerAndPool(ctx sdk.Context) (borrowIdByOwnerAndPoolMapping []types.BorrowIdByOwnerAndPoolMapping) {
+func (k Keeper) GetAllBorrowIDByOwnerAndPool(ctx sdk.Context) (borrowIDByOwnerAndPoolMapping []types.BorrowIdByOwnerAndPoolMapping) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.BorrowByUserAndPoolPrefix)
@@ -272,9 +272,9 @@ func (k Keeper) GetAllBorrowIDByOwnerAndPool(ctx sdk.Context) (borrowIdByOwnerAn
 	for ; iter.Valid(); iter.Next() {
 		var asset types.BorrowIdByOwnerAndPoolMapping
 		k.cdc.MustUnmarshal(iter.Value(), &asset)
-		borrowIdByOwnerAndPoolMapping = append(borrowIdByOwnerAndPoolMapping, asset)
+		borrowIDByOwnerAndPoolMapping = append(borrowIDByOwnerAndPoolMapping, asset)
 	}
-	return borrowIdByOwnerAndPoolMapping
+	return borrowIDByOwnerAndPoolMapping
 }
 
 func (k Keeper) BorrowIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userBorrows []types.BorrowAsset, found bool) {
@@ -346,4 +346,38 @@ func (k Keeper) SetBorrows(ctx sdk.Context, userBorrows types.BorrowMapping) {
 		value = k.cdc.MustMarshal(&userBorrows)
 	)
 	store.Set(key, value)
+}
+
+func (k Keeper) SetReservePoolRecordsForBorrow(ctx sdk.Context, borrow types.ReservePoolRecordsForBorrow) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReservePoolRecordsForBorrowKey(borrow.ID)
+		value = k.cdc.MustMarshal(&borrow)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetReservePoolRecordsForBorrow(ctx sdk.Context, ID uint64) (borrow types.ReservePoolRecordsForBorrow, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReservePoolRecordsForBorrowKey(ID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return borrow, false
+	}
+
+	k.cdc.MustUnmarshal(value, &borrow)
+	return borrow, true
+}
+
+func (k Keeper) DeleteReservePoolRecordsForBorrow(ctx sdk.Context, ID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReservePoolRecordsForBorrowKey(ID)
+	)
+
+	store.Delete(key)
 }

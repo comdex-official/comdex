@@ -5,7 +5,6 @@ import (
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strconv"
 )
 
 var (
@@ -83,7 +82,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 		//Creating locker instance
 		var userLocker types.Locker
 		counter := lookupTableData.Counter + 1
-		userLocker.LockerId = appMapping.ShortName + strconv.FormatUint(counter, 10)
+		userLocker.LockerId = counter
 		userLocker.Depositor = msg.Depositor
 		userLocker.AssetDepositId = asset.Id
 		userLocker.CreatedAt = ctx.BlockTime()

@@ -104,7 +104,11 @@ func Deposit() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			userVaultid := args[2]
+
+			userVaultid, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			amount, ok := sdk.NewIntFromString(args[3])
 			if !ok {
@@ -143,7 +147,11 @@ func Withdraw() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			userVaultid := args[2]
+			
+			userVaultid, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			amount, ok := sdk.NewIntFromString(args[3])
 			if !ok {
@@ -182,7 +190,11 @@ func DrawDebt() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			userVaultid := args[2]
+
+			userVaultid, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			amount, ok := sdk.NewIntFromString(args[3])
 			if !ok {
@@ -220,7 +232,11 @@ func RepayDebt() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			userVaultid := args[2]
+
+			userVaultid, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			amount, ok := sdk.NewIntFromString(args[3])
 			if !ok {
@@ -258,7 +274,11 @@ func Close() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			userVaultid := args[2]
+
+			userVaultid, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			msg := types.NewMsgLiquidateRequest(ctx.FromAddress, appID, extendedPairVaultID, userVaultid)
 			if err := msg.ValidateBasic(); err != nil {
@@ -336,7 +356,11 @@ func DepositStableMint() *cobra.Command {
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
-			stablemintID := args[3]
+
+			stablemintID, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			msg := types.NewMsgDepositStableMintRequest(ctx.FromAddress, appID, extendedPairVaultID, amount, stablemintID)
 
@@ -377,7 +401,11 @@ func WithdrawStableMint() *cobra.Command {
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
-			stablemintID := args[3]
+			
+			stablemintID, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			msg := types.NewMsgWithdrawStableMintRequest(ctx.FromAddress, appID, extendedPairVaultID, amount, stablemintID)
 

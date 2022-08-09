@@ -26,7 +26,7 @@ func (k Keeper) GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom
 	return k.collector.GetAppToDenomsMapping(ctx, appID)
 }
 
-func (k Keeper) GetLocker(ctx sdk.Context, lockerID string) (locker types.Locker, found bool) {
+func (k Keeper) GetLocker(ctx sdk.Context, lockerID uint64) (locker types.Locker, found bool) {
 	return k.locker.GetLocker(ctx, lockerID)
 }
 
@@ -58,11 +58,11 @@ func (k Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
 	return k.asset.GetAsset(ctx, id)
 }
 
-func (k Keeper) GetVault(ctx sdk.Context, id string) (vault vaulttypes.Vault, found bool) {
+func (k Keeper) GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool) {
 	return k.vault.GetVault(ctx, id)
 }
 
-func (k Keeper) DeleteVault(ctx sdk.Context, id string) {
+func (k Keeper) DeleteVault(ctx sdk.Context, id uint64) {
 	k.vault.DeleteVault(ctx, id)
 }
 
@@ -78,7 +78,7 @@ func (k Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPair
 	k.vault.UpdateUserVaultExtendedPairMapping(ctx, extendedPairID, userAddress, appMappingID)
 }
 
-func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID string, appMappingID uint64) {
+func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64) {
 	k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, extendedPairID, userVaultID, appMappingID)
 }
 func (k Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool) {
@@ -150,10 +150,14 @@ func (k Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, asse
 	return k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, appID, assetID)
 }
 
-func (k Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool) {
-	return k.esm.GetKillSwitchData(ctx, app_id)
+func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool) {
+	return k.esm.GetKillSwitchData(ctx, appID)
 }
 
 func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
 	return k.esm.GetESMStatus(ctx, id)
+}
+
+func (k Keeper) GetLockers(ctx sdk.Context) (locker []types.Locker) {
+	return k.locker.GetLockers(ctx)
 }

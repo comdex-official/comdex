@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/collector/v1beta1/params.proto";
 import "comdex/collector/v1beta1/collector.proto";
-// this line is used by starport scaffolding # 1
+import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/collector/types";
 
@@ -31,7 +31,6 @@ service Query {
     option (google.api.http).get = "/comdex/collector/v1beta1/net-fee-data-by-app-and-asset/{app_id}/{asset_id}";
   };
 
-  // this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -43,57 +42,60 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-// this line is used by starport scaffolding # 3
 
 message QueryCollectorLookupByAppRequest {
-  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 message QueryCollectorLookupByAppResponse {
   repeated CollectorLookupTable collectorLookup = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"collectorLookup\"" ];
+    (gogoproto.moretags) = "yaml:\"collectorLookup\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 
 }
 message QueryCollectorLookupByAppAndAssetRequest {
-  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
-  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
 }
 message QueryCollectorLookupByAppAndAssetResponse {
   CollectorLookupTable collectorLookup = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"collectorLookup\"" ];
+    (gogoproto.moretags) = "yaml:\"collectorLookup\""];
 
 }
 
 message QueryCollectorDataByAppAndAssetRequest {
-  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
-  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
 }
 message QueryCollectorDataByAppAndAssetResponse {
   CollectorData collectorData = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"collectorData\"" ];
+    (gogoproto.moretags) = "yaml:\"collectorData\""];
 
 }
 
 message QueryAuctionMappingForAppAndAssetRequest {
-  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
-  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
 }
 message QueryAuctionMappingForAppAndAssetResponse {
   AssetIdToAuctionLookupTable assetIdToAuctionLookupTable = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"assetIdToAuctionLookupTable\"" ];
+    (gogoproto.moretags) = "yaml:\"assetIdToAuctionLookupTable\""];
 
 }
 
 message QueryNetFeeCollectedForAppAndAssetRequest {
-  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
-  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
 }
 message QueryNetFeeCollectedForAppAndAssetResponse {
   AssetIdToFeeCollected assetIdToFeeCollected = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"assetIdToFeeCollected\"" ];
+    (gogoproto.moretags) = "yaml:\"assetIdToFeeCollected\""];
 
 }

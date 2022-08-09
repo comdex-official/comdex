@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"context"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -27,29 +29,65 @@ func NewQueryServer(k Keeper) types.QueryServer {
 
 func (q QueryServer) QueryAllVaults(c context.Context, req *types.QueryAllVaultsRequest) (*types.QueryAllVaultsResponse, error) {
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		items []types.Vault
+		ctx   = sdk.UnwrapSDKContext(c)
 	)
-	vaults := q.GetVaults(ctx)
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), types.VaultKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.Vault
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
 	return &types.QueryAllVaultsResponse{
-		Vault: vaults,
+		Vault:      items,
+		Pagination: pagination,
 	}, nil
 }
 
 func (q QueryServer) QueryAllVaultsByApp(c context.Context, req *types.QueryAllVaultsByAppRequest) (*types.QueryAllVaultsByAppResponse, error) {
 	var (
-		ctx       = sdk.UnwrapSDKContext(c)
-		AppVaults []types.Vault
+		ctx   = sdk.UnwrapSDKContext(c)
+		items []types.Vault
 	)
-	vaults := q.GetVaults(ctx)
-	for _, data := range vaults {
-		if data.AppId == req.AppId {
-			AppVaults = append(AppVaults, data)
-		}
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), types.VaultKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.Vault
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				if item.AppId == req.AppId {
+					items = append(items, item)
+				}
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryAllVaultsByAppResponse{
-		Vault: AppVaults,
+		Vault:      items,
+		Pagination: pagination,
 	}, nil
 }
 
@@ -117,7 +155,7 @@ func (q QueryServer) QueryVaultInfoOfOwnerByApp(c context.Context, req *types.Qu
 	// nolint
 	var (
 		ctx        = sdk.UnwrapSDKContext(c)
-		vaultsIds  []string
+		vaultsIds  []uint64
 		vaultsInfo []types.VaultInfo
 	)
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -213,7 +251,7 @@ func (q QueryServer) QueryVaultIDOfOwnerByExtendedPairAndApp(c context.Context, 
 	}
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		vaultID = ""
+		vaultID uint64
 	)
 
 	_, found := q.GetApp(ctx, req.AppId)
@@ -250,7 +288,7 @@ func (q QueryServer) QueryVaultIdsByAppInAllExtendedPairs(c context.Context, req
 	}
 	var (
 		ctx       = sdk.UnwrapSDKContext(c)
-		vaultsIds []string
+		vaultsIds []uint64
 	)
 
 	_, found := q.GetApp(ctx, req.AppId)
@@ -277,7 +315,7 @@ func (q QueryServer) QueryAllVaultIdsByAnOwner(c context.Context, req *types.Que
 	}
 	var (
 		ctx       = sdk.UnwrapSDKContext(c)
-		vaultsIds []string
+		vaultsIds []uint64
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -672,7 +710,7 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 	}
 	var (
 		ctx             = sdk.UnwrapSDKContext(c)
-		vaultsIds       []string
+		vaultsIds       []uint64
 		totalLocked     = sdk.ZeroInt()
 		totalDue        = sdk.ZeroInt()
 		availableBorrow = sdk.ZeroInt()

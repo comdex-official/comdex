@@ -142,6 +142,11 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 				return err
 			}
 
+			assetOraclePrice, err := cmd.Flags().GetBool(flagAssetOraclePrice)
+			if err != nil {
+				return  err
+			}
+
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
 				return err
@@ -159,6 +164,7 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 				Name:     name,
 				Denom:    denom,
 				Decimals: decimals,
+				IsOraclePriceRequired: assetOraclePrice,
 			}
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)

@@ -99,14 +99,11 @@ func queryLends() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
 			}
-
 			queryClient := types.NewQueryClient(ctx)
-
 			res, err := queryClient.QueryLends(
 				context.Background(),
 				&types.QueryLendsRequest{
@@ -133,6 +130,10 @@ func QueryAllLendsByOwner() *cobra.Command {
 		Short: "lends list for a owner",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -141,7 +142,8 @@ func QueryAllLendsByOwner() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllLendByOwner(cmd.Context(), &types.QueryAllLendByOwnerRequest{
-				Owner: args[0],
+				Owner:      args[0],
+				Pagination: pagination,
 			})
 
 			if err != nil {
@@ -161,6 +163,10 @@ func QueryAllLendsByOwnerAndPoolID() *cobra.Command {
 		Short: "lends list for a owner",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -174,8 +180,9 @@ func QueryAllLendsByOwnerAndPoolID() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllLendByOwnerAndPool(cmd.Context(), &types.QueryAllLendByOwnerAndPoolRequest{
-				Owner:  args[0],
-				PoolId: poolID,
+				Owner:      args[0],
+				PoolId:     poolID,
+				Pagination: pagination,
 			})
 
 			if err != nil {
@@ -462,14 +469,11 @@ func queryBorrows() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
 			}
-
 			queryClient := types.NewQueryClient(ctx)
-
 			res, err := queryClient.QueryBorrows(
 				context.Background(),
 				&types.QueryBorrowsRequest{
@@ -496,6 +500,10 @@ func QueryAllBorrowsByOwner() *cobra.Command {
 		Short: "borrows list for a owner",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -504,7 +512,8 @@ func QueryAllBorrowsByOwner() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAllBorrowByOwner(cmd.Context(), &types.QueryAllBorrowByOwnerRequest{
-				Owner: args[0],
+				Owner:      args[0],
+				Pagination: pagination,
 			})
 
 			if err != nil {
@@ -524,6 +533,10 @@ func QueryAllBorrowsByOwnerAndPoolID() *cobra.Command {
 		Short: "borrows list for a owner",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -537,8 +550,9 @@ func QueryAllBorrowsByOwnerAndPoolID() *cobra.Command {
 			}
 
 			res, err := queryClient.QueryAllBorrowByOwnerAndPool(cmd.Context(), &types.QueryAllBorrowByOwnerAndPoolRequest{
-				Owner:  args[0],
-				PoolId: poolID,
+				Owner:      args[0],
+				PoolId:     poolID,
+				Pagination: pagination,
 			})
 
 			if err != nil {

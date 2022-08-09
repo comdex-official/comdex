@@ -41,6 +41,6 @@ func UserLockerAssetMappingKey(address string) []byte {
 	return append(UserLockerAssetMappingKeyPrefix, address...)
 }
 
-func LockerKey(lockerID string) []byte {
-	return append(LockerKeyPrefix, lockerID...)
+func LockerKey(lockerID uint64) []byte {
+	return append(LockerKeyPrefix, sdk.Uint64ToBigEndian(lockerID)...)
 }
