@@ -48,6 +48,10 @@ func queryLockersByAppToAssetID() *cobra.Command {
 		Short: "Query all lockers by app and asset id",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -67,8 +71,9 @@ func queryLockersByAppToAssetID() *cobra.Command {
 			res, err := queryClient.QueryLockersByAppToAssetID(
 				context.Background(),
 				&types.QueryLockersByAppToAssetIDRequest{
-					AppId:   appID,
-					AssetId: assetID,
+					AppId:      appID,
+					AssetId:    assetID,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -88,6 +93,10 @@ func queryLockerByAppID() *cobra.Command {
 		Short: "Query locker info by app id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -102,7 +111,8 @@ func queryLockerByAppID() *cobra.Command {
 			res, err := queryClient.QueryLockerInfoByAppID(
 				context.Background(),
 				&types.QueryLockerInfoByAppIDRequest{
-					AppId: appID,
+					AppId:      appID,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -162,6 +172,10 @@ func queryOwnerLockerByAppIDbyOwner() *cobra.Command {
 		Short: "Query owner locker by app id by owner",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -177,8 +191,9 @@ func queryOwnerLockerByAppIDbyOwner() *cobra.Command {
 			res, err := queryClient.QueryOwnerLockerByAppIDbyOwner(
 				context.Background(),
 				&types.QueryOwnerLockerByAppIDbyOwnerRequest{
-					AppId: appID,
-					Owner: owner,
+					AppId:      appID,
+					Owner:      owner,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -198,6 +213,10 @@ func queryLockerByAppByOwner() *cobra.Command {
 		Short: "Query locker by app by owner",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -214,8 +233,9 @@ func queryLockerByAppByOwner() *cobra.Command {
 			res, err := queryClient.QueryLockerByAppByOwner(
 				context.Background(),
 				&types.QueryLockerByAppByOwnerRequest{
-					AppId: appID,
-					Owner: owner,
+					AppId:      appID,
+					Owner:      owner,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -235,6 +255,10 @@ func queryOwnerLockerOfAllAppsByOwner() *cobra.Command {
 		Short: "Query owner locker by all apps by owner",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -246,7 +270,8 @@ func queryOwnerLockerOfAllAppsByOwner() *cobra.Command {
 			res, err := queryClient.QueryOwnerLockerOfAllAppsByOwner(
 				context.Background(),
 				&types.QueryOwnerLockerOfAllAppsByOwnerRequest{
-					Owner: owner,
+					Owner:      owner,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -432,6 +457,10 @@ func queryWhiteListedAssetIDsByAppID() *cobra.Command {
 		Short: "Query whitelisted asset Ids by app id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -446,7 +475,8 @@ func queryWhiteListedAssetIDsByAppID() *cobra.Command {
 			res, err := queryClient.QueryWhiteListedAssetIDsByAppID(
 				context.Background(),
 				&types.QueryWhiteListedAssetIDsByAppIDRequest{
-					AppId: appID,
+					AppId:      appID,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -466,6 +496,10 @@ func queryWhiteListedAssetByAllApps() *cobra.Command {
 		Short: "Query white listed asset all apps",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -474,7 +508,9 @@ func queryWhiteListedAssetByAllApps() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryWhiteListedAssetByAllApps(
 				context.Background(),
-				&types.QueryWhiteListedAssetByAllAppsRequest{},
+				&types.QueryWhiteListedAssetByAllAppsRequest{
+					Pagination: pagination,
+				},
 			)
 			if err != nil {
 				return err
@@ -493,6 +529,10 @@ func queryLockerLookupTableByApp() *cobra.Command {
 		Short: "Query locker lookup by app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -507,7 +547,8 @@ func queryLockerLookupTableByApp() *cobra.Command {
 			res, err := queryClient.QueryLockerLookupTableByApp(
 				context.Background(),
 				&types.QueryLockerLookupTableByAppRequest{
-					AppId: appID,
+					AppId:      appID,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -566,6 +607,10 @@ func queryLockerTotalDepositedByApp() *cobra.Command {
 		Short: "Query locker deposited amount by app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -580,7 +625,8 @@ func queryLockerTotalDepositedByApp() *cobra.Command {
 			res, err := queryClient.QueryLockerTotalDepositedByApp(
 				context.Background(),
 				&types.QueryLockerTotalDepositedByAppRequest{
-					AppId: appID,
+					AppId:      appID,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {

@@ -164,6 +164,10 @@ func queryApps() *cobra.Command {
 		Use:   "apps",
 		Short: "Query data for all the apps of the protocol",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -173,7 +177,9 @@ func queryApps() *cobra.Command {
 
 			res, err := queryClient.QueryApps(
 				context.Background(),
-				&types.QueryAppsRequest{},
+				&types.QueryAppsRequest{
+					Pagination: pagination,
+				},
 			)
 			if err != nil {
 				return err
@@ -184,7 +190,7 @@ func queryApps() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "assets")
+	flags.AddPaginationFlagsToCmd(cmd, "apps")
 
 	return cmd
 }
@@ -222,8 +228,6 @@ func queryApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "assets")
-
 	return cmd
 }
 
@@ -260,8 +264,6 @@ func queryExtendedPairVault() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "assets")
-
 	return cmd
 }
 
@@ -270,6 +272,10 @@ func queryAllExtendedPairVaults() *cobra.Command {
 		Use:   "extended_pair_vaults",
 		Short: "Query all Extended pairVaults",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -279,7 +285,9 @@ func queryAllExtendedPairVaults() *cobra.Command {
 
 			res, err := queryClient.QueryAllExtendedPairVaults(
 				context.Background(),
-				&types.QueryAllExtendedPairVaultsRequest{},
+				&types.QueryAllExtendedPairVaultsRequest{
+					Pagination: pagination,
+				},
 			)
 			if err != nil {
 				return err
@@ -290,7 +298,7 @@ func queryAllExtendedPairVaults() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "assets")
+	flags.AddPaginationFlagsToCmd(cmd, "extended_pair_vaults")
 
 	return cmd
 }
@@ -301,6 +309,10 @@ func queryAllExtendedPairVaultsByApp() *cobra.Command {
 		Short: "Query all extended pairs in an app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -316,7 +328,8 @@ func queryAllExtendedPairVaultsByApp() *cobra.Command {
 			res, err := queryClient.QueryAllExtendedPairVaultsByApp(
 				context.Background(),
 				&types.QueryAllExtendedPairVaultsByAppRequest{
-					AppId: appID,
+					AppId:      appID,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -328,7 +341,7 @@ func queryAllExtendedPairVaultsByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "assets")
+	flags.AddPaginationFlagsToCmd(cmd, "app-extended-pair")
 
 	return cmd
 }
@@ -339,6 +352,10 @@ func queryAllExtendedPairStableVaultsIDByApp() *cobra.Command {
 		Short: "Query all extended pairs stable vault wise in an app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -354,7 +371,8 @@ func queryAllExtendedPairStableVaultsIDByApp() *cobra.Command {
 			res, err := queryClient.QueryAllExtendedPairStableVaultsIDByApp(
 				context.Background(),
 				&types.QueryAllExtendedPairStableVaultsIDByAppRequest{
-					AppId: appID,
+					AppId:      appID,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -366,7 +384,7 @@ func queryAllExtendedPairStableVaultsIDByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "assets")
+	flags.AddPaginationFlagsToCmd(cmd, "extended-pair-stable-vault-wise")
 
 	return cmd
 }
@@ -404,7 +422,7 @@ func queryGovTokenByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "assets")
+	flags.AddPaginationFlagsToCmd(cmd, "check_for_gov_token_for_an_app")
 
 	return cmd
 }
@@ -415,6 +433,10 @@ func queryAllExtendedPairStableVaultsByApp() *cobra.Command {
 		Short: "Query all extended pairs data stable vault wise in an app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -430,7 +452,8 @@ func queryAllExtendedPairStableVaultsByApp() *cobra.Command {
 			res, err := queryClient.QueryAllExtendedPairStableVaultsByApp(
 				context.Background(),
 				&types.QueryAllExtendedPairStableVaultsByAppRequest{
-					AppId: appID,
+					AppId:      appID,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -442,7 +465,7 @@ func queryAllExtendedPairStableVaultsByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "assets")
+	flags.AddPaginationFlagsToCmd(cmd, "extended-pair-data-stable-vault-wise")
 
 	return cmd
 }
