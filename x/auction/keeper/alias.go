@@ -270,3 +270,7 @@ func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleNam
 func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
 	return k.liquidation.UnLiquidateLockedBorrows(ctx, id)
 }
+
+func (k Keeper) SetLend(ctx sdk.Context, lend lendtypes.LendAsset) {
+	k.lend.SetLend(ctx, lend)
+}
