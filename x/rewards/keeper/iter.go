@@ -90,14 +90,17 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 								if err != nil {
 									return err
 								}
-								err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, newReward)))
-								if err != nil {
-									return err
+								if newReward.GT(sdk.ZeroInt()){
+									err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, newReward)))
+									if err != nil {
+										return err
+									}
 								}
+								if newReward.GT(sdk.ZeroInt()){
 								err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, newReward)))
-
-								if err != nil {
-									return err
+									if err != nil {
+										return err
+									}
 								}
 								lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appMappingID, p.AssetId)
 
@@ -156,8 +159,13 @@ func (k Keeper) CalculateRewards(
 	intAccPerBlock := intPerBlockFactor - 1
 	amtFloat, _ := strconv.ParseFloat(amount.String(), 64)
 	newAmount := intAccPerBlock * amtFloat
-
-	return sdk.NewDec(int64(newAmount)), nil
+	
+	s :=fmt.Sprint(newAmount)
+	newAm, err := sdk.NewDecFromStr(s)
+	if err !=nil {
+		return sdk.ZeroDec(), err
+	}
+	return newAm, nil
 }
 
 //IterateVaults does interest calculation for vaults .
