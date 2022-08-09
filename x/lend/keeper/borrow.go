@@ -347,3 +347,37 @@ func (k Keeper) SetBorrows(ctx sdk.Context, userBorrows types.BorrowMapping) {
 	)
 	store.Set(key, value)
 }
+
+func (k Keeper) SetReservePoolRecordsForBorrow(ctx sdk.Context, borrow types.ReservePoolRecordsForBorrow) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReservePoolRecordsForBorrowKey(borrow.ID)
+		value = k.cdc.MustMarshal(&borrow)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetReservePoolRecordsForBorrow(ctx sdk.Context, ID uint64) (borrow types.ReservePoolRecordsForBorrow, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReservePoolRecordsForBorrowKey(ID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return borrow, false
+	}
+
+	k.cdc.MustUnmarshal(value, &borrow)
+	return borrow, true
+}
+
+func (k Keeper) DeleteReservePoolRecordsForBorrow(ctx sdk.Context, ID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReservePoolRecordsForBorrowKey(ID)
+	)
+
+	store.Delete(key)
+}

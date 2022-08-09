@@ -70,6 +70,25 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 		if err != nil {
 			return err
 		}
+		reserveRates, err := k.GetReserveRate(ctx, pair.AssetOutPoolID, pair.AssetOut)
+		if err != nil {
+			return types.ErrReserveRatesNotFound
+		}
+		reservePoolAmountPerBlock, err := k.CalculateRewards(ctx, borrow.AmountOut.Amount.String(), reserveRates)
+		if err != nil {
+			return err
+		}
+		reservePoolRecords, found := k.GetReservePoolRecordsForBorrow(ctx, borrow.ID)
+		if !found {
+			reservePoolRecords = types.ReservePoolRecordsForBorrow{
+				ID:                  borrow.ID,
+				InterestAccumulated: sdk.ZeroInt(),
+			}
+		}
+		if reservePoolAmountPerBlock.GT(sdk.ZeroInt()) {
+			reservePoolRecords.InterestAccumulated = reservePoolRecords.InterestAccumulated.Add(reservePoolAmountPerBlock)
+		}
+		k.SetReservePoolRecordsForBorrow(ctx, reservePoolRecords)
 		if interestPerBlock.GT(sdk.ZeroInt()) {
 
 			updatedBorrow := types.BorrowAsset{
