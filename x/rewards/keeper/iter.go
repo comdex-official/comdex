@@ -48,7 +48,7 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 						balance := locker.NetBalance
 						reward, err := k.CalculateRewards(ctx, balance, CollectorLookup.LockerSavingRate)
 						if err != nil {
-							return nil
+							continue
 						}
 
 						// update the lock position
@@ -70,18 +70,8 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 							lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 						}
 						k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
-						updatedReturnsAcc := returnsAcc.Add(newReward)
-						netBalance := locker.NetBalance.Add(newReward)
-						updatedLocker := lockertypes.Locker{
-							LockerId:           locker.LockerId,
-							Depositor:          locker.Depositor,
-							ReturnsAccumulated: updatedReturnsAcc,
-							NetBalance:         netBalance,
-							CreatedAt:          locker.CreatedAt,
-							AssetDepositId:     locker.AssetDepositId,
-							IsLocked:           locker.IsLocked,
-							AppId:              locker.AppId,
-						}
+						locker.NetBalance = locker.NetBalance.Add(newReward)
+						locker.ReturnsAccumulated = returnsAcc.Add(newReward)
 						netFeeCollectedData, _ := k.GetNetFeeCollectedData(ctx, locker.AppId)
 						for _, p := range netFeeCollectedData.AssetIdToFeeCollected {
 							if p.AssetId == locker.AssetDepositId {
@@ -93,17 +83,10 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 								if newReward.GT(sdk.ZeroInt()) {
 									err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, newReward)))
 									if err != nil {
-										return err
-									}
-								}
-								if newReward.GT(sdk.ZeroInt()) {
-									err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, newReward)))
-									if err != nil {
-										return err
+										continue
 									}
 								}
 								lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appMappingID, p.AssetId)
-
 								if !found {
 									var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
 									lockerReward.AppId = locker.AppId
@@ -111,19 +94,19 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 									lockerReward.TotalRewards = sdk.ZeroInt().Add(newReward)
 									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
 									if err != nil {
-										return err
+										continue
 									}
 								} else {
 									lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
 
 									err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
 									if err != nil {
-										return err
+										continue
 									}
 								}
 							}
 						}
-						k.UpdateLocker(ctx, updatedLocker)
+						k.UpdateLocker(ctx, locker)
 					}
 				}
 			}
@@ -273,7 +256,7 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 
 									err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
 									if err != nil {
-										return err
+										continue
 									}
 									epoch.Count = epoch.Count + types.UInt64One
 									epoch.StartingTime = timeNow + types.Int64SecondsInADay
@@ -332,7 +315,7 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 								user, _ := sdk.AccAddressFromBech32(userVault.Owner)
 								err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
 								if err != nil {
-									return err
+									continue
 								}
 								epoch.Count = epoch.Count + types.UInt64One
 								epoch.StartingTime = timeNow + types.SecondsPerDay
