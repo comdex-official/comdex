@@ -157,3 +157,7 @@ func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillS
 func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
 	return k.esm.GetESMStatus(ctx, id)
 }
+
+func (k Keeper) GetLockers(ctx sdk.Context) (locker []types.Locker) {
+	return k.locker.GetLockers(ctx)
+}
