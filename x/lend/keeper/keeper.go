@@ -364,7 +364,7 @@ func (k Keeper) CloseLend(ctx sdk.Context, addr string, lendID uint64) error {
 		return err
 	}
 
-	k.UpdateLendStats(ctx, lendPos.AssetID, lendPos.PoolID, lendPos.AmountIn.Amount, true)
+	k.UpdateLendStats(ctx, lendPos.AssetID, lendPos.PoolID, lendPos.AmountIn.Amount, false)
 	k.DeleteLendForAddressByAsset(ctx, lenderAddr, lendPos.AssetID, lendPos.PoolID)
 
 	err = k.UpdateUserLendIDMapping(ctx, addr, lendPos.ID, false)
