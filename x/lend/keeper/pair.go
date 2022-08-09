@@ -39,10 +39,10 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		}
 	}
 	depositStats, found := k.GetDepositStats(ctx)
-	userDepositStats, found := k.GetUserDepositStats(ctx)
-	ReserveDepositStats, found := k.GetReserveDepositStats(ctx)
-	BuyBackDepositStats, found := k.GetBuyBackDepositStats(ctx)
-	BorrowStats, found := k.GetBorrowStats(ctx)
+	userDepositStats, _ := k.GetUserDepositStats(ctx)
+	ReserveDepositStats, _ := k.GetReserveDepositStats(ctx)
+	BuyBackDepositStats, _ := k.GetBuyBackDepositStats(ctx)
+	BorrowStats, _ := k.GetBorrowStats(ctx)
 	var balanceStats []types.BalanceStats
 	if !found {
 		for _, v := range pool.AssetData {

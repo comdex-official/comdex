@@ -90,14 +90,14 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 								if err != nil {
 									return err
 								}
-								if newReward.GT(sdk.ZeroInt()){
+								if newReward.GT(sdk.ZeroInt()) {
 									err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, newReward)))
 									if err != nil {
 										return err
 									}
 								}
-								if newReward.GT(sdk.ZeroInt()){
-								err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, newReward)))
+								if newReward.GT(sdk.ZeroInt()) {
+									err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, newReward)))
 									if err != nil {
 										return err
 									}
@@ -141,11 +141,11 @@ func (k Keeper) CalculateRewards(
 	currentTime := ctx.BlockTime().Unix()
 
 	prevInterestTime := k.GetLastInterestTime(ctx)
-	if prevInterestTime == 0 {
+	if prevInterestTime == types.Int64Zero {
 		prevInterestTime = currentTime
 	}
 	secondsElapsed := currentTime - prevInterestTime
-	if secondsElapsed < 0 {
+	if secondsElapsed < types.Int64Zero {
 		return sdk.ZeroDec(), sdkerrors.Wrap(types.ErrNegativeTimeElapsed, fmt.Sprintf("%d seconds", secondsElapsed))
 	}
 	//{(1+ Annual Interest Rate)^(No of seconds per block/No. of seconds in a year)}-1
@@ -156,13 +156,13 @@ func (k Keeper) CalculateRewards(
 	b, _ := sdk.NewDecFromStr(perc)
 	factor1 := a.Add(b).MustFloat64()
 	intPerBlockFactor := math.Pow(factor1, yearsElapsed)
-	intAccPerBlock := intPerBlockFactor - 1
+	intAccPerBlock := intPerBlockFactor - types.Float64One
 	amtFloat, _ := strconv.ParseFloat(amount.String(), 64)
 	newAmount := intAccPerBlock * amtFloat
-	
-	s :=fmt.Sprint(newAmount)
+
+	s := fmt.Sprint(newAmount)
 	newAm, err := sdk.NewDecFromStr(s)
-	if err !=nil {
+	if err != nil {
 		return sdk.ZeroDec(), err
 	}
 	return newAm, nil
@@ -195,7 +195,7 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingID uint64) error {
 			}
 			ExtPairVault, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 			StabilityFee := ExtPairVault.StabilityFee
-			if vault.ExtendedPairVaultID != 0 {
+			if vault.ExtendedPairVaultID != types.UInt64Zero {
 				if StabilityFee.GT(sdk.ZeroDec()) {
 					interest, err := k.CalculateRewards(ctx, vault.AmountOut, StabilityFee)
 					if err != nil {
@@ -275,8 +275,8 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 									if err != nil {
 										return err
 									}
-									epoch.Count = epoch.Count + 1
-									epoch.StartingTime = timeNow + 84600
+									epoch.Count = epoch.Count + types.UInt64One
+									epoch.StartingTime = timeNow + types.Int64SecondsInADay
 									k.SetEpochTime(ctx, epoch)
 								}
 							}
@@ -334,8 +334,8 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 								if err != nil {
 									return err
 								}
-								epoch.Count = epoch.Count + 1
-								epoch.StartingTime = timeNow + 84600
+								epoch.Count = epoch.Count + types.UInt64One
+								epoch.StartingTime = timeNow + types.SecondsPerDay
 								k.SetEpochTime(ctx, epoch)
 							}
 						}

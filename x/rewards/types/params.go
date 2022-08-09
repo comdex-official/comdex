@@ -6,6 +6,14 @@ import (
 
 var _ paramstypes.ParamSet = (*Params)(nil)
 
+const (
+	Int64SecondsInADay = int64(84600)
+	UInt64One          = uint64(1)
+	Float64One         = float64(1)
+	Int64Zero          = int64(0)
+	UInt64Zero         = uint64(0)
+)
+
 // ParamKeyTable for incentives module.
 func ParamKeyTable() paramstypes.KeyTable {
 	return paramstypes.NewKeyTable().RegisterParamSet(&Params{})
