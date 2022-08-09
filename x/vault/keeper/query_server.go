@@ -60,18 +60,34 @@ func (q QueryServer) QueryAllVaults(c context.Context, req *types.QueryAllVaults
 
 func (q QueryServer) QueryAllVaultsByApp(c context.Context, req *types.QueryAllVaultsByAppRequest) (*types.QueryAllVaultsByAppResponse, error) {
 	var (
-		ctx       = sdk.UnwrapSDKContext(c)
-		AppVaults []types.Vault
+		ctx   = sdk.UnwrapSDKContext(c)
+		items []types.Vault
 	)
-	vaults := q.GetVaults(ctx)
-	for _, data := range vaults {
-		if data.AppId == req.AppId {
-			AppVaults = append(AppVaults, data)
-		}
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), types.VaultKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.Vault
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				if item.AppId == req.AppId {
+					items = append(items, item)
+				}
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryAllVaultsByAppResponse{
-		Vault: AppVaults,
+		Vault:      items,
+		Pagination: pagination,
 	}, nil
 }
 

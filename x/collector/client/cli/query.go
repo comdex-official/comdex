@@ -40,6 +40,10 @@ func QueryCollectorLookupByApp() *cobra.Command {
 		Short: "Query collector lookup for an app",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -52,7 +56,8 @@ func QueryCollectorLookupByApp() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryCollectorLookupByApp(cmd.Context(), &types.QueryCollectorLookupByAppRequest{
-				AppId: appID,
+				AppId:      appID,
+				Pagination: pagination,
 			})
 
 			if err != nil {
