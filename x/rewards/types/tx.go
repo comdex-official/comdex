@@ -108,7 +108,6 @@ func (m *ActivateExternalRewardsLockers) Type() string {
 }
 
 func (m *ActivateExternalRewardsLockers) ValidateBasic() error {
-
 	if m.AppMappingId <= 0 {
 		return fmt.Errorf("app id should be positive: %d > 0", m.AppMappingId)
 	}

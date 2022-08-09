@@ -37,6 +37,7 @@ type LiquidationKeeper interface {
 	SetLockedVault(ctx sdk.Context, lockedVault liquidationtypes.LockedVault)
 	DeleteLockedVault(ctx sdk.Context, id uint64)
 	CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
+	UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error
 }
 
 type AssetKeeper interface {
@@ -53,11 +54,11 @@ type VaultKeeper interface {
 	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool)
 	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool)
 	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64)
-	CreateNewVault(ctx sdk.Context, From string, AppId uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error
+	CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error
 	GetUserVaultExtendedPairMapping(ctx sdk.Context, address string) (userVaultAssetData vaulttypes.UserVaultAssetMapping, found bool)
-	CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData vaulttypes.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID string, found bool)
+	CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData vaulttypes.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID uint64, found bool)
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
-	GetVault(ctx sdk.Context, id string) (vault vaulttypes.Vault, found bool)
+	GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool)
 }
 
 type CollectorKeeper interface {
@@ -79,7 +80,7 @@ type TokenMintKeeper interface {
 }
 
 type EsmKeeper interface {
-	GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool)
+	GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool)
 	GetESMStatus(ctx sdk.Context, id uint64) (esmStatus esmtypes.ESMStatus, found bool)
 }
 
@@ -103,4 +104,5 @@ type LendKeeper interface {
 	GetReserveDepositStats(ctx sdk.Context) (depositStats lendtypes.DepositStats, found bool)
 	ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int
 	UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error
+	SetLend(ctx sdk.Context, lend lendtypes.LendAsset)
 }

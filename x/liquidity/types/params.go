@@ -24,7 +24,6 @@ const (
 	CancelAllOrdersGas  = sdk.Gas(74000)
 	FarmGas             = sdk.Gas(62300)
 	UnfarmGas           = sdk.Gas(69000)
-	gasCostPerIteration = sdk.Gas(10)
 )
 
 var (

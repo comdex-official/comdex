@@ -46,13 +46,13 @@ func (m msgServer) ExecuteESM(goCtx context.Context, execute *types.MsgExecuteES
 	return &types.MsgExecuteESMResponse{}, nil
 }
 
-func (k msgServer) MsgKillSwitch(c context.Context, msg *types.MsgKillRequest) (*types.MsgKillResponse, error) {
+func (m msgServer) MsgKillSwitch(c context.Context, msg *types.MsgKillRequest) (*types.MsgKillResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if !k.keeper.Admin(ctx, msg.From) {
+	if !m.keeper.Admin(ctx, msg.From) {
 		return nil, types.ErrorUnauthorized
 	}
 
-	if err := k.keeper.SetKillSwitchData(ctx, *msg.KillSwitchParams); err != nil {
+	if err := m.keeper.SetKillSwitchData(ctx, *msg.KillSwitchParams); err != nil {
 		return nil, err
 	}
 	ctx.GasMeter().ConsumeGas(types.MsgKillSwitchGas, "MsgKillSwitchGas")
@@ -60,9 +60,9 @@ func (k msgServer) MsgKillSwitch(c context.Context, msg *types.MsgKillRequest) (
 	return &types.MsgKillResponse{}, nil
 }
 
-func (k msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgCollateralRedemptionRequest) (*types.MsgCollateralRedemptionResponse, error) {
+func (m msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgCollateralRedemptionRequest) (*types.MsgCollateralRedemptionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.keeper.GetESMStatus(ctx, req.AppId)
+	esmStatus, found := m.keeper.GetESMStatus(ctx, req.AppId)
 	status := false
 	if found {
 		status = esmStatus.Status
@@ -72,14 +72,14 @@ func (k msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgColl
 		return nil, types.ErrCoolOffPeriodRemains
 	}
 	if ctx.BlockTime().After(esmStatus.EndTime) && status {
-		esmDataAfterCoolOff, _ := k.keeper.GetDataAfterCoolOff(ctx, req.AppId)
+		esmDataAfterCoolOff, _ := m.keeper.GetDataAfterCoolOff(ctx, req.AppId)
 		for _, v := range esmDataAfterCoolOff.DebtAsset {
-			debtAsset, _ := k.keeper.GetAsset(ctx, v.AssetID)
+			debtAsset, _ := m.keeper.GetAsset(ctx, v.AssetID)
 			if req.Amount.Denom == debtAsset.Denom {
 				if !req.Amount.Amount.LTE(v.Amount) {
 					return nil, types.ErrorInvalidAmount
 				}
-				if err := k.keeper.CalculateCollateral(ctx, req.AppId, req.Amount, esmDataAfterCoolOff, req.From); err != nil {
+				if err := m.keeper.CalculateCollateral(ctx, req.AppId, req.Amount, esmDataAfterCoolOff, req.From); err != nil {
 					return nil, err
 				}
 

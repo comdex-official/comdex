@@ -10,10 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/cosmos/cosmos-sdk/x/simulation"
 )
 
 // GetShareValue multiplies with truncation by receiving int amount and decimal ratio and returns int result.
@@ -94,39 +91,6 @@ func RandomInt(r *rand.Rand, min, max sdk.Int) sdk.Int {
 func RandomDec(r *rand.Rand, min, max sdk.Dec) sdk.Dec {
 	return min.Add(sdk.NewDecFromBigIntWithPrec(new(big.Int).Rand(r, max.Sub(min).BigInt()), sdk.Precision))
 }
-
-// GenAndDeliverTx generates a transactions and delivers it.
-func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins, gas uint64) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
-	tx, err := helpers.GenTx(
-		txCtx.TxGen,
-		[]sdk.Msg{txCtx.Msg},
-		fees,
-		gas,
-		txCtx.Context.ChainID(),
-		[]uint64{account.GetAccountNumber()},
-		[]uint64{account.GetSequence()},
-		txCtx.SimAccount.PrivKey,
-	)
-
-	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate mock tx"), nil, err
-	}
-
-	_, _, err = txCtx.App.Deliver(txCtx.TxGen.TxEncoder(), tx)
-	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to deliver tx"), nil, err
-	}
-
-	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
-}
-
-// GenAndDeliverTxWithFees generates a transaction with given fee and delivers it.
-
-// ShuffleSimAccounts returns randomly shuffled simulation accounts.
-
-// TestAddress returns an address for testing purpose.
-// TestAddress returns same address when addrNum is same.
 
 // SafeMath runs f in safe mode, which means that any panics occurred inside f
 // gets caught by recover() and if the panic was an overflow, onOverflow is run.

@@ -63,8 +63,8 @@ func txDepositAssetLocker() *cobra.Command {
 				return err
 			}
 
-			lockerID := args[0]
-			if len(lockerID) == 0 {
+			lockerID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
 				return err
 			}
 			amount, ok := sdk.NewIntFromString(args[1])
@@ -104,8 +104,8 @@ func txWithdrawAssetLocker() *cobra.Command {
 				return err
 			}
 
-			lockerID := args[0]
-			if len(lockerID) == 0 {
+			lockerID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
 				return err
 			}
 			amount, ok := sdk.NewIntFromString(args[1])

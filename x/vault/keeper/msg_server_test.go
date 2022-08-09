@@ -116,7 +116,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			ExpResp:            &types.MsgCreateResponse{},
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Vault{
-				Id:                  "appone1",
+				Id:                  1,
 				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr1.String(),
@@ -134,7 +134,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			ExpResp:            &types.MsgCreateResponse{},
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
-				Id:                  "appone2",
+				Id:                  2,
 				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr2.String(),
@@ -163,7 +163,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			ExpResp:            &types.MsgCreateResponse{},
 			QueryResponseIndex: 2,
 			QueryResponse: &types.Vault{
-				Id:                  "apptwo1",
+				Id:                  3,
 				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
@@ -181,7 +181,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			ExpResp:            &types.MsgCreateResponse{},
 			QueryResponseIndex: 3,
 			QueryResponse: &types.Vault{
-				Id:                  "apptwo2",
+				Id:                  4,
 				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr2.String(),
@@ -216,7 +216,6 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 
 				vaults := s.keeper.GetVaults(s.ctx)
-				s.Require().Len(vaults, int(tc.QueryResponseIndex+1))
 				s.Require().Equal(tc.QueryResponse.Id, vaults[tc.QueryResponseIndex].Id)
 				s.Require().Equal(tc.QueryResponse.Owner, vaults[tc.QueryResponseIndex].Owner)
 				s.Require().Equal(tc.QueryResponse.AmountIn, vaults[tc.QueryResponseIndex].AmountIn)
@@ -262,7 +261,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "error invalid from address",
 			Msg: *types.NewMsgDepositRequest(
-				[]byte(""), appID1, extendedVaultPairID1, "appone1", newInt(69000000),
+				[]byte(""), appID1, extendedVaultPairID1, 1, newInt(69000000),
 			),
 			ExpErr:             fmt.Errorf("empty address string is not allowed"),
 			ExpResp:            nil,
@@ -273,7 +272,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "error extended vault pair does not exists",
 			Msg: *types.NewMsgDepositRequest(
-				addr1, appID1, 123, "appone1", newInt(4000000),
+				addr1, appID1, 123, 1, newInt(4000000),
 			),
 			ExpErr:             types.ErrorExtendedPairVaultDoesNotExists,
 			ExpResp:            nil,
@@ -284,7 +283,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "error invalid appID",
 			Msg: *types.NewMsgDepositRequest(
-				addr1, 69, extendedVaultPairID1, "appone1", newInt(69000000),
+				addr1, 69, extendedVaultPairID1, 1, newInt(69000000),
 			),
 			ExpErr:             types.ErrorAppMappingDoesNotExist,
 			ExpResp:            nil,
@@ -295,7 +294,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "error appID mismatch",
 			Msg: *types.NewMsgDepositRequest(
-				addr1, appID2, extendedVaultPairID1, "appone1", newInt(69000000),
+				addr1, appID2, extendedVaultPairID1, 1, newInt(69000000),
 			),
 			ExpErr:             types.ErrorAppMappingIDMismatch,
 			ExpResp:            nil,
@@ -306,7 +305,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "error vault does not exists",
 			Msg: *types.NewMsgDepositRequest(
-				addr1, appID1, extendedVaultPairID1, "appone2", newInt(69000000),
+				addr1, appID1, extendedVaultPairID1, 2, newInt(69000000),
 			),
 			ExpErr:             types.ErrorVaultDoesNotExist,
 			ExpResp:            nil,
@@ -317,7 +316,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "error access unathorized ",
 			Msg: *types.NewMsgDepositRequest(
-				addr2, appID1, extendedVaultPairID1, "appone1", newInt(69000000),
+				addr2, appID1, extendedVaultPairID1, 1, newInt(69000000),
 			),
 			ExpErr:             types.ErrVaultAccessUnauthorised,
 			ExpResp:            nil,
@@ -328,7 +327,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "error insufficient funds",
 			Msg: *types.NewMsgDepositRequest(
-				addr1, appID1, extendedVaultPairID1, "appone1", newInt(69000000),
+				addr1, appID1, extendedVaultPairID1, 1, newInt(69000000),
 			),
 			ExpErr:             fmt.Errorf(fmt.Sprintf("0uasset1 is smaller than %duasset1: insufficient funds", 69000000)),
 			ExpResp:            nil,
@@ -339,13 +338,13 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "success valid case app1 user1",
 			Msg: *types.NewMsgDepositRequest(
-				addr1, appID1, extendedVaultPairID1, "appone1", newInt(69000000),
+				addr1, appID1, extendedVaultPairID1, 1, newInt(69000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgDepositResponse{},
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Vault{
-				Id:                  "appone1",
+				Id:                  1,
 				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr1.String(),
@@ -357,13 +356,13 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "success valid case app2 user2",
 			Msg: *types.NewMsgDepositRequest(
-				addr2, appID2, extendedVaultPairID2, "apptwo1", newInt(69000000),
+				addr2, appID2, extendedVaultPairID2, 3, newInt(69000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgDepositResponse{},
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
-				Id:                  "apptwo1",
+				Id:                  3,
 				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr2.String(),
@@ -443,7 +442,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "error invalid from address",
 			Msg: *types.NewMsgWithdrawRequest(
-				[]byte(""), appID1, extendedVaultPairID1, "appone1", newInt(400000000),
+				[]byte(""), appID1, extendedVaultPairID1, 1, newInt(400000000),
 			),
 			ExpErr:             fmt.Errorf("empty address string is not allowed"),
 			ExpResp:            nil,
@@ -454,7 +453,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "error extended vault pair does not exists",
 			Msg: *types.NewMsgWithdrawRequest(
-				addr1, appID1, 123, "appone1", newInt(400000000),
+				addr1, appID1, 123, 1, newInt(400000000),
 			),
 			ExpErr:             types.ErrorExtendedPairVaultDoesNotExists,
 			ExpResp:            nil,
@@ -465,7 +464,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "error invalid appID",
 			Msg: *types.NewMsgWithdrawRequest(
-				addr1, 69, extendedVaultPairID1, "appone1", newInt(400000000),
+				addr1, 69, extendedVaultPairID1, 1, newInt(400000000),
 			),
 			ExpErr:             types.ErrorAppMappingDoesNotExist,
 			ExpResp:            nil,
@@ -476,7 +475,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "error appID mismatch",
 			Msg: *types.NewMsgWithdrawRequest(
-				addr1, appID2, extendedVaultPairID1, "appone1", newInt(400000000),
+				addr1, appID2, extendedVaultPairID1, 1, newInt(400000000),
 			),
 			ExpErr:             types.ErrorAppMappingIDMismatch,
 			ExpResp:            nil,
@@ -487,7 +486,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "error vault does not exists",
 			Msg: *types.NewMsgWithdrawRequest(
-				addr1, appID1, extendedVaultPairID1, "appone2", newInt(400000000),
+				addr1, appID1, extendedVaultPairID1, 2, newInt(400000000),
 			),
 			ExpErr:             types.ErrorVaultDoesNotExist,
 			ExpResp:            nil,
@@ -498,7 +497,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "error access unathorized",
 			Msg: *types.NewMsgWithdrawRequest(
-				addr2, appID1, extendedVaultPairID1, "appone1", newInt(400000000),
+				addr2, appID1, extendedVaultPairID1, 1, newInt(400000000),
 			),
 			ExpErr:             types.ErrVaultAccessUnauthorised,
 			ExpResp:            nil,
@@ -509,7 +508,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "error invalid collateralization ratio",
 			Msg: *types.NewMsgWithdrawRequest(
-				addr1, appID1, extendedVaultPairID1, "appone1", newInt(400000000),
+				addr1, appID1, extendedVaultPairID1, 1, newInt(400000000),
 			),
 			ExpErr:             types.ErrorInvalidCollateralizationRatio,
 			ExpResp:            nil,
@@ -520,13 +519,13 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "success valid case app1 user1",
 			Msg: *types.NewMsgWithdrawRequest(
-				addr1, appID1, extendedVaultPairID1, "appone1", newInt(50000000),
+				addr1, appID1, extendedVaultPairID1, 1, newInt(50000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgWithdrawResponse{},
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Vault{
-				Id:                  "appone1",
+				Id:                  1,
 				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr1.String(),
@@ -538,13 +537,13 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "success valid case app2 user1",
 			Msg: *types.NewMsgWithdrawRequest(
-				addr1, appID2, extendedVaultPairID2, "apptwo1", newInt(50000000),
+				addr1, appID2, extendedVaultPairID2, 3, newInt(50000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgWithdrawResponse{},
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
-				Id:                  "apptwo1",
+				Id:                  3,
 				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
@@ -618,7 +617,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "error invalid from address",
 			Msg: *types.NewMsgDrawRequest(
-				[]byte(""), appID1, extendedVaultPairID1, "appone1", newInt(50000000),
+				[]byte(""), appID1, extendedVaultPairID1, 1, newInt(50000000),
 			),
 			ExpErr:             fmt.Errorf("empty address string is not allowed"),
 			ExpResp:            nil,
@@ -629,7 +628,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "error extended vault pair does not exists",
 			Msg: *types.NewMsgDrawRequest(
-				addr1, appID1, 123, "appone1", newInt(50000000),
+				addr1, appID1, 123, 1, newInt(50000000),
 			),
 			ExpErr:             types.ErrorExtendedPairVaultDoesNotExists,
 			ExpResp:            nil,
@@ -640,7 +639,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "error invalid appID",
 			Msg: *types.NewMsgDrawRequest(
-				addr1, 69, extendedVaultPairID1, "appone1", newInt(50000000),
+				addr1, 69, extendedVaultPairID1, 1, newInt(50000000),
 			),
 			ExpErr:             types.ErrorAppMappingDoesNotExist,
 			ExpResp:            nil,
@@ -651,7 +650,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "error appID mismatch",
 			Msg: *types.NewMsgDrawRequest(
-				addr1, appID2, extendedVaultPairID1, "appone1", newInt(50000000),
+				addr1, appID2, extendedVaultPairID1, 1, newInt(50000000),
 			),
 			ExpErr:             types.ErrorAppMappingIDMismatch,
 			ExpResp:            nil,
@@ -662,7 +661,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "error vault does not exists",
 			Msg: *types.NewMsgDrawRequest(
-				addr1, appID1, extendedVaultPairID1, "appone2", newInt(50000000),
+				addr1, appID1, extendedVaultPairID1, 2, newInt(50000000),
 			),
 			ExpErr:             types.ErrorVaultDoesNotExist,
 			ExpResp:            nil,
@@ -673,7 +672,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "error access unathorized",
 			Msg: *types.NewMsgDrawRequest(
-				addr2, appID1, extendedVaultPairID1, "appone1", newInt(50000000),
+				addr2, appID1, extendedVaultPairID1, 1, newInt(50000000),
 			),
 			ExpErr:             types.ErrVaultAccessUnauthorised,
 			ExpResp:            nil,
@@ -684,7 +683,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "error invalid collateralization ratio",
 			Msg: *types.NewMsgDrawRequest(
-				addr1, appID1, extendedVaultPairID1, "appone1", newInt(50000000),
+				addr1, appID1, extendedVaultPairID1, 1, newInt(50000000),
 			),
 			ExpErr:             types.ErrorInvalidCollateralizationRatio,
 			ExpResp:            nil,
@@ -695,13 +694,13 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "success valid case app1 user1",
 			Msg: *types.NewMsgDrawRequest(
-				addr1, appID1, extendedVaultPairID1, "appone1", newInt(10000000),
+				addr1, appID1, extendedVaultPairID1, 1, newInt(10000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgDrawResponse{},
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Vault{
-				Id:                  "appone1",
+				Id:                  1,
 				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr1.String(),
@@ -713,13 +712,13 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "success valid case app2 user1",
 			Msg: *types.NewMsgDrawRequest(
-				addr1, appID2, extendedVaultPairID2, "apptwo1", newInt(10000000),
+				addr1, appID2, extendedVaultPairID2, 3, newInt(10000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgDrawResponse{},
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
-				Id:                  "apptwo1",
+				Id:                  3,
 				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
@@ -793,7 +792,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "error invalid from address",
 			Msg: *types.NewMsgRepayRequest(
-				[]byte(""), appID1, extendedVaultPairID1, "appone1", newInt(50000000),
+				[]byte(""), appID1, extendedVaultPairID1, 1, newInt(50000000),
 			),
 			ExpErr:             fmt.Errorf("empty address string is not allowed"),
 			ExpResp:            nil,
@@ -804,7 +803,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "error extended vault pair does not exists",
 			Msg: *types.NewMsgRepayRequest(
-				addr1, appID1, 123, "appone1", newInt(50000000),
+				addr1, appID1, 123, 1, newInt(50000000),
 			),
 			ExpErr:             types.ErrorExtendedPairVaultDoesNotExists,
 			ExpResp:            nil,
@@ -815,7 +814,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "error invalid appID",
 			Msg: *types.NewMsgRepayRequest(
-				addr1, 69, extendedVaultPairID1, "appone1", newInt(50000000),
+				addr1, 69, extendedVaultPairID1, 1, newInt(50000000),
 			),
 			ExpErr:             types.ErrorAppMappingDoesNotExist,
 			ExpResp:            nil,
@@ -826,7 +825,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "error appID mismatch",
 			Msg: *types.NewMsgRepayRequest(
-				addr1, appID2, extendedVaultPairID1, "appone1", newInt(50000000),
+				addr1, appID2, extendedVaultPairID1, 1, newInt(50000000),
 			),
 			ExpErr:             types.ErrorAppMappingIDMismatch,
 			ExpResp:            nil,
@@ -837,7 +836,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "error vault does not exists",
 			Msg: *types.NewMsgRepayRequest(
-				addr1, appID1, extendedVaultPairID1, "appone2", newInt(50000000),
+				addr1, appID1, extendedVaultPairID1, 2, newInt(50000000),
 			),
 			ExpErr:             types.ErrorVaultDoesNotExist,
 			ExpResp:            nil,
@@ -848,7 +847,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "error access unathorized",
 			Msg: *types.NewMsgRepayRequest(
-				addr2, appID1, extendedVaultPairID1, "appone1", newInt(50000000),
+				addr2, appID1, extendedVaultPairID1, 1, newInt(50000000),
 			),
 			ExpErr:             types.ErrVaultAccessUnauthorised,
 			ExpResp:            nil,
@@ -859,7 +858,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "error invalid amount",
 			Msg: *types.NewMsgRepayRequest(
-				addr1, appID1, extendedVaultPairID1, "appone1", newInt(0),
+				addr1, appID1, extendedVaultPairID1, 1, newInt(0),
 			),
 			ExpErr:             types.ErrorInvalidAmount,
 			ExpResp:            nil,
@@ -870,13 +869,13 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "success valid case app1 user1",
 			Msg: *types.NewMsgRepayRequest(
-				addr1, appID1, extendedVaultPairID1, "appone1", newInt(100000000),
+				addr1, appID1, extendedVaultPairID1, 1, newInt(100000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgRepayResponse{},
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Vault{
-				Id:                  "appone1",
+				Id:                  1,
 				AppId:               appID1,
 				ExtendedPairVaultID: extendedVaultPairID1,
 				Owner:               addr1.String(),
@@ -888,13 +887,13 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "success valid case app2 user1",
 			Msg: *types.NewMsgRepayRequest(
-				addr1, appID2, extendedVaultPairID2, "apptwo1", newInt(100000000),
+				addr1, appID2, extendedVaultPairID2, 3, newInt(100000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgRepayResponse{},
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
-				Id:                  "apptwo1",
+				Id:                  3,
 				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
@@ -971,7 +970,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 		{
 			Name: "error invalid from address",
 			Msg: *types.NewMsgLiquidateRequest(
-				[]byte(""), appID1, extendedVaultPairID1, "appone1",
+				[]byte(""), appID1, extendedVaultPairID1, 1,
 			),
 			ExpErr:             fmt.Errorf("empty address string is not allowed"),
 			ExpResp:            nil,
@@ -981,7 +980,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 		{
 			Name: "error extended vault pair does not exists",
 			Msg: *types.NewMsgLiquidateRequest(
-				addr1, appID1, 123, "appone1",
+				addr1, appID1, 123, 1,
 			),
 			ExpErr:             types.ErrorExtendedPairVaultDoesNotExists,
 			ExpResp:            nil,
@@ -991,7 +990,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 		{
 			Name: "error invalid appID",
 			Msg: *types.NewMsgLiquidateRequest(
-				addr1, 69, extendedVaultPairID1, "appone1",
+				addr1, 69, extendedVaultPairID1, 1,
 			),
 			ExpErr:             types.ErrorAppMappingDoesNotExist,
 			ExpResp:            nil,
@@ -1001,7 +1000,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 		{
 			Name: "error appID mismatch",
 			Msg: *types.NewMsgLiquidateRequest(
-				addr1, appID2, extendedVaultPairID1, "appone1",
+				addr1, appID2, extendedVaultPairID1, 1,
 			),
 			ExpErr:             types.ErrorAppMappingIDMismatch,
 			ExpResp:            nil,
@@ -1011,7 +1010,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 		{
 			Name: "error vault does not exists",
 			Msg: *types.NewMsgLiquidateRequest(
-				addr1, appID1, extendedVaultPairID1, "appone2",
+				addr1, appID1, extendedVaultPairID1, 2,
 			),
 			ExpErr:             types.ErrorVaultDoesNotExist,
 			ExpResp:            nil,
@@ -1021,7 +1020,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 		{
 			Name: "error access unathorized",
 			Msg: *types.NewMsgLiquidateRequest(
-				addr2, appID1, extendedVaultPairID1, "appone1",
+				addr2, appID1, extendedVaultPairID1, 1,
 			),
 			ExpErr:             types.ErrVaultAccessUnauthorised,
 			ExpResp:            nil,
@@ -1031,7 +1030,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 		{
 			Name: "success valid case app1 user1",
 			Msg: *types.NewMsgLiquidateRequest(
-				addr1, appID1, extendedVaultPairID1, "appone1",
+				addr1, appID1, extendedVaultPairID1, 1,
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgCloseResponse{},
@@ -1041,7 +1040,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 		{
 			Name: "success valid case app2 user1",
 			Msg: *types.NewMsgLiquidateRequest(
-				addr1, appID2, extendedVaultPairID2, "apptwo1",
+				addr1, appID2, extendedVaultPairID2, 3,
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgCloseResponse{},
@@ -1208,7 +1207,7 @@ func (s *KeeperTestSuite) TestMsgCreateStableMint() {
 			ExpResp:        &types.MsgCreateStableMintResponse{},
 			QueryRespIndex: 0,
 			QueryResponse: &types.StableMintVault{
-				Id:                  "appfou1",
+				Id:                  1,
 				AmountIn:            newInt(10000),
 				AmountOut:           newInt(10000),
 				AppId:               4,
@@ -1288,7 +1287,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "error invalid from address",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				[]byte(""), appID1, extendedVaultPairID1, newInt(10000), "appone1",
+				[]byte(""), appID1, extendedVaultPairID1, newInt(10000), 1,
 			),
 			ExpErr:           fmt.Errorf("empty address string is not allowed"),
 			ExpResp:          nil,
@@ -1299,7 +1298,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "error extended vault pair does not exists",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID1, 123, newInt(10000), "appone1",
+				addr1, appID1, 123, newInt(10000), 1,
 			),
 			ExpErr:           types.ErrorExtendedPairVaultDoesNotExists,
 			ExpResp:          nil,
@@ -1310,7 +1309,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "error invalid appID",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, 69, extendedVaultPairID1, newInt(10000), "appone1",
+				addr1, 69, extendedVaultPairID1, newInt(10000), 1,
 			),
 			ExpErr:           types.ErrorAppMappingDoesNotExist,
 			ExpResp:          nil,
@@ -1321,7 +1320,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "error vault creation inactive",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID1, extendedVaultPairID1, newInt(10000), "appone1",
+				addr1, appID1, extendedVaultPairID1, newInt(10000), 1,
 			),
 			ExpErr:           types.ErrorVaultInactive,
 			ExpResp:          nil,
@@ -1332,7 +1331,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "error non stable mint vault cannot create stable mint vault",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID1, extendedVaultPairID2, newInt(10000), "appone1",
+				addr1, appID1, extendedVaultPairID2, newInt(10000), 1,
 			),
 			ExpErr:           types.ErrorCannotCreateStableMintVault,
 			ExpResp:          nil,
@@ -1343,7 +1342,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "error appID mismatch",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID2, extendedVaultPairID3, newInt(10000), "appone1",
+				addr1, appID2, extendedVaultPairID3, newInt(10000), 1,
 			),
 			ExpErr:           types.ErrorAppMappingIDMismatch,
 			ExpResp:          nil,
@@ -1354,7 +1353,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "error invalid stable mint id",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID1, extendedVaultPairID3, newInt(10000), "appone2",
+				addr1, appID1, extendedVaultPairID3, newInt(10000), 2,
 			),
 			ExpErr:           types.ErrorVaultDoesNotExist,
 			ExpResp:          nil,
@@ -1365,7 +1364,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "error insufficient funds",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID1, extendedVaultPairID3, newInt(10000), "appone1",
+				addr1, appID1, extendedVaultPairID3, newInt(10000), 1,
 			),
 			ExpErr:           fmt.Errorf(fmt.Sprintf("0uasset1 is smaller than %duasset1: insufficient funds", 10000)),
 			ExpResp:          nil,
@@ -1376,13 +1375,13 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "success valid case 1 app1 user1",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID1, extendedVaultPairID3, newInt(2000000000), "appone1",
+				addr1, appID1, extendedVaultPairID3, newInt(2000000000), 1,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgDepositStableMintResponse{},
 			QueryRespIndex: 0,
 			QueryResponse: &types.StableMintVault{
-				Id:                  "appone1",
+				Id:                  1,
 				AmountIn:            newInt(3000000000),
 				AmountOut:           newInt(3000000000),
 				AppId:               1,
@@ -1393,13 +1392,13 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "success valid 2 case app1 user1",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID1, extendedVaultPairID3, newInt(1000000000), "appone1",
+				addr1, appID1, extendedVaultPairID3, newInt(1000000000), 1,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgDepositStableMintResponse{},
 			QueryRespIndex: 0,
 			QueryResponse: &types.StableMintVault{
-				Id:                  "appone1",
+				Id:                  1,
 				AmountIn:            newInt(4000000000),
 				AmountOut:           newInt(4000000000),
 				AppId:               1,
@@ -1410,13 +1409,13 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "success valid 3 case app2 user1",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID2, extendedVaultPairID4, newInt(9000000000), "apptwo1",
+				addr1, appID2, extendedVaultPairID4, newInt(9000000000), 3,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgDepositStableMintResponse{},
 			QueryRespIndex: 1,
 			QueryResponse: &types.StableMintVault{
-				Id:                  "apptwo1",
+				Id:                  3,
 				AmountIn:            newInt(10000000000),
 				AmountOut:           newInt(10000000000),
 				AppId:               2,
@@ -1502,7 +1501,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "error invalid from address",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				[]byte(""), appID1, extendedVaultPairID1, newInt(10000), "appone1",
+				[]byte(""), appID1, extendedVaultPairID1, newInt(10000), 1,
 			),
 			ExpErr:           fmt.Errorf("empty address string is not allowed"),
 			ExpResp:          nil,
@@ -1513,7 +1512,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "error extended vault pair does not exists",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID1, 123, newInt(10000), "appone1",
+				addr1, appID1, 123, newInt(10000), 1,
 			),
 			ExpErr:           types.ErrorExtendedPairVaultDoesNotExists,
 			ExpResp:          nil,
@@ -1524,7 +1523,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "error invalid appID",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, 69, extendedVaultPairID1, newInt(10000), "appone1",
+				addr1, 69, extendedVaultPairID1, newInt(10000), 1,
 			),
 			ExpErr:           types.ErrorAppMappingDoesNotExist,
 			ExpResp:          nil,
@@ -1535,7 +1534,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "error vault creation inactive",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID1, extendedVaultPairID1, newInt(10000), "appone1",
+				addr1, appID1, extendedVaultPairID1, newInt(10000), 1,
 			),
 			ExpErr:           types.ErrorCannotCreateStableMintVault,
 			ExpResp:          nil,
@@ -1546,7 +1545,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "error non stable mint vault cannot create stable mint vault",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID1, extendedVaultPairID2, newInt(10000), "appone1",
+				addr1, appID1, extendedVaultPairID2, newInt(10000), 1,
 			),
 			ExpErr:           types.ErrorCannotCreateStableMintVault,
 			ExpResp:          nil,
@@ -1557,7 +1556,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "error appID mismatch",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID2, extendedVaultPairID3, newInt(10000), "appone1",
+				addr1, appID2, extendedVaultPairID3, newInt(10000), 1,
 			),
 			ExpErr:           types.ErrorAppMappingIDMismatch,
 			ExpResp:          nil,
@@ -1568,7 +1567,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "error invalid stable mint id",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID1, extendedVaultPairID3, newInt(10000), "appone2",
+				addr1, appID1, extendedVaultPairID3, newInt(10000), 2,
 			),
 			ExpErr:           types.ErrorVaultDoesNotExist,
 			ExpResp:          nil,
@@ -1579,7 +1578,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "error insufficient funds",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr2, appID1, extendedVaultPairID3, newInt(10000), "appone1",
+				addr2, appID1, extendedVaultPairID3, newInt(10000), 1,
 			),
 			ExpErr:           fmt.Errorf(fmt.Sprintf("0uasset2 is smaller than %duasset2: insufficient funds", 10000)),
 			ExpResp:          nil,
@@ -1590,7 +1589,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "error invalid withdraw amount",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID1, extendedVaultPairID3, newInt(9000000000), "appone1",
+				addr1, appID1, extendedVaultPairID3, newInt(9000000000), 1,
 			),
 			ExpErr:           types.ErrorInvalidAmount,
 			ExpResp:          nil,
@@ -1601,13 +1600,13 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "success valid case 1 app1 user1",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID1, extendedVaultPairID3, newInt(500000000), "appone1",
+				addr1, appID1, extendedVaultPairID3, newInt(500000000), 1,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgWithdrawStableMintResponse{},
 			QueryRespIndex: 0,
 			QueryResponse: &types.StableMintVault{
-				Id:                  "appone1",
+				Id:                  1,
 				AmountIn:            newInt(505000000),
 				AmountOut:           newInt(505000000),
 				AppId:               1,
@@ -1618,13 +1617,13 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "success valid case 2 case app1 user1",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID1, extendedVaultPairID3, newInt(200000000), "appone1",
+				addr1, appID1, extendedVaultPairID3, newInt(200000000), 1,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgWithdrawStableMintResponse{},
 			QueryRespIndex: 0,
 			QueryResponse: &types.StableMintVault{
-				Id:                  "appone1",
+				Id:                  1,
 				AmountIn:            newInt(307000000),
 				AmountOut:           newInt(307000000),
 				AppId:               1,
@@ -1635,13 +1634,13 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "success valid case 3 case app2 user1",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID2, extendedVaultPairID4, newInt(1000000000), "apptwo1",
+				addr1, appID2, extendedVaultPairID4, newInt(1000000000), 3,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgWithdrawStableMintResponse{},
 			QueryRespIndex: 1,
 			QueryResponse: &types.StableMintVault{
-				Id:                  "apptwo1",
+				Id:                  3,
 				AmountIn:            newInt(10000000),
 				AmountOut:           newInt(10000000),
 				AppId:               2,
@@ -1652,13 +1651,13 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "success valid case 4 case app2 user3",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr3, appID2, extendedVaultPairID4, newInt(5000000), "apptwo1",
+				addr3, appID2, extendedVaultPairID4, newInt(5000000), 3,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgWithdrawStableMintResponse{},
 			QueryRespIndex: 1,
 			QueryResponse: &types.StableMintVault{
-				Id:                  "apptwo1",
+				Id:                  3,
 				AmountIn:            newInt(5050000),
 				AmountOut:           newInt(5050000),
 				AppId:               2,
@@ -1669,13 +1668,13 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "success valid case 5 case app2 user4",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr4, appID2, extendedVaultPairID4, newInt(5050000), "apptwo1",
+				addr4, appID2, extendedVaultPairID4, newInt(5050000), 3,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgWithdrawStableMintResponse{},
 			QueryRespIndex: 1,
 			QueryResponse: &types.StableMintVault{
-				Id:                  "apptwo1",
+				Id:                  3,
 				AmountIn:            newInt(50500),
 				AmountOut:           newInt(50500),
 				AppId:               2,

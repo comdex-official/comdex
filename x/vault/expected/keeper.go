@@ -38,6 +38,6 @@ type CollectorKeeper interface {
 type EsmKeeper interface {
 	GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool)
 	GetESMStatus(ctx sdk.Context, id uint64) (esmStatus esmtypes.ESMStatus, found bool)
-	GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket esmtypes.ESMMarketPrice, found bool)
+	GetSnapshotOfPrices(ctx sdk.Context, appID, assetID uint64) (price uint64, found bool)
 	GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerParams esmtypes.ESMTriggerParams, found bool)
 }

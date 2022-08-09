@@ -75,6 +75,10 @@ message ESMStatus{
   bool stable_vault_redemption_status = 7 [
     (gogoproto.moretags) = "yaml:\"stable_vault_redemption_status\""
   ];
+
+  bool snapshotStatus = 8 [
+    (gogoproto.moretags) = "yaml:\"snapshot_status\""
+  ];
 }
 
 message KillSwitchParams{
@@ -126,6 +130,12 @@ message DataAfterCoolOff {
     (gogoproto.moretags) = "yaml:\"debt_asset\"",
     (gogoproto.nullable) = false
   ];
+  string collateral_total_amount = 4 [(gogoproto.moretags) = "yaml:\"collateral_total_amount\"",
+  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+  (gogoproto.nullable) = false];
+  string debt_total_amount = 5 [(gogoproto.moretags) = "yaml:\"debt_total_amount\"",
+  (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+  (gogoproto.nullable) = false];
 }
 
 message AssetToAmount {
@@ -136,6 +146,16 @@ message AssetToAmount {
   string amount = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
+  ];
+  string share = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"share\""
+  ];
+  string debt_token_worth = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.moretags) = "yaml:\"debt_token_worth\"",
     (gogoproto.nullable) = false
   ];
 }

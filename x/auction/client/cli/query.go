@@ -105,6 +105,10 @@ func querySurplusBiddings() *cobra.Command {
 		Short: "Query surplus biddings by bidder address",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -125,9 +129,10 @@ func querySurplusBiddings() *cobra.Command {
 			res, err := queryClient.QuerySurplusBiddings(
 				context.Background(),
 				&types.QuerySurplusBiddingsRequest{
-					AppId:   appID,
-					History: history,
-					Bidder:  bidder.String(),
+					AppId:      appID,
+					History:    history,
+					Bidder:     bidder.String(),
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -234,6 +239,10 @@ func queryDebtBidding() *cobra.Command {
 		Short: "Query surplus Debt by bidder address",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -254,9 +263,10 @@ func queryDebtBidding() *cobra.Command {
 			res, err := queryClient.QueryDebtBiddings(
 				context.Background(),
 				&types.QueryDebtBiddingsRequest{
-					Bidder:  bidder.String(),
-					AppId:   appID,
-					History: history,
+					Bidder:     bidder.String(),
+					AppId:      appID,
+					History:    history,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -400,6 +410,10 @@ func queryDutchBiddings() *cobra.Command {
 		Short: "Query Dutch biddings by bidder address",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -420,9 +434,10 @@ func queryDutchBiddings() *cobra.Command {
 			res, err := queryClient.QueryDutchBiddings(
 				context.Background(),
 				&types.QueryDutchBiddingsRequest{
-					AppId:   appID,
-					History: history,
-					Bidder:  bidder.String(),
+					AppId:      appID,
+					History:    history,
+					Bidder:     bidder.String(),
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -594,6 +609,10 @@ func queryDutchLendBiddings() *cobra.Command {
 		Short: "Query Dutch biddings by bidder address",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -614,9 +633,10 @@ func queryDutchLendBiddings() *cobra.Command {
 			res, err := queryClient.QueryDutchLendBiddings(
 				context.Background(),
 				&types.QueryDutchLendBiddingsRequest{
-					AppId:   appID,
-					History: history,
-					Bidder:  bidder.String(),
+					AppId:      appID,
+					History:    history,
+					Bidder:     bidder.String(),
+					Pagination: pagination,
 				},
 			)
 			if err != nil {

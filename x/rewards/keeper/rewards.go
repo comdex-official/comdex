@@ -18,7 +18,7 @@ func (k Keeper) SetReward(ctx sdk.Context, rewards types.InternalRewards) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetReward(ctx sdk.Context, id uint64) (asset types.InternalRewards, found bool) {
+func (k Keeper) GetReward(ctx sdk.Context, id uint64) (rewards types.InternalRewards, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.RewardsKey(id)
@@ -26,11 +26,11 @@ func (k Keeper) GetReward(ctx sdk.Context, id uint64) (asset types.InternalRewar
 	)
 
 	if value == nil {
-		return asset, false
+		return rewards, false
 	}
 
-	k.cdc.MustUnmarshal(value, &asset)
-	return asset, true
+	k.cdc.MustUnmarshal(value, &rewards)
+	return rewards, true
 }
 
 func (k Keeper) GetRewards(ctx sdk.Context) (lends []types.InternalRewards) {
@@ -358,4 +358,54 @@ func (k Keeper) WhitelistAppVault(goCtx context.Context, msg *types.WhitelistApp
 		return nil, err
 	}
 	return &types.MsgWhitelistAppIdVaultResponse{}, nil
+}
+
+func (k Keeper) SetLockerRewardTracker(ctx sdk.Context, rewards types.LockerRewardsTracker) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockerRewardsTrackerKey(rewards.LockerId, rewards.AppMappingId)
+		value = k.cdc.MustMarshal(&rewards)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetLockerRewardTracker(ctx sdk.Context, id, appID uint64) (rewards types.LockerRewardsTracker, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockerRewardsTrackerKey(id, appID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return rewards, false
+	}
+
+	k.cdc.MustUnmarshal(value, &rewards)
+	return rewards, true
+}
+
+func (k Keeper) SetVaultInterestTracker(ctx sdk.Context, vault types.VaultInterestTracker) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockerRewardsTrackerKey(vault.VaultId, vault.AppMappingId)
+		value = k.cdc.MustMarshal(&vault)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetVaultInterestTracker(ctx sdk.Context, id, appID uint64) (vault types.VaultInterestTracker, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.VaultInterestTrackerKey(id, appID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return vault, false
+	}
+
+	k.cdc.MustUnmarshal(value, &vault)
+	return vault, true
 }

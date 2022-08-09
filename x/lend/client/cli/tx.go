@@ -53,7 +53,7 @@ func txLend() *cobra.Command {
 				return err
 			}
 
-			assetId, err := strconv.ParseUint(args[0], 10, 64)
+			assetID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -68,12 +68,12 @@ func txLend() *cobra.Command {
 				return err
 			}
 
-			appId, err := strconv.ParseUint(args[3], 10, 64)
+			appID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgLend(ctx.GetFromAddress().String(), assetId, asset, pool, appId)
+			msg := types.NewMsgLend(ctx.GetFromAddress().String(), assetID, asset, pool, appID)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -380,12 +380,12 @@ func txBorrowAssetAlternate() *cobra.Command {
 				return err
 			}
 
-			appId, err := strconv.ParseUint(args[6], 10, 64)
+			appID, err := strconv.ParseUint(args[6], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgBorrowAlternate(ctx.GetFromAddress().String(), assetID, poolID, amountIn, pairID, isStableBorrow, amountOut, appId)
+			msg := types.NewMsgBorrowAlternate(ctx.GetFromAddress().String(), assetID, poolID, amountIn, pairID, isStableBorrow, amountOut, appID)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
@@ -877,7 +877,7 @@ func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.Flag
 	if err != nil {
 		return txf, nil, err
 	}
-	dutchId, err := strconv.ParseUint(auctionParamsInput.DutchId, 10, 64)
+	dutchID, err := strconv.ParseUint(auctionParamsInput.DutchID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
@@ -893,7 +893,7 @@ func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.Flag
 		Cusp:                   cusp,
 		Step:                   step,
 		PriceFunctionType:      priceFunctionType,
-		DutchId:                dutchId,
+		DutchId:                dutchID,
 		BidDurationSeconds:     bidDurationSeconds,
 	}
 

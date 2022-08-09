@@ -51,11 +51,11 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 	return k.vault.CalculateCollaterlizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
 }
 
-func (k Keeper) GetVault(ctx sdk.Context, id string) (vault types.Vault, found bool) {
+func (k Keeper) GetVault(ctx sdk.Context, id uint64) (vault types.Vault, found bool) {
 	return k.vault.GetVault(ctx, id)
 }
 
-func (k Keeper) DeleteVault(ctx sdk.Context, id string) {
+func (k Keeper) DeleteVault(ctx sdk.Context, id uint64) {
 	k.vault.DeleteVault(ctx, id)
 }
 
@@ -71,7 +71,7 @@ func (k Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPair
 	k.vault.UpdateUserVaultExtendedPairMapping(ctx, extendedPairID, userAddress, appMappingID)
 }
 
-func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID string, appMappingID uint64) {
+func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64) {
 	k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, extendedPairID, userVaultID, appMappingID)
 }
 
@@ -87,8 +87,8 @@ func (k Keeper) SetVault(ctx sdk.Context, vault types.Vault) {
 	k.vault.SetVault(ctx, vault)
 }
 
-func (k Keeper) GetKillSwitchData(ctx sdk.Context, app_id uint64) (esmtypes.KillSwitchParams, bool) {
-	return k.esm.GetKillSwitchData(ctx, app_id)
+func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool) {
+	return k.esm.GetKillSwitchData(ctx, appID)
 }
 
 func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {

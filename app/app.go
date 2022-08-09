@@ -166,6 +166,7 @@ import (
 
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
 	tv2_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v2_0_0"
+	tv3_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v3_0_0"
 )
 
 const (
@@ -1134,8 +1135,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 func (a *App) registerUpgradeHandlers() {
 
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv2_0_0.UpgradeNameV2,
-		tv2_0_0.CreateUpgradeHandlerV2(a.mm, a.configurator),
+		tv3_0_0.UpgradeName,
+		tv3_0_0.CreateUpgradeHandler(a.mm, a.configurator),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1194,6 +1195,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				icahosttypes.StoreKey,
 			},
 		}
+	case upgradeInfo.Name == tv3_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 	}
 	return storeUpgrades
 }

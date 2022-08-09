@@ -389,8 +389,7 @@ func (k Keeper) CloseDutchAuction(
 	if err != nil {
 		return err
 	}
-	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount.Sub(dutchAuction.OutflowTokenCurrentAmount.Amount))
-
+	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
 	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount)
 	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(burnToken.Amount)
 
@@ -495,9 +494,9 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				var inflowLeft = dutchAuction.InflowTokenTargetAmount.Amount.Sub(dutchAuction.InflowTokenCurrentAmount.Amount)
 				userVaultExtendedPairMapping, userExists := k.GetUserVaultExtendedPairMapping(ctx, string(dutchAuction.VaultOwner))
 				if userExists {
-					vaultId, alreadyExists := k.CheckUserAppToExtendedPairMapping(ctx, userVaultExtendedPairMapping, lockedVault.ExtendedPairId, lockedVault.AppId)
+					vaultID, alreadyExists := k.CheckUserAppToExtendedPairMapping(ctx, userVaultExtendedPairMapping, lockedVault.ExtendedPairId, lockedVault.AppId)
 					if alreadyExists {
-						vaultData, _ := k.GetVault(ctx, vaultId)
+						vaultData, _ := k.GetVault(ctx, vaultID)
 						err := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
 						if err != nil {
 							return err

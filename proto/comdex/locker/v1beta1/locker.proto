@@ -9,7 +9,7 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 //locker_id will be the key which will be derived from the LockerLookUpTable
 message Locker {
-  string locker_id = 1 [
+  uint64 locker_id = 1 [
       (gogoproto.moretags) = "yaml:\"locker_id\""
   ];
   string depositor = 2 [
@@ -63,7 +63,7 @@ message LockerToAppMapping {
 //This is used inside LockerToAppMapping
 message AssetToLockerMapping{
   uint64 asset_id = 1;
-  string locker_id =2 [
+  uint64 locker_id =2 [
     (gogoproto.moretags) = "yaml:\"locker_id\""];
   repeated UserTxData user_data =3  [
     (gogoproto.moretags) = "yaml:\"user_data\""];
@@ -101,7 +101,7 @@ message LockerLookupTable {
 message TokenToLockerMapping {
  uint64 asset_id = 1;
 
- repeated string locker_ids =2 [
+ repeated uint64 locker_ids =2 [
  (gogoproto.moretags) = "yaml:\"addresses\""
   ];
   string deposited_amount = 4 [

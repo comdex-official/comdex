@@ -185,7 +185,7 @@ func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (
 	return appAssetCollectorData, true
 }
 
-func (k Keeper) GetAllAppidToAssetCollectorMapping(ctx sdk.Context) (appIdToAssetCollectorMapping []types.AppIdToAssetCollectorMapping) {
+func (k Keeper) GetAllAppidToAssetCollectorMapping(ctx sdk.Context) (appIDToAssetCollectorMapping []types.AppIdToAssetCollectorMapping) {
 	var (
 		store = ctx.KVStore(k.storeKey)
 		iter  = sdk.KVStorePrefixIterator(store, types.AppIDToAssetCollectorMappingPrefix)
@@ -201,9 +201,9 @@ func (k Keeper) GetAllAppidToAssetCollectorMapping(ctx sdk.Context) (appIdToAsse
 	for ; iter.Valid(); iter.Next() {
 		var fee types.AppIdToAssetCollectorMapping
 		k.cdc.MustUnmarshal(iter.Value(), &fee)
-		appIdToAssetCollectorMapping = append(appIdToAssetCollectorMapping, fee)
+		appIDToAssetCollectorMapping = append(appIDToAssetCollectorMapping, fee)
 	}
-	return appIdToAssetCollectorMapping
+	return appIDToAssetCollectorMapping
 }
 
 // GetCollectorDataForAppIDAssetID returns app_id to asset mapping for collector.
@@ -366,9 +366,10 @@ func (k Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64
 	for _, data := range collectorLookup.AssetRateInfo {
 		if data.CollectorAssetId == assetID {
 			assetRateInfo = data
+			return assetRateInfo, true
 		}
 	}
-	return assetRateInfo, true
+	return assetRateInfo, false
 }
 
 // SetAppToDenomsMapping set denoms for appId in Collector LookupTable.

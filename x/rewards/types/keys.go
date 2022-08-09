@@ -48,6 +48,8 @@ var (
 
 	// GaugeIdsByTriggerDurationKeyPrefix defines the prefix to store GaugeIds by duration.
 	GaugeIdsByTriggerDurationKeyPrefix = []byte{0x24}
+	LockerRewardsTrackerKeyPrefix      = []byte{0x25}
+	VaultInterestTrackerKeyPrefix      = []byte{0x26}
 )
 
 // GetEpochInfoByDurationKey returns the indexing key for EpochInfo by duration.
@@ -85,4 +87,11 @@ func EpochForLockerKey(denom uint64) []byte {
 
 func ExternalRewardsVaultMappingKey(appMappingID uint64) []byte {
 	return append(ExternalRewardsVaultKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
+}
+
+func LockerRewardsTrackerKey(id, appID uint64) []byte {
+	return append(append(LockerRewardsTrackerKeyPrefix, sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
+}
+func VaultInterestTrackerKey(id, appID uint64) []byte {
+	return append(append(VaultInterestTrackerKeyPrefix, sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
 }

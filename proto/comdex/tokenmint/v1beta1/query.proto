@@ -7,13 +7,13 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/tokenmint/types";
-option (gogoproto.equal_all)           = false;
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 
 message QueryAllTokenMintedForAllAppsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryAllTokenMintedForAllAppsResponse {
@@ -22,13 +22,13 @@ message QueryAllTokenMintedForAllAppsResponse {
     (gogoproto.moretags) = "yaml:\"tokenMint\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryTokenMintedByAppRequest {
-  uint64 app_id   = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
   cosmos.base.query.v1beta1.PageRequest pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryTokenMintedByAppResponse {
@@ -37,14 +37,14 @@ message QueryTokenMintedByAppResponse {
     (gogoproto.moretags) = "yaml:\"tokenMint\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryTokenMintedByAppAndAssetRequest {
-  uint64 app_id   = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
-  uint64 asset_id   = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
   cosmos.base.query.v1beta1.PageRequest pagination = 3
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryTokenMintedByAppAndAssetResponse {
@@ -53,7 +53,7 @@ message QueryTokenMintedByAppAndAssetResponse {
     (gogoproto.moretags) = "yaml:\"mintedTokens\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 

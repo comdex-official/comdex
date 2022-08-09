@@ -30,11 +30,11 @@ var (
 	StableMintVaultKeyPrefix              = []byte{0x14}
 )
 
-func VaultKey(vaultID string) []byte {
-	return append(VaultKeyPrefix, vaultID...)
+func VaultKey(vaultID uint64) []byte {
+	return append(VaultKeyPrefix, sdk.Uint64ToBigEndian(vaultID)...)
 }
-func StableMintVaultKey(stableVaultID string) []byte {
-	return append(StableMintVaultKeyPrefix, stableVaultID...)
+func StableMintVaultKey(stableVaultID uint64) []byte {
+	return append(StableMintVaultKeyPrefix, sdk.Uint64ToBigEndian(stableVaultID)...)
 }
 
 func UserVaultExtendedPairMappingKey(address string) []byte {
