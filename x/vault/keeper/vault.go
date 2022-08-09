@@ -243,35 +243,23 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 	if found {
 		statusEsm = esmStatus.Status
 	}
-	if statusEsm {
-		marketStatus, found := k.GetESMMarketForAsset(ctx, extendedPairVault.AppId)
+	if statusEsm  && esmStatus.SnapshotStatus{
+		price, found := k.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetInData.Id)
 		if !found {
 			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 		}
-		if marketStatus.IsPriceSet {
-			for _, data := range marketStatus.Market {
-				if assetInData.Id == data.AssetID {
-					assetInPrice = data.Rates
-				}
-			}
-		}
+		assetInPrice = price
 	}
 	var assetOutPrice uint64
 
 	if extendedPairVault.AssetOutOraclePrice {
 		//If oracle Price required for the assetOut
-		if statusEsm {
-			marketStatus, found := k.GetESMMarketForAsset(ctx, extendedPairVault.AppId)
+		if statusEsm  && esmStatus.SnapshotStatus{
+			price, found := k.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetOutData.Id)
 			if !found {
 				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 			}
-			if marketStatus.IsPriceSet {
-				for _, data := range marketStatus.Market {
-					if assetOutData.Id == data.AssetID {
-						assetOutPrice = data.Rates
-					}
-				}
-			}
+			assetOutPrice = price
 		} else {
 			assetOutPrice, found = k.GetPriceForAsset(ctx, assetOutData.Id)
 			if !found {

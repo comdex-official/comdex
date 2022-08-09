@@ -82,8 +82,8 @@ func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bo
 	return k.esm.GetESMStatus(ctx, id)
 }
 
-func (k Keeper) GetESMMarketForAsset(ctx sdk.Context, id uint64) (esmMarket esmtypes.ESMMarketPrice, found bool) {
-	return k.esm.GetESMMarketForAsset(ctx, id)
+func (k Keeper) GetSnapshotOfPrices(ctx sdk.Context, appID, assetID uint64) (price uint64, found bool) {
+	return k.esm.GetSnapshotOfPrices(ctx, appID, assetID)
 }
 
 func (k Keeper) GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerParams esmtypes.ESMTriggerParams, found bool) {

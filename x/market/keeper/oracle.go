@@ -164,6 +164,6 @@ func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	if !found {
 		return 0, false
 	}
-	
+
 	return k.GetPriceForMarket(ctx, market.Symbol)
 }

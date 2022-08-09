@@ -182,75 +182,28 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 	if err != nil {
 		return err
 	}
-	marketData, found := k.GetESMMarketForAsset(ctx, appID)
-	if !found {
-		return types.ErrMarketDataNotFound
-	}
-
 	assetInID, _ := k.GetAssetForDenom(ctx, amount.Denom)
-	var (
-		assetInPrice uint64
-		assetPrice   uint64
-	)
-	AppValue := sdk.ZeroInt()
-	AppAssetValue := sdk.ZeroInt()
-	for _, v := range marketData.Market {
-		if assetInID.Id == v.AssetID {
-			assetInPrice = v.Rates
-			break
-		} else {
-			assetInPrice = 0
-		}
-	}
-	esmData, _ := k.GetESMTriggerParams(ctx, appID)
-	for _, data := range esmData.AssetsRates {
-		if assetInID.Id == data.AssetID {
-			assetInPrice = data.Rates
+
+	userWorth := sdk.ZeroDec()
+	for _, v := range esmDataAfterCoolOff.DebtAsset {
+		if v.AssetID == assetInID.Id {
+			userWorth = v.DebtTokenWorth.Mul(sdk.NewDecFromInt(amount.Amount))
 			break
 		}
 	}
 
-	amtInPrice := amount.Amount.Mul(sdk.NewIntFromUint64(assetInPrice))
-
-	for _, u := range esmDataAfterCoolOff.CollateralAsset {
-		for _, w := range marketData.Market {
-			if u.AssetID == w.AssetID {
-				assetPrice = w.Rates
-				AppAssetValue = u.Amount.Mul(sdk.NewIntFromUint64(assetPrice))
-				assetVal := types.AssetToAmountValue{
-					AppId:                     appID,
-					AssetID:                   u.AssetID,
-					Amount:                    AppAssetValue,
-					AssetValueToAppValueRatio: sdk.ZeroDec(),
-				}
-				k.SetAssetToAmountValue(ctx, assetVal)
-			}
-			AppValue = AppValue.Add(AppAssetValue)
-			appToAmtValue := types.AppToAmountValue{
-				AppId:  appID,
-				Amount: AppValue,
-			}
-			k.SetAppToAmtValue(ctx, appToAmtValue)
-		}
-	}
-	for index, a := range esmDataAfterCoolOff.CollateralAsset {
-		assetToAmountValue, _ := k.GetAssetToAmountValue(ctx, appID, a.AssetID)
-		appToAmountValue, _ := k.GetAppToAmtValue(ctx, appID)
-		nume := assetToAmountValue.Amount.ToDec()
-		deno := appToAmountValue.Amount.ToDec()
-		Ratio := nume.Quo(deno)
-		assetToAmountValue.AssetValueToAppValueRatio = Ratio
-		k.SetAssetToAmountValue(ctx, assetToAmountValue)
-		asset, _ := k.GetAsset(ctx, a.AssetID)
-		factor1 := Ratio.Mul(amtInPrice.ToDec())
-		amountToDispatch := factor1.Quo(sdk.NewIntFromUint64(assetInPrice).ToDec())
-		collateralTokens := sdk.NewCoin(asset.Denom, amountToDispatch.TruncateInt())
-
+	for i, data := range esmDataAfterCoolOff.CollateralAsset {
+		collAsset ,_ := k.GetAsset(ctx, data.AssetID)
+		tokenDVaule := data.Share.Mul(userWorth)
+		price , _ := k.GetSnapshotOfPrices(ctx, appID, data.AssetID)
+		oldtokenQuant := tokenDVaule.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
+		usd := 1000000
+		tokenQuant := oldtokenQuant.Quo(sdk.NewDec(int64(usd))).TruncateInt()
 		err1 := k.bank.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, sdk.NewCoins(amount))
 		if err1 != nil {
 			return err1
 		}
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(collateralTokens))
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(collAsset.Denom, tokenQuant)))
 		if err != nil {
 			return err
 		}
@@ -258,10 +211,10 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 		if err2 != nil {
 			return err2
 		}
-		a.Amount = a.Amount.Sub(collateralTokens.Amount)
-		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:index], esmDataAfterCoolOff.CollateralAsset[index+1:]...)
-		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:index+1], esmDataAfterCoolOff.CollateralAsset[index:]...)
-		esmDataAfterCoolOff.CollateralAsset[index] = a
+		data.Amount = data.Amount.Sub((sdk.Int(tokenQuant)))
+		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i], esmDataAfterCoolOff.CollateralAsset[i+1:]...)
+		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i+1], esmDataAfterCoolOff.CollateralAsset[i:]...)
+		esmDataAfterCoolOff.CollateralAsset[i] = data
 		k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
 	}
 

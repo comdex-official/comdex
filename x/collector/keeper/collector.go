@@ -366,9 +366,10 @@ func (k Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64
 	for _, data := range collectorLookup.AssetRateInfo {
 		if data.CollectorAssetId == assetID {
 			assetRateInfo = data
+			return assetRateInfo, true
 		}
 	}
-	return assetRateInfo, true
+	return assetRateInfo, false
 }
 
 // SetAppToDenomsMapping set denoms for appId in Collector LookupTable.

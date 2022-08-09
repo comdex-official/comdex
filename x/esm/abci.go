@@ -36,30 +36,11 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 					continue
 				}
 			}
-			esmMarket, found := k.GetESMMarketForAsset(ctx, v.Id)
-			if found {
-				continue
-			}
-			if !esmMarket.IsPriceSet && esmStatus.Status {
-				assets := k.GetAssetsForOracle(ctx)
-				var markets []types.Market
-				for _, a := range assets {
-					price, found := k.GetPriceForAsset(ctx, a.Id)
-					if !found {
-						continue
-					}
-					market := types.Market{
-						AssetID: a.Id,
-						Rates:   price,
-					}
-					markets = append(markets, market)
+			if !esmStatus.SnapshotStatus && esmStatus.Status {
+				err := k.SnapshotOfPrices(ctx, esmStatus)
+				if err != nil {
+					return err
 				}
-				em := types.ESMMarketPrice{
-					AppId:      v.Id,
-					IsPriceSet: true,
-					Market:     markets,
-				}
-				k.SetESMMarketForAsset(ctx, em)
 			}
 		}
 		return nil
