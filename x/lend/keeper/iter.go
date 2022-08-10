@@ -5,7 +5,6 @@ import (
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strconv"
 )
 
 func (k Keeper) IterateLends(ctx sdk.Context) error {
@@ -20,25 +19,29 @@ func (k Keeper) IterateLends(ctx sdk.Context) error {
 		if err != nil {
 			continue
 		}
-		if interestPerBlock.GT(sdk.ZeroInt()) {
-
-			updatedLend := types.LendAsset{
-				ID:                 lend.ID,
-				AssetID:            lend.AssetID,
-				PoolID:             lend.PoolID,
-				Owner:              lend.Owner,
-				AmountIn:           lend.AmountIn,
-				LendingTime:        lend.LendingTime,
-				UpdatedAmountIn:    lend.UpdatedAmountIn.Add(interestPerBlock),
-				AvailableToBorrow:  lend.AvailableToBorrow.Add(interestPerBlock),
-				Reward_Accumulated: lend.Reward_Accumulated.Add(interestPerBlock),
-				AppID:              lend.AppID,
-				CPoolName:          lend.CPoolName,
+		lendRewardsTracker, found := k.GetLendRewardTracker(ctx, lend.ID)
+		if !found {
+			lendRewardsTracker = types.LendRewardsTracker{
+				LendingId:          lend.ID,
+				RewardsAccumulated: sdk.ZeroDec(),
 			}
+		}
+		lendRewardsTracker.RewardsAccumulated = lendRewardsTracker.RewardsAccumulated.Add(interestPerBlock)
+		newInterestPerBlock := sdk.ZeroInt()
+		if lendRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
+			newInterestPerBlock = lendRewardsTracker.RewardsAccumulated.TruncateInt()
+			newRewardDec := sdk.NewDec(newInterestPerBlock.Int64())
+			lendRewardsTracker.RewardsAccumulated = lendRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
+		}
+		k.SetLendRewardTracker(ctx, lendRewardsTracker)
+		if newInterestPerBlock.GT(sdk.ZeroInt()) {
+			lend.UpdatedAmountIn = lend.UpdatedAmountIn.Add(newInterestPerBlock)
+			lend.AvailableToBorrow = lend.AvailableToBorrow.Add(newInterestPerBlock)
+			lend.Reward_Accumulated = lend.Reward_Accumulated.Add(newInterestPerBlock)
 
 			pool, _ := k.GetPool(ctx, lend.PoolID)
 			asset, _ := k.GetAsset(ctx, lend.AssetID)
-			Amount := sdk.NewCoin(asset.Denom, interestPerBlock)
+			Amount := sdk.NewCoin(asset.Denom, newInterestPerBlock)
 			assetRatesStat, found := k.GetAssetRatesStats(ctx, lend.AssetID)
 			if !found {
 				continue
@@ -53,7 +56,7 @@ func (k Keeper) IterateLends(ctx sdk.Context) error {
 			if err != nil {
 				continue
 			}
-			k.SetLend(ctx, updatedLend)
+			k.SetLend(ctx, lend)
 		}
 	}
 	return nil
@@ -78,41 +81,44 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 		if err != nil {
 			continue
 		}
+		borrowInterestTracker, found := k.GetBorrowInterestTracker(ctx, borrow.ID)
+		if !found {
+			borrowInterestTracker = types.BorrowInterestTracker{
+				BorrowingId:         borrow.ID,
+				InterestAccumulated: sdk.ZeroDec(),
+			}
+		}
+		borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Add(interestPerBlock)
+		newInterestPerBlock := sdk.ZeroInt()
+		if borrowInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
+			newInterestPerBlock = borrowInterestTracker.InterestAccumulated.TruncateInt()
+			newRewardDec := sdk.NewDec(newInterestPerBlock.Int64())
+			borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Sub(newRewardDec)
+		}
+		k.SetBorrowInterestTracker(ctx, borrowInterestTracker)
+
 		reservePoolRecords, found := k.GetReservePoolRecordsForBorrow(ctx, borrow.ID)
 		if !found {
 			reservePoolRecords = types.ReservePoolRecordsForBorrow{
 				ID:                  borrow.ID,
-				InterestAccumulated: sdk.ZeroInt(),
+				InterestAccumulated: sdk.ZeroDec(),
 			}
 		}
-		if reservePoolAmountPerBlock.GT(sdk.ZeroInt()) {
+		if reservePoolAmountPerBlock.GT(sdk.ZeroDec()) {
 			reservePoolRecords.InterestAccumulated = reservePoolRecords.InterestAccumulated.Add(reservePoolAmountPerBlock)
 		}
 		k.SetReservePoolRecordsForBorrow(ctx, reservePoolRecords)
-		if interestPerBlock.GT(sdk.ZeroInt()) {
+		if newInterestPerBlock.GT(sdk.ZeroInt()) {
+			borrow.UpdatedAmountOut = borrow.UpdatedAmountOut.Add(newInterestPerBlock)
+			borrow.Interest_Accumulated = borrow.Interest_Accumulated.Add(newInterestPerBlock)
 
-			updatedBorrow := types.BorrowAsset{
-				ID:                   borrow.ID,
-				LendingID:            borrow.LendingID,
-				IsStableBorrow:       borrow.IsStableBorrow,
-				PairID:               borrow.PairID,
-				AmountIn:             borrow.AmountIn,
-				AmountOut:            borrow.AmountOut,
-				BridgedAssetAmount:   borrow.BridgedAssetAmount,
-				BorrowingTime:        borrow.BorrowingTime,
-				StableBorrowRate:     borrow.StableBorrowRate,
-				UpdatedAmountOut:     borrow.UpdatedAmountOut.Add(interestPerBlock),
-				Interest_Accumulated: borrow.Interest_Accumulated.Add(interestPerBlock),
-				CPoolName:            borrow.CPoolName,
-			}
-
-			k.SetBorrow(ctx, updatedBorrow)
+			k.SetBorrow(ctx, borrow)
 		}
 	}
 	return nil
 }
 
-func (k Keeper) CalculateRewards(ctx sdk.Context, amount string, rate sdk.Dec) (sdk.Int, error) {
+func (k Keeper) CalculateRewards(ctx sdk.Context, amount string, rate sdk.Dec) (sdk.Dec, error) {
 
 	currentTime := ctx.BlockTime().Unix()
 
@@ -122,16 +128,13 @@ func (k Keeper) CalculateRewards(ctx sdk.Context, amount string, rate sdk.Dec) (
 	}
 	secondsElapsed := currentTime - prevInterestTime
 	if secondsElapsed < int64(types.Uint64Zero) {
-		return sdk.ZeroInt(), sdkerrors.Wrap(types.ErrNegativeTimeElapsed, fmt.Sprintf("%d seconds", secondsElapsed))
+		return sdk.ZeroDec(), sdkerrors.Wrap(types.ErrNegativeTimeElapsed, fmt.Sprintf("%d seconds", secondsElapsed))
 	}
-
-	yearsElapsed := sdk.NewDec(secondsElapsed).QuoInt64(types.SecondsPerYear).MustFloat64()
-	amtFloat, _ := strconv.ParseFloat(amount, 64)
-	perc := rate.String()
-	b, _ := sdk.NewDecFromStr(perc)
-
-	newAmount := amtFloat * b.MustFloat64() * (yearsElapsed)
-	return sdk.NewInt(int64(newAmount)), nil
+	yearsElapsed := sdk.NewDec(secondsElapsed).QuoInt64(types.SecondsPerYear)
+	amtFloat, _ := sdk.NewDecFromStr(amount)
+	perc := rate
+	newAmount := amtFloat.Mul(perc).Mul(yearsElapsed)
+	return newAmount, nil
 }
 
 func (k Keeper) ReBalanceStableRates(ctx sdk.Context) error {
