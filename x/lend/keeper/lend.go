@@ -758,3 +758,28 @@ func (k Keeper) GetBorrowStats(ctx sdk.Context) (borrowStats types.DepositStats,
 	k.cdc.MustUnmarshal(value, &borrowStats)
 	return borrowStats, true
 }
+
+func (k Keeper) SetLendRewardTracker(ctx sdk.Context, rewards types.LendRewardsTracker) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendRewardsTrackerKey(rewards.LendingId)
+		value = k.cdc.MustMarshal(&rewards)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetLendRewardTracker(ctx sdk.Context, id uint64) (rewards types.LendRewardsTracker, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LendRewardsTrackerKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return rewards, false
+	}
+
+	k.cdc.MustUnmarshal(value, &rewards)
+	return rewards, true
+}
