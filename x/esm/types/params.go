@@ -15,10 +15,10 @@ var (
 )
 
 const (
-	DepositESMGas              = sdk.Gas(66329)
-	ExecuteESMGas              = sdk.Gas(53554)
+	DepositESMGas              = sdk.Gas(36329)
+	ExecuteESMGas              = sdk.Gas(23554)
 	MsgKillSwitchGas           = sdk.Gas(76473)
-	MsgCollateralRedemptionGas = sdk.Gas(87559)
+	MsgCollateralRedemptionGas = sdk.Gas(37559)
 )
 
 func NewParams(admin []string) Params {

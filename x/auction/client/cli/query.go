@@ -95,13 +95,13 @@ func querySurplusAuctions() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "auctions")
+	flags.AddPaginationFlagsToCmd(cmd, "all-surplus-auctions")
 	return cmd
 }
 
 func querySurplusBiddings() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "suplus-biddings [bidder] [app-id] [history]",
+		Use:   "surplus-biddings [bidder] [app-id] [history]",
 		Short: "Query surplus biddings by bidder address",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -142,6 +142,8 @@ func querySurplusBiddings() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "surplus-biddings")
+
 	return cmd
 }
 
@@ -229,7 +231,7 @@ func queryDebtAuctions() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "auctions")
+	flags.AddPaginationFlagsToCmd(cmd, "all-debt-auctions")
 	return cmd
 }
 
@@ -276,6 +278,8 @@ func queryDebtBidding() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "debt-biddings")
+
 	return cmd
 }
 
@@ -363,7 +367,7 @@ func queryDutchAuctions() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "auctions")
+	flags.AddPaginationFlagsToCmd(cmd, "all-dutch-auctions")
 	return cmd
 }
 
@@ -400,7 +404,7 @@ func queryProtocolStats() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "stats")
+	flags.AddPaginationFlagsToCmd(cmd, "all-protocol-stats")
 	return cmd
 }
 
@@ -447,6 +451,8 @@ func queryDutchBiddings() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "dutch-biddings")
+
 	return cmd
 }
 
@@ -599,7 +605,7 @@ func queryDutchLendAuctions() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "auctions")
+	flags.AddPaginationFlagsToCmd(cmd, "all-dutch-auctions-lend")
 	return cmd
 }
 
@@ -646,5 +652,7 @@ func queryDutchLendBiddings() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "dutch-biddings-lend")
+
 	return cmd
 }

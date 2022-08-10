@@ -8,9 +8,9 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	CreateLockerGas   = sdk.Gas(62640)
-	DepositLockerGas  = sdk.Gas(56688)
-	WithdrawLockerGas = sdk.Gas(56473)
+	CreateLockerGas   = sdk.Gas(32640)
+	DepositLockerGas  = sdk.Gas(26688)
+	WithdrawLockerGas = sdk.Gas(26473)
 )
 
 // ParamKeyTable the param key table for launch module.

@@ -381,3 +381,28 @@ func (k Keeper) DeleteReservePoolRecordsForBorrow(ctx sdk.Context, ID uint64) {
 
 	store.Delete(key)
 }
+
+func (k Keeper) SetBorrowInterestTracker(ctx sdk.Context, interest types.BorrowInterestTracker) {
+	var (
+		store = k.Store(ctx)
+		key   = types.BorrowInterestTrackerKey(interest.BorrowingId)
+		value = k.cdc.MustMarshal(&interest)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetBorrowInterestTracker(ctx sdk.Context, id uint64) (interest types.BorrowInterestTracker, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.BorrowInterestTrackerKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return interest, false
+	}
+
+	k.cdc.MustUnmarshal(value, &interest)
+	return interest, true
+}

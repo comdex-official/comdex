@@ -68,6 +68,8 @@ func QueryCollectorLookupByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "collector-lookup-by-app")
+
 	return cmd
 }
 
