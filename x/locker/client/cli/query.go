@@ -83,6 +83,7 @@ func queryLockersByAppToAssetID() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "lockers-by-app-asset-id")
 
 	return cmd
 }
@@ -122,6 +123,7 @@ func queryLockerByAppID() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "locker-info-product-id")
 
 	return cmd
 }
@@ -203,6 +205,7 @@ func queryOwnerLockerByAppIDbyOwner() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "owner-locker-by-app-id-and-owner")
 
 	return cmd
 }
@@ -245,6 +248,7 @@ func queryLockerByAppByOwner() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "locker-by-app-by-owner")
 
 	return cmd
 }

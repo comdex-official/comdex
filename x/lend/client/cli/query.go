@@ -154,6 +154,8 @@ func QueryAllLendsByOwner() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "lends-by-owner")
+
 	return cmd
 }
 
@@ -193,6 +195,7 @@ func QueryAllLendsByOwnerAndPoolID() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "lends-by-owner-pool")
 	return cmd
 }
 
@@ -418,7 +421,7 @@ func queryAssetToPairMappings() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "lends")
+	flags.AddPaginationFlagsToCmd(cmd, "asset-pair-mappings")
 
 	return cmd
 }
@@ -489,7 +492,7 @@ func queryBorrows() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "lends")
+	flags.AddPaginationFlagsToCmd(cmd, "borrows")
 
 	return cmd
 }
@@ -524,6 +527,8 @@ func QueryAllBorrowsByOwner() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "borrows-by-owner")
+
 	return cmd
 }
 
@@ -563,6 +568,8 @@ func QueryAllBorrowsByOwnerAndPoolID() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "borrows-by-owner-pool")
+
 	return cmd
 }
 

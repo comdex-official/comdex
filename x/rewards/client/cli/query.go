@@ -353,7 +353,7 @@ func queryRewards() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "lends")
+	flags.AddPaginationFlagsToCmd(cmd, "internal-rewards")
 
 	return cmd
 }
@@ -390,7 +390,7 @@ func queryExternalRewardsLockers() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "lends")
+	flags.AddPaginationFlagsToCmd(cmd, "locker_external_rewards")
 
 	return cmd
 }
@@ -427,7 +427,7 @@ func queryExternalRewardVaults() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "lends")
+	flags.AddPaginationFlagsToCmd(cmd, "vault_external_rewards")
 
 	return cmd
 }
@@ -464,7 +464,7 @@ func queryWhitelistedAppIdsVault() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "lends")
+	flags.AddPaginationFlagsToCmd(cmd, "whitelisted_appids_Vault")
 
 	return cmd
 }

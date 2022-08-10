@@ -165,6 +165,8 @@ func queryUserLockedVaults() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "locked-vaults-by-user")
+
 	return cmd
 }
 
@@ -199,6 +201,8 @@ func queryUserLockedVaultsHistory() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "locked-vaults-history-by-user")
+
 	return cmd
 }
 
@@ -238,6 +242,8 @@ func queryLockedVaultsPair() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "locked-vaults-pair")
+
 	return cmd
 }
 
