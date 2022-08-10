@@ -63,6 +63,7 @@ func QueryAllTokenMintedForAllApps() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "total-token-minted-all-apps")
 	return cmd
 }
 
@@ -102,6 +103,7 @@ func QueryTokenMintedByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "token-minted-by-app")
 	return cmd
 }
 
@@ -146,5 +148,6 @@ func QueryTokenMintedByAppAndAsset() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "token-minted-by-app-and-asset")
 	return cmd
 }

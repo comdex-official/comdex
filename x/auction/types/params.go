@@ -8,10 +8,10 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	DutchBidGas     = sdk.Gas(71183)
-	DebtBidGas      = sdk.Gas(57580)
-	DutchLendBidGas = sdk.Gas(71183)
-	SurplusBidGas   = sdk.Gas(57580)
+	DutchBidGas     = sdk.Gas(31183)
+	DebtBidGas      = sdk.Gas(27580)
+	DutchLendBidGas = sdk.Gas(31183)
+	SurplusBidGas   = sdk.Gas(27580)
 )
 
 // ParamKeyTable the param key table for launch module.

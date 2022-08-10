@@ -9,7 +9,7 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	TokenmintGas = sdk.Gas(66329)
+	TokenmintGas = sdk.Gas(36329)
 )
 
 // ParamKeyTable the param key table for launch module.

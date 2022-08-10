@@ -81,6 +81,7 @@ func QueryAllVaults() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "vaults")
 	return cmd
 }
 
@@ -118,6 +119,7 @@ func QueryAllVaultsByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "vaults-by-app")
 	return cmd
 }
 
@@ -196,6 +198,7 @@ func QueryVaultIDOfOwnerByExtendedPairAndApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "vault-id-of-owner-by-extended-pair-and-app")
 	return cmd
 }
 
@@ -234,6 +237,7 @@ func QueryVaultInfoOfOwnerByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "vaultsInfo-of-owner-by-app")
 	return cmd
 }
 
@@ -276,6 +280,7 @@ func QueryAllVaultsByAppAndExtendedPair() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "vaults-by-app-and-extended-pair")
 	return cmd
 }
 
@@ -346,6 +351,7 @@ func QueryVaultIdsByAppInAllExtendedPairs() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "vaultIds-by-app-in-all-extendedPairs")
 	return cmd
 }
 
@@ -378,6 +384,7 @@ func QueryAllVaultIdsByAnOwner() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "vault-ids-by-an-owner")
 	return cmd
 }
 
@@ -420,6 +427,7 @@ func QueryTokenMintedByAppAndExtendedPair() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "token-minted-by-App-and-extended-pair")
 	return cmd
 }
 
@@ -457,6 +465,7 @@ func QueryTokenMintedAssetWiseByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "token-minted-asset-wise-by-app")
 	return cmd
 }
 
@@ -532,6 +541,7 @@ func QueryVaultCountByAppAndExtendedPair() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "vault-count-by-an-App-and-extended-pair")
 	return cmd
 }
 
@@ -574,6 +584,7 @@ func QueryTotalValueLockedByAppAndExtendedPair() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "value-locked-by-App-and-extended-pair")
 	return cmd
 }
 
@@ -611,6 +622,7 @@ func QueryExtendedPairIDsByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "extended-pair-id-by-App")
 	return cmd
 }
 
@@ -681,6 +693,7 @@ func QueryStableVaultByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "stable-vault-by-App")
 	return cmd
 }
 
@@ -755,6 +768,7 @@ func QueryExtendedPairVaultMappingByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "extendedPairVault-mapping-by-App")
 	return cmd
 }
 
@@ -829,6 +843,7 @@ func QueryTVLByAppOfAllExtendedPairs() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "tvl-by-app-all-extended-pairs")
 	return cmd
 }
 
@@ -960,5 +975,6 @@ func QueryPairsLockedAndMintedStatisticByApp() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "pairs-locked-and-minted-statistic-by-app")
 	return cmd
 }
