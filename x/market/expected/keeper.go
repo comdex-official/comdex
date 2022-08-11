@@ -27,7 +27,7 @@ type ScopedKeeper interface {
 }
 
 type AssetKeeper interface {
-	GetAssetsForOracle(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
+	GetAssets(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 }
 

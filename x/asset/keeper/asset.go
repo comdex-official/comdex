@@ -177,9 +177,6 @@ func (k Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	k.SetAssetID(ctx, asset.Id)
 	k.SetAsset(ctx, asset)
 	k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
-	if msg.IsOraclePriceRequired {
-		k.SetAssetForOracle(ctx, asset)
-	}
 
 	return nil
 }
@@ -243,36 +240,4 @@ func (k Keeper) AddPairsRecords(ctx sdk.Context, msg types.Pair) error {
 	k.SetPair(ctx, pair)
 
 	return nil
-}
-
-func (k Keeper) SetAssetForOracle(ctx sdk.Context, asset types.Asset) {
-	var (
-		store = k.Store(ctx)
-		key   = types.AssetForOracleKey(asset.Id)
-		value = k.cdc.MustMarshal(&asset)
-	)
-
-	store.Set(key, value)
-}
-
-func (k Keeper) GetAssetsForOracle(ctx sdk.Context) (assets []types.Asset) {
-	var (
-		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AssetForOracleKeyPrefix)
-	)
-
-	defer func(iter sdk.Iterator) {
-		err := iter.Close()
-		if err != nil {
-			return
-		}
-	}(iter)
-
-	for ; iter.Valid(); iter.Next() {
-		var asset types.Asset
-		k.cdc.MustUnmarshal(iter.Value(), &asset)
-		assets = append(assets, asset)
-	}
-
-	return assets
 }

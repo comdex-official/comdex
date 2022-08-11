@@ -68,9 +68,11 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	}
 
 	var symbol []string
-	assets := k.GetAssetsForOracle(ctx)
+	assets := k.GetAssets(ctx)
 	for _, asset := range assets {
-		symbol = append(symbol, asset.Name)
+		if asset.IsOraclePriceRequired {
+			symbol = append(symbol, asset.Name)
+		}
 	}
 
 	encodedCallData := obi.MustEncode(types.FetchPriceCallData{Symbols: symbol, Multiplier: 1000000})
