@@ -1133,9 +1133,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
-
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv3_0_0.UpgradeName,
+		tv3_0_0.UpgradeNameV3_1,
 		tv3_0_0.CreateUpgradeHandler(a.mm, a.configurator),
 	)
 
@@ -1196,6 +1195,8 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 			},
 		}
 	case upgradeInfo.Name == tv3_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+
+	case upgradeInfo.Name == tv3_0_0.UpgradeNameV3_1 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 	}
 	return storeUpgrades
 }
