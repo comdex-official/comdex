@@ -2,7 +2,7 @@ package v3_0_0
 
 const (
 	UpgradeName   = "v3.0.0"
-	UpgradeNameV3_1   = "v3.1.1"
+	UpgradeNameV3_1   = "v3.1.0"
 	UpgradeHeight = "" // replace this height
 	UpgradeInfo   = `'{
 		"binaries": {
