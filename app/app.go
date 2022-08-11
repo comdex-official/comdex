@@ -1138,6 +1138,10 @@ func (a *App) registerUpgradeHandlers() {
 		tv3_0_0.UpgradeName,
 		tv3_0_0.CreateUpgradeHandler(a.mm, a.configurator),
 	)
+	a.UpgradeKeeper.SetUpgradeHandler(
+		tv3_0_0.UpgradeNameV3_1,
+		tv3_0_0.CreateUpgradeHandler(a.mm, a.configurator),
+	)
 
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1196,6 +1200,8 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 			},
 		}
 	case upgradeInfo.Name == tv3_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	
+	case upgradeInfo.Name == tv3_0_0.UpgradeNameV3_1 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 	}
 	return storeUpgrades
 }
