@@ -100,7 +100,7 @@ func (p *UpdateAssetProposal) ValidateBasic() error {
 	}
 
 	asset := p.Asset
-	if err := asset.Validate(); err != nil {
+	if err := asset.UpdateValidate(); err != nil {
 		return err
 	}
 

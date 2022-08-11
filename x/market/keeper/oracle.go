@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
@@ -101,20 +102,23 @@ func (k Keeper) SetRates(ctx sdk.Context, _ string) {
 	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))
 
 	var sym []string
-	assets := k.GetAssetsForOracle(ctx)
-	rateSliceLength := len(data.Rates)
-	if rateSliceLength >= len(assets) {
-		for i, asset := range assets {
+	allAssets := k.GetAssets(ctx)
+	var assets []assetTypes.Asset
+	for _, a := range allAssets {
+		if a.IsOraclePriceRequired {
+			assets = append(assets, a)
+		}
+	}
+	for i, asset := range assets {
+		if asset.IsOraclePriceRequired {
 			sym = append(sym, asset.Name)
 			store := k.Store(ctx)
 			key := types.PriceForMarketKey(sym[i])
+			value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+				Value: data.Rates[i],
+			})
+			store.Set(key, value)
 
-			if data.Rates[i] != 0 {
-				value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-					Value: data.Rates[i],
-				})
-				store.Set(key, value)
-			}
 		}
 	}
 }
@@ -165,5 +169,9 @@ func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 		return 0, false
 	}
 
-	return k.GetPriceForMarket(ctx, market.Symbol)
+	rates, found := k.GetPriceForMarket(ctx, market.Symbol)
+	if !found || rates == 0 {
+		return 0, false
+	}
+	return rates, found
 }

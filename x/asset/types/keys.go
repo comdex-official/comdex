@@ -19,7 +19,6 @@ var (
 	PairsVaultIDKey = []byte{0x05}
 
 	AssetKeyPrefix          = []byte{0x11}
-	AssetForOracleKeyPrefix = []byte{0x12}
 	PairKeyPrefix           = []byte{0x14}
 	AppKeyPrefix            = []byte{0x15}
 	PairsVaultKeyPrefix     = []byte{0x16}
@@ -59,8 +58,4 @@ func GenesisForApp(appID uint64) []byte {
 
 func PairKey(id uint64) []byte {
 	return append(PairKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func AssetForOracleKey(id uint64) []byte {
-	return append(AssetForOracleKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
