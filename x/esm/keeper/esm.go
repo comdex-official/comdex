@@ -735,13 +735,15 @@ func (k Keeper) GetAllAppToAmtValue(ctx sdk.Context) (appToAmountValue []types.A
 }
 
 func (k Keeper) SnapshotOfPrices(ctx sdk.Context, esmStatus types.ESMStatus) error {
-	assets := k.GetAssetsForOracle(ctx)
+	assets := k.GetAssets(ctx)
 	for _, a := range assets {
-		price, found := k.GetPriceForAsset(ctx, a.Id)
-		if !found {
-			continue
+		if a.IsOraclePriceRequired {
+			price, found := k.GetPriceForAsset(ctx, a.Id)
+			if !found {
+				continue
+			}
+			k.SetSnapshotOfPrices(ctx, esmStatus.AppId, a.Id, price)
 		}
-		k.SetSnapshotOfPrices(ctx, esmStatus.AppId, a.Id, price)
 	}
 	esmStatus.SnapshotStatus = true
 	k.SetESMStatus(ctx, esmStatus)

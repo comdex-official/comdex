@@ -328,13 +328,6 @@ func (s *KeeperTestSuite) TestQueryAssets() {
 	s.Require().Equal(len(assets), 5)
 }
 
-func (s *KeeperTestSuite) TestGetAssetsForOracle() {
-	s.TestAddAssetRecords()
-	assetKeeper, ctx := &s.assetKeeper, &s.ctx
-	results := assetKeeper.GetAssetsForOracle(*ctx)
-	s.Require().Equal(len(results), 2)
-}
-
 func (s *KeeperTestSuite) TestAddPair() {
 
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx

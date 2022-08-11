@@ -10,7 +10,7 @@ const (
 	flagName                 = "name"
 	flagDenom                = "denom"
 	flagDecimals             = "decimals"
-	flagAssetOraclePrice	 = "isOraclePriceRequired"
+	flagAssetOraclePrice	 = "is-oracle-price-required"
 	FlagAddAssetMappingFile  = "add-asset-mapping-file"
 	FlagAddAssetsMappingFile = "add-assets-file"
 )

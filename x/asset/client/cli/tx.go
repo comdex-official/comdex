@@ -142,10 +142,12 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 				return err
 			}
 
-			assetOraclePrice, err := cmd.Flags().GetBool(flagAssetOraclePrice)
+			assetOraclePrice, err := cmd.Flags().GetString(flagAssetOraclePrice)
 			if err != nil {
 				return  err
 			}
+
+			newAssetOraclePrice := ParseBoolFromString(assetOraclePrice)
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
@@ -164,7 +166,7 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 				Name:     name,
 				Denom:    denom,
 				Decimals: decimals,
-				IsOraclePriceRequired: assetOraclePrice,
+				IsOraclePriceRequired: newAssetOraclePrice,
 			}
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
@@ -197,6 +199,7 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 	cmd.Flags().String(flagName, "", "name")
 	cmd.Flags().String(flagDenom, "", "denomination")
 	cmd.Flags().Int64(flagDecimals, -1, "decimals")
+	cmd.Flags().String(flagAssetOraclePrice, "", "is-oracle-price-required")
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
 

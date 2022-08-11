@@ -12,7 +12,7 @@ type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
-	GetAssetsForOracle(ctx sdk.Context) (assets []assettypes.Asset)
+	GetAssets(ctx sdk.Context) (assets []assettypes.Asset)
 	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
 	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
 }
