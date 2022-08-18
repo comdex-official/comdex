@@ -245,9 +245,90 @@ def ProposeWasmGovernanceProposal(proposal, proposlID):
         exit(f"error while proposing prop {proposlID} ")
     print(f"Proposal {proposlID} raised successfully ✔️")
 
+def AddAssetRates(assetName, jsonData):
+    fileName = f"newAssetRate-{assetName}-{datetime.datetime.now()}.json"
+    with open(fileName, "w") as jsonFile:
+        json.dump(jsonData, jsonFile)
+    
+    command = f"""comdex tx gov submit-proposal add-asset-rates-stats --add-asset-rates-stats-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    output = subprocess.getstatusoutput(command)[1]
+    output = json.loads(output)
+    if int(output["code"]) != 0:
+        print(output)
+        exit("error in add asset rate prop")
+    if os.path.exists(fileName):
+        os.remove(fileName)
+    print(f"Proposal For - Asset Rates {assetName}  Submitted ✔️")
+
+def AddLendPool(jsonData):
+    fileName = f"addLendPool-{jsonData['module_name']}-{datetime.datetime.now()}.json"
+    with open(fileName, "w") as jsonFile:
+        json.dump(jsonData, jsonFile)
+    
+    command = f"""comdex tx gov submit-proposal add-lend-pool --add-lend-pool-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    output = subprocess.getstatusoutput(command)[1]
+    output = json.loads(output)
+    if int(output["code"]) != 0:
+        print(output)
+        exit("error in add lend pool prop")
+    if os.path.exists(fileName):
+        os.remove(fileName)
+    print(f"Proposal For - Add Lend Pool {jsonData['module_name']}  Submitted ✔️")
+
+def AddLendPair(pairString, jsonData):
+    fileName = f"addLendPair-{pairString}-{datetime.datetime.now()}.json"
+    with open(fileName, "w") as jsonFile:
+        json.dump(jsonData, jsonFile)
+    
+    command = f"""comdex tx gov submit-proposal add-lend-pairs --add-lend-pair-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    output = subprocess.getstatusoutput(command)[1]
+    output = json.loads(output)
+    if int(output["code"]) != 0:
+        print(output)
+        exit("error in add lend pair prop")
+    if os.path.exists(fileName):
+        os.remove(fileName)
+    print(f"Proposal For - Add Lend Pair {pairString}  Submitted ✔️")
+
+def AddLendAssetPairMapping(assetID, poolID, pairIDs):
+    command = f"""comdex tx gov submit-proposal add-asset-to-pair-mapping {assetID} {poolID} {','.join([str(i) for i in pairIDs])} --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --title "Lend Asset Pair Mapping" --description "Adding New Lend Asset To Pair Mapping" --deposit 100000000ucmdx --keyring-backend test -y"""
+    output = subprocess.getstatusoutput(command)[1]
+    output = json.loads(output)
+    if int(output["code"]) != 0:
+        print(output)
+        exit("error in add lend asset pair mapping prop")
+    print(f"Proposal For - Add Lend Asset Pair Mapping assetID-{assetID}, poolID-{poolID}, pairIDs-{pairIDs}  Submitted ✔️")
+
+def AddLendAuctionParamsAndVote():
+    jsonData = {
+        "app_id": "3",
+        "auction_duration_seconds": "600",
+        "buffer": "1.2",
+        "cusp": "0.4",
+        "step": "360",
+        "price_function_type": "1",
+        "dutch_id": "3",
+        "bid_duration_seconds": "360",
+        "title": "Adding Auction Params for Lend Module",
+        "description" :"Params for auctions",
+        "deposit" :"100000000ucmdx"
+    }
+    fileName = f"addLendAuctionParams--{datetime.datetime.now()}.json"
+    with open(fileName, "w") as jsonFile:
+        json.dump(jsonData, jsonFile)
+    
+    command = f"""comdex tx gov submit-proposal add-auction-params --add-auction-params-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    output = subprocess.getstatusoutput(command)[1]
+    output = json.loads(output)
+    if int(output["code"]) != 0:
+        print(output)
+        exit("error in add lend auction params prop")
+    if os.path.exists(fileName):
+        os.remove(fileName)
+    print(f"Proposal For - Add Lend Auction Param Submitted ✔️")
+    Vote("yes")
 
 def CreateState():
-
     for app in APPS:
         if len(app) != 4:
             exit("Invalid app configs")
@@ -270,6 +351,8 @@ def CreateState():
     StoreAndIntantiateGovernanceWasmContract()
 
     for wasmProp in WASM_PROPOSALS:
+        if len(wasmProp) != 2:
+            exit("Invalid wasm proposals configs")
         propID = wasmProp[0]
         prop = wasmProp[1]
         ProposeWasmGovernanceProposal(prop, propID)
@@ -287,6 +370,32 @@ def CreateState():
         if len(liquidityPool) != 3:
             exit("Invalid liquidity pool configs")
         CreateLiquidityPool(liquidityPool[0], liquidityPool[1], liquidityPool[2])
+    
+    for assetRate in ADD_ASSET_RATES:
+        if len(assetRate) != 2:
+            exit("Invalid add asset rate configs")
+        AddAssetRates(assetRate[0], assetRate[1])
+        Vote("yes")
+    
+    for lenPoolData in ADD_LEND_POOL:
+        AddLendPool(lenPoolData)
+        Vote("yes")
+    
+    for lendPair in ADD_LEND_PAIR:
+        if len(lendPair) != 2:
+            exit("Invalid lend pair configs")
+        AddLendPair(lendPair[0], lendPair[1])
+        Vote("yes")
+    
+    for lenAssetPairMap in LEND_ASSET_PAIR_MAPPING:
+        if len(lenAssetPairMap) != 3:
+            exit("Invalid lend asset pair map configs")
+        AddLendAssetPairMapping(lenAssetPairMap[0], lenAssetPairMap[1], lenAssetPairMap[2])
+        Vote("yes")
+    
+    AddLendAuctionParamsAndVote()
+
+
 
 def main():
     if not os.path.exists(HOME_DIR):
