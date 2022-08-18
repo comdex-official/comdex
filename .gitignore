@@ -6,3 +6,5 @@
 /build/
 /cover.out
 /bin/
+__pycache__
+*.pyc
