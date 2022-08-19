@@ -24,14 +24,8 @@ func NewQueryServer(k Keeper) types.QueryServer {
 }
 
 func (q QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	var (
-		ctx    = sdk.UnwrapSDKContext(c)
-		params = q.GetParams(ctx)
-	)
-
-	return &types.QueryParamsResponse{
-		Params: params,
-	}, nil
+	ctx := sdk.UnwrapSDKContext(c)
+	return &types.QueryParamsResponse{Params: q.GetParams(ctx)}, nil
 }
 
 func (q QueryServer) QueryLockedVault(c context.Context, req *types.QueryLockedVaultRequest) (*types.QueryLockedVaultResponse, error) {
