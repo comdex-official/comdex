@@ -27,7 +27,6 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		liquidationOffsetHolder, found := k.GetLiquidationOffsetHolder(ctx, appIds[i], types.VaultLiquidationsOffsetPrefix)
 		if !found {
 			liquidationOffsetHolder = types.NewLiquidationOffsetHolder(appIds[i], 0)
-			k.SetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, liquidationOffsetHolder)
 		}
 
 		vaultsMap, _ := k.GetAppMappingData(ctx, appIds[i])
@@ -65,6 +64,8 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 					k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, vault.ExtendedPairVaultID, vault.Id, appIds[i])
 				}
 			}
+			liquidationOffsetHolder.CurrentOffset = uint64(end)
+			k.SetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, liquidationOffsetHolder)
 		}
 	}
 	return nil
