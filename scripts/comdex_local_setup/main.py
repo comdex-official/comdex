@@ -6,6 +6,7 @@ import datetime
 import os
 import json
 import time
+import wget
 
 from constants import *
 from states import *
@@ -197,6 +198,8 @@ def CreateLiquidityPool(appID, pairID, depositCoins):
     print(f"New liquidity pool created for pairID {pairID} in app {appID} with initial deposit of {depositCoins} ✔️")
 
 def StoreAndIntantiateGovernanceWasmContract():
+    print("fetching test governance contract....")
+    wget.download(TEST_GOVERNANCE_WASM_CONTRACT_LINK, GOVERNANCE_CONTRACT_PATH)
     command = f"comdex tx wasm store {GOVERNANCE_CONTRACT_PATH} --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --gas-adjustment 1.3 --keyring-backend test  -y  --output json"
     output = subprocess.getstatusoutput(command)[1]
     output = json.loads(output)
@@ -204,6 +207,8 @@ def StoreAndIntantiateGovernanceWasmContract():
         print(output)
         exit("error in adding governance wasm contract")
     print(f"Governance wasm contract added successfully ✔️")
+    if os.path.exists(GOVERNANCE_CONTRACT_PATH):
+        os.remove(GOVERNANCE_CONTRACT_PATH)
 
     init = {
         "threshold":{
