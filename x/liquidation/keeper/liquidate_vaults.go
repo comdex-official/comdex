@@ -1,15 +1,17 @@
 package keeper
 
 import (
+	"strconv"
+
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
-	"strconv"
 )
 
 func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 	appIds := k.GetAppIds(ctx).WhitelistedAppIds
+	params := k.GetParams(ctx)
 
 	for i := range appIds {
 		esmStatus, found := k.GetESMStatus(ctx, appIds[i])
@@ -21,13 +23,26 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		if klwsParams.BreakerEnable || status {
 			continue
 		}
+
+		liquidationOffsetHolder, found := k.GetLiquidationOffsetHolder(ctx, appIds[i], types.VaultLiquidationsOffsetPrefix)
+		if !found {
+			liquidationOffsetHolder = types.NewLiquidationOffsetHolder(appIds[i], 0)
+			k.SetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, liquidationOffsetHolder)
+		}
+
 		vaultsMap, _ := k.GetAppMappingData(ctx, appIds[i])
 
 		vaults := vaultsMap
 		for j := range vaults {
 			vaultIds := vaults[j].VaultIds
-			for l := range vaultIds {
-				vault, found := k.GetVault(ctx, vaultIds[l])
+			start, end := types.GetSliceStartEndForLiquidations(len(vaultIds), int(liquidationOffsetHolder.CurrentOffset), int(params.LiquidationBatchSize))
+			if start == end {
+				liquidationOffsetHolder.CurrentOffset = 0
+				start, end = types.GetSliceStartEndForLiquidations(len(vaultIds), int(liquidationOffsetHolder.CurrentOffset), int(params.LiquidationBatchSize))
+			}
+			newVaultIDs := vaultIds[start:end]
+			for l := range newVaultIDs {
+				vault, found := k.GetVault(ctx, newVaultIDs[l])
 				if !found {
 					continue
 				}
