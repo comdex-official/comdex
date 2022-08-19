@@ -83,9 +83,12 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 	if !found {
 		return types.ErrPoolNotFound
 	}
-	_, found = k.GetApp(ctx, AppID)
+	appMapping, found := k.GetApp(ctx, AppID)
 	if !found {
 		return types.ErrorAppMappingDoesNotExist
+	}
+	if appMapping.Name != types.AppName {
+		return types.ErrorAppMappingIDMismatch
 	}
 
 	if Amount.Denom != asset.Denom {
