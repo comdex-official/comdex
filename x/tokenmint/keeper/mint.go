@@ -183,3 +183,56 @@ func (k Keeper) BurnFrom(ctx sdk.Context, amount sdk.Coin, burnFrom sdk.AccAddre
 	}
 	return k.BurnCoin(ctx, types.ModuleName, amount)
 }
+
+func (k Keeper) WasmMsgFoundationEmission(ctx sdk.Context, appID uint64, amount sdk.Int, foundationAddr []sdk.AccAddress) error {
+	s := len(foundationAddr)
+	var assetID uint64
+	app, _ := k.GetApp(ctx, appID)
+	govToken := app.GenesisToken
+	for _, v := range govToken {
+		if v.IsGovToken {
+			assetID = v.AssetId
+		}
+	}
+	asset, _ := k.GetAsset(ctx, assetID)
+	err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(asset.Denom, amount))
+	if err != nil {
+		return err
+	}
+
+	amountToIndividualFoundationAddr := amount.Quo(sdk.NewInt(int64(s)))
+	for _, addr := range foundationAddr {
+		err = k.SendCoinFromModuleToAccount(ctx, types.ModuleName, addr, sdk.NewCoin(asset.Denom, amountToIndividualFoundationAddr))
+		if err != nil {
+			return err
+		}
+	}
+	k.UpdateAssetDataInTokenMintByApp(ctx, appID, assetID, true, amount)
+
+	return nil
+}
+
+func (k Keeper) WasmMsgRebaseMint(ctx sdk.Context, appID uint64, amount sdk.Int, contractAddr sdk.AccAddress) error {
+	var assetID uint64
+	app, _ := k.GetApp(ctx, appID)
+	govToken := app.GenesisToken
+	for _, v := range govToken {
+		if v.IsGovToken {
+			assetID = v.AssetId
+		}
+	}
+	asset, _ := k.GetAsset(ctx, assetID)
+	err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(asset.Denom, amount))
+	if err != nil {
+		return err
+	}
+
+	err = k.SendCoinFromModuleToAccount(ctx, types.ModuleName, contractAddr, sdk.NewCoin(asset.Denom, amount))
+	if err != nil {
+		return err
+	}
+
+	k.UpdateAssetDataInTokenMintByApp(ctx, appID, assetID, true, amount)
+
+	return nil
+}
