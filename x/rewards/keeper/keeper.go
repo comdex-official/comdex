@@ -203,12 +203,11 @@ func (k Keeper) ActExternalRewardsVaults(
 ) error {
 	id := k.GetExternalRewardsVaultID(ctx)
 
-	appExtPairVaultData, found := k.GetAppExtendedPairVaultMapping(ctx, appMappingID)
+	appExtPairVaultData, found := k.GetAppMappingData(ctx, appMappingID)
 	if !found {
 		return types.ErrAssetIDDoesNotExist
 	}
-	extPairVault := appExtPairVaultData.ExtendedPairVaults
-	for _, v := range extPairVault {
+	for _, v := range appExtPairVaultData {
 		if extendedPairID != v.ExtendedPairId {
 			return types.ErrAssetIDDoesNotExist
 		}

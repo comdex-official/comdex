@@ -7,9 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) DistributorActivator(ctx sdk.Context, data collectortypes.CollectorAuctionLookupTable,
-	inData collectortypes.AssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
-	if !inData.IsSurplusAuction && !inData.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
+func (k Keeper) DistributorActivator(ctx sdk.Context, data collectortypes.AppAssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
+	if !data.IsSurplusAuction && !data.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
 		// to do
 		// reduce coin from collector
 		// send coin to contract

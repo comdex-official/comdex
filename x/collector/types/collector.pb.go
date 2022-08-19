@@ -64,23 +64,24 @@ func (m *CollectorData) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CollectorData proto.InternalMessageInfo
 
-type NetFeeCollectedData struct {
-	AppId                 uint64                  `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
-	AssetIdToFeeCollected []AssetIdToFeeCollected `protobuf:"bytes,2,rep,name=assetIdToFeeCollected,proto3" json:"assetIdToFeeCollected" yaml:"asset_id_to_fee_collected"`
+type AppAssetIdToFeeCollectedData struct {
+	AppId            uint64                                 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId          uint64                                 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	NetFeesCollected github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=net_fees_collected,json=netFeesCollected,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"net_fees_collected" yaml:"net_fees_collected"`
 }
 
-func (m *NetFeeCollectedData) Reset()         { *m = NetFeeCollectedData{} }
-func (m *NetFeeCollectedData) String() string { return proto.CompactTextString(m) }
-func (*NetFeeCollectedData) ProtoMessage()    {}
-func (*NetFeeCollectedData) Descriptor() ([]byte, []int) {
+func (m *AppAssetIdToFeeCollectedData) Reset()         { *m = AppAssetIdToFeeCollectedData{} }
+func (m *AppAssetIdToFeeCollectedData) String() string { return proto.CompactTextString(m) }
+func (*AppAssetIdToFeeCollectedData) ProtoMessage()    {}
+func (*AppAssetIdToFeeCollectedData) Descriptor() ([]byte, []int) {
 	return fileDescriptor_f18765a8dff2a43b, []int{1}
 }
-func (m *NetFeeCollectedData) XXX_Unmarshal(b []byte) error {
+func (m *AppAssetIdToFeeCollectedData) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *NetFeeCollectedData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AppAssetIdToFeeCollectedData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_NetFeeCollectedData.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AppAssetIdToFeeCollectedData.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -90,49 +91,50 @@ func (m *NetFeeCollectedData) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *NetFeeCollectedData) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NetFeeCollectedData.Merge(m, src)
+func (m *AppAssetIdToFeeCollectedData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AppAssetIdToFeeCollectedData.Merge(m, src)
 }
-func (m *NetFeeCollectedData) XXX_Size() int {
+func (m *AppAssetIdToFeeCollectedData) XXX_Size() int {
 	return m.Size()
 }
-func (m *NetFeeCollectedData) XXX_DiscardUnknown() {
-	xxx_messageInfo_NetFeeCollectedData.DiscardUnknown(m)
+func (m *AppAssetIdToFeeCollectedData) XXX_DiscardUnknown() {
+	xxx_messageInfo_AppAssetIdToFeeCollectedData.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NetFeeCollectedData proto.InternalMessageInfo
+var xxx_messageInfo_AppAssetIdToFeeCollectedData proto.InternalMessageInfo
 
-func (m *NetFeeCollectedData) GetAppId() uint64 {
+func (m *AppAssetIdToFeeCollectedData) GetAppId() uint64 {
 	if m != nil {
 		return m.AppId
 	}
 	return 0
 }
 
-func (m *NetFeeCollectedData) GetAssetIdToFeeCollected() []AssetIdToFeeCollected {
+func (m *AppAssetIdToFeeCollectedData) GetAssetId() uint64 {
 	if m != nil {
-		return m.AssetIdToFeeCollected
+		return m.AssetId
 	}
-	return nil
+	return 0
 }
 
-type AssetIdToFeeCollected struct {
-	AssetId          uint64                                 `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	NetFeesCollected github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=net_fees_collected,json=netFeesCollected,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"net_fees_collected" yaml:"net_fees_collected"`
+type AppToAssetIdCollectorMapping struct {
+	AppId     uint64        `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId   uint64        `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	Collector CollectorData `protobuf:"bytes,3,opt,name=collector,proto3" json:"collector" yaml:"collector"`
 }
 
-func (m *AssetIdToFeeCollected) Reset()         { *m = AssetIdToFeeCollected{} }
-func (m *AssetIdToFeeCollected) String() string { return proto.CompactTextString(m) }
-func (*AssetIdToFeeCollected) ProtoMessage()    {}
-func (*AssetIdToFeeCollected) Descriptor() ([]byte, []int) {
+func (m *AppToAssetIdCollectorMapping) Reset()         { *m = AppToAssetIdCollectorMapping{} }
+func (m *AppToAssetIdCollectorMapping) String() string { return proto.CompactTextString(m) }
+func (*AppToAssetIdCollectorMapping) ProtoMessage()    {}
+func (*AppToAssetIdCollectorMapping) Descriptor() ([]byte, []int) {
 	return fileDescriptor_f18765a8dff2a43b, []int{2}
 }
-func (m *AssetIdToFeeCollected) XXX_Unmarshal(b []byte) error {
+func (m *AppToAssetIdCollectorMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *AssetIdToFeeCollected) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AppToAssetIdCollectorMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_AssetIdToFeeCollected.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AppToAssetIdCollectorMapping.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -142,130 +144,40 @@ func (m *AssetIdToFeeCollected) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *AssetIdToFeeCollected) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AssetIdToFeeCollected.Merge(m, src)
+func (m *AppToAssetIdCollectorMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AppToAssetIdCollectorMapping.Merge(m, src)
 }
-func (m *AssetIdToFeeCollected) XXX_Size() int {
+func (m *AppToAssetIdCollectorMapping) XXX_Size() int {
 	return m.Size()
 }
-func (m *AssetIdToFeeCollected) XXX_DiscardUnknown() {
-	xxx_messageInfo_AssetIdToFeeCollected.DiscardUnknown(m)
+func (m *AppToAssetIdCollectorMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_AppToAssetIdCollectorMapping.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AssetIdToFeeCollected proto.InternalMessageInfo
+var xxx_messageInfo_AppToAssetIdCollectorMapping proto.InternalMessageInfo
 
-func (m *AssetIdToFeeCollected) GetAssetId() uint64 {
-	if m != nil {
-		return m.AssetId
-	}
-	return 0
-}
-
-type AppIdToAssetCollectorMapping struct {
-	AppId          uint64                    `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
-	AssetCollector []AssetIdCollectorMapping `protobuf:"bytes,2,rep,name=asset_collector,json=assetCollector,proto3" json:"asset_collector" yaml:"asset_collector"`
-}
-
-func (m *AppIdToAssetCollectorMapping) Reset()         { *m = AppIdToAssetCollectorMapping{} }
-func (m *AppIdToAssetCollectorMapping) String() string { return proto.CompactTextString(m) }
-func (*AppIdToAssetCollectorMapping) ProtoMessage()    {}
-func (*AppIdToAssetCollectorMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f18765a8dff2a43b, []int{3}
-}
-func (m *AppIdToAssetCollectorMapping) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AppIdToAssetCollectorMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AppIdToAssetCollectorMapping.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AppIdToAssetCollectorMapping) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AppIdToAssetCollectorMapping.Merge(m, src)
-}
-func (m *AppIdToAssetCollectorMapping) XXX_Size() int {
-	return m.Size()
-}
-func (m *AppIdToAssetCollectorMapping) XXX_DiscardUnknown() {
-	xxx_messageInfo_AppIdToAssetCollectorMapping.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AppIdToAssetCollectorMapping proto.InternalMessageInfo
-
-func (m *AppIdToAssetCollectorMapping) GetAppId() uint64 {
+func (m *AppToAssetIdCollectorMapping) GetAppId() uint64 {
 	if m != nil {
 		return m.AppId
 	}
 	return 0
 }
 
-func (m *AppIdToAssetCollectorMapping) GetAssetCollector() []AssetIdCollectorMapping {
-	if m != nil {
-		return m.AssetCollector
-	}
-	return nil
-}
-
-type AssetIdCollectorMapping struct {
-	AssetId   uint64        `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	Collector CollectorData `protobuf:"bytes,2,opt,name=collector,proto3" json:"collector" yaml:"collector"`
-}
-
-func (m *AssetIdCollectorMapping) Reset()         { *m = AssetIdCollectorMapping{} }
-func (m *AssetIdCollectorMapping) String() string { return proto.CompactTextString(m) }
-func (*AssetIdCollectorMapping) ProtoMessage()    {}
-func (*AssetIdCollectorMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f18765a8dff2a43b, []int{4}
-}
-func (m *AssetIdCollectorMapping) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AssetIdCollectorMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AssetIdCollectorMapping.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AssetIdCollectorMapping) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AssetIdCollectorMapping.Merge(m, src)
-}
-func (m *AssetIdCollectorMapping) XXX_Size() int {
-	return m.Size()
-}
-func (m *AssetIdCollectorMapping) XXX_DiscardUnknown() {
-	xxx_messageInfo_AssetIdCollectorMapping.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AssetIdCollectorMapping proto.InternalMessageInfo
-
-func (m *AssetIdCollectorMapping) GetAssetId() uint64 {
+func (m *AppToAssetIdCollectorMapping) GetAssetId() uint64 {
 	if m != nil {
 		return m.AssetId
 	}
 	return 0
 }
 
-func (m *AssetIdCollectorMapping) GetCollector() CollectorData {
+func (m *AppToAssetIdCollectorMapping) GetCollector() CollectorData {
 	if m != nil {
 		return m.Collector
 	}
 	return CollectorData{}
 }
 
-type CollectorLookupTable struct {
+type CollectorLookupTableData struct {
 	AppId            uint64                                 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	CollectorAssetId uint64                                 `protobuf:"varint,2,opt,name=collector_asset_id,json=collectorAssetId,proto3" json:"collector_asset_id,omitempty" yaml:"collector_asset_id"`
 	SecondaryAssetId uint64                                 `protobuf:"varint,3,opt,name=secondary_asset_id,json=secondaryAssetId,proto3" json:"secondary_asset_id,omitempty" yaml:"secondary_asset_id"`
@@ -277,18 +189,18 @@ type CollectorLookupTable struct {
 	DebtLotSize      uint64                                 `protobuf:"varint,9,opt,name=debt_lot_size,json=debtLotSize,proto3" json:"debt_lot_size,omitempty" yaml:"debt_lot_size"`
 }
 
-func (m *CollectorLookupTable) Reset()         { *m = CollectorLookupTable{} }
-func (m *CollectorLookupTable) String() string { return proto.CompactTextString(m) }
-func (*CollectorLookupTable) ProtoMessage()    {}
-func (*CollectorLookupTable) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f18765a8dff2a43b, []int{5}
+func (m *CollectorLookupTableData) Reset()         { *m = CollectorLookupTableData{} }
+func (m *CollectorLookupTableData) String() string { return proto.CompactTextString(m) }
+func (*CollectorLookupTableData) ProtoMessage()    {}
+func (*CollectorLookupTableData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f18765a8dff2a43b, []int{3}
 }
-func (m *CollectorLookupTable) XXX_Unmarshal(b []byte) error {
+func (m *CollectorLookupTableData) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CollectorLookupTable) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *CollectorLookupTableData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CollectorLookupTable.Marshal(b, m, deterministic)
+		return xxx_messageInfo_CollectorLookupTableData.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -298,117 +210,65 @@ func (m *CollectorLookupTable) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *CollectorLookupTable) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CollectorLookupTable.Merge(m, src)
+func (m *CollectorLookupTableData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CollectorLookupTableData.Merge(m, src)
 }
-func (m *CollectorLookupTable) XXX_Size() int {
+func (m *CollectorLookupTableData) XXX_Size() int {
 	return m.Size()
 }
-func (m *CollectorLookupTable) XXX_DiscardUnknown() {
-	xxx_messageInfo_CollectorLookupTable.DiscardUnknown(m)
+func (m *CollectorLookupTableData) XXX_DiscardUnknown() {
+	xxx_messageInfo_CollectorLookupTableData.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CollectorLookupTable proto.InternalMessageInfo
+var xxx_messageInfo_CollectorLookupTableData proto.InternalMessageInfo
 
-func (m *CollectorLookupTable) GetAppId() uint64 {
+func (m *CollectorLookupTableData) GetAppId() uint64 {
 	if m != nil {
 		return m.AppId
 	}
 	return 0
 }
 
-func (m *CollectorLookupTable) GetCollectorAssetId() uint64 {
+func (m *CollectorLookupTableData) GetCollectorAssetId() uint64 {
 	if m != nil {
 		return m.CollectorAssetId
 	}
 	return 0
 }
 
-func (m *CollectorLookupTable) GetSecondaryAssetId() uint64 {
+func (m *CollectorLookupTableData) GetSecondaryAssetId() uint64 {
 	if m != nil {
 		return m.SecondaryAssetId
 	}
 	return 0
 }
 
-func (m *CollectorLookupTable) GetSurplusThreshold() uint64 {
+func (m *CollectorLookupTableData) GetSurplusThreshold() uint64 {
 	if m != nil {
 		return m.SurplusThreshold
 	}
 	return 0
 }
 
-func (m *CollectorLookupTable) GetDebtThreshold() uint64 {
+func (m *CollectorLookupTableData) GetDebtThreshold() uint64 {
 	if m != nil {
 		return m.DebtThreshold
 	}
 	return 0
 }
 
-func (m *CollectorLookupTable) GetLotSize() uint64 {
+func (m *CollectorLookupTableData) GetLotSize() uint64 {
 	if m != nil {
 		return m.LotSize
 	}
 	return 0
 }
 
-func (m *CollectorLookupTable) GetDebtLotSize() uint64 {
+func (m *CollectorLookupTableData) GetDebtLotSize() uint64 {
 	if m != nil {
 		return m.DebtLotSize
 	}
 	return 0
-}
-
-type CollectorLookup struct {
-	AppId         uint64                 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
-	AssetRateInfo []CollectorLookupTable `protobuf:"bytes,2,rep,name=asset_rate_info,json=assetRateInfo,proto3" json:"asset_rate_info" yaml:"asset_rate_info"`
-}
-
-func (m *CollectorLookup) Reset()         { *m = CollectorLookup{} }
-func (m *CollectorLookup) String() string { return proto.CompactTextString(m) }
-func (*CollectorLookup) ProtoMessage()    {}
-func (*CollectorLookup) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f18765a8dff2a43b, []int{6}
-}
-func (m *CollectorLookup) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *CollectorLookup) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_CollectorLookup.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *CollectorLookup) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CollectorLookup.Merge(m, src)
-}
-func (m *CollectorLookup) XXX_Size() int {
-	return m.Size()
-}
-func (m *CollectorLookup) XXX_DiscardUnknown() {
-	xxx_messageInfo_CollectorLookup.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CollectorLookup proto.InternalMessageInfo
-
-func (m *CollectorLookup) GetAppId() uint64 {
-	if m != nil {
-		return m.AppId
-	}
-	return 0
-}
-
-func (m *CollectorLookup) GetAssetRateInfo() []CollectorLookupTable {
-	if m != nil {
-		return m.AssetRateInfo
-	}
-	return nil
 }
 
 type AppToDenomsMapping struct {
@@ -420,7 +280,7 @@ func (m *AppToDenomsMapping) Reset()         { *m = AppToDenomsMapping{} }
 func (m *AppToDenomsMapping) String() string { return proto.CompactTextString(m) }
 func (*AppToDenomsMapping) ProtoMessage()    {}
 func (*AppToDenomsMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f18765a8dff2a43b, []int{7}
+	return fileDescriptor_f18765a8dff2a43b, []int{4}
 }
 func (m *AppToDenomsMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -463,24 +323,29 @@ func (m *AppToDenomsMapping) GetAssetIds() []uint64 {
 	return nil
 }
 
-// key app id -> assets  traverse this one
-type CollectorAuctionLookupTable struct {
-	AppId                  uint64                        `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
-	AssetIdToAuctionLookup []AssetIdToAuctionLookupTable `protobuf:"bytes,2,rep,name=assetIdToAuctionLookup,proto3" json:"assetIdToAuctionLookup" yaml:"asset_id_to_auction_lookup"`
+type AppAssetIdToAuctionLookupTable struct {
+	AppId               uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId             uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	IsSurplusAuction    bool   `protobuf:"varint,3,opt,name=is_surplus_auction,json=isSurplusAuction,proto3" json:"is_surplus_auction,omitempty" yaml:"is_surplus_auction"`
+	IsDebtAuction       bool   `protobuf:"varint,4,opt,name=is_debt_auction,json=isDebtAuction,proto3" json:"is_debt_auction,omitempty" yaml:"is_debt_auction"`
+	IsDistributor       bool   `protobuf:"varint,5,opt,name=is_distributor,json=isDistributor,proto3" json:"is_distributor,omitempty" yaml:"is_distributor"`
+	IsAuctionActive     bool   `protobuf:"varint,6,opt,name=is_auction_active,json=isAuctionActive,proto3" json:"is_auction_active,omitempty" yaml:"is_auction_active"`
+	AssetOutOraclePrice bool   `protobuf:"varint,7,opt,name=asset_out_oracle_price,json=assetOutOraclePrice,proto3" json:"asset_out_oracle_price,omitempty" yaml:"asset_out_oracle_price"`
+	AssetOutPrice       uint64 `protobuf:"varint,8,opt,name=asset_out_price,json=assetOutPrice,proto3" json:"asset_out_price,omitempty" yaml:"asset_out_price"`
 }
 
-func (m *CollectorAuctionLookupTable) Reset()         { *m = CollectorAuctionLookupTable{} }
-func (m *CollectorAuctionLookupTable) String() string { return proto.CompactTextString(m) }
-func (*CollectorAuctionLookupTable) ProtoMessage()    {}
-func (*CollectorAuctionLookupTable) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f18765a8dff2a43b, []int{8}
+func (m *AppAssetIdToAuctionLookupTable) Reset()         { *m = AppAssetIdToAuctionLookupTable{} }
+func (m *AppAssetIdToAuctionLookupTable) String() string { return proto.CompactTextString(m) }
+func (*AppAssetIdToAuctionLookupTable) ProtoMessage()    {}
+func (*AppAssetIdToAuctionLookupTable) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f18765a8dff2a43b, []int{5}
 }
-func (m *CollectorAuctionLookupTable) XXX_Unmarshal(b []byte) error {
+func (m *AppAssetIdToAuctionLookupTable) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CollectorAuctionLookupTable) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AppAssetIdToAuctionLookupTable) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CollectorAuctionLookupTable.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AppAssetIdToAuctionLookupTable.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -490,118 +355,68 @@ func (m *CollectorAuctionLookupTable) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *CollectorAuctionLookupTable) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CollectorAuctionLookupTable.Merge(m, src)
+func (m *AppAssetIdToAuctionLookupTable) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AppAssetIdToAuctionLookupTable.Merge(m, src)
 }
-func (m *CollectorAuctionLookupTable) XXX_Size() int {
+func (m *AppAssetIdToAuctionLookupTable) XXX_Size() int {
 	return m.Size()
 }
-func (m *CollectorAuctionLookupTable) XXX_DiscardUnknown() {
-	xxx_messageInfo_CollectorAuctionLookupTable.DiscardUnknown(m)
+func (m *AppAssetIdToAuctionLookupTable) XXX_DiscardUnknown() {
+	xxx_messageInfo_AppAssetIdToAuctionLookupTable.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CollectorAuctionLookupTable proto.InternalMessageInfo
+var xxx_messageInfo_AppAssetIdToAuctionLookupTable proto.InternalMessageInfo
 
-func (m *CollectorAuctionLookupTable) GetAppId() uint64 {
+func (m *AppAssetIdToAuctionLookupTable) GetAppId() uint64 {
 	if m != nil {
 		return m.AppId
 	}
 	return 0
 }
 
-func (m *CollectorAuctionLookupTable) GetAssetIdToAuctionLookup() []AssetIdToAuctionLookupTable {
-	if m != nil {
-		return m.AssetIdToAuctionLookup
-	}
-	return nil
-}
-
-type AssetIdToAuctionLookupTable struct {
-	AssetId             uint64 `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	IsSurplusAuction    bool   `protobuf:"varint,2,opt,name=is_surplus_auction,json=isSurplusAuction,proto3" json:"is_surplus_auction,omitempty" yaml:"is_surplus_auction"`
-	IsDebtAuction       bool   `protobuf:"varint,3,opt,name=is_debt_auction,json=isDebtAuction,proto3" json:"is_debt_auction,omitempty" yaml:"is_debt_auction"`
-	IsDistributor       bool   `protobuf:"varint,4,opt,name=is_distributor,json=isDistributor,proto3" json:"is_distributor,omitempty" yaml:"is_distributor"`
-	IsAuctionActive     bool   `protobuf:"varint,5,opt,name=is_auction_active,json=isAuctionActive,proto3" json:"is_auction_active,omitempty" yaml:"is_auction_active"`
-	AssetOutOraclePrice bool   `protobuf:"varint,6,opt,name=asset_out_oracle_price,json=assetOutOraclePrice,proto3" json:"asset_out_oracle_price,omitempty" yaml:"asset_out_oracle_price"`
-	AssetOutPrice       uint64 `protobuf:"varint,7,opt,name=asset_out_price,json=assetOutPrice,proto3" json:"asset_out_price,omitempty" yaml:"asset_out_price"`
-}
-
-func (m *AssetIdToAuctionLookupTable) Reset()         { *m = AssetIdToAuctionLookupTable{} }
-func (m *AssetIdToAuctionLookupTable) String() string { return proto.CompactTextString(m) }
-func (*AssetIdToAuctionLookupTable) ProtoMessage()    {}
-func (*AssetIdToAuctionLookupTable) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f18765a8dff2a43b, []int{9}
-}
-func (m *AssetIdToAuctionLookupTable) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AssetIdToAuctionLookupTable) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AssetIdToAuctionLookupTable.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AssetIdToAuctionLookupTable) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AssetIdToAuctionLookupTable.Merge(m, src)
-}
-func (m *AssetIdToAuctionLookupTable) XXX_Size() int {
-	return m.Size()
-}
-func (m *AssetIdToAuctionLookupTable) XXX_DiscardUnknown() {
-	xxx_messageInfo_AssetIdToAuctionLookupTable.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AssetIdToAuctionLookupTable proto.InternalMessageInfo
-
-func (m *AssetIdToAuctionLookupTable) GetAssetId() uint64 {
+func (m *AppAssetIdToAuctionLookupTable) GetAssetId() uint64 {
 	if m != nil {
 		return m.AssetId
 	}
 	return 0
 }
 
-func (m *AssetIdToAuctionLookupTable) GetIsSurplusAuction() bool {
+func (m *AppAssetIdToAuctionLookupTable) GetIsSurplusAuction() bool {
 	if m != nil {
 		return m.IsSurplusAuction
 	}
 	return false
 }
 
-func (m *AssetIdToAuctionLookupTable) GetIsDebtAuction() bool {
+func (m *AppAssetIdToAuctionLookupTable) GetIsDebtAuction() bool {
 	if m != nil {
 		return m.IsDebtAuction
 	}
 	return false
 }
 
-func (m *AssetIdToAuctionLookupTable) GetIsDistributor() bool {
+func (m *AppAssetIdToAuctionLookupTable) GetIsDistributor() bool {
 	if m != nil {
 		return m.IsDistributor
 	}
 	return false
 }
 
-func (m *AssetIdToAuctionLookupTable) GetIsAuctionActive() bool {
+func (m *AppAssetIdToAuctionLookupTable) GetIsAuctionActive() bool {
 	if m != nil {
 		return m.IsAuctionActive
 	}
 	return false
 }
 
-func (m *AssetIdToAuctionLookupTable) GetAssetOutOraclePrice() bool {
+func (m *AppAssetIdToAuctionLookupTable) GetAssetOutOraclePrice() bool {
 	if m != nil {
 		return m.AssetOutOraclePrice
 	}
 	return false
 }
 
-func (m *AssetIdToAuctionLookupTable) GetAssetOutPrice() uint64 {
+func (m *AppAssetIdToAuctionLookupTable) GetAssetOutPrice() uint64 {
 	if m != nil {
 		return m.AssetOutPrice
 	}
@@ -610,15 +425,11 @@ func (m *AssetIdToAuctionLookupTable) GetAssetOutPrice() uint64 {
 
 func init() {
 	proto.RegisterType((*CollectorData)(nil), "comdex.collector.v1beta1.CollectorData")
-	proto.RegisterType((*NetFeeCollectedData)(nil), "comdex.collector.v1beta1.NetFeeCollectedData")
-	proto.RegisterType((*AssetIdToFeeCollected)(nil), "comdex.collector.v1beta1.AssetIdToFeeCollected")
-	proto.RegisterType((*AppIdToAssetCollectorMapping)(nil), "comdex.collector.v1beta1.AppIdToAssetCollectorMapping")
-	proto.RegisterType((*AssetIdCollectorMapping)(nil), "comdex.collector.v1beta1.AssetIdCollectorMapping")
-	proto.RegisterType((*CollectorLookupTable)(nil), "comdex.collector.v1beta1.CollectorLookupTable")
-	proto.RegisterType((*CollectorLookup)(nil), "comdex.collector.v1beta1.CollectorLookup")
+	proto.RegisterType((*AppAssetIdToFeeCollectedData)(nil), "comdex.collector.v1beta1.AppAssetIdToFeeCollectedData")
+	proto.RegisterType((*AppToAssetIdCollectorMapping)(nil), "comdex.collector.v1beta1.AppToAssetIdCollectorMapping")
+	proto.RegisterType((*CollectorLookupTableData)(nil), "comdex.collector.v1beta1.CollectorLookupTableData")
 	proto.RegisterType((*AppToDenomsMapping)(nil), "comdex.collector.v1beta1.AppToDenomsMapping")
-	proto.RegisterType((*CollectorAuctionLookupTable)(nil), "comdex.collector.v1beta1.CollectorAuctionLookupTable")
-	proto.RegisterType((*AssetIdToAuctionLookupTable)(nil), "comdex.collector.v1beta1.AssetIdToAuctionLookupTable")
+	proto.RegisterType((*AppAssetIdToAuctionLookupTable)(nil), "comdex.collector.v1beta1.AppAssetIdToAuctionLookupTable")
 }
 
 func init() {
@@ -626,77 +437,67 @@ func init() {
 }
 
 var fileDescriptor_f18765a8dff2a43b = []byte{
-	// 1120 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x57, 0x4d, 0x4f, 0x1b, 0x47,
-	0x18, 0x66, 0xc1, 0x80, 0x19, 0x04, 0x98, 0x05, 0x12, 0x87, 0x0f, 0x9b, 0x8c, 0xaa, 0xd6, 0x3d,
-	0xc4, 0x16, 0x89, 0x7a, 0xa9, 0x7a, 0x08, 0x0b, 0x42, 0x45, 0x24, 0x21, 0x1a, 0x50, 0x0e, 0xbd,
-	0x8c, 0x66, 0x77, 0x07, 0x18, 0xb1, 0x78, 0x36, 0x3b, 0x63, 0x5a, 0x73, 0xec, 0xa1, 0xea, 0xad,
-	0x3d, 0x56, 0xfd, 0x09, 0xbd, 0xb6, 0x7f, 0xa0, 0x55, 0x0f, 0x39, 0xa6, 0xb7, 0xaa, 0x07, 0xab,
-	0x82, 0x7f, 0xe0, 0x5f, 0x50, 0xcd, 0xcc, 0x7e, 0xd9, 0x86, 0x34, 0x5b, 0xf5, 0x04, 0xfb, 0xbe,
-	0xcf, 0x3e, 0xf3, 0xcc, 0xfb, 0xf1, 0xac, 0x0c, 0x1a, 0x1e, 0xbf, 0xf0, 0xe9, 0x57, 0x2d, 0x8f,
-	0x07, 0x01, 0xf5, 0x24, 0x8f, 0x5a, 0x97, 0x5b, 0x2e, 0x95, 0x64, 0x2b, 0x8b, 0x34, 0xc3, 0x88,
-	0x4b, 0x6e, 0x57, 0x0d, 0xb2, 0x99, 0xc5, 0x63, 0xe4, 0xea, 0xf2, 0x29, 0x3f, 0xe5, 0x1a, 0xd4,
-	0x52, 0xff, 0x19, 0x3c, 0xfc, 0xb5, 0x04, 0xe6, 0x76, 0x12, 0xec, 0x2e, 0x91, 0xc4, 0xfe, 0xd6,
-	0x02, 0xf7, 0xe3, 0xb7, 0xa9, 0x8f, 0x85, 0x24, 0x2e, 0x0b, 0x98, 0xec, 0xe2, 0x13, 0x4a, 0xab,
-	0xd6, 0xa6, 0xd5, 0x98, 0x71, 0x5e, 0xbe, 0xe9, 0xd5, 0xc7, 0xfe, 0xea, 0xd5, 0x3f, 0x3c, 0x65,
-	0xf2, 0xac, 0xe3, 0x36, 0x3d, 0x7e, 0xd1, 0xf2, 0xb8, 0xb8, 0xe0, 0x22, 0xfe, 0xf3, 0x48, 0xf8,
-	0xe7, 0x2d, 0xd9, 0x0d, 0xa9, 0x68, 0xee, 0xb7, 0x65, 0xbf, 0x57, 0xaf, 0x75, 0xc9, 0x45, 0xf0,
-	0x29, 0xbc, 0x83, 0x16, 0xa2, 0x95, 0x34, 0x73, 0x94, 0x24, 0xf6, 0x28, 0xb5, 0xbf, 0xb6, 0x40,
-	0x96, 0xc1, 0x5e, 0xc0, 0x05, 0x6b, 0x9f, 0x6a, 0x21, 0xe3, 0x5a, 0xc8, 0x8b, 0xc2, 0x42, 0xd6,
-	0x87, 0x85, 0xe4, 0x48, 0x21, 0x5a, 0x4a, 0xe3, 0x3b, 0x26, 0x3c, 0x2a, 0x82, 0x87, 0xb4, 0x9d,
-	0x88, 0x98, 0xf8, 0xbf, 0x44, 0xe4, 0x48, 0xf3, 0x22, 0x0e, 0x4d, 0x58, 0x89, 0xf8, 0xd1, 0x02,
-	0x1b, 0x01, 0x7b, 0xdd, 0x61, 0x3e, 0x91, 0x8c, 0xb7, 0x71, 0x44, 0xbf, 0x24, 0x91, 0x2f, 0x70,
-	0x8a, 0xad, 0x96, 0xb4, 0x98, 0x57, 0x85, 0xc5, 0x7c, 0x60, 0xc4, 0xbc, 0x93, 0x1c, 0xa2, 0xb5,
-	0x5c, 0x1e, 0x99, 0xf4, 0x4e, 0x9a, 0xfd, 0xc3, 0x02, 0x4b, 0x2f, 0xa8, 0xdc, 0xa3, 0x34, 0x8d,
-	0xe9, 0x49, 0x6a, 0x80, 0x29, 0x12, 0x86, 0x98, 0xf9, 0x7a, 0x6e, 0x4a, 0xce, 0x62, 0xbf, 0x57,
-	0x9f, 0x33, 0xc7, 0x99, 0x38, 0x44, 0x93, 0x24, 0x0c, 0xf7, 0x7d, 0xfb, 0x3b, 0x0b, 0xac, 0x10,
-	0x21, 0xa8, 0xdc, 0xf7, 0x8f, 0x79, 0x9e, 0xa7, 0x3a, 0xbe, 0x39, 0xd1, 0x98, 0x7d, 0xdc, 0x6a,
-	0xde, 0x35, 0xd6, 0xcd, 0xed, 0xdb, 0x5e, 0x73, 0x1a, 0xaa, 0x0e, 0xfd, 0x5e, 0x7d, 0x33, 0x3e,
-	0x4e, 0x81, 0x30, 0xf3, 0xb1, 0xe4, 0xaa, 0xc8, 0xf9, 0x9b, 0xdd, 0x7e, 0x2e, 0xfc, 0xcd, 0x02,
-	0x2b, 0xb7, 0x52, 0xdb, 0x4d, 0x50, 0x4e, 0xe8, 0xe2, 0x7b, 0x2d, 0xf5, 0x7b, 0xf5, 0x85, 0xc1,
-	0x83, 0x20, 0x9a, 0x8e, 0x79, 0xed, 0x2e, 0xb0, 0xdb, 0x54, 0xaa, 0x63, 0xf3, 0xed, 0x32, 0x03,
-	0x7c, 0x50, 0xb8, 0x5d, 0x0f, 0xcc, 0x39, 0xa3, 0x8c, 0x10, 0x55, 0xda, 0xba, 0x07, 0xb9, 0xc6,
-	0xfc, 0x6e, 0x81, 0xf5, 0x6d, 0x55, 0xe0, 0x63, 0xae, 0xef, 0x92, 0x2e, 0xfa, 0x73, 0x12, 0x86,
-	0xac, 0x7d, 0x5a, 0xa0, 0x43, 0x57, 0x60, 0xc1, 0xdc, 0x2d, 0xed, 0x40, 0xdc, 0x9a, 0xad, 0x7f,
-	0x6d, 0xcd, 0xf0, 0xa9, 0x4e, 0x2d, 0x6e, 0xce, 0xbd, 0x7c, 0xcd, 0xd2, 0xd7, 0x21, 0x9a, 0x27,
-	0x03, 0x62, 0xe1, 0x4f, 0x16, 0xb8, 0x7f, 0x07, 0x57, 0xe1, 0x6e, 0x60, 0x30, 0x93, 0xbf, 0x81,
-	0xd5, 0x98, 0x7d, 0xfc, 0xd1, 0xdd, 0x37, 0x18, 0x70, 0x46, 0xa7, 0x1a, 0xeb, 0xae, 0x0c, 0xec,
-	0xaf, 0x52, 0x9c, 0x71, 0xc2, 0x5f, 0x26, 0xc1, 0x72, 0xfa, 0xda, 0x33, 0xce, 0xcf, 0x3b, 0xe1,
-	0x31, 0x71, 0x03, 0x5a, 0xa0, 0xd6, 0x07, 0xc0, 0x4e, 0xf9, 0x70, 0x7a, 0xbb, 0x71, 0xfd, 0xd6,
-	0x46, 0x36, 0x03, 0xa3, 0x18, 0x88, 0x2a, 0x69, 0x30, 0x2e, 0x98, 0x22, 0x13, 0xd4, 0xe3, 0x6d,
-	0x9f, 0x44, 0xdd, 0x8c, 0x6c, 0x62, 0x98, 0x6c, 0x14, 0x03, 0x51, 0x25, 0x0d, 0x26, 0x64, 0xfb,
-	0x60, 0x51, 0x74, 0xa2, 0x30, 0xe8, 0x08, 0x2c, 0xcf, 0x22, 0x2a, 0xce, 0x78, 0x60, 0x9c, 0xa7,
-	0xe4, 0xac, 0xf7, 0x7b, 0xf5, 0x6a, 0xcc, 0x35, 0x0c, 0x51, 0x54, 0x26, 0x76, 0x9c, 0x84, 0xec,
-	0xa7, 0x60, 0xde, 0xa7, 0xae, 0xcc, 0xf1, 0x4c, 0x6a, 0x9e, 0x07, 0xfd, 0x5e, 0x7d, 0xc5, 0xf0,
-	0x0c, 0xe6, 0x21, 0x9a, 0x53, 0x81, 0x8c, 0xa1, 0x0b, 0xec, 0x80, 0x7b, 0xe7, 0x34, 0xc2, 0x82,
-	0x5c, 0x2a, 0xfb, 0x8c, 0x88, 0xa4, 0xd5, 0xa9, 0xc2, 0x8b, 0xb5, 0x4b, 0xbd, 0xac, 0x0e, 0xa3,
-	0x8c, 0x10, 0x55, 0x4c, 0xf0, 0x48, 0xc7, 0x10, 0x91, 0x54, 0x4d, 0x5d, 0xc0, 0x25, 0x16, 0xec,
-	0x8a, 0x56, 0xa7, 0x87, 0xa7, 0x2e, 0xc9, 0x40, 0x34, 0x1d, 0x70, 0x79, 0xc4, 0xae, 0xa8, 0xed,
-	0x02, 0xe0, 0x32, 0x1f, 0x9f, 0x10, 0x3d, 0x76, 0x65, 0x2d, 0x71, 0xa7, 0xb0, 0xc4, 0x45, 0xc3,
-	0x9f, 0x31, 0x41, 0x34, 0xe3, 0x32, 0x7f, 0x4f, 0xff, 0x6f, 0x7f, 0x06, 0x74, 0x7d, 0x70, 0x2a,
-	0x6c, 0x46, 0x0b, 0xab, 0xf6, 0x7b, 0xf5, 0xe5, 0x5c, 0x3d, 0x33, 0x75, 0xb3, 0xea, 0xf9, 0x99,
-	0x51, 0x08, 0x7f, 0xb6, 0xc0, 0xc2, 0xd0, 0xd8, 0x16, 0x98, 0xd8, 0xcb, 0xc4, 0x1d, 0x54, 0xc1,
-	0x30, 0x6b, 0x9f, 0xf0, 0xd8, 0x1d, 0x9a, 0xef, 0xb1, 0x5b, 0xb9, 0x25, 0xb9, 0xdd, 0x1a, 0x52,
-	0x52, 0x88, 0xe6, 0x74, 0x44, 0xf5, 0x60, 0x5f, 0x3d, 0xbf, 0x06, 0xf6, 0x76, 0x18, 0x1e, 0xf3,
-	0x5d, 0xda, 0xe6, 0x17, 0xa2, 0xb8, 0xab, 0x6d, 0x81, 0x99, 0x64, 0xdc, 0x85, 0x56, 0x5c, 0x72,
-	0x96, 0xb3, 0x05, 0x4f, 0x53, 0x10, 0x95, 0x63, 0xff, 0x10, 0xf0, 0xda, 0x02, 0x6b, 0xa9, 0xf4,
-	0xed, 0x8e, 0xa7, 0xbe, 0x88, 0xff, 0x6d, 0xcd, 0x7f, 0xb0, 0xc0, 0xbd, 0xf4, 0xe3, 0x33, 0xc0,
-	0x14, 0x17, 0xef, 0x93, 0xf7, 0xf8, 0xea, 0x8d, 0x2a, 0x70, 0x3e, 0x8e, 0x6b, 0xf8, 0x70, 0xf4,
-	0xdb, 0x47, 0x0c, 0x1a, 0x07, 0x1a, 0x0e, 0xd1, 0x1d, 0xe7, 0xc3, 0x6f, 0x4a, 0x60, 0xed, 0x1d,
-	0x47, 0x14, 0x76, 0xdd, 0x03, 0x60, 0x33, 0x81, 0x13, 0x5f, 0x88, 0x55, 0x68, 0x47, 0x2b, 0xe7,
-	0x4d, 0x68, 0x14, 0x03, 0x51, 0x85, 0x89, 0x23, 0x13, 0x8b, 0x75, 0xd8, 0x0e, 0x58, 0x60, 0x02,
-	0xeb, 0x61, 0x4e, 0x98, 0x26, 0x34, 0xd3, 0x6a, 0x36, 0x38, 0x43, 0x00, 0x88, 0xe6, 0x98, 0xd8,
-	0xa5, 0xae, 0x4c, 0x38, 0x9e, 0x82, 0x79, 0x05, 0x61, 0x42, 0x46, 0xcc, 0xed, 0xa8, 0xa5, 0x2c,
-	0x69, 0x8a, 0x9c, 0xfb, 0x0c, 0xe6, 0x0d, 0x43, 0xf6, 0x6c, 0x7f, 0x0e, 0x16, 0x59, 0x2a, 0x13,
-	0x13, 0x4f, 0xb2, 0x4b, 0xaa, 0x2d, 0xac, 0x9c, 0xb7, 0xc2, 0x11, 0x08, 0x44, 0x0b, 0x2c, 0xb9,
-	0xc9, 0xb6, 0x8e, 0xd8, 0xaf, 0xe2, 0x31, 0xc0, 0xbc, 0x23, 0x31, 0x8f, 0x88, 0x17, 0x50, 0x1c,
-	0x46, 0xcc, 0x33, 0x5e, 0x56, 0x76, 0x1e, 0xf6, 0x7b, 0xf5, 0x8d, 0x7c, 0x69, 0x87, 0x71, 0x10,
-	0x2d, 0xe9, 0xc4, 0x61, 0x47, 0x1e, 0xea, 0xf0, 0x4b, 0x15, 0x55, 0x75, 0xca, 0xf0, 0x86, 0xd0,
-	0x78, 0xd5, 0xea, 0xf0, 0x82, 0xa5, 0x80, 0x64, 0xc1, 0x0e, 0x3b, 0x52, 0x73, 0x38, 0xcf, 0xdf,
-	0x5c, 0xd7, 0xac, 0xb7, 0xd7, 0x35, 0xeb, 0xef, 0xeb, 0x9a, 0xf5, 0xfd, 0x4d, 0x6d, 0xec, 0xed,
-	0x4d, 0x6d, 0xec, 0xcf, 0x9b, 0xda, 0xd8, 0x17, 0x4f, 0x06, 0x6c, 0x4b, 0x8d, 0xe9, 0x23, 0x7e,
-	0x72, 0xc2, 0x3c, 0x46, 0x82, 0xf8, 0xb9, 0x95, 0xff, 0xbd, 0xa2, 0x7d, 0xcc, 0x9d, 0xd2, 0x3f,
-	0x3a, 0x9e, 0xfc, 0x13, 0x00, 0x00, 0xff, 0xff, 0x7d, 0x52, 0xa8, 0x53, 0xd0, 0x0c, 0x00, 0x00,
+	// 954 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x56, 0x3f, 0x6f, 0xdb, 0xc6,
+	0x1b, 0xb6, 0x6c, 0xd9, 0x96, 0x2e, 0x50, 0x2c, 0xd3, 0x4e, 0x7e, 0x4c, 0x7e, 0xb6, 0x98, 0x1e,
+	0x8a, 0xd6, 0x4b, 0x24, 0xb8, 0xd9, 0x8a, 0x0e, 0xb1, 0x6c, 0x18, 0x35, 0x9c, 0xd4, 0xc1, 0xd9,
+	0xc8, 0xd0, 0xe5, 0x70, 0x24, 0xcf, 0xf2, 0xc1, 0x14, 0x8f, 0xe1, 0x1d, 0xdd, 0x2a, 0x63, 0xa7,
+	0x8e, 0x9d, 0xfb, 0x35, 0xba, 0x74, 0xed, 0x96, 0x31, 0x63, 0xdb, 0x81, 0x28, 0xec, 0x6f, 0xc0,
+	0x7e, 0x81, 0xe2, 0xee, 0xf8, 0x4f, 0x12, 0x52, 0x40, 0x40, 0x33, 0x49, 0x7c, 0xde, 0x47, 0xcf,
+	0x3d, 0xef, 0xcb, 0xf7, 0x39, 0x08, 0xec, 0x79, 0x7c, 0xec, 0xd3, 0xef, 0x07, 0x1e, 0x0f, 0x02,
+	0xea, 0x49, 0x1e, 0x0f, 0x6e, 0xf6, 0x5d, 0x2a, 0xc9, 0x7e, 0x85, 0xf4, 0xa3, 0x98, 0x4b, 0x6e,
+	0xd9, 0x86, 0xd9, 0xaf, 0xf0, 0x9c, 0xf9, 0x78, 0x7b, 0xc4, 0x47, 0x5c, 0x93, 0x06, 0xea, 0x9b,
+	0xe1, 0xc3, 0xdf, 0x9a, 0xa0, 0x73, 0x58, 0x70, 0x8f, 0x88, 0x24, 0xd6, 0x8f, 0x0d, 0xf0, 0xbf,
+	0xfc, 0xd7, 0xd4, 0xc7, 0x42, 0x12, 0x97, 0x05, 0x4c, 0x4e, 0xf0, 0x25, 0xa5, 0x76, 0xe3, 0x49,
+	0x63, 0xaf, 0x3d, 0x7c, 0xf5, 0x2e, 0x75, 0x96, 0xfe, 0x4c, 0x9d, 0xcf, 0x46, 0x4c, 0x5e, 0x25,
+	0x6e, 0xdf, 0xe3, 0xe3, 0x81, 0xc7, 0xc5, 0x98, 0x8b, 0xfc, 0xe3, 0xa9, 0xf0, 0xaf, 0x07, 0x72,
+	0x12, 0x51, 0xd1, 0x3f, 0x09, 0x65, 0x96, 0x3a, 0xbd, 0x09, 0x19, 0x07, 0x5f, 0xc2, 0x0f, 0xc8,
+	0x42, 0xf4, 0xa0, 0xac, 0x9c, 0x17, 0x85, 0x63, 0x4a, 0xad, 0x1f, 0x1a, 0xa0, 0xaa, 0x60, 0x2f,
+	0xe0, 0x82, 0x85, 0x23, 0x6d, 0x64, 0x59, 0x1b, 0xf9, 0x66, 0x61, 0x23, 0x3b, 0xb3, 0x46, 0x6a,
+	0xa2, 0x10, 0x6d, 0x95, 0xf8, 0xa1, 0x81, 0xe7, 0x4d, 0xf0, 0x88, 0x86, 0x85, 0x89, 0x95, 0xff,
+	0xca, 0x44, 0x4d, 0xb4, 0x6e, 0xe2, 0xcc, 0xc0, 0xca, 0xc4, 0xcf, 0x0d, 0xb0, 0x1b, 0xb0, 0x37,
+	0x09, 0xf3, 0x89, 0x64, 0x3c, 0xc4, 0x31, 0xfd, 0x8e, 0xc4, 0xbe, 0xc0, 0x25, 0xd7, 0x6e, 0x6a,
+	0x33, 0xaf, 0x17, 0x36, 0xf3, 0xa9, 0x31, 0xf3, 0xaf, 0xe2, 0x10, 0xfd, 0xbf, 0x56, 0x47, 0xa6,
+	0x7c, 0x58, 0x56, 0xff, 0x6e, 0x80, 0x9d, 0x83, 0x28, 0x3a, 0x10, 0x82, 0xca, 0x13, 0xff, 0x82,
+	0x1f, 0x53, 0x5a, 0x16, 0xf5, 0x4a, 0xed, 0x81, 0x35, 0x12, 0x45, 0x98, 0xf9, 0x7a, 0x81, 0x9a,
+	0xc3, 0xcd, 0x2c, 0x75, 0x3a, 0xe6, 0x5c, 0x83, 0x43, 0xb4, 0x4a, 0xa2, 0xe8, 0xc4, 0xb7, 0xfa,
+	0xa0, 0x45, 0x94, 0x8c, 0xe2, 0x2e, 0x6b, 0xee, 0x56, 0x96, 0x3a, 0x1b, 0x39, 0x37, 0xaf, 0x40,
+	0xb4, 0x4e, 0xcc, 0x59, 0xd6, 0x04, 0x58, 0x21, 0x95, 0x6a, 0x70, 0xf5, 0x59, 0x98, 0x17, 0x73,
+	0xba, 0xf0, 0x2c, 0x1e, 0x99, 0x73, 0xe6, 0x15, 0x21, 0xea, 0x86, 0x54, 0x1e, 0x53, 0x5a, 0xeb,
+	0xfa, 0x0f, 0xd3, 0xf5, 0x05, 0xcf, 0xfb, 0x2e, 0x53, 0xf4, 0x92, 0x44, 0x11, 0x0b, 0x47, 0x1f,
+	0xb1, 0x6b, 0x0c, 0xda, 0x65, 0xbe, 0x75, 0xb3, 0xf7, 0xbe, 0xf8, 0xbc, 0xff, 0xa1, 0xe0, 0xf7,
+	0xa7, 0xe2, 0x3d, 0xb4, 0xd5, 0x54, 0xb2, 0xd4, 0xe9, 0x4e, 0x2d, 0x21, 0x8f, 0x21, 0xaa, 0x34,
+	0xe1, 0xaf, 0xab, 0xc0, 0x2e, 0x7f, 0xf6, 0x82, 0xf3, 0xeb, 0x24, 0xba, 0x20, 0x6e, 0x40, 0x17,
+	0x7c, 0x9b, 0xa7, 0xc0, 0x2a, 0x35, 0xf1, 0x4c, 0x87, 0xbb, 0xd5, 0xbc, 0xe7, 0x39, 0x10, 0x75,
+	0x4b, 0x30, 0x1f, 0xaf, 0x12, 0x13, 0xd4, 0xe3, 0xa1, 0x4f, 0xe2, 0x49, 0x25, 0xb6, 0x32, 0x2b,
+	0x36, 0xcf, 0x81, 0xa8, 0x5b, 0x82, 0x85, 0xd8, 0x09, 0xd8, 0x14, 0x49, 0x1c, 0x05, 0x89, 0xc0,
+	0xf2, 0x2a, 0xa6, 0xe2, 0x8a, 0x07, 0x26, 0x42, 0xcd, 0xe1, 0x4e, 0x96, 0x3a, 0x76, 0xae, 0x35,
+	0x4b, 0x51, 0x52, 0x06, 0xbb, 0x28, 0x20, 0xeb, 0x39, 0xb8, 0xef, 0x53, 0x57, 0xd6, 0x74, 0x56,
+	0xb5, 0xce, 0xa3, 0x2c, 0x75, 0x1e, 0x18, 0x9d, 0xe9, 0x3a, 0x44, 0x1d, 0x05, 0x54, 0x0a, 0x13,
+	0x60, 0x05, 0xdc, 0xbb, 0xa6, 0x31, 0x16, 0xe4, 0x46, 0xdd, 0x03, 0x31, 0x91, 0xd4, 0x5e, 0x5b,
+	0x78, 0x89, 0x8f, 0xa8, 0x57, 0xcd, 0x61, 0x5e, 0x11, 0xa2, 0xae, 0x01, 0xcf, 0x35, 0x86, 0x88,
+	0xa4, 0x6a, 0xf3, 0x02, 0x2e, 0xb1, 0x60, 0x6f, 0xa9, 0xbd, 0x3e, 0xbb, 0x79, 0x45, 0x05, 0xa2,
+	0xf5, 0x80, 0xcb, 0x73, 0xf6, 0x96, 0x5a, 0x2e, 0x00, 0x2e, 0xf3, 0xf1, 0x25, 0xd1, 0xab, 0xd7,
+	0xd2, 0x16, 0x0f, 0x17, 0xb6, 0xb8, 0x69, 0xf4, 0x2b, 0x25, 0x88, 0xda, 0x2e, 0xf3, 0x8f, 0xf5,
+	0x77, 0xeb, 0x2b, 0xa0, 0xe7, 0x83, 0x4b, 0x63, 0x6d, 0x6d, 0xcc, 0xce, 0x52, 0x67, 0xbb, 0x36,
+	0xcf, 0xca, 0xdd, 0x3d, 0xf5, 0xfc, 0xc2, 0x38, 0x84, 0x6f, 0x80, 0xa5, 0x53, 0x79, 0x44, 0x43,
+	0x3e, 0x16, 0x8b, 0x67, 0x71, 0x1f, 0xb4, 0x8b, 0xc5, 0x11, 0xf6, 0xf2, 0x93, 0x95, 0xbd, 0xe6,
+	0x70, 0xbb, 0x8a, 0x4b, 0x59, 0x82, 0xa8, 0x95, 0xa7, 0x51, 0xc0, 0x5f, 0x9a, 0xa0, 0x57, 0xbf,
+	0xff, 0x0e, 0x12, 0x4f, 0xdd, 0x93, 0xb5, 0xdc, 0x7c, 0xc4, 0xbb, 0xe0, 0x14, 0x58, 0x4c, 0xe0,
+	0x62, 0x53, 0x89, 0x39, 0x5a, 0xc7, 0xa2, 0x55, 0x8f, 0xc5, 0x3c, 0x07, 0xa2, 0x2e, 0x13, 0xe7,
+	0x06, 0xcb, 0x1d, 0x5b, 0x43, 0xb0, 0xc1, 0x04, 0xd6, 0xe3, 0x2d, 0x94, 0x9a, 0x5a, 0xe9, 0x71,
+	0x96, 0x3a, 0x0f, 0x4b, 0xa5, 0x3a, 0x01, 0xa2, 0x0e, 0x13, 0x47, 0xd4, 0x95, 0x85, 0xc6, 0x73,
+	0x70, 0x5f, 0x51, 0x98, 0x90, 0x31, 0x73, 0x13, 0xb5, 0x26, 0xab, 0x5a, 0xa2, 0x96, 0x87, 0xe9,
+	0xba, 0x51, 0xa8, 0x9e, 0xad, 0xaf, 0xc1, 0x26, 0x2b, 0x6d, 0x62, 0xe2, 0x49, 0x76, 0x63, 0xe2,
+	0xd0, 0xaa, 0x87, 0x73, 0x8e, 0x02, 0xd1, 0x06, 0x2b, 0x3a, 0x39, 0xd0, 0x88, 0xf5, 0x1a, 0x3c,
+	0x34, 0x23, 0xe3, 0x89, 0xc4, 0x3c, 0x26, 0x5e, 0x40, 0x71, 0x14, 0x33, 0xcf, 0x2c, 0x7b, 0x6b,
+	0xf8, 0x49, 0x96, 0x3a, 0xbb, 0xf5, 0xd1, 0xce, 0xf2, 0x20, 0xda, 0xd2, 0x85, 0xb3, 0x44, 0x9e,
+	0x69, 0xf8, 0x95, 0x42, 0xd5, 0x9c, 0x2a, 0xbe, 0x11, 0x6c, 0xe9, 0x77, 0x55, 0x9b, 0xd3, 0x0c,
+	0x01, 0xa2, 0x4e, 0xa1, 0xa4, 0x35, 0x86, 0x2f, 0xdf, 0xdd, 0xf6, 0x1a, 0xef, 0x6f, 0x7b, 0x8d,
+	0xbf, 0x6e, 0x7b, 0x8d, 0x9f, 0xee, 0x7a, 0x4b, 0xef, 0xef, 0x7a, 0x4b, 0xbf, 0xdf, 0xf5, 0x96,
+	0xbe, 0x7d, 0x36, 0x15, 0x24, 0x75, 0xab, 0x3f, 0xe5, 0x97, 0x97, 0xcc, 0x63, 0x24, 0xc8, 0x9f,
+	0x07, 0xf5, 0xbf, 0x82, 0x3a, 0x59, 0xee, 0x9a, 0xfe, 0x3f, 0xf7, 0xec, 0x9f, 0x00, 0x00, 0x00,
+	0xff, 0xff, 0x09, 0x24, 0x6d, 0x26, 0x2b, 0x0a, 0x00, 0x00,
 }
 
 func (m *CollectorData) Marshal() (dAtA []byte, err error) {
@@ -762,7 +563,7 @@ func (m *CollectorData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *NetFeeCollectedData) Marshal() (dAtA []byte, err error) {
+func (m *AppAssetIdToFeeCollectedData) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -772,54 +573,12 @@ func (m *NetFeeCollectedData) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *NetFeeCollectedData) MarshalTo(dAtA []byte) (int, error) {
+func (m *AppAssetIdToFeeCollectedData) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *NetFeeCollectedData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.AssetIdToFeeCollected) > 0 {
-		for iNdEx := len(m.AssetIdToFeeCollected) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.AssetIdToFeeCollected[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCollector(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if m.AppId != 0 {
-		i = encodeVarintCollector(dAtA, i, uint64(m.AppId))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *AssetIdToFeeCollected) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AssetIdToFeeCollected) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AssetIdToFeeCollected) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AppAssetIdToFeeCollectedData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -833,48 +592,11 @@ func (m *AssetIdToFeeCollected) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintCollector(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x12
+	dAtA[i] = 0x1a
 	if m.AssetId != 0 {
 		i = encodeVarintCollector(dAtA, i, uint64(m.AssetId))
 		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *AppIdToAssetCollectorMapping) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AppIdToAssetCollectorMapping) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AppIdToAssetCollectorMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.AssetCollector) > 0 {
-		for iNdEx := len(m.AssetCollector) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.AssetCollector[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCollector(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
+		dAtA[i] = 0x10
 	}
 	if m.AppId != 0 {
 		i = encodeVarintCollector(dAtA, i, uint64(m.AppId))
@@ -884,7 +606,7 @@ func (m *AppIdToAssetCollectorMapping) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *AssetIdCollectorMapping) Marshal() (dAtA []byte, err error) {
+func (m *AppToAssetIdCollectorMapping) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -894,12 +616,12 @@ func (m *AssetIdCollectorMapping) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AssetIdCollectorMapping) MarshalTo(dAtA []byte) (int, error) {
+func (m *AppToAssetIdCollectorMapping) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AssetIdCollectorMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AppToAssetIdCollectorMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -913,16 +635,21 @@ func (m *AssetIdCollectorMapping) MarshalToSizedBuffer(dAtA []byte) (int, error)
 		i = encodeVarintCollector(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x12
+	dAtA[i] = 0x1a
 	if m.AssetId != 0 {
 		i = encodeVarintCollector(dAtA, i, uint64(m.AssetId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.AppId != 0 {
+		i = encodeVarintCollector(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *CollectorLookupTable) Marshal() (dAtA []byte, err error) {
+func (m *CollectorLookupTableData) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -932,12 +659,12 @@ func (m *CollectorLookupTable) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CollectorLookupTable) MarshalTo(dAtA []byte) (int, error) {
+func (m *CollectorLookupTableData) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CollectorLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *CollectorLookupTableData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1000,48 +727,6 @@ func (m *CollectorLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *CollectorLookup) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *CollectorLookup) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *CollectorLookup) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.AssetRateInfo) > 0 {
-		for iNdEx := len(m.AssetRateInfo) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.AssetRateInfo[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCollector(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if m.AppId != 0 {
-		i = encodeVarintCollector(dAtA, i, uint64(m.AppId))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
 func (m *AppToDenomsMapping) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1088,7 +773,7 @@ func (m *AppToDenomsMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *CollectorAuctionLookupTable) Marshal() (dAtA []byte, err error) {
+func (m *AppAssetIdToAuctionLookupTable) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1098,54 +783,12 @@ func (m *CollectorAuctionLookupTable) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CollectorAuctionLookupTable) MarshalTo(dAtA []byte) (int, error) {
+func (m *AppAssetIdToAuctionLookupTable) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CollectorAuctionLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.AssetIdToAuctionLookup) > 0 {
-		for iNdEx := len(m.AssetIdToAuctionLookup) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.AssetIdToAuctionLookup[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintCollector(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if m.AppId != 0 {
-		i = encodeVarintCollector(dAtA, i, uint64(m.AppId))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *AssetIdToAuctionLookupTable) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AssetIdToAuctionLookupTable) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AssetIdToAuctionLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AppAssetIdToAuctionLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1153,7 +796,7 @@ func (m *AssetIdToAuctionLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, er
 	if m.AssetOutPrice != 0 {
 		i = encodeVarintCollector(dAtA, i, uint64(m.AssetOutPrice))
 		i--
-		dAtA[i] = 0x38
+		dAtA[i] = 0x40
 	}
 	if m.AssetOutOraclePrice {
 		i--
@@ -1163,7 +806,7 @@ func (m *AssetIdToAuctionLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, er
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x38
 	}
 	if m.IsAuctionActive {
 		i--
@@ -1173,7 +816,7 @@ func (m *AssetIdToAuctionLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, er
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x28
+		dAtA[i] = 0x30
 	}
 	if m.IsDistributor {
 		i--
@@ -1183,7 +826,7 @@ func (m *AssetIdToAuctionLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, er
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x28
 	}
 	if m.IsDebtAuction {
 		i--
@@ -1193,7 +836,7 @@ func (m *AssetIdToAuctionLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, er
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x20
 	}
 	if m.IsSurplusAuction {
 		i--
@@ -1203,10 +846,15 @@ func (m *AssetIdToAuctionLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, er
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x18
 	}
 	if m.AssetId != 0 {
 		i = encodeVarintCollector(dAtA, i, uint64(m.AssetId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.AppId != 0 {
+		i = encodeVarintCollector(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -1241,7 +889,7 @@ func (m *CollectorData) Size() (n int) {
 	return n
 }
 
-func (m *NetFeeCollectedData) Size() (n int) {
+func (m *AppAssetIdToFeeCollectedData) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1250,21 +898,6 @@ func (m *NetFeeCollectedData) Size() (n int) {
 	if m.AppId != 0 {
 		n += 1 + sovCollector(uint64(m.AppId))
 	}
-	if len(m.AssetIdToFeeCollected) > 0 {
-		for _, e := range m.AssetIdToFeeCollected {
-			l = e.Size()
-			n += 1 + l + sovCollector(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *AssetIdToFeeCollected) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	if m.AssetId != 0 {
 		n += 1 + sovCollector(uint64(m.AssetId))
 	}
@@ -1273,7 +906,7 @@ func (m *AssetIdToFeeCollected) Size() (n int) {
 	return n
 }
 
-func (m *AppIdToAssetCollectorMapping) Size() (n int) {
+func (m *AppToAssetIdCollectorMapping) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1282,21 +915,6 @@ func (m *AppIdToAssetCollectorMapping) Size() (n int) {
 	if m.AppId != 0 {
 		n += 1 + sovCollector(uint64(m.AppId))
 	}
-	if len(m.AssetCollector) > 0 {
-		for _, e := range m.AssetCollector {
-			l = e.Size()
-			n += 1 + l + sovCollector(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *AssetIdCollectorMapping) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	if m.AssetId != 0 {
 		n += 1 + sovCollector(uint64(m.AssetId))
 	}
@@ -1305,7 +923,7 @@ func (m *AssetIdCollectorMapping) Size() (n int) {
 	return n
 }
 
-func (m *CollectorLookupTable) Size() (n int) {
+func (m *CollectorLookupTableData) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1339,24 +957,6 @@ func (m *CollectorLookupTable) Size() (n int) {
 	return n
 }
 
-func (m *CollectorLookup) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.AppId != 0 {
-		n += 1 + sovCollector(uint64(m.AppId))
-	}
-	if len(m.AssetRateInfo) > 0 {
-		for _, e := range m.AssetRateInfo {
-			l = e.Size()
-			n += 1 + l + sovCollector(uint64(l))
-		}
-	}
-	return n
-}
-
 func (m *AppToDenomsMapping) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1376,7 +976,7 @@ func (m *AppToDenomsMapping) Size() (n int) {
 	return n
 }
 
-func (m *CollectorAuctionLookupTable) Size() (n int) {
+func (m *AppAssetIdToAuctionLookupTable) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1385,21 +985,6 @@ func (m *CollectorAuctionLookupTable) Size() (n int) {
 	if m.AppId != 0 {
 		n += 1 + sovCollector(uint64(m.AppId))
 	}
-	if len(m.AssetIdToAuctionLookup) > 0 {
-		for _, e := range m.AssetIdToAuctionLookup {
-			l = e.Size()
-			n += 1 + l + sovCollector(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *AssetIdToAuctionLookupTable) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	if m.AssetId != 0 {
 		n += 1 + sovCollector(uint64(m.AssetId))
 	}
@@ -1616,7 +1201,7 @@ func (m *CollectorData) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *NetFeeCollectedData) Unmarshal(dAtA []byte) error {
+func (m *AppAssetIdToFeeCollectedData) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1639,10 +1224,10 @@ func (m *NetFeeCollectedData) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: NetFeeCollectedData: wiretype end group for non-group")
+			return fmt.Errorf("proto: AppAssetIdToFeeCollectedData: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: NetFeeCollectedData: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AppAssetIdToFeeCollectedData: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1665,90 +1250,6 @@ func (m *NetFeeCollectedData) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AssetIdToFeeCollected", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCollector
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCollector
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCollector
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AssetIdToFeeCollected = append(m.AssetIdToFeeCollected, AssetIdToFeeCollected{})
-			if err := m.AssetIdToFeeCollected[len(m.AssetIdToFeeCollected)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCollector(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthCollector
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AssetIdToFeeCollected) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCollector
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AssetIdToFeeCollected: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AssetIdToFeeCollected: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
@@ -1767,7 +1268,7 @@ func (m *AssetIdToFeeCollected) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 2:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NetFeesCollected", wireType)
 			}
@@ -1822,7 +1323,7 @@ func (m *AssetIdToFeeCollected) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *AppIdToAssetCollectorMapping) Unmarshal(dAtA []byte) error {
+func (m *AppToAssetIdCollectorMapping) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1845,10 +1346,10 @@ func (m *AppIdToAssetCollectorMapping) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: AppIdToAssetCollectorMapping: wiretype end group for non-group")
+			return fmt.Errorf("proto: AppToAssetIdCollectorMapping: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AppIdToAssetCollectorMapping: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AppToAssetIdCollectorMapping: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1871,90 +1372,6 @@ func (m *AppIdToAssetCollectorMapping) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AssetCollector", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCollector
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCollector
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCollector
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AssetCollector = append(m.AssetCollector, AssetIdCollectorMapping{})
-			if err := m.AssetCollector[len(m.AssetCollector)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCollector(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthCollector
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AssetIdCollectorMapping) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCollector
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AssetIdCollectorMapping: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AssetIdCollectorMapping: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
@@ -1973,7 +1390,7 @@ func (m *AssetIdCollectorMapping) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 2:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Collector", wireType)
 			}
@@ -2027,7 +1444,7 @@ func (m *AssetIdCollectorMapping) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CollectorLookupTable) Unmarshal(dAtA []byte) error {
+func (m *CollectorLookupTableData) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2050,10 +1467,10 @@ func (m *CollectorLookupTable) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CollectorLookupTable: wiretype end group for non-group")
+			return fmt.Errorf("proto: CollectorLookupTableData: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CollectorLookupTable: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: CollectorLookupTableData: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2278,109 +1695,6 @@ func (m *CollectorLookupTable) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CollectorLookup) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCollector
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: CollectorLookup: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CollectorLookup: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
-			}
-			m.AppId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCollector
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.AppId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AssetRateInfo", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCollector
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCollector
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCollector
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AssetRateInfo = append(m.AssetRateInfo, CollectorLookupTable{})
-			if err := m.AssetRateInfo[len(m.AssetRateInfo)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCollector(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthCollector
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
 func (m *AppToDenomsMapping) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -2526,7 +1840,7 @@ func (m *AppToDenomsMapping) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CollectorAuctionLookupTable) Unmarshal(dAtA []byte) error {
+func (m *AppAssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2549,10 +1863,10 @@ func (m *CollectorAuctionLookupTable) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CollectorAuctionLookupTable: wiretype end group for non-group")
+			return fmt.Errorf("proto: AppAssetIdToAuctionLookupTable: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CollectorAuctionLookupTable: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AppAssetIdToAuctionLookupTable: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2575,90 +1889,6 @@ func (m *CollectorAuctionLookupTable) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AssetIdToAuctionLookup", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowCollector
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthCollector
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthCollector
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AssetIdToAuctionLookup = append(m.AssetIdToAuctionLookup, AssetIdToAuctionLookupTable{})
-			if err := m.AssetIdToAuctionLookup[len(m.AssetIdToAuctionLookup)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipCollector(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthCollector
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowCollector
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AssetIdToAuctionLookupTable: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AssetIdToAuctionLookupTable: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
@@ -2677,7 +1907,7 @@ func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 2:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field IsSurplusAuction", wireType)
 			}
@@ -2697,7 +1927,7 @@ func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.IsSurplusAuction = bool(v != 0)
-		case 3:
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field IsDebtAuction", wireType)
 			}
@@ -2717,7 +1947,7 @@ func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.IsDebtAuction = bool(v != 0)
-		case 4:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field IsDistributor", wireType)
 			}
@@ -2737,7 +1967,7 @@ func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.IsDistributor = bool(v != 0)
-		case 5:
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field IsAuctionActive", wireType)
 			}
@@ -2757,7 +1987,7 @@ func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.IsAuctionActive = bool(v != 0)
-		case 6:
+		case 7:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutOraclePrice", wireType)
 			}
@@ -2777,7 +2007,7 @@ func (m *AssetIdToAuctionLookupTable) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.AssetOutOraclePrice = bool(v != 0)
-		case 7:
+		case 8:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetOutPrice", wireType)
 			}

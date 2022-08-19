@@ -60,26 +60,14 @@ func (q QueryServer) QueryLockersByAppToAssetID(c context.Context, request *type
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	app, found := q.GetApp(ctx, request.AppId)
+	lockerLookupData, found := q.GetLockerLookupTable(ctx, request.AppId, request.AssetId)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
+		return nil, status.Errorf(codes.NotFound, "asset does not exists appID %d", request.AppId)
 	}
 
-	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
-
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
-	}
-
-	var lockerIds []uint64
-	for _, locker := range lockerLookupData.Lockers {
-		if request.AssetId == locker.AssetId {
-			lockerIds = append(lockerIds, locker.LockerIds...)
-		}
-	}
 	return &types.QueryLockersByAppToAssetIDResponse{
-		LockerIds: lockerIds,
+		LockerIds: lockerLookupData.LockerIds,
 	}, nil
 }
 
@@ -98,15 +86,15 @@ func (q QueryServer) QueryLockerInfoByAppID(c context.Context, request *types.Qu
 		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
 	}
 
-	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
+	lockerLookupData, found := q.GetLockerLookupTableByApp(ctx, app.Id)
 
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
 	}
 
 	var lockerIds []uint64
-	for _, locker := range lockerLookupData.Lockers {
-		lockerIds = locker.LockerIds
+	for _, locker := range lockerLookupData {
+		lockerIds = append(lockerIds, locker.LockerIds...)
 	}
 	return &types.QueryLockerInfoByAppIDResponse{
 		LockerIds: lockerIds,
@@ -122,26 +110,14 @@ func (q QueryServer) QueryTotalDepositByAppAndAssetID(c context.Context, request
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	app, found := q.GetApp(ctx, request.AppId)
+	lockerLookupData, found := q.GetLockerLookupTable(ctx, request.AppId, request.AssetId)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
 	}
 
-	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
-
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
-	}
-
-	var totalDeposit uint64
-	for _, locker := range lockerLookupData.Lockers {
-		if request.AssetId == locker.AssetId {
-			totalDeposit += locker.DepositedAmount.Uint64()
-		}
-	}
 	return &types.QueryTotalDepositByAppAndAssetIDResponse{
-		TotalDeposit: totalDeposit,
+		TotalDeposit: lockerLookupData.DepositedAmount.Uint64(),
 	}, nil
 }
 
@@ -155,26 +131,16 @@ func (q QueryServer) QueryLockerByAppByOwner(c context.Context,
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	app, found := q.GetApp(ctx, request.AppId)
+	lockerLookupData, found := q.GetUserLockerAppMapping(ctx, request.Owner, request.AppId)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
-	}
-
-	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
-
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
 	}
 
 	var lockerInfos []types.Locker
-	for _, locker := range lockerLookupData.Lockers {
-		for _, lockerID := range locker.LockerIds {
-			locker1, _ := q.GetLocker(ctx, lockerID)
-			if request.Owner == locker1.Depositor {
-				lockerInfos = append(lockerInfos, locker1)
-			}
-		}
+	for _, locker := range lockerLookupData {
+		locker1, _ := q.GetLocker(ctx, locker.LockerId)
+		lockerInfos = append(lockerInfos, locker1)
 	}
 	return &types.QueryLockerByAppByOwnerResponse{
 		LockerInfo: lockerInfos,
@@ -190,22 +156,14 @@ func (q QueryServer) QueryOwnerLockerByAppIDbyOwner(c context.Context, request *
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	app, found := q.GetApp(ctx, request.AppId)
-
+	lockerLookupData, found := q.GetUserLockerAppMapping(ctx, request.Owner, request.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
 	}
 
-	lockerLookupData, _ := q.GetLockerLookupTable(ctx, app.Id)
-
 	var lockerIds []uint64
-	for _, locker := range lockerLookupData.Lockers {
-		for _, lockerID := range locker.LockerIds {
-			locker1, _ := q.GetLocker(ctx, lockerID)
-			if request.Owner == locker1.Depositor {
-				lockerIds = append(lockerIds, locker1.LockerId)
-			}
-		}
+	for _, locker := range lockerLookupData {
+		lockerIds = append(lockerIds, locker.LockerId)
 	}
 
 	return &types.QueryOwnerLockerByAppIDbyOwnerResponse{
@@ -221,13 +179,11 @@ func (q QueryServer) QueryOwnerLockerOfAllAppsByOwner(c context.Context, request
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-	userLockerLookupData, _ := q.GetUserLockerAssetMapping(ctx, request.Owner)
+	userLockerLookupData, _ := q.GetUserLockerMapping(ctx, request.Owner)
 
 	var lockerIds []uint64
-	for _, locker := range userLockerLookupData.LockerAppMapping {
-		for _, data := range locker.UserAssetLocker {
-			lockerIds = append(lockerIds, data.LockerId)
-		}
+	for _, locker := range userLockerLookupData{
+		lockerIds = append(lockerIds, locker.LockerId)
 	}
 
 	return &types.QueryOwnerLockerOfAllAppsByOwnerResponse{
@@ -242,22 +198,14 @@ func (q QueryServer) QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(c context.Cont
 
 	var (
 		ctx        = sdk.UnwrapSDKContext(c)
-		userTxData []*types.UserTxData
 	)
-	userLockerLookupData, _ := q.GetUserLockerAssetMapping(ctx, request.Owner)
-	if userLockerLookupData.Owner == request.Owner {
-		for _, locker := range userLockerLookupData.LockerAppMapping {
-			if locker.AppId == request.AppId {
-				for _, data := range locker.UserAssetLocker {
-					if data.AssetId == request.AssetId {
-						userTxData = append(userTxData, data.UserData...)
-					}
-				}
-			}
-		}
+	userLockerLookupData, found := q.GetUserLockerAssetMapping(ctx, request.Owner, request.AppId, request.AssetId)
+	if !found {
+		return &types.QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse{}, nil
 	}
+	
 	return &types.QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse{
-		UserTxData: userTxData,
+		UserTxData: userLockerLookupData.UserData,
 	}, nil
 }
 
@@ -270,31 +218,17 @@ func (q QueryServer) QueryOwnerLockerByAppToAssetIDbyOwner(c context.Context, re
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	app, found := q.GetApp(ctx, request.AppId)
+	lockerLookupData, found := q.GetUserLockerAssetMapping(ctx, request.Owner, request.AppId, request.AssetId)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
 	}
 
-	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
-
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
-	}
-
-	var lockerInfos []types.Locker
-	for _, locker := range lockerLookupData.Lockers {
-		if request.AssetId == locker.AssetId {
-			for _, lockerID := range locker.LockerIds {
-				locker1, _ := q.GetLocker(ctx, lockerID)
-				if request.Owner == locker1.Depositor {
-					lockerInfos = append(lockerInfos, locker1)
-				}
-			}
-		}
-	}
+	lockerData, _ := q.GetLocker(ctx, lockerLookupData.LockerId)
+	
+		
 	return &types.QueryOwnerLockerByAppToAssetIDbyOwnerResponse{
-		LockerInfo: lockerInfos,
+		LockerInfo: lockerData,
 	}, nil
 }
 
@@ -313,23 +247,18 @@ func (q QueryServer) QueryLockerCountByAppID(c context.Context, request *types.Q
 		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
 	}
 
-	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
+	lockerLookupData, found := q.GetLockerLookupTableByApp(ctx, app.Id)
 
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
 	}
 
-	var lockerCount uint64
-	for _, locker := range lockerLookupData.Lockers {
-		for _, lockerID := range locker.LockerIds {
-			_, lockerFound := q.GetLocker(ctx, lockerID)
-			if lockerFound {
-				lockerCount++
-			}
-		}
+	var lockerCount int
+	for _, locker := range lockerLookupData {
+		lockerCount = lockerCount + len(locker.LockerIds)
 	}
 	return &types.QueryLockerCountByAppIDResponse{
-		TotalCount: lockerCount,
+		TotalCount: uint64(lockerCount),
 	}, nil
 }
 
@@ -342,31 +271,16 @@ func (q QueryServer) QueryLockerCountByAppToAssetID(c context.Context, request *
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	app, found := q.GetApp(ctx, request.AppId)
+	lockerLookupData, found := q.GetLockerLookupTable(ctx, request.AppId, request.AssetId)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
 	}
 
-	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
-
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
-	}
-
-	var lockerCount uint64
-	for _, locker := range lockerLookupData.Lockers {
-		if request.AssetId == locker.AssetId {
-			for _, lockerID := range locker.LockerIds {
-				_, lockerFound := q.GetLocker(ctx, lockerID)
-				if lockerFound {
-					lockerCount++
-				}
-			}
-		}
-	}
+	lockerCount := len(lockerLookupData.LockerIds)
+	
 	return &types.QueryLockerCountByAppToAssetIDResponse{
-		TotalCount: lockerCount,
+		TotalCount: uint64(lockerCount),
 	}, nil
 }
 
@@ -379,25 +293,14 @@ func (q QueryServer) QueryWhiteListedAssetIDsByAppID(c context.Context, request 
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	app, found := q.GetApp(ctx, request.AppId)
+	lockerLookupData, found := q.GetLockerProductAssetMapping(ctx, request.AppId)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
-	}
-
-	lockerLookupData, found := q.GetLockerLookupTable(ctx, app.Id)
-
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", app.Id)
-	}
-
-	var assetIds []uint64
-	for _, locker := range lockerLookupData.Lockers {
-		assetIds = append(assetIds, locker.AssetId)
+		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
 	}
 
 	return &types.QueryWhiteListedAssetIDsByAppIDResponse{
-		AssetIds: assetIds,
+		AssetIds: lockerLookupData.AssetIds,
 	}, nil
 }
 
@@ -447,13 +350,13 @@ func (q QueryServer) QueryLockerLookupTableByApp(c context.Context, req *types.Q
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-	item, found := q.GetLockerLookupTable(ctx, req.AppId)
+	item, found := q.GetLockerLookupTableByApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
 	}
 
 	return &types.QueryLockerLookupTableByAppResponse{
-		TokenToLockerMapping: item.Lockers,
+		TokenToLockerMapping: item,
 	}, nil
 }
 
@@ -465,20 +368,13 @@ func (q QueryServer) QueryLockerLookupTableByAppAndAssetID(c context.Context, re
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-	item, found := q.GetLockerLookupTable(ctx, req.AppId)
+	item, found := q.GetLockerLookupTable(ctx, req.AppId, req.AssetId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
 	}
-	var locker types.TokenToLockerMapping
-
-	for _, data := range item.Lockers {
-		if data.AssetId == req.AssetId {
-			locker = *data
-		}
-	}
 
 	return &types.QueryLockerLookupTableByAppAndAssetIDResponse{
-		TokenToLockerMapping: &locker,
+		TokenToLockerMapping: &item,
 	}, nil
 }
 
@@ -490,13 +386,13 @@ func (q QueryServer) QueryLockerTotalDepositedByApp(c context.Context, req *type
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-	item, found := q.GetLockerLookupTable(ctx, req.AppId)
+	item, found := q.GetLockerLookupTableByApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
 	}
 	var lockedDepositedAmt []types.LockedDepositedAmountDataMap
 
-	for _, data := range item.Lockers {
+	for _, data := range item {
 		var lockeddata types.LockedDepositedAmountDataMap
 		lockeddata.AssetId = data.AssetId
 		lockeddata.DepositedAmount = data.DepositedAmount

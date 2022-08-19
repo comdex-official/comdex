@@ -49,46 +49,70 @@ message Vault {
 }
 
 //user_address is the key
-message UserVaultAssetMapping {
+// message UserVaultAssetMapping {
+//   string owner = 1 [
+//     (gogoproto.moretags) = "yaml:\"owner\""
+//   ];
+
+//   repeated VaultToAppMapping  user_vault_app = 2 [
+//     (gogoproto.moretags) = "yaml:\"user_vault_app\""
+//   ];
+// }
+
+// message VaultToAppMapping {
+//   uint64 app_id = 1;
+//   repeated ExtendedPairToVaultMapping user_extended_pair_vault = 2 [
+//     (gogoproto.moretags) = "yaml:\"user_extended_pair_vault\""
+//   ];
+// }
+// message ExtendedPairToVaultMapping {
+//   uint64 extended_pair_id = 1;
+//   uint64 vault_id = 2 [
+//     (gogoproto.moretags) = "yaml:\"vault_id\""];
+
+// }
+
+message OwnerAppExtendedPairVaultMappingData {
   string owner = 1 [
     (gogoproto.moretags) = "yaml:\"owner\""
   ];
-
-  repeated VaultToAppMapping  user_vault_app = 2 [
-    (gogoproto.moretags) = "yaml:\"user_vault_app\""
-  ];
-}
-
-message VaultToAppMapping {
-  uint64 app_id = 1;
-  repeated ExtendedPairToVaultMapping user_extended_pair_vault = 2 [
-    (gogoproto.moretags) = "yaml:\"user_extended_pair_vault\""
-  ];
-}
-message ExtendedPairToVaultMapping {
-  uint64 extended_pair_id = 1;
-  uint64 vault_id = 2 [
+  uint64 app_id = 2;
+  uint64 extended_pair_id = 3;
+  uint64 vault_id = 4 [
     (gogoproto.moretags) = "yaml:\"vault_id\""];
 
 }
 
 
 //app_id is the key
-message AppExtendedPairVaultMapping {
-  uint64 app_id = 1 ;
-  uint64 counter = 2;
-  repeated ExtendedPairVaultMapping extended_pair_vaults = 3 [(gogoproto.moretags) = "yaml:\"extended_pair_vaults\""];
-}
+// message AppExtendedPairVaultMapping {
+//   uint64 app_id = 1 ;
+//   repeated ExtendedPairVaultMapping extended_pair_vaults = 2 [(gogoproto.moretags) = "yaml:\"extended_pair_vaults\""];
+// }
 
-message ExtendedPairVaultMapping
+// message ExtendedPairVaultMapping
+// {
+//   uint64 extended_pair_id = 1 [(gogoproto.moretags) = "yaml:\"extended_pair_id\""];
+//   repeated uint64 vault_ids = 2 [(gogoproto.moretags) = "yaml:\"vault_ids\""];
+//   string token_minted_amount = 3[
+//     (gogoproto.moretags) = "yaml:\"token_minted_amount\"",
+//     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+//     (gogoproto.nullable) = false];
+//   string collateral_locked_amount = 4[(gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
+//     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+//     (gogoproto.nullable) = false];
+// }
+
+message AppExtendedPairVaultMappingData
 {
-  uint64 extended_pair_id = 1 [(gogoproto.moretags) = "yaml:\"extended_pair_id\""];
-  repeated uint64 vault_ids = 2 [(gogoproto.moretags) = "yaml:\"vault_ids\""];
-  string token_minted_amount = 3[
+  uint64 app_id = 1 ;
+  uint64 extended_pair_id = 2 [(gogoproto.moretags) = "yaml:\"extended_pair_id\""];
+  repeated uint64 vault_ids = 3 [(gogoproto.moretags) = "yaml:\"vault_ids\""];
+  string token_minted_amount = 4[
     (gogoproto.moretags) = "yaml:\"token_minted_amount\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false];
-  string collateral_locked_amount = 4[(gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
+  string collateral_locked_amount = 5[(gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false];
 }

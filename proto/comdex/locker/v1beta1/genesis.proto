@@ -23,11 +23,11 @@ message GenesisState {
     (gogoproto.moretags)   = "yaml:\"lockerTotalRewardsByAssetAppWise\"",
     (gogoproto.nullable)   = false
   ];
-  repeated LockerLookupTable lockerLookupTable = 4 [
+  repeated LockerLookupTableData lockerLookupTable = 4 [
     (gogoproto.moretags)   = "yaml:\"lockerLookupTable\"",
     (gogoproto.nullable)   = false
   ];
-  repeated UserLockerAssetMapping userLockerAssetMapping = 5 [
+  repeated UserAppAssetLockerMapping userLockerAssetMapping = 5 [
     (gogoproto.moretags)   = "yaml:\"userLockerAssetMapping\"",
     (gogoproto.nullable)   = false
   ];

@@ -33,7 +33,7 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 		assetIds := r.Asset_ID
 
 		for i := range assetIds {
-			CollectorLookup, found := k.GetCollectorLookupByAsset(ctx, appMappingID, assetIds[i])
+			CollectorLookup, found := k.GetCollectorLookupTable(ctx, appMappingID, assetIds[i])
 			if !found {
 				continue
 			}
@@ -68,7 +68,7 @@ func (k Keeper) IterateLocker(ctx sdk.Context) error {
 					k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 					locker.NetBalance = locker.NetBalance.Add(newReward)
 					locker.ReturnsAccumulated = returnsAcc.Add(newReward)
-					netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, locker.AppId)
+					netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, locker.AppId, locker.AssetDepositId)
 					if !found {
 						continue
 					}
@@ -147,7 +147,7 @@ func (k Keeper) CalculateRewards(
 
 //IterateVaults does interest calculation for vaults .
 func (k Keeper) IterateVaults(ctx sdk.Context, appMappingID uint64) error {
-	extVaultMapping, found := k.GetAppExtendedPairVaultMapping(ctx, appMappingID)
+	extVaultMapping, found := k.GetAppMappingData(ctx, appMappingID)
 	if !found {
 		return types.ErrVaultNotFound
 	}
@@ -163,7 +163,7 @@ func (k Keeper) IterateVaults(ctx sdk.Context, appMappingID uint64) error {
 	if status {
 		return esmtypes.ErrESMAlreadyExecuted
 	}
-	for _, v := range extVaultMapping.ExtendedPairVaults {
+	for _, v := range extVaultMapping {
 		vaultIds := v.VaultIds
 		for j := range vaultIds {
 			vault, found := k.GetVault(ctx, vaultIds[j])
@@ -232,8 +232,8 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 					epoch, _ := k.GetEpochTime(ctx, v.EpochId)
 
 					if epoch.Count < uint64(extRewards[i].DurationDays) {
-						lockerLookup, _ := k.GetLockerLookupTable(ctx, v.AppMappingId)
-						for _, u := range lockerLookup.Lockers {
+						lockerLookup, _ := k.GetLockerLookupTableByApp(ctx, v.AppMappingId)
+						for _, u := range lockerLookup {
 							if u.AssetId == v.AssetId {
 								lockerIds := u.LockerIds
 								totalShare := u.DepositedAmount
@@ -294,8 +294,8 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 				if extRewards[i].IsActive {
 					epoch, _ := k.GetEpochTime(ctx, v.EpochId)
 					if epoch.Count < uint64(extRewards[i].DurationDays) {
-						appExtPairVaultData, _ := k.GetAppExtendedPairVaultMapping(ctx, v.AppMappingId)
-						for _, u := range appExtPairVaultData.ExtendedPairVaults {
+						appExtPairVaultData, _ := k.GetAppMappingData(ctx, v.AppMappingId)
+						for _, u := range appExtPairVaultData {
 							for _, w := range u.VaultIds {
 								totalRewards := v.TotalRewards
 								userVault, _ := k.GetVault(ctx, w)

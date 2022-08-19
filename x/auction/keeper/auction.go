@@ -77,18 +77,15 @@ func (k Keeper) AddAuctionParams(ctx sdk.Context, auctionParamsBinding *bindings
 }
 
 func (k Keeper) makeFalseForFlags(ctx sdk.Context, appID, assetID uint64) error {
-	auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appID)
+	auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appID, assetID)
 	if !found {
 		return auctiontypes.ErrorInvalidAddress
 	}
-	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
-		if assetToAuction.AssetId == assetID {
-			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = false
-			err := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
-			if err != nil {
-				return err
-			}
-		}
+	
+	auctionLookupTable.IsAuctionActive = false
+	err := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
+	if err != nil {
+		return err
 	}
 	return nil
 }

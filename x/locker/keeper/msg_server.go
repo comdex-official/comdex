@@ -46,14 +46,17 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	//Checking if user mapping exists
 	//if it does then check app to asset mapping has any locker key
 	//if it does throw error
-	userLockerAssetMapping, userExists := k.GetUserLockerAssetMapping(ctx, msg.Depositor)
-
+	_, userExists := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)
 	if userExists {
-		_, alreadyExists := k.CheckUserAppToAssetMapping(ctx, userLockerAssetMapping, asset.Id, appMapping.Id)
-		if alreadyExists {
-			return nil, types.ErrorUserLockerAlreadyExists
-		}
+		return nil, types.ErrorUserLockerAlreadyExists
 	}
+
+	// if userExists {
+	// 	_, alreadyExists := k.CheckUserAppToAssetMapping(ctx, userLockerAssetMapping, asset.Id, appMapping.Id)
+	// 	if alreadyExists {
+	// 		return nil, types.ErrorUserLockerAlreadyExists
+	// 	}
+	// }
 
 	lockerProductAssetMapping, found := k.GetLockerProductAssetMapping(ctx, appMapping.Id)
 	if !found {
@@ -65,7 +68,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 		//Create a new instance of locker
 
 		//call Lookup table to get relevant data
-		lookupTableData, exists := k.GetLockerLookupTable(ctx, lockerProductAssetMapping.AppId)
+		lookupTableData, exists := k.GetLockerLookupTable(ctx, lockerProductAssetMapping.AppId, msg.AssetId)
 		if !exists {
 			return nil, types.ErrorAppMappingDoesNotExist
 		}
@@ -80,9 +83,9 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 			}
 		}
 		//Creating locker instance
+		id := k.GetIDForLocker(ctx)
 		var userLocker types.Locker
-		counter := lookupTableData.Counter + 1
-		userLocker.LockerId = counter
+		userLocker.LockerId = id + 1
 		userLocker.Depositor = msg.Depositor
 		userLocker.AssetDepositId = asset.Id
 		userLocker.CreatedAt = ctx.BlockTime()
@@ -91,74 +94,87 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 		userLocker.ReturnsAccumulated = sdk.ZeroInt()
 		userLocker.AppId = appMapping.Id
 		k.SetLocker(ctx, userLocker)
+		k.SetIDForLocker(ctx, id)
 		//Checking if user data exits in mapping by user address
 		//if not - create a new set
-		userLockerAssetMappingData, userExists := k.GetUserLockerAssetMapping(ctx, msg.Depositor)
-		if !userExists {
+		// userLockerAssetMappingData, userExists := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)
+		// if !userExists {
 			//UserData does not exists
 			//Create a new instance
-			var userMappingData types.UserLockerAssetMapping
-			var userAppData types.LockerToAppMapping
-			var userAssetData types.AssetToLockerMapping
+			var userMappingData types.UserAppAssetLockerMapping
+			// var userAppData types.LockerToAppMapping
+			// var userAssetData types.AssetToLockerMapping
 			var userTxData types.UserTxData
+			userMappingData.AppId = appMapping.Id
+			userMappingData.AssetId = asset.Id
+			userMappingData.LockerId = userLocker.LockerId
+			userMappingData.Owner = msg.Depositor
 
-			userAssetData.AssetId = asset.Id
-			userAssetData.LockerId = userLocker.LockerId
 			userTxData.TxType = "Create"
 			userTxData.Amount = msg.Amount
 			userTxData.Balance = msg.Amount
 			userTxData.TxTime = ctx.BlockTime()
-			userAssetData.UserData = append(userAssetData.UserData, &userTxData)
 
-			userAppData.AppId = appMapping.Id
-			userAppData.UserAssetLocker = append(userAppData.UserAssetLocker, &userAssetData)
-			userMappingData.Owner = msg.Depositor
-			userMappingData.LockerAppMapping = append(userMappingData.LockerAppMapping, &userAppData)
+			userMappingData.UserData = append(userMappingData.UserData, &userTxData)
+
+
+			// userAssetData.AssetId = asset.Id
+			// userAssetData.LockerId = userLocker.LockerId
+			// userTxData.TxType = "Create"
+			// userTxData.Amount = msg.Amount
+			// userTxData.Balance = msg.Amount
+			// userTxData.TxTime = ctx.BlockTime()
+			// userAssetData.UserData = append(userAssetData.UserData, &userTxData)
+
+			// userAppData.AppId = appMapping.Id
+			// userAppData.UserAssetLocker = append(userAppData.UserAssetLocker, &userAssetData)
+			// userMappingData.Owner = msg.Depositor
+			// userMappingData.LockerAppMapping = append(userMappingData.LockerAppMapping, &userAppData)
 
 			k.SetUserLockerAssetMapping(ctx, userMappingData)
-		} else {
-			///Check if user app_mapping data exits
+		// } else {
+		// 	///Check if user app_mapping data exits
 
-			appExists := k.CheckUserToAppMapping(ctx, userLockerAssetMappingData, appMapping.Id)
-			if appExists { //User has the app_mapping added
-				//So only need to add the locker id with asset
-				var userAssetData types.AssetToLockerMapping
-				var userTxData types.UserTxData
-				userAssetData.AssetId = asset.Id
-				userAssetData.LockerId = userLocker.LockerId
-				userTxData.TxType = "Create"
-				userTxData.Amount = msg.Amount
-				userTxData.Balance = msg.Amount
-				userTxData.TxTime = ctx.BlockTime()
-				userAssetData.UserData = append(userAssetData.UserData, &userTxData)
+		// 	appExists := k.CheckUserToAppMapping(ctx, userLockerAssetMappingData, appMapping.Id)
+		// 	if appExists { //User has the app_mapping added
+		// 		//So only need to add the locker id with asset
+		// 		var userAssetData types.AssetToLockerMapping
+		// 		var userTxData types.UserTxData
+		// 		userAssetData.AssetId = asset.Id
+		// 		userAssetData.LockerId = userLocker.LockerId
+		// 		userTxData.TxType = "Create"
+		// 		userTxData.Amount = msg.Amount
+		// 		userTxData.Balance = msg.Amount
+		// 		userTxData.TxTime = ctx.BlockTime()
+		// 		userAssetData.UserData = append(userAssetData.UserData, &userTxData)
 
-				for _, appData := range userLockerAssetMappingData.LockerAppMapping {
-					if appData.AppId == appMapping.Id {
-						appData.UserAssetLocker = append(appData.UserAssetLocker, &userAssetData)
-					}
-				}
-				k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
-			} else {
-				//Will need to create new app and add it to the user
-				var userAssetData types.AssetToLockerMapping
-				var userAppData types.LockerToAppMapping
-				var userTxData types.UserTxData
+		// 		for _, appData := range userLockerAssetMappingData.LockerAppMapping {
+		// 			if appData.AppId == appMapping.Id {
+		// 				appData.UserAssetLocker = append(appData.UserAssetLocker, &userAssetData)
+		// 			}
+		// 		}
+		// 		k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
+		// 	} else {
+		// 		//Will need to create new app and add it to the user
+		// 		var userAssetData types.AssetToLockerMapping
+		// 		var userAppData types.LockerToAppMapping
+		// 		var userTxData types.UserTxData
 
-				userAssetData.AssetId = asset.Id
-				userAssetData.LockerId = userLocker.LockerId
-				userAppData.AppId = appMapping.Id
-				userTxData.TxType = "Create"
-				userTxData.Amount = msg.Amount
-				userTxData.Balance = msg.Amount
-				userTxData.TxTime = ctx.BlockTime()
-				userAssetData.UserData = append(userAssetData.UserData, &userTxData)
+		// 		userAssetData.AssetId = asset.Id
+		// 		userAssetData.LockerId = userLocker.LockerId
+		// 		userAppData.AppId = appMapping.Id
+		// 		userTxData.TxType = "Create"
+		// 		userTxData.Amount = msg.Amount
+		// 		userTxData.Balance = msg.Amount
+		// 		userTxData.TxTime = ctx.BlockTime()
+		// 		userAssetData.UserData = append(userAssetData.UserData, &userTxData)
 
-				userAppData.UserAssetLocker = append(userAppData.UserAssetLocker, &userAssetData)
-				userLockerAssetMappingData.LockerAppMapping = append(userLockerAssetMappingData.LockerAppMapping, &userAppData)
-				k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
-			}
-		}
-		k.UpdateTokenLockerMapping(ctx, lookupTableData, counter, userLocker)
+		// 		userAppData.UserAssetLocker = append(userAppData.UserAssetLocker, &userAssetData)
+		// 		userLockerAssetMappingData.LockerAppMapping = append(userLockerAssetMappingData.LockerAppMapping, &userAppData)
+		// 		k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
+		// 	}
+		// }
+		k.UpdateTokenLockerMapping(ctx, lookupTableData, userLocker)
 	} else {
 		//Not a whitelisted asset , return err
 		return nil, types.ErrorLockerProductAssetMappingDoesNotExists
@@ -208,7 +224,7 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
-	lookupTableData, exists := k.GetLockerLookupTable(ctx, appMapping.Id)
+	lookupTableData, exists := k.GetLockerLookupTable(ctx, appMapping.Id, asset.Id)
 	if !exists {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -228,21 +244,23 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 	//Update  Amount in Locker Mapping
 	k.UpdateAmountLockerMapping(ctx, lookupTableData, asset.Id, msg.Amount, true)
 
-	userLockerAssetMappingData, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor)
+	userLockerAssetMappingData, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)
 	var userHisData types.UserTxData
 	userHisData.TxType = "Deposit"
 	userHisData.Amount = msg.Amount
 	userHisData.Balance = lockerData.NetBalance
 	userHisData.TxTime = ctx.BlockTime()
-	for _, userLockerAppData := range userLockerAssetMappingData.LockerAppMapping {
-		if userLockerAppData.AppId == msg.AppId {
-			for _, assetData := range userLockerAppData.UserAssetLocker {
-				if assetData.AssetId == msg.AssetId {
-					assetData.UserData = append(assetData.UserData, &userHisData)
-				}
-			}
-		}
-	}
+
+	userLockerAssetMappingData.UserData = append(userLockerAssetMappingData.UserData, &userHisData)
+	// for _, userLockerAppData := range userLockerAssetMappingData.LockerAppMapping {
+	// 	if userLockerAppData.AppId == msg.AppId {
+	// 		for _, assetData := range userLockerAppData.UserAssetLocker {
+	// 			if assetData.AssetId == msg.AssetId {
+	// 				assetData.UserData = append(assetData.UserData, &userHisData)
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
 
@@ -278,7 +296,7 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
 
-	lookupTableData, exists := k.GetLockerLookupTable(ctx, appMapping.Id)
+	lookupTableData, exists := k.GetLockerLookupTable(ctx, appMapping.Id, asset.Id)
 	if !exists {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -303,25 +321,100 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 	//Update  Amount in Locker Mapping
 	k.UpdateAmountLockerMapping(ctx, lookupTableData, asset.Id, msg.Amount, false)
 
-	userLockerAssetMappingData, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor)
+	userLockerAssetMappingData, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)
 
 	var userTxData types.UserTxData
-	for _, userLockerAppData := range userLockerAssetMappingData.LockerAppMapping {
-		if userLockerAppData.AppId == msg.AppId {
-			for _, assetData := range userLockerAppData.UserAssetLocker {
-				if assetData.AssetId == msg.AssetId {
-					userTxData.TxType = "Withdraw"
-					userTxData.Amount = msg.Amount
-					userTxData.Balance = lockerData.NetBalance
-					userTxData.TxTime = ctx.BlockTime()
-					assetData.UserData = append(assetData.UserData, &userTxData)
-				}
-			}
-		}
-	}
+
+	userTxData.TxType = "Withdraw"
+	userTxData.Amount = msg.Amount
+	userTxData.Balance = lockerData.NetBalance
+	userTxData.TxTime = ctx.BlockTime()
+	userLockerAssetMappingData.UserData = append(userLockerAssetMappingData.UserData, &userTxData)
+
+	// for _, userLockerAppData := range userLockerAssetMappingData.LockerAppMapping {
+	// 	if userLockerAppData.AppId == msg.AppId {
+	// 		for _, assetData := range userLockerAppData.UserAssetLocker {
+	// 			if assetData.AssetId == msg.AssetId {
+	// 				userTxData.TxType = "Withdraw"
+	// 				userTxData.Amount = msg.Amount
+	// 				userTxData.Balance = lockerData.NetBalance
+	// 				userTxData.TxTime = ctx.BlockTime()
+	// 				assetData.UserData = append(assetData.UserData, &userTxData)
+	// 			}
+	// 		}
+	// 	}
+	// }
 	k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
 
 	ctx.GasMeter().ConsumeGas(types.WithdrawLockerGas, "WithdrawLockerGas")
 
 	return &types.MsgWithdrawAssetResponse{}, nil
+}
+
+func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRequest) (*types.MsgCloseLockerResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	asset, found := k.GetAsset(ctx, msg.AssetId)
+	if !found {
+		return nil, types.ErrorAssetDoesNotExist
+	}
+	appMapping, found := k.GetApp(ctx, msg.AppId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+
+	lockerData, found := k.GetLocker(ctx, msg.LockerId)
+
+	if !found {
+		return nil, types.ErrorLockerDoesNotExists
+	}
+	if lockerData.AssetDepositId != asset.Id {
+		return nil, types.ErrorInvalidAssetID
+	}
+	if msg.Depositor != lockerData.Depositor {
+		return nil, types.ErrorUnauthorized
+	}
+	if appMapping.Id != lockerData.AppId {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+
+	lookupTableData, exists := k.GetLockerLookupTable(ctx, appMapping.Id, asset.Id)
+	if !exists {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+	depositor, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, lockerData.NetBalance)); err != nil {
+		return nil, err
+	}
+
+	userOutAmt := lockerData.NetBalance
+
+	lockerData.NetBalance = sdk.ZeroInt()
+
+	k.SetLocker(ctx, lockerData)
+
+
+	userLockerAssetMappingData, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)
+
+	var userTxData types.UserTxData
+
+	userTxData.TxType = "close"
+	userTxData.Amount = userOutAmt
+	userTxData.Balance = lockerData.NetBalance
+	userTxData.TxTime = ctx.BlockTime()
+	userLockerAssetMappingData.UserData = append(userLockerAssetMappingData.UserData, &userTxData)
+
+	k.UpdateAmountLockerMapping(ctx, lookupTableData, asset.Id, lockerData.NetBalance, false)
+	k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
+
+	k.DeleteLocker(ctx, lockerData.LockerId)
+	// to DO ----------------------------------
+	// delete locker id from locker lookup table
+	//-----------------------------------------
+	ctx.GasMeter().ConsumeGas(types.CloseLockerGas, "CloseLockerGas")
+
+	return &types.MsgCloseLockerResponse{}, nil
 }

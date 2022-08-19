@@ -14,12 +14,12 @@ func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint6
 	return k.locker.GetLockerProductAssetMapping(ctx, appMappingID)
 }
 
-func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (appAssetCollectorData collectortypes.AppIdToAssetCollectorMapping, found bool) {
-	return k.collector.GetAppidToAssetCollectorMapping(ctx, appID)
+func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID, assetID uint64) (appAssetCollectorData collectortypes.AppToAssetIdCollectorMapping, found bool) {
+	return k.collector.GetAppidToAssetCollectorMapping(ctx, appID, assetID)
 }
 
-func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup collectortypes.CollectorLookup, found bool) {
-	return k.collector.GetCollectorLookupTable(ctx, appID)
+func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTableData, found bool) {
+	return k.collector.GetCollectorLookupTable(ctx, appID, assetID)
 }
 
 func (k Keeper) GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom collectortypes.AppToDenomsMapping, found bool) {
@@ -34,20 +34,20 @@ func (k Keeper) GetSupply(ctx sdk.Context, denom string) sdk.Coin {
 	return k.bank.GetSupply(ctx, denom)
 }
 
-func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appMappingID uint64) (lockerLookupData types.LockerLookupTable, found bool) {
-	return k.locker.GetLockerLookupTable(ctx, appMappingID)
+func (k Keeper) GetLockerLookupTableByApp(ctx sdk.Context, appID uint64) (lockerLookupData []types.LockerLookupTableData, found bool) {
+	return k.locker.GetLockerLookupTableByApp(ctx, appID)
 }
 
-func (k Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTable, found bool) {
-	return k.collector.GetCollectorLookupByAsset(ctx, appID, assetID)
-}
+// func (k Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTable, found bool) {
+// 	return k.collector.GetCollectorLookupByAsset(ctx, appID, assetID)
+// }
 
 func (k Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
 	k.locker.UpdateLocker(ctx, locker)
 }
 
-func (k Keeper) GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping, found bool) {
-	return k.vault.GetAppExtendedPairVaultMapping(ctx, appMappingID)
+func (k Keeper) GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData []vaulttypes.AppExtendedPairVaultMappingData, found bool) {
+	return k.vault.GetAppMappingData(ctx, appMappingID)
 }
 
 func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
@@ -66,16 +66,16 @@ func (k Keeper) DeleteVault(ctx sdk.Context, id uint64) {
 	k.vault.DeleteVault(ctx, id)
 }
 
-func (k Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context, counter uint64, vaultData vaulttypes.Vault) {
-	k.vault.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, counter, vaultData)
+func (k Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context, vaultData vaulttypes.Vault) {
+	k.vault.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, vaultData)
 }
 
-func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
-	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, vaultLookupData, extendedPairID, amount, changeType)
+func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMappingData, amount sdk.Int, changeType bool) {
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, vaultLookupData, amount, changeType)
 }
 
-func (k Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64) {
-	k.vault.UpdateUserVaultExtendedPairMapping(ctx, extendedPairID, userAddress, appMappingID)
+func (k Keeper) DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64){
+	k.vault.DeleteUserVaultExtendedPairMapping(ctx, address, appID, pairVaultID)
 }
 
 func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64) {
@@ -131,15 +131,15 @@ func (k Keeper) SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coin
 	return k.bank.SpendableCoins(ctx, address)
 }
 
-func (k Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData collectortypes.NetFeeCollectedData, found bool) {
-	return k.collector.GetNetFeeCollectedData(ctx, appID)
+func (k Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64) (netFeeData collectortypes.AppAssetIdToFeeCollectedData, found bool) {
+	return k.collector.GetNetFeeCollectedData(ctx, appID, assetID)
 }
 
 func (k Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error {
 	return k.collector.SetNetFeeCollectedData(ctx, appID, assetID, fee)
 }
 
-func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int, netFeeCollectedData collectortypes.NetFeeCollectedData) error {
+func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int, netFeeCollectedData collectortypes.AppAssetIdToFeeCollectedData) error {
 	return k.collector.DecreaseNetFeeCollectedData(ctx, appID, assetID, fee, netFeeCollectedData)
 }
 

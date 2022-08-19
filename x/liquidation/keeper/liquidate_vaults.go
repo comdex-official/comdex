@@ -21,9 +21,9 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		if klwsParams.BreakerEnable || status {
 			continue
 		}
-		vaultsMap, _ := k.GetAppExtendedPairVaultMapping(ctx, appIds[i])
+		vaultsMap, _ := k.GetAppMappingData(ctx, appIds[i])
 
-		vaults := vaultsMap.ExtendedPairVaults
+		vaults := vaultsMap
 		for j := range vaults {
 			vaultIds := vaults[j].VaultIds
 			for l := range vaultIds {

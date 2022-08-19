@@ -606,13 +606,13 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 
 		}
 	}
-	netFee, found1 := k.GetNetFeeCollectedData(ctx, appID)
+	netFee, found1 := k.GetAppNetFeeCollectedData(ctx, appID)
 	coolOffData, found := k.GetDataAfterCoolOff(ctx, appID)
 	if !found {
 		return nil
 	}
 	if found1{
-		for _, data := range netFee.AssetIdToFeeCollected {
+		for _, data := range netFee {
 			for i, indatanet := range coolOffData.DebtAsset {
 				if data.AssetId == indatanet.AssetID {
 					rateOut, found := k.GetSnapshotOfPrices(ctx, appID, data.AssetId)
