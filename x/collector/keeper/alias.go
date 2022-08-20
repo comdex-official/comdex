@@ -5,8 +5,8 @@ import (
 
 	"github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
-	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
@@ -61,4 +61,31 @@ func (k Keeper) GetReward(ctx sdk.Context, appId, assetID uint64) (rewards rewar
 
 func (k Keeper) GetLocker(ctx sdk.Context, lockerID uint64) (locker lockertypes.Locker, found bool) {
 	return k.GetLocker(ctx, lockerID)
+}
+
+func (k Keeper) CalculationOfRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec, bTime int64) (sdk.Dec, error) {
+	return k.CalculationOfRewards(ctx, amount, lsr, bTime)
+}
+
+func (k Keeper) SetLocker(ctx sdk.Context, locker lockertypes.Locker) {
+	k.SetLocker(ctx, locker)
+}
+
+func (k Keeper) SetLockerLookupTable(ctx sdk.Context, lockerLookupData lockertypes.LockerLookupTableData) {
+	k.SetLockerLookupTable(ctx, lockerLookupData)
+}
+
+func (k Keeper) SetLockerRewardTracker(ctx sdk.Context, rewards rewardstypes.LockerRewardsTracker) {
+	k.SetLockerRewardTracker(ctx, rewards)
+}
+
+func (k Keeper) GetLockerRewardTracker(ctx sdk.Context, id, appID uint64) (rewards rewardstypes.LockerRewardsTracker, found bool) {
+	return k.GetLockerRewardTracker(ctx, id, appID)
+}
+
+func (k Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise) error {
+	return k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+}
+func (k Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise, found bool) {
+	return k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, appID, assetID)
 }

@@ -95,7 +95,6 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	userLocker.AppId = appMapping.Id
 	userLocker.BlockHeight = blockHeight
 	userLocker.BlockTime = blockTime
-	userLocker.DustRewards = sdk.ZeroDec()
 	k.SetLocker(ctx, userLocker)
 	k.SetIDForLocker(ctx, id)
 
@@ -173,6 +172,12 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 	if err != nil {
 		return nil, err
 	}
+	err1 := k.CalculateLockerRewards(ctx, appMapping.Id, msg.AssetId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
+	if err1 != nil {
+		return nil, err1
+	}
+	lockerData, _ = k.GetLocker(ctx, msg.LockerId)
+
 	if msg.Amount.GT(sdk.ZeroInt()) {
 		if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
 			return nil, err
@@ -183,6 +188,7 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 	// diffHeight := ctx.BlockHeight() - lockerData.BlockHeight
 	// lockRewards, err := k.CalculateLockerRewards(ctx, appMapping, lockerData.LockerId)
 	lockerData.BlockHeight = ctx.BlockHeight()
+	lockerData.BlockTime = ctx.BlockTime()
 	lockerData.NetBalance = lockerData.NetBalance.Add(msg.Amount)
 	k.SetLocker(ctx, lockerData)
 
@@ -243,6 +249,11 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 	if lockerData.NetBalance.LT(msg.Amount) {
 		return nil, types.ErrorRequestedAmountExceedsDepositAmount
 	}
+	err1 := k.CalculateLockerRewards(ctx, appMapping.Id, msg.AssetId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
+	if err1 != nil {
+		return nil, err1
+	}
+	lockerData, _ = k.GetLocker(ctx, msg.LockerId)
 
 	lockerData.NetBalance = lockerData.NetBalance.Sub(msg.Amount)
 
@@ -255,6 +266,7 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 	// diffHeight := ctx.BlockHeight() - lockerData.BlockHeight
 
 	lockerData.BlockHeight = ctx.BlockHeight()
+	lockerData.BlockTime = ctx.BlockTime()
 	k.SetLocker(ctx, lockerData)
 
 	//Update  Amount in Locker Mapping
@@ -311,6 +323,13 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 	if err != nil {
 		return nil, err
 	}
+
+	err1 := k.CalculateLockerRewards(ctx, appMapping.Id, msg.AssetId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
+	if err1 != nil {
+		return nil, err1
+	}
+
+	lockerData, _ = k.GetLocker(ctx, msg.LockerId)
 
 	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, lockerData.NetBalance)); err != nil {
 		return nil, err

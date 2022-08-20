@@ -71,3 +71,7 @@ func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillS
 func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
 	return k.esm.GetESMStatus(ctx, id)
 }
+
+func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID uint64, Depositor string, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64 ) error {
+	return k.CalculateLockerRewards(ctx, appID, assetID, lockerID, Depositor, NetBalance, blockHeight, lockerBlockTime)
+}

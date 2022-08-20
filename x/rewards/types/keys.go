@@ -28,7 +28,6 @@ const (
 
 var (
 	RewardsKeyPrefix               = []byte{0x05}
-	KeyPrefixLastInterestTime      = []byte{0x06}
 	AppIdsVaultKeyPrefix           = []byte{0x12}
 	ExternalRewardsLockerKeyPrefix = []byte{0x13}
 	ExternalRewardsVaultKeyPrefix  = []byte{0x14}
@@ -58,8 +57,8 @@ func GetEpochInfoByDurationKey(duration time.Duration) []byte {
 }
 
 // GetGaugeKey return the indexing key for Gauge.
-func GetGaugeKey(id uint64) []byte {
-	return append(GaugeKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func AppIDKeyPrefix(appID uint64) []byte {
+	return append(AppIdsVaultKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetGaugeIdsByTriggerDurationKey returns indexing key for GaugeIDs by duration.
@@ -73,12 +72,6 @@ func RewardsKey(appID, assetID uint64) []byte {
 
 func RewardsKeyByApp(appID uint64) []byte {
 	return append(RewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
-}
-
-func CreateLastInterestTimeKey() []byte {
-	var key []byte
-	key = append(key, KeyPrefixLastInterestTime...)
-	return key
 }
 
 func ExternalRewardsLockerMappingKey(appMappingID uint64) []byte {
@@ -98,4 +91,8 @@ func LockerRewardsTrackerKey(id, appID uint64) []byte {
 }
 func VaultInterestTrackerKey(id, appID uint64) []byte {
 	return append(append(VaultInterestTrackerKeyPrefix, sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
+}
+
+func GetGaugeKey(id uint64) []byte {
+	return append(GaugeKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }

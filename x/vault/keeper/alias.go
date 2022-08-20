@@ -93,3 +93,7 @@ func (k Keeper) GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerParam
 func (k Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int) {
 	k.tokenmint.UpdateAssetDataInTokenMintByApp(ctx, appMappingID, assetID, changeType, amount)
 }
+
+func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error {
+	return k.CalculateVaultInterest(ctx, appID, assetID, lockerID, NetBalance, blockHeight, lockerBlockTime)
+}

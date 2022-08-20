@@ -45,3 +45,7 @@ type EsmKeeper interface {
 type TokenMintKeeper interface {
 	UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int)
 }
+
+type RewardsKeeper interface {
+	CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error
+}

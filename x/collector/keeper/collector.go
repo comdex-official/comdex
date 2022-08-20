@@ -1,11 +1,12 @@
 package keeper
 
 import (
-
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/collector/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -604,8 +605,8 @@ func (k Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, collectorBindings *
 		LotSize:          collectorBindings.LotSize,
 		BidFactor:        collectorBindings.BidFactor,
 		DebtLotSize:      collectorBindings.DebtLotSize,
-		BlockHeight: 	  blockHeight,
-		BlockTime: 		  ctx.BlockTime(),
+		BlockHeight:      blockHeight,
+		BlockTime:        ctx.BlockTime(),
 	}
 
 	var (
@@ -700,18 +701,25 @@ func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding
 	if found {
 		if Collector.LockerSavingRate != updateColBinding.LSR {
 			if updateColBinding.LSR.IsZero() {
+
 				// run script to distrubyte reward
-				k.LockerIterateRewards(ctx, updateColBinding.AppID, updateColBinding.AssetID)
+				k.LockerIterateRewards(ctx, Collector.LockerSavingRate, Collector.BlockHeight, Collector.BlockTime.Unix(), updateColBinding.AppID, updateColBinding.AssetID, false)
+				Collector.BlockTime = ctx.BlockTime()
+				Collector.BlockHeight = 0
+
 			} else if Collector.LockerSavingRate.IsZero() {
 				// do nothing
+				Collector.BlockHeight = ctx.BlockHeight()
+				Collector.BlockTime = ctx.BlockTime()
 			} else if Collector.LockerSavingRate.GT(sdk.ZeroDec()) && updateColBinding.LSR.GT(sdk.ZeroDec()) {
 				// run script to distribute
-				k.LockerIterateRewards(ctx, updateColBinding.AppID, updateColBinding.AssetID)
+				k.LockerIterateRewards(ctx, Collector.LockerSavingRate, Collector.BlockHeight, Collector.BlockTime.Unix(), updateColBinding.AppID, updateColBinding.AssetID, true)
+				Collector.BlockHeight = ctx.BlockHeight()
+				Collector.BlockTime = ctx.BlockTime()
+
 			}
-			
 		}
 	}
-
 
 	Collector.BidFactor = updateColBinding.BidFactor
 	Collector.DebtThreshold = updateColBinding.DebtThreshold
@@ -729,12 +737,95 @@ func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding
 	return nil
 }
 
-func (k Keeper) LockerIterateRewards(ctx sdk.Context, appID, assetID uint64) {
-	lockers, _:= k.GetLockerLookupTable(ctx, appID, assetID)
-	for _, data := range lockers.LockerIds {
-		lockerData, _ := k.GetLocker(ctx, data)
+func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, collectorBh, collectorBt int64, appID, assetID uint64, changeTypes bool) {
+	lockers, _ := k.GetLockerLookupTable(ctx, appID, assetID)
+	for _, lockID := range lockers.LockerIds {
+		lockerData, _ := k.GetLocker(ctx, lockID)
+		rewards := sdk.ZeroDec()
+		var err error
+		if lockerData.BlockHeight == 0 {
+			rewards, err = k.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, collectorBt)
+			if err != nil {
+				return
+			}
+		} else {
+			rewards, err = k.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, lockerData.BlockTime.Unix())
+			if err != nil {
+				return
+			}
+		}
+
+		lockerRewardsTracker, found := k.GetLockerRewardTracker(ctx, lockerData.LockerId, appID)
+		if !found {
+			lockerRewardsTracker = rewardstypes.LockerRewardsTracker{
+				LockerId:           lockerData.LockerId,
+				AppMappingId:       appID,
+				RewardsAccumulated: sdk.ZeroDec(),
+			}
+		}
+
+		lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Add(rewards)
+		newReward := sdk.ZeroInt()
+		if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
+			newReward = lockerRewardsTracker.RewardsAccumulated.TruncateInt()
+			newRewardDec := sdk.NewDec(newReward.Int64())
+			lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
+		}
+		k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
+
+		netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
+		if !found {
+			continue
+		}
+		err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward, netFeeCollectedData)
+		if err != nil {
+			continue
+		}
+
+		assetData, _ := k.GetAsset(ctx, assetID)
+		newrewards := rewards.TruncateInt()
+		if newrewards.GT(sdk.ZeroInt()) {
+			err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newrewards)))
+			if err != nil {
+				continue
+			}
+		}
+
+		lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appID, lockerData.AssetDepositId)
+		if !found {
+			var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
+			lockerReward.AppId = appID
+			lockerReward.AssetId = lockerData.AssetDepositId
+			lockerReward.TotalRewards = sdk.ZeroInt().Add(newReward)
+			err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
+			if err != nil {
+				continue
+			}
+		} else {
+			lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
+
+			err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+			if err != nil {
+				continue
+			}
+		}
+
+		// updating user rewards data
+		lockerData.BlockTime = ctx.BlockTime()
+		if changeTypes {
+			lockerData.BlockHeight = ctx.BlockHeight()
+		} else {
+			lockerData.BlockHeight = 0
+		}
+
+		lockerData.NetBalance = lockerData.NetBalance.Add(newrewards)
+		lockerData.ReturnsAccumulated = lockerData.ReturnsAccumulated.Add(newrewards)
+		k.SetLocker(ctx, lockerData)
+		lockers.DepositedAmount = lockers.DepositedAmount.Add(newrewards)
+		k.SetLockerLookupTable(ctx, lockers)
+
 	}
-	
+
 }
 
 func (k Keeper) WasmUpdateCollectorLookupTableQuery(ctx sdk.Context, appID, assetID uint64) (bool, string) {

@@ -81,7 +81,7 @@ func (k Keeper) StartLendDutchAuction(
 		found             bool
 	)
 
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
+	lockedVault, found := k.GetLockedVault(ctx, appID, lockedVaultID)
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
@@ -204,7 +204,7 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 	//required target cmst to raise in usd * 10**-12
 	//here we are multiplying each ucmdx with uusd so cmdx tokens price will be calculated amount * 10**-12
 
-	lockedVault, found := k.GetLockedVault(ctx, auction.LockedVaultId)
+	lockedVault, found := k.GetLockedVault(ctx, appID, auction.LockedVaultId)
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
@@ -378,7 +378,7 @@ func (k Keeper) CloseDutchLendAuction(
 		}
 	}
 
-	lockedVault, found := k.GetLockedVault(ctx, dutchAuction.LockedVaultId)
+	lockedVault, found := k.GetLockedVault(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId)
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}

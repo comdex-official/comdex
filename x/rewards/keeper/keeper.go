@@ -82,49 +82,31 @@ func uint64InSlice(a uint64, list []uint64) bool {
 	return false
 }
 
-func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetIDs []uint64, isInsert bool) error {
-	lockerAssets, _ := k.locker.GetLockerProductAssetMapping(ctx, appMappingID)
-	for i := range assetIDs {
-		found := uint64InSlice(assetIDs[i], lockerAssets.AssetIds)
-		if !found {
-			return types.ErrAssetIDDoesNotExist
-		}
-	}
+func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetID uint64) error {
+	_, found := k.locker.GetLockerProductAssetMapping(ctx, appMappingID, assetID)
 
-	for _, assetID := range assetIDs {
-		internalReward, found := k.GetReward(ctx, appMappingID, assetID)
-		if !found && isInsert {
-			internalReward = types.InternalRewards{
-				App_mapping_ID: appMappingID,
-				Asset_ID:       nil,
-			}
-		} else if internalReward.Asset_ID != nil && !isInsert {
-			return types.ErrInternalRewardsNotFound
-		}
-		if isInsert {
-			internalReward.Asset_ID = append(internalReward.Asset_ID, assetID)
-		} else {
-			for index, id := range internalReward.Asset_ID {
-				if id == assetID {
-					internalReward.Asset_ID = append(internalReward.Asset_ID[:index], internalReward.Asset_ID[index+1:]...)
-				}
-			}
-		}
+	if !found {
+		return types.ErrAssetIDDoesNotExist
+	}
+	internalReward, found := k.GetReward(ctx, appMappingID, assetID)
+	if !found {
+		internalReward.App_mapping_ID = appMappingID
+		internalReward.Asset_ID = assetID
 		k.SetReward(ctx, internalReward)
 	}
+	
+
 	return nil
 }
 
 func (k Keeper) WhitelistAppIDVault(ctx sdk.Context, appMappingID uint64) error {
-	found := uint64InSlice(appMappingID, k.GetAppIDs(ctx).WhitelistedAppMappingIdsVaults)
+	found := uint64InSlice(appMappingID, k.GetAppIDs(ctx))
 	if found {
 		return types.ErrAppIDExists
 	}
-	WhitelistedAppIds := append(k.GetAppIDs(ctx).WhitelistedAppMappingIdsVaults, appMappingID)
-	UpdatedWhitelistedAppIds := types.WhitelistedAppIdsVault{
-		WhitelistedAppMappingIdsVaults: WhitelistedAppIds,
-	}
-	k.SetAppID(ctx, UpdatedWhitelistedAppIds)
+	
+	
+	k.SetAppID(ctx, appMappingID)
 	return nil
 }
 
@@ -148,10 +130,6 @@ func (k Keeper) ActExternalRewardsLockers(
 		return types.ErrAssetIDDoesNotExist
 	}
 
-	// found = uint64InSlice(assetID, lockerAssets.AssetIds)
-	// if !found {
-	// 	return types.ErrAssetIDDoesNotExist
-	// }
 	extRewards := k.GetExternalRewardsLockers(ctx)
 	for _, v := range extRewards {
 		if v.AppMappingId == appMappingID && v.AssetId == assetID {
@@ -269,18 +247,6 @@ func (k Keeper) WasmRemoveWhitelistAssetLocker(ctx sdk.Context, appMappingID uin
 	if !found1 {
 		return types.ErrInternalRewardsNotFound
 	}
-
-	// var newAssetIDs []uint64
-	// for i := range rewards.Asset_ID {
-	// 	if assetID != rewards.Asset_ID[i] {
-	// 		newAssetID := rewards.Asset_ID[i]
-	// 		newAssetIDs = append(newAssetIDs, newAssetID)
-	// 	}
-	// }
-	// newRewards := types.InternalRewards{
-	// 	App_mapping_ID: appMappingID,
-	// 	Asset_ID:       newAssetIDs,
-	// }
 	k.DeleteReward(ctx, appMappingID, assetID)
 	return nil
 }
@@ -290,11 +256,6 @@ func (k Keeper) WasmRemoveWhitelistAssetLockerQuery(ctx sdk.Context, appMappingI
 	if !found {
 		return false, "app Id not found"
 	}
-	// for _, j := range rewards.Asset_ID {
-	// 	if j != assetID {
-	// 		return false, types.ErrAssetIDDoesNotExist.Error()
-	// 	}
-	// }
 	return true, ""
 }
 
@@ -313,25 +274,13 @@ func (k Keeper) WasmRemoveWhitelistAppIDVaultInterest(ctx sdk.Context, appMappin
 		return esmtypes.ErrESMAlreadyExecuted
 	}
 
-	WhitelistedAppIds := k.GetAppIDs(ctx).WhitelistedAppMappingIdsVaults
+	k.DeleteAppIDByApp(ctx, appMappingID)
 
-	var newAppIDs []uint64
-	for i := range WhitelistedAppIds {
-		if appMappingID != WhitelistedAppIds[i] {
-			newAppID := WhitelistedAppIds[i]
-			newAppIDs = append(newAppIDs, newAppID)
-		}
-	}
-	UpdatedWhitelistedAppIds := types.WhitelistedAppIdsVault{
-		WhitelistedAppMappingIdsVaults: newAppIDs,
-	}
-
-	k.SetAppID(ctx, UpdatedWhitelistedAppIds)
 	return nil
 }
 
 func (k Keeper) WasmRemoveWhitelistAppIDVaultInterestQuery(ctx sdk.Context, appMappingID uint64) (bool, string) {
-	found := uint64InSlice(appMappingID, k.GetAppIDs(ctx).WhitelistedAppMappingIdsVaults)
+	found := uint64InSlice(appMappingID, k.GetAppIDs(ctx))
 	if !found {
 		return false, types.ErrAppIDDoesNotExists.Error()
 	}

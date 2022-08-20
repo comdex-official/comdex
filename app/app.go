@@ -552,6 +552,8 @@ func New(
 		app.keys[assettypes.StoreKey],
 		app.GetSubspace(assettypes.ModuleName),
 		&app.MarketKeeper,
+		&app.Rewardskeeper,
+		&app.VaultKeeper,
 	)
 
 	app.LendKeeper = lendkeeper.NewKeeper(
@@ -692,6 +694,7 @@ func New(
 		&app.MarketKeeper,
 		&app.CollectorKeeper,
 		&app.EsmKeeper,
+		&app.Rewardskeeper,
 	)
 
 	app.LiquidityKeeper = liquiditykeeper.NewKeeper(

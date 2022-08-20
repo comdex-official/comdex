@@ -33,7 +33,7 @@ type LiquidationKeeper interface {
 	SetFlagIsAuctionInProgress(ctx sdk.Context, appID, id uint64, flag bool) error
 	SetFlagIsAuctionComplete(ctx sdk.Context, appID, id uint64, flag bool) error
 	GetLockedVaults(ctx sdk.Context) (lockedVaults []liquidationtypes.LockedVault)
-	GetLockedVault(ctx sdk.Context, id uint64) (lockedVault liquidationtypes.LockedVault, found bool)
+	GetLockedVault(ctx sdk.Context, appID, id uint64) (lockedVault liquidationtypes.LockedVault, found bool)
 	SetLockedVault(ctx sdk.Context, lockedVault liquidationtypes.LockedVault)
 	DeleteLockedVault(ctx sdk.Context, appID, id uint64)
 	CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error

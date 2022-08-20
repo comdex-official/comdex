@@ -46,6 +46,15 @@ message Vault {
     (gogoproto.moretags) = "yaml:\"interest_accumulated\"",
     (gogoproto.nullable) = false
   ];
+  int64 block_height = 10 [
+    (gogoproto.moretags)   = "yaml:\"block_height\""
+  ];
+  google.protobuf.Timestamp block_time = 11 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags)   = "yaml:\"block_time\""
+];
+
 }
 
 //user_address is the key

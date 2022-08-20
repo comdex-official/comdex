@@ -162,7 +162,7 @@ func WhitelistAppIDLockerRewards(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Con
 	msg := rewardstypes.WhitelistAsset{
 		From:         contractAddr,
 		AppMappingId: whiteListAsset.AppID,
-		AssetId:      whiteListAsset.AssetIDs,
+		AssetId:      whiteListAsset.AssetID,
 	}
 	_, err := rewardsKeeper.Whitelist(sdk.WrapSDKContext(ctx), &msg)
 

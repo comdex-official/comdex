@@ -119,8 +119,8 @@ func (k Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, f
 	return k.collector.SetNetFeeCollectedData(ctx, appID, assetID, fee)
 }
 
-func (k Keeper) GetLockedVault(ctx sdk.Context, id uint64) (lockedVault liquidationtypes.LockedVault, found bool) {
-	return k.liquidation.GetLockedVault(ctx, id)
+func (k Keeper) GetLockedVault(ctx sdk.Context, appID, id uint64) (lockedVault liquidationtypes.LockedVault, found bool) {
+	return k.liquidation.GetLockedVault(ctx, appID, id)
 }
 
 func (k Keeper) SetLockedVault(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) {

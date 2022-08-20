@@ -161,3 +161,15 @@ func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bo
 func (k Keeper) GetLockers(ctx sdk.Context) (locker []types.Locker) {
 	return k.locker.GetLockers(ctx)
 }
+
+func (k Keeper) SetLockerLookupTable(ctx sdk.Context, lockerLookupData types.LockerLookupTableData) {
+	k.SetLockerLookupTable(ctx, lockerLookupData)
+}
+
+func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appID, assetID uint64) (lockerLookupData types.LockerLookupTableData, found bool) {
+	return k.locker.GetLockerLookupTable(ctx, appID, assetID)
+}
+
+func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID uint64, pairVaultID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData, found bool) {
+	return k.vault.GetAppExtendedPairVaultMappingData(ctx, appMappingID, pairVaultID)
+}

@@ -66,7 +66,7 @@ func (k Keeper) StartDutchAuction(
 		found             bool
 	)
 
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
+	lockedVault, found := k.GetLockedVault(ctx, appID, lockedVaultID)
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
@@ -196,7 +196,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	//required target cmst to raise in usd * 10**-12
 	//here we are multiplying each ucmdx with uusd so cmdx tokens price will be calculated amount * 10**-12
 
-	lockedVault, found := k.GetLockedVault(ctx, auction.LockedVaultId)
+	lockedVault, found := k.GetLockedVault(ctx,appID, auction.LockedVaultId)
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
@@ -362,7 +362,7 @@ func (k Keeper) CloseDutchAuction(
 		}
 	}
 
-	lockedVault, found := k.GetLockedVault(ctx, dutchAuction.LockedVaultId)
+	lockedVault, found := k.GetLockedVault(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId)
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}
@@ -442,7 +442,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 	}
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
-		lockedVault, found := k.GetLockedVault(ctx, dutchAuction.LockedVaultId)
+		lockedVault, found := k.GetLockedVault(ctx, appID, dutchAuction.LockedVaultId)
 		if !found {
 			return auctiontypes.ErrorInvalidLockedVault
 		}
@@ -568,7 +568,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 }
 
 func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAuction, burnToken sdk.Coin) error {
-	lockedVault, found1 := k.GetLockedVault(ctx, auction.LockedVaultId)
+	lockedVault, found1 := k.GetLockedVault(ctx, auction.AppId, auction.LockedVaultId)
 	if !found1 {
 		return auctiontypes.ErrorVaultNotFound
 	}
