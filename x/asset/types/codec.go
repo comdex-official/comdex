@@ -31,9 +31,6 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgAddAssetRequest{},
-		&MsgUpdateAssetRequest{},
-		&MsgAddPairRequest{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

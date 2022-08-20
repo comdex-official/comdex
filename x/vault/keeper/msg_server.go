@@ -80,7 +80,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	//if does then check app to extendedPair mapping has any vault key
 	//if it does throw error
 	_, userExists := k.GetUserAppExtendedPairMappingData(ctx, msg.From, msg.AppId, msg.ExtendedPairVaultId)
-	
+
 	if userExists {
 		// _, alreadyExists := k.CheckUserAppToExtendedPairMapping(ctx, userVaultExtendedPairMapping, extendedPairVault.Id, appMapping.Id)
 		return nil, types.ErrorUserVaultAlreadyExists
@@ -214,7 +214,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	// 		k.SetUserVaultExtendedPairMapping(ctx, userVaultExtendedPairMappingData)
 	// 	}
 	// }
-	var  mappingData types.OwnerAppExtendedPairVaultMappingData
+	var mappingData types.OwnerAppExtendedPairVaultMappingData
 	mappingData.Owner = msg.From
 	mappingData.AppId = msg.AppId
 	mappingData.ExtendedPairId = msg.ExtendedPairVaultId
@@ -790,179 +790,33 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 // MsgDepositAndDraw.
 func (k msgServer) MsgDepositAndDraw(c context.Context, msg *types.MsgDepositAndDrawRequest) (*types.MsgDepositAndDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
-	status := false
-	if found {
-		status = esmStatus.Status
+	msgDepositReq := types.MsgDepositRequest{
+		From:                msg.From,
+		AppId:               msg.AppId,
+		ExtendedPairVaultId: msg.ExtendedPairVaultId,
+		UserVaultId:         msg.UserVaultId,
+		Amount:              msg.Amount,
 	}
-	if status {
-		return nil, esmtypes.ErrESMAlreadyExecuted
-	}
-	killSwitchParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
-	if killSwitchParams.BreakerEnable {
-		return nil, esmtypes.ErrCircuitBreakerEnabled
-	}
-	extendedPairVault, found := k.GetPairsVault(ctx, msg.ExtendedPairVaultId)
-	if !found {
-		return nil, types.ErrorExtendedPairVaultDoesNotExists
-	}
-	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
-	if !found {
-		return nil, types.ErrorPairDoesNotExist
-	}
-	assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
-	if !found {
-		return nil, types.ErrorAssetDoesNotExist
-	}
-	assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
-	if !found {
-		return nil, types.ErrorAssetDoesNotExist
-	}
-
-	appMapping, found := k.GetApp(ctx, msg.AppId)
-	if !found {
-		return nil, types.ErrorAppMappingDoesNotExist
-	}
-
-	if appMapping.Id != extendedPairVault.AppId {
-		return nil, types.ErrorAppMappingIDMismatch
-	}
-
-	depositorAddress, err := sdk.AccAddressFromBech32(msg.From)
+	_, err := k.MsgDeposit(c, &msgDepositReq)
 	if err != nil {
 		return nil, err
 	}
-
-	// Checking if this is a stableMint pair or not  -- stableMintPair == psmPair
-	if extendedPairVault.IsStableMintVault {
-		return nil, types.ErrorCannotCreateStableMintVault
-	}
-	//Checking
-	if !extendedPairVault.IsVaultActive {
-		return nil, types.ErrorVaultCreationInactive
-	}
-
 	userVault, found := k.GetVault(ctx, msg.UserVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
 	}
-	if userVault.Owner != msg.From {
-		return nil, types.ErrVaultAccessUnauthorised
+	newAmt := k.calculateUserToken(userVault, msg.Amount)
+	msgDrawReq := types.MsgDrawRequest{
+		From:                msg.From,
+		AppId:               msg.AppId,
+		ExtendedPairVaultId: msg.ExtendedPairVaultId,
+		UserVaultId:         msg.UserVaultId,
+		Amount:              newAmt,
 	}
-
-	if appMapping.Id != userVault.AppId {
-		return nil, types.ErrorInvalidAppMappingData
-	}
-	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
-		return nil, types.ErrorInvalidExtendedPairMappingData
-	}
-
-	assetInPrice, found := k.GetPriceForAsset(ctx, assetInData.Id)
-	if !found {
-		return nil, types.ErrorPriceDoesNotExist
-	}
-	var assetOutPrice uint64
-
-	if extendedPairVault.AssetOutOraclePrice {
-		//If oracle Price required for the assetOut
-		assetOutPrice, found = k.GetPriceForAsset(ctx, assetOutData.Id)
-		if !found {
-			return nil, types.ErrorPriceDoesNotExist
-		}
-	} else {
-		//If oracle Price is not required for the assetOut
-		assetOutPrice = extendedPairVault.AssetOutPrice
-	}
-
-	collaRatio, err := k.CalculateCollaterlizationRatio(ctx, msg.ExtendedPairVaultId, userVault.AmountIn, userVault.AmountOut)
+	_, err = k.MsgDraw(c, &msgDrawReq)
 	if err != nil {
 		return nil, err
 	}
-
-	totalIn := msg.Amount.Mul(sdk.NewIntFromUint64(assetInPrice))
-	if totalIn.LTE(sdk.ZeroInt()) {
-		return nil, types.ErrorInvalidAmountIn
-	}
-	
-	totalOut := k.calculateUserToken(ctx, userVault, collaRatio, msg.Amount, assetInPrice, assetOutPrice)
-
-	//Call CheckAppExtendedPairVaultMapping function to get counter - it also initialised the kv store if appMapping_id does not exists, or extendedPairVault_id does not exists.
-	tokenMintedStatistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
-	//Check debt Floor
-	if !totalOut.GTE(extendedPairVault.DebtFloor) {
-		return nil, types.ErrorAmountOutLessThanDebtFloor
-	}
-	//Check Debt Ceil
-	currentMintedStatistics := tokenMintedStatistics.Add(totalOut)
-
-	if currentMintedStatistics.GT(extendedPairVault.DebtCeiling) {
-		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
-	}
-
-
-	//Take amount from user
-	if msg.Amount.GT(sdk.ZeroInt()) {
-		if err := k.SendCoinFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoin(assetInData.Denom, msg.Amount)); err != nil {
-			return nil, err
-		}
-	}
-
-	//Mint Tokens for user
-	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetOutData.Denom, totalOut)); err != nil {
-		return nil, err
-	}
-
-	//Send Fees to Accumulator
-	//Deducting Opening Fee if 0 opening fee then act accordingly
-	if extendedPairVault.DrawDownFee.IsZero() && totalOut.GT(sdk.ZeroInt()) { //Send Rest to user
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetOutData.Denom, totalOut)); err != nil {
-			return nil, err
-		}
-	} else {
-		//If not zero deduct send to collector//////////
-		//one approach could be
-		collectorShare := (totalOut.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
-
-		if collectorShare.GT(sdk.ZeroInt()) {
-			if err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
-				return nil, err
-			}
-
-			err := k.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		// and send the rest to the user
-		amountToUser := totalOut.Sub(collectorShare)
-		if amountToUser.GT(sdk.ZeroInt()) {
-			if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoin(assetOutData.Denom, amountToUser)); err != nil {
-				return nil, err
-			}
-		}
-	}
-
-	//If all correct  update vault
-
-	userVault.AmountIn = userVault.AmountIn.Add(msg.Amount)
-	if !userVault.AmountIn.IsPositive() {
-		return nil, types.ErrorInvalidAmount
-	}
-	userVault.AmountOut = userVault.AmountIn.Add(totalOut)
-
-	closingFeeVal := totalOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
-	userVault.ClosingFeeAccumulated = closingFeeVal
-
-	k.SetVault(ctx, userVault)
-	//Update LookupTable minting Status
-	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
-
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, msg.Amount, true)
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, totalOut, true)
-
-	ctx.GasMeter().ConsumeGas(types.DepositDrawVaultGas, "DepositDrawVaultGas")
-	
 	return &types.MsgDepositAndDrawResponse{}, nil
 }
 

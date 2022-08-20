@@ -72,15 +72,14 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 			return nil, types.ErrorGenesisMintingForTokenAlreadyDone
 		}
 		userAddress, err := sdk.AccAddressFromBech32(assetDataInApp.Recipient)
-
 		if err != nil {
 			return nil, err
 		}
 		if assetDataInApp.GenesisSupply.GT(sdk.ZeroInt()) {
-			if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
+			if err = k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
 				return nil, err
 			}
-			if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
+			if err = k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
 				return nil, err
 			}
 		}
