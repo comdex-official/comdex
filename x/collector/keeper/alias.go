@@ -36,6 +36,13 @@ func (k Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipi
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }
 
+func (k Keeper) SendCoinsFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coins sdk.Coins) error {
+	if coins.IsZero() {
+		return collectortypes.SendCoinFromModuleToModuleIsZero
+	}
+	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, coins)
+}
+
 func (k Keeper) GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64) (mintData types.MintGenesisToken, found bool) {
 	return k.asset.GetMintGenesisTokenData(ctx, appID, assetID)
 }

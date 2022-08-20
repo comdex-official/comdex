@@ -18,7 +18,8 @@ func TestWhitelistAssetLocker(t *testing.T) {
 		&comdex.Rewardskeeper,
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper)
+		&comdex.EsmKeeper,
+		&comdex.VaultKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgWhiteListAssetLocker
@@ -58,7 +59,8 @@ func TestAddMsgAddExtendedPairsVault(t *testing.T) {
 		&comdex.Rewardskeeper,
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper)
+		&comdex.EsmKeeper,
+		&comdex.VaultKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgAddExtendedPairsVault
@@ -112,7 +114,8 @@ func TestMsgSetCollectorLookupTable(t *testing.T) {
 		&comdex.Rewardskeeper,
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper)
+		&comdex.EsmKeeper,
+		&comdex.VaultKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgSetCollectorLookupTable
@@ -160,7 +163,8 @@ func TestMsgSetAuctionMappingForApp(t *testing.T) {
 		&comdex.Rewardskeeper,
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper)
+		&comdex.EsmKeeper,
+		&comdex.VaultKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgSetAuctionMappingForApp
@@ -170,12 +174,12 @@ func TestMsgSetAuctionMappingForApp(t *testing.T) {
 			name: "Add  Collector Lookup Table",
 			msg: &bindings.MsgSetAuctionMappingForApp{
 				AppID:                1,
-				AssetIDs:             []uint64{2},
-				IsSurplusAuctions:    []bool{true},
-				IsDebtAuctions:       []bool{false},
-				IsDistributor:        []bool{false},
-				AssetOutOraclePrices: []bool{false},
-				AssetOutPrices:       []uint64{1000000},
+				AssetIDs:             uint64(2),
+				IsSurplusAuctions:    true,
+				IsDebtAuctions:       false,
+				IsDistributor:        false,
+				AssetOutOraclePrices: false,
+				AssetOutPrices:       1000000,
 			},
 			isErrorExpected: false,
 		},
@@ -207,7 +211,8 @@ func TestMsgUpdateCollectorLookupTable(t *testing.T) {
 		&comdex.Rewardskeeper,
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper)
+		&comdex.EsmKeeper,
+		&comdex.VaultKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgUpdateCollectorLookupTable
@@ -255,7 +260,8 @@ func TestMsgUpdatePairsVault(t *testing.T) {
 		&comdex.Rewardskeeper,
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper)
+		&comdex.EsmKeeper,
+		&comdex.VaultKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgUpdatePairsVault
@@ -307,7 +313,8 @@ func TestMsgWhitelistAppIDLiquidation(t *testing.T) {
 		&comdex.Rewardskeeper,
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper)
+		&comdex.EsmKeeper,
+		&comdex.VaultKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgWhitelistAppIDLiquidation
@@ -351,7 +358,8 @@ func TestMsgRemoveWhitelistAppIDLiquidation(t *testing.T) {
 		&comdex.Rewardskeeper,
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper)
+		&comdex.EsmKeeper,
+		&comdex.VaultKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgRemoveWhitelistAppIDLiquidation
@@ -391,7 +399,8 @@ func TestMsgAddAuctionParams(t *testing.T) {
 		&comdex.Rewardskeeper,
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper)
+		&comdex.EsmKeeper,
+		&comdex.VaultKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgAddAuctionParams

@@ -23,6 +23,9 @@ type ComdexQuery struct {
 	WhitelistAppIDLiquidationQuery         *WhitelistAppIDLiquidationQuery         `json:"whitelist_app_id_liquidation_query,omitempty"`
 	RemoveWhitelistAppIDLiquidationQuery   *RemoveWhitelistAppIDLiquidationQuery   `json:"remove_whitelist_app_id_liquidation_query,omitempty"`
 	AddESMTriggerParamsForAppQuery         *AddESMTriggerParamsForAppQuery         `json:"add_e_s_m_trigger_params_for_app_query,omitempty"`
+	ExtendedPairByApp                      *ExtendedPairByApp                      `json:"extended-pair-by-app,omitempty"`
+	CheckSurplusReward                     *CheckSurplusReward                     `json:"check_surplus_reward,omitempty"`
+	CheckWhitelistedAsset                  *CheckWhitelistedAsset                  `json:"check_whitelisted_asset,omitempty"`
 }
 
 type AppData struct {
@@ -222,4 +225,29 @@ type AddESMTriggerParamsForAppQuery struct {
 type AddESMTriggerParamsForAppResponse struct {
 	Found bool   `json:"found"`
 	Err   string `json:"err"`
+}
+
+type ExtendedPairByApp struct {
+	AppID uint64 `json:"app_id"`
+}
+
+type ExtendedPairByAppResponse struct {
+	ExtendedPair []uint64 `json:"ext_pair"`
+}
+
+type CheckSurplusReward struct {
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
+}
+
+type CheckSurplusRewardResponse struct {
+	Amount sdk.Coin `json:"amount"`
+}
+
+type CheckWhitelistedAsset struct {
+	Denom string `json:"denom"`
+}
+
+type CheckWhitelistedAssetResponse struct {
+	Found bool `json:"found"`
 }

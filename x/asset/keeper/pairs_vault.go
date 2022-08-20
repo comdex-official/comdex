@@ -89,6 +89,33 @@ func (k Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault,
 	return apps, true
 }
 
+func (k Keeper) WasmExtendedPairByAppQuery(ctx sdk.Context, appID uint64) (extId []uint64, found bool) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.PairsVaultKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var extPair types.ExtendedPairVault
+		k.cdc.MustUnmarshal(iter.Value(), &extPair)
+		if extPair.AppId == appID {
+			extId = append(extId, extPair.Id)
+		}
+	}
+	if extId == nil {
+		return nil, false
+	}
+
+	return extId, true
+}
+
 func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBinding *bindings.MsgAddExtendedPairsVault) error {
 	DebtCeiling := sdk.NewInt(int64(pairVaultBinding.DebtCeiling))
 	DebtFloor := sdk.NewInt(int64(pairVaultBinding.DebtFloor))
@@ -239,4 +266,9 @@ func (k Keeper) WasmUpdatePairsVaultQuery(ctx sdk.Context, appID, exPairID uint6
 		return false, types.ErrorExtendedPairDoesNotExistForTheApp.Error()
 	}
 	return true, ""
+}
+
+func (k Keeper) WasmCheckWhitelistedAssetQuery(ctx sdk.Context, denom string) (found bool) {
+	found = k.HasAssetForDenom(ctx, denom)
+	return found
 }

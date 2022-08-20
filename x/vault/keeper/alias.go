@@ -89,3 +89,7 @@ func (k Keeper) GetSnapshotOfPrices(ctx sdk.Context, appID, assetID uint64) (pri
 func (k Keeper) GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerParams esmtypes.ESMTriggerParams, found bool) {
 	return k.esm.GetESMTriggerParams(ctx, id)
 }
+
+func (k Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int) {
+	k.tokenmint.UpdateAssetDataInTokenMintByApp(ctx, appMappingID, assetID, changeType, amount)
+}

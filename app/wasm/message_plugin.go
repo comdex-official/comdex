@@ -3,6 +3,7 @@ package wasm
 import (
 	"encoding/json"
 	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 
 	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
@@ -23,7 +24,7 @@ import (
 
 func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper,
 	assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper,
-	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper, esmKeeper esmkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
+	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper, esmKeeper esmkeeper.Keeper, vaultKeeper vaultkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
 			wrapped:           old,
@@ -35,6 +36,7 @@ func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewa
 			auctionKeeper:     auctionKeeper,
 			tokenMintKeeper:   tokenMintKeeper,
 			esmKeeper:         esmKeeper,
+			vaultKeeper:       vaultKeeper,
 		}
 	}
 }
@@ -49,6 +51,7 @@ type CustomMessenger struct {
 	auctionKeeper     auctionkeeper.Keeper
 	tokenMintKeeper   tokenmintkeeper.Keeper
 	esmKeeper         esmkeeper.Keeper
+	vaultKeeper       vaultkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -105,6 +108,18 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		}
 		if comdexMsg.MsgAddESMTriggerParams != nil {
 			return m.AddESMTriggerParams(ctx, contractAddr, comdexMsg.MsgAddESMTriggerParams)
+		}
+		if comdexMsg.MsgEmissionRewards != nil {
+			return m.ExecuteAddEmissionRewards(ctx, contractAddr, comdexMsg.MsgEmissionRewards)
+		}
+		if comdexMsg.MsgFoundationEmission != nil {
+			return m.ExecuteFoundationEmission(ctx, contractAddr, comdexMsg.MsgFoundationEmission)
+		}
+		if comdexMsg.MsgRebaseMint != nil {
+			return m.ExecuteMsgRebaseMint(ctx, contractAddr, comdexMsg.MsgRebaseMint)
+		}
+		if comdexMsg.MsgGetSurplusFund != nil {
+			return m.ExecuteMsgGetSurplusFund(ctx, contractAddr, comdexMsg.MsgGetSurplusFund)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
@@ -385,6 +400,74 @@ func (m *CustomMessenger) AddESMTriggerParams(ctx sdk.Context, contractAddr sdk.
 func MsgAddESMTriggerParams(esmKeeper esmkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 	a *bindings.MsgAddESMTriggerParams) error {
 	err := esmKeeper.AddESMTriggerParamsForApp(ctx, a)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) ExecuteAddEmissionRewards(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgEmissionRewards) ([]sdk.Event, [][]byte, error) {
+	err := MsgAddEmissionRewards(m.vaultKeeper, ctx, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "Emission rewards error")
+	}
+	return nil, nil, nil
+}
+
+func MsgAddEmissionRewards(vaultKeeper vaultkeeper.Keeper, ctx sdk.Context,
+	a *bindings.MsgEmissionRewards) error {
+	err := vaultKeeper.WasmMsgAddEmissionRewards(ctx, a.AppID, a.Amount, a.ExtendedPair, a.VotingRatio)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) ExecuteFoundationEmission(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgFoundationEmission) ([]sdk.Event, [][]byte, error) {
+	err := MsgFoundationEmission(m.tokenMintKeeper, ctx, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "Foundation Emission rewards error")
+	}
+	return nil, nil, nil
+}
+
+func MsgFoundationEmission(tokenmintKeeper tokenmintkeeper.Keeper, ctx sdk.Context,
+	a *bindings.MsgFoundationEmission) error {
+	err := tokenmintKeeper.WasmMsgFoundationEmission(ctx, a.AppID, a.Amount, a.FoundationAddress)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) ExecuteMsgRebaseMint(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgRebaseMint) ([]sdk.Event, [][]byte, error) {
+	err := MsgRebaseMint(m.tokenMintKeeper, ctx, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "Foundation Emission rewards error")
+	}
+	return nil, nil, nil
+}
+
+func MsgRebaseMint(tokenmintKeeper tokenmintkeeper.Keeper, ctx sdk.Context,
+	a *bindings.MsgRebaseMint) error {
+	err := tokenmintKeeper.WasmMsgRebaseMint(ctx, a.AppID, a.Amount, a.ContractAddr)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) ExecuteMsgGetSurplusFund(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgGetSurplusFund) ([]sdk.Event, [][]byte, error) {
+	err := MsgGetSurplusFund(m.collectorKeeper, ctx, a, contractAddr)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "Execute surplus fund rewards error")
+	}
+	return nil, nil, nil
+}
+
+func MsgGetSurplusFund(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context,
+	a *bindings.MsgGetSurplusFund, contractAddr sdk.AccAddress) error {
+	err := collectorKeeper.WasmMsgGetSurplusFund(ctx, a.AppID, a.AssetID, contractAddr, a.Amount)
 	if err != nil {
 		return err
 	}

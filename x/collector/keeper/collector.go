@@ -744,3 +744,28 @@ func (k Keeper) WasmUpdateCollectorLookupTableQuery(ctx sdk.Context, appID, asse
 	}
 	return true, ""
 }
+
+func (k Keeper) WasmCheckSurplusRewardQuery(ctx sdk.Context, appID, assetID uint64) sdk.Coin {
+	asset, _ := k.GetAsset(ctx, assetID)
+	netFeeCollectedData, _ := k.GetNetFeeCollectedData(ctx, appID, assetID)
+	auctionMapping, _ := k.GetAuctionMappingForApp(ctx, appID, assetID)
+	collectorLookup, _ := k.GetCollectorLookupTable(ctx, appID, assetID)
+	netAmount := collectorLookup.SurplusThreshold + collectorLookup.LotSize
+	if auctionMapping.IsDistributor && netFeeCollectedData.NetFeesCollected.GT(sdk.NewInt(int64(netAmount))) {
+		finalAmount := netFeeCollectedData.NetFeesCollected.Sub(sdk.NewInt(int64(collectorLookup.SurplusThreshold)))
+		return sdk.NewCoin(asset.Denom, finalAmount)
+	}
+	return sdk.NewCoin(asset.Denom, sdk.NewInt(0))
+}
+
+func (k Keeper) WasmMsgGetSurplusFund(ctx sdk.Context, appID, assetID uint64, addr sdk.AccAddress, amount sdk.Coin) error {
+	err := k.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr, sdk.NewCoins(amount))
+	if err != nil {
+		return err
+	}
+	err = k.DecreaseNetFeeCollectedData(ctx, appID, assetID, amount.Amount, types.AppAssetIdToFeeCollectedData{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
