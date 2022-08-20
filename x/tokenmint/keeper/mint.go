@@ -195,16 +195,20 @@ func (k Keeper) WasmMsgFoundationEmission(ctx sdk.Context, appID uint64, amount 
 		}
 	}
 	asset, _ := k.GetAsset(ctx, assetID)
-	err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(asset.Denom, amount))
-	if err != nil {
-		return err
+	if amount.GT(sdk.ZeroInt()) {
+		err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(asset.Denom, amount))
+		if err != nil {
+			return err
+		}
 	}
 
 	amountToIndividualFoundationAddr := amount.Quo(sdk.NewInt(int64(s)))
 	for _, addr := range foundationAddr {
-		err = k.SendCoinFromModuleToAccount(ctx, types.ModuleName, addr, sdk.NewCoin(asset.Denom, amountToIndividualFoundationAddr))
-		if err != nil {
-			return err
+		if amountToIndividualFoundationAddr.GT(sdk.ZeroInt()) {
+			err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, addr, sdk.NewCoin(asset.Denom, amountToIndividualFoundationAddr))
+			if err != nil {
+				return err
+			}
 		}
 	}
 	k.UpdateAssetDataInTokenMintByApp(ctx, appID, assetID, true, amount)
@@ -222,17 +226,16 @@ func (k Keeper) WasmMsgRebaseMint(ctx sdk.Context, appID uint64, amount sdk.Int,
 		}
 	}
 	asset, _ := k.GetAsset(ctx, assetID)
-	err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(asset.Denom, amount))
-	if err != nil {
-		return err
+	if amount.GT(sdk.ZeroInt()) {
+		err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(asset.Denom, amount))
+		if err != nil {
+			return err
+		}
+		err = k.SendCoinFromModuleToAccount(ctx, types.ModuleName, contractAddr, sdk.NewCoin(asset.Denom, amount))
+		if err != nil {
+			return err
+		}
+		k.UpdateAssetDataInTokenMintByApp(ctx, appID, assetID, true, amount)
 	}
-
-	err = k.SendCoinFromModuleToAccount(ctx, types.ModuleName, contractAddr, sdk.NewCoin(asset.Denom, amount))
-	if err != nil {
-		return err
-	}
-
-	k.UpdateAssetDataInTokenMintByApp(ctx, appID, assetID, true, amount)
-
 	return nil
 }

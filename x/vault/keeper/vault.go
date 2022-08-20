@@ -720,9 +720,11 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 		}
 	}
 	asset, _ := k.GetAsset(ctx, assetID)
-	err := k.MintCoin(ctx, tokenminttypes.ModuleName, sdk.NewCoin(asset.Denom, amount))
-	if err != nil {
-		return err
+	if amount.GT(sdk.ZeroInt()) {
+		err := k.MintCoin(ctx, tokenminttypes.ModuleName, sdk.NewCoin(asset.Denom, amount))
+		if err != nil {
+			return err
+		}
 	}
 	k.UpdateAssetDataInTokenMintByApp(ctx, appID, assetID, true, amount)
 	for i, _ := range votingRatio {
@@ -735,16 +737,16 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 		shareByExtPair := votingR.Mul(amount)
 		perUserShareByAmt = shareByExtPair.Quo(extPairVaultMappingData.TokenMintedAmount)
 		vaultsData, _ = k.GetAppExtendedPairVaultMappingData(ctx, appID, extP)
-		//TODO:
-		// apply offset for batching
 
 		for _, vaultID := range vaultsData.VaultIds {
 			vault, _ := k.GetVault(ctx, vaultID)
 			amt := vault.AmountOut.Mul(perUserShareByAmt)
 			addr, _ := sdk.AccAddressFromBech32(vault.Owner)
-			err = k.SendCoinFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoin(asset.Denom, amt))
-			if err != nil {
-				return err
+			if amt.GT(sdk.ZeroInt()) {
+				err := k.SendCoinFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoin(asset.Denom, amt))
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
