@@ -86,7 +86,7 @@ func (k Keeper) WasmWhitelistAppIDLiquidation(ctx sdk.Context, appID uint64) err
 
 func (k Keeper) WasmWhitelistAppIDLiquidationQuery(ctx sdk.Context, appID uint64) (bool, string) {
 	appID, found := k.GetAppIdByApp(ctx, appID)
-	if !found {
+	if found {
 		return false, types.ErrAppIDExists.Error()
 	}
 	return true, ""
