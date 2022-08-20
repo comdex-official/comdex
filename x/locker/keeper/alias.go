@@ -6,6 +6,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 )
 
 func (k Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coin sdk.Coin) error {
@@ -50,6 +51,10 @@ func (k Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
 
 func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected sdk.Int) error {
 	return k.collector.UpdateCollector(ctx, appID, assetID, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected)
+}
+
+func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTableData, found bool) {
+	return k.collector.GetCollectorLookupTable(ctx, appID, assetID)
 }
 
 func (k Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {

@@ -12,7 +12,7 @@ message Internal_rewards{
     (gogoproto.customname) = "App_mapping_ID",
     (gogoproto.moretags) = "yaml:\"app_mapping_ID\""
   ];
-  repeated uint64 asset_ID = 2 [
+  uint64 asset_ID = 2 [
     (gogoproto.customname) = "Asset_ID",
     (gogoproto.moretags) = "yaml:\"asset_ID\""
   ];

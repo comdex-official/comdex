@@ -5,6 +5,7 @@ import (
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 )
 
 type BankKeeper interface {
@@ -31,6 +32,7 @@ type OracleKeeper interface {
 
 type CollectorKeeper interface {
 	UpdateCollector(ctx sdk.Context, appID, assetID uint64, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected sdk.Int) error
+	GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTableData, found bool)
 }
 
 type EsmKeeper interface {

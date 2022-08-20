@@ -5,11 +5,11 @@ import (
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
-	"strconv"
 )
 
 func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
-	appIds := k.GetAppIds(ctx).WhitelistedAppIds
+	appIds := k.GetAppIds(ctx)
+	params := k.GetParams(ctx)
 
 	for i := range appIds {
 		esmStatus, found := k.GetESMStatus(ctx, appIds[i])
@@ -21,18 +21,39 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		if klwsParams.BreakerEnable || status {
 			continue
 		}
+
+		liquidationOffsetHolder, found := k.GetLiquidationOffsetHolder(ctx, appIds[i], types.VaultLiquidationsOffsetPrefix)
+		if !found {
+			liquidationOffsetHolder = types.NewLiquidationOffsetHolder(appIds[i], 0)
+		}
 		vaultsMap, _ := k.GetAppMappingData(ctx, appIds[i])
 
 		vaults := vaultsMap
 		for j := range vaults {
 			vaultIds := vaults[j].VaultIds
-			for l := range vaultIds {
+			start, end := types.GetSliceStartEndForLiquidations(len(vaultIds), int(liquidationOffsetHolder.CurrentOffset), int(params.LiquidationBatchSize))
+			if start == end {
+				liquidationOffsetHolder.CurrentOffset = 0
+				start, end = types.GetSliceStartEndForLiquidations(len(vaultIds), int(liquidationOffsetHolder.CurrentOffset), int(params.LiquidationBatchSize))
+			}
+			newVaultIDs := vaultIds[start:end]
+			for l := range newVaultIDs {
 				vault, found := k.GetVault(ctx, vaultIds[l])
 				if !found {
 					continue
 				}
 
 				extPair, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
+				pair, _ := k.GetPair(ctx, extPair.PairId)
+				assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+				if !found {
+					continue
+				}
+				assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
+				if !found {
+					continue
+				}
+				totalIn := vault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
 
 				liqRatio := extPair.MinCr
 				totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
@@ -42,7 +63,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				}
 
 				if sdk.Dec.LT(collateralitzationRatio, liqRatio) {
-					err := k.CreateLockedVault(ctx, vault, collateralitzationRatio, appIds[i])
+					err := k.CreateLockedVault(ctx, vault, totalIn, collateralitzationRatio, appIds[i])
 					if err != nil {
 						continue
 					}
@@ -50,18 +71,19 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 					k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, vault.ExtendedPairVaultID, vault.Id, appIds[i])
 				}
 			}
+			liquidationOffsetHolder.CurrentOffset = uint64(end)
+			k.SetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, liquidationOffsetHolder)
 		}
 	}
 	return nil
 }
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, collateralizationRatio sdk.Dec, appID uint64) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, totalIn sdk.Dec, collateralizationRatio sdk.Dec, appID uint64) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	var value = types.LockedVault{
 		LockedVaultId:                lockedVaultID + 1,
 		AppId:                        appID,
-		AppVaultTypeId:               strconv.FormatUint(appID, 10),
 		OriginalVaultId:              vault.Id,
 		ExtendedPairId:               vault.ExtendedPairVaultID,
 		Owner:                        vault.Owner,
@@ -72,10 +94,8 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 		IsAuctionComplete:            false,
 		IsAuctionInProgress:          false,
 		CrAtLiquidation:              collateralizationRatio,
-		CurrentCollaterlisationRatio: collateralizationRatio,
-		CollateralToBeAuctioned:      sdk.ZeroDec(),
+		CollateralToBeAuctioned:      totalIn,
 		LiquidationTimestamp:         ctx.BlockTime(),
-		SellOffHistory:               nil,
 		InterestAccumulated:          vault.InterestAccumulated,
 		Kind:                         nil,
 	}
@@ -85,51 +105,12 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, colla
 	return nil
 }
 
-func (k Keeper) SetLockedVaultByAppID(ctx sdk.Context, msg types.LockedVaultToAppMapping) {
-	var (
-		store = k.Store(ctx)
-		key   = types.AppIDLockedVaultMappingKey(msg.AppId)
-		value = k.cdc.MustMarshal(&msg)
-	)
-
-	store.Set(key, value)
+func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom string) sdk.Int {
+	macc := k.GetModuleAccount(ctx, accountName)
+	return k.GetBalance(ctx, macc.GetAddress(), denom).Amount
 }
 
-func (k Keeper) GetLockedVaultByAppID(ctx sdk.Context, appMappingID uint64) (msg types.LockedVaultToAppMapping, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.AppIDLockedVaultMappingKey(appMappingID)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return msg, false
-	}
-
-	k.cdc.MustUnmarshal(value, &msg)
-	return msg, true
-}
-
-func (k Keeper) GetAllLockedVaultByAppID(ctx sdk.Context) (lockedVaultToAppMapping []types.LockedVaultToAppMapping) {
-	var (
-		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AppIDLockedVaultMappingKeyPrefix)
-	)
-
-	defer func(iter sdk.Iterator) {
-		err := iter.Close()
-		if err != nil {
-			return
-		}
-	}(iter)
-
-	for ; iter.Valid(); iter.Next() {
-		var vault types.LockedVaultToAppMapping
-		k.cdc.MustUnmarshal(iter.Value(), &vault)
-		lockedVaultToAppMapping = append(lockedVaultToAppMapping, vault)
-	}
-	return lockedVaultToAppMapping
-}
+// Locked vault history kv
 
 func (k Keeper) CreateLockedVaultHistory(ctx sdk.Context, lockedVault types.LockedVault) error {
 	lockedVaultID := k.GetLockedVaultIDHistory(ctx)
@@ -137,66 +118,6 @@ func (k Keeper) CreateLockedVaultHistory(ctx sdk.Context, lockedVault types.Lock
 	k.SetLockedVaultIDHistory(ctx, lockedVaultID+1)
 
 	return nil
-}
-
-func (k Keeper) UpdateLockedVaults(ctx sdk.Context) error {
-	appIds := k.GetAppIds(ctx).WhitelistedAppIds
-	for _, v := range appIds {
-		newUpdatedVaults := k.GetLockedVaults(ctx)
-		for _, lockedVault := range newUpdatedVaults {
-			if lockedVault.AppId == v {
-				ExtPair, _ := k.GetPairsVault(ctx, lockedVault.ExtendedPairId)
-				if (!lockedVault.IsAuctionInProgress && !lockedVault.IsAuctionComplete) || (lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.LTE(ExtPair.MinCr)) {
-					pair, _ := k.GetPair(ctx, ExtPair.PairId)
-					assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-					if !found {
-						continue
-					}
-
-					collateralizationRatio, err := k.CalculateCollaterlizationRatio(ctx, ExtPair.PairId, lockedVault.AmountIn, lockedVault.UpdatedAmountOut)
-					if err != nil {
-						continue
-					}
-
-					assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-					if !found {
-						continue
-					}
-
-					totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
-					updatedLockedVault := lockedVault
-					updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
-					updatedLockedVault.CollateralToBeAuctioned = totalIn
-					k.SetLockedVault(ctx, updatedLockedVault)
-					//k.UpdateLockedVaultsAppMapping(ctx, updatedLockedVault)
-
-				}
-			}
-		}
-	}
-	return nil
-}
-
-func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom string) sdk.Int {
-	macc := k.GetModuleAccount(ctx, accountName)
-	return k.GetBalance(ctx, macc.GetAddress(), denom).Amount
-}
-
-func (k Keeper) GetLockedVaultIDbyApp(ctx sdk.Context, appID uint64) uint64 {
-	var (
-		store = k.Store(ctx)
-		key   = types.AppLockedVaultMappingKey(appID)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return 0
-	}
-
-	var id protobuftypes.UInt64Value
-	k.cdc.MustUnmarshal(value, &id)
-
-	return id.GetValue()
 }
 
 func (k Keeper) GetLockedVaultIDHistory(ctx sdk.Context) uint64 {
@@ -215,6 +136,46 @@ func (k Keeper) GetLockedVaultIDHistory(ctx sdk.Context) uint64 {
 
 	return id.GetValue()
 }
+
+func (k Keeper) SetLockedVaultIDHistory(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockedVaultKeyHistory
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+	store.Set(key, value)
+}
+
+func (k Keeper) SetLockedVaultHistory(ctx sdk.Context, lockedVault types.LockedVault, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockedVaultHistoryKey(lockedVault.AppId, id)
+		value = k.cdc.MustMarshal(&lockedVault)
+	)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetLockedVaultHistory(ctx sdk.Context, appID, id uint64) (lockedVault types.LockedVault, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockedVaultHistoryKey(appID, id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return lockedVault, false
+	}
+
+	k.cdc.MustUnmarshal(value, &lockedVault)
+	return lockedVault, true
+	
+}
+
+// locked vaults kvs
 
 func (k Keeper) SetLockedVaultID(ctx sdk.Context, id uint64) {
 	var (
@@ -245,49 +206,31 @@ func (k Keeper) GetLockedVaultID(ctx sdk.Context) uint64 {
 
 	return id.GetValue()
 }
-func (k Keeper) SetLockedVaultIDHistory(ctx sdk.Context, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LockedVaultKeyHistory
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: id,
-			},
-		)
-	)
-	store.Set(key, value)
-}
+
 
 func (k Keeper) SetLockedVault(ctx sdk.Context, lockedVault types.LockedVault) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LockedVaultKey(lockedVault.LockedVaultId)
+		key   = types.LockedVaultKey(lockedVault.AppId, lockedVault.LockedVaultId)
 		value = k.cdc.MustMarshal(&lockedVault)
 	)
 	store.Set(key, value)
 }
 
-func (k Keeper) SetLockedVaultHistory(ctx sdk.Context, lockedVault types.LockedVault, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LockedVaultHistoryKey(id)
-		value = k.cdc.MustMarshal(&lockedVault)
-	)
-	store.Set(key, value)
-}
 
-func (k Keeper) DeleteLockedVault(ctx sdk.Context, id uint64) {
+
+func (k Keeper) DeleteLockedVault(ctx sdk.Context, appID, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LockedVaultKey(id)
+		key   = types.LockedVaultKey(appID, id)
 	)
 	store.Delete(key)
 }
 
-func (k Keeper) GetLockedVault(ctx sdk.Context, id uint64) (lockedVault types.LockedVault, found bool) {
+func (k Keeper) GetLockedVault(ctx sdk.Context, appID, id uint64) (lockedVault types.LockedVault, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LockedVaultKey(id)
+		key   = types.LockedVaultKey(appID, id)
 		value = store.Get(key)
 	)
 
@@ -297,6 +240,28 @@ func (k Keeper) GetLockedVault(ctx sdk.Context, id uint64) (lockedVault types.Lo
 
 	k.cdc.MustUnmarshal(value, &lockedVault)
 	return lockedVault, true
+}
+
+func (k Keeper) GetLockedVaultByApp(ctx sdk.Context, appID uint64) (lockedVault []types.LockedVault) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockedVaultKeyByApp(appID)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var mapData types.LockedVault
+		k.cdc.MustUnmarshal(iter.Value(), &mapData)
+		lockedVault = append(lockedVault, mapData)
+	}
+	return lockedVault
 }
 
 func (k Keeper) GetLockedVaults(ctx sdk.Context) (lockedVaults []types.LockedVault) {
@@ -321,8 +286,10 @@ func (k Keeper) GetLockedVaults(ctx sdk.Context) (lockedVaults []types.LockedVau
 	return lockedVaults
 }
 
-func (k Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag bool) error {
-	lockedVault, found := k.GetLockedVault(ctx, id)
+// auction flags kvs
+
+func (k Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, appID, id uint64, flag bool) error {
+	lockedVault, found := k.GetLockedVault(ctx, appID, id)
 	if !found {
 		return types.LockedVaultDoesNotExist
 	}
@@ -331,8 +298,8 @@ func (k Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag bool
 	return nil
 }
 
-func (k Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) error {
-	lockedVault, found := k.GetLockedVault(ctx, id)
+func (k Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, appID, id uint64, flag bool) error {
+	lockedVault, found := k.GetLockedVault(ctx, appID, id)
 	if !found {
 		return types.LockedVaultDoesNotExist
 	}
@@ -341,27 +308,66 @@ func (k Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) 
 	return nil
 }
 
-func (k Keeper) SetAppID(ctx sdk.Context, AppIds types.WhitelistedAppIds) {
+// whitlisted appIds kvs
+
+func (k Keeper) SetAppID(ctx sdk.Context, appID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AppIdsKeyPrefix
-		value = k.cdc.MustMarshal(&AppIds)
+		key   = types.WhitelistAppKeyByApp(appID)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: appID,
+			},
+		)
 	)
 
 	store.Set(key, value)
 }
 
-func (k Keeper) GetAppIds(ctx sdk.Context) (appIds types.WhitelistedAppIds) {
+func (k Keeper) GetAppIdByApp(ctx sdk.Context, appID uint64) (uint64, bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AppIdsKeyPrefix
+		key   = types.WhitelistAppKeyByApp(appID)
 		value = store.Get(key)
 	)
 
 	if value == nil {
-		return appIds
+		return 0, false
 	}
 
-	k.cdc.MustUnmarshal(value, &appIds)
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue(), true
+}
+
+func (k Keeper) GetAppIds(ctx sdk.Context) (appIds []uint64) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AppIdsKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+
+		var app protobuftypes.UInt64Value
+		k.cdc.MustUnmarshal(iter.Value(), &app)
+		appIds = append(appIds, app.Value)
+	}
 	return appIds
+}
+
+func (k Keeper) DeleteAppId(ctx sdk.Context, appID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.WhitelistAppKeyByApp(appID)
+	)
+
+	store.Delete(key)
 }

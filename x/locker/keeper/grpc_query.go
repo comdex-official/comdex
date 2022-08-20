@@ -291,16 +291,21 @@ func (q QueryServer) QueryWhiteListedAssetIDsByAppID(c context.Context, request 
 
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
+		assetIds   []uint64  
 	)
 
-	lockerLookupData, found := q.GetLockerProductAssetMapping(ctx, request.AppId)
+	lockerLookupData, found := q.GetLockerProductAssetMappingByApp(ctx, request.AppId)
 
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
 	}
 
+	for _, data := range lockerLookupData {
+		assetIds = append(assetIds, data.AssetId)
+	}
+
 	return &types.QueryWhiteListedAssetIDsByAppIDResponse{
-		AssetIds: lockerLookupData.AssetIds,
+		AssetIds: assetIds,
 	}, nil
 }
 
@@ -323,14 +328,14 @@ func (q QueryServer) QueryWhiteListedAssetByAllApps(c context.Context, request *
 	for _, app := range apps {
 		var product types.AppToAllAsset
 		var assets []assettypes.Asset
-		appData, _ := q.GetLockerProductAssetMapping(ctx, app.Id)
-		for _, assetID := range appData.AssetIds {
-			asset, assetFound := q.asset.GetAsset(ctx, assetID)
+		appData, _ := q.GetLockerProductAssetMappingByApp(ctx, app.Id)
+		for _, assetID := range appData {
+			asset, assetFound := q.asset.GetAsset(ctx, assetID.AssetId)
 			if assetFound {
 				assets = append(assets, asset)
 			}
 			product = types.AppToAllAsset{
-				AppId:  appData.AppId,
+				AppId:  app.Id,
 				Assets: assets,
 			}
 		}

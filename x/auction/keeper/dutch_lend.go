@@ -151,7 +151,7 @@ func (k Keeper) StartLendDutchAuction(
 	if err != nil {
 		return err
 	}
-	err = k.SetFlagIsAuctionInProgress(ctx, lockedVaultID, true)
+	err = k.SetFlagIsAuctionInProgress(ctx, appID, lockedVaultID, true)
 	if err != nil {
 		return err
 	}
@@ -418,12 +418,12 @@ func (k Keeper) CloseDutchLendAuction(
 	dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
 
 	//update locked vault
-	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
+	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
 	if err != nil {
 		return err
 	}
 
-	err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.LockedVaultId, false)
+	err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, false)
 	if err != nil {
 		return err
 	}
@@ -440,7 +440,7 @@ func (k Keeper) CloseDutchLendAuction(
 	if err != nil {
 		return err
 	}
-	err = k.UnLiquidateLockedBorrows(ctx, lockedVault.LockedVaultId)
+	err = k.UnLiquidateLockedBorrows(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 	if err != nil {
 		return err
 	}

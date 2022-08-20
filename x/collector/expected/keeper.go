@@ -3,6 +3,8 @@ package expected
 import (
 	"github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
+	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -26,4 +28,13 @@ type AssetKeeper interface {
 
 type AuctionKeeper interface {
 	GetAuctionParams(ctx sdk.Context, appID uint64) (asset auctiontypes.AuctionParams, found bool)
+}
+
+type LockerKeeper interface {
+	GetLockerLookupTable(ctx sdk.Context, appID, assetID uint64) (lockerLookupData lockertypes.LockerLookupTableData, found bool)
+	GetLocker(ctx sdk.Context, lockerID uint64) (locker lockertypes.Locker, found bool)
+}
+
+type RewardsKeeper interface {
+	GetReward(ctx sdk.Context, appId, assetID uint64) (rewards rewardstypes.InternalRewards, found bool)
 }

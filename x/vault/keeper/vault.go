@@ -1,9 +1,11 @@
 package keeper
 
 import (
+	"sort"
+
 	"github.com/comdex-official/comdex/x/vault/types"
-	protobuftypes "github.com/gogo/protobuf/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 func (k Keeper) SetIDForVault(ctx sdk.Context, id uint64) {
@@ -544,20 +546,21 @@ func (k Keeper) GetVaults(ctx sdk.Context) (vaults []types.Vault) {
 func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64) {
 	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMappingData(ctx, appMappingID, extendedPairID)
 
-	var dataIndex int
 	if found {
-		for index, vaultID := range appExtendedPairVaultData.VaultIds {
-			if vaultID == userVaultID {
-				dataIndex = index
+		lengthOfVaults := len(appExtendedPairVaultData.VaultIds)
+
+		dataIndex := sort.Search(lengthOfVaults, func(i int) bool { return appExtendedPairVaultData.VaultIds[i] >= userVaultID })
+	
+	
+		if dataIndex < lengthOfVaults && appExtendedPairVaultData.VaultIds[dataIndex] == userVaultID {
+			appExtendedPairVaultData.VaultIds = append(appExtendedPairVaultData.VaultIds[:dataIndex], appExtendedPairVaultData.VaultIds[dataIndex+1:]...)
+			err := k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
+			if err != nil {
+				return
 			}
-		}
-		appExtendedPairVaultData.VaultIds = append(appExtendedPairVaultData.VaultIds[:dataIndex], appExtendedPairVaultData.VaultIds[dataIndex+1:]...)
-		
-		err := k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
-		if err != nil {
-			return
-		}
+		} 
 	}
+
 }
 
 func (k Keeper) SetIDForStableVault(ctx sdk.Context, id uint64) {

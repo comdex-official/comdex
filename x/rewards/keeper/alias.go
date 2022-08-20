@@ -10,8 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
-	return k.locker.GetLockerProductAssetMapping(ctx, appMappingID)
+func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appID, assetID uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
+	return k.locker.GetLockerProductAssetMapping(ctx, appID, assetID)
 }
 
 func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID, assetID uint64) (appAssetCollectorData collectortypes.AppToAssetIdCollectorMapping, found bool) {
@@ -42,8 +42,8 @@ func (k Keeper) GetLockerLookupTableByApp(ctx sdk.Context, appID uint64) (locker
 // 	return k.collector.GetCollectorLookupByAsset(ctx, appID, assetID)
 // }
 
-func (k Keeper) UpdateLocker(ctx sdk.Context, locker types.Locker) {
-	k.locker.UpdateLocker(ctx, locker)
+func (k Keeper) SetLocker(ctx sdk.Context, locker types.Locker) {
+	k.locker.SetLocker(ctx, locker)
 }
 
 func (k Keeper) GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData []vaulttypes.AppExtendedPairVaultMappingData, found bool) {

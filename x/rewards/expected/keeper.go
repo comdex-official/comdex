@@ -39,11 +39,11 @@ type MarketKeeper interface {
 }
 
 type LockerKeeper interface {
-	GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint64) (lockerProductMapping lockertypes.LockerProductAssetMapping, found bool)
+	GetLockerProductAssetMapping(ctx sdk.Context, appMappingID, assetID uint64) (lockerProductMapping lockertypes.LockerProductAssetMapping, found bool)
 	GetLocker(ctx sdk.Context, lockerID uint64) (locker lockertypes.Locker, found bool)
 	GetLockers(ctx sdk.Context) (locker []lockertypes.Locker)
 	GetLockerLookupTableByApp(ctx sdk.Context, appID uint64) (lockerLookupData []lockertypes.LockerLookupTableData, found bool)
-	UpdateLocker(ctx sdk.Context, locker lockertypes.Locker)
+	SetLocker(ctx sdk.Context, locker lockertypes.Locker)
 	SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise) error
 	GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise, found bool)
 }

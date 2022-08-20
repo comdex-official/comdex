@@ -69,12 +69,12 @@ func (k Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
 	return k.asset.GetAsset(ctx, id)
 }
 
-func (k Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag bool) error {
-	return k.liquidation.SetFlagIsAuctionInProgress(ctx, id, flag)
+func (k Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, appID, id uint64, flag bool) error {
+	return k.liquidation.SetFlagIsAuctionInProgress(ctx, appID, id, flag)
 }
 
-func (k Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) error {
-	return k.liquidation.SetFlagIsAuctionComplete(ctx, id, flag)
+func (k Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, appID, id uint64, flag bool) error {
+	return k.liquidation.SetFlagIsAuctionComplete(ctx, appID, id, flag)
 }
 
 func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID, assetID uint64) (appAssetCollectorData types.AppToAssetIdCollectorMapping, found bool) {
@@ -156,8 +156,8 @@ func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vault
 func (k Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.AppAssetIdToAuctionLookupTable, found bool) {
 	return k.collector.GetAllAuctionMappingForApp(ctx)
 }
-func (k Keeper) DeleteLockedVault(ctx sdk.Context, id uint64) {
-	k.liquidation.DeleteLockedVault(ctx, id)
+func (k Keeper) DeleteLockedVault(ctx sdk.Context, appId, id uint64) {
+	k.liquidation.DeleteLockedVault(ctx, appId, id)
 }
 
 func (k Keeper) DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64) {
@@ -271,8 +271,8 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
 	return k.lend.UpdateReserveBalances(ctx, assetID, moduleName, payment, inc)
 }
-func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
-	return k.liquidation.UnLiquidateLockedBorrows(ctx, id)
+func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
+	return k.liquidation.UnLiquidateLockedBorrows(ctx, appID, id)
 }
 
 func (k Keeper) SetLend(ctx sdk.Context, lend lendtypes.LendAsset) {

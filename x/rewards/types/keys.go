@@ -67,8 +67,12 @@ func GetGaugeIdsByTriggerDurationKey(duration time.Duration) []byte {
 	return append(GaugeIdsByTriggerDurationKeyPrefix, sdk.Uint64ToBigEndian(uint64(duration))...)
 }
 
-func RewardsKey(id uint64) []byte {
-	return append(RewardsKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func RewardsKey(appID, assetID uint64) []byte {
+	return append(append(RewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
+}
+
+func RewardsKeyByApp(appID uint64) []byte {
+	return append(RewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 func CreateLastInterestTimeKey() []byte {

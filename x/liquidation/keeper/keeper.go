@@ -72,91 +72,38 @@ func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
 
-func uint64InSlice(a uint64, list []uint64) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
-
-func (k Keeper) WhitelistAppID(ctx sdk.Context, appID uint64) error {
-	found := uint64InSlice(appID, k.GetAppIds(ctx).WhitelistedAppIds)
-	if found {
-		return types.ErrAppIDExists
-	}
-	WhitelistedAppIds := append(k.GetAppIds(ctx).WhitelistedAppIds, appID)
-	UpdatedWhitelistedAppIds := types.WhitelistedAppIds{
-		WhitelistedAppIds: WhitelistedAppIds,
-	}
-	k.SetAppID(ctx, UpdatedWhitelistedAppIds)
-	return nil
-}
-
-func (k Keeper) RemoveWhitelistAsset(ctx sdk.Context, appMappingID uint64) error {
-	WhitelistedAppIds := k.GetAppIds(ctx).WhitelistedAppIds
-	found := uint64InSlice(appMappingID, k.GetAppIds(ctx).WhitelistedAppIds)
-	if !found {
-		return types.ErrAppIDDoesNotExists
-	}
-	var newAppIds []uint64
-	for i := range WhitelistedAppIds {
-		if appMappingID != WhitelistedAppIds[i] {
-			newAppID := WhitelistedAppIds[i]
-			newAppIds = append(newAppIds, newAppID)
-		}
-	}
-	UpdatedWhitelistedAppIds := types.WhitelistedAppIds{
-		WhitelistedAppIds: newAppIds,
-	}
-
-	k.SetAppID(ctx, UpdatedWhitelistedAppIds)
-	return nil
-}
-
 //Wasm tx and query binding functions
 
 func (k Keeper) WasmWhitelistAppIDLiquidation(ctx sdk.Context, appID uint64) error {
-	WhitelistedAppIds := append(k.GetAppIds(ctx).WhitelistedAppIds, appID)
-	UpdatedWhitelistedAppIds := types.WhitelistedAppIds{
-		WhitelistedAppIds: WhitelistedAppIds,
+	appID, found := k.GetAppIdByApp(ctx, appID)
+	if found {
+		return types.ErrAppIDDoesNotExists
 	}
-	k.SetAppID(ctx, UpdatedWhitelistedAppIds)
+
+	k.SetAppID(ctx, appID)
 	return nil
 }
 
 func (k Keeper) WasmWhitelistAppIDLiquidationQuery(ctx sdk.Context, appID uint64) (bool, string) {
-	found := uint64InSlice(appID, k.GetAppIds(ctx).WhitelistedAppIds)
-	if found {
+	appID, found := k.GetAppIdByApp(ctx, appID)
+	if !found {
 		return false, types.ErrAppIDExists.Error()
 	}
 	return true, ""
 }
 
 func (k Keeper) WasmRemoveWhitelistAppIDLiquidation(ctx sdk.Context, appID uint64) error {
-	WhitelistedAppIds := k.GetAppIds(ctx).WhitelistedAppIds
-	found := uint64InSlice(appID, k.GetAppIds(ctx).WhitelistedAppIds)
+	appID, found := k.GetAppIdByApp(ctx, appID)
 	if !found {
 		return types.ErrAppIDDoesNotExists
 	}
-	var newAppIds []uint64
-	for i := range WhitelistedAppIds {
-		if appID != WhitelistedAppIds[i] {
-			newAppID := WhitelistedAppIds[i]
-			newAppIds = append(newAppIds, newAppID)
-		}
-	}
-	UpdatedWhitelistedAppIds := types.WhitelistedAppIds{
-		WhitelistedAppIds: newAppIds,
-	}
+	k.DeleteAppId(ctx, appID)
 
-	k.SetAppID(ctx, UpdatedWhitelistedAppIds)
 	return nil
 }
 
 func (k Keeper) WasmRemoveWhitelistAppIDLiquidationQuery(ctx sdk.Context, appID uint64) (bool, string) {
-	found := uint64InSlice(appID, k.GetAppIds(ctx).WhitelistedAppIds)
+	appID, found := k.GetAppIdByApp(ctx, appID)
 	if !found {
 		return false, types.ErrAppIDDoesNotExists.Error()
 	}

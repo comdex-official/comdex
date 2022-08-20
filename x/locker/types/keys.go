@@ -27,20 +27,21 @@ var (
 	LockerIDPrefix							  = []byte{0x17}
 )
 
-func LockerProductAssetMappingKey(id uint64) []byte {
-	return append(LockerProductAssetMappingKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func LockerProductAssetMappingKey(appID, assetID uint64) []byte {
+	return append(append(LockerProductAssetMappingKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
+}
+
+func LockerProductAssetMappingByAppKey(appID uint64) []byte {
+	return append(LockerProductAssetMappingKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 func LockerTotalRewardsByAssetAppWiseKey(appID, assetID uint64) []byte {
 	return append(append(LockerTotalRewardsByAssetAppWiseKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
 }
-// func LockerLookupTableKey(id uint64) []byte {
-// 	return append(LockerLookupTableKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-// }
 
-// func UserLockerAssetMappingKey(address string) []byte {
-// 	return append(UserLockerAssetMappingKeyPrefix, address...)
-// }
+func LockerTotalRewardsByAppWiseKey(appID uint64) []byte {
+	return append(LockerTotalRewardsByAssetAppWiseKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
+}
 
 func UserAppAssetLockerMappingKey(address string, appID uint64, assetID uint64) []byte {
 	return append(append(append(UserLockerAssetMappingKeyPrefix,  address...), sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)

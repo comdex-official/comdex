@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
@@ -11,17 +12,17 @@ import (
 func (k Keeper) SetReward(ctx sdk.Context, rewards types.InternalRewards) {
 	var (
 		store = k.Store(ctx)
-		key   = types.RewardsKey(rewards.App_mapping_ID)
+		key   = types.RewardsKey(rewards.App_mapping_ID, rewards.Asset_ID)
 		value = k.cdc.MustMarshal(&rewards)
 	)
 
 	store.Set(key, value)
 }
 
-func (k Keeper) GetReward(ctx sdk.Context, id uint64) (rewards types.InternalRewards, found bool) {
+func (k Keeper) GetReward(ctx sdk.Context, appId, assetID uint64) (rewards types.InternalRewards, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.RewardsKey(id)
+		key   = types.RewardsKey(appId, assetID)
 		value = store.Get(key)
 	)
 
@@ -30,6 +31,39 @@ func (k Keeper) GetReward(ctx sdk.Context, id uint64) (rewards types.InternalRew
 	}
 
 	k.cdc.MustUnmarshal(value, &rewards)
+	return rewards, true
+}
+
+func (k Keeper) DeleteReward(ctx sdk.Context, appID, assetID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.RewardsKey(appID, assetID)
+	)
+	store.Delete(key)
+}
+
+func (k Keeper) GetRewardByApp(ctx sdk.Context, appId uint64) (rewards []types.InternalRewards, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.RewardsKeyByApp(appId)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var mapData types.InternalRewards
+		k.cdc.MustUnmarshal(iter.Value(), &mapData)
+		rewards = append(rewards, mapData)
+	}
+	if rewards == nil {
+		return nil, false
+	}
 	return rewards, true
 }
 
@@ -276,7 +310,7 @@ func (k Keeper) SetExternalRewardVault(ctx sdk.Context, VaultExternalRewards typ
 // Wasm query checks
 
 func (k Keeper) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetIDs []uint64) (found bool, err string) {
-	_, found = k.GetReward(ctx, appMappingID)
+	_, found = k.GetRewardByApp(ctx, appMappingID)
 	if !found {
 		return false, "not found"
 	}
@@ -408,4 +442,38 @@ func (k Keeper) GetVaultInterestTracker(ctx sdk.Context, id, appID uint64) (vaul
 
 	k.cdc.MustUnmarshal(value, &vault)
 	return vault, true
+}
+
+func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID uint64, Depositor string, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64 ) (sdk.Dec, error) {
+
+	_, found := k.GetReward(ctx, appID, assetID)
+	if !found {
+		return sdk.ZeroDec(), nil
+	}
+
+	collectorLookup, found := k.GetCollectorLookupTable(ctx, appID, assetID)
+	if !found {
+		return sdk.ZeroDec(), collectortypes.ErrorAssetDoesNotExist
+	}
+	collectorBTime := collectorLookup.BlockTime.Unix()
+	if collectorLookup.LockerSavingRate.IsZero() {
+		return sdk.ZeroDec(), nil
+	} else {
+		if blockHeight == 0 {
+			// take bh from lsr
+			newAmt, err := k.LockerRewards(ctx, NetBalance, collectorLookup.LockerSavingRate, collectorBTime)
+			if err != nil {
+				return sdk.ZeroDec(), err
+			}
+			return newAmt, nil
+		} else {
+			newAmt, err := k.LockerRewards(ctx, NetBalance, collectorLookup.LockerSavingRate, lockerBlockTime)
+			if err != nil {
+				return sdk.ZeroDec(), err
+			}
+			return newAmt, nil
+		}
+	}
+
+	return sdk.ZeroDec(), nil
 }

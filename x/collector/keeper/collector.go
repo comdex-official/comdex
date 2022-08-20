@@ -1,8 +1,10 @@
 package keeper
 
 import (
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -90,7 +92,6 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 			return err
 		}
 	} else {
-		// var check = 0 // makes it 1 if assetID exists for appId
 
 		var collectorNewData types.AppToAssetIdCollectorMapping
 		collectorNewData.AppId = appID
@@ -115,29 +116,6 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 
 		return nil
 
-		// if check == 0 {
-		// 	var assetIDCollect types.AssetIdCollectorMapping
-		// 	assetIDCollect.AssetId = assetID
-		// 	var newCollector types.CollectorData
-
-		// 	newCollector.CollectedClosingFee = collectedClosingFee
-		// 	newCollector.CollectedOpeningFee = collectedOpeningFee
-		// 	newCollector.CollectedStabilityFee = collectedStabilityFee
-		// 	newCollector.LiquidationRewardsCollected = liquidationRewardsCollected
-		// 	assetIDCollect.Collector = newCollector
-
-		// 	collectorData.AssetCollector = append(collectorData.AssetCollector, assetIDCollect)
-
-		// 	k.SetAppidToAssetCollectorMapping(ctx, collectorData)
-		// 	err := k.SetNetFeeCollectedData(ctx, appID, assetID,
-		// 		newCollector.CollectedClosingFee.
-		// 			Add(newCollector.CollectedOpeningFee).
-		// 			Add(newCollector.CollectedStabilityFee).
-		// 			Add(newCollector.LiquidationRewardsCollected))
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// }
 	}
 	return nil
 }
@@ -267,30 +245,6 @@ func (k Keeper) SetCollectorLookupTable(ctx sdk.Context, records types.Collector
 	return nil
 }
 
-// func (k Keeper) SetCollectorLookupTableForWasm(ctx sdk.Context, records types.CollectorLookupTableData) error {
-// 	accmLookup, _ := k.GetCollectorLookupTable(ctx, records.AppId, records.CollectorAssetId)
-// 	accmLookup.AppId = records.AppId
-// 	aa := accmLookup.AssetRateInfo
-// 	for j, v := range aa {
-// 		if v.CollectorAssetId == records.CollectorAssetId {
-// 			v.LockerSavingRate = records.LockerSavingRate
-// 			v.BidFactor = records.BidFactor
-// 			v.DebtLotSize = records.DebtLotSize
-// 			v.DebtThreshold = records.DebtThreshold
-// 			v.LotSize = records.LotSize
-// 			v.SurplusThreshold = records.SurplusThreshold
-// 			accmLookup.AssetRateInfo[j] = v
-// 			var (
-// 				store = ctx.KVStore(k.storeKey)
-// 				key   = types.CollectorLookupTableMappingKey(records.AppId)
-// 				value = k.cdc.MustMarshal(&accmLookup)
-// 			)
-// 			store.Set(key, value)
-// 		}
-// 	}
-// 	return nil
-// }
-
 // GetCollectorLookupTable returns collector lookup table.
 func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup types.CollectorLookupTableData, found bool) {
 	var (
@@ -352,23 +306,6 @@ func (k Keeper) GetAllCollectorLookupTable(ctx sdk.Context) (collectorLookup []t
 	}
 	return collectorLookup
 }
-
-// GetCollectorLookupByAsset return collector lookup data queried on asset.
-// func (k Keeper) GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64) (collectorLookupTable types.CollectorLookupTableData, found bool) {
-// 	collectorLookup, found := k.GetCollectorLookupTable(ctx, appID, assetID)
-// 	if !found {
-// 		return collectorLookupTable, false
-// 	}
-
-// 	// var assetRateInfo types.CollectorLookupTable
-// 	// for _, data := range collectorLookup.AssetRateInfo {
-// 	// 	if data.CollectorAssetId == assetID {
-// 	// 		assetRateInfo = data
-// 	// 		return assetRateInfo, true
-// 	// 	}
-// 	// }
-// 	return collectorLookup, true
-// }
 
 // SetAppToDenomsMapping set denoms for appId in Collector LookupTable.
 func (k Keeper) SetAppToDenomsMapping(ctx sdk.Context, appID uint64, appToDenom types.AppToDenomsMapping) {
@@ -477,20 +414,6 @@ func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, record types.AppAssetId
 	store.Set(key, value)
 	return nil
 }
-
-// func (k Keeper) DuplicateCheck(ctx sdk.Context, appID, assetID uint64) (found bool, index int) {
-// 	result, found := k.GetAuctionMappingForApp(ctx, appID)
-// 	if !found {
-// 		return false, 0
-// 	}
-// 	for i, data := range result.AssetIdToAuctionLookup {
-// 		if data.AssetId == assetID {
-// 			return true, i
-// 		}
-// 	}
-
-// 	return false, 0
-// }
 
 // GetAuctionMappingForApp gets auction map data for app/product.
 func (k Keeper) GetAuctionMappingForApp(ctx sdk.Context, appID, assetID uint64) (collectorAuctionLookupTable types.AppAssetIdToAuctionLookupTable, found bool) {
@@ -665,6 +588,11 @@ func (k Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, collectorBindings *
 		appDenomNew.AssetIds = append(appDenomNew.AssetIds, collectorBindings.CollectorAssetID)
 		k.SetAppToDenomsMapping(ctx, collectorBindings.AppID, appDenomNew)
 	}
+	blockHeight := ctx.BlockHeight()
+
+	if collectorBindings.LockerSavingRate.IsZero() {
+		blockHeight = 0
+	}
 
 	var Collector = types.CollectorLookupTableData{
 		AppId:            collectorBindings.AppID,
@@ -676,10 +604,9 @@ func (k Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, collectorBindings *
 		LotSize:          collectorBindings.LotSize,
 		BidFactor:        collectorBindings.BidFactor,
 		DebtLotSize:      collectorBindings.DebtLotSize,
+		BlockHeight: 	  blockHeight,
+		BlockTime: 		  ctx.BlockTime(),
 	}
-	// accmLookup, _ := k.GetCollectorLookupTable(ctx, collectorBindings.AppID)
-	// accmLookup.AppId = collectorBindings.AppID
-	// accmLookup.AssetRateInfo = append(accmLookup.AssetRateInfo, Collector)
 
 	var (
 		store = ctx.KVStore(k.storeKey)
@@ -769,6 +696,22 @@ func (k Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, appID uint64) 
 
 func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding *bindings.MsgUpdateCollectorLookupTable) error {
 	Collector, _ := k.GetCollectorLookupTable(ctx, updateColBinding.AppID, updateColBinding.AssetID)
+	_, found := k.GetReward(ctx, Collector.AppId, Collector.CollectorAssetId)
+	if found {
+		if Collector.LockerSavingRate != updateColBinding.LSR {
+			if updateColBinding.LSR.IsZero() {
+				// run script to distrubyte reward
+				k.LockerIterateRewards(ctx, updateColBinding.AppID, updateColBinding.AssetID)
+			} else if Collector.LockerSavingRate.IsZero() {
+				// do nothing
+			} else if Collector.LockerSavingRate.GT(sdk.ZeroDec()) && updateColBinding.LSR.GT(sdk.ZeroDec()) {
+				// run script to distribute
+				k.LockerIterateRewards(ctx, updateColBinding.AppID, updateColBinding.AssetID)
+			}
+			
+		}
+	}
+
 
 	Collector.BidFactor = updateColBinding.BidFactor
 	Collector.DebtThreshold = updateColBinding.DebtThreshold
@@ -784,6 +727,14 @@ func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding
 	)
 	store.Set(key, value)
 	return nil
+}
+
+func (k Keeper) LockerIterateRewards(ctx sdk.Context, appID, assetID uint64) {
+	lockers, _:= k.GetLockerLookupTable(ctx, appID, assetID)
+	for _, data := range lockers.LockerIds {
+		lockerData, _ := k.GetLocker(ctx, data)
+	}
+	
 }
 
 func (k Keeper) WasmUpdateCollectorLookupTableQuery(ctx sdk.Context, appID, assetID uint64) (bool, string) {

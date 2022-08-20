@@ -132,7 +132,7 @@ message QueryRewardRequest {
 }
 
 message QueryRewardResponse {
-  Internal_rewards reward = 1
+  repeated Internal_rewards reward = 1
   [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"reward\""];
 }
 

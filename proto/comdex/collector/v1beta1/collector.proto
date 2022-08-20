@@ -2,6 +2,7 @@ syntax = "proto3";
 package comdex.collector.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 
 // this line is used by starport scaffolding # genesis/proto/import
@@ -42,23 +43,6 @@ message AppAssetIdToFeeCollectedData {
   ];
 }
 
-// message NetFeeCollectedData {
-//   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-//   repeated AssetIdToFeeCollected assetIdToFeeCollected = 2 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"asset_id_to_fee_collected\""];
-// }
-
-// message AssetIdToFeeCollected {
-//   uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
-//   string net_fees_collected = 2 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags)   = "yaml:\"net_fees_collected\"",
-//     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
-//   ];
-
-// }
-
 message AppToAssetIdCollectorMapping {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
   uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
@@ -66,20 +50,6 @@ message AppToAssetIdCollectorMapping {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"collector\""];
 }
-
-// message AppIdToAssetCollectorMapping {
-//   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-//   repeated AssetIdCollectorMapping asset_collector = 2 [(gogoproto.moretags) = "yaml:\"asset_collector\"",
-//   (gogoproto.nullable) = false];
-// }
-
-// message AssetIdCollectorMapping {
-//   uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
-//   CollectorData collector = 2 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"collector\""];
-
-// }
 
 message CollectorLookupTableData {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
@@ -102,62 +72,21 @@ message CollectorLookupTableData {
   ];
   uint64 debt_lot_size = 9 [
   (gogoproto.moretags) = "yaml:\"debt_lot_size\""];
+
+  int64 block_height = 10 [
+    (gogoproto.moretags) = "yaml:\"debt_lot_size\""];
+
+  google.protobuf.Timestamp block_time = 11 [
+      (gogoproto.nullable) = false,
+      (gogoproto.stdtime) = true,
+      (gogoproto.moretags)   = "yaml:\"block_time\""
+  ];
 }
-
-// message CollectorLookupTable {
-//   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-//   uint64 collector_asset_id = 2 [(gogoproto.moretags) = "yaml:\"collector_asset_id\""];
-//   uint64 secondary_asset_id = 3 [(gogoproto.moretags) = "yaml:\"secondary_asset_id\""];
-//   uint64 surplus_threshold = 4 [
-//   (gogoproto.moretags) = "yaml:\"surplus_threshold\""];
-//   uint64 debt_threshold = 5 [
-//   (gogoproto.moretags) = "yaml:\"debt_threshold\""];
-//   string locker_saving_rate = 6 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"locker_saving_rate\"",
-//   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
-//   uint64 lot_size = 7 [
-//   (gogoproto.moretags) = "yaml:\"lot_size\""];
-//   string bid_factor = 8 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-//     (gogoproto.moretags)   = "yaml:\"bid_factor\""
-//   ];
-//   uint64 debt_lot_size = 9 [
-//   (gogoproto.moretags) = "yaml:\"debt_lot_size\""];
-// }
-
-// message CollectorLookup { 
-//   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-//   repeated CollectorLookupTable asset_rate_info = 2 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"asset_rate_info\""];
-// }
 
 message AppToDenomsMapping {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
   repeated uint64 asset_ids = 2 [(gogoproto.moretags) = "yaml:\"asset_ids\""];
 }
-
-
-// key app id -> assets  traverse this one
-// message CollectorAuctionLookupTable {
-//   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
-//   repeated AssetIdToAuctionLookupTable assetIdToAuctionLookup = 2 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"asset_id_to_auction_lookup\""];
-// }
-
-// message AssetIdToAuctionLookupTable {
-//   uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
-//   bool is_surplus_auction = 2 [(gogoproto.moretags) = "yaml:\"is_surplus_auction\""];
-//   bool is_debt_auction = 3 [(gogoproto.moretags) = "yaml:\"is_debt_auction\""];
-//   bool is_distributor = 4 [(gogoproto.moretags) = "yaml:\"is_distributor\""];
-//   bool is_auction_active = 5 [(gogoproto.moretags) = "yaml:\"is_auction_active\""];
-//   bool asset_out_oracle_price = 6 [ (gogoproto.moretags) = "yaml:\"asset_out_oracle_price\"" ];
-//   uint64 asset_out_price     = 7 [ 
-//     (gogoproto.moretags) = "yaml:\"asset_out_price\"" ];
-// }
 
 message AppAssetIdToAuctionLookupTable {
   uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];

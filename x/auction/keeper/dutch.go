@@ -143,7 +143,7 @@ func (k Keeper) StartDutchAuction(
 	if err != nil {
 		return err
 	}
-	err = k.SetFlagIsAuctionInProgress(ctx, lockedVaultID, true)
+	err = k.SetFlagIsAuctionInProgress(ctx, appID, lockedVaultID, true)
 	if err != nil {
 		return err
 	}
@@ -407,12 +407,12 @@ func (k Keeper) CloseDutchAuction(
 	}
 
 	//update locked vault
-	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
+	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
 	if err != nil {
 		return err
 	}
 
-	err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.LockedVaultId, false)
+	err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, false)
 	if err != nil {
 		return err
 	}
@@ -429,7 +429,7 @@ func (k Keeper) CloseDutchAuction(
 	if err != nil {
 		return err
 	}
-	k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+	k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 
 	return nil
 }
@@ -518,12 +518,12 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
 
 				//update locked vault
-				err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
+				err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
 				if err != nil {
 					return err
 				}
 
-				err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.LockedVaultId, false)
+				err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, false)
 				if err != nil {
 					return err
 				}
@@ -540,7 +540,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				if err != nil {
 					return err
 				}
-				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+				k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 
 			} else {
 				OutFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)

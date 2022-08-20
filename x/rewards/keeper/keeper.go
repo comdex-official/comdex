@@ -92,7 +92,7 @@ func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetIDs []
 	}
 
 	for _, assetID := range assetIDs {
-		internalReward, found := k.GetReward(ctx, appMappingID)
+		internalReward, found := k.GetReward(ctx, appMappingID, assetID)
 		if !found && isInsert {
 			internalReward = types.InternalRewards{
 				App_mapping_ID: appMappingID,
@@ -143,15 +143,15 @@ func (k Keeper) ActExternalRewardsLockers(
 	minLockupTimeSeconds int64,
 ) error {
 	id := k.GetExternalRewardsLockersID(ctx)
-	lockerAssets, found := k.GetLockerProductAssetMapping(ctx, appMappingID)
+	_, found := k.GetLockerProductAssetMapping(ctx, appMappingID, assetID)
 	if !found {
 		return types.ErrAssetIDDoesNotExist
 	}
 
-	found = uint64InSlice(assetID, lockerAssets.AssetIds)
-	if !found {
-		return types.ErrAssetIDDoesNotExist
-	}
+	// found = uint64InSlice(assetID, lockerAssets.AssetIds)
+	// if !found {
+	// 	return types.ErrAssetIDDoesNotExist
+	// }
 	extRewards := k.GetExternalRewardsLockers(ctx)
 	for _, v := range extRewards {
 		if v.AppMappingId == appMappingID && v.AssetId == assetID {
@@ -265,33 +265,36 @@ func (k Keeper) WasmRemoveWhitelistAssetLocker(ctx sdk.Context, appMappingID uin
 		return esmtypes.ErrESMAlreadyExecuted
 	}
 
-	rewards, _ := k.GetReward(ctx, appMappingID)
+	_, found1 := k.GetReward(ctx, appMappingID, assetID)
+	if !found1 {
+		return types.ErrInternalRewardsNotFound
+	}
 
-	var newAssetIDs []uint64
-	for i := range rewards.Asset_ID {
-		if assetID != rewards.Asset_ID[i] {
-			newAssetID := rewards.Asset_ID[i]
-			newAssetIDs = append(newAssetIDs, newAssetID)
-		}
-	}
-	newRewards := types.InternalRewards{
-		App_mapping_ID: appMappingID,
-		Asset_ID:       newAssetIDs,
-	}
-	k.SetReward(ctx, newRewards)
+	// var newAssetIDs []uint64
+	// for i := range rewards.Asset_ID {
+	// 	if assetID != rewards.Asset_ID[i] {
+	// 		newAssetID := rewards.Asset_ID[i]
+	// 		newAssetIDs = append(newAssetIDs, newAssetID)
+	// 	}
+	// }
+	// newRewards := types.InternalRewards{
+	// 	App_mapping_ID: appMappingID,
+	// 	Asset_ID:       newAssetIDs,
+	// }
+	k.DeleteReward(ctx, appMappingID, assetID)
 	return nil
 }
 
 func (k Keeper) WasmRemoveWhitelistAssetLockerQuery(ctx sdk.Context, appMappingID uint64, assetID uint64) (bool, string) {
-	rewards, found := k.GetReward(ctx, appMappingID)
+	_, found := k.GetReward(ctx, appMappingID, assetID)
 	if !found {
 		return false, "app Id not found"
 	}
-	for _, j := range rewards.Asset_ID {
-		if j != assetID {
-			return false, types.ErrAssetIDDoesNotExist.Error()
-		}
-	}
+	// for _, j := range rewards.Asset_ID {
+	// 	if j != assetID {
+	// 		return false, types.ErrAssetIDDoesNotExist.Error()
+	// 	}
+	// }
 	return true, ""
 }
 

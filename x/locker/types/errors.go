@@ -25,6 +25,7 @@ var (
 	SendCoinsFromModuleToModuleInLockerIsZero   = errors.Register(ModuleName, 214, "Coin value in module to module transfer in locker is zero")
 	SendCoinsFromModuleToAccountInLockerIsZero  = errors.Register(ModuleName, 215, "Coin value in module to account transfer in locker is zero")
 	SendCoinsFromAccountToModuleInLockerIsZero  = errors.Register(ModuleName, 216, "Coin value in account to module transfer in locker is zero")
+	ErrorCollectorLookupDoesNotExists           = errors.Register(ModuleName, 217, "Collector lookup does not exists")
 )
 
 var (

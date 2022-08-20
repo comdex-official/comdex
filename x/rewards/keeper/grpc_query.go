@@ -208,7 +208,7 @@ func (k Keeper) QueryReward(c context.Context, req *types.QueryRewardRequest) (*
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item, found := k.GetReward(ctx, req.Id)
+	item, found := k.GetRewardByApp(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
 	}

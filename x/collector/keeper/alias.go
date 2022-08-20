@@ -5,7 +5,9 @@ import (
 
 	"github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
+	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
 func (k Keeper) HasAssetForDenom(ctx sdk.Context, id string) bool {
@@ -40,4 +42,16 @@ func (k Keeper) GetMintGenesisTokenData(ctx sdk.Context, appID, assetID uint64) 
 
 func (k Keeper) GetAuctionParams(ctx sdk.Context, AppID uint64) (asset auctiontypes.AuctionParams, found bool) {
 	return k.auction.GetAuctionParams(ctx, AppID)
+}
+
+func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appID, assetID uint64) (lockerLookupData lockertypes.LockerLookupTableData, found bool) {
+	return k.locker.GetLockerLookupTable(ctx, appID, assetID)
+}
+
+func (k Keeper) GetReward(ctx sdk.Context, appId, assetID uint64) (rewards rewardstypes.InternalRewards, found bool) {
+	return k.GetReward(ctx, appId, assetID)
+}
+
+func (k Keeper) GetLocker(ctx sdk.Context, lockerID uint64) (locker lockertypes.Locker, found bool) {
+	return k.GetLocker(ctx, lockerID)
 }
