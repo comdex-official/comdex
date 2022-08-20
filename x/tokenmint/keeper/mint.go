@@ -70,7 +70,6 @@ func (k Keeper) GetAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint6
 
 func (k Keeper) GetAssetDataInTokenMintByAppSupply(ctx sdk.Context, appMappingID uint64, assetID uint64) (tokenDataSupply int64, found bool) {
 	tokenData, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingID, assetID)
-
 	if !found {
 		return 0, false
 	}
@@ -91,19 +90,20 @@ func (k Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetI
 	if !found {
 		return types.ErrorAssetNotWhiteListedForGenesisMinting
 	}
-	if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, amount)); err != nil {
-		return err
-	}
-	userAddress, err := sdk.AccAddressFromBech32(address)
+	if amount.GT(sdk.ZeroInt()) {
+		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, amount)); err != nil {
+			return err
+		}
+		userAddress, err := sdk.AccAddressFromBech32(address)
 
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
+		if err = k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, amount)); err != nil {
+			return err
+		}
+		k.UpdateAssetDataInTokenMintByApp(ctx, appMappingID, assetID, true, amount)
 	}
-	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, amount)); err != nil {
-		return err
-	}
-	k.UpdateAssetDataInTokenMintByApp(ctx, appMappingID, assetID, true, amount)
-
 	return nil
 }
 
@@ -121,15 +121,13 @@ func (k Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID u
 	if !found {
 		return types.ErrorAssetNotWhiteListedForGenesisMinting
 	}
-	if tokenData.CurrentSupply.Sub(amount).LTE(sdk.NewInt(0)) {
+	if tokenData.CurrentSupply.Sub(amount).LTE(sdk.NewInt(0)) || amount.LTE(sdk.ZeroInt()) {
 		return types.ErrorBurningMakesSupplyLessThanZero
 	}
 	if err := k.BurnCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, amount)); err != nil {
 		return err
 	}
-	// if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress(address), sdk.NewCoin(assetData.Denom, amount)); err != nil {
-	// 	return err
-	// }
+
 	k.UpdateAssetDataInTokenMintByApp(ctx, appMappingID, assetID, false, amount)
 
 	return nil
@@ -174,14 +172,15 @@ func (k Keeper) BurnGovTokensForApp(ctx sdk.Context, appMappingID uint64, from s
 }
 
 func (k Keeper) BurnFrom(ctx sdk.Context, amount sdk.Coin, burnFrom sdk.AccAddress) error {
-	err := k.SendCoinFromAccountToModule(ctx,
-		burnFrom,
-		types.ModuleName,
-		amount)
+	err := k.SendCoinFromAccountToModule(ctx, burnFrom, types.ModuleName, amount)
 	if err != nil {
 		return err
 	}
-	return k.BurnCoin(ctx, types.ModuleName, amount)
+	err = k.BurnCoin(ctx, types.ModuleName, amount)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (k Keeper) WasmMsgFoundationEmission(ctx sdk.Context, appID uint64, amount sdk.Int, foundationAddr []string) error {

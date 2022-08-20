@@ -22,6 +22,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 			assetID = item.Id
 		}
 		k.SetAssetForDenom(ctx, item.Denom, item.Id)
+		k.SetAssetForName(ctx, item.Name, item.Id)
 		k.SetAsset(ctx, item)
 	}
 

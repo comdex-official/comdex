@@ -11,7 +11,7 @@ option go_package = "github.com/comdex-official/comdex/x/tokenmint/types";
 // GenesisState defines the tokenmint module's genesis state.
 message GenesisState {
   repeated TokenMint tokenMint = 1
-  [ (gogoproto.moretags) = "yaml:\"tokenMint\"", (gogoproto.nullable) = false ];
+  [(gogoproto.moretags) = "yaml:\"tokenMint\"", (gogoproto.nullable) = false];
   Params params = 2 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }

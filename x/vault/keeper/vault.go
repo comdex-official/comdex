@@ -548,14 +548,14 @@ func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, ex
 		lengthOfVaults := len(appExtendedPairVaultData.VaultIds)
 
 		dataIndex := sort.Search(lengthOfVaults, func(i int) bool { return appExtendedPairVaultData.VaultIds[i] >= userVaultID })
-	
+
 		if dataIndex < lengthOfVaults && appExtendedPairVaultData.VaultIds[dataIndex] == userVaultID {
 			appExtendedPairVaultData.VaultIds = append(appExtendedPairVaultData.VaultIds[:dataIndex], appExtendedPairVaultData.VaultIds[dataIndex+1:]...)
 			err := k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
 			if err != nil {
 				return
 			}
-		} 
+		}
 	}
 }
 
@@ -698,12 +698,10 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, Exten
 	return nil
 }
 
-func (k Keeper) calculateUserToken(ctx sdk.Context, userVault types.Vault, cr sdk.Dec, amountIn sdk.Int, assetInPrice, assetOutPrice uint64) (userToken sdk.Int) {
-	nume := userVault.AmountIn.Add(amountIn)
-	newNum := nume.Mul(sdk.NewIntFromUint64(assetInPrice))
-	denom := sdk.NewIntFromUint64(assetOutPrice).Mul(cr.TruncateInt())
-	newVal := newNum.Quo(denom)
-	userToken = newVal.Sub(userVault.AmountOut)
+func (k Keeper) calculateUserToken(userVault types.Vault, amountIn sdk.Int) (userToken sdk.Int) {
+	nume := userVault.AmountOut.Mul(amountIn)
+	deno := userVault.AmountIn
+	userToken = nume.Quo(deno)
 
 	return userToken
 }
