@@ -157,9 +157,9 @@ type MsgEmissionRewards struct {
 }
 
 type MsgFoundationEmission struct {
-	AppID             uint64           `json:"app_id"`
-	Amount            sdk.Int          `json:"amount"`
-	FoundationAddress []sdk.AccAddress `json:"foundation_address"`
+	AppID             uint64   `json:"app_id"`
+	Amount            sdk.Int  `json:"amount"`
+	FoundationAddress []string `json:"foundation_address"`
 }
 
 type MsgRebaseMint struct {

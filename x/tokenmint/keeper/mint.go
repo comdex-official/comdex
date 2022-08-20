@@ -184,7 +184,7 @@ func (k Keeper) BurnFrom(ctx sdk.Context, amount sdk.Coin, burnFrom sdk.AccAddre
 	return k.BurnCoin(ctx, types.ModuleName, amount)
 }
 
-func (k Keeper) WasmMsgFoundationEmission(ctx sdk.Context, appID uint64, amount sdk.Int, foundationAddr []sdk.AccAddress) error {
+func (k Keeper) WasmMsgFoundationEmission(ctx sdk.Context, appID uint64, amount sdk.Int, foundationAddr []string) error {
 	s := len(foundationAddr)
 	var assetID uint64
 	app, _ := k.GetApp(ctx, appID)
@@ -204,8 +204,9 @@ func (k Keeper) WasmMsgFoundationEmission(ctx sdk.Context, appID uint64, amount 
 
 	amountToIndividualFoundationAddr := amount.Quo(sdk.NewInt(int64(s)))
 	for _, addr := range foundationAddr {
+		newAddr, _ := sdk.AccAddressFromBech32(addr)
 		if amountToIndividualFoundationAddr.GT(sdk.ZeroInt()) {
-			err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, addr, sdk.NewCoin(asset.Denom, amountToIndividualFoundationAddr))
+			err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, newAddr, sdk.NewCoin(asset.Denom, amountToIndividualFoundationAddr))
 			if err != nil {
 				return err
 			}
