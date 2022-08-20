@@ -38,7 +38,7 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 	return returnedFee, nil
 }
 
-func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, collectorData types.AppAssetIdToFeeCollectedData) error {
+func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, _ types.AppAssetIdToFeeCollectedData) error {
 	var netCollected types.AppAssetIdToFeeCollectedData
 	netCollected.AppId = appID
 
@@ -690,9 +690,11 @@ func (k Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBindi
 }
 
 func (k Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, appID uint64) (bool, string) {
-	// _, _ = k.GetAppidToAssetCollectorMapping(ctx, appID)
-
-	return true, ""
+	_, found := k.GetApp(ctx, appID)
+	if found {
+		return true, ""
+	}
+	return false, types.ErrorAppDoesNotExist.Error()
 }
 
 func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding *bindings.MsgUpdateCollectorLookupTable) error {
