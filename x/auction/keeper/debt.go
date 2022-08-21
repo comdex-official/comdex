@@ -93,9 +93,8 @@ func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appID, AssetInID, AssetO
 	}
 	var debtLot uint64
 	collectorData, _ := k.GetCollectorLookupTable(ctx, appID, AssetInID)
-	
+
 	debtLot = collectorData.DebtLotSize
-	
 
 	buyToken = sdk.NewCoin(buyAsset.Denom, lotSize)
 	sellToken = sdk.NewCoin(sellAsset.Denom, sdk.NewIntFromUint64(debtLot))

@@ -19,7 +19,7 @@ type (
 		memKey     sdk.StoreKey
 		asset      expected.AssetKeeper
 		auction    expected.AuctionKeeper
-		locker 	   expected.LockerKeeper
+		locker     expected.LockerKeeper
 		rewards    expected.RewardsKeeper
 		paramStore paramtypes.Subspace
 		bank       expected.BankKeeper

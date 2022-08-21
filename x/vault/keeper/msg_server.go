@@ -280,7 +280,7 @@ func (k msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (
 	k.SetVault(ctx, userVault)
 	//Updating appExtendedPairvaultMappingData data -
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, msg.Amount, true)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, msg.Amount, true)
 
 	ctx.GasMeter().ConsumeGas(types.DepositVaultGas, "DepositVaultGas")
 
@@ -385,7 +385,7 @@ func (k msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest)
 
 	//Updating appExtendedPairVaultMappingData
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, msg.Amount, false)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, msg.Amount, false)
 
 	ctx.GasMeter().ConsumeGas(types.WithdrawVaultGas, "WithdrawVaultGas")
 
@@ -526,7 +526,7 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 
 	//Updating appExtendedPairVaultMappingData
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, msg.Amount, true)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, msg.Amount, true)
 
 	ctx.GasMeter().ConsumeGas(types.DrawVaultGas, "DrawVaultGas")
 
@@ -673,7 +673,7 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 		userVault.BlockTime = ctx.BlockTime()
 		k.SetVault(ctx, userVault)
 		appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
-		k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, updatedUserSentAmountAfterFeesDeduction, false)
+		k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, updatedUserSentAmountAfterFeesDeduction, false)
 	}
 
 	ctx.GasMeter().ConsumeGas(types.RepayVaultGas, "RepayVaultGas")
@@ -794,8 +794,8 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 	//Update LookupTable minting Status
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
 
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, userVault.AmountIn, false)
-	k.UpdateTokenMintedAmountLockerMapping(ctx,appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, userVault.AmountOut, false)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, userVault.AmountIn, false)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, userVault.AmountOut, false)
 
 	//Remove address from lookup table
 	k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, extendedPairVault.Id, userVault.Id, appMapping.Id)
@@ -1100,8 +1100,8 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 
 	k.SetStableMintVault(ctx, stableVault)
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, stableVault.AmountIn, true)
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, stableVault.AmountOut, true)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, stableVault.AmountIn, true)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, stableVault.AmountOut, true)
 
 	ctx.GasMeter().ConsumeGas(types.DepositStableVaultGas, "DepositStableVaultGas")
 	return &types.MsgDepositStableMintResponse{}, nil
@@ -1227,8 +1227,8 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 	stableVault.AmountOut = stableVault.AmountOut.Sub(updatedAmount)
 	k.SetStableMintVault(ctx, stableVault)
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, stableVault.AmountIn, false)
-	k.UpdateTokenMintedAmountLockerMapping(ctx,appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, stableVault.AmountOut, false)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, stableVault.AmountIn, false)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, stableVault.AmountOut, false)
 
 	ctx.GasMeter().ConsumeGas(types.WithdrawStableVaultGas, "WithdrawStableVaultGas")
 

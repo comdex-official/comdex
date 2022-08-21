@@ -48,7 +48,7 @@ func (k Keeper) makeFalseForFlags(ctx sdk.Context, appID, assetID uint64) error 
 	if !found {
 		return auctiontypes.ErrorInvalidAddress
 	}
-	
+
 	auctionLookupTable.IsAuctionActive = false
 	err := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
 	if err != nil {

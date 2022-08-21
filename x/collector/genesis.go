@@ -10,7 +10,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
 	for _, item := range state.NetFeeCollectedData {
-		
+
 		err := k.SetNetFeeCollectedData(ctx, item.AppId, item.AssetId, item.NetFeesCollected)
 		if err != nil {
 			return

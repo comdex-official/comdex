@@ -2,9 +2,9 @@ package keeper
 
 import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
 )

@@ -207,8 +207,7 @@ func (m *MsgAddWhiteListedAssetRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-
-func NewMsgCloseLockerRequest(from string, appID uint64, assetID uint64, lockerID uint64,) *MsgCloseLockerRequest {
+func NewMsgCloseLockerRequest(from string, appID uint64, assetID uint64, lockerID uint64) *MsgCloseLockerRequest {
 	return &MsgCloseLockerRequest{
 		Depositor: from,
 		AppId:     appID,

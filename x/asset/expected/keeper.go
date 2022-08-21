@@ -2,8 +2,8 @@ package expected
 
 import (
 	"github.com/comdex-official/comdex/x/market/types"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

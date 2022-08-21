@@ -94,7 +94,6 @@ func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetID uin
 		internalReward.Asset_ID = assetID
 		k.SetReward(ctx, internalReward)
 	}
-	
 
 	return nil
 }
@@ -104,8 +103,7 @@ func (k Keeper) WhitelistAppIDVault(ctx sdk.Context, appMappingID uint64) error 
 	if found {
 		return types.ErrAppIDExists
 	}
-	
-	
+
 	k.SetAppByAppID(ctx, appMappingID)
 	return nil
 }

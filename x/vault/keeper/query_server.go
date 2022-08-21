@@ -163,7 +163,7 @@ func (q QueryServer) QueryVaultInfoOfOwnerByApp(c context.Context, req *types.Qu
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData ,_ := q.GetUserAppMappingData(ctx, req.Owner, req.AppId)
+	userVaultAssetData, _ := q.GetUserAppMappingData(ctx, req.Owner, req.AppId)
 
 	for _, data := range userVaultAssetData {
 		vaultsIds = append(vaultsIds, data.VaultId)
@@ -240,7 +240,7 @@ func (q QueryServer) QueryVaultIDOfOwnerByExtendedPairAndApp(c context.Context, 
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx     = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 
 	userVault, found := q.GetUserAppExtendedPairMappingData(ctx, req.Owner, req.AppId, req.ExtendedPairId)
@@ -310,7 +310,7 @@ func (q QueryServer) QueryTokenMintedByAppAndExtendedPair(c context.Context, req
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx         = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMappingData(ctx, req.AppId, req.ExtendedPairId)
 	if !found {
@@ -405,9 +405,8 @@ func (q QueryServer) QueryVaultCountByAppAndExtendedPair(c context.Context, req 
 	if !found {
 		return &types.QueryVaultCountByAppAndExtendedPairResponse{}, nil
 	}
-	
-	count = uint64(len(appExtendedPairVaultData.VaultIds))
 
+	count = uint64(len(appExtendedPairVaultData.VaultIds))
 
 	return &types.QueryVaultCountByAppAndExtendedPairResponse{
 		VaultCount: count,
@@ -435,9 +434,8 @@ func (q QueryServer) QueryTotalValueLockedByAppAndExtendedPair(c context.Context
 	if !found {
 		return &types.QueryTotalValueLockedByAppAndExtendedPairResponse{}, nil
 	}
-	
-	valueLocked = appExtendedPairVaultData.CollateralLockedAmount
 
+	valueLocked = appExtendedPairVaultData.CollateralLockedAmount
 
 	return &types.QueryTotalValueLockedByAppAndExtendedPairResponse{
 		ValueLocked: &valueLocked,
@@ -536,7 +534,7 @@ func (q QueryServer) QueryExtendedPairVaultMappingByAppAndExtendedPair(c context
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx                = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -548,7 +546,6 @@ func (q QueryServer) QueryExtendedPairVaultMappingByAppAndExtendedPair(c context
 		return &types.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse{}, nil
 	}
 
-
 	return &types.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse{
 		ExtendedPairVaultMapping: &appExtendedPairVaultData,
 	}, nil
@@ -559,7 +556,7 @@ func (q QueryServer) QueryExtendedPairVaultMappingByApp(c context.Context, req *
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx     = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -738,7 +735,7 @@ func (q QueryServer) QueryUserExtendedPairTotalData(c context.Context, req *type
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	userVaultAssetData  := q.GetUserMappingData(ctx, req.Owner)
+	userVaultAssetData := q.GetUserMappingData(ctx, req.Owner)
 
 	return &types.QueryUserExtendedPairTotalDataResponse{
 		UserTotalData: userVaultAssetData,

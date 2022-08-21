@@ -449,7 +449,7 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 					}
 				}
 				if count == 0 {
-				
+
 					var itemx types.AssetToAmount
 
 					itemx.AssetID = assetOutData.Id
@@ -611,7 +611,7 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 	if !found {
 		return nil
 	}
-	if found1{
+	if found1 {
 		for _, data := range netFee {
 			for i, indatanet := range coolOffData.DebtAsset {
 				if data.AssetId == indatanet.AssetID {

@@ -193,9 +193,9 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 	}
 
 	for i, data := range esmDataAfterCoolOff.CollateralAsset {
-		collAsset ,_ := k.GetAsset(ctx, data.AssetID)
+		collAsset, _ := k.GetAsset(ctx, data.AssetID)
 		tokenDVaule := data.Share.Mul(userWorth)
-		price , _ := k.GetSnapshotOfPrices(ctx, appID, data.AssetID)
+		price, _ := k.GetSnapshotOfPrices(ctx, appID, data.AssetID)
 		oldtokenQuant := tokenDVaule.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
 		usd := 1000000
 		tokenQuant := oldtokenQuant.Quo(sdk.NewDec(int64(usd))).TruncateInt()
