@@ -30,6 +30,7 @@ func CreateUpgradeHandler(
 	liquidationKeeper liquidationKeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		// This change is only for testnet upgrade
 		vault.InitGenesis(ctx, vaultKeeper, vaulttypes.DefaultGenesisState())
 		locker.InitGenesis(ctx, lockerKeeper, lockertypes.DefaultGenesisState())
 		collector.InitGenesis(ctx, collectorKeeper, collectortypes.DefaultGenesisState())
