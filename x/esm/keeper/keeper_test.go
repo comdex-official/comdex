@@ -11,7 +11,6 @@ import (
 	chain "github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/esm/keeper"
 	"github.com/comdex-official/comdex/x/esm/types"
-
 )
 
 type KeeperTestSuite struct {

@@ -81,7 +81,7 @@ func (k Keeper) StartLendDutchAuction(
 		found             bool
 	)
 
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
+	lockedVault, found := k.GetLockedVault(ctx, appID, lockedVaultID)
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
@@ -151,7 +151,7 @@ func (k Keeper) StartLendDutchAuction(
 	if err != nil {
 		return err
 	}
-	err = k.SetFlagIsAuctionInProgress(ctx, lockedVaultID, true)
+	err = k.SetFlagIsAuctionInProgress(ctx, appID, lockedVaultID, true)
 	if err != nil {
 		return err
 	}
@@ -204,7 +204,7 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 	//required target cmst to raise in usd * 10**-12
 	//here we are multiplying each ucmdx with uusd so cmdx tokens price will be calculated amount * 10**-12
 
-	lockedVault, found := k.GetLockedVault(ctx, auction.LockedVaultId)
+	lockedVault, found := k.GetLockedVault(ctx, appID, auction.LockedVaultId)
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
@@ -378,7 +378,7 @@ func (k Keeper) CloseDutchLendAuction(
 		}
 	}
 
-	lockedVault, found := k.GetLockedVault(ctx, dutchAuction.LockedVaultId)
+	lockedVault, found := k.GetLockedVault(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId)
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}
@@ -418,12 +418,12 @@ func (k Keeper) CloseDutchLendAuction(
 	dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
 
 	//update locked vault
-	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
+	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
 	if err != nil {
 		return err
 	}
 
-	err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.LockedVaultId, false)
+	err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, false)
 	if err != nil {
 		return err
 	}
@@ -440,7 +440,7 @@ func (k Keeper) CloseDutchLendAuction(
 	if err != nil {
 		return err
 	}
-	err = k.UnLiquidateLockedBorrows(ctx, lockedVault.LockedVaultId)
+	err = k.UnLiquidateLockedBorrows(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 	if err != nil {
 		return err
 	}

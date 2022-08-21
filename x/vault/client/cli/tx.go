@@ -31,6 +31,7 @@ func GetTxCmd() *cobra.Command {
 		DrawDebt(),
 		RepayDebt(),
 		Close(),
+		DepositAndDraw(),
 		CreateStableMint(),
 		DepositStableMint(),
 		WithdrawStableMint(),
@@ -147,7 +148,7 @@ func Withdraw() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			
+
 			userVaultid, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
@@ -291,6 +292,49 @@ func Close() *cobra.Command {
 	return cmd
 }
 
+func DepositAndDraw() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "deposit-draw [appID] [extendedPairVaultID] [userVaultid] [amount]",
+		Short: "creates a new deposit and draw",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			extendedPairVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			userVaultid, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			amount, ok := sdk.NewIntFromString(args[3])
+			if !ok {
+				return types.ErrorInvalidAmount
+			}
+
+			msg := types.NewMsgDepositAndDrawRequest(ctx.FromAddress, appID, extendedPairVaultID, userVaultid, amount)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
 func CreateStableMint() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-stable-mint [appID] [extendedPairVaultID] [amount] ",
@@ -401,7 +445,7 @@ func WithdrawStableMint() *cobra.Command {
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
-			
+
 			stablemintID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return err

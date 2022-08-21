@@ -141,7 +141,7 @@ func (k Keeper) SetAppForShortName(ctx sdk.Context, shortName string, id uint64)
 func (k Keeper) SetAppForName(ctx sdk.Context, Name string, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetForNameKey(Name)
+		key   = types.AppAssetForNameKey(Name)
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -164,7 +164,7 @@ func (k Keeper) HasAppForShortName(ctx sdk.Context, shortName string) bool {
 func (k Keeper) HasAppForName(ctx sdk.Context, Name string) bool {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetForNameKey(Name)
+		key   = types.AppAssetForNameKey(Name)
 	)
 
 	return store.Has(key)
@@ -248,6 +248,7 @@ func (k Keeper) UpdateGovTimeInApp(ctx sdk.Context, msg types.AppAndGovTime) err
 		return types.ErrorAssetDoesNotExist
 	}
 	appDetails.GovTimeInSeconds = msg.GovTimeInSeconds
+	appDetails.MinGovDeposit = msg.MinGovDeposit
 
 	k.SetApp(ctx, appDetails)
 	return nil

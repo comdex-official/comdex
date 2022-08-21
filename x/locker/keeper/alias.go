@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 )
@@ -52,6 +53,10 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 	return k.collector.UpdateCollector(ctx, appID, assetID, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected)
 }
 
+func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTableData, found bool) {
+	return k.collector.GetCollectorLookupTable(ctx, appID, assetID)
+}
+
 func (k Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
 		return lockertypes.SendCoinsFromModuleToModuleInLockerIsZero
@@ -65,4 +70,8 @@ func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillS
 
 func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bool) {
 	return k.esm.GetESMStatus(ctx, id)
+}
+
+func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID uint64, Depositor string, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error {
+	return k.rewards.CalculateLockerRewards(ctx, appID, assetID, lockerID, Depositor, NetBalance, blockHeight, lockerBlockTime)
 }

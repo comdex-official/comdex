@@ -54,7 +54,7 @@ message WhitelistAsset {
     (gogoproto.moretags) = "yaml:\"from\""
   ];
 
-  repeated uint64 asset_id = 3 [
+  uint64 asset_id = 3 [
     (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
 }

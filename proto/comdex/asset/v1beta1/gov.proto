@@ -7,7 +7,7 @@ import "comdex/asset/v1beta1/pair.proto";
 import "comdex/asset/v1beta1/app.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
-option (gogoproto.equal_all)           = false;
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message AddAssetsProposal {

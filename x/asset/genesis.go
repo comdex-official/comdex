@@ -21,7 +21,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		if item.Id > assetID {
 			assetID = item.Id
 		}
-
+		k.SetAssetForDenom(ctx, item.Denom, item.Id)
+		k.SetAssetForName(ctx, item.Name, item.Id)
 		k.SetAsset(ctx, item)
 	}
 
@@ -37,7 +38,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		if item.Id > appID {
 			appID = item.Id
 		}
-
+		k.SetAppForShortName(ctx, item.ShortName, item.Id)
+		k.SetAppForName(ctx, item.Name, item.Id)
 		k.SetApp(ctx, item)
 	}
 

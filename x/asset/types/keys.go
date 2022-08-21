@@ -18,15 +18,16 @@ var (
 	AppIDKey        = []byte{0x04}
 	PairsVaultIDKey = []byte{0x05}
 
-	AssetKeyPrefix          = []byte{0x11}
-	PairKeyPrefix           = []byte{0x14}
-	AppKeyPrefix            = []byte{0x15}
-	PairsVaultKeyPrefix     = []byte{0x16}
+	AssetKeyPrefix      = []byte{0x11}
+	PairKeyPrefix       = []byte{0x14}
+	AppKeyPrefix        = []byte{0x15}
+	PairsVaultKeyPrefix = []byte{0x16}
 
 	AssetForDenomKeyPrefix = []byte{0x21}
 	AppForShortNamePrefix  = []byte{0x22}
 	AppForNamePrefix       = []byte{0x23}
 	GenesisForAppPrefix    = []byte{0x24}
+	AssetForNameKeyPrefix  = []byte{0x25}
 )
 
 func AppKey(id uint64) []byte {
@@ -45,10 +46,14 @@ func AssetForDenomKey(denom string) []byte {
 	return append(AssetForDenomKeyPrefix, []byte(denom)...)
 }
 
+func AssetForNameKey(denom string) []byte {
+	return append(AssetForNameKeyPrefix, []byte(denom)...)
+}
+
 func AssetForShortNameKey(shortName string) []byte {
 	return append(AppForShortNamePrefix, []byte(shortName)...)
 }
-func AssetForNameKey(Name string) []byte {
+func AppAssetForNameKey(Name string) []byte {
 	return append(AppForNamePrefix, []byte(Name)...)
 }
 

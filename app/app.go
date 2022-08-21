@@ -167,6 +167,7 @@ import (
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
 	tv2_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v2_0_0"
 	tv3_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v3_0_0"
+	tv4_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v4_0_0"
 )
 
 const (
@@ -552,6 +553,8 @@ func New(
 		app.keys[assettypes.StoreKey],
 		app.GetSubspace(assettypes.ModuleName),
 		&app.MarketKeeper,
+		&app.Rewardskeeper,
+		&app.VaultKeeper,
 	)
 
 	app.LendKeeper = lendkeeper.NewKeeper(
@@ -586,6 +589,8 @@ func New(
 		&app.MarketKeeper,
 		&app.CollectorKeeper,
 		&app.EsmKeeper,
+		&app.TokenmintKeeper,
+		&app.Rewardskeeper,
 	)
 
 	app.TokenmintKeeper = tokenmintkeeper.NewKeeper(
@@ -663,6 +668,8 @@ func New(
 		app.keys[collectortypes.MemStoreKey],
 		&app.AssetKeeper,
 		&app.AuctionKeeper,
+		&app.LockerKeeper,
+		&app.Rewardskeeper,
 		app.GetSubspace(collectortypes.ModuleName),
 		app.BankKeeper,
 	)
@@ -689,6 +696,7 @@ func New(
 		&app.MarketKeeper,
 		&app.CollectorKeeper,
 		&app.EsmKeeper,
+		&app.Rewardskeeper,
 	)
 
 	app.LiquidityKeeper = liquiditykeeper.NewKeeper(
@@ -725,7 +733,7 @@ func New(
 	}
 	supportedFeatures := "iterator,staking,stargate,comdex"
 
-	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper), wasmOpts...)
+	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper), wasmOpts...)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		app.cdc,
@@ -1134,8 +1142,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv3_0_0.UpgradeNameV3_1,
-		tv3_0_0.CreateUpgradeHandler(a.mm, a.configurator),
+		tv4_0_0.UpgradeName,
+		tv4_0_0.CreateUpgradeHandler(a.mm, a.configurator, a.VaultKeeper, a.LockerKeeper, a.CollectorKeeper, a.LiquidationKeeper),
 	)
 
 	// When a planned update height is reached, the old binary will panic

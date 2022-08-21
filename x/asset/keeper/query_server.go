@@ -172,17 +172,37 @@ func (q QueryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (
 	}, nil
 }
 
-func (q QueryServer) QueryApps(c context.Context, _ *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
+func (q QueryServer) QueryApps(c context.Context, req *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
+
 	var (
-		ctx         = sdk.UnwrapSDKContext(c)
-		apps, found = q.GetApps(ctx)
+		items []types.AppData
+		ctx   = sdk.UnwrapSDKContext(c)
 	)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "app does not exist for id")
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), types.AppKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.AppData
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryAppsResponse{
-		Apps: apps,
+		Apps:       items,
+		Pagination: pagination,
 	}, nil
 }
 
@@ -214,57 +234,102 @@ func (q QueryServer) QueryExtendedPairVault(c context.Context, req *types.QueryE
 	}, nil
 }
 
-func (q QueryServer) QueryAllExtendedPairVaults(c context.Context, _ *types.QueryAllExtendedPairVaultsRequest) (*types.QueryAllExtendedPairVaultsResponse, error) {
+func (q QueryServer) QueryAllExtendedPairVaults(c context.Context, req *types.QueryAllExtendedPairVaultsRequest) (*types.QueryAllExtendedPairVaultsResponse, error) {
 	var (
-		ctx               = sdk.UnwrapSDKContext(c)
-		pairVaults, found = q.GetPairsVaults(ctx)
+		items []types.ExtendedPairVault
+		ctx   = sdk.UnwrapSDKContext(c)
 	)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), types.PairsVaultKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.ExtendedPairVault
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryAllExtendedPairVaultsResponse{
-		PairVault: pairVaults,
+		PairVault:  items,
+		Pagination: pagination,
 	}, nil
 }
 
 func (q QueryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *types.QueryAllExtendedPairVaultsByAppRequest) (*types.QueryAllExtendedPairVaultsByAppResponse, error) {
 	var (
-		ctx               = sdk.UnwrapSDKContext(c)
-		pairVaults, found = q.GetPairsVaults(ctx)
+		items []types.ExtendedPairVault
+		ctx   = sdk.UnwrapSDKContext(c)
 	)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
-	}
-	var pairVaultsData []types.ExtendedPairVault
-	for _, data := range pairVaults {
-		if data.AppId == req.AppId {
-			pairVaultsData = append(pairVaultsData, data)
-		}
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), types.PairsVaultKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.ExtendedPairVault
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate && item.AppId == req.AppId {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryAllExtendedPairVaultsByAppResponse{
-		ExtendedPair: pairVaultsData,
+		ExtendedPair: items,
+		Pagination:   pagination,
 	}, nil
 }
 
 func (q QueryServer) QueryAllExtendedPairStableVaultsIDByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsIDByAppRequest) (*types.QueryAllExtendedPairStableVaultsIDByAppResponse, error) {
 	var (
-		ctx               = sdk.UnwrapSDKContext(c)
-		pairVaults, found = q.GetPairsVaults(ctx)
-		pairVault         []uint64
+		items []uint64
+		ctx   = sdk.UnwrapSDKContext(c)
 	)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
-	}
-	for _, data := range pairVaults {
-		if (data.AppId == req.AppId) && (data.IsStableMintVault) {
-			pairVault = append(pairVault, data.Id)
-		}
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), types.PairsVaultKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.ExtendedPairVault
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate && (item.AppId == req.AppId) && (item.IsStableMintVault) {
+				items = append(items, item.Id)
+			}
+
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryAllExtendedPairStableVaultsIDByAppResponse{
-		ExtendedPairsId: pairVault,
+		ExtendedPairsId: items,
+		Pagination:      pagination,
 	}, nil
 }
 
@@ -290,20 +355,33 @@ func (q QueryServer) QueryGovTokenByApp(c context.Context, req *types.QueryGovTo
 
 func (q QueryServer) QueryAllExtendedPairStableVaultsByApp(c context.Context, req *types.QueryAllExtendedPairStableVaultsByAppRequest) (*types.QueryAllExtendedPairStableVaultsByAppResponse, error) {
 	var (
-		ctx               = sdk.UnwrapSDKContext(c)
-		pairVaults, found = q.GetPairsVaults(ctx)
+		items []types.ExtendedPairVault
+		ctx   = sdk.UnwrapSDKContext(c)
 	)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "Extended pairs does not exist")
-	}
-	var pairVaultsData []types.ExtendedPairVault
-	for _, data := range pairVaults {
-		if data.AppId == req.AppId && data.IsStableMintVault {
-			pairVaultsData = append(pairVaultsData, data)
-		}
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), types.PairsVaultKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.ExtendedPairVault
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate && (item.AppId == req.AppId) && (item.IsStableMintVault) {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryAllExtendedPairStableVaultsByAppResponse{
-		ExtendedPair: pairVaultsData,
+		ExtendedPair: items,
+		Pagination:   pagination,
 	}, nil
 }

@@ -69,32 +69,32 @@ func (k Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
 	return k.asset.GetAsset(ctx, id)
 }
 
-func (k Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, id uint64, flag bool) error {
-	return k.liquidation.SetFlagIsAuctionInProgress(ctx, id, flag)
+func (k Keeper) SetFlagIsAuctionInProgress(ctx sdk.Context, appID, id uint64, flag bool) error {
+	return k.liquidation.SetFlagIsAuctionInProgress(ctx, appID, id, flag)
 }
 
-func (k Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, id uint64, flag bool) error {
-	return k.liquidation.SetFlagIsAuctionComplete(ctx, id, flag)
+func (k Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, appID, id uint64, flag bool) error {
+	return k.liquidation.SetFlagIsAuctionComplete(ctx, appID, id, flag)
 }
 
-func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (appAssetCollectorData types.AppIdToAssetCollectorMapping, found bool) {
-	return k.collector.GetAppidToAssetCollectorMapping(ctx, appID)
+func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID, assetID uint64) (appAssetCollectorData types.AppToAssetIdCollectorMapping, found bool) {
+	return k.collector.GetAppidToAssetCollectorMapping(ctx, appID, assetID)
 }
 
 func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error {
 	return k.collector.UpdateCollector(ctx, appID, assetID, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected)
 }
 
-func (k Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.CollectorLookupTable) error {
-	return k.collector.SetCollectorLookupTable(ctx, records...)
+// func (k Keeper) SetCollectorLookupTable(ctx sdk.Context, records ...types.CollectorLookupTable) error {
+// 	return k.collector.SetCollectorLookupTable(ctx, records...)
+// }
+
+func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup types.CollectorLookupTableData, found bool) {
+	return k.collector.GetCollectorLookupTable(ctx, appID, assetID)
 }
 
-func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup types.CollectorLookup, found bool) {
-	return k.collector.GetCollectorLookupTable(ctx, appID)
-}
-
-func (k Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData types.NetFeeCollectedData, found bool) {
-	return k.collector.GetNetFeeCollectedData(ctx, appID)
+func (k Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64) (netFeeData types.AppAssetIdToFeeCollectedData, found bool) {
+	return k.collector.GetNetFeeCollectedData(ctx, appID, assetID)
 }
 func (k Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool) {
 	return k.asset.GetApps(ctx)
@@ -119,8 +119,8 @@ func (k Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, f
 	return k.collector.SetNetFeeCollectedData(ctx, appID, assetID, fee)
 }
 
-func (k Keeper) GetLockedVault(ctx sdk.Context, id uint64) (lockedVault liquidationtypes.LockedVault, found bool) {
-	return k.liquidation.GetLockedVault(ctx, id)
+func (k Keeper) GetLockedVault(ctx sdk.Context, appID, id uint64) (lockedVault liquidationtypes.LockedVault, found bool) {
+	return k.liquidation.GetLockedVault(ctx, appID, id)
 }
 
 func (k Keeper) SetLockedVault(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) {
@@ -131,37 +131,37 @@ func (k Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.Exte
 	return k.asset.GetPairsVault(ctx, id)
 }
 
-func (k Keeper) GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping, found bool) {
-	return k.vault.GetAppExtendedPairVaultMapping(ctx, appMappingID)
+func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID uint64, pairVaultsID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData, found bool) {
+	return k.vault.GetAppExtendedPairVaultMappingData(ctx, appMappingID, pairVaultsID)
 }
 
-func (k Keeper) SetAppExtendedPairVaultMapping(ctx sdk.Context, appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping) error {
-	return k.vault.SetAppExtendedPairVaultMapping(ctx, appExtendedPairVaultData)
+func (k Keeper) SetAppExtendedPairVaultMappingData(ctx sdk.Context, appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData) error {
+	return k.vault.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
 }
 
-func (k Keeper) GetAuctionMappingForApp(ctx sdk.Context, appID uint64) (collectorAuctionLookupTable types.CollectorAuctionLookupTable, found bool) {
-	return k.collector.GetAuctionMappingForApp(ctx, appID)
+func (k Keeper) GetAuctionMappingForApp(ctx sdk.Context, appID, assetID uint64) (collectorAuctionLookupTable types.AppAssetIdToAuctionLookupTable, found bool) {
+	return k.collector.GetAuctionMappingForApp(ctx, appID, assetID)
 }
-func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records ...types.CollectorAuctionLookupTable) error {
-	return k.collector.SetAuctionMappingForApp(ctx, records...)
-}
-
-func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
-	k.vault.UpdateTokenMintedAmountLockerMapping(ctx, vaultLookupData, extendedPairID, amount, changeType)
-}
-func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool) {
-	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, vaultLookupData, extendedPairID, amount, changeType)
+func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records types.AppAssetIdToAuctionLookupTable) error {
+	return k.collector.SetAuctionMappingForApp(ctx, records)
 }
 
-func (k Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.CollectorAuctionLookupTable, found bool) {
+func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateTokenMintedAmountLockerMapping(ctx, appMappingID, extendedPairID, amount, changeType)
+}
+func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, appMappingID, extendedPairID, amount, changeType)
+}
+
+func (k Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.AppAssetIdToAuctionLookupTable, found bool) {
 	return k.collector.GetAllAuctionMappingForApp(ctx)
 }
-func (k Keeper) DeleteLockedVault(ctx sdk.Context, id uint64) {
-	k.liquidation.DeleteLockedVault(ctx, id)
+func (k Keeper) DeleteLockedVault(ctx sdk.Context, appId, id uint64) {
+	k.liquidation.DeleteLockedVault(ctx, appId, id)
 }
 
-func (k Keeper) UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64) {
-	k.vault.UpdateUserVaultExtendedPairMapping(ctx, extendedPairID, userAddress, appMappingID)
+func (k Keeper) DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64) {
+	k.vault.DeleteUserVaultExtendedPairMapping(ctx, address, appID, pairVaultID)
 }
 
 func (k Keeper) CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
@@ -180,13 +180,17 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, Exten
 	return k.vault.CreateNewVault(ctx, From, AppID, ExtendedPairVaultID, AmountIn, AmountOut)
 }
 
-func (k Keeper) GetUserVaultExtendedPairMapping(ctx sdk.Context, address string) (userVaultAssetData vaulttypes.UserVaultAssetMapping, found bool) {
-	return k.vault.GetUserVaultExtendedPairMapping(ctx, address)
+func (k Keeper) GetUserAppExtendedPairMappingData(ctx sdk.Context, from string, appMapping uint64, extendedPairVault uint64) (userVaultAssetData vaulttypes.OwnerAppExtendedPairVaultMappingData, found bool) {
+	return k.vault.GetUserAppExtendedPairMappingData(ctx, from, appMapping, extendedPairVault)
 }
 
-func (k Keeper) CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData vaulttypes.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID uint64, found bool) {
-	return k.vault.CheckUserAppToExtendedPairMapping(ctx, userVaultAssetData, extendedPairVaultID, appMappingID)
+func (k Keeper) GetUserAppMappingData(ctx sdk.Context, address string, appID uint64) (mappingData []vaulttypes.OwnerAppExtendedPairVaultMappingData, found bool) {
+	return k.vault.GetUserAppMappingData(ctx, address, appID)
 }
+
+// func (k Keeper) CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData vaulttypes.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID uint64, found bool) {
+// 	return k.vault.CheckUserAppToExtendedPairMapping(ctx, userVaultAssetData, extendedPairVaultID, appMappingID)
+// }
 
 func (k Keeper) SetVault(ctx sdk.Context, vault vaulttypes.Vault) {
 	k.vault.SetVault(ctx, vault)
@@ -267,8 +271,8 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
 	return k.lend.UpdateReserveBalances(ctx, assetID, moduleName, payment, inc)
 }
-func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
-	return k.liquidation.UnLiquidateLockedBorrows(ctx, id)
+func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
+	return k.liquidation.UnLiquidateLockedBorrows(ctx, appID, id)
 }
 
 func (k Keeper) SetLend(ctx sdk.Context, lend lendtypes.LendAsset) {

@@ -59,6 +59,10 @@ func (k Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (asset assettype
 	return k.asset.GetAssetForDenom(ctx, denom)
 }
 
-func (k Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData collectortypes.NetFeeCollectedData, found bool) {
-	return k.collector.GetNetFeeCollectedData(ctx, appID)
+func (k Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64) (netFeeData collectortypes.AppAssetIdToFeeCollectedData, found bool) {
+	return k.collector.GetNetFeeCollectedData(ctx, appID, assetID)
+}
+
+func (k Keeper) GetAppNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData []collectortypes.AppAssetIdToFeeCollectedData, found bool) {
+	return k.collector.GetAppNetFeeCollectedData(ctx, appID)
 }

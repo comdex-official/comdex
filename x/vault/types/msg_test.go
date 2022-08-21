@@ -195,7 +195,7 @@ func TestNewMsgWithdrawRequest(t *testing.T) {
 		{
 			name: "amount Zero",
 			msg: types.NewMsgWithdrawRequest(
-				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1,1, sdk.NewInt(0),
+				sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), 1, 1, 1, sdk.NewInt(0),
 			),
 			isErrExp: true,
 		},

@@ -19,5 +19,5 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 
 func (k Keeper) AdminParam(ctx sdk.Context) (s []string) {
 	k.paramstore.Get(ctx, types.KeyAdmin, &s)
-	return
+	return s
 }

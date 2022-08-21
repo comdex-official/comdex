@@ -12,7 +12,8 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message QueryLockedVaultRequest {
-  uint64 id = 1;
+  uint64 appID = 1;
+  uint64 id = 2;
 }
 
 message QueryLockedVaultResponse {
@@ -105,8 +106,8 @@ message QueryLockedVaultsPairResponse {
 message QueryAppIdsRequest {}
 
 message QueryAppIdsResponse {
-  WhitelistedAppIds WhitelistedAppIds = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"WhitelistedAppIds\"" ];
+  repeated uint64 WhitelistedAppIds = 1
+  [(gogoproto.moretags) = "yaml:\"WhitelistedAppIds\"" ];
 }
 
 service Query {

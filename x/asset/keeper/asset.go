@@ -5,6 +5,7 @@ import (
 	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
+	"regexp"
 )
 
 func (k Keeper) SetAssetID(ctx sdk.Context, id uint64) {
@@ -148,6 +149,38 @@ func (k Keeper) DeleteAssetForDenom(ctx sdk.Context, denom string) {
 	store.Delete(key)
 }
 
+func (k Keeper) SetAssetForName(ctx sdk.Context, name string, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForNameKey(name)
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) HasAssetForName(ctx sdk.Context, name string) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForNameKey(name)
+	)
+
+	return store.Has(key)
+}
+
+func (k Keeper) DeleteAssetForName(ctx sdk.Context, name string) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetForNameKey(name)
+	)
+
+	store.Delete(key)
+}
+
 func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	market, found := k.oracle.GetMarketForAsset(ctx, id)
 	if !found {
@@ -158,8 +191,14 @@ func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 }
 
 func (k Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
-	if k.HasAssetForDenom(ctx, msg.Denom) {
+	if k.HasAssetForDenom(ctx, msg.Denom) || k.HasAssetForName(ctx, msg.Name) {
 		return types.ErrorDuplicateAsset
+	}
+
+	var IsLetter = regexp.MustCompile(`^[A-Z]+$`).MatchString
+
+	if !IsLetter(msg.Name) || len(msg.Name) > 10 {
+		return types.ErrorNameDidNotMeetCriterion
 	}
 
 	var (
@@ -177,6 +216,7 @@ func (k Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	k.SetAssetID(ctx, asset.Id)
 	k.SetAsset(ctx, asset)
 	k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+	k.SetAssetForName(ctx, asset.Name, asset.Id)
 
 	return nil
 }
@@ -186,9 +226,20 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	if !found {
 		return types.ErrorAssetDoesNotExist
 	}
+	var IsLetter = regexp.MustCompile(`^[A-Z]+$`).MatchString
+
+	if !IsLetter(msg.Name) || len(msg.Name) > 10 {
+		return types.ErrorNameDidNotMeetCriterion
+	}
 
 	if msg.Name != "" {
+		if k.HasAssetForName(ctx, msg.Name) {
+			return types.ErrorDuplicateAsset
+		}
+		k.DeleteAssetForName(ctx, asset.Name)
 		asset.Name = msg.Name
+		k.SetAssetForName(ctx, asset.Name, asset.Id)
+
 	}
 	if msg.Denom != "" {
 		if k.HasAssetForDenom(ctx, msg.Denom) {

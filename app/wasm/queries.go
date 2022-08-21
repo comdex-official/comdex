@@ -8,7 +8,7 @@ import (
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	tokenMintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
-
+	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -20,6 +20,7 @@ type QueryPlugin struct {
 	collectorKeeper   *collectorkeeper.Keeper
 	liquidationKeeper *liquidationKeeper.Keeper
 	esmKeeper         *esmKeeper.Keeper
+	vaultKeeper       *vaultKeeper.Keeper
 }
 
 func NewQueryPlugin(
@@ -30,6 +31,7 @@ func NewQueryPlugin(
 	collectorKeeper *collectorkeeper.Keeper,
 	liquidation *liquidationKeeper.Keeper,
 	esmKeeper *esmKeeper.Keeper,
+	vaultKeeper *vaultKeeper.Keeper,
 
 ) *QueryPlugin {
 	return &QueryPlugin{
@@ -40,6 +42,7 @@ func NewQueryPlugin(
 		collectorKeeper:   collectorKeeper,
 		liquidationKeeper: liquidation,
 		esmKeeper:         esmKeeper,
+		vaultKeeper:       vaultKeeper,
 	}
 }
 
@@ -64,7 +67,7 @@ func (qp QueryPlugin) GetTokenMint(ctx sdk.Context, appID, assetID uint64) (int6
 	return tokenData, nil
 }
 
-func (qp QueryPlugin) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appID uint64, assetIDs []uint64) (found bool, err string) {
+func (qp QueryPlugin) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appID uint64, assetIDs uint64) (found bool, err string) {
 	found, err = qp.rewardsKeeper.GetRemoveWhitelistAppIDLockerRewardsCheck(ctx, appID, assetIDs)
 	return found, err
 }
@@ -73,8 +76,8 @@ func (qp QueryPlugin) GetWhitelistAppIDVaultInterestCheck(ctx sdk.Context, appID
 	found, err = qp.rewardsKeeper.GetWhitelistAppIDVaultInterestCheck(ctx, appID)
 	return found, err
 }
-func (qp QueryPlugin) GetWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appID uint64, assetIDs []uint64) (found bool, err string) {
-	found, err = qp.rewardsKeeper.GetWhitelistAppIDLockerRewardsCheck(ctx, appID, assetIDs)
+func (qp QueryPlugin) GetWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appID uint64, assetID uint64) (found bool, err string) {
+	found, err = qp.rewardsKeeper.GetWhitelistAppIDLockerRewardsCheck(ctx, appID, assetID)
 
 	return found, err
 }
@@ -142,4 +145,21 @@ func (qp QueryPlugin) WasmRemoveWhitelistAppIDLiquidationQueryCheck(ctx sdk.Cont
 func (qp QueryPlugin) WasmAddESMTriggerParamsQueryCheck(ctx sdk.Context, appID uint64) (found bool, err string) {
 	found, err = qp.esmKeeper.WasmAddESMTriggerParamsQuery(ctx, appID)
 	return found, err
+}
+
+func (qp QueryPlugin) WasmExtendedPairByApp(ctx sdk.Context, appID uint64) (extendedPairIDs []uint64, found bool) {
+	extendedPairIDs, found = qp.assetKeeper.WasmExtendedPairByAppQuery(ctx, appID)
+	return extendedPairIDs, found
+}
+
+func (qp QueryPlugin) WasmCheckSurplusReward(ctx sdk.Context, appID, assetID uint64) (amount sdk.Coin) {
+	//TO DO : add extended pair app query
+	amount = qp.collectorKeeper.WasmCheckSurplusRewardQuery(ctx, appID, assetID)
+	return amount
+}
+
+func (qp QueryPlugin) WasmCheckWhitelistedAsset(ctx sdk.Context, denom string) (found bool) {
+	//TO DO : add extended pair app query
+	found = qp.assetKeeper.WasmCheckWhitelistedAssetQuery(ctx, denom)
+	return found
 }

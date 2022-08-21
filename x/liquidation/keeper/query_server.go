@@ -24,14 +24,8 @@ func NewQueryServer(k Keeper) types.QueryServer {
 }
 
 func (q QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	var (
-		ctx    = sdk.UnwrapSDKContext(c)
-		params = q.GetParams(ctx)
-	)
-
-	return &types.QueryParamsResponse{
-		Params: params,
-	}, nil
+	ctx := sdk.UnwrapSDKContext(c)
+	return &types.QueryParamsResponse{Params: q.GetParams(ctx)}, nil
 }
 
 func (q QueryServer) QueryLockedVault(c context.Context, req *types.QueryLockedVaultRequest) (*types.QueryLockedVaultResponse, error) {
@@ -42,7 +36,7 @@ func (q QueryServer) QueryLockedVault(c context.Context, req *types.QueryLockedV
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-	item, found := q.GetLockedVault(ctx, req.Id)
+	item, found := q.GetLockedVault(ctx, req.AppID, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locked-vault does not exist for id %d", req.Id)
 	}
@@ -242,7 +236,7 @@ func (q QueryServer) QueryAppIds(c context.Context, _ *types.QueryAppIdsRequest)
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item := q.GetAppIds(ctx)
+	item := q.GetAppIdsForLiquidation(ctx)
 	return &types.QueryAppIdsResponse{
 		WhitelistedAppIds: item,
 	}, nil

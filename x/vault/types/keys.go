@@ -28,6 +28,8 @@ var (
 	UserVaultExtendedPairMappingKeyPrefix = []byte{0x12}
 	AppExtendedPairVaultMappingKeyPrefix  = []byte{0x13}
 	StableMintVaultKeyPrefix              = []byte{0x14}
+	VaultIDPrefix                         = []byte{0x15}
+	StableVaultIDPrefix                   = []byte{0x16}
 )
 
 func VaultKey(vaultID uint64) []byte {
@@ -37,10 +39,26 @@ func StableMintVaultKey(stableVaultID uint64) []byte {
 	return append(StableMintVaultKeyPrefix, sdk.Uint64ToBigEndian(stableVaultID)...)
 }
 
-func UserVaultExtendedPairMappingKey(address string) []byte {
-	return append(UserVaultExtendedPairMappingKeyPrefix, address...)
+// func UserVaultExtendedPairMappingKey(address string) []byte {
+// 	return append(UserVaultExtendedPairMappingKeyPrefix, address...)
+// }
+
+func AppExtendedPairVaultMappingKey(appMappingID uint64, pairVaultID uint64) []byte {
+	return append(append(AppExtendedPairVaultMappingKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...), sdk.Uint64ToBigEndian(pairVaultID)...)
 }
 
-func AppExtendedPairVaultMappingKey(appMappingID uint64) []byte {
+func AppMappingKey(appMappingID uint64) []byte {
 	return append(AppExtendedPairVaultMappingKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
+}
+
+func UserAppExtendedPairMappingKey(address string, appID uint64, pairVaultID uint64) []byte {
+	return append(append(append(UserVaultExtendedPairMappingKeyPrefix, address...), sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairVaultID)...)
+}
+
+func UserAppMappingKey(address string, appID uint64) []byte {
+	return append(append(UserVaultExtendedPairMappingKeyPrefix, address...), sdk.Uint64ToBigEndian(appID)...)
+}
+
+func UserKey(address string) []byte {
+	return append(UserVaultExtendedPairMappingKeyPrefix, address...)
 }

@@ -19,11 +19,11 @@ const (
 )
 
 const (
-	CreatePoolGas       = sdk.Gas(67500)
-	CancelOrderGas      = sdk.Gas(65000)
-	CancelAllOrdersGas  = sdk.Gas(74000)
-	FarmGas             = sdk.Gas(62300)
-	UnfarmGas           = sdk.Gas(69000)
+	CreatePoolGas      = sdk.Gas(67500)
+	CancelOrderGas     = sdk.Gas(65000)
+	CancelAllOrdersGas = sdk.Gas(74000)
+	FarmGas            = sdk.Gas(62300)
+	UnfarmGas          = sdk.Gas(69000)
 )
 
 var (
