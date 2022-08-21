@@ -74,7 +74,7 @@ func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vault
 	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, vaultLookupData, amount, changeType)
 }
 
-func (k Keeper) DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64){
+func (k Keeper) DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64) {
 	k.vault.DeleteUserVaultExtendedPairMapping(ctx, address, appID, pairVaultID)
 }
 
@@ -163,7 +163,7 @@ func (k Keeper) GetLockers(ctx sdk.Context) (locker []types.Locker) {
 }
 
 func (k Keeper) SetLockerLookupTable(ctx sdk.Context, lockerLookupData types.LockerLookupTableData) {
-	k.SetLockerLookupTable(ctx, lockerLookupData)
+	k.locker.SetLockerLookupTable(ctx, lockerLookupData)
 }
 
 func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appID, assetID uint64) (lockerLookupData types.LockerLookupTableData, found bool) {

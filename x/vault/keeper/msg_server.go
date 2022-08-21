@@ -145,7 +145,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 		}
 	}
 	blockHeight := ctx.BlockHeight()
-	blockTime   := ctx.BlockTime()
+	blockTime := ctx.BlockTime()
 	if extendedPairVault.StabilityFee.IsZero() {
 		blockHeight = 0
 	}
@@ -177,8 +177,8 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	// lookup table already exists
 	//only need to update counter and token statistics value
 	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, newVault)
-	
-	var  mappingData types.OwnerAppExtendedPairVaultMappingData
+
+	var mappingData types.OwnerAppExtendedPairVaultMappingData
 	mappingData.Owner = msg.From
 	mappingData.AppId = msg.AppId
 	mappingData.ExtendedPairId = msg.ExtendedPairVaultId
@@ -256,7 +256,7 @@ func (k msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (
 	}
 
 	totalDebt := userVault.AmountOut.Add(userVault.InterestAccumulated)
-	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalDebt , userVault.BlockHeight, userVault.BlockTime.Unix())
+	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalDebt, userVault.BlockHeight, userVault.BlockTime.Unix())
 	if err1 != nil {
 		return nil, err1
 	}
@@ -275,7 +275,7 @@ func (k msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (
 		}
 	}
 	userVault.BlockHeight = ctx.BlockHeight()
-	userVault.BlockTime  = ctx.BlockTime()
+	userVault.BlockTime = ctx.BlockTime()
 
 	k.SetVault(ctx, userVault)
 	//Updating appExtendedPairvaultMappingData data -
@@ -353,7 +353,7 @@ func (k msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest)
 	}
 
 	totalDebt := userVault.AmountOut.Add(userVault.InterestAccumulated)
-	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalDebt , userVault.BlockHeight, userVault.BlockTime.Unix())
+	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalDebt, userVault.BlockHeight, userVault.BlockTime.Unix())
 	if err1 != nil {
 		return nil, err1
 	}
@@ -380,7 +380,7 @@ func (k msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest)
 		}
 	}
 	userVault.BlockHeight = ctx.BlockHeight()
-	userVault.BlockTime  = ctx.BlockTime()
+	userVault.BlockTime = ctx.BlockTime()
 	k.SetVault(ctx, userVault)
 
 	//Updating appExtendedPairVaultMappingData
@@ -459,7 +459,7 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 	}
 
 	totalCalDebt := userVault.AmountOut.Add(userVault.InterestAccumulated)
-	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalCalDebt , userVault.BlockHeight, userVault.BlockTime.Unix())
+	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalCalDebt, userVault.BlockHeight, userVault.BlockTime.Unix())
 	if err1 != nil {
 		return nil, err1
 	}
@@ -521,7 +521,7 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 
 	userVault.AmountOut = userVault.AmountOut.Add(msg.Amount)
 	userVault.BlockHeight = ctx.BlockHeight()
-	userVault.BlockTime  = ctx.BlockTime()
+	userVault.BlockTime = ctx.BlockTime()
 	k.SetVault(ctx, userVault)
 
 	//Updating appExtendedPairVaultMappingData
@@ -597,7 +597,7 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 	}
 
 	totalDebt := userVault.AmountOut.Add(userVault.InterestAccumulated)
-	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalDebt , userVault.BlockHeight, userVault.BlockTime.Unix())
+	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalDebt, userVault.BlockHeight, userVault.BlockTime.Unix())
 	if err1 != nil {
 		return nil, err1
 	}
@@ -633,7 +633,7 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 			}
 		}
 		userVault.BlockHeight = ctx.BlockHeight()
-		userVault.BlockTime  = ctx.BlockTime()
+		userVault.BlockTime = ctx.BlockTime()
 		k.SetVault(ctx, userVault)
 	} else {
 		updatedUserSentAmountAfterFeesDeduction := msg.Amount.Sub(userVault.InterestAccumulated)
@@ -670,7 +670,7 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 		zeroVal := sdk.ZeroInt()
 		userVault.InterestAccumulated = zeroVal
 		userVault.BlockHeight = ctx.BlockHeight()
-		userVault.BlockTime  = ctx.BlockTime()
+		userVault.BlockTime = ctx.BlockTime()
 		k.SetVault(ctx, userVault)
 		appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
 		k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, updatedUserSentAmountAfterFeesDeduction, false)
@@ -746,7 +746,7 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 	}
 
 	totalDebt := userVault.AmountOut.Add(userVault.InterestAccumulated)
-	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalDebt , userVault.BlockHeight, userVault.BlockTime.Unix())
+	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalDebt, userVault.BlockHeight, userVault.BlockTime.Unix())
 	if err1 != nil {
 		return nil, err1
 	}
@@ -814,6 +814,11 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 // MsgDepositAndDraw.
 func (k msgServer) MsgDepositAndDraw(c context.Context, msg *types.MsgDepositAndDrawRequest) (*types.MsgDepositAndDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	userVault, found := k.GetVault(ctx, msg.UserVaultId)
+	if !found {
+		return nil, types.ErrorVaultDoesNotExist
+	}
+	newAmt := k.calculateUserToken(userVault, msg.Amount)
 	msgDepositReq := types.MsgDepositRequest{
 		From:                msg.From,
 		AppId:               msg.AppId,
@@ -825,11 +830,6 @@ func (k msgServer) MsgDepositAndDraw(c context.Context, msg *types.MsgDepositAnd
 	if err != nil {
 		return nil, err
 	}
-	userVault, found := k.GetVault(ctx, msg.UserVaultId)
-	if !found {
-		return nil, types.ErrorVaultDoesNotExist
-	}
-	newAmt := k.calculateUserToken(userVault, msg.Amount)
 	msgDrawReq := types.MsgDrawRequest{
 		From:                msg.From,
 		AppId:               msg.AppId,

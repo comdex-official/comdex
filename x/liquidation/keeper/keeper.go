@@ -75,7 +75,7 @@ func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 //Wasm tx and query binding functions
 
 func (k Keeper) WasmWhitelistAppIDLiquidation(ctx sdk.Context, appID uint64) error {
-	appID, found := k.GetAppIdByAppForLiquidation(ctx, appID)
+	_, found := k.GetAppIdByAppForLiquidation(ctx, appID)
 	if found {
 		return types.ErrAppIDDoesNotExists
 	}
@@ -85,7 +85,7 @@ func (k Keeper) WasmWhitelistAppIDLiquidation(ctx sdk.Context, appID uint64) err
 }
 
 func (k Keeper) WasmWhitelistAppIDLiquidationQuery(ctx sdk.Context, appID uint64) (bool, string) {
-	appID, found := k.GetAppIdByAppForLiquidation(ctx, appID)
+	_, found := k.GetAppIdByAppForLiquidation(ctx, appID)
 	if found {
 		return false, types.ErrAppIDExists.Error()
 	}
@@ -93,7 +93,7 @@ func (k Keeper) WasmWhitelistAppIDLiquidationQuery(ctx sdk.Context, appID uint64
 }
 
 func (k Keeper) WasmRemoveWhitelistAppIDLiquidation(ctx sdk.Context, appID uint64) error {
-	appID, found := k.GetAppIdByAppForLiquidation(ctx, appID)
+	_, found := k.GetAppIdByAppForLiquidation(ctx, appID)
 	if !found {
 		return types.ErrAppIDDoesNotExists
 	}
@@ -103,7 +103,7 @@ func (k Keeper) WasmRemoveWhitelistAppIDLiquidation(ctx sdk.Context, appID uint6
 }
 
 func (k Keeper) WasmRemoveWhitelistAppIDLiquidationQuery(ctx sdk.Context, appID uint64) (bool, string) {
-	appID, found := k.GetAppIdByAppForLiquidation(ctx, appID)
+	_, found := k.GetAppIdByAppForLiquidation(ctx, appID)
 	if !found {
 		return false, types.ErrAppIDDoesNotExists.Error()
 	}
