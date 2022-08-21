@@ -377,7 +377,6 @@ func (k Keeper) VerifyCollaterlizationRatio(
 	return nil
 }
 
-
 func (k Keeper) SetVault(ctx sdk.Context, vault types.Vault) {
 	var (
 		store = k.Store(ctx)
@@ -402,39 +401,43 @@ func (k Keeper) GetVault(ctx sdk.Context, id uint64) (vault types.Vault, found b
 }
 
 // UpdateCollateralLockedAmountLockerMapping For updating token stats of collateral .
-func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData types.AppExtendedPairVaultMappingData, amount sdk.Int, changeType bool) {
+func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
 	//if Change type true = Add to collateral Locked
 	//If change type false = Subtract from the collateral Locked
+	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMappingData(ctx, appMappingID, extendedPairID)
+	if found {
+		if changeType {
+			updatedVal := appExtendedPairVaultData.CollateralLockedAmount.Add(amount)
+			appExtendedPairVaultData.CollateralLockedAmount = updatedVal
+		} else {
+			updatedVal := appExtendedPairVaultData.CollateralLockedAmount.Sub(amount)
+			appExtendedPairVaultData.CollateralLockedAmount = updatedVal
+		}
 
-	if changeType {
-		updatedVal := vaultLookupData.CollateralLockedAmount.Add(amount)
-		vaultLookupData.CollateralLockedAmount = updatedVal
-	} else {
-		updatedVal := vaultLookupData.CollateralLockedAmount.Sub(amount)
-		vaultLookupData.CollateralLockedAmount = updatedVal
-	}
-
-	err := k.SetAppExtendedPairVaultMappingData(ctx, vaultLookupData)
-	if err != nil {
-		return
+		err := k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
+		if err != nil {
+			return
+		}
 	}
 }
 
 // UpdateTokenMintedAmountLockerMapping For updating token stats of minted .
-func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData types.AppExtendedPairVaultMappingData, amount sdk.Int, changeType bool) {
+func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
 	//if Change type true = Add to token Locked
 	//If change type false = Subtract from the token Locked
-
-	if changeType {
-		updatedVal := vaultLookupData.TokenMintedAmount.Add(amount)
-		vaultLookupData.TokenMintedAmount = updatedVal
-	} else {
-		updatedVal := vaultLookupData.TokenMintedAmount.Sub(amount)
-		vaultLookupData.TokenMintedAmount = updatedVal
-	}
-	err := k.SetAppExtendedPairVaultMappingData(ctx, vaultLookupData)
-	if err != nil {
-		return
+	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMappingData(ctx, appMappingID, extendedPairID)
+	if found {
+		if changeType {
+			updatedVal := appExtendedPairVaultData.TokenMintedAmount.Add(amount)
+			appExtendedPairVaultData.TokenMintedAmount = updatedVal
+		} else {
+			updatedVal := appExtendedPairVaultData.TokenMintedAmount.Sub(amount)
+			appExtendedPairVaultData.TokenMintedAmount = updatedVal
+		}
+		err := k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
+		if err != nil {
+			return
+		}
 	}
 }
 
@@ -467,7 +470,6 @@ func (k Keeper) GetVaults(ctx sdk.Context) (vaults []types.Vault) {
 	}
 	return vaults
 }
-
 
 func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64) {
 	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMappingData(ctx, appMappingID, extendedPairID)
@@ -583,7 +585,6 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, Exten
 	newVault.ExtendedPairVaultID = extendedPairVault.Id
 	k.SetVault(ctx, newVault)
 	k.SetIDForVault(ctx, newID)
-
 
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, AppID, ExtendedPairVaultID)
 
