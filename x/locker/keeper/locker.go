@@ -232,15 +232,21 @@ func (k Keeper) GetAllLockerLookupTable(ctx sdk.Context) (lockerLookupTable []ty
 }
 
 // UpdateAmountLockerMapping For updating token locker mapping in lookup table.
-func (k Keeper) UpdateAmountLockerMapping(ctx sdk.Context, lockerLookupData types.LockerLookupTableData, assetID uint64, amount sdk.Int, changeType bool) { //if Change type true = Add to deposits
-	//If change type false = Subtract from the deposits
-	if changeType {
-		lockerLookupData.DepositedAmount = lockerLookupData.DepositedAmount.Add(amount)
-	} else {
-		lockerLookupData.DepositedAmount = lockerLookupData.DepositedAmount.Sub(amount)
-	}
+func (k Keeper) UpdateAmountLockerMapping(ctx sdk.Context, appId uint64, assetID uint64, amount sdk.Int, changeType bool) {
+	//if Change type true = Add to deposits
 
-	k.SetLockerLookupTable(ctx, lockerLookupData)
+	//If change type false = Subtract from the deposits
+	lookupTableData, exists := k.GetLockerLookupTable(ctx, appId, assetID)
+	if exists {
+
+		if changeType {
+			lookupTableData.DepositedAmount = lookupTableData.DepositedAmount.Add(amount)
+		} else {
+			lookupTableData.DepositedAmount = lookupTableData.DepositedAmount.Sub(amount)
+		}
+
+		k.SetLockerLookupTable(ctx, lookupTableData)
+	}
 }
 
 // SetUserLockerAssetMapping User Locker Functions.

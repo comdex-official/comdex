@@ -2,10 +2,11 @@ package keeper
 
 import (
 	"context"
+	"sort"
+
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"sort"
 )
 
 var (
@@ -77,7 +78,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 		}
 	}
 	blockHeight := ctx.BlockHeight()
-	blockTime   := ctx.BlockTime()
+	blockTime := ctx.BlockTime()
 	if Collector.LockerSavingRate.IsZero() {
 		blockHeight = 0
 	}
@@ -193,7 +194,7 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 	k.SetLocker(ctx, lockerData)
 
 	//Update  Amount in Locker Mapping
-	k.UpdateAmountLockerMapping(ctx, lookupTableData, asset.Id, msg.Amount, true)
+	k.UpdateAmountLockerMapping(ctx, lookupTableData.AppId, asset.Id, msg.Amount, true)
 
 	userLockerAssetMappingData, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)
 	var userHisData types.UserTxData
@@ -270,7 +271,7 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 	k.SetLocker(ctx, lockerData)
 
 	//Update  Amount in Locker Mapping
-	k.UpdateAmountLockerMapping(ctx, lookupTableData, asset.Id, msg.Amount, false)
+	k.UpdateAmountLockerMapping(ctx, lookupTableData.AppId, asset.Id, msg.Amount, false)
 
 	userLockerAssetMappingData, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)
 
@@ -345,9 +346,9 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 	userTxData.TxTime = ctx.BlockTime()
 	userLockerAssetMappingData.UserData = append(userLockerAssetMappingData.UserData, &userTxData)
 
-	k.UpdateAmountLockerMapping(ctx, lookupTableData, asset.Id, lockerData.NetBalance, false)
+	k.UpdateAmountLockerMapping(ctx, lookupTableData.AppId, asset.Id, lockerData.NetBalance, false)
 	k.SetUserLockerAssetMapping(ctx, userLockerAssetMappingData)
-
+	lookupTableData, _ = k.GetLockerLookupTable(ctx, appMapping.Id, asset.Id)
 
 	lengthOfVaults := len(lookupTableData.LockerIds)
 	dataIndex := sort.Search(lengthOfVaults, func(i int) bool { return lookupTableData.LockerIds[i] >= lockerData.LockerId })
