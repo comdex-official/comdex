@@ -583,8 +583,8 @@ func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAu
 		return sdkerrors.ErrNotFound
 	}
 
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, burnToken.Amount, false)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, auction.OutflowTokenInitAmount.Amount.Sub(auction.OutflowTokenCurrentAmount.Amount), false)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, burnToken.Amount, false)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId, auction.OutflowTokenInitAmount.Amount.Sub(auction.OutflowTokenCurrentAmount.Amount), false)
 	return nil
 }
 
