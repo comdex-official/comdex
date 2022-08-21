@@ -56,31 +56,31 @@ func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appID, assetID uint64) (lo
 }
 
 func (k Keeper) GetReward(ctx sdk.Context, appId, assetID uint64) (rewards rewardstypes.InternalRewards, found bool) {
-	return k.GetReward(ctx, appId, assetID)
+	return k.rewards.GetReward(ctx, appId, assetID)
 }
 
 func (k Keeper) GetLocker(ctx sdk.Context, lockerID uint64) (locker lockertypes.Locker, found bool) {
-	return k.GetLocker(ctx, lockerID)
+	return k.locker.GetLocker(ctx, lockerID)
 }
 
 func (k Keeper) CalculationOfRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec, bTime int64) (sdk.Dec, error) {
-	return k.CalculationOfRewards(ctx, amount, lsr, bTime)
+	return k.rewards.CalculationOfRewards(ctx, amount, lsr, bTime)
 }
 
 func (k Keeper) SetLocker(ctx sdk.Context, locker lockertypes.Locker) {
-	k.SetLocker(ctx, locker)
+	k.locker.SetLocker(ctx, locker)
 }
 
 func (k Keeper) SetLockerLookupTable(ctx sdk.Context, lockerLookupData lockertypes.LockerLookupTableData) {
-	k.SetLockerLookupTable(ctx, lockerLookupData)
+	k.locker.SetLockerLookupTable(ctx, lockerLookupData)
 }
 
 func (k Keeper) SetLockerRewardTracker(ctx sdk.Context, rewards rewardstypes.LockerRewardsTracker) {
-	k.SetLockerRewardTracker(ctx, rewards)
+	k.rewards.SetLockerRewardTracker(ctx, rewards)
 }
 
 func (k Keeper) GetLockerRewardTracker(ctx sdk.Context, id, appID uint64) (rewards rewardstypes.LockerRewardsTracker, found bool) {
-	return k.GetLockerRewardTracker(ctx, id, appID)
+	return k.rewards.GetLockerRewardTracker(ctx, id, appID)
 }
 
 func (k Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise) error {
