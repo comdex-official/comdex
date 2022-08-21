@@ -8,7 +8,7 @@ import (
 )
 
 func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
-	appIds := k.GetAppIds(ctx)
+	appIds := k.GetAppIdsForLiquidation(ctx)
 	params := k.GetParams(ctx)
 
 	for i := range appIds {
@@ -310,7 +310,7 @@ func (k Keeper) SetFlagIsAuctionComplete(ctx sdk.Context, appID, id uint64, flag
 
 // whitlisted appIds kvs
 
-func (k Keeper) SetAppID(ctx sdk.Context, appID uint64) {
+func (k Keeper) SetAppIDForLiquidation(ctx sdk.Context, appID uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.WhitelistAppKeyByApp(appID)
@@ -324,7 +324,7 @@ func (k Keeper) SetAppID(ctx sdk.Context, appID uint64) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetAppIdByApp(ctx sdk.Context, appID uint64) (uint64, bool) {
+func (k Keeper) GetAppIdByAppForLiquidation(ctx sdk.Context, appID uint64) (uint64, bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.WhitelistAppKeyByApp(appID)
@@ -341,7 +341,7 @@ func (k Keeper) GetAppIdByApp(ctx sdk.Context, appID uint64) (uint64, bool) {
 	return id.GetValue(), true
 }
 
-func (k Keeper) GetAppIds(ctx sdk.Context) (appIds []uint64) {
+func (k Keeper) GetAppIdsForLiquidation(ctx sdk.Context) (appIds []uint64) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.AppIdsKeyPrefix)
