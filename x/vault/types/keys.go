@@ -52,13 +52,13 @@ func AppMappingKey(appMappingID uint64) []byte {
 }
 
 func UserAppExtendedPairMappingKey(address string, appID uint64, pairVaultID uint64) []byte {
-	return append(append(append(UserVaultExtendedPairMappingKeyPrefix,  address...), sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairVaultID)...)
+	return append(append(append(UserVaultExtendedPairMappingKeyPrefix, address...), sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairVaultID)...)
 }
 
 func UserAppMappingKey(address string, appID uint64) []byte {
-	return append(append(UserVaultExtendedPairMappingKeyPrefix,  address...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(UserVaultExtendedPairMappingKeyPrefix, address...), sdk.Uint64ToBigEndian(appID)...)
 }
 
 func UserKey(address string) []byte {
-	return append(UserVaultExtendedPairMappingKeyPrefix,  address...)
+	return append(UserVaultExtendedPairMappingKeyPrefix, address...)
 }

@@ -82,22 +82,22 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, total
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	var value = types.LockedVault{
-		LockedVaultId:                lockedVaultID + 1,
-		AppId:                        appID,
-		OriginalVaultId:              vault.Id,
-		ExtendedPairId:               vault.ExtendedPairVaultID,
-		Owner:                        vault.Owner,
-		AmountIn:                     vault.AmountIn,
-		AmountOut:                    vault.AmountOut,
-		UpdatedAmountOut:             vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated),
-		Initiator:                    types.ModuleName,
-		IsAuctionComplete:            false,
-		IsAuctionInProgress:          false,
-		CrAtLiquidation:              collateralizationRatio,
-		CollateralToBeAuctioned:      totalIn,
-		LiquidationTimestamp:         ctx.BlockTime(),
-		InterestAccumulated:          vault.InterestAccumulated,
-		Kind:                         nil,
+		LockedVaultId:           lockedVaultID + 1,
+		AppId:                   appID,
+		OriginalVaultId:         vault.Id,
+		ExtendedPairId:          vault.ExtendedPairVaultID,
+		Owner:                   vault.Owner,
+		AmountIn:                vault.AmountIn,
+		AmountOut:               vault.AmountOut,
+		UpdatedAmountOut:        vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated),
+		Initiator:               types.ModuleName,
+		IsAuctionComplete:       false,
+		IsAuctionInProgress:     false,
+		CrAtLiquidation:         collateralizationRatio,
+		CollateralToBeAuctioned: totalIn,
+		LiquidationTimestamp:    ctx.BlockTime(),
+		InterestAccumulated:     vault.InterestAccumulated,
+		Kind:                    nil,
 	}
 
 	k.SetLockedVault(ctx, value)
@@ -172,7 +172,7 @@ func (k Keeper) GetLockedVaultHistory(ctx sdk.Context, appID, id uint64) (locked
 
 	k.cdc.MustUnmarshal(value, &lockedVault)
 	return lockedVault, true
-	
+
 }
 
 // locked vaults kvs
@@ -207,7 +207,6 @@ func (k Keeper) GetLockedVaultID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-
 func (k Keeper) SetLockedVault(ctx sdk.Context, lockedVault types.LockedVault) {
 	var (
 		store = k.Store(ctx)
@@ -216,8 +215,6 @@ func (k Keeper) SetLockedVault(ctx sdk.Context, lockedVault types.LockedVault) {
 	)
 	store.Set(key, value)
 }
-
-
 
 func (k Keeper) DeleteLockedVault(ctx sdk.Context, appID, id uint64) {
 	var (

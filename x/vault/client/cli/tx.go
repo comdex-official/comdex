@@ -148,7 +148,7 @@ func Withdraw() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			
+
 			userVaultid, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
@@ -445,7 +445,7 @@ func WithdrawStableMint() *cobra.Command {
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
-			
+
 			stablemintID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return err

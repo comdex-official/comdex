@@ -2,8 +2,8 @@ package rest
 
 import (
 	"context"
-	"strconv"
 	"net/http"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/rest"

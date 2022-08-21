@@ -182,7 +182,7 @@ func (q QueryServer) QueryOwnerLockerOfAllAppsByOwner(c context.Context, request
 	userLockerLookupData, _ := q.GetUserLockerMapping(ctx, request.Owner)
 
 	var lockerIds []uint64
-	for _, locker := range userLockerLookupData{
+	for _, locker := range userLockerLookupData {
 		lockerIds = append(lockerIds, locker.LockerId)
 	}
 
@@ -197,13 +197,13 @@ func (q QueryServer) QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(c context.Cont
 	}
 
 	var (
-		ctx        = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 	userLockerLookupData, found := q.GetUserLockerAssetMapping(ctx, request.Owner, request.AppId, request.AssetId)
 	if !found {
 		return &types.QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse{}, nil
 	}
-	
+
 	return &types.QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse{
 		UserTxData: userLockerLookupData.UserData,
 	}, nil
@@ -225,8 +225,7 @@ func (q QueryServer) QueryOwnerLockerByAppToAssetIDbyOwner(c context.Context, re
 	}
 
 	lockerData, _ := q.GetLocker(ctx, lockerLookupData.LockerId)
-	
-		
+
 	return &types.QueryOwnerLockerByAppToAssetIDbyOwnerResponse{
 		LockerInfo: lockerData,
 	}, nil
@@ -278,7 +277,7 @@ func (q QueryServer) QueryLockerCountByAppToAssetID(c context.Context, request *
 	}
 
 	lockerCount := len(lockerLookupData.LockerIds)
-	
+
 	return &types.QueryLockerCountByAppToAssetIDResponse{
 		TotalCount: uint64(lockerCount),
 	}, nil
@@ -290,8 +289,8 @@ func (q QueryServer) QueryWhiteListedAssetIDsByAppID(c context.Context, request 
 	}
 
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
-		assetIds   []uint64  
+		ctx      = sdk.UnwrapSDKContext(c)
+		assetIds []uint64
 	)
 
 	lockerLookupData, found := q.GetLockerProductAssetMappingByApp(ctx, request.AppId)

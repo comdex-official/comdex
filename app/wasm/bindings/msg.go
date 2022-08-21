@@ -36,8 +36,8 @@ type MsgWhitelistAppIDVaultInterest struct {
 }
 
 type MsgWhitelistAppIDLockerRewards struct {
-	AppID    uint64   `json:"app_id"`
-	AssetID  uint64   `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type MsgAddExtendedPairsVault struct {

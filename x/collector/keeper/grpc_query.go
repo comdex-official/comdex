@@ -90,7 +90,7 @@ func (q QueryServer) QueryAuctionMappingForAppAndAsset(c context.Context, req *t
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx                  = sdk.UnwrapSDKContext(c)
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {

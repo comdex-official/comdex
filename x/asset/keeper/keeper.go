@@ -10,12 +10,12 @@ import (
 )
 
 type Keeper struct {
-	cdc    codec.BinaryCodec
-	key    sdk.StoreKey
-	params paramstypes.Subspace
-	oracle expected.MarketKeeper
+	cdc     codec.BinaryCodec
+	key     sdk.StoreKey
+	params  paramstypes.Subspace
+	oracle  expected.MarketKeeper
 	rewards expected.RewardsKeeper
-	vault expected.VaultKeeper
+	vault   expected.VaultKeeper
 }
 
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, oracle expected.MarketKeeper, rewards expected.RewardsKeeper, vault expected.VaultKeeper) Keeper {
@@ -24,12 +24,12 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subsp
 	}
 
 	return Keeper{
-		cdc:    cdc,
-		key:    key,
-		params: params,
-		oracle: oracle,
+		cdc:     cdc,
+		key:     key,
+		params:  params,
+		oracle:  oracle,
 		rewards: rewards,
-		vault: vault,
+		vault:   vault,
 	}
 }
 

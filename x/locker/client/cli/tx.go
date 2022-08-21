@@ -150,7 +150,6 @@ func txCloseLocker() *cobra.Command {
 				return err
 			}
 
-
 			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
@@ -160,7 +159,7 @@ func txCloseLocker() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			
+
 			msg := types.NewMsgCloseLockerRequest(ctx.FromAddress.String(), appID, assetID, lockerID)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

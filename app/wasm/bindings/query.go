@@ -67,8 +67,8 @@ type MintedTokenResponse struct {
 }
 
 type RemoveWhiteListAssetLocker struct {
-	AppID    uint64   `json:"app_id"`
-	AssetIDs uint64   `json:"asset_ids"`
+	AppID    uint64 `json:"app_id"`
+	AssetIDs uint64 `json:"asset_ids"`
 }
 
 type RemoveWhiteListAssetResponse struct {
@@ -86,8 +86,8 @@ type WhitelistAppIDVaultInterestResponse struct {
 }
 
 type WhitelistAppIDLockerRewards struct {
-	AppID   uint64   `json:"app_id"`
-	AssetID uint64   `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type WhitelistAppIDLockerRewardsResponse struct {

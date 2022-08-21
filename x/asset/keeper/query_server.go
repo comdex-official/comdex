@@ -173,7 +173,7 @@ func (q QueryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (
 }
 
 func (q QueryServer) QueryApps(c context.Context, req *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
-	
+
 	var (
 		items []types.AppData
 		ctx   = sdk.UnwrapSDKContext(c)
@@ -201,7 +201,7 @@ func (q QueryServer) QueryApps(c context.Context, req *types.QueryAppsRequest) (
 	}
 
 	return &types.QueryAppsResponse{
-		Apps: items,
+		Apps:       items,
 		Pagination: pagination,
 	}, nil
 }
@@ -262,7 +262,7 @@ func (q QueryServer) QueryAllExtendedPairVaults(c context.Context, req *types.Qu
 	}
 
 	return &types.QueryAllExtendedPairVaultsResponse{
-		PairVault: items,
+		PairVault:  items,
 		Pagination: pagination,
 	}, nil
 }
@@ -282,7 +282,7 @@ func (q QueryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *typ
 				return false, err
 			}
 
-			if accumulate && item.AppId == req.AppId{
+			if accumulate && item.AppId == req.AppId {
 				items = append(items, item)
 			}
 
@@ -296,7 +296,7 @@ func (q QueryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *typ
 
 	return &types.QueryAllExtendedPairVaultsByAppResponse{
 		ExtendedPair: items,
-		Pagination: pagination,
+		Pagination:   pagination,
 	}, nil
 }
 
@@ -326,11 +326,10 @@ func (q QueryServer) QueryAllExtendedPairStableVaultsIDByApp(c context.Context, 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	
 
 	return &types.QueryAllExtendedPairStableVaultsIDByAppResponse{
 		ExtendedPairsId: items,
-		Pagination: pagination,
+		Pagination:      pagination,
 	}, nil
 }
 
@@ -369,7 +368,7 @@ func (q QueryServer) QueryAllExtendedPairStableVaultsByApp(c context.Context, re
 				return false, err
 			}
 
-			if accumulate && (item.AppId == req.AppId) && (item.IsStableMintVault){
+			if accumulate && (item.AppId == req.AppId) && (item.IsStableMintVault) {
 				items = append(items, item)
 			}
 
@@ -383,6 +382,6 @@ func (q QueryServer) QueryAllExtendedPairStableVaultsByApp(c context.Context, re
 
 	return &types.QueryAllExtendedPairStableVaultsByAppResponse{
 		ExtendedPair: items,
-		Pagination: pagination,
+		Pagination:   pagination,
 	}, nil
 }

@@ -2,8 +2,8 @@ package types
 
 func NewGenesisState(lockedVault []LockedVault, params Params) *GenesisState {
 	return &GenesisState{
-		LockedVault:             lockedVault,
-		Params:                  params,
+		LockedVault: lockedVault,
+		Params:      params,
 	}
 }
 

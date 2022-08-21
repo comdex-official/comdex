@@ -146,11 +146,11 @@ func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records types.AppAssetI
 	return k.collector.SetAuctionMappingForApp(ctx, records)
 }
 
-func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context,  appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
-	k.vault.UpdateTokenMintedAmountLockerMapping(ctx,  appMappingID , extendedPairID , amount, changeType)
+func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateTokenMintedAmountLockerMapping(ctx, appMappingID, extendedPairID, amount, changeType)
 }
-func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context,  appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
-	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx,  appMappingID , extendedPairID, amount, changeType)
+func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, appMappingID, extendedPairID, amount, changeType)
 }
 
 func (k Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.AppAssetIdToAuctionLookupTable, found bool) {
@@ -184,7 +184,7 @@ func (k Keeper) GetUserAppExtendedPairMappingData(ctx sdk.Context, from string, 
 	return k.vault.GetUserAppExtendedPairMappingData(ctx, from, appMapping, extendedPairVault)
 }
 
-func (k Keeper)  GetUserAppMappingData(ctx sdk.Context, address string, appID uint64) (mappingData []vaulttypes.OwnerAppExtendedPairVaultMappingData, found bool) {
+func (k Keeper) GetUserAppMappingData(ctx sdk.Context, address string, appID uint64) (mappingData []vaulttypes.OwnerAppExtendedPairVaultMappingData, found bool) {
 	return k.vault.GetUserAppMappingData(ctx, address, appID)
 }
 
