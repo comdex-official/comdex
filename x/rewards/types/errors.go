@@ -20,7 +20,7 @@ var (
 
 	ErrAssetIDDoesNotExist = sdkerrors.Register(ModuleName, 1101, "Asset Id does not exist in locker for App_Mapping")
 	ErrNegativeTimeElapsed = sdkerrors.Register(ModuleName, 1102, "negative time elapsed since last interest time")
-	ErrAppIDExists         = sdkerrors.Register(ModuleName, 1103, "Asset Id does not exist in locker for App_Mapping")
+	ErrAppIDExists         = sdkerrors.Register(ModuleName, 1103, "App id exists")
 	ErrAppIDDoesNotExists  = sdkerrors.Register(ModuleName, 1104, "App  Id does not exist in rewards for interest accrual")
 	ErrPairNotExists       = sdkerrors.Register(ModuleName, 1105, "pair does not exists")
 	ErrPriceNotFound       = sdkerrors.Register(ModuleName, 1106, "price not found")
