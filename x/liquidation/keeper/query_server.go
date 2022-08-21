@@ -236,7 +236,7 @@ func (q QueryServer) QueryAppIds(c context.Context, _ *types.QueryAppIdsRequest)
 		ctx = sdk.UnwrapSDKContext(c)
 	)
 
-	item := q.GetAppIds(ctx)
+	item := q.GetAppIdsForLiquidation(ctx)
 	return &types.QueryAppIdsResponse{
 		WhitelistedAppIds: item,
 	}, nil
