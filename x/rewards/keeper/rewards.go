@@ -358,7 +358,7 @@ func (k Keeper) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMa
 }
 
 func (k Keeper) GetWhitelistAppIDVaultInterestCheck(ctx sdk.Context, appMappingID uint64) (found bool, err string) {
-	_,found = k.GetAppIDByApp(ctx, appMappingID)
+	_, found = k.GetAppIDByApp(ctx, appMappingID)
 	if found {
 		return false, "app Id already exists"
 	}
@@ -581,7 +581,7 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 
 	_, found := k.GetAppIDByApp(ctx, appID)
 	if !found {
-		return types.ErrAppIDDoesNotExists
+		return nil
 	}
 	ExtPairVaultData, found := k.GetPairsVault(ctx, extendedPairID)
 	if !found {
