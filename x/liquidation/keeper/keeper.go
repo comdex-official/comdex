@@ -75,7 +75,7 @@ func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 //Wasm tx and query binding functions
 
 func (k Keeper) WasmWhitelistAppIDLiquidation(ctx sdk.Context, appID uint64) error {
-	appID, found := k.GetAppIdByApp(ctx, appID)
+	_, found := k.GetAppIdByApp(ctx, appID)
 	if found {
 		return types.ErrAppIDDoesNotExists
 	}

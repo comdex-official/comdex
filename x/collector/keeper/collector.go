@@ -38,8 +38,7 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 	return returnedFee, nil
 }
 
-func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, _ types.AppAssetIdToFeeCollectedData) error {
-	var netCollected types.AppAssetIdToFeeCollectedData
+func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, netCollected types.AppAssetIdToFeeCollectedData) error {
 	netCollected.AppId = appID
 
 	var netCollectedFee sdk.Int
