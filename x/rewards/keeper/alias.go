@@ -70,8 +70,8 @@ func (k Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context
 	k.vault.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, vaultData)
 }
 
-func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMappingData, amount sdk.Int, changeType bool) {
-	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, vaultLookupData, amount, changeType)
+func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context,  appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx,  appMappingID , extendedPairID , amount, changeType)
 }
 
 func (k Keeper) DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64) {

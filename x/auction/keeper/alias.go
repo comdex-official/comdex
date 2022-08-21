@@ -146,11 +146,11 @@ func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records types.AppAssetI
 	return k.collector.SetAuctionMappingForApp(ctx, records)
 }
 
-func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMappingData, amount sdk.Int, changeType bool) {
-	k.vault.UpdateTokenMintedAmountLockerMapping(ctx, vaultLookupData, amount, changeType)
+func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context,  appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateTokenMintedAmountLockerMapping(ctx,  appMappingID , extendedPairID , amount, changeType)
 }
-func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMappingData, amount sdk.Int, changeType bool) {
-	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, vaultLookupData, amount, changeType)
+func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context,  appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx,  appMappingID , extendedPairID, amount, changeType)
 }
 
 func (k Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.AppAssetIdToAuctionLookupTable, found bool) {
