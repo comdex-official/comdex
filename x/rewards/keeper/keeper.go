@@ -106,7 +106,7 @@ func (k Keeper) WhitelistAppIDVault(ctx sdk.Context, appMappingID uint64) error 
 	}
 	
 	
-	k.SetAppID(ctx, appMappingID)
+	k.SetAppByAppID(ctx, appMappingID)
 	return nil
 }
 
@@ -183,11 +183,11 @@ func (k Keeper) ActExternalRewardsVaults(
 
 	appExtPairVaultData, found := k.GetAppMappingData(ctx, appMappingID)
 	if !found {
-		return types.ErrAssetIDDoesNotExist
+		return types.ErrAppIDDoesNotExists
 	}
 	for _, v := range appExtPairVaultData {
 		if extendedPairID != v.ExtendedPairId {
-			return types.ErrAssetIDDoesNotExist
+			return types.ErrPairNotExists
 		}
 	}
 

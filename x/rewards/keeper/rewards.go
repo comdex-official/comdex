@@ -92,7 +92,7 @@ func (k Keeper) GetRewards(ctx sdk.Context) (lends []types.InternalRewards) {
 	return lends
 }
 
-func (k Keeper) SetAppID(ctx sdk.Context, appID uint64) {
+func (k Keeper) SetAppByAppID(ctx sdk.Context, appID uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AppIDKeyPrefix(appID)
