@@ -5,7 +5,6 @@ import (
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strconv"
 )
 
 func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
@@ -124,7 +123,6 @@ func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset
 	var value = types.LockedVault{
 		LockedVaultId:                lockedVaultID + 1,
 		AppId:                        appID,
-		AppVaultTypeId:               strconv.FormatUint(appID, 10),
 		OriginalVaultId:              borrow.ID,
 		ExtendedPairId:               borrow.PairID,
 		Owner:                        lendPos.Owner,
@@ -262,8 +260,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
-	lockedVault, _ := k.GetLockedVault(ctx, id)
+func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
+	lockedVault, _ := k.GetLockedVault(ctx, appID, id)
 	borrowMetadata := lockedVault.GetBorrowMetaData()
 	if borrowMetadata != nil {
 		lendPos, _ := k.GetLend(ctx, borrowMetadata.LendingId)
@@ -286,7 +284,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
 						return err
 					}
 					k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
-					k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+					k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 					if err = k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
 						return err
 					}
@@ -304,7 +302,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
 					}
 					k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
 					k.CreteNewBorrow(ctx, lockedVault)
-					k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+					k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 				}
 			} else {
 				if borrowMetadata.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
@@ -320,7 +318,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
 							return err
 						}
 						k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
-						k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+						k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 						if err = k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
 							return err
 						}
@@ -338,7 +336,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
 						}
 						k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
 						k.CreteNewBorrow(ctx, lockedVault)
-						k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+						k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 					}
 				} else {
 					liqThresholdAssetIn, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
@@ -352,7 +350,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
 							return err
 						}
 						k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
-						k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+						k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 						if err = k.SendCoinFromModuleToAccount(ctx, vaulttypes.ModuleName, userAddress, sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn)); err != nil {
 							return err
 						}
@@ -370,7 +368,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, id uint64) error {
 						}
 						k.DeleteBorrowForAddressByPair(ctx, userAddress, lockedVault.ExtendedPairId)
 						k.CreteNewBorrow(ctx, lockedVault)
-						k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+						k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 					}
 				}
 			}

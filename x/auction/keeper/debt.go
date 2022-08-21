@@ -10,15 +10,14 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) DebtActivator(ctx sdk.Context, data collectortypes.CollectorAuctionLookupTable,
-	inData collectortypes.AssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
-	if inData.IsDebtAuction && !inData.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
-		err := k.CreateDebtAuction(ctx, data.AppId, inData.AssetId)
+func (k Keeper) DebtActivator(ctx sdk.Context, data collectortypes.AppAssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
+	if data.IsDebtAuction && !data.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
+		err := k.CreateDebtAuction(ctx, data.AppId, data.AssetId)
 		if err != nil {
 			return err
 		}
 	}
-	if inData.IsDebtAuction && inData.IsAuctionActive {
+	if data.IsDebtAuction && data.IsAuctionActive {
 		err := k.DebtAuctionClose(ctx, data.AppId, status)
 		if err != nil {
 			return err
@@ -33,61 +32,55 @@ func (k Keeper) CreateDebtAuction(ctx sdk.Context, appID, assetID uint64) error 
 		return err
 	}
 
-	auctionLookupTable, _ := k.GetAuctionMappingForApp(ctx, appID)
+	auctionLookupTable, _ := k.GetAuctionMappingForApp(ctx, appID, assetID)
 
-	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
-		if assetToAuction.AssetId == assetID && status == auctiontypes.StartedDebtAuction {
-			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = true
-			err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
-			if err1 != nil {
-				return err1
-			}
+	if status == auctiontypes.StartedDebtAuction {
+		auctionLookupTable.IsAuctionActive = true
+		err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
+		if err1 != nil {
+			return err1
 		}
 	}
+
 	return nil
 }
 
 //nolint:unparam
 func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context, appID, assetID uint64) (status uint64, err error) {
-	assetsCollectorDataUnderAppID, found := k.GetCollectorLookupTable(ctx, appID)
+	collector, found := k.GetCollectorLookupTable(ctx, appID, assetID)
 	if !found {
 		return
 	}
 	//traverse this to access appId , collector asset id  , debt threshold
-	for _, collector := range assetsCollectorDataUnderAppID.AssetRateInfo {
-		if collector.CollectorAssetId == assetID {
-			NetFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID)
 
-			if !found {
-				return auctiontypes.NoAuction, nil
-			}
-			//traverse this to access appId , collector asset id , netfees collected
-			for _, AssetIDToFeeCollected := range NetFeeCollectedData.AssetIdToFeeCollected {
-				if AssetIDToFeeCollected.AssetId == assetID {
-					if AssetIDToFeeCollected.NetFeesCollected.LTE(sdk.NewIntFromUint64(collector.DebtThreshold - collector.LotSize)) {
-						// START DEBT AUCTION .  LOTSIZE AS MINTED FOR SECONDARY ASSET and ACCEPT Collector assetid from user
-						//calculate inflow token amount
-						assetInID := collector.CollectorAssetId
-						assetOutID := collector.SecondaryAssetId
-						//net = 200 debtThreshold = 500 , lotsize = 100
-						amount := sdk.NewIntFromUint64(collector.LotSize)
+	NetFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, assetID)
 
-						status, outflowToken, inflowToken := k.getDebtSellTokenAmount(ctx, appID, assetInID, assetOutID, amount)
-						if status == auctiontypes.NoAuction {
-							return auctiontypes.NoAuction, nil
-						}
-
-						//Mint the tokens when collector module sends tokens to user
-						err := k.StartDebtAuction(ctx, outflowToken, inflowToken, collector.BidFactor, appID, assetID, assetInID, assetOutID)
-						if err != nil {
-							break
-						}
-						return auctiontypes.StartedDebtAuction, nil
-					}
-				}
-			}
-		}
+	if !found {
+		return auctiontypes.NoAuction, nil
 	}
+	//traverse this to access appId , collector asset id , netfees collected
+
+	if NetFeeCollectedData.NetFeesCollected.LTE(sdk.NewIntFromUint64(collector.DebtThreshold - collector.LotSize)) {
+		// START DEBT AUCTION .  LOTSIZE AS MINTED FOR SECONDARY ASSET and ACCEPT Collector assetid from user
+		//calculate inflow token amount
+		assetInID := collector.CollectorAssetId
+		assetOutID := collector.SecondaryAssetId
+		//net = 200 debtThreshold = 500 , lotsize = 100
+		amount := sdk.NewIntFromUint64(collector.LotSize)
+
+		status, outflowToken, inflowToken := k.getDebtSellTokenAmount(ctx, appID, assetInID, assetOutID, amount)
+		if status == auctiontypes.NoAuction {
+			return auctiontypes.NoAuction, nil
+		}
+
+		//Mint the tokens when collector module sends tokens to user
+		err := k.StartDebtAuction(ctx, outflowToken, inflowToken, collector.BidFactor, appID, assetID, assetInID, assetOutID)
+		if err != nil {
+			return auctiontypes.NoAuction, nil
+		}
+		return auctiontypes.StartedDebtAuction, nil
+	}
+
 	return auctiontypes.NoAuction, nil
 }
 
@@ -99,12 +92,10 @@ func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appID, AssetInID, AssetO
 		return auctiontypes.NoAuction, emptyCoin, emptyCoin
 	}
 	var debtLot uint64
-	collectorData, _ := k.GetCollectorLookupTable(ctx, appID)
-	for _, collector := range collectorData.AssetRateInfo {
-		if collector.CollectorAssetId == AssetInID {
-			debtLot = collector.DebtLotSize
-		}
-	}
+	collectorData, _ := k.GetCollectorLookupTable(ctx, appID, AssetInID)
+	
+	debtLot = collectorData.DebtLotSize
+	
 
 	buyToken = sdk.NewCoin(buyAsset.Denom, lotSize)
 	sellToken = sdk.NewCoin(sellAsset.Denom, sdk.NewIntFromUint64(debtLot))

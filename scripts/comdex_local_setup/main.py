@@ -197,43 +197,55 @@ def CreateLiquidityPool(appID, pairID, depositCoins):
         exit("error in create pool")
     print(f"New liquidity pool created for pairID {pairID} in app {appID} with initial deposit of {depositCoins} ✔️")
 
-def StoreAndIntantiateGovernanceWasmContract():
-    print("fetching test governance contract....")
-    wget.download(TEST_GOVERNANCE_WASM_CONTRACT_LINK, GOVERNANCE_CONTRACT_PATH)
-    command = f"comdex tx wasm store {GOVERNANCE_CONTRACT_PATH} --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --gas-adjustment 1.3 --keyring-backend test  -y  --output json"
-    output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
-        exit("error in adding governance wasm contract")
-    print(f"Governance wasm contract added successfully ✔️")
-    if os.path.exists(GOVERNANCE_CONTRACT_PATH):
-        os.remove(GOVERNANCE_CONTRACT_PATH)
+def GetContractAddress(codeID):
+    command = f"comdex q wasm list-contract-by-code {codeID} --output json"
+    resp = json.loads(subprocess.getstatusoutput(command)[1])
+    return resp['contracts'][0]
 
-    init = {
-        "threshold":{
-            "threshold_quorum":{
-                "threshold":"0.50",
-                "quorum":"0.33"
-            }
-        },
-        "target":"0.0.0.0:9090"
-    }
-    command = f"""comdex tx wasm instantiate 1 '{json.dumps(init)}' --label "Instantiate Contract Governance" --no-admin --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --gas-adjustment 1.3 --keyring-backend test -y"""
-    output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
-        exit("error in instantiating governance wasm contract")
-    print(f"Governance wasm contract instantiated successfully ✔️")
+def GetLastContractCodeID():
+    command = "comdex q wasm list-code --output json"
+    resp = json.loads(subprocess.getstatusoutput(command)[1])
+    return int(resp["code_infos"][-1]["code_id"])
 
-def ExecuteWasmGovernanceProposal(proposalID):
+def StoreAndIntantiateWasmContract():
+    contractAddresses = {}
+    for index, contractData in enumerate(WASM_CONTRACTS):
+        print(f"fetching test {contractData['name']} ....")
+        wget.download(contractData['contractLink'], contractData['contractPath'])
+
+        command = f"comdex tx wasm store {contractData['contractPath']} --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --gas-adjustment 1.3 --keyring-backend test  -y  --output json"
+        output = subprocess.getstatusoutput(command)[1]
+        output = json.loads(output)
+        if int(output["code"]) != 0:
+            print(output)
+            exit(f"error in adding {contractData['name']}")
+        print(f"\n{contractData['name']} added successfully ✔️")
+
+        for keys in contractData['formatKeys']:
+            contractData['initator'][keys] = contractAddresses[keys]
+
+        currentCodeID = GetLastContractCodeID()
+        command = f"""comdex tx wasm instantiate {currentCodeID} '{json.dumps(contractData['initator'])}' --label "Instantiate {contractData['name']}" --no-admin --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --gas-adjustment 1.3 --keyring-backend test -y"""
+        output = subprocess.getstatusoutput(command)[1]
+        output = json.loads(output)
+        if int(output["code"]) != 0:
+            print(output)
+            exit(f"error in instantiating {contractData['name']}")
+        print(f"{contractData['name']} instantiated successfully ✔️")
+        contractAddresses[contractData['contractAddressKey']] = GetContractAddress(currentCodeID)
+        if os.path.exists(contractData['contractPath']):
+            os.remove(contractData['contractPath'])
+    print(contractAddresses)
+    print("all contract added and instantiaded successfully ✔️")
+    return contractAddresses
+
+def ExecuteWasmGovernanceProposal(contractAddress, proposalID):
     execute = {
         "execute": {
             "proposal_id":proposalID
         }
     }
-    command = f"""comdex tx wasm execute {GOVERNANCE_CONTRACT_ADDRESS} '{json.dumps(execute)}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"""
+    command = f"""comdex tx wasm execute {contractAddress} '{json.dumps(execute)}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"""
     output = subprocess.getstatusoutput(command)[1]
     output = json.loads(output)
     if int(output["code"]) != 0:
@@ -241,8 +253,8 @@ def ExecuteWasmGovernanceProposal(proposalID):
         exit(f"error while executing wasm prop with id {proposalID} ")
     print(f"Proposal with ID {proposalID} executed successfully ✔️")
 
-def ProposeWasmGovernanceProposal(proposal, proposlID):
-    command = f"""comdex tx wasm execute {GOVERNANCE_CONTRACT_ADDRESS}  '{json.dumps(proposal)}' --amount 100000000uharbor --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"""
+def ProposeWasmProposal(contractAddress, proposal, proposlID):
+    command = f"""comdex tx wasm execute {contractAddress}  '{json.dumps(proposal)}' --amount 100000000uharbor --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"""
     output = subprocess.getstatusoutput(command)[1]
     output = json.loads(output)
     if int(output["code"]) != 0:
@@ -353,17 +365,14 @@ def CreateState():
         Vote("yes")
     
     AddAssetInAppsAndVote(1, 9)
-    StoreAndIntantiateGovernanceWasmContract()
-
+    contractAddresses = StoreAndIntantiateWasmContract()
     for wasmProp in WASM_PROPOSALS:
-        if len(wasmProp) != 2:
-            exit("Invalid wasm proposals configs")
-        propID = wasmProp[0]
-        prop = wasmProp[1]
-        ProposeWasmGovernanceProposal(prop, propID)
-        print(f"waiting for wasm prop {propID}")
-        time.sleep(APPS[0][3]) # waiting for proposal duration
-        ExecuteWasmGovernanceProposal(propID)
+        contractAddress = contractAddresses[wasmProp['contractAddressKey']]
+        ProposeWasmProposal(contractAddress, wasmProp['content'], wasmProp['proposalID'])
+        print(f"waiting for wasm prop {wasmProp['proposalID']}")
+        if wasmProp['isProposal']:
+            time.sleep(APPS[0][3]) # waiting for proposal duration
+            ExecuteWasmGovernanceProposal(contractAddress, wasmProp['proposalID'])
 
     for liquidityPair in LIQUIDITY_PAIRS:
         if len(liquidityPair) != 3:

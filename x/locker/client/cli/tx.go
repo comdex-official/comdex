@@ -133,3 +133,42 @@ func txWithdrawAssetLocker() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
+
+func txCloseLocker() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "close-locker [app_id] [asset_id] [locker_id] ",
+		Short: "close locker",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			lockerID, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+			
+			msg := types.NewMsgCloseLockerRequest(ctx.FromAddress.String(), appID, assetID, lockerID)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}

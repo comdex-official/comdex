@@ -11,16 +11,15 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k Keeper) SurplusActivator(ctx sdk.Context, data collectortypes.CollectorAuctionLookupTable,
-	inData collectortypes.AssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
+func (k Keeper) SurplusActivator(ctx sdk.Context, data collectortypes.AppAssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
 
-	if inData.IsSurplusAuction && !inData.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
-		err := k.CreateSurplusAuction(ctx, data.AppId, inData.AssetId)
+	if data.IsSurplusAuction && !data.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
+		err := k.CreateSurplusAuction(ctx, data.AppId, data.AssetId)
 		if err != nil {
 			return err
 		}
 	}
-	if inData.IsSurplusAuction && inData.IsAuctionActive {
+	if data.IsSurplusAuction && data.IsAuctionActive {
 		err := k.SurplusAuctionClose(ctx, data.AppId, status)
 		if err != nil {
 			return err
@@ -35,69 +34,61 @@ func (k Keeper) CreateSurplusAuction(ctx sdk.Context, appID, assetID uint64) err
 		return err
 	}
 
-	auctionLookupTable, _ := k.GetAuctionMappingForApp(ctx, appID)
+	auctionLookupTable, _ := k.GetAuctionMappingForApp(ctx, appID, assetID)
 
-	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
-		if assetToAuction.AssetId == assetID && status == auctiontypes.StartedSurplusAuction {
-			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = true
-			err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
-			if err1 != nil {
-				return err1
-			}
+	if status == auctiontypes.StartedSurplusAuction {
+		auctionLookupTable.IsAuctionActive = true
+		err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
+		if err1 != nil {
+			return err1
 		}
 	}
+
 	return nil
 }
 
 func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Context, appID, assetID uint64) (status uint64, err error) {
-	assetsCollectorDataUnderAppID, found := k.GetCollectorLookupTable(ctx, appID)
+	collector, found := k.GetCollectorLookupTable(ctx, appID, assetID)
 	if !found {
 		return
 	}
 	//traverse this to access appId , collector asset id , surplus threshold
-	for _, collector := range assetsCollectorDataUnderAppID.AssetRateInfo {
-		if collector.CollectorAssetId == assetID {
-			//collectorLookupTable has surplusThreshold for all assets
+	//collectorLookupTable has surplusThreshold for all assets
 
-			NetFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID)
+	NetFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, assetID)
 
-			if !found {
-				return auctiontypes.NoAuction, nil
-			}
-			//traverse this to access appId , collector asset id , netfees collected
-			for _, AssetIDToFeeCollected := range NetFeeCollectedData.AssetIdToFeeCollected {
-				if AssetIDToFeeCollected.AssetId == assetID {
-					if AssetIDToFeeCollected.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold + collector.LotSize)) {
-						// START SURPLUS AUCTION .  WITH COLLECTOR ASSET ID AS token given to user of lot size and secondary asset as received from user and burnt , bid factor
-						//calculate inflow token amount
+	if !found {
+		return auctiontypes.NoAuction, nil
+	}
+	//traverse this to access appId , collector asset id , netfees collected
 
-						assetBuyID := collector.SecondaryAssetId
-						assetSellID := collector.CollectorAssetId
+	if NetFeeCollectedData.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold + collector.LotSize)) {
+		// START SURPLUS AUCTION .  WITH COLLECTOR ASSET ID AS token given to user of lot size and secondary asset as received from user and burnt , bid factor
+		//calculate inflow token amount
 
-						//net = 900 surplusThreshhold = 500 , lotsize = 100
-						amount := sdk.NewIntFromUint64(collector.LotSize)
+		assetBuyID := collector.SecondaryAssetId
+		assetSellID := collector.CollectorAssetId
 
-						status, sellToken, buyToken := k.getSurplusBuyTokenAmount(ctx, assetBuyID, assetSellID, amount)
+		//net = 900 surplusThreshhold = 500 , lotsize = 100
+		amount := sdk.NewIntFromUint64(collector.LotSize)
 
-						if status == auctiontypes.NoAuction {
-							return auctiontypes.NoAuction, nil
-						}
-						//Transfer balance from collector module to auction module
+		status, sellToken, buyToken := k.getSurplusBuyTokenAmount(ctx, assetBuyID, assetSellID, amount)
 
-						_, err := k.GetAmountFromCollector(ctx, appID, assetID, sellToken.Amount)
-						if err != nil {
-							return status, err
-						}
-
-						err = k.StartSurplusAuction(ctx, sellToken, buyToken, collector.BidFactor, appID, assetID, assetBuyID, assetSellID)
-						if err != nil {
-							return status, err
-						}
-						return auctiontypes.StartedSurplusAuction, nil
-					}
-				}
-			}
+		if status == auctiontypes.NoAuction {
+			return auctiontypes.NoAuction, nil
 		}
+		//Transfer balance from collector module to auction module
+
+		_, err := k.GetAmountFromCollector(ctx, appID, assetID, sellToken.Amount)
+		if err != nil {
+			return status, err
+		}
+
+		err = k.StartSurplusAuction(ctx, sellToken, buyToken, collector.BidFactor, appID, assetID, assetBuyID, assetSellID)
+		if err != nil {
+			return status, err
+		}
+		return auctiontypes.StartedSurplusAuction, nil
 	}
 	return auctiontypes.NoAuction, nil
 }

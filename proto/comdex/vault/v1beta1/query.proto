@@ -280,7 +280,7 @@ message QueryExtendedPairVaultMappingByAppAndExtendedPairRequest {
 }
 
 message QueryExtendedPairVaultMappingByAppAndExtendedPairResponse {
-  ExtendedPairVaultMapping extendedPairVaultMapping = 1 [(gogoproto.moretags) = "yaml:\"extendedPairVaultMapping\""];
+  AppExtendedPairVaultMappingData extendedPairVaultMapping = 1 [(gogoproto.moretags) = "yaml:\"extendedPairVaultMapping\""];
 }
 
 message QueryExtendedPairVaultMappingByAppRequest {
@@ -290,7 +290,7 @@ message QueryExtendedPairVaultMappingByAppRequest {
 }
 
 message QueryExtendedPairVaultMappingByAppResponse {
-  repeated ExtendedPairVaultMapping extendedPairVaultMapping = 1 [(gogoproto.moretags) = "yaml:\"extendedPairVaultMapping\""];
+  repeated AppExtendedPairVaultMappingData extendedPairVaultMapping = 1 [(gogoproto.moretags) = "yaml:\"extendedPairVaultMapping\"", (gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
@@ -348,7 +348,7 @@ message QueryUserExtendedPairTotalDataRequest {
 }
 
 message QueryUserExtendedPairTotalDataResponse {
-  UserVaultAssetMapping userTotalData = 1 [(gogoproto.moretags) = "yaml:\"user_total_data\""];
+  repeated OwnerAppExtendedPairVaultMappingData userTotalData = 1 [(gogoproto.moretags) = "yaml:\"user_total_data\"", (gogoproto.nullable) = false];
 }
 
 message QueryPairsLockedAndMintedStatisticByAppRequest {

@@ -284,6 +284,42 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "AddESMTriggerParamsForAppResponse query response")
 			}
 			return bz, nil
+		} else if comdexQuery.ExtendedPairByApp != nil {
+			AppID := comdexQuery.ExtendedPairByApp.AppID
+
+			extendedPair, _ := queryPlugin.WasmExtendedPairByApp(ctx, AppID)
+			res := bindings.ExtendedPairByAppResponse{
+				ExtendedPair: extendedPair,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "ExtendedPairByAppResponse query response")
+			}
+			return bz, nil
+		} else if comdexQuery.CheckSurplusReward != nil {
+			AppID := comdexQuery.CheckSurplusReward.AppID
+			AssetID := comdexQuery.CheckSurplusReward.AssetID
+			amount := queryPlugin.WasmCheckSurplusReward(ctx, AppID, AssetID)
+			res := bindings.CheckSurplusRewardResponse{
+				Amount: amount,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "CheckSurplusRewardResponse query response")
+			}
+			return bz, nil
+		} else if comdexQuery.CheckWhitelistedAsset != nil {
+			Denom := comdexQuery.CheckWhitelistedAsset.Denom
+
+			found := queryPlugin.WasmCheckWhitelistedAsset(ctx, Denom)
+			res := bindings.CheckWhitelistedAssetResponse{
+				Found: found,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "CheckWhitelistedAssetResponse query response")
+			}
+			return bz, nil
 		}
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown App Data query variant"}
 	}

@@ -16,6 +16,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRepayRequest{}, "comdex/vault/MsgRepayRequest", nil)
 	cdc.RegisterConcrete(&MsgWithdrawRequest{}, "comdex/vault/MsgWithdrawRequest", nil)
 	cdc.RegisterConcrete(&MsgDrawRequest{}, "comdex/vault/MsgDrawRequest", nil)
+	cdc.RegisterConcrete(&MsgDepositAndDrawRequest{}, "comdex/vault/MsgDepositAndDrawRequest", nil)
 	cdc.RegisterConcrete(&MsgCreateStableMintRequest{}, "comdex/vault/MsgCreateStableMintRequest", nil)
 	cdc.RegisterConcrete(&MsgDepositStableMintRequest{}, "comdex/vault/MsgDepositStableMintRequest", nil)
 	cdc.RegisterConcrete(&MsgWithdrawStableMintRequest{}, "comdex/vault/MsgWithdrawStableMintRequest", nil)
@@ -30,6 +31,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&MsgDrawRequest{},
 		&MsgRepayRequest{},
 		&MsgCloseRequest{},
+		&MsgDepositAndDrawRequest{},
 		&MsgCreateStableMintRequest{},
 		&MsgDepositStableMintRequest{},
 		&MsgWithdrawStableMintRequest{},

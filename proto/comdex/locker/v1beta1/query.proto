@@ -182,7 +182,7 @@ message QueryOwnerLockerByAppToAssetIDbyOwnerRequest {
 }
 
 message QueryOwnerLockerByAppToAssetIDbyOwnerResponse {
-  repeated Locker locker_info = 1[
+  Locker locker_info = 1[
     (gogoproto.moretags) = "yaml:\"locker_info\"",
     (gogoproto.nullable) = false
   ];
@@ -277,7 +277,7 @@ message QueryLockerLookupTableByAppRequest {
 }
 
 message QueryLockerLookupTableByAppResponse {
-  repeated TokenToLockerMapping token_to_locker_mapping = 1 [(gogoproto.moretags) = "yaml:\"token_to_locker_mapping\""];
+  repeated LockerLookupTableData token_to_locker_mapping = 1 [(gogoproto.moretags) = "yaml:\"token_to_locker_mapping\"", (gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
@@ -288,7 +288,7 @@ message QueryLockerLookupTableByAppAndAssetIDRequest {
 }
 
 message QueryLockerLookupTableByAppAndAssetIDResponse {
-  TokenToLockerMapping token_to_locker_mapping = 1 [(gogoproto.moretags) = "yaml:\"token_to_locker_mapping\""];
+  LockerLookupTableData token_to_locker_mapping = 1 [(gogoproto.moretags) = "yaml:\"token_to_locker_mapping\""];
 }
 
 message QueryLockerTotalDepositedByAppRequest {

@@ -14,20 +14,11 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 		k.SetLockedVault(ctx, item)
 	}
-
-	for _, item := range state.LockedVaultToAppMapping {
-
-		k.SetLockedVaultByAppID(ctx, item)
-	}
-
-	k.SetAppID(ctx, state.WhitelistedAppIds)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
 		k.GetLockedVaults(ctx),
-		k.GetAllLockedVaultByAppID(ctx),
-		k.GetAppIds(ctx),
 		k.GetParams(ctx),
 	)
 }

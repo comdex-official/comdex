@@ -35,13 +35,13 @@ func (q QueryServer) QueryCollectorLookupByApp(c context.Context, req *types.Que
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
 
-	collectorLookupData, found := q.GetCollectorLookupTable(ctx, req.AppId)
+	collectorLookupData, found := q.GetCollectorLookupTableByApp(ctx, req.AppId)
 	if !found {
 		return &types.QueryCollectorLookupByAppResponse{}, nil
 	}
 
 	return &types.QueryCollectorLookupByAppResponse{
-		CollectorLookup: collectorLookupData.AssetRateInfo,
+		CollectorLookup: collectorLookupData,
 	}, nil
 }
 
@@ -57,7 +57,7 @@ func (q QueryServer) QueryCollectorLookupByAppAndAsset(c context.Context, req *t
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
 
-	collectorLookupData, found := q.GetCollectorLookupByAsset(ctx, req.AppId, req.AssetId)
+	collectorLookupData, found := q.GetCollectorLookupTable(ctx, req.AppId, req.AssetId)
 	if !found {
 		return &types.QueryCollectorLookupByAppAndAssetResponse{}, nil
 	}
@@ -72,26 +72,16 @@ func (q QueryServer) QueryCollectorDataByAppAndAsset(c context.Context, req *typ
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx           = sdk.UnwrapSDKContext(c)
-		collectorData types.CollectorData
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
-	collectorMap, _ := q.GetAppidToAssetCollectorMapping(ctx, req.AppId)
-
-	for _, data := range collectorMap.AssetCollector {
-		if data.AssetId == req.AssetId {
-			collectorData.CollectedClosingFee = data.Collector.CollectedClosingFee
-			collectorData.CollectedOpeningFee = data.Collector.CollectedOpeningFee
-			collectorData.CollectedStabilityFee = data.Collector.CollectedStabilityFee
-			collectorData.LiquidationRewardsCollected = data.Collector.LiquidationRewardsCollected
-		}
-	}
+	collectorMap, _ := q.GetAppidToAssetCollectorMapping(ctx, req.AppId, req.AssetId)
 
 	return &types.QueryCollectorDataByAppAndAssetResponse{
-		CollectorData: collectorData,
+		CollectorData: collectorMap.Collector,
 	}, nil
 }
 
@@ -101,26 +91,15 @@ func (q QueryServer) QueryAuctionMappingForAppAndAsset(c context.Context, req *t
 	}
 	var (
 		ctx                  = sdk.UnwrapSDKContext(c)
-		assetToAuctionLookup types.AssetIdToAuctionLookupTable
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
-	auctionData, _ := q.GetAuctionMappingForApp(ctx, req.AppId)
-	for _, data := range auctionData.AssetIdToAuctionLookup {
-		if data.AssetId == req.AssetId {
-			assetToAuctionLookup.AssetId = data.AssetId
-			assetToAuctionLookup.AssetOutOraclePrice = data.AssetOutOraclePrice
-			assetToAuctionLookup.AssetOutPrice = data.AssetOutPrice
-			assetToAuctionLookup.IsAuctionActive = data.IsAuctionActive
-			assetToAuctionLookup.IsDebtAuction = data.IsDebtAuction
-			assetToAuctionLookup.IsSurplusAuction = data.IsSurplusAuction
-		}
-	}
+	auctionData, _ := q.GetAuctionMappingForApp(ctx, req.AppId, req.AssetId)
 
 	return &types.QueryAuctionMappingForAppAndAssetResponse{
-		AssetIdToAuctionLookupTable: assetToAuctionLookup,
+		AssetIdToAuctionLookupTable: auctionData,
 	}, nil
 }
 
@@ -129,22 +108,15 @@ func (q QueryServer) QueryNetFeeCollectedForAppAndAsset(c context.Context, req *
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx                   = sdk.UnwrapSDKContext(c)
-		assetIDToFeeCollected types.AssetIdToFeeCollected
+		ctx = sdk.UnwrapSDKContext(c)
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
-	fee, _ := q.GetNetFeeCollectedData(ctx, req.AppId)
-	for _, data := range fee.AssetIdToFeeCollected {
-		if data.AssetId == req.AssetId {
-			assetIDToFeeCollected.AssetId = data.AssetId
-			assetIDToFeeCollected.NetFeesCollected = data.NetFeesCollected
-		}
-	}
+	feeData, _ := q.GetNetFeeCollectedData(ctx, req.AppId, req.AssetId)
 
 	return &types.QueryNetFeeCollectedForAppAndAssetResponse{
-		AssetIdToFeeCollected: assetIDToFeeCollected,
+		AssetIdToFeeCollected: feeData,
 	}, nil
 }

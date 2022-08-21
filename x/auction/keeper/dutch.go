@@ -66,11 +66,11 @@ func (k Keeper) StartDutchAuction(
 		found             bool
 	)
 
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
+	lockedVault, found := k.GetLockedVault(ctx, appID, lockedVaultID)
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
-	k.UpdateUserVaultExtendedPairMapping(ctx, lockedVault.ExtendedPairId, lockedVault.Owner, lockedVault.AppId)
+	k.DeleteUserVaultExtendedPairMapping(ctx, lockedVault.Owner, appID, lockedVault.ExtendedPairId)
 
 	var extendedPairVault = lockedVault.ExtendedPairId
 
@@ -143,7 +143,7 @@ func (k Keeper) StartDutchAuction(
 	if err != nil {
 		return err
 	}
-	err = k.SetFlagIsAuctionInProgress(ctx, lockedVaultID, true)
+	err = k.SetFlagIsAuctionInProgress(ctx, appID, lockedVaultID, true)
 	if err != nil {
 		return err
 	}
@@ -196,7 +196,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	//required target cmst to raise in usd * 10**-12
 	//here we are multiplying each ucmdx with uusd so cmdx tokens price will be calculated amount * 10**-12
 
-	lockedVault, found := k.GetLockedVault(ctx, auction.LockedVaultId)
+	lockedVault, found := k.GetLockedVault(ctx,appID, auction.LockedVaultId)
 	if !found {
 		return auctiontypes.ErrorInvalidLockedVault
 	}
@@ -362,7 +362,7 @@ func (k Keeper) CloseDutchAuction(
 		}
 	}
 
-	lockedVault, found := k.GetLockedVault(ctx, dutchAuction.LockedVaultId)
+	lockedVault, found := k.GetLockedVault(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId)
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}
@@ -407,12 +407,12 @@ func (k Keeper) CloseDutchAuction(
 	}
 
 	//update locked vault
-	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
+	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
 	if err != nil {
 		return err
 	}
 
-	err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.LockedVaultId, false)
+	err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, false)
 	if err != nil {
 		return err
 	}
@@ -429,7 +429,7 @@ func (k Keeper) CloseDutchAuction(
 	if err != nil {
 		return err
 	}
-	k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+	k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 
 	return nil
 }
@@ -442,7 +442,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 	}
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
-		lockedVault, found := k.GetLockedVault(ctx, dutchAuction.LockedVaultId)
+		lockedVault, found := k.GetLockedVault(ctx, appID, dutchAuction.LockedVaultId)
 		if !found {
 			return auctiontypes.ErrorInvalidLockedVault
 		}
@@ -492,11 +492,9 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				// if exists append in existing
 				// close auction func call
 				var inflowLeft = dutchAuction.InflowTokenTargetAmount.Amount.Sub(dutchAuction.InflowTokenCurrentAmount.Amount)
-				userVaultExtendedPairMapping, userExists := k.GetUserVaultExtendedPairMapping(ctx, string(dutchAuction.VaultOwner))
+				vaultID, userExists := k.GetUserAppExtendedPairMappingData(ctx, string(dutchAuction.VaultOwner), dutchAuction.AppId, lockedVault.ExtendedPairId)
 				if userExists {
-					vaultID, alreadyExists := k.CheckUserAppToExtendedPairMapping(ctx, userVaultExtendedPairMapping, lockedVault.ExtendedPairId, lockedVault.AppId)
-					if alreadyExists {
-						vaultData, _ := k.GetVault(ctx, vaultID)
+						vaultData, _ := k.GetVault(ctx, vaultID.VaultId)
 						err := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
 						if err != nil {
 							return err
@@ -505,7 +503,6 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 						vaultData.AmountIn = vaultData.AmountIn.Add(dutchAuction.OutflowTokenCurrentAmount.Amount)
 						vaultData.AmountOut = vaultData.AmountOut.Add(inflowLeft)
 						k.SetVault(ctx, vaultData)
-					}
 				} else {
 					err1 := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
 					if err1 != nil {
@@ -521,12 +518,12 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
 
 				//update locked vault
-				err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.LockedVaultId, true)
+				err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
 				if err != nil {
 					return err
 				}
 
-				err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.LockedVaultId, false)
+				err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, false)
 				if err != nil {
 					return err
 				}
@@ -543,7 +540,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				if err != nil {
 					return err
 				}
-				k.DeleteLockedVault(ctx, lockedVault.LockedVaultId)
+				k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 
 			} else {
 				OutFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
@@ -571,7 +568,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 }
 
 func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAuction, burnToken sdk.Coin) error {
-	lockedVault, found1 := k.GetLockedVault(ctx, auction.LockedVaultId)
+	lockedVault, found1 := k.GetLockedVault(ctx, auction.AppId, auction.LockedVaultId)
 	if !found1 {
 		return auctiontypes.ErrorVaultNotFound
 	}
@@ -581,13 +578,13 @@ func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAu
 		return auctiontypes.ErrorInvalidExtendedPairVault
 	}
 
-	appExtendedPairVaultData, found3 := k.GetAppExtendedPairVaultMapping(ctx, ExtendedPairVault.AppId)
+	appExtendedPairVaultData, found3 := k.GetAppExtendedPairVaultMappingData(ctx, ExtendedPairVault.AppId, ExtendedPairVault.Id)
 	if !found3 {
 		return sdkerrors.ErrNotFound
 	}
 
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, burnToken.Amount, false)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, ExtendedPairVault.Id, auction.OutflowTokenInitAmount.Amount.Sub(auction.OutflowTokenCurrentAmount.Amount), false)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData, burnToken.Amount, false)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData, auction.OutflowTokenInitAmount.Amount.Sub(auction.OutflowTokenCurrentAmount.Amount), false)
 	return nil
 }
 

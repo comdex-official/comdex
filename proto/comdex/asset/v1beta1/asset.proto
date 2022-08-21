@@ -4,14 +4,14 @@ package comdex.asset.v1beta1;
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
-option (gogoproto.equal_all)           = false;
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Asset {
-  uint64 id      = 1;
-  string name    = 2 [ (gogoproto.moretags) = "yaml:\"name\"" ];
-  string denom   = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
-  int64 decimals = 4 [ (gogoproto.moretags) = "yaml:\"decimals\"" ];
-  bool is_on_chain = 5 [ (gogoproto.moretags) = "yaml:\"is_on_chain\"" ];
+  uint64 id = 1;
+  string name = 2 [(gogoproto.moretags) = "yaml:\"name\""];
+  string denom = 3 [(gogoproto.moretags) = "yaml:\"denom\""];
+  int64 decimals = 4 [(gogoproto.moretags) = "yaml:\"decimals\""];
+  bool is_on_chain = 5 [(gogoproto.moretags) = "yaml:\"is_on_chain\""];
   bool is_oracle_price_required = 6 [(gogoproto.moretags) = "yaml:\"is_oracle_price_required\""];
 }

@@ -39,36 +39,37 @@ type MarketKeeper interface {
 }
 
 type LockerKeeper interface {
-	GetLockerProductAssetMapping(ctx sdk.Context, appMappingID uint64) (lockerProductMapping lockertypes.LockerProductAssetMapping, found bool)
+	GetLockerProductAssetMapping(ctx sdk.Context, appMappingID, assetID uint64) (lockerProductMapping lockertypes.LockerProductAssetMapping, found bool)
 	GetLocker(ctx sdk.Context, lockerID uint64) (locker lockertypes.Locker, found bool)
 	GetLockers(ctx sdk.Context) (locker []lockertypes.Locker)
-	GetLockerLookupTable(ctx sdk.Context, appMappingID uint64) (lockerLookupData lockertypes.LockerLookupTable, found bool)
-	UpdateLocker(ctx sdk.Context, locker lockertypes.Locker)
+	GetLockerLookupTableByApp(ctx sdk.Context, appID uint64) (lockerLookupData []lockertypes.LockerLookupTableData, found bool)
+	GetLockerLookupTable(ctx sdk.Context, appID, assetID uint64) (lockerLookupData lockertypes.LockerLookupTableData, found bool)
+	SetLocker(ctx sdk.Context, locker lockertypes.Locker)
 	SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise) error
 	GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise, found bool)
 }
 
 type CollectorKeeper interface {
-	GetAppidToAssetCollectorMapping(ctx sdk.Context, appID uint64) (appAssetCollectorData collectortypes.AppIdToAssetCollectorMapping, found bool)
-	GetCollectorLookupTable(ctx sdk.Context, appID uint64) (collectorLookup collectortypes.CollectorLookup, found bool)
+	GetAppidToAssetCollectorMapping(ctx sdk.Context, appID, assetID uint64) (appAssetCollectorData collectortypes.AppToAssetIdCollectorMapping, found bool)
+	GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTableData, found bool)
 	GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom collectortypes.AppToDenomsMapping, found bool)
-	GetCollectorLookupByAsset(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTable, found bool)
-	GetNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData collectortypes.NetFeeCollectedData, found bool)
+	GetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64) (netFeeData collectortypes.AppAssetIdToFeeCollectedData, found bool)
 	SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error
-	DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, netFeeCollectedData collectortypes.NetFeeCollectedData) error
+	DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, netFeeCollectedData collectortypes.AppAssetIdToFeeCollectedData) error
 }
 
 type VaultKeeper interface {
-	GetAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMapping, found bool)
+	GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData []vaulttypes.AppExtendedPairVaultMappingData, found bool)
 	CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error)
 	GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool)
 	DeleteVault(ctx sdk.Context, id uint64)
-	UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context, counter uint64, vaultData vaulttypes.Vault)
-	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool)
-	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMapping, extendedPairID uint64, amount sdk.Int, changeType bool)
-	UpdateUserVaultExtendedPairMapping(ctx sdk.Context, extendedPairID uint64, userAddress string, appMappingID uint64)
+	UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context, vaultData vaulttypes.Vault)
+	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMappingData, amount sdk.Int, changeType bool)
+	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, vaultLookupData vaulttypes.AppExtendedPairVaultMappingData, amount sdk.Int, changeType bool)
+	DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64)
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64)
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
+	GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID uint64, pairVaultID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData, found bool) 
 }
 
 type BankKeeper interface {

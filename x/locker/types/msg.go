@@ -206,3 +206,49 @@ func (m *MsgAddWhiteListedAssetRequest) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+
+func NewMsgCloseLockerRequest(from string, appID uint64, assetID uint64, lockerID uint64,) *MsgCloseLockerRequest {
+	return &MsgCloseLockerRequest{
+		Depositor: from,
+		AppId:     appID,
+		AssetId:   assetID,
+		LockerId:  lockerID,
+	}
+}
+
+func (m *MsgCloseLockerRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgCloseLockerRequest) Type() string {
+	return TypeMsgWithdrawAssetRequest
+}
+
+func (m *MsgCloseLockerRequest) ValidateBasic() error {
+	if m.Depositor == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.Depositor); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+
+	if m.LockerId <= 0 {
+		return errors.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
+	}
+
+	return nil
+}
+
+func (m *MsgCloseLockerRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgCloseLockerRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.Depositor)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}

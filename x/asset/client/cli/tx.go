@@ -144,7 +144,7 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 
 			assetOraclePrice, err := cmd.Flags().GetString(flagAssetOraclePrice)
 			if err != nil {
-				return  err
+				return err
 			}
 
 			newAssetOraclePrice := ParseBoolFromString(assetOraclePrice)
@@ -162,10 +162,10 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 			from := clientCtx.GetFromAddress()
 
 			asset := types.Asset{
-				Id:       id,
-				Name:     name,
-				Denom:    denom,
-				Decimals: decimals,
+				Id:                    id,
+				Name:                  name,
+				Denom:                 denom,
+				Decimals:              decimals,
 				IsOraclePriceRequired: newAssetOraclePrice,
 			}
 
@@ -364,8 +364,8 @@ func NewCmdSubmitAddAppProposal() *cobra.Command {
 
 func NewCmdSubmitUpdateGovTimeInAppProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-gov-time-app [app_id] [gov_time_in_seconds]",
-		Args:  cobra.ExactArgs(2),
+		Use:   "update-gov-time-app [app_id] [gov_time_in_seconds] [min_gov_deposit]",
+		Args:  cobra.ExactArgs(3),
 		Short: "Update gov time in app",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -383,6 +383,10 @@ func NewCmdSubmitUpdateGovTimeInAppProposal() *cobra.Command {
 				return err
 			}
 
+			minGovDeposit, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidMinGovSupply
+			}
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
 				return err
@@ -407,6 +411,7 @@ func NewCmdSubmitUpdateGovTimeInAppProposal() *cobra.Command {
 			aTime := types.AppAndGovTime{
 				AppId:            appID,
 				GovTimeInSeconds: govTimeIn.Seconds(),
+				MinGovDeposit:    minGovDeposit,
 			}
 
 			content := types.NewUpdateGovTimeInAppProposal(title, description, aTime)

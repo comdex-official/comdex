@@ -552,6 +552,8 @@ func New(
 		app.keys[assettypes.StoreKey],
 		app.GetSubspace(assettypes.ModuleName),
 		&app.MarketKeeper,
+		&app.Rewardskeeper,
+		&app.VaultKeeper,
 	)
 
 	app.LendKeeper = lendkeeper.NewKeeper(
@@ -586,6 +588,7 @@ func New(
 		&app.MarketKeeper,
 		&app.CollectorKeeper,
 		&app.EsmKeeper,
+		&app.TokenmintKeeper,
 	)
 
 	app.TokenmintKeeper = tokenmintkeeper.NewKeeper(
@@ -663,6 +666,8 @@ func New(
 		app.keys[collectortypes.MemStoreKey],
 		&app.AssetKeeper,
 		&app.AuctionKeeper,
+		&app.LockerKeeper,
+		&app.Rewardskeeper,
 		app.GetSubspace(collectortypes.ModuleName),
 		app.BankKeeper,
 	)
@@ -689,6 +694,7 @@ func New(
 		&app.MarketKeeper,
 		&app.CollectorKeeper,
 		&app.EsmKeeper,
+		&app.Rewardskeeper,
 	)
 
 	app.LiquidityKeeper = liquiditykeeper.NewKeeper(
@@ -725,7 +731,7 @@ func New(
 	}
 	supportedFeatures := "iterator,staking,stargate,comdex"
 
-	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper), wasmOpts...)
+	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper), wasmOpts...)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		app.cdc,
