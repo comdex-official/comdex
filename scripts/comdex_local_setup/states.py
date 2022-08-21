@@ -1,3 +1,5 @@
+from constants import *
+
 APPS = [
     # [name, shortName, minGovDeposit, govTimeInSeconds]
     ["harbor", "hbr", 1000000, 5],  # ID - 1
@@ -11,10 +13,10 @@ ASSETS = [
     ["CMDX", "ucmdx", 0, 1],  # ID - 2
     ["CMST", "ucmst", 0, 0],  # ID - 3
     ["OSMO", "uosmo", 0, 1],  # ID - 4
-    ["cATOM", "ucatom", 0, 0],  # ID - 5
-    ["cCMDX", "uccmdx", 0, 0],  # ID - 6
-    ["cCMST", "uccmst", 0, 0],  # ID - 7
-    ["cOSMO", "ucosmo", 0, 0],  # ID - 8
+    ["CATOM", "ucatom", 0, 0],  # ID - 5
+    ["CCMDX", "uccmdx", 0, 0],  # ID - 6
+    ["CCMST", "uccmst", 0, 0],  # ID - 7
+    ["COSMO", "ucosmo", 0, 0],  # ID - 8
     ["HARBOR", "uharbor", 1, 0],  # ID - 9
 ]
 
@@ -173,7 +175,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair CMDX-CMST",
             "description": "adding extended pairs for CMDX-CMST same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "CMDX-ATOM",
@@ -186,7 +188,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair CMDX-ATOM",
             "description": "adding extended pairs CMDX-ATOM same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "ATOM-CMDX",
@@ -199,7 +201,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair ATOM-CMDX",
             "description": "adding extended pairs ATOM-CMDX same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "ATOM-CMST",
@@ -212,7 +214,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair ATOM-CMST",
             "description": "adding extended pairs ATOM-CMST same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "CMST-CMDX",
@@ -225,7 +227,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair CMST-CMDX",
             "description": "adding extended pairs CMST-CMDX same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "CMST-ATOM",
@@ -238,7 +240,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair CMST-ATOM",
             "description": "adding extended pairs CMST-ATOM same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "OSMO-CMST",
@@ -251,7 +253,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair OSMO-CMST",
             "description": "adding extended pairs OSMO-CMST same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "OSMO-ATOM",
@@ -264,7 +266,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair OSMO-ATOM",
             "description": "adding extended pairs OSMO-ATOM same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "ATOM-OSMO",
@@ -277,7 +279,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair ATOM-OSMO",
             "description": "adding extended pairs ATOM-OSMO same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "ATOM-CMST",
@@ -290,7 +292,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair ATOM-CMST",
             "description": "adding extended pairs ATOM-CMST same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "CMST-OSMO",
@@ -303,7 +305,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair CMST-OSMO",
             "description": "adding extended pairs CMST-OSMO same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "CMST-ATOM",
@@ -316,7 +318,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair CMST-ATOM",
             "description": "adding extended pairs CMST-ATOM same pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "CMDX-OSMO",
@@ -329,7 +331,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair CMDX-OSMO",
             "description": "adding extended pairs CMDX-OSMO cross pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "CMST-OSMO",
@@ -342,7 +344,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair CMST-OSMO",
             "description": "adding extended pairs CMST-OSMO cross pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "ATOM-OSMO",
@@ -355,7 +357,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair ATOM-OSMO",
             "description": "adding extended pairs ATOM-OSMO cross pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "OSMO-CMDX",
@@ -368,7 +370,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair OSMO-CMDX",
             "description": "adding extended pairs OSMO-CMDX cross pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "CMST-CMDX",
@@ -381,7 +383,7 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair CMST-CMDX",
             "description": "adding extended pairs CMST-CMDX cross pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
     [
         "ATOM-CMDX",
@@ -394,25 +396,80 @@ ADD_LEND_PAIR = [
             "title": "Add Extended pair ATOM-CMDX",
             "description": "adding extended pairs ATOM-CMDX cross pool",
             "deposit": "10000000ucmdx",
-        }
+        },
     ],
 ]
 
 LEND_ASSET_PAIR_MAPPING = [
     # [assetID, poolID, pairIDs]
-    [1, 1, [3,4,15]],
-    [2, 1, [1,2,13]],
-    [3, 1, [5,6,14]],
-    [4, 2, [7,8,16]],
-    [1, 2, [9,10,18]],
-    [3, 2, [11,12,17]],
+    [1, 1, [3, 4, 15]],
+    [2, 1, [1, 2, 13]],
+    [3, 1, [5, 6, 14]],
+    [4, 2, [7, 8, 16]],
+    [1, 2, [9, 10, 18]],
+    [3, 2, [11, 12, 17]],
+]
+
+WASM_CONTRACTS = [
+    {
+        "name": "Vesting Contract",
+        "contractAddressKey": "vesting_contract",
+        "contractLink": "https://github.com/comdex-official/test-wasm-artifacts/raw/main/token_vesting.wasm",
+        "contractPath": f"{COMDEX_DIR_PATH}/scripts/comdex_local_setup/token_vesting.wasm",
+        "initator": {},
+        "formatKeys": []
+    },
+    {
+        "name": "Locking Contract",
+        "contractAddressKey": "locking_contract",
+        "contractLink": "https://github.com/comdex-official/test-wasm-artifacts/raw/main/locking_contract.wasm",
+        "contractPath": f"{COMDEX_DIR_PATH}/scripts/comdex_local_setup/locking_contract.wasm",
+        "initator": {
+            "t1": {"period": 500, "weight": "0.25"},
+            "t2": {"period": 1000, "weight": "0.50"},
+            "t3": {"period": 3000, "weight": "0.75"},
+            "t4": {"period": 5000, "weight": "1.0"},
+            "voting_period": 22500,
+            "vesting_contract": "",
+            "foundation_addr": ["comdex1rljg3wwgv6qezu3p05vxny9pwk3mdwl0ja407z"],
+            "foundation_percentage": "0.2",
+            "surplus_asset_id": 3,
+            "emission": {
+                "app_id": 1,
+                "total_rewards": "10000000000000",
+                "rewards_pending": "10000000000000",
+                "emmission_rate": "0.01",
+                "distributed_rewards": "0",
+            },
+        },
+        "formatKeys": ['vesting_contract']
+    },
+    {
+        "name": "Governance Contract",
+        "contractAddressKey": "governance_contract",
+        "contractLink": "https://github.com/comdex-official/test-wasm-artifacts/raw/main/governance.wasm",
+        "contractPath": f"{COMDEX_DIR_PATH}/scripts/comdex_local_setup/governance.wasm",
+        "initator": {
+            "threshold": {"threshold_quorum": {"threshold": "0.50", "quorum": "0.33"}},
+            "target": "0.0.0.0:9090",
+            "locking_contract": "",
+        },
+        "formatKeys": ['locking_contract']
+    },
 ]
 
 WASM_PROPOSALS = [
-    # [proposalID, proposal]
-    [
-        1,
-        {
+    {
+        "proposalID": 0,
+        "isProposal": False,
+        "contractAddressKey": "locking_contract",
+        "content": {"lock": {"app_id": 1, "locking_period": "t3"}},
+    },
+    {
+        "proposalID": 1,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
             "propose": {
                 "propose": {
                     "title": "New proposal for add vault pair for CMDX C - CMST",
@@ -442,10 +499,12 @@ WASM_PROPOSALS = [
                 }
             }
         },
-    ],
-    [
-        2,
-        {
+    },
+    {
+        "proposalID": 2,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
             "propose": {
                 "propose": {
                     "title": "New proposal to initialise collector param for stability fee and auction (surplus and debt)threshold data",
@@ -469,10 +528,12 @@ WASM_PROPOSALS = [
                 }
             }
         },
-    ],
-    [
-        3,
-        {
+    },
+    {
+        "proposalID": 3,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
             "propose": {
                 "propose": {
                     "title": "New proposal for setting auction params for collateral auctions.",
@@ -497,10 +558,12 @@ WASM_PROPOSALS = [
                 }
             }
         },
-    ],
-    [
-        4,
-        {
+    },
+    {
+        "proposalID": 4,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
             "propose": {
                 "propose": {
                     "title": "New proposal to whitelist CMST for locker",
@@ -509,12 +572,12 @@ WASM_PROPOSALS = [
                         {
                             "msg_set_auction_mapping_for_app": {
                                 "app_id": 1,
-                                "asset_id": [3],
-                                "is_surplus_auction": [False],
-                                "is_debt_auction": [True],
-                                "is_distributor": [True],
-                                "asset_out_oracle_price": [False],
-                                "asset_out_price": [1000000],
+                                "asset_id": 3,
+                                "is_surplus_auction": False,
+                                "is_debt_auction": False,
+                                "is_distributor": True,
+                                "asset_out_oracle_price": False,
+                                "asset_out_price": 1000000,
                             }
                         }
                     ],
@@ -522,10 +585,12 @@ WASM_PROPOSALS = [
                 }
             }
         },
-    ],
-    [
-        5,
-        {
+    },
+    {
+        "proposalID": 5,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
             "propose": {
                 "propose": {
                     "title": "New proposal to whitelist CMST for locker",
@@ -537,10 +602,12 @@ WASM_PROPOSALS = [
                 }
             }
         },
-    ],
-    [
-        6,
-        {
+    },
+    {
+        "proposalID": 6,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
             "propose": {
                 "propose": {
                     "title": "New proposal to whitelist CMST for locker",
@@ -549,7 +616,7 @@ WASM_PROPOSALS = [
                         {
                             "msg_whitelist_app_id_locker_rewards": {
                                 "app_id": 1,
-                                "asset_ids": [3],
+                                "asset_id": 3,
                             }
                         }
                     ],
@@ -557,10 +624,12 @@ WASM_PROPOSALS = [
                 }
             }
         },
-    ],
-    [
-        7,
-        {
+    },
+    {
+        "proposalID": 7,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
             "propose": {
                 "propose": {
                     "title": "New proposal to whitelist CMST for locker",
@@ -570,10 +639,12 @@ WASM_PROPOSALS = [
                 }
             }
         },
-    ],
-    [
-        8,
-        {
+    },
+    {
+        "proposalID": 8,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
             "propose": {
                 "propose": {
                     "title": "New proposal for add pair for CMDX",
@@ -583,10 +654,12 @@ WASM_PROPOSALS = [
                 }
             }
         },
-    ],
-    [
-        9,
-        {
+    },
+    {
+        "proposalID": 9,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
             "propose": {
                 "propose": {
                     "title": "New proposal for setting auction params for collateral auctions.",
@@ -606,10 +679,12 @@ WASM_PROPOSALS = [
                 }
             }
         },
-    ],
-    [
-        10,
-        {
+    },
+    {
+        "proposalID": 10,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
             "propose": {
                 "propose": {
                     "title": "New proposal for add vault pair for CMDX C - CMST",
@@ -639,5 +714,5 @@ WASM_PROPOSALS = [
                 }
             }
         },
-    ],
+    },
 ]
