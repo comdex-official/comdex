@@ -136,7 +136,7 @@ func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID
 }
 
 func (k Keeper) SetAppExtendedPairVaultMappingData(ctx sdk.Context, appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData)  {
-	return k.vault.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
+	k.vault.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
 }
 
 func (k Keeper) GetAuctionMappingForApp(ctx sdk.Context, appID, assetID uint64) (collectorAuctionLookupTable types.AppAssetIdToAuctionLookupTable, found bool) {
