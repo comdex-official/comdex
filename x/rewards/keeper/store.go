@@ -171,6 +171,25 @@ func (k Keeper) GetGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration ti
 	return gaugeIdsByTriggerDuration, true
 }
 
+func (k Keeper) GetAllGaugeIdsByTriggerDuration(ctx sdk.Context) (gaugeByTriggerDuration []types.GaugeByTriggerDuration) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GaugeIdsByTriggerDurationKeyPrefix)
+	)
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+	for ; iter.Valid(); iter.Next() {
+		var gauge types.GaugeByTriggerDuration
+		k.cdc.MustUnmarshal(iter.Value(), &gauge)
+		gaugeByTriggerDuration = append(gaugeByTriggerDuration, gauge)
+	}
+	return gaugeByTriggerDuration
+}
+
 // GetAllGaugesByGaugeTypeID returns all the gauges with given gaugeTypeId.
 func (k Keeper) GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeID uint64) (gauges []types.Gauge) {
 	var (
