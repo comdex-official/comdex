@@ -288,56 +288,58 @@ func (k Keeper) WasmCheckWhitelistedAssetQuery(ctx sdk.Context, denom string) (f
 
 func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, collectorBh, collectorBt int64, appID, pairVaultID uint64, changeTypes bool) {
 
-	extPairVault, _ := k.vault.GetAppExtendedPairVaultMappingData(ctx, appID, pairVaultID)
-	for _, valID := range extPairVault.VaultIds {
-		vaultData, found := k.vault.GetVault(ctx, valID)
-		if !found {
-			continue
-		}
-		interest := sdk.ZeroDec()
-		var err error
-		if vaultData.BlockHeight == 0 {
-			interest, err = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, collectorBt)
-			if err != nil {
-				return
+	extPairVault, found := k.vault.GetAppExtendedPairVaultMappingData(ctx, appID, pairVaultID)
+	if found {
+		for _, valID := range extPairVault.VaultIds {
+			vaultData, found := k.vault.GetVault(ctx, valID)
+			if !found {
+				continue
 			}
-		} else {
-			interest, err = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, vaultData.BlockTime.Unix())
-			if err != nil {
-				return
+			interest := sdk.ZeroDec()
+			var err error
+			if vaultData.BlockHeight == 0 {
+				interest, err = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, collectorBt)
+				if err != nil {
+					return
+				}
+			} else {
+				interest, err = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, vaultData.BlockTime.Unix())
+				if err != nil {
+					return
+				}
 			}
-		}
 
-		vaultInterestTracker, found := k.rewards.GetVaultInterestTracker(ctx, extPairVault.ExtendedPairId, appID)
-		if !found {
-			vaultInterestTracker = rewardstypes.VaultInterestTracker{
-				VaultId:             extPairVault.ExtendedPairId,
-				AppMappingId:        appID,
-				InterestAccumulated: sdk.ZeroDec(),
+			vaultInterestTracker, found := k.rewards.GetVaultInterestTracker(ctx, extPairVault.ExtendedPairId, appID)
+			if !found {
+				vaultInterestTracker = rewardstypes.VaultInterestTracker{
+					VaultId:             extPairVault.ExtendedPairId,
+					AppMappingId:        appID,
+					InterestAccumulated: sdk.ZeroDec(),
+				}
 			}
-		}
-		vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
-		newInterest := sdk.ZeroInt()
-		if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
-			newInterest = vaultInterestTracker.InterestAccumulated.TruncateInt()
-			newInterestDec := sdk.NewDec(newInterest.Int64())
-			vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
-		}
-		k.rewards.SetVaultInterestTracker(ctx, vaultInterestTracker)
+			vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
+			newInterest := sdk.ZeroInt()
+			if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
+				newInterest = vaultInterestTracker.InterestAccumulated.TruncateInt()
+				newInterestDec := sdk.NewDec(newInterest.Int64())
+				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
+			}
+			k.rewards.SetVaultInterestTracker(ctx, vaultInterestTracker)
 
-		// updating user rewards data
-		vaultData.BlockTime = ctx.BlockTime()
-		if changeTypes {
-			vaultData.BlockHeight = ctx.BlockHeight()
-		} else {
-			vaultData.BlockHeight = 0
+			// updating user rewards data
+			vaultData.BlockTime = ctx.BlockTime()
+			if changeTypes {
+				vaultData.BlockHeight = ctx.BlockHeight()
+			} else {
+				vaultData.BlockHeight = 0
+			}
+
+			intAcc := vaultData.InterestAccumulated
+			updatedIntAcc := (intAcc).Add(newInterest)
+			vaultData.InterestAccumulated = updatedIntAcc
+			k.vault.SetVault(ctx, vaultData)
+
 		}
-
-		intAcc := vaultData.InterestAccumulated
-		updatedIntAcc := (intAcc).Add(newInterest)
-		vaultData.InterestAccumulated = updatedIntAcc
-		k.vault.SetVault(ctx, vaultData)
-
 	}
 
 }
