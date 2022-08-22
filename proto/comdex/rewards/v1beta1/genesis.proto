@@ -4,6 +4,8 @@ package comdex.rewards.v1beta1;
 import "gogoproto/gogo.proto";
 import "comdex/rewards/v1beta1/params.proto";
 import "comdex/rewards/v1beta1/rewards.proto";
+import "comdex/rewards/v1beta1/epochs.proto";
+import "comdex/rewards/v1beta1/gauge.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 
@@ -29,7 +31,22 @@ message GenesisState {
     (gogoproto.moretags) = "yaml:\"vault_external_rewards\"",
     (gogoproto.nullable) = false
   ];
-  Params params = 6 [
+  repeated uint64 appIDs = 6 [
+    (gogoproto.moretags) = "yaml:\"vault_external_rewards\""
+  ];
+  repeated EpochInfo epochInfo = 7 [
+    (gogoproto.moretags) = "yaml:\"epochInfo\"",
+    (gogoproto.nullable) = false
+  ];
+  repeated Gauge gauge = 8 [
+    (gogoproto.moretags) = "yaml:\"gauge\"",
+    (gogoproto.nullable) = false
+  ];
+  repeated GaugeByTriggerDuration gaugeByTriggerDuration = 9 [
+    (gogoproto.moretags) = "yaml:\"gaugeByTriggerDuration\"",
+    (gogoproto.nullable) = false
+  ];
+  Params params = 10 [
     (gogoproto.moretags) = "yaml:\"params\"",
     (gogoproto.nullable) = false
   ];

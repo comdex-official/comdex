@@ -8,6 +8,10 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
+	var (
+		gaugeID        uint64 = 0
+	)
+
 	k.SetParams(ctx, state.Params)
 
 	for _, item := range state.InternalRewards {
@@ -30,6 +34,27 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	for _, item := range state.VaultExternalRewards {
 		k.SetExternalRewardVault(ctx, item)
 	}
+
+	for _, item := range state.AppIDs {
+		k.SetAppByAppID(ctx, item)
+	}
+
+	for _, item := range state.EpochInfo {
+		k.SetEpochInfoByDuration(ctx, item)
+	}
+
+	for _, item := range state.Gauge {
+		if item.Id > gaugeID {
+			gaugeID = item.Id
+		}
+		k.SetGauge(ctx, item)
+	}
+
+	for _, item := range state.GaugeByTriggerDuration {
+		k.SetGaugeIdsByTriggerDuration(ctx, item)
+	}
+
+	k.SetGaugeID(ctx, gaugeID)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
@@ -39,6 +64,10 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetAllVaultInterestTracker(ctx),
 		k.GetExternalRewardsLockers(ctx),
 		k.GetExternalRewardVaults(ctx),
+		k.GetAppIDs(ctx),
+		k.GetAllEpochInfos(ctx),
+		k.GetAllGauges(ctx),
+		k.GetAllGaugeIdsByTriggerDuration(ctx),
 		k.GetParams(ctx),
 	)
 }
