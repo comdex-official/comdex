@@ -3,10 +3,34 @@ package comdex.rewards.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "comdex/rewards/v1beta1/params.proto";
+import "comdex/rewards/v1beta1/rewards.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 
 // GenesisState defines the rewards module's genesis state.
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Internal_rewards internal_rewards = 1 [
+    (gogoproto.moretags) = "yaml:\"internal_rewards\"",
+    (gogoproto.nullable) = false
+  ];
+  repeated Locker_rewards_tracker locker_rewards_tracker = 2 [
+    (gogoproto.moretags) = "yaml:\"locker_rewards_tracker\"",
+    (gogoproto.nullable) = false
+  ];
+  repeated Vault_interest_tracker vault_interest_tracker = 3 [
+    (gogoproto.moretags) = "yaml:\"vault_interest_tracker\"",
+    (gogoproto.nullable) = false
+  ];
+  repeated Locker_external_rewards locker_external_rewards = 4 [
+    (gogoproto.moretags) = "yaml:\"locker_external_rewards\"",
+    (gogoproto.nullable) = false
+  ];
+  repeated Vault_external_rewards vault_external_rewards = 5 [
+    (gogoproto.moretags) = "yaml:\"vault_external_rewards\"",
+    (gogoproto.nullable) = false
+  ];
+  Params params = 6 [
+    (gogoproto.moretags) = "yaml:\"params\"",
+    (gogoproto.nullable) = false
+  ];
 }
