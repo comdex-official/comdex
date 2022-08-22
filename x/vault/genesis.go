@@ -17,23 +17,23 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetStableMintVault(ctx, item)
 	}
 
-	// for _, item := range state.AppExtendedPairVaultMapping {
-	// 	err := k.SetAppExtendedPairVaultMappingData(ctx, item)
-	// 	if err != nil {
-	// 		return
-	// 	}
-	// }
+	for _, item := range state.AppExtendedPairVaultMapping {
+		err := k.SetAppExtendedPairVaultMappingData(ctx, item)
+		if err != nil {
+			return
+		}
+	}
 
-	// for _, item := range state.UserVaultAssetMapping {
-	// 	k.SetUserVaultExtendedPairMapping(ctx, item)
-	// }
+	for _, item := range state.UserVaultAssetMapping {
+		k.SetUserAppExtendedPairMappingData(ctx, item)
+	}
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
 		k.GetVaults(ctx),
 		k.GetStableMintVaults(ctx),
-		// k.GetAllAppExtendedPairVaultMapping(ctx),
-		// k.GetAllUserVaultExtendedPairMapping(ctx),
+		k.GetAllAppExtendedPairVaultMapping(ctx),
+		k.GetAllUserVaultExtendedPairMapping(ctx),
 	)
 }
