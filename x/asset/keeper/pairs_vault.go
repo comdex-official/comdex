@@ -227,14 +227,12 @@ func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.
 	if !found {
 		return types.ErrorPairDoesNotExist
 	}
-	pairID, _ := k.GetPair(ctx, updatePairVault.ExtPairID)
-	assetID, _ := k.GetAsset(ctx, pairID.AssetOut)
 	_, found1 := k.rewards.GetAppIDByApp(ctx, updatePairVault.AppID)
 	if found1 {
 		if ExtPairVaultData.StabilityFee != updatePairVault.StabilityFee {
 			if updatePairVault.StabilityFee.IsZero() {
 				// run script to distrubyte reward
-				k.VaultIterateRewards(ctx, ExtPairVaultData.StabilityFee, ExtPairVaultData.BlockHeight, ExtPairVaultData.BlockTime.Unix(), updatePairVault.AppID, assetID.Id, false)
+				k.VaultIterateRewards(ctx, ExtPairVaultData.StabilityFee, ExtPairVaultData.BlockHeight, ExtPairVaultData.BlockTime.Unix(), updatePairVault.AppID, ExtPairVaultData.Id, false)
 				ExtPairVaultData.BlockTime = ctx.BlockTime()
 				ExtPairVaultData.BlockHeight = 0
 
@@ -244,7 +242,7 @@ func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.
 				ExtPairVaultData.BlockTime = ctx.BlockTime()
 			} else if ExtPairVaultData.StabilityFee.GT(sdk.ZeroDec()) && updatePairVault.StabilityFee.GT(sdk.ZeroDec()) {
 				// run script to distribute
-				k.VaultIterateRewards(ctx, ExtPairVaultData.StabilityFee, ExtPairVaultData.BlockHeight, ExtPairVaultData.BlockTime.Unix(), updatePairVault.AppID, assetID.Id, true)
+				k.VaultIterateRewards(ctx, ExtPairVaultData.StabilityFee, ExtPairVaultData.BlockHeight, ExtPairVaultData.BlockTime.Unix(), updatePairVault.AppID, ExtPairVaultData.Id, true)
 				ExtPairVaultData.BlockHeight = ctx.BlockHeight()
 				ExtPairVaultData.BlockTime = ctx.BlockTime()
 
@@ -288,9 +286,9 @@ func (k Keeper) WasmCheckWhitelistedAssetQuery(ctx sdk.Context, denom string) (f
 	return found
 }
 
-func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, collectorBh, collectorBt int64, appID, assetID uint64, changeTypes bool) {
+func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, collectorBh, collectorBt int64, appID, pairVaultID uint64, changeTypes bool) {
 
-	extPairVault, _ := k.vault.GetAppExtendedPairVaultMappingData(ctx, appID, assetID)
+	extPairVault, _ := k.vault.GetAppExtendedPairVaultMappingData(ctx, appID, pairVaultID)
 	for _, valID := range extPairVault.VaultIds {
 		vaultData, found := k.vault.GetVault(ctx, valID)
 		if !found {
