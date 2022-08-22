@@ -10,6 +10,9 @@ import (
 	locker "github.com/comdex-official/comdex/x/locker"
 	lockerKeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	rewards "github.com/comdex-official/comdex/x/rewards"
+	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vault "github.com/comdex-official/comdex/x/vault"
 
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
@@ -28,6 +31,7 @@ func CreateUpgradeHandler(
 	lockerKeeper lockerKeeper.Keeper,
 	collectorKeeper collectorKeeper.Keeper,
 	liquidationKeeper liquidationKeeper.Keeper,
+	rewardsKeeper rewardsKeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
@@ -35,6 +39,7 @@ func CreateUpgradeHandler(
 		locker.InitGenesis(ctx, lockerKeeper, lockertypes.DefaultGenesisState())
 		collector.InitGenesis(ctx, collectorKeeper, collectortypes.DefaultGenesisState())
 		liquidation.InitGenesis(ctx, liquidationKeeper, liquidationtypes.DefaultGenesisState())
+		rewards.InitGenesis(ctx, rewardsKeeper, rewardstypes.DefaultGenesisState())
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 
 		if err != nil {

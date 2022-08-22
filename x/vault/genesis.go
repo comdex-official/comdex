@@ -9,31 +9,44 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
+	var (
+		vaultID       uint64 = 0
+		stableVaultID uint64 = 0
+	)
+
 	for _, item := range state.Vaults {
+		if item.Id > vaultID {
+			vaultID = item.Id
+		}
 		k.SetVault(ctx, item)
 	}
 
 	for _, item := range state.StableMintVault {
+		if item.Id > stableVaultID {
+			stableVaultID = item.Id
+		}
 		k.SetStableMintVault(ctx, item)
 	}
 
-	// for _, item := range state.AppExtendedPairVaultMapping {
-	// 	err := k.SetAppExtendedPairVaultMappingData(ctx, item)
-	// 	if err != nil {
-	// 		return
-	// 	}
-	// }
+	for _, item := range state.AppExtendedPairVaultMapping {
+		err := k.SetAppExtendedPairVaultMappingData(ctx, item)
+		if err != nil {
+			return
+		}
+	}
 
-	// for _, item := range state.UserVaultAssetMapping {
-	// 	k.SetUserVaultExtendedPairMapping(ctx, item)
-	// }
+	for _, item := range state.UserVaultAssetMapping {
+		k.SetUserAppExtendedPairMappingData(ctx, item)
+	}
+	k.SetIDForVault(ctx, vaultID)
+	k.SetIDForStableVault(ctx, stableVaultID)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
 		k.GetVaults(ctx),
 		k.GetStableMintVaults(ctx),
-		// k.GetAllAppExtendedPairVaultMapping(ctx),
-		// k.GetAllUserVaultExtendedPairMapping(ctx),
+		k.GetAllAppExtendedPairVaultMapping(ctx),
+		k.GetAllUserVaultExtendedPairMapping(ctx),
 	)
 }

@@ -140,12 +140,6 @@ message Vault_external_rewards{
   ];
 }
 
-// message WhitelistedAppIdsVault{
-//   repeated uint64 whitelisted_app_mapping_ids_vaults = 1 [
-//     (gogoproto.moretags) = "yaml:\"whitelisted_app_mapping_ids_vaults\""
-//   ];
-// }
-
 message EpochTime{
   uint64 id = 1 [
     (gogoproto.moretags) = "yaml:\"id\""

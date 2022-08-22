@@ -4,7 +4,6 @@ import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector/types"
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -786,7 +785,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 		assetData, _ := k.GetAsset(ctx, assetID)
 		newrewards := rewards.TruncateInt()
 		if newrewards.GT(sdk.ZeroInt()) {
-			err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newrewards)))
+			err = k.SendCoinFromModuleToModule(ctx, types.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newrewards)))
 			if err != nil {
 				continue
 			}

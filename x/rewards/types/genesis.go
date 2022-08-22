@@ -1,17 +1,34 @@
 package types
 
-// DefaultIndex is the default capability global index.
-const DefaultIndex uint64 = 1
-
-// DefaultGenesis returns the default Capability genesis state.
-func DefaultGenesis() *GenesisState {
+func NewGenesisState(internal_rewards []InternalRewards, locker_rewards_tracker []LockerRewardsTracker, vault_interest_tracker []VaultInterestTracker, locker_external_rewards []LockerExternalRewards, vault_external_rewards []VaultExternalRewards, appIDs []uint64, epochInfo []EpochInfo, gauge []Gauge, gaugeDuration []GaugeByTriggerDuration, params Params) *GenesisState {
 	return &GenesisState{
-		Params: DefaultParams(),
+		InternalRewards:       internal_rewards,
+		LockerRewardsTracker:  locker_rewards_tracker,
+		VaultInterestTracker:  vault_interest_tracker,
+		LockerExternalRewards: locker_external_rewards,
+		VaultExternalRewards: vault_external_rewards,
+		AppIDs: appIDs,
+		EpochInfo: epochInfo,
+		Gauge: gauge,
+		GaugeByTriggerDuration: gaugeDuration,
+		Params:    params,
 	}
 }
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(
+		[]InternalRewards{},
+		[]LockerRewardsTracker{},
+		[]VaultInterestTracker{},
+		[]LockerExternalRewards{},
+		[]VaultExternalRewards{},
+		[]uint64{},
+		[]EpochInfo{},
+		[]Gauge{},
+		[]GaugeByTriggerDuration{},
+		DefaultParams(),
+	)
+}
 
-// Validate performs basic genesis state validation returning an error upon any
-// failure.
-func (gs GenesisState) Validate() error {
-	return gs.Params.Validate()
+func (m *GenesisState) Validate() error {
+	return nil
 }
