@@ -20,7 +20,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 	for _, item := range state.VaultInterestTracker {
 		k.SetVaultInterestTracker(ctx, item)
-		
+
 	}
 
 	for _, item := range state.LockerExternalRewards {
