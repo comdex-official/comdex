@@ -25,7 +25,12 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // GenesisState defines the rewards module's genesis state.
 type GenesisState struct {
-	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+	InternalRewards       []InternalRewards       `protobuf:"bytes,1,rep,name=internal_rewards,json=internalRewards,proto3" json:"internal_rewards" yaml:"internal_rewards"`
+	LockerRewardsTracker  []LockerRewardsTracker  `protobuf:"bytes,2,rep,name=locker_rewards_tracker,json=lockerRewardsTracker,proto3" json:"locker_rewards_tracker" yaml:"locker_rewards_tracker"`
+	VaultInterestTracker  []VaultInterestTracker  `protobuf:"bytes,3,rep,name=vault_interest_tracker,json=vaultInterestTracker,proto3" json:"vault_interest_tracker" yaml:"vault_interest_tracker"`
+	LockerExternalRewards []LockerExternalRewards `protobuf:"bytes,4,rep,name=locker_external_rewards,json=lockerExternalRewards,proto3" json:"locker_external_rewards" yaml:"locker_external_rewards"`
+	VaultExternalRewards  []VaultExternalRewards  `protobuf:"bytes,5,rep,name=vault_external_rewards,json=vaultExternalRewards,proto3" json:"vault_external_rewards" yaml:"vault_external_rewards"`
+	Params                Params                  `protobuf:"bytes,6,opt,name=params,proto3" json:"params" yaml:"params"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
@@ -61,6 +66,41 @@ func (m *GenesisState) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GenesisState proto.InternalMessageInfo
 
+func (m *GenesisState) GetInternalRewards() []InternalRewards {
+	if m != nil {
+		return m.InternalRewards
+	}
+	return nil
+}
+
+func (m *GenesisState) GetLockerRewardsTracker() []LockerRewardsTracker {
+	if m != nil {
+		return m.LockerRewardsTracker
+	}
+	return nil
+}
+
+func (m *GenesisState) GetVaultInterestTracker() []VaultInterestTracker {
+	if m != nil {
+		return m.VaultInterestTracker
+	}
+	return nil
+}
+
+func (m *GenesisState) GetLockerExternalRewards() []LockerExternalRewards {
+	if m != nil {
+		return m.LockerExternalRewards
+	}
+	return nil
+}
+
+func (m *GenesisState) GetVaultExternalRewards() []VaultExternalRewards {
+	if m != nil {
+		return m.VaultExternalRewards
+	}
+	return nil
+}
+
 func (m *GenesisState) GetParams() Params {
 	if m != nil {
 		return m.Params
@@ -77,20 +117,33 @@ func init() {
 }
 
 var fileDescriptor_cdfc05d0f3c33bb6 = []byte{
-	// 204 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x49, 0xce, 0xcf, 0x4d,
-	0x49, 0xad, 0xd0, 0x2f, 0x4a, 0x2d, 0x4f, 0x2c, 0x4a, 0x29, 0xd6, 0x2f, 0x33, 0x4c, 0x4a, 0x2d,
-	0x49, 0x34, 0xd4, 0x4f, 0x4f, 0xcd, 0x4b, 0x2d, 0xce, 0x2c, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9,
-	0x17, 0x12, 0x83, 0xa8, 0xd2, 0x83, 0xaa, 0xd2, 0x83, 0xaa, 0x92, 0x12, 0x49, 0xcf, 0x4f, 0xcf,
-	0x07, 0x2b, 0xd1, 0x07, 0xb1, 0x20, 0xaa, 0xa5, 0x94, 0x71, 0x98, 0x59, 0x90, 0x58, 0x94, 0x98,
-	0x0b, 0x35, 0x52, 0xc9, 0x87, 0x8b, 0xc7, 0x1d, 0x62, 0x47, 0x70, 0x49, 0x62, 0x49, 0xaa, 0x90,
-	0x0d, 0x17, 0x1b, 0x44, 0x5e, 0x82, 0x51, 0x81, 0x51, 0x83, 0xdb, 0x48, 0x4e, 0x0f, 0xbb, 0x9d,
-	0x7a, 0x01, 0x60, 0x55, 0x4e, 0x2c, 0x27, 0xee, 0xc9, 0x33, 0x04, 0x41, 0xf5, 0x38, 0x79, 0x9f,
-	0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb, 0x31,
-	0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x94, 0x61, 0x7a, 0x66, 0x49, 0x46, 0x69,
-	0x12, 0xc8, 0x34, 0x7d, 0x88, 0x89, 0xba, 0xf9, 0x69, 0x69, 0x99, 0xc9, 0x99, 0x89, 0x39, 0x50,
-	0xbe, 0x3e, 0xc2, 0xa5, 0x25, 0x95, 0x05, 0xa9, 0xc5, 0x49, 0x6c, 0x60, 0x17, 0x1a, 0x03, 0x02,
-	0x00, 0x00, 0xff, 0xff, 0x4a, 0xf6, 0xfe, 0x62, 0x1c, 0x01, 0x00, 0x00,
+	// 412 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0xcd, 0x4e, 0xc2, 0x40,
+	0x14, 0x85, 0x5b, 0xd1, 0x2e, 0x8a, 0x46, 0x43, 0xf8, 0x0b, 0x89, 0x03, 0xa9, 0x3f, 0x61, 0x63,
+	0x1b, 0x70, 0xe7, 0xb2, 0x89, 0x31, 0x44, 0x4d, 0x4c, 0x35, 0x2e, 0xdc, 0x90, 0x01, 0x86, 0xda,
+	0x58, 0x28, 0x69, 0x07, 0x84, 0x67, 0x70, 0x81, 0x8f, 0xc5, 0x92, 0xa5, 0x2b, 0x62, 0xe0, 0x0d,
+	0x7c, 0x02, 0xc3, 0xdc, 0xa9, 0xc6, 0x69, 0xab, 0xee, 0x98, 0x7b, 0xcf, 0x3d, 0xe7, 0xe3, 0x4e,
+	0x47, 0x3d, 0x6c, 0x7b, 0xbd, 0x0e, 0x19, 0x1b, 0x3e, 0x79, 0xc6, 0x7e, 0x27, 0x30, 0x46, 0xb5,
+	0x16, 0xa1, 0xb8, 0x66, 0xd8, 0xa4, 0x4f, 0x02, 0x27, 0xd0, 0x07, 0xbe, 0x47, 0xbd, 0x4c, 0x1e,
+	0x54, 0x3a, 0x57, 0xe9, 0x5c, 0x55, 0xca, 0xda, 0x9e, 0xed, 0x31, 0x89, 0xb1, 0xfe, 0x05, 0xea,
+	0xd2, 0x41, 0x82, 0xe7, 0x00, 0xfb, 0xb8, 0xc7, 0x2d, 0x4b, 0x49, 0xc1, 0x61, 0x04, 0x53, 0x69,
+	0x53, 0x45, 0xdd, 0xbe, 0x00, 0x94, 0x5b, 0x8a, 0x29, 0xc9, 0x50, 0x75, 0xcf, 0xe9, 0x53, 0xe2,
+	0xf7, 0xb1, 0xdb, 0xe4, 0xd2, 0xa2, 0x5c, 0x49, 0x55, 0xd3, 0xf5, 0xaa, 0x1e, 0x0f, 0xa9, 0x37,
+	0x04, 0xbd, 0x59, 0x9e, 0x2d, 0xca, 0xd2, 0xc7, 0xa2, 0x5c, 0x98, 0xe0, 0x9e, 0x7b, 0xa6, 0x89,
+	0x7e, 0x9a, 0xb5, 0x1b, 0x96, 0x2c, 0xa8, 0x64, 0x5e, 0x64, 0x35, 0xef, 0x7a, 0xed, 0x27, 0xe2,
+	0x87, 0xa2, 0x26, 0xf5, 0xf1, 0xfa, 0x5c, 0xdc, 0x60, 0xe1, 0x7a, 0x52, 0xf8, 0x55, 0xec, 0x94,
+	0x79, 0xc4, 0x11, 0xf6, 0x01, 0x21, 0xde, 0x5b, 0xb3, 0xb2, 0xd0, 0xe0, 0x18, 0x77, 0x50, 0x66,
+	0x34, 0x23, 0x3c, 0x74, 0x69, 0x93, 0x71, 0x92, 0x80, 0x7e, 0xd1, 0xa4, 0x7e, 0xa7, 0xb9, 0x8f,
+	0x9d, 0x12, 0x69, 0xe2, 0xbd, 0x35, 0x2b, 0xcb, 0x1a, 0x0d, 0x5e, 0x0f, 0x69, 0xa6, 0xb2, 0x5a,
+	0xe0, 0xfc, 0x64, 0x2c, 0xdc, 0xcc, 0x26, 0xc3, 0x31, 0xfe, 0x58, 0x8e, 0x38, 0x66, 0x1e, 0x73,
+	0x1e, 0xf4, 0x63, 0x3b, 0xa2, 0x4c, 0xb3, 0x72, 0xd0, 0x39, 0x1f, 0x47, 0x6f, 0x0b, 0xfe, 0x43,
+	0x04, 0x68, 0xeb, 0x3f, 0xfb, 0x89, 0xf0, 0xc4, 0xee, 0x27, 0x8a, 0x03, 0xfb, 0x11, 0x69, 0xae,
+	0x55, 0x05, 0x3e, 0xfc, 0xa2, 0x52, 0x91, 0xab, 0xe9, 0x3a, 0x4a, 0x0a, 0xbf, 0x61, 0x2a, 0x33,
+	0xc7, 0xc3, 0x76, 0x20, 0x0c, 0x66, 0x35, 0x8b, 0x9b, 0x98, 0x97, 0xb3, 0x25, 0x92, 0xe7, 0x4b,
+	0x24, 0xbf, 0x2f, 0x91, 0xfc, 0xba, 0x42, 0xd2, 0x7c, 0x85, 0xa4, 0xb7, 0x15, 0x92, 0x1e, 0x6a,
+	0xb6, 0x43, 0x1f, 0x87, 0xad, 0xb5, 0xbd, 0x01, 0x11, 0x27, 0x5e, 0xb7, 0xeb, 0xb4, 0x1d, 0xec,
+	0xf2, 0xb3, 0xf1, 0xfd, 0xdc, 0xe8, 0x64, 0x40, 0x82, 0x96, 0xc2, 0x5e, 0xd9, 0xe9, 0x67, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x4f, 0x2c, 0x75, 0x33, 0x06, 0x04, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -122,7 +175,77 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintGenesis(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0xa
+	dAtA[i] = 0x32
+	if len(m.VaultExternalRewards) > 0 {
+		for iNdEx := len(m.VaultExternalRewards) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.VaultExternalRewards[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
+	if len(m.LockerExternalRewards) > 0 {
+		for iNdEx := len(m.LockerExternalRewards) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.LockerExternalRewards[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x22
+		}
+	}
+	if len(m.VaultInterestTracker) > 0 {
+		for iNdEx := len(m.VaultInterestTracker) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.VaultInterestTracker[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.LockerRewardsTracker) > 0 {
+		for iNdEx := len(m.LockerRewardsTracker) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.LockerRewardsTracker[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.InternalRewards) > 0 {
+		for iNdEx := len(m.InternalRewards) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.InternalRewards[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -143,6 +266,36 @@ func (m *GenesisState) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if len(m.InternalRewards) > 0 {
+		for _, e := range m.InternalRewards {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.LockerRewardsTracker) > 0 {
+		for _, e := range m.LockerRewardsTracker {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.VaultInterestTracker) > 0 {
+		for _, e := range m.VaultInterestTracker {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.LockerExternalRewards) > 0 {
+		for _, e := range m.LockerExternalRewards {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.VaultExternalRewards) > 0 {
+		for _, e := range m.VaultExternalRewards {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
 	l = m.Params.Size()
 	n += 1 + l + sovGenesis(uint64(l))
 	return n
@@ -184,6 +337,176 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InternalRewards", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.InternalRewards = append(m.InternalRewards, InternalRewards{})
+			if err := m.InternalRewards[len(m.InternalRewards)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LockerRewardsTracker", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LockerRewardsTracker = append(m.LockerRewardsTracker, LockerRewardsTracker{})
+			if err := m.LockerRewardsTracker[len(m.LockerRewardsTracker)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultInterestTracker", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.VaultInterestTracker = append(m.VaultInterestTracker, VaultInterestTracker{})
+			if err := m.VaultInterestTracker[len(m.VaultInterestTracker)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LockerExternalRewards", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LockerExternalRewards = append(m.LockerExternalRewards, LockerExternalRewards{})
+			if err := m.LockerExternalRewards[len(m.LockerExternalRewards)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultExternalRewards", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.VaultExternalRewards = append(m.VaultExternalRewards, VaultExternalRewards{})
+			if err := m.VaultExternalRewards[len(m.VaultExternalRewards)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
 			}

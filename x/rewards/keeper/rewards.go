@@ -451,6 +451,28 @@ func (k Keeper) GetLockerRewardTracker(ctx sdk.Context, id, appID uint64) (rewar
 	return rewards, true
 }
 
+func (k Keeper) GetAllLockerRewardTracker(ctx sdk.Context) (Lockrewards []types.LockerRewardsTracker) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.LockerRewardsTrackerKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var rewards types.LockerRewardsTracker
+		k.cdc.MustUnmarshal(iter.Value(), &rewards)
+		Lockrewards = append(Lockrewards, rewards)
+	}
+
+	return Lockrewards
+}
+
 func (k Keeper) SetVaultInterestTracker(ctx sdk.Context, vault types.VaultInterestTracker) {
 	var (
 		store = k.Store(ctx)
@@ -474,6 +496,28 @@ func (k Keeper) GetVaultInterestTracker(ctx sdk.Context, id, appID uint64) (vaul
 
 	k.cdc.MustUnmarshal(value, &vault)
 	return vault, true
+}
+
+func (k Keeper) GetAllVaultInterestTracker(ctx sdk.Context) (Vaultrewards []types.VaultInterestTracker) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.VaultInterestTrackerKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var rewards types.VaultInterestTracker
+		k.cdc.MustUnmarshal(iter.Value(), &rewards)
+		Vaultrewards = append(Vaultrewards, rewards)
+	}
+
+	return Vaultrewards
 }
 
 func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID uint64, Depositor string, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error {
