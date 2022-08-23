@@ -7,7 +7,7 @@ import (
 
 const (
 	// ModuleName defines the module name.
-	ModuleName = "lend"
+	ModuleName = "lendV1"
 
 	// ModuleAcc1 , ModuleAcc2 & ModuleAcc3  defines different module accounts to store selected pairs of asset.
 	ModuleAcc1 = "cmdx"
