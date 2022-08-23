@@ -1296,4 +1296,8 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 	if err != nil {
 		return
 	}
+	err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, borrowPos.ID, true)
+	if err != nil {
+		return
+	}
 }

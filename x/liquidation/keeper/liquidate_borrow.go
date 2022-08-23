@@ -233,8 +233,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 				} else {
 					c = assetRatesStats.LiquidationThreshold
 				}
-
-				b := deductionPercentage.Add(assetRatesStats.LiquidationPenalty)
+				penalty := assetRatesStats.LiquidationPenalty.Add(assetRatesStats.LiquidationBonus)
+				b := deductionPercentage.Add(penalty)
 				totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
 				totalOut := lockedVault.UpdatedAmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
 				factor1 := c.Mul(totalIn)
