@@ -1244,7 +1244,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 //call function
 //exit function
 
-func (k msgServer) MsgVaultCalculateInterest(c context.Context, msg *types.MsgVaultInterestCalcRequest) (*types.MsgVaultInterestCalcResponse, error) {
+func (k msgServer) MsgVaultInterestCalc(c context.Context, msg *types.MsgVaultInterestCalcRequest) (*types.MsgVaultInterestCalcResponse, error) {
 
 	ctx := sdk.UnwrapSDKContext(c)
 	appMapping, found := k.GetApp(ctx, msg.AppId)
