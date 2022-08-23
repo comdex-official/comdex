@@ -5,6 +5,7 @@ package types
 
 import (
 	fmt "fmt"
+	_ "github.com/cosmos/cosmos-sdk/types"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
@@ -38,6 +39,8 @@ type Locker struct {
 	AssetDepositId     uint64                                 `protobuf:"varint,6,opt,name=asset_deposit_id,json=assetDepositId,proto3" json:"asset_deposit_id,omitempty" yaml:"asset_deposit_id"`
 	IsLocked           bool                                   `protobuf:"varint,7,opt,name=is_locked,json=isLocked,proto3" json:"is_locked,omitempty" yaml:"is_locked"`
 	AppId              uint64                                 `protobuf:"varint,8,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	BlockHeight        int64                                  `protobuf:"varint,9,opt,name=block_height,json=blockHeight,proto3" json:"block_height,omitempty" yaml:"block_height"`
+	BlockTime          time.Time                              `protobuf:"bytes,10,opt,name=block_time,json=blockTime,proto3,stdtime" json:"block_time" yaml:"block_time"`
 }
 
 func (m *Locker) Reset()         { *m = Locker{} }
@@ -73,24 +76,26 @@ func (m *Locker) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Locker proto.InternalMessageInfo
 
-//Key is user address
-type UserLockerAssetMapping struct {
-	Owner            string                `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
-	LockerAppMapping []*LockerToAppMapping `protobuf:"bytes,2,rep,name=locker_app_mapping,json=lockerAppMapping,proto3" json:"locker_app_mapping,omitempty" yaml:"locker_app_mapping"`
+type UserAppAssetLockerMapping struct {
+	Owner    string        `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+	AppId    uint64        `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
+	AssetId  uint64        `protobuf:"varint,3,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty"`
+	LockerId uint64        `protobuf:"varint,4,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
+	UserData []*UserTxData `protobuf:"bytes,5,rep,name=user_data,json=userData,proto3" json:"user_data,omitempty" yaml:"user_data"`
 }
 
-func (m *UserLockerAssetMapping) Reset()         { *m = UserLockerAssetMapping{} }
-func (m *UserLockerAssetMapping) String() string { return proto.CompactTextString(m) }
-func (*UserLockerAssetMapping) ProtoMessage()    {}
-func (*UserLockerAssetMapping) Descriptor() ([]byte, []int) {
+func (m *UserAppAssetLockerMapping) Reset()         { *m = UserAppAssetLockerMapping{} }
+func (m *UserAppAssetLockerMapping) String() string { return proto.CompactTextString(m) }
+func (*UserAppAssetLockerMapping) ProtoMessage()    {}
+func (*UserAppAssetLockerMapping) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5cf8d15809df39ec, []int{1}
 }
-func (m *UserLockerAssetMapping) XXX_Unmarshal(b []byte) error {
+func (m *UserAppAssetLockerMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *UserLockerAssetMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UserAppAssetLockerMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_UserLockerAssetMapping.Marshal(b, m, deterministic)
+		return xxx_messageInfo_UserAppAssetLockerMapping.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -100,96 +105,17 @@ func (m *UserLockerAssetMapping) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *UserLockerAssetMapping) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UserLockerAssetMapping.Merge(m, src)
+func (m *UserAppAssetLockerMapping) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UserAppAssetLockerMapping.Merge(m, src)
 }
-func (m *UserLockerAssetMapping) XXX_Size() int {
+func (m *UserAppAssetLockerMapping) XXX_Size() int {
 	return m.Size()
 }
-func (m *UserLockerAssetMapping) XXX_DiscardUnknown() {
-	xxx_messageInfo_UserLockerAssetMapping.DiscardUnknown(m)
+func (m *UserAppAssetLockerMapping) XXX_DiscardUnknown() {
+	xxx_messageInfo_UserAppAssetLockerMapping.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_UserLockerAssetMapping proto.InternalMessageInfo
-
-//This is used inside the UserLockerAssetMapping
-type LockerToAppMapping struct {
-	AppId           uint64                  `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
-	UserAssetLocker []*AssetToLockerMapping `protobuf:"bytes,2,rep,name=user_asset_locker,json=userAssetLocker,proto3" json:"user_asset_locker,omitempty" yaml:"user_asset_locker"`
-}
-
-func (m *LockerToAppMapping) Reset()         { *m = LockerToAppMapping{} }
-func (m *LockerToAppMapping) String() string { return proto.CompactTextString(m) }
-func (*LockerToAppMapping) ProtoMessage()    {}
-func (*LockerToAppMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cf8d15809df39ec, []int{2}
-}
-func (m *LockerToAppMapping) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *LockerToAppMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_LockerToAppMapping.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *LockerToAppMapping) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LockerToAppMapping.Merge(m, src)
-}
-func (m *LockerToAppMapping) XXX_Size() int {
-	return m.Size()
-}
-func (m *LockerToAppMapping) XXX_DiscardUnknown() {
-	xxx_messageInfo_LockerToAppMapping.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_LockerToAppMapping proto.InternalMessageInfo
-
-//This is used inside LockerToAppMapping
-type AssetToLockerMapping struct {
-	AssetId  uint64        `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty"`
-	LockerId uint64        `protobuf:"varint,2,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
-	UserData []*UserTxData `protobuf:"bytes,3,rep,name=user_data,json=userData,proto3" json:"user_data,omitempty" yaml:"user_data"`
-}
-
-func (m *AssetToLockerMapping) Reset()         { *m = AssetToLockerMapping{} }
-func (m *AssetToLockerMapping) String() string { return proto.CompactTextString(m) }
-func (*AssetToLockerMapping) ProtoMessage()    {}
-func (*AssetToLockerMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cf8d15809df39ec, []int{3}
-}
-func (m *AssetToLockerMapping) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AssetToLockerMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AssetToLockerMapping.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AssetToLockerMapping) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AssetToLockerMapping.Merge(m, src)
-}
-func (m *AssetToLockerMapping) XXX_Size() int {
-	return m.Size()
-}
-func (m *AssetToLockerMapping) XXX_DiscardUnknown() {
-	xxx_messageInfo_AssetToLockerMapping.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AssetToLockerMapping proto.InternalMessageInfo
+var xxx_messageInfo_UserAppAssetLockerMapping proto.InternalMessageInfo
 
 type UserTxData struct {
 	TxType  string                                 `protobuf:"bytes,1,opt,name=tx_type,json=txType,proto3" json:"tx_type,omitempty" yaml:"tx_type"`
@@ -202,7 +128,7 @@ func (m *UserTxData) Reset()         { *m = UserTxData{} }
 func (m *UserTxData) String() string { return proto.CompactTextString(m) }
 func (*UserTxData) ProtoMessage()    {}
 func (*UserTxData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cf8d15809df39ec, []int{4}
+	return fileDescriptor_5cf8d15809df39ec, []int{2}
 }
 func (m *UserTxData) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -231,64 +157,25 @@ func (m *UserTxData) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_UserTxData proto.InternalMessageInfo
 
-//Key is app_mapping_id
-type LockerLookupTable struct {
-	AppId   uint64                  `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
-	Lockers []*TokenToLockerMapping `protobuf:"bytes,2,rep,name=lockers,proto3" json:"lockers,omitempty" yaml:"lockers"`
-	Counter uint64                  `protobuf:"varint,3,opt,name=counter,proto3" json:"counter,omitempty"`
-}
-
-func (m *LockerLookupTable) Reset()         { *m = LockerLookupTable{} }
-func (m *LockerLookupTable) String() string { return proto.CompactTextString(m) }
-func (*LockerLookupTable) ProtoMessage()    {}
-func (*LockerLookupTable) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cf8d15809df39ec, []int{5}
-}
-func (m *LockerLookupTable) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *LockerLookupTable) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_LockerLookupTable.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *LockerLookupTable) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LockerLookupTable.Merge(m, src)
-}
-func (m *LockerLookupTable) XXX_Size() int {
-	return m.Size()
-}
-func (m *LockerLookupTable) XXX_DiscardUnknown() {
-	xxx_messageInfo_LockerLookupTable.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_LockerLookupTable proto.InternalMessageInfo
-
-type TokenToLockerMapping struct {
-	AssetId         uint64                                 `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty"`
-	LockerIds       []uint64                               `protobuf:"varint,2,rep,packed,name=locker_ids,json=lockerIds,proto3" json:"locker_ids,omitempty" yaml:"addresses"`
+type LockerLookupTableData struct {
+	AppId           uint64                                 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId         uint64                                 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty"`
+	LockerIds       []uint64                               `protobuf:"varint,3,rep,packed,name=locker_ids,json=lockerIds,proto3" json:"locker_ids,omitempty" yaml:"addresses"`
 	DepositedAmount github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=deposited_amount,json=depositedAmount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"deposited_amount" yaml:"deposited_amount"`
 }
 
-func (m *TokenToLockerMapping) Reset()         { *m = TokenToLockerMapping{} }
-func (m *TokenToLockerMapping) String() string { return proto.CompactTextString(m) }
-func (*TokenToLockerMapping) ProtoMessage()    {}
-func (*TokenToLockerMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cf8d15809df39ec, []int{6}
+func (m *LockerLookupTableData) Reset()         { *m = LockerLookupTableData{} }
+func (m *LockerLookupTableData) String() string { return proto.CompactTextString(m) }
+func (*LockerLookupTableData) ProtoMessage()    {}
+func (*LockerLookupTableData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5cf8d15809df39ec, []int{3}
 }
-func (m *TokenToLockerMapping) XXX_Unmarshal(b []byte) error {
+func (m *LockerLookupTableData) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *TokenToLockerMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *LockerLookupTableData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_TokenToLockerMapping.Marshal(b, m, deterministic)
+		return xxx_messageInfo_LockerLookupTableData.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -298,29 +185,29 @@ func (m *TokenToLockerMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *TokenToLockerMapping) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TokenToLockerMapping.Merge(m, src)
+func (m *LockerLookupTableData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LockerLookupTableData.Merge(m, src)
 }
-func (m *TokenToLockerMapping) XXX_Size() int {
+func (m *LockerLookupTableData) XXX_Size() int {
 	return m.Size()
 }
-func (m *TokenToLockerMapping) XXX_DiscardUnknown() {
-	xxx_messageInfo_TokenToLockerMapping.DiscardUnknown(m)
+func (m *LockerLookupTableData) XXX_DiscardUnknown() {
+	xxx_messageInfo_LockerLookupTableData.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_TokenToLockerMapping proto.InternalMessageInfo
+var xxx_messageInfo_LockerLookupTableData proto.InternalMessageInfo
 
 //Key is app_mapping_id
 type LockerProductAssetMapping struct {
-	AppId    uint64   `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
-	AssetIds []uint64 `protobuf:"varint,2,rep,packed,name=asset_ids,json=assetIds,proto3" json:"asset_ids,omitempty" yaml:"asset_ids"`
+	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
 func (m *LockerProductAssetMapping) Reset()         { *m = LockerProductAssetMapping{} }
 func (m *LockerProductAssetMapping) String() string { return proto.CompactTextString(m) }
 func (*LockerProductAssetMapping) ProtoMessage()    {}
 func (*LockerProductAssetMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cf8d15809df39ec, []int{7}
+	return fileDescriptor_5cf8d15809df39ec, []int{4}
 }
 func (m *LockerProductAssetMapping) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -358,7 +245,7 @@ func (m *LockedDepositedAmountDataMap) Reset()         { *m = LockedDepositedAmo
 func (m *LockedDepositedAmountDataMap) String() string { return proto.CompactTextString(m) }
 func (*LockedDepositedAmountDataMap) ProtoMessage()    {}
 func (*LockedDepositedAmountDataMap) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cf8d15809df39ec, []int{8}
+	return fileDescriptor_5cf8d15809df39ec, []int{5}
 }
 func (m *LockedDepositedAmountDataMap) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -397,7 +284,7 @@ func (m *LockerTotalRewardsByAssetAppWise) Reset()         { *m = LockerTotalRew
 func (m *LockerTotalRewardsByAssetAppWise) String() string { return proto.CompactTextString(m) }
 func (*LockerTotalRewardsByAssetAppWise) ProtoMessage()    {}
 func (*LockerTotalRewardsByAssetAppWise) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cf8d15809df39ec, []int{9}
+	return fileDescriptor_5cf8d15809df39ec, []int{6}
 }
 func (m *LockerTotalRewardsByAssetAppWise) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -428,12 +315,9 @@ var xxx_messageInfo_LockerTotalRewardsByAssetAppWise proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*Locker)(nil), "comdex.locker.v1beta1.Locker")
-	proto.RegisterType((*UserLockerAssetMapping)(nil), "comdex.locker.v1beta1.UserLockerAssetMapping")
-	proto.RegisterType((*LockerToAppMapping)(nil), "comdex.locker.v1beta1.LockerToAppMapping")
-	proto.RegisterType((*AssetToLockerMapping)(nil), "comdex.locker.v1beta1.AssetToLockerMapping")
+	proto.RegisterType((*UserAppAssetLockerMapping)(nil), "comdex.locker.v1beta1.UserAppAssetLockerMapping")
 	proto.RegisterType((*UserTxData)(nil), "comdex.locker.v1beta1.UserTxData")
-	proto.RegisterType((*LockerLookupTable)(nil), "comdex.locker.v1beta1.LockerLookupTable")
-	proto.RegisterType((*TokenToLockerMapping)(nil), "comdex.locker.v1beta1.TokenToLockerMapping")
+	proto.RegisterType((*LockerLookupTableData)(nil), "comdex.locker.v1beta1.LockerLookupTableData")
 	proto.RegisterType((*LockerProductAssetMapping)(nil), "comdex.locker.v1beta1.LockerProductAssetMapping")
 	proto.RegisterType((*LockedDepositedAmountDataMap)(nil), "comdex.locker.v1beta1.LockedDepositedAmountDataMap")
 	proto.RegisterType((*LockerTotalRewardsByAssetAppWise)(nil), "comdex.locker.v1beta1.LockerTotalRewardsByAssetAppWise")
@@ -444,71 +328,66 @@ func init() {
 }
 
 var fileDescriptor_5cf8d15809df39ec = []byte{
-	// 1021 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x56, 0x3d, 0x6f, 0xdb, 0xc6,
-	0x1b, 0x17, 0x65, 0x5b, 0x2f, 0xe7, 0x24, 0xb6, 0x2f, 0xce, 0x3f, 0xb4, 0xff, 0x89, 0xa8, 0xde,
-	0x10, 0xa8, 0x08, 0x42, 0xd5, 0xce, 0xd6, 0xa5, 0x95, 0xe0, 0x16, 0x30, 0xe0, 0xa0, 0xc5, 0x41,
-	0x45, 0xda, 0x2c, 0xc2, 0x89, 0x3c, 0xab, 0x84, 0x45, 0x1d, 0xc1, 0x3b, 0x26, 0xf6, 0xd0, 0xef,
-	0x90, 0xcf, 0xd0, 0xa9, 0x73, 0xa7, 0xa2, 0x4b, 0x97, 0x0e, 0x1e, 0x03, 0x74, 0x29, 0x8a, 0x82,
-	0x6d, 0xed, 0xa9, 0x2b, 0x3f, 0x41, 0x71, 0x2f, 0xa4, 0x28, 0x47, 0x71, 0xad, 0xa1, 0x93, 0x79,
-	0xcf, 0xdd, 0xf3, 0xfb, 0x3d, 0xaf, 0x3f, 0x0b, 0x20, 0x8f, 0x85, 0x3e, 0x3d, 0xed, 0x4e, 0x98,
-	0x77, 0x42, 0xe3, 0xee, 0xcb, 0xbd, 0x11, 0x15, 0x64, 0xcf, 0x1c, 0xdd, 0x28, 0x66, 0x82, 0xc1,
-	0x7b, 0xfa, 0x8d, 0x6b, 0x8c, 0xe6, 0xcd, 0xee, 0xf6, 0x98, 0x8d, 0x99, 0x7a, 0xd1, 0x95, 0x5f,
-	0xfa, 0xf1, 0xae, 0x33, 0x66, 0x6c, 0x3c, 0xa1, 0x5d, 0x75, 0x1a, 0x25, 0xc7, 0x5d, 0x11, 0x84,
-	0x94, 0x0b, 0x12, 0x46, 0xfa, 0x01, 0xfa, 0x65, 0x15, 0xd4, 0x8e, 0x14, 0x12, 0xdc, 0x03, 0x4d,
-	0x8d, 0x39, 0x0c, 0x7c, 0xdb, 0x6a, 0x5b, 0x9d, 0xd5, 0xfe, 0x76, 0x96, 0x3a, 0x9b, 0x67, 0x24,
-	0x9c, 0x7c, 0x88, 0x8a, 0x2b, 0x84, 0x1b, 0xfa, 0xfb, 0xd0, 0x87, 0xfb, 0xa0, 0xe9, 0xd3, 0x88,
-	0xf1, 0x40, 0xb0, 0xd8, 0xae, 0xb6, 0xad, 0x4e, 0xb3, 0xec, 0x52, 0x5c, 0x21, 0x3c, 0x7b, 0x06,
-	0xbf, 0x01, 0x77, 0x63, 0x2a, 0x92, 0x78, 0xca, 0x87, 0xc4, 0xf3, 0x92, 0x30, 0x99, 0x10, 0x41,
-	0x7d, 0x7b, 0x45, 0x79, 0x1f, 0x9d, 0xa7, 0x4e, 0xe5, 0xb7, 0xd4, 0x79, 0x34, 0x0e, 0xc4, 0xd7,
-	0xc9, 0xc8, 0xf5, 0x58, 0xd8, 0xf5, 0x18, 0x0f, 0x19, 0x37, 0x7f, 0x9e, 0x70, 0xff, 0xa4, 0x2b,
-	0xce, 0x22, 0xca, 0xdd, 0xc3, 0xa9, 0xc8, 0x52, 0x67, 0x57, 0x73, 0x2d, 0x80, 0x44, 0x18, 0x1a,
-	0x6b, 0x6f, 0x66, 0x84, 0x14, 0xac, 0x4f, 0xa9, 0x18, 0x8e, 0xc8, 0x84, 0x4c, 0x3d, 0x6a, 0xaf,
-	0x2a, 0xda, 0x83, 0xa5, 0x69, 0xa1, 0xa6, 0x2d, 0x41, 0x21, 0x0c, 0xa6, 0x54, 0xf4, 0xf5, 0x01,
-	0x7e, 0x09, 0x80, 0x17, 0x53, 0xc9, 0x38, 0x24, 0xc2, 0x5e, 0x6b, 0x5b, 0x9d, 0xf5, 0xfd, 0x5d,
-	0x57, 0x77, 0xc3, 0xcd, 0xbb, 0xe1, 0x0e, 0xf2, 0x6e, 0xf4, 0x1f, 0xca, 0x08, 0xb2, 0xd4, 0xd9,
-	0xd2, 0xb8, 0x33, 0x5f, 0xf4, 0xfa, 0x0f, 0xc7, 0xc2, 0x4d, 0x63, 0xe8, 0x09, 0xf8, 0x09, 0xd8,
-	0x24, 0x9c, 0x53, 0x31, 0x34, 0x25, 0x95, 0xdd, 0xaa, 0xa9, 0x6e, 0xfd, 0x3f, 0x4b, 0x9d, 0xfb,
-	0xda, 0xff, 0xea, 0x0b, 0x84, 0xef, 0x28, 0xd3, 0x81, 0xb6, 0x1c, 0xfa, 0xb2, 0xdb, 0x01, 0x1f,
-	0xaa, 0x4e, 0xfa, 0x76, 0xbd, 0x6d, 0x75, 0x1a, 0xe5, 0xd6, 0x15, 0x57, 0x08, 0x37, 0x02, 0xae,
-	0x06, 0xc4, 0x87, 0x1d, 0x50, 0x23, 0x51, 0x24, 0xf9, 0x1a, 0x8a, 0x6f, 0x2b, 0x4b, 0x9d, 0xdb,
-	0x86, 0x4f, 0xd9, 0x11, 0x5e, 0x23, 0x51, 0x74, 0xe8, 0xa3, 0x1f, 0x2c, 0xf0, 0xbf, 0x2f, 0x38,
-	0x8d, 0xf5, 0x64, 0xf5, 0x24, 0xf3, 0x33, 0x12, 0x45, 0xc1, 0x74, 0x0c, 0x1f, 0x81, 0x35, 0xf6,
-	0x6a, 0x4a, 0x63, 0x35, 0x61, 0xcd, 0xfe, 0x66, 0x96, 0x3a, 0xb7, 0x34, 0x86, 0x32, 0x23, 0xac,
-	0xaf, 0xe1, 0x4b, 0x00, 0xcd, 0xc8, 0x49, 0xec, 0x50, 0x7b, 0xdb, 0xd5, 0xf6, 0x4a, 0x67, 0x7d,
-	0xff, 0x7d, 0x77, 0xe1, 0x0e, 0xb8, 0x9a, 0x6e, 0xc0, 0x7a, 0x51, 0x64, 0xe8, 0xfa, 0x0f, 0xb3,
-	0xd4, 0xd9, 0x99, 0x9b, 0xe0, 0x12, 0x1c, 0xc2, 0x9b, 0xda, 0x38, 0x73, 0x40, 0xdf, 0x5a, 0x00,
-	0xbe, 0x8d, 0x03, 0xef, 0x15, 0xb9, 0xab, 0xcd, 0x30, 0x89, 0xc2, 0x04, 0x6c, 0x25, 0x5c, 0x82,
-	0xaa, 0x7a, 0x6b, 0x30, 0x13, 0xe4, 0xe3, 0x77, 0x04, 0xa9, 0xaa, 0x31, 0x60, 0x9a, 0x23, 0x0f,
-	0xf3, 0x41, 0x96, 0x3a, 0xb6, 0x0e, 0xf3, 0x2d, 0x3c, 0x84, 0x37, 0xa4, 0x4d, 0xf9, 0x69, 0x2f,
-	0xf4, 0xa3, 0x05, 0xb6, 0x17, 0xe1, 0xc0, 0x1d, 0xd0, 0xd0, 0xae, 0x45, 0xa0, 0x75, 0x75, 0xd6,
-	0x0d, 0x9f, 0xad, 0x77, 0xf5, 0x46, 0xeb, 0x3d, 0x00, 0x4d, 0x15, 0x8d, 0x4f, 0x04, 0xb1, 0x57,
-	0x54, 0x56, 0xef, 0xbd, 0x23, 0x2b, 0xd9, 0xed, 0xc1, 0xe9, 0x01, 0x11, 0xa4, 0x8c, 0x5a, 0x78,
-	0x23, 0xdc, 0x90, 0xdf, 0xf2, 0x1e, 0xfd, 0x54, 0x05, 0x60, 0xf6, 0x1c, 0x3e, 0x06, 0x75, 0x71,
-	0x3a, 0x94, 0xbb, 0x65, 0x46, 0x02, 0x66, 0xa9, 0x73, 0x47, 0xfb, 0x9b, 0x0b, 0x84, 0x6b, 0xe2,
-	0x74, 0x70, 0x16, 0x51, 0xf8, 0x1c, 0xd4, 0x48, 0xc8, 0x92, 0xa9, 0x30, 0x6a, 0xf3, 0xd1, 0xd2,
-	0x8b, 0x9b, 0x0f, 0xac, 0x42, 0x41, 0xd8, 0xc0, 0xc1, 0x17, 0xa0, 0x9e, 0x4b, 0x82, 0x56, 0xa2,
-	0x8f, 0x97, 0x46, 0x36, 0x31, 0x17, 0x72, 0x90, 0x03, 0xc2, 0xcf, 0x74, 0x86, 0x41, 0xa8, 0xe5,
-	0xe6, 0x7a, 0x21, 0xd8, 0x35, 0x42, 0x50, 0xaa, 0x40, 0x10, 0x52, 0xad, 0x02, 0xb2, 0x0a, 0xf2,
-	0xf0, 0xbd, 0x05, 0xb6, 0x74, 0xdf, 0x8f, 0x18, 0x3b, 0x49, 0xa2, 0x01, 0x19, 0x4d, 0x68, 0x69,
-	0x3d, 0xad, 0xeb, 0xd7, 0x13, 0x7e, 0x05, 0xea, 0xba, 0x7d, 0xfc, 0x5f, 0x66, 0x75, 0xc0, 0x4e,
-	0xe8, 0xf4, 0xea, 0xac, 0x96, 0xfa, 0x63, 0x50, 0x10, 0xce, 0xf1, 0xa0, 0x0d, 0xea, 0x9e, 0x2c,
-	0x28, 0x8d, 0x55, 0x1d, 0x57, 0x71, 0x7e, 0x44, 0xbf, 0x5b, 0x60, 0x7b, 0x11, 0xde, 0x75, 0x33,
-	0xfb, 0x14, 0x80, 0x62, 0x30, 0x75, 0xac, 0x73, 0x43, 0x4b, 0x7c, 0x3f, 0xa6, 0x9c, 0x53, 0x8e,
-	0x70, 0x33, 0x1f, 0x5a, 0x0e, 0x05, 0xd8, 0x34, 0xc2, 0x27, 0x05, 0x54, 0x4f, 0x8b, 0x96, 0xf9,
-	0xc3, 0xa5, 0x7b, 0x7a, 0x7f, 0xee, 0x3f, 0x59, 0x81, 0x87, 0xf0, 0x46, 0x61, 0xea, 0x69, 0xcb,
-	0x29, 0xd8, 0xd1, 0x69, 0x7d, 0x1e, 0x33, 0x3f, 0xf1, 0xc4, 0x9c, 0xe8, 0xdd, 0xbc, 0x35, 0x7b,
-	0xa0, 0x99, 0x17, 0x63, 0x51, 0xc2, 0xf9, 0x15, 0xc2, 0x0d, 0x53, 0x23, 0x8e, 0x7e, 0xb6, 0xc0,
-	0x03, 0xad, 0xd0, 0x07, 0xf3, 0x31, 0xc9, 0xf5, 0x7a, 0x46, 0x22, 0xe8, 0x5e, 0x2d, 0x70, 0xff,
-	0x6e, 0x96, 0x3a, 0x1b, 0xf3, 0x90, 0x68, 0x56, 0xf5, 0x45, 0x05, 0xac, 0xfe, 0xe7, 0x05, 0xfc,
-	0xdb, 0x02, 0xed, 0x5c, 0x78, 0x05, 0x99, 0x60, 0xfa, 0x8a, 0xc4, 0x3e, 0xef, 0x9f, 0xa9, 0x42,
-	0xf6, 0xa2, 0xe8, 0x79, 0xc0, 0x97, 0x99, 0xf1, 0x72, 0xd2, 0xd5, 0x1b, 0x24, 0x7d, 0x02, 0x6e,
-	0x0b, 0xc9, 0x3b, 0x8c, 0x35, 0xb1, 0x91, 0x81, 0x4f, 0x97, 0xce, 0x78, 0xdb, 0x2c, 0x6e, 0x19,
-	0x0c, 0xe1, 0x5b, 0xa2, 0x9c, 0x14, 0x3e, 0xff, 0xab, 0x55, 0xf9, 0xee, 0xa2, 0x55, 0x39, 0xbf,
-	0x68, 0x59, 0x6f, 0x2e, 0x5a, 0xd6, 0x9f, 0x17, 0x2d, 0xeb, 0xf5, 0x65, 0xab, 0xf2, 0xe6, 0xb2,
-	0x55, 0xf9, 0xf5, 0xb2, 0x55, 0x79, 0xf1, 0xc1, 0x1c, 0x9f, 0xdc, 0xcd, 0x27, 0xec, 0xf8, 0x38,
-	0xf0, 0x02, 0x32, 0x31, 0xe7, 0x6e, 0xf1, 0x33, 0x51, 0xb1, 0x8f, 0x6a, 0x4a, 0x4c, 0x9e, 0xfe,
-	0x13, 0x00, 0x00, 0xff, 0xff, 0xd5, 0x44, 0xcb, 0xd8, 0x44, 0x0a, 0x00, 0x00,
+	// 944 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x56, 0x3f, 0x6f, 0xdb, 0x46,
+	0x14, 0x17, 0xad, 0x3f, 0x96, 0xce, 0x4e, 0xe2, 0x9c, 0x6d, 0x98, 0x56, 0x5b, 0x51, 0xbd, 0x21,
+	0x10, 0x50, 0x84, 0xaa, 0x9d, 0x2d, 0x4b, 0x2b, 0xc1, 0x2d, 0x2a, 0xc0, 0x41, 0x8b, 0x83, 0x8a,
+	0x14, 0x59, 0x88, 0x13, 0x79, 0x96, 0x09, 0x4b, 0x3a, 0x82, 0x77, 0x6c, 0xec, 0xa1, 0x73, 0xd7,
+	0x7c, 0x8c, 0x7e, 0x8b, 0x2e, 0x1d, 0x3c, 0x66, 0x2c, 0x3a, 0xb0, 0xad, 0x3d, 0x65, 0xe5, 0x07,
+	0x28, 0x8a, 0xfb, 0x43, 0x8a, 0x0a, 0x0c, 0x38, 0x1a, 0x32, 0xe9, 0xde, 0x7f, 0xbe, 0xdf, 0xfb,
+	0xbd, 0x07, 0x01, 0xe4, 0xb3, 0x79, 0x40, 0x2f, 0xfb, 0x33, 0xe6, 0x5f, 0xd0, 0xb8, 0xff, 0xf3,
+	0xd1, 0x84, 0x0a, 0x72, 0x64, 0x44, 0x37, 0x8a, 0x99, 0x60, 0x70, 0x5f, 0xfb, 0xb8, 0x46, 0x69,
+	0x7c, 0xda, 0x1d, 0x9f, 0xf1, 0x39, 0xe3, 0xfd, 0x09, 0xe1, 0xb4, 0x08, 0xf4, 0x59, 0xb8, 0xd0,
+	0x61, 0xed, 0xbd, 0x29, 0x9b, 0x32, 0xf5, 0xec, 0xcb, 0x97, 0xd1, 0x3a, 0x53, 0xc6, 0xa6, 0x33,
+	0xda, 0x57, 0xd2, 0x24, 0x39, 0xeb, 0x8b, 0x70, 0x4e, 0xb9, 0x20, 0xf3, 0x48, 0x3b, 0xa0, 0x77,
+	0x75, 0xd0, 0x38, 0x55, 0x95, 0xe0, 0x11, 0x68, 0xe9, 0x9a, 0x5e, 0x18, 0xd8, 0x56, 0xd7, 0xea,
+	0xd5, 0x86, 0x7b, 0x59, 0xea, 0xec, 0x5c, 0x91, 0xf9, 0xec, 0x39, 0x2a, 0x4c, 0x08, 0x37, 0xf5,
+	0x7b, 0x14, 0xc0, 0x63, 0xd0, 0x0a, 0x68, 0xc4, 0x78, 0x28, 0x58, 0x6c, 0x6f, 0x74, 0xad, 0x5e,
+	0xab, 0x1c, 0x52, 0x98, 0x10, 0x5e, 0xba, 0xc1, 0x5f, 0xc0, 0x6e, 0x4c, 0x45, 0x12, 0x2f, 0xb8,
+	0x47, 0x7c, 0x3f, 0x99, 0x27, 0x33, 0x22, 0x68, 0x60, 0x57, 0x55, 0xf4, 0xe9, 0x75, 0xea, 0x54,
+	0xfe, 0x4a, 0x9d, 0x27, 0xd3, 0x50, 0x9c, 0x27, 0x13, 0xd7, 0x67, 0xf3, 0xbe, 0x69, 0x5c, 0xff,
+	0x3c, 0xe5, 0xc1, 0x45, 0x5f, 0x5c, 0x45, 0x94, 0xbb, 0xa3, 0x85, 0xc8, 0x52, 0xa7, 0xad, 0x6b,
+	0xdd, 0x91, 0x12, 0x61, 0x68, 0xb4, 0x83, 0xa5, 0x12, 0x52, 0xb0, 0xb5, 0xa0, 0xc2, 0x9b, 0x90,
+	0x19, 0x59, 0xf8, 0xd4, 0xae, 0xa9, 0xb2, 0x27, 0x6b, 0x97, 0x85, 0xba, 0x6c, 0x29, 0x15, 0xc2,
+	0x60, 0x41, 0xc5, 0x50, 0x0b, 0xf0, 0x27, 0x00, 0xfc, 0x98, 0xca, 0x8a, 0x1e, 0x11, 0x76, 0xbd,
+	0x6b, 0xf5, 0xb6, 0x8e, 0xdb, 0xae, 0x9e, 0x86, 0x9b, 0x4f, 0xc3, 0x1d, 0xe7, 0xd3, 0x18, 0x7e,
+	0x26, 0xbf, 0x20, 0x4b, 0x9d, 0xc7, 0x3a, 0xef, 0x32, 0x16, 0xbd, 0xf9, 0xdb, 0xb1, 0x70, 0xcb,
+	0x28, 0x06, 0x02, 0x7e, 0x03, 0x76, 0x08, 0xe7, 0x54, 0x78, 0x06, 0x52, 0x39, 0xad, 0x86, 0x9a,
+	0xd6, 0x27, 0x59, 0xea, 0x1c, 0xe8, 0xf8, 0xf7, 0x3d, 0x10, 0x7e, 0xa8, 0x54, 0x27, 0x5a, 0x33,
+	0x0a, 0xe4, 0xb4, 0x43, 0xee, 0xa9, 0x49, 0x06, 0xf6, 0x66, 0xd7, 0xea, 0x35, 0xcb, 0xa3, 0x2b,
+	0x4c, 0x08, 0x37, 0x43, 0xae, 0x08, 0x12, 0xc0, 0x1e, 0x68, 0x90, 0x28, 0x92, 0xf5, 0x9a, 0xaa,
+	0xde, 0xe3, 0x2c, 0x75, 0x1e, 0x98, 0x7a, 0x4a, 0x8f, 0x70, 0x9d, 0x44, 0xd1, 0x28, 0x80, 0xcf,
+	0xc1, 0xf6, 0x44, 0xc6, 0x7b, 0xe7, 0x34, 0x9c, 0x9e, 0x0b, 0xbb, 0xd5, 0xb5, 0x7a, 0xd5, 0xe1,
+	0x41, 0x96, 0x3a, 0xbb, 0xda, 0xbf, 0x6c, 0x45, 0x78, 0x4b, 0x89, 0xdf, 0x29, 0x49, 0x22, 0xa7,
+	0xad, 0x92, 0xaa, 0x36, 0x58, 0x17, 0xb9, 0x65, 0xac, 0x41, 0x4e, 0x29, 0xa4, 0x3b, 0xfa, 0xcf,
+	0x02, 0x87, 0x3f, 0x72, 0x1a, 0x0f, 0xa2, 0x68, 0x20, 0xc1, 0xd0, 0xbc, 0x7f, 0x41, 0xa2, 0x28,
+	0x5c, 0x4c, 0xe1, 0x13, 0x50, 0x67, 0xaf, 0x17, 0x34, 0x56, 0xd4, 0x6f, 0x0d, 0x77, 0xb2, 0xd4,
+	0xd9, 0xd6, 0x29, 0x95, 0x1a, 0x61, 0x6d, 0x86, 0xfb, 0x05, 0x0a, 0x92, 0xf0, 0xb5, 0xbc, 0xe5,
+	0x43, 0xd0, 0xd4, 0xa0, 0x87, 0x9a, 0xcb, 0x35, 0xbc, 0xa9, 0x64, 0x0d, 0xf5, 0x72, 0xb1, 0x6a,
+	0x1f, 0xb4, 0x58, 0x63, 0xd0, 0x4a, 0x38, 0x8d, 0xbd, 0x80, 0x08, 0x62, 0xd7, 0xbb, 0xd5, 0xde,
+	0xd6, 0xf1, 0xe7, 0xee, 0x9d, 0x87, 0xc1, 0x95, 0x1d, 0x8d, 0x2f, 0x4f, 0x88, 0x20, 0xe5, 0xac,
+	0x45, 0x34, 0xc2, 0x4d, 0xf9, 0x96, 0x76, 0xf4, 0xfb, 0x06, 0x00, 0x4b, 0x77, 0xf8, 0x05, 0xd8,
+	0x14, 0x97, 0x9e, 0x64, 0xb5, 0xe9, 0x19, 0x66, 0xa9, 0xf3, 0x50, 0xc7, 0x1b, 0x03, 0xc2, 0x0d,
+	0x71, 0x39, 0xbe, 0x8a, 0x28, 0x7c, 0x09, 0x1a, 0x64, 0xce, 0x92, 0x85, 0x30, 0x7b, 0xfe, 0xd5,
+	0xda, 0x2b, 0x93, 0x53, 0x45, 0x65, 0x41, 0xd8, 0xa4, 0x83, 0xaf, 0xc0, 0x66, 0xbe, 0x8c, 0xfa,
+	0x06, 0x7c, 0xbd, 0x76, 0x66, 0xf3, 0xcd, 0xc5, 0x22, 0xe6, 0x09, 0xe1, 0xf7, 0xba, 0x43, 0x49,
+	0xa4, 0xda, 0xbd, 0x44, 0x6a, 0x1b, 0x22, 0x95, 0x10, 0x28, 0x58, 0x24, 0x51, 0x90, 0xc2, 0xaf,
+	0x1b, 0x60, 0x5f, 0xd3, 0xe6, 0x94, 0xb1, 0x8b, 0x24, 0x1a, 0x93, 0xc9, 0x8c, 0x2a, 0x30, 0x97,
+	0xcb, 0x61, 0xdd, 0xb3, 0x1c, 0x65, 0xa6, 0x6c, 0xac, 0x32, 0xe5, 0x19, 0x00, 0x05, 0x1d, 0xb8,
+	0x5d, 0xed, 0x56, 0x57, 0xa9, 0x42, 0x82, 0x20, 0xa6, 0x9c, 0x53, 0x8e, 0x70, 0x2b, 0xa7, 0x0a,
+	0x87, 0x02, 0xec, 0x98, 0x45, 0x97, 0x07, 0x43, 0xcf, 0x48, 0x9f, 0xb5, 0xd1, 0xda, 0x48, 0x1e,
+	0xac, 0x5c, 0xee, 0x22, 0x1f, 0xc2, 0x8f, 0x0a, 0xd5, 0x40, 0x6b, 0x12, 0x70, 0xa8, 0x81, 0xf8,
+	0x21, 0x66, 0x41, 0xe2, 0x0b, 0xb5, 0x51, 0xf9, 0x2e, 0x7d, 0x38, 0x18, 0xee, 0xfb, 0x60, 0x0c,
+	0x77, 0xb3, 0xd4, 0x79, 0x54, 0xbe, 0x62, 0xd2, 0x3b, 0x47, 0x08, 0xfd, 0x61, 0x81, 0x4f, 0xf5,
+	0x39, 0x3a, 0x59, 0xfd, 0x20, 0x39, 0x84, 0x17, 0x24, 0x5a, 0x49, 0x68, 0xdd, 0x9f, 0xf0, 0x4e,
+	0xf4, 0x36, 0x3e, 0x3a, 0x7a, 0xef, 0x2c, 0xd0, 0xd5, 0xf0, 0x8d, 0x99, 0x20, 0x33, 0x4c, 0x5f,
+	0x93, 0x38, 0xe0, 0xc3, 0x2b, 0x85, 0xe2, 0x20, 0x8a, 0x5e, 0x86, 0x9c, 0x7e, 0x3c, 0x14, 0xe1,
+	0x05, 0x78, 0x20, 0x64, 0x5d, 0x2f, 0xd6, 0x85, 0xcd, 0xe6, 0x7d, 0xbb, 0x76, 0xc7, 0x7b, 0x66,
+	0x57, 0xca, 0xc9, 0x10, 0xde, 0x16, 0xe5, 0xa6, 0xf0, 0xf5, 0xbf, 0x9d, 0xca, 0x6f, 0x37, 0x9d,
+	0xca, 0xf5, 0x4d, 0xc7, 0x7a, 0x7b, 0xd3, 0xb1, 0xfe, 0xb9, 0xe9, 0x58, 0x6f, 0x6e, 0x3b, 0x95,
+	0xb7, 0xb7, 0x9d, 0xca, 0x9f, 0xb7, 0x9d, 0xca, 0xab, 0x2f, 0x57, 0xea, 0xc9, 0x23, 0xf7, 0x94,
+	0x9d, 0x9d, 0x85, 0x7e, 0x48, 0x66, 0x46, 0xee, 0x17, 0xff, 0x99, 0x54, 0xf5, 0x49, 0x43, 0xed,
+	0xef, 0xb3, 0xff, 0x03, 0x00, 0x00, 0xff, 0xff, 0xaf, 0x82, 0xe2, 0x45, 0x51, 0x09, 0x00, 0x00,
 }
 
 func (m *Locker) Marshal() (dAtA []byte, err error) {
@@ -531,6 +410,19 @@ func (m *Locker) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BlockTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BlockTime):])
+	if err1 != nil {
+		return 0, err1
+	}
+	i -= n1
+	i = encodeVarintLocker(dAtA, i, uint64(n1))
+	i--
+	dAtA[i] = 0x52
+	if m.BlockHeight != 0 {
+		i = encodeVarintLocker(dAtA, i, uint64(m.BlockHeight))
+		i--
+		dAtA[i] = 0x48
+	}
 	if m.AppId != 0 {
 		i = encodeVarintLocker(dAtA, i, uint64(m.AppId))
 		i--
@@ -551,12 +443,12 @@ func (m *Locker) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x30
 	}
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.CreatedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.CreatedAt):])
-	if err1 != nil {
-		return 0, err1
+	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.CreatedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.CreatedAt):])
+	if err2 != nil {
+		return 0, err2
 	}
-	i -= n1
-	i = encodeVarintLocker(dAtA, i, uint64(n1))
+	i -= n2
+	i = encodeVarintLocker(dAtA, i, uint64(n2))
 	i--
 	dAtA[i] = 0x2a
 	{
@@ -594,7 +486,7 @@ func (m *Locker) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *UserLockerAssetMapping) Marshal() (dAtA []byte, err error) {
+func (m *UserAppAssetLockerMapping) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -604,98 +496,12 @@ func (m *UserLockerAssetMapping) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *UserLockerAssetMapping) MarshalTo(dAtA []byte) (int, error) {
+func (m *UserAppAssetLockerMapping) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *UserLockerAssetMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.LockerAppMapping) > 0 {
-		for iNdEx := len(m.LockerAppMapping) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.LockerAppMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintLocker(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if len(m.Owner) > 0 {
-		i -= len(m.Owner)
-		copy(dAtA[i:], m.Owner)
-		i = encodeVarintLocker(dAtA, i, uint64(len(m.Owner)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *LockerToAppMapping) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *LockerToAppMapping) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *LockerToAppMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.UserAssetLocker) > 0 {
-		for iNdEx := len(m.UserAssetLocker) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.UserAssetLocker[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintLocker(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if m.AppId != 0 {
-		i = encodeVarintLocker(dAtA, i, uint64(m.AppId))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *AssetToLockerMapping) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AssetToLockerMapping) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AssetToLockerMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *UserAppAssetLockerMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -711,18 +517,30 @@ func (m *AssetToLockerMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintLocker(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x1a
+			dAtA[i] = 0x2a
 		}
 	}
 	if m.LockerId != 0 {
 		i = encodeVarintLocker(dAtA, i, uint64(m.LockerId))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x20
 	}
 	if m.AssetId != 0 {
 		i = encodeVarintLocker(dAtA, i, uint64(m.AssetId))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0x18
+	}
+	if m.AppId != 0 {
+		i = encodeVarintLocker(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintLocker(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -747,12 +565,12 @@ func (m *UserTxData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.TxTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.TxTime):])
-	if err2 != nil {
-		return 0, err2
+	n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.TxTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.TxTime):])
+	if err3 != nil {
+		return 0, err3
 	}
-	i -= n2
-	i = encodeVarintLocker(dAtA, i, uint64(n2))
+	i -= n3
+	i = encodeVarintLocker(dAtA, i, uint64(n3))
 	i--
 	dAtA[i] = 0x22
 	{
@@ -785,7 +603,7 @@ func (m *UserTxData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *LockerLookupTable) Marshal() (dAtA []byte, err error) {
+func (m *LockerLookupTableData) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -795,59 +613,12 @@ func (m *LockerLookupTable) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *LockerLookupTable) MarshalTo(dAtA []byte) (int, error) {
+func (m *LockerLookupTableData) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *LockerLookupTable) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Counter != 0 {
-		i = encodeVarintLocker(dAtA, i, uint64(m.Counter))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.Lockers) > 0 {
-		for iNdEx := len(m.Lockers) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Lockers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintLocker(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if m.AppId != 0 {
-		i = encodeVarintLocker(dAtA, i, uint64(m.AppId))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *TokenToLockerMapping) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *TokenToLockerMapping) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *TokenToLockerMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *LockerLookupTableData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -863,25 +634,30 @@ func (m *TokenToLockerMapping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x22
 	if len(m.LockerIds) > 0 {
-		dAtA4 := make([]byte, len(m.LockerIds)*10)
-		var j3 int
+		dAtA5 := make([]byte, len(m.LockerIds)*10)
+		var j4 int
 		for _, num := range m.LockerIds {
 			for num >= 1<<7 {
-				dAtA4[j3] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA5[j4] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j3++
+				j4++
 			}
-			dAtA4[j3] = uint8(num)
-			j3++
+			dAtA5[j4] = uint8(num)
+			j4++
 		}
-		i -= j3
-		copy(dAtA[i:], dAtA4[:j3])
-		i = encodeVarintLocker(dAtA, i, uint64(j3))
+		i -= j4
+		copy(dAtA[i:], dAtA5[:j4])
+		i = encodeVarintLocker(dAtA, i, uint64(j4))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x1a
 	}
 	if m.AssetId != 0 {
 		i = encodeVarintLocker(dAtA, i, uint64(m.AssetId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.AppId != 0 {
+		i = encodeVarintLocker(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -908,23 +684,10 @@ func (m *LockerProductAssetMapping) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	_ = i
 	var l int
 	_ = l
-	if len(m.AssetIds) > 0 {
-		dAtA6 := make([]byte, len(m.AssetIds)*10)
-		var j5 int
-		for _, num := range m.AssetIds {
-			for num >= 1<<7 {
-				dAtA6[j5] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j5++
-			}
-			dAtA6[j5] = uint8(num)
-			j5++
-		}
-		i -= j5
-		copy(dAtA[i:], dAtA6[:j5])
-		i = encodeVarintLocker(dAtA, i, uint64(j5))
+	if m.AssetId != 0 {
+		i = encodeVarintLocker(dAtA, i, uint64(m.AssetId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if m.AppId != 0 {
 		i = encodeVarintLocker(dAtA, i, uint64(m.AppId))
@@ -1054,10 +817,15 @@ func (m *Locker) Size() (n int) {
 	if m.AppId != 0 {
 		n += 1 + sovLocker(uint64(m.AppId))
 	}
+	if m.BlockHeight != 0 {
+		n += 1 + sovLocker(uint64(m.BlockHeight))
+	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BlockTime)
+	n += 1 + l + sovLocker(uint64(l))
 	return n
 }
 
-func (m *UserLockerAssetMapping) Size() (n int) {
+func (m *UserAppAssetLockerMapping) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1067,39 +835,9 @@ func (m *UserLockerAssetMapping) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovLocker(uint64(l))
 	}
-	if len(m.LockerAppMapping) > 0 {
-		for _, e := range m.LockerAppMapping {
-			l = e.Size()
-			n += 1 + l + sovLocker(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *LockerToAppMapping) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	if m.AppId != 0 {
 		n += 1 + sovLocker(uint64(m.AppId))
 	}
-	if len(m.UserAssetLocker) > 0 {
-		for _, e := range m.UserAssetLocker {
-			l = e.Size()
-			n += 1 + l + sovLocker(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *AssetToLockerMapping) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	if m.AssetId != 0 {
 		n += 1 + sovLocker(uint64(m.AssetId))
 	}
@@ -1134,7 +872,7 @@ func (m *UserTxData) Size() (n int) {
 	return n
 }
 
-func (m *LockerLookupTable) Size() (n int) {
+func (m *LockerLookupTableData) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1143,24 +881,6 @@ func (m *LockerLookupTable) Size() (n int) {
 	if m.AppId != 0 {
 		n += 1 + sovLocker(uint64(m.AppId))
 	}
-	if len(m.Lockers) > 0 {
-		for _, e := range m.Lockers {
-			l = e.Size()
-			n += 1 + l + sovLocker(uint64(l))
-		}
-	}
-	if m.Counter != 0 {
-		n += 1 + sovLocker(uint64(m.Counter))
-	}
-	return n
-}
-
-func (m *TokenToLockerMapping) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	if m.AssetId != 0 {
 		n += 1 + sovLocker(uint64(m.AssetId))
 	}
@@ -1185,12 +905,8 @@ func (m *LockerProductAssetMapping) Size() (n int) {
 	if m.AppId != 0 {
 		n += 1 + sovLocker(uint64(m.AppId))
 	}
-	if len(m.AssetIds) > 0 {
-		l = 0
-		for _, e := range m.AssetIds {
-			l += sovLocker(uint64(e))
-		}
-		n += 1 + sovLocker(uint64(l)) + l
+	if m.AssetId != 0 {
+		n += 1 + sovLocker(uint64(m.AssetId))
 	}
 	return n
 }
@@ -1471,6 +1187,58 @@ func (m *Locker) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 9:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockHeight", wireType)
+			}
+			m.BlockHeight = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLocker
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BlockHeight |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockTime", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLocker
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthLocker
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthLocker
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.BlockTime, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipLocker(dAtA[iNdEx:])
@@ -1492,7 +1260,7 @@ func (m *Locker) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *UserLockerAssetMapping) Unmarshal(dAtA []byte) error {
+func (m *UserAppAssetLockerMapping) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1515,10 +1283,10 @@ func (m *UserLockerAssetMapping) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: UserLockerAssetMapping: wiretype end group for non-group")
+			return fmt.Errorf("proto: UserAppAssetLockerMapping: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: UserLockerAssetMapping: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: UserAppAssetLockerMapping: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1554,90 +1322,6 @@ func (m *UserLockerAssetMapping) Unmarshal(dAtA []byte) error {
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LockerAppMapping", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLocker
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthLocker
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthLocker
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.LockerAppMapping = append(m.LockerAppMapping, &LockerToAppMapping{})
-			if err := m.LockerAppMapping[len(m.LockerAppMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipLocker(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthLocker
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *LockerToAppMapping) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowLocker
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: LockerToAppMapping: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: LockerToAppMapping: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
@@ -1656,91 +1340,7 @@ func (m *LockerToAppMapping) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field UserAssetLocker", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLocker
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthLocker
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthLocker
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UserAssetLocker = append(m.UserAssetLocker, &AssetToLockerMapping{})
-			if err := m.UserAssetLocker[len(m.UserAssetLocker)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipLocker(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthLocker
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AssetToLockerMapping) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowLocker
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AssetToLockerMapping: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AssetToLockerMapping: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
@@ -1759,7 +1359,7 @@ func (m *AssetToLockerMapping) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 2:
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field LockerId", wireType)
 			}
@@ -1778,7 +1378,7 @@ func (m *AssetToLockerMapping) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 3:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UserData", wireType)
 			}
@@ -2016,7 +1616,7 @@ func (m *UserTxData) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *LockerLookupTable) Unmarshal(dAtA []byte) error {
+func (m *LockerLookupTableData) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2039,10 +1639,10 @@ func (m *LockerLookupTable) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: LockerLookupTable: wiretype end group for non-group")
+			return fmt.Errorf("proto: LockerLookupTableData: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: LockerLookupTable: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: LockerLookupTableData: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2065,109 +1665,6 @@ func (m *LockerLookupTable) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Lockers", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLocker
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthLocker
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthLocker
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Lockers = append(m.Lockers, &TokenToLockerMapping{})
-			if err := m.Lockers[len(m.Lockers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Counter", wireType)
-			}
-			m.Counter = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLocker
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Counter |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipLocker(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthLocker
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *TokenToLockerMapping) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowLocker
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: TokenToLockerMapping: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: TokenToLockerMapping: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
 			}
@@ -2186,7 +1683,7 @@ func (m *TokenToLockerMapping) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 2:
+		case 3:
 			if wireType == 0 {
 				var v uint64
 				for shift := uint(0); ; shift += 7 {
@@ -2366,80 +1863,23 @@ func (m *LockerProductAssetMapping) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowLocker
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
+			}
+			m.AssetId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLocker
 				}
-				m.AssetIds = append(m.AssetIds, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowLocker
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthLocker
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthLocker
-				}
-				if postIndex > l {
+				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
 				}
-				elementCount = count
-				if elementCount != 0 && len(m.AssetIds) == 0 {
-					m.AssetIds = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowLocker
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.AssetIds = append(m.AssetIds, v)
-				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field AssetIds", wireType)
 			}
 		default:
 			iNdEx = preIndex

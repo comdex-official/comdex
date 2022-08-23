@@ -6,7 +6,7 @@ import (
 
 const (
 	// ModuleName defines the module name.
-	ModuleName = "collector"
+	ModuleName = "collectorV1"
 
 	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
@@ -29,19 +29,27 @@ var (
 	NetFeeCollectedDataPrefix          = []byte{0x08}
 )
 
-func CollectorLookupTableMappingKey(appID uint64) []byte {
+func CollectorLookupTableMappingKey(appID, assetID uint64) []byte {
+	return append(append(AddCollectorLookupKey, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
+}
+
+func CollectorLookupTableMappingByAppKey(appID uint64) []byte {
 	return append(AddCollectorLookupKey, sdk.Uint64ToBigEndian(appID)...)
 }
 
-func AppidToAssetCollectorMappingKey(appID uint64) []byte {
-	return append(AppIDToAssetCollectorMappingPrefix, sdk.Uint64ToBigEndian(appID)...)
+func AppidToAssetCollectorMappingKey(appID, assetID uint64) []byte {
+	return append(append(AppIDToAssetCollectorMappingPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
 }
 
-func AppIDToAuctionMappingKey(appID uint64) []byte {
-	return append(AppIDToAuctionMappingPrefix, sdk.Uint64ToBigEndian(appID)...)
+func AppIDToAuctionMappingKey(appID, assetID uint64) []byte {
+	return append(append(AppIDToAuctionMappingPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(appID)...)
 }
 
-func NetFeeCollectedDataKey(appID uint64) []byte {
+func NetFeeCollectedDataKey(appID, assetID uint64) []byte {
+	return append(append(NetFeeCollectedDataPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
+}
+
+func AppNetFeeCollectedDataKey(appID uint64) []byte {
 	return append(NetFeeCollectedDataPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 

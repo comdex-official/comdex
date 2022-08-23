@@ -1,6 +1,6 @@
 package types
 
-func NewGenesisState(locker []Locker, lockerProductAssetMapping []LockerProductAssetMapping, lockerTotalRewardsByAssetAppWise []LockerTotalRewardsByAssetAppWise, lockerLookupTable []LockerLookupTable, userLockerAssetMapping []UserLockerAssetMapping, params Params) *GenesisState {
+func NewGenesisState(locker []Locker, lockerProductAssetMapping []LockerProductAssetMapping, lockerTotalRewardsByAssetAppWise []LockerTotalRewardsByAssetAppWise, lockerLookupTable []LockerLookupTableData, userLockerAssetMapping []UserAppAssetLockerMapping, params Params) *GenesisState {
 	return &GenesisState{
 		Lockers:                          locker,
 		LockerProductAssetMapping:        lockerProductAssetMapping,
@@ -16,8 +16,8 @@ func DefaultGenesisState() *GenesisState {
 		[]Locker{},
 		[]LockerProductAssetMapping{},
 		[]LockerTotalRewardsByAssetAppWise{},
-		[]LockerLookupTable{},
-		[]UserLockerAssetMapping{},
+		[]LockerLookupTableData{},
+		[]UserAppAssetLockerMapping{},
 		DefaultParams(),
 	)
 }

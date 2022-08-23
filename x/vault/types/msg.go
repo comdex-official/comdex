@@ -355,6 +355,63 @@ func (m *MsgCloseRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
+func NewMsgDepositAndDrawRequest(
+	// nolint
+	from sdk.AccAddress,
+	appID uint64, extendedPairVaultID uint64, userVaultid uint64, amount sdk.Int) *MsgDepositAndDrawRequest {
+	return &MsgDepositAndDrawRequest{
+		From:                from.String(),
+		AppId:               appID,
+		ExtendedPairVaultId: extendedPairVaultID,
+		UserVaultId:         userVaultid,
+		Amount:              amount,
+	}
+}
+
+func (m *MsgDepositAndDrawRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgDepositAndDrawRequest) Type() string {
+	return TypeMsgDepositRequest
+}
+
+func (m *MsgDepositAndDrawRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+	if m.UserVaultId == 0 {
+		return errors.Wrap(ErrorInvalidID, "id cannot be null")
+	}
+	if m.Amount.IsNil() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be nil")
+	}
+	if m.Amount.IsNegative() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be negative")
+	}
+	if m.Amount.IsZero() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be zero")
+	}
+
+	return nil
+}
+
+func (m *MsgDepositAndDrawRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgDepositAndDrawRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
 func NewMsgCreateStableMintRequest(
 	// nolint
 	from sdk.AccAddress,

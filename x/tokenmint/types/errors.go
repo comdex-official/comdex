@@ -22,4 +22,6 @@ var (
 	SendCoinsFromModuleToModuleInTokenmintIsZero  = errors.Register(ModuleName, 209, "Coin value in module to module transfer in tokenmint is zero")
 	SendCoinsFromModuleToAccountInTokenmintIsZero = errors.Register(ModuleName, 210, "Coin value in module to account transfer in tokenmint is zero")
 	SendCoinsFromAccountToModuleInTokenmintIsZero = errors.Register(ModuleName, 211, "Coin value in account to module transfer in tokenmint is zero")
+	ErrorInvalidAppID                             = errors.Register(ModuleName, 212, "app id can not be zero")
+	ErrorInvalidAssetID                           = errors.Register(ModuleName, 213, "asset id can not be zero")
 )

@@ -19,6 +19,8 @@ type (
 		memKey     sdk.StoreKey
 		asset      expected.AssetKeeper
 		auction    expected.AuctionKeeper
+		locker     expected.LockerKeeper
+		rewards    expected.RewardsKeeper
 		paramStore paramtypes.Subspace
 		bank       expected.BankKeeper
 	}
@@ -30,6 +32,8 @@ func NewKeeper(
 	memKey sdk.StoreKey,
 	asset expected.AssetKeeper,
 	auction expected.AuctionKeeper,
+	locker expected.LockerKeeper,
+	rewards expected.RewardsKeeper,
 	ps paramtypes.Subspace,
 	bank expected.BankKeeper,
 
@@ -46,6 +50,8 @@ func NewKeeper(
 		memKey:     memKey,
 		asset:      asset,
 		auction:    auction,
+		locker:     locker,
+		rewards:    rewards,
 		paramStore: ps,
 		bank:       bank,
 	}

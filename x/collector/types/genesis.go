@@ -1,6 +1,6 @@
 package types
 
-func NewGenesisState(netFeeCollectedData []NetFeeCollectedData, appIDToAssetCollectorMapping []AppIdToAssetCollectorMapping, collectorLookup []CollectorLookup, collectorAuctionLookupTable []CollectorAuctionLookupTable, appToDenomsMapping []AppToDenomsMapping, params Params) *GenesisState {
+func NewGenesisState(netFeeCollectedData []AppAssetIdToFeeCollectedData, appIDToAssetCollectorMapping []AppToAssetIdCollectorMapping, collectorLookup []CollectorLookupTableData, collectorAuctionLookupTable []AppAssetIdToAuctionLookupTable, appToDenomsMapping []AppToDenomsMapping, params Params) *GenesisState {
 	return &GenesisState{
 		NetFeeCollectedData:          netFeeCollectedData,
 		AppIdToAssetCollectorMapping: appIDToAssetCollectorMapping,
@@ -13,10 +13,10 @@ func NewGenesisState(netFeeCollectedData []NetFeeCollectedData, appIDToAssetColl
 
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
-		[]NetFeeCollectedData{},
-		[]AppIdToAssetCollectorMapping{},
-		[]CollectorLookup{},
-		[]CollectorAuctionLookupTable{},
+		[]AppAssetIdToFeeCollectedData{},
+		[]AppToAssetIdCollectorMapping{},
+		[]CollectorLookupTableData{},
+		[]AppAssetIdToAuctionLookupTable{},
 		[]AppToDenomsMapping{},
 		DefaultParams(),
 	)

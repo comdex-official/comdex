@@ -10,11 +10,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
 	for _, item := range state.NetFeeCollectedData {
-		for _, initem := range item.AssetIdToFeeCollected {
-			err := k.SetNetFeeCollectedData(ctx, item.AppId, initem.AssetId, initem.NetFeesCollected)
-			if err != nil {
-				return
-			}
+
+		err := k.SetNetFeeCollectedData(ctx, item.AppId, item.AssetId, item.NetFeesCollected)
+		if err != nil {
+			return
 		}
 	}
 
@@ -23,7 +22,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	}
 
 	for _, item := range state.CollectorLookup {
-		err := k.SetCollectorLookupTable(ctx, item.AssetRateInfo...)
+		err := k.SetCollectorLookupTable(ctx, item)
 		if err != nil {
 			return
 		}

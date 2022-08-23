@@ -1,6 +1,6 @@
 package types
 
-func NewGenesisState(vaults []Vault, stableMintVault []StableMintVault, appExtendedPairVaultMapping []AppExtendedPairVaultMapping, userVaultAssetMapping []UserVaultAssetMapping) *GenesisState {
+func NewGenesisState(vaults []Vault, stableMintVault []StableMintVault, appExtendedPairVaultMapping []AppExtendedPairVaultMappingData, userVaultAssetMapping []OwnerAppExtendedPairVaultMappingData) *GenesisState {
 	return &GenesisState{
 		Vaults:                      vaults,
 		StableMintVault:             stableMintVault,
@@ -13,8 +13,8 @@ func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
 		[]Vault{},
 		[]StableMintVault{},
-		[]AppExtendedPairVaultMapping{},
-		[]UserVaultAssetMapping{},
+		[]AppExtendedPairVaultMappingData{},
+		[]OwnerAppExtendedPairVaultMappingData{},
 	)
 }
 

@@ -20,6 +20,10 @@ type ComdexMessages struct {
 	MsgAddAuctionParams                  *MsgAddAuctionParams                  `json:"msg_add_auction_params,omitempty"`
 	MsgBurnGovTokensForApp               *MsgBurnGovTokensForApp               `json:"msg_burn_gov_tokens_for_app,omitempty"`
 	MsgAddESMTriggerParams               *MsgAddESMTriggerParams               `json:"msg_add_e_s_m_trigger_params,omitempty"`
+	MsgEmissionRewards                   *MsgEmissionRewards                   `json:"msg_emission_rewards,omitempty"`
+	MsgFoundationEmission                *MsgFoundationEmission                `json:"msg_foundation_emission,omitempty"`
+	MsgRebaseMint                        *MsgRebaseMint                        `json:"msg_rebase_mint,omitempty"`
+	MsgGetSurplusFund                    *MsgGetSurplusFund                    `json:"msg_get_surplus_fund,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
@@ -32,8 +36,8 @@ type MsgWhitelistAppIDVaultInterest struct {
 }
 
 type MsgWhitelistAppIDLockerRewards struct {
-	AppID    uint64   `json:"app_id"`
-	AssetIDs []uint64 `json:"asset_ids"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type MsgAddExtendedPairsVault struct {
@@ -67,13 +71,13 @@ type MsgSetCollectorLookupTable struct {
 }
 
 type MsgSetAuctionMappingForApp struct {
-	AppID                uint64   `json:"app_id"`
-	AssetIDs             []uint64 `json:"asset_id"`
-	IsSurplusAuctions    []bool   `json:"is_surplus_auction"`
-	IsDebtAuctions       []bool   `json:"is_debt_auction"`
-	IsDistributor        []bool   `json:"is_distributor"`
-	AssetOutOraclePrices []bool   `json:"asset_out_oracle_price"`
-	AssetOutPrices       []uint64 `json:"asset_out_price"`
+	AppID                uint64 `json:"app_id"`
+	AssetIDs             uint64 `json:"asset_id"`
+	IsSurplusAuctions    bool   `json:"is_surplus_auction"`
+	IsDebtAuctions       bool   `json:"is_debt_auction"`
+	IsDistributor        bool   `json:"is_distributor"`
+	AssetOutOraclePrices bool   `json:"asset_out_oracle_price"`
+	AssetOutPrices       uint64 `json:"asset_out_price"`
 }
 
 type MsgUpdatePairsVault struct {
@@ -142,4 +146,31 @@ type MsgAddESMTriggerParams struct {
 	CoolOffPeriod uint64   `json:"cool_off_period"`
 	AssetID       []uint64 `json:"asset_id"`
 	Rates         []uint64 `json:"rates"`
+}
+
+type MsgEmissionRewards struct {
+	AppID          uint64    `json:"app_id"`
+	Amount         sdk.Int   `json:"amount"`
+	EmissionAmount uint64    `json:"emission_amount"`
+	ExtendedPair   []uint64  `json:"extended_pair"`
+	VotingRatio    []sdk.Int `json:"voting_ratio"`
+}
+
+type MsgFoundationEmission struct {
+	AppID             uint64   `json:"app_id"`
+	Amount            sdk.Int  `json:"amount"`
+	FoundationAddress []string `json:"foundation_address"`
+}
+
+type MsgRebaseMint struct {
+	AppID        uint64         `json:"app_id"`
+	Amount       sdk.Int        `json:"amount"`
+	ContractAddr sdk.AccAddress `json:"contract_addr"`
+}
+
+type MsgGetSurplusFund struct {
+	AppID        uint64         `json:"app_id"`
+	AssetID      uint64         `json:"asset_id"`
+	ContractAddr sdk.AccAddress `json:"contract_addr"`
+	Amount       sdk.Coin       `json:"amount"`
 }

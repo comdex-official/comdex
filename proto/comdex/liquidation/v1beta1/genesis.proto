@@ -10,9 +10,8 @@ option go_package = "github.com/comdex-official/comdex/x/liquidation/types";
 message GenesisState {
   repeated LockedVault lockedVault = 1
       [ (gogoproto.moretags) = "yaml:\"lockedVault\"", (gogoproto.nullable) = false ];
-  repeated LockedVaultToAppMapping lockedVaultToAppMapping = 2
-      [ (gogoproto.moretags) = "yaml:\"lockedVaultToAppMapping\"", (gogoproto.nullable) = false ];
-  WhitelistedAppIds whitelistedAppIds = 3
-      [ (gogoproto.moretags) = "yaml:\"whitelistedAppIds\"", (gogoproto.nullable) = false ];
+  repeated uint64 whitelistedApps = 2
+      [ (gogoproto.moretags) = "yaml:\"whitelistedApps\""];
+ 
   Params params = 4 [(gogoproto.nullable) = false];
 }

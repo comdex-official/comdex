@@ -23,39 +23,6 @@ func (k Keeper) FundModule(ctx sdk.Context, moduleName string, denom string, amt
 	return nil
 }
 
-func (k Keeper) IncreaseLockedVaultAmountIn(ctx sdk.Context, lockedVaultID uint64, amount sdk.Int) error {
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
-	if !found {
-		return auctiontypes.ErrorVaultNotFound
-	}
-	lockedVault.AmountIn = lockedVault.AmountIn.Add(amount)
-	k.SetLockedVault(ctx, lockedVault)
-	return nil
-}
-
-func (k Keeper) DecreaseLockedVaultAmountIn(ctx sdk.Context, lockedVaultID uint64, amount sdk.Int) (isZero bool, err error) {
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
-	if !found {
-		return false, auctiontypes.ErrorVaultNotFound
-	}
-	lockedVault.AmountIn = lockedVault.AmountIn.Sub(amount)
-	k.SetLockedVault(ctx, lockedVault)
-	if lockedVault.AmountIn.IsZero() {
-		return true, nil
-	}
-	return false, nil
-}
-
-func (k Keeper) DecreaseLockedVaultAmountOut(ctx sdk.Context, lockedVaultID uint64, amount sdk.Int) error {
-	lockedVault, found := k.GetLockedVault(ctx, lockedVaultID)
-	if !found {
-		return auctiontypes.ErrorVaultNotFound
-	}
-	lockedVault.AmountIn = lockedVault.AmountOut.Sub(amount)
-	k.SetLockedVault(ctx, lockedVault)
-	return nil
-}
-
 func (k Keeper) AddAuctionParams(ctx sdk.Context, auctionParamsBinding *bindings.MsgAddAuctionParams) error {
 	newStep := sdk.NewIntFromUint64(auctionParamsBinding.Step)
 	auctionParams := auctiontypes.AuctionParams{
@@ -77,18 +44,15 @@ func (k Keeper) AddAuctionParams(ctx sdk.Context, auctionParamsBinding *bindings
 }
 
 func (k Keeper) makeFalseForFlags(ctx sdk.Context, appID, assetID uint64) error {
-	auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appID)
+	auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appID, assetID)
 	if !found {
 		return auctiontypes.ErrorInvalidAddress
 	}
-	for i, assetToAuction := range auctionLookupTable.AssetIdToAuctionLookup {
-		if assetToAuction.AssetId == assetID {
-			auctionLookupTable.AssetIdToAuctionLookup[i].IsAuctionActive = false
-			err := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
-			if err != nil {
-				return err
-			}
-		}
+
+	auctionLookupTable.IsAuctionActive = false
+	err := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
+	if err != nil {
+		return err
 	}
 	return nil
 }

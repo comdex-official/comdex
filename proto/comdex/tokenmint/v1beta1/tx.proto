@@ -20,6 +20,4 @@ message MsgMintNewTokensRequest {
       (gogoproto.moretags)   = "yaml:\"asset_id\""
     ];
 }
-  
-  
-  message MsgMintNewTokensResponse{}
+message MsgMintNewTokensResponse{}

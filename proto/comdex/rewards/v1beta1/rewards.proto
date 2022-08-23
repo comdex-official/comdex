@@ -12,7 +12,7 @@ message Internal_rewards{
     (gogoproto.customname) = "App_mapping_ID",
     (gogoproto.moretags) = "yaml:\"app_mapping_ID\""
   ];
-  repeated uint64 asset_ID = 2 [
+  uint64 asset_ID = 2 [
     (gogoproto.customname) = "Asset_ID",
     (gogoproto.moretags) = "yaml:\"asset_ID\""
   ];
@@ -137,12 +137,6 @@ message Vault_external_rewards{
   ];
   uint64 epoch_id = 12 [
     (gogoproto.moretags) = "yaml:\"epoch_id\""
-  ];
-}
-
-message WhitelistedAppIdsVault{
-  repeated uint64 whitelisted_app_mapping_ids_vaults = 1 [
-    (gogoproto.moretags) = "yaml:\"whitelisted_app_mapping_ids_vaults\""
   ];
 }
 

@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ModuleName     = "liquidation"
+	ModuleName     = "liquidationV1"
 	ParamsSubspace = ModuleName
 	QuerierRoute   = ModuleName
 	RouterKey      = ModuleName
@@ -18,21 +18,39 @@ var (
 	LockedVaultKeyPrefix             = []byte{0x11}
 	LockedVaultKeyHistory            = []byte{0x12}
 	AppIdsKeyPrefix                  = []byte{0x15}
-	AppLockedVaultMappingKeyPrefix   = []byte{0x13}
-	AppIDLockedVaultMappingKeyPrefix = []byte{0x14}
+	LiquidationOffsetHolderKeyPrefix = []byte{0x16}
 )
 
-func LockedVaultKey(id uint64) []byte {
-	return append(LockedVaultKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-func LockedVaultHistoryKey(id uint64) []byte {
-	return append(LockedVaultKeyHistory, sdk.Uint64ToBigEndian(id)...)
+// LengthPrefixString returns length-prefixed bytes representation
+// of a string.
+func LengthPrefixString(s string) []byte {
+	bz := []byte(s)
+	bzLen := len(bz)
+	if bzLen == 0 {
+		return bz
+	}
+	return append([]byte{byte(bzLen)}, bz...)
 }
 
-func AppLockedVaultMappingKey(appMappingID uint64) []byte {
-	return append(AppLockedVaultMappingKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
+func LockedVaultKey(appID, lockedVaultID uint64) []byte {
+	return append(append(LockedVaultKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(lockedVaultID)...)
 }
 
-func AppIDLockedVaultMappingKey(appMappingID uint64) []byte {
-	return append(AppIDLockedVaultMappingKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
+func LockedVaultKeyByApp(appID uint64) []byte {
+	return append(LockedVaultKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
+}
+
+func LockedVaultHistoryKey(appID, lockedVaultID uint64) []byte {
+	return append(append(LockedVaultKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(lockedVaultID)...)
+}
+
+// GetLiquidationOffsetHolderKey returns the index key to look offset value for liquidation.
+func GetLiquidationOffsetHolderKey(appID uint64, liquidatonForPrefix string) []byte {
+	return append(append(LiquidationOffsetHolderKeyPrefix, sdk.Uint64ToBigEndian(appID)...), LengthPrefixString(liquidatonForPrefix)...)
+}
+
+// whitelisting kv
+
+func WhitelistAppKeyByApp(appID uint64) []byte {
+	return append(AppIdsKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }

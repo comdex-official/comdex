@@ -1,19 +1,17 @@
 package types
 
-func NewGenesisState(lockedVault []LockedVault, lockedVaultToAppMapping []LockedVaultToAppMapping, whitelistedAppIds WhitelistedAppIds, params Params) *GenesisState {
+func NewGenesisState(lockedVault []LockedVault, whitelistedApps []uint64, params Params) *GenesisState {
 	return &GenesisState{
-		LockedVault:             lockedVault,
-		LockedVaultToAppMapping: lockedVaultToAppMapping,
-		WhitelistedAppIds:       whitelistedAppIds,
-		Params:                  params,
+		LockedVault:     lockedVault,
+		WhitelistedApps: whitelistedApps,
+		Params:          params,
 	}
 }
 
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
 		[]LockedVault{},
-		[]LockedVaultToAppMapping{},
-		WhitelistedAppIds{},
+		[]uint64{},
 		DefaultParams(),
 	)
 }
