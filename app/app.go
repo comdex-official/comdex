@@ -1207,9 +1207,9 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		//delete deprecated kv store instead of migrating as this is only for testnet.
 		//won't be used on main net migration and to make store name similar with V1 appended for all modules
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Deleted: []string{"vaultv1", "rewards", "collector", "locker", "lend", "auction", "liquidation"},
+			Deleted: []string{"vaultv1", "rewards", "collector", "locker", "lend", "auction", "liquidation", "esm"},
 			Added: []string{vaulttypes.ModuleName, rewardstypes.ModuleName, liquidationtypes.ModuleName,
-				collectortypes.ModuleName, lockertypes.ModuleName, lendtypes.ModuleName, auctiontypes.ModuleName},
+				collectortypes.ModuleName, lockertypes.ModuleName, lendtypes.ModuleName, auctiontypes.ModuleName, esmtypes.ModuleName},
 		}
 	}
 	return storeUpgrades
