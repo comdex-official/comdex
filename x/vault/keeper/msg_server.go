@@ -1235,3 +1235,35 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 
 	return &types.MsgWithdrawStableMintResponse{}, nil
 }
+
+
+//take app id 
+//check app id
+//take vault id
+// check vault id
+//calculate total debt
+//call function
+//exit function
+
+func (k msgServer) MsgVaultCalculateInterest(c context.Context, msg *types.MsgVaultCalcInterestRequest) (*types.MsgCalculateInterestResponse, error) {
+
+	ctx := sdk.UnwrapSDKContext(c)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+	userVault, found := k.GetVault(ctx, msg.UserVaultId)
+	if !found {
+		return nil, types.ErrorVaultDoesNotExist
+	}
+
+	totalDebt := userVault.AmountOut.Add(userVault.InterestAccumulated)
+	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, msg.ExtendedPairVaultId, msg.UserVaultId, totalDebt, userVault.BlockHeight, userVault.BlockTime.Unix())
+	if err1 != nil {
+		return nil, err1
+	}
+
+
+
+	return &types.MsgCalculateInterestResponse{}, nil
+}

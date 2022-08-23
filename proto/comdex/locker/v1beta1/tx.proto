@@ -14,6 +14,7 @@ service Msg {
   rpc MsgDepositAsset(MsgDepositAssetRequest) returns (MsgDepositAssetResponse);
   rpc MsgWithdrawAsset(MsgWithdrawAssetRequest) returns (MsgWithdrawAssetResponse);
   rpc MsgCloseLocker(MsgCloseLockerRequest) returns (MsgCloseLockerResponse);
+  rpc MsgLockerRewardCalc(MsgLockerRewardCalcRequest)returns (MsgLockerRewardCalcResponse);
 }
 
 message MsgCreateLockerRequest{
@@ -122,3 +123,14 @@ message MsgCloseLockerRequest {
 message MsgCloseLockerResponse {
 
 }
+message MsgLockerRewardCalcRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id = 2 [
+      (gogoproto.moretags)   = "yaml:\"app_id\""
+      ];
+  uint64 locker_id   = 4
+      [
+       (gogoproto.moretags) = "yaml:\"locker_id\"" ];
+}
+
+message  MsgLockerRewardCalcResponse{}

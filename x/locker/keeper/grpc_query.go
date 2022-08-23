@@ -221,7 +221,7 @@ func (q QueryServer) QueryOwnerLockerByAppToAssetIDbyOwner(c context.Context, re
 	lockerLookupData, found := q.GetUserLockerAssetMapping(ctx, request.Owner, request.AppId, request.AssetId)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
+		return &types.QueryOwnerLockerByAppToAssetIDbyOwnerResponse{}, nil
 	}
 
 	lockerData, _ := q.GetLocker(ctx, lockerLookupData.LockerId)

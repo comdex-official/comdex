@@ -97,7 +97,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	userLocker.BlockHeight = blockHeight
 	userLocker.BlockTime = blockTime
 	k.SetLocker(ctx, userLocker)
-	k.SetIDForLocker(ctx, id)
+	k.SetIDForLocker(ctx, id+1)
 
 	//Create a new instance
 	var userMappingData types.UserAppAssetLockerMapping

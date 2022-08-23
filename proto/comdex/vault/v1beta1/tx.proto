@@ -181,6 +181,16 @@ message MsgWithdrawStableMintRequest {
 
 message  MsgWithdrawStableMintResponse{}
 
+
+message MsgVaultInterestCalcRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
+}
+
+message  MsgVaultInterestCalcResponse{}
+
 service Msg {
   rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
   rpc MsgDeposit(MsgDepositRequest) returns (MsgDepositResponse);
@@ -192,4 +202,5 @@ service Msg {
   rpc MsgCreateStableMint(MsgCreateStableMintRequest) returns (MsgCreateStableMintResponse);
   rpc MsgDepositStableMint(MsgDepositStableMintRequest) returns (MsgDepositStableMintResponse);
   rpc MsgWithdrawStableMint(MsgWithdrawStableMintRequest) returns (MsgWithdrawStableMintResponse);
+  rpc MsgVaultInterestCalc(MsgVaultInterestCalcRequest) returns (MsgVaultInterestCalcResponse);
 }

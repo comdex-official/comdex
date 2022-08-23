@@ -615,7 +615,6 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 		k.SetLocker(ctx, lockerData)
 		lockers.DepositedAmount = lockers.DepositedAmount.Add(newrewards)
 		k.SetLockerLookupTable(ctx, lockers)
-
 	}
 
 	return nil
