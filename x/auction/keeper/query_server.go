@@ -450,3 +450,49 @@ func (q QueryServer) QueryDutchLendBiddings(c context.Context, req *types.QueryD
 		Biddings: item,
 	}, nil
 }
+
+func (q QueryServer) QueryFilterDutchAuctions(c context.Context, req *types.QueryFilterDutchAuctionsRequest) (*types.QueryFilterDutchAuctionsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.DutchAuction
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+	if req.History {
+		key = types.HistoryAuctionTypeKey(req.AppId, types.DutchString)
+	} else {
+		key = types.AuctionTypeKey(req.AppId, types.DutchString)
+	}
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.DutchAuction
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+			var check = false
+			if item.OutflowTokenCurrentAmount.Denom == req.Denom || item.InflowTokenCurrentAmount.Denom == req.Denom {
+				check = true
+			}
+
+			if accumulate && check{
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryFilterDutchAuctionsResponse{
+		Auctions:   items,
+		Pagination: pagination,
+	}, nil
+}

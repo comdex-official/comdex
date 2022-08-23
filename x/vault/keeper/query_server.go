@@ -221,7 +221,7 @@ func (q QueryServer) QueryAllVaultsByAppAndExtendedPair(c context.Context, req *
 
 	appExtendedPairData, found := q.GetAppExtendedPairVaultMappingData(ctx, req.AppId, req.ExtendedPairId)
 	if !found {
-		return nil, types.ErrorAppMappingDoesNotExist
+		return nil, types.ErrorAppExtendedPairDataDoesNotExists
 	}
 	vaultIDs := appExtendedPairData.VaultIds
 
@@ -314,7 +314,7 @@ func (q QueryServer) QueryTokenMintedByAppAndExtendedPair(c context.Context, req
 	)
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMappingData(ctx, req.AppId, req.ExtendedPairId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Pair vault does not exist for App id %d", req.AppId)
+		return nil, status.Errorf(codes.NotFound, "App ExtendedPairVault Data does not exist for App id %d and ExtendedPair id %d", req.AppId, req.ExtendedPairId)
 	}
 
 	return &types.QueryTokenMintedByAppAndExtendedPairResponse{

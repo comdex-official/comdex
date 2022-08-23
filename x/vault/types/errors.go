@@ -40,6 +40,7 @@ var (
 	SendCoinsFromModuleToModuleInVaultIsZero  = errors.Register(ModuleName, 220, "Coin value in module to module transfer in vault is zero")
 	SendCoinsFromModuleToAccountInVaultIsZero = errors.Register(ModuleName, 221, "Coin value in module to account transfer in vault is zero")
 	SendCoinsFromAccountToModuleInVaultIsZero = errors.Register(ModuleName, 222, "Coin value in account to module transfer in vault is zero")
+	ErrorAppExtendedPairDataDoesNotExists     = errors.Register(ModuleName, 223, "App ExtendedPair Data Does Not Exists")
 )
 
 var (
