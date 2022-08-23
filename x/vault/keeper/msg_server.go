@@ -1235,3 +1235,8 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 
 	return &types.MsgWithdrawStableMintResponse{}, nil
 }
+
+func (k msgServer) MsgVaultInterestCalc(ctx context.Context, request *types.MsgVaultInterestCalcRequest) (*types.MsgVaultInterestCalcResponse, error) {
+	//TODO implement me
+	panic("implement me")
+}

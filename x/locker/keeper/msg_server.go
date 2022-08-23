@@ -364,3 +364,8 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 
 	return &types.MsgCloseLockerResponse{}, nil
 }
+
+func (k msgServer) MsgLockerRewardCalc(ctx context.Context, request *types.MsgLockerRewardCalcRequest) (*types.MsgLockerRewardCalcResponse, error) {
+	//TODO implement me
+	panic("implement me")
+}
