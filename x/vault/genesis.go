@@ -29,10 +29,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	}
 
 	for _, item := range state.AppExtendedPairVaultMapping {
-		err := k.SetAppExtendedPairVaultMappingData(ctx, item)
-		if err != nil {
-			return
-		}
+		k.SetAppExtendedPairVaultMappingData(ctx, item)
+	
 	}
 
 	for _, item := range state.UserVaultAssetMapping {
