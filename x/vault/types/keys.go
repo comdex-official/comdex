@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ModuleName   = "vaultv1"
+	ModuleName   = "vaultV1"
 	QuerierRoute = ModuleName
 	RouterKey    = ModuleName
 	StoreKey     = ModuleName
