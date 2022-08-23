@@ -1046,6 +1046,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	if !stableAmountIn.IsPositive() {
 		return nil, types.ErrorInvalidAmount
 	}
+	//Looking for a case where apart from create function , this function creates new vaults and its data.
 	tokenMintedStatistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
 	//Check Debt Ceil

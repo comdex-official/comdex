@@ -738,92 +738,94 @@ func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding
 }
 
 func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, collectorBh, collectorBt int64, appID, assetID uint64, changeTypes bool) {
-	lockers, _ := k.GetLockerLookupTable(ctx, appID, assetID)
-	for _, lockID := range lockers.LockerIds {
-		lockerData, _ := k.GetLocker(ctx, lockID)
-		rewards := sdk.ZeroDec()
-		var err error
-		if lockerData.BlockHeight == 0 {
-			rewards, err = k.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, collectorBt)
-			if err != nil {
-				return
+	lockers, found := k.GetLockerLookupTable(ctx, appID, assetID)
+	if found {
+		for _, lockID := range lockers.LockerIds {
+			lockerData, _ := k.GetLocker(ctx, lockID)
+			rewards := sdk.ZeroDec()
+			var err error
+			if lockerData.BlockHeight == 0 {
+				rewards, err = k.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, collectorBt)
+				if err != nil {
+					return
+				}
+			} else {
+				rewards, err = k.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, lockerData.BlockTime.Unix())
+				if err != nil {
+					return
+				}
 			}
-		} else {
-			rewards, err = k.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, lockerData.BlockTime.Unix())
-			if err != nil {
-				return
+
+			lockerRewardsTracker, found := k.GetLockerRewardTracker(ctx, lockerData.LockerId, appID)
+			if !found {
+				lockerRewardsTracker = rewardstypes.LockerRewardsTracker{
+					LockerId:           lockerData.LockerId,
+					AppMappingId:       appID,
+					RewardsAccumulated: sdk.ZeroDec(),
+				}
 			}
-		}
 
-		lockerRewardsTracker, found := k.GetLockerRewardTracker(ctx, lockerData.LockerId, appID)
-		if !found {
-			lockerRewardsTracker = rewardstypes.LockerRewardsTracker{
-				LockerId:           lockerData.LockerId,
-				AppMappingId:       appID,
-				RewardsAccumulated: sdk.ZeroDec(),
+			lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Add(rewards)
+			newReward := sdk.ZeroInt()
+			if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
+				newReward = lockerRewardsTracker.RewardsAccumulated.TruncateInt()
+				newRewardDec := sdk.NewDec(newReward.Int64())
+				lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 			}
-		}
+			k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 
-		lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Add(rewards)
-		newReward := sdk.ZeroInt()
-		if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
-			newReward = lockerRewardsTracker.RewardsAccumulated.TruncateInt()
-			newRewardDec := sdk.NewDec(newReward.Int64())
-			lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
-		}
-		k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
-
-		netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
-		if !found {
-			continue
-		}
-		err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward, netFeeCollectedData)
-		if err != nil {
-			continue
-		}
-
-		assetData, _ := k.GetAsset(ctx, assetID)
-		newrewards := rewards.TruncateInt()
-		if newrewards.GT(sdk.ZeroInt()) {
-			err = k.SendCoinFromModuleToModule(ctx, types.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newrewards)))
+			netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
+			if !found {
+				continue
+			}
+			err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward, netFeeCollectedData)
 			if err != nil {
 				continue
 			}
-		}
 
-		lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appID, lockerData.AssetDepositId)
-		if !found {
-			var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
-			lockerReward.AppId = appID
-			lockerReward.AssetId = lockerData.AssetDepositId
-			lockerReward.TotalRewards = sdk.ZeroInt().Add(newReward)
-			err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
-			if err != nil {
-				continue
+			assetData, _ := k.GetAsset(ctx, assetID)
+			newrewards := rewards.TruncateInt()
+			if newrewards.GT(sdk.ZeroInt()) {
+				err = k.SendCoinFromModuleToModule(ctx, types.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newrewards)))
+				if err != nil {
+					continue
+				}
 			}
-		} else {
-			lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
 
-			err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
-			if err != nil {
-				continue
+			lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appID, lockerData.AssetDepositId)
+			if !found {
+				var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
+				lockerReward.AppId = appID
+				lockerReward.AssetId = lockerData.AssetDepositId
+				lockerReward.TotalRewards = sdk.ZeroInt().Add(newReward)
+				err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
+				if err != nil {
+					continue
+				}
+			} else {
+				lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
+
+				err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+				if err != nil {
+					continue
+				}
 			}
+
+			// updating user rewards data
+			lockerData.BlockTime = ctx.BlockTime()
+			if changeTypes {
+				lockerData.BlockHeight = ctx.BlockHeight()
+			} else {
+				lockerData.BlockHeight = 0
+			}
+
+			lockerData.NetBalance = lockerData.NetBalance.Add(newrewards)
+			lockerData.ReturnsAccumulated = lockerData.ReturnsAccumulated.Add(newrewards)
+			k.SetLocker(ctx, lockerData)
+			lockers.DepositedAmount = lockers.DepositedAmount.Add(newrewards)
+			k.SetLockerLookupTable(ctx, lockers)
+
 		}
-
-		// updating user rewards data
-		lockerData.BlockTime = ctx.BlockTime()
-		if changeTypes {
-			lockerData.BlockHeight = ctx.BlockHeight()
-		} else {
-			lockerData.BlockHeight = 0
-		}
-
-		lockerData.NetBalance = lockerData.NetBalance.Add(newrewards)
-		lockerData.ReturnsAccumulated = lockerData.ReturnsAccumulated.Add(newrewards)
-		k.SetLocker(ctx, lockerData)
-		lockers.DepositedAmount = lockers.DepositedAmount.Add(newrewards)
-		k.SetLockerLookupTable(ctx, lockers)
-
 	}
 
 }
