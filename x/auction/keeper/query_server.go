@@ -360,7 +360,7 @@ func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAucti
 
 	item, found := q.GetAuctionParams(ctx, req.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "Auction Params not exist for id %d", req.AppId)
+		return &types.QueryAuctionParamResponse{}, nil
 	}
 
 	return &types.QueryAuctionParamResponse{

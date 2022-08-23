@@ -262,10 +262,6 @@ func (q QueryServer) QueryVaultIdsByAppInAllExtendedPairs(c context.Context, req
 		vaultsIds []uint64
 	)
 
-	_, found := q.GetApp(ctx, req.AppId)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "App does not exist for id %d", req.AppId)
-	}
 	appExtendedPairVaultData, found := q.GetAppMappingData(ctx, req.AppId)
 	if !found {
 		return &types.QueryVaultIdsByAppInAllExtendedPairsResponse{}, nil
@@ -314,7 +310,7 @@ func (q QueryServer) QueryTokenMintedByAppAndExtendedPair(c context.Context, req
 	)
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMappingData(ctx, req.AppId, req.ExtendedPairId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "App ExtendedPairVault Data does not exist for App id %d and ExtendedPair id %d", req.AppId, req.ExtendedPairId)
+		return &types.QueryTokenMintedByAppAndExtendedPairResponse{}, nil
 	}
 
 	return &types.QueryTokenMintedByAppAndExtendedPairResponse{
@@ -332,10 +328,6 @@ func (q QueryServer) QueryTokenMintedAssetWiseByApp(c context.Context, req *type
 		ctx        = sdk.UnwrapSDKContext(c)
 		mintedData []types.MintedDataMap
 	)
-	_, found := q.GetApp(ctx, req.AppId)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "App does not exist for id %d", req.AppId)
-	}
 
 	appExtendedPairVaultData, found := q.GetAppMappingData(ctx, req.AppId)
 	if !found {
@@ -452,10 +444,6 @@ func (q QueryServer) QueryExtendedPairIDsByApp(c context.Context, req *types.Que
 		ctx     = sdk.UnwrapSDKContext(c)
 		pairIDs []uint64
 	)
-	_, found := q.GetApp(ctx, req.AppId)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "App does not exist for id %d", req.AppId)
-	}
 
 	appExtendedPairVaultData, found := q.GetAppMappingData(ctx, req.AppId)
 	if !found {
@@ -583,10 +571,6 @@ func (q QueryServer) QueryTVLByAppOfAllExtendedPairs(c context.Context, req *typ
 		ctx     = sdk.UnwrapSDKContext(c)
 		tvlData []types.TvlLockedDataMap
 	)
-	_, found := q.GetApp(ctx, req.AppId)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "App does not exist for id %d", req.AppId)
-	}
 
 	appExtendedPairVaultData, found := q.GetAppMappingData(ctx, req.AppId)
 	if !found {
