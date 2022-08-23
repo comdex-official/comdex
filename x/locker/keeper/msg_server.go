@@ -364,3 +364,28 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 
 	return &types.MsgCloseLockerResponse{}, nil
 }
+
+func (k msgServer) MsgLockerRewardCalc(c context.Context, msg *types.MsgLockerRewardCalcRequest) (*types.MsgLockerRewardCalcResponse, error) {
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	appMapping, found := k.GetApp(ctx, msg.AppId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+	depositor, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+	lockerData, found := k.GetLocker(ctx, msg.LockerId)
+
+	if !found {
+		return nil, types.ErrorLockerDoesNotExists
+	}
+	err1 := k.CalculateLockerRewards(ctx, appMapping.Id, lockerData.AssetDepositId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
+	if err1 != nil {
+		return nil, err1
+	}
+
+	return &types.MsgLockerRewardCalcResponse{}, nil
+}

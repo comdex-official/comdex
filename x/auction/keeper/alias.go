@@ -135,7 +135,7 @@ func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID
 	return k.vault.GetAppExtendedPairVaultMappingData(ctx, appMappingID, pairVaultsID)
 }
 
-func (k Keeper) SetAppExtendedPairVaultMappingData(ctx sdk.Context, appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData)  {
+func (k Keeper) SetAppExtendedPairVaultMappingData(ctx sdk.Context, appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData) {
 	k.vault.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
 }
 

@@ -181,12 +181,11 @@ message MsgWithdrawStableMintRequest {
 
 message  MsgWithdrawStableMintResponse{}
 
-
 message MsgVaultInterestCalcRequest {
   string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
   uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
-  uint64 user_vault_id   = 4
-      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
+  uint64 user_vault_id   = 3
+  [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
 }
 
 message  MsgVaultInterestCalcResponse{}

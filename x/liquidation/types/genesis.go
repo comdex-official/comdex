@@ -2,9 +2,9 @@ package types
 
 func NewGenesisState(lockedVault []LockedVault, whitelistedApps []uint64, params Params) *GenesisState {
 	return &GenesisState{
-		LockedVault: lockedVault,
+		LockedVault:     lockedVault,
 		WhitelistedApps: whitelistedApps,
-		Params:      params,
+		Params:          params,
 	}
 }
 

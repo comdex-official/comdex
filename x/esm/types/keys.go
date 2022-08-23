@@ -4,7 +4,7 @@ import sdk "github.com/cosmos/cosmos-sdk/types"
 
 const (
 	// ModuleName defines the module name
-	ModuleName = "esm"
+	ModuleName = "esmV1"
 
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName

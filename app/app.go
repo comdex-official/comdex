@@ -1143,7 +1143,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		tv4_0_0.UpgradeName,
-		tv4_0_0.CreateUpgradeHandler(a.mm, a.configurator, a.VaultKeeper, a.LockerKeeper, a.CollectorKeeper, a.LiquidationKeeper, a.Rewardskeeper),
+		tv4_0_0.CreateUpgradeHandler(a.mm, a.configurator),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1203,8 +1203,14 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 			},
 		}
 	case upgradeInfo.Name == tv3_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-
-	case upgradeInfo.Name == tv3_0_0.UpgradeNameV3_1 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tv4_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		//delete deprecated kv store instead of migrating as this is only for testnet.
+		//won't be used on main net migration and to make store name similar with V1 appended for all modules
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Deleted: []string{"vaultv1", "rewards", "collector", "locker", "lend", "auction", "liquidation", "esm"},
+			Added: []string{vaulttypes.ModuleName, rewardstypes.ModuleName, liquidationtypes.ModuleName,
+				collectortypes.ModuleName, lockertypes.ModuleName, lendtypes.ModuleName, auctiontypes.ModuleName, esmtypes.ModuleName},
+		}
 	}
 	return storeUpgrades
 }
