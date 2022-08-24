@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/lend/expected"
 	"github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
@@ -25,6 +26,7 @@ type (
 		account    expected.AccountKeeper
 		asset      expected.AssetKeeper
 		market     expected.MarketKeeper
+		esm        expected.EsmKeeper
 	}
 )
 
@@ -37,6 +39,7 @@ func NewKeeper(
 	account expected.AccountKeeper,
 	asset expected.AssetKeeper,
 	market expected.MarketKeeper,
+	esm expected.EsmKeeper,
 
 ) Keeper {
 	// set KeyTable if it has not already been set
@@ -54,6 +57,7 @@ func NewKeeper(
 		account:    account,
 		asset:      asset,
 		market:     market,
+		esm:        esm,
 	}
 }
 
@@ -75,6 +79,10 @@ func uint64InAssetData(a uint64, list []types.AssetDataPoolMapping) bool {
 }
 
 func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Amount sdk.Coin, PoolID, AppID uint64) error {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
 	asset, found := k.GetAsset(ctx, AssetID)
 	if !found {
 		return assettypes.ErrorAssetDoesNotExist
@@ -175,6 +183,11 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 	if !found {
 		return types.ErrLendNotFound
 	}
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
+
 	getAsset, _ := k.GetAsset(ctx, lendPos.AssetID)
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
 
@@ -282,6 +295,10 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendID uint64, deposi
 		return types.ErrLendNotFound
 	}
 
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
 	getAsset, _ := k.GetAsset(ctx, lendPos.AssetID)
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
 
@@ -331,6 +348,12 @@ func (k Keeper) CloseLend(ctx sdk.Context, addr string, lendID uint64) error {
 	if !found {
 		return types.ErrLendNotFound
 	}
+
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
+
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
 
 	if lendPos.Owner != addr {
@@ -407,6 +430,12 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 	if !found {
 		return types.ErrLendNotFound
 	}
+
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
+
 	if lendPos.Owner != addr {
 		return types.ErrLendAccessUnauthorised
 	}
@@ -746,6 +775,12 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 	if !found {
 		return types.ErrLendNotFound
 	}
+
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
+
 	if lendPos.Owner != borrowerAddr {
 		return types.ErrLendAccessUnauthorised
 	}
@@ -851,6 +886,12 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 	if !found {
 		return types.ErrLendNotFound
 	}
+
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
+
 	if lendPos.Owner != addr {
 		return types.ErrLendAccessUnauthorised
 	}
@@ -979,6 +1020,12 @@ func (k Keeper) DrawAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string,
 	if !found {
 		return types.ErrLendNotFound
 	}
+
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
+
 	if lendPos.Owner != borrowerAddr {
 		return types.ErrLendAccessUnauthorised
 	}
@@ -1037,6 +1084,10 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 	lendPos, found := k.GetLend(ctx, borrowPos.LendingID)
 	if !found {
 		return types.ErrLendNotFound
+	}
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
 	}
 	assetInPool, found := k.GetPool(ctx, lendPos.PoolID)
 	if !found {
@@ -1114,6 +1165,10 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 }
 
 func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, PoolID uint64, AmountIn sdk.Coin, PairID uint64, IsStableBorrow bool, AmountOut sdk.Coin, AppID uint64) error {
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
 	asset, found := k.GetAsset(ctx, AssetID)
 	if !found {
 		return assettypes.ErrorAssetDoesNotExist

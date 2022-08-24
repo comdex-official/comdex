@@ -2,6 +2,7 @@ package keeper
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -67,4 +68,8 @@ func (k Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipi
 
 func (k Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool) {
 	return k.asset.GetApp(ctx, id)
+}
+
+func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool) {
+	return k.esm.GetKillSwitchData(ctx, appID)
 }
