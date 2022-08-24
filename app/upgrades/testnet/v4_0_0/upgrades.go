@@ -65,7 +65,7 @@ func CreateUpgradeHandlerV401(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
-		CreateSwapFeeGauge(ctx, rewardskeeper, liquiditykeeper, 2, 1)
+		CreateSwapFeeGauge(ctx, rewardskeeper, liquiditykeeper, 1, 1)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 
 		if err != nil {
