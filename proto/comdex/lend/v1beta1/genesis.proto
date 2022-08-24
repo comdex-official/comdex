@@ -4,11 +4,9 @@ package comdex.lend.v1beta1;
 import "gogoproto/gogo.proto";
 import "comdex/lend/v1beta1/lend.proto";
 import "comdex/lend/v1beta1/params.proto";
-// this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/comdex-official/comdex/x/lend/types";
 
-// GenesisState defines the lend module's genesis state.
 message GenesisState {
   repeated BorrowAsset borrowAsset = 1
   [ (gogoproto.moretags) = "yaml:\"borrowAsset\"", (gogoproto.nullable) = false ];
@@ -49,5 +47,5 @@ message GenesisState {
   repeated AuctionParams auctionParams = 19
   [ (gogoproto.moretags) = "yaml:\"auctionParams\"", (gogoproto.nullable) = false ];
   Params params = 20 [(gogoproto.nullable) = false];
-  // this line is used by starport scaffolding # genesis/proto/state
+
 }

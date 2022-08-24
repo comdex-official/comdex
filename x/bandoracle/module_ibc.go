@@ -130,7 +130,6 @@ func (im IBCModule) OnRecvPacket(
 	} else if ack != oracleAck {
 		return oracleAck
 	}
-	// this line is used by starport scaffolding # market/packet/module/recv
 
 	var modulePacketData types.BandoraclePacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
@@ -139,7 +138,6 @@ func (im IBCModule) OnRecvPacket(
 
 	// Dispatch packet
 	switch packet := modulePacketData.Packet.(type) {
-	// this line is used by starport scaffolding # ibc/packet/module/recv
 	default:
 		errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
 		return channeltypes.NewErrorAcknowledgement(errMsg)
@@ -168,7 +166,6 @@ func (im IBCModule) OnAcknowledgementPacket(
 		sdkResult.Events = ctx.EventManager().Events().ToABCIEvents()
 		return nil
 	}
-	// this line is used by starport scaffolding # market/packet/module/ack
 
 	var modulePacketData types.BandoraclePacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
@@ -177,42 +174,11 @@ func (im IBCModule) OnAcknowledgementPacket(
 
 	// Dispatch packet
 	switch packet := modulePacketData.Packet.(type) {
-	// this line is used by starport scaffolding # ibc/packet/module/ack
 	default:
 		errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
 		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 	}
 
-	// Undo comments for event emitters after updating switch statements
-
-	// var eventType string
-
-	// ctx.EventManager().EmitEvent( //nolint:govet
-	// 	sdk.NewEvent(
-	// 		eventType,
-	// 		sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-	// 		sdk.NewAttribute(types.AttributeKeyAck, fmt.Sprintf("%v", ack)),
-	// 	),
-	// )
-
-	// switch resp := ack.Response.(type) {
-	// case *channeltypes.Acknowledgement_Result:
-	// 	ctx.EventManager().EmitEvent(
-	// 		sdk.NewEvent(
-	// 			eventType,
-	// 			sdk.NewAttribute(types.AttributeKeyAckSuccess, string(resp.Result)),
-	// 		),
-	// 	)
-	// case *channeltypes.Acknowledgement_Error:
-	// 	ctx.EventManager().EmitEvent(
-	// 		sdk.NewEvent(
-	// 			eventType,
-	// 			sdk.NewAttribute(types.AttributeKeyAckError, resp.Error),
-	// 		),
-	// 	)
-	// }
-
-	// return nil
 }
 
 // OnTimeoutPacket implements the IBCModule interface.
@@ -228,7 +194,7 @@ func (im IBCModule) OnTimeoutPacket(
 
 	// Dispatch packet
 	switch packet := modulePacketData.Packet.(type) {
-	// this line is used by starport scaffolding # ibc/packet/module/timeout
+
 	default:
 		errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
 		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)

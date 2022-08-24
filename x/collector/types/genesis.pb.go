@@ -23,7 +23,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// GenesisState defines the collector module's genesis state.
 type GenesisState struct {
 	NetFeeCollectedData          []AppAssetIdToFeeCollectedData   `protobuf:"bytes,1,rep,name=netFeeCollectedData,proto3" json:"netFeeCollectedData" yaml:"netFeeCollectedData"`
 	AppIdToAssetCollectorMapping []AppToAssetIdCollectorMapping   `protobuf:"bytes,2,rep,name=appIdToAssetCollectorMapping,proto3" json:"appIdToAssetCollectorMapping" yaml:"appIdToAssetCollectorMapping"`
