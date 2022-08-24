@@ -179,3 +179,7 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID
 func (k Keeper) DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker) {
 	k.rewards.DeleteVaultInterestTracker(ctx, vault)
 }
+
+func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
+	return k.auction.DutchActivator(ctx, lockedVault)
+}

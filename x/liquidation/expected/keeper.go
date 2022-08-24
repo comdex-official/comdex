@@ -49,6 +49,7 @@ type MarketKeeper interface {
 
 type AuctionKeeper interface {
 	GetParams(ctx sdk.Context) auctiontypes.Params
+	DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
 }
 
 type EsmKeeper interface {

@@ -484,7 +484,7 @@ func (k Keeper) GetAllLockerRewardTracker(ctx sdk.Context) (Lockrewards []types.
 func (k Keeper) SetVaultInterestTracker(ctx sdk.Context, vault types.VaultInterestTracker) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LockerRewardsTrackerKey(vault.VaultId, vault.AppMappingId)
+		key   = types.VaultInterestTrackerKey(vault.VaultId, vault.AppMappingId)
 		value = k.cdc.MustMarshal(&vault)
 	)
 
@@ -494,7 +494,7 @@ func (k Keeper) SetVaultInterestTracker(ctx sdk.Context, vault types.VaultIntere
 func (k Keeper) DeleteVaultInterestTracker(ctx sdk.Context, vault types.VaultInterestTracker) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LockerRewardsTrackerKey(vault.VaultId, vault.AppMappingId)
+		key   = types.VaultInterestTrackerKey(vault.VaultId, vault.AppMappingId)
 	)
 	store.Delete(key)
 }
@@ -572,65 +572,71 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 			lockerRewardsTracker = types.LockerRewardsTracker{
 				LockerId:           lockerData.LockerId,
 				AppMappingId:       appID,
-				RewardsAccumulated: sdk.ZeroDec(),
+				RewardsAccumulated: rewards,
 			}
+
+		} else {
+			lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Add(rewards)
 		}
 
-		lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Add(rewards)
-		newReward := sdk.ZeroInt()
 		if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
+			//send rewards
+			newReward := sdk.ZeroInt()
 			newReward = lockerRewardsTracker.RewardsAccumulated.TruncateInt()
 			newRewardDec := sdk.NewDec(newReward.Int64())
 			lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
-		}
-		k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
-
-		netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
-		if !found {
-			return nil
-		}
-		err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward, netFeeCollectedData)
-		if err != nil {
-			return nil
-		}
-
-		assetData, _ := k.GetAsset(ctx, assetID)
-		newrewards := rewards.TruncateInt()
-		if newrewards.GT(sdk.ZeroInt()) {
-			err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newrewards)))
+			k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
+			netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
+			if !found {
+				return nil
+			}
+			err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward, netFeeCollectedData)
 			if err != nil {
 				return nil
 			}
-		}
+			assetData, _ := k.GetAsset(ctx, assetID)
 
-		lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appID, lockerData.AssetDepositId)
-		if !found {
-			var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
-			lockerReward.AppId = appID
-			lockerReward.AssetId = lockerData.AssetDepositId
-			lockerReward.TotalRewards = sdk.ZeroInt().Add(newReward)
-			err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
-			if err != nil {
-				return nil
+			if newReward.GT(sdk.ZeroInt()) {
+				err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
+				if err != nil {
+					return nil
+				}
 			}
+			lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appID, lockerData.AssetDepositId)
+			if !found {
+				var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
+				lockerReward.AppId = appID
+				lockerReward.AssetId = lockerData.AssetDepositId
+				lockerReward.TotalRewards = newReward
+				err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
+				if err != nil {
+					return nil
+				}
+			} else {
+				lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
+				err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+				if err != nil {
+					return nil
+				}
+			}
+			// updating user rewards data
+			lockerData.BlockTime = ctx.BlockTime()
+			lockerData.BlockHeight = ctx.BlockHeight()
+
+			lockerData.NetBalance = lockerData.NetBalance.Add(newReward)
+			lockerData.ReturnsAccumulated = lockerData.ReturnsAccumulated.Add(newReward)
+			k.SetLocker(ctx, lockerData)
+			lockers.DepositedAmount = lockers.DepositedAmount.Add(newReward)
+			k.SetLockerLookupTable(ctx, lockers)
 		} else {
-			lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
+			//	set tracker rewards
+			k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
+			lockerData.BlockTime = ctx.BlockTime()
+			lockerData.BlockHeight = ctx.BlockHeight()
+			k.SetLocker(ctx, lockerData)
 
-			err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
-			if err != nil {
-				return nil
-			}
 		}
 
-		// updating user rewards data
-		lockerData.BlockTime = ctx.BlockTime()
-		lockerData.BlockHeight = ctx.BlockHeight()
-
-		lockerData.NetBalance = lockerData.NetBalance.Add(newrewards)
-		lockerData.ReturnsAccumulated = lockerData.ReturnsAccumulated.Add(newrewards)
-		k.SetLocker(ctx, lockerData)
-		lockers.DepositedAmount = lockers.DepositedAmount.Add(newrewards)
-		k.SetLockerLookupTable(ctx, lockers)
 	}
 
 	return nil
@@ -671,25 +677,32 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 			vaultInterestTracker = types.VaultInterestTracker{
 				VaultId:             vaultData.Id,
 				AppMappingId:        appID,
-				InterestAccumulated: sdk.ZeroDec(),
+				InterestAccumulated: interest,
 			}
+		} else {
+			vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
 		}
 
-		vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
-		newInterest := sdk.ZeroInt()
 		if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
+			newInterest := sdk.ZeroInt()
 			newInterest = vaultInterestTracker.InterestAccumulated.TruncateInt()
 			newInterestDec := sdk.NewDec(newInterest.Int64())
 			vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
-		}
-		vaultData.BlockTime = ctx.BlockTime()
-		vaultData.BlockHeight = ctx.BlockHeight()
 
-		k.SetVaultInterestTracker(ctx, vaultInterestTracker)
-		intAcc := vaultData.InterestAccumulated
-		updatedIntAcc := (intAcc).Add(newInterest)
-		vaultData.InterestAccumulated = updatedIntAcc
-		k.SetVault(ctx, vaultData)
+			vaultData.BlockTime = ctx.BlockTime()
+			vaultData.BlockHeight = ctx.BlockHeight()
+	
+			k.SetVaultInterestTracker(ctx, vaultInterestTracker)
+			intAcc := vaultData.InterestAccumulated
+			updatedIntAcc := (intAcc).Add(newInterest)
+			vaultData.InterestAccumulated = updatedIntAcc
+			k.SetVault(ctx, vaultData)
+		} else {
+			k.SetVaultInterestTracker(ctx, vaultInterestTracker)
+			vaultData.BlockTime = ctx.BlockTime()
+			vaultData.BlockHeight = ctx.BlockHeight()
+			k.SetVault(ctx, vaultData)
+		}
 
 	}
 

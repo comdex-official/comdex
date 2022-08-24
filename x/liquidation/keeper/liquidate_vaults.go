@@ -115,6 +115,10 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, total
 
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
+	err := k.DutchActivator(ctx, value)
+	if err != nil {
+		ctx.Logger().Error("error in dutch activator")
+	}
 	return nil
 }
 
