@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 )
 
@@ -48,4 +49,5 @@ type TokenMintKeeper interface {
 
 type RewardsKeeper interface {
 	CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error
+	DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker) 
 }

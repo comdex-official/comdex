@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -359,6 +360,10 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 	}
 
 	k.DeleteLocker(ctx, lockerData.LockerId)
+	var rewards rewardstypes.LockerRewardsTracker
+	rewards.AppMappingId = appMapping.Id
+	rewards.LockerId = lockerData.LockerId
+	k.DeleteLockerRewardTracker(ctx, rewards)
 
 	ctx.GasMeter().ConsumeGas(types.CloseLockerGas, "CloseLockerGas")
 

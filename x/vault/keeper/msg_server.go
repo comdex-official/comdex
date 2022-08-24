@@ -5,6 +5,7 @@ import (
 
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -805,6 +806,11 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 
 	//Delete Vault
 	k.DeleteVault(ctx, userVault.Id)
+
+	var rewards rewardstypes.VaultInterestTracker
+	rewards.AppMappingId = appMapping.Id
+	rewards.VaultId = userVault.Id
+	k.DeleteVaultInterestTracker(ctx, rewards)
 
 	ctx.GasMeter().ConsumeGas(types.CloseVaultGas, "CloseVaultGas")
 

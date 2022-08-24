@@ -436,6 +436,14 @@ func (k Keeper) SetLockerRewardTracker(ctx sdk.Context, rewards types.LockerRewa
 	store.Set(key, value)
 }
 
+func (k Keeper) DeleteLockerRewardTracker(ctx sdk.Context, rewards types.LockerRewardsTracker) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockerRewardsTrackerKey(rewards.LockerId, rewards.AppMappingId)
+	)
+	store.Delete(key)
+}
+
 func (k Keeper) GetLockerRewardTracker(ctx sdk.Context, id, appID uint64) (rewards types.LockerRewardsTracker, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -481,6 +489,14 @@ func (k Keeper) SetVaultInterestTracker(ctx sdk.Context, vault types.VaultIntere
 	)
 
 	store.Set(key, value)
+}
+
+func (k Keeper) DeleteVaultInterestTracker(ctx sdk.Context, vault types.VaultInterestTracker) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LockerRewardsTrackerKey(vault.VaultId, vault.AppMappingId)
+	)
+	store.Delete(key)
 }
 
 func (k Keeper) GetVaultInterestTracker(ctx sdk.Context, id, appID uint64) (vault types.VaultInterestTracker, found bool) {
@@ -650,10 +666,10 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 			}
 		}
 		vaultData, _ := k.GetVault(ctx, vaultID)
-		vaultInterestTracker, found := k.GetVaultInterestTracker(ctx, vaultData.ExtendedPairVaultID, appID)
+		vaultInterestTracker, found := k.GetVaultInterestTracker(ctx, vaultData.Id, appID)
 		if !found {
 			vaultInterestTracker = types.VaultInterestTracker{
-				VaultId:             vaultData.ExtendedPairVaultID,
+				VaultId:             vaultData.Id,
 				AppMappingId:        appID,
 				InterestAccumulated: sdk.ZeroDec(),
 			}

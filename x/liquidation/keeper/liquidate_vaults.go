@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 )
@@ -63,11 +64,23 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				}
 
 				if sdk.Dec.LT(collateralitzationRatio, liqRatio) {
+					//calculate interest and update vault
+					totalDebt := vault.AmountOut.Add(vault.InterestAccumulated)
+					err1 := k.CalculateVaultInterest(ctx, vault.AppId, vault.ExtendedPairVaultID, vault.Id, totalDebt, vault.BlockHeight, vault.BlockTime.Unix())
+					if err1 != nil {
+						continue
+					}
+					vault, _ := k.GetVault(ctx, vaultIds[l])
+
 					err := k.CreateLockedVault(ctx, vault, totalIn, collateralitzationRatio, appIds[i])
 					if err != nil {
 						continue
 					}
 					k.DeleteVault(ctx, vault.Id)
+					var rewards rewardstypes.VaultInterestTracker
+					rewards.AppMappingId = appIds[i]
+					rewards.VaultId = vaultIds[l]
+					k.DeleteVaultInterestTracker(ctx, rewards)
 					k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, vault.ExtendedPairVaultID, vault.Id, appIds[i])
 				}
 			}

@@ -309,10 +309,10 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 				}
 			}
 
-			vaultInterestTracker, found := k.rewards.GetVaultInterestTracker(ctx, extPairVault.ExtendedPairId, appID)
+			vaultInterestTracker, found := k.rewards.GetVaultInterestTracker(ctx, valID, appID)
 			if !found {
 				vaultInterestTracker = rewardstypes.VaultInterestTracker{
-					VaultId:             extPairVault.ExtendedPairId,
+					VaultId:             valID,
 					AppMappingId:        appID,
 					InterestAccumulated: sdk.ZeroDec(),
 				}
