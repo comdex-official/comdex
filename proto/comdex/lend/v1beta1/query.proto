@@ -288,6 +288,22 @@ message QueryAuctionParamResponse {
   [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction_params\""];
 }
 
+message QueryDepositRankingRequest {}
+
+message QueryDepositRankingResponse {
+  Deposit_ranking depositRanking = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"deposit_ranking\""];
+}
+
+message QueryBorrowRankingRequest {}
+
+message QueryBorrowRankingResponse {
+  Borrow_ranking borrowRanking = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"borrow_ranking\""];
+}
+
 service Query {
   rpc QueryLends(QueryLendsRequest) returns (QueryLendsResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/lends";
@@ -381,6 +397,14 @@ service Query {
 
   rpc QueryAuctionParams(QueryAuctionParamRequest) returns (QueryAuctionParamResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/auctionparams/{app_id}";
+  }
+
+  rpc QueryDepositRanking(QueryDepositRankingRequest) returns (QueryDepositRankingResponse){
+    option (google.api.http).get = "/comdex/lend/v1beta1/deposit_ranking";
+  }
+
+  rpc QueryBorrowRanking(QueryBorrowRankingRequest) returns (QueryBorrowRankingResponse){
+    option (google.api.http).get = "/comdex/lend/v1beta1/borrow_ranking";
   }
 }
 

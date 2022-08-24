@@ -4,6 +4,7 @@ import (
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+	"sort"
 )
 
 func (k Keeper) SetUserBorrowIDHistory(ctx sdk.Context, ID uint64) {
@@ -405,4 +406,75 @@ func (k Keeper) GetBorrowInterestTracker(ctx sdk.Context, id uint64) (interest t
 
 	k.cdc.MustUnmarshal(value, &interest)
 	return interest, true
+}
+
+func (k Keeper) UpdateBorrowRank(ctx sdk.Context) {
+	var rankingStats types.BorrowRanking
+	var assetRankings []types.AssetRanking
+	var apr []sdk.Dec
+	newAPR := sdk.ZeroDec()
+
+	borrowStats, _ := k.GetBorrowStats(ctx)
+	for _, borrowStat := range borrowStats.BalanceStats {
+		pools := k.GetPools(ctx)
+		for _, pool := range pools {
+			assetStats, found := k.AssetStatsByPoolIDAndAssetID(ctx, borrowStat.AssetID, pool.PoolID)
+			if !found {
+				continue
+			}
+			if borrowStat.AssetID != pool.FirstBridgedAssetID {
+				apr = append(apr, assetStats.BorrowApr)
+			} else {
+				newAPR = assetStats.BorrowApr
+			}
+		}
+		if apr != nil {
+			sort.Slice(apr[:], func(i, j int) bool {
+				return apr[i].GT(apr[j])
+			})
+			newAPR = apr[0]
+		}
+		price, _ := k.GetPriceForAsset(ctx, borrowStat.AssetID)
+		qty := borrowStat.Amount
+		amt := qty.Mul(sdk.NewIntFromUint64(price))
+		assetRanking := types.AssetRanking{
+			AssetID: borrowStat.AssetID,
+			Apr:     newAPR,
+			Amount:  amt,
+		}
+		assetRankings = append(assetRankings, assetRanking)
+	}
+	sort.Slice(assetRankings[:], func(i, j int) bool {
+		return assetRankings[i].Amount.GT(assetRankings[j].Amount)
+	})
+
+	rankingStats.First = assetRankings[0]
+	rankingStats.Second = assetRankings[1]
+	rankingStats.Third = assetRankings[2]
+	k.SetBorrowRanking(ctx, rankingStats)
+}
+
+func (k Keeper) SetBorrowRanking(ctx sdk.Context, rankingStats types.BorrowRanking) {
+	var (
+		store = k.Store(ctx)
+		key   = types.BorrowRankingKeyPrefix
+		value = k.cdc.MustMarshal(&rankingStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetBorrowRanking(ctx sdk.Context) (rankingStats types.BorrowRanking, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.BorrowRankingKeyPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return rankingStats, false
+	}
+
+	k.cdc.MustUnmarshal(value, &rankingStats)
+	return rankingStats, true
 }
