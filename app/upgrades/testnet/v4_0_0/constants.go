@@ -13,3 +13,17 @@ const (
 		}
 	}'`
 )
+
+const (
+	UpgradeNameV4_0_1   = "v4.0.1"
+	UpgradeHeightV4_0_1 = "" // replace this height
+	UpgradeInfoV4_0_1   = `'{
+		"binaries": {
+			"darwin/arm64":"",
+			"darwin/x86_64":"",
+			"linux/arm64":"",
+			"linux/x86_64":"",
+			"windows/x86_64":""
+		}
+	}'`
+)
