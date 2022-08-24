@@ -22,10 +22,6 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 		if err != nil {
 			ctx.Logger().Error("error in LiquidateBorrows")
 		}
-		err = k.UpdateLockedBorrows(ctx)
-		if err != nil {
-			ctx.Logger().Error("error in UpdateLockedBorrows")
-		}
 		return nil
 	})
 }
