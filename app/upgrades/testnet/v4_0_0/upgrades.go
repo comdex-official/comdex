@@ -56,7 +56,7 @@ func CreateSwapFeeGauge(
 }
 
 // CreateUpgradeHandler creates an SDK upgrade handler for v4_0_1
-func CreateUpgradeHandlerV401(
+func CreateUpgradeHandlerV410(
 	mm *module.Manager,
 	configurator module.Configurator,
 	rewardskeeper rewardskeeper.Keeper,
