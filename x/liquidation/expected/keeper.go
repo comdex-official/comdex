@@ -16,6 +16,7 @@ type AccountKeeper interface {
 }
 
 type BankKeeper interface {
+	BurnCoins(ctx sdk.Context, name string, coins sdk.Coins) error
 	MintCoins(ctx sdk.Context, name string, coins sdk.Coins) error
 	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, amt sdk.Coins) error
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
@@ -76,4 +77,6 @@ type LendKeeper interface {
 	GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats lendtypes.AssetStats, found bool)
 	SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats lendtypes.AssetStats)
 	UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, borrowPos lendtypes.BorrowAsset, amount sdk.Int, inc bool)
+	UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error
+	SetLend(ctx sdk.Context, lend lendtypes.LendAsset)
 }

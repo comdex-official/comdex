@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -240,7 +241,29 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 				numerator := totalOut.Sub(factor1)
 				denominator := deductionPercentage.Sub(factor2)
 				selloffAmount := numerator.Quo(denominator)
-
+				updatedLockedVault := lockedVault
+				if lockedVault.SellOffHistory == nil {
+					liquidationDeductionAmount := selloffAmount.Mul(penalty)
+					bonusToBidderAmount := selloffAmount.Mul(assetRatesStats.LiquidationBonus)
+					penaltyToReserveAmount := selloffAmount.Mul(assetRatesStats.LiquidationPenalty)
+					err = k.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, sdk.Int(bonusToBidderAmount))))
+					if err != nil {
+						return err
+					}
+					err = k.UpdateReserveBalances(ctx, pair.AssetIn, pool.ModuleName, sdk.NewCoin(assetIn.Denom, sdk.Int(penaltyToReserveAmount)), true)
+					if err != nil {
+						return err
+					}
+					casset, _ := k.GetAsset(ctx, assetRatesStats.CAssetID)
+					updatedLockedVault.AmountIn = updatedLockedVault.AmountIn.Sub(sdk.Int(liquidationDeductionAmount))
+					lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(sdk.Int(liquidationDeductionAmount))
+					lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(sdk.Int(liquidationDeductionAmount))
+					err = k.BurnCoin(ctx, pool.ModuleName, sdk.NewCoin(casset.Denom, sdk.Int(penaltyToReserveAmount)))
+					if err != nil {
+						return err
+					}
+					k.SetLend(ctx, lendPos)
+				}
 				var collateralToBeAuctioned sdk.Dec
 
 				if selloffAmount.GTE(totalIn) {
@@ -249,7 +272,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 
 					collateralToBeAuctioned = selloffAmount
 				}
-				updatedLockedVault := lockedVault
 				updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 				updatedLockedVault.CollateralToBeAuctioned = collateralToBeAuctioned
 				k.SetLockedVault(ctx, updatedLockedVault)
@@ -260,7 +282,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
+func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutchAuction auctiontypes.DutchAuction) error {
 	lockedVault, _ := k.GetLockedVault(ctx, appID, id)
 	borrowMetadata := lockedVault.GetBorrowMetaData()
 	if borrowMetadata != nil {
@@ -293,6 +315,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64) erro
 				if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
 					updatedLockedVault := lockedVault
 					updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
+					updatedLockedVault.SellOffHistory = append(updatedLockedVault.SellOffHistory, dutchAuction.String())
 					k.SetLockedVault(ctx, updatedLockedVault)
 				}
 				if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
@@ -327,6 +350,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64) erro
 					if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
 						updatedLockedVault := lockedVault
 						updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
+						updatedLockedVault.SellOffHistory = append(updatedLockedVault.SellOffHistory, dutchAuction.String())
 						k.SetLockedVault(ctx, updatedLockedVault)
 					}
 					if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
@@ -359,6 +383,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64) erro
 					if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
 						updatedLockedVault := lockedVault
 						updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
+						updatedLockedVault.SellOffHistory = append(updatedLockedVault.SellOffHistory, dutchAuction.String())
 						k.SetLockedVault(ctx, updatedLockedVault)
 					}
 					if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {

@@ -170,3 +170,27 @@ func (k Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats lend
 func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, borrowPos lendtypes.BorrowAsset, amount sdk.Int, inc bool) {
 	k.lend.UpdateBorrowStats(ctx, pair, borrowPos, amount, inc)
 }
+
+func (k Keeper) SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, coin sdk.Coins) error {
+	if coin.IsZero() {
+		return auctiontypes.SendCoinsFromModuleToModuleInAuctionIsZero
+	}
+
+	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
+}
+
+func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
+	return k.lend.UpdateReserveBalances(ctx, assetID, moduleName, payment, inc)
+}
+
+func (k Keeper) SetLend(ctx sdk.Context, lend lendtypes.LendAsset) {
+	k.lend.SetLend(ctx, lend)
+}
+
+func (k Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
+	if coin.IsZero() {
+		return lendtypes.BurnCoinValueInLendIsZero
+	}
+
+	return k.bank.BurnCoins(ctx, name, sdk.NewCoins(coin))
+}

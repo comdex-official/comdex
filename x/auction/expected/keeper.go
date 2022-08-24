@@ -2,6 +2,7 @@ package expected
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
@@ -37,7 +38,7 @@ type LiquidationKeeper interface {
 	SetLockedVault(ctx sdk.Context, lockedVault liquidationtypes.LockedVault)
 	DeleteLockedVault(ctx sdk.Context, appID, id uint64)
 	CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
-	UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64) error
+	UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutchAuction auctiontypes.DutchAuction) error
 }
 
 type AssetKeeper interface {
