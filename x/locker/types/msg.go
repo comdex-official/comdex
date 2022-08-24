@@ -10,6 +10,7 @@ var (
 	_ sdk.Msg = (*MsgDepositAssetRequest)(nil)
 	_ sdk.Msg = (*MsgWithdrawAssetRequest)(nil)
 	_ sdk.Msg = (*MsgAddWhiteListedAssetRequest)(nil)
+	_ sdk.Msg = (*MsgLockerRewardCalcRequest)(nil)
 )
 
 func NewMsgCreateLockerRequest(from string, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgCreateLockerRequest {
