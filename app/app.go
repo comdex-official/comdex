@@ -1205,6 +1205,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		}
 	case upgradeInfo.Name == tv3_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 	case upgradeInfo.Name == tv4_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		//delete deprecated kv store instead of migrating as this is only for testnet.
 		//won't be used on main net migration and to make store name similar with V1 appended for all modules
 		storeUpgrades = &storetypes.StoreUpgrades{
