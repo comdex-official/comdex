@@ -134,7 +134,7 @@ func (q QueryServer) QueryLockerByAppByOwner(c context.Context,
 	lockerLookupData, found := q.GetUserLockerAppMapping(ctx, request.Owner, request.AppId)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
+		return &types.QueryLockerByAppByOwnerResponse{}, nil
 	}
 
 	var lockerInfos []types.Locker
@@ -221,7 +221,7 @@ func (q QueryServer) QueryOwnerLockerByAppToAssetIDbyOwner(c context.Context, re
 	lockerLookupData, found := q.GetUserLockerAssetMapping(ctx, request.Owner, request.AppId, request.AssetId)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
+		return &types.QueryOwnerLockerByAppToAssetIDbyOwnerResponse{}, nil
 	}
 
 	lockerData, _ := q.GetLocker(ctx, lockerLookupData.LockerId)
@@ -296,7 +296,7 @@ func (q QueryServer) QueryWhiteListedAssetIDsByAppID(c context.Context, request 
 	lockerLookupData, found := q.GetLockerProductAssetMappingByApp(ctx, request.AppId)
 
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "no asset exists appID %d", request.AppId)
+		return &types.QueryWhiteListedAssetIDsByAppIDResponse{}, nil
 	}
 
 	for _, data := range lockerLookupData {
@@ -356,7 +356,7 @@ func (q QueryServer) QueryLockerLookupTableByApp(c context.Context, req *types.Q
 	)
 	item, found := q.GetLockerLookupTableByApp(ctx, req.AppId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
+		return &types.QueryLockerLookupTableByAppResponse{}, nil
 	}
 
 	return &types.QueryLockerLookupTableByAppResponse{

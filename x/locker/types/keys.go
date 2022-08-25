@@ -15,7 +15,9 @@ var (
 	TypeMsgCreateLockerRequest        = ModuleName + ":createLocker"
 	TypeMsgDepositAssetRequest        = ModuleName + ":depositAsset"
 	TypeMsgWithdrawAssetRequest       = ModuleName + ":withdrawAsset"
+	TypeMsgCloseLockerRequest         = ModuleName + ":closeLocker"
 	TypeMsgAddWhiteListedAssetRequest = ModuleName + ":whitelistAsset"
+	TypeMsgLockerRewardCalcRequest    = ModuleName + ":lockerRewardCalc"
 )
 
 var (

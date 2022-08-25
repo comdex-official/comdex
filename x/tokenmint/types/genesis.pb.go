@@ -23,7 +23,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// GenesisState defines the tokenmint module's genesis state.
 type GenesisState struct {
 	TokenMint []TokenMint `protobuf:"bytes,1,rep,name=tokenMint,proto3" json:"tokenMint" yaml:"tokenMint"`
 	Params    Params      `protobuf:"bytes,2,opt,name=params,proto3" json:"params"`

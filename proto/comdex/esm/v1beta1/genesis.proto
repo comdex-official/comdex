@@ -18,13 +18,7 @@ message GenesisState {
   [ (gogoproto.moretags) = "yaml:\"killSwitchParams\"", (gogoproto.nullable) = false ];
   repeated UsersDepositMapping usersDepositMapping = 5
   [ (gogoproto.moretags) = "yaml:\"usersDepositMapping\"", (gogoproto.nullable) = false ];
-  repeated ESMMarketPrice eSMMarketPrice = 6
-  [ (gogoproto.moretags) = "yaml:\"eSMMarketPrice\"", (gogoproto.nullable) = false ];
   repeated DataAfterCoolOff dataAfterCoolOff = 7
   [ (gogoproto.moretags) = "yaml:\"dataAfterCoolOff\"", (gogoproto.nullable) = false ];
-  repeated AssetToAmountValue assetToAmountValue = 8
-  [ (gogoproto.moretags) = "yaml:\"assetToAmountValue\"", (gogoproto.nullable) = false ];
-  repeated AppToAmountValue appToAmountValue = 9
-  [ (gogoproto.moretags) = "yaml:\"appToAmountValue\"", (gogoproto.nullable) = false ];
   Params params = 10 [(gogoproto.nullable) = false];
 }

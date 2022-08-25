@@ -23,8 +23,8 @@ func (s *KeeperTestSuite) TestImportExportGenesis() {
 	k, ctx := s.keeper, s.ctx
 
 	appID1 := s.CreateNewApp("appone")
-	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 2000000)
 	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
 	pool := s.CreateNewLiquidityPool(appID1, pair.Id, s.addr(0), "1000000denom1,1000000denom2")
 	s.Deposit(appID1, pool.Id, s.addr(1), "1000000denom1,1000000denom2")
@@ -115,9 +115,9 @@ func (s *KeeperTestSuite) TestIndexesAfterImport() {
 	s.ctx = s.ctx.WithBlockHeight(1).WithBlockTime(utils.ParseTime("2022-03-01T00:00:00Z"))
 
 	appID1 := s.CreateNewApp("appone")
-	asset1 := s.CreateNewAsset("ASSET1", "denom1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "denom2", 2000000)
-	asset3 := s.CreateNewAsset("ASSET2", "denom3", 3000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 2000000)
+	asset3 := s.CreateNewAsset("ASSETTWO", "denom3", 3000000)
 
 	pair1 := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
 	pair2 := s.CreateNewLiquidityPair(appID1, s.addr(1), asset2.Denom, asset3.Denom)

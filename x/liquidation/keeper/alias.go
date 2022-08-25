@@ -6,6 +6,7 @@ import (
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -193,4 +194,20 @@ func (k Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
 	}
 
 	return k.bank.BurnCoins(ctx, name, sdk.NewCoins(coin))
+}
+
+func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error {
+	return k.rewards.CalculateVaultInterest(ctx, appID, assetID, lockerID, NetBalance, blockHeight, lockerBlockTime)
+}
+
+func (k Keeper) DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker) {
+	k.rewards.DeleteVaultInterestTracker(ctx, vault)
+}
+
+func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
+	return k.auction.DutchActivator(ctx, lockedVault)
+}
+
+func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
+	return k.auction.LendDutchActivator(ctx, lockedVault)
 }

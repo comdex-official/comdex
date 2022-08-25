@@ -6,6 +6,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 )
 
@@ -74,4 +75,8 @@ func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bo
 
 func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID uint64, Depositor string, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error {
 	return k.rewards.CalculateLockerRewards(ctx, appID, assetID, lockerID, Depositor, NetBalance, blockHeight, lockerBlockTime)
+}
+
+func (k Keeper) DeleteLockerRewardTracker(ctx sdk.Context, rewards rewardstypes.LockerRewardsTracker) {
+	k.rewards.DeleteLockerRewardTracker(ctx, rewards)
 }

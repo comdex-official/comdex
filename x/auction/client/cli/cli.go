@@ -30,6 +30,7 @@ func GetQueryCmd() *cobra.Command {
 		queryDutchLendAuction(),
 		queryDutchLendAuctions(),
 		queryDutchLendBiddings(),
+		queryFilterDutchAuctions(),
 	)
 
 	return cmd

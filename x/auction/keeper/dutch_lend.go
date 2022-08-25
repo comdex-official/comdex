@@ -10,58 +10,58 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVaults []liquidationtypes.LockedVault) error {
-	for _, lockedVault := range lockedVaults {
-		if lockedVault.Kind != nil {
-			if !lockedVault.IsAuctionInProgress {
-				extendedPair, found := k.GetLendPair(ctx, lockedVault.ExtendedPairId)
-				if !found {
-					return auctiontypes.ErrorInvalidPair
-				}
-				assetIn, _ := k.GetAsset(ctx, extendedPair.AssetIn)
+func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
 
-				assetOut, _ := k.GetAsset(ctx, extendedPair.AssetOut)
+	if lockedVault.Kind != nil {
+		if !lockedVault.IsAuctionInProgress {
+			extendedPair, found := k.GetLendPair(ctx, lockedVault.ExtendedPairId)
+			if !found {
+				return auctiontypes.ErrorInvalidPair
+			}
+			assetIn, _ := k.GetAsset(ctx, extendedPair.AssetIn)
 
-				assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-				if !found {
-					ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
-					continue
-				}
-				assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
-				if !found {
-					ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
-					continue
-				}
-				//assetInPrice is the collateral price
-				////Here collateral to be auctioned is received in ucollateral*uusd so inorder to get back amount we divide with uusd of assetIn
-				AssetInPrice := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))
-				if AssetInPrice.Equal(sdk.ZeroDec()) {
-					ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
-					continue
-				}
-				AssetOutPrice := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetOutPrice))
-				if AssetOutPrice.Equal(sdk.ZeroDec()) {
-					ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
-					continue
-				}
-				outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(AssetInPrice).TruncateInt())
-				inflowToken := sdk.NewCoin(assetOut.Denom, lockedVault.CollateralToBeAuctioned.Quo(AssetOutPrice).TruncateInt())
+			assetOut, _ := k.GetAsset(ctx, extendedPair.AssetOut)
 
-				AssetRatesStats, found := k.GetAssetRatesStats(ctx, extendedPair.AssetIn)
-				if !found {
-					ctx.Logger().Error(auctiontypes.ErrorAssetRates.Error(), lockedVault.LockedVaultId)
-					continue
-				}
-				liquidationPenalty := AssetRatesStats.LiquidationPenalty
+			assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
+			if !found {
+				ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
+				return nil
+			}
+			assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
+			if !found {
+				ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
+				return nil
+			}
+			//assetInPrice is the collateral price
+			////Here collateral to be auctioned is received in ucollateral*uusd so inorder to get back amount we divide with uusd of assetIn
+			AssetInPrice := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))
+			if AssetInPrice.Equal(sdk.ZeroDec()) {
+				ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
+				return nil
+			}
+			AssetOutPrice := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetOutPrice))
+			if AssetOutPrice.Equal(sdk.ZeroDec()) {
+				ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
+				return nil
+			}
+			outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(AssetInPrice).TruncateInt())
+			inflowToken := sdk.NewCoin(assetOut.Denom, lockedVault.CollateralToBeAuctioned.Quo(AssetOutPrice).TruncateInt())
 
-				err1 := k.StartLendDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
-				if err1 != nil {
-					ctx.Logger().Error(auctiontypes.ErrorInStartDutchAuction.Error(), lockedVault.LockedVaultId)
-					continue
-				}
+			AssetRatesStats, found := k.GetAssetRatesStats(ctx, extendedPair.AssetIn)
+			if !found {
+				ctx.Logger().Error(auctiontypes.ErrorAssetRates.Error(), lockedVault.LockedVaultId)
+				return nil
+			}
+			liquidationPenalty := AssetRatesStats.LiquidationPenalty
+
+			err1 := k.StartLendDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
+			if err1 != nil {
+				ctx.Logger().Error(auctiontypes.ErrorInStartDutchAuction.Error(), lockedVault.LockedVaultId)
+				return nil
 			}
 		}
 	}
+
 	return nil
 }
 

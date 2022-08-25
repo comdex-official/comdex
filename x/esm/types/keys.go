@@ -25,10 +25,7 @@ var (
 	ESMStatusPrefix             = []byte{0x03}
 	KillSwitchDataKey           = []byte{0x04}
 	UserDepositByAppPrefix      = []byte{0x05}
-	ESMPricePrefix              = []byte{0x06}
 	ESMDataAfterCoolOffPrefix   = []byte{0x07}
-	AssetToAmountValueKeyPrefix = []byte{0x08}
-	AppToAmountValueKeyPrefix   = []byte{0x09}
 	SnapshotKeyPrefix           = []byte{0x10}
 )
 
@@ -54,18 +51,6 @@ func KillSwitchData(appID uint64) []byte {
 
 func UserDepositByAppKey(owner string, id uint64) []byte {
 	return append(append(UserDepositByAppPrefix, sdk.Uint64ToBigEndian(id)...), owner...)
-}
-
-func ESMSPriceKey(id uint64) []byte {
-	return append(ESMPricePrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func AssetToAmountValueKey(appID, assetID uint64) []byte {
-	return append(append(AssetToAmountValueKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
-}
-
-func AppToAmountValueKey(id uint64) []byte {
-	return append(AppToAmountValueKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func SnapshotTypeKey(appID uint64, assetID uint64) []byte {
