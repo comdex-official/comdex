@@ -38,8 +38,8 @@ func (s *ModuleTestSuite) TestMsgCreate() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
 	appID1 := s.CreateNewApp("appone")
-	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
 
@@ -70,8 +70,8 @@ func (s *ModuleTestSuite) TestMsgDeposit() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
-	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
 
@@ -104,8 +104,8 @@ func (s *ModuleTestSuite) TestMsgWithdraw() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
-	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
 
@@ -136,8 +136,8 @@ func (s *ModuleTestSuite) TestMsgDraw() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
-	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
 
@@ -168,8 +168,8 @@ func (s *ModuleTestSuite) TestMsgRepay() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
-	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
 
@@ -200,8 +200,8 @@ func (s *ModuleTestSuite) TestMsgClose() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
-	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
 
@@ -228,8 +228,8 @@ func (s *ModuleTestSuite) TestMsgCreateStableMint() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
-	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, true, true)
 
@@ -254,8 +254,8 @@ func (s *ModuleTestSuite) TestMsgDepositStableMint() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
-	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, true, true)
 
@@ -288,8 +288,8 @@ func (s *ModuleTestSuite) TestMsgWithdrawStableMint() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
-	asseOneID := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asseTwoID := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, true, true)
 

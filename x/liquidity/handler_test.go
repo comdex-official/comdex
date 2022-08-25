@@ -50,8 +50,8 @@ func (s *ModuleTestSuite) TestMsgCreatePair() {
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 
 	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
@@ -83,8 +83,8 @@ func (s *ModuleTestSuite) TestMsgCreatePool() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 
@@ -124,8 +124,8 @@ func (s *ModuleTestSuite) TestMsgDeposit() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
@@ -154,8 +154,8 @@ func (s *ModuleTestSuite) TestMsgWithdraw() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
@@ -181,8 +181,8 @@ func (s *ModuleTestSuite) TestMsgLimitOrder() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
@@ -227,8 +227,8 @@ func (s *ModuleTestSuite) TestMsgMarketOrder() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
@@ -277,8 +277,8 @@ func (s *ModuleTestSuite) TestMsgCancelOrder() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
@@ -309,8 +309,8 @@ func (s *ModuleTestSuite) TestMsgCancelAllOrders() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
@@ -340,8 +340,8 @@ func (s *ModuleTestSuite) TestMsgFarm() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
@@ -368,8 +368,8 @@ func (s *ModuleTestSuite) TestMsgUnfarm() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")

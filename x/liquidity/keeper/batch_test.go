@@ -17,8 +17,8 @@ func (s *KeeperTestSuite) TestOrderExpiration() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
 

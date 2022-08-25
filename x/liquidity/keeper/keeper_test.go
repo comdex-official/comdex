@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"encoding/binary"
+	"strings"
 	"testing"
 	"time"
 
@@ -89,8 +90,8 @@ func newDec(i int64) sdk.Dec {
 
 func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
-		Name:             appName,
-		ShortName:        appName,
+		Name:             strings.ToLower(appName),
+		ShortName:        strings.ToLower(appName),
 		MinGovDeposit:    sdk.NewInt(0),
 		GovTimeInSeconds: 0,
 		GenesisToken:     []assettypes.MintGenesisToken{},
