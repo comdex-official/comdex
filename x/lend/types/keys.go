@@ -77,8 +77,6 @@ var (
 	ReservePoolRecordsForBorrowKeyPrefix  = []byte{0x42}
 	LendRewardsTrackerKeyPrefix           = []byte{0x43}
 	BorrowInterestTrackerKeyPrefix        = []byte{0x44}
-	BorrowRankingKeyPrefix                = []byte{0x45}
-	DepositRankingKeyPrefix               = []byte{0x45}
 )
 
 func ReserveFundsKey(tokenDenom string) []byte {
