@@ -783,7 +783,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 					continue
 				}
 				assetData, _ := k.GetAsset(ctx, assetID)
-	
+
 				if newReward.GT(sdk.ZeroInt()) {
 					err = k.SendCoinFromModuleToModule(ctx, types.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
 					if err != nil {
@@ -814,7 +814,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 				} else {
 					lockerData.BlockHeight = 0
 				}
-	
+
 				lockerData.NetBalance = lockerData.NetBalance.Add(newReward)
 				lockerData.ReturnsAccumulated = lockerData.ReturnsAccumulated.Add(newReward)
 				k.SetLocker(ctx, lockerData)
@@ -831,7 +831,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 					lockerData.BlockHeight = 0
 				}
 				k.SetLocker(ctx, lockerData)
-	
+
 			}
 
 		}

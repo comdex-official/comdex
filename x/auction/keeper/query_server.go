@@ -479,7 +479,7 @@ func (q QueryServer) QueryFilterDutchAuctions(c context.Context, req *types.Quer
 				check = true
 			}
 
-			if accumulate && check{
+			if accumulate && check {
 				items = append(items, item)
 			}
 

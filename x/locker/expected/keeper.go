@@ -43,5 +43,5 @@ type EsmKeeper interface {
 
 type RewardsKeeper interface {
 	CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID uint64, Depositor string, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error
-	DeleteLockerRewardTracker(ctx sdk.Context, rewards rewardstypes.LockerRewardsTracker) 
+	DeleteLockerRewardTracker(ctx sdk.Context, rewards rewardstypes.LockerRewardsTracker)
 }

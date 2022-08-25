@@ -23,8 +23,7 @@ var (
 	_ = baseapp.Paramspace
 )
 
-const (
-)
+const ()
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
@@ -32,8 +31,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	for i, acc := range simState.Accounts {
 		accs[i] = acc.Address.String()
 	}
-	esmGenesis := types.GenesisState{
-	}
+	esmGenesis := types.GenesisState{}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&esmGenesis)
 }
 

@@ -17,7 +17,6 @@ func TestGenesis(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
-
 	}
 
 	rewards.InitGenesis(ctx, comdexApp.Rewardskeeper, genesisState)

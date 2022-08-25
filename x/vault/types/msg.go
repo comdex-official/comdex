@@ -574,15 +574,14 @@ func (m *MsgWithdrawStableMintRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-
 func NewMsgVaultInterestCalcRequest(
 	// nolint
 	from sdk.AccAddress,
 	appID uint64, userVaultId uint64) *MsgVaultInterestCalcRequest {
 	return &MsgVaultInterestCalcRequest{
-		From:                from.String(),
-		AppId:               appID,
-		UserVaultId:         userVaultId,
+		From:        from.String(),
+		AppId:       appID,
+		UserVaultId: userVaultId,
 	}
 }
 
