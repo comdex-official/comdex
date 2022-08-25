@@ -33,20 +33,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetUserDepositByApp(ctx, item)
 	}
 
-	for _, item := range state.ESMMarketPrice {
-		k.SetESMMarketForAsset(ctx, item)
-	}
-
 	for _, item := range state.DataAfterCoolOff {
 		k.SetDataAfterCoolOff(ctx, item)
-	}
-
-	for _, item := range state.AssetToAmountValue {
-		k.SetAssetToAmountValue(ctx, item)
-	}
-
-	for _, item := range state.AppToAmountValue {
-		k.SetAppToAmtValue(ctx, item)
 	}
 }
 
@@ -58,10 +46,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetAllESMStatus(ctx),
 		k.GetAllKillSwitchData(ctx),
 		k.GetAllUserDepositByApp(ctx),
-		k.GetAllESMMarketForAsset(ctx),
 		k.GetAllDataAfterCoolOff(ctx),
-		k.GetAllAssetToAmountValue(ctx),
-		k.GetAllAppToAmtValue(ctx),
 		k.GetParams(ctx),
 	)
 }

@@ -24,6 +24,7 @@ type Keeper struct {
 	market     expected.MarketKeeper
 	auction    expected.AuctionKeeper
 	esm        expected.EsmKeeper
+	rewards    expected.RewardsKeeper
 	lend       expected.LendKeeper
 }
 
@@ -39,6 +40,7 @@ func NewKeeper(
 	market expected.MarketKeeper,
 	auction expected.AuctionKeeper,
 	esm expected.EsmKeeper,
+	rewards expected.RewardsKeeper,
 	lend expected.LendKeeper,
 
 ) Keeper {
@@ -60,6 +62,7 @@ func NewKeeper(
 		market:     market,
 		auction:    auction,
 		esm:        esm,
+		rewards:    rewards,
 		lend:       lend,
 	}
 }

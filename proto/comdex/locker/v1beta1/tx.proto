@@ -3,7 +3,7 @@ package comdex.locker.v1beta1;
 
 import "gogoproto/gogo.proto";
 
-option go_package            = "github.com/comdex-official/comdex/x/locker/types";
+option go_package = "github.com/comdex-official/comdex/x/locker/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
@@ -14,22 +14,23 @@ service Msg {
   rpc MsgDepositAsset(MsgDepositAssetRequest) returns (MsgDepositAssetResponse);
   rpc MsgWithdrawAsset(MsgWithdrawAssetRequest) returns (MsgWithdrawAssetResponse);
   rpc MsgCloseLocker(MsgCloseLockerRequest) returns (MsgCloseLockerResponse);
+  rpc MsgLockerRewardCalc(MsgLockerRewardCalcRequest) returns (MsgLockerRewardCalcResponse);
 }
 
 message MsgCreateLockerRequest{
 
-  string depositor = 1 [ (gogoproto.moretags) = "yaml:\"depositor\"" ];
+  string depositor = 1 [(gogoproto.moretags) = "yaml:\"depositor\""];
 
   string amount = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount\"",
-    (gogoproto.nullable)   = false
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
   ];
-  uint64 asset_id  = 3 [
-     (gogoproto.moretags) = "yaml:\"asset_id\""
+  uint64 asset_id = 3 [
+    (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
   uint64 app_id = 4 [
-    (gogoproto.moretags)   = "yaml:\"app_id\""
+    (gogoproto.moretags) = "yaml:\"app_id\""
   ];
 }
 
@@ -40,38 +41,37 @@ message MsgAddWhiteListedAssetRequest {
 
   string from = 1 [
     (gogoproto.moretags) = "yaml:\"from\""
-    ];
+  ];
 
   uint64 app_id = 2 [
-    (gogoproto.moretags)   = "yaml:\"app_id\""
- 
+    (gogoproto.moretags) = "yaml:\"app_id\""
+
   ];
   uint64 asset_id = 3 [
-    (gogoproto.moretags)   = "yaml:\"asset_id\""
+    (gogoproto.moretags) = "yaml:\"asset_id\""
 
   ];
 }
 
-
 message MsgAddWhiteListedAssetResponse {}
 
 message MsgDepositAssetRequest {
-  string depositor = 1 [ 
+  string depositor = 1 [
     (gogoproto.moretags) = "yaml:\"depositor\""
-    ];
-  uint64 locker_id   = 2[
-     (gogoproto.moretags) = "yaml:\"locker_id\"" ];
-  string amount    = 3 [
+  ];
+  uint64 locker_id = 2[
+    (gogoproto.moretags) = "yaml:\"locker_id\""];
+  string amount = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount\"",
-    (gogoproto.nullable)   = false
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
 
   ];
-  uint64 asset_id  = 4 [
-     (gogoproto.moretags) = "yaml:\"asset_id\""
+  uint64 asset_id = 4 [
+    (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
   uint64 app_id = 5 [
-    (gogoproto.moretags)   = "yaml:\"app_id\""
+    (gogoproto.moretags) = "yaml:\"app_id\""
 
   ];
 }
@@ -80,45 +80,53 @@ message MsgDepositAssetResponse {}
 
 message MsgWithdrawAssetRequest {
   string depositor = 1 [
-     (gogoproto.moretags) = "yaml:\"depositor\""
-     ];
-  uint64 locker_id   = 2
-      [
-       (gogoproto.moretags) = "yaml:\"locker_id\"" ];
+    (gogoproto.moretags) = "yaml:\"depositor\""
+  ];
+  uint64 locker_id = 2
+  [
+    (gogoproto.moretags) = "yaml:\"locker_id\""];
   string amount = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags)   = "yaml:\"amount\"",
-    (gogoproto.nullable)   = false
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
 
   ];
-  uint64 asset_id  = 4 [
-     (gogoproto.moretags) = "yaml:\"asset_id\""
+  uint64 asset_id = 4 [
+    (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
   uint64 app_id = 5 [
-    (gogoproto.moretags)   = "yaml:\"app_id\""
+    (gogoproto.moretags) = "yaml:\"app_id\""
   ];
 }
 
-message MsgWithdrawAssetResponse {
-
-}
+message MsgWithdrawAssetResponse {}
 
 message MsgCloseLockerRequest {
   string depositor = 1 [
-     (gogoproto.moretags) = "yaml:\"depositor\""
-     ];
+    (gogoproto.moretags) = "yaml:\"depositor\""
+  ];
   uint64 app_id = 2 [
-      (gogoproto.moretags)   = "yaml:\"app_id\""
-      ];
-  uint64 asset_id  = 3 [
-      (gogoproto.moretags) = "yaml:\"asset_id\""
+    (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+  uint64 asset_id = 3 [
+    (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
 
-  uint64 locker_id   = 4
-      [
-       (gogoproto.moretags) = "yaml:\"locker_id\"" ];
+  uint64 locker_id = 4
+  [
+    (gogoproto.moretags) = "yaml:\"locker_id\""];
 }
 
-message MsgCloseLockerResponse {
+message MsgCloseLockerResponse {}
 
+message MsgLockerRewardCalcRequest {
+  string from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  uint64 app_id = 2 [
+    (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+  uint64 locker_id = 3
+  [
+    (gogoproto.moretags) = "yaml:\"locker_id\""];
 }
+
+message  MsgLockerRewardCalcResponse{}

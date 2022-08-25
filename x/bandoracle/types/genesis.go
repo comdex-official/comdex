@@ -11,7 +11,6 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		PortId: PortID,
-		// this line is used by starport scaffolding # genesis/types/default.
 		Params: DefaultParams(),
 	}
 }
@@ -22,7 +21,6 @@ func (gs GenesisState) Validate() error {
 	if err := host.PortIdentifierValidator(gs.PortId); err != nil {
 		return err
 	}
-	// this line is used by starport scaffolding # genesis/types/validate.
 
 	return gs.Params.Validate()
 }

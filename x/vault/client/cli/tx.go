@@ -35,6 +35,7 @@ func GetTxCmd() *cobra.Command {
 		CreateStableMint(),
 		DepositStableMint(),
 		WithdrawStableMint(),
+		CalculateInterest(),
 	)
 
 	return cmd
@@ -452,6 +453,41 @@ func WithdrawStableMint() *cobra.Command {
 			}
 
 			msg := types.NewMsgWithdrawStableMintRequest(ctx.FromAddress, appID, extendedPairVaultID, amount, stablemintID)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func CalculateInterest() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "calculate-interest [appID] [userVaultID]",
+		Short: "calculate interest by app and user vault id",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			userVaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgVaultInterestCalcRequest(ctx.FromAddress, appID, userVaultID)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

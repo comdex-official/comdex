@@ -24,7 +24,6 @@ package tokenmint
 // )
 
 // const (
-//     // this line is used by starport scaffolding # simapp/module/const
 // )
 
 // // GenerateGenesisState creates a randomized GenState of the module
@@ -34,7 +33,6 @@ package tokenmint
 // 		accs[i] = acc.Address.String()
 // 	}
 // 	tokenmintGenesis := types.GenesisState{
-// 		// this line is used by starport scaffolding # simapp/module/genesisState
 // 	}
 // 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&tokenmintGenesis)
 // }
@@ -57,8 +55,6 @@ package tokenmint
 // // WeightedOperations returns the all the gov module operations with their respective weights.
 // func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 // 	operations := make([]simtypes.WeightedOperation, 0)
-
-// 	// this line is used by starport scaffolding # simapp/module/operation
 
 // 	return operations
 // }

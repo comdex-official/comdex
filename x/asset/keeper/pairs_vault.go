@@ -309,35 +309,46 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 				}
 			}
 
-			vaultInterestTracker, found := k.rewards.GetVaultInterestTracker(ctx, extPairVault.ExtendedPairId, appID)
+			vaultInterestTracker, found := k.rewards.GetVaultInterestTracker(ctx, valID, appID)
 			if !found {
 				vaultInterestTracker = rewardstypes.VaultInterestTracker{
-					VaultId:             extPairVault.ExtendedPairId,
+					VaultId:             valID,
 					AppMappingId:        appID,
-					InterestAccumulated: sdk.ZeroDec(),
+					InterestAccumulated: interest,
 				}
+			} else {
+				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
 			}
-			vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
-			newInterest := sdk.ZeroInt()
 			if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
+				newInterest := sdk.ZeroInt()
 				newInterest = vaultInterestTracker.InterestAccumulated.TruncateInt()
 				newInterestDec := sdk.NewDec(newInterest.Int64())
 				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
-			}
-			k.rewards.SetVaultInterestTracker(ctx, vaultInterestTracker)
 
-			// updating user rewards data
-			vaultData.BlockTime = ctx.BlockTime()
-			if changeTypes {
-				vaultData.BlockHeight = ctx.BlockHeight()
+				// updating user rewards data
+				vaultData.BlockTime = ctx.BlockTime()
+				if changeTypes {
+					vaultData.BlockHeight = ctx.BlockHeight()
+				} else {
+					vaultData.BlockHeight = 0
+				}
+
+				k.rewards.SetVaultInterestTracker(ctx, vaultInterestTracker)
+				intAcc := vaultData.InterestAccumulated
+				updatedIntAcc := (intAcc).Add(newInterest)
+				vaultData.InterestAccumulated = updatedIntAcc
+				k.vault.SetVault(ctx, vaultData)
 			} else {
-				vaultData.BlockHeight = 0
+				k.rewards.SetVaultInterestTracker(ctx, vaultInterestTracker)
+				// updating user rewards data
+				vaultData.BlockTime = ctx.BlockTime()
+				if changeTypes {
+					vaultData.BlockHeight = ctx.BlockHeight()
+				} else {
+					vaultData.BlockHeight = 0
+				}
+				k.vault.SetVault(ctx, vaultData)
 			}
-
-			intAcc := vaultData.InterestAccumulated
-			updatedIntAcc := (intAcc).Add(newInterest)
-			vaultData.InterestAccumulated = updatedIntAcc
-			k.vault.SetVault(ctx, vaultData)
 
 		}
 	}

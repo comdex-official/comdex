@@ -6,13 +6,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"strconv"
 
-	// "strings"
-
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	// "github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/esm/types"
 )
@@ -35,6 +31,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryCurrentDepositStats(),
 		queryUsersDepositMapping(),
 		queryDataAfterCoolOff(),
+		querySnapshotPrice(),
 	)
 
 	return cmd
@@ -212,6 +209,49 @@ func queryDataAfterCoolOff() *cobra.Command {
 				context.Background(),
 				&types.QueryDataAfterCoolOffRequest{
 					Id: id,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func querySnapshotPrice() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "price_snapshot [app-id] [asset-id]",
+		Short: "Query price snapshot for esm",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			asset, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QuerySnapshotPrice(
+				context.Background(),
+				&types.QuerySnapshotPriceRequest{
+					AppId: id,
+					AssetId: asset,
 				},
 			)
 			if err != nil {

@@ -30,10 +30,6 @@ func (q QueryServer) QueryCollectorLookupByApp(c context.Context, req *types.Que
 	var (
 		ctx = sdk.UnwrapSDKContext(c)
 	)
-	_, found := q.GetApp(ctx, req.AppId)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
-	}
 
 	collectorLookupData, found := q.GetCollectorLookupTableByApp(ctx, req.AppId)
 	if !found {

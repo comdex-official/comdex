@@ -63,6 +63,15 @@ message QueryDataAfterCoolOffResponse {
   [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"data_after_cool_off\""];
 }
 
+message QuerySnapshotPriceRequest {
+  uint64 app_id = 1;
+  uint64 asset_id = 2;
+}
+
+message QuerySnapshotPriceResponse {
+  uint64 price = 1; 
+}
+
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/v1beta1/esm/params";
@@ -86,5 +95,9 @@ service Query {
 
   rpc QueryDataAfterCoolOff(QueryDataAfterCoolOffRequest) returns (QueryDataAfterCoolOffResponse) {
     option (google.api.http).get = "/comdex/esm/v1beta1/data_after_cool_off/{id}";
+  }
+
+  rpc QuerySnapshotPrice(QuerySnapshotPriceRequest) returns (QuerySnapshotPriceResponse) {
+    option (google.api.http).get = "/comdex/esm/v1beta1/price_snapshot/{app_id}/{asset_id}";
   }
 }

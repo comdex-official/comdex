@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -97,7 +98,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	userLocker.BlockHeight = blockHeight
 	userLocker.BlockTime = blockTime
 	k.SetLocker(ctx, userLocker)
-	k.SetIDForLocker(ctx, id)
+	k.SetIDForLocker(ctx, id+1)
 
 	//Create a new instance
 	var userMappingData types.UserAppAssetLockerMapping
@@ -359,8 +360,37 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 	}
 
 	k.DeleteLocker(ctx, lockerData.LockerId)
+	var rewards rewardstypes.LockerRewardsTracker
+	rewards.AppMappingId = appMapping.Id
+	rewards.LockerId = lockerData.LockerId
+	k.DeleteLockerRewardTracker(ctx, rewards)
 
 	ctx.GasMeter().ConsumeGas(types.CloseLockerGas, "CloseLockerGas")
 
 	return &types.MsgCloseLockerResponse{}, nil
+}
+
+func (k msgServer) MsgLockerRewardCalc(c context.Context, msg *types.MsgLockerRewardCalcRequest) (*types.MsgLockerRewardCalcResponse, error) {
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	appMapping, found := k.GetApp(ctx, msg.AppId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+	depositor, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+	lockerData, found := k.GetLocker(ctx, msg.LockerId)
+
+	if !found {
+		return nil, types.ErrorLockerDoesNotExists
+	}
+	err1 := k.CalculateLockerRewards(ctx, appMapping.Id, lockerData.AssetDepositId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
+	if err1 != nil {
+		return nil, err1
+	}
+
+	return &types.MsgLockerRewardCalcResponse{}, nil
 }

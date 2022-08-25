@@ -642,6 +642,7 @@ func New(
 		&app.MarketKeeper,
 		&app.AuctionKeeper,
 		&app.EsmKeeper,
+		&app.Rewardskeeper,
 		&app.LendKeeper,
 	)
 
