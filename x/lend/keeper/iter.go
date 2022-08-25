@@ -11,11 +11,11 @@ func (k Keeper) IterateLends(ctx sdk.Context) error {
 	lends, _ := k.GetLends(ctx)
 	for _, v := range lends.LendIDs {
 		lend, _ := k.GetLend(ctx, v)
-		lendAPY, err := k.GetLendAPRByAssetIDAndPoolID(ctx, lend.PoolID, lend.AssetID)
+		lendAPR, err := k.GetLendAPRByAssetIDAndPoolID(ctx, lend.PoolID, lend.AssetID)
 		if err != nil {
 			continue
 		}
-		interestPerBlock, err := k.CalculateRewards(ctx, lend.AmountIn.Amount.String(), lendAPY)
+		interestPerBlock, err := k.CalculateRewards(ctx, lend.AmountIn.Amount.String(), lendAPR)
 		if err != nil {
 			continue
 		}
@@ -68,8 +68,8 @@ func (k Keeper) IterateBorrows(ctx sdk.Context) error {
 		borrow, _ := k.GetBorrow(ctx, v)
 		pair, _ := k.GetLendPair(ctx, borrow.PairID)
 
-		borrowAPY, _ := k.GetBorrowAPRByAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut, borrow.IsStableBorrow)
-		interestPerBlock, err := k.CalculateRewards(ctx, borrow.AmountOut.Amount.String(), borrowAPY)
+		borrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut, borrow.IsStableBorrow)
+		interestPerBlock, err := k.CalculateRewards(ctx, borrow.AmountOut.Amount.String(), borrowAPR)
 		if err != nil {
 			continue
 		}

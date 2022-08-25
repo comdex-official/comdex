@@ -100,25 +100,26 @@ func (k Keeper) GetRates(ctx sdk.Context, symbol string) (uint64, bool) {
 func (k Keeper) SetRates(ctx sdk.Context, _ string) {
 	id := k.bandoraclekeeper.GetLastFetchPriceID(ctx)
 	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))
-
-	var sym []string
-	allAssets := k.GetAssets(ctx)
-	var assets []assetTypes.Asset
-	for _, a := range allAssets {
-		if a.IsOraclePriceRequired {
-			assets = append(assets, a)
+	if data.Rates != nil {
+		var sym []string
+		allAssets := k.GetAssets(ctx)
+		var assets []assetTypes.Asset
+		for _, a := range allAssets {
+			if a.IsOraclePriceRequired {
+				assets = append(assets, a)
+			}
 		}
-	}
-	for i, asset := range assets {
-		if asset.IsOraclePriceRequired {
-			sym = append(sym, asset.Name)
-			store := k.Store(ctx)
-			key := types.PriceForMarketKey(sym[i])
-			value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-				Value: data.Rates[i],
-			})
-			store.Set(key, value)
+		for i, asset := range assets {
+			if asset.IsOraclePriceRequired {
+				sym = append(sym, asset.Name)
+				store := k.Store(ctx)
+				key := types.PriceForMarketKey(sym[i])
+				value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
+					Value: data.Rates[i],
+				})
+				store.Set(key, value)
 
+			}
 		}
 	}
 }
@@ -164,14 +165,19 @@ func (k Keeper) GetMarketForAsset(ctx sdk.Context, id uint64) (market types.Mark
 }
 
 func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	market, found := k.GetMarketForAsset(ctx, id)
-	if !found {
-		return 0, false
+	if id != 3 {
+		market, found := k.GetMarketForAsset(ctx, id)
+		if !found {
+			return 0, false
+		}
+
+		rates, found := k.GetPriceForMarket(ctx, market.Symbol)
+		if !found || rates == 0 {
+			return 0, false
+		}
+		return rates, found
+	} else {
+		return 1000000, true
 	}
 
-	rates, found := k.GetPriceForMarket(ctx, market.Symbol)
-	if !found || rates == 0 {
-		return 0, false
-	}
-	return rates, found
 }

@@ -19,6 +19,7 @@ var (
 	LockedVaultKeyHistory            = []byte{0x12}
 	AppIdsKeyPrefix                  = []byte{0x15}
 	LiquidationOffsetHolderKeyPrefix = []byte{0x16}
+	LockedVaultDataKeyHistory        = []byte{0x17}
 )
 
 // LengthPrefixString returns length-prefixed bytes representation
@@ -41,7 +42,7 @@ func LockedVaultKeyByApp(appID uint64) []byte {
 }
 
 func LockedVaultHistoryKey(appID, lockedVaultID uint64) []byte {
-	return append(append(LockedVaultKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(lockedVaultID)...)
+	return append(append(LockedVaultDataKeyHistory, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(lockedVaultID)...)
 }
 
 // GetLiquidationOffsetHolderKey returns the index key to look offset value for liquidation.

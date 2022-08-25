@@ -196,6 +196,9 @@ func (msg *MsgFundModuleAccounts) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
+	if msg.ModuleName == "" {
+		return fmt.Errorf("module name can not be empty")
+	}
 
 	if msg.AssetId <= 0 {
 		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)

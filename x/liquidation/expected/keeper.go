@@ -4,9 +4,9 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -17,6 +17,7 @@ type AccountKeeper interface {
 }
 
 type BankKeeper interface {
+	BurnCoins(ctx sdk.Context, name string, coins sdk.Coins) error
 	MintCoins(ctx sdk.Context, name string, coins sdk.Coins) error
 	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, amt sdk.Coins) error
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
@@ -50,6 +51,7 @@ type MarketKeeper interface {
 type AuctionKeeper interface {
 	GetParams(ctx sdk.Context) auctiontypes.Params
 	DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
+	LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
 }
 
 type EsmKeeper interface {
@@ -78,9 +80,11 @@ type LendKeeper interface {
 	GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats lendtypes.AssetStats, found bool)
 	SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats lendtypes.AssetStats)
 	UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, borrowPos lendtypes.BorrowAsset, amount sdk.Int, inc bool)
+	UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error
+	SetLend(ctx sdk.Context, lend lendtypes.LendAsset)
 }
 
 type RewardsKeeper interface {
 	CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error
-	DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker) 
+	DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker)
 }
