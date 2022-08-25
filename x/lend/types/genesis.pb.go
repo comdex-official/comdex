@@ -23,7 +23,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// GenesisState defines the lend module's genesis state.
 type GenesisState struct {
 	BorrowAsset                   []BorrowAsset                   `protobuf:"bytes,1,rep,name=borrowAsset,proto3" json:"borrowAsset" yaml:"borrowAsset"`
 	UserBorrowIdMapping           []UserBorrowIdMapping           `protobuf:"bytes,2,rep,name=userBorrowIdMapping,proto3" json:"userBorrowIdMapping" yaml:"userBorrowIdMapping"`

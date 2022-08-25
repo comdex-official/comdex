@@ -15,6 +15,7 @@ var (
 	_ sdk.Msg = (*MsgCreateStableMintRequest)(nil)
 	_ sdk.Msg = (*MsgDepositStableMintRequest)(nil)
 	_ sdk.Msg = (*MsgWithdrawStableMintRequest)(nil)
+	_ sdk.Msg = (*MsgVaultInterestCalcRequest)(nil)
 )
 
 func NewMsgCreateRequest(
@@ -373,7 +374,7 @@ func (m *MsgDepositAndDrawRequest) Route() string {
 }
 
 func (m *MsgDepositAndDrawRequest) Type() string {
-	return TypeMsgDepositRequest
+	return TypeMsgDepositDrawRequest
 }
 
 func (m *MsgDepositAndDrawRequest) ValidateBasic() error {
@@ -565,6 +566,50 @@ func (m *MsgWithdrawStableMintRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgWithdrawStableMintRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+
+func NewMsgVaultInterestCalcRequest(
+	// nolint
+	from sdk.AccAddress,
+	appID uint64, userVaultId uint64) *MsgVaultInterestCalcRequest {
+	return &MsgVaultInterestCalcRequest{
+		From:                from.String(),
+		AppId:               appID,
+		UserVaultId:         userVaultId,
+	}
+}
+
+func (m *MsgVaultInterestCalcRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgVaultInterestCalcRequest) Type() string {
+	return TypeMsgVaultInterestCalcRequest
+}
+
+func (m *MsgVaultInterestCalcRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+
+	return nil
+}
+
+func (m *MsgVaultInterestCalcRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgVaultInterestCalcRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

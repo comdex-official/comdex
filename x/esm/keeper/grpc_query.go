@@ -116,3 +116,22 @@ func (q QueryServer) QueryDataAfterCoolOff(c context.Context, req *types.QueryDa
 		DataAfterCoolOff: item,
 	}, nil
 }
+
+func (q QueryServer) QuerySnapshotPrice(c context.Context, req *types.QuerySnapshotPriceRequest) (*types.QuerySnapshotPriceResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+
+	price, found := q.GetSnapshotOfPrices(ctx, req.AppId, req.AssetId)
+	if !found {
+		return nil, types.ErrPriceNotFound
+	}
+
+	return &types.QuerySnapshotPriceResponse{
+		Price: price,
+	}, nil
+}

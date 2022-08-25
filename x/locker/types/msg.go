@@ -10,6 +10,7 @@ var (
 	_ sdk.Msg = (*MsgDepositAssetRequest)(nil)
 	_ sdk.Msg = (*MsgWithdrawAssetRequest)(nil)
 	_ sdk.Msg = (*MsgAddWhiteListedAssetRequest)(nil)
+	_ sdk.Msg = (*MsgLockerRewardCalcRequest)(nil)
 )
 
 func NewMsgCreateLockerRequest(from string, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgCreateLockerRequest {
@@ -251,3 +252,49 @@ func (m *MsgCloseLockerRequest) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+
+func NewMsgLockerRewardCalcRequest(from string, appID uint64, lockerID uint64) *MsgLockerRewardCalcRequest {
+	return &MsgLockerRewardCalcRequest{
+		From: from,
+		AppId:     appID,
+		LockerId:  lockerID,
+	}
+}
+
+func (m *MsgLockerRewardCalcRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgLockerRewardCalcRequest) Type() string {
+	return TypeMsgLockerRewardCalcRequest
+}
+
+func (m *MsgLockerRewardCalcRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+
+	if m.LockerId <= 0 {
+		return errors.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
+	}
+
+	return nil
+}
+
+func (m *MsgLockerRewardCalcRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgLockerRewardCalcRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+

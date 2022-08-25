@@ -5,6 +5,7 @@ import (
 
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -806,6 +807,11 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 	//Delete Vault
 	k.DeleteVault(ctx, userVault.Id)
 
+	var rewards rewardstypes.VaultInterestTracker
+	rewards.AppMappingId = appMapping.Id
+	rewards.VaultId = userVault.Id
+	k.DeleteVaultInterestTracker(ctx, rewards)
+
 	ctx.GasMeter().ConsumeGas(types.CloseVaultGas, "CloseVaultGas")
 
 	return &types.MsgCloseResponse{}, nil
@@ -1234,4 +1240,33 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 	ctx.GasMeter().ConsumeGas(types.WithdrawStableVaultGas, "WithdrawStableVaultGas")
 
 	return &types.MsgWithdrawStableMintResponse{}, nil
+}
+
+//take app id
+//check app id
+//take vault id
+// check vault id
+//calculate total debt
+//call function
+//exit function
+
+func (k msgServer) MsgVaultInterestCalc(c context.Context, msg *types.MsgVaultInterestCalcRequest) (*types.MsgVaultInterestCalcResponse, error) {
+
+	ctx := sdk.UnwrapSDKContext(c)
+	appMapping, found := k.GetApp(ctx, msg.AppId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+	userVault, found := k.GetVault(ctx, msg.UserVaultId)
+	if !found {
+		return nil, types.ErrorVaultDoesNotExist
+	}
+
+	totalDebt := userVault.AmountOut.Add(userVault.InterestAccumulated)
+	err1 := k.CalculateVaultInterest(ctx, appMapping.Id, userVault.ExtendedPairVaultID, msg.UserVaultId, totalDebt, userVault.BlockHeight, userVault.BlockTime.Unix())
+	if err1 != nil {
+		return nil, err1
+	}
+
+	return &types.MsgVaultInterestCalcResponse{}, nil
 }

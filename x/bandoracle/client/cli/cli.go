@@ -23,7 +23,6 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(CmdFetchPriceResult())
 	cmd.AddCommand(CmdLastFetchPriceID())
-	// this line is used by starport scaffolding # 1.
 
 	return cmd
 }
@@ -39,7 +38,6 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand()
-	// this line is used by starport scaffolding # 1.
 
 	return cmd
 }

@@ -28,4 +28,5 @@ var (
 	ErrorInvalidFrom               = sdkerrors.Register(ModuleName, 1118, "invalid from")
 	ErrESMParamsNotFound           = sdkerrors.Register(ModuleName, 1119, "ESM Params Not Found")
 	ErrDepositForAppNotFound       = sdkerrors.Register(ModuleName, 1120, "Deposit For AppID not found")
+	ErrPriceNotFound               = sdkerrors.Register(ModuleName, 1121, "Price not found")
 )

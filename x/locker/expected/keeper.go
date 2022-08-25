@@ -6,6 +6,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
 type BankKeeper interface {
@@ -42,4 +43,5 @@ type EsmKeeper interface {
 
 type RewardsKeeper interface {
 	CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID uint64, Depositor string, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error
+	DeleteLockerRewardTracker(ctx sdk.Context, rewards rewardstypes.LockerRewardsTracker) 
 }

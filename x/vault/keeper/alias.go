@@ -6,6 +6,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
 func (k Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
@@ -96,4 +97,8 @@ func (k Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID ui
 
 func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error {
 	return k.rewards.CalculateVaultInterest(ctx, appID, assetID, lockerID, NetBalance, blockHeight, lockerBlockTime)
+}
+
+func (k Keeper) DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker) {
+	k.rewards.DeleteVaultInterestTracker(ctx, vault)
 }

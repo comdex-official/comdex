@@ -18,9 +18,11 @@ var (
 	TypeMsgDrawRequest               = ModuleName + ":draw"
 	TypeMsgRepayRequest              = ModuleName + ":repay"
 	TypeMsgLiquidateRequest          = ModuleName + ":liquidate"
+	TypeMsgDepositDrawRequest		 = ModuleName + ":deposit_draw"
 	TypeMsgCreateStableMintRequest   = ModuleName + ":create_stablemint"
 	TypeMsgDepositStableMintRequest  = ModuleName + ":deposit_stablemint"
 	TypeMsgWithdrawStableMintRequest = ModuleName + ":withdraw_stablemint"
+	TypeMsgVaultInterestCalcRequest  = ModuleName + ":calculate_interest"
 )
 
 var (
@@ -39,9 +41,6 @@ func StableMintVaultKey(stableVaultID uint64) []byte {
 	return append(StableMintVaultKeyPrefix, sdk.Uint64ToBigEndian(stableVaultID)...)
 }
 
-// func UserVaultExtendedPairMappingKey(address string) []byte {
-// 	return append(UserVaultExtendedPairMappingKeyPrefix, address...)
-// }
 
 func AppExtendedPairVaultMappingKey(appMappingID uint64, pairVaultID uint64) []byte {
 	return append(append(AppExtendedPairVaultMappingKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...), sdk.Uint64ToBigEndian(pairVaultID)...)

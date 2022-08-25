@@ -27,6 +27,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgCloseLockerRequest:
 			res, err := server.MsgCloseLocker(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgLockerRewardCalcRequest:
+			res, err := server.MsgLockerRewardCalc(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
 		}
