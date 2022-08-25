@@ -13,8 +13,8 @@ func (s *KeeperTestSuite) TestCreatePair() {
 
 	appID1 := s.CreateNewApp("appone")
 	appID2 := s.CreateNewApp("apptwo")
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 2000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 
 	testCases := []struct {
 		Name               string
