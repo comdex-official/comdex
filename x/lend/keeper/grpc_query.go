@@ -590,31 +590,3 @@ func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAucti
 		AuctionParams: item,
 	}, nil
 }
-
-func (q QueryServer) QueryDepositRanking(c context.Context, req *types.QueryDepositRankingRequest) (*types.QueryDepositRankingResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-	}
-	ctx := sdk.UnwrapSDKContext(c)
-
-	DepositRankingData, found := q.GetDepositRanking(ctx)
-	if !found {
-		return &types.QueryDepositRankingResponse{}, nil
-	}
-
-	return &types.QueryDepositRankingResponse{DepositRanking: DepositRankingData}, nil
-}
-
-func (q QueryServer) QueryBorrowRanking(c context.Context, req *types.QueryBorrowRankingRequest) (*types.QueryBorrowRankingResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-	}
-	ctx := sdk.UnwrapSDKContext(c)
-
-	BorrowRankingData, found := q.GetBorrowRanking(ctx)
-	if !found {
-		return &types.QueryBorrowRankingResponse{}, nil
-	}
-
-	return &types.QueryBorrowRankingResponse{BorrowRanking: BorrowRankingData}, nil
-}

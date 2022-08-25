@@ -48,8 +48,6 @@ func GetQueryCmd() *cobra.Command {
 		queryBuyBackDepositStats(),
 		queryBorrowStats(),
 		queryAuctionParams(),
-		queryDepositRanking(),
-		queryBorrowRanking(),
 	)
 
 	return cmd
@@ -905,61 +903,5 @@ func queryAuctionParams() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 
-	return cmd
-}
-
-func queryDepositRanking() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "deposit-ranking",
-		Short: "Query deposit ranking",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(ctx)
-
-			res, err := queryClient.QueryDepositRanking(
-				context.Background(),
-				&types.QueryDepositRankingRequest{},
-			)
-			if err != nil {
-				return err
-			}
-
-			return ctx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
-func queryBorrowRanking() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "borrow-ranking",
-		Short: "Query borrow ranking",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(ctx)
-
-			res, err := queryClient.QueryBorrowRanking(
-				context.Background(),
-				&types.QueryBorrowRankingRequest{},
-			)
-			if err != nil {
-				return err
-			}
-
-			return ctx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }
