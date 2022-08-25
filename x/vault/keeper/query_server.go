@@ -647,12 +647,10 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	_, found := q.GetApp(ctx, req.AppId)
+	userVaultAssetData, found := q.GetUserAppMappingData(ctx, req.Owner, req.AppId)
 	if !found {
 		return &types.QueryUserMyPositionByAppResponse{}, nil
 	}
-
-	userVaultAssetData, _ := q.GetUserAppMappingData(ctx, req.Owner, req.AppId)
 
 	for _, data := range userVaultAssetData {
 		vaultsIds = append(vaultsIds, data.VaultId)
