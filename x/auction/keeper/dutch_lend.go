@@ -96,21 +96,21 @@ func (k Keeper) StartLendDutchAuction(
 	if !found {
 		return auctiontypes.ErrorInvalidAuctionParams
 	}
-
 	BorrowMetaData := lockedVault.GetBorrowMetaData()
 	LendPos, _ := k.GetLend(ctx, BorrowMetaData.LendingId)
 	pool, _ := k.GetPool(ctx, LendPos.PoolID)
-	err := k.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(outFlowToken))
-	if err != nil {
-		return err
-	}
 	assetStat, _ := k.GetAssetRatesStats(ctx, LendPos.AssetID)
 	cAsset, _ := k.GetAsset(ctx, assetStat.CAssetID)
-	err = k.BurnCoins(ctx, pool.ModuleName, sdk.NewCoin(cAsset.Denom, outFlowToken.Amount))
-	if err != nil {
-		return err
+	if outFlowToken.Amount.GT(sdk.ZeroInt()) {
+		err := k.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(outFlowToken))
+		if err != nil {
+			return err
+		}
+		err = k.BurnCoins(ctx, pool.ModuleName, sdk.NewCoin(cAsset.Denom, outFlowToken.Amount))
+		if err != nil {
+			return err
+		}
 	}
-
 	outFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetOutID)
 	if !found {
 		return auctiontypes.ErrorPrices

@@ -114,7 +114,6 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset, collateralizationRatio sdk.Dec, appID uint64) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 	lendPos, _ := k.GetLend(ctx, borrow.LendingID)
-
 	kind := &types.LockedVault_BorrowMetaData{
 		BorrowMetaData: &types.BorrowMetaData{
 			LendingId:          borrow.LendingID,
@@ -143,7 +142,6 @@ func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset
 		InterestAccumulated:          borrow.Interest_Accumulated,
 		Kind:                         kind,
 	}
-
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
 	return nil
@@ -154,7 +152,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 	if len(lockedVaults) == 0 {
 		return nil
 	}
-
 	for _, lockedVault := range lockedVaults {
 		pair, found := k.GetLendPair(ctx, lockedVault.ExtendedPairId)
 		if !found {
@@ -245,22 +242,27 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 				selloffAmount := numerator.Quo(denominator)
 				updatedLockedVault := lockedVault
 				if lockedVault.SellOffHistory == nil {
-					liquidationDeductionAmount := selloffAmount.Mul(penalty)
-					bonusToBidderAmount := selloffAmount.Mul(assetRatesStats.LiquidationBonus)
-					penaltyToReserveAmount := selloffAmount.Mul(assetRatesStats.LiquidationPenalty)
-					err = k.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, sdk.Int(bonusToBidderAmount))))
+					aip := sdk.NewDec(int64(assetInPrice))
+					liquidationDeductionAmt := selloffAmount.Mul(penalty)
+					liquidationDeductionAmount := liquidationDeductionAmt.Quo(aip)
+					bonusToBidderAmt := selloffAmount.Mul(assetRatesStats.LiquidationBonus)
+
+					bonusToBidderAmount := bonusToBidderAmt.Quo(aip)
+					penaltyToReserveAmt := selloffAmount.Mul(assetRatesStats.LiquidationPenalty)
+					penaltyToReserveAmount := penaltyToReserveAmt.Quo(aip)
+					err = k.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, sdk.NewInt(bonusToBidderAmount.TruncateInt64()))))
 					if err != nil {
 						return err
 					}
-					err = k.UpdateReserveBalances(ctx, pair.AssetIn, pool.ModuleName, sdk.NewCoin(assetIn.Denom, sdk.Int(penaltyToReserveAmount)), true)
+					err = k.UpdateReserveBalances(ctx, pair.AssetIn, pool.ModuleName, sdk.NewCoin(assetIn.Denom, sdk.NewInt(penaltyToReserveAmount.TruncateInt64())), true)
 					if err != nil {
 						return err
 					}
 					cAsset, _ := k.GetAsset(ctx, assetRatesStats.CAssetID)
-					updatedLockedVault.AmountIn = updatedLockedVault.AmountIn.Sub(sdk.Int(liquidationDeductionAmount))
-					lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(sdk.Int(liquidationDeductionAmount))
-					lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(sdk.Int(liquidationDeductionAmount))
-					err = k.BurnCoin(ctx, pool.ModuleName, sdk.NewCoin(cAsset.Denom, sdk.Int(penaltyToReserveAmount)))
+					updatedLockedVault.AmountIn = updatedLockedVault.AmountIn.Sub(sdk.NewInt(liquidationDeductionAmount.TruncateInt64()))
+					lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(sdk.NewInt(liquidationDeductionAmount.TruncateInt64()))
+					lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(sdk.NewInt(liquidationDeductionAmount.TruncateInt64()))
+					err = k.BurnCoin(ctx, pool.ModuleName, sdk.NewCoin(cAsset.Denom, sdk.NewInt(penaltyToReserveAmount.TruncateInt64())))
 					if err != nil {
 						return err
 					}
