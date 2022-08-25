@@ -250,7 +250,7 @@ func querySnapshotPrice() *cobra.Command {
 			res, err := queryClient.QuerySnapshotPrice(
 				context.Background(),
 				&types.QuerySnapshotPriceRequest{
-					AppId: id,
+					AppId:   id,
 					AssetId: asset,
 				},
 			)

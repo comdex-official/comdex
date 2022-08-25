@@ -271,8 +271,8 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
 	return k.lend.UpdateReserveBalances(ctx, assetID, moduleName, payment, inc)
 }
-func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
-	return k.liquidation.UnLiquidateLockedBorrows(ctx, appID, id)
+func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutchAuction auctiontypes.DutchAuction) error {
+	return k.liquidation.UnLiquidateLockedBorrows(ctx, appID, id, dutchAuction)
 }
 
 func (k Keeper) SetLend(ctx sdk.Context, lend lendtypes.LendAsset) {

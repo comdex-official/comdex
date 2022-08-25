@@ -4,9 +4,9 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -172,6 +172,30 @@ func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair,
 	k.lend.UpdateBorrowStats(ctx, pair, borrowPos, amount, inc)
 }
 
+func (k Keeper) SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, coin sdk.Coins) error {
+	if coin.IsZero() {
+		return auctiontypes.SendCoinsFromModuleToModuleInAuctionIsZero
+	}
+
+	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
+}
+
+func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
+	return k.lend.UpdateReserveBalances(ctx, assetID, moduleName, payment, inc)
+}
+
+func (k Keeper) SetLend(ctx sdk.Context, lend lendtypes.LendAsset) {
+	k.lend.SetLend(ctx, lend)
+}
+
+func (k Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
+	if coin.IsZero() {
+		return lendtypes.BurnCoinValueInLendIsZero
+	}
+
+	return k.bank.BurnCoins(ctx, name, sdk.NewCoins(coin))
+}
+
 func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error {
 	return k.rewards.CalculateVaultInterest(ctx, appID, assetID, lockerID, NetBalance, blockHeight, lockerBlockTime)
 }
@@ -182,4 +206,8 @@ func (k Keeper) DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.V
 
 func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
 	return k.auction.DutchActivator(ctx, lockedVault)
+}
+
+func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
+	return k.auction.LendDutchActivator(ctx, lockedVault)
 }

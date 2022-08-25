@@ -691,7 +691,7 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 
 			vaultData.BlockTime = ctx.BlockTime()
 			vaultData.BlockHeight = ctx.BlockHeight()
-	
+
 			k.SetVaultInterestTracker(ctx, vaultInterestTracker)
 			intAcc := vaultData.InterestAccumulated
 			updatedIntAcc := (intAcc).Add(newInterest)

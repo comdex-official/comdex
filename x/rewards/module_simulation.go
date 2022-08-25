@@ -23,8 +23,7 @@ var (
 	_ = baseapp.Paramspace
 )
 
-const (
-)
+const ()
 
 // GenerateGenesisState creates a randomized GenState of the module.
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {

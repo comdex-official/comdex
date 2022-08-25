@@ -6,8 +6,8 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
 func (k Keeper) SendCoinFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coin sdk.Coin) error {

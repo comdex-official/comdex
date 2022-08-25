@@ -382,5 +382,6 @@ service Query {
   rpc QueryAuctionParams(QueryAuctionParamRequest) returns (QueryAuctionParamResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/auctionparams/{app_id}";
   }
+
 }
 

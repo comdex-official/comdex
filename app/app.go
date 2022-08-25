@@ -566,6 +566,7 @@ func New(
 		app.AccountKeeper,
 		&app.AssetKeeper,
 		&app.MarketKeeper,
+		&app.EsmKeeper,
 	)
 
 	app.EsmKeeper = esmkeeper.NewKeeper(

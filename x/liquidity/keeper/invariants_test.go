@@ -12,8 +12,8 @@ func (s *KeeperTestSuite) TestDepositCoinsEscrowInvariant() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
 	pool := s.CreateNewLiquidityPool(appID1, pair.Id, creator, "1000000000000uasset1,1000000000000uasset2")
@@ -40,8 +40,8 @@ func (s *KeeperTestSuite) TestPoolCoinEscrowInvariant() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
 	pool := s.CreateNewLiquidityPool(appID1, pair.Id, creator, "1000000000000uasset1,1000000000000uasset2")
@@ -71,8 +71,8 @@ func (s *KeeperTestSuite) TestRemainingOfferCoinEscrowInvariant() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
 
@@ -98,8 +98,8 @@ func (s *KeeperTestSuite) TestPoolStatusInvariant() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSET1", "uasset1", 1000000)
-	asset2 := s.CreateNewAsset("ASSET2", "uasset2", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
 	pool := s.CreateNewLiquidityPool(appID1, pair.Id, creator, "1000000000000uasset1,1000000000000uasset2")

@@ -20,13 +20,13 @@ const (
 )
 
 var (
-	ESMTriggerParamsKeyPrefix   = []byte{0x01}
-	CurrentDepositStatsPrefix   = []byte{0x02}
-	ESMStatusPrefix             = []byte{0x03}
-	KillSwitchDataKey           = []byte{0x04}
-	UserDepositByAppPrefix      = []byte{0x05}
-	ESMDataAfterCoolOffPrefix   = []byte{0x07}
-	SnapshotKeyPrefix           = []byte{0x10}
+	ESMTriggerParamsKeyPrefix = []byte{0x01}
+	CurrentDepositStatsPrefix = []byte{0x02}
+	ESMStatusPrefix           = []byte{0x03}
+	KillSwitchDataKey         = []byte{0x04}
+	UserDepositByAppPrefix    = []byte{0x05}
+	ESMDataAfterCoolOffPrefix = []byte{0x07}
+	SnapshotKeyPrefix         = []byte{0x10}
 )
 
 func ESMTriggerParamsKey(id uint64) []byte {

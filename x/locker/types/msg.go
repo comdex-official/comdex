@@ -253,12 +253,11 @@ func (m *MsgCloseLockerRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-
 func NewMsgLockerRewardCalcRequest(from string, appID uint64, lockerID uint64) *MsgLockerRewardCalcRequest {
 	return &MsgLockerRewardCalcRequest{
-		From: from,
-		AppId:     appID,
-		LockerId:  lockerID,
+		From:     from,
+		AppId:    appID,
+		LockerId: lockerID,
 	}
 }
 
@@ -297,4 +296,3 @@ func (m *MsgLockerRewardCalcRequest) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
-

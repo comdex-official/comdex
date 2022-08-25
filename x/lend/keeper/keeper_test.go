@@ -200,3 +200,28 @@ func (s *KeeperTestSuite) AddAssetToPair(AssetID, PoolID uint64, PairID []uint64
 	})
 	s.Require().NoError(err)
 }
+
+func (s *KeeperTestSuite) CreateNewApp(appName, shortName string) uint64 {
+	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
+		Name:             appName,
+		ShortName:        shortName,
+		MinGovDeposit:    sdk.NewInt(0),
+		GovTimeInSeconds: 0,
+		GenesisToken:     []assettypes.MintGenesisToken{},
+	})
+	s.Require().NoError(err)
+	found := s.app.AssetKeeper.HasAppForName(s.ctx, appName)
+	s.Require().True(found)
+
+	apps, found := s.app.AssetKeeper.GetApps(s.ctx)
+	s.Require().True(found)
+	var appID uint64
+	for _, app := range apps {
+		if app.Name == appName {
+			appID = app.Id
+			break
+		}
+	}
+	s.Require().NotZero(appID)
+	return appID
+}

@@ -54,4 +54,5 @@ var (
 	SendCoinsFromAccountToModuleInLendIsZero = sdkerrors.Register(ModuleName, 1161, "Coin value in account to module transfer in lend is zero")
 	ErrAverageBorrowRate                     = sdkerrors.Register(ModuleName, 1162, "Average Borrow Rate Error")
 	ErrInsufficientFunds                     = sdkerrors.Register(ModuleName, 1163, "Insufficient Funds")
+	ErrorAppMappingIDMismatch                = sdkerrors.Register(ModuleName, 1164, "App Mapping Id mismatch, use the correct App Mapping ID in request")
 )

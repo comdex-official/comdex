@@ -379,12 +379,12 @@ def CreateState():
             exit("Invalid liquidity pair configs")
         CreateLiquidityPair(liquidityPair[0], liquidityPair[1], liquidityPair[2])
         Vote("yes")
-    
+
     for liquidityPool in LIQUIDITY_POOLS:
         if len(liquidityPool) != 3:
             exit("Invalid liquidity pool configs")
         CreateLiquidityPool(liquidityPool[0], liquidityPool[1], liquidityPool[2])
-    
+
     for assetRate in ADD_ASSET_RATES:
         if len(assetRate) != 2:
             exit("Invalid add asset rate configs")

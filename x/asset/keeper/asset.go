@@ -229,7 +229,7 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	if msg.Name != "" {
 		var IsLetter = regexp.MustCompile(`^[A-Z]+$`).MatchString
 
-		if (!IsLetter(msg.Name) || len(msg.Name) > 10){
+		if !IsLetter(msg.Name) || len(msg.Name) > 10 {
 			return types.ErrorNameDidNotMeetCriterion
 		}
 	}
