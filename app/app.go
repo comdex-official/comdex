@@ -168,6 +168,7 @@ import (
 	tv2_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v2_0_0"
 	tv3_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v3_0_0"
 	tv4_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v4_0_0"
+	tdevnet_2_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/devnet_2_0_0"
 )
 
 const (
@@ -1143,8 +1144,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv4_0_0.UpgradeName,
-		tv4_0_0.CreateUpgradeHandler(a.mm, a.configurator),
+		tdevnet_2_0_0.UpgradeName,
+		tdevnet_2_0_0.CreateUpgradeHandler(a.mm, a.configurator),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1205,6 +1206,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		}
 	case upgradeInfo.Name == tv3_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 	case upgradeInfo.Name == tv4_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tdevnet_2_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		//delete deprecated kv store instead of migrating as this is only for testnet.
 		//won't be used on main net migration and to make store name similar with V1 appended for all modules
 		storeUpgrades = &storetypes.StoreUpgrades{
