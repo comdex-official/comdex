@@ -290,7 +290,6 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 			return err
 		}
 	} else if auction.OutflowTokenCurrentAmount.Amount.IsZero() && auction.InflowTokenCurrentAmount.IsLT(auction.InflowTokenTargetAmount) { //entire collateral sold out
-
 		// take requiredAmount from reserve-pool
 		requiredAmount := auction.InflowTokenTargetAmount.Sub(auction.InflowTokenCurrentAmount)
 		//get reserve balance if the requiredAmount is available in the reserves or not
@@ -415,6 +414,7 @@ func (k Keeper) CloseDutchLendAuction(
 	k.SetLend(ctx, lendPos)
 
 	lockedVault.AmountOut = lockedVault.AmountOut.Sub(dutchAuction.InflowTokenTargetAmount.Amount)
+	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(dutchAuction.InflowTokenTargetAmount.Amount)
 	if lockedVault.AmountOut.LTE(sdk.ZeroInt()) {
 		lockedVault.AmountOut = sdk.ZeroInt()
 	}
@@ -436,15 +436,15 @@ func (k Keeper) CloseDutchLendAuction(
 	if err != nil {
 		return err
 	}
-	err = k.DeleteDutchLendAuction(ctx, dutchAuction)
-	if err != nil {
-		return err
-	}
 	err = k.SetHistoryDutchLendAuction(ctx, dutchAuction)
 	if err != nil {
 		return err
 	}
 	err = k.UnLiquidateLockedBorrows(ctx, lockedVault.AppId, lockedVault.LockedVaultId, dutchAuction)
+	if err != nil {
+		return err
+	}
+	err = k.DeleteDutchLendAuction(ctx, dutchAuction)
 	if err != nil {
 		return err
 	}

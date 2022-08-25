@@ -12,15 +12,19 @@ import (
 
 func queryLockedVault() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "locked-vault [id]",
+		Use:   "locked-vault [app-id] [id]",
 		Short: "Query locked-vault",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			id, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -28,7 +32,8 @@ func queryLockedVault() *cobra.Command {
 			res, err := queryClient.QueryLockedVault(
 				context.Background(),
 				&types.QueryLockedVaultRequest{
-					Id: id,
+					AppID: appID,
+					Id:    id,
 				},
 			)
 			if err != nil {

@@ -94,7 +94,7 @@ func (q QueryServer) QueryLockedVaultsHistory(c context.Context, req *types.Quer
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.LockedVaultKeyHistory),
+		prefix.NewStore(q.Store(ctx), types.LockedVaultDataKeyHistory),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.LockedVault
@@ -168,7 +168,7 @@ func (q QueryServer) QueryUserLockedVaultsHistory(c context.Context, req *types.
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.LockedVaultKeyHistory),
+		prefix.NewStore(q.Store(ctx), types.LockedVaultDataKeyHistory),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.LockedVault

@@ -201,7 +201,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context) error {
 				continue
 			}
 
-			if (!lockedVault.IsAuctionInProgress && !lockedVault.IsAuctionComplete) || (lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.LTE(unliquidatePointPercentage)) {
+			if (!lockedVault.IsAuctionInProgress && !lockedVault.IsAuctionComplete) || (lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.GTE(unliquidatePointPercentage)) {
 
 				assetIn, found := k.GetAsset(ctx, pair.AssetIn)
 				if !found {
@@ -320,7 +320,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 					k.SetLend(ctx, lendPos)
 				}
 				newCalculatedCollateralizationRatio, _ := k.CalculateLendCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
-				if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
+				if newCalculatedCollateralizationRatio.GT(unliquidatePointPercentage) {
 					updatedLockedVault := lockedVault
 					updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
 					updatedLockedVault.SellOffHistory = append(updatedLockedVault.SellOffHistory, dutchAuction.String())
@@ -330,7 +330,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						return nil
 					}
 				}
-				if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
+				if newCalculatedCollateralizationRatio.LTE(unliquidatePointPercentage) {
 					err := k.CreateLockedVaultHistory(ctx, lockedVault)
 					if err != nil {
 						return err
@@ -341,7 +341,6 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 				}
 			} else {
 				if borrowMetadata.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
-
 					liqThresholdAssetIn, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
 					liqThresholdFirstBridgedAsset, _ := k.GetAssetRatesStats(ctx, assetInPool.FirstBridgedAssetID)
 					liqThreshold := liqThresholdAssetIn.LiquidationThreshold.Mul(liqThresholdFirstBridgedAsset.LiquidationThreshold)
@@ -361,7 +360,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						k.SetLend(ctx, lendPos)
 					}
 					newCalculatedCollateralizationRatio, _ := k.CalculateLendCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
-					if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
+					if newCalculatedCollateralizationRatio.GT(unliquidatePointPercentage) {
 						updatedLockedVault := lockedVault
 						updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
 						updatedLockedVault.SellOffHistory = append(updatedLockedVault.SellOffHistory, dutchAuction.String())
@@ -371,7 +370,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 							return nil
 						}
 					}
-					if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
+					if newCalculatedCollateralizationRatio.LTE(unliquidatePointPercentage) {
 						err := k.CreateLockedVaultHistory(ctx, lockedVault)
 						if err != nil {
 							return err
@@ -400,7 +399,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						k.SetLend(ctx, lendPos)
 					}
 					newCalculatedCollateralizationRatio, _ := k.CalculateLendCollaterlizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
-					if newCalculatedCollateralizationRatio.LT(unliquidatePointPercentage) {
+					if newCalculatedCollateralizationRatio.GT(unliquidatePointPercentage) {
 						updatedLockedVault := lockedVault
 						updatedLockedVault.CurrentCollaterlisationRatio = newCalculatedCollateralizationRatio
 						updatedLockedVault.SellOffHistory = append(updatedLockedVault.SellOffHistory, dutchAuction.String())
@@ -410,7 +409,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 							return nil
 						}
 					}
-					if newCalculatedCollateralizationRatio.GTE(unliquidatePointPercentage) {
+					if newCalculatedCollateralizationRatio.LTE(unliquidatePointPercentage) {
 						err := k.CreateLockedVaultHistory(ctx, lockedVault)
 						if err != nil {
 							return err
