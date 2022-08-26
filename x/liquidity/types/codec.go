@@ -20,8 +20,8 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgMarketOrder{}, "comdex/liquidity/MsgMarketOrder", nil)
 	cdc.RegisterConcrete(&MsgCancelOrder{}, "comdex/liquidity/MsgCancelOrder", nil)
 	cdc.RegisterConcrete(&MsgCancelAllOrders{}, "comdex/liquidity/MsgCancelAllOrders", nil)
-	cdc.RegisterConcrete(&MsgFarm{}, "comdex/liquidity/Farm", nil)
-	cdc.RegisterConcrete(&MsgUnfarm{}, "comdex/liquidity/Unfarm", nil)
+	cdc.RegisterConcrete(&MsgFarm{}, "comdex/liquidity/MsgFarm", nil)
+	cdc.RegisterConcrete(&MsgUnfarm{}, "comdex/liquidity/MsgUnfarm", nil)
 	cdc.RegisterConcrete(&UpdateGenericParamsProposal{}, "comdex/liquidity/UpdateGenericParamsProposal", nil)
 	cdc.RegisterConcrete(&CreateNewLiquidityPairProposal{}, "comdex/liquidity/CreateNewLiquidityPairProposal", nil)
 }
