@@ -19,6 +19,10 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 		}
 		lendPair, _ := k.GetLendPair(ctx, borrowPos.PairID)
 		lendPos, _ := k.GetLend(ctx, borrowPos.LendingID)
+		killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+		if killSwitchParams.BreakerEnable {
+			continue
+		}
 		pool, _ := k.GetPool(ctx, lendPos.PoolID)
 		assetIn, _ := k.GetAsset(ctx, lendPair.AssetIn)
 		assetOut, _ := k.GetAsset(ctx, lendPair.AssetOut)

@@ -838,7 +838,6 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 			amtOut := borrowPos.AmountOut.Amount.Sub(payment.Amount)
 			amountOut := amtOut.Add(borrowPos.Interest_Accumulated)
 			borrowPos.AmountOut.Amount = amountOut
-			amtBorrowStats := amountOut.Add(borrowPos.Interest_Accumulated)
 
 			reservePoolRecords, _ := k.GetReservePoolRecordsForBorrow(ctx, borrowID)
 			amtToReservePool := reservePoolRecords.InterestAccumulated
@@ -858,6 +857,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 					return err
 				}
 			}
+			amtBorrowStats := payment.Amount.Sub(borrowPos.Interest_Accumulated)
 			borrowPos.Interest_Accumulated = sdk.ZeroInt()
 			reservePoolRecords.InterestAccumulated = sdk.ZeroDec()
 			k.SetReservePoolRecordsForBorrow(ctx, reservePoolRecords)
@@ -1153,7 +1153,7 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 		}
 	}
 
-	k.UpdateBorrowStats(ctx, pair, borrowPos, borrowPos.AmountOut.Amount.Add(borrowPos.Interest_Accumulated), false)
+	k.UpdateBorrowStats(ctx, pair, borrowPos, borrowPos.AmountOut.Amount, false)
 
 	lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Add(borrowPos.AmountIn.Amount)
 	k.SetLend(ctx, lendPos)
