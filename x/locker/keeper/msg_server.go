@@ -333,8 +333,10 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 
 	lockerData, _ = k.GetLocker(ctx, msg.LockerId)
 
-	if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, lockerData.NetBalance)); err != nil {
-		return nil, err
+	if lockerData.NetBalance.GT(sdk.ZeroInt()) {
+		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, lockerData.NetBalance)); err != nil {
+			return nil, err
+		}
 	}
 
 	userLockerAssetMappingData, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)

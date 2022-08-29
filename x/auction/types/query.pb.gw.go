@@ -1528,7 +1528,7 @@ func request_Query_QueryFilterDutchAuctions_0(ctx context.Context, marshaler run
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom")
 	}
 
-	protoReq.Denom, err = runtime.String(val)
+	protoReq.Denom, err = runtime.StringSlice(val, ",")
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom", err)
@@ -1584,7 +1584,7 @@ func local_request_Query_QueryFilterDutchAuctions_0(ctx context.Context, marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom")
 	}
 
-	protoReq.Denom, err = runtime.String(val)
+	protoReq.Denom, err = runtime.StringSlice(val, ",")
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom", err)

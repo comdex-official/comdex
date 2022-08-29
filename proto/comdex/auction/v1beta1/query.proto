@@ -268,7 +268,7 @@ message QueryDutchLendBiddingsResponse {
 
 message QueryFilterDutchAuctionsRequest {
   uint64 app_id = 1;
-  string denom = 2;
+  repeated string denom = 2;
   bool history = 3;
   cosmos.base.query.v1beta1.PageRequest pagination = 4
   [(gogoproto.moretags) = "yaml:\"pagination\""];
