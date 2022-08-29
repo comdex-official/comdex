@@ -18,8 +18,8 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
 
 	testCases := []struct {
 		Name               string
@@ -238,8 +238,8 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
@@ -419,8 +419,8 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
@@ -594,8 +594,8 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
@@ -769,8 +769,8 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
@@ -945,8 +945,8 @@ func (s *KeeperTestSuite) TestMsgClose() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
@@ -1085,10 +1085,10 @@ func (s *KeeperTestSuite) TestMsgCreateStableMint() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, false)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX C", appID2, pairID, true, false)
-	extendedVaultPairID3 := s.CreateNewExtendedVaultPair("CMDX C", appID3, pairID, true, true)
-	extendedVaultPairID4 := s.CreateNewExtendedVaultPair("CMDX C", appID4, pairID, true, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, false)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, true, false)
+	extendedVaultPairID3 := s.CreateNewExtendedVaultPair("CMDX-C", appID3, pairID, true, true)
+	extendedVaultPairID4 := s.CreateNewExtendedVaultPair("CMDX-C", appID4, pairID, true, true)
 
 	testCases := []struct {
 		Name             string
@@ -1258,10 +1258,10 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, false)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX A", appID1, pairID, false, true)
-	extendedVaultPairID3 := s.CreateNewExtendedVaultPair("CMDX B", appID1, pairID, true, true)
-	extendedVaultPairID4 := s.CreateNewExtendedVaultPair("CMDX D", appID2, pairID, true, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, false)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-A", appID1, pairID, false, true)
+	extendedVaultPairID3 := s.CreateNewExtendedVaultPair("CMDX-B", appID1, pairID, true, true)
+	extendedVaultPairID4 := s.CreateNewExtendedVaultPair("CMDX-D", appID2, pairID, true, true)
 
 	s.fundAddr(addr1, sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
 	_, err := s.msgServer.MsgCreateStableMint(sdk.WrapSDKContext(s.ctx), types.NewMsgCreateStableMintRequest(
@@ -1469,10 +1469,10 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX C", appID1, pairID, false, false)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX A", appID1, pairID, false, true)
-	extendedVaultPairID3 := s.CreateNewExtendedVaultPair("CMDX B", appID1, pairID, true, true)
-	extendedVaultPairID4 := s.CreateNewExtendedVaultPair("CMDX D", appID2, pairID, true, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, false)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-A", appID1, pairID, false, true)
+	extendedVaultPairID3 := s.CreateNewExtendedVaultPair("CMDX-B", appID1, pairID, true, true)
+	extendedVaultPairID4 := s.CreateNewExtendedVaultPair("CMDX-D", appID2, pairID, true, true)
 
 	s.fundAddr(addr1, sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
 	_, err := s.msgServer.MsgCreateStableMint(sdk.WrapSDKContext(s.ctx), types.NewMsgCreateStableMintRequest(

@@ -19,7 +19,7 @@ func TestGenesis(t *testing.T) {
 		Params: types.DefaultParams(),
 	}
 
-	rewards.InitGenesis(ctx, comdexApp.Rewardskeeper, genesisState)
+	rewards.InitGenesis(ctx, comdexApp.Rewardskeeper, &genesisState)
 	got := rewards.ExportGenesis(ctx, comdexApp.Rewardskeeper)
 	require.NotNil(t, got)
 
