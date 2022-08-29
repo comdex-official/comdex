@@ -605,6 +605,10 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 	undirectedGraph := types.BuildUndirectedGraph(edges)
 
 	for _, pool := range availablePools {
+		if pool.Disabled {
+			continue
+		}
+
 		pair, found := k.GetPair(ctx, pool.AppId, pool.PairId)
 		if !found {
 			continue
@@ -629,6 +633,9 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 					}
 
 					rx, ry := k.getPoolBalances(ctx, swappablePool, swappablePair)
+					if !rx.Amount.IsPositive() || !ry.Amount.IsPositive() {
+						continue
+					}
 					baseCoinPoolPrice := rx.Amount.ToDec().Quo(ry.Amount.ToDec())
 
 					orderDirection := types.OrderDirectionBuy
