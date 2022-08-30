@@ -910,8 +910,8 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 
 	tokenMintedStatistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
-	appData, _ := k.GetAppMappingData(ctx, appMapping.Id)
-	if len(appData) >= 1 {
+	extPairData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
+	if len(extPairData.VaultIds) >= 1 {
 		return nil, types.ErrorStableMintVaultAlreadyCreated
 	}
 

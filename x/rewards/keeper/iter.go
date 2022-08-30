@@ -110,9 +110,11 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 							finalDailyRewards := sdk.NewInt(dailyRewards.TruncateInt64())
 
 							user, _ := sdk.AccAddressFromBech32(userVault.Owner)
-							err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
-							if err != nil {
-								continue
+							if finalDailyRewards.GT(sdk.ZeroInt()) {
+								err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
+								if err != nil {
+									continue
+								}
 							}
 							epoch.Count = epoch.Count + types.UInt64One
 							epoch.StartingTime = timeNow + types.SecondsPerDay

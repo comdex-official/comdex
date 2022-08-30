@@ -4,6 +4,7 @@ import (
 	"context"
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -77,6 +78,13 @@ func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.Activa
 	Depositor, err := sdk.AccAddressFromBech32(msg.Depositor)
 	if err != nil {
 		return nil, err
+	}
+	pairVault, found := m.GetPairsVault(ctx, msg.Extended_Pair_Id)
+	if !found {
+		return nil, assettypes.ErrorExtendedPairDoesNotExistForTheApp
+	}
+	if pairVault.IsStableMintVault {
+		return nil, types.ErrStablemintVaultFound
 	}
 	if err := m.Keeper.ActExternalRewardsVaults(ctx, msg.AppMappingId, msg.Extended_Pair_Id, msg.DurationDays, msg.MinLockupTimeSeconds, msg.TotalRewards, Depositor); err != nil {
 		return nil, err
