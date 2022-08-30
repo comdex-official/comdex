@@ -117,7 +117,7 @@ func (s *KeeperTestSuite) TestIndexesAfterImport() {
 	appID1 := s.CreateNewApp("appone")
 	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
 	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 2000000)
-	asset3 := s.CreateNewAsset("ASSETTWO", "denom3", 3000000)
+	asset3 := s.CreateNewAsset("ASSETTHREE", "denom3", 3000000)
 
 	pair1 := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
 	pair2 := s.CreateNewLiquidityPair(appID1, s.addr(1), asset2.Denom, asset3.Denom)
