@@ -55,7 +55,7 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 			err = assetKeeper.WasmAddExtendedPairsVaultRecords(*ctx, &tc.extendedPairVault)
 			s.Require().NoError(err)
 
-			err = liquidationKeeper.WhitelistAppID(*ctx, 1)
+			err = liquidationKeeper.WasmWhitelistAppIDLiquidation(*ctx, 1)
 			s.Require().NoError(err)
 
 			s.SetInitialOraclePriceForSymbols(tc.symbol1, tc.symbol2)
@@ -133,11 +133,11 @@ func (s *KeeperTestSuite) GetVaultCount() int {
 	return len(res.Vault)
 }
 
-func (s *KeeperTestSuite) GetVaultCountForExtendedPairIDbyAppID(appID uint64) int {
-	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
-	res, found := liquidationKeeper.GetAppExtendedPairVaultMapping(*ctx, appID)
+func (s *KeeperTestSuite) GetVaultCountForExtendedPairIDbyAppID(appID, extID uint64) int {
+	vaultKeeper1, ctx := &s.vaultKeeper, &s.ctx
+	res, found := vaultKeeper1.GetAppExtendedPairVaultMappingData(*ctx, appID, extID)
 	s.Require().True(found)
-	return len(res.ExtendedPairVaults[0].VaultIds)
+	return len(res.VaultIds)
 }
 
 func (s *KeeperTestSuite) GetAssetPrice(id uint64) sdk.Dec {
@@ -227,7 +227,7 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	s.CreateVault()
 	currentVaultsCount := 2
 	s.Require().Equal(s.GetVaultCount(), currentVaultsCount)
-	s.Require().Equal(s.GetVaultCountForExtendedPairIDbyAppID(uint64(1)), currentVaultsCount)
+	s.Require().Equal(s.GetVaultCountForExtendedPairIDbyAppID(uint64(1), 1), currentVaultsCount)
 	beforeVault, found := liquidationKeeper.GetVault(*ctx, 1)
 	s.Require().True(found)
 
@@ -241,12 +241,10 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	s.ChangeOraclePrice("ucmdx")
 	err = liquidationKeeper.LiquidateVaults(*ctx)
 	s.Require().NoError(err)
-	err = liquidationKeeper.UpdateLockedVaults(*ctx)
-	s.Require().NoError(err)
 	id = liquidationKeeper.GetLockedVaultID(*ctx)
 	s.Require().Equal(id, uint64(2))
 	s.Require().Equal(s.GetVaultCount(), currentVaultsCount-2)
-	s.Require().Equal(s.GetVaultCountForExtendedPairIDbyAppID(uint64(1)), currentVaultsCount-2)
+	s.Require().Equal(s.GetVaultCountForExtendedPairIDbyAppID(uint64(1), 1), currentVaultsCount-2)
 
 	lockedVault := liquidationKeeper.GetLockedVaults(*ctx)
 	s.Require().Equal(lockedVault[0].OriginalVaultId, beforeVault.Id)
@@ -269,16 +267,13 @@ func (s *KeeperTestSuite) TestUpdateLockedVaults() {
 	s.TestLiquidateVaults1()
 	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
 
-	err := liquidationKeeper.UpdateLockedVaults(*ctx)
-	s.Require().NoError(err)
 	lockedVault1 := liquidationKeeper.GetLockedVaults(*ctx)
 
 	s.Require().Equal(lockedVault1[0].CurrentCollaterlisationRatio, lockedVault1[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault1[0].UpdatedAmountOut.ToDec().Mul(s.GetAssetPrice(2))))
 
 	s.SetOraclePrice("ucmdx", 99999)
-	err = liquidationKeeper.UpdateLockedVaults(*ctx)
 
-	lockedVault2, found := liquidationKeeper.GetLockedVault(*ctx, uint64(1))
+	lockedVault2, found := liquidationKeeper.GetLockedVault(*ctx, uint64(1), 1)
 	s.Require().True(found)
 	s.Require().Equal(lockedVault2.CurrentCollaterlisationRatio, lockedVault2.AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault2.UpdatedAmountOut.ToDec().Mul(s.GetAssetPrice(2))))
 
@@ -287,24 +282,24 @@ func (s *KeeperTestSuite) TestUpdateLockedVaults() {
 func (s *KeeperTestSuite) TestSetFlags() {
 	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
 	s.TestUpdateLockedVaults()
-	err := liquidationKeeper.SetFlagIsAuctionInProgress(*ctx, 1, true)
+	err := liquidationKeeper.SetFlagIsAuctionInProgress(*ctx, 1, 1, true)
 	s.Require().NoError(err)
-	lockedVault, found := liquidationKeeper.GetLockedVault(*ctx, 1)
+	lockedVault, found := liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().True(found)
 	s.Require().True(lockedVault.IsAuctionInProgress)
-	err = liquidationKeeper.SetFlagIsAuctionInProgress(*ctx, 1, false)
+	err = liquidationKeeper.SetFlagIsAuctionInProgress(*ctx, 1, 1, false)
 	s.Require().NoError(err)
-	lockedVault, found = liquidationKeeper.GetLockedVault(*ctx, 1)
+	lockedVault, found = liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().True(found)
 	s.Require().False(lockedVault.IsAuctionInProgress)
-	err = liquidationKeeper.SetFlagIsAuctionComplete(*ctx, 1, true)
+	err = liquidationKeeper.SetFlagIsAuctionComplete(*ctx, 1, 1, true)
 	s.Require().NoError(err)
-	lockedVault, found = liquidationKeeper.GetLockedVault(*ctx, 1)
+	lockedVault, found = liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().True(found)
 	s.Require().True(lockedVault.IsAuctionComplete)
-	err = liquidationKeeper.SetFlagIsAuctionComplete(*ctx, 1, false)
+	err = liquidationKeeper.SetFlagIsAuctionComplete(*ctx, 1, 1, false)
 	s.Require().NoError(err)
-	lockedVault, found = liquidationKeeper.GetLockedVault(*ctx, 1)
+	lockedVault, found = liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().True(found)
 	s.Require().False(lockedVault.IsAuctionComplete)
 }
@@ -312,13 +307,13 @@ func (s *KeeperTestSuite) TestSetFlags() {
 func (s *KeeperTestSuite) TestDeleteLockedVault() {
 	s.TestUpdateLockedVaults()
 	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
-	vault, found := liquidationKeeper.GetLockedVault(*ctx, 1)
+	vault, found := liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().True(found)
 	err := liquidationKeeper.CreateLockedVaultHistory(*ctx, vault)
 	s.Require().NoError(err)
 	id := liquidationKeeper.GetLockedVaultIDHistory(*ctx)
 	s.Require().Equal(id, uint64(1))
-	liquidationKeeper.DeleteLockedVault(*ctx, 1)
-	_, found = liquidationKeeper.GetLockedVault(*ctx, 1)
+	liquidationKeeper.DeleteLockedVault(*ctx, 1, 1)
+	_, found = liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().False(found)
 }

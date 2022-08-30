@@ -71,10 +71,10 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	surplusAuction, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
-	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1)
+	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1,2)
 	s.Require().True(found)
 
-	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1))
+	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1),2)
 	s.Require().True(found)
 
 	s.Require().Equal(surplusAuction.AppId, appId)
@@ -82,13 +82,13 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	s.Require().Equal(surplusAuction.AuctionMappingId, auctionMappingId)
 	s.Require().Equal(surplusAuction.ActiveBiddingId, uint64(0))
 	s.Require().Equal(surplusAuction.AuctionStatus, auctionTypes.AuctionStartNoBids)
-	s.Require().Equal(surplusAuction.AssetInId, collectorLookUp.AssetRateInfo[0].SecondaryAssetId)
-	s.Require().Equal(surplusAuction.AssetOutId, collectorLookUp.AssetRateInfo[0].CollectorAssetId)
-	s.Require().Equal(surplusAuction.BidFactor, collectorLookUp.AssetRateInfo[0].BidFactor)
-	s.Require().Equal(surplusAuction.SellToken.Amount.Uint64(), collectorLookUp.AssetRateInfo[0].LotSize)
+	s.Require().Equal(surplusAuction.AssetInId, collectorLookUp.SecondaryAssetId)
+	s.Require().Equal(surplusAuction.AssetOutId, collectorLookUp.CollectorAssetId)
+	s.Require().Equal(surplusAuction.BidFactor, collectorLookUp.BidFactor)
+	s.Require().Equal(surplusAuction.SellToken.Amount.Uint64(), collectorLookUp.LotSize)
 	s.Require().Equal(surplusAuction.BuyToken.Amount.Uint64(), uint64(0))
 	s.Require().Equal(surplusAuction.Bid.Amount.Uint64(), uint64(0))
-	s.Require().True(netFees.AssetIdToFeeCollected[0].NetFeesCollected.GTE(sdk.NewIntFromUint64(collectorLookUp.AssetRateInfo[0].SurplusThreshold + collectorLookUp.AssetRateInfo[0].LotSize)))
+	s.Require().True(netFees.NetFeesCollected.GTE(sdk.NewIntFromUint64(collectorLookUp.SurplusThreshold + collectorLookUp.LotSize)))
 
 	//Test restart surplus auction
 	s.advanceseconds(301)
@@ -102,13 +102,13 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	s.Require().Equal(surplusAuction1.AuctionMappingId, auctionMappingId)
 	s.Require().Equal(surplusAuction1.ActiveBiddingId, uint64(0))
 	s.Require().Equal(surplusAuction1.AuctionStatus, auctionTypes.AuctionStartNoBids)
-	s.Require().Equal(surplusAuction.AssetInId, collectorLookUp.AssetRateInfo[0].SecondaryAssetId)
-	s.Require().Equal(surplusAuction.AssetOutId, collectorLookUp.AssetRateInfo[0].CollectorAssetId)
-	s.Require().Equal(surplusAuction1.BidFactor, collectorLookUp.AssetRateInfo[0].BidFactor)
-	s.Require().Equal(surplusAuction.SellToken.Amount.Uint64(), collectorLookUp.AssetRateInfo[0].LotSize)
+	s.Require().Equal(surplusAuction.AssetInId, collectorLookUp.SecondaryAssetId)
+	s.Require().Equal(surplusAuction.AssetOutId, collectorLookUp.CollectorAssetId)
+	s.Require().Equal(surplusAuction1.BidFactor, collectorLookUp.BidFactor)
+	s.Require().Equal(surplusAuction.SellToken.Amount.Uint64(), collectorLookUp.LotSize)
 	s.Require().Equal(surplusAuction.BuyToken.Amount.Uint64(), uint64(0))
 	s.Require().Equal(surplusAuction.Bid.Amount.Uint64(), uint64(0))
-	s.Require().True(netFees.AssetIdToFeeCollected[0].NetFeesCollected.GTE(sdk.NewIntFromUint64(collectorLookUp.AssetRateInfo[0].SurplusThreshold + collectorLookUp.AssetRateInfo[0].LotSize)))
+	s.Require().True(netFees.NetFeesCollected.GTE(sdk.NewIntFromUint64(collectorLookUp.SurplusThreshold + collectorLookUp.LotSize)))
 	s.Require().Equal(ctx.BlockTime().Add(time.Second*time.Duration(300)), surplusAuction1.EndTime)
 }
 

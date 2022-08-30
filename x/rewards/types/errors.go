@@ -33,4 +33,5 @@ var (
 	SendCoinsFromModuleToAccountInRewardsIsZero = sdkerrors.Register(ModuleName, 1112, "Coin value in module to account transfer in rewards is zero")
 	SendCoinsFromAccountToModuleInRewardsIsZero = sdkerrors.Register(ModuleName, 1113, "Coin value in account to module transfer in rewards is zero")
 	ErrInternalRewardsNotFound                  = sdkerrors.Register(ModuleName, 1114, "Internal rewards not found")
+	ErrStablemintVaultFound                     = sdkerrors.Register(ModuleName, 1115, "Can't give reward to stablemint vault")
 )
