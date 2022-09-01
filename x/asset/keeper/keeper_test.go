@@ -15,6 +15,7 @@ import (
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	marketKeeper "github.com/comdex-official/comdex/x/market/keeper"
+	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
 )
@@ -31,6 +32,7 @@ type KeeperTestSuite struct {
 	querier           assetKeeper.QueryServer
 	vaultQuerier      vaultKeeper.QueryServer
 	vaultMsgServer    vaultTypes.MsgServer
+	rewardsKeeper 	  rewardsKeeper.Keeper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -47,6 +49,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.vaultMsgServer = vaultKeeper.NewMsgServer(s.vaultKeeper)
 	s.vaultQuerier = vaultKeeper.QueryServer{Keeper: s.vaultKeeper}
 	s.marketKeeper = s.app.MarketKeeper
+	s.rewardsKeeper = s.app.Rewardskeeper
 }
 
 //

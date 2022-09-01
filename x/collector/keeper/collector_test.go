@@ -438,7 +438,7 @@ func (s *KeeperTestSuite) TestUpdateCollector() {
 				CollectedStabilityFee:       sdk.NewIntFromUint64(100),
 				CollectedClosingFee:         sdk.NewIntFromUint64(200),
 				CollectedOpeningFee:         sdk.NewIntFromUint64(300),
-				LiquidationRewardsCollected: sdk.NewIntFromUint64(400),
+				LiquidationRewardsCollected: sdk.NewIntFromUint64(500),
 			},
 			errorExpected: false,
 		},

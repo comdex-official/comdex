@@ -85,7 +85,7 @@ func (s *VaultIntegrationTestSuite) Create() {
 	assetInID := s.CreateNewAsset("ASSETONE", "denom1", 2000000)
 	assetOutID := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
 	pairID := s.CreateNewPair(assetInID, assetOutID)
-	extendedVaultPairID := s.CreateNewExtendedVaultPair("CMDX C", appID, pairID)
+	extendedVaultPairID := s.CreateNewExtendedVaultPair("CMDX-C", appID, pairID)
 
 	_, _ = MsgCreate(s.val.ClientCtx, appID, extendedVaultPairID, sdk.NewInt(3), sdk.NewInt(2), s.val.Address.String())
 	// s.Require().NoError(err)
