@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/locker/keeper"
 	lockerTypes "github.com/comdex-official/comdex/x/locker/types"
@@ -47,11 +48,56 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	err = assetKeeper.AddAssetRecords(*ctx, msg5)
 	s.Require().NoError(err)
 }
+func (s *KeeperTestSuite) AddCollectorLookupTable() {
+	collectorKeeper, ctx := &s.collector, &s.ctx
+	msg1 := bindings.MsgSetCollectorLookupTable{
+		AppID:            1,
+		CollectorAssetID: 1,
+		SecondaryAssetID: 3,
+		SurplusThreshold: 10000000,
+		DebtThreshold:    5000000,
+		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
+		LotSize:          2000000,
+		BidFactor:        sdk.MustNewDecFromStr("0.01"),
+		DebtLotSize:      2000000,
+	}
+	err := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg1)
+	s.Require().NoError(err)
+
+	msg2 := bindings.MsgSetCollectorLookupTable{
+		AppID:            1,
+		CollectorAssetID: 2,
+		SecondaryAssetID: 3,
+		SurplusThreshold: 10000000,
+		DebtThreshold:    5000000,
+		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
+		LotSize:          2000000,
+		BidFactor:        sdk.MustNewDecFromStr("0.01"),
+		DebtLotSize:      2000000,
+	}
+	err1 := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg2)
+	s.Require().NoError(err1)
+
+	msg3 := bindings.MsgSetCollectorLookupTable{
+		AppID:            2,
+		CollectorAssetID: 1,
+		SecondaryAssetID: 3,
+		SurplusThreshold: 10000000,
+		DebtThreshold:    5000000,
+		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
+		LotSize:          2000000,
+		BidFactor:        sdk.MustNewDecFromStr("0.01"),
+		DebtLotSize:      2000000,
+	}
+	err2 := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg3)
+	s.Require().NoError(err2)
+}
 
 func (s *KeeperTestSuite) TestCreateLocker() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	lockerKeeper, ctx := &s.lockerKeeper, &s.ctx
 	s.AddAppAsset()
+	s.AddCollectorLookupTable()
 	server := keeper.NewMsgServer(*lockerKeeper)
 
 	//Add whitelisted App Asset combinations
@@ -144,7 +190,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			2000000,
 			false,
 			lockerTypes.QueryLockerInfoRequest{
-				Id: 1,
+				Id: 2,
 			},
 		},
 		{"CreateLocker : App2 Asset 1",
@@ -157,7 +203,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			9900000,
 			false,
 			lockerTypes.QueryLockerInfoRequest{
-				Id: 1,
+				Id: 3,
 			},
 		},
 	} {
@@ -228,13 +274,13 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 		{"DepositLocker : App2 Asset 1",
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
-				LockerId:  1,
+				LockerId:  3,
 				Amount:    sdk.NewIntFromUint64(4000000),
 				AssetId:   1,
 				AppId:     2,
 			},
 			lockerTypes.QueryLockerInfoRequest{
-				Id: 1,
+				Id: 3,
 			},
 			9900000,
 			false,
@@ -323,13 +369,13 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 		{"WithdrawLocker : Full Withdraw App2 Asset 1",
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
-				LockerId:  1,
+				LockerId:  3,
 				Amount:    sdk.NewIntFromUint64(9900000),
 				AssetId:   1,
-				AppId:     1,
+				AppId:     2,
 			},
 			lockerTypes.QueryLockerInfoRequest{
-				Id: 1,
+				Id: 3,
 			},
 			false,
 			false,
