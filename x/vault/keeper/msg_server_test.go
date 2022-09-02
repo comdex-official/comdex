@@ -305,7 +305,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "error vault does not exists",
 			Msg: *types.NewMsgDepositRequest(
-				addr1, appID1, extendedVaultPairID1, 2, newInt(69000000),
+				addr1, appID1, extendedVaultPairID1, 4, newInt(69000000),
 			),
 			ExpErr:             types.ErrorVaultDoesNotExist,
 			ExpResp:            nil,
@@ -356,13 +356,13 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		{
 			Name: "success valid case app2 user2",
 			Msg: *types.NewMsgDepositRequest(
-				addr2, appID2, extendedVaultPairID2, 3, newInt(69000000),
+				addr2, appID2, extendedVaultPairID2, 2, newInt(69000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgDepositResponse{},
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
-				Id:                  3,
+				Id:                  2,
 				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr2.String(),
@@ -486,7 +486,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "error vault does not exists",
 			Msg: *types.NewMsgWithdrawRequest(
-				addr1, appID1, extendedVaultPairID1, 2, newInt(400000000),
+				addr1, appID1, extendedVaultPairID1, 3, newInt(400000000),
 			),
 			ExpErr:             types.ErrorVaultDoesNotExist,
 			ExpResp:            nil,
@@ -537,13 +537,13 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		{
 			Name: "success valid case app2 user1",
 			Msg: *types.NewMsgWithdrawRequest(
-				addr1, appID2, extendedVaultPairID2, 3, newInt(50000000),
+				addr1, appID2, extendedVaultPairID2, 2, newInt(50000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgWithdrawResponse{},
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
-				Id:                  3,
+				Id:                  2,
 				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
@@ -661,7 +661,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "error vault does not exists",
 			Msg: *types.NewMsgDrawRequest(
-				addr1, appID1, extendedVaultPairID1, 2, newInt(50000000),
+				addr1, appID1, extendedVaultPairID1, 3, newInt(50000000),
 			),
 			ExpErr:             types.ErrorVaultDoesNotExist,
 			ExpResp:            nil,
@@ -712,13 +712,13 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		{
 			Name: "success valid case app2 user1",
 			Msg: *types.NewMsgDrawRequest(
-				addr1, appID2, extendedVaultPairID2, 3, newInt(10000000),
+				addr1, appID2, extendedVaultPairID2, 2, newInt(10000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgDrawResponse{},
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
-				Id:                  3,
+				Id:                  2,
 				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
@@ -836,7 +836,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "error vault does not exists",
 			Msg: *types.NewMsgRepayRequest(
-				addr1, appID1, extendedVaultPairID1, 2, newInt(50000000),
+				addr1, appID1, extendedVaultPairID1, 3, newInt(50000000),
 			),
 			ExpErr:             types.ErrorVaultDoesNotExist,
 			ExpResp:            nil,
@@ -887,13 +887,13 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name: "success valid case app2 user1",
 			Msg: *types.NewMsgRepayRequest(
-				addr1, appID2, extendedVaultPairID2, 3, newInt(100000000),
+				addr1, appID2, extendedVaultPairID2, 2, newInt(100000000),
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgRepayResponse{},
 			QueryResponseIndex: 1,
 			QueryResponse: &types.Vault{
-				Id:                  3,
+				Id:                  2,
 				AppId:               appID2,
 				ExtendedPairVaultID: extendedVaultPairID2,
 				Owner:               addr1.String(),
@@ -1010,7 +1010,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 		{
 			Name: "error vault does not exists",
 			Msg: *types.NewMsgLiquidateRequest(
-				addr1, appID1, extendedVaultPairID1, 2,
+				addr1, appID1, extendedVaultPairID1, 3,
 			),
 			ExpErr:             types.ErrorVaultDoesNotExist,
 			ExpResp:            nil,
@@ -1040,7 +1040,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 		{
 			Name: "success valid case app2 user1",
 			Msg: *types.NewMsgLiquidateRequest(
-				addr1, appID2, extendedVaultPairID2, 3,
+				addr1, appID2, extendedVaultPairID2, 2,
 			),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgCloseResponse{},
@@ -1353,7 +1353,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "error invalid stable mint id",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID1, extendedVaultPairID3, newInt(10000), 2,
+				addr1, appID1, extendedVaultPairID3, newInt(10000), 3,
 			),
 			ExpErr:           types.ErrorVaultDoesNotExist,
 			ExpResp:          nil,
@@ -1409,13 +1409,13 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 		{
 			Name: "success valid 3 case app2 user1",
 			Msg: *types.NewMsgDepositStableMintRequest(
-				addr1, appID2, extendedVaultPairID4, newInt(9000000000), 3,
+				addr1, appID2, extendedVaultPairID4, newInt(9000000000), 2,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgDepositStableMintResponse{},
 			QueryRespIndex: 1,
 			QueryResponse: &types.StableMintVault{
-				Id:                  3,
+				Id:                  2,
 				AmountIn:            newInt(10000000000),
 				AmountOut:           newInt(10000000000),
 				AppId:               2,
@@ -1567,7 +1567,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "error invalid stable mint id",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID1, extendedVaultPairID3, newInt(10000), 2,
+				addr1, appID1, extendedVaultPairID3, newInt(10000), 3,
 			),
 			ExpErr:           types.ErrorVaultDoesNotExist,
 			ExpResp:          nil,
@@ -1634,13 +1634,13 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "success valid case 3 case app2 user1",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr1, appID2, extendedVaultPairID4, newInt(1000000000), 3,
+				addr1, appID2, extendedVaultPairID4, newInt(1000000000), 2,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgWithdrawStableMintResponse{},
 			QueryRespIndex: 1,
 			QueryResponse: &types.StableMintVault{
-				Id:                  3,
+				Id:                  2,
 				AmountIn:            newInt(10000000),
 				AmountOut:           newInt(10000000),
 				AppId:               2,
@@ -1651,13 +1651,13 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 		{
 			Name: "success valid case 4 case app2 user3",
 			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr3, appID2, extendedVaultPairID4, newInt(5000000), 3,
+				addr3, appID2, extendedVaultPairID4, newInt(5000000), 2,
 			),
 			ExpErr:         nil,
 			ExpResp:        &types.MsgWithdrawStableMintResponse{},
 			QueryRespIndex: 1,
 			QueryResponse: &types.StableMintVault{
-				Id:                  3,
+				Id:                  2,
 				AmountIn:            newInt(5050000),
 				AmountOut:           newInt(5050000),
 				AppId:               2,

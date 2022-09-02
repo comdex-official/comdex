@@ -624,7 +624,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 		{
 			SkipVaultCreation: true,
 			Req:               &types.QueryAllVaultsByAppAndExtendedPairRequest{AppId: 69, ExtendedPairId: 12},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
+			ExpErr:            types.ErrorAppExtendedPairDataDoesNotExists,
 			ExpResp:           nil,
 		},
 		{
