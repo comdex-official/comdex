@@ -23,6 +23,7 @@ const (
 
 const (
 	AppName    = "commodo"
+	AppID      = uint64(3)
 	Uint64Zero = uint64(0)
 	Uint64Two  = uint64(2)
 	Perc1      = string("0.2")

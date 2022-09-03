@@ -8,12 +8,25 @@ import (
 )
 
 func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
-	borrowIds, found := k.GetBorrows(ctx)
+	borrowIDs, found := k.GetBorrows(ctx)
+	params := k.GetParams(ctx)
 	if !found {
 		return nil
 	}
-	for _, v := range borrowIds.BorrowIDs {
-		borrowPos, found := k.GetBorrow(ctx, v)
+	liquidationOffsetHolder, found := k.GetLiquidationOffsetHolder(ctx, lendtypes.AppID, types.VaultLiquidationsOffsetPrefix)
+	if !found {
+		liquidationOffsetHolder = types.NewLiquidationOffsetHolder(lendtypes.AppID, 0)
+	}
+	vaultIds := borrowIDs.BorrowIDs
+	start, end := types.GetSliceStartEndForLiquidations(len(vaultIds), int(liquidationOffsetHolder.CurrentOffset), int(params.LiquidationBatchSize))
+
+	if start == end {
+		liquidationOffsetHolder.CurrentOffset = 0
+		start, end = types.GetSliceStartEndForLiquidations(len(vaultIds), int(liquidationOffsetHolder.CurrentOffset), int(params.LiquidationBatchSize))
+	}
+	newVaultIDs := vaultIds[start:end]
+	for l := range newVaultIDs {
+		borrowPos, found := k.GetBorrow(ctx, newVaultIDs[l])
 		if !found {
 			continue
 		}
@@ -40,16 +53,16 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					continue
 				}
 				k.UpdateBorrowStats(ctx, lendPair, borrowPos, borrowPos.AmountOut.Amount, false)
-				k.DeleteBorrow(ctx, v)
-				err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, v, false)
+				k.DeleteBorrow(ctx, vaultIds[l])
+				err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, vaultIds[l], false)
 				if err != nil {
 					continue
 				}
-				err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, v, lendPair.AssetOutPoolID, false)
+				err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, vaultIds[l], lendPair.AssetOutPoolID, false)
 				if err != nil {
 					continue
 				}
-				err = k.UpdateBorrowIdsMapping(ctx, v, false)
+				err = k.UpdateBorrowIdsMapping(ctx, vaultIds[l], false)
 				if err != nil {
 					continue
 				}
@@ -65,16 +78,16 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 						continue
 					}
 					k.UpdateBorrowStats(ctx, lendPair, borrowPos, borrowPos.AmountOut.Amount, false)
-					k.DeleteBorrow(ctx, v)
-					err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, v, false)
+					k.DeleteBorrow(ctx, vaultIds[l])
+					err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, vaultIds[l], false)
 					if err != nil {
 						continue
 					}
-					err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, v, lendPair.AssetOutPoolID, false)
+					err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, vaultIds[l], lendPair.AssetOutPoolID, false)
 					if err != nil {
 						continue
 					}
-					err = k.UpdateBorrowIdsMapping(ctx, v, false)
+					err = k.UpdateBorrowIdsMapping(ctx, vaultIds[l], false)
 					if err != nil {
 						continue
 					}
@@ -89,16 +102,16 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 						continue
 					}
 					k.UpdateBorrowStats(ctx, lendPair, borrowPos, borrowPos.AmountOut.Amount, false)
-					k.DeleteBorrow(ctx, v)
-					err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, v, false)
+					k.DeleteBorrow(ctx, vaultIds[l])
+					err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, vaultIds[l], false)
 					if err != nil {
 						continue
 					}
-					err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, v, lendPair.AssetOutPoolID, false)
+					err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, vaultIds[l], lendPair.AssetOutPoolID, false)
 					if err != nil {
 						continue
 					}
-					err = k.UpdateBorrowIdsMapping(ctx, v, false)
+					err = k.UpdateBorrowIdsMapping(ctx, vaultIds[l], false)
 					if err != nil {
 						continue
 					}
@@ -112,6 +125,8 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 			return nil
 		}
 	}
+	liquidationOffsetHolder.CurrentOffset = uint64(end)
+	k.SetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, liquidationOffsetHolder)
 
 	return nil
 }

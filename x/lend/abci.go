@@ -18,10 +18,10 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		if err != nil {
 			ctx.Logger().Error("error in Iterate Lends")
 		}
-		err = k.IterateBorrows(ctx)
-		if err != nil {
-			ctx.Logger().Error("error in Iterate Borrows")
-		}
+		//err = k.IterateBorrows(ctx)
+		//if err != nil {
+		//	ctx.Logger().Error("error in Iterate Borrows")
+		//}
 		err = k.ReBalanceStableRates(ctx)
 		if err != nil {
 			ctx.Logger().Error("error in ReBalance Stable Rates")
