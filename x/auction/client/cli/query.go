@@ -671,7 +671,10 @@ func queryFilterDutchAuctions() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			denom := args[1]
+			denoms, err := ParseStringFromString(args[1], ",")
+			if err != nil {
+				return err
+			}
 			history, err := strconv.ParseBool(args[2])
 			if err != nil {
 				return err
@@ -685,7 +688,7 @@ func queryFilterDutchAuctions() *cobra.Command {
 				context.Background(),
 				&types.QueryFilterDutchAuctionsRequest{
 					AppId:      appID,
-					Denom:      denom,
+					Denom:      denoms,
 					History:    history,
 					Pagination: pagination,
 				},

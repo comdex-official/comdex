@@ -113,7 +113,7 @@ func (s *KeeperTestSuite) TestWasmUpdateCollectorLookupTable() {
 		s.Run(tc.name, func() {
 			err := collectorKeeper.WasmUpdateCollectorLookupTable(*ctx, &tc.msg)
 			s.Require().NoError(err)
-			result, found := collectorKeeper.GetCollectorLookupByAsset(*ctx, tc.msg.AppID, tc.msg.AssetID)
+			result, found := collectorKeeper.GetCollectorLookupTable(*ctx, tc.msg.AppID, tc.msg.AssetID)
 			s.Require().True(found)
 			s.Require().Equal(result.AppId, tc.msg.AppID)
 			s.Require().Equal(result.CollectorAssetId, tc.msg.AssetID)
@@ -165,21 +165,21 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 		s.Run(tc.name, func() {
 			err := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &tc.msg)
 			s.Require().NoError(err)
-			result, found := collectorKeeper.GetCollectorLookupTable(*ctx, tc.msg.AppID)
+			result, found := collectorKeeper.GetCollectorLookupTableByApp(*ctx, tc.msg.AppID)
 			s.Require().True(found)
-			s.Require().Equal(result.AssetRateInfo[index].AppId, tc.msg.AppID)
-			s.Require().Equal(result.AssetRateInfo[index].CollectorAssetId, tc.msg.CollectorAssetID)
-			s.Require().Equal(result.AssetRateInfo[index].SecondaryAssetId, tc.msg.SecondaryAssetID)
-			s.Require().Equal(result.AssetRateInfo[index].SurplusThreshold, tc.msg.SurplusThreshold)
-			s.Require().Equal(result.AssetRateInfo[index].DebtThreshold, tc.msg.DebtThreshold)
-			s.Require().Equal(result.AssetRateInfo[index].LockerSavingRate, tc.msg.LockerSavingRate)
-			s.Require().Equal(result.AssetRateInfo[index].LotSize, tc.msg.LotSize)
-			s.Require().Equal(result.AssetRateInfo[index].BidFactor, tc.msg.BidFactor)
-			s.Require().Equal(result.AssetRateInfo[index].DebtLotSize, tc.msg.DebtLotSize)
+			s.Require().Equal(result[index].AppId, tc.msg.AppID)
+			s.Require().Equal(result[index].CollectorAssetId, tc.msg.CollectorAssetID)
+			s.Require().Equal(result[index].SecondaryAssetId, tc.msg.SecondaryAssetID)
+			s.Require().Equal(result[index].SurplusThreshold, tc.msg.SurplusThreshold)
+			s.Require().Equal(result[index].DebtThreshold, tc.msg.DebtThreshold)
+			s.Require().Equal(result[index].LockerSavingRate, tc.msg.LockerSavingRate)
+			s.Require().Equal(result[index].LotSize, tc.msg.LotSize)
+			s.Require().Equal(result[index].BidFactor, tc.msg.BidFactor)
+			s.Require().Equal(result[index].DebtLotSize, tc.msg.DebtLotSize)
 		})
 	}
 	s.AddAuctionParams()
-	for index, tc := range []struct {
+	for _, tc := range []struct {
 		name string
 		msg  bindings.MsgSetAuctionMappingForApp
 	}{
@@ -187,39 +187,39 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 			"Wasm Add Auction Control AppID 1 AssetID 2",
 			bindings.MsgSetAuctionMappingForApp{
 				AppID:                1,
-				AssetIDs:             []uint64{2},
-				IsSurplusAuctions:    []bool{true},
-				IsDebtAuctions:       []bool{false},
-				IsDistributor:        []bool{false},
-				AssetOutOraclePrices: []bool{false},
-				AssetOutPrices:       []uint64{1000000},
+				AssetIDs:             uint64(2),
+				IsSurplusAuctions:    bool(true),
+				IsDebtAuctions:       bool(false),
+				IsDistributor:        bool(false),
+				AssetOutOraclePrices: bool(false),
+				AssetOutPrices:       uint64(1000000),
 			},
 		},
 		{
 			"Wasm Add Auction Control AppID 1 AssetID 3",
 			bindings.MsgSetAuctionMappingForApp{
 				AppID:                1,
-				AssetIDs:             []uint64{3},
-				IsSurplusAuctions:    []bool{true},
-				IsDebtAuctions:       []bool{false},
-				IsDistributor:        []bool{false},
-				AssetOutOraclePrices: []bool{false},
-				AssetOutPrices:       []uint64{100000},
+				AssetIDs:             uint64(3),
+				IsSurplusAuctions:    bool(true),
+				IsDebtAuctions:       bool(false),
+				IsDistributor:        bool(false),
+				AssetOutOraclePrices: bool(false),
+				AssetOutPrices:       uint64(100000),
 			},
 		},
 	} {
 		s.Run(tc.name, func() {
 			err := collectorKeeper.WasmSetAuctionMappingForApp(*ctx, &tc.msg)
 			s.Require().NoError(err)
-			result1, found := collectorKeeper.GetAuctionMappingForApp(*ctx, tc.msg.AppID)
+			result1, found := collectorKeeper.GetAuctionMappingForApp(*ctx, tc.msg.AppID, tc.msg.AssetIDs)
 			s.Require().True(found)
-			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetId, tc.msg.AssetIDs[0])
-			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsSurplusAuction, tc.msg.IsSurplusAuctions[0])
-			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsDebtAuction, tc.msg.IsDebtAuctions[0])
-			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsDistributor, tc.msg.IsDistributor[0])
-			s.Require().Equal(result1.AssetIdToAuctionLookup[index].IsAuctionActive, false)
-			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetOutOraclePrice, tc.msg.AssetOutOraclePrices[0])
-			s.Require().Equal(result1.AssetIdToAuctionLookup[index].AssetOutPrice, tc.msg.AssetOutPrices[0])
+			s.Require().Equal(result1.AssetId, tc.msg.AssetIDs)
+			s.Require().Equal(result1.IsSurplusAuction, tc.msg.IsSurplusAuctions)
+			s.Require().Equal(result1.IsDebtAuction, tc.msg.IsDebtAuctions)
+			s.Require().Equal(result1.IsDistributor, tc.msg.IsDistributor)
+			s.Require().Equal(result1.IsAuctionActive, false)
+			s.Require().Equal(result1.AssetOutOraclePrice, tc.msg.AssetOutOraclePrices)
+			s.Require().Equal(result1.AssetOutPrice, tc.msg.AssetOutPrices)
 		})
 	}
 
@@ -258,11 +258,11 @@ func (s *KeeperTestSuite) TestSetNetFeesCollected() {
 				s.Require().Error(err)
 			} else {
 				s.Require().NoError(err)
-				netFeesData, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID)
+				netFeesData, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID, tc.assetID)
 				s.Require().True(found)
 				s.Require().Equal(tc.appID, netFeesData.AppId)
-				s.Require().Equal(tc.assetID, netFeesData.AssetIdToFeeCollected[0].AssetId)
-				s.Require().Equal(tc.fee, netFeesData.AssetIdToFeeCollected[0].NetFeesCollected)
+				s.Require().Equal(tc.assetID, netFeesData.AssetId)
+				s.Require().Equal(tc.fee, netFeesData.NetFeesCollected)
 			}
 		})
 	}
@@ -295,18 +295,18 @@ func (s *KeeperTestSuite) TestAddNetFeesCollected() {
 		},
 	} {
 		s.Run(tc.name, func() {
-			netFeesData1, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID)
+			netFeesData1, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID, tc.assetID)
 			s.Require().True(found)
 			err := collectorKeeper.SetNetFeeCollectedData(*ctx, tc.appID, tc.assetID, tc.fee)
 			if tc.errorExpected {
 				s.Require().Error(err)
 			} else {
 				s.Require().NoError(err)
-				netFeesData, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID)
+				netFeesData, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID, tc.assetID)
 				s.Require().True(found)
 				s.Require().Equal(tc.appID, netFeesData.AppId)
-				s.Require().Equal(tc.assetID, netFeesData.AssetIdToFeeCollected[0].AssetId)
-				s.Require().Equal(netFeesData1.AssetIdToFeeCollected[0].NetFeesCollected.Add(tc.fee), netFeesData.AssetIdToFeeCollected[0].NetFeesCollected)
+				s.Require().Equal(tc.assetID, netFeesData.AssetId)
+				s.Require().Equal(netFeesData1.NetFeesCollected.Add(tc.fee), netFeesData.NetFeesCollected)
 			}
 		})
 	}
@@ -338,18 +338,18 @@ func (s *KeeperTestSuite) TestDecreaseNetFeesCollected() {
 		},
 	} {
 		s.Run(tc.name, func() {
-			netFeesData1, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID)
+			netFeesData1, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID, tc.assetID)
 			s.Require().True(found)
 			err := collectorKeeper.DecreaseNetFeeCollectedData(*ctx, tc.appID, tc.assetID, tc.fee, netFeesData1)
 			if tc.errorExpected {
 				s.Require().Error(err)
 			} else {
 				s.Require().NoError(err)
-				netFeesData, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID)
+				netFeesData, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID, tc.assetID)
 				s.Require().True(found)
 				s.Require().Equal(tc.appID, netFeesData.AppId)
-				s.Require().Equal(tc.assetID, netFeesData.AssetIdToFeeCollected[0].AssetId)
-				s.Require().Equal(netFeesData1.AssetIdToFeeCollected[0].NetFeesCollected.Sub(tc.fee), netFeesData.AssetIdToFeeCollected[0].NetFeesCollected)
+				s.Require().Equal(tc.assetID, netFeesData.AssetId)
+				s.Require().Equal(netFeesData1.NetFeesCollected.Sub(tc.fee), netFeesData.NetFeesCollected)
 			}
 		})
 	}

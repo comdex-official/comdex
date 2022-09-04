@@ -5,6 +5,7 @@ import (
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+	"regexp"
 
 	"github.com/comdex-official/comdex/x/asset/types"
 )
@@ -90,7 +91,7 @@ func (k Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault,
 	return apps, true
 }
 
-func (k Keeper) WasmExtendedPairByAppQuery(ctx sdk.Context, appID uint64) (extId []uint64, found bool) {
+func (k Keeper) WasmExtendedPairByAppQuery(ctx sdk.Context, appID uint64) (extID []uint64, found bool) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.PairsVaultKeyPrefix)
@@ -106,15 +107,15 @@ func (k Keeper) WasmExtendedPairByAppQuery(ctx sdk.Context, appID uint64) (extId
 	for ; iter.Valid(); iter.Next() {
 		var extPair types.ExtendedPairVault
 		k.cdc.MustUnmarshal(iter.Value(), &extPair)
-		if extPair.AppId == appID {
-			extId = append(extId, extPair.Id)
+		if extPair.AppId == appID && !extPair.IsStableMintVault {
+			extID = append(extID, extPair.Id)
 		}
 	}
-	if extId == nil {
+	if extID == nil {
 		return nil, false
 	}
 
-	return extId, true
+	return extID, true
 }
 
 func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBinding *bindings.MsgAddExtendedPairsVault) error {
@@ -128,6 +129,12 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	_, pairExists := k.GetPair(ctx, pairVaultBinding.PairID)
 	if !pairExists {
 		return types.ErrorPairDoesNotExist
+	}
+
+	var IsLetter = regexp.MustCompile(`^[A-Z-]+$`).MatchString
+
+	if !IsLetter(pairVaultBinding.PairName) {
+		return types.ErrorNameDidNotMeetCriterion
 	}
 
 	var id = k.GetPairsVaultID(ctx)
@@ -229,13 +236,12 @@ func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.
 	}
 	_, found1 := k.rewards.GetAppIDByApp(ctx, updatePairVault.AppID)
 	if found1 {
-		if ExtPairVaultData.StabilityFee != updatePairVault.StabilityFee {
+		if ExtPairVaultData.StabilityFee != updatePairVault.StabilityFee && !ExtPairVaultData.IsStableMintVault {
 			if updatePairVault.StabilityFee.IsZero() {
 				// run script to distrubyte reward
 				k.VaultIterateRewards(ctx, ExtPairVaultData.StabilityFee, ExtPairVaultData.BlockHeight, ExtPairVaultData.BlockTime.Unix(), updatePairVault.AppID, ExtPairVaultData.Id, false)
 				ExtPairVaultData.BlockTime = ctx.BlockTime()
 				ExtPairVaultData.BlockHeight = 0
-
 			} else if ExtPairVaultData.StabilityFee.IsZero() {
 				// do nothing
 				ExtPairVaultData.BlockHeight = ctx.BlockHeight()
@@ -245,7 +251,6 @@ func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.
 				k.VaultIterateRewards(ctx, ExtPairVaultData.StabilityFee, ExtPairVaultData.BlockHeight, ExtPairVaultData.BlockTime.Unix(), updatePairVault.AppID, ExtPairVaultData.Id, true)
 				ExtPairVaultData.BlockHeight = ctx.BlockHeight()
 				ExtPairVaultData.BlockTime = ctx.BlockTime()
-
 			}
 		}
 	}
@@ -287,7 +292,6 @@ func (k Keeper) WasmCheckWhitelistedAssetQuery(ctx sdk.Context, denom string) (f
 }
 
 func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, collectorBh, collectorBt int64, appID, pairVaultID uint64, changeTypes bool) {
-
 	extPairVault, found := k.vault.GetAppExtendedPairVaultMappingData(ctx, appID, pairVaultID)
 	if found {
 		for _, valID := range extPairVault.VaultIds {
@@ -349,8 +353,6 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 				}
 				k.vault.SetVault(ctx, vaultData)
 			}
-
 		}
 	}
-
 }

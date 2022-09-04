@@ -105,18 +105,42 @@ func (q QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySur
 	}
 
 	var (
-		ctx  = sdk.UnwrapSDKContext(c)
-		item []types.SurplusBiddings
+		ctx   = sdk.UnwrapSDKContext(c)
+		items []types.SurplusBiddings
+		key   []byte
 	)
 	if req.History {
-		item = q.GetHistorySurplusUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.HistoryUserAuctionTypeKey(req.Bidder, req.AppId, types.SurplusString)
+		// item = q.GetHistorySurplusUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
-		item = q.GetSurplusUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.UserAuctionTypeKey(req.Bidder, req.AppId, types.SurplusString)
+		// item = q.GetSurplusUserBiddings(ctx, req.Bidder, req.AppId)
+	}
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.SurplusBiddings
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QuerySurplusBiddingsResponse{
-		Bidder:   req.Bidder,
-		Biddings: item,
+		Bidder:     req.Bidder,
+		Biddings:   items,
+		Pagination: pagination,
 	}, nil
 }
 func (q QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAuctionRequest) (res *types.QueryDebtAuctionResponse, err error) {
@@ -190,18 +214,42 @@ func (q QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtBi
 	}
 
 	var (
-		ctx  = sdk.UnwrapSDKContext(c)
-		item []types.DebtBiddings
+		ctx   = sdk.UnwrapSDKContext(c)
+		items []types.DebtBiddings
+		key   []byte
 	)
 	if req.History {
-		item = q.GetHistoryDebtUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.HistoryUserAuctionTypeKey(req.Bidder, req.AppId, types.DebtString)
+		// item = q.GetHistoryDebtUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
-		item = q.GetDebtUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.UserAuctionTypeKey(req.Bidder, req.AppId, types.DebtString)
+		// item = q.GetDebtUserBiddings(ctx, req.Bidder, req.AppId)
+	}
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.DebtBiddings
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryDebtBiddingsResponse{
-		Bidder:   req.Bidder,
-		Biddings: item,
+		Bidder:     req.Bidder,
+		Biddings:   items,
+		Pagination: pagination,
 	}, nil
 }
 
@@ -273,18 +321,43 @@ func (q QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutch
 	}
 
 	var (
-		ctx  = sdk.UnwrapSDKContext(c)
-		item []types.DutchBiddings
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+		items []types.DutchBiddings
 	)
 	if req.History {
-		item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.HistoryUserAuctionTypeKey(req.Bidder, req.AppId, types.DutchString)
+		// item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
-		item = q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.UserAuctionTypeKey(req.Bidder, req.AppId, types.DutchString)
+		// item = q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)
+	}
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.DutchBiddings
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryDutchBiddingsResponse{
-		Bidder:   req.Bidder,
-		Biddings: item,
+		Bidder:     req.Bidder,
+		Biddings:   items,
+		Pagination: pagination,
 	}, nil
 }
 
@@ -475,8 +548,11 @@ func (q QueryServer) QueryFilterDutchAuctions(c context.Context, req *types.Quer
 				return false, err
 			}
 			var check = false
-			if item.OutflowTokenCurrentAmount.Denom == req.Denom || item.InflowTokenCurrentAmount.Denom == req.Denom {
-				check = true
+			for _, data := range req.Denom {
+				if item.OutflowTokenCurrentAmount.Denom == data || item.InflowTokenCurrentAmount.Denom == data {
+					check = true
+					break
+				}
 			}
 
 			if accumulate && check {

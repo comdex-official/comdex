@@ -656,7 +656,7 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 	interest := sdk.ZeroDec()
 	var err error
 	extPairVaultBTime := ExtPairVaultData.BlockTime.Unix()
-	if ExtPairVaultData.StabilityFee.IsZero() {
+	if ExtPairVaultData.StabilityFee.IsZero() || ExtPairVaultData.IsStableMintVault{
 		return nil
 	} else {
 		if blockHeight == 0 {
