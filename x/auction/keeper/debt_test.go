@@ -166,7 +166,6 @@ func (s *KeeperTestSuite) TestDebtActivatorBetweenThreshholdAndLotsize() {
 	s.AddAuctionParams()
 	s.WasmSetCollectorLookupTableAndAuctionControlForDebt()
 	s.WasmUpdateCollectorLookupTable(30000, 20500, 800, 501)
-	s.LiquidateVaults1()
 
 	k, ctx := &s.keeper, &s.ctx
 
@@ -189,7 +188,6 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
 	s.WasmSetCollectorLookupTableAndAuctionControlForDebt()
-	s.LiquidateVaults1()
 
 	k, collectorKeeper, ctx := &s.keeper, &s.collectorKeeper, &s.ctx
 

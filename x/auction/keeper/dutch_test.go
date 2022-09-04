@@ -275,7 +275,7 @@ func (s *KeeperTestSuite) LiquidateVaults1() {
 	price, found := s.app.MarketKeeper.GetPriceForAsset(*ctx, uint64(1))
 	s.Require().True(found)
 	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, beforeVault.AmountIn.ToDec().Mul(sdk.NewIntFromUint64(price).ToDec()))
-	s.Require().Equal(lockedVault[0].CurrentCollaterlisationRatio, lockedVault[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault[0].UpdatedAmountOut.ToDec().Mul(s.GetAssetPrice(2))))
+	s.Require().Equal(lockedVault[0].CrAtLiquidation, lockedVault[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault[0].UpdatedAmountOut.ToDec().Mul(s.GetAssetPrice(2))))
 }
 
 func (s *KeeperTestSuite) AddAuctionParams() {
@@ -313,10 +313,10 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	appId := uint64(1)
 	auctionMappingId := uint64(3)
 	auctionId := uint64(1)
-	dutchAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
-	s.Require().NoError(err)
 	lockedVault, found := liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().True(found)
+	dutchAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
+	s.Require().NoError(err)
 
 	s.Require().Equal(dutchAuction.AppId, lockedVault.AppId)
 	s.Require().Equal(dutchAuction.AuctionId, auctionId)
