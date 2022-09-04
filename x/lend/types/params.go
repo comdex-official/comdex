@@ -9,16 +9,17 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	LendGas                 = sdk.Gas(32763)
-	WithdrawGas             = sdk.Gas(22763)
-	DepositGas              = sdk.Gas(22763)
-	CloseLendGas            = sdk.Gas(22763)
-	BorrowAssetGas          = sdk.Gas(22763)
-	DrawAssetGas            = sdk.Gas(22763)
-	RepayAssetGas           = sdk.Gas(22763)
-	DepositBorrowAssetGas   = sdk.Gas(22763)
-	CloseBorrowAssetGas     = sdk.Gas(22763)
-	BorrowAssetAlternateGas = sdk.Gas(22763)
+	LendGas                    = sdk.Gas(32763)
+	WithdrawGas                = sdk.Gas(22763)
+	DepositGas                 = sdk.Gas(22763)
+	CloseLendGas               = sdk.Gas(22763)
+	BorrowAssetGas             = sdk.Gas(22763)
+	DrawAssetGas               = sdk.Gas(22763)
+	RepayAssetGas              = sdk.Gas(22763)
+	DepositBorrowAssetGas      = sdk.Gas(22763)
+	CloseBorrowAssetGas        = sdk.Gas(22763)
+	BorrowAssetAlternateGas    = sdk.Gas(22763)
+	CalculateBorrowInterestGas = sdk.Gas(22763)
 )
 
 const (

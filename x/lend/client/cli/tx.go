@@ -37,6 +37,7 @@ func GetTxCmd() *cobra.Command {
 		txCloseBorrowAsset(),
 		txBorrowAssetAlternate(),
 		txFundModuleAccounts(),
+		txCalculateBorrowInterest(),
 	)
 
 	return cmd
@@ -916,4 +917,30 @@ func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.Flag
 	}
 
 	return txf, msg, nil
+}
+
+func txCalculateBorrowInterest() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "calculate-borrow-interest [borrow-id] ",
+		Short: " calculate borrow interest for a borrow position",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgCalculateBorrowInterest(ctx.GetFromAddress().String(), borrowID)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

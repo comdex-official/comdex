@@ -473,3 +473,39 @@ func (msg *MsgBorrowAlternate) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
+
+func NewMsgCalculateBorrowInterest(borrower string, borrowID uint64) *MsgCalculateBorrowInterest {
+	return &MsgCalculateBorrowInterest{
+		Borrower: borrower,
+		BorrowId: borrowID,
+	}
+}
+
+func (msg MsgCalculateBorrowInterest) Route() string { return ModuleName }
+func (msg MsgCalculateBorrowInterest) Type() string  { return TypeCalculateBorrowInterestRequest }
+
+func (msg *MsgCalculateBorrowInterest) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		return err
+	}
+
+	if msg.BorrowId <= 0 {
+		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
+	}
+	return nil
+}
+
+func (msg *MsgCalculateBorrowInterest) GetSigners() []sdk.AccAddress {
+	lender, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{lender}
+}
+
+// GetSignBytes get the bytes for the message signer to sign on.
+func (msg *MsgCalculateBorrowInterest) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}

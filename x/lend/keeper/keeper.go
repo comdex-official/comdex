@@ -1475,3 +1475,35 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 		return
 	}
 }
+
+func (k Keeper) MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string, borrowID uint64) error {
+	borrowPos, found := k.GetBorrow(ctx, borrowID)
+	if !found {
+		return types.ErrBorrowNotFound
+	}
+
+	lendPos, found := k.GetLend(ctx, borrowPos.LendingID)
+	if !found {
+		return types.ErrLendNotFound
+	}
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
+	if lendPos.Owner != borrowerAddr {
+		return types.ErrLendAccessUnauthorised
+	}
+	indexGlobalCurrent, reserveGlobalIndex, err := k.IterateBorrow(ctx, borrowID)
+	if err != nil {
+		return err
+	}
+	borrowPos, found = k.GetBorrow(ctx, borrowID)
+	if !found {
+		return types.ErrBorrowNotFound
+	}
+	borrowPos.GlobalIndex = indexGlobalCurrent
+	borrowPos.ReserveGlobalIndex = reserveGlobalIndex
+	borrowPos.LastInteractionTime = ctx.BlockTime()
+	k.SetBorrow(ctx, borrowPos)
+	return nil
+}

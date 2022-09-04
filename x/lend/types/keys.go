@@ -30,17 +30,18 @@ const (
 )
 
 var (
-	TypeLendAssetRequest            = ModuleName + ":lend"
-	TypeWithdrawAssetRequest        = ModuleName + ":withdraw"
-	TypeBorrowAssetRequest          = ModuleName + ":borrow"
-	TypeRepayAssetRequest           = ModuleName + ":repay"
-	TypeFundModuleAccountRequest    = ModuleName + ":fund-module"
-	TypeDepositAssetRequest         = ModuleName + ":deposit"
-	TypeCloseLendAssetRequest       = ModuleName + ":close-lend"
-	TypeCloseBorrowAssetRequest     = ModuleName + ":close-borrow"
-	TypeDrawAssetRequest            = ModuleName + ":draw"
-	TypeDepositBorrowdAssetRequest  = ModuleName + ":deposit-borrow"
-	TypeBorrowAlternateAssetRequest = ModuleName + ":borrow-alternate"
+	TypeLendAssetRequest               = ModuleName + ":lend"
+	TypeWithdrawAssetRequest           = ModuleName + ":withdraw"
+	TypeBorrowAssetRequest             = ModuleName + ":borrow"
+	TypeRepayAssetRequest              = ModuleName + ":repay"
+	TypeFundModuleAccountRequest       = ModuleName + ":fund-module"
+	TypeDepositAssetRequest            = ModuleName + ":deposit"
+	TypeCloseLendAssetRequest          = ModuleName + ":close-lend"
+	TypeCloseBorrowAssetRequest        = ModuleName + ":close-borrow"
+	TypeDrawAssetRequest               = ModuleName + ":draw"
+	TypeDepositBorrowdAssetRequest     = ModuleName + ":deposit-borrow"
+	TypeBorrowAlternateAssetRequest    = ModuleName + ":borrow-alternate"
+	TypeCalculateBorrowInterestRequest = ModuleName + ":calculate-borrow-interest"
 )
 
 var (
