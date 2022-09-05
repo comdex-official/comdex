@@ -365,25 +365,25 @@ def CreateState():
         Vote("yes")
     
     AddAssetInAppsAndVote(1, 9)
-#     contractAddresses = StoreAndIntantiateWasmContract()
-#     for wasmProp in WASM_PROPOSALS:
-#         contractAddress = contractAddresses[wasmProp['contractAddressKey']]
-#         ProposeWasmProposal(contractAddress, wasmProp['content'], wasmProp['proposalID'])
-#         print(f"waiting for wasm prop {wasmProp['proposalID']}")
-#         if wasmProp['isProposal']:
-#             time.sleep(APPS[0][3]) # waiting for proposal duration
-#             ExecuteWasmGovernanceProposal(contractAddress, wasmProp['proposalID'])
-#
-#     for liquidityPair in LIQUIDITY_PAIRS:
-#         if len(liquidityPair) != 3:
-#             exit("Invalid liquidity pair configs")
-#         CreateLiquidityPair(liquidityPair[0], liquidityPair[1], liquidityPair[2])
-#         Vote("yes")
-#
-#     for liquidityPool in LIQUIDITY_POOLS:
-#         if len(liquidityPool) != 3:
-#             exit("Invalid liquidity pool configs")
-#         CreateLiquidityPool(liquidityPool[0], liquidityPool[1], liquidityPool[2])
+    contractAddresses = StoreAndIntantiateWasmContract()
+    for wasmProp in WASM_PROPOSALS:
+        contractAddress = contractAddresses[wasmProp['contractAddressKey']]
+        ProposeWasmProposal(contractAddress, wasmProp['content'], wasmProp['proposalID'])
+        print(f"waiting for wasm prop {wasmProp['proposalID']}")
+        if wasmProp['isProposal']:
+            time.sleep(APPS[0][3]) # waiting for proposal duration
+            ExecuteWasmGovernanceProposal(contractAddress, wasmProp['proposalID'])
+
+    for liquidityPair in LIQUIDITY_PAIRS:
+        if len(liquidityPair) != 3:
+            exit("Invalid liquidity pair configs")
+        CreateLiquidityPair(liquidityPair[0], liquidityPair[1], liquidityPair[2])
+        Vote("yes")
+
+    for liquidityPool in LIQUIDITY_POOLS:
+        if len(liquidityPool) != 3:
+            exit("Invalid liquidity pool configs")
+        CreateLiquidityPool(liquidityPool[0], liquidityPool[1], liquidityPool[2])
 
     for assetRate in ADD_ASSET_RATES:
         if len(assetRate) != 2:
