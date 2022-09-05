@@ -156,8 +156,8 @@ func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMa
 func (k Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.AppAssetIdToAuctionLookupTable, found bool) {
 	return k.collector.GetAllAuctionMappingForApp(ctx)
 }
-func (k Keeper) DeleteLockedVault(ctx sdk.Context, appId, id uint64) {
-	k.liquidation.DeleteLockedVault(ctx, appId, id)
+func (k Keeper) DeleteLockedVault(ctx sdk.Context, appID, id uint64) {
+	k.liquidation.DeleteLockedVault(ctx, appID, id)
 }
 
 func (k Keeper) DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64) {

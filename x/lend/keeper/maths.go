@@ -87,9 +87,8 @@ func (k Keeper) GetAverageBorrowRate(ctx sdk.Context, poolID, assetID uint64) (s
 		averageBorrowRate := numerator.Quo(denominator)
 		return averageBorrowRate, nil
 
-	} else {
-		return sdk.ZeroDec(), types.ErrAverageBorrowRate
 	}
+	return sdk.ZeroDec(), types.ErrAverageBorrowRate
 }
 
 func (k Keeper) GetSavingRate(ctx sdk.Context, poolID, assetID uint64) (savingRate sdk.Dec, err error) {
@@ -119,9 +118,8 @@ func (k Keeper) GetReserveRate(ctx sdk.Context, poolID, assetID uint64) (reserve
 	if averageBorrowRate != sdk.ZeroDec() {
 		reserveRate = averageBorrowRate.Sub(savingRate)
 		return reserveRate, nil
-	} else {
-		return sdk.ZeroDec(), nil
 	}
+	return sdk.ZeroDec(), nil
 }
 
 func (k Keeper) UpdateAPR(ctx sdk.Context, poolID, assetID uint64) (AssetStats types.AssetStats, found bool) {
