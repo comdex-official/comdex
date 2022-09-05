@@ -140,18 +140,28 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 
 	lendID := k.GetUserLendIDHistory(ctx)
 
+	var globalIndex sdk.Dec
+	assetStats, _ := k.AssetStatsByPoolIDAndAssetID(ctx, AssetID, PoolID)
+	if assetStats.LendApr.IsZero() {
+		globalIndex = sdk.OneDec()
+	} else {
+		globalIndex = assetStats.LendApr
+	}
+
 	lendPos := types.LendAsset{
-		ID:                 lendID + 1,
-		AssetID:            AssetID,
-		PoolID:             PoolID,
-		Owner:              lenderAddr,
-		AmountIn:           Amount,
-		LendingTime:        ctx.BlockTime(),
-		UpdatedAmountIn:    Amount.Amount,
-		AvailableToBorrow:  Amount.Amount,
-		Reward_Accumulated: sdk.ZeroInt(),
-		CPoolName:          pool.CPoolName,
-		AppID:              AppID,
+		ID:                  lendID + 1,
+		AssetID:             AssetID,
+		PoolID:              PoolID,
+		Owner:               lenderAddr,
+		AmountIn:            Amount,
+		LendingTime:         ctx.BlockTime(),
+		UpdatedAmountIn:     Amount.Amount,
+		AvailableToBorrow:   Amount.Amount,
+		Reward_Accumulated:  sdk.ZeroInt(),
+		AppID:               AppID,
+		GlobalIndex:         globalIndex,
+		LastInteractionTime: ctx.BlockTime(),
+		CPoolName:           pool.CPoolName,
 	}
 	k.UpdateLendStats(ctx, AssetID, PoolID, Amount.Amount, true)
 	k.SetUserLendIDHistory(ctx, lendPos.ID)
@@ -186,6 +196,13 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
 	}
+	indexGlobalCurrent, err := k.IterateLends(ctx, lendID)
+	if err != nil {
+		return err
+	}
+	lendPos, _ = k.GetLend(ctx, lendID)
+	lendPos.GlobalIndex = indexGlobalCurrent
+	lendPos.LastInteractionTime = ctx.BlockTime()
 
 	getAsset, _ := k.GetAsset(ctx, lendPos.AssetID)
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
@@ -296,6 +313,13 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendID uint64, deposi
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
 	}
+	indexGlobalCurrent, err := k.IterateLends(ctx, lendID)
+	if err != nil {
+		return err
+	}
+	lendPos, _ = k.GetLend(ctx, lendID)
+	lendPos.GlobalIndex = indexGlobalCurrent
+	lendPos.LastInteractionTime = ctx.BlockTime()
 	getAsset, _ := k.GetAsset(ctx, lendPos.AssetID)
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
 
@@ -349,6 +373,13 @@ func (k Keeper) CloseLend(ctx sdk.Context, addr string, lendID uint64) error {
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
 	}
+	indexGlobalCurrent, err := k.IterateLends(ctx, lendID)
+	if err != nil {
+		return err
+	}
+	lendPos, _ = k.GetLend(ctx, lendID)
+	lendPos.GlobalIndex = indexGlobalCurrent
+	lendPos.LastInteractionTime = ctx.BlockTime()
 
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
 
@@ -1161,10 +1192,10 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 		return types.ErrInsufficientFunds
 	}
 	amt := sdk.NewCoins(sdk.NewCoin(assetOut.Denom, borrowPos.UpdatedAmountOut))
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, amt); err != nil {
+	if err = k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, amt); err != nil {
 		return err
 	}
-	if err := k.bank.SendCoinsFromModuleToAccount(ctx, assetInPool.ModuleName, lenderAddr, sdk.NewCoins(borrowPos.AmountIn)); err != nil {
+	if err = k.bank.SendCoinsFromModuleToAccount(ctx, assetInPool.ModuleName, lenderAddr, sdk.NewCoins(borrowPos.AmountIn)); err != nil {
 		return err
 	}
 
@@ -1175,13 +1206,13 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 	}
 	if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
 		amount := sdk.NewCoin(assetOut.Denom, amtToReservePool.TruncateInt())
-		err := k.SetReserveBalances(ctx, pool.ModuleName, pair.AssetOut, amount)
+		err = k.SetReserveBalances(ctx, pool.ModuleName, pair.AssetOut, amount)
 		if err != nil {
 			return err
 		}
 	}
 	if borrowPos.Interest_Accumulated.GT(amtToReservePool.TruncateInt()) {
-		err := k.MintCoin(ctx, pool.ModuleName, sdk.NewCoin(cAsset.Denom, borrowPos.Interest_Accumulated.Sub(amtToReservePool.TruncateInt())))
+		err = k.MintCoin(ctx, pool.ModuleName, sdk.NewCoin(cAsset.Denom, borrowPos.Interest_Accumulated.Sub(amtToReservePool.TruncateInt())))
 		if err != nil {
 			return err
 		}
@@ -1281,18 +1312,28 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 
 	lendID := k.GetUserLendIDHistory(ctx)
 
+	var globalIndex sdk.Dec
+	assetStats, _ := k.AssetStatsByPoolIDAndAssetID(ctx, AssetID, PoolID)
+	if assetStats.LendApr.IsZero() {
+		globalIndex = sdk.OneDec()
+	} else {
+		globalIndex = assetStats.LendApr
+	}
+
 	lendPos := types.LendAsset{
-		ID:                 lendID + 1,
-		AssetID:            AssetID,
-		PoolID:             PoolID,
-		Owner:              lenderAddr,
-		AmountIn:           AmountIn,
-		LendingTime:        ctx.BlockTime(),
-		UpdatedAmountIn:    AmountIn.Amount,
-		AvailableToBorrow:  AmountIn.Amount,
-		Reward_Accumulated: sdk.ZeroInt(),
-		CPoolName:          pool.CPoolName,
-		AppID:              AppID,
+		ID:                  lendID + 1,
+		AssetID:             AssetID,
+		PoolID:              PoolID,
+		Owner:               lenderAddr,
+		AmountIn:            AmountIn,
+		LendingTime:         ctx.BlockTime(),
+		UpdatedAmountIn:     AmountIn.Amount,
+		AvailableToBorrow:   AmountIn.Amount,
+		Reward_Accumulated:  sdk.ZeroInt(),
+		AppID:               AppID,
+		GlobalIndex:         globalIndex,
+		LastInteractionTime: ctx.BlockTime(),
+		CPoolName:           pool.CPoolName,
 	}
 	k.UpdateLendStats(ctx, AssetID, PoolID, AmountIn.Amount, true)
 	k.SetUserLendIDHistory(ctx, lendPos.ID)
@@ -1384,6 +1425,12 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 	AssetOutPool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
 	lendPos, _ := k.GetLend(ctx, kind.LendingId)
 	AssetInPool, _ := k.GetPool(ctx, lendPos.PoolID)
+	assetStats, _ := k.AssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolID)
+	reserveGlobalIndex, err := k.GetReserveRate(ctx, pair.AssetOutPoolID, pair.AssetOut)
+	if err != nil {
+		reserveGlobalIndex = sdk.OneDec()
+	}
+	globalIndex := assetStats.BorrowApr
 
 	borrowPos := types.BorrowAsset{
 		ID:                   borrowID + 1,
@@ -1397,6 +1444,9 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 		BorrowingTime:        ctx.BlockTime(),
 		UpdatedAmountOut:     liqBorrow.AmountOut,
 		Interest_Accumulated: sdk.ZeroInt(),
+		GlobalIndex:          globalIndex,
+		ReserveGlobalIndex:   reserveGlobalIndex,
+		LastInteractionTime:  ctx.BlockTime(),
 		CPoolName:            AssetOutPool.CPoolName,
 	}
 	// Adjusting bridged asset qty after auctions
@@ -1451,7 +1501,7 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 
 	}
 	OriginalBorrowID := liqBorrow.OriginalVaultId
-	err := k.UpdateLendIDToBorrowIDMapping(ctx, kind.LendingId, OriginalBorrowID, false)
+	err = k.UpdateLendIDToBorrowIDMapping(ctx, kind.LendingId, OriginalBorrowID, false)
 	if err != nil {
 		return
 	}
@@ -1505,5 +1555,29 @@ func (k Keeper) MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string,
 	borrowPos.ReserveGlobalIndex = reserveGlobalIndex
 	borrowPos.LastInteractionTime = ctx.BlockTime()
 	k.SetBorrow(ctx, borrowPos)
+	return nil
+}
+
+func (k Keeper) MsgCalculateLendRewards(ctx sdk.Context, addr string, lendID uint64) error {
+	lendPos, found := k.GetLend(ctx, lendID)
+	if !found {
+		return types.ErrLendNotFound
+	}
+
+	killSwitchParams, _ := k.GetKillSwitchData(ctx, lendPos.AppID)
+	if killSwitchParams.BreakerEnable {
+		return esmtypes.ErrCircuitBreakerEnabled
+	}
+	indexGlobalCurrent, err := k.IterateLends(ctx, lendID)
+	if err != nil {
+		return err
+	}
+	lendPos, _ = k.GetLend(ctx, lendID)
+	lendPos.GlobalIndex = indexGlobalCurrent
+	lendPos.LastInteractionTime = ctx.BlockTime()
+	if lendPos.Owner != addr {
+		return types.ErrLendAccessUnauthorised
+	}
+	k.SetLend(ctx, lendPos)
 	return nil
 }

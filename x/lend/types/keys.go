@@ -39,9 +39,10 @@ var (
 	TypeCloseLendAssetRequest          = ModuleName + ":close-lend"
 	TypeCloseBorrowAssetRequest        = ModuleName + ":close-borrow"
 	TypeDrawAssetRequest               = ModuleName + ":draw"
-	TypeDepositBorrowdAssetRequest     = ModuleName + ":deposit-borrow"
+	TypeDepositBorrowAssetRequest      = ModuleName + ":deposit-borrow"
 	TypeBorrowAlternateAssetRequest    = ModuleName + ":borrow-alternate"
 	TypeCalculateBorrowInterestRequest = ModuleName + ":calculate-borrow-interest"
+	TypeCalculateLendRewardsRequest    = ModuleName + ":calculate-lend-rewards"
 )
 
 var (
@@ -68,7 +69,6 @@ var (
 	LendIDToBorrowIDMappingKeyPrefix      = []byte{0x28}
 	AssetStatsByPoolIDAndAssetIDKeyPrefix = []byte{0x29}
 	AssetRatesStatsKeyPrefix              = []byte{0x30}
-	KeyPrefixLastTime                     = []byte{0x31}
 	LendByUserAndPoolPrefix               = []byte{0x34}
 	BorrowByUserAndPoolPrefix             = []byte{0x35}
 	DepositStatsPrefix                    = []byte{0x36}
@@ -164,12 +164,6 @@ func BorrowInterestTrackerKey(ID uint64) []byte {
 func SetAssetStatsByPoolIDAndAssetID(assetID, pairID uint64) []byte {
 	v := append(AssetStatsByPoolIDAndAssetIDKeyPrefix, sdk.Uint64ToBigEndian(assetID)...)
 	return append(v, sdk.Uint64ToBigEndian(pairID)...)
-}
-
-func CreateLastInterestTimeKey() []byte {
-	var key []byte
-	key = append(key, KeyPrefixLastTime...)
-	return key
 }
 
 func LendByUserAndPoolKey(owner string, ID uint64) []byte {

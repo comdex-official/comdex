@@ -36,6 +36,8 @@ service Msg {
   rpc FundModuleAccounts(MsgFundModuleAccounts) returns (MsgFundModuleAccountsResponse);
 
   rpc CalculateBorrowInterest(MsgCalculateBorrowInterest) returns (MsgCalculateBorrowInterestResponse);
+
+  rpc CalculateLendRewards(MsgCalculateLendRewards) returns (MsgCalculateLendRewardsResponse);
 }
 
 message MsgLend {
@@ -118,6 +120,10 @@ message MsgCalculateBorrowInterest {
   uint64                   borrow_id = 2;
 }
 
+message    MsgCalculateLendRewards{
+  string                   lender = 1;
+  uint64                   lend_id = 2;
+}
 
 message MsgLendResponse {}
 
@@ -142,3 +148,5 @@ message MsgBorrowAlternateResponse {}
 message MsgFundModuleAccountsResponse {}
 
 message MsgCalculateBorrowInterestResponse {}
+
+message MsgCalculateLendRewardsResponse {}

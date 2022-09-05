@@ -175,3 +175,17 @@ func (m msgServer) CalculateBorrowInterest(goCtx context.Context, interest *type
 
 	return &types.MsgCalculateBorrowInterestResponse{}, nil
 }
+
+func (m msgServer) CalculateLendRewards(goCtx context.Context, rewards *types.MsgCalculateLendRewards) (*types.MsgCalculateLendRewardsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	borrowID := rewards.LendId
+
+	if err := m.keeper.MsgCalculateLendRewards(ctx, rewards.Lender, borrowID); err != nil {
+		return nil, err
+	}
+
+	ctx.GasMeter().ConsumeGas(types.CalculateLendRewardGas, "CalculateLendRewardGas")
+
+	return &types.MsgCalculateLendRewardsResponse{}, nil
+}
