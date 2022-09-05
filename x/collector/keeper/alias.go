@@ -55,8 +55,8 @@ func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appID, assetID uint64) (lo
 	return k.locker.GetLockerLookupTable(ctx, appID, assetID)
 }
 
-func (k Keeper) GetReward(ctx sdk.Context, appId, assetID uint64) (rewards rewardstypes.InternalRewards, found bool) {
-	return k.rewards.GetReward(ctx, appId, assetID)
+func (k Keeper) GetReward(ctx sdk.Context, appID, assetID uint64) (rewards rewardstypes.InternalRewards, found bool) {
+	return k.rewards.GetReward(ctx, appID, assetID)
 }
 
 func (k Keeper) GetLocker(ctx sdk.Context, lockerID uint64) (locker lockertypes.Locker, found bool) {

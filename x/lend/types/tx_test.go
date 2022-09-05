@@ -550,7 +550,7 @@ func TestNewMsgDepositBorrow(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
-			require.Equal(t, tc.msg.Type(), types.TypeDepositBorrowdAssetRequest)
+			require.Equal(t, tc.msg.Type(), types.TypeDepositBorrowAssetRequest)
 
 			err := tc.msg.ValidateBasic()
 

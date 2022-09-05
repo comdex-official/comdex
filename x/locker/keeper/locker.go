@@ -232,11 +232,11 @@ func (k Keeper) GetAllLockerLookupTable(ctx sdk.Context) (lockerLookupTable []ty
 }
 
 // UpdateAmountLockerMapping For updating token locker mapping in lookup table.
-func (k Keeper) UpdateAmountLockerMapping(ctx sdk.Context, appId uint64, assetID uint64, amount sdk.Int, changeType bool) {
+func (k Keeper) UpdateAmountLockerMapping(ctx sdk.Context, appID uint64, assetID uint64, amount sdk.Int, changeType bool) {
 	//if Change type true = Add to deposits
 
 	//If change type false = Subtract from the deposits
-	lookupTableData, exists := k.GetLockerLookupTable(ctx, appId, assetID)
+	lookupTableData, exists := k.GetLockerLookupTable(ctx, appID, assetID)
 	if exists {
 
 		if changeType {
@@ -536,8 +536,7 @@ func (k Keeper) AddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteLis
 		lockerLookupData.AppId = appMapping.Id
 		k.SetLockerLookupTable(ctx, lockerLookupData)
 		return &types.MsgAddWhiteListedAssetResponse{}, nil
-	} else {
-		// Check if the asset from msg exists or not ,
-		return nil, types.ErrorLockerProductAssetMappingExists
 	}
+	// Check if the asset from msg exists or not ,
+	return nil, types.ErrorLockerProductAssetMappingExists
 }

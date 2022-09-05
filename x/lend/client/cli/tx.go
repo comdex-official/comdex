@@ -27,16 +27,18 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		txLend(),
-		txWithdraw(), //withdraw collateral partially or fully
+		txWithdraw(),
 		txDeposit(),
 		txCloseLend(),
 		txBorrowAsset(),
 		txDrawAsset(),
-		txRepayAsset(), //including functionality of both repaying and closing position
+		txRepayAsset(),
 		txDepositBorrowAsset(),
 		txCloseBorrowAsset(),
 		txBorrowAssetAlternate(),
 		txFundModuleAccounts(),
+		txCalculateBorrowInterest(),
+		txCalculateLendRewards(),
 	)
 
 	return cmd
@@ -916,4 +918,56 @@ func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.Flag
 	}
 
 	return txf, msg, nil
+}
+
+func txCalculateBorrowInterest() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "calculate-borrow-interest [borrow-id] ",
+		Short: " calculate borrow interest for a borrow position",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgCalculateBorrowInterest(ctx.GetFromAddress().String(), borrowID)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func txCalculateLendRewards() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "calculate-lend-rewards [lend-id] ",
+		Short: " calculate lend rewards for a lend position",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgCalculateLendRewards(ctx.GetFromAddress().String(), borrowID)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

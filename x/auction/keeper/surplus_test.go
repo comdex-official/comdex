@@ -69,10 +69,10 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	surplusAuction, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
-	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1,2)
+	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1, 2)
 	s.Require().True(found)
 
-	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1),2)
+	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1), 2)
 	s.Require().True(found)
 
 	s.Require().Equal(surplusAuction.AppId, appId)

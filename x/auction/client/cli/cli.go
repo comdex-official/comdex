@@ -2,8 +2,8 @@ package cli
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
-	"strings"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 func GetQueryCmd() *cobra.Command {
@@ -56,9 +56,9 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
-func ParseStringFromString(s string, seperator string) ([]string, error) {
+func ParseStringFromString(s string, separator string) ([]string, error) {
 	var parsedStrings []string
-	for _, s := range strings.Split(s, seperator) {
+	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 
 		parsedStrings = append(parsedStrings, s)

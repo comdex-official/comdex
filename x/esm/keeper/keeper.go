@@ -211,7 +211,7 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 		if err2 != nil {
 			return err2
 		}
-		data.Amount = data.Amount.Sub((sdk.Int(tokenQuant)))
+		data.Amount = data.Amount.Sub(tokenQuant)
 		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i], esmDataAfterCoolOff.CollateralAsset[i+1:]...)
 		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i+1], esmDataAfterCoolOff.CollateralAsset[i:]...)
 		esmDataAfterCoolOff.CollateralAsset[i] = data
