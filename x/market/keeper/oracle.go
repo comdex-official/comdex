@@ -179,5 +179,4 @@ func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 	} else {
 		return 1000000, true
 	}
-
 }
