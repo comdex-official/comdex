@@ -29,7 +29,7 @@ const (
 )
 
 const (
-	UpgradeNameV4_2_0   = "vtestLend"
+	UpgradeNameV4_2_0   = "v4.2.0-beta"
 	UpgradeHeightV4_2_0 = "" // replace this height
 	UpgradeInfoV4_2_0   = `'{
 		"binaries": {
