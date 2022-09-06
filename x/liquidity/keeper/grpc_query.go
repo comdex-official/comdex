@@ -721,7 +721,7 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 		if len(gauge.GetLiquidityMetaData().ChildPoolIds) == 0 {
 			pools := k.GetAllPools(ctx, req.AppId)
 			for _, pool := range pools {
-				if pool.Id != gauge.GetLiquidityMetaData().PoolId {
+				if pool.Id != gauge.GetLiquidityMetaData().PoolId && !pool.Disabled {
 					childPoolIds = append(childPoolIds, pool.Id)
 				}
 			}
