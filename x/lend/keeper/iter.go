@@ -65,7 +65,6 @@ func (k Keeper) IterateBorrow(ctx sdk.Context, ID uint64) (sdk.Dec, sdk.Dec, err
 	if err != nil {
 		return sdk.ZeroDec(), sdk.ZeroDec(), err
 	}
-
 	borrowInterestTracker, found := k.GetBorrowInterestTracker(ctx, borrow.ID)
 	if !found {
 		borrowInterestTracker = types.BorrowInterestTracker{
@@ -73,7 +72,15 @@ func (k Keeper) IterateBorrow(ctx sdk.Context, ID uint64) (sdk.Dec, sdk.Dec, err
 			InterestAccumulated: sdk.ZeroDec(),
 		}
 	}
-	borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Add(interestPerBlock)
+	if !borrow.IsStableBorrow {
+		borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Add(interestPerBlock)
+	} else {
+		stableInterestPerBlock, err := k.CalculateStableInterest(ctx, borrow.AmountOut.Amount.String(), borrow)
+		if err != nil {
+			return sdk.ZeroDec(), sdk.ZeroDec(), err
+		}
+		borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Add(stableInterestPerBlock)
+	}
 	newInterestPerBlock := sdk.ZeroInt()
 	if borrowInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
 		newInterestPerBlock = borrowInterestTracker.InterestAccumulated.TruncateInt()
@@ -101,24 +108,24 @@ func (k Keeper) IterateBorrow(ctx sdk.Context, ID uint64) (sdk.Dec, sdk.Dec, err
 	return indexGlobalCurrent, reserveGlobalIndex, nil
 }
 
-//func (k Keeper) CalculateRewards(ctx sdk.Context, amount string, rate sdk.Dec) (sdk.Dec, error) {
-//
-//	currentTime := ctx.BlockTime().Unix()
-//
-//	prevInterestTime := k.GetLastInterestTime(ctx)
-//	if prevInterestTime == int64(types.Uint64Zero) {
-//		prevInterestTime = currentTime
-//	}
-//	secondsElapsed := currentTime - prevInterestTime
-//	if secondsElapsed < int64(types.Uint64Zero) {
-//		return sdk.ZeroDec(), sdkerrors.Wrap(types.ErrNegativeTimeElapsed, fmt.Sprintf("%d seconds", secondsElapsed))
-//	}
-//	yearsElapsed := sdk.NewDec(secondsElapsed).QuoInt64(types.SecondsPerYear)
-//	amt, _ := sdk.NewDecFromStr(amount)
-//	perc := rate
-//	newAmount := amt.Mul(perc).Mul(yearsElapsed)
-//	return newAmount, nil
-//}
+func (k Keeper) CalculateStableInterest(ctx sdk.Context, amount string, borrow types.BorrowAsset) (sdk.Dec, error) {
+
+	currentTime := ctx.BlockTime().Unix()
+
+	prevInterestTime := borrow.LastInteractionTime.Unix()
+	if prevInterestTime == int64(types.Uint64Zero) {
+		prevInterestTime = currentTime
+	}
+	secondsElapsed := currentTime - prevInterestTime
+	if secondsElapsed < int64(types.Uint64Zero) {
+		return sdk.ZeroDec(), sdkerrors.Wrap(types.ErrNegativeTimeElapsed, fmt.Sprintf("%d seconds", secondsElapsed))
+	}
+	yearsElapsed := sdk.NewDec(secondsElapsed).QuoInt64(types.SecondsPerYear)
+	amt, _ := sdk.NewDecFromStr(amount)
+	perc := borrow.StableBorrowRate
+	newAmount := amt.Mul(perc).Mul(yearsElapsed)
+	return newAmount, nil
+}
 
 func (k Keeper) CalculateLendReward(ctx sdk.Context, amount string, rate sdk.Dec, lend types.LendAsset) (sdk.Dec, sdk.Dec, error) {
 	currentTime := ctx.BlockTime().Unix()
