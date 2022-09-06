@@ -177,7 +177,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 		if len(liquidityGaugeData.ChildPoolIds) == 0 {
 			pools := k.GetAllPools(ctx, appID)
 			for _, pool := range pools {
-				if pool.Id != liquidityGaugeData.PoolId {
+				if pool.Id != liquidityGaugeData.PoolId && !pool.Disabled {
 					childPoolIds = append(childPoolIds, pool.Id)
 				}
 			}

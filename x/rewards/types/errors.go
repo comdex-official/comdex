@@ -17,6 +17,7 @@ var (
 	ErrNoGaugeForDuration      = sdkerrors.Register(ModuleName, 8, "no gauges found for given duration")
 	ErrDepositSmallThanEpoch   = sdkerrors.Register(ModuleName, 9, "deposit amount smaller than total epochs/triggers")
 	ErrInvalidCalculatedAMount = sdkerrors.Register(ModuleName, 10, "available distribution coins smaller than calculated distribution amount")
+	ErrSamePoolID              = sdkerrors.Register(ModuleName, 11, "same pool id cannot exists in child pool ids")
 
 	ErrAssetIDDoesNotExist = sdkerrors.Register(ModuleName, 1101, "Asset Id does not exist in locker for App_Mapping")
 	ErrNegativeTimeElapsed = sdkerrors.Register(ModuleName, 1102, "negative time elapsed since last interest time")
