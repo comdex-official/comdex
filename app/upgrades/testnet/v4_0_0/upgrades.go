@@ -55,7 +55,7 @@ func CreateSwapFeeGauge(
 	_ = rewardsKeeper.CreateNewGauge(ctx, newGauge, true)
 }
 
-// CreateUpgradeHandler creates an SDK upgrade handler for v4_0_1
+// CreateUpgradeHandler creates an SDK upgrade handler for v4_1_0
 func CreateUpgradeHandlerV410(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -66,6 +66,23 @@ func CreateUpgradeHandlerV410(
 		// This change is only for testnet upgrade
 
 		CreateSwapFeeGauge(ctx, rewardskeeper, liquiditykeeper, 1, 1)
+		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
+
+		if err != nil {
+			return newVM, err
+		}
+		return newVM, err
+	}
+}
+
+// CreateUpgradeHandler creates an SDK upgrade handler for v4_2_0
+func CreateUpgradeHandlerV420(
+	mm *module.Manager,
+	configurator module.Configurator,
+) upgradetypes.UpgradeHandler {
+	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		// This change is only for testnet upgrade
+
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 
 		if err != nil {
