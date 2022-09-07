@@ -39,7 +39,7 @@ linters:
     #- goconst
     #- gocritic
     #- gocyclo
-    - godot
+    #- godot
     - godox
     #- goerr113
     - gofmt
@@ -69,7 +69,7 @@ linters:
     - typecheck
     - unconvert
     #- unparam
-    - unused
+    #- unused - will be enabled later
     - varcheck
     - whitespace
     #- wsl

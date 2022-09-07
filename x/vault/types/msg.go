@@ -84,12 +84,12 @@ func (m *MsgCreateRequest) GetSigners() []sdk.AccAddress {
 func NewMsgDepositRequest(
 	// nolint
 	from sdk.AccAddress,
-	appID uint64, extendedPairVaultID uint64, userVaultid uint64, amount sdk.Int) *MsgDepositRequest {
+	appID uint64, extendedPairVaultID uint64, userVaultID uint64, amount sdk.Int) *MsgDepositRequest {
 	return &MsgDepositRequest{
 		From:                from.String(),
 		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
-		UserVaultId:         userVaultid,
+		UserVaultId:         userVaultID,
 		Amount:              amount,
 	}
 }
@@ -577,11 +577,11 @@ func (m *MsgWithdrawStableMintRequest) GetSigners() []sdk.AccAddress {
 func NewMsgVaultInterestCalcRequest(
 	// nolint
 	from sdk.AccAddress,
-	appID uint64, userVaultId uint64) *MsgVaultInterestCalcRequest {
+	appID uint64, userVaultID uint64) *MsgVaultInterestCalcRequest {
 	return &MsgVaultInterestCalcRequest{
 		From:        from.String(),
 		AppId:       appID,
-		UserVaultId: userVaultId,
+		UserVaultId: userVaultID,
 	}
 }
 

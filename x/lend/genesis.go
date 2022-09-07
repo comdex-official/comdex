@@ -84,7 +84,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	lends, _ := k.GetLends(ctx)
 	userDeposit, _ := k.GetUserDepositStats(ctx)
 	reserveDeposit, _ := k.GetReserveDepositStats(ctx)
-	buyBackDeposir, _ := k.GetBuyBackDepositStats(ctx)
+	buyBackDeposit, _ := k.GetBuyBackDepositStats(ctx)
 	borrowDeposit, _ := k.GetBorrowStats(ctx)
 	return types.NewGenesisState(
 		k.GetAllBorrow(ctx),
@@ -101,7 +101,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		lends,
 		userDeposit,
 		reserveDeposit,
-		buyBackDeposir,
+		buyBackDeposit,
 		borrowDeposit,
 		k.GetLendPairs(ctx),
 		k.GetAllAssetRatesStats(ctx),

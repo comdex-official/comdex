@@ -3,29 +3,31 @@ package types
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgLend{}, "comdex/lend/lend", nil)
-	cdc.RegisterConcrete(&MsgWithdraw{}, "comdex/lend/withdraw", nil)
-	cdc.RegisterConcrete(&MsgDeposit{}, "comdex/lend/deposit", nil)
-	cdc.RegisterConcrete(&MsgCloseLend{}, "comdex/lend/close-lend", nil)
-	cdc.RegisterConcrete(&MsgBorrow{}, "comdex/lend/borrow", nil)
-	cdc.RegisterConcrete(&MsgDepositBorrow{}, "comdex/lend/deposit-borrow", nil)
-	cdc.RegisterConcrete(&MsgDraw{}, "comdex/lend/draw", nil)
-	cdc.RegisterConcrete(&MsgCloseBorrow{}, "comdex/lend/close-borrow", nil)
-	cdc.RegisterConcrete(&MsgRepay{}, "comdex/lend/repay", nil)
-	cdc.RegisterConcrete(&MsgBorrowAlternate{}, "comdex/lend/borrow-alternate", nil)
-	cdc.RegisterConcrete(&MsgFundModuleAccounts{}, "comdex/lend/fund-module", nil)
-	cdc.RegisterConcrete(&LendPairsProposal{}, "comdex/lend/add-lend-pairs", nil)
-	cdc.RegisterConcrete(&AddPoolsProposal{}, "comdex/lend/add-lend-pools", nil)
-	cdc.RegisterConcrete(&AddAssetToPairProposal{}, "comdex/lend/add-asset-to-pair-mapping", nil)
-	cdc.RegisterConcrete(&AddAssetRatesStats{}, "comdex/lend/add-asset-rates-stats", nil)
-	cdc.RegisterConcrete(&AddAuctionParamsProposal{}, "comdex/lend/add-auction-params", nil)
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	cdc.RegisterConcrete(&MsgLend{}, "comdex/lend/MsgLend", nil)
+	cdc.RegisterConcrete(&MsgWithdraw{}, "comdex/lend/MsgWithdraw", nil)
+	cdc.RegisterConcrete(&MsgDeposit{}, "comdex/lend/MsgDeposit", nil)
+	cdc.RegisterConcrete(&MsgCloseLend{}, "comdex/lend/MsgCloseLend", nil)
+	cdc.RegisterConcrete(&MsgBorrow{}, "comdex/lend/MsgBorrow", nil)
+	cdc.RegisterConcrete(&MsgDepositBorrow{}, "comdex/lend/MsgDepositBorrow", nil)
+	cdc.RegisterConcrete(&MsgDraw{}, "comdex/lend/MsgDraw", nil)
+	cdc.RegisterConcrete(&MsgCloseBorrow{}, "comdex/lend/MsgCloseBorrow", nil)
+	cdc.RegisterConcrete(&MsgRepay{}, "comdex/lend/MsgRepay", nil)
+	cdc.RegisterConcrete(&MsgBorrowAlternate{}, "comdex/lend/MsgBorrowAlternate", nil)
+	cdc.RegisterConcrete(&MsgFundModuleAccounts{}, "comdex/lend/MsgFundModuleAccounts", nil)
+	cdc.RegisterConcrete(&LendPairsProposal{}, "comdex/lend/LendPairsProposal", nil)
+	cdc.RegisterConcrete(&AddPoolsProposal{}, "comdex/lend/AddPoolsProposal", nil)
+	cdc.RegisterConcrete(&AddAssetToPairProposal{}, "comdex/lend/AddAssetToPairProposal", nil)
+	cdc.RegisterConcrete(&AddAssetRatesStats{}, "comdex/lend/AddAssetRatesStats", nil)
+	cdc.RegisterConcrete(&AddAuctionParamsProposal{}, "comdex/lend/AddAuctionParamsProposal", nil)
+	cdc.RegisterConcrete(&MsgCalculateBorrowInterest{}, "comdex/lend/MsgCalculateBorrowInterest", nil)
+	cdc.RegisterConcrete(&MsgCalculateLendRewards{}, "comdex/lend/MsgCalculateLendRewards", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -50,12 +52,20 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgRepay{},
 		&MsgBorrowAlternate{},
 		&MsgFundModuleAccounts{},
+		&MsgCalculateBorrowInterest{},
+		&MsgCalculateLendRewards{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
 var (
-	Amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewProtoCodec(cdctypes.NewInterfaceRegistry())
+	amino     = codec.NewLegacyAmino()
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
+
+func init() {
+	RegisterLegacyAminoCodec(amino)
+	cryptocodec.RegisterCrypto(amino)
+	amino.Seal()
+}

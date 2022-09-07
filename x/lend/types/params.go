@@ -9,20 +9,23 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	LendGas                 = sdk.Gas(32763)
-	WithdrawGas             = sdk.Gas(22763)
-	DepositGas              = sdk.Gas(22763)
-	CloseLendGas            = sdk.Gas(22763)
-	BorrowAssetGas          = sdk.Gas(22763)
-	DrawAssetGas            = sdk.Gas(22763)
-	RepayAssetGas           = sdk.Gas(22763)
-	DepositBorrowAssetGas   = sdk.Gas(22763)
-	CloseBorrowAssetGas     = sdk.Gas(22763)
-	BorrowAssetAlternateGas = sdk.Gas(22763)
+	LendGas                    = sdk.Gas(32763)
+	WithdrawGas                = sdk.Gas(22763)
+	DepositGas                 = sdk.Gas(22763)
+	CloseLendGas               = sdk.Gas(22763)
+	BorrowAssetGas             = sdk.Gas(22763)
+	DrawAssetGas               = sdk.Gas(22763)
+	RepayAssetGas              = sdk.Gas(22763)
+	DepositBorrowAssetGas      = sdk.Gas(22763)
+	CloseBorrowAssetGas        = sdk.Gas(22763)
+	BorrowAssetAlternateGas    = sdk.Gas(22763)
+	CalculateBorrowInterestGas = sdk.Gas(22763)
+	CalculateLendRewardGas     = sdk.Gas(22763)
 )
 
 const (
 	AppName    = "commodo"
+	AppID      = uint64(3)
 	Uint64Zero = uint64(0)
 	Uint64Two  = uint64(2)
 	Perc1      = string("0.2")

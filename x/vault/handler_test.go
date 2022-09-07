@@ -23,7 +23,7 @@ func TestInvalidMsg(t *testing.T) {
 
 	app.VaultKeeper = keeper.NewKeeper(
 		app.AppCodec(), app.GetKey(types.StoreKey), app.BankKeeper, &app.AssetKeeper, &app.MarketKeeper, &app.CollectorKeeper, &app.EsmKeeper,
-	app.TokenmintKeeper, app.Rewardskeeper )
+		app.TokenmintKeeper, app.Rewardskeeper)
 	h := vault.NewHandler(app.VaultKeeper)
 
 	res, err := h(sdk.NewContext(nil, tmproto.Header{}, false, nil), testdata.NewTestMsg())

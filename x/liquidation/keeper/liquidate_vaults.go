@@ -338,7 +338,7 @@ func (k Keeper) SetAppIDForLiquidation(ctx sdk.Context, appID uint64) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetAppIdByAppForLiquidation(ctx sdk.Context, appID uint64) (uint64, bool) {
+func (k Keeper) GetAppIDByAppForLiquidation(ctx sdk.Context, appID uint64) (uint64, bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.WhitelistAppKeyByApp(appID)
@@ -377,7 +377,7 @@ func (k Keeper) GetAppIdsForLiquidation(ctx sdk.Context) (appIds []uint64) {
 	return appIds
 }
 
-func (k Keeper) DeleteAppId(ctx sdk.Context, appID uint64) {
+func (k Keeper) DeleteAppID(ctx sdk.Context, appID uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.WhitelistAppKeyByApp(appID)
