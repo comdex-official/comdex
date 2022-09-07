@@ -209,7 +209,6 @@ func (k Keeper) closeSurplusAuction(
 		if err2 != nil {
 			return auctiontypes.ErrorUnableToSetNetFees
 		}
-
 	} else if !statusEsm && surplusAuction.Bidder != nil {
 		highestBidReceived := surplusAuction.Bid
 

@@ -533,6 +533,7 @@ func (q QueryServer) QueryFilterDutchAuctions(c context.Context, req *types.Quer
 		items []types.DutchAuction
 		ctx   = sdk.UnwrapSDKContext(c)
 		key   []byte
+		count = 0
 	)
 	if req.History {
 		key = types.HistoryAuctionTypeKey(req.AppId, types.DutchString)
@@ -551,6 +552,7 @@ func (q QueryServer) QueryFilterDutchAuctions(c context.Context, req *types.Quer
 			for _, data := range req.Denom {
 				if item.OutflowTokenCurrentAmount.Denom == data || item.InflowTokenCurrentAmount.Denom == data {
 					check = true
+					count ++
 					break
 				}
 			}
@@ -566,6 +568,7 @@ func (q QueryServer) QueryFilterDutchAuctions(c context.Context, req *types.Quer
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+	pagination.Total = uint64(count)
 
 	return &types.QueryFilterDutchAuctionsResponse{
 		Auctions:   items,

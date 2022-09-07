@@ -315,6 +315,8 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	auctionId := uint64(1)
 	lockedVault, found := liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().True(found)
+	err = k.DutchActivator(*ctx, lockedVault)
+	s.Require().NoError(err)
 	dutchAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
@@ -528,11 +530,20 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 
 func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	s.AddAppAsset()
+	s.AddPairAndExtendedPairVault1()
+	s.LiquidateVaults1()
+	s.AddAuctionParams()
 	s.TestDutchBid()
-	k, ctx := &s.keeper, &s.ctx
+	k, liquidationKeeper, ctx := &s.keeper, &s.liquidationKeeper, &s.ctx
+	//k, ctx := &s.keeper, &s.ctx
 	appId := uint64(1)
 	auctionMappingId := uint64(3)
 	auctionId := uint64(1)
+	lockedVault, found := liquidationKeeper.GetLockedVault(*ctx, 1, 1)
+	s.Require().True(found)
+	err := k.DutchActivator(*ctx, lockedVault)
+	s.Require().NoError(err)
 	server := auctionKeeper.NewMsgServiceServer(*k)
 	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
