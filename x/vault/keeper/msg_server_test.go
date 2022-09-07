@@ -1081,14 +1081,14 @@ func (s *KeeperTestSuite) TestMsgCreateStableMint() {
 	appID1 := s.CreateNewApp("appone")
 	appID2 := s.CreateNewApp("apptwo")
 	appID3 := s.CreateNewApp("appthr")
-	appID4 := s.CreateNewApp("appfou")
+	// appID4 := s.CreateNewApp("appfou")
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, false)
 	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, true, false)
 	extendedVaultPairID3 := s.CreateNewExtendedVaultPair("CMDX-C", appID3, pairID, true, true)
-	extendedVaultPairID4 := s.CreateNewExtendedVaultPair("CMDX-C", appID4, pairID, true, true)
+	// extendedVaultPairID4 := s.CreateNewExtendedVaultPair("CMDX-C", appID4, pairID, true, true)
 
 	testCases := []struct {
 		Name             string
@@ -1188,6 +1188,23 @@ func (s *KeeperTestSuite) TestMsgCreateStableMint() {
 			AvailableBalance: sdk.NewCoins(),
 		},
 		{
+			Name: "success valid case app3 user1",
+			Msg: *types.NewMsgCreateStableMintRequest(
+				addr1, appID3, extendedVaultPairID3, newInt(10000),
+			),
+			ExpErr:         nil,
+			ExpResp:        &types.MsgCreateStableMintResponse{},
+			QueryRespIndex: 0,
+			QueryResponse: &types.StableMintVault{
+				Id:                  1,
+				AmountIn:            newInt(10000),
+				AmountOut:           newInt(10000),
+				AppId:               3,
+				ExtendedPairVaultID: 3,
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(9900))),
+		},
+		{
 			Name: "error stable mint vault already exists",
 			Msg: *types.NewMsgCreateStableMintRequest(
 				addr1, appID3, extendedVaultPairID3, newInt(10000),
@@ -1198,23 +1215,23 @@ func (s *KeeperTestSuite) TestMsgCreateStableMint() {
 			QueryResponse:    nil,
 			AvailableBalance: sdk.NewCoins(),
 		},
-		{
-			Name: "success valid case app4 user1",
-			Msg: *types.NewMsgCreateStableMintRequest(
-				addr1, appID4, extendedVaultPairID4, newInt(10000),
-			),
-			ExpErr:         nil,
-			ExpResp:        &types.MsgCreateStableMintResponse{},
-			QueryRespIndex: 0,
-			QueryResponse: &types.StableMintVault{
-				Id:                  1,
-				AmountIn:            newInt(10000),
-				AmountOut:           newInt(10000),
-				AppId:               4,
-				ExtendedPairVaultID: 4,
-			},
-			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(9900))),
-		},
+		// {
+		// 	Name: "success valid case app4 user1",
+		// 	Msg: *types.NewMsgCreateStableMintRequest(
+		// 		addr1, appID4, extendedVaultPairID4, newInt(10000),
+		// 	),
+		// 	ExpErr:         nil,
+		// 	ExpResp:        &types.MsgCreateStableMintResponse{},
+		// 	QueryRespIndex: 0,
+		// 	QueryResponse: &types.StableMintVault{
+		// 		Id:                  1,
+		// 		AmountIn:            newInt(10000),
+		// 		AmountOut:           newInt(10000),
+		// 		AppId:               4,
+		// 		ExtendedPairVaultID: 4,
+		// 	},
+		// 	AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(19800))),
+		// },
 	}
 
 	for _, tc := range testCases {
@@ -1665,23 +1682,23 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(4950000))),
 		},
-		{
-			Name: "success valid case 5 case app2 user4",
-			Msg: *types.NewMsgWithdrawStableMintRequest(
-				addr4, appID2, extendedVaultPairID4, newInt(5050000), 3,
-			),
-			ExpErr:         nil,
-			ExpResp:        &types.MsgWithdrawStableMintResponse{},
-			QueryRespIndex: 1,
-			QueryResponse: &types.StableMintVault{
-				Id:                  3,
-				AmountIn:            newInt(50500),
-				AmountOut:           newInt(50500),
-				AppId:               2,
-				ExtendedPairVaultID: 4,
-			},
-			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(4999500))),
-		},
+		// {
+		// 	Name: "success valid case 5 case app2 user4",
+		// 	Msg: *types.NewMsgWithdrawStableMintRequest(
+		// 		addr4, appID2, extendedVaultPairID4, newInt(5050000), 3,
+		// 	),
+		// 	ExpErr:         nil,
+		// 	ExpResp:        &types.MsgWithdrawStableMintResponse{},
+		// 	QueryRespIndex: 1,
+		// 	QueryResponse: &types.StableMintVault{
+		// 		Id:                  3,
+		// 		AmountIn:            newInt(50500),
+		// 		AmountOut:           newInt(50500),
+		// 		AppId:               2,
+		// 		ExtendedPairVaultID: 4,
+		// 	},
+		// 	AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(4999500))),
+		// },
 	}
 
 	for _, tc := range testCases {

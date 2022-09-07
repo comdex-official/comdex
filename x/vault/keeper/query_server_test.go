@@ -628,12 +628,6 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 			ExpResp:           nil,
 		},
 		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryAllVaultsByAppAndExtendedPairRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1},
-			ExpErr:            nil,
-			ExpResp:           &types.QueryAllVaultsByAppAndExtendedPairResponse{},
-		},
-		{
 			SkipVaultCreation:   false,
 			Address:             addr1,
 			AppID:               appID1,
@@ -789,18 +783,6 @@ func (s *KeeperTestSuite) TestQueryVaultIDOfOwnerByExtendedPairAndApp() {
 		},
 		{
 			SkipVaultCreation: true,
-			Req:               &types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest{AppId: 69, ExtendedPairId: 12, Owner: addr1.String()},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1, Owner: "comdex..."},
-			ExpErr:            status.Errorf(codes.NotFound, "Address is not correct"),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
 			Req:               &types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1, Owner: addr1.String()},
 			ExpErr:            nil,
 			ExpResp:           &types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse{},
@@ -905,12 +887,6 @@ func (s *KeeperTestSuite) TestQueryVaultIdsByAppInAllExtendedPairs() {
 			SkipVaultCreation: true,
 			Req:               nil,
 			ExpErr:            status.Error(codes.InvalidArgument, "request cannot be empty"),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryVaultIdsByAppInAllExtendedPairsRequest{AppId: 69},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
 			ExpResp:           nil,
 		},
 		{
@@ -1128,24 +1104,6 @@ func (s *KeeperTestSuite) TestQueryTokenMintedByAppAndExtendedPair() {
 			ExpResp:           nil,
 		},
 		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryTokenMintedByAppAndExtendedPairRequest{AppId: 69, ExtendedPairId: 12},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryTokenMintedByAppAndExtendedPairRequest{AppId: appID1, ExtendedPairId: 12},
-			ExpErr:            status.Errorf(codes.NotFound, "extended pair does not exist for id %d", 12),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryTokenMintedByAppAndExtendedPairRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1},
-			ExpErr:            status.Errorf(codes.NotFound, "Pair vault does not exist for App id %d", appID1),
-			ExpResp:           nil,
-		},
-		{
 			SkipVaultCreation:   false,
 			Address:             addr1,
 			AppID:               appID1,
@@ -1244,12 +1202,6 @@ func (s *KeeperTestSuite) TestQueryTokenMintedAssetWiseByApp() {
 			SkipVaultCreation: true,
 			Req:               nil,
 			ExpErr:            status.Error(codes.InvalidArgument, "request cannot be empty"),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryTokenMintedAssetWiseByAppRequest{AppId: 69},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
 			ExpResp:           nil,
 		},
 		{
@@ -1706,12 +1658,6 @@ func (s *KeeperTestSuite) TestQueryExtendedPairIDsByApp() {
 		},
 		{
 			SkipVaultCreation: true,
-			Req:               &types.QueryExtendedPairIDsByAppRequest{AppId: 69},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
 			Req:               &types.QueryExtendedPairIDsByAppRequest{AppId: appID1},
 			ExpErr:            nil,
 			ExpResp:           &types.QueryExtendedPairIDsByAppResponse{},
@@ -1840,11 +1786,11 @@ func (s *KeeperTestSuite) TestQueryStableVaultByVaultID() {
 			AppID:                       appID2,
 			ExtendedVaultPairID:         extendedVaultPairID2,
 			AmountIn:                    newInt(1000000000),
-			Req:                         &types.QueryStableVaultByVaultIDRequest{StableVaultId: 3},
+			Req:                         &types.QueryStableVaultByVaultIDRequest{StableVaultId: 2},
 			ExpErr:                      nil,
 			ExpResp: &types.QueryStableVaultByVaultIDResponse{
 				StableMintVault: &types.StableMintVault{
-					Id:                  3,
+					Id:                  2,
 					AmountIn:            newInt(1000000000),
 					AmountOut:           newInt(1000000000),
 					AppId:               appID2,
@@ -2354,12 +2300,6 @@ func (s *KeeperTestSuite) TestQueryTVLByAppOfAllExtendedPairs() {
 			SkipVaultCreation: true,
 			Req:               nil,
 			ExpErr:            status.Error(codes.InvalidArgument, "request cannot be empty"),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryTVLByAppOfAllExtendedPairsRequest{AppId: 69},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
 			ExpResp:           nil,
 		},
 		{
