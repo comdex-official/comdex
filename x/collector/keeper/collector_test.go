@@ -388,20 +388,20 @@ func (s *KeeperTestSuite) TestGetAmountFromCollector() {
 	} {
 
 		s.Run(tc.name, func() {
-			err := auctionKeeper.FundModule(*ctx, "auction", tc.denom, tc.FundAmount)
+			err := auctionKeeper.FundModule(*ctx, "auctionV1", tc.denom, tc.FundAmount)
 			s.Require().NoError(err)
-			err = auctionKeeper.SendCoinsFromModuleToModule(*ctx, "auction", "collector", sdk.NewCoins(sdk.NewCoin(tc.denom, sdk.NewIntFromUint64(tc.FundAmount))))
+			err = auctionKeeper.SendCoinsFromModuleToModule(*ctx, "auctionV1", "collectorV1", sdk.NewCoins(sdk.NewCoin(tc.denom, sdk.NewIntFromUint64(tc.FundAmount))))
 			s.Require().NoError(err)
-			beforeCollectorBalance := auctionKeeper.GetModuleAccountBalance(*ctx, "collector", tc.denom)
+			beforeCollectorBalance := auctionKeeper.GetModuleAccountBalance(*ctx, "collectorV1", tc.denom)
 			returnAmount, err := collectorKeeper.GetAmountFromCollector(*ctx, tc.appID, tc.assetID, tc.GetAmount)
 			if tc.errorExpected {
 				s.Require().Error(err)
 			} else {
 				s.Require().NoError(err)
 				s.Require().Equal(tc.GetAmount, returnAmount)
-				auctionBalance := auctionKeeper.GetModuleAccountBalance(*ctx, "auction", tc.denom)
+				auctionBalance := auctionKeeper.GetModuleAccountBalance(*ctx, "auctionV1", tc.denom)
 				s.Require().Equal(tc.GetAmount, auctionBalance)
-				currentCollectorBalance := auctionKeeper.GetModuleAccountBalance(*ctx, "collector", tc.denom)
+				currentCollectorBalance := auctionKeeper.GetModuleAccountBalance(*ctx, "collectorV1", tc.denom)
 				s.Require().Equal(currentCollectorBalance, beforeCollectorBalance.Sub(tc.GetAmount))
 			}
 		})
