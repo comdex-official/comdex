@@ -189,7 +189,6 @@ func (k Keeper) closeDebtAuction(
 	debtAuction auctiontypes.DebtAuction,
 	statusEsm bool,
 ) error { //If there are bids
-
 	if statusEsm && debtAuction.BiddingIds != nil {
 		bidding, err := k.GetDebtUserBidding(ctx, debtAuction.Bidder.String(), debtAuction.AppId, debtAuction.ActiveBiddingId)
 		if err != nil {
