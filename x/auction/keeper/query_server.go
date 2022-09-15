@@ -552,7 +552,7 @@ func (q QueryServer) QueryFilterDutchAuctions(c context.Context, req *types.Quer
 			for _, data := range req.Denom {
 				if item.OutflowTokenCurrentAmount.Denom == data || item.InflowTokenCurrentAmount.Denom == data {
 					check = true
-					count ++
+					count++
 					break
 				}
 			}

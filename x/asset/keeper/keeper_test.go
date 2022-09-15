@@ -32,7 +32,7 @@ type KeeperTestSuite struct {
 	querier           assetKeeper.QueryServer
 	vaultQuerier      vaultKeeper.QueryServer
 	vaultMsgServer    vaultTypes.MsgServer
-	rewardsKeeper 	  rewardsKeeper.Keeper
+	rewardsKeeper     rewardsKeeper.Keeper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
