@@ -1146,7 +1146,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		mv5_0_0.UpgradeName,
-		mv5_0_0.CreateUpgradeHandler(a.mm, a.configurator),
+		mv5_0_0.CreateUpgradeHandler(a.mm, a.configurator, a.WasmKeeper),
 	)
 
 	// When a planned update height is reached, the old binary will panic
