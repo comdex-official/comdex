@@ -88,7 +88,6 @@ service Query {
     option (google.api.http).get = "/comdex/locker/v1beta1/locker-deposited-by-app/{app_id}";
   };
 
-  rpc QueryState(QueryStateRequest) returns (QueryStateResponse){};
 }
 
 message QueryLockerInfoRequest {
@@ -312,19 +311,4 @@ message QueryLockerTotalRewardsByAssetAppWiseRequest {
 message QueryLockerTotalRewardsByAssetAppWiseResponse {
   LockerTotalRewardsByAssetAppWise total_rewards = 1 [(gogoproto.moretags) = "yaml:\"total_rewards\"",
     (gogoproto.nullable) = false];
-}
-
-message QueryStateRequest{
-  string address = 1;
-  string denom = 2;
-  string height = 3;
-  string target = 4;
-}
-
-message QueryStateResponse{
-  cosmos.base.v1beta1.Coin amount = 1 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"amount\"",
-    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
-  ];
 }
