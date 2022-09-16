@@ -6,8 +6,6 @@ import (
 	"time"
 
 	_ "github.com/stretchr/testify/suite"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"github.com/comdex-official/comdex/app"
 	utils "github.com/comdex-official/comdex/types"
@@ -61,20 +59,18 @@ func (s *ModuleTestSuite) TestMsgCreatePair() {
 	s.fundAddr(addr1, params.PairCreationFee)
 
 	_, err = handler(s.ctx, msg)
-	s.Require().Error(err)
-	s.Require().EqualError(err, status.Errorf(codes.Unavailable, "pair can be created only via governance").Error())
+	s.Require().NoError(err)
 
-	// uncomment this if enabeling pair creation via normal transaction.
-	// pairs := s.keeper.GetAllPairs(s.ctx, appID1)
-	// s.Require().Len(pairs, 1)
-	// s.Require().Equal(uint64(1), pairs[0].Id)
-	// s.Require().Equal(asset1.Denom, pairs[0].BaseCoinDenom)
-	// s.Require().Equal(asset2.Denom, pairs[0].QuoteCoinDenom)
-	// s.Require().Equal("cosmos1url34vfv5a5a7esm2aapklqelh2mzuwe34vvgc94eh752t8mcjeqla0n0v", pairs[0].EscrowAddress)
-	// s.Require().Equal(uint64(0), pairs[0].LastOrderId)
-	// s.Require().Equal(uint64(1), pairs[0].CurrentBatchId)
-	// s.Require().Equal("cosmos19a7w3ferywxjst035636dzktx94xyh22u64pwee3fl62sennw5hsw8erx3", pairs[0].SwapFeeCollectorAddress)
-	// s.Require().Equal(appID1, pairs[0].AppId)
+	pairs := s.keeper.GetAllPairs(s.ctx, appID1)
+	s.Require().Len(pairs, 1)
+	s.Require().Equal(uint64(1), pairs[0].Id)
+	s.Require().Equal(asset1.Denom, pairs[0].BaseCoinDenom)
+	s.Require().Equal(asset2.Denom, pairs[0].QuoteCoinDenom)
+	s.Require().Equal("cosmos1url34vfv5a5a7esm2aapklqelh2mzuwe34vvgc94eh752t8mcjeqla0n0v", pairs[0].EscrowAddress)
+	s.Require().Equal(uint64(0), pairs[0].LastOrderId)
+	s.Require().Equal(uint64(1), pairs[0].CurrentBatchId)
+	s.Require().Equal("cosmos19a7w3ferywxjst035636dzktx94xyh22u64pwee3fl62sennw5hsw8erx3", pairs[0].SwapFeeCollectorAddress)
+	s.Require().Equal(appID1, pairs[0].AppId)
 }
 
 func (s *ModuleTestSuite) TestMsgCreatePool() {
