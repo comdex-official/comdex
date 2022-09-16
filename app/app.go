@@ -1235,6 +1235,10 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				rewardstypes.ModuleName,
 				tokenminttypes.ModuleName,
 				vaulttypes.ModuleName,
+				feegrant.ModuleName,
+				icacontrollertypes.StoreKey,
+				icahosttypes.StoreKey,
+				authz.ModuleName,
 			},
 		}
 	}
