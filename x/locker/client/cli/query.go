@@ -644,43 +644,6 @@ func queryLockerTotalDepositedByApp() *cobra.Command {
 	return cmd
 }
 
-func queryState() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "state [address] [denom] [block_height] [target]",
-		Short: "Query state of an account at a block height",
-		Args:  cobra.ExactArgs(4),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			address := args[0]
-			denom := args[1]
-			blockHeight := args[2]
-			target := args[3]
-
-			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.QueryState(
-				context.Background(),
-				&types.QueryStateRequest{
-					Address: address,
-					Denom:   denom,
-					Height:  blockHeight,
-					Target:  target,
-				},
-			)
-			if err != nil {
-				return err
-			}
-			return ctx.PrintProto(res)
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
-
-	return cmd
-}
-
 func queryLockerTotalRewardsByAssetAppWise() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "lockers-rewards-by-app-asset-id [app_id] [asset_id]",
