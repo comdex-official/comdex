@@ -51,20 +51,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "tokenMint query response")
 			}
 			return bz, nil
-		} else if comdexQuery.State != nil {
-			address := comdexQuery.State.Address
-			denom := comdexQuery.State.Denom
-			height := comdexQuery.State.Height
-			target := comdexQuery.State.Target
-			state, _ := GetState(address, denom, height, target)
-			res := bindings.StateResponse{
-				Amount: state,
-			}
-			bz, err := json.Marshal(res)
-			if err != nil {
-				return nil, sdkerrors.Wrap(err, "locker state query response")
-			}
-			return bz, nil
+		
 		} else if comdexQuery.RemoveWhiteListAssetLocker != nil {
 			appID := comdexQuery.RemoveWhiteListAssetLocker.AppID
 			assetID := comdexQuery.RemoveWhiteListAssetLocker.AssetIDs
