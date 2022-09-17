@@ -112,8 +112,9 @@ func (k Keeper) UpdateLendStats(ctx sdk.Context, AssetID, PoolID uint64, amount 
 }
 
 func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair types.Extended_Pair, borrowPos types.BorrowAsset, amount sdk.Int, inc bool) {
+	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolID)
+	borrowStats, _ := k.GetBorrowStats(ctx)
 	if inc {
-		borrowStats, _ := k.GetBorrowStats(ctx)
 		var userBalanceStats []types.BalanceStats
 		for _, v := range borrowStats.BalanceStats {
 			if v.AssetID == pair.AssetOut {
@@ -124,7 +125,6 @@ func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair types.Extended_Pair, bor
 			k.SetBorrowStats(ctx, newUserDepositStats)
 		}
 
-		assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolID)
 		if borrowPos.IsStableBorrow {
 			assetStats.TotalStableBorrowed = assetStats.TotalStableBorrowed.Add(amount)
 			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
@@ -134,7 +134,6 @@ func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair types.Extended_Pair, bor
 		}
 
 	} else {
-		borrowStats, _ := k.GetBorrowStats(ctx)
 		var userBalanceStats []types.BalanceStats
 		for _, v := range borrowStats.BalanceStats {
 			if v.AssetID == pair.AssetOut {
@@ -145,7 +144,6 @@ func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair types.Extended_Pair, bor
 			k.SetBorrowStats(ctx, newUserDepositStats)
 		}
 
-		assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolID)
 		if borrowPos.IsStableBorrow {
 			assetStats.TotalStableBorrowed = assetStats.TotalStableBorrowed.Sub(amount)
 			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
