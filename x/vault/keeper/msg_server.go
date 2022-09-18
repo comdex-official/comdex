@@ -847,6 +847,7 @@ func (k msgServer) MsgDepositAndDraw(c context.Context, msg *types.MsgDepositAnd
 	if err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.DepositDrawVaultGas, "DepositDrawVaultGas")
 	return &types.MsgDepositAndDrawResponse{}, nil
 }
 

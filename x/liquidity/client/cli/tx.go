@@ -29,7 +29,7 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		// NewCreatePairCmd(),
+		NewCreatePairCmd(),
 		NewCreatePoolCmd(),
 		NewDepositCmd(),
 		NewWithdrawCmd(),

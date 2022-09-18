@@ -148,11 +148,11 @@ func (s *KeeperTestSuite) TestAddApp() {
 				s.Require().Equal(res.App.GenesisToken[0].GenesisSupply, tc.msg.GenesisToken[0].GenesisSupply)
 				s.Require().Equal(res.App.GenesisToken[0].Recipient, tc.msg.GenesisToken[0].Recipient)
 				s.Require().Equal(res.App.GenesisToken[0].IsGovToken, tc.msg.GenesisToken[0].IsGovToken)
-				err = assetKeeper.UpdateGovTimeInApp(*ctx, assetTypes.AppAndGovTime{AppId: tc.appID, GovTimeInSeconds: 653})
+				err = assetKeeper.UpdateGovTimeInApp(*ctx, assetTypes.AppAndGovTime{AppId: tc.appID, GovTimeInSeconds: 653, MinGovDeposit: sdk.NewIntFromUint64(5000000)})
 				s.Require().NoError(err)
 				minGovDeposit, govTimeInSeconds, _, err := assetKeeper.GetAppWasmQuery(*ctx, tc.appID)
 				s.Require().NoError(err)
-				s.Require().Equal(minGovDeposit, tc.msg.MinGovDeposit.Int64())
+				s.Require().Equal(minGovDeposit, sdk.NewIntFromUint64(5000000).Int64())
 				s.Require().Equal(govTimeInSeconds, int64(653))
 			}
 
@@ -180,7 +180,7 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 		{"Update Asset cmdx ucmdx",
 			assetTypes.Asset{
 				Id:                    1,
-				Name:                  "CMDX",
+				Name:                  "CMRT",
 				Denom:                 "ucmrt",
 				Decimals:              100,
 				IsOnChain:             false,

@@ -180,7 +180,7 @@ func (k Keeper) GetCollectorDataForAppIDAssetID(ctx sdk.Context, appID uint64, a
 	k.cdc.MustUnmarshal(value, &appAssetCollectorData)
 	collectorData = appAssetCollectorData.Collector
 
-	return collectorData, false
+	return collectorData, true
 }
 
 // SetCollectorLookupTable updates the collector lookup store.

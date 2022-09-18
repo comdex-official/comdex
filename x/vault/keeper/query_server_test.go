@@ -321,7 +321,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 					Owner:            addr1.String(),
 					Collateral:       newInt(1000000000),
 					Debt:             newInt(200000000),
-					ExtendedPairName: "CMDX C",
+					ExtendedPairName: "CMDX-C",
 					AssetInDenom:     "uasset1",
 					AssetOutDenom:    "uasset2",
 				},
@@ -343,7 +343,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 					Owner:            addr2.String(),
 					Collateral:       newInt(1000000000),
 					Debt:             newInt(200000000),
-					ExtendedPairName: "CMDX C",
+					ExtendedPairName: "CMDX-C",
 					AssetInDenom:     "uasset1",
 					AssetOutDenom:    "uasset2",
 				},
@@ -365,7 +365,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 					Owner:            addr1.String(),
 					Collateral:       newInt(1000000000),
 					Debt:             newInt(200000000),
-					ExtendedPairName: "CMDX C",
+					ExtendedPairName: "CMDX-C",
 					AssetInDenom:     "uasset1",
 					AssetOutDenom:    "uasset2",
 				},
@@ -387,7 +387,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 					Owner:            addr2.String(),
 					Collateral:       newInt(1000000000),
 					Debt:             newInt(200000000),
-					ExtendedPairName: "CMDX C",
+					ExtendedPairName: "CMDX-C",
 					AssetInDenom:     "uasset1",
 					AssetOutDenom:    "uasset2",
 				},
@@ -473,7 +473,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 						Owner:            addr1.String(),
 						Collateral:       newInt(1000000000),
 						Debt:             newInt(200000000),
-						ExtendedPairName: "CMDX C",
+						ExtendedPairName: "CMDX-C",
 						AssetInDenom:     "uasset1",
 						AssetOutDenom:    "uasset2",
 					},
@@ -497,7 +497,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 						Owner:            addr2.String(),
 						Collateral:       newInt(1000000000),
 						Debt:             newInt(200000000),
-						ExtendedPairName: "CMDX C",
+						ExtendedPairName: "CMDX-C",
 						AssetInDenom:     "uasset1",
 						AssetOutDenom:    "uasset2",
 					},
@@ -521,7 +521,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 						Owner:            addr1.String(),
 						Collateral:       newInt(1000000000),
 						Debt:             newInt(200000000),
-						ExtendedPairName: "CMDX C",
+						ExtendedPairName: "CMDX-C",
 						AssetInDenom:     "uasset1",
 						AssetOutDenom:    "uasset2",
 					},
@@ -545,7 +545,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 						Owner:            addr2.String(),
 						Collateral:       newInt(1000000000),
 						Debt:             newInt(200000000),
-						ExtendedPairName: "CMDX C",
+						ExtendedPairName: "CMDX-C",
 						AssetInDenom:     "uasset1",
 						AssetOutDenom:    "uasset2",
 					},
@@ -624,14 +624,8 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 		{
 			SkipVaultCreation: true,
 			Req:               &types.QueryAllVaultsByAppAndExtendedPairRequest{AppId: 69, ExtendedPairId: 12},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
+			ExpErr:            types.ErrorAppExtendedPairDataDoesNotExists,
 			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryAllVaultsByAppAndExtendedPairRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1},
-			ExpErr:            nil,
-			ExpResp:           &types.QueryAllVaultsByAppAndExtendedPairResponse{},
 		},
 		{
 			SkipVaultCreation:   false,
@@ -789,18 +783,6 @@ func (s *KeeperTestSuite) TestQueryVaultIDOfOwnerByExtendedPairAndApp() {
 		},
 		{
 			SkipVaultCreation: true,
-			Req:               &types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest{AppId: 69, ExtendedPairId: 12, Owner: addr1.String()},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1, Owner: "comdex..."},
-			ExpErr:            status.Errorf(codes.NotFound, "Address is not correct"),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
 			Req:               &types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1, Owner: addr1.String()},
 			ExpErr:            nil,
 			ExpResp:           &types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse{},
@@ -905,12 +887,6 @@ func (s *KeeperTestSuite) TestQueryVaultIdsByAppInAllExtendedPairs() {
 			SkipVaultCreation: true,
 			Req:               nil,
 			ExpErr:            status.Error(codes.InvalidArgument, "request cannot be empty"),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryVaultIdsByAppInAllExtendedPairsRequest{AppId: 69},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
 			ExpResp:           nil,
 		},
 		{
@@ -1128,24 +1104,6 @@ func (s *KeeperTestSuite) TestQueryTokenMintedByAppAndExtendedPair() {
 			ExpResp:           nil,
 		},
 		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryTokenMintedByAppAndExtendedPairRequest{AppId: 69, ExtendedPairId: 12},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryTokenMintedByAppAndExtendedPairRequest{AppId: appID1, ExtendedPairId: 12},
-			ExpErr:            status.Errorf(codes.NotFound, "extended pair does not exist for id %d", 12),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryTokenMintedByAppAndExtendedPairRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1},
-			ExpErr:            status.Errorf(codes.NotFound, "Pair vault does not exist for App id %d", appID1),
-			ExpResp:           nil,
-		},
-		{
 			SkipVaultCreation:   false,
 			Address:             addr1,
 			AppID:               appID1,
@@ -1244,12 +1202,6 @@ func (s *KeeperTestSuite) TestQueryTokenMintedAssetWiseByApp() {
 			SkipVaultCreation: true,
 			Req:               nil,
 			ExpErr:            status.Error(codes.InvalidArgument, "request cannot be empty"),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryTokenMintedAssetWiseByAppRequest{AppId: 69},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
 			ExpResp:           nil,
 		},
 		{
@@ -1706,12 +1658,6 @@ func (s *KeeperTestSuite) TestQueryExtendedPairIDsByApp() {
 		},
 		{
 			SkipVaultCreation: true,
-			Req:               &types.QueryExtendedPairIDsByAppRequest{AppId: 69},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
 			Req:               &types.QueryExtendedPairIDsByAppRequest{AppId: appID1},
 			ExpErr:            nil,
 			ExpResp:           &types.QueryExtendedPairIDsByAppResponse{},
@@ -1840,11 +1786,11 @@ func (s *KeeperTestSuite) TestQueryStableVaultByVaultID() {
 			AppID:                       appID2,
 			ExtendedVaultPairID:         extendedVaultPairID2,
 			AmountIn:                    newInt(1000000000),
-			Req:                         &types.QueryStableVaultByVaultIDRequest{StableVaultId: 3},
+			Req:                         &types.QueryStableVaultByVaultIDRequest{StableVaultId: 2},
 			ExpErr:                      nil,
 			ExpResp: &types.QueryStableVaultByVaultIDResponse{
 				StableMintVault: &types.StableMintVault{
-					Id:                  3,
+					Id:                  2,
 					AmountIn:            newInt(1000000000),
 					AmountOut:           newInt(1000000000),
 					AppId:               appID2,
@@ -1936,7 +1882,7 @@ func (s *KeeperTestSuite) TestQueryStableVaultByApp() {
 			ExpResp: &types.QueryStableVaultByAppResponse{
 				StableMintVault: []types.StableMintVault{
 					{
-						Id:                  3,
+						Id:                  2,
 						AmountIn:            newInt(1000000000),
 						AmountOut:           newInt(1000000000),
 						AppId:               appID2,
@@ -2026,7 +1972,7 @@ func (s *KeeperTestSuite) TestQueryStableVaultByAppAndExtendedPair() {
 			ExpErr:                      nil,
 			ExpResp: &types.QueryStableVaultByAppAndExtendedPairResponse{
 				StableMintVault: &types.StableMintVault{
-					Id:                  3,
+					Id:                  2,
 					AmountIn:            newInt(1000000000),
 					AmountOut:           newInt(1000000000),
 					AppId:               appID2,
@@ -2354,12 +2300,6 @@ func (s *KeeperTestSuite) TestQueryTVLByAppOfAllExtendedPairs() {
 			SkipVaultCreation: true,
 			Req:               nil,
 			ExpErr:            status.Error(codes.InvalidArgument, "request cannot be empty"),
-			ExpResp:           nil,
-		},
-		{
-			SkipVaultCreation: true,
-			Req:               &types.QueryTVLByAppOfAllExtendedPairsRequest{AppId: 69},
-			ExpErr:            status.Errorf(codes.NotFound, "App does not exist for id %d", 69),
 			ExpResp:           nil,
 		},
 		{
@@ -2717,12 +2657,13 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 			Req:                 &types.QueryUserExtendedPairTotalDataRequest{Owner: addr1.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryUserExtendedPairTotalDataResponse{
-				UserTotalData: &types.OwnerAppExtendedPairVaultMappingData{
+				UserTotalData: []types.OwnerAppExtendedPairVaultMappingData{
 					{
-					Owner: addr1.String(),
-					AppId: appID1,
-					ExtendedPairId: extendedVaultPairID1,
-					VaultId: 1,
+						Owner:          addr1.String(),
+						AppId:          appID1,
+						ExtendedPairId: extendedVaultPairID1,
+						VaultId:        1,
+					},
 				},
 			},
 		},
@@ -2736,11 +2677,13 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 			Req:                 &types.QueryUserExtendedPairTotalDataRequest{Owner: addr2.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryUserExtendedPairTotalDataResponse{
-				UserTotalData: &types.UserVaultAssetMapping{
-					Owner: addr2.String(),
-					AppId: appID1,
-					ExtendedPairId: extendedVaultPairID1,
-					VaultId: 2,
+				UserTotalData: []types.OwnerAppExtendedPairVaultMappingData{
+					{
+						Owner:          addr2.String(),
+						AppId:          appID1,
+						ExtendedPairId: extendedVaultPairID1,
+						VaultId:        2,
+					},
 				},
 			},
 		},
@@ -2754,21 +2697,16 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 			Req:                 &types.QueryUserExtendedPairTotalDataRequest{Owner: addr1.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryUserExtendedPairTotalDataResponse{
-				UserTotalData: &types.UserVaultAssetMapping{
-					Owner: addr1.String(),
-					UserVaultApp: []*types.VaultToAppMapping{
-						{
-							AppId: appID1,
-							UserExtendedPairVault: []*types.ExtendedPairToVaultMapping{
-								{ExtendedPairId: extendedVaultPairID1, VaultId: 1},
-							},
-						},
-						{
-							AppId: appID2,
-							UserExtendedPairVault: []*types.ExtendedPairToVaultMapping{
-								{ExtendedPairId: extendedVaultPairID2, VaultId: 3},
-							},
-						},
+				UserTotalData: []types.OwnerAppExtendedPairVaultMappingData{
+					{Owner: addr1.String(),
+						AppId:          appID1,
+						ExtendedPairId: extendedVaultPairID1,
+						VaultId:        1,
+					},
+					{Owner: addr1.String(),
+						AppId:          appID2,
+						ExtendedPairId: extendedVaultPairID2,
+						VaultId:        3,
 					},
 				},
 			},
@@ -2783,21 +2721,18 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 			Req:                 &types.QueryUserExtendedPairTotalDataRequest{Owner: addr2.String()},
 			ExpErr:              nil,
 			ExpResp: &types.QueryUserExtendedPairTotalDataResponse{
-				UserTotalData: &types.UserVaultAssetMapping{
-					Owner: addr2.String(),
-					UserVaultApp: []*types.VaultToAppMapping{
-						{
-							AppId: appID1,
-							UserExtendedPairVault: []*types.ExtendedPairToVaultMapping{
-								{ExtendedPairId: extendedVaultPairID1, VaultId: 2},
-							},
-						},
-						{
-							AppId: appID2,
-							UserExtendedPairVault: []*types.ExtendedPairToVaultMapping{
-								{ExtendedPairId: extendedVaultPairID2, VaultId: 4},
-							},
-						},
+				UserTotalData: []types.OwnerAppExtendedPairVaultMappingData{
+					{
+						Owner:          addr2.String(),
+						AppId:          appID1,
+						ExtendedPairId: extendedVaultPairID1,
+						VaultId:        2,
+					},
+					{
+						Owner:          addr2.String(),
+						AppId:          appID2,
+						ExtendedPairId: extendedVaultPairID2,
+						VaultId:        4,
 					},
 				},
 			},
@@ -2817,8 +2752,7 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 			s.Require().EqualError(v.ExpErr, err.Error())
 		} else {
 			s.Require().NoError(err)
-			s.Require().Equal(v.ExpResp.UserTotalData.Owner, userTotalData.UserTotalData.Owner)
-			s.Require().Equal(v.ExpResp.UserTotalData.UserVaultApp, userTotalData.UserTotalData.UserVaultApp)
+			s.Require().Equal(v.ExpResp.UserTotalData, userTotalData.UserTotalData)
 		}
 	}
 }
