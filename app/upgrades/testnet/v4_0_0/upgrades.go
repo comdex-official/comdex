@@ -100,7 +100,7 @@ func EditAndSetPair(
 ) {
 	pair1 := assettypes.Pair{
 		Id: 1,
-		AssetIn:  6,
+		AssetIn:  1,
 		AssetOut: 3,
 	}
 	assetkeeper.SetPair(ctx, pair1)
