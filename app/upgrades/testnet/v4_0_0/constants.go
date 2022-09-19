@@ -43,7 +43,7 @@ const (
 )
 
 const (
-	UpgradeNameV4_2_1   = "v4.2.1-beta"
+	UpgradeNameV4_2_1   = "v4.2.1beta"
 	UpgradeHeightV4_2_1 = "" // replace this height
 	UpgradeInfoV4_2_1   = `'{
 		"binaries": {
