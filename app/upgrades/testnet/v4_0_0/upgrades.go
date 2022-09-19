@@ -94,31 +94,17 @@ func CreateUpgradeHandlerV420(
 	}
 }
 
-// delete pair data
-func DeletePair(ctx sdk.Context, pair assettypes.Pair) {
-	var (
-		assetKeeper assetkeeper.Keeper
-		store = assetkeeper.Keeper.Store(assetKeeper, ctx)
-		key   = assettypes.PairKey(pair.Id)
-	)
-
-	store.Delete(key)
-}
-
 func EditAndSetPair(
 	ctx sdk.Context,
+	assetkeeper assetkeeper.Keeper,
 ) {
-	var (
-		assetKeeper assetkeeper.Keeper
-	)
-
 	pair1 := assettypes.Pair{
 		Id: 1,
 		AssetIn:  6,
 		AssetOut: 3,
 	}
-	assetKeeper.SetPair(ctx, pair1)
-	assetKeeper.SetPairID(ctx, 3)
+	assetkeeper.SetPair(ctx, pair1)
+	assetkeeper.SetPairID(ctx, 3)
 
 }
 
@@ -126,11 +112,12 @@ func EditAndSetPair(
 func CreateUpgradeHandlerV421(
 	mm *module.Manager,
 	configurator module.Configurator,
+	assetkeeper assetkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
-		EditAndSetPair(ctx)
+		EditAndSetPair(ctx, assetkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 
 		if err != nil {
