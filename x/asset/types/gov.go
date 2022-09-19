@@ -8,6 +8,7 @@ const (
 	ProposalAddAssets          = "AddAssets"
 	ProposalUpdateAsset        = "UpdateAsset"
 	ProposalAddPairs           = "AddPairs"
+	ProposalUpdatePair         = "UpdatePair"
 	ProposalAddApp             = "AddApp"
 	ProposalAddAssetInApp      = "AddAssetInApp"
 	ProposalUpdateGovTimeInApp = "UpdateGovTimeInApp"
@@ -23,6 +24,9 @@ func init() {
 	govtypes.RegisterProposalType(ProposalAddPairs)
 	govtypes.RegisterProposalTypeCodec(&AddPairsProposal{}, "comdex/AddPairsProposal")
 
+	govtypes.RegisterProposalType(ProposalUpdatePair)
+	govtypes.RegisterProposalTypeCodec(&UpdatePairProposal{}, "comdex/UpdatePairProposal")
+
 	govtypes.RegisterProposalType(ProposalUpdateGovTimeInApp)
 	govtypes.RegisterProposalTypeCodec(&UpdateGovTimeInAppProposal{}, "comdex/UpdateGovTimeInAppProposal")
 
@@ -37,6 +41,7 @@ var (
 	_ govtypes.Content = &AddAssetsProposal{}
 	_ govtypes.Content = &UpdateAssetProposal{}
 	_ govtypes.Content = &AddPairsProposal{}
+	_ govtypes.Content = &UpdatePairProposal{}
 	_ govtypes.Content = &UpdateGovTimeInAppProposal{}
 	_ govtypes.Content = &AddAppProposal{}
 	_ govtypes.Content = &AddAssetInAppProposal{}
@@ -133,6 +138,41 @@ func (p *AddPairsProposal) ValidateBasic() error {
 	}
 
 	if err := p.Pairs.Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewUpdatePairProposal(title, description string, pair Pair) govtypes.Content {
+	return &UpdatePairProposal{
+		Title:       title,
+		Description: description,
+		Pairs:        pair,
+	}
+}
+
+func (p *UpdatePairProposal) GetTitle() string {
+	return p.Title
+}
+
+func (p *UpdatePairProposal) GetDescription() string {
+	return p.Description
+}
+
+func (p *UpdatePairProposal) ProposalRoute() string { return RouterKey }
+
+func (p *UpdatePairProposal) ProposalType() string { return ProposalUpdatePair }
+
+func (p *UpdatePairProposal) ValidateBasic() error {
+
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
+	}
+
+	pair := p.Pairs
+	if err := pair.Validate(); err != nil {
 		return err
 	}
 

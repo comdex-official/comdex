@@ -104,3 +104,20 @@ func (k Keeper) NewAddPair(ctx sdk.Context, msg *types.MsgAddPairRequest) (*type
 	k.SetPair(ctx, pair)
 	return &types.MsgAddPairResponse{}, nil
 }
+
+func (k *Keeper) UpdatePairRecords(ctx sdk.Context, msg types.Pair) error {
+	pair, found := k.GetPair(ctx, msg.Id)
+	if !found {
+		return  types.ErrorPairDoesNotExist
+	}
+
+	if msg.AssetIn > 0 {
+		pair.AssetIn = msg.AssetIn
+	}
+
+	if msg.AssetOut > 0 {
+		pair.AssetOut = msg.AssetOut
+	}
+	k.SetPair(ctx, pair)
+	return nil
+}
