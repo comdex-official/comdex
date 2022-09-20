@@ -43,9 +43,9 @@ const (
 )
 
 const (
-	UpgradeNameV4_2_1   = "v4.2.1beta"
-	UpgradeHeightV4_2_1 = "" // replace this height
-	UpgradeInfoV4_2_1   = `'{
+	UpgradeNameV4_3_0   = "v4.3.0"
+	UpgradeHeightV4_3_0 = "" // replace this height
+	UpgradeInfoV4_3_0   = `'{
 		"binaries": {
 			"darwin/arm64":"",
 			"darwin/x86_64":"",

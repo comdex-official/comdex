@@ -99,17 +99,16 @@ func EditAndSetPair(
 	assetkeeper assetkeeper.Keeper,
 ) {
 	pair1 := assettypes.Pair{
-		Id: 1,
+		Id:       1,
 		AssetIn:  1,
 		AssetOut: 3,
 	}
 	assetkeeper.SetPair(ctx, pair1)
 	assetkeeper.SetPairID(ctx, 3)
-
 }
 
-// CreateUpgradeHandler creates an SDK upgrade handler for v4_2_1
-func CreateUpgradeHandlerV421(
+// CreateUpgradeHandler creates an SDK upgrade handler for v4_3_0
+func CreateUpgradeHandlerV430(
 	mm *module.Manager,
 	configurator module.Configurator,
 	assetkeeper assetkeeper.Keeper,

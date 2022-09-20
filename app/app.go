@@ -1144,8 +1144,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv4_0_0.UpgradeNameV4_2_1,
-		tv4_0_0.CreateUpgradeHandlerV421(a.mm, a.configurator, a.AssetKeeper),
+		tv4_0_0.UpgradeNameV4_3_0,
+		tv4_0_0.CreateUpgradeHandlerV430(a.mm, a.configurator, a.AssetKeeper),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1217,7 +1217,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_2_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
-	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_2_1 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_3_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	}
 	return storeUpgrades
