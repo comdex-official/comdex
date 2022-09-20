@@ -1,6 +1,8 @@
 package v4_0_0
 
 import (
+	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
@@ -83,6 +85,38 @@ func CreateUpgradeHandlerV420(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
+		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
+
+		if err != nil {
+			return newVM, err
+		}
+		return newVM, err
+	}
+}
+
+func EditAndSetPair(
+	ctx sdk.Context,
+	assetkeeper assetkeeper.Keeper,
+) {
+	pair1 := assettypes.Pair{
+		Id:       1,
+		AssetIn:  1,
+		AssetOut: 3,
+	}
+	assetkeeper.SetPair(ctx, pair1)
+	assetkeeper.SetPairID(ctx, 3)
+}
+
+// CreateUpgradeHandler creates an SDK upgrade handler for v4_3_0
+func CreateUpgradeHandlerV430(
+	mm *module.Manager,
+	configurator module.Configurator,
+	assetkeeper assetkeeper.Keeper,
+) upgradetypes.UpgradeHandler {
+	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		// This change is only for testnet upgrade
+
+		EditAndSetPair(ctx, assetkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 
 		if err != nil {

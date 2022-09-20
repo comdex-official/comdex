@@ -5,11 +5,7 @@ import (
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	protobuftypes "github.com/gogo/protobuf/types"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 
 	"github.com/comdex-official/comdex/x/locker/types"
 )
@@ -434,50 +430,6 @@ func (k Keeper) GetLockers(ctx sdk.Context) (locker []types.Locker) {
 		locker = append(locker, lock)
 	}
 	return locker
-}
-
-func QueryState(addr, denom, blockHeight, target string) (*sdk.Coin, error) {
-	myAddress, err := sdk.AccAddressFromBech32(addr)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create a connection to the gRPC server.
-	grpcConn, err := grpc.Dial(
-		target,
-		grpc.WithInsecure(),
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer func(grpcConn *grpc.ClientConn) {
-		err := grpcConn.Close()
-		if err != nil {
-			return
-		}
-	}(grpcConn)
-
-	bankClient := banktypes.NewQueryClient(grpcConn)
-	bankRes, err := bankClient.Balance(
-		context.Background(),
-		&banktypes.QueryBalanceRequest{Address: myAddress.String(), Denom: denom},
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	var header metadata.MD
-	bankRes, err = bankClient.Balance(
-		metadata.AppendToOutgoingContext(context.Background(), grpctypes.GRPCBlockHeightHeader, blockHeight), // Add metadata to request
-		&banktypes.QueryBalanceRequest{Address: myAddress.String(), Denom: denom},
-		grpc.Header(&header),
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return bankRes.GetBalance(), nil
 }
 
 func (k Keeper) WasmAddWhiteListedAssetQuery(ctx sdk.Context, appMappingID, AssetID uint64) (bool, string) {
