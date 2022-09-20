@@ -17,6 +17,10 @@ func (k Keeper) HandleProposalAddPairs(ctx sdk.Context, p *types.AddPairsProposa
 	return k.AddPairsRecords(ctx, p.Pairs)
 }
 
+func (k Keeper) HandleProposalUpdatePair(ctx sdk.Context, p *types.UpdatePairProposal) error {
+	return k.UpdatePairRecords(ctx, p.Pairs)
+}
+
 func (k Keeper) HandleUpdateGovTimeInApp(ctx sdk.Context, p *types.UpdateGovTimeInAppProposal) error {
 	return k.UpdateGovTimeInApp(ctx, p.GovTime)
 }
