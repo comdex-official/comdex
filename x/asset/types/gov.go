@@ -148,7 +148,7 @@ func NewUpdatePairProposal(title, description string, pair Pair) govtypes.Conten
 	return &UpdatePairProposal{
 		Title:       title,
 		Description: description,
-		Pairs:        pair,
+		Pairs:       pair,
 	}
 }
 
@@ -165,7 +165,6 @@ func (p *UpdatePairProposal) ProposalRoute() string { return RouterKey }
 func (p *UpdatePairProposal) ProposalType() string { return ProposalUpdatePair }
 
 func (p *UpdatePairProposal) ValidateBasic() error {
-
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
