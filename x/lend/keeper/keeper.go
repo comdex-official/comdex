@@ -192,7 +192,7 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 	if !found {
 		return types.ErrLendNotFound
 	}
-	if withdrawal.Amount.Equal(lendPos.AmountIn.Amount) {
+	if withdrawal.Amount.Equal(lendPos.UpdatedAmountIn) {
 		err = k.CloseLend(ctx, addr, lendID)
 		if err != nil {
 			return err
