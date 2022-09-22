@@ -197,11 +197,6 @@ func WhitelistAppIDVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Con
 	return nil
 }
 
-func GetState(addr, denom, blockHeight, target string) (sdk.Coin, error) {
-	state, _ := lockerkeeper.QueryState(addr, denom, blockHeight, target)
-	return *state, nil
-}
-
 func (m *CustomMessenger) AddExtendedPairsVault(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgAddExtendedPairsVault) ([]sdk.Event, [][]byte, error) {
 	err := MsgAddExtendedPairsVault(m.assetKeeper, ctx, contractAddr, a)
 	if err != nil {
