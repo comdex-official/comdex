@@ -819,17 +819,13 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 	if !found {
 		return types.ErrBorrowNotFound
 	}
-	fmt.Println("payment.Amount", payment.Amount)
-	fmt.Println("borrowPos.AmountOut.Amount", borrowPos.AmountOut.Amount)
 	if payment.Amount.Equal(borrowPos.AmountOut.Amount) {
-		fmt.Println("should print this")
 		err := k.CloseBorrow(ctx, borrowerAddr, borrowID)
 		if err != nil {
 			return err
 		}
 		return nil
 	} else {
-		fmt.Println("should not print this")
 		addr, _ := sdk.AccAddressFromBech32(borrowerAddr)
 		pair, found := k.GetLendPair(ctx, borrowPos.PairID)
 		if !found {

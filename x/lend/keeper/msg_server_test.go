@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -288,6 +289,24 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset2", newInt(100))))
 	_, _ = s.msgServer.Lend(sdk.WrapSDKContext(s.ctx), msg)
 	_, _ = s.msgServer.Lend(sdk.WrapSDKContext(s.ctx), msg2)
+	var bast []types.BalanceStats
+	balanceStats1 := types.BalanceStats{
+		AssetID: 1,
+		Amount:  sdk.NewInt(90),
+	}
+	balanceStats2 := types.BalanceStats{
+		AssetID: 2,
+		Amount:  sdk.NewInt(100),
+	}
+	balanceStats3 := types.BalanceStats{
+		AssetID: 3,
+		Amount:  sdk.NewInt(0),
+	}
+	balanceStats4 := types.BalanceStats{
+		AssetID: 4,
+		Amount:  sdk.NewInt(0),
+	}
+	bast = append(bast, balanceStats1, balanceStats2, balanceStats3, balanceStats4)
 
 	testCases := []struct {
 		Name               string
@@ -297,6 +316,8 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		QueryResponseIndex uint64
 		QueryResponse      *types.MsgWithdraw
 		AvailableBalance   sdk.Coins
+		DepositStats       *types.DepositStats
+		UserDepositStats   *types.DepositStats
 	}{
 		{
 			Name:               "Lend Position not found",
@@ -305,7 +326,6 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
-			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(0))),
 		},
 		{
 			Name:               "invalid offer coin amount",
@@ -314,7 +334,6 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
-			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(0))),
 		},
 		{
 			Name:               "Withdraw Amount Limit Exceeded",
@@ -323,7 +342,6 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
-			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(0))),
 		},
 		{
 			Name:               "success valid case",
@@ -333,10 +351,12 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 			QueryResponseIndex: 0,
 			QueryResponse: &types.MsgWithdraw{
 				Lender: "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
-				LendId: 2,
-				Amount: sdk.NewCoin("uasset2", sdk.NewInt(10)),
+				LendId: 1,
+				Amount: sdk.NewCoin("uasset1", sdk.NewInt(10)),
 			},
-			//AvailableBalance: sdk.NewCoins(sdk.NewCoin("ucasset1", newInt(90))),
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(10)), sdk.NewCoin("ucasset1", newInt(90)), sdk.NewCoin("ucasset2", newInt(100))),
+			DepositStats:     &types.DepositStats{BalanceStats: bast},
+			UserDepositStats: &types.DepositStats{BalanceStats: bast},
 		},
 	}
 	for _, tc := range testCases {
@@ -344,9 +364,9 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		s.Run(tc.Name, func() {
 
 			// add funds to acount for valid case
-			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Lender), sdk.NewCoins(sdk.NewCoin("uasset1", tc.Msg.Amount.Amount)))
-			}
+			//if tc.ExpErr == nil {
+			//	s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Lender), sdk.NewCoins(sdk.NewCoin("uasset1", tc.Msg.Amount.Amount)))
+			//}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
 			resp, err := s.msgServer.Withdraw(ctx, &tc.Msg)
@@ -359,8 +379,30 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				depositStats := s.getDepositStats()
+				userDepositStats := s.getUserDepositStats()
+
+				fmt.Println("availableBalances", availableBalances)
+				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+
+				s.Require().True(tc.DepositStats.BalanceStats[0].AssetID == depositStats.BalanceStats[0].AssetID)
+				s.Require().True(tc.DepositStats.BalanceStats[0].Amount.Equal(depositStats.BalanceStats[0].Amount))
+				s.Require().True(tc.DepositStats.BalanceStats[1].AssetID == depositStats.BalanceStats[1].AssetID)
+				s.Require().True(tc.DepositStats.BalanceStats[1].Amount.Equal(depositStats.BalanceStats[1].Amount))
+				s.Require().True(tc.DepositStats.BalanceStats[2].AssetID == depositStats.BalanceStats[2].AssetID)
+				s.Require().True(tc.DepositStats.BalanceStats[2].Amount.Equal(depositStats.BalanceStats[2].Amount))
+				s.Require().True(tc.DepositStats.BalanceStats[3].AssetID == depositStats.BalanceStats[3].AssetID)
+				s.Require().True(tc.DepositStats.BalanceStats[3].Amount.Equal(depositStats.BalanceStats[3].Amount))
+
+				s.Require().True(tc.UserDepositStats.BalanceStats[0].AssetID == userDepositStats.BalanceStats[0].AssetID)
+				s.Require().True(tc.UserDepositStats.BalanceStats[0].Amount.Equal(userDepositStats.BalanceStats[0].Amount))
+				s.Require().True(tc.UserDepositStats.BalanceStats[1].AssetID == userDepositStats.BalanceStats[1].AssetID)
+				s.Require().True(tc.UserDepositStats.BalanceStats[1].Amount.Equal(userDepositStats.BalanceStats[1].Amount))
+				s.Require().True(tc.UserDepositStats.BalanceStats[2].AssetID == userDepositStats.BalanceStats[2].AssetID)
+				s.Require().True(tc.UserDepositStats.BalanceStats[2].Amount.Equal(userDepositStats.BalanceStats[2].Amount))
+				s.Require().True(tc.UserDepositStats.BalanceStats[3].AssetID == userDepositStats.BalanceStats[3].AssetID)
+				s.Require().True(tc.UserDepositStats.BalanceStats[3].Amount.Equal(userDepositStats.BalanceStats[3].Amount))
 			}
 		})
 	}

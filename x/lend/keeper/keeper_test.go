@@ -41,6 +41,16 @@ func (s *KeeperTestSuite) getBalances(addr sdk.AccAddress) sdk.Coins {
 	return s.app.BankKeeper.GetAllBalances(s.ctx, addr)
 }
 
+func (s *KeeperTestSuite) getDepositStats() types.DepositStats {
+	depositStats, _ := s.app.LendKeeper.GetDepositStats(s.ctx)
+	return depositStats
+}
+
+func (s *KeeperTestSuite) getUserDepositStats() types.DepositStats {
+	userDepositStats, _ := s.app.LendKeeper.GetUserDepositStats(s.ctx)
+	return userDepositStats
+}
+
 func (s *KeeperTestSuite) getBalance(addr sdk.AccAddress, denom string) sdk.Coin {
 	return s.app.BankKeeper.GetBalance(s.ctx, addr, denom)
 }
