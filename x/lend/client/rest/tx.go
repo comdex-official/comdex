@@ -22,6 +22,7 @@ type AddNewPairsRequest struct{}
 type UpdateNewPairRequest struct{}
 type AddPoolRequest struct{}
 type AddAssetToPairRequest struct{}
+type UpdateAssetToPairRequest struct{}
 type AddAssetRatesStatsRequest struct{}
 type AddAuctionParamsRequest struct{}
 
@@ -32,9 +33,9 @@ func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRE
 	}
 }
 
-func UpdateNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+func UpdatePairProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "update-whitelisted-assets",
+		SubRoute: "update-new-pair",
 		Handler:  UpdateNewPairsRESTHandler(clientCtx),
 	}
 }
@@ -42,18 +43,18 @@ func UpdateNewPairsProposalRESTHandler(clientCtx client.Context) govrest.Proposa
 func AddPoolProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-lend-pools",
-		Handler:  AddpoolRESTHandler(clientCtx),
+		Handler:  AddPoolRESTHandler(clientCtx),
 	}
 }
 
 func AddAssetToPairProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "add-lend-pools",
+		SubRoute: "add-asset-to-pair",
 		Handler:  AddAssetToPairRESTHandler(clientCtx),
 	}
 }
 
-func AddWNewAssetRatesStatsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+func AddNewAssetRatesStatsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-asset-rates-stats",
 		Handler:  AddAssetRatesStatsRESTHandler(clientCtx),
@@ -87,7 +88,7 @@ func UpdateNewPairsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	}
 }
 
-func AddpoolRESTHandler(clientCtx client.Context) http.HandlerFunc {
+func AddPoolRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req AddPoolRequest
 

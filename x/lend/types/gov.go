@@ -6,6 +6,7 @@ import (
 
 var (
 	ProposalAddLendPairs       = "ProposalAddLendPairs"
+	ProposalUpdateLendPairs    = "ProposalUpdateLendPairs"
 	ProposalAddPool            = "ProposalAddPool"
 	ProposalAddAssetToPair     = "ProposalAddAssetToPair"
 	ProposalAddAssetRatesStats = "ProposalAddAssetRatesStats"
@@ -15,6 +16,8 @@ var (
 func init() {
 	govtypes.RegisterProposalType(ProposalAddLendPairs)
 	govtypes.RegisterProposalTypeCodec(&LendPairsProposal{}, "comdex/AddLendPairsProposal")
+	govtypes.RegisterProposalType(ProposalUpdateLendPairs)
+	govtypes.RegisterProposalTypeCodec(&UpdateLendPairsProposal{}, "comdex/UpdateLendPairsProposal")
 	govtypes.RegisterProposalType(ProposalAddPool)
 	govtypes.RegisterProposalTypeCodec(&AddPoolsProposal{}, "comdex/AddPoolsProposal")
 	govtypes.RegisterProposalType(ProposalAddAssetToPair)
@@ -27,6 +30,7 @@ func init() {
 
 var (
 	_ govtypes.Content = &LendPairsProposal{}
+	_ govtypes.Content = &UpdateLendPairsProposal{}
 	_ govtypes.Content = &AddPoolsProposal{}
 	_ govtypes.Content = &AddAssetToPairProposal{}
 	_ govtypes.Content = &AddAssetRatesStats{}
@@ -46,6 +50,31 @@ func (p *LendPairsProposal) ProposalRoute() string { return RouterKey }
 func (p *LendPairsProposal) ProposalType() string { return ProposalAddLendPairs }
 
 func (p *LendPairsProposal) ValidateBasic() error {
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
+	}
+
+	if err := p.Pairs.Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewUpdateLendPairsProposal(title, description string, pairs Extended_Pair) govtypes.Content {
+	return &UpdateLendPairsProposal{
+		Title:       title,
+		Description: description,
+		Pairs:       pairs,
+	}
+}
+
+func (p *UpdateLendPairsProposal) ProposalRoute() string { return RouterKey }
+
+func (p *UpdateLendPairsProposal) ProposalType() string { return ProposalUpdateLendPairs }
+
+func (p *UpdateLendPairsProposal) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
@@ -140,7 +169,7 @@ func (p *AddAssetRatesStats) ValidateBasic() error {
 		return err
 	}
 
-	if err := p.AssetRatesStats.Validate(); err != nil {
+	if err = p.AssetRatesStats.Validate(); err != nil {
 		return err
 	}
 

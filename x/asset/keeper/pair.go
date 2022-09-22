@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -92,6 +93,9 @@ func (k Keeper) NewAddPair(ctx sdk.Context, msg *types.MsgAddPairRequest) (*type
 	if !k.HasAsset(ctx, msg.AssetOut) {
 		return nil, types.ErrorAssetDoesNotExist
 	}
+	if msg.AssetIn == msg.AssetOut {
+		return nil, lendtypes.ErrorAssetsCanNotBeSame
+	}
 	var (
 		id   = k.GetPairID(ctx)
 		pair = types.Pair{
@@ -115,6 +119,9 @@ func (k *Keeper) UpdatePairRecords(ctx sdk.Context, msg types.Pair) error {
 	}
 	if !k.HasAsset(ctx, msg.AssetOut) {
 		return types.ErrorAssetDoesNotExist
+	}
+	if msg.AssetIn == msg.AssetOut {
+		return lendtypes.ErrorAssetsCanNotBeSame
 	}
 	pair.AssetIn = msg.AssetIn
 	pair.AssetOut = msg.AssetOut
