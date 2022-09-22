@@ -318,7 +318,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		},
 		{
 			Name:               "Withdraw Amount Limit Exceeded",
-			Msg:                *types.NewMsgWithdraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset1", sdk.NewInt(100))),
+			Msg:                *types.NewMsgWithdraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset1", sdk.NewInt(101))),
 			ExpErr:             types.ErrWithdrawAmountLimitExceeds,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
