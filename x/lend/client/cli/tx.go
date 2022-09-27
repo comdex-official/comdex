@@ -2,6 +2,8 @@ package cli
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,10 +11,10 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
-	"strconv"
+
+	"github.com/cosmos/cosmos-sdk/client"
 
 	"github.com/comdex-official/comdex/x/lend/types"
-	"github.com/cosmos/cosmos-sdk/client"
 )
 
 // GetTxCmd returns the transaction commands for this module.
@@ -460,7 +462,6 @@ func CmdAddNewLendPairsProposal() *cobra.Command {
 
 func NewCreateNewLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
 	newLendPairs, err := parseAddNewLendPairsFlags(fs)
-
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse add lend pairs : %w", err)
 	}
@@ -547,7 +548,6 @@ func CmdAddPoolProposal() *cobra.Command {
 
 func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
 	newLendPool, err := parseAddPoolFlags(fs)
-
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse add lend pool : %w", err)
 	}
@@ -731,7 +731,6 @@ func CmdAddNewAssetRatesStatsProposal() *cobra.Command {
 
 func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
 	assetRatesStatsInput, err := parseAssetRateStatsFlags(fs)
-
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse asset rates stats : %w", err)
 	}
@@ -855,7 +854,6 @@ func CmdAddNewAuctionParamsProposal() *cobra.Command {
 
 func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
 	auctionParamsInput, err := parseAuctionPramsFlags(fs)
-
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse auction params : %w", err)
 	}

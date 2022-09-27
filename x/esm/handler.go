@@ -2,10 +2,12 @@ package esm
 
 import (
 	"fmt"
-	"github.com/comdex-official/comdex/x/esm/keeper"
-	"github.com/comdex-official/comdex/x/esm/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/comdex-official/comdex/x/esm/keeper"
+	"github.com/comdex-official/comdex/x/esm/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {

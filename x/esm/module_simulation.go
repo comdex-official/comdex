@@ -3,15 +3,16 @@ package esm
 import (
 	"math/rand"
 
-	"github.com/comdex-official/comdex/testutil/sample"
-	esmsimulation "github.com/comdex-official/comdex/x/esm/simulation"
-	"github.com/comdex-official/comdex/x/esm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
+	"github.com/comdex-official/comdex/testutil/sample"
+	esmsimulation "github.com/comdex-official/comdex/x/esm/simulation"
+	"github.com/comdex-official/comdex/x/esm/types"
 )
 
 // avoid unused import issue
@@ -22,8 +23,6 @@ var (
 	_ = simulation.MsgEntryKind
 	_ = baseapp.Paramspace
 )
-
-const ()
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
@@ -42,7 +41,6 @@ func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedP
 
 // RandomizedParams creates randomized  param changes for the simulator
 func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
-
 	return []simtypes.ParamChange{}
 }
 

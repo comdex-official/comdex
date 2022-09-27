@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/asset/types"
 )
 
 func (k Keeper) HandleProposalAddAsset(ctx sdk.Context, p *types.AddAssetsProposal) error {

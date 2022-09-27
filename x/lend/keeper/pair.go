@@ -1,9 +1,10 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
 func (k Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_Pair) error {
@@ -212,25 +213,23 @@ func (k Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRatesS
 			return types.ErrorDuplicateAssetRatesStats
 		}
 
-		var (
-			assetRatesStats = types.AssetRatesStats{
-				AssetID:              msg.AssetID,
-				UOptimal:             msg.UOptimal,
-				Base:                 msg.Base,
-				Slope1:               msg.Slope1,
-				Slope2:               msg.Slope2,
-				EnableStableBorrow:   msg.EnableStableBorrow,
-				StableBase:           msg.StableBase,
-				StableSlope1:         msg.StableSlope1,
-				StableSlope2:         msg.StableSlope2,
-				Ltv:                  msg.Ltv,
-				LiquidationThreshold: msg.LiquidationThreshold,
-				LiquidationPenalty:   msg.LiquidationPenalty,
-				LiquidationBonus:     msg.LiquidationBonus,
-				ReserveFactor:        msg.ReserveFactor,
-				CAssetID:             msg.CAssetID,
-			}
-		)
+		assetRatesStats := types.AssetRatesStats{
+			AssetID:              msg.AssetID,
+			UOptimal:             msg.UOptimal,
+			Base:                 msg.Base,
+			Slope1:               msg.Slope1,
+			Slope2:               msg.Slope2,
+			EnableStableBorrow:   msg.EnableStableBorrow,
+			StableBase:           msg.StableBase,
+			StableSlope1:         msg.StableSlope1,
+			StableSlope2:         msg.StableSlope2,
+			Ltv:                  msg.Ltv,
+			LiquidationThreshold: msg.LiquidationThreshold,
+			LiquidationPenalty:   msg.LiquidationPenalty,
+			LiquidationBonus:     msg.LiquidationBonus,
+			ReserveFactor:        msg.ReserveFactor,
+			CAssetID:             msg.CAssetID,
+		}
 
 		k.SetAssetRatesStats(ctx, assetRatesStats)
 	}

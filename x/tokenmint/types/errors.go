@@ -6,9 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var (
-	ErrorInvalidFrom = errors.Register(ModuleName, 104, "invalid from")
-)
+var ErrorInvalidFrom = errors.Register(ModuleName, 104, "invalid from")
 
 var (
 	ErrorAssetDoesNotExist                        = errors.Register(ModuleName, 201, "Asset Does not exists")

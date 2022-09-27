@@ -2,8 +2,12 @@ package app
 
 import (
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"sort"
+	"strings"
 
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	"github.com/gorilla/mux"
@@ -15,19 +19,11 @@ import (
 	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 
-	"io"
-	"os"
-	"path/filepath"
-	"strings"
-
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	"github.com/spf13/cast"
 
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	"github.com/comdex-official/comdex/x/liquidation"
-	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -100,6 +96,10 @@ import (
 	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+
+	"github.com/comdex-official/comdex/x/liquidation"
+	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -265,9 +265,7 @@ var (
 	)
 )
 
-var (
-	_ servertypes.Application = (*App)(nil)
-)
+var _ servertypes.Application = (*App)(nil)
 
 func init() {
 	userHomeDir, err := os.UserHomeDir()
@@ -729,7 +727,6 @@ func New(
 
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
-
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
 	}
@@ -811,7 +808,7 @@ func New(
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
 	// we prefer to be more strict in what arguments the modules expect.
-	var skipGenesisInvariants = cast.ToBool(appOptions.Get(crisis.FlagSkipGenesisInvariants))
+	skipGenesisInvariants := cast.ToBool(appOptions.Get(crisis.FlagSkipGenesisInvariants))
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
@@ -1206,12 +1203,14 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		}
 	case upgradeInfo.Name == tv3_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 	case upgradeInfo.Name == tv4_0_0.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		//delete deprecated kv store instead of migrating as this is only for testnet.
-		//won't be used on main net migration and to make store name similar with V1 appended for all modules
+		// delete deprecated kv store instead of migrating as this is only for testnet.
+		// won't be used on main net migration and to make store name similar with V1 appended for all modules
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Deleted: []string{"vaultv1", "rewards", "collector", "locker", "lend", "auction", "liquidation", "esm"},
-			Added: []string{vaulttypes.ModuleName, rewardstypes.ModuleName, liquidationtypes.ModuleName,
-				collectortypes.ModuleName, lockertypes.ModuleName, lendtypes.ModuleName, auctiontypes.ModuleName, esmtypes.ModuleName},
+			Added: []string{
+				vaulttypes.ModuleName, rewardstypes.ModuleName, liquidationtypes.ModuleName,
+				collectortypes.ModuleName, lockertypes.ModuleName, lendtypes.ModuleName, auctiontypes.ModuleName, esmtypes.ModuleName,
+			},
 		}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_1_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}

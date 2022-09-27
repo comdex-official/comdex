@@ -1,18 +1,19 @@
 package keeper
 
 import (
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"time"
+
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) SurplusActivator(ctx sdk.Context, data collectortypes.AppAssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
-
 	if data.IsSurplusAuction && !data.IsAuctionActive && !killSwitchParams.BreakerEnable && !status {
 		err := k.CreateSurplusAuction(ctx, data.AppId, data.AssetId)
 		if err != nil {
@@ -28,7 +29,7 @@ func (k Keeper) SurplusActivator(ctx sdk.Context, data collectortypes.AppAssetId
 	return nil
 }
 
-func (k Keeper) CreateSurplusAuction(ctx sdk.Context, appID, assetID uint64) error { //check if auction status for an asset is false
+func (k Keeper) CreateSurplusAuction(ctx sdk.Context, appID, assetID uint64) error { // check if auction status for an asset is false
 	status, err := k.checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx, appID, assetID)
 	if err != nil {
 		return err
@@ -52,24 +53,24 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 	if !found {
 		return
 	}
-	//traverse this to access appId , collector asset id , surplus threshold
-	//collectorLookupTable has surplusThreshold for all assets
+	// traverse this to access appId , collector asset id , surplus threshold
+	// collectorLookupTable has surplusThreshold for all assets
 
 	NetFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, assetID)
 
 	if !found {
 		return auctiontypes.NoAuction, nil
 	}
-	//traverse this to access appId , collector asset id , netfees collected
+	// traverse this to access appId , collector asset id , netfees collected
 
 	if NetFeeCollectedData.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold + collector.LotSize)) {
 		// START SURPLUS AUCTION .  WITH COLLECTOR ASSET ID AS token given to user of lot size and secondary asset as received from user and burnt , bid factor
-		//calculate inflow token amount
+		// calculate inflow token amount
 
 		assetBuyID := collector.SecondaryAssetId
 		assetSellID := collector.CollectorAssetId
 
-		//net = 900 surplusThreshhold = 500 , lotsize = 100
+		// net = 900 surplusThreshhold = 500 , lotsize = 100
 		amount := sdk.NewIntFromUint64(collector.LotSize)
 
 		status, sellToken, buyToken := k.getSurplusBuyTokenAmount(ctx, assetBuyID, assetSellID, amount)
@@ -77,7 +78,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 		if status == auctiontypes.NoAuction {
 			return auctiontypes.NoAuction, nil
 		}
-		//Transfer balance from collector module to auction module
+		// Transfer balance from collector module to auction module
 
 		_, err := k.GetAmountFromCollector(ctx, appID, assetID, sellToken.Amount)
 		if err != nil {
@@ -101,7 +102,7 @@ func (k Keeper) getSurplusBuyTokenAmount(ctx sdk.Context, AssetBuyID, AssetSellI
 		return auctiontypes.NoAuction, emptyCoin, emptyCoin
 	}
 
-	//outflow token will be of lot size
+	// outflow token will be of lot size
 	sellToken = sdk.NewCoin(sellingAsset.Denom, lotSize)
 	buyToken = sdk.NewCoin(buyingAsset.Denom, sdk.ZeroInt())
 	return 5, sellToken, buyToken
@@ -195,7 +196,6 @@ func (k Keeper) closeSurplusAuction(
 	statusEsm bool,
 ) error {
 	if statusEsm && surplusAuction.Bidder != nil {
-
 		err := k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, surplusAuction.Bidder, sdk.NewCoins(surplusAuction.Bid))
 		if err != nil {
 			return err
@@ -227,7 +227,7 @@ func (k Keeper) closeSurplusAuction(
 			return err
 		}
 
-		//burn tokens by sending bid tokens from auction to tokenMint module and then call burn function
+		// burn tokens by sending bid tokens from auction to tokenMint module and then call burn function
 		err = k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, tokenminttypes.ModuleName, sdk.NewCoins(highestBidReceived))
 		if err != nil {
 			return err
@@ -332,7 +332,7 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appID, auctionMappingID,
 		auction.AuctionStatus = auctiontypes.AuctionGoingOn
 	}
 	auction.ActiveBiddingId = biddingID
-	var bidIDOwner = &auctiontypes.BidOwnerMapping{BidId: biddingID, BidOwner: bidder.String()}
+	bidIDOwner := &auctiontypes.BidOwnerMapping{BidId: biddingID, BidOwner: bidder.String()}
 	auction.BiddingIds = append(auction.BiddingIds, bidIDOwner)
 	auction.Bidder = bidder
 	auction.Bid = bid

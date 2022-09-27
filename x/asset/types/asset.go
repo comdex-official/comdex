@@ -29,7 +29,6 @@ func (m *Asset) Validate() error {
 }
 
 func (m *Asset) UpdateValidate() error {
-
 	if len(m.Name) > MaxAssetNameLength {
 		return fmt.Errorf("name length cannot be greater than %d", MaxAssetNameLength)
 	}

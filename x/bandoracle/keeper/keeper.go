@@ -2,17 +2,20 @@ package keeper
 
 import (
 	"fmt"
-	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	"github.com/comdex-official/comdex/x/bandoracle/expected"
+
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	host "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 
+	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	"github.com/comdex-official/comdex/x/bandoracle/expected"
+
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 type (
@@ -39,7 +42,6 @@ func NewKeeper(
 	scopedKeeper expected.ScopedKeeper,
 	market expected.MarketKeeper,
 	assetKeeper assetkeeper.Keeper,
-
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {

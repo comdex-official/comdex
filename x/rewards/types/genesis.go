@@ -14,6 +14,7 @@ func NewGenesisState(internalRewards []InternalRewards, lockerRewardsTracker []L
 		Params:                 params,
 	}
 }
+
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(
 		[]InternalRewards{},

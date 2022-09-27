@@ -1,16 +1,14 @@
 package rewards
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/comdex-official/comdex/x/rewards/keeper"
 	"github.com/comdex-official/comdex/x/rewards/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
-
-	var (
-		gaugeID uint64 = 0
-	)
+	var gaugeID uint64 = 0
 
 	k.SetParams(ctx, state.Params)
 
@@ -24,7 +22,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 	for _, item := range state.VaultInterestTracker {
 		k.SetVaultInterestTracker(ctx, item)
-
 	}
 
 	for _, item := range state.LockerExternalRewards {

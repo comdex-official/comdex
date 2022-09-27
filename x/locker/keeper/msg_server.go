@@ -4,15 +4,14 @@ import (
 	"context"
 	"sort"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-var (
-	_ types.MsgServer = msgServer{}
-)
+var _ types.MsgServer = msgServer{}
 
 type msgServer struct {
 	Keeper
@@ -46,7 +45,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
-	//Checking if user mapping exists
+	// Checking if user mapping exists
 	userDataForLocker, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)
 	if userDataForLocker.LockerId != 0 {
 		return nil, types.ErrorUserLockerAlreadyExists
@@ -60,15 +59,15 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	if !found {
 		return nil, types.ErrorLockerProductAssetMappingDoesNotExists
 	}
-	//This asset is accepted by the app
-	//Create a new instance of locker
+	// This asset is accepted by the app
+	// Create a new instance of locker
 
-	//call Lookup table to get relevant data
+	// call Lookup table to get relevant data
 	lookupTableData, exists := k.GetLockerLookupTable(ctx, lockerProductAssetMapping.AppId, msg.AssetId)
 	if !exists {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
-	//Transferring amount from user to module
+	// Transferring amount from user to module
 	depositor, err := sdk.AccAddressFromBech32(msg.Depositor)
 	if err != nil {
 		return nil, err
@@ -84,7 +83,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 		blockHeight = 0
 	}
 
-	//Creating locker instance
+	// Creating locker instance
 	id := k.GetIDForLocker(ctx)
 	var userLocker types.Locker
 	userLocker.LockerId = id + 1
@@ -100,7 +99,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	k.SetLocker(ctx, userLocker)
 	k.SetIDForLocker(ctx, id+1)
 
-	//Create a new instance
+	// Create a new instance
 	var userMappingData types.UserAppAssetLockerMapping
 
 	var userTxData types.UserTxData
@@ -194,7 +193,7 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 	lockerData.NetBalance = lockerData.NetBalance.Add(msg.Amount)
 	k.SetLocker(ctx, lockerData)
 
-	//Update  Amount in Locker Mapping
+	// Update  Amount in Locker Mapping
 	k.UpdateAmountLockerMapping(ctx, lookupTableData.AppId, asset.Id, msg.Amount, true)
 
 	userLockerAssetMappingData, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)
@@ -271,7 +270,7 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 	lockerData.BlockTime = ctx.BlockTime()
 	k.SetLocker(ctx, lockerData)
 
-	//Update  Amount in Locker Mapping
+	// Update  Amount in Locker Mapping
 	k.UpdateAmountLockerMapping(ctx, lookupTableData.AppId, asset.Id, msg.Amount, false)
 
 	userLockerAssetMappingData, _ := k.GetUserLockerAssetMapping(ctx, msg.Depositor, msg.AppId, msg.AssetId)
@@ -373,7 +372,6 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 }
 
 func (k msgServer) MsgLockerRewardCalc(c context.Context, msg *types.MsgLockerRewardCalcRequest) (*types.MsgLockerRewardCalcResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(c)
 
 	appMapping, found := k.GetApp(ctx, msg.AppId)

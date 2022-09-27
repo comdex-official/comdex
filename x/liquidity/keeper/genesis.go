@@ -54,7 +54,6 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) {
 		for _, queuedFarmer := range appState.QueuedFarmers {
 			k.SetQueuedFarmer(ctx, queuedFarmer)
 		}
-
 	}
 }
 
@@ -83,15 +82,12 @@ func (k Keeper) GetActiveAndQueuedFarmersForGenesis(ctx sdk.Context, appID uint6
 				QueudCoins: queuedFarmer.QueudCoins,
 			})
 		}
-
 	}
 	return allActiveFarmers, allQueuedFarmers
-
 }
 
 // ExportGenesis returns the capability module's exported genesis.
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
-
 	allApps, found := k.GetApps(ctx)
 
 	appGenesisState := []types.AppGenesisState{}

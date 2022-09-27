@@ -1,11 +1,12 @@
 package keeper
 
 import (
+	"regexp"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
-	"regexp"
 )
 
 func (k Keeper) GetAppID(ctx sdk.Context) uint64 {
@@ -63,6 +64,7 @@ func (k Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppData, found boo
 	k.cdc.MustUnmarshal(value, &app)
 	return app, true
 }
+
 func (k Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint64, error) {
 	appData, _ := k.GetApp(ctx, id)
 	minGovDeposit := appData.MinGovDeposit.Int64()
@@ -138,6 +140,7 @@ func (k Keeper) SetAppForShortName(ctx sdk.Context, shortName string, id uint64)
 
 	store.Set(key, value)
 }
+
 func (k Keeper) SetAppForName(ctx sdk.Context, Name string, id uint64) {
 	var (
 		store = k.Store(ctx)
@@ -208,7 +211,7 @@ func (k Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 	if k.HasAppForName(ctx, msg.Name) {
 		return types.ErrorDuplicateApp
 	}
-	var IsLetter = regexp.MustCompile(`^[a-z]+$`).MatchString
+	IsLetter := regexp.MustCompile(`^[a-z]+$`).MatchString
 
 	if !IsLetter(msg.ShortName) || len(msg.ShortName) > 6 {
 		return types.ErrorShortNameDidNotMeetCriterion

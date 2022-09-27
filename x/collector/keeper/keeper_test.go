@@ -1,9 +1,8 @@
 package keeper_test
 
 import (
-	"time"
-
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 

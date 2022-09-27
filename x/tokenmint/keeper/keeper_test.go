@@ -1,11 +1,10 @@
 package keeper_test
 
 import (
+	"testing"
 	"time"
 
 	collectorTypes "github.com/comdex-official/comdex/x/collector/types"
-
-	"testing"
 
 	"github.com/stretchr/testify/suite"
 
@@ -48,12 +47,11 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.msgServer = tokenmintKeeper.NewMsgServer(s.tokenmintKeeper)
 }
 
+// // Below are just shortcuts to frequently-used functions.
 //
-//// Below are just shortcuts to frequently-used functions.
-//func (s *KeeperTestSuite) getBalances(addr sdk.AccAddress) sdk.Coins {
-//	return s.app.bankKeeper.GetAllBalances(s.ctx, addr)
-//}
-//
+//	func (s *KeeperTestSuite) getBalances(addr sdk.AccAddress) sdk.Coins {
+//		return s.app.bankKeeper.GetAllBalances(s.ctx, addr)
+//	}
 func (s *KeeperTestSuite) getBalance(addr string, denom string) (coin sdk.Coin, err error) {
 	addr1, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {

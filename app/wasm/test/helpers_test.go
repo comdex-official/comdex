@@ -76,24 +76,29 @@ func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 	}
 	_ = assetKeeper.AddAppRecords(*ctx, msg1)
 
-	msg2 := assetTypes.Asset{Name: "CMDX",
+	msg2 := assetTypes.Asset{
+		Name:      "CMDX",
 		Denom:     "ucmdx",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 	_ = assetKeeper.AddAssetRecords(*ctx, msg2)
 
-	msg3 := assetTypes.Asset{Name: "CMST",
+	msg3 := assetTypes.Asset{
+		Name:      "CMST",
 		Denom:     "ucmst",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 	_ = assetKeeper.AddAssetRecords(*ctx, msg3)
 
-	msg4 := assetTypes.Asset{Name: "HARBOR",
+	msg4 := assetTypes.Asset{
+		Name:      "HARBOR",
 		Denom:     "uharbor",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 	_ = assetKeeper.AddAssetRecords(*ctx, msg4)
-
 }
 
 func AddPair(app *app.App, ctx1 sdk.Context) {
@@ -107,7 +112,8 @@ func AddPair(app *app.App, ctx1 sdk.Context) {
 		isErrorExpectedForPair bool
 		pairID                 uint64
 	}{
-		{"Add Pair 1: cmdx cmst",
+		{
+			"Add Pair 1: cmdx cmst",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,
@@ -129,7 +135,8 @@ func AddCollectorLookuptable(app *app.App, ctx1 sdk.Context) {
 		name string
 		msg  bindings.MsgSetCollectorLookupTable
 	}{
-		{"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
+		{
+			"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
 			bindings.MsgSetCollectorLookupTable{
 				AppID:            1,
 				CollectorAssetID: 2,
@@ -154,7 +161,8 @@ func AddExtendedPairVault(app *app.App, ctx1 sdk.Context) {
 		name string
 		msg  bindings.MsgAddExtendedPairsVault
 	}{
-		{"Add Extended Pair Vault : cmdx cmst",
+		{
+			"Add Extended Pair Vault : cmdx cmst",
 
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
@@ -186,7 +194,8 @@ func WhitelistAppIDLiquidation(app *app.App, ctx1 sdk.Context) {
 		name string
 		msg  bindings.MsgWhitelistAppIDLiquidation
 	}{
-		{"Whitelist AppID Liquidation",
+		{
+			"Whitelist AppID Liquidation",
 
 			bindings.MsgWhitelistAppIDLiquidation{
 				AppID: 1,
@@ -222,5 +231,4 @@ func MsgMintNewTokens(app *app.App, ctx1 sdk.Context) {
 		_, err := server.MsgMintNewTokens(wctx, &tc.msg)
 		fmt.Println(err)
 	}
-
 }

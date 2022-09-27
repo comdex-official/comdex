@@ -37,6 +37,7 @@ var (
 func VaultKey(vaultID uint64) []byte {
 	return append(VaultKeyPrefix, sdk.Uint64ToBigEndian(vaultID)...)
 }
+
 func StableMintVaultKey(stableVaultID uint64) []byte {
 	return append(StableMintVaultKeyPrefix, sdk.Uint64ToBigEndian(stableVaultID)...)
 }

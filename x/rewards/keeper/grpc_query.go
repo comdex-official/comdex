@@ -4,12 +4,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
 var _ types.QueryServer = &Keeper{}
@@ -27,9 +28,7 @@ func (k Keeper) QueryEpochInfoByDuration(c context.Context, req *types.QueryEpoc
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	item, found := k.GetEpochInfoByDuration(ctx, time.Second*time.Duration(req.DurationSeconds))
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "epoch does not exist for given duration %ds", req.DurationSeconds)
@@ -67,7 +66,6 @@ func (k Keeper) QueryAllEpochsInfo(c context.Context, req *types.QueryAllEpochsI
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -105,7 +103,6 @@ func (k Keeper) QueryAllGauges(c context.Context, req *types.QueryAllGaugesReque
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -121,9 +118,7 @@ func (k Keeper) QueryGaugeByID(c context.Context, req *types.QueryGaugeByIdReque
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	item, found := k.GetGaugeByID(ctx, req.GaugeId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "gauge does not exist for given id %d", req.GaugeId)
@@ -139,9 +134,7 @@ func (k Keeper) QueryGaugeByDuration(c context.Context, req *types.QueryGaugesBy
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	gaugesIDsByTriggerDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, time.Second*time.Duration(req.DurationSeconds))
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "no gauges for given duration %ds", req.DurationSeconds)
@@ -188,7 +181,6 @@ func (k Keeper) QueryRewards(c context.Context, req *types.QueryRewardsRequest) 
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -204,9 +196,7 @@ func (k Keeper) QueryReward(c context.Context, req *types.QueryRewardRequest) (*
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := k.GetRewardByApp(ctx, req.Id)
 	if !found {
@@ -223,9 +213,7 @@ func (k Keeper) QueryExternalRewardsLockers(c context.Context, req *types.QueryE
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	items := k.GetExternalRewardsLockers(ctx)
 
@@ -239,9 +227,7 @@ func (k Keeper) QueryExternalRewardVaults(c context.Context, req *types.QueryExt
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	items := k.GetExternalRewardVaults(ctx)
 
@@ -255,9 +241,7 @@ func (k Keeper) QueryWhitelistedAppIdsVault(c context.Context, req *types.QueryW
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	items := k.GetAppIDs(ctx)
 

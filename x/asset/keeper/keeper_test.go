@@ -1,9 +1,8 @@
 package keeper_test
 
 import (
-	"time"
-
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 
@@ -91,7 +90,6 @@ func (s *KeeperTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coin) {
 
 func (s *KeeperTestSuite) advanceseconds(dur int64) {
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Second * time.Duration(dur)))
-
 }
 
 // ParseCoins parses and returns sdk.Coins.

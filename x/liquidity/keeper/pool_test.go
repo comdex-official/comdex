@@ -11,7 +11,6 @@ import (
 )
 
 func (s *KeeperTestSuite) TestCreatePool() {
-
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
@@ -216,7 +215,6 @@ func (s *KeeperTestSuite) TestCreatePool() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				params, err := s.keeper.GetGenericParams(s.ctx, tc.Msg.AppId)
@@ -317,7 +315,6 @@ func (s *KeeperTestSuite) TestDisabledPool() {
 }
 
 func (s *KeeperTestSuite) TestCreatePoolAfterDisabled() {
-
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
@@ -540,7 +537,6 @@ func (s *KeeperTestSuite) TestDeposit() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Depositor), tc.Msg.DepositCoins)
@@ -574,7 +570,6 @@ func (s *KeeperTestSuite) TestDeposit() {
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestDepositRefund() {
@@ -758,7 +753,6 @@ func (s *KeeperTestSuite) TestWithdraw() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			withdrawReq, err := s.keeper.Withdraw(s.ctx, &tc.Msg)
 			if tc.ExpErr != nil {
 				s.Require().Error(err)

@@ -1,12 +1,13 @@
 package keeper
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	protobuftypes "github.com/gogo/protobuf/types"
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 func (k Keeper) AddESMTriggerParamsRecords(ctx sdk.Context, record types.ESMTriggerParams) error {
@@ -15,14 +16,12 @@ func (k Keeper) AddESMTriggerParamsRecords(ctx sdk.Context, record types.ESMTrig
 		return types.ErrorDuplicateESMTriggerParams
 	}
 
-	var (
-		esmTriggerParams = types.ESMTriggerParams{
-			AppId:         record.AppId,
-			TargetValue:   record.TargetValue,
-			CoolOffPeriod: record.CoolOffPeriod,
-			AssetsRates:   record.AssetsRates,
-		}
-	)
+	esmTriggerParams := types.ESMTriggerParams{
+		AppId:         record.AppId,
+		TargetValue:   record.TargetValue,
+		CoolOffPeriod: record.CoolOffPeriod,
+		AssetsRates:   record.AssetsRates,
+	}
 	k.SetESMTriggerParams(ctx, esmTriggerParams)
 
 	return nil
@@ -210,7 +209,6 @@ func (k Keeper) GetAllUserDepositByApp(ctx sdk.Context) (usersDepositMapping []t
 }
 
 func (k Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, addESMTriggerParams *bindings.MsgAddESMTriggerParams) error {
-
 	var debtRates []types.DebtAssetsRates
 	for i := range addESMTriggerParams.AssetID {
 		var debtRate types.DebtAssetsRates
@@ -218,14 +216,12 @@ func (k Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, addESMTriggerParams *
 		debtRate.Rates = addESMTriggerParams.Rates[i]
 		debtRates = append(debtRates, debtRate)
 	}
-	var (
-		esmTriggerParams = types.ESMTriggerParams{
-			AppId:         addESMTriggerParams.AppID,
-			TargetValue:   addESMTriggerParams.TargetValue,
-			CoolOffPeriod: addESMTriggerParams.CoolOffPeriod,
-			AssetsRates:   debtRates,
-		}
-	)
+	esmTriggerParams := types.ESMTriggerParams{
+		AppId:         addESMTriggerParams.AppID,
+		TargetValue:   addESMTriggerParams.TargetValue,
+		CoolOffPeriod: addESMTriggerParams.CoolOffPeriod,
+		AssetsRates:   debtRates,
+	}
 	k.SetESMTriggerParams(ctx, esmTriggerParams)
 
 	return nil
@@ -356,7 +352,7 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			} else {
-				var count = 0
+				count := 0
 				for i, indata := range coolOffData.CollateralAsset {
 					if indata.AssetID == assetInData.Id {
 						count++
@@ -403,7 +399,6 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 					}
 				}
 				if count == 0 {
-
 					var itemx types.AssetToAmount
 
 					itemx.AssetID = assetOutData.Id
@@ -497,7 +492,7 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			} else {
-				var count = 0
+				count := 0
 				for i, indata := range coolOffData.CollateralAsset {
 					if indata.AssetID == assetInData.Id {
 						count++
@@ -557,7 +552,6 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 				}
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			}
-
 		}
 	}
 	netFee, found1 := k.GetAppNetFeeCollectedData(ctx, appID)

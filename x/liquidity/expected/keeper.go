@@ -3,11 +3,12 @@ package expected
 import (
 	"time"
 
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
 // AccountKeeper is the expected account keeper.

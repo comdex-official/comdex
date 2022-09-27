@@ -5,8 +5,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/comdex-official/comdex/x/locker/types"
 	"github.com/cosmos/cosmos-sdk/client"
+
+	"github.com/comdex-official/comdex/x/locker/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module.

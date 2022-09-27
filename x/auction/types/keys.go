@@ -19,16 +19,20 @@ const (
 	SuccessBiddingStatus  = "success"
 )
 
-const AuctionStartNoBids uint64 = 0
-const AuctionGoingOn uint64 = 1
-const AuctionEnded uint64 = 2
+const (
+	AuctionStartNoBids uint64 = 0
+	AuctionGoingOn     uint64 = 1
+	AuctionEnded       uint64 = 2
+)
 
-const NoAuction uint64 = 0
-const StartedSurplusAuction uint64 = 1
-const StartedDebtAuction uint64 = 2
-const SurplusString = "surplus"
-const DebtString = "debt"
-const DutchString = "dutch"
+const (
+	NoAuction             uint64 = 0
+	StartedSurplusAuction uint64 = 1
+	StartedDebtAuction    uint64 = 2
+	SurplusString                = "surplus"
+	DebtString                   = "debt"
+	DutchString                  = "dutch"
+)
 
 var (
 	AuctionKeyPrefix            = []byte{0x11}

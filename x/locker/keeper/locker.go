@@ -3,15 +3,15 @@ package keeper
 import (
 	"context"
 
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 
 	"github.com/comdex-official/comdex/x/locker/types"
 )
 
-//get locker lookup table.
-
+// get locker lookup table.
 func (k Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error {
 	var (
 		store = k.Store(ctx)
@@ -229,12 +229,11 @@ func (k Keeper) GetAllLockerLookupTable(ctx sdk.Context) (lockerLookupTable []ty
 
 // UpdateAmountLockerMapping For updating token locker mapping in lookup table.
 func (k Keeper) UpdateAmountLockerMapping(ctx sdk.Context, appID uint64, assetID uint64, amount sdk.Int, changeType bool) {
-	//if Change type true = Add to deposits
+	// if Change type true = Add to deposits
 
-	//If change type false = Subtract from the deposits
+	// If change type false = Subtract from the deposits
 	lookupTableData, exists := k.GetLockerLookupTable(ctx, appID, assetID)
 	if exists {
-
 		if changeType {
 			lookupTableData.DepositedAmount = lookupTableData.DepositedAmount.Add(amount)
 		} else {
@@ -272,7 +271,6 @@ func (k Keeper) GetUserLockerAssetMapping(ctx sdk.Context, address string, appID
 }
 
 func (k Keeper) GetUserLockerAppMapping(ctx sdk.Context, address string, appID uint64) (userLockerAssetData []types.UserAppAssetLockerMapping, found bool) {
-
 	var (
 		store = k.Store(ctx)
 		key   = types.UserAppLockerMappingKey(address, appID)
@@ -299,7 +297,6 @@ func (k Keeper) GetUserLockerAppMapping(ctx sdk.Context, address string, appID u
 }
 
 func (k Keeper) GetUserLockerMapping(ctx sdk.Context, address string) (userLockerAssetData []types.UserAppAssetLockerMapping, found bool) {
-
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLockerMappingKey(address)
@@ -474,14 +471,14 @@ func (k Keeper) AddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteLis
 	_, found1 := k.GetLockerProductAssetMapping(ctx, msg.AppId, msg.AssetId)
 
 	if !found1 {
-		//Set a new instance of Locker Product Asset  Mapping
+		// Set a new instance of Locker Product Asset  Mapping
 
 		var locker types.LockerProductAssetMapping
 		locker.AppId = appMapping.Id
 		locker.AssetId = msg.AssetId
 		k.SetLockerProductAssetMapping(ctx, locker)
 
-		//Also Create a LockerLookup table Instance and set it with the new asset id
+		// Also Create a LockerLookup table Instance and set it with the new asset id
 		var lockerLookupData types.LockerLookupTableData
 
 		lockerLookupData.AssetId = asset.Id

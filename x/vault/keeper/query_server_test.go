@@ -2698,12 +2698,14 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 			ExpErr:              nil,
 			ExpResp: &types.QueryUserExtendedPairTotalDataResponse{
 				UserTotalData: []types.OwnerAppExtendedPairVaultMappingData{
-					{Owner: addr1.String(),
+					{
+						Owner:          addr1.String(),
 						AppId:          appID1,
 						ExtendedPairId: extendedVaultPairID1,
 						VaultId:        1,
 					},
-					{Owner: addr1.String(),
+					{
+						Owner:          addr1.String(),
 						AppId:          appID2,
 						ExtendedPairId: extendedVaultPairID2,
 						VaultId:        3,

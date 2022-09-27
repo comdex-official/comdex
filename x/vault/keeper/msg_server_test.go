@@ -9,7 +9,6 @@ import (
 )
 
 func (s *KeeperTestSuite) TestMsgCreate() {
-
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
@@ -195,7 +194,6 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.From), sdk.NewCoins(sdk.NewCoin("uasset1", tc.Msg.AmountIn)))
@@ -225,11 +223,9 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgDeposit() {
-
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
@@ -376,7 +372,6 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.From), sdk.NewCoins(sdk.NewCoin("uasset1", tc.Msg.Amount)))
@@ -410,7 +405,6 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 }
 
 func (s *KeeperTestSuite) TestMsgWithdraw() {
-
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
@@ -585,7 +579,6 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 }
 
 func (s *KeeperTestSuite) TestMsgDraw() {
-
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
@@ -707,7 +700,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 				AmountIn:            newInt(1000000000),
 				AmountOut:           newInt(210000000),
 			},
-			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(405900000))), //198000000*2+(10000000-1%)
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(405900000))), // 198000000*2+(10000000-1%)
 		},
 		{
 			Name: "success valid case app2 user1",
@@ -725,7 +718,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 				AmountIn:            newInt(1000000000),
 				AmountOut:           newInt(210000000),
 			},
-			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(415800000))), //198000000*2+(10000000-1%) + (10000000-1%)
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(415800000))), // 198000000*2+(10000000-1%) + (10000000-1%)
 		},
 	}
 
@@ -760,7 +753,6 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 }
 
 func (s *KeeperTestSuite) TestMsgRepay() {
-
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 
@@ -882,7 +874,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 				AmountIn:            newInt(1000000000),
 				AmountOut:           newInt(100000000),
 			},
-			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(296000000))), //198000000*2 - 100000000
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(296000000))), // 198000000*2 - 100000000
 		},
 		{
 			Name: "success valid case app2 user1",
@@ -900,7 +892,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 				AmountIn:            newInt(1000000000),
 				AmountOut:           newInt(100000000),
 			},
-			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(196000000))), //198000000*2 - 100000000 - 100000000
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(196000000))), // 198000000*2 - 100000000 - 100000000
 		},
 	}
 
@@ -936,7 +928,6 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 }
 
 func (s *KeeperTestSuite) TestMsgClose() {
-
 	addr1 := s.addr(1)
 	addr2 := s.addr(2)
 

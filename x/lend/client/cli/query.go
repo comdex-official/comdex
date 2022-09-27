@@ -3,13 +3,15 @@ package cli
 import (
 	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"strconv"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	"github.com/spf13/cobra"
 
-	"github.com/comdex-official/comdex/x/lend/types"
 	"github.com/cosmos/cosmos-sdk/client"
+
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module.
@@ -145,7 +147,6 @@ func QueryAllLendsByOwner() *cobra.Command {
 				Owner:      args[0],
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -186,7 +187,6 @@ func QueryAllLendsByOwnerAndPoolID() *cobra.Command {
 				PoolId:     poolID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -518,7 +518,6 @@ func QueryAllBorrowsByOwner() *cobra.Command {
 				Owner:      args[0],
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -559,7 +558,6 @@ func QueryAllBorrowsByOwnerAndPoolID() *cobra.Command {
 				PoolId:     poolID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -674,7 +672,6 @@ func QueryAssetStats() *cobra.Command {
 				AssetId: assetID,
 				PoolId:  poolID,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -707,7 +704,6 @@ func QueryModuleBalance() *cobra.Command {
 			res, err := queryClient.QueryModuleBalance(cmd.Context(), &types.QueryModuleBalanceRequest{
 				PoolId: poolID,
 			})
-
 			if err != nil {
 				return err
 			}

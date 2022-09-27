@@ -2,18 +2,20 @@ package keeper
 
 import (
 	"fmt"
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	"github.com/comdex-official/comdex/x/lend/expected"
-	"github.com/comdex-official/comdex/x/lend/types"
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
-	"strconv"
+
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	"github.com/comdex-official/comdex/x/lend/expected"
+	"github.com/comdex-official/comdex/x/lend/types"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 )
 
 type (
@@ -40,7 +42,6 @@ func NewKeeper(
 	asset expected.AssetKeeper,
 	market expected.MarketKeeper,
 	esm expected.EsmKeeper,
-
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -48,7 +49,6 @@ func NewKeeper(
 	}
 
 	return Keeper{
-
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
@@ -249,7 +249,7 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 				return err
 			}
 
-			//burn c/Token
+			// burn c/Token
 			err = k.bank.BurnCoins(ctx, pool.ModuleName, cTokens)
 			if err != nil {
 				return err
@@ -266,12 +266,11 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 			lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(withdrawal.Amount)
 			lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(withdrawal.Amount)
 			k.SetLend(ctx, lendPos)
-
 		} else {
 			if err = k.SendCoinFromAccountToModule(ctx, lenderAddr, pool.ModuleName, cToken); err != nil {
 				return err
 			}
-			//burn c/Token
+			// burn c/Token
 			err = k.bank.BurnCoins(ctx, pool.ModuleName, cTokens)
 			if err != nil {
 				return err
@@ -290,7 +289,6 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 			lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(withdrawal.Amount)
 			lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(withdrawal.Amount)
 			k.SetLend(ctx, lendPos)
-
 		}
 	} else {
 		return types.ErrWithdrawAmountLimitExceeds
@@ -476,7 +474,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 	if !found {
 		return types.ErrorPairNotFound
 	}
-	//check cr ratio
+	// check cr ratio
 	assetIn, found := k.GetAsset(ctx, lendPos.AssetID)
 	if !found {
 		return assettypes.ErrorAssetDoesNotExist
@@ -597,7 +595,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		if err != nil {
 			return err
 		}
-
 	} else {
 		updatedAmtIn := AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv)
 		priceAssetIn, found := k.GetPriceForAsset(ctx, pair.AssetIn)
@@ -711,7 +708,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 			if err != nil {
 				return err
 			}
-
 		} else if secondBridgedAssetQty.LT(secondBridgedAssetBal) {
 			err = k.VerifyCollaterlizationRatio(ctx, secondBridgedAssetQty, secondBridgedAsset, loan.Amount, assetOut, secondBridgedAssetRatesStats.Ltv)
 			if err != nil {
@@ -782,7 +778,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 			if err != nil {
 				return err
 			}
-
 		} else {
 			return types.ErrBorrowingPoolInsufficient
 		}
@@ -884,7 +879,6 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 			}
 			borrowPos.Interest_Accumulated = borrowPos.Interest_Accumulated.Sub(payment.Amount)
 			k.SetBorrow(ctx, borrowPos)
-
 		} else {
 			// sending repayment to moduleAcc from borrower
 			if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, sdk.NewCoins(payment)); err != nil {
@@ -919,7 +913,6 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 			k.SetReservePoolRecordsForBorrow(ctx, reservePoolRecords)
 			k.UpdateBorrowStats(ctx, pair, borrowPos, amtBorrowStats, false)
 			k.SetBorrow(ctx, borrowPos)
-
 		}
 	} else {
 		return types.ErrInvalidRepayment
@@ -995,7 +988,6 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 		k.SetLend(ctx, lendPos)
 		borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
 		k.SetBorrow(ctx, borrowPos)
-
 	} else {
 		assetIn := lendPos.UpdatedAmountIn
 		priceAssetIn, found := k.GetPriceForAsset(ctx, pair.AssetIn)
@@ -1044,7 +1036,6 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 			borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
 			borrowPos.BridgedAssetAmount.Amount = borrowPos.BridgedAssetAmount.Amount.Add(firstBridgedAssetQty.TruncateInt())
 			k.SetBorrow(ctx, borrowPos)
-
 		} else if secondBridgedAssetQty.LT(secondBridgedAssetBal.ToDec()) {
 			// take c/Tokens from the user
 			if err := k.SendCoinFromAccountToModule(ctx, lenderAddr, AssetInPool.ModuleName, AmountIn); err != nil {
@@ -1059,7 +1050,6 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 			borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
 			borrowPos.BridgedAssetAmount.Amount = borrowPos.BridgedAssetAmount.Amount.Add(secondBridgedAssetQty.TruncateInt())
 			k.SetBorrow(ctx, borrowPos)
-
 		} else {
 			return types.ErrBridgeAssetQtyInsufficient
 		}
@@ -1477,7 +1467,6 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 					borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
 				}
 			}
-
 		} else {
 			secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
 			diff := borrowPos.BridgedAssetAmount.Amount.Sub(secondBridgedAssetQty)
@@ -1498,7 +1487,6 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 				}
 			}
 		}
-
 	}
 	OriginalBorrowID := liqBorrow.OriginalVaultId
 	err = k.UpdateLendIDToBorrowIDMapping(ctx, kind.LendingId, OriginalBorrowID, false)

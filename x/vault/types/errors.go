@@ -43,10 +43,6 @@ var (
 	ErrorAppExtendedPairDataDoesNotExists     = errors.Register(ModuleName, 223, "App ExtendedPair Data Does Not Exists")
 )
 
-var (
-	ErrorUnknownMsgType = errors.Register(ModuleName, 301, "unknown message type")
-)
+var ErrorUnknownMsgType = errors.Register(ModuleName, 301, "unknown message type")
 
-var (
-	ErrorCannotCreateStableMintVault = errors.Register(ModuleName, 401, "Cannot Create Stable Mint Vault, StableMint tx command")
-)
+var ErrorCannotCreateStableMintVault = errors.Register(ModuleName, 401, "Cannot Create Stable Mint Vault, StableMint tx command")

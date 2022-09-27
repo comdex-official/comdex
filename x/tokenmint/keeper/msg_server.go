@@ -2,13 +2,13 @@ package keeper
 
 import (
 	"context"
-	"github.com/comdex-official/comdex/x/tokenmint/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/tokenmint/types"
 )
 
-var (
-	_ types.MsgServer = msgServer{}
-)
+var _ types.MsgServer = msgServer{}
 
 type msgServer struct {
 	Keeper
@@ -30,7 +30,7 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExists
 	}
-	//Checking if asset exists in the app
+	// Checking if asset exists in the app
 
 	assetDataInApp, found := k.GetMintGenesisTokenData(ctx, appMappingData.Id, assetData.Id)
 	if !found {
@@ -46,7 +46,6 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 			return nil, err
 		}
 		userAddress, err := sdk.AccAddressFromBech32(assetDataInApp.Recipient)
-
 		if err != nil {
 			return nil, err
 		}
@@ -66,7 +65,7 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 
 		k.SetTokenMint(ctx, appData)
 	} else {
-		//AppData in TokenMint exists
+		// AppData in TokenMint exists
 		_, found := k.GetAssetDataInTokenMintByApp(ctx, appMappingData.Id, assetData.Id)
 		if found {
 			return nil, types.ErrorGenesisMintingForTokenAlreadyDone
