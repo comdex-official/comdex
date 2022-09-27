@@ -23,10 +23,10 @@ func (k Keeper) SetReward(ctx sdk.Context, rewards types.InternalRewards) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetReward(ctx sdk.Context, appId, assetID uint64) (rewards types.InternalRewards, found bool) {
+func (k Keeper) GetReward(ctx sdk.Context, appID, assetID uint64) (rewards types.InternalRewards, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.RewardsKey(appId, assetID)
+		key   = types.RewardsKey(appID, assetID)
 		value = store.Get(key)
 	)
 
@@ -46,10 +46,10 @@ func (k Keeper) DeleteReward(ctx sdk.Context, appID, assetID uint64) {
 	store.Delete(key)
 }
 
-func (k Keeper) GetRewardByApp(ctx sdk.Context, appId uint64) (rewards []types.InternalRewards, found bool) {
+func (k Keeper) GetRewardByApp(ctx sdk.Context, appID uint64) (rewards []types.InternalRewards, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.RewardsKeyByApp(appId)
+		key   = types.RewardsKeyByApp(appID)
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -547,12 +547,12 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 	if !found {
 		return collectortypes.ErrorAssetDoesNotExist
 	}
-	rewards := sdk.ZeroDec()
+	rewards := sdk.ZeroDec() //nolint:ineffassign,staticcheck // might want to fix this, because there are a number of places where we are making vague declarations of new variables, then not using them till much later.
 	var err error
 	collectorBTime := collectorLookup.BlockTime.Unix()
 	if collectorLookup.LockerSavingRate.IsZero() {
 		return nil
-	} else {
+	} else { //nolint:revive // later you could refactor this as a switch, but the approach is clear and there's no need to refactor.
 		if blockHeight == 0 {
 			// take bh from lsr
 			rewards, err = k.CalculationOfRewards(ctx, NetBalance, collectorLookup.LockerSavingRate, collectorBTime)
@@ -579,8 +579,7 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 
 		if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
 			// send rewards
-			newReward := sdk.ZeroInt()
-			newReward = lockerRewardsTracker.RewardsAccumulated.TruncateInt()
+			newReward := lockerRewardsTracker.RewardsAccumulated.TruncateInt()
 			newRewardDec := sdk.NewDec(newReward.Int64())
 			lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 			k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
@@ -658,12 +657,12 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 		// take bh from ext pair
 		_, err = k.CalculationOfRewards(ctx, totalDebt, ExtPairVaultData.StabilityFee, extPairVaultBTime)
 		if err != nil {
-			return nil
+			return err
 		}
 	} else {
 		interest, err = k.CalculationOfRewards(ctx, totalDebt, ExtPairVaultData.StabilityFee, vaultBlockTime)
 		if err != nil {
-			return nil
+			return err
 		}
 
 		vaultData, _ := k.GetVault(ctx, vaultID)
