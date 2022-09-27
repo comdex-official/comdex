@@ -40,7 +40,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			depCdc := clientCtx.Codec
-			cdc := depCdc.(codec.ProtoCodecMarshaler)
+			cdc := depCdc.(codec.ProtoCodecMarshaler) //nolint:forcetypeassert // TODO: compare to eg: gaia and see if we can drop the type assertion.
 
 			serverCtx := server.GetServerContextFromCmd(cmd)
 			config := serverCtx.Config

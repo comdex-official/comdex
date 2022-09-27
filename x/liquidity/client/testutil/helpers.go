@@ -41,7 +41,7 @@ func MsgCreate(
 	return clitestutil.ExecTestCLICmd(clientCtx, cli.Create(), args)
 }
 
-func (s *LiquidityIntegrationTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
+func (s *LiquidityIntegrationTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) { //nolint:unused
 	s.T().Helper()
 	err := s.app.BankKeeper.MintCoins(s.ctx, types.ModuleName, amt)
 	s.Require().NoError(err)

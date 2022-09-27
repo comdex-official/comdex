@@ -8,7 +8,7 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
-	var gaugeID uint64 = 0
+	var gaugeID uint64
 
 	k.SetParams(ctx, state.Params)
 

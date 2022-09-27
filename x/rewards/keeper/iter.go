@@ -135,7 +135,6 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 // calculate new locker rewards
 func (k Keeper) CalculationOfRewards(
 	ctx sdk.Context,
-	// nolint
 	amount sdk.Int, lsr sdk.Dec, bTime int64,
 ) (sdk.Dec, error) {
 	currentTime := ctx.BlockTime().Unix()

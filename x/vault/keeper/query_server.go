@@ -148,7 +148,6 @@ func (q QueryServer) QueryVaultInfoOfOwnerByApp(c context.Context, req *types.Qu
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	// nolint
 	var (
 		ctx        = sdk.UnwrapSDKContext(c)
 		vaultsIds  []uint64
@@ -315,7 +314,6 @@ func (q QueryServer) QueryTokenMintedAssetWiseByApp(c context.Context, req *type
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	// nolint
 	var (
 		ctx        = sdk.UnwrapSDKContext(c)
 		mintedData []types.MintedDataMap
@@ -377,8 +375,8 @@ func (q QueryServer) QueryVaultCountByAppAndExtendedPair(c context.Context, req 
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
-		ctx          = sdk.UnwrapSDKContext(c)
-		count uint64 = 0
+		ctx   = sdk.UnwrapSDKContext(c)
+		count uint64
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -431,7 +429,6 @@ func (q QueryServer) QueryExtendedPairIDsByApp(c context.Context, req *types.Que
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	// nolint
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
 		pairIDs []uint64
@@ -552,7 +549,6 @@ func (q QueryServer) QueryTVLByAppOfAllExtendedPairs(c context.Context, req *typ
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	// nolint
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
 		tvlData []types.TvlLockedDataMap

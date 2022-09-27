@@ -40,10 +40,10 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		}
 	}
 	depositStats, found := k.GetDepositStats(ctx)
-	userDepositStats, _ := k.GetUserDepositStats(ctx)
-	ReserveDepositStats, _ := k.GetReserveDepositStats(ctx)
-	BuyBackDepositStats, _ := k.GetBuyBackDepositStats(ctx)
-	BorrowStats, _ := k.GetBorrowStats(ctx)
+	_, _ = k.GetUserDepositStats(ctx)
+	_, _ = k.GetReserveDepositStats(ctx)
+	_, _ = k.GetBuyBackDepositStats(ctx)
+	_, _ = k.GetBorrowStats(ctx)
 	var balanceStats []types.BalanceStats
 	if !found {
 		for _, v := range pool.AssetData {
@@ -53,10 +53,10 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 			}
 			balanceStats = append(balanceStats, balanceStat)
 			depositStats = types.DepositStats{BalanceStats: balanceStats}
-			userDepositStats = types.DepositStats{BalanceStats: balanceStats}
-			ReserveDepositStats = types.DepositStats{BalanceStats: balanceStats}
-			BuyBackDepositStats = types.DepositStats{BalanceStats: balanceStats}
-			BorrowStats = types.DepositStats{BalanceStats: balanceStats}
+			userDepositStats := types.DepositStats{BalanceStats: balanceStats}
+			ReserveDepositStats := types.DepositStats{BalanceStats: balanceStats}
+			BuyBackDepositStats := types.DepositStats{BalanceStats: balanceStats}
+			BorrowStats := types.DepositStats{BalanceStats: balanceStats}
 			k.SetDepositStats(ctx, depositStats)
 			k.SetUserDepositStats(ctx, userDepositStats)
 			k.SetReserveDepositStats(ctx, ReserveDepositStats)
@@ -70,10 +70,10 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		}
 		balanceStats = append(depositStats.BalanceStats, balanceStat)
 		depositStats = types.DepositStats{BalanceStats: balanceStats}
-		userDepositStats = types.DepositStats{BalanceStats: balanceStats}
-		ReserveDepositStats = types.DepositStats{BalanceStats: balanceStats}
-		BuyBackDepositStats = types.DepositStats{BalanceStats: balanceStats}
-		BorrowStats = types.DepositStats{BalanceStats: balanceStats}
+		userDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		ReserveDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		BuyBackDepositStats := types.DepositStats{BalanceStats: balanceStats}
+		BorrowStats := types.DepositStats{BalanceStats: balanceStats}
 		k.SetDepositStats(ctx, depositStats)
 		k.SetUserDepositStats(ctx, userDepositStats)
 		k.SetReserveDepositStats(ctx, ReserveDepositStats)

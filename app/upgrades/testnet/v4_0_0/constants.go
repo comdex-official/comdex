@@ -1,4 +1,4 @@
-package v4_0_0
+package v4_0_0 //nolint:revive,stylecheck // we're going to use the underscore...
 
 const (
 	UpgradeName   = "v4.0.0"

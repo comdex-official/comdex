@@ -1,4 +1,4 @@
-package v2_0_0
+package v2_0_0 //nolint:revive,stylecheck // we're going to use the underscore...
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"

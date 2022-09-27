@@ -170,7 +170,7 @@ func InitTestnet(
 			return err
 		}
 
-		addr, secret, err := server.GenerateSaveCoinKey(kb, nodeDirName, true, algo)
+		addr, secret, err := server.GenerateSaveCoinKey(kb, nodeDirName, true, algo) //nolint:staticcheck
 		if err != nil {
 			_ = os.RemoveAll(outputDir)
 			return err

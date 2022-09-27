@@ -86,7 +86,6 @@ func NewMsgActivateExternalRewardsLockers(
 	assetID uint64,
 	totalRewards sdk.Coin,
 	durationDays, minLockupTimeSeconds int64,
-	// nolint
 	from sdk.AccAddress,
 ) *ActivateExternalRewardsLockers {
 	return &ActivateExternalRewardsLockers{
@@ -144,7 +143,6 @@ func NewMsgActivateExternalVaultLockers(
 	extendedPairID uint64,
 	totalRewards sdk.Coin,
 	durationDays, minLockupTimeSeconds int64,
-	// nolint
 	from sdk.AccAddress,
 ) *ActivateExternalRewardsVault {
 	return &ActivateExternalRewardsVault{
