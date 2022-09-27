@@ -292,7 +292,7 @@ func (k Keeper) IterateAllDepositRequests(ctx sdk.Context, appID uint64, cb func
 func (k Keeper) IterateDepositRequestsByDepositor(
 	ctx sdk.Context,
 	appID uint64,
-	//nolint
+	
 	depositor sdk.AccAddress,
 	cb func(req types.DepositRequest) (stop bool, err error),
 ) error {
@@ -401,7 +401,7 @@ func (k Keeper) IterateAllWithdrawRequests(ctx sdk.Context, appID uint64, cb fun
 func (k Keeper) IterateWithdrawRequestsByWithdrawer(
 	ctx sdk.Context,
 	appID uint64,
-	//nolint
+	
 	withdrawer sdk.AccAddress,
 	cb func(req types.WithdrawRequest) (stop bool, err error),
 ) error {
@@ -534,7 +534,7 @@ func (k Keeper) IterateOrdersByPair(ctx sdk.Context, appID, pairID uint64, cb fu
 func (k Keeper) IterateOrdersByOrderer(
 	ctx sdk.Context,
 	appID uint64,
-	//nolint
+	
 	orderer sdk.AccAddress,
 	cb func(order types.Order) (stop bool, err error),
 ) error {

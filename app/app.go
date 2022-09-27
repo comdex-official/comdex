@@ -397,7 +397,7 @@ func New(
 		app.tkeys[paramstypes.TStoreKey],
 	)
 
-	//nolint:godox  //TODO: refactor this code
+	
 	app.ParamsKeeper.Subspace(authtypes.ModuleName)
 	app.ParamsKeeper.Subspace(banktypes.ModuleName)
 	app.ParamsKeeper.Subspace(stakingtypes.ModuleName)

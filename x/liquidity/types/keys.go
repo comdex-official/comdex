@@ -124,7 +124,7 @@ func GetDepositRequestKey(appID, poolID, id uint64) []byte {
 // GetDepositRequestIndexKey returns the index key to map deposit requests
 // with a depositor.
 func GetDepositRequestIndexKey(
-	//nolint
+	
 	appID uint64,
 	depositor sdk.AccAddress,
 	poolID, reqID uint64,
@@ -152,7 +152,7 @@ func GetWithdrawRequestKey(appID, poolID, id uint64) []byte {
 // GetWithdrawRequestIndexKey returns the index key to map withdraw requests
 // with a withdrawer.
 func GetWithdrawRequestIndexKey(
-	//nolint
+	
 	appID uint64,
 	withdrawer sdk.AccAddress,
 	poolID, reqID uint64,

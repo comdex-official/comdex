@@ -106,7 +106,7 @@ type BasicPoolOrderSource struct {
 func NewBasicPoolOrderSource(
 	pool amm.Pool,
 	poolID uint64,
-	//nolint
+	
 	reserveAddr sdk.AccAddress,
 	baseCoinDenom, quoteCoinDenom string,
 ) *BasicPoolOrderSource {

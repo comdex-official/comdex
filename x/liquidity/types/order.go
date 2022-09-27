@@ -107,7 +107,7 @@ type PoolOrder struct {
 // NewPoolOrder returns a new pool order.
 func NewPoolOrder(
 	poolID uint64,
-	//nolint
+	
 	reserveAddr sdk.AccAddress,
 	dir amm.OrderDirection,
 	price sdk.Dec,
