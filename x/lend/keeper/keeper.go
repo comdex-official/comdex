@@ -909,14 +909,15 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		amtToReservePool := reservePoolRecords.InterestAccumulated
 		if amtToReservePool.TruncateInt().LTE(payment.Amount) {
 
+			if amtToReservePool.TruncateInt().LT(sdk.ZeroInt()) {
+				return types.ErrReserveRatesNotFound
+			}
 			if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
 				amount := sdk.NewCoin(payment.Denom, amtToReservePool.TruncateInt())
 				err = k.SetReserveBalances(ctx, pool.ModuleName, pair.AssetOut, amount)
 				if err != nil {
 					return err
 				}
-			} else {
-				return types.ErrReserveRatesNotFound
 			}
 			amtBackToPool := payment.Amount.Sub(amtToReservePool.TruncateInt())
 			if amtBackToPool.GT(sdk.ZeroInt()) {
@@ -954,13 +955,14 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		amtToReservePool := reservePoolRecords.InterestAccumulated
 
 		if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
+			return types.ErrReserveRatesNotFound
+		}
+		if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
 			amount := sdk.NewCoin(payment.Denom, amtToReservePool.TruncateInt())
 			err = k.SetReserveBalances(ctx, pool.ModuleName, pair.AssetOut, amount)
 			if err != nil {
 				return err
 			}
-		} else {
-			return types.ErrReserveRatesNotFound
 		}
 		interestAmtToPool := payment.Amount.Sub(borrowPos.AmountOut.Amount)
 		amtBackToPool := interestAmtToPool.Sub(amtToReservePool.TruncateInt())
@@ -1257,13 +1259,14 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 	reservePoolRecords, _ := k.GetReservePoolRecordsForBorrow(ctx, borrowID)
 	amtToReservePool := reservePoolRecords.InterestAccumulated
 	if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
+		return types.ErrReserveRatesNotFound
+	}
+	if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
 		amount := sdk.NewCoin(assetOut.Denom, amtToReservePool.TruncateInt())
 		err = k.SetReserveBalances(ctx, pool.ModuleName, pair.AssetOut, amount)
 		if err != nil {
 			return err
 		}
-	} else {
-		return types.ErrReserveRatesNotFound
 	}
 	amtBackToPool := borrowPos.UpdatedAmountOut.Sub(borrowPos.AmountOut.Amount)
 	amtToMint := amtBackToPool.Sub(amtToReservePool.TruncateInt())
@@ -1512,47 +1515,48 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 		priceSecondBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.SecondBridgedAssetID)
 		firstBridgedAsset, _ := k.GetAsset(ctx, AssetInPool.FirstBridgedAssetID)
 
-		if kind.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
-			firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset))
-			diff := borrowPos.BridgedAssetAmount.Amount.Sub(firstBridgedAssetQty)
-			if diff.GT(sdk.ZeroInt()) {
-				err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
-				if err != nil {
-					return
-				}
-				borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
-			} else {
-				newDiff := firstBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
-				if newDiff.GT(sdk.ZeroInt()) {
-					err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
+		if kind.BridgedAssetAmount.Amount != sdk.ZeroInt() {
+			if kind.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
+				firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset))
+				diff := borrowPos.BridgedAssetAmount.Amount.Sub(firstBridgedAssetQty)
+				if diff.GT(sdk.ZeroInt()) {
+					err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
 					if err != nil {
 						return
 					}
 					borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
+				} else {
+					newDiff := firstBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
+					if newDiff.GT(sdk.ZeroInt()) {
+						err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
+						if err != nil {
+							return
+						}
+						borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
+					}
 				}
-			}
 
-		} else {
-			secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
-			diff := borrowPos.BridgedAssetAmount.Amount.Sub(secondBridgedAssetQty)
-			if diff.GT(sdk.ZeroInt()) {
-				err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
-				if err != nil {
-					return
-				}
-				borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
 			} else {
-				newDiff := secondBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
-				if newDiff.GT(sdk.ZeroInt()) {
-					err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
+				secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
+				diff := borrowPos.BridgedAssetAmount.Amount.Sub(secondBridgedAssetQty)
+				if diff.GT(sdk.ZeroInt()) {
+					err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
 					if err != nil {
 						return
 					}
 					borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
+				} else {
+					newDiff := secondBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
+					if newDiff.GT(sdk.ZeroInt()) {
+						err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
+						if err != nil {
+							return
+						}
+						borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
+					}
 				}
 			}
 		}
-
 	}
 	OriginalBorrowID := liqBorrow.OriginalVaultId
 	err = k.UpdateLendIDToBorrowIDMapping(ctx, kind.LendingId, OriginalBorrowID, false)

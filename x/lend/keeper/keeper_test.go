@@ -41,6 +41,16 @@ func (s *KeeperTestSuite) getBalances(addr sdk.AccAddress) sdk.Coins {
 	return s.app.BankKeeper.GetAllBalances(s.ctx, addr)
 }
 
+func (s *KeeperTestSuite) getDepositStats() types.DepositStats {
+	depositStats, _ := s.app.LendKeeper.GetDepositStats(s.ctx)
+	return depositStats
+}
+
+func (s *KeeperTestSuite) getUserDepositStats() types.DepositStats {
+	userDepositStats, _ := s.app.LendKeeper.GetUserDepositStats(s.ctx)
+	return userDepositStats
+}
+
 func (s *KeeperTestSuite) getBalance(addr sdk.AccAddress, denom string) sdk.Coin {
 	return s.app.BankKeeper.GetBalance(s.ctx, addr, denom)
 }
@@ -125,7 +135,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	return assetID
 }
 
-func (s *KeeperTestSuite) CreateNewPool(moduleName, cPoolName string, mainAssetID, firstBridgedAssetID, secondBridgedAssetID uint64, assetData []types.AssetDataPoolMapping) uint64 {
+func (s *KeeperTestSuite) CreateNewPool(moduleName, cPoolName string, mainAssetID, firstBridgedAssetID, secondBridgedAssetID uint64, assetData []*types.AssetDataPoolMapping) uint64 {
 	err := s.app.LendKeeper.AddPoolRecords(s.ctx, types.Pool{
 		ModuleName:           moduleName,
 		MainAssetId:          mainAssetID,
