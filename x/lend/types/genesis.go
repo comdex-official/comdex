@@ -1,6 +1,6 @@
 package types
 
-func NewGenesisState(borrowAsset []BorrowAsset, userBorrowIDMapping []UserBorrowIdMapping, borrowIDByOwnerAndPoolMapping []BorrowIdByOwnerAndPoolMapping, borrowMapping BorrowMapping, lendAsset []LendAsset, pool []Pool, assetToPairMapping []AssetToPairMapping, userLendIdMapping []UserLendIdMapping, lendIdByOwnerAndPoolMapping []LendIdByOwnerAndPoolMapping, lendIdToBorrowIdMapping []LendIdToBorrowIdMapping, assetStats []AssetStats, lendMapping LendMapping, userdepositStats DepositStats, reservedepositStats DepositStats, buybackdepositStats DepositStats, borrowdepositStats DepositStats, extended_Pair []Extended_Pair, assetRatesStats []AssetRatesStats, auctionParams []AuctionParams, params Params) *GenesisState {
+func NewGenesisState(borrowAsset []BorrowAsset, userBorrowIDMapping []UserBorrowIdMapping, borrowIDByOwnerAndPoolMapping []BorrowIdByOwnerAndPoolMapping, borrowMapping BorrowMapping, lendAsset []LendAsset, pool []Pool, assetToPairMapping []AssetToPairMapping, userLendIDMapping []UserLendIdMapping, lendIDByOwnerAndPoolMapping []LendIdByOwnerAndPoolMapping, lendIDToBorrowIdMapping []LendIdToBorrowIdMapping, assetStats []AssetStats, lendMapping LendMapping, userdepositStats DepositStats, reservedepositStats DepositStats, buybackdepositStats DepositStats, borrowdepositStats DepositStats, extended_Pair []Extended_Pair, assetRatesStats []AssetRatesStats, auctionParams []AuctionParams, params Params) *GenesisState { //nolint:revive,stylecheck // seems like it may make sense to refactor this line later (pretty complex)
 	return &GenesisState{
 		BorrowAsset:                   borrowAsset,
 		UserBorrowIdMapping:           userBorrowIDMapping,
@@ -9,9 +9,9 @@ func NewGenesisState(borrowAsset []BorrowAsset, userBorrowIDMapping []UserBorrow
 		LendAsset:                     lendAsset,
 		Pool:                          pool,
 		AssetToPairMapping:            assetToPairMapping,
-		UserLendIdMapping:             userLendIdMapping,
-		LendIdByOwnerAndPoolMapping:   lendIdByOwnerAndPoolMapping,
-		LendIdToBorrowIdMapping:       lendIdToBorrowIdMapping,
+		UserLendIdMapping:             userLendIDMapping,
+		LendIdByOwnerAndPoolMapping:   lendIDByOwnerAndPoolMapping,
+		LendIdToBorrowIdMapping:       lendIDToBorrowIdMapping,
 		AssetStats:                    assetStats,
 		LendMapping:                   lendMapping,
 		UserDepositStats:              userdepositStats,

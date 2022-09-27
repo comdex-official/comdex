@@ -647,20 +647,18 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 		return assettypes.ErrorPairDoesNotExist
 	}
 
-	interest := sdk.ZeroDec()
-	var err error
 	extPairVaultBTime := ExtPairVaultData.BlockTime.Unix()
 	if ExtPairVaultData.StabilityFee.IsZero() || ExtPairVaultData.IsStableMintVault {
 		return nil
 	}
 	if blockHeight == 0 {
 		// take bh from ext pair
-		_, err = k.CalculationOfRewards(ctx, totalDebt, ExtPairVaultData.StabilityFee, extPairVaultBTime)
+		_, err := k.CalculationOfRewards(ctx, totalDebt, ExtPairVaultData.StabilityFee, extPairVaultBTime)
 		if err != nil {
 			return err
 		}
 	} else {
-		interest, err = k.CalculationOfRewards(ctx, totalDebt, ExtPairVaultData.StabilityFee, vaultBlockTime)
+		interest, err := k.CalculationOfRewards(ctx, totalDebt, ExtPairVaultData.StabilityFee, vaultBlockTime)
 		if err != nil {
 			return err
 		}
@@ -678,8 +676,7 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 		}
 
 		if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
-			newInterest := sdk.ZeroInt()
-			newInterest = vaultInterestTracker.InterestAccumulated.TruncateInt()
+			newInterest := vaultInterestTracker.InterestAccumulated.TruncateInt()
 			newInterestDec := sdk.NewDec(newInterest.Int64())
 			vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
 

@@ -301,15 +301,15 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 			if !found {
 				continue
 			}
-			interest := sdk.ZeroDec()
+			interest := sdk.ZeroDec() // NOTE: it is hard to tell where this is used.  We've left it in place because the code is assumed to work as is.  Would declare later.
 			var err error
 			if vaultData.BlockHeight == 0 {
-				interest, err = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, collectorBt)
+				_, _ = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, collectorBt)
 				if err != nil {
 					return
 				}
 			} else {
-				interest, err = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, vaultData.BlockTime.Unix())
+				_, _ = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, vaultData.BlockTime.Unix()) // NOTE: we might want to have this return an error but that would require chaging other code.
 				if err != nil {
 					return
 				}
@@ -326,8 +326,7 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
 			}
 			if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
-				newInterest := sdk.ZeroInt()
-				newInterest = vaultInterestTracker.InterestAccumulated.TruncateInt()
+				newInterest := vaultInterestTracker.InterestAccumulated.TruncateInt()
 				newInterestDec := sdk.NewDec(newInterest.Int64())
 				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
 

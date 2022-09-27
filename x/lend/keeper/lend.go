@@ -476,7 +476,7 @@ func (k Keeper) GetLendIDToBorrowIDMapping(ctx sdk.Context, id uint64) (lendIDTo
 	return lendIDToBorrowIDMapping, true
 }
 
-func (k Keeper) GetAllLendIDToBorrowIDMapping(ctx sdk.Context) (lendIDToBorrowIdMapping []types.LendIdToBorrowIdMapping) {
+func (k Keeper) GetAllLendIDToBorrowIDMapping(ctx sdk.Context) (lendIDToBorrowIDMapping []types.LendIdToBorrowIdMapping) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.LendIDToBorrowIDMappingKeyPrefix)
@@ -492,9 +492,9 @@ func (k Keeper) GetAllLendIDToBorrowIDMapping(ctx sdk.Context) (lendIDToBorrowId
 	for ; iter.Valid(); iter.Next() {
 		var asset types.LendIdToBorrowIdMapping
 		k.cdc.MustUnmarshal(iter.Value(), &asset)
-		lendIDToBorrowIdMapping = append(lendIDToBorrowIdMapping, asset)
+		lendIDToBorrowIDMapping = append(lendIDToBorrowIDMapping, asset)
 	}
-	return lendIDToBorrowIdMapping
+	return lendIDToBorrowIDMapping
 }
 
 func (k Keeper) DeleteLendIDToBorrowIDMapping(ctx sdk.Context, lendingID uint64) {

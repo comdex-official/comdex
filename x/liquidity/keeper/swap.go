@@ -447,7 +447,6 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 	pair.CurrentBatchId++
 	k.SetPair(ctx, pair)
 
-	//nolint
 	// TODO: emit an event?
 	return nil
 }
@@ -488,7 +487,6 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 			} else {
 				o.SetStatus(types.OrderStatusPartiallyMatched)
 				k.SetOrder(ctx, pair.AppId, o)
-				//nolint
 				// TODO: emit an event?
 			}
 			bulkOp.QueueSendCoins(pair.GetEscrowAddress(), order.Orderer, sdk.NewCoins(order.ReceivedDemandCoin))
@@ -559,12 +557,11 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 			sdk.NewAttribute(types.AttributeKeyOrderer, order.Orderer),
 			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(order.PairId, 10)),
 			sdk.NewAttribute(types.AttributeKeyOrderDirection, order.Direction.String()),
-			//nolint
 			// TODO: include these attributes?
-			//sdk.NewAttribute(types.AttributeKeyOfferCoin, order.OfferCoin.String()),
-			//sdk.NewAttribute(types.AttributeKeyAmount, order.Amount.String()),
-			//sdk.NewAttribute(types.AttributeKeyOpenAmount, order.OpenAmount.String()),
-			//sdk.NewAttribute(types.AttributeKeyPrice, order.Price.String()),
+			// sdk.NewAttribute(types.AttributeKeyOfferCoin, order.OfferCoin.String()),
+			// sdk.NewAttribute(types.AttributeKeyAmount, order.Amount.String()),
+			// sdk.NewAttribute(types.AttributeKeyOpenAmount, order.OpenAmount.String()),
+			// sdk.NewAttribute(types.AttributeKeyPrice, order.Price.String()),
 			sdk.NewAttribute(types.AttributeKeyRemainingOfferCoin, order.RemainingOfferCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyReceivedCoin, order.ReceivedCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyStatus, order.Status.String()),

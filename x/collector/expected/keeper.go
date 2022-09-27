@@ -41,7 +41,7 @@ type LockerKeeper interface {
 }
 
 type RewardsKeeper interface {
-	GetReward(ctx sdk.Context, appId, assetID uint64) (rewards rewardstypes.InternalRewards, found bool)
+	GetReward(ctx sdk.Context, appID, assetID uint64) (rewards rewardstypes.InternalRewards, found bool)
 	CalculationOfRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec, bTime int64) (sdk.Dec, error)
 	SetLockerRewardTracker(ctx sdk.Context, rewards rewardstypes.LockerRewardsTracker)
 	GetLockerRewardTracker(ctx sdk.Context, id, appID uint64) (rewards rewardstypes.LockerRewardsTracker, found bool)
