@@ -407,7 +407,7 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 		return err
 	}
 
-	if skip { //nolint TODO: update this when there are more than one pools
+	if skip {
 		return nil
 	}
 
