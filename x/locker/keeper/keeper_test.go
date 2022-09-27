@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	collectorKeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	"time"
 
 	"testing"
@@ -25,6 +26,7 @@ type KeeperTestSuite struct {
 	lockerKeeper lockerKeeper.Keeper
 	querier      lockerKeeper.QueryServer
 	msgServer    lockerTypes.MsgServer
+	collector    collectorKeeper.Keeper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -38,6 +40,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.assetKeeper = s.app.AssetKeeper
 	s.querier = lockerKeeper.QueryServer{Keeper: s.lockerKeeper}
 	s.msgServer = lockerKeeper.NewMsgServer(s.lockerKeeper)
+	s.collector = s.app.CollectorKeeper
 }
 
 //

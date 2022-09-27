@@ -408,18 +408,6 @@ func (q QueryServer) QueryLockerTotalDepositedByApp(c context.Context, req *type
 	}, nil
 }
 
-func (q QueryServer) QueryState(c context.Context, req *types.QueryStateRequest) (*types.QueryStateResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-	}
-
-	qs, _ := QueryState(req.Address, req.Denom, req.Height, req.Target)
-
-	return &types.QueryStateResponse{
-		Amount: *qs,
-	}, nil
-}
-
 func (q QueryServer) QueryLockerTotalRewardsByAssetAppWise(c context.Context, request *types.QueryLockerTotalRewardsByAssetAppWiseRequest) (*types.QueryLockerTotalRewardsByAssetAppWiseResponse, error) {
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")

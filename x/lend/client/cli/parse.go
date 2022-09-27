@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/pflag"
-	"io/ioutil"
+	"os"
 )
 
 type XAddNewLendPairsInputs addNewLendPairsInputs
@@ -95,7 +95,7 @@ func parseAddNewLendPairsFlags(fs *pflag.FlagSet) (*addNewLendPairsInputs, error
 		return nil, fmt.Errorf("must pass in a add new lend pairs json using the --%s flag", FlagNewLendPairFile)
 	}
 
-	contents, err := ioutil.ReadFile(addLendPairsParamsFile) //nolint:gosec
+	contents, err := os.ReadFile(addLendPairsParamsFile)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ func parseAddPoolFlags(fs *pflag.FlagSet) (*addLendPoolInputs, error) {
 		return nil, fmt.Errorf("must pass in a add new pool json using the --%s flag", FlagAddLendPoolFile)
 	}
 
-	contents, err := ioutil.ReadFile(addPoolParamsParamsFile) //nolint:gosec
+	contents, err := os.ReadFile(addPoolParamsParamsFile)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +139,7 @@ func parseAssetRateStatsFlags(fs *pflag.FlagSet) (*addAssetRatesStatsInputs, err
 		return nil, fmt.Errorf("must pass in a add asset rates stats json using the --%s flag", FlagAddAssetRatesStatsFile)
 	}
 
-	contents, err := ioutil.ReadFile(addAssetRatesStatsFile) //nolint:gosec
+	contents, err := os.ReadFile(addAssetRatesStatsFile)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +161,7 @@ func parseAuctionPramsFlags(fs *pflag.FlagSet) (*addNewAuctionParamsInputs, erro
 		return nil, fmt.Errorf("must pass in a add auction params json using the --%s flag", FlagSetAuctionParamsFile)
 	}
 
-	contents, err := ioutil.ReadFile(addNewAuctionParamsFile) //nolint:gosec
+	contents, err := os.ReadFile(addNewAuctionParamsFile)
 	if err != nil {
 		return nil, err
 	}

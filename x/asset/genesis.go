@@ -27,7 +27,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	}
 
 	for _, item := range state.Pairs {
-		if item.Id > assetID {
+		if item.Id > pairID {
 			pairID = item.Id
 		}
 
@@ -44,7 +44,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	}
 
 	for _, item := range state.ExtendedPairVault {
-		if item.Id > appID {
+		if item.Id > extendedPairID {
 			extendedPairID = item.Id
 		}
 

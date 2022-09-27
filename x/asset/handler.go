@@ -33,6 +33,8 @@ func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return handleUpdateAssetProposal(ctx, k, c)
 		case *types.AddPairsProposal:
 			return handleAddPairsProposal(ctx, k, c)
+		case *types.UpdatePairProposal:
+			return handleUpdatePairProposal(ctx, k, c)
 		case *types.UpdateGovTimeInAppProposal:
 			return handleUpdateGovTimeInAppProposal(ctx, k, c)
 		case *types.AddAppProposal:
@@ -56,6 +58,10 @@ func handleUpdateAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.Update
 
 func handleAddPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPairsProposal) error {
 	return k.HandleProposalAddPairs(ctx, p)
+}
+
+func handleUpdatePairProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdatePairProposal) error {
+	return k.HandleProposalUpdatePair(ctx, p)
 }
 
 func handleUpdateGovTimeInAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateGovTimeInAppProposal) error {

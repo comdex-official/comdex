@@ -39,7 +39,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 			if !esmStatus.SnapshotStatus && esmStatus.Status {
 				err := k.SnapshotOfPrices(ctx, esmStatus)
 				if err != nil {
-					return err
+					continue
 				}
 			}
 		}

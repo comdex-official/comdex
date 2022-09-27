@@ -14,7 +14,7 @@ const (
 	DrawVaultGas           = sdk.Gas(37559)
 	RepayVaultGas          = sdk.Gas(37559)
 	CloseVaultGas          = sdk.Gas(37559)
-	DepositDrawVaultGas    = sdk.Gas(36329)
+	DepositDrawVaultGas    = sdk.Gas(26329)
 	CreateStableVaultGas   = sdk.Gas(36329)
 	DepositStableVaultGas  = sdk.Gas(23554)
 	WithdrawStableVaultGas = sdk.Gas(26473)

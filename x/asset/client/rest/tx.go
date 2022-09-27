@@ -39,6 +39,13 @@ func UpdateNewAssetProposalRESTHandler(clientCtx client.Context) govrest.Proposa
 	}
 }
 
+func UpdateNewPairProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "update-new-pair",
+		Handler:  UpdateNewPairsRESTHandler(clientCtx),
+	}
+}
+
 func UpdateNewGovTimeInAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "update-gov-time-app",

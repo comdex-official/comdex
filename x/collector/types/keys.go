@@ -42,7 +42,7 @@ func AppidToAssetCollectorMappingKey(appID, assetID uint64) []byte {
 }
 
 func AppIDToAuctionMappingKey(appID, assetID uint64) []byte {
-	return append(append(AppIDToAuctionMappingPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(appID)...)
+	return append(append(AppIDToAuctionMappingPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
 }
 
 func NetFeeCollectedDataKey(appID, assetID uint64) []byte {

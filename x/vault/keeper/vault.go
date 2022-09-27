@@ -153,7 +153,6 @@ func (k Keeper) SetAppExtendedPairVaultMappingData(ctx sdk.Context, appExtendedP
 	)
 
 	store.Set(key, value)
-
 }
 
 //Get AppExtendedPairVaultMapping to check the current status of the vault by extended pair vault id
@@ -253,7 +252,6 @@ func (k Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context
 	appExtendedPairVaultData.VaultIds = append(appExtendedPairVaultData.VaultIds, vaultData.Id)
 
 	k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
-
 }
 
 func (k Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(ctx sdk.Context, vaultData types.StableMintVault) {
@@ -265,7 +263,6 @@ func (k Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(
 	appExtendedPairVaultData.VaultIds = append(appExtendedPairVaultData.VaultIds, vaultData.Id)
 
 	k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
-
 }
 
 // CalculateCollaterlizationRatio Calculate Collaterlization Ratio .
@@ -394,7 +391,6 @@ func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMa
 		}
 
 		k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
-
 	}
 }
 
@@ -412,7 +408,6 @@ func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMapping
 			appExtendedPairVaultData.TokenMintedAmount = updatedVal
 		}
 		k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
-
 	}
 }
 
@@ -457,7 +452,6 @@ func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, ex
 		if dataIndex < lengthOfVaults && appExtendedPairVaultData.VaultIds[dataIndex] == userVaultID {
 			appExtendedPairVaultData.VaultIds = append(appExtendedPairVaultData.VaultIds[:dataIndex], appExtendedPairVaultData.VaultIds[dataIndex+1:]...)
 			k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
-
 		}
 	}
 }

@@ -38,7 +38,6 @@ func GetQueryCmd() *cobra.Command {
 		queryLockerTotalDepositedByApp(),
 		queryOwnerTxDetailsLockerOfAppByOwnerByAsset(),
 		queryLockerByAppByOwner(),
-		queryState(),
 		queryLockerTotalRewardsByAssetAppWise(),
 	)
 

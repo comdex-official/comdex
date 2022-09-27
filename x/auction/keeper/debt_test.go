@@ -7,6 +7,7 @@ import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	auctionTypes "github.com/comdex-official/comdex/x/auction/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	tokenmintKeeper1 "github.com/comdex-official/comdex/x/tokenmint/keeper"
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -166,7 +167,6 @@ func (s *KeeperTestSuite) TestDebtActivatorBetweenThreshholdAndLotsize() {
 	s.AddAuctionParams()
 	s.WasmSetCollectorLookupTableAndAuctionControlForDebt()
 	s.WasmUpdateCollectorLookupTable(30000, 20500, 800, 501)
-	s.LiquidateVaults1()
 
 	k, ctx := &s.keeper, &s.ctx
 
@@ -189,7 +189,6 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
 	s.WasmSetCollectorLookupTableAndAuctionControlForDebt()
-	s.LiquidateVaults1()
 
 	k, collectorKeeper, ctx := &s.keeper, &s.collectorKeeper, &s.ctx
 
@@ -199,14 +198,23 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	auctionMappingId := uint64(2)
 	auctionId := uint64(1)
 
+	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1, 2)
+	s.Require().True(found)
+
+	auctionMapData, auctionMappingFound := k.GetAuctionMappingForApp(*ctx, appId, collectorLookUp.CollectorAssetId)
+	s.Require().True(auctionMappingFound)
+	klswData := esmtypes.KillSwitchParams{
+		1,
+		false,
+	}
+	err1 := k.DebtActivator(*ctx, auctionMapData, klswData, false)
+	s.Require().NoError(err1)
+
+	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1), 2)
+	s.Require().True(found)
+
 	debtAuction, err := k.GetDebtAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
-
-	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1, 3)
-	s.Require().True(found)
-
-	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1), 3)
-	s.Require().True(found)
 
 	s.Require().Equal(debtAuction.AppId, appId)
 	s.Require().Equal(debtAuction.AuctionId, auctionId)
