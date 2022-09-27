@@ -410,7 +410,7 @@ func (k Keeper) CloseDutchLendAuction(
 	borrowMetaData := lockedVault.GetBorrowMetaData()
 	lendPos, _ := k.GetLend(ctx, borrowMetaData.LendingId)
 	lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
-	lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
+	lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
 	k.SetLend(ctx, lendPos)
 
 	lockedVault.AmountOut = lockedVault.AmountOut.Sub(dutchAuction.InflowTokenTargetAmount.Amount)

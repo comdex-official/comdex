@@ -585,14 +585,15 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 		return txf, nil, err
 	}
 	var pool types.Pool
-	var assetData []types.AssetDataPoolMapping
+	var assetData []*types.AssetDataPoolMapping
 
 	for i := range assetID {
 		bridged := ParseBoolFromString(isBridgedAsset[i])
-		assetData = append(assetData, types.AssetDataPoolMapping{
+		assetDataNew := types.AssetDataPoolMapping{
 			AssetID:   assetID[i],
 			IsBridged: bridged,
-		})
+		}
+		assetData = append(assetData, &assetDataNew)
 	}
 	pool = types.Pool{
 		ModuleName:           moduleName,
@@ -765,7 +766,7 @@ func NewCreateAssetRatesStats(clientCtx client.Context, txf tx.Factory, fs *flag
 
 	liquidationPenalty := assetRatesStatsInput.LiquidationPenalty
 
-	liquidationBonus := assetRatesStatsInput.LiquidationPenalty
+	liquidationBonus := assetRatesStatsInput.LiquidationBonus
 
 	reserveFactor := assetRatesStatsInput.ReserveFactor
 

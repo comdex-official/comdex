@@ -67,6 +67,11 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					continue
 				}
 
+				lockedVaultID := k.GetLockedVaultID(ctx)
+				err = k.UpdateLockedBorrows(ctx, lendPos.AppID, lockedVaultID)
+				if err != nil {
+					return nil
+				}
 			}
 
 		} else {
@@ -90,6 +95,11 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					err = k.UpdateBorrowIdsMapping(ctx, borrowIDs[l], false)
 					if err != nil {
 						continue
+					}
+					lockedVaultID := k.GetLockedVaultID(ctx)
+					err = k.UpdateLockedBorrows(ctx, lendPos.AppID, lockedVaultID)
+					if err != nil {
+						return nil
 					}
 
 				}
@@ -116,13 +126,13 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 						continue
 					}
 
+					lockedVaultID := k.GetLockedVaultID(ctx)
+					err = k.UpdateLockedBorrows(ctx, lendPos.AppID, lockedVaultID)
+					if err != nil {
+						return nil
+					}
 				}
 			}
-		}
-		lockedVaultID := k.GetLockedVaultID(ctx)
-		err := k.UpdateLockedBorrows(ctx, lendPos.AppID, lockedVaultID)
-		if err != nil {
-			return nil
 		}
 	}
 	liquidationOffsetHolder.CurrentOffset = uint64(end)
@@ -150,7 +160,7 @@ func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset
 		Owner:                        lendPos.Owner,
 		AmountIn:                     borrow.AmountIn.Amount,
 		AmountOut:                    borrow.AmountOut.Amount,
-		UpdatedAmountOut:             borrow.AmountOut.Amount.Add(borrow.Interest_Accumulated),
+		UpdatedAmountOut:             borrow.UpdatedAmountOut,
 		Initiator:                    types.ModuleName,
 		IsAuctionComplete:            false,
 		IsAuctionInProgress:          false,
@@ -159,7 +169,7 @@ func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset
 		CollateralToBeAuctioned:      sdk.ZeroDec(),
 		LiquidationTimestamp:         ctx.BlockTime(),
 		SellOffHistory:               nil,
-		InterestAccumulated:          borrow.Interest_Accumulated,
+		InterestAccumulated:          sdk.ZeroInt(),
 		Kind:                         kind,
 	}
 	k.SetLockedVault(ctx, value)
@@ -248,7 +258,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
 				cAsset, _ := k.GetAsset(ctx, assetRatesStats.CAssetID)
 				updatedLockedVault.AmountIn = updatedLockedVault.AmountIn.Sub(sdk.NewInt(liquidationDeductionAmount.TruncateInt64()))
 				lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(sdk.NewInt(liquidationDeductionAmount.TruncateInt64()))
-				lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(sdk.NewInt(liquidationDeductionAmount.TruncateInt64()))
+				lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(sdk.NewInt(liquidationDeductionAmount.TruncateInt64()))
 				err = k.BurnCoin(ctx, pool.ModuleName, sdk.NewCoin(cAsset.Denom, sdk.NewInt(penaltyToReserveAmount.TruncateInt64())))
 				if err != nil {
 					return err
