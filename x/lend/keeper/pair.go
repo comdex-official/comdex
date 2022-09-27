@@ -12,6 +12,9 @@ func (k Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_P
 		if found {
 			return types.ErrorDuplicateLendPair
 		}
+		if msg.AssetIn == msg.AssetOut {
+			return types.ErrorAssetsCanNotBeSame
+		}
 
 		var (
 			id   = k.GetLendPairID(ctx)
@@ -28,6 +31,34 @@ func (k Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_P
 		k.SetLendPairID(ctx, pair.Id)
 		k.SetLendPair(ctx, pair)
 	}
+	return nil
+}
+
+func (k Keeper) UpdateLendPairsRecords(ctx sdk.Context, msg types.Extended_Pair) error {
+
+	pair, found := k.GetLendPair(ctx, msg.Id)
+	if !found {
+		return types.ErrorPairNotFound
+	}
+
+	_, found = k.GetAsset(ctx, msg.AssetIn)
+	if !found {
+		return types.ErrorAssetDoesNotExist
+	}
+	_, found = k.GetAsset(ctx, msg.AssetOut)
+	if !found {
+		return types.ErrorAssetDoesNotExist
+	}
+
+	if msg.AssetIn == msg.AssetOut {
+		return types.ErrorAssetsCanNotBeSame
+	}
+
+	pair.AssetIn = msg.AssetIn
+	pair.AssetOut = msg.AssetOut
+	pair.MinUsdValueLeft = msg.MinUsdValueLeft
+
+	k.SetLendPair(ctx, pair)
 	return nil
 }
 

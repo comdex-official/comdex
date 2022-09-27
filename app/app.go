@@ -197,6 +197,7 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 		bandoraclemoduleclient.AddFetchPriceHandler,
 		lendclient.AddLendPairsHandler,
 		lendclient.AddPoolHandler,
+		lendclient.UpdateLendPairsHandler,
 		lendclient.AddAssetToPairHandler,
 		lendclient.AddAssetRatesStatsHandler,
 		lendclient.AddAuctionParamsHandler,
