@@ -397,7 +397,6 @@ func New(
 		app.tkeys[paramstypes.TStoreKey],
 	)
 
-	
 	app.ParamsKeeper.Subspace(authtypes.ModuleName)
 	app.ParamsKeeper.Subspace(banktypes.ModuleName)
 	app.ParamsKeeper.Subspace(stakingtypes.ModuleName)

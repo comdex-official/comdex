@@ -33,13 +33,13 @@ const (
 	TypeMsgCancelOrder     = "cancel_order"
 	TypeMsgCancelAllOrders = "cancel_all_orders"
 	TypeMsgFarm            = "farm"
-	TypeMsgUnfarm          = "unfarm" 
+	TypeMsgUnfarm          = "unfarm"
 )
 
 // NewMsgCreatePair returns a new MsgCreatePair.
 func NewMsgCreatePair(
 	appID uint64,
-	
+
 	creator sdk.AccAddress,
 	baseCoinDenom, quoteCoinDenom string,
 ) *MsgCreatePair {
@@ -91,7 +91,7 @@ func (msg MsgCreatePair) GetCreator() sdk.AccAddress {
 // NewMsgCreatePool creates a new MsgCreatePool.
 func NewMsgCreatePool(
 	appID uint64,
-	
+
 	creator sdk.AccAddress,
 	pairID uint64,
 	depositCoins sdk.Coins,
@@ -152,7 +152,7 @@ func (msg MsgCreatePool) GetCreator() sdk.AccAddress {
 // NewMsgDeposit creates a new MsgDeposit.
 func NewMsgDeposit(
 	appID uint64,
-	
+
 	depositor sdk.AccAddress,
 	poolID uint64,
 	depositCoins sdk.Coins,
@@ -208,7 +208,7 @@ func (msg MsgDeposit) GetDepositor() sdk.AccAddress {
 // NewMsgWithdraw creates a new MsgWithdraw.
 func NewMsgWithdraw(
 	appID uint64,
-	
+
 	withdrawer sdk.AccAddress,
 	poolID uint64,
 	poolCoin sdk.Coin,
@@ -264,7 +264,7 @@ func (msg MsgWithdraw) GetWithdrawer() sdk.AccAddress {
 // NewMsgLimitOrder creates a new MsgLimitOrder.
 func NewMsgLimitOrder(
 	appID uint64,
-	
+
 	orderer sdk.AccAddress,
 	pairID uint64,
 	dir OrderDirection,
@@ -364,7 +364,7 @@ func (msg MsgLimitOrder) GetOrderer() sdk.AccAddress {
 // NewMsgMarketOrder creates a new MsgMarketOrder.
 func NewMsgMarketOrder(
 	appID uint64,
-	
+
 	orderer sdk.AccAddress,
 	pairID uint64,
 	dir OrderDirection,
@@ -449,7 +449,7 @@ func (msg MsgMarketOrder) GetOrderer() sdk.AccAddress {
 // NewMsgCancelOrder creates a new MsgCancelOrder.
 func NewMsgCancelOrder(
 	appID uint64,
-	
+
 	orderer sdk.AccAddress,
 	pairID uint64,
 	orderID uint64,
@@ -502,7 +502,7 @@ func (msg MsgCancelOrder) GetOrderer() sdk.AccAddress {
 // NewMsgCancelAllOrders creates a new MsgCancelAllOrders.
 func NewMsgCancelAllOrders(
 	appID uint64,
-	
+
 	orderer sdk.AccAddress,
 	pairIDs []uint64,
 ) *MsgCancelAllOrders {
@@ -558,7 +558,7 @@ func (msg MsgCancelAllOrders) GetOrderer() sdk.AccAddress {
 func NewMsgFarm(
 	appID uint64,
 	poolID uint64,
-	
+
 	farmer sdk.AccAddress,
 	poolCoin sdk.Coin,
 ) *MsgFarm {
@@ -617,7 +617,7 @@ func (msg MsgFarm) GetFarmer() sdk.AccAddress {
 func NewMsgUnfarm(
 	appID uint64,
 	poolID uint64,
-	
+
 	farmer sdk.AccAddress,
 	poolCoin sdk.Coin,
 ) *MsgUnfarm {

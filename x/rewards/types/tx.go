@@ -16,7 +16,7 @@ var _ sdk.Msg = &MsgCreateGauge{}
 // NewMsgCreateGauge creates a message to add a new gauge.
 func NewMsgCreateGauge(
 	appID uint64,
-	
+
 	from sdk.AccAddress,
 	startTime time.Time,
 	gaugeTypeID uint64,

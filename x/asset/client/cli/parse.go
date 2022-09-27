@@ -60,7 +60,7 @@ func parseAssetMappingFlags(fs *pflag.FlagSet) (*createAddAssetMappingInputs, er
 		return nil, fmt.Errorf("must pass in add asset mapping json using the --%s flag", FlagAddAssetMappingFile)
 	}
 
-	contents, err := ioutil.ReadFile(addAssetMappingFile) 
+	contents, err := ioutil.ReadFile(addAssetMappingFile)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func parseAssetsMappingFlags(fs *pflag.FlagSet) (*createAddAssetsMappingInputs, 
 		return nil, fmt.Errorf("must pass in add asset mapping json using the --%s flag", FlagAddAssetMappingFile)
 	}
 
-	contents, err := ioutil.ReadFile(addAssetsMappingFile) 
+	contents, err := ioutil.ReadFile(addAssetsMappingFile)
 	if err != nil {
 		return nil, err
 	}
