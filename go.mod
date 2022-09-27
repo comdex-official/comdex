@@ -23,9 +23,6 @@ require (
 	google.golang.org/genproto v0.0.0-20220725144611-272f38e5d71b
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.1
-)
-
-require (
 	github.com/golangci/golangci-lint v1.48.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/pflag v1.0.5
