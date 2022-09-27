@@ -4,7 +4,6 @@ run:
   tests: false
   allow-parallel-runners: true
 
-
 linters:
   disable-all: true
   enable:
@@ -13,7 +12,6 @@ linters:
     - depguard
     - errcheck
     - forcetypeassert
-    - godox
     - gofumpt
     - gomodguard
     - goprintffuncname

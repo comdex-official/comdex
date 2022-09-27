@@ -176,7 +176,6 @@ func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
 			return 0, false
 		}
 		return rates, found
-	} else {
-		return 1000000, true
 	}
+	return 1000000, true
 }
