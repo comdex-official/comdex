@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"encoding/binary"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
@@ -234,4 +235,15 @@ func (s *KeeperTestSuite) CreateNewApp(appName, shortName string) uint64 {
 	}
 	s.Require().NotZero(appID)
 	return appID
+}
+
+func (s *KeeperTestSuite) CreteNewBorrow(liqBorrow liquidationtypes.LockedVault) {
+	s.app.LendKeeper.CreteNewBorrow(s.ctx, liqBorrow)
+}
+
+func (s *KeeperTestSuite) UpdateLendIDToBorrowIDMapping(lendID, borrowID uint64, insert bool) {
+	err := s.app.LendKeeper.UpdateLendIDToBorrowIDMapping(s.ctx, lendID, borrowID, insert)
+	if err != nil {
+		return
+	}
 }

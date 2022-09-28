@@ -280,58 +280,6 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 		lendPos.AmountIn.Amount = lendPos.AvailableToBorrow
 		k.SetLend(ctx, lendPos)
 	}
-	//if withdrawal.Amount.LT(lendPos.UpdatedAmountIn) {
-	//	if withdrawal.Amount.GTE(lendPos.AmountIn.Amount) {
-	//		if err = k.SendCoinFromAccountToModule(ctx, lenderAddr, pool.ModuleName, cToken); err != nil {
-	//			return err
-	//		}
-	//
-	//		//burn c/Token
-	//		err = k.bank.BurnCoins(ctx, pool.ModuleName, cTokens)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		if err = k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, lenderAddr, tokens); err != nil {
-	//			return err
-	//		}
-	//		subtractionFactor := lendPos.UpdatedAmountIn.Sub(withdrawal.Amount)
-	//		subtractionAmount := lendPos.AmountIn.Amount.Sub(subtractionFactor)
-	//		k.UpdateLendStats(ctx, lendPos.AssetID, lendPos.PoolID, subtractionAmount, false)
-	//		lendPos.Reward_Accumulated = sdk.ZeroInt()
-	//		lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(subtractionAmount)
-	//		lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(withdrawal.Amount)
-	//		lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(withdrawal.Amount)
-	//		k.SetLend(ctx, lendPos)
-	//
-	//	} else {
-	//		if err = k.SendCoinFromAccountToModule(ctx, lenderAddr, pool.ModuleName, cToken); err != nil {
-	//			return err
-	//		}
-	//		//burn c/Token
-	//		err = k.bank.BurnCoins(ctx, pool.ModuleName, cTokens)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		if err = k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, lenderAddr, tokens); err != nil {
-	//			return err
-	//		}
-	//		k.UpdateLendStats(ctx, lendPos.AssetID, lendPos.PoolID, withdrawal.Amount, false)
-	//		if withdrawal.Amount.GTE(lendPos.Reward_Accumulated) {
-	//			lendPos.Reward_Accumulated = sdk.ZeroInt()
-	//		} else {
-	//			lendPos.Reward_Accumulated = lendPos.Reward_Accumulated.Sub(withdrawal.Amount)
-	//		}
-	//		lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(withdrawal.Amount)
-	//		lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(withdrawal.Amount)
-	//		lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(withdrawal.Amount)
-	//		k.SetLend(ctx, lendPos)
-	//
-	//	}
-	//} else {
-	//	return types.ErrWithdrawAmountLimitExceeds
-	//}
 	return nil
 
 }
@@ -1507,7 +1455,7 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 		CPoolName:           AssetOutPool.CPoolName,
 	}
 	// Adjusting bridged asset qty after auctions
-	if kind.BridgedAssetAmount.Amount != sdk.ZeroInt() {
+	if !kind.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
 		priceAssetIn, _ := k.GetPriceForAsset(ctx, pair.AssetIn)
 		adjustedBridgedAssetAmt := borrowPos.AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv)
 		amtIn := adjustedBridgedAssetAmt.TruncateInt().Mul(sdk.NewIntFromUint64(priceAssetIn))
@@ -1515,45 +1463,43 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 		priceSecondBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.SecondBridgedAssetID)
 		firstBridgedAsset, _ := k.GetAsset(ctx, AssetInPool.FirstBridgedAssetID)
 
-		if kind.BridgedAssetAmount.Amount != sdk.ZeroInt() {
-			if kind.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
-				firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset))
-				diff := borrowPos.BridgedAssetAmount.Amount.Sub(firstBridgedAssetQty)
-				if diff.GT(sdk.ZeroInt()) {
-					err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
+		if kind.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
+			firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset))
+			diff := borrowPos.BridgedAssetAmount.Amount.Sub(firstBridgedAssetQty)
+			if diff.GT(sdk.ZeroInt()) {
+				err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
+				if err != nil {
+					return
+				}
+				borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
+			} else {
+				newDiff := firstBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
+				if newDiff.GT(sdk.ZeroInt()) {
+					err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
 					if err != nil {
 						return
 					}
 					borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
-				} else {
-					newDiff := firstBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
-					if newDiff.GT(sdk.ZeroInt()) {
-						err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
-						if err != nil {
-							return
-						}
-						borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
-					}
 				}
+			}
 
+		} else {
+			secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
+			diff := borrowPos.BridgedAssetAmount.Amount.Sub(secondBridgedAssetQty)
+			if diff.GT(sdk.ZeroInt()) {
+				err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
+				if err != nil {
+					return
+				}
+				borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
 			} else {
-				secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
-				diff := borrowPos.BridgedAssetAmount.Amount.Sub(secondBridgedAssetQty)
-				if diff.GT(sdk.ZeroInt()) {
-					err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
+				newDiff := secondBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
+				if newDiff.GT(sdk.ZeroInt()) {
+					err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
 					if err != nil {
 						return
 					}
 					borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
-				} else {
-					newDiff := secondBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
-					if newDiff.GT(sdk.ZeroInt()) {
-						err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
-						if err != nil {
-							return
-						}
-						borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
-					}
 				}
 			}
 		}
