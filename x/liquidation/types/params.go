@@ -11,9 +11,7 @@ var (
 	DefaultLiquidationBatchSize = uint64(200)
 )
 
-var (
-	KeyLiquidationBatchSize = []byte("LiquidationBatchSize")
-)
+var KeyLiquidationBatchSize = []byte("LiquidationBatchSize")
 
 var _ paramtypes.ParamSet = (*Params)(nil)
 

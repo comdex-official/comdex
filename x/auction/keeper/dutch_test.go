@@ -15,7 +15,6 @@ import (
 )
 
 func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
-
 	assetKeeper, liquidationKeeper, ctx := &s.assetKeeper, &s.liquidationKeeper, &s.ctx
 
 	for _, tc := range []struct {
@@ -25,7 +24,8 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 		symbol1           string
 		symbol2           string
 	}{
-		{"Add Pair , Extended Pair Vault : cmdx cmst",
+		{
+			"Add Pair , Extended Pair Vault : cmdx cmst",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,
@@ -83,6 +83,7 @@ func (s *KeeperTestSuite) SetInitialOraclePriceForSymbols(asset1 string, asset2 
 	s.SetOraclePrice(asset1, 2000000)
 	s.SetOraclePrice(asset2, 1000000)
 }
+
 func (s *KeeperTestSuite) ChangeOraclePrice(asset string) {
 	s.SetOraclePrice(asset, 1000000)
 }
@@ -97,7 +98,8 @@ func (s *KeeperTestSuite) CreateVault() {
 		name string
 		msg  vaultTypes.MsgCreateRequest
 	}{
-		{"Create Vault : AppID 1 extended pair 1 user address 1",
+		{
+			"Create Vault : AppID 1 extended pair 1 user address 1",
 			vaultTypes.MsgCreateRequest{
 				From:                userAddress1,
 				AppId:               1,
@@ -106,7 +108,8 @@ func (s *KeeperTestSuite) CreateVault() {
 				AmountOut:           sdk.NewIntFromUint64(1000000),
 			},
 		},
-		{"Create Vault : AppID 1 extended pair 1 user address 2",
+		{
+			"Create Vault : AppID 1 extended pair 1 user address 2",
 			vaultTypes.MsgCreateRequest{
 				From:                userAddress2,
 				AppId:               1,
@@ -199,23 +202,32 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		name string
 		msg  assetTypes.Asset
 	}{
-		{"Add Asset 1",
-			assetTypes.Asset{Name: "CMDX",
+		{
+			"Add Asset 1",
+			assetTypes.Asset{
+				Name:      "CMDX",
 				Denom:     "ucmdx",
 				Decimals:  1000000,
-				IsOnChain: true},
+				IsOnChain: true,
+			},
 		},
-		{"Add Asset 2",
-			assetTypes.Asset{Name: "CMST",
+		{
+			"Add Asset 2",
+			assetTypes.Asset{
+				Name:      "CMST",
 				Denom:     "ucmst",
 				Decimals:  1000000,
-				IsOnChain: true},
+				IsOnChain: true,
+			},
 		},
-		{"Add Asset 3",
-			assetTypes.Asset{Name: "HARBOR",
+		{
+			"Add Asset 3",
+			assetTypes.Asset{
+				Name:      "HARBOR",
 				Denom:     "uharbor",
 				Decimals:  1000000,
-				IsOnChain: true},
+				IsOnChain: true,
+			},
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -234,7 +246,6 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			s.fundAddr(addr2, sdk.NewCoin(tc.msg.Denom, sdk.NewInt(1000000)))
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) LiquidateVaults1() {
@@ -429,7 +440,6 @@ func (s *KeeperTestSuite) TestDutchBid() {
 		},
 	} {
 		s.Run(tc.name, func() {
-
 			s.advanceseconds(tc.advanceSeconds)
 			auction.BeginBlocker(*ctx, s.keeper)
 			/*s.Require().NoError(err)
@@ -442,7 +452,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 			s.Require().NoError(err)
 
-			//dont expect error
+			// dont expect error
 			_, err = server.MsgPlaceDutchBid(sdk.WrapSDKContext(*ctx), &tc.msg)
 			if tc.isErrorExpected {
 				s.advanceseconds(301 - tc.advanceSeconds)
@@ -482,7 +492,6 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestCloseDutchAuction() {
@@ -525,7 +534,6 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 	s.Require().Equal(afterAuction.InflowTokenTargetAmount, afterAuction.InflowTokenCurrentAmount)
 	s.Require().Equal(beforeCmdxBalance.Add(userInflowCoin), afterCmdxBalance)
 	s.Require().Equal(beforeCmstBalance.Sub(userOutflowCoin), afterCmstBalance)
-
 }
 
 func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
@@ -536,7 +544,7 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	s.AddAuctionParams()
 	s.TestDutchBid()
 	k, liquidationKeeper, ctx := &s.keeper, &s.liquidationKeeper, &s.ctx
-	//k, ctx := &s.keeper, &s.ctx
+	// k, ctx := &s.keeper, &s.ctx
 	appId := uint64(1)
 	auctionMappingId := uint64(3)
 	auctionId := uint64(1)
@@ -547,8 +555,8 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	server := auctionKeeper.NewMsgServiceServer(*k)
 	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
-	//beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
-	//s.Require().NoError(err)
+	// beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+	// s.Require().NoError(err)
 	beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 	s.Require().NoError(err)
 	s.advanceseconds(250)
@@ -580,8 +588,8 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	_, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().Error(err)
 
-	//afterCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
-	//s.Require().NoError(err)
+	// afterCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+	// s.Require().NoError(err)
 	afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 	s.Require().NoError(err)
 	afterAuction, err := k.GetHistoryDutchAuction(*ctx, appId, auctionMappingId, auctionId)
@@ -591,7 +599,7 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 
 	s.Require().Equal(beforeCmstBalance.Sub(userOutflowCoin), afterCmstBalance)
 
-	//verify loss
+	// verify loss
 	stats, found := k.GetProtocolStat(*ctx, appId, 2)
 	s.Require().True(found)
 	loss := afterAuction.InflowTokenTargetAmount.Sub(afterAuction.InflowTokenCurrentAmount).Amount.ToDec()
@@ -607,7 +615,7 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	dutchAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
-	//exact the auction duration
+	// exact the auction duration
 	s.advanceseconds(300)
 
 	startPrice := dutchAuction.OutflowTokenCurrentPrice
@@ -621,7 +629,7 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 
 	s.Require().Equal(dutchAuction.OutflowTokenCurrentPrice, startPrice.Mul(sdk.MustNewDecFromStr("0.6")))
 
-	//full the auction duration RESTART
+	// full the auction duration RESTART
 	s.advanceseconds(1)
 	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
@@ -652,7 +660,7 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	s.Require().Equal(beforeAuction.LiquidationPenalty, afterAuction.LiquidationPenalty)
 	s.Require().Equal(afterAuction.OutflowTokenCurrentPrice, startPrice)
 
-	//half the auction duration
+	// half the auction duration
 	s.advanceseconds(150)
 
 	auction.BeginBlocker(*ctx, s.keeper)
@@ -664,5 +672,4 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	s.Require().NoError(err)
 
 	s.Require().Equal(dutchAuction.OutflowTokenCurrentPrice, startPrice.Mul(sdk.MustNewDecFromStr("0.8")))
-
 }

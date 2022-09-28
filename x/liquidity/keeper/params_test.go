@@ -102,6 +102,5 @@ func (s *KeeperTestSuite) TestUpdateGenericParams() {
 				s.Require().Equal(params.SwapFeeBurnRate, utils.ParseDec("0.8"))
 			}
 		})
-
 	}
 }

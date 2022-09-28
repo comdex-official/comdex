@@ -1,13 +1,15 @@
 package keeper
 
 import (
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"time"
+
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) DebtActivator(ctx sdk.Context, data collectortypes.AppAssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {
@@ -26,7 +28,7 @@ func (k Keeper) DebtActivator(ctx sdk.Context, data collectortypes.AppAssetIdToA
 	return nil
 }
 
-func (k Keeper) CreateDebtAuction(ctx sdk.Context, appID, assetID uint64) error { //check if auction status for an asset is false
+func (k Keeper) CreateDebtAuction(ctx sdk.Context, appID, assetID uint64) error { // check if auction status for an asset is false
 	status, err := k.checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx, appID, assetID)
 	if err != nil {
 		return err
@@ -51,21 +53,21 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 	if !found {
 		return
 	}
-	//traverse this to access appId , collector asset id  , debt threshold
+	// traverse this to access appId , collector asset id  , debt threshold
 
 	NetFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, assetID)
 
 	if !found {
 		return auctiontypes.NoAuction, nil
 	}
-	//traverse this to access appId , collector asset id , netfees collected
+	// traverse this to access appId , collector asset id , netfees collected
 
 	if NetFeeCollectedData.NetFeesCollected.LTE(sdk.NewIntFromUint64(collector.DebtThreshold - collector.LotSize)) {
 		// START DEBT AUCTION .  LOTSIZE AS MINTED FOR SECONDARY ASSET and ACCEPT Collector assetid from user
-		//calculate inflow token amount
+		// calculate inflow token amount
 		assetInID := collector.CollectorAssetId
 		assetOutID := collector.SecondaryAssetId
-		//net = 200 debtThreshold = 500 , lotsize = 100
+		// net = 200 debtThreshold = 500 , lotsize = 100
 		amount := sdk.NewIntFromUint64(collector.LotSize)
 
 		status, outflowToken, inflowToken := k.getDebtSellTokenAmount(ctx, appID, assetInID, assetOutID, amount)
@@ -73,7 +75,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 			return auctiontypes.NoAuction, nil
 		}
 
-		//Mint the tokens when collector module sends tokens to user
+		// Mint the tokens when collector module sends tokens to user
 		err := k.StartDebtAuction(ctx, outflowToken, inflowToken, collector.BidFactor, appID, assetID, assetInID, assetOutID)
 		if err != nil {
 			return auctiontypes.NoAuction, nil
@@ -103,7 +105,7 @@ func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appID, AssetInID, AssetO
 
 func (k Keeper) StartDebtAuction(
 	ctx sdk.Context,
-	auctionToken sdk.Coin, //sell token
+	auctionToken sdk.Coin, // sell token
 	expectedUserToken sdk.Coin, // buy token
 	bidFactor sdk.Dec,
 	appID, assetID uint64,
@@ -188,7 +190,7 @@ func (k Keeper) closeDebtAuction(
 	ctx sdk.Context,
 	debtAuction auctiontypes.DebtAuction,
 	statusEsm bool,
-) error { //If there are bids
+) error { // If there are bids
 	if statusEsm && debtAuction.BiddingIds != nil {
 		bidding, err := k.GetDebtUserBidding(ctx, debtAuction.Bidder.String(), debtAuction.AppId, debtAuction.ActiveBiddingId)
 		if err != nil {
@@ -234,7 +236,7 @@ func (k Keeper) closeDebtAuction(
 			}
 		}
 
-		//send to collector module the amount collected in debt auction
+		// send to collector module the amount collected in debt auction
 
 		err = k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(debtAuction.ExpectedUserToken))
 
@@ -303,7 +305,7 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appID, auctionMappingID, au
 	if err != nil {
 		return err
 	}
-	//If auction gets bid from second time onwards . refund previous bidder
+	// If auction gets bid from second time onwards . refund previous bidder
 	if auction.AuctionStatus != auctiontypes.AuctionStartNoBids {
 		err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, auction.Bidder, sdk.NewCoins(auction.ExpectedUserToken))
 		if err != nil {
@@ -323,7 +325,7 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appID, auctionMappingID, au
 		auction.AuctionStatus = auctiontypes.AuctionGoingOn
 	}
 	auction.ActiveBiddingId = biddingID
-	var bidIDOwner = &auctiontypes.BidOwnerMapping{BidId: biddingID, BidOwner: bidder.String()}
+	bidIDOwner := &auctiontypes.BidOwnerMapping{BidId: biddingID, BidOwner: bidder.String()}
 	auction.BiddingIds = append(auction.BiddingIds, bidIDOwner)
 	auction.Bidder = bidder
 	auction.CurrentBidAmount = bid

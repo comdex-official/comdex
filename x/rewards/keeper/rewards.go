@@ -3,13 +3,14 @@ package keeper
 import (
 	"context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	protobuftypes "github.com/gogo/protobuf/types"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 func (k Keeper) SetReward(ctx sdk.Context, rewards types.InternalRewards) {
@@ -137,7 +138,6 @@ func (k Keeper) GetAppIDs(ctx sdk.Context) (appIds []uint64) {
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-
 		var app protobuftypes.UInt64Value
 		k.cdc.MustUnmarshal(iter.Value(), &app)
 		appIds = append(appIds, app.Value)
@@ -537,7 +537,6 @@ func (k Keeper) GetAllVaultInterestTracker(ctx sdk.Context) (Vaultrewards []type
 }
 
 func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID uint64, Depositor string, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error {
-
 	_, found := k.GetReward(ctx, appID, assetID)
 	if !found {
 		return nil
@@ -574,13 +573,12 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 				AppMappingId:       appID,
 				RewardsAccumulated: rewards,
 			}
-
 		} else {
 			lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Add(rewards)
 		}
 
 		if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
-			//send rewards
+			// send rewards
 			newReward := sdk.ZeroInt()
 			newReward = lockerRewardsTracker.RewardsAccumulated.TruncateInt()
 			newRewardDec := sdk.NewDec(newReward.Int64())
@@ -634,16 +632,13 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 			lockerData.BlockTime = ctx.BlockTime()
 			lockerData.BlockHeight = ctx.BlockHeight()
 			k.SetLocker(ctx, lockerData)
-
 		}
-
 	}
 
 	return nil
 }
 
 func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, vaultID uint64, totalDebt sdk.Int, blockHeight int64, vaultBlockTime int64) error {
-
 	_, found := k.GetAppIDByApp(ctx, appID)
 	if !found {
 		return nil
@@ -703,7 +698,6 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 			vaultData.BlockHeight = ctx.BlockHeight()
 			k.SetVault(ctx, vaultData)
 		}
-
 	}
 
 	return nil

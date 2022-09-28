@@ -4,9 +4,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-var (
-	_ paramstypes.ParamSet = (*Params)(nil)
-)
+var _ paramstypes.ParamSet = (*Params)(nil)
 
 func NewParams() Params {
 	return Params{}

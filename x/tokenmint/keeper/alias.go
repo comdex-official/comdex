@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/tokenmint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/tokenmint/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 )
@@ -38,6 +39,7 @@ func (k Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, addres
 
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
+
 func (k Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
 		return types.SendCoinsFromModuleToModuleInTokenmintIsZero

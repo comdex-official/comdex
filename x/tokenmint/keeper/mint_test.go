@@ -51,29 +51,34 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	err = assetKeeper.AddAppRecords(*ctx, msg2)
 	s.Require().NoError(err)
 
-	msg3 := assetTypes.Asset{Name: "CMDX",
+	msg3 := assetTypes.Asset{
+		Name:      "CMDX",
 		Denom:     "ucmdx",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 
 	err = assetKeeper.AddAssetRecords(*ctx, msg3)
 	s.Require().NoError(err)
 
-	msg4 := assetTypes.Asset{Name: "CMST",
+	msg4 := assetTypes.Asset{
+		Name:      "CMST",
 		Denom:     "ucmst",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg4)
 	s.Require().NoError(err)
 
-	msg5 := assetTypes.Asset{Name: "HARBOR",
+	msg5 := assetTypes.Asset{
+		Name:      "HARBOR",
 		Denom:     "uharbor",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 
 	err = assetKeeper.AddAssetRecords(*ctx, msg5)
 	s.Require().NoError(err)
-
 }
 
 //for _, tc := range []struct {
@@ -166,15 +171,14 @@ func (s *KeeperTestSuite) TestMsgMintNewTokens() {
 				s.Require().Equal(res.MintedTokens.GenesisSupply, ActualAmountMinted)
 				s.Require().Equal(res.MintedTokens.CurrentSupply, ActualAmountMinted)
 			}
-
 		})
 	}
 	result := s.tokenmintKeeper.GetTotalTokenMinted(*ctx)
-	//validates no. of apps
+	// validates no. of apps
 	s.Require().Equal(len(result), 2)
-	//validates no of assets under app id 1
+	// validates no of assets under app id 1
 	s.Require().Equal(len(result[0].MintedTokens), 2)
-	//validates no of assets under app id 2
+	// validates no of assets under app id 2
 	s.Require().Equal(len(result[1].MintedTokens), 1)
 }
 
@@ -232,7 +236,6 @@ func (s *KeeperTestSuite) TestMintNewTokensForApp() {
 				s.Require().Equal(res.MintedTokens.CurrentSupply, beforeTokenMint.MintedTokens.CurrentSupply.Add(tc.mintAmount))
 			}
 		})
-
 	}
 }
 
@@ -302,7 +305,6 @@ func (s *KeeperTestSuite) TestBurnTokensForApp() {
 				s.Require().Equal(beforeTokenMintBalance.Sub(afterTokenMintBalance), tc.burnAmount)
 			}
 		})
-
 	}
 }
 
@@ -376,6 +378,5 @@ func (s *KeeperTestSuite) TestBurnGovTokensForApp() {
 				s.Require().Equal(beforeUserBalance.Amount.Sub(afterUserBalance.Amount), tc.burnAmount)
 			}
 		})
-
 	}
 }

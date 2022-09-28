@@ -2,13 +2,15 @@ package cli
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	"github.com/comdex-official/comdex/x/tokenmint/types"
 	"github.com/cosmos/cosmos-sdk/client"
+
+	"github.com/comdex-official/comdex/x/tokenmint/types"
 )
 
 // GetTxCmd returns the transaction commands for this module.
@@ -40,12 +42,10 @@ func txMint() *cobra.Command {
 				return err
 			}
 			appID, err := sdk.ParseUint(args[0])
-
 			if err != nil {
 				return err
 			}
 			assetID, err := sdk.ParseUint(args[1])
-
 			if err != nil {
 				return err
 			}

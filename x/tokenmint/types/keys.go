@@ -16,13 +16,9 @@ func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
 
-var (
-	TypeMsgMintNewTokensRequest = ModuleName + ":mintnewtokens"
-)
+var TypeMsgMintNewTokensRequest = ModuleName + ":mintnewtokens"
 
-var (
-	TokenMintKeyPrefix = []byte{0x10}
-)
+var TokenMintKeyPrefix = []byte{0x10}
 
 func TokenMintKey(appMappingID uint64) []byte {
 	return append(TokenMintKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)

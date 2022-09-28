@@ -60,7 +60,7 @@ func (k Keeper) GetAllKillSwitchData(ctx sdk.Context) (killSwitchParams []types.
 }
 
 func (k Keeper) Admin(ctx sdk.Context, from string) bool {
-	var fromAddress = k.AdminParam(ctx)
+	fromAddress := k.AdminParam(ctx)
 	for _, addr := range fromAddress {
 		if addr == from {
 			return true

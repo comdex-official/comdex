@@ -2,17 +2,19 @@ package keeper
 
 import (
 	"fmt"
-	"github.com/comdex-official/comdex/x/esm/expected"
 	"time"
 
+	"github.com/comdex-official/comdex/x/esm/expected"
+
 	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/types"
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
-	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type (
@@ -41,7 +43,6 @@ func NewKeeper(
 	market expected.MarketKeeper,
 	tokenmint expected.Tokenmint,
 	collector expected.Collector,
-
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -49,7 +50,6 @@ func NewKeeper(
 	}
 
 	return Keeper{
-
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
@@ -72,7 +72,6 @@ func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 }
 
 func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, Amount sdk.Coin) error {
-
 	appData, found := k.GetApp(ctx, AppID)
 	if !found {
 		return types.ErrAppDataNotFound
@@ -142,7 +141,6 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 }
 
 func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error {
-
 	_, found := k.GetApp(ctx, AppID)
 	if !found {
 		return types.ErrAppDataNotFound

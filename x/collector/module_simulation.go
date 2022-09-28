@@ -4,15 +4,16 @@ package collector
 import (
 	"math/rand"
 
-	"github.com/comdex-official/comdex/testutil/sample"
-	collectorsimulation "github.com/comdex-official/comdex/x/collector/simulation"
-	"github.com/comdex-official/comdex/x/collector/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
+	"github.com/comdex-official/comdex/testutil/sample"
+	collectorsimulation "github.com/comdex-official/comdex/x/collector/simulation"
+	"github.com/comdex-official/comdex/x/collector/types"
 )
 
 // avoid unused import issue.

@@ -13,7 +13,6 @@ import (
 )
 
 func (s *KeeperTestSuite) TestParams() {
-
 	resp, err := s.querier.Params(sdk.WrapSDKContext(s.ctx), &types.QueryParamsRequest{})
 	s.Require().NoError(err)
 	s.Require().Equal(&types.QueryParamsResponse{}, resp)
