@@ -20,7 +20,6 @@ func (genState GenesisState) Validate() error {
 	}
 
 	for _, appState := range genState.AppGenesisState {
-
 		if err := appState.GenericParams.Validate(); err != nil {
 			return fmt.Errorf("invalid generic params: %w", err)
 		}

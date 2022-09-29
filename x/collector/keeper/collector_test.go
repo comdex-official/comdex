@@ -53,23 +53,27 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		Name:      "CMDX",
 		Denom:     "ucmdx",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg2)
 
-	msg3 := assetTypes.Asset{Name: "CMST",
+	msg3 := assetTypes.Asset{
+		Name:      "CMST",
 		Denom:     "ucmst",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg3)
 
-	msg4 := assetTypes.Asset{Name: "HARBOR",
+	msg4 := assetTypes.Asset{
+		Name:      "HARBOR",
 		Denom:     "uharbor",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg4)
 
 	s.Require().NoError(err)
-
 }
 
 func (s *KeeperTestSuite) AddAuctionParams() {
@@ -126,8 +130,9 @@ func (s *KeeperTestSuite) TestWasmUpdateCollectorLookupTable() {
 		})
 	}
 }
+
 func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
-	//userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	// userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	collectorKeeper, ctx := &s.collectorKeeper, &s.ctx
 	s.AddAppAsset()
 
@@ -135,7 +140,8 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 		name string
 		msg  bindings.MsgSetCollectorLookupTable
 	}{
-		{"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
+		{
+			"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
 			bindings.MsgSetCollectorLookupTable{
 				AppID:            1,
 				CollectorAssetID: 2,
@@ -148,7 +154,8 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 				DebtLotSize:      2000000,
 			},
 		},
-		{"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 3",
+		{
+			"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 3",
 			bindings.MsgSetCollectorLookupTable{
 				AppID:            1,
 				CollectorAssetID: 3,
@@ -222,7 +229,6 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 			s.Require().Equal(result1.AssetOutPrice, tc.msg.AssetOutPrices)
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestSetNetFeesCollected() {
@@ -236,7 +242,6 @@ func (s *KeeperTestSuite) TestSetNetFeesCollected() {
 		fee           sdk.Int
 		errorExpected bool
 	}{
-
 		{
 			"Set net fees collected : AppID 1 AssetID 2",
 			1,
@@ -386,7 +391,6 @@ func (s *KeeperTestSuite) TestGetAmountFromCollector() {
 			true,
 		},
 	} {
-
 		s.Run(tc.name, func() {
 			err := auctionKeeper.FundModule(*ctx, "auctionV1", tc.denom, tc.FundAmount)
 			s.Require().NoError(err)
@@ -459,9 +463,7 @@ func (s *KeeperTestSuite) TestUpdateCollector() {
 				s.Require().True(found)
 				s.Require().Equal(tc.collectorData, collectorData)
 			}
-
 		})
-
 	}
 }
 
@@ -510,8 +512,6 @@ func (s *KeeperTestSuite) TestAddUpdateCollector() {
 				s.Require().Equal(beforeCollectorData.LiquidationRewardsCollected.Add(tc.collectorData.LiquidationRewardsCollected), currentCollectorData.LiquidationRewardsCollected)
 
 			}
-
 		})
-
 	}
 }

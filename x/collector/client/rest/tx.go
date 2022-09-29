@@ -8,8 +8,10 @@ import (
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 )
 
-type NewCmdLookupTableParams struct{}
-type NewCmdAuctionToAppLookupTable struct{}
+type (
+	NewCmdLookupTableParams       struct{}
+	NewCmdAuctionToAppLookupTable struct{}
+)
 
 func NewCmdLookupTableParamsRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{

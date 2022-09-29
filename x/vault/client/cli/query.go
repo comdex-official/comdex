@@ -72,7 +72,6 @@ func QueryAllVaults() *cobra.Command {
 			res, err := queryClient.QueryAllVaults(cmd.Context(), &types.QueryAllVaultsRequest{
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -110,7 +109,6 @@ func QueryAllVaultsByApp() *cobra.Command {
 				AppId:      appID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -144,7 +142,6 @@ func QueryVault() *cobra.Command {
 			res, err := queryClient.QueryVault(cmd.Context(), &types.QueryVaultRequest{
 				Id: id,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -189,7 +186,6 @@ func QueryVaultIDOfOwnerByExtendedPairAndApp() *cobra.Command {
 				ExtendedPairId: extendedPairid,
 				Pagination:     pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -228,7 +224,6 @@ func QueryVaultInfoOfOwnerByApp() *cobra.Command {
 				Owner:      args[1],
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -271,7 +266,6 @@ func QueryAllVaultsByAppAndExtendedPair() *cobra.Command {
 				ExtendedPairId: extendedPairID,
 				Pagination:     pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -305,7 +299,6 @@ func QueryVaultInfoByVaultID() *cobra.Command {
 			res, err := queryClient.QueryVaultInfoByVaultID(cmd.Context(), &types.QueryVaultInfoByVaultIDRequest{
 				Id: id,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -342,7 +335,6 @@ func QueryVaultIdsByAppInAllExtendedPairs() *cobra.Command {
 				AppId:      appID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -375,7 +367,6 @@ func QueryAllVaultIdsByAnOwner() *cobra.Command {
 				Owner:      args[0],
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -418,7 +409,6 @@ func QueryTokenMintedByAppAndExtendedPair() *cobra.Command {
 				ExtendedPairId: extendedPairID,
 				Pagination:     pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -456,7 +446,6 @@ func QueryTokenMintedAssetWiseByApp() *cobra.Command {
 				AppId:      appID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -489,7 +478,6 @@ func QueryVaultCountByApp() *cobra.Command {
 			res, err := queryClient.QueryVaultCountByApp(cmd.Context(), &types.QueryVaultCountByAppRequest{
 				AppId: appID,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -532,7 +520,6 @@ func QueryVaultCountByAppAndExtendedPair() *cobra.Command {
 				ExtendedPairId: extendedPairID,
 				Pagination:     pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -575,7 +562,6 @@ func QueryTotalValueLockedByAppAndExtendedPair() *cobra.Command {
 				ExtendedPairId: extendedPairID,
 				Pagination:     pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -613,7 +599,6 @@ func QueryExtendedPairIDsByApp() *cobra.Command {
 				AppId:      appID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -647,7 +632,6 @@ func QueryStableVaultByVaultID() *cobra.Command {
 			res, err := queryClient.QueryStableVaultByVaultID(cmd.Context(), &types.QueryStableVaultByVaultIDRequest{
 				StableVaultId: id,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -684,7 +668,6 @@ func QueryStableVaultByApp() *cobra.Command {
 				AppId:      appID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -722,7 +705,6 @@ func QueryStableVaultByAppAndExtendedPair() *cobra.Command {
 				AppId:          appID,
 				ExtendedPairId: extendedPairID,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -759,7 +741,6 @@ func QueryExtendedPairVaultMappingByApp() *cobra.Command {
 				AppId:      appID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -797,7 +778,6 @@ func QueryExtendedPairVaultMappingByAppAndExtendedPair() *cobra.Command {
 				AppId:          appID,
 				ExtendedPairId: extendedPairID,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -834,7 +814,6 @@ func QueryTVLByAppOfAllExtendedPairs() *cobra.Command {
 				AppId:      appID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -867,7 +846,6 @@ func QueryTVLByApp() *cobra.Command {
 			res, err := queryClient.QueryTVLByApp(cmd.Context(), &types.QueryTVLByAppRequest{
 				AppId: appID,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -900,7 +878,6 @@ func QueryUserMyPositionByApp() *cobra.Command {
 				AppId: appID,
 				Owner: args[1],
 			})
-
 			if err != nil {
 				return err
 			}
@@ -928,7 +905,6 @@ func QueryUserExtendedPairTotalData() *cobra.Command {
 			res, err := queryClient.QueryUserExtendedPairTotalData(cmd.Context(), &types.QueryUserExtendedPairTotalDataRequest{
 				Owner: args[0],
 			})
-
 			if err != nil {
 				return err
 			}
@@ -966,7 +942,6 @@ func QueryPairsLockedAndMintedStatisticByApp() *cobra.Command {
 				AppId:      appID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}

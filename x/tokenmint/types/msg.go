@@ -5,9 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var (
-	_ sdk.Msg = (*MsgMintNewTokensRequest)(nil)
-)
+var _ sdk.Msg = (*MsgMintNewTokensRequest)(nil)
 
 func NewMsgMintNewTokensRequest(from string, appID uint64, assetID uint64) *MsgMintNewTokensRequest {
 	return &MsgMintNewTokensRequest{

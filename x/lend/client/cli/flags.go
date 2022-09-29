@@ -1,9 +1,10 @@
 package cli
 
 import (
-	flag "github.com/spf13/pflag"
 	"strconv"
 	"strings"
+
+	flag "github.com/spf13/pflag"
 )
 
 const (

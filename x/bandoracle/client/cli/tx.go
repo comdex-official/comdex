@@ -1,14 +1,16 @@
 package cli
 
 import (
-	"github.com/comdex-official/comdex/x/bandoracle/types"
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/spf13/cobra"
-	"strconv"
+
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 func NewCmdSubmitFetchPriceProposal() *cobra.Command {

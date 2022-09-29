@@ -1,8 +1,9 @@
 package expected
 
 import (
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 )
 
 type BankKeeper interface {

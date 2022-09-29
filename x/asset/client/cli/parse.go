@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/pflag"
 	"io/ioutil"
+
+	"github.com/spf13/pflag"
 )
 
-type XCreateAddAssetMappingInputs createAddAssetMappingInputs
-type XCreateAddAssetsMappingInputs createAddAssetsMappingInputs
+type (
+	XCreateAddAssetMappingInputs  createAddAssetMappingInputs
+	XCreateAddAssetsMappingInputs createAddAssetsMappingInputs
+)
 
 type XCreateAddAssetMappingInputsExceptions struct {
 	XCreateAddAssetMappingInputs

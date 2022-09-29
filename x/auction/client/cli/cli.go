@@ -1,9 +1,10 @@
 package cli
 
 import (
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
-	"strings"
 )
 
 func GetQueryCmd() *cobra.Command {

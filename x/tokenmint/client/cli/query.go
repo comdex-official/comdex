@@ -54,7 +54,6 @@ func QueryAllTokenMintedForAllApps() *cobra.Command {
 			res, err := queryClient.QueryAllTokenMintedForAllApps(cmd.Context(), &types.QueryAllTokenMintedForAllAppsRequest{
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -94,7 +93,6 @@ func QueryTokenMintedByApp() *cobra.Command {
 				AppId:      appID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -139,7 +137,6 @@ func QueryTokenMintedByAppAndAsset() *cobra.Command {
 				AssetId:    assetID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}

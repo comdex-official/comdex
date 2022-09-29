@@ -7,9 +7,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
 	"github.com/comdex-official/comdex/x/locker/expected"
 	"github.com/comdex-official/comdex/x/locker/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type Keeper struct {

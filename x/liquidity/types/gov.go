@@ -37,6 +37,7 @@ func NewUpdateGenericParamsProposal(
 		Values:      value,
 	}
 }
+
 func (p *UpdateGenericParamsProposal) GetTitle() string {
 	return p.Title
 }
@@ -96,6 +97,7 @@ func NewCreateLiquidityPairProposal(
 		From:           from.String(),
 	}
 }
+
 func (p *CreateNewLiquidityPairProposal) GetTitle() string {
 	return p.Title
 }

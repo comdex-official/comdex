@@ -2,13 +2,15 @@ package lend
 
 import (
 	"fmt"
+
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/pkg/errors"
 
-	"github.com/comdex-official/comdex/x/lend/keeper"
-	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/comdex-official/comdex/x/lend/keeper"
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
 // NewHandler ...

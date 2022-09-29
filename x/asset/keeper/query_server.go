@@ -12,9 +12,7 @@ import (
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-var (
-	_ types.QueryServer = QueryServer{}
-)
+var _ types.QueryServer = QueryServer{}
 
 type QueryServer struct {
 	Keeper
@@ -52,7 +50,6 @@ func (q QueryServer) QueryAssets(c context.Context, req *types.QueryAssetsReques
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -68,9 +65,7 @@ func (q QueryServer) QueryAsset(c context.Context, req *types.QueryAssetRequest)
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetAsset(ctx, req.Id)
 	if !found {
@@ -126,7 +121,6 @@ func (q QueryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest)
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -173,7 +167,6 @@ func (q QueryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (
 }
 
 func (q QueryServer) QueryApps(c context.Context, req *types.QueryAppsRequest) (*types.QueryAppsResponse, error) {
-
 	var (
 		items []types.AppData
 		ctx   = sdk.UnwrapSDKContext(c)
@@ -195,7 +188,6 @@ func (q QueryServer) QueryApps(c context.Context, req *types.QueryAppsRequest) (
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -256,7 +248,6 @@ func (q QueryServer) QueryAllExtendedPairVaults(c context.Context, req *types.Qu
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -289,7 +280,6 @@ func (q QueryServer) QueryAllExtendedPairVaultsByApp(c context.Context, req *typ
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -322,7 +312,6 @@ func (q QueryServer) QueryAllExtendedPairStableVaultsIDByApp(c context.Context, 
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -375,7 +364,6 @@ func (q QueryServer) QueryAllExtendedPairStableVaultsByApp(c context.Context, re
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

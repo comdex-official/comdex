@@ -95,7 +95,6 @@ func (k Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetI
 			return err
 		}
 		userAddress, err := sdk.AccAddressFromBech32(address)
-
 		if err != nil {
 			return err
 		}
@@ -134,8 +133,8 @@ func (k Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID u
 }
 
 func (k Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int) {
-	//ChangeType + == add to current supply
-	//Change type - == reduce from supply
+	// ChangeType + == add to current supply
+	// Change type - == reduce from supply
 	mintData, found := k.GetTokenMint(ctx, appMappingID)
 
 	if found {

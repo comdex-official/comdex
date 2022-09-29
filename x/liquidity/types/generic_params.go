@@ -30,7 +30,7 @@ var (
 	DefaultWithdrawExtraGas         = sdk.Gas(64000)
 	DefaultOrderExtraGas            = sdk.Gas(37000)
 	DefaultSwapFeeDistrDenom        = DefaultFeeDenom
-	DefaultSwapFeeBurnRate          = sdk.NewDecWithPrec(0, 0) //0%
+	DefaultSwapFeeBurnRate          = sdk.NewDecWithPrec(0, 0) // 0%
 )
 
 var (

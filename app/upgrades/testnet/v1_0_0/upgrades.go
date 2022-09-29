@@ -28,12 +28,11 @@ func CreateUpgradeHandler(
 		delete(fromVM, "oracle")
 
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-
 		if err != nil {
 			return newVM, err
 		}
 
-		//wasm
+		// wasm
 		wasmParams := wasmKeeper.GetParams(ctx)
 		wasmParams.CodeUploadAccess = wasmtypes.AllowNobody
 		wasmKeeper.SetParams(ctx, wasmParams)

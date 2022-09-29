@@ -1,6 +1,8 @@
 package wasm
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	esmKeeper "github.com/comdex-official/comdex/x/esm/keeper"
@@ -9,7 +11,6 @@ import (
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	tokenMintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type QueryPlugin struct {
@@ -32,7 +33,6 @@ func NewQueryPlugin(
 	liquidation *liquidationKeeper.Keeper,
 	esmKeeper *esmKeeper.Keeper,
 	vaultKeeper *vaultKeeper.Keeper,
-
 ) *QueryPlugin {
 	return &QueryPlugin{
 		assetKeeper:       assetKeeper,
@@ -76,6 +76,7 @@ func (qp QueryPlugin) GetWhitelistAppIDVaultInterestCheck(ctx sdk.Context, appID
 	found, err = qp.rewardsKeeper.GetWhitelistAppIDVaultInterestCheck(ctx, appID)
 	return found, err
 }
+
 func (qp QueryPlugin) GetWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appID uint64, assetID uint64) (found bool, err string) {
 	found, err = qp.rewardsKeeper.GetWhitelistAppIDLockerRewardsCheck(ctx, appID, assetID)
 
@@ -153,13 +154,13 @@ func (qp QueryPlugin) WasmExtendedPairByApp(ctx sdk.Context, appID uint64) (exte
 }
 
 func (qp QueryPlugin) WasmCheckSurplusReward(ctx sdk.Context, appID, assetID uint64) (amount sdk.Coin) {
-	//TO DO : add extended pair app query
+	// TO DO : add extended pair app query
 	amount = qp.collectorKeeper.WasmCheckSurplusRewardQuery(ctx, appID, assetID)
 	return amount
 }
 
 func (qp QueryPlugin) WasmCheckWhitelistedAsset(ctx sdk.Context, denom string) (found bool) {
-	//TO DO : add extended pair app query
+	// TO DO : add extended pair app query
 	found = qp.assetKeeper.WasmCheckWhitelistedAssetQuery(ctx, denom)
 	return found
 }

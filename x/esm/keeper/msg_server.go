@@ -2,8 +2,10 @@ package keeper
 
 import (
 	"context"
-	"github.com/comdex-official/comdex/x/esm/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/esm/types"
 )
 
 // NewMsgServerImpl returns an implementation of the MsgServer interface
@@ -82,7 +84,6 @@ func (m msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgColl
 				if err := m.keeper.CalculateCollateral(ctx, req.AppId, req.Amount, esmDataAfterCoolOff, req.From); err != nil {
 					return nil, err
 				}
-
 			} else {
 				return nil, types.ErrInvalidAsset
 			}
