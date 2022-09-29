@@ -1,9 +1,8 @@
 package keeper_test
 
 import (
-	"time"
-
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 
@@ -62,6 +61,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.auctionMsgServer = keeper.NewMsgServiceServer(s.keeper)
 	s.tokenmintKeeper = s.app.TokenmintKeeper
 }
+
 func (s *KeeperTestSuite) getBalance(addr string, denom string) (coin sdk.Coin, err error) {
 	addr1, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
@@ -109,7 +109,6 @@ func (s *KeeperTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coin) {
 
 func (s *KeeperTestSuite) advanceseconds(dur int64) {
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Second * time.Duration(dur)))
-
 }
 
 // ParseCoins parses and returns sdk.Coins.

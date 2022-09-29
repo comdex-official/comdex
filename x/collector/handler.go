@@ -2,14 +2,15 @@ package collector
 
 import (
 	"fmt"
-	"github.com/comdex-official/comdex/x/collector/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/comdex-official/comdex/x/collector/types"
 )
 
 // NewHandler ...
 func NewHandler() sdk.Handler {
-
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		_ = ctx.WithEventManager(sdk.NewEventManager())
 

@@ -3,10 +3,11 @@ package keeper
 import (
 	"context"
 
-	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/locker/types"
 )
 
 func (k Keeper) Params(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {

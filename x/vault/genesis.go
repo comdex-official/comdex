@@ -8,7 +8,6 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
-
 	var (
 		vaultID       uint64 = 0
 		stableVaultID uint64 = 0
@@ -30,7 +29,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 	for _, item := range state.AppExtendedPairVaultMapping {
 		k.SetAppExtendedPairVaultMappingData(ctx, item)
-
 	}
 
 	for _, item := range state.UserVaultAssetMapping {

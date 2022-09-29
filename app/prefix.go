@@ -12,7 +12,6 @@ var (
 
 // SetAccountAddressPrefixes sets the global prefix to be used when serializing addresses to bech32 strings.
 func SetAccountAddressPrefixes() {
-
 	config := sdk.GetConfig()
 
 	config.SetBech32PrefixForAccount(AccountAddressPrefix, AccountPubKeyPrefix)

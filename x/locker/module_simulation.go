@@ -3,15 +3,16 @@ package locker
 import (
 	"math/rand"
 
-	"github.com/comdex-official/comdex/testutil/sample"
-	lockersimulation "github.com/comdex-official/comdex/x/locker/simulation"
-	"github.com/comdex-official/comdex/x/locker/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
+	"github.com/comdex-official/comdex/testutil/sample"
+	lockersimulation "github.com/comdex-official/comdex/x/locker/simulation"
+	"github.com/comdex-official/comdex/x/locker/types"
 )
 
 // avoid unused import issue.

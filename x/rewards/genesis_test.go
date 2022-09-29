@@ -1,9 +1,10 @@
 package rewards_test
 
 import (
+	"testing"
+
 	"github.com/comdex-official/comdex/app"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"testing"
 
 	"github.com/comdex-official/comdex/x/rewards"
 	"github.com/comdex-official/comdex/x/rewards/types"
@@ -11,7 +12,6 @@ import (
 )
 
 func TestGenesis(t *testing.T) {
-
 	comdexApp := app.Setup(false)
 	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
 
@@ -22,5 +22,4 @@ func TestGenesis(t *testing.T) {
 	rewards.InitGenesis(ctx, comdexApp.Rewardskeeper, &genesisState)
 	got := rewards.ExportGenesis(ctx, comdexApp.Rewardskeeper)
 	require.NotNil(t, got)
-
 }

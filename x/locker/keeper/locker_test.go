@@ -14,7 +14,8 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		Name:             "cswap",
 		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-		GovTimeInSeconds: 900}
+		GovTimeInSeconds: 900,
+	}
 	err := assetKeeper.AddAppRecords(*ctx, msg1)
 	s.Require().NoError(err)
 
@@ -22,32 +23,40 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		Name:             "commodo",
 		ShortName:        "comdo",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-		GovTimeInSeconds: 900}
+		GovTimeInSeconds: 900,
+	}
 	err = assetKeeper.AddAppRecords(*ctx, msg2)
 	s.Require().NoError(err)
 
-	msg3 := assetTypes.Asset{Name: "CMDX",
+	msg3 := assetTypes.Asset{
+		Name:      "CMDX",
 		Denom:     "ucmdx",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 
 	err = assetKeeper.AddAssetRecords(*ctx, msg3)
 	s.Require().NoError(err)
 
-	msg4 := assetTypes.Asset{Name: "CMST",
+	msg4 := assetTypes.Asset{
+		Name:      "CMST",
 		Denom:     "ucmst",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg4)
 	s.Require().NoError(err)
 
-	msg5 := assetTypes.Asset{Name: "HARBOR",
+	msg5 := assetTypes.Asset{
+		Name:      "HARBOR",
 		Denom:     "uharbor",
 		Decimals:  1000000,
-		IsOnChain: true}
+		IsOnChain: true,
+	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg5)
 	s.Require().NoError(err)
 }
+
 func (s *KeeperTestSuite) AddCollectorLookupTable() {
 	collectorKeeper, ctx := &s.collector, &s.ctx
 	msg1 := bindings.MsgSetCollectorLookupTable{
@@ -100,26 +109,29 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 	s.AddCollectorLookupTable()
 	server := keeper.NewMsgServer(*lockerKeeper)
 
-	//Add whitelisted App Asset combinations
+	// Add whitelisted App Asset combinations
 	for _, tc := range []struct {
 		name string
 		msg  lockerTypes.MsgAddWhiteListedAssetRequest
 	}{
-		{"Whitelist : App1 Asset 1",
+		{
+			"Whitelist : App1 Asset 1",
 			lockerTypes.MsgAddWhiteListedAssetRequest{
 				From:    userAddress,
 				AppId:   1,
 				AssetId: 1,
 			},
 		},
-		{"Whitelist : App1 Asset 2",
+		{
+			"Whitelist : App1 Asset 2",
 			lockerTypes.MsgAddWhiteListedAssetRequest{
 				From:    userAddress,
 				AppId:   1,
 				AssetId: 2,
 			},
 		},
-		{"Whitelist : App2 Asset 1",
+		{
+			"Whitelist : App2 Asset 1",
 			lockerTypes.MsgAddWhiteListedAssetRequest{
 				From:    userAddress,
 				AppId:   2,
@@ -141,7 +153,8 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 		expectedError bool
 		query         lockerTypes.QueryLockerInfoRequest
 	}{
-		{"CreateLocker : Insufficient balance App1 Asset 1",
+		{
+			"CreateLocker : Insufficient balance App1 Asset 1",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
 				Amount:    sdk.NewIntFromUint64(1000000),
@@ -154,7 +167,8 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				Id: 1,
 			},
 		},
-		{"CreateLocker : App1 Asset 1",
+		{
+			"CreateLocker : App1 Asset 1",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
 				Amount:    sdk.NewIntFromUint64(1000000),
@@ -167,7 +181,8 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				Id: 1,
 			},
 		},
-		{"CreateLocker : Duplicate locker App1 Asset1 should fail",
+		{
+			"CreateLocker : Duplicate locker App1 Asset1 should fail",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
 				Amount:    sdk.NewIntFromUint64(1000000),
@@ -180,7 +195,8 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				Id: 1,
 			},
 		},
-		{"CreateLocker : App1 Asset 2",
+		{
+			"CreateLocker : App1 Asset 2",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
 				Amount:    sdk.NewIntFromUint64(2000000),
@@ -193,7 +209,8 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				Id: 2,
 			},
 		},
-		{"CreateLocker : App2 Asset 1",
+		{
+			"CreateLocker : App2 Asset 1",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
 				Amount:    sdk.NewIntFromUint64(9900000),
@@ -227,13 +244,12 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestDepositLocker() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	lockerKeeper, ctx := &s.lockerKeeper, &s.ctx
-	//s.AddAppAsset()
+	// s.AddAppAsset()
 	s.TestCreateLocker()
 	server := keeper.NewMsgServer(*lockerKeeper)
 	for _, tc := range []struct {
@@ -243,7 +259,8 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 		fundAmount    uint64
 		expectedError bool
 	}{
-		{"DepositLocker : Insufficient Balance App1 Asset 1",
+		{
+			"DepositLocker : Insufficient Balance App1 Asset 1",
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
@@ -257,7 +274,8 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			9900000,
 			true,
 		},
-		{"DepositLocker : App1 Asset 1",
+		{
+			"DepositLocker : App1 Asset 1",
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
@@ -271,7 +289,8 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			9900000,
 			false,
 		},
-		{"DepositLocker : App2 Asset 1",
+		{
+			"DepositLocker : App2 Asset 1",
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  3,
@@ -314,7 +333,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 func (s *KeeperTestSuite) TestWithdrawLocker() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	lockerKeeper, ctx := &s.lockerKeeper, &s.ctx
-	//s.AddAppAsset()
+	// s.AddAppAsset()
 	s.TestCreateLocker()
 	server := keeper.NewMsgServer(*lockerKeeper)
 	for _, tc := range []struct {
@@ -324,7 +343,8 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 		expectedError bool
 		partial       bool
 	}{
-		{"WithdrawLocker : Insufficient Balance App1 Asset 1",
+		{
+			"WithdrawLocker : Insufficient Balance App1 Asset 1",
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
@@ -338,7 +358,8 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			true,
 			true,
 		},
-		{"WithdrawLocker : Partial withdraw App1 Asset 1",
+		{
+			"WithdrawLocker : Partial withdraw App1 Asset 1",
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
@@ -352,7 +373,8 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			false,
 			true,
 		},
-		{"WithdrawLocker : Full Withdraw App1 Asset 1",
+		{
+			"WithdrawLocker : Full Withdraw App1 Asset 1",
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
@@ -366,7 +388,8 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			false,
 			false,
 		},
-		{"WithdrawLocker : Full Withdraw App2 Asset 1",
+		{
+			"WithdrawLocker : Full Withdraw App2 Asset 1",
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  3,
@@ -403,5 +426,4 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			}
 		})
 	}
-
 }

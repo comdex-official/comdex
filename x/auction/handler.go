@@ -1,10 +1,11 @@
 package auction
 
 import (
-	"github.com/comdex-official/comdex/x/auction/keeper"
-	"github.com/comdex-official/comdex/x/auction/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/comdex-official/comdex/x/auction/keeper"
+	"github.com/comdex-official/comdex/x/auction/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {

@@ -1,15 +1,17 @@
 package keeper
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k Keeper) GetUUSDFromUSD(ctx sdk.Context, price sdk.Dec) sdk.Dec {
 	usdInUUSD := sdk.MustNewDecFromStr("1000000")
 	return price.Mul(usdInUUSD)
 }
+
 func (k Keeper) GetModuleAccountBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int {
 	address := k.account.GetModuleAddress(moduleName)
 	return k.bank.GetBalance(ctx, address, denom).Amount

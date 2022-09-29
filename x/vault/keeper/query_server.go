@@ -2,9 +2,10 @@ package keeper
 
 import (
 	"context"
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
@@ -13,9 +14,7 @@ import (
 	"github.com/comdex-official/comdex/x/vault/types"
 )
 
-var (
-	_ types.QueryServer = QueryServer{}
-)
+var _ types.QueryServer = QueryServer{}
 
 type QueryServer struct {
 	Keeper
@@ -96,9 +95,7 @@ func (q QueryServer) QueryVault(c context.Context, req *types.QueryVaultRequest)
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	vault, found := q.GetVault(ctx, req.Id)
 	if !found {
 		return &types.QueryVaultResponse{}, nil
@@ -108,14 +105,13 @@ func (q QueryServer) QueryVault(c context.Context, req *types.QueryVaultRequest)
 		Vault: vault,
 	}, nil
 }
+
 func (q QueryServer) QueryVaultInfoByVaultID(c context.Context, req *types.QueryVaultInfoByVaultIDRequest) (*types.QueryVaultInfoByVaultIDResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	vault, found := q.GetVault(ctx, req.Id)
 	if !found {
@@ -168,7 +164,7 @@ func (q QueryServer) QueryVaultInfoOfOwnerByApp(c context.Context, req *types.Qu
 	for _, data := range userVaultAssetData {
 		vaultsIds = append(vaultsIds, data.VaultId)
 	}
-	var count = len(vaultsIds)
+	count := len(vaultsIds)
 	for _, id := range vaultsIds {
 		vault, found := q.GetVault(ctx, id)
 		if !found {
@@ -239,9 +235,7 @@ func (q QueryServer) QueryVaultIDOfOwnerByExtendedPairAndApp(c context.Context, 
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	userVault, found := q.GetUserAppExtendedPairMappingData(ctx, req.Owner, req.AppId, req.ExtendedPairId)
 	if !found {
@@ -305,9 +299,7 @@ func (q QueryServer) QueryTokenMintedByAppAndExtendedPair(c context.Context, req
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	appExtendedPairVaultData, found := q.GetAppExtendedPairVaultMappingData(ctx, req.AppId, req.ExtendedPairId)
 	if !found {
 		return &types.QueryTokenMintedByAppAndExtendedPairResponse{}, nil
@@ -462,9 +454,7 @@ func (q QueryServer) QueryStableVaultByVaultID(c context.Context, req *types.Que
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	stableMintData, found := q.GetStableMintVault(ctx, req.StableVaultId)
 	if !found {
 		return &types.QueryStableVaultByVaultIDResponse{}, nil
@@ -521,9 +511,7 @@ func (q QueryServer) QueryExtendedPairVaultMappingByAppAndExtendedPair(c context
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "App does not exist for id %d", req.AppId)
@@ -543,9 +531,7 @@ func (q QueryServer) QueryExtendedPairVaultMappingByApp(c context.Context, req *
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "App does not exist for id %d", req.AppId)
@@ -655,7 +641,7 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 	for _, data := range userVaultAssetData {
 		vaultsIds = append(vaultsIds, data.VaultId)
 	}
-	var count = len(vaultsIds)
+	count := len(vaultsIds)
 
 	if count == 0 {
 		return &types.QueryUserMyPositionByAppResponse{}, nil
@@ -687,7 +673,7 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 		}
 
 		totalCr = collaterlizationRatio.Add(totalCr)
-		var minCr = extPairVault.MinCr
+		minCr := extPairVault.MinCr
 
 		AmtIn := vault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
 		AmtOut := vault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
@@ -713,9 +699,7 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 }
 
 func (q QueryServer) QueryUserExtendedPairTotalData(c context.Context, req *types.QueryUserExtendedPairTotalDataRequest) (*types.QueryUserExtendedPairTotalDataResponse, error) {
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	userVaultAssetData := q.GetUserMappingData(ctx, req.Owner)
 

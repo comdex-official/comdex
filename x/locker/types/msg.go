@@ -191,7 +191,6 @@ func (m *MsgAddWhiteListedAssetRequest) Type() string {
 }
 
 func (m *MsgAddWhiteListedAssetRequest) ValidateBasic() error {
-
 	return nil
 }
 

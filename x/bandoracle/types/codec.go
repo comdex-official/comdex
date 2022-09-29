@@ -11,6 +11,7 @@ import (
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgFetchPriceData{}, "bandoracle/FetchPriceData", nil)
 }
+
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgFetchPriceData{},

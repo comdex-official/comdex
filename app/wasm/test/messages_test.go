@@ -1,11 +1,12 @@
 package wasm
 
 import (
+	"testing"
+
 	"github.com/comdex-official/comdex/app/wasm"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestWhitelistAssetLocker(t *testing.T) {
@@ -300,7 +301,7 @@ func TestMsgUpdatePairsVault(t *testing.T) {
 	}
 }
 
-//func MsgWhitelistAppIDLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+// func MsgWhitelistAppIDLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 //	a *bindings.MsgWhitelistAppIDLiquidation)
 
 func TestMsgWhitelistAppIDLiquidation(t *testing.T) {
@@ -344,7 +345,7 @@ func TestMsgWhitelistAppIDLiquidation(t *testing.T) {
 	}
 }
 
-//func MsgRemoveWhitelistAppIDLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+// func MsgRemoveWhitelistAppIDLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 //	a *bindings.MsgRemoveWhitelistAppIDLiquidation)
 
 func TestMsgRemoveWhitelistAppIDLiquidation(t *testing.T) {
@@ -439,7 +440,7 @@ func TestMsgAddAuctionParams(t *testing.T) {
 	}
 }
 
-//func MsgBurnGovTokensForApp(tokenMintKeeper tokenmintkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+// func MsgBurnGovTokensForApp(tokenMintKeeper tokenmintkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
 //	a *bindings.MsgBurnGovTokensForApp)
 
 func TestMsgBurnGovTokensForApp(t *testing.T) {
@@ -457,7 +458,6 @@ func TestMsgBurnGovTokensForApp(t *testing.T) {
 		{
 			name: "Add Auction Params",
 			msg: &bindings.MsgBurnGovTokensForApp{
-
 				AppID:  1,
 				From:   addr,
 				Amount: sdk.NewCoin("uharbor", sdk.NewInt(100)),

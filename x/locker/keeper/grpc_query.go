@@ -3,11 +3,12 @@ package keeper
 import (
 	"context"
 
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/locker/types"
 )
 
 var _ types.QueryServer = QueryServer{}
@@ -38,9 +39,7 @@ func (q QueryServer) QueryLockerInfo(c context.Context, req *types.QueryLockerIn
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	item, found := q.GetLocker(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.Id)
@@ -56,9 +55,7 @@ func (q QueryServer) QueryLockersByAppToAssetID(c context.Context, request *type
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	lockerLookupData, found := q.GetLockerLookupTable(ctx, request.AppId, request.AssetId)
 
@@ -76,9 +73,7 @@ func (q QueryServer) QueryLockerInfoByAppID(c context.Context, request *types.Qu
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	app, found := q.GetApp(ctx, request.AppId)
 
@@ -106,9 +101,7 @@ func (q QueryServer) QueryTotalDepositByAppAndAssetID(c context.Context, request
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	lockerLookupData, found := q.GetLockerLookupTable(ctx, request.AppId, request.AssetId)
 
@@ -122,14 +115,13 @@ func (q QueryServer) QueryTotalDepositByAppAndAssetID(c context.Context, request
 }
 
 func (q QueryServer) QueryLockerByAppByOwner(c context.Context,
-	request *types.QueryLockerByAppByOwnerRequest) (*types.QueryLockerByAppByOwnerResponse, error) {
+	request *types.QueryLockerByAppByOwnerRequest,
+) (*types.QueryLockerByAppByOwnerResponse, error) {
 	if request == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	lockerLookupData, found := q.GetUserLockerAppMapping(ctx, request.Owner, request.AppId)
 
@@ -152,9 +144,7 @@ func (q QueryServer) QueryOwnerLockerByAppIDbyOwner(c context.Context, request *
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	lockerLookupData, found := q.GetUserLockerAppMapping(ctx, request.Owner, request.AppId)
 	if !found {
@@ -176,9 +166,7 @@ func (q QueryServer) QueryOwnerLockerOfAllAppsByOwner(c context.Context, request
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	userLockerLookupData, _ := q.GetUserLockerMapping(ctx, request.Owner)
 
 	var lockerIds []uint64
@@ -196,9 +184,7 @@ func (q QueryServer) QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(c context.Cont
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	userLockerLookupData, found := q.GetUserLockerAssetMapping(ctx, request.Owner, request.AppId, request.AssetId)
 	if !found {
 		return &types.QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse{}, nil
@@ -214,9 +200,7 @@ func (q QueryServer) QueryOwnerLockerByAppToAssetIDbyOwner(c context.Context, re
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	lockerLookupData, found := q.GetUserLockerAssetMapping(ctx, request.Owner, request.AppId, request.AssetId)
 
@@ -236,9 +220,7 @@ func (q QueryServer) QueryLockerCountByAppID(c context.Context, request *types.Q
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	app, found := q.GetApp(ctx, request.AppId)
 
@@ -266,9 +248,7 @@ func (q QueryServer) QueryLockerCountByAppToAssetID(c context.Context, request *
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	lockerLookupData, found := q.GetLockerLookupTable(ctx, request.AppId, request.AssetId)
 
@@ -313,9 +293,7 @@ func (q QueryServer) QueryWhiteListedAssetByAllApps(c context.Context, request *
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	apps, found := q.asset.GetApps(ctx)
 
 	if !found {
@@ -351,9 +329,7 @@ func (q QueryServer) QueryLockerLookupTableByApp(c context.Context, req *types.Q
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	item, found := q.GetLockerLookupTableByApp(ctx, req.AppId)
 	if !found {
 		return &types.QueryLockerLookupTableByAppResponse{}, nil
@@ -369,9 +345,7 @@ func (q QueryServer) QueryLockerLookupTableByAppAndAssetID(c context.Context, re
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	item, found := q.GetLockerLookupTable(ctx, req.AppId, req.AssetId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
@@ -387,9 +361,7 @@ func (q QueryServer) QueryLockerTotalDepositedByApp(c context.Context, req *type
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	item, found := q.GetLockerLookupTableByApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locker-info does not exist for id %d", req.AppId)
@@ -413,9 +385,7 @@ func (q QueryServer) QueryLockerTotalRewardsByAssetAppWise(c context.Context, re
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	_, found := q.GetApp(ctx, request.AppId)
 

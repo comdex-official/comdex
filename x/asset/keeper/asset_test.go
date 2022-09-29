@@ -155,7 +155,6 @@ func (s *KeeperTestSuite) TestAddApp() {
 				s.Require().Equal(minGovDeposit, sdk.NewIntFromUint64(5000000).Int64())
 				s.Require().Equal(govTimeInSeconds, int64(653))
 			}
-
 		})
 	}
 }
@@ -168,6 +167,7 @@ func (s *KeeperTestSuite) TestQueryApps() {
 	s.Require().NoError(err)
 	s.Require().Equal(len(res.Apps), 2)
 }
+
 func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 	s.TestAddAssetRecords()
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
@@ -177,7 +177,8 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 		assetID         uint64
 		isErrorExpected bool
 	}{
-		{"Update Asset cmdx ucmdx",
+		{
+			"Update Asset cmdx ucmdx",
 			assetTypes.Asset{
 				Id:                    1,
 				Name:                  "CMRT",
@@ -209,8 +210,8 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 		})
 	}
 }
-func (s *KeeperTestSuite) TestAddAssetRecords() {
 
+func (s *KeeperTestSuite) TestAddAssetRecords() {
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	for _, tc := range []struct {
 		name            string
@@ -218,8 +219,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 		assetID         uint64
 		isErrorExpected bool
 	}{
-		{"Add Asset cmdx ucmdx",
-			assetTypes.Asset{Name: "CMDX",
+		{
+			"Add Asset cmdx ucmdx",
+			assetTypes.Asset{
+				Name:                  "CMDX",
 				Denom:                 "ucmdx",
 				Decimals:              1000000,
 				IsOnChain:             true,
@@ -236,8 +239,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 		//	2,
 		//	true,
 		//},
-		{"Add Asset : Duplicate Denom 2 osmo ucmdx",
-			assetTypes.Asset{Name: "OSMO",
+		{
+			"Add Asset : Duplicate Denom 2 osmo ucmdx",
+			assetTypes.Asset{
+				Name:                  "OSMO",
 				Denom:                 "ucmdx",
 				Decimals:              1000000,
 				IsOnChain:             true,
@@ -246,8 +251,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			2,
 			true,
 		},
-		{"Add Asset 2",
-			assetTypes.Asset{Name: "CMST",
+		{
+			"Add Asset 2",
+			assetTypes.Asset{
+				Name:                  "CMST",
 				Denom:                 "ucmst",
 				Decimals:              1000000,
 				IsOnChain:             true,
@@ -256,8 +263,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			2,
 			false,
 		},
-		{"Add Asset 3",
-			assetTypes.Asset{Name: "HARBOR",
+		{
+			"Add Asset 3",
+			assetTypes.Asset{
+				Name:                  "HARBOR",
 				Denom:                 "uharbor",
 				Decimals:              1000000,
 				IsOnChain:             true,
@@ -266,8 +275,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			3,
 			false,
 		},
-		{"Add Asset 4",
-			assetTypes.Asset{Name: "CMDO",
+		{
+			"Add Asset 4",
+			assetTypes.Asset{
+				Name:                  "CMDO",
 				Denom:                 "ucmdo",
 				Decimals:              1000000,
 				IsOnChain:             true,
@@ -276,8 +287,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			4,
 			false,
 		},
-		{"Add Asset 5",
-			assetTypes.Asset{Name: "SPX",
+		{
+			"Add Asset 5",
+			assetTypes.Asset{
+				Name:                  "SPX",
 				Denom:                 "uspx",
 				Decimals:              1000000,
 				IsOnChain:             false,
@@ -312,7 +325,6 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				s.Require().Equal(asset.IsOraclePriceRequired, tc.msg.IsOraclePriceRequired)
 
 			}
-
 		})
 	}
 }
@@ -329,7 +341,6 @@ func (s *KeeperTestSuite) TestQueryAssets() {
 }
 
 func (s *KeeperTestSuite) TestAddPair() {
-
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	s.TestAddApp()
 	s.TestAddAssetRecords()
@@ -341,7 +352,8 @@ func (s *KeeperTestSuite) TestAddPair() {
 		isErrorExpectedForPair bool
 		pairID                 uint64
 	}{
-		{"Add Pair 1: cmdx cmst",
+		{
+			"Add Pair 1: cmdx cmst",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,
@@ -351,7 +363,8 @@ func (s *KeeperTestSuite) TestAddPair() {
 			false,
 			1,
 		},
-		{"Add Duplicate Pair : cmdx cmst",
+		{
+			"Add Duplicate Pair : cmdx cmst",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,
@@ -361,7 +374,8 @@ func (s *KeeperTestSuite) TestAddPair() {
 			true,
 			1,
 		},
-		{"Add Pair 2 : cmst harbor",
+		{
+			"Add Pair 2 : cmst harbor",
 			assetTypes.Pair{
 				AssetIn:  2,
 				AssetOut: 3,
@@ -387,13 +401,11 @@ func (s *KeeperTestSuite) TestAddPair() {
 				s.Require().Equal(res.PairInfo.DenomIn, tc.symbol1)
 				s.Require().Equal(res.PairInfo.DenomOut, tc.symbol2)
 			}
-
 		})
 	}
 }
 
 func (s *KeeperTestSuite) TestWasmUpdatePairsVault() {
-
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	s.TestAddExtendedPairVault()
 	for _, tc := range []struct {
@@ -404,7 +416,8 @@ func (s *KeeperTestSuite) TestWasmUpdatePairsVault() {
 		isErrorExpectedForVault bool
 		vaultID                 uint64
 	}{
-		{"Update Extended Pair Vault : cmdx cmst",
+		{
+			"Update Extended Pair Vault : cmdx cmst",
 
 			bindings.MsgUpdatePairsVault{
 				AppID:              1,
@@ -454,12 +467,11 @@ func (s *KeeperTestSuite) TestWasmUpdatePairsVault() {
 				s.Require().Equal(afterVault.PairVault.AssetOutPrice, beforeVault.PairVault.AssetOutPrice)
 				s.Require().Equal(afterVault.PairVault.MinUsdValueLeft, tc.extendedPairVault.MinUsdValueLeft)
 			}
-
 		})
 	}
 }
-func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 
+func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	s.TestAddPair()
 	for _, tc := range []struct {
@@ -470,7 +482,8 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 		isErrorExpectedForVault bool
 		vaultID                 uint64
 	}{
-		{"Add Extended Pair Vault : cmdx cmst",
+		{
+			"Add Extended Pair Vault : cmdx cmst",
 
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
@@ -518,7 +531,8 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 		//	true,
 		//	2,
 		//},
-		{"Add Extended Pair Vault : Duplicate PairName cmst cmdx",
+		{
+			"Add Extended Pair Vault : Duplicate PairName cmst cmdx",
 
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
@@ -543,7 +557,8 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			2,
 		},
 
-		{"Add Pair , Extended Pair Vault : cmdx cmst",
+		{
+			"Add Pair , Extended Pair Vault : cmdx cmst",
 
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
@@ -595,7 +610,6 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				s.Require().Equal(res2.PairVault.AssetOutPrice, tc.extendedPairVault.AssetOutPrice)
 				s.Require().Equal(res2.PairVault.MinUsdValueLeft, tc.extendedPairVault.MinUsdValueLeft)
 			}
-
 		})
 	}
 }

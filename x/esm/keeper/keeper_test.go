@@ -26,6 +26,7 @@ type KeeperTestSuite struct {
 func TestKeeperTestSuite(t *testing.T) {
 	suite.Run(t, new(KeeperTestSuite))
 }
+
 func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})

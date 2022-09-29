@@ -4,10 +4,11 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/comdex-official/comdex/x/locker/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
+
+	"github.com/comdex-official/comdex/x/locker/types"
 )
 
 func queryLockedVault() *cobra.Command {

@@ -3,10 +3,11 @@ package keeper
 import (
 	"context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgServer struct {

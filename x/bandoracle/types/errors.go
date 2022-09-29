@@ -5,9 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var (
-	ErrorUnknownProposalType = errors.Register(ModuleName, 401, "unknown proposal type")
-)
+var ErrorUnknownProposalType = errors.Register(ModuleName, 401, "unknown proposal type")
 
 var (
 	ErrSample         = errors.Register(ModuleName, 1100, "sample error")

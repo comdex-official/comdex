@@ -18,7 +18,6 @@ import (
 )
 
 func TestInvalidMsg(t *testing.T) {
-
 	app := app.Setup(false)
 
 	app.VaultKeeper = keeper.NewKeeper(

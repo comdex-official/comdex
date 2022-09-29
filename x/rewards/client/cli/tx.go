@@ -13,8 +13,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/cosmos/cosmos-sdk/client"
+
+	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
 // GetTxCmd returns the transaction commands for this module .
@@ -102,7 +103,6 @@ func NewCreateGaugeCmd() *cobra.Command {
 					return err
 				}
 				appID, err := cmd.Flags().GetUint64(FlagAppID)
-
 				if err != nil {
 					return err
 				}

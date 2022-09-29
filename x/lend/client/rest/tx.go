@@ -3,11 +3,12 @@ package rest
 import (
 	"net/http"
 
-	"github.com/comdex-official/comdex/x/asset/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
+
+	"github.com/comdex-official/comdex/x/asset/types"
 )
 
 type AddNewAssetsRequest struct {
@@ -18,12 +19,14 @@ type AddNewAssetsRequest struct {
 	Asset       []types.Asset `json:"assets" yaml:"assets"`
 }
 
-type AddNewPairsRequest struct{}
-type UpdateNewPairRequest struct{}
-type AddPoolRequest struct{}
-type AddAssetToPairRequest struct{}
-type AddAssetRatesStatsRequest struct{}
-type AddAuctionParamsRequest struct{}
+type (
+	AddNewPairsRequest        struct{}
+	UpdateNewPairRequest      struct{}
+	AddPoolRequest            struct{}
+	AddAssetToPairRequest     struct{}
+	AddAssetRatesStatsRequest struct{}
+	AddAuctionParamsRequest   struct{}
+)
 
 func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{

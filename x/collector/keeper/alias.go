@@ -17,6 +17,7 @@ func (k Keeper) HasAssetForDenom(ctx sdk.Context, id string) bool {
 func (k Keeper) HasAsset(ctx sdk.Context, id uint64) bool {
 	return k.asset.HasAsset(ctx, id)
 }
+
 func (k Keeper) GetAssetForDenom(ctx sdk.Context, id string) (types.Asset, bool) {
 	return k.asset.GetAssetForDenom(ctx, id)
 }
@@ -86,6 +87,7 @@ func (k Keeper) GetLockerRewardTracker(ctx sdk.Context, id, appID uint64) (rewar
 func (k Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise) error {
 	return k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
 }
+
 func (k Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise, found bool) {
 	return k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, appID, assetID)
 }

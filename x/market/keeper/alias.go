@@ -1,10 +1,11 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/asset/types"
-	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+
+	"github.com/comdex-official/comdex/x/asset/types"
+	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 func (k Keeper) AuthenticateCapability(ctx sdk.Context, cap *capabilitytypes.Capability, name string) bool {
