@@ -1,8 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/comdex-official/comdex/x/auction"
 	"time"
+
+	"github.com/comdex-official/comdex/x/auction"
 
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
@@ -16,14 +17,15 @@ import (
 const advanceSeconds = 21601
 
 func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForSurplus() {
-	//userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	// userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	collectorKeeper, ctx := &s.collectorKeeper, &s.ctx
 
 	for _, tc := range []struct {
 		name string
 		msg  bindings.MsgSetCollectorLookupTable
 	}{
-		{"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
+		{
+			"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
 			bindings.MsgSetCollectorLookupTable{
 				AppID:            1,
 				CollectorAssetID: 2,
@@ -53,7 +55,7 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForSurplus
 			s.Require().Equal(result.DebtLotSize, tc.msg.DebtLotSize)
 		})
 	}
-	//s.AddAuctionParams()
+	// s.AddAuctionParams()
 	for _, tc := range []struct {
 		name string
 		msg  bindings.MsgSetAuctionMappingForApp
@@ -85,18 +87,18 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForSurplus
 			s.Require().Equal(result1.AssetOutPrice, tc.msg.AssetOutPrices)
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForDebt() {
-	//userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	// userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	collectorKeeper, ctx := &s.collectorKeeper, &s.ctx
 
 	for _, tc := range []struct {
 		name string
 		msg  bindings.MsgSetCollectorLookupTable
 	}{
-		{"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
+		{
+			"Wasm Add MsgSetCollectorLookupTable AppID 1 CollectorAssetID 2",
 			bindings.MsgSetCollectorLookupTable{
 				AppID:            1,
 				CollectorAssetID: 2,
@@ -126,7 +128,7 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForDebt() 
 			s.Require().Equal(result.DebtLotSize, tc.msg.DebtLotSize)
 		})
 	}
-	//s.AddAuctionParams()
+	// s.AddAuctionParams()
 	for _, tc := range []struct {
 		name string
 		msg  bindings.MsgSetAuctionMappingForApp
@@ -158,7 +160,6 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForDebt() 
 			s.Require().Equal(result1.AssetOutPrice, tc.msg.AssetOutPrices)
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestDebtActivatorBetweenThreshholdAndLotsize() {
@@ -171,7 +172,7 @@ func (s *KeeperTestSuite) TestDebtActivatorBetweenThreshholdAndLotsize() {
 	k, ctx := &s.keeper, &s.ctx
 
 	auction.BeginBlocker(*ctx, s.keeper)
-	//s.Require().NoError(err)
+	// s.Require().NoError(err)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(2)
@@ -182,9 +183,9 @@ func (s *KeeperTestSuite) TestDebtActivatorBetweenThreshholdAndLotsize() {
 }
 
 func (s *KeeperTestSuite) TestDebtActivator() {
-	//userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	//addr1, err := sdk.AccAddressFromBech32(userAddress1)
-	//s.Require().NoError(err)
+	// userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	// addr1, err := sdk.AccAddressFromBech32(userAddress1)
+	// s.Require().NoError(err)
 	s.AddAppAsset()
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
@@ -229,7 +230,7 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	s.Require().Equal(debtAuction.ExpectedMintedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
 	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.DebtLotSize)))
 
-	//Test restart debt auction
+	// Test restart debt auction
 	s.advanceseconds(301)
 	auction.BeginBlocker(*ctx, s.keeper)
 	s.Require().NoError(err)
@@ -365,7 +366,7 @@ func (s *KeeperTestSuite) TestDebtBid() {
 				mintedToken = userBid3.OutflowTokens
 			}
 
-			//place bid
+			// place bid
 			_, err = server.MsgPlaceDebtBid(sdk.WrapSDKContext(*ctx), &tc.msg)
 			if tc.isErrorExpected {
 				s.Require().Error(err)
@@ -414,7 +415,6 @@ func (s *KeeperTestSuite) TestDebtBid() {
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestCloseDebtAuction() {
@@ -457,7 +457,6 @@ func (s *KeeperTestSuite) TestCloseDebtAuction() {
 		},
 	} {
 		s.Run(tc.name, func() {
-
 			beforeHarborBalance, err := s.getBalance(winnerAddress, "uharbor")
 			s.Require().NoError(err)
 
@@ -469,8 +468,8 @@ func (s *KeeperTestSuite) TestCloseDebtAuction() {
 			s.Require().NoError(err)
 
 			afterHarborBalance, err := s.getBalance(winnerAddress, "uharbor")
-			//s.Require().NoError(err)
-			//s.Require().Equal(beforeHarborBalance.Add(auction.ExpectedMintedToken), afterHarborBalance)
+			// s.Require().NoError(err)
+			// s.Require().Equal(beforeHarborBalance.Add(auction.ExpectedMintedToken), afterHarborBalance)
 			if tc.isErrorExpected {
 				s.Require().NotEqual(beforeHarborBalance.Add(debtAuction.ExpectedMintedToken), afterHarborBalance)
 			} else {
@@ -478,5 +477,4 @@ func (s *KeeperTestSuite) TestCloseDebtAuction() {
 			}
 		})
 	}
-
 }

@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
 func (k Keeper) GetReserveFunds(_ sdk.Context, pool types.Pool) sdk.Int {
@@ -73,7 +74,6 @@ func (k Keeper) UpdateLendStats(ctx sdk.Context, AssetID, PoolID uint64, amount 
 	//var userBalanceStats []types.BalanceStats
 
 	if inc {
-
 		assetStats.TotalLend = assetStats.TotalLend.Add(amount)
 		k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 
@@ -141,7 +141,6 @@ func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair types.Extended_Pair, bor
 			assetStats.TotalBorrowed = assetStats.TotalBorrowed.Add(amount)
 			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 		}
-
 	} else {
 		borrowStats, _ := k.GetBorrowStats(ctx)
 		//var userBalanceStats []types.BalanceStats

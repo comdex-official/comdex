@@ -1,10 +1,10 @@
 package keeper_test
 
 import (
-	collectorKeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	"testing"
 	"time"
 
-	"testing"
+	collectorKeeper "github.com/comdex-official/comdex/x/collector/keeper"
 
 	"github.com/stretchr/testify/suite"
 

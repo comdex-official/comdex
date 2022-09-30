@@ -1,14 +1,14 @@
 package keeper
 
 import (
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	protobuftypes "github.com/gogo/protobuf/types"
+
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 )
 
-//Generic for all auctions.
-
+// Generic for all auctions.
 func (k Keeper) SetProtocolStatistics(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) {
 	var (
 		store = k.Store(ctx)
@@ -175,7 +175,6 @@ func (k Keeper) GetAllAuctions(ctx sdk.Context) (auctions []auctiontypes.Surplus
 }
 
 func (k Keeper) GetAllSurplusAuctions(ctx sdk.Context) (surplusAuction []auctiontypes.SurplusAuction) {
-
 	apps, _ := k.GetApps(ctx)
 
 	for _, item := range apps {
@@ -185,8 +184,7 @@ func (k Keeper) GetAllSurplusAuctions(ctx sdk.Context) (surplusAuction []auction
 	return surplusAuction
 }
 
-//SURPLUS
-
+// SURPLUS
 func (k Keeper) SetSurplusAuction(ctx sdk.Context, auction auctiontypes.SurplusAuction) error {
 	auctionType, err := k.GetAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
 	if err != nil {
@@ -448,8 +446,7 @@ func (k Keeper) GetHistorySurplusUserBiddings(ctx sdk.Context, bidder string, ap
 	return userBiddings
 }
 
-//DEBT
-
+// DEBT
 func (k Keeper) SetDebtAuction(ctx sdk.Context, auction auctiontypes.DebtAuction) error {
 	auctionType, err := k.GetAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
 	if err != nil {
@@ -549,7 +546,6 @@ func (k Keeper) GetDebtAuctions(ctx sdk.Context, appID uint64) (auctions []aucti
 }
 
 func (k Keeper) GetAllDebtAuctions(ctx sdk.Context) (debtAuction []auctiontypes.DebtAuction) {
-
 	apps, _ := k.GetApps(ctx)
 
 	for _, item := range apps {
@@ -716,8 +712,7 @@ func (k Keeper) GetHistoryDebtUserBiddings(ctx sdk.Context, bidder string, appID
 	return userBiddings
 }
 
-//DUTCH
-
+// DUTCH
 func (k Keeper) SetDutchAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) error {
 	auctionType, err := k.GetAuctionType(ctx, auction.AuctionMappingId, auction.AppId)
 	if err != nil {

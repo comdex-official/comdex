@@ -2,11 +2,11 @@ package keeper_test
 
 import (
 	"fmt"
+	"time"
 	"github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"time"
 )
 
 func (s *KeeperTestSuite) TestMsgLend() {
@@ -49,7 +49,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
 	s.AddAssetRatesStats(assetOneID, newDec("0.75"), newDec("0.002"), newDec("0.07"), newDec("1.25"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.7"), newDec("0.75"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetOneID)
-	//s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
+	// s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
 	s.AddAssetRatesStats(assetTwoID, newDec("0.5"), newDec("0.002"), newDec("0.08"), newDec("2.0"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.5"), newDec("0.55"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetTwoID)
 
 	pairOneID := s.AddExtendedLendPair(assetTwoID, assetThreeID, false, poolOneID, 1000000)
@@ -229,7 +229,6 @@ func (s *KeeperTestSuite) TestMsgLend() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Lender), sdk.NewCoins(sdk.NewCoin("uasset1", tc.Msg.Amount.Amount), sdk.NewCoin("uasset2", tc.Msg.Amount.Amount)))
@@ -251,11 +250,9 @@ func (s *KeeperTestSuite) TestMsgLend() {
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgWithdraw() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -492,7 +489,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
 	s.AddAssetRatesStats(assetOneID, newDec("0.75"), newDec("0.002"), newDec("0.07"), newDec("1.25"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.7"), newDec("0.75"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetOneID)
-	//s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
+	// s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
 	s.AddAssetRatesStats(assetTwoID, newDec("0.5"), newDec("0.002"), newDec("0.08"), newDec("2.0"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.5"), newDec("0.55"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetTwoID)
 
 	pairOneID := s.AddExtendedLendPair(assetTwoID, assetThreeID, false, poolOneID, 1000000)
@@ -572,7 +569,6 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Lender), sdk.NewCoins(sdk.NewCoin("uasset1", tc.Msg.Amount.Amount)))
@@ -594,7 +590,6 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgCloseLend() {

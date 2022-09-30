@@ -7,11 +7,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
+
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
@@ -127,7 +128,6 @@ func (k Querier) Pools(c context.Context, req *types.QueryPoolsRequest) (*types.
 
 		return true, nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -314,7 +314,6 @@ func (k Querier) Pairs(c context.Context, req *types.QueryPairsRequest) (*types.
 
 		return true, nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -381,7 +380,6 @@ func (k Querier) DepositRequests(c context.Context, req *types.QueryDepositReque
 
 		return true, nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -452,7 +450,6 @@ func (k Querier) WithdrawRequests(c context.Context, req *types.QueryWithdrawReq
 
 		return true, nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -523,7 +520,6 @@ func (k Querier) Orders(c context.Context, req *types.QueryOrdersRequest) (*type
 
 		return true, nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

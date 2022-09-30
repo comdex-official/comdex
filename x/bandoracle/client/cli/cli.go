@@ -2,10 +2,12 @@ package cli
 
 import (
 	"fmt"
+
 	"github.com/spf13/cobra"
 
-	"github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/cosmos/cosmos-sdk/client"
+
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module.

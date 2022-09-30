@@ -1,8 +1,9 @@
 package collector_test
 
 import (
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"testing"
+
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	app "github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/collector"
@@ -11,7 +12,6 @@ import (
 )
 
 func TestGenesis(t *testing.T) {
-
 	comdexApp := app.Setup(false)
 	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
 	genesisState := types.GenesisState{
@@ -22,5 +22,4 @@ func TestGenesis(t *testing.T) {
 	collector.InitGenesis(ctx, k, &genesisState)
 	got := collector.ExportGenesis(ctx, k)
 	require.NotNil(t, got)
-
 }

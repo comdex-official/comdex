@@ -89,6 +89,7 @@ func ExternalRewardsVaultMappingKey(appMappingID uint64) []byte {
 func LockerRewardsTrackerKey(id, appID uint64) []byte {
 	return append(append(LockerRewardsTrackerKeyPrefix, sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
 }
+
 func VaultInterestTrackerKey(id, appID uint64) []byte {
 	return append(append(VaultInterestTrackerKeyPrefix, sdk.Uint64ToBigEndian(id)...), sdk.Uint64ToBigEndian(appID)...)
 }

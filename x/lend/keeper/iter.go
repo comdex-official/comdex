@@ -2,9 +2,11 @@ package keeper
 
 import (
 	"fmt"
-	"github.com/comdex-official/comdex/x/lend/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
 func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
@@ -109,7 +111,6 @@ func (k Keeper) IterateBorrow(ctx sdk.Context, ID uint64) (sdk.Dec, sdk.Dec, err
 }
 
 func (k Keeper) CalculateStableInterest(ctx sdk.Context, amount string, borrow types.BorrowAsset) (sdk.Dec, error) {
-
 	currentTime := ctx.BlockTime().Unix()
 
 	prevInterestTime := borrow.LastInteractionTime.Unix()

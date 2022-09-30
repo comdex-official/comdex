@@ -1,13 +1,14 @@
 package keeper
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/locker/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k Keeper) GetLockerProductAssetMapping(ctx sdk.Context, appID, assetID uint64) (lockerProductMapping types.LockerProductAssetMapping, found bool) {
@@ -81,6 +82,7 @@ func (k Keeper) DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address stri
 func (k Keeper) DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64) {
 	k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, extendedPairID, userVaultID, appMappingID)
 }
+
 func (k Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool) {
 	return k.asset.GetPairsVault(ctx, id)
 }
@@ -120,6 +122,7 @@ func (k Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, addres
 
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
+
 func (k Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
 		return rewardstypes.SendCoinsFromModuleToModuleInRewardsIsZero
@@ -146,6 +149,7 @@ func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint
 func (k Keeper) SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise) error {
 	return k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
 }
+
 func (k Keeper) GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping types.LockerTotalRewardsByAssetAppWise, found bool) {
 	return k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, appID, assetID)
 }

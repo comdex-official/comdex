@@ -2,12 +2,14 @@ package keeper
 
 import (
 	"fmt"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	"github.com/comdex-official/comdex/x/rewards/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"math"
 	"strconv"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
 func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
@@ -95,7 +97,6 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 				if extRewards[i].IsActive {
 					epoch, _ := k.GetEpochTime(ctx, v.EpochId)
 					if epoch.Count < uint64(extRewards[i].DurationDays) {
-
 						appExtPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.Extended_Pair_Id)
 						for _, vaultID := range appExtPairVaultData.VaultIds {
 							totalRewards := v.TotalRewards

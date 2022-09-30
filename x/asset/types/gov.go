@@ -54,6 +54,7 @@ func NewAddAssetsProposal(title, description string, assets Asset) govtypes.Cont
 		Assets:      assets,
 	}
 }
+
 func (p *AddAssetsProposal) GetTitle() string {
 	return p.Title
 }

@@ -5,11 +5,12 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/comdex-official/comdex/x/auction/expected"
-	"github.com/comdex-official/comdex/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	"github.com/comdex-official/comdex/x/auction/expected"
+	"github.com/comdex-official/comdex/x/auction/types"
 )
 
 type (
@@ -53,7 +54,6 @@ func NewKeeper(
 	}
 
 	return Keeper{
-
 		cdc:         cdc,
 		storeKey:    storeKey,
 		memKey:      memKey,

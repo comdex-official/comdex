@@ -28,6 +28,4 @@ var (
 	ErrorCollectorLookupDoesNotExists           = errors.Register(ModuleName, 217, "Collector lookup does not exists")
 )
 
-var (
-	ErrorUnknownMsgType = errors.Register(ModuleName, 301, "unknown message type")
-)
+var ErrorUnknownMsgType = errors.Register(ModuleName, 301, "unknown message type")

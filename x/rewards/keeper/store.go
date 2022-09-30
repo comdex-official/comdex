@@ -3,9 +3,10 @@ package keeper
 import (
 	"time"
 
-	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+
+	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
 // EPOCHES

@@ -5,9 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var (
-	_ sdk.Msg = (*MsgKillRequest)(nil)
-)
+var _ sdk.Msg = (*MsgKillRequest)(nil)
 
 func NewMsgKillRequest(from sdk.AccAddress, switchParams KillSwitchParams) *MsgKillRequest {
 	return &MsgKillRequest{

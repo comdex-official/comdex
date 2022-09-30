@@ -12,7 +12,6 @@ import (
 )
 
 func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
-
 	assetKeeper, liquidationKeeper, ctx := &s.assetKeeper, &s.liquidationKeeper, &s.ctx
 
 	for _, tc := range []struct {
@@ -22,7 +21,8 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 		symbol1           string
 		symbol2           string
 	}{
-		{"Add Pair , Extended Pair Vault : cmdx cmst",
+		{
+			"Add Pair , Extended Pair Vault : cmdx cmst",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,
@@ -80,6 +80,7 @@ func (s *KeeperTestSuite) SetInitialOraclePriceForSymbols(asset1 string, asset2 
 	s.SetOraclePrice(asset1, 2000000)
 	s.SetOraclePrice(asset2, 1000000)
 }
+
 func (s *KeeperTestSuite) ChangeOraclePrice(asset string) {
 	s.SetOraclePrice(asset, 1000000)
 }
@@ -96,7 +97,8 @@ func (s *KeeperTestSuite) CreateVault() {
 		name string
 		msg  vaultTypes.MsgCreateRequest
 	}{
-		{"Create Vault : AppID 1 extended pair 1 user address 1",
+		{
+			"Create Vault : AppID 1 extended pair 1 user address 1",
 			vaultTypes.MsgCreateRequest{
 				From:                userAddress1,
 				AppId:               1,
@@ -105,7 +107,8 @@ func (s *KeeperTestSuite) CreateVault() {
 				AmountOut:           sdk.NewIntFromUint64(1000000),
 			},
 		},
-		{"Create Vault : AppID 1 extended pair 1 user address 2",
+		{
+			"Create Vault : AppID 1 extended pair 1 user address 2",
 			vaultTypes.MsgCreateRequest{
 				From:                userAddress2,
 				AppId:               1,
@@ -184,23 +187,32 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		name string
 		msg  assetTypes.Asset
 	}{
-		{"Add Asset 1",
-			assetTypes.Asset{Name: "CMDX",
+		{
+			"Add Asset 1",
+			assetTypes.Asset{
+				Name:      "CMDX",
 				Denom:     "ucmdx",
 				Decimals:  1000000,
-				IsOnChain: true},
+				IsOnChain: true,
+			},
 		},
-		{"Add Asset 2",
-			assetTypes.Asset{Name: "CMST",
+		{
+			"Add Asset 2",
+			assetTypes.Asset{
+				Name:      "CMST",
 				Denom:     "ucmst",
 				Decimals:  1000000,
-				IsOnChain: true},
+				IsOnChain: true,
+			},
 		},
-		{"Add Asset 3",
-			assetTypes.Asset{Name: "HARBOR",
+		{
+			"Add Asset 3",
+			assetTypes.Asset{
+				Name:      "HARBOR",
 				Denom:     "uharbor",
 				Decimals:  1000000,
-				IsOnChain: true},
+				IsOnChain: true,
+			},
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -219,7 +231,6 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			s.fundAddr(addr2, sdk.NewCoin(tc.msg.Denom, sdk.NewInt(1000000)))
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestLiquidateVaults1() {

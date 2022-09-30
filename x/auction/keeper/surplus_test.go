@@ -1,8 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/comdex-official/comdex/x/auction"
 	"time"
+
+	"github.com/comdex-official/comdex/x/auction"
 
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
@@ -39,8 +40,8 @@ func (s *KeeperTestSuite) TestSurplusActivatorBetweenThreshholdAndLotsize() {
 	k, ctx := &s.keeper, &s.ctx
 
 	auction.BeginBlocker(*ctx, s.keeper)
-	//err := k.SurplusActivator(*ctx)
-	//s.Require().NoError(err)
+	// err := k.SurplusActivator(*ctx)
+	// s.Require().NoError(err)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(1)
@@ -49,8 +50,8 @@ func (s *KeeperTestSuite) TestSurplusActivatorBetweenThreshholdAndLotsize() {
 	_, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().Error(err)
 }
-func (s *KeeperTestSuite) TestSurplusActivator() {
 
+func (s *KeeperTestSuite) TestSurplusActivator() {
 	s.AddAppAsset()
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
@@ -60,7 +61,7 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	k, collectorKeeper, ctx := &s.keeper, &s.collectorKeeper, &s.ctx
 
 	auction.BeginBlocker(*ctx, s.keeper)
-	//s.Require().NoError(err)
+	// s.Require().NoError(err)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(1)
@@ -88,7 +89,7 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	s.Require().Equal(surplusAuction.Bid.Amount.Uint64(), uint64(0))
 	s.Require().True(netFees.NetFeesCollected.GTE(sdk.NewIntFromUint64(collectorLookUp.SurplusThreshold + collectorLookUp.LotSize)))
 
-	//Test restart surplus auction
+	// Test restart surplus auction
 	s.advanceseconds(301)
 	auction.BeginBlocker(*ctx, s.keeper)
 	s.Require().NoError(err)
@@ -206,7 +207,7 @@ func (s *KeeperTestSuite) TestSurplusBid() {
 				bidToken = userBid3.Bid
 			}
 
-			//place bid
+			// place bid
 			_, err = server.MsgPlaceSurplusBid(sdk.WrapSDKContext(*ctx), &tc.msg)
 			if tc.isErrorExpected {
 				s.Require().Error(err)
@@ -253,7 +254,6 @@ func (s *KeeperTestSuite) TestSurplusBid() {
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestCloseSurplusAuction() {
@@ -296,7 +296,6 @@ func (s *KeeperTestSuite) TestCloseSurplusAuction() {
 		},
 	} {
 		s.Run(tc.name, func() {
-
 			beforeCmstBalance, err := s.getBalance(winnerAddress, "ucmst")
 			s.Require().NoError(err)
 
@@ -308,15 +307,13 @@ func (s *KeeperTestSuite) TestCloseSurplusAuction() {
 			s.Require().NoError(err)
 
 			afterCmstBalance, err := s.getBalance(winnerAddress, "ucmst")
-			//s.Require().NoError(err)
-			//s.Require().Equal(beforeHarborBalance.Add(auction.ExpectedMintedToken), afterHarborBalance)
+			// s.Require().NoError(err)
+			// s.Require().Equal(beforeHarborBalance.Add(auction.ExpectedMintedToken), afterHarborBalance)
 			if tc.isErrorExpected {
 				s.Require().NotEqual(beforeCmstBalance.Add(surplusAuction.SellToken), afterCmstBalance)
 			} else {
-
 				s.Require().Equal(beforeCmstBalance.Add(surplusAuction.SellToken), afterCmstBalance)
 			}
 		})
 	}
-
 }

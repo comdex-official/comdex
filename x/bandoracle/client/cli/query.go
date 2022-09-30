@@ -4,10 +4,11 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
+
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 // CmdFetchPriceResult queries request result by reqID.

@@ -13,7 +13,7 @@ func DefaultGenesisState() *GenesisState {
 		DefaultParams(),
 	)
 }
-func (gs GenesisState) Validate() error {
 
+func (gs GenesisState) Validate() error {
 	return gs.Params.Validate()
 }

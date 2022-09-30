@@ -3,10 +3,11 @@ package bandoracle
 import (
 	"github.com/bandprotocol/bandchain-packet/obi"
 	"github.com/bandprotocol/bandchain-packet/packet"
-	"github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 func (im IBCModule) handleOraclePacket(

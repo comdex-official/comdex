@@ -21,9 +21,11 @@ type AddNewAssetsRequest struct {
 	Asset       types.Asset  `json:"assets" yaml:"assets"`
 }
 
-type UpdateNewAssetRequest struct{}
-type AddNewPairsRequest struct{}
-type UpdateNewPairRequest struct{}
+type (
+	UpdateNewAssetRequest struct{}
+	AddNewPairsRequest    struct{}
+	UpdateNewPairRequest  struct{}
+)
 
 func AddNewAssetsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
@@ -140,6 +142,7 @@ func AddNewAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalREST
 		Handler:  AddNewAssetsRESTHandler(clientCtx),
 	}
 }
+
 func AddNewAssetInAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-update-new-asset-in-app",

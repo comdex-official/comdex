@@ -3,12 +3,13 @@ package keeper
 import (
 	"context"
 
-	"github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/liquidation/types"
 )
 
 var _ types.QueryServer = QueryServer{}
@@ -33,9 +34,7 @@ func (q QueryServer) QueryLockedVault(c context.Context, req *types.QueryLockedV
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	item, found := q.GetLockedVault(ctx, req.AppID, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locked-vault does not exist for id %d", req.Id)
@@ -72,7 +71,6 @@ func (q QueryServer) QueryLockedVaults(c context.Context, req *types.QueryLocked
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -109,7 +107,6 @@ func (q QueryServer) QueryLockedVaultsHistory(c context.Context, req *types.Quer
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -146,7 +143,6 @@ func (q QueryServer) QueryUserLockedVaults(c context.Context, req *types.QueryUs
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -183,7 +179,6 @@ func (q QueryServer) QueryUserLockedVaultsHistory(c context.Context, req *types.
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -220,7 +215,6 @@ func (q QueryServer) QueryLockedVaultsPair(c context.Context, req *types.QueryLo
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -232,9 +226,7 @@ func (q QueryServer) QueryLockedVaultsPair(c context.Context, req *types.QueryLo
 }
 
 func (q QueryServer) QueryAppIds(c context.Context, _ *types.QueryAppIdsRequest) (*types.QueryAppIdsResponse, error) {
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item := q.GetAppIdsForLiquidation(ctx)
 	return &types.QueryAppIdsResponse{

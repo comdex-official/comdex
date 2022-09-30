@@ -4,14 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/pflag"
 	"os"
+
+	"github.com/spf13/pflag"
 )
 
-type XAddNewLendPairsInputs addNewLendPairsInputs
-type XAddLendPoolInputs addLendPoolInputs
-type XAddAssetRatesStatsInputs addAssetRatesStatsInputs
-type XSetAuctionParamsInputs addNewAuctionParamsInputs
+type (
+	XAddNewLendPairsInputs    addNewLendPairsInputs
+	XAddLendPoolInputs        addLendPoolInputs
+	XAddAssetRatesStatsInputs addAssetRatesStatsInputs
+	XSetAuctionParamsInputs   addNewAuctionParamsInputs
+)
 
 type XAddNewLendPairsInputsExceptions struct {
 	XAddNewLendPairsInputs

@@ -2,12 +2,13 @@ package main
 
 import (
 	"errors"
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	"github.com/prometheus/client_golang/prometheus"
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -194,7 +195,8 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 }
 
 func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64,
-	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions) (servertypes.ExportedApp, error) {
+	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions,
+) (servertypes.ExportedApp, error) {
 	config := comdex.MakeEncodingConfig()
 	config.Marshaler = codec.NewProtoCodec(config.InterfaceRegistry)
 	homePath, ok := options.Get(flags.FlagHome).(string)

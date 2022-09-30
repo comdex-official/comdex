@@ -1,10 +1,11 @@
 package keeper
 
 import (
-	assetTypes "github.com/comdex-official/comdex/x/asset/types"
-	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+
+	assetTypes "github.com/comdex-official/comdex/x/asset/types"
+	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 
 	"github.com/comdex-official/comdex/x/market/types"
 )
@@ -118,7 +119,6 @@ func (k Keeper) SetRates(ctx sdk.Context, _ string) {
 					Value: data.Rates[i],
 				})
 				store.Set(key, value)
-
 			}
 		}
 	}

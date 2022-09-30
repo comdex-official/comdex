@@ -11,15 +11,16 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/comdex-official/comdex/x/liquidation/client/cli"
-	"github.com/comdex-official/comdex/x/liquidation/expected"
-	"github.com/comdex-official/comdex/x/liquidation/keeper"
-	"github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+
+	"github.com/comdex-official/comdex/x/liquidation/client/cli"
+	"github.com/comdex-official/comdex/x/liquidation/expected"
+	"github.com/comdex-official/comdex/x/liquidation/keeper"
+	"github.com/comdex-official/comdex/x/liquidation/types"
 )
 
 var (
