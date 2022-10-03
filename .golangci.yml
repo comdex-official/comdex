@@ -1,75 +1,34 @@
-# v1.27.0
-
 run:
   concurrency: 16
   timeout: 5m
   tests: false
   allow-parallel-runners: true
 
-linters-settings:
-  funlen:
-    lines: 180
-    statements: 120
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - experimental
-      - performance
-      - style
-  gocyclo:
-    min-complexity: 16
-  goimports:
-    local-prefixes: github.com/comdex-official/comdex
-
 linters:
   disable-all: true
   enable:
     - asciicheck
     - bodyclose
-    - deadcode
     - depguard
-    # - dogsled
-    #- dupl
     - errcheck
-    #- funlen
     - forcetypeassert
-    #- gochecknoglobals
-    #- gochecknoinits
-    #- gocognit
-    #- goconst
-    #- gocritic
-    #- gocyclo
-    #- godot
-    - godox
-    #- goerr113
-    - gofmt
-    - goimports
-    - golint
-    #- gomnd
+    - gofumpt
     - gomodguard
     - goprintffuncname
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - interfacer
-    #- lll
-    - maligned
     - misspell
+    - revive
     - nakedret
-    #- nestif
-    #- nolintlint
-    #- prealloc
+    - nolintlint
     - rowserrcheck
-    - scopelint
     - staticcheck
-    - structcheck
     - stylecheck
     - testpackage
     - typecheck
     - unconvert
-    #- unparam
-    #- unused - will be enabled later
-    - varcheck
+    - unparam
+    - unused
     - whitespace
-    #- wsl
