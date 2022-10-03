@@ -1,7 +1,6 @@
 package v4_0_0
 
 import (
-	"github.com/comdex-official/comdex/app"
 	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -144,10 +143,10 @@ func UpdateDutchLendAuctions(
 }
 
 // CreateUpgradeHandler creates an SDK upgrade handler for v4_4_0
-func CreateUpgradeHandlerV440(mm *module.Manager, configurator module.Configurator, a *app.App) upgradetypes.UpgradeHandler {
+func CreateUpgradeHandlerV440(mm *module.Manager, configurator module.Configurator, liquidationkeeper liquidationkeeper.Keeper, auctionkeeper auctionkeeper.Keeper) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
-		err := UpdateDutchLendAuctions(ctx, a.LiquidationKeeper, a.AuctionKeeper)
+		err := UpdateDutchLendAuctions(ctx, liquidationkeeper, auctionkeeper)
 		if err != nil {
 			return nil, err
 		}
