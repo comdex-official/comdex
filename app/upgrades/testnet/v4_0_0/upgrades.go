@@ -146,10 +146,10 @@ func UpdateDutchLendAuctions(
 func CreateUpgradeHandlerV440(mm *module.Manager, configurator module.Configurator, liquidationkeeper liquidationkeeper.Keeper, auctionkeeper auctionkeeper.Keeper) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
-		err := UpdateDutchLendAuctions(ctx, liquidationkeeper, auctionkeeper)
-		if err != nil {
-			return nil, err
-		}
+		//err := UpdateDutchLendAuctions(ctx, liquidationkeeper, auctionkeeper)
+		//if err != nil {
+		//	return nil, err
+		//}
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 
 		if err != nil {
