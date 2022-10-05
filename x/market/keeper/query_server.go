@@ -12,9 +12,7 @@ import (
 	"github.com/comdex-official/comdex/x/market/types"
 )
 
-var (
-	_ types.QueryServer = (*queryServer)(nil)
-)
+var _ types.QueryServer = (*queryServer)(nil)
 
 type queryServer struct {
 	Keeper
@@ -52,7 +50,6 @@ func (q *queryServer) QueryMarkets(c context.Context, req *types.QueryMarketsReq
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -68,9 +65,7 @@ func (q *queryServer) QueryMarket(c context.Context, req *types.QueryMarketReque
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetMarket(ctx, req.Symbol)
 	if !found {

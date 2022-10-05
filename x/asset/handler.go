@@ -3,16 +3,17 @@ package asset
 //goland:noinspection GoLinter
 import (
 	"fmt"
-	"github.com/comdex-official/comdex/x/asset/keeper"
-	"github.com/comdex-official/comdex/x/asset/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
+	"github.com/comdex-official/comdex/x/asset/keeper"
+	"github.com/comdex-official/comdex/x/asset/types"
 )
 
 // NewHandler ...
 func NewHandler(k keeper.Keeper) sdk.Handler {
-
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		_ = ctx.WithEventManager(sdk.NewEventManager())
 
@@ -71,6 +72,7 @@ func handleUpdateGovTimeInAppProposal(ctx sdk.Context, k keeper.Keeper, p *types
 func handleAddAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAppProposal) error {
 	return k.HandleAddAppRecords(ctx, p)
 }
+
 func handleAddAssetInAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetInAppProposal) error {
 	return k.HandleAddAssetInAppRecords(ctx, p)
 }

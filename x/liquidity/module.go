@@ -103,7 +103,8 @@ type AppModule struct {
 }
 
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper,
-	accountKeeper expected.AccountKeeper, bankKeeper expected.BankKeeper) AppModule {
+	accountKeeper expected.AccountKeeper, bankKeeper expected.BankKeeper,
+) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,

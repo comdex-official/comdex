@@ -5,11 +5,12 @@ import (
 	"strconv"
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) GetAMMPoolInterfaceObject(ctx sdk.Context, appID, poolID uint64) (*types.Pool, *types.Pair, *amm.BasicPool, error) {
@@ -466,7 +467,6 @@ func (k Keeper) ProcessQueuedFarmers(ctx sdk.Context, appID uint64) {
 		queuedFarmers := k.GetAllQueuedFarmers(ctx, pool.AppId, pool.Id)
 
 		for _, queuedFarmer := range queuedFarmers {
-
 			activeFarmer, found := k.GetActiveFarmer(ctx, queuedFarmer.AppId, queuedFarmer.PoolId, sdk.MustAccAddressFromBech32(queuedFarmer.Farmer))
 			if !found {
 				activeFarmer = types.NewActivefarmer(queuedFarmer.AppId, queuedFarmer.PoolId, sdk.MustAccAddressFromBech32(queuedFarmer.Farmer), sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)))

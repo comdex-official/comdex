@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
 func (k Keeper) HandelUpdateGenericParamsProposal(ctx sdk.Context, p *types.UpdateGenericParamsProposal) error {

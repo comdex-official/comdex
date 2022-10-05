@@ -1,12 +1,13 @@
 package keeper
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetAmountFromCollector returns amount from the collector.
@@ -68,7 +69,7 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 
 	collectorData, found := k.GetAppidToAssetCollectorMapping(ctx, appID, assetID)
 	if !found {
-		//create a new instance of appID To AssetCollectorMapping
+		// create a new instance of appID To AssetCollectorMapping
 		var collectorNewData types.AppToAssetIdCollectorMapping
 		collectorNewData.AppId = appID
 		collectorNewData.AssetId = assetID
@@ -91,7 +92,6 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 			return err
 		}
 	} else {
-
 		var collectorNewData types.AppToAssetIdCollectorMapping
 		collectorNewData.AppId = appID
 		collectorNewData.AssetId = assetID
@@ -114,7 +114,6 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 		}
 
 		return nil
-
 	}
 	return nil
 }
@@ -185,7 +184,6 @@ func (k Keeper) GetCollectorDataForAppIDAssetID(ctx sdk.Context, appID uint64, a
 
 // SetCollectorLookupTable updates the collector lookup store.
 func (k Keeper) SetCollectorLookupTable(ctx sdk.Context, records types.CollectorLookupTableData) error {
-
 	if !k.HasAsset(ctx, records.CollectorAssetId) {
 		return types.ErrorAssetDoesNotExist
 	}
@@ -201,8 +199,8 @@ func (k Keeper) SetCollectorLookupTable(ctx sdk.Context, records types.Collector
 	}
 	appDenom, found := k.GetAppToDenomsMapping(ctx, records.AppId)
 	if found {
-		//check if assetdenom already exists
-		var check = 0
+		// check if assetdenom already exists
+		check := 0
 		for _, data := range appDenom.AssetIds {
 			if data == records.CollectorAssetId {
 				check++
@@ -215,14 +213,14 @@ func (k Keeper) SetCollectorLookupTable(ctx sdk.Context, records types.Collector
 		appDenom.AssetIds = append(appDenom.AssetIds, records.CollectorAssetId)
 		k.SetAppToDenomsMapping(ctx, records.AppId, appDenom)
 	} else {
-		//initialize the mapping
+		// initialize the mapping
 		var appDenomNew types.AppToDenomsMapping
 		appDenomNew.AppId = records.AppId
 		appDenomNew.AssetIds = append(appDenomNew.AssetIds, records.CollectorAssetId)
 		k.SetAppToDenomsMapping(ctx, records.AppId, appDenomNew)
 	}
 
-	var Collector = types.CollectorLookupTableData{
+	Collector := types.CollectorLookupTableData{
 		AppId:            records.AppId,
 		CollectorAssetId: records.CollectorAssetId,
 		SecondaryAssetId: records.SecondaryAssetId,
@@ -357,7 +355,6 @@ func (k Keeper) GetAllAppToDenomsMapping(ctx sdk.Context) (appToDenomsMapping []
 
 // SetAuctionMappingForApp sets auction map data for app/product.
 func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, record types.AppAssetIdToAuctionLookupTable) error {
-
 	_, found := k.GetApp(ctx, record.AppId)
 	if !found {
 		return types.ErrorAppDoesNotExist
@@ -567,8 +564,8 @@ func (k Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, collectorBindings *
 	}
 	appDenom, found := k.GetAppToDenomsMapping(ctx, collectorBindings.AppID)
 	if found {
-		//check if asset denom already exists
-		var check = 0
+		// check if asset denom already exists
+		check := 0
 		for _, data := range appDenom.AssetIds {
 			if data == collectorBindings.CollectorAssetID {
 				check++
@@ -581,7 +578,7 @@ func (k Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, collectorBindings *
 		appDenom.AssetIds = append(appDenom.AssetIds, collectorBindings.CollectorAssetID)
 		k.SetAppToDenomsMapping(ctx, collectorBindings.AppID, appDenom)
 	} else {
-		//initialize the mapping
+		// initialize the mapping
 		var appDenomNew types.AppToDenomsMapping
 		appDenomNew.AppId = collectorBindings.AppID
 		appDenomNew.AssetIds = append(appDenomNew.AssetIds, collectorBindings.CollectorAssetID)
@@ -593,7 +590,7 @@ func (k Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, collectorBindings *
 		blockHeight = 0
 	}
 
-	var Collector = types.CollectorLookupTableData{
+	Collector := types.CollectorLookupTableData{
 		AppId:            collectorBindings.AppID,
 		CollectorAssetId: collectorBindings.CollectorAssetID,
 		SecondaryAssetId: collectorBindings.SecondaryAssetID,
@@ -629,8 +626,8 @@ func (k Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, appID, collect
 	}
 	appDenom, found := k.GetAppToDenomsMapping(ctx, appID)
 	if found {
-		//check if asset denom already exists
-		var check = 0
+		// check if asset denom already exists
+		check := 0
 		for _, data := range appDenom.AssetIds {
 			if data == collectorAssetID {
 				check++
@@ -701,12 +698,10 @@ func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding
 	if found {
 		if Collector.LockerSavingRate != updateColBinding.LSR {
 			if updateColBinding.LSR.IsZero() {
-
 				// run script to distrubyte reward
 				k.LockerIterateRewards(ctx, Collector.LockerSavingRate, Collector.BlockHeight, Collector.BlockTime.Unix(), updateColBinding.AppID, updateColBinding.AssetID, false)
 				Collector.BlockTime = ctx.BlockTime()
 				Collector.BlockHeight = 0
-
 			} else if Collector.LockerSavingRate.IsZero() {
 				// do nothing
 				Collector.BlockHeight = ctx.BlockHeight()
@@ -716,7 +711,6 @@ func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding
 				k.LockerIterateRewards(ctx, Collector.LockerSavingRate, Collector.BlockHeight, Collector.BlockTime.Unix(), updateColBinding.AppID, updateColBinding.AssetID, true)
 				Collector.BlockHeight = ctx.BlockHeight()
 				Collector.BlockTime = ctx.BlockTime()
-
 			}
 		}
 	}
@@ -768,7 +762,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 			}
 
 			if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
-				//send rewards
+				// send rewards
 				newReward := sdk.ZeroInt()
 				newReward = lockerRewardsTracker.RewardsAccumulated.TruncateInt()
 				newRewardDec := sdk.NewDec(newReward.Int64())
@@ -831,12 +825,9 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 					lockerData.BlockHeight = 0
 				}
 				k.SetLocker(ctx, lockerData)
-
 			}
-
 		}
 	}
-
 }
 
 func (k Keeper) WasmUpdateCollectorLookupTableQuery(ctx sdk.Context, appID, assetID uint64) (bool, string) {

@@ -3,10 +3,11 @@ package keeper
 import (
 	"sort"
 
-	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
-	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	"github.com/comdex-official/comdex/x/vault/types"
 )
 
 func (k Keeper) SetIDForVault(ctx sdk.Context, id uint64) {
@@ -155,8 +156,7 @@ func (k Keeper) SetAppExtendedPairVaultMappingData(ctx sdk.Context, appExtendedP
 	store.Set(key, value)
 }
 
-//Get AppExtendedPairVaultMapping to check the current status of the vault by extended pair vault id
-
+// Get AppExtendedPairVaultMapping to check the current status of the vault by extended pair vault id
 func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID uint64, pairVaultID uint64) (appExtendedPairVaultData types.AppExtendedPairVaultMappingData, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -219,15 +219,14 @@ func (k Keeper) GetAllAppExtendedPairVaultMapping(ctx sdk.Context) (appExtendedP
 	return appExtendedPairVaultData
 }
 
-//Check AppExtendedPairVault Data,
-//If exists fine --- go with the next steps from here
-//else instantiate 1 and set it. and go for the next steps from here
-//So best way will be to create a function which will first check if AppExtendedPairVault Data exists or not. If it does. then send counted value. else create a struct save it. and send counter value.
-
+// Check AppExtendedPairVault Data,
+// If exists fine --- go with the next steps from here
+// else instantiate 1 and set it. and go for the next steps from here
+// So best way will be to create a function which will first check if AppExtendedPairVault Data exists or not. If it does. then send counted value. else create a struct save it. and send counter value.
 func (k Keeper) CheckAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64, extendedPairVaultID uint64) (mintedStatistics sdk.Int, lenVaults uint64) {
 	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMappingData(ctx, appMappingID, extendedPairVaultID)
 	if !found {
-		//Initialising a new struct
+		// Initialising a new struct
 		var newAppExtendedPairVault types.AppExtendedPairVaultMappingData
 		newAppExtendedPairVault.AppId = appMappingID
 		zeroVal := sdk.ZeroInt()
@@ -303,7 +302,7 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 	var assetOutPrice uint64
 
 	if extendedPairVault.AssetOutOraclePrice {
-		//If oracle Price required for the assetOut
+		// If oracle Price required for the assetOut
 		if statusEsm && esmStatus.SnapshotStatus {
 			price, found := k.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetOutData.Id)
 			if !found {
@@ -317,7 +316,7 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 			}
 		}
 	} else {
-		//If oracle Price is not required for the assetOut
+		// If oracle Price is not required for the assetOut
 		assetOutPrice = extendedPairVault.AssetOutPrice
 	}
 
@@ -378,8 +377,8 @@ func (k Keeper) GetVault(ctx sdk.Context, id uint64) (vault types.Vault, found b
 
 // UpdateCollateralLockedAmountLockerMapping For updating token stats of collateral .
 func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
-	//if Change type true = Add to collateral Locked
-	//If change type false = Subtract from the collateral Locked
+	// if Change type true = Add to collateral Locked
+	// If change type false = Subtract from the collateral Locked
 	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMappingData(ctx, appMappingID, extendedPairID)
 	if found {
 		if changeType {
@@ -396,8 +395,8 @@ func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMa
 
 // UpdateTokenMintedAmountLockerMapping For updating token stats of minted .
 func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
-	//if Change type true = Add to token Locked
-	//If change type false = Subtract from the token Locked
+	// if Change type true = Add to token Locked
+	// If change type false = Subtract from the token Locked
 	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMappingData(ctx, appMappingID, extendedPairID)
 	if found {
 		if changeType {
@@ -573,6 +572,7 @@ func (k Keeper) calculateUserToken(userVault types.Vault, amountIn sdk.Int) (use
 
 	return userToken
 }
+
 func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount sdk.Int, extPair []uint64, votingRatio []sdk.Int) error {
 	var assetID uint64
 	var perUserShareByAmt sdk.Int
@@ -594,7 +594,7 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 		}
 	}
 	k.UpdateAssetDataInTokenMintByApp(ctx, appID, assetID, true, amount)
-	for i, _ := range votingRatio {
+	for i := range votingRatio {
 		totalVote = totalVote.Add(votingRatio[i])
 	}
 	for j, extP := range extPair {

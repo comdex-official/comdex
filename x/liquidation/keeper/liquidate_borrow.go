@@ -1,10 +1,11 @@
 package keeper
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
@@ -66,9 +67,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 				if err != nil {
 					continue
 				}
-
 			}
-
 		} else {
 			if borrowPos.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
 				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.UpdatedAmountOut, assetOut)
@@ -91,7 +90,6 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					if err != nil {
 						continue
 					}
-
 				}
 			} else {
 				currentCollateralizationRatio, _ = k.CalculateLendCollaterlizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.UpdatedAmountOut, assetOut)
@@ -115,7 +113,6 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					if err != nil {
 						continue
 					}
-
 				}
 			}
 		}
@@ -142,7 +139,7 @@ func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset
 			BridgedAssetAmount: borrow.BridgedAssetAmount,
 		},
 	}
-	var value = types.LockedVault{
+	value := types.LockedVault{
 		LockedVaultId:                lockedVaultID + 1,
 		AppId:                        appID,
 		OriginalVaultId:              borrow.ID,
@@ -193,7 +190,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
 		assetRatesStats, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
 
 		if (!lockedVault.IsAuctionInProgress && !lockedVault.IsAuctionComplete) || (lockedVault.IsAuctionComplete && lockedVault.CurrentCollaterlisationRatio.GTE(unliquidatePointPercentage)) {
-
 			assetIn, _ := k.GetAsset(ctx, pair.AssetIn)
 
 			assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
@@ -214,7 +210,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
 				} else {
 					c = assetRatesStats.LiquidationThreshold.Mul(secondBridgeAssetStats.Ltv)
 				}
-
 			} else {
 				c = assetRatesStats.LiquidationThreshold
 			}
@@ -260,7 +255,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
 			if selloffAmount.GTE(totalIn) {
 				collateralToBeAuctioned = totalIn
 			} else {
-
 				collateralToBeAuctioned = selloffAmount
 			}
 			updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
@@ -292,7 +286,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 
 		if lockedVault.IsAuctionComplete {
 			if borrowMetadata.BridgedAssetAmount.IsZero() {
-				//also calculate the current collaterlization ratio to ensure there is no sudden changes
+				// also calculate the current collaterlization ratio to ensure there is no sudden changes
 				liqThreshold, _ := k.GetAssetRatesStats(ctx, pair.AssetIn)
 				unliquidatePointPercentage := liqThreshold.LiquidationThreshold
 

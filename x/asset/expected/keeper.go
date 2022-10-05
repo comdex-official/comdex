@@ -1,10 +1,11 @@
 package expected
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/comdex-official/comdex/x/market/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type MarketKeeper interface {

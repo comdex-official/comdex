@@ -1,9 +1,10 @@
 package bandoracle
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/comdex-official/comdex/x/bandoracle/keeper"
 	"github.com/comdex-official/comdex/x/bandoracle/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis

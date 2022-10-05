@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/liquidation/types"
 )
 
 // LiquidationBatchSize

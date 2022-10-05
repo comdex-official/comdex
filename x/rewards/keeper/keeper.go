@@ -9,10 +9,11 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
 type (
@@ -45,7 +46,6 @@ func NewKeeper(
 	liquidityKeeper expected.LiquidityKeeper,
 	marketKeeper expected.MarketKeeper,
 	esm expected.EsmKeeper,
-
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -53,7 +53,6 @@ func NewKeeper(
 	}
 
 	return Keeper{
-
 		cdc:             cdc,
 		storeKey:        storeKey,
 		memKey:          memKey,
@@ -224,10 +223,8 @@ func (k Keeper) ActExternalRewardsVaults(
 	return nil
 }
 
-//Wasm tx and query binding functions
-
+// Wasm tx and query binding functions
 func (k Keeper) WasmRemoveWhitelistAssetLocker(ctx sdk.Context, appMappingID uint64, assetID uint64) error {
-
 	klwsParams, _ := k.GetKillSwitchData(ctx, appMappingID)
 	if klwsParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
@@ -258,7 +255,6 @@ func (k Keeper) WasmRemoveWhitelistAssetLockerQuery(ctx sdk.Context, appMappingI
 }
 
 func (k Keeper) WasmRemoveWhitelistAppIDVaultInterest(ctx sdk.Context, appMappingID uint64) error {
-
 	klwsParams, _ := k.GetKillSwitchData(ctx, appMappingID)
 	if klwsParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled

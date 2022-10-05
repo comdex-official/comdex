@@ -8,7 +8,6 @@ import (
 )
 
 func (s *KeeperTestSuite) TestCreatePair() {
-
 	addr1 := s.addr(1)
 
 	appID1 := s.CreateNewApp("appone")
@@ -211,7 +210,6 @@ func (s *KeeperTestSuite) TestCreatePair() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				params, err := s.keeper.GetGenericParams(s.ctx, tc.Msg.AppId)
@@ -252,5 +250,4 @@ func (s *KeeperTestSuite) TestCreatePair() {
 			}
 		})
 	}
-
 }

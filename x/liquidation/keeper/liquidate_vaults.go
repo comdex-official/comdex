@@ -1,11 +1,12 @@
 package keeper
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	protobuftypes "github.com/gogo/protobuf/types"
+
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
@@ -64,7 +65,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				}
 
 				if sdk.Dec.LT(collateralitzationRatio, liqRatio) {
-					//calculate interest and update vault
+					// calculate interest and update vault
 					totalDebt := vault.AmountOut.Add(vault.InterestAccumulated)
 					err1 := k.CalculateVaultInterest(ctx, vault.AppId, vault.ExtendedPairVaultID, vault.Id, totalDebt, vault.BlockHeight, vault.BlockTime.Unix())
 					if err1 != nil {
@@ -94,7 +95,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, totalIn sdk.Dec, collateralizationRatio sdk.Dec, appID uint64) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
-	var value = types.LockedVault{
+	value := types.LockedVault{
 		LockedVaultId:           lockedVaultID + 1,
 		AppId:                   appID,
 		OriginalVaultId:         vault.Id,
@@ -189,7 +190,6 @@ func (k Keeper) GetLockedVaultHistory(ctx sdk.Context, appID, id uint64) (locked
 
 	k.cdc.MustUnmarshal(value, &lockedVault)
 	return lockedVault, true
-
 }
 
 // locked vaults kvs
@@ -369,7 +369,6 @@ func (k Keeper) GetAppIdsForLiquidation(ctx sdk.Context) (appIds []uint64) {
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-
 		var app protobuftypes.UInt64Value
 		k.cdc.MustUnmarshal(iter.Value(), &app)
 		appIds = append(appIds, app.Value)

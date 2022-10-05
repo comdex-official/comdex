@@ -1,11 +1,12 @@
 package keeper
 
 import (
+	"regexp"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
-	"regexp"
 )
 
 func (k Keeper) SetAssetID(ctx sdk.Context, id uint64) {
@@ -195,7 +196,7 @@ func (k Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 		return types.ErrorDuplicateAsset
 	}
 
-	var IsLetter = regexp.MustCompile(`^[A-Z]+$`).MatchString
+	IsLetter := regexp.MustCompile(`^[A-Z]+$`).MatchString
 
 	if !IsLetter(msg.Name) || len(msg.Name) > 10 {
 		return types.ErrorNameDidNotMeetCriterion
@@ -230,7 +231,7 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 		return types.ErrorAssetDoesNotExist
 	}
 	if msg.Name != "" {
-		var IsLetter = regexp.MustCompile(`^[A-Z]+$`).MatchString
+		IsLetter := regexp.MustCompile(`^[A-Z]+$`).MatchString
 
 		if !IsLetter(msg.Name) || len(msg.Name) > 10 {
 			return types.ErrorNameDidNotMeetCriterion

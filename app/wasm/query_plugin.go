@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
-	"github.com/comdex-official/comdex/app/wasm/bindings"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 )
 
 func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
@@ -51,7 +52,6 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "tokenMint query response")
 			}
 			return bz, nil
-		
 		} else if comdexQuery.RemoveWhiteListAssetLocker != nil {
 			appID := comdexQuery.RemoveWhiteListAssetLocker.AppID
 			assetID := comdexQuery.RemoveWhiteListAssetLocker.AssetIDs

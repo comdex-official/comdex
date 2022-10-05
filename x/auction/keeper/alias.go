@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector/types"
@@ -8,8 +11,6 @@ import (
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 func (k Keeper) GetModuleAccount(ctx sdk.Context, name string) authtypes.ModuleAccountI {
@@ -19,6 +20,7 @@ func (k Keeper) GetModuleAccount(ctx sdk.Context, name string) authtypes.ModuleA
 func (k Keeper) GetModuleAddress(_ sdk.Context, name string) sdk.AccAddress {
 	return k.account.GetModuleAddress(name)
 }
+
 func (k Keeper) GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin {
 	return k.bank.GetBalance(ctx, addr, denom)
 }
@@ -38,6 +40,7 @@ func (k Keeper) SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string
 
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
 }
+
 func (k Keeper) SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, coin sdk.Coins) error {
 	if coin.IsZero() {
 		return auctiontypes.SendCoinsFromModuleToAccountInAuctionIsZero
@@ -45,6 +48,7 @@ func (k Keeper) SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule strin
 
 	return k.bank.SendCoinsFromModuleToAccount(ctx, senderModule, recipientAddr, coin)
 }
+
 func (k Keeper) SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
 		return auctiontypes.SendCoinsFromAccountToModuleInAuctionIsZero
@@ -96,9 +100,11 @@ func (k Keeper) GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) 
 func (k Keeper) GetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64) (netFeeData types.AppAssetIdToFeeCollectedData, found bool) {
 	return k.collector.GetNetFeeCollectedData(ctx, appID, assetID)
 }
+
 func (k Keeper) GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool) {
 	return k.asset.GetApps(ctx)
 }
+
 func (k Keeper) GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool) {
 	return k.asset.GetApp(ctx, id)
 }
@@ -142,6 +148,7 @@ func (k Keeper) SetAppExtendedPairVaultMappingData(ctx sdk.Context, appExtendedP
 func (k Keeper) GetAuctionMappingForApp(ctx sdk.Context, appID, assetID uint64) (collectorAuctionLookupTable types.AppAssetIdToAuctionLookupTable, found bool) {
 	return k.collector.GetAuctionMappingForApp(ctx, appID, assetID)
 }
+
 func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records types.AppAssetIdToAuctionLookupTable) error {
 	return k.collector.SetAuctionMappingForApp(ctx, records)
 }
@@ -149,6 +156,7 @@ func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, records types.AppAssetI
 func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
 	k.vault.UpdateTokenMintedAmountLockerMapping(ctx, appMappingID, extendedPairID, amount, changeType)
 }
+
 func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
 	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, appMappingID, extendedPairID, amount, changeType)
 }
@@ -156,6 +164,7 @@ func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMa
 func (k Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.AppAssetIdToAuctionLookupTable, found bool) {
 	return k.collector.GetAllAuctionMappingForApp(ctx)
 }
+
 func (k Keeper) DeleteLockedVault(ctx sdk.Context, appID, id uint64) {
 	k.liquidation.DeleteLockedVault(ctx, appID, id)
 }
@@ -271,6 +280,7 @@ func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) 
 func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
 	return k.lend.UpdateReserveBalances(ctx, assetID, moduleName, payment, inc)
 }
+
 func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutchAuction auctiontypes.DutchAuction) error {
 	return k.liquidation.UnLiquidateLockedBorrows(ctx, appID, id, dutchAuction)
 }

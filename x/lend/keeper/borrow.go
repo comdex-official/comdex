@@ -1,9 +1,10 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
 func (k Keeper) SetUserBorrowIDHistory(ctx sdk.Context, ID uint64) {

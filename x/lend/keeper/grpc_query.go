@@ -2,17 +2,17 @@ package keeper
 
 import (
 	"context"
-	"github.com/comdex-official/comdex/x/lend/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
-var (
-	_ types.QueryServer = QueryServer{}
-)
+var _ types.QueryServer = QueryServer{}
 
 type QueryServer struct {
 	Keeper
@@ -50,7 +50,6 @@ func (q QueryServer) QueryLends(c context.Context, req *types.QueryLendsRequest)
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -66,9 +65,7 @@ func (q QueryServer) QueryLend(c context.Context, req *types.QueryLendRequest) (
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetLend(ctx, req.Id)
 	if !found {
@@ -181,7 +178,6 @@ func (q QueryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest)
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -197,9 +193,7 @@ func (q QueryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetLendPair(ctx, req.Id)
 	if !found {
@@ -237,7 +231,6 @@ func (q QueryServer) QueryPools(c context.Context, req *types.QueryPoolsRequest)
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -253,9 +246,7 @@ func (q QueryServer) QueryPool(c context.Context, req *types.QueryPoolRequest) (
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetPool(ctx, req.Id)
 	if !found {
@@ -293,7 +284,6 @@ func (q QueryServer) QueryAssetToPairMappings(c context.Context, req *types.Quer
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -309,9 +299,7 @@ func (q QueryServer) QueryAssetToPairMapping(c context.Context, req *types.Query
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetAssetToPair(ctx, req.AssetId, req.PoolId)
 	if !found {
@@ -349,7 +337,6 @@ func (q QueryServer) QueryBorrows(c context.Context, req *types.QueryBorrowsRequ
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -365,9 +352,7 @@ func (q QueryServer) QueryBorrow(c context.Context, req *types.QueryBorrowReques
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetBorrow(ctx, req.Id)
 	if !found {
@@ -430,7 +415,6 @@ func (q QueryServer) QueryAssetRatesStats(c context.Context, req *types.QueryAss
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -446,9 +430,7 @@ func (q QueryServer) QueryAssetRatesStat(c context.Context, req *types.QueryAsse
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetAssetRatesStats(ctx, req.Id)
 	if !found {
@@ -577,9 +559,7 @@ func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAucti
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetAddAuctionParamsData(ctx, req.AppId)
 	if !found {

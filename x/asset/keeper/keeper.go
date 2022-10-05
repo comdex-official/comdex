@@ -1,10 +1,11 @@
 package keeper
 
 import (
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 
 	"github.com/comdex-official/comdex/x/asset/expected"
 )

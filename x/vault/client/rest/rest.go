@@ -11,8 +11,8 @@ func registerQueryRoutes(ctx client.Context, router *mux.Router) {
 }
 
 func registerTxRoutes(ctx client.Context, router *mux.Router) {
-
 }
+
 func RegisterRoutes(ctx client.Context, router *mux.Router) {
 	registerQueryRoutes(ctx, router)
 	registerTxRoutes(ctx, router)

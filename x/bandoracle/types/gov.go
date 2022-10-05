@@ -13,9 +13,7 @@ func init() {
 	govtypes.RegisterProposalTypeCodec(&FetchPriceProposal{}, "comdex/FetchPriceProposal")
 }
 
-var (
-	_ govtypes.Content = &FetchPriceProposal{}
-)
+var _ govtypes.Content = &FetchPriceProposal{}
 
 func NewFetchPriceProposal(title, description string, fetchPrice MsgFetchPriceData) govtypes.Content {
 	return &FetchPriceProposal{

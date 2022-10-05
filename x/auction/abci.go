@@ -1,15 +1,15 @@
 package auction
 
 import (
+	"github.com/cosmos/cosmos-sdk/telemetry"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/auction/keeper"
 	"github.com/comdex-official/comdex/x/auction/types"
-	"github.com/cosmos/cosmos-sdk/telemetry"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
-
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
@@ -33,7 +33,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			}
 		}
 
-		//lockedVaults := k.GetLockedVaults(ctx)
+		// lockedVaults := k.GetLockedVaults(ctx)
 
 		//if len(lockedVaults) > 0 {
 		//	err3 := k.DutchActivator(ctx, lockedVaults)

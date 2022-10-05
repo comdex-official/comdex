@@ -75,7 +75,6 @@ func TestNewMsgCreateRequest(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeMsgCreateRequest)
 
@@ -143,7 +142,6 @@ func TestNewMsgDepositRequest(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeMsgDepositRequest)
 
@@ -211,7 +209,6 @@ func TestNewMsgWithdrawRequest(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeMsgWithdrawRequest)
 
@@ -279,7 +276,6 @@ func TestNewMsgDrawRequest(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeMsgDrawRequest)
 
@@ -347,7 +343,6 @@ func TestNewMsgRepayRequest(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeMsgRepayRequest)
 
@@ -394,7 +389,6 @@ func TestNewMsgLiquidateRequest(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeMsgLiquidateRequest)
 
@@ -455,7 +449,6 @@ func TestNewMsgCreateStableMintRequest(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeMsgCreateStableMintRequest)
 
@@ -516,7 +509,6 @@ func TestNewMsgDepositStableMintRequest(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeMsgDepositStableMintRequest)
 
@@ -577,7 +569,6 @@ func TestNewMsgWithdrawStableMintRequest(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeMsgWithdrawStableMintRequest)
 

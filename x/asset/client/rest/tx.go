@@ -103,6 +103,7 @@ func AddNewAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalREST
 		Handler:  AddNewAssetsRESTHandler(clientCtx),
 	}
 }
+
 func AddNewAssetInAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-update-new-asset-in-app",

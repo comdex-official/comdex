@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/spf13/pflag"
-	"io/ioutil"
 )
 
-type XCreateAddAssetMappingInputs createAddAssetMappingInputs
-type XCreateAddAssetsMappingInputs createAddAssetsMappingInputs
+type (
+	XCreateAddAssetMappingInputs  createAddAssetMappingInputs
+	XCreateAddAssetsMappingInputs createAddAssetsMappingInputs
+)
 
 type XCreateAddAssetMappingInputsExceptions struct {
 	XCreateAddAssetMappingInputs
@@ -57,7 +60,7 @@ func parseAssetMappingFlags(fs *pflag.FlagSet) (*createAddAssetMappingInputs, er
 		return nil, fmt.Errorf("must pass in add asset mapping json using the --%s flag", FlagAddAssetMappingFile)
 	}
 
-	contents, err := ioutil.ReadFile(addAssetMappingFile) //nolint:gosec
+	contents, err := os.ReadFile(addAssetMappingFile)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +82,7 @@ func parseAssetsMappingFlags(fs *pflag.FlagSet) (*createAddAssetsMappingInputs, 
 		return nil, fmt.Errorf("must pass in add asset mapping json using the --%s flag", FlagAddAssetMappingFile)
 	}
 
-	contents, err := ioutil.ReadFile(addAssetsMappingFile) //nolint:gosec
+	contents, err := os.ReadFile(addAssetsMappingFile)
 	if err != nil {
 		return nil, err
 	}

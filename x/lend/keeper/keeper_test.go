@@ -2,12 +2,13 @@ package keeper_test
 
 import (
 	"encoding/binary"
+	"testing"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"testing"
 
 	chain "github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/lend/keeper"

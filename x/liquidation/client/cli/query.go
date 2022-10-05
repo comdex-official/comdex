@@ -4,10 +4,11 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
+
+	"github.com/comdex-official/comdex/x/liquidation/types"
 )
 
 func queryLockedVault() *cobra.Command {
@@ -161,7 +162,6 @@ func queryUserLockedVaults() *cobra.Command {
 				UserAddress: args[0],
 				Pagination:  pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -197,7 +197,6 @@ func queryUserLockedVaultsHistory() *cobra.Command {
 				UserAddress: args[0],
 				Pagination:  pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -222,7 +221,6 @@ func queryLockedVaultsPair() *cobra.Command {
 				return err
 			}
 			pairID, err := strconv.ParseUint(args[0], 10, 64)
-
 			if err != nil {
 				return err
 			}
@@ -238,7 +236,6 @@ func queryLockedVaultsPair() *cobra.Command {
 				PairId:     pairID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -265,7 +262,6 @@ func queryAppIds() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAppIds(cmd.Context(), &types.QueryAppIdsRequest{})
-
 			if err != nil {
 				return err
 			}

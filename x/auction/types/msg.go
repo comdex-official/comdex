@@ -7,9 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var (
-	_ sdk.Msg = (*MsgPlaceSurplusBidRequest)(nil)
-)
+var _ sdk.Msg = (*MsgPlaceSurplusBidRequest)(nil)
 
 func NewMsgPlaceSurplusBid(from string, auctionID uint64, amt sdk.Coin, appID, auctionMappingID uint64) *MsgPlaceSurplusBidRequest {
 	return &MsgPlaceSurplusBidRequest{

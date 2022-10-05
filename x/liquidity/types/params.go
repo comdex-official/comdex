@@ -26,10 +26,8 @@ const (
 	UnfarmGas          = sdk.Gas(69000)
 )
 
-var (
-	// GlobalEscrowAddress is an escrow for deposit/withdraw requests.
-	GlobalEscrowAddress = DeriveAddress(AddressType32Bytes, ModuleName, "GlobalEscrow")
-)
+// GlobalEscrowAddress is an escrow for deposit/withdraw requests.
+var GlobalEscrowAddress = DeriveAddress(AddressType32Bytes, ModuleName, "GlobalEscrow")
 
 var _ paramstypes.ParamSet = (*Params)(nil)
 

@@ -1,11 +1,13 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/app/wasm/bindings"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	"regexp"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
-	"regexp"
+
+	"github.com/comdex-official/comdex/app/wasm/bindings"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
 )
@@ -131,13 +133,13 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 		return types.ErrorPairDoesNotExist
 	}
 
-	var IsLetter = regexp.MustCompile(`^[A-Z-]+$`).MatchString
+	IsLetter := regexp.MustCompile(`^[A-Z-]+$`).MatchString
 
 	if !IsLetter(pairVaultBinding.PairName) {
 		return types.ErrorNameDidNotMeetCriterion
 	}
 
-	var id = k.GetPairsVaultID(ctx)
+	id := k.GetPairsVaultID(ctx)
 
 	extendedPairVault, _ := k.GetPairsVaults(ctx)
 
@@ -165,7 +167,7 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	if pairVaultBinding.StabilityFee.IsZero() {
 		blockHeight = 0
 	}
-	var app = types.ExtendedPairVault{
+	app := types.ExtendedPairVault{
 		Id:                  id + 1,
 		AppId:               pairVaultBinding.AppID,
 		PairId:              pairVaultBinding.PairID,
@@ -275,7 +277,7 @@ func (k Keeper) WasmUpdatePairsVaultQuery(ctx sdk.Context, appID, exPairID uint6
 	if !found {
 		return false, types.ErrorPairDoesNotExist.Error()
 	}
-	var count = 0
+	count := 0
 	for _, data := range pairVaults {
 		if data.AppId == appID && data.Id == exPairID {
 			count++

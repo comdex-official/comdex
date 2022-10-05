@@ -2,15 +2,15 @@ package keeper
 
 import (
 	"context"
-	"github.com/comdex-official/comdex/x/esm/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/esm/types"
 )
 
-var (
-	_ types.QueryServer = QueryServer{}
-)
+var _ types.QueryServer = QueryServer{}
 
 type QueryServer struct {
 	Keeper
@@ -27,9 +27,7 @@ func (q QueryServer) QueryESMTriggerParams(c context.Context, req *types.QueryES
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetESMTriggerParams(ctx, req.Id)
 	if !found {
@@ -46,9 +44,7 @@ func (q QueryServer) QueryESMStatus(c context.Context, req *types.QueryESMStatus
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetESMStatus(ctx, req.Id)
 	if !found {
@@ -65,9 +61,7 @@ func (q QueryServer) QueryCurrentDepositStats(c context.Context, req *types.Quer
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetCurrentDepositStats(ctx, req.Id)
 	if !found {
@@ -84,9 +78,7 @@ func (q QueryServer) QueryUsersDepositMapping(c context.Context, req *types.Quer
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetUserDepositByApp(ctx, req.Depositor, req.Id)
 	if !found {
@@ -103,9 +95,7 @@ func (q QueryServer) QueryDataAfterCoolOff(c context.Context, req *types.QueryDa
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetDataAfterCoolOff(ctx, req.Id)
 	if !found {
@@ -122,9 +112,7 @@ func (q QueryServer) QuerySnapshotPrice(c context.Context, req *types.QuerySnaps
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	price, found := q.GetSnapshotOfPrices(ctx, req.AppId, req.AssetId)
 	if !found {

@@ -5,7 +5,6 @@ import (
 
 	"github.com/bandprotocol/bandchain-packet/obi"
 	"github.com/bandprotocol/bandchain-packet/packet"
-	"github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
@@ -13,6 +12,8 @@ import (
 	host "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	gogotypes "github.com/gogo/protobuf/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 func (k Keeper) SetFetchPriceResult(ctx sdk.Context, requestID types.OracleRequestID, result types.FetchPriceResult) {

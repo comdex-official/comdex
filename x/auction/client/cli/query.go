@@ -4,11 +4,12 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/comdex-official/comdex/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
+
+	"github.com/comdex-official/comdex/x/auction/types"
 )
 
 func querySurplusAuction() *cobra.Command {

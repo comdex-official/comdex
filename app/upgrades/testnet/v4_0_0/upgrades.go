@@ -1,15 +1,16 @@
 package v4_0_0
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 // CreateUpgradeHandler creates an SDK upgrade handler for v4_0_0
@@ -21,7 +22,6 @@ func CreateUpgradeHandler(
 		// This change is only for testnet upgrade
 
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-
 		if err != nil {
 			return newVM, err
 		}
@@ -69,7 +69,6 @@ func CreateUpgradeHandlerV410(
 
 		CreateSwapFeeGauge(ctx, rewardskeeper, liquiditykeeper, 1, 1)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-
 		if err != nil {
 			return newVM, err
 		}
@@ -86,7 +85,6 @@ func CreateUpgradeHandlerV420(
 		// This change is only for testnet upgrade
 
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-
 		if err != nil {
 			return newVM, err
 		}
@@ -118,7 +116,6 @@ func CreateUpgradeHandlerV430(
 
 		EditAndSetPair(ctx, assetkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-
 		if err != nil {
 			return newVM, err
 		}

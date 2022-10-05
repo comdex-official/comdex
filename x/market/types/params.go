@@ -4,9 +4,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-var (
-	_ paramstypes.ParamSet = (*Params)(nil)
-)
+var _ paramstypes.ParamSet = (*Params)(nil)
 
 const (
 	Int64Twenty    = int64(20)

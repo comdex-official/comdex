@@ -1,10 +1,11 @@
 package expected
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type AssetKeeper interface {

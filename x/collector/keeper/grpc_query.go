@@ -3,15 +3,14 @@ package keeper
 import (
 	"context"
 
-	"github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/collector/types"
 )
 
-var (
-	_ types.QueryServer = QueryServer{}
-)
+var _ types.QueryServer = QueryServer{}
 
 type QueryServer struct {
 	Keeper
@@ -27,9 +26,7 @@ func (q QueryServer) QueryCollectorLookupByApp(c context.Context, req *types.Que
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	collectorLookupData, found := q.GetCollectorLookupTableByApp(ctx, req.AppId)
 	if !found {
@@ -45,9 +42,7 @@ func (q QueryServer) QueryCollectorLookupByAppAndAsset(c context.Context, req *t
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
@@ -67,9 +62,7 @@ func (q QueryServer) QueryCollectorDataByAppAndAsset(c context.Context, req *typ
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
@@ -85,9 +78,7 @@ func (q QueryServer) QueryAuctionMappingForAppAndAsset(c context.Context, req *t
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
@@ -103,9 +94,7 @@ func (q QueryServer) QueryNetFeeCollectedForAppAndAsset(c context.Context, req *
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)

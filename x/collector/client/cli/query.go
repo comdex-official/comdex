@@ -59,7 +59,6 @@ func QueryCollectorLookupByApp() *cobra.Command {
 				AppId:      appID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -99,7 +98,6 @@ func QueryCollectorLookupByAppAndAsset() *cobra.Command {
 				AppId:   appID,
 				AssetId: assetID,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -137,7 +135,6 @@ func QueryCollectorDataByAppAndAsset() *cobra.Command {
 				AppId:   appID,
 				AssetId: assetID,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -174,7 +171,6 @@ func QueryAuctionMappingForAppAndAsset() *cobra.Command {
 				AppId:   appID,
 				AssetId: assetID,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -211,7 +207,6 @@ func QueryNetFeeCollectedForAppAndAsset() *cobra.Command {
 				AppId:   appID,
 				AssetId: assetID,
 			})
-
 			if err != nil {
 				return err
 			}

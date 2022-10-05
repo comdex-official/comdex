@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
 // GetParams returns the parameters for the liquidity module.

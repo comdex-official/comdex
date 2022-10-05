@@ -3,12 +3,13 @@ package keeper
 import (
 	"context"
 
-	"github.com/comdex-official/comdex/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/auction/types"
 )
 
 var _ types.QueryServer = QueryServer{}
@@ -88,7 +89,6 @@ func (q QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySur
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -132,7 +132,6 @@ func (q QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySur
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -143,6 +142,7 @@ func (q QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySur
 		Pagination: pagination,
 	}, nil
 }
+
 func (q QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAuctionRequest) (res *types.QueryDebtAuctionResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -165,6 +165,7 @@ func (q QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAuc
 		Auction: item,
 	}, nil
 }
+
 func (q QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtAuctionsRequest) (*types.QueryDebtAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -197,7 +198,6 @@ func (q QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtAu
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -241,7 +241,6 @@ func (q QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtBi
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -304,7 +303,6 @@ func (q QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutch
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -349,7 +347,6 @@ func (q QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutch
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -411,7 +408,6 @@ func (q QueryServer) QueryProtocolStatistics(c context.Context, req *types.Query
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -427,9 +423,7 @@ func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAucti
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetAuctionParams(ctx, req.AppId)
 	if !found {
@@ -492,7 +486,6 @@ func (q QueryServer) QueryDutchLendAuctions(c context.Context, req *types.QueryD
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -548,7 +541,7 @@ func (q QueryServer) QueryFilterDutchAuctions(c context.Context, req *types.Quer
 			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
-			var check = false
+			check := false
 			for _, data := range req.Denom {
 				if item.OutflowTokenCurrentAmount.Denom == data || item.InflowTokenCurrentAmount.Denom == data {
 					check = true
@@ -564,7 +557,6 @@ func (q QueryServer) QueryFilterDutchAuctions(c context.Context, req *types.Quer
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
