@@ -212,6 +212,9 @@ func (k Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 			IsOraclePriceRequired: msg.IsOraclePriceRequired,
 		}
 	)
+	if msg.IsOraclePriceRequired {
+		k.bandoracle.SetCheckFlag(ctx, false)
+	}
 
 	k.SetAssetID(ctx, asset.Id)
 	k.SetAsset(ctx, asset)
@@ -232,17 +235,15 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 		if !IsLetter(msg.Name) || len(msg.Name) > 10 {
 			return types.ErrorNameDidNotMeetCriterion
 		}
-	}
 
-	if msg.Name != "" {
 		if k.HasAssetForName(ctx, msg.Name) {
 			return types.ErrorDuplicateAsset
 		}
 		k.DeleteAssetForName(ctx, asset.Name)
 		asset.Name = msg.Name
 		k.SetAssetForName(ctx, asset.Name, asset.Id)
-
 	}
+
 	if msg.Denom != "" {
 		if k.HasAssetForDenom(ctx, msg.Denom) {
 			return types.ErrorDuplicateAsset
@@ -256,6 +257,9 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 		asset.Decimals = msg.Decimals
 	}
 	asset.IsOraclePriceRequired = msg.IsOraclePriceRequired
+	if msg.IsOraclePriceRequired {
+		k.bandoracle.SetCheckFlag(ctx, false)
+	}
 
 	k.SetAsset(ctx, asset)
 	return nil

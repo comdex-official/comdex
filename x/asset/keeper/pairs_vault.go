@@ -259,6 +259,7 @@ func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.
 	ExtPairVaultData.ClosingFee = updatePairVault.ClosingFee
 	ExtPairVaultData.LiquidationPenalty = updatePairVault.LiquidationPenalty
 	ExtPairVaultData.DrawDownFee = updatePairVault.DrawDownFee
+	ExtPairVaultData.IsVaultActive = updatePairVault.IsVaultActive
 	ExtPairVaultData.DebtCeiling = sdk.NewInt(int64(updatePairVault.DebtCeiling))
 	ExtPairVaultData.DebtFloor = sdk.NewInt(int64(updatePairVault.DebtFloor))
 	ExtPairVaultData.MinCr = updatePairVault.MinCr

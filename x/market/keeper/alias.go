@@ -34,3 +34,19 @@ func (k Keeper) GetLastBlockheight(ctx sdk.Context) int64 {
 func (k Keeper) GetFetchPriceMsg(ctx sdk.Context) bandoraclemoduletypes.MsgFetchPriceData {
 	return k.bandoraclekeeper.GetFetchPriceMsg(ctx)
 }
+
+func (k Keeper) GetFetchPriceResult(ctx sdk.Context, id bandoraclemoduletypes.OracleRequestID) (bandoraclemoduletypes.FetchPriceResult, error) {
+	return k.bandoraclekeeper.GetFetchPriceResult(ctx, id)
+}
+
+func (k Keeper) GetCheckFlag(ctx sdk.Context) bool {
+	return k.bandoraclekeeper.GetCheckFlag(ctx)
+}
+
+func (k Keeper) SetCheckFlag(ctx sdk.Context, flag bool) {
+	k.bandoraclekeeper.SetCheckFlag(ctx, flag)
+}
+
+func (k Keeper) GetOracleValidationResult(ctx sdk.Context) bool {
+	return k.bandoraclekeeper.GetOracleValidationResult(ctx)
+}

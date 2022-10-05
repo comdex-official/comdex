@@ -36,4 +36,7 @@ type BandOracleKeeper interface {
 	GetLastFetchPriceID(ctx sdk.Context) int64
 	GetLastBlockHeight(ctx sdk.Context) int64
 	GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData
+	GetCheckFlag(ctx sdk.Context) bool
+	SetCheckFlag(ctx sdk.Context, flag bool)
+	GetOracleValidationResult(ctx sdk.Context) bool
 }

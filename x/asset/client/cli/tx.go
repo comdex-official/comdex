@@ -3,7 +3,6 @@ package cli
 import (
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -372,7 +371,7 @@ func NewCmdSubmitAddAppProposal() *cobra.Command {
 
 			minGovDeposit := args[2]
 
-			govTimeIn, err := time.ParseDuration(args[3] + "s")
+			govTimeIn, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -403,7 +402,7 @@ func NewCmdSubmitAddAppProposal() *cobra.Command {
 				Name:             name,
 				ShortName:        shortName,
 				MinGovDeposit:    newMinGovDeposit,
-				GovTimeInSeconds: govTimeIn.Seconds(),
+				GovTimeInSeconds: govTimeIn,
 				GenesisToken:     bMap,
 			}
 
@@ -456,7 +455,7 @@ func NewCmdSubmitUpdateGovTimeInAppProposal() *cobra.Command {
 				return err
 			}
 
-			govTimeIn, err := time.ParseDuration(args[1] + "s")
+			govTimeIn, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -488,7 +487,7 @@ func NewCmdSubmitUpdateGovTimeInAppProposal() *cobra.Command {
 
 			aTime := types.AppAndGovTime{
 				AppId:            appID,
-				GovTimeInSeconds: govTimeIn.Seconds(),
+				GovTimeInSeconds: govTimeIn,
 				MinGovDeposit:    minGovDeposit,
 			}
 

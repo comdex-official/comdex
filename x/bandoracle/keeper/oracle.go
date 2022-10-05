@@ -12,6 +12,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	host "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	gogotypes "github.com/gogo/protobuf/types"
+	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 func (k Keeper) SetFetchPriceResult(ctx sdk.Context, requestID types.OracleRequestID, result types.FetchPriceResult) {
@@ -155,6 +156,7 @@ func (k Keeper) SetLastBlockHeight(ctx sdk.Context, height int64) {
 func (k Keeper) AddFetchPriceRecords(ctx sdk.Context, price types.MsgFetchPriceData) error {
 	k.SetFetchPriceMsg(ctx, price)
 	k.SetLastBlockHeight(ctx, ctx.BlockHeight())
+	k.SetCheckFlag(ctx, false)
 	return nil
 }
 
@@ -188,4 +190,31 @@ func (k Keeper) GetTempFetchPriceID(ctx sdk.Context) int64 {
 	intV := gogotypes.Int64Value{}
 	k.cdc.MustUnmarshalLengthPrefixed(bz, &intV)
 	return intV.GetValue()
+}
+
+func (k Keeper) SetCheckFlag(ctx sdk.Context, flag bool) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.CheckFlagKey
+		value = k.cdc.MustMarshal(
+			&protobuftypes.BoolValue{
+				Value: flag,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetCheckFlag(ctx sdk.Context) bool {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.CheckFlagKey
+		value = store.Get(key)
+	)
+
+	var id protobuftypes.BoolValue
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
 }

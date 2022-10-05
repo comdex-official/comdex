@@ -555,6 +555,7 @@ func New(
 		&app.MarketKeeper,
 		&app.Rewardskeeper,
 		&app.VaultKeeper,
+		&app.BandoracleKeeper,
 	)
 
 	app.LendKeeper = lendkeeper.NewKeeper(
