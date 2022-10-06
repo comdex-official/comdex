@@ -343,7 +343,7 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendID uint64, deposi
 	getAsset, _ := k.GetAsset(ctx, lendPos.AssetID)
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
 
-	found, err = k.CheckSupplyCap(ctx, lendPos.AssetID, lendPos.PoolID, deposit.Amount.Add(lendPos.AmountIn.Amount))
+	found, err = k.CheckSupplyCap(ctx, lendPos.AssetID, lendPos.PoolID, deposit.Amount)
 	if err != nil {
 		return err
 	}
