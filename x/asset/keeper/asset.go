@@ -182,15 +182,6 @@ func (k Keeper) DeleteAssetForName(ctx sdk.Context, name string) {
 	store.Delete(key)
 }
 
-func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	market, found := k.oracle.GetMarketForAsset(ctx, id)
-	if !found {
-		return 0, false
-	}
-
-	return k.oracle.GetPriceForMarket(ctx, market.Symbol)
-}
-
 func (k Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	if k.HasAssetForDenom(ctx, msg.Denom) || k.HasAssetForName(ctx, msg.Name) {
 		return types.ErrorDuplicateAsset

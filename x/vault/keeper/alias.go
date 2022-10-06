@@ -103,3 +103,7 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID
 func (k Keeper) DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker) {
 	k.rewards.DeleteVaultInterestTracker(ctx, vault)
 }
+
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price uint64, err error) {
+	return k.oracle.CalcAssetPrice(ctx, id, amt)
+}

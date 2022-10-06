@@ -17,7 +17,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		if k.GetOracleValidationResult(ctx) {
 			block := k.GetLastBlockheight(ctx)
 			if block != types.Int64Zero {
-				if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero && ctx.BlockHeight() != block {
+				if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero && ctx.BlockHeight() != block && k.GetCheckFlag(ctx) {
 					assets := k.GetAssets(ctx)
 					id := k.GetLastFetchPriceID(ctx)
 					data, _ := k.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))

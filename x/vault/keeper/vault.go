@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -282,53 +283,65 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 	if !found {
 		return sdk.ZeroDec(), types.ErrorAssetDoesNotExist
 	}
-
-	assetInPrice, found := k.GetPriceForAsset(ctx, assetInData.Id)
-	if !found {
-		return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+	// calculating price of the asset_in
+	assetInTotalPrice, err := k.CalcAssetPrice(ctx, assetInData.Id, amountIn)
+	if err != nil {
+		return sdk.ZeroDec(), err
 	}
+	fmt.Println("assetInTotalPrice", assetInTotalPrice)
 	esmStatus, found := k.GetESMStatus(ctx, extendedPairVault.AppId)
 	statusEsm := false
 	if found {
 		statusEsm = esmStatus.Status
 	}
+
+	// check to get calc asset price from esm
 	if statusEsm && esmStatus.SnapshotStatus {
+		// TODO: function update
+
 		price, found := k.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetInData.Id)
 		if !found {
 			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 		}
-		assetInPrice = price
+		assetInTotalPrice = price
 	}
-	var assetOutPrice uint64
+	var assetOutTotalPrice uint64
 
 	if extendedPairVault.AssetOutOraclePrice {
 		// If oracle Price required for the assetOut
 		if statusEsm && esmStatus.SnapshotStatus {
+			// TODO: function update
 			price, found := k.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetOutData.Id)
 			if !found {
 				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 			}
-			assetOutPrice = price
+			assetInTotalPrice = price
 		} else {
-			assetOutPrice, found = k.GetPriceForAsset(ctx, assetOutData.Id)
-			if !found {
-				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+			assetOutTotalPrice, err = k.CalcAssetPrice(ctx, assetOutData.Id, amountOut)
+			if err != nil {
+				return sdk.ZeroDec(), err
 			}
+			fmt.Println("assetOutTotalPrice", assetOutTotalPrice)
 		}
 	} else {
 		// If oracle Price is not required for the assetOut
-		assetOutPrice = extendedPairVault.AssetOutPrice
+		assetOutTotalPrice = (sdk.NewIntFromUint64(extendedPairVault.AssetOutPrice).Mul(amountOut)).Quo(sdk.NewIntFromUint64(uint64(assetOutData.Decimals))).Uint64()
+		fmt.Println("assetOutTotalPrice", assetOutTotalPrice)
 	}
 
-	totalIn := amountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
+	totalIn := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInTotalPrice))
+	fmt.Println("totalIn", totalIn)
 	if totalIn.LTE(sdk.ZeroDec()) {
+		fmt.Println("efwfwefewfewf")
 		return sdk.ZeroDec(), types.ErrorInvalidAmountIn
 	}
 
-	totalOut := amountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
+	totalOut := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetOutTotalPrice))
+	fmt.Println("totalOut", totalOut)
 	if totalOut.LTE(sdk.ZeroDec()) {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountOut
 	}
+	fmt.Println("totalIn.Quo(totalOut)", totalIn.Quo(totalOut))
 	return totalIn.Quo(totalOut), nil
 }
 

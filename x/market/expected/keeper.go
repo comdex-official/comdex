@@ -28,6 +28,7 @@ type ScopedKeeper interface {
 }
 
 type AssetKeeper interface {
+	GetAsset(ctx sdk.Context, id uint64) (asset assettypes.Asset, found bool)
 	GetAssets(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 }
