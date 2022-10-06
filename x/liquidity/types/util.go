@@ -26,7 +26,6 @@ func NewBulkSendCoinsOperation() *BulkSendCoinsOperation {
 
 // QueueSendCoins queues a BankKeeper.SendCoins operation for later execution.
 func (op *BulkSendCoinsOperation) QueueSendCoins(
-	//nolint
 	fromAddr, toAddr sdk.AccAddress,
 	amt sdk.Coins,
 ) {
