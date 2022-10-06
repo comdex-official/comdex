@@ -83,6 +83,7 @@ type addLendPoolInputs struct {
 	SecondBridgedAssetID string `json:"second_bridged_asset_id"`
 	AssetID              string `json:"asset_id"`
 	IsBridgedAsset       string `json:"is_bridged_asset"`
+	SupplyCap            string `json:"supply_cap"`
 	CPoolName            string `json:"c_pool_name"`
 	ReserveFunds         string `json:"reserve_funds"`
 	Title                string

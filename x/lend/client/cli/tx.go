@@ -664,6 +664,11 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 		return txf, nil, err
 	}
 
+	supplyCap, err := ParseUint64SliceFromString(newLendPool.SupplyCap, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
 	isBridgedAsset, err := ParseUint64SliceFromString(newLendPool.IsBridgedAsset, ",")
 	if err != nil {
 		return txf, nil, err
@@ -676,6 +681,7 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 		assetDataNew := types.AssetDataPoolMapping{
 			AssetID:   assetID[i],
 			IsBridged: bridged,
+			SupplyCap: supplyCap[i],
 		}
 		assetData = append(assetData, &assetDataNew)
 	}

@@ -78,6 +78,32 @@ func uint64InAssetData(a uint64, list []*types.AssetDataPoolMapping) bool {
 	return false
 }
 
+func (k Keeper) CheckSupplyCap(ctx sdk.Context, assetID, poolID uint64, amt sdk.Int) (bool, error) {
+	var supplyCap uint64
+	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, assetID, poolID)
+	price, found := k.GetPriceForAsset(ctx, assetID)
+	if !found {
+		return false, types.ErrorPriceDoesNotExist
+	}
+	currentSupply := assetStats.TotalLend.Mul(sdk.NewIntFromUint64(price))
+	userShare := amt.Mul(sdk.NewIntFromUint64(price))
+	pool, found := k.GetPool(ctx, poolID)
+	if !found {
+		return false, types.ErrPoolNotFound
+	}
+
+	for _, v := range pool.AssetData {
+		if assetID == v.AssetID {
+			supplyCap = v.SupplyCap
+		}
+	}
+	if currentSupply.Add(userShare).LT(sdk.NewIntFromUint64(supplyCap)) {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
 func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Amount sdk.Coin, PoolID, AppID uint64) error {
 	killSwitchParams, _ := k.GetKillSwitchData(ctx, AppID)
 	if killSwitchParams.BreakerEnable {
@@ -108,6 +134,14 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 		return sdkerrors.Wrap(types.ErrInvalidAssetIDForPool, strconv.FormatUint(AssetID, 10))
 	}
 
+	found, err := k.CheckSupplyCap(ctx, AssetID, PoolID, Amount.Amount)
+	if err != nil {
+		return err
+	}
+	if !found {
+		return types.ErrorSupplyCapExceeds
+	}
+
 	addr, _ := sdk.AccAddressFromBech32(lenderAddr)
 
 	if k.HasLendForAddressByAsset(ctx, addr, AssetID, PoolID) {
@@ -133,7 +167,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 		return err
 	}
 
-	err := k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, addr, cTokens)
+	err = k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, addr, cTokens)
 	if err != nil {
 		return err
 	}
@@ -308,6 +342,14 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendID uint64, deposi
 	lendPos.LastInteractionTime = ctx.BlockTime()
 	getAsset, _ := k.GetAsset(ctx, lendPos.AssetID)
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
+
+	found, err = k.CheckSupplyCap(ctx, lendPos.AssetID, lendPos.PoolID, deposit.Amount.Add(lendPos.AmountIn.Amount))
+	if err != nil {
+		return err
+	}
+	if !found {
+		return types.ErrorSupplyCapExceeds
+	}
 
 	if deposit.Denom != getAsset.Denom {
 		return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, deposit.Denom)

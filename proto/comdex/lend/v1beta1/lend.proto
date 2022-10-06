@@ -191,6 +191,10 @@ message AssetDataPoolMapping{
   bool is_bridged = 2 [
     (gogoproto.moretags) = "yaml:\"is_bridged\""
   ];
+  uint64 supply_cap = 3 [
+    (gogoproto.customname) = "SupplyCap",
+    (gogoproto.moretags) = "yaml:\"supply_cap\""
+  ];
 }
 
 message Extended_Pair {

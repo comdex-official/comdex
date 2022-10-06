@@ -56,4 +56,5 @@ var (
 	ErrInsufficientFunds                     = sdkerrors.Register(ModuleName, 1163, "Insufficient Funds")
 	ErrorAppMappingIDMismatch                = sdkerrors.Register(ModuleName, 1164, "App Mapping Id mismatch, use the correct App Mapping ID in request")
 	ErrorAssetsCanNotBeSame                  = sdkerrors.Register(ModuleName, 1165, "asset ID of assetIn and assetOut can not be same")
+	ErrorSupplyCapExceeds                    = sdkerrors.Register(ModuleName, 1166, "Supply cap exceeds")
 )

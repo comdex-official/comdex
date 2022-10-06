@@ -2,11 +2,11 @@ package keeper_test
 
 import (
 	"fmt"
-	"time"
 	"github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 )
 
 func (s *KeeperTestSuite) TestMsgLend() {
@@ -27,20 +27,23 @@ func (s *KeeperTestSuite) TestMsgLend() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
-
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 
@@ -269,18 +272,22 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -467,18 +474,22 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -610,18 +621,22 @@ func (s *KeeperTestSuite) TestMsgCloseLend() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -745,18 +760,22 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -1010,20 +1029,23 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
-
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
 
@@ -1208,20 +1230,23 @@ func (s *KeeperTestSuite) TestMsgDepositBorrow() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
-
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
 
@@ -1400,18 +1425,22 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -1576,18 +1605,22 @@ func (s *KeeperTestSuite) TestMsgCloseBorrow() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -1756,18 +1789,22 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -1979,18 +2016,22 @@ func (s *KeeperTestSuite) TestMsgCalculateBorrowInterest() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -2131,18 +2172,22 @@ func (s *KeeperTestSuite) TestMsgCalculateLendRewards() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -2283,18 +2328,22 @@ func (s *KeeperTestSuite) TestMsgCreateNewBorrow() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:   assetOneID,
 		IsBridged: false,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:   assetTwoID,
 		IsBridged: true,
+		SupplyCap: uint64(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:   assetThreeID,
 		IsBridged: true,
+		SupplyCap: uint64(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:   assetFourID,
 		IsBridged: true,
+		SupplyCap: uint64(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
