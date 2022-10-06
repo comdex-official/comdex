@@ -10,6 +10,10 @@ func (k Keeper) HandleAddWhitelistedPairsRecords(ctx sdk.Context, p *types.LendP
 	return k.AddLendPairsRecords(ctx, p.Pairs)
 }
 
+func (k Keeper) HandleUpdateWhitelistedPairsRecords(ctx sdk.Context, p *types.UpdateLendPairsProposal) error {
+	return k.UpdateLendPairsRecords(ctx, p.Pairs)
+}
+
 func (k Keeper) HandleAddPoolRecords(ctx sdk.Context, p *types.AddPoolsProposal) error {
 	return k.AddPoolRecords(ctx, p.Pool)
 }

@@ -35,40 +35,28 @@ message LendAsset {
     (gogoproto.moretags) = "yaml:\"lending_time\""
   ];
 
-  string updated_amount_in = 7 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"updated_amount_in\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
-  ];
-
-  string available_to_borrow = 8 [
+  string available_to_borrow = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"available_to_borrow\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
 
-  string reward_Accumulated = 9 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"reward_accumulated\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
-  ];
-
-  uint64 app_id = 10
+  uint64 app_id = 8
   [(gogoproto.customname) = "AppID", (gogoproto.moretags) = "yaml:\"app_id\""];
 
-  string global_index = 11 [
+  string global_index = 9 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"global_index\""
   ];
 
-  google.protobuf.Timestamp last_interaction_time = 12 [
+  google.protobuf.Timestamp last_interaction_time = 10 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"last_interaction_time\""
   ];
 
-  string cpool_name = 13 [
+  string cpool_name = 11 [
     (gogoproto.customname) = "CPoolName",
     (gogoproto.moretags) = "yaml:\"cpool_name\""
   ];
@@ -130,30 +118,24 @@ message BorrowAsset {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
 
-  string interest_Accumulated = 11 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"interest_accumulated\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
-  ];
-
-  string global_index = 12 [
+  string global_index = 11 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"global_index\""
   ];
-  string reserve_global_index = 13 [
+  string reserve_global_index = 12 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"reserve_global_index\""
   ];
 
-  google.protobuf.Timestamp last_interaction_time = 14 [
+  google.protobuf.Timestamp last_interaction_time = 13 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"last_interaction_time\""
   ];
 
-  string cpool_name = 15 [
+  string cpool_name = 14 [
     (gogoproto.customname) = "CPoolName",
     (gogoproto.moretags) = "yaml:\"cpool_name\""
   ];
@@ -195,7 +177,6 @@ message Pool {
   ];
 
   repeated AssetDataPoolMapping asset_data = 8 [
-    (gogoproto.nullable) = false,
     (gogoproto.customname) = "AssetData",
     (gogoproto.moretags) = "yaml:\"asset_data\""
   ];
@@ -209,6 +190,10 @@ message AssetDataPoolMapping{
   ];
   bool is_bridged = 2 [
     (gogoproto.moretags) = "yaml:\"is_bridged\""
+  ];
+  uint64 supply_cap = 3 [
+    (gogoproto.customname) = "SupplyCap",
+    (gogoproto.moretags) = "yaml:\"supply_cap\""
   ];
 }
 
@@ -451,7 +436,6 @@ message ModuleBalance{
     (gogoproto.moretags) = "yaml:\"pool_id\""
   ];
   repeated ModuleBalanceStats module_balance_stats = 2[
-    (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"module_balance_stats\""
   ];
 }
@@ -482,7 +466,6 @@ message BalanceStats{
 
 message DepositStats{
   repeated BalanceStats balance_stats = 1[
-    (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"balance_stats\""
   ];
 }

@@ -92,7 +92,10 @@ func (k Keeper) GetAverageBorrowRate(ctx sdk.Context, poolID, assetID uint64) (s
 }
 
 func (k Keeper) GetSavingRate(ctx sdk.Context, poolID, assetID uint64) (savingRate sdk.Dec, err error) {
-	assetRatesStats, _ := k.GetAssetRatesStats(ctx, assetID)
+	assetRatesStats, found := k.GetAssetRatesStats(ctx, assetID)
+	if !found {
+		return sdk.ZeroDec(), types.ErrorAssetRatesStatsNotFound
+	}
 	averageBorrowRate, err := k.GetAverageBorrowRate(ctx, poolID, assetID)
 	if err != nil {
 		return sdk.Dec{}, err

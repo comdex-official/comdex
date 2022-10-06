@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
@@ -40,6 +41,16 @@ func (s *KeeperTestSuite) SetupTest() {
 
 func (s *KeeperTestSuite) getBalances(addr sdk.AccAddress) sdk.Coins {
 	return s.app.BankKeeper.GetAllBalances(s.ctx, addr)
+}
+
+func (s *KeeperTestSuite) getDepositStats() types.DepositStats {
+	depositStats, _ := s.app.LendKeeper.GetDepositStats(s.ctx)
+	return depositStats
+}
+
+func (s *KeeperTestSuite) getUserDepositStats() types.DepositStats {
+	userDepositStats, _ := s.app.LendKeeper.GetUserDepositStats(s.ctx)
+	return userDepositStats
 }
 
 func (s *KeeperTestSuite) getBalance(addr sdk.AccAddress, denom string) sdk.Coin {
@@ -126,7 +137,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	return assetID
 }
 
-func (s *KeeperTestSuite) CreateNewPool(moduleName, cPoolName string, mainAssetID, firstBridgedAssetID, secondBridgedAssetID uint64, assetData []types.AssetDataPoolMapping) uint64 {
+func (s *KeeperTestSuite) CreateNewPool(moduleName, cPoolName string, mainAssetID, firstBridgedAssetID, secondBridgedAssetID uint64, assetData []*types.AssetDataPoolMapping) uint64 {
 	err := s.app.LendKeeper.AddPoolRecords(s.ctx, types.Pool{
 		ModuleName:           moduleName,
 		MainAssetId:          mainAssetID,
@@ -225,4 +236,15 @@ func (s *KeeperTestSuite) CreateNewApp(appName, shortName string) uint64 {
 	}
 	s.Require().NotZero(appID)
 	return appID
+}
+
+func (s *KeeperTestSuite) CreteNewBorrow(liqBorrow liquidationtypes.LockedVault) {
+	s.app.LendKeeper.CreteNewBorrow(s.ctx, liqBorrow)
+}
+
+func (s *KeeperTestSuite) UpdateLendIDToBorrowIDMapping(lendID, borrowID uint64, insert bool) {
+	err := s.app.LendKeeper.UpdateLendIDToBorrowIDMapping(s.ctx, lendID, borrowID, insert)
+	if err != nil {
+		return
+	}
 }

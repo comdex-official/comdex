@@ -627,7 +627,7 @@ func (k Keeper) GetModuleBalanceByPoolID(ctx sdk.Context, poolID uint64) (Module
 			Balance: tokenBal,
 		}
 		ModuleBalance.PoolID = poolID
-		ModuleBalance.ModuleBalanceStats = append(ModuleBalance.ModuleBalanceStats, modBalStats)
+		ModuleBalance.ModuleBalanceStats = append(ModuleBalance.ModuleBalanceStats, &modBalStats)
 	}
 	return ModuleBalance, true
 }

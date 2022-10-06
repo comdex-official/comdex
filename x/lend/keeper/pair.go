@@ -13,6 +13,9 @@ func (k Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_P
 		if found {
 			return types.ErrorDuplicateLendPair
 		}
+		if msg.AssetIn == msg.AssetOut {
+			return types.ErrorAssetsCanNotBeSame
+		}
 
 		var (
 			id   = k.GetLendPairID(ctx)
@@ -32,6 +35,34 @@ func (k Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_P
 	return nil
 }
 
+func (k Keeper) UpdateLendPairsRecords(ctx sdk.Context, msg types.Extended_Pair) error {
+
+	pair, found := k.GetLendPair(ctx, msg.Id)
+	if !found {
+		return types.ErrorPairNotFound
+	}
+
+	_, found = k.GetAsset(ctx, msg.AssetIn)
+	if !found {
+		return types.ErrorAssetDoesNotExist
+	}
+	_, found = k.GetAsset(ctx, msg.AssetOut)
+	if !found {
+		return types.ErrorAssetDoesNotExist
+	}
+
+	if msg.AssetIn == msg.AssetOut {
+		return types.ErrorAssetsCanNotBeSame
+	}
+
+	pair.AssetIn = msg.AssetIn
+	pair.AssetOut = msg.AssetOut
+	pair.MinUsdValueLeft = msg.MinUsdValueLeft
+
+	k.SetLendPair(ctx, pair)
+	return nil
+}
+
 func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 	for _, v := range pool.AssetData {
 		_, found := k.GetAsset(ctx, v.AssetID)
@@ -44,19 +75,17 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 	ReserveDepositStats, _ := k.GetReserveDepositStats(ctx)
 	BuyBackDepositStats, _ := k.GetBuyBackDepositStats(ctx)
 	BorrowStats, _ := k.GetBorrowStats(ctx)
-	var balanceStats []types.BalanceStats
 	if !found {
 		for _, v := range pool.AssetData {
 			balanceStat := types.BalanceStats{
 				AssetID: v.AssetID,
 				Amount:  sdk.ZeroInt(),
 			}
-			balanceStats = append(balanceStats, balanceStat)
-			depositStats = types.DepositStats{BalanceStats: balanceStats}
-			userDepositStats = types.DepositStats{BalanceStats: balanceStats}
-			ReserveDepositStats = types.DepositStats{BalanceStats: balanceStats}
-			BuyBackDepositStats = types.DepositStats{BalanceStats: balanceStats}
-			BorrowStats = types.DepositStats{BalanceStats: balanceStats}
+			depositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
+			userDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
+			ReserveDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
+			BuyBackDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
+			BorrowStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
 			k.SetDepositStats(ctx, depositStats)
 			k.SetUserDepositStats(ctx, userDepositStats)
 			k.SetReserveDepositStats(ctx, ReserveDepositStats)
@@ -68,12 +97,11 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 			AssetID: pool.MainAssetId,
 			Amount:  sdk.ZeroInt(),
 		}
-		balanceStats = append(depositStats.BalanceStats, balanceStat)
-		depositStats = types.DepositStats{BalanceStats: balanceStats}
-		userDepositStats = types.DepositStats{BalanceStats: balanceStats}
-		ReserveDepositStats = types.DepositStats{BalanceStats: balanceStats}
-		BuyBackDepositStats = types.DepositStats{BalanceStats: balanceStats}
-		BorrowStats = types.DepositStats{BalanceStats: balanceStats}
+		depositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
+		userDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
+		ReserveDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
+		BuyBackDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
+		BorrowStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
 		k.SetDepositStats(ctx, depositStats)
 		k.SetUserDepositStats(ctx, userDepositStats)
 		k.SetReserveDepositStats(ctx, ReserveDepositStats)
