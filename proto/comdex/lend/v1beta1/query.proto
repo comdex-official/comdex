@@ -263,7 +263,9 @@ message QueryPoolAssetLBMappingResponse {
 //     (gogoproto.moretags) = "yaml:\"reserve_deposit_stats\""];
 // }
 
-message QueryReserveBuybackAssetDataRequest {}
+message QueryReserveBuybackAssetDataRequest {
+  uint64 asset_id = 1;
+}
 
 message QueryReserveBuybackAssetDataResponse {
   ReserveBuybackAssetData ReserveBuybackAssetData = 1 [
@@ -372,7 +374,7 @@ service Query {
   // }
 
   rpc QueryReserveBuybackAssetData(QueryReserveBuybackAssetDataRequest) returns (QueryReserveBuybackAssetDataResponse) {
-    option (google.api.http).get = "/comdex/lend/v1beta1/reserve_buyback_asset_data";
+    option (google.api.http).get = "/comdex/lend/v1beta1/reserve_buyback_asset_data/{asset_id}";
   }
 
   // rpc QueryBorrowStats(QueryBorrowStatsRequest) returns (QueryBorrowStatsResponse) {

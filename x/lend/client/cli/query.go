@@ -40,16 +40,16 @@ func GetQueryCmd() *cobra.Command {
 		queryBorrows(),
 		QueryAllBorrowsByOwner(),
 		QueryAllBorrowsByOwnerAndPoolID(),
-		queryAssetRatesStat(),
-		queryAssetRatesStats(),
-		QueryAssetStats(),
+		QueryAssetRatesParam(),
+		QueryAssetRatesParams(),
+		QueryPoolAssetLBMapping(),
 		// QueryModuleBalance(),
 		// queryDepositStats(),
 		// queryUserDepositStats(),
 		// queryReserveDepositStats(),
-		// queryBuyBackDepositStats(),
+		queryReserveBuybackAssetData(),
 		// queryBorrowStats(),
-		queryAuctionParams(),
+		queryAuctionParams(),//
 	)
 
 	return cmd
@@ -571,7 +571,7 @@ func QueryAllBorrowsByOwnerAndPoolID() *cobra.Command {
 	return cmd
 }
 
-func queryAssetRatesStat() *cobra.Command {
+func QueryAssetRatesParam() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "asset-rates-stat [asset-id]",
 		Short: "Query asset rates stat by asset-id",
@@ -608,7 +608,7 @@ func queryAssetRatesStat() *cobra.Command {
 	return cmd
 }
 
-func queryAssetRatesStats() *cobra.Command {
+func QueryAssetRatesParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "asset-rates-stats",
 		Short: "Query asset rates stats",
@@ -645,7 +645,7 @@ func queryAssetRatesStats() *cobra.Command {
 	return cmd
 }
 
-func QueryAssetStats() *cobra.Command {
+func QueryPoolAssetLBMapping() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "asset-stats [asset-id] [pool-id]",
 		Short: "Query asset stats for an asset-id and pool-id",
@@ -805,35 +805,43 @@ func QueryAssetStats() *cobra.Command {
 // 	return cmd
 // }
 
-// func queryBuyBackDepositStats() *cobra.Command {
-// 	cmd := &cobra.Command{
-// 		Use:   "buy-back-deposit-stats",
-// 		Short: "Query reserve deposit stats",
-// 		RunE: func(cmd *cobra.Command, args []string) error {
-// 			ctx, err := client.GetClientQueryContext(cmd)
-// 			if err != nil {
-// 				return err
-// 			}
+func queryReserveBuybackAssetData() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "buy-back-deposit-stats [id]",
+		Short: "Query reserve deposit stats",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
-// 			queryClient := types.NewQueryClient(ctx)
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
 
-// 			res, err := queryClient.QueryBuyBackDepositStats(
-// 				context.Background(),
-// 				&types.QueryBuyBackDepositStatsRequest{},
-// 			)
-// 			if err != nil {
-// 				return err
-// 			}
+			queryClient := types.NewQueryClient(ctx)
 
-// 			return ctx.PrintProto(res)
-// 		},
-// 	}
+			res, err := queryClient.QueryReserveBuybackAssetData(
+				context.Background(),
+				&types.QueryReserveBuybackAssetDataRequest{
+					AssetId: id,
+				},
+			)
+			if err != nil {
+				return err
+			}
 
-// 	flags.AddQueryFlagsToCmd(cmd)
-// 	flags.AddPaginationFlagsToCmd(cmd, "buy-back-deposit-stats")
+			return ctx.PrintProto(res)
+		},
+	}
 
-// 	return cmd
-// }
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "buy-back-deposit-stats")
+
+	return cmd
+}
 
 // func queryBorrowStats() *cobra.Command {
 // 	cmd := &cobra.Command{
