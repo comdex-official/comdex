@@ -63,5 +63,5 @@ func (k Keeper) CalculateCollateralizationRatio(
 	// 	return sdk.ZeroDec(), types.ErrorInvalidAmountOut
 	// }
 
-	return sdk.NewDecFromInt(sdk.NewIntFromUint64(totalOut)).Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(totalIn))), nil
+	return sdk.NewDecFromInt(totalOut).Quo(sdk.NewDecFromInt(totalIn)), nil
 }

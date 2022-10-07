@@ -96,7 +96,7 @@ func (k Keeper) CheckSupplyCap(ctx sdk.Context, assetID, poolID uint64, amt sdk.
 			supplyCap = v.SupplyCap
 		}
 	}
-	if currentSupply <= supplyCap {
+	if currentSupply.Uint64() <= supplyCap {
 		return true, nil
 	} else {
 		return false, nil
@@ -651,9 +651,9 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 
 		// qty of first and second bridged asset to be sent over different pool according to the borrow Pool
 
-		firstBridgedAssetQty := sdk.NewIntFromUint64(updatedAmtInPrice).Quo(sdk.NewIntFromUint64(unitAmountFirstTransitAsset))
+		firstBridgedAssetQty := updatedAmtInPrice.Quo(unitAmountFirstTransitAsset)
 		firstBridgedAssetBal := k.ModuleBalance(ctx, AssetInPool.ModuleName, firstTransitAsset.Denom)
-		secondBridgedAssetQty := sdk.NewIntFromUint64(updatedAmtInPrice).Quo(sdk.NewIntFromUint64(unitAmountSecondTransitAsset))
+		secondBridgedAssetQty := updatedAmtInPrice.Quo(unitAmountSecondTransitAsset)
 		secondBridgedAssetBal := k.ModuleBalance(ctx, AssetInPool.ModuleName, secondTransitAsset.Denom)
 
 		firstBridgedAssetRatesStats, found := k.GetAssetRatesParams(ctx, firstTransitAsset.Id)
@@ -1096,9 +1096,9 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 
 		// qty of first and second bridged asset to be sent over different pool according to the borrow Pool
 
-		firstBridgedAssetQty := sdk.NewIntFromUint64(amtIn).Quo(sdk.NewIntFromUint64(unitAmountFirstTransitAsset))
+		firstBridgedAssetQty := amtIn.Quo(unitAmountFirstTransitAsset)
 		firstBridgedAssetBal := k.ModuleBalance(ctx, AssetInPool.ModuleName, firstTransitAsset.Denom)
-		secondBridgedAssetQty := sdk.NewIntFromUint64(amtIn).Quo(sdk.NewIntFromUint64(unitAmountSecondTransitAsset))
+		secondBridgedAssetQty := amtIn.Quo(unitAmountSecondTransitAsset)
 		secondBridgedAssetBal := k.ModuleBalance(ctx, AssetInPool.ModuleName, secondTransitAsset.Denom)
 		// priceFirstBridgedAsset, found := k.GetPriceForAsset(ctx, AssetInPool.FirstBridgedAssetID)
 		// if !found {
