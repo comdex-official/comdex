@@ -8,7 +8,7 @@ import (
 
 	"github.com/comdex-official/comdex/x/lend/types"
 )
-
+// To calculate pending rewards from last interaction
 func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 	lend, _ := k.GetLend(ctx, ID)
 	lendAPR, _ := k.GetLendAPRByAssetIDAndPoolID(ctx, lend.PoolID, lend.AssetID)
@@ -37,7 +37,7 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 		pool, _ := k.GetPool(ctx, lend.PoolID)
 		asset, _ := k.GetAsset(ctx, lend.AssetID)
 		Amount := sdk.NewCoin(asset.Denom, newInterestPerBlock)
-		assetRatesStat, _ := k.GetAssetRatesStats(ctx, lend.AssetID)
+		assetRatesStat, _ := k.GetAssetRatesParams(ctx, lend.AssetID)
 
 		cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
 		cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)

@@ -927,7 +927,7 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 		{
 			Name:               "Unauthorized User",
 			Msg:                *types.NewMsgBorrow("cosmos14edpcw6ptcqd2vct9rkjf7lgyvrlwdtd0rqrtx", 1, 4, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset3", newInt(100))),
-			ExpErr:             types.ErrLendAccessUnauthorised,
+			ExpErr:             types.ErrLendAccessUnauthorized,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -1150,7 +1150,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		{
 			Name:               "different user",
 			Msg:                *types.NewMsgRepay("cosmos14edpcw6ptcqd2vct9rkjf7lgyvrlwdtd0rqrtx", 1, sdk.NewCoin("uasset2", newInt(100))),
-			ExpErr:             types.ErrLendAccessUnauthorised,
+			ExpErr:             types.ErrLendAccessUnauthorized,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -1711,7 +1711,7 @@ func (s *KeeperTestSuite) TestMsgCloseBorrow() {
 		{
 			Name:               "Different user",
 			Msg:                *types.NewMsgCloseBorrow("cosmos14edpcw6ptcqd2vct9rkjf7lgyvrlwdtd0rqrtx", 1),
-			ExpErr:             types.ErrLendAccessUnauthorised,
+			ExpErr:             types.ErrLendAccessUnauthorized,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,

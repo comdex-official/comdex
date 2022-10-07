@@ -91,8 +91,8 @@ func NewLendHandler(k keeper.Keeper) govtypes.Handler {
 			return handleAddPoolProposal(ctx, k, c)
 		case *types.AddAssetToPairProposal:
 			return handleAddAssetToPairProposal(ctx, k, c)
-		case *types.AddAssetRatesStats:
-			return handleAddAssetRatesStatsProposal(ctx, k, c)
+		case *types.AddAssetRatesParams:
+			return handleAddAssetRatesParamsProposal(ctx, k, c)
 		case *types.AddAuctionParamsProposal:
 			return HandleAddAuctionParamsProposal(ctx, k, c)
 
@@ -118,8 +118,8 @@ func handleAddAssetToPairProposal(ctx sdk.Context, k keeper.Keeper, p *types.Add
 	return k.HandleAddAssetToPairRecords(ctx, p)
 }
 
-func handleAddAssetRatesStatsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetRatesStats) error {
-	return k.HandleAddAssetRatesStatsRecords(ctx, p)
+func handleAddAssetRatesParamsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetRatesParams) error {
+	return k.HandleAddAssetRatesParamsRecords(ctx, p)
 }
 
 func HandleAddAuctionParamsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAuctionParamsProposal) error {

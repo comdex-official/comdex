@@ -70,58 +70,17 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 			return types.ErrorAssetDoesNotExist
 		}
 	}
-	depositStats, found := k.GetDepositStats(ctx)
-	userDepositStats, _ := k.GetUserDepositStats(ctx)
-	ReserveDepositStats, _ := k.GetReserveDepositStats(ctx)
-	BuyBackDepositStats, _ := k.GetBuyBackDepositStats(ctx)
-	BorrowStats, _ := k.GetBorrowStats(ctx)
-	if !found {
-		for _, v := range pool.AssetData {
-			balanceStat := types.BalanceStats{
-				AssetID: v.AssetID,
-				Amount:  sdk.ZeroInt(),
-			}
-			depositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
-			userDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
-			ReserveDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
-			BuyBackDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
-			BorrowStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
-			k.SetDepositStats(ctx, depositStats)
-			k.SetUserDepositStats(ctx, userDepositStats)
-			k.SetReserveDepositStats(ctx, ReserveDepositStats)
-			k.SetBuyBackDepositStats(ctx, BuyBackDepositStats)
-			k.SetBorrowStats(ctx, BorrowStats)
-		}
-	} else {
-		balanceStat := types.BalanceStats{
-			AssetID: pool.MainAssetId,
-			Amount:  sdk.ZeroInt(),
-		}
-		depositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
-		userDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
-		ReserveDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
-		BuyBackDepositStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
-		BorrowStats.BalanceStats = append(depositStats.BalanceStats, &balanceStat)
-		k.SetDepositStats(ctx, depositStats)
-		k.SetUserDepositStats(ctx, userDepositStats)
-		k.SetReserveDepositStats(ctx, ReserveDepositStats)
-		k.SetBuyBackDepositStats(ctx, BuyBackDepositStats)
-		k.SetBorrowStats(ctx, BorrowStats)
-	}
 
 	poolID := k.GetPoolID(ctx)
 	newPool := types.Pool{
 		PoolID:               poolID + 1,
 		ModuleName:           pool.ModuleName,
-		MainAssetId:          pool.MainAssetId,
-		FirstBridgedAssetID:  pool.FirstBridgedAssetID,
-		SecondBridgedAssetID: pool.SecondBridgedAssetID,
 		CPoolName:            pool.CPoolName,
 		ReserveFunds:         pool.ReserveFunds,
 		AssetData:            pool.AssetData,
 	}
 	for _, v := range pool.AssetData {
-		var assetStats types.AssetStats
+		var assetStats types.PoolAssetLBMapping
 		assetStats.PoolID = newPool.PoolID
 		assetStats.AssetID = v.AssetID
 		assetStats.TotalBorrowed = sdk.ZeroInt()
@@ -234,14 +193,14 @@ func (k Keeper) GetLendPairID(ctx sdk.Context) uint64 {
 	return count.GetValue()
 }
 
-func (k Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRatesStats) error {
+func (k Keeper) AddAssetRatesParams(ctx sdk.Context, records ...types.AssetRatesParams) error {
 	for _, msg := range records {
-		_, found := k.GetAssetRatesStats(ctx, msg.AssetID)
+		_, found := k.GetAssetRatesParams(ctx, msg.AssetID)
 		if found {
-			return types.ErrorDuplicateAssetRatesStats
+			return types.ErrorAssetRatesParamsNotFound
 		}
 
-		assetRatesStats := types.AssetRatesStats{
+		assetRatesParams := types.AssetRatesParams{
 			AssetID:              msg.AssetID,
 			UOptimal:             msg.UOptimal,
 			Base:                 msg.Base,
@@ -259,7 +218,7 @@ func (k Keeper) AddAssetRatesStats(ctx sdk.Context, records ...types.AssetRatesS
 			CAssetID:             msg.CAssetID,
 		}
 
-		k.SetAssetRatesStats(ctx, assetRatesStats)
+		k.SetAssetRatesParams(ctx, assetRatesParams)
 	}
 	return nil
 }
@@ -312,35 +271,35 @@ func (k Keeper) GetAllAddAuctionParamsData(ctx sdk.Context) (auctionParams []typ
 	return auctionParams
 }
 
-func (k Keeper) SetAssetRatesStats(ctx sdk.Context, assetRatesStats types.AssetRatesStats) {
+func (k Keeper) SetAssetRatesParams(ctx sdk.Context, assetRatesParams types.AssetRatesParams) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetRatesStatsKey(assetRatesStats.AssetID)
-		value = k.cdc.MustMarshal(&assetRatesStats)
+		key   = types.AssetRatesParamsKey(assetRatesParams.AssetID)
+		value = k.cdc.MustMarshal(&assetRatesParams)
 	)
 
 	store.Set(key, value)
 }
 
-func (k Keeper) GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRatesStats types.AssetRatesStats, found bool) {
+func (k Keeper) GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRatesParams types.AssetRatesParams, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetRatesStatsKey(assetID)
+		key   = types.AssetRatesParamsKey(assetID)
 		value = store.Get(key)
 	)
 
 	if value == nil {
-		return assetRatesStats, false
+		return assetRatesParams, false
 	}
 
-	k.cdc.MustUnmarshal(value, &assetRatesStats)
-	return assetRatesStats, true
+	k.cdc.MustUnmarshal(value, &assetRatesParams)
+	return assetRatesParams, true
 }
 
-func (k Keeper) GetAllAssetRatesStats(ctx sdk.Context) (assetRatesStats []types.AssetRatesStats) {
+func (k Keeper) GetAllAssetRatesParams(ctx sdk.Context) (assetRatesParams []types.AssetRatesParams) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AssetRatesStatsKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.AssetRatesParamsKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -351,34 +310,34 @@ func (k Keeper) GetAllAssetRatesStats(ctx sdk.Context) (assetRatesStats []types.
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var asset types.AssetRatesStats
+		var asset types.AssetRatesParams
 		k.cdc.MustUnmarshal(iter.Value(), &asset)
-		assetRatesStats = append(assetRatesStats, asset)
+		assetRatesParams = append(assetRatesParams, asset)
 	}
-	return assetRatesStats
+	return assetRatesParams
 }
 
-func (k Keeper) SetDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
-	var (
-		store = k.Store(ctx)
-		key   = types.DepositStatsPrefix
-		value = k.cdc.MustMarshal(&depositStats)
-	)
+// func (k Keeper) SetDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
+// 	var (
+// 		store = k.Store(ctx)
+// 		key   = types.DepositStatsPrefix
+// 		value = k.cdc.MustMarshal(&depositStats)
+// 	)
 
-	store.Set(key, value)
-}
+// 	store.Set(key, value)
+// }
 
-func (k Keeper) GetDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.DepositStatsPrefix
-		value = store.Get(key)
-	)
+// func (k Keeper) GetDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
+// 	var (
+// 		store = k.Store(ctx)
+// 		key   = types.DepositStatsPrefix
+// 		value = store.Get(key)
+// 	)
 
-	if value == nil {
-		return depositStats, false
-	}
+// 	if value == nil {
+// 		return depositStats, false
+// 	}
 
-	k.cdc.MustUnmarshal(value, &depositStats)
-	return depositStats, true
-}
+// 	k.cdc.MustUnmarshal(value, &depositStats)
+// 	return depositStats, true
+// }

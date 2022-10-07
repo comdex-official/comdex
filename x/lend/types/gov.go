@@ -9,7 +9,7 @@ var (
 	ProposalUpdateLendPairs    = "ProposalUpdateLendPairs"
 	ProposalAddPool            = "ProposalAddPool"
 	ProposalAddAssetToPair     = "ProposalAddAssetToPair"
-	ProposalAddAssetRatesStats = "ProposalAddAssetRatesStats"
+	ProposalAddAssetRatesParams = "ProposalAddAssetRatesParams"
 	ProposalAddAuctionParams   = "ProposalAddAuctionParams"
 )
 
@@ -22,8 +22,8 @@ func init() {
 	govtypes.RegisterProposalTypeCodec(&AddPoolsProposal{}, "comdex/AddPoolsProposal")
 	govtypes.RegisterProposalType(ProposalAddAssetToPair)
 	govtypes.RegisterProposalTypeCodec(&AddAssetToPairProposal{}, "comdex/AddAssetToPairProposal")
-	govtypes.RegisterProposalType(ProposalAddAssetRatesStats)
-	govtypes.RegisterProposalTypeCodec(&AddAssetRatesStats{}, "comdex/AddAssetRatesStats")
+	govtypes.RegisterProposalType(ProposalAddAssetRatesParams)
+	govtypes.RegisterProposalTypeCodec(&AddAssetRatesParams{}, "comdex/AddAssetRatesParams")
 	govtypes.RegisterProposalType(ProposalAddAuctionParams)
 	govtypes.RegisterProposalTypeCodec(&AddAuctionParamsProposal{}, "comdex/AddAuctionParamsProposal")
 }
@@ -33,7 +33,7 @@ var (
 	_ govtypes.Content = &UpdateLendPairsProposal{}
 	_ govtypes.Content = &AddPoolsProposal{}
 	_ govtypes.Content = &AddAssetToPairProposal{}
-	_ govtypes.Content = &AddAssetRatesStats{}
+	_ govtypes.Content = &AddAssetRatesParams{}
 	_ govtypes.Content = &AddAuctionParamsProposal{}
 )
 
@@ -147,29 +147,29 @@ func (p *AddAssetToPairProposal) ValidateBasic() error {
 	return nil
 }
 
-func NewAddAssetRatesStats(title, description string, AssetRatesStats AssetRatesStats) govtypes.Content {
-	return &AddAssetRatesStats{
+func NewAddassetRatesParams(title, description string, AssetRatesParams AssetRatesParams) govtypes.Content {
+	return &AddAssetRatesParams{
 		Title:           title,
 		Description:     description,
-		AssetRatesStats: AssetRatesStats,
+		AssetRatesParams: AssetRatesParams,
 	}
 }
 
-func (p *AddAssetRatesStats) ProposalRoute() string {
+func (p *AddAssetRatesParams) ProposalRoute() string {
 	return RouterKey
 }
 
-func (p *AddAssetRatesStats) ProposalType() string {
-	return ProposalAddAssetRatesStats
+func (p *AddAssetRatesParams) ProposalType() string {
+	return ProposalAddAssetRatesParams
 }
 
-func (p *AddAssetRatesStats) ValidateBasic() error {
+func (p *AddAssetRatesParams) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
 		return err
 	}
 
-	if err = p.AssetRatesStats.Validate(); err != nil {
+	if err = p.AssetRatesParams.Validate(); err != nil {
 		return err
 	}
 

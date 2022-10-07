@@ -26,6 +26,6 @@ func (m *AssetToPairMapping) Validate() error {
 	return nil
 }
 
-func (m *AssetRatesStats) Validate() error {
+func (m *AssetRatesParams) Validate() error {
 	return nil
 }

@@ -51,34 +51,35 @@ var (
 
 	PoolKeyPrefix         = []byte{0x13}
 	LendUserPrefix        = []byte{0x15}
-	LendHistoryIDPrefix   = []byte{0x16}
+	LendCounterIDPrefix   = []byte{0x16}
 	PoolIDPrefix          = []byte{0x17}
 	LendPairIDKey         = []byte{0x18}
 	LendPairKeyPrefix     = []byte{0x19}
-	BorrowHistoryIDPrefix = []byte{0x25}
+	BorrowCounterIDPrefix = []byte{0x25}
 	BorrowPairKeyPrefix   = []byte{0x26}
-	LendsKey              = []byte{0x32}
-	BorrowsKey            = []byte{0x33}
-	BorrowStatsPrefix     = []byte{0x40}
+	// LendsKey              = []byte{0x32}
+	// BorrowsKey            = []byte{0x33}
+	// BorrowStatsPrefix     = []byte{0x40}
 	AuctionParamPrefix    = []byte{0x41}
 
 	AssetToPairMappingKeyPrefix           = []byte{0x20}
 	LendForAddressByAssetKeyPrefix        = []byte{0x22}
-	UserLendsForAddressKeyPrefix          = []byte{0x23}
+	// UserLendsForAddressKeyPrefix          = []byte{0x23}
 	BorrowForAddressByPairKeyPrefix       = []byte{0x24}
-	UserBorrowsForAddressKeyPrefix        = []byte{0x27}
-	LendIDToBorrowIDMappingKeyPrefix      = []byte{0x28}
+	// UserBorrowsForAddressKeyPrefix        = []byte{0x27}
+	// LendIDToBorrowIDMappingKeyPrefix      = []byte{0x28}
 	AssetStatsByPoolIDAndAssetIDKeyPrefix = []byte{0x29}
-	AssetRatesStatsKeyPrefix              = []byte{0x30}
-	LendByUserAndPoolPrefix               = []byte{0x34}
-	BorrowByUserAndPoolPrefix             = []byte{0x35}
+	AssetRatesParamsKeyPrefix              = []byte{0x30}
+	// LendByUserAndPoolPrefix               = []byte{0x34}
+	// BorrowByUserAndPoolPrefix             = []byte{0x35}
 	DepositStatsPrefix                    = []byte{0x36}
-	UserDepositStatsPrefix                = []byte{0x37}
-	ReserveDepositStatsPrefix             = []byte{0x38}
-	BuyBackDepositStatsPrefix             = []byte{0x39}
-	ReservePoolRecordsForBorrowKeyPrefix  = []byte{0x42}
+	// UserDepositStatsPrefix                = []byte{0x37}
+	// ReserveDepositStatsPrefix             = []byte{0x38}
+	// BuyBackDepositStatsPrefix             = []byte{0x39}
+	// ReservePoolRecordsForBorrowKeyPrefix  = []byte{0x42}
 	LendRewardsTrackerKeyPrefix           = []byte{0x43}
 	BorrowInterestTrackerKeyPrefix        = []byte{0x44}
+	UserLendBorrowMappingKeyPrefix		  = []byte{0x45}
 )
 
 func ReserveFundsKey(tokenDenom string) []byte {
@@ -109,17 +110,17 @@ func AuctionParamKey(ID uint64) []byte {
 	return append(AuctionParamPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
-func AssetRatesStatsKey(ID uint64) []byte {
-	return append(AssetRatesStatsKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
+func AssetRatesParamsKey(ID uint64) []byte {
+	return append(AssetRatesParamsKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
 func BorrowUserKey(ID uint64) []byte {
 	return append(BorrowPairKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
 }
 
-func ReservePoolRecordsForBorrowKey(ID uint64) []byte {
-	return append(ReservePoolRecordsForBorrowKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
-}
+// func ReservePoolRecordsForBorrowKey(ID uint64) []byte {
+// 	return append(ReservePoolRecordsForBorrowKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
+// }
 
 func AssetToPairMappingKey(assetID, poolID uint64) []byte {
 	return append(append(AssetToPairMappingKeyPrefix, sdk.Uint64ToBigEndian(assetID)...), sdk.Uint64ToBigEndian(poolID)...)
@@ -142,17 +143,17 @@ func BorrowForAddressByPair(address sdk.AccAddress, pairID uint64) []byte {
 	return append(v, sdk.Uint64ToBigEndian(pairID)...)
 }
 
-func UserLendsForAddressKey(address string) []byte {
-	return append(UserLendsForAddressKeyPrefix, address...)
-}
+// func UserLendsForAddressKey(address string) []byte {
+// 	return append(UserLendsForAddressKeyPrefix, address...)
+// }
 
-func UserBorrowsForAddressKey(address string) []byte {
-	return append(UserBorrowsForAddressKeyPrefix, address...)
-}
+// func UserBorrowsForAddressKey(address string) []byte {
+// 	return append(UserBorrowsForAddressKeyPrefix, address...)
+// }
 
-func LendIDToBorrowIDMappingKey(ID uint64) []byte {
-	return append(LendIDToBorrowIDMappingKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
-}
+// func LendIDToBorrowIDMappingKey(ID uint64) []byte {
+// 	return append(LendIDToBorrowIDMappingKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
+// }
 
 func LendRewardsTrackerKey(ID uint64) []byte {
 	return append(LendRewardsTrackerKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
@@ -167,10 +168,18 @@ func SetAssetStatsByPoolIDAndAssetID(assetID, pairID uint64) []byte {
 	return append(v, sdk.Uint64ToBigEndian(pairID)...)
 }
 
-func LendByUserAndPoolKey(owner string, ID uint64) []byte {
-	return append(append(LendByUserAndPoolPrefix, sdk.Uint64ToBigEndian(ID)...), owner...)
+// func LendByUserAndPoolKey(owner string, ID uint64) []byte {
+// 	return append(append(LendByUserAndPoolPrefix, sdk.Uint64ToBigEndian(ID)...), owner...)
+// }
+
+// func BorrowByUserAndPoolKey(owner string, ID uint64) []byte {
+// 	return append(append(BorrowByUserAndPoolPrefix, sdk.Uint64ToBigEndian(ID)...), owner...)
+// }
+
+func UserLendBorrowMappingKey(owner string, lendID uint64) []byte {
+	return append(append(UserLendBorrowMappingKeyPrefix, owner...), sdk.Uint64ToBigEndian(lendID)...)
 }
 
-func BorrowByUserAndPoolKey(owner string, ID uint64) []byte {
-	return append(append(BorrowByUserAndPoolPrefix, sdk.Uint64ToBigEndian(ID)...), owner...)
+func UserLendBorrowKey(owner string) []byte {
+	return append(UserLendBorrowMappingKeyPrefix, owner...)
 }

@@ -67,100 +67,29 @@ func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleNam
 }
 
 func (k Keeper) UpdateLendStats(ctx sdk.Context, AssetID, PoolID uint64, amount sdk.Int, inc bool) {
-	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, AssetID, PoolID)
-	depositStats, _ := k.GetDepositStats(ctx)
-	userDepositStats, _ := k.GetUserDepositStats(ctx)
-	//var balanceStats []types.BalanceStats
-	//var userBalanceStats []types.BalanceStats
-
+	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, PoolID, AssetID)
 	if inc {
 		assetStats.TotalLend = assetStats.TotalLend.Add(amount)
-		k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
-
-		for _, v := range depositStats.BalanceStats {
-			if v.AssetID == AssetID {
-				v.Amount = v.Amount.Add(amount)
-				k.SetDepositStats(ctx, depositStats)
-				break
-			}
-			//balanceStats = append(balanceStats, v)
-			//newDepositStats := types.DepositStats{BalanceStats: balanceStats}
-		}
-		for _, v := range userDepositStats.BalanceStats {
-			if v.AssetID == AssetID {
-				v.Amount = v.Amount.Add(amount)
-				k.SetUserDepositStats(ctx, userDepositStats)
-				break
-			}
-			//userBalanceStats = append(userBalanceStats, v)
-			//newUserDepositStats := types.DepositStats{BalanceStats: userBalanceStats}
-		}
 	} else {
 		assetStats.TotalLend = assetStats.TotalLend.Sub(amount)
-		k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
-		for _, v := range depositStats.BalanceStats {
-			if v.AssetID == AssetID {
-				v.Amount = v.Amount.Sub(amount)
-				k.SetDepositStats(ctx, depositStats)
-				break
-			}
-			//balanceStats = append(balanceStats, v)
-			//newDepositStats := types.DepositStats{BalanceStats: balanceStats}
-		}
-		for _, v := range userDepositStats.BalanceStats {
-			if v.AssetID == AssetID {
-				v.Amount = v.Amount.Sub(amount)
-				k.SetUserDepositStats(ctx, userDepositStats)
-				break
-			}
-			//userBalanceStats = append(userBalanceStats, v)
-			//newUserDepositStats := types.DepositStats{BalanceStats: userBalanceStats}
-		}
 	}
+	k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 }
 
-func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair types.Extended_Pair, borrowPos types.BorrowAsset, amount sdk.Int, inc bool) {
+func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair types.Extended_Pair, isStableBorrow bool, amount sdk.Int, inc bool) {
+	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
 	if inc {
-		borrowStats, _ := k.GetBorrowStats(ctx)
-		//var userBalanceStats []types.BalanceStats
-		for _, v := range borrowStats.BalanceStats {
-			if v.AssetID == pair.AssetOut {
-				v.Amount = v.Amount.Add(amount)
-				k.SetBorrowStats(ctx, borrowStats)
-				break
-			}
-			//userBalanceStats = append(userBalanceStats, v)
-			//newUserDepositStats := types.DepositStats{BalanceStats: userBalanceStats}
-		}
-
-		assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolID)
-		if borrowPos.IsStableBorrow {
+		if isStableBorrow {
 			assetStats.TotalStableBorrowed = assetStats.TotalStableBorrowed.Add(amount)
-			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 		} else {
 			assetStats.TotalBorrowed = assetStats.TotalBorrowed.Add(amount)
-			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 		}
 	} else {
-		borrowStats, _ := k.GetBorrowStats(ctx)
-		//var userBalanceStats []types.BalanceStats
-		for _, v := range borrowStats.BalanceStats {
-			if v.AssetID == pair.AssetOut {
-				v.Amount = v.Amount.Sub(amount)
-				k.SetBorrowStats(ctx, borrowStats)
-				break
-			}
-			//userBalanceStats = append(userBalanceStats, v)
-			//newUserDepositStats := types.DepositStats{BalanceStats: userBalanceStats}
-		}
-
-		assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolID)
-		if borrowPos.IsStableBorrow {
+		if isStableBorrow {
 			assetStats.TotalStableBorrowed = assetStats.TotalStableBorrowed.Sub(amount)
-			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 		} else {
 			assetStats.TotalBorrowed = assetStats.TotalBorrowed.Sub(amount)
-			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 		}
 	}
+	k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 }
