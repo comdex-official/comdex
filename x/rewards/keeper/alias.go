@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -176,4 +177,16 @@ func (k Keeper) GetLockerLookupTable(ctx sdk.Context, appID, assetID uint64) (lo
 
 func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID uint64, pairVaultID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData, found bool) {
 	return k.vault.GetAppExtendedPairVaultMappingData(ctx, appMappingID, pairVaultID)
+}
+
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price uint64, err error) {
+	return k.marketKeeper.CalcAssetPrice(ctx, id, amt)
+}
+
+func (k Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool) {
+	return k.lend.GetBorrow(ctx, id)
+}
+
+func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool) {
+	return k.lend.GetLend(ctx, id)
 }

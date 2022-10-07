@@ -24,6 +24,7 @@ const (
 
 	SecondsPerYear = 31557600
 	SecondsPerDay  = 86400
+	DaysInYear     = "365.242"
 )
 
 var (

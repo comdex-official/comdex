@@ -163,3 +163,87 @@ func (k Keeper) CalculationOfRewards(
 	}
 	return newAm, nil
 }
+
+func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
+	extRewards := k.GetExternalRewardLends(ctx)
+	for i, v := range extRewards {
+		klwsParams, _ := k.GetKillSwitchData(ctx, v.AppMappingId)
+		if klwsParams.BreakerEnable {
+			return esmtypes.ErrCircuitBreakerEnabled
+		}
+		if v.IsActive {
+			epochTime, _ := k.GetEpochTime(ctx, v.EpochId)
+			et := epochTime.StartingTime
+
+			timeNow := ctx.BlockTime().Unix()
+
+			if et < timeNow {
+				if extRewards[i].IsActive {
+					epoch, _ := k.GetEpochTime(ctx, v.EpochId)
+					if epoch.Count < uint64(extRewards[i].DurationDays) {
+						// we will only consider the borrows of the pool and assetID defined
+						totalBorrowedAmt := uint64(0)
+						for _, rewardsAssetPoolData := range v.RewardsAssetPoolData {
+							for _, assetID := range rewardsAssetPoolData.AssetId {
+								borrowByPoolIDAssetID := k.getlbdatabypoolandassetid()
+								price, err := k.CalcAssetPrice(ctx, assetID, borrowByPoolIDAssetID)
+								if err != nil {
+									return err
+								}
+								totalBorrowedAmt = totalBorrowedAmt + price
+							}
+						}
+						totalRewardAmt, _ := k.CalcAssetPrice(ctx, v.RewardAssetId, v.TotalRewards.Amount)
+						totalAPR := sdk.NewDec(int64(totalRewardAmt)).Quo(sdk.NewDec(int64(totalBorrowedAmt)))
+						var inverseRatesSum sdk.Dec
+						for _, rewardsAssetPoolData := range v.RewardsAssetPoolData {
+							for _, assetID := range rewardsAssetPoolData.AssetId {
+								inverseRate := k.InversingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
+								inverseRatesSum = inverseRatesSum.Add(inverseRate)
+							}
+						}
+
+						for _, rewardsAssetPoolData := range v.RewardsAssetPoolData {
+							for _, assetID := range rewardsAssetPoolData.AssetId {
+								borrowIDs := k.getlbdatabypoolandassetid()
+								for _, borrowID := range borrowIDs {
+									borrow, _ := k.GetBorrow(ctx, borrowID)
+									lend, _ := k.GetLend(ctx, borrow.LendingID)
+									inverseRate := k.InversingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
+									numerator := totalAPR.Mul(inverseRate)
+									finalAPR := numerator.Quo(inverseRatesSum)
+									finalDailyRewardsNumerator := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(finalAPR)
+									daysInYear, _ := sdk.NewDecFromStr(types.DaysInYear)
+									finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(daysInYear)
+									user, _ := sdk.AccAddressFromBech32(lend.Owner)
+									if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
+										err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
+										if err != nil {
+											continue
+										}
+									}
+								}
+							}
+						}
+						epoch.Count = epoch.Count + types.UInt64One
+						epoch.StartingTime = timeNow + types.SecondsPerDay
+						k.SetEpochTime(ctx, epoch)
+
+					} else {
+						extRewards[i].IsActive = false
+						k.SetExternalRewardLend(ctx, extRewards[i])
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (k Keeper) InversingRates(ctx sdk.Context, assetID, poolID, totalRewardAmt uint64) sdk.Dec {
+	assetBorrowedByPoolIDandAssetID := k.getlbdatabypoolandassetid(assetID, poolID)
+	assetBorrowedByPoolIDandAssetIDAmt, _ := k.CalcAssetPrice(ctx, assetID, assetBorrowedByPoolIDandAssetID)
+	tempRate := sdk.NewDec(int64(assetBorrowedByPoolIDandAssetIDAmt)).Quo(sdk.NewDec(int64(totalRewardAmt)))
+	inverseRate := sdk.OneDec().Sub(tempRate)
+	return inverseRate
+}
