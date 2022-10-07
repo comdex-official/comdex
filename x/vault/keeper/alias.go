@@ -104,6 +104,6 @@ func (k Keeper) DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.V
 	k.rewards.DeleteVaultInterestTracker(ctx, vault)
 }
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price uint64, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
 	return k.oracle.CalcAssetPrice(ctx, id, amt)
 }

@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -167,20 +165,16 @@ func (k Keeper) GetMarketForAsset(ctx sdk.Context, id uint64) (market types.Mark
 }
 
 func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	if id != 3 {
-		market, found := k.GetMarketForAsset(ctx, id)
-		if !found {
-			return 0, false
-		}
-
-		rates, found := k.GetPriceForMarket(ctx, market.Symbol)
-		if !found || rates == 0 {
-			return 0, false
-		}
-		return rates, found
-	} else {
-		return 1000000, true
+	market, found := k.GetMarketForAsset(ctx, id)
+	if !found {
+		return 0, false
 	}
+
+	rates, found := k.GetPriceForMarket(ctx, market.Symbol)
+	if !found || rates == 0 {
+		return 0, false
+	}
+	return rates, found
 }
 
 ////////////
@@ -281,48 +275,17 @@ func (k Keeper) GetLatestPrice(ctx sdk.Context, id uint64) (price uint64, err er
 	return 0, types.ErrorPriceNotActive
 }
 
-// func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price uint64, err error) {
-// 	asset, found := k.GetAsset(ctx, id)
-// 	if !found {
-// 		return 0, assetTypes.ErrorAssetDoesNotExist
-// 	}
-// 	twa, found := k.GetTwa(ctx, id)
-// 	if found && twa.IsPriceActive {
-// 		nume := amt.Mul(sdk.NewIntFromUint64(twa.Twa))
-// 		demo := sdk.NewIntFromUint64(uint64(asset.Decimals))
-// 		return nume.Quo(demo).Uint64(), nil
-// 	}
-// 	return 0, types.ErrorPriceNotActive
-// }
-
-
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price uint64, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
 	asset, found := k.GetAsset(ctx, id)
 	if !found {
-		return 0, assetTypes.ErrorAssetDoesNotExist
+		return sdk.ZeroInt(), assetTypes.ErrorAssetDoesNotExist
 	}
-	rate := 0
-	if id == 1 {
-		rate = 12000000
+	twa, found := k.GetTwa(ctx, id)
+	if found && twa.IsPriceActive {
+		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
+		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset.Decimals)))
+		result := numerator.Quo(denominator)
+		return result.TruncateInt(), nil
 	}
-	if id == 2 {
-		rate = 200000
-	}
-	if id == 3 {
-		rate = 12000000
-	}
-	if id == 4 {
-		rate = 2000000
-	}
-	if id == 11 {
-		rate = 1500000000
-	}
-	fmt.Println("amt", amt)
-		nume := amt.Mul(sdk.NewIntFromUint64(uint64(rate)))
-		demo := sdk.NewIntFromUint64(uint64(asset.Decimals))
-		fmt.Println("nume/demo",nume.Quo(demo))
-	fmt.Println("nume",nume)
-	fmt.Println("demo",demo)
-		return nume.Quo(demo).Uint64(), nil
-	
+	return sdk.ZeroInt(), types.ErrorPriceNotActive
 }
