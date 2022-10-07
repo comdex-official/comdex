@@ -77,7 +77,6 @@ func (k Keeper) IterateBorrow(ctx sdk.Context, ID uint64) (sdk.Dec, sdk.Dec, err
 		borrow.InterestAccumulated = borrow.InterestAccumulated.Add(stableInterestPerBlock)
 	}
 
-
 	reservePoolRecords, found := k.GetBorrowInterestTracker(ctx, borrow.ID)
 	if !found {
 		reservePoolRecords = types.BorrowInterestTracker{
@@ -174,38 +173,38 @@ func (k Keeper) CalculateBorrowInterest(ctx sdk.Context, amount string, rate, re
 }
 
 func (k Keeper) ReBalanceStableRates(ctx sdk.Context) error {
-	// borrows, _ := k.GetBorrows(ctx)
+	borrows, _ := k.GetBorrows(ctx)
 
-	// for _, v := range borrows.BorrowIDs {
-	// 	borrowPos, found := k.GetBorrow(ctx, v)
-	// 	if !found {
-	// 		continue
-	// 	}
-	// 	if !borrowPos.IsLiquidated {
-	// 		if borrowPos.IsStableBorrow {
-	// 			pair, found := k.GetLendPair(ctx, borrowPos.PairID)
-	// 			if !found {
-	// 				continue
-	// 			}
-	// 			assetStats, found := k.UpdateAPR(ctx, pair.AssetOutPoolID, pair.AssetOut)
-	// 			if !found {
-	// 				continue
-	// 			}
-	// 			utilizationRatio, err := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
-	// 			if err != nil {
-	// 				continue
-	// 			}
-	// 			perc1, _ := sdk.NewDecFromStr(types.Perc1)
-	// 			perc2, _ := sdk.NewDecFromStr(types.Perc2)
-	// 			if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {
-	// 				borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-	// 				k.SetBorrow(ctx, borrowPos)
-	// 			} else if utilizationRatio.GT(perc2) && (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) {
-	// 				borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-	// 				k.SetBorrow(ctx, borrowPos)
-	// 			}
-	// 		}
-	// 	}
-	// }
+	for _, v := range borrows {
+		borrowPos, found := k.GetBorrow(ctx, v)
+		if !found {
+			continue
+		}
+		if !borrowPos.IsLiquidated {
+			if borrowPos.IsStableBorrow {
+				pair, found := k.GetLendPair(ctx, borrowPos.PairID)
+				if !found {
+					continue
+				}
+				assetStats, found := k.UpdateAPR(ctx, pair.AssetOutPoolID, pair.AssetOut)
+				if !found {
+					continue
+				}
+				utilizationRatio, err := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
+				if err != nil {
+					continue
+				}
+				perc1, _ := sdk.NewDecFromStr(types.Perc1)
+				perc2, _ := sdk.NewDecFromStr(types.Perc2)
+				if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {
+					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
+					k.SetBorrow(ctx, borrowPos)
+				} else if utilizationRatio.GT(perc2) && (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) {
+					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
+					k.SetBorrow(ctx, borrowPos)
+				}
+			}
+		}
+	}
 	return nil
 }

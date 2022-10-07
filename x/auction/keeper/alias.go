@@ -197,20 +197,12 @@ func (k Keeper) GetUserAppMappingData(ctx sdk.Context, address string, appID uin
 	return k.vault.GetUserAppMappingData(ctx, address, appID)
 }
 
-// func (k Keeper) CheckUserAppToExtendedPairMapping(ctx sdk.Context, userVaultAssetData vaulttypes.UserVaultAssetMapping, extendedPairVaultID uint64, appMappingID uint64) (vaultID uint64, found bool) {
-// 	return k.vault.CheckUserAppToExtendedPairMapping(ctx, userVaultAssetData, extendedPairVaultID, appMappingID)
-// }
-
 func (k Keeper) SetVault(ctx sdk.Context, vault vaulttypes.Vault) {
 	k.vault.SetVault(ctx, vault)
 }
 
 func (k Keeper) GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool) {
 	return k.vault.GetVault(ctx, id)
-}
-
-func (k Keeper) GetBorrows(ctx sdk.Context) (userBorrows lendtypes.BorrowMapping, found bool) {
-	return k.lend.GetBorrows(ctx)
 }
 
 func (k Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool) {
@@ -221,16 +213,16 @@ func (k Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended
 	return k.lend.GetLendPair(ctx, id)
 }
 
-func (k Keeper) GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesStats, found bool) {
-	return k.lend.GetAssetRatesStats(ctx, assetID)
+func (k Keeper) GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesParams, found bool) {
+	return k.lend.GetAssetRatesParams(ctx, assetID)
 }
 
-func (k Keeper) VerifyCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error {
-	return k.lend.VerifyCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut, liquidationThreshold)
+func (k Keeper) VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error {
+	return k.lend.VerifyCollateralizationRatio(ctx, amountIn, assetIn, amountOut, assetOut, liquidationThreshold)
 }
 
-func (k Keeper) CalculateLendCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error) {
-	return k.lend.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
+func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error) {
+	return k.lend.CalculateCollateralizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
 }
 
 func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool) {
@@ -245,32 +237,12 @@ func (k Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAdd
 	k.lend.DeleteBorrowForAddressByPair(ctx, address, pairID)
 }
 
-func (k Keeper) UpdateUserBorrowIDMapping(ctx sdk.Context, borrowOwner string, borrowID uint64, isInsert bool) error {
-	return k.lend.UpdateUserBorrowIDMapping(ctx, borrowOwner, borrowID, isInsert)
-}
-
-func (k Keeper) UpdateBorrowIDByOwnerAndPoolMapping(ctx sdk.Context, borrowOwner string, borrowID uint64, poolID uint64, isInsert bool) error {
-	return k.lend.UpdateBorrowIDByOwnerAndPoolMapping(ctx, borrowOwner, borrowID, poolID, isInsert)
-}
-
-func (k Keeper) UpdateBorrowIdsMapping(ctx sdk.Context, borrowID uint64, isInsert bool) error {
-	return k.lend.UpdateBorrowIdsMapping(ctx, borrowID, isInsert)
-}
-
-func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
-	k.lend.CreteNewBorrow(ctx, liqBorrow)
-}
-
 func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
 	return k.lend.GetPool(ctx, id)
 }
 
 func (k Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams lendtypes.AuctionParams, found bool) {
 	return k.lend.GetAddAuctionParamsData(ctx, appID)
-}
-
-func (k Keeper) GetReserveDepositStats(ctx sdk.Context) (depositStats lendtypes.DepositStats, found bool) {
-	return k.lend.GetReserveDepositStats(ctx)
 }
 
 func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int {
