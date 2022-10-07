@@ -31,6 +31,10 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 		lendRewardsTracker.RewardsAccumulated = lendRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 	}
 	k.SetLendRewardTracker(ctx, lendRewardsTracker)
+	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lend.PoolID, lend.AssetID)
+	if newInterestPerBlock.GT(poolAssetLBMappingData.TotalInterestAccumulated) {
+		return sdk.Dec{}, types.ErrorInsufficientCTokensForRewards
+	}
 	if newInterestPerBlock.GT(sdk.ZeroInt()) {
 		lend.AvailableToBorrow = lend.AvailableToBorrow.Add(newInterestPerBlock)
 

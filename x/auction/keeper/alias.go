@@ -233,10 +233,6 @@ func (k Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
 	k.lend.DeleteBorrow(ctx, id)
 }
 
-func (k Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
-	k.lend.DeleteBorrowForAddressByPair(ctx, address, pairID)
-}
-
 func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
 	return k.lend.GetPool(ctx, id)
 }

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -156,13 +157,13 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 	cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
 	cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
 
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, loanTokens); err != nil {
+	if err = k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, loanTokens); err != nil {
 		return err
 	}
 	// mint c/Token and set new total cToken supply
 
 	cTokens := sdk.NewCoins(cToken)
-	if err := k.bank.MintCoins(ctx, pool.ModuleName, cTokens); err != nil {
+	if err = k.bank.MintCoins(ctx, pool.ModuleName, cTokens); err != nil {
 		return err
 	}
 
@@ -847,6 +848,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 	borrowPos.GlobalIndex = indexGlobalCurrent
 	borrowPos.ReserveGlobalIndex = reserveGlobalIndex
 	borrowPos.LastInteractionTime = ctx.BlockTime()
+	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
 
 	if payment.Amount.LTE(borrowPos.InterestAccumulated.TruncateInt()) {
 		// sending repayment to moduleAcc from borrower
@@ -876,6 +878,9 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 				if err != nil {
 					return err
 				}
+				poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Add(amtBackToPool)
+				poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(amtBackToPool)
+				k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 			}
 
 			reservePoolRecords.ReservePoolInterest = sdk.ZeroDec()
@@ -922,6 +927,9 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 				if err != nil {
 					return err
 				}
+				poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Add(amtBackToPool)
+				poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(amtBackToPool)
+				k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 			}
 
 			reservePoolRecords.ReservePoolInterest = sdk.ZeroDec()
@@ -1218,6 +1226,7 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 		return assettypes.ErrorAssetDoesNotExist
 	}
 	lenderAddr, _ := sdk.AccAddressFromBech32(lendPos.Owner)
+	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
 
 	amt := sdk.NewCoins(sdk.NewCoin(assetOut.Denom, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt())))
 	if err = k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, amt); err != nil {
@@ -1245,6 +1254,9 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 		if err != nil {
 			return err
 		}
+		poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Add(amtToMint)
+		poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(amtToMint)
+		k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 	}
 
 	if pair.IsInterPool {
@@ -1421,114 +1433,114 @@ func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
 
-// func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
-// 	kind := liqBorrow.GetBorrowMetaData()
-// 	borrowID := k.GetUserBorrowIDCounter(ctx)
-// 	pair, _ := k.GetLendPair(ctx, liqBorrow.ExtendedPairId)
-// 	AssetOut, _ := k.GetAsset(ctx, pair.AssetOut)
-// 	assetInRatesStats, _ := k.GetAssetRatesParams(ctx, pair.AssetIn)
-// 	AssetRatesStats, _ := k.GetAssetRatesParams(ctx, pair.AssetIn)
-// 	cAssetIn, _ := k.GetAsset(ctx, AssetRatesStats.CAssetID)
-// 	AssetOutPool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
-// 	lendPos, _ := k.GetLend(ctx, kind.LendingId)
-// 	AssetInPool, _ := k.GetPool(ctx, lendPos.PoolID)
-// 	assetStats, _ := k.AssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolID)
-// 	reserveGlobalIndex, err := k.GetReserveRate(ctx, pair.AssetOutPoolID, pair.AssetOut)
-// 	if err != nil {
-// 		reserveGlobalIndex = sdk.OneDec()
-// 	}
-// 	globalIndex := assetStats.BorrowApr
-//
-// 	borrowPos := types.BorrowAsset{
-// 		ID:                  borrowID + 1,
-// 		LendingID:           kind.LendingId,
-// 		PairID:              liqBorrow.ExtendedPairId,
-// 		AmountIn:            sdk.NewCoin(cAssetIn.Denom, liqBorrow.AmountIn),
-// 		AmountOut:           sdk.NewCoin(AssetOut.Denom, liqBorrow.AmountOut),
-// 		BridgedAssetAmount:  kind.BridgedAssetAmount,
-// 		IsStableBorrow:      kind.IsStableBorrow,
-// 		StableBorrowRate:    kind.StableBorrowRate,
-// 		BorrowingTime:       ctx.BlockTime(),
-// 		UpdatedAmountOut:    liqBorrow.AmountOut,
-// 		GlobalIndex:         globalIndex,
-// 		ReserveGlobalIndex:  reserveGlobalIndex,
-// 		LastInteractionTime: ctx.BlockTime(),
-// 		CPoolName:           AssetOutPool.CPoolName,
-// 	}
-// 	// Adjusting bridged asset qty after auctions
-// 	if !kind.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
-// 		priceAssetIn, _ := k.GetPriceForAsset(ctx, pair.AssetIn)
-// 		adjustedBridgedAssetAmt := borrowPos.AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv)
-// 		amtIn := adjustedBridgedAssetAmt.TruncateInt().Mul(sdk.NewIntFromUint64(priceAssetIn))
-// 		priceFirstBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.FirstBridgedAssetID)
-// 		priceSecondBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.SecondBridgedAssetID)
-// 		firstBridgedAsset, _ := k.GetAsset(ctx, AssetInPool.FirstBridgedAssetID)
-//
-// 		if kind.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
-// 			firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset))
-// 			diff := borrowPos.BridgedAssetAmount.Amount.Sub(firstBridgedAssetQty)
-// 			if diff.GT(sdk.ZeroInt()) {
-// 				err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
-// 				if err != nil {
-// 					return
-// 				}
-// 				borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
-// 			} else {
-// 				newDiff := firstBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
-// 				if newDiff.GT(sdk.ZeroInt()) {
-// 					err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
-// 					if err != nil {
-// 						return
-// 					}
-// 					borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
-// 				}
-// 			}
-// 		} else {
-// 			secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
-// 			diff := borrowPos.BridgedAssetAmount.Amount.Sub(secondBridgedAssetQty)
-// 			if diff.GT(sdk.ZeroInt()) {
-// 				err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
-// 				if err != nil {
-// 					return
-// 				}
-// 				borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
-// 			} else {
-// 				newDiff := secondBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
-// 				if newDiff.GT(sdk.ZeroInt()) {
-// 					err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
-// 					if err != nil {
-// 						return
-// 					}
-// 					borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
-// 				}
-// 			}
-// 		}
-// 	}
-// 	OriginalBorrowID := liqBorrow.OriginalVaultId
-// 	err = k.UpdateLendIDToBorrowIDMapping(ctx, kind.LendingId, OriginalBorrowID, false)
-// 	if err != nil {
-// 		return
-// 	}
-// 	k.UpdateBorrowStats(ctx, pair, borrowPos, borrowPos.AmountOut.Amount, true)
-// 	k.SetBorrow(ctx, borrowPos)
-// 	k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
-// 	err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, borrowPos.ID, true)
-// 	if err != nil {
-// 		return
-// 	}
-// 	err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, borrowPos.ID, pair.AssetOutPoolID, true)
-// 	if err != nil {
-// 		return
-// 	}
-// 	err = k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, true)
-// 	if err != nil {
-// 		return
-// 	}
-// 	err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, borrowPos.ID, true)
-// 	if err != nil {
-// 		return
-// 	}
-// }
+func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
+	// 	kind := liqBorrow.GetBorrowMetaData()
+	// 	borrowID := k.GetUserBorrowIDCounter(ctx)
+	// 	pair, _ := k.GetLendPair(ctx, liqBorrow.ExtendedPairId)
+	// 	AssetOut, _ := k.GetAsset(ctx, pair.AssetOut)
+	// 	assetInRatesStats, _ := k.GetAssetRatesParams(ctx, pair.AssetIn)
+	// 	AssetRatesStats, _ := k.GetAssetRatesParams(ctx, pair.AssetIn)
+	// 	cAssetIn, _ := k.GetAsset(ctx, AssetRatesStats.CAssetID)
+	// 	AssetOutPool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
+	// 	lendPos, _ := k.GetLend(ctx, kind.LendingId)
+	// 	AssetInPool, _ := k.GetPool(ctx, lendPos.PoolID)
+	// 	assetStats, _ := k.AssetStatsByPoolIDAndAssetID(ctx, pair.AssetOut, pair.AssetOutPoolID)
+	// 	reserveGlobalIndex, err := k.GetReserveRate(ctx, pair.AssetOutPoolID, pair.AssetOut)
+	// 	if err != nil {
+	// 		reserveGlobalIndex = sdk.OneDec()
+	// 	}
+	// 	globalIndex := assetStats.BorrowApr
+	//
+	// 	borrowPos := types.BorrowAsset{
+	// 		ID:                  borrowID + 1,
+	// 		LendingID:           kind.LendingId,
+	// 		PairID:              liqBorrow.ExtendedPairId,
+	// 		AmountIn:            sdk.NewCoin(cAssetIn.Denom, liqBorrow.AmountIn),
+	// 		AmountOut:           sdk.NewCoin(AssetOut.Denom, liqBorrow.AmountOut),
+	// 		BridgedAssetAmount:  kind.BridgedAssetAmount,
+	// 		IsStableBorrow:      kind.IsStableBorrow,
+	// 		StableBorrowRate:    kind.StableBorrowRate,
+	// 		BorrowingTime:       ctx.BlockTime(),
+	// 		UpdatedAmountOut:    liqBorrow.AmountOut,
+	// 		GlobalIndex:         globalIndex,
+	// 		ReserveGlobalIndex:  reserveGlobalIndex,
+	// 		LastInteractionTime: ctx.BlockTime(),
+	// 		CPoolName:           AssetOutPool.CPoolName,
+	// 	}
+	// 	// Adjusting bridged asset qty after auctions
+	// 	if !kind.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
+	// 		priceAssetIn, _ := k.GetPriceForAsset(ctx, pair.AssetIn)
+	// 		adjustedBridgedAssetAmt := borrowPos.AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv)
+	// 		amtIn := adjustedBridgedAssetAmt.TruncateInt().Mul(sdk.NewIntFromUint64(priceAssetIn))
+	// 		priceFirstBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.FirstBridgedAssetID)
+	// 		priceSecondBridgedAsset, _ := k.GetPriceForAsset(ctx, AssetInPool.SecondBridgedAssetID)
+	// 		firstBridgedAsset, _ := k.GetAsset(ctx, AssetInPool.FirstBridgedAssetID)
+	//
+	// 		if kind.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
+	// 			firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset))
+	// 			diff := borrowPos.BridgedAssetAmount.Amount.Sub(firstBridgedAssetQty)
+	// 			if diff.GT(sdk.ZeroInt()) {
+	// 				err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
+	// 				if err != nil {
+	// 					return
+	// 				}
+	// 				borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
+	// 			} else {
+	// 				newDiff := firstBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
+	// 				if newDiff.GT(sdk.ZeroInt()) {
+	// 					err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
+	// 					if err != nil {
+	// 						return
+	// 					}
+	// 					borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
+	// 				}
+	// 			}
+	// 		} else {
+	// 			secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
+	// 			diff := borrowPos.BridgedAssetAmount.Amount.Sub(secondBridgedAssetQty)
+	// 			if diff.GT(sdk.ZeroInt()) {
+	// 				err = k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
+	// 				if err != nil {
+	// 					return
+	// 				}
+	// 				borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
+	// 			} else {
+	// 				newDiff := secondBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
+	// 				if newDiff.GT(sdk.ZeroInt()) {
+	// 					err = k.SendCoinFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
+	// 					if err != nil {
+	// 						return
+	// 					}
+	// 					borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// 	OriginalBorrowID := liqBorrow.OriginalVaultId
+	// 	err = k.UpdateLendIDToBorrowIDMapping(ctx, kind.LendingId, OriginalBorrowID, false)
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// 	k.UpdateBorrowStats(ctx, pair, borrowPos, borrowPos.AmountOut.Amount, true)
+	// 	k.SetBorrow(ctx, borrowPos)
+	// 	k.SetUserBorrowIDHistory(ctx, borrowPos.ID)
+	// 	err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, borrowPos.ID, true)
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// 	err = k.UpdateBorrowIDByOwnerAndPoolMapping(ctx, lendPos.Owner, borrowPos.ID, pair.AssetOutPoolID, true)
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// 	err = k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, true)
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// 	err = k.UpdateUserBorrowIDMapping(ctx, lendPos.Owner, borrowPos.ID, true)
+	// 	if err != nil {
+	// 		return
+	// 	}
+}
 
 func (k Keeper) MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string, borrowID uint64) error {
 	borrowPos, found := k.GetBorrow(ctx, borrowID)
