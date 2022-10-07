@@ -179,7 +179,7 @@ func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID
 	return k.vault.GetAppExtendedPairVaultMappingData(ctx, appMappingID, pairVaultID)
 }
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price uint64, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
 	return k.marketKeeper.CalcAssetPrice(ctx, id, amt)
 }
 
@@ -189,4 +189,8 @@ func (k Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAs
 
 func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool) {
 	return k.lend.GetLend(ctx, id)
+}
+
+func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping lendtypes.PoolAssetLBMapping, found bool) {
+	return k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
 }
