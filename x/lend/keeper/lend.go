@@ -14,7 +14,7 @@ func (k Keeper) SetUserLendIDCounter(ctx sdk.Context, id uint64) {
 		key   = types.LendCounterIDPrefix
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
-				Value: id,
+				Value: id, 
 			},
 		)
 	)
@@ -216,37 +216,28 @@ func (k Keeper) GetAllAssetToPair(ctx sdk.Context) (assetToPairMapping []types.A
 	return assetToPairMapping
 }
 
-func (k Keeper) SetLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, id, poolID uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendForAddressByAsset(address, assetID, poolID)
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: id,
-			},
-		)
-	)
+// func (k Keeper) SetLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, id, poolID uint64) {
+// 	var (
+// 		store = k.Store(ctx)
+// 		key   = types.LendForAddressByAsset(address, assetID, poolID)
+// 		value = k.cdc.MustMarshal(
+// 			&protobuftypes.UInt64Value{
+// 				Value: id,
+// 			},
+// 		)
+// 	)
 
-	store.Set(key, value)
-}
+// 	store.Set(key, value)
+// }
 
-func (k Keeper) HasLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, poolID uint64) bool {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendForAddressByAsset(address, assetID, poolID)
-	)
+// func (k Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, poolID uint64) {
+// 	var (
+// 		store = k.Store(ctx)
+// 		key   = types.LendForAddressByAsset(address, assetID, poolID)
+// 	)
 
-	return store.Has(key)
-}
-
-func (k Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, poolID uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendForAddressByAsset(address, assetID, poolID)
-	)
-
-	store.Delete(key)
-}
+// 	store.Delete(key)
+// }
 
 // func (k Keeper) UpdateUserLendIDMapping(
 // 	ctx sdk.Context,
@@ -805,6 +796,28 @@ func (k Keeper) GetUserTotalMappingData(ctx sdk.Context, address string) (mappin
 	}
 
 	return mappingData
+}
+
+func (k Keeper) HasLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, poolID uint64) bool {
+	mappingData := k.GetUserTotalMappingData(ctx, string(address))
+	for _, data := range mappingData {
+		if data.PoolId == poolID {
+			lend, _ := k.GetLend(ctx, data.LendId)
+			if lend.AssetID == assetID {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (k Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address string, lendingID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLendBorrowMappingKey(address, lendingID)
+	)
+
+	store.Delete(key)
 }
 
 func (k Keeper) DeleteIDFromAssetStatsMapping(ctx sdk.Context, poolID, assetID, id uint64, typeOfId bool) {

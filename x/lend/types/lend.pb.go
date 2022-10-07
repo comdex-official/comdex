@@ -934,12 +934,7 @@ func (m *AuctionParams) GetBidDurationSeconds() uint64 {
 }
 
 type BorrowInterestTracker struct {
-	BorrowingId uint64 `protobuf:"varint,1,opt,name=borrowing_id,json=borrowingId,proto3" json:"borrowing_id,omitempty" yaml:"borrowing_id"`
-	// string user_interest = 2 [
-	//   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-	//   (gogoproto.nullable) = false,
-	//   (gogoproto.moretags) = "yaml:\"user_interest\""
-	// ];
+	BorrowingId         uint64                                 `protobuf:"varint,1,opt,name=borrowing_id,json=borrowingId,proto3" json:"borrowing_id,omitempty" yaml:"borrowing_id"`
 	ReservePoolInterest github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=reserve_pool_interest,json=reservePoolInterest,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve_pool_interest" yaml:"reserve_pool_interest"`
 }
 

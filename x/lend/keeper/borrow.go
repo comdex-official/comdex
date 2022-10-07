@@ -92,37 +92,41 @@ func (k Keeper) DeleteBorrow(ctx sdk.Context, ID uint64) {
 	store.Delete(key)
 }
 
-func (k Keeper) SetBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID, ID uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.BorrowForAddressByPair(address, pairID)
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: ID,
-			},
-		)
-	)
+// func (k Keeper) SetBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID, ID uint64) {
+// 	var (
+// 		store = k.Store(ctx)
+// 		key   = types.BorrowForAddressByPair(address, pairID)
+// 		value = k.cdc.MustMarshal(
+// 			&protobuftypes.UInt64Value{
+// 				Value: ID,
+// 			},
+// 		)
+// 	)
 
-	store.Set(key, value)
-}
+// 	store.Set(key, value)
+// }
 
 func (k Keeper) HasBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
-	var (
-		store = k.Store(ctx)
-		key   = types.BorrowForAddressByPair(address, pairID)
-	)
-
-	return store.Has(key)
+	mappingData := k.GetUserTotalMappingData(ctx, address.String())
+	for _, data := range mappingData{
+		for _, indata := range data.BorrowId {
+			borrowData, _ := k.GetBorrow(ctx, indata)
+			if borrowData.PairID == pairID {
+				return true
+			}
+		}
+	}
+	return false
 }
 
-func (k Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.BorrowForAddressByPair(address, pairID)
-	)
+// func (k Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
+// 	var (
+// 		store = k.Store(ctx)
+// 		key   = types.BorrowForAddressByPair(address, pairID)
+// 	)
 
-	store.Delete(key)
-}
+// 	store.Delete(key)
+// }
 
 // func (k Keeper) UpdateUserBorrowIDMapping(
 // 	ctx sdk.Context,
