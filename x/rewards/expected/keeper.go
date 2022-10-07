@@ -38,7 +38,7 @@ type AssetKeeper interface {
 
 type MarketKeeper interface {
 	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
-	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price uint64, err error)
+	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error)
 }
 
 type LockerKeeper interface {
@@ -98,4 +98,5 @@ type EsmKeeper interface {
 type LendKeeper interface {
 	GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool)
 	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
+	GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping lendtypes.PoolAssetLBMapping, found bool)
 }
