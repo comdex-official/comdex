@@ -326,19 +326,13 @@ func (k Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAdd
 // 	return nil
 // }
 
-// func (k Keeper) GetBorrows(ctx sdk.Context) (userBorrows types.BorrowMapping, found bool) {
-// 	var (
-// 		store = k.Store(ctx)
-// 		key   = types.BorrowsKey
-// 		value = store.Get(key)
-// 	)
-// 	if value == nil {
-// 		return userBorrows, false
-// 	}
-// 	k.cdc.MustUnmarshal(value, &userBorrows)
-
-// 	return userBorrows, true
-// }
+func (k Keeper) GetBorrows(ctx sdk.Context) (borrowIds []uint64, found bool) {
+	assetStats := k.GetAllAssetStatsByPoolIDAndAssetID(ctx)
+	for _, data := range assetStats {
+		borrowIds = append(borrowIds, data.BorrowIds...)
+	}
+	return borrowIds, true
+}
 
 // func (k Keeper) SetBorrows(ctx sdk.Context, userBorrows types.BorrowMapping) {
 // 	var (
