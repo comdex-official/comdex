@@ -80,6 +80,7 @@ var (
 	LendRewardsTrackerKeyPrefix           = []byte{0x43}
 	BorrowInterestTrackerKeyPrefix        = []byte{0x44}
 	UserLendBorrowMappingKeyPrefix		  = []byte{0x45}
+	ReserveBuybackAssetDataKeyPrefix	  = []byte{0x46}
 )
 
 func ReserveFundsKey(tokenDenom string) []byte {
@@ -182,4 +183,8 @@ func UserLendBorrowMappingKey(owner string, lendID uint64) []byte {
 
 func UserLendBorrowKey(owner string) []byte {
 	return append(UserLendBorrowMappingKeyPrefix, owner...)
+}
+
+func ReserveBuybackAssetDataKey(ID uint64) []byte {
+	return append(ReserveBuybackAssetDataKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
 }

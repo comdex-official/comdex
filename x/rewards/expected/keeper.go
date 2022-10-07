@@ -96,7 +96,6 @@ type EsmKeeper interface {
 }
 
 type LendKeeper interface {
-	GetBorrows(ctx sdk.Context) (userBorrows lendtypes.BorrowMapping, found bool)
 	GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool)
 	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
 }

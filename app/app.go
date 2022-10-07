@@ -199,7 +199,7 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 		lendclient.AddPoolHandler,
 		lendclient.UpdateLendPairsHandler,
 		lendclient.AddAssetToPairHandler,
-		lendclient.AddAssetRatesStatsHandler,
+		lendclient.AddAssetRatesParamsHandler,
 		lendclient.AddAuctionParamsHandler,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
@@ -725,6 +725,7 @@ func New(
 		app.LiquidityKeeper,
 		&app.MarketKeeper,
 		&app.EsmKeeper,
+		&app.LendKeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")

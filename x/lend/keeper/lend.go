@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"sort"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -804,4 +805,52 @@ func (k Keeper) GetUserTotalMappingData(ctx sdk.Context, address string) (mappin
 	}
 
 	return mappingData
+}
+
+func (k Keeper) DeleteIDFromAssetStatsMapping(ctx sdk.Context, poolID, assetID, id uint64, typeOfId bool) {
+	poolLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
+	if typeOfId {
+		lengthOfIDs := len(poolLBMappingData.LendIds)
+
+		dataIndex := sort.Search(lengthOfIDs, func(i int) bool { return poolLBMappingData.LendIds[i] >= id })
+
+		if dataIndex < lengthOfIDs && poolLBMappingData.LendIds[dataIndex] == id {
+			poolLBMappingData.LendIds = append(poolLBMappingData.LendIds[:dataIndex], poolLBMappingData.LendIds[dataIndex+1:]...)
+			k.SetAssetStatsByPoolIDAndAssetID(ctx, poolLBMappingData)
+		}
+	} else {
+		lengthOfIDs := len(poolLBMappingData.BorrowIds)
+
+		dataIndex := sort.Search(lengthOfIDs, func(i int) bool { return poolLBMappingData.BorrowIds[i] >= id })
+
+		if dataIndex < lengthOfIDs && poolLBMappingData.BorrowIds[dataIndex] == id {
+			poolLBMappingData.BorrowIds = append(poolLBMappingData.BorrowIds[:dataIndex], poolLBMappingData.BorrowIds[dataIndex+1:]...)
+			k.SetAssetStatsByPoolIDAndAssetID(ctx, poolLBMappingData)
+		}
+	}
+}
+
+func (k Keeper) SetReserveBuybackAssetData(ctx sdk.Context, reserve types.ReserveBuybackAssetData) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReserveBuybackAssetDataKey(reserve.AssetID)
+		value = k.cdc.MustMarshal(&reserve)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetReserveBuybackAssetData(ctx sdk.Context, id uint64) (reserve types.ReserveBuybackAssetData, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReserveBuybackAssetDataKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return reserve, false
+	}
+
+	k.cdc.MustUnmarshal(value, &reserve)
+	return reserve, true
 }
