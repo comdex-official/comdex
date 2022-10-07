@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -288,7 +287,6 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 	if err != nil {
 		return sdk.ZeroDec(), err
 	}
-	fmt.Println("assetInTotalPrice", assetInTotalPrice)
 	esmStatus, found := k.GetESMStatus(ctx, extendedPairVault.AppId)
 	statusEsm := false
 	if found {
@@ -303,9 +301,9 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 		if !found {
 			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 		}
-		assetInTotalPrice = price
+		assetInTotalPrice = sdk.NewIntFromUint64(price)
 	}
-	var assetOutTotalPrice uint64
+	var assetOutTotalPrice sdk.Int
 
 	if extendedPairVault.AssetOutOraclePrice {
 		// If oracle Price required for the assetOut
@@ -315,33 +313,27 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 			if !found {
 				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 			}
-			assetInTotalPrice = price
+			assetInTotalPrice = sdk.NewIntFromUint64(price)
 		} else {
 			assetOutTotalPrice, err = k.CalcAssetPrice(ctx, assetOutData.Id, amountOut)
 			if err != nil {
 				return sdk.ZeroDec(), err
 			}
-			fmt.Println("assetOutTotalPrice", assetOutTotalPrice)
 		}
 	} else {
 		// If oracle Price is not required for the assetOut
-		assetOutTotalPrice = (sdk.NewIntFromUint64(extendedPairVault.AssetOutPrice).Mul(amountOut)).Quo(sdk.NewIntFromUint64(uint64(assetOutData.Decimals))).Uint64()
-		fmt.Println("assetOutTotalPrice", assetOutTotalPrice)
+		assetOutTotalPrice = (sdk.NewIntFromUint64(extendedPairVault.AssetOutPrice).Mul(amountOut)).Quo(sdk.NewIntFromUint64(uint64(assetOutData.Decimals)))
 	}
 
-	totalIn := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInTotalPrice))
-	fmt.Println("totalIn", totalIn)
+	totalIn := sdk.NewDecFromInt(assetInTotalPrice)
 	if totalIn.LTE(sdk.ZeroDec()) {
-		fmt.Println("efwfwefewfewf")
 		return sdk.ZeroDec(), types.ErrorInvalidAmountIn
 	}
 
-	totalOut := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetOutTotalPrice))
-	fmt.Println("totalOut", totalOut)
+	totalOut := sdk.NewDecFromInt(assetOutTotalPrice)
 	if totalOut.LTE(sdk.ZeroDec()) {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountOut
 	}
-	fmt.Println("totalIn.Quo(totalOut)", totalIn.Quo(totalOut))
 	return totalIn.Quo(totalOut), nil
 }
 
