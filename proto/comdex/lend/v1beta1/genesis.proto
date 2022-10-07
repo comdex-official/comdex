@@ -7,7 +7,7 @@ import "comdex/lend/v1beta1/params.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/lend/types";
 
-// message GenesisState {
+message GenesisState {
 //   repeated BorrowAsset borrowAsset = 1
 //   [ (gogoproto.moretags) = "yaml:\"borrowAsset\"", (gogoproto.nullable) = false ];
 //   repeated UserBorrowIdMapping userBorrowIdMapping = 2
@@ -48,4 +48,4 @@ option go_package = "github.com/comdex-official/comdex/x/lend/types";
 //   [ (gogoproto.moretags) = "yaml:\"auctionParams\"", (gogoproto.nullable) = false ];
 //   Params params = 20 [(gogoproto.nullable) = false];
 
-// }
+}
