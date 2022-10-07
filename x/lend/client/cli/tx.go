@@ -663,20 +663,17 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 
 	for i := range assetID {
 		assetDataNew := types.AssetDataPoolMapping{
-			AssetID:   assetID[i],
+			AssetID:          assetID[i],
 			AssetTransitType: assetTransitType[i],
-			SupplyCap: supplyCap[i],
+			SupplyCap:        supplyCap[i],
 		}
 		assetData = append(assetData, &assetDataNew)
 	}
 	pool = types.Pool{
-		ModuleName:           moduleName,
-		// MainAssetId:          mainAssetID,
-		// FirstBridgedAssetID:  firstBridgedAssetID,
-		// SecondBridgedAssetID: secondBridgedAssetID,
-		CPoolName:            cPoolName,
-		ReserveFunds:         reserveFunds,
-		AssetData:            assetData,
+		ModuleName:   moduleName,
+		CPoolName:    cPoolName,
+		ReserveFunds: reserveFunds,
+		AssetData:    assetData,
 	}
 
 	from := clientCtx.GetFromAddress()
