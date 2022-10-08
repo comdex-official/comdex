@@ -10,7 +10,7 @@ func (k Keeper) GetUtilisationRatioByPoolIDAndAssetID(ctx sdk.Context, poolID, a
 	pool, _ := k.GetPool(ctx, poolID)
 	asset, _ := k.GetAsset(ctx, assetID)
 	moduleBalance := k.ModuleBalance(ctx, pool.ModuleName, asset.Denom)
-	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, assetID, poolID)
+	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
 	if !found {
 		return sdk.ZeroDec(), types.ErrAssetStatsNotFound
 	}

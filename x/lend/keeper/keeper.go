@@ -619,7 +619,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		k.SetUserLendBorrowMapping(ctx, mappingData)
 	} else {
 		updatedAmtIn := AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv)
-		updatedAmtInPrice, err := k.CalcAssetPrice(ctx, lendPos.AssetID, sdk.Int(updatedAmtIn))
+		updatedAmtInPrice, err := k.CalcAssetPrice(ctx, lendPos.AssetID, updatedAmtIn.TruncateInt())
 		if err != nil {
 			return err
 		}
@@ -1032,7 +1032,7 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 		borrowPos.AmountIn = borrowPos.AmountIn.Add(AmountIn)
 		k.SetBorrow(ctx, borrowPos)
 	} else {
-		amtIn, err := k.CalcAssetPrice(ctx, pair.AssetIn, sdk.Int(sdk.NewDecFromInt(AmountIn.Amount).Mul(assetRatesStat.Ltv)))
+		amtIn, err := k.CalcAssetPrice(ctx, pair.AssetIn, (sdk.NewDecFromInt(AmountIn.Amount).Mul(assetRatesStat.Ltv)).TruncateInt())
 		if err != nil {
 			return err
 		}

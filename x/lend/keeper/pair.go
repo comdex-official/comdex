@@ -317,28 +317,3 @@ func (k Keeper) GetAllAssetRatesParams(ctx sdk.Context) (assetRatesParams []type
 	}
 	return assetRatesParams
 }
-
-// func (k Keeper) SetDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
-// 	var (
-// 		store = k.Store(ctx)
-// 		key   = types.DepositStatsPrefix
-// 		value = k.cdc.MustMarshal(&depositStats)
-// 	)
-
-// 	store.Set(key, value)
-// }
-
-// func (k Keeper) GetDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
-// 	var (
-// 		store = k.Store(ctx)
-// 		key   = types.DepositStatsPrefix
-// 		value = store.Get(key)
-// 	)
-
-// 	if value == nil {
-// 		return depositStats, false
-// 	}
-
-// 	k.cdc.MustUnmarshal(value, &depositStats)
-// 	return depositStats, true
-// }
