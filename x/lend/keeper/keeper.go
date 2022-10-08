@@ -513,7 +513,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		return types.ErrBadOfferCoinType
 	}
 
-	if k.HasBorrowForAddressByPair(ctx, lenderAddr, pairID) {
+	if k.HasBorrowForAddressByPair(ctx, addr, pairID) {
 		return types.ErrorDuplicateBorrow
 	}
 

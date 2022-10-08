@@ -92,8 +92,8 @@ func (k Keeper) DeleteBorrow(ctx sdk.Context, ID uint64) {
 	store.Delete(key)
 }
 
-func (k Keeper) HasBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) bool {
-	mappingData := k.GetUserTotalMappingData(ctx, address.String())
+func (k Keeper) HasBorrowForAddressByPair(ctx sdk.Context, address string, pairID uint64) bool {
+	mappingData := k.GetUserTotalMappingData(ctx, address)
 	for _, data := range mappingData {
 		for _, indata := range data.BorrowId {
 			borrowData, _ := k.GetBorrow(ctx, indata)
