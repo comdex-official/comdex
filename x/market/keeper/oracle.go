@@ -275,17 +275,58 @@ func (k Keeper) GetLatestPrice(ctx sdk.Context, id uint64) (price uint64, err er
 	return 0, types.ErrorPriceNotActive
 }
 
+//func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
+//	asset, found := k.GetAsset(ctx, id)
+//	if !found {
+//		return sdk.ZeroInt(), assetTypes.ErrorAssetDoesNotExist
+//	}
+//	twa, found := k.GetTwa(ctx, id)
+//	if found && twa.IsPriceActive {
+//		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
+//		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset.Decimals)))
+//		result := numerator.Quo(denominator)
+//		return result.TruncateInt(), nil
+//	}
+//	return sdk.ZeroInt(), types.ErrorPriceNotActive
+//}
+
 func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
-	asset, found := k.GetAsset(ctx, id)
-	if !found {
-		return sdk.ZeroInt(), assetTypes.ErrorAssetDoesNotExist
+	asset, _ := k.GetAsset(ctx, id)
+	//if !found {
+	//	return sdk.ZeroInt(), assetTypes.ErrorAssetDoesNotExist
+	//}
+	//twa, found := k.GetTwa(ctx, id)
+	//if found && twa.IsPriceActive {
+	var rate uint64
+	if id == 1 {
+		rate = 2000000
 	}
-	twa, found := k.GetTwa(ctx, id)
-	if found && twa.IsPriceActive {
-		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
-		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset.Decimals)))
-		result := numerator.Quo(denominator)
-		return result.TruncateInt(), nil
+	if id == 2 {
+		rate = 2000000
 	}
-	return sdk.ZeroInt(), types.ErrorPriceNotActive
+	if id == 3 {
+		rate = 2000000
+	}
+	if id == 4 {
+		rate = 2000000
+	}
+	if id == 5 {
+		rate = 2000000
+	}
+	if id == 6 {
+		rate = 2000000
+	}
+	if id == 7 {
+		rate = 2000000
+	}
+	if id == 8 {
+		rate = 2000000
+	}
+
+	numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
+	denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset.Decimals)))
+	result := numerator.Quo(denominator)
+	//	return result.TruncateInt(), nil
+	//}
+	return result.TruncateInt(), nil
 }

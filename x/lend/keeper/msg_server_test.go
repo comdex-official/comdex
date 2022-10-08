@@ -771,6 +771,10 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 	s.AddAssetToPair(assetThreeID, poolTwoID, []uint64{pairElevenID, pairTwelveID, pairSeventeenID})
 
 	appOneID := s.CreateNewApp("commodo", "cmmdo")
+	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000000000))))
+	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset2", newInt(1000000000000000))))
+	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset3", newInt(1000000000000000))))
+	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset4", newInt(1000000000000000))))
 
 	msg := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", newInt(300)), poolOneID, appOneID)
 	msgLend2 := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetTwoID, sdk.NewCoin("uasset2", newInt(10000000000)), poolOneID, appOneID)
@@ -782,10 +786,6 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
 
-	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(100000000000))))
-	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset2", newInt(100000000000))))
-	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset3", newInt(100000000000))))
-	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset4", newInt(100000000000))))
 	_, _ = s.msgServer.Lend(sdk.WrapSDKContext(s.ctx), msg)
 	_, _ = s.msgServer.Lend(sdk.WrapSDKContext(s.ctx), msgLend2)
 	_, _ = s.msgServer.FundModuleAccounts(sdk.WrapSDKContext(s.ctx), msg3)
@@ -845,7 +845,7 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 		},
 		{
 			Name:               "Available To Borrow Insufficient",
-			Msg:                *types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 4, false, sdk.NewCoin("ucasset1", newInt(201)), sdk.NewCoin("uasset4", newInt(10))),
+			Msg:                *types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 4, false, sdk.NewCoin("ucasset1", newInt(201)), sdk.NewCoin("uasset3", newInt(10))),
 			ExpErr:             types.ErrAvailableToBorrowInsufficient,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,

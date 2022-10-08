@@ -43,25 +43,6 @@ func (k Keeper) CalculateCollateralizationRatio(
 	if err != nil {
 		return sdk.ZeroDec(), err
 	}
-	// assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-	// if !found {
-	// 	return sdk.ZeroDec(), types.ErrorPriceInDoesNotExist
-	// }
-
-	// assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
-	// if !found {
-	// 	return sdk.ZeroDec(), types.ErrorPriceOutDoesNotExist
-	// }
-
-	// totalIn := amountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
-	// if totalIn.LTE(sdk.ZeroDec()) {
-	// 	return sdk.ZeroDec(), types.ErrorInvalidAmountIn
-	// }
-
-	// totalOut := amountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
-	// if totalOut.LTE(sdk.ZeroDec()) {
-	// 	return sdk.ZeroDec(), types.ErrorInvalidAmountOut
-	// }
 
 	return sdk.NewDecFromInt(totalOut).Quo(sdk.NewDecFromInt(totalIn)), nil
 }
