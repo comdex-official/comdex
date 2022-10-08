@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	"sort"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+	"sort"
 
 	"github.com/comdex-official/comdex/x/lend/types"
 )
@@ -14,7 +14,7 @@ func (k Keeper) SetUserLendIDCounter(ctx sdk.Context, id uint64) {
 		key   = types.LendCounterIDPrefix
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
-				Value: id, 
+				Value: id,
 			},
 		)
 	)
@@ -866,4 +866,16 @@ func (k Keeper) GetReserveBuybackAssetData(ctx sdk.Context, id uint64) (reserve 
 
 	k.cdc.MustUnmarshal(value, &reserve)
 	return reserve, true
+}
+
+func (k Keeper) DeleteBorrowIDFromUserMapping(ctx sdk.Context, owner string, lendID, borrowID uint64) {
+	userData, _ := k.GetUserLendBorrowMapping(ctx, owner, lendID)
+	lengthOfIDs := len(userData.BorrowId)
+
+	dataIndex := sort.Search(lengthOfIDs, func(i int) bool { return userData.BorrowId[i] >= borrowID })
+
+	if dataIndex < lengthOfIDs && userData.BorrowId[dataIndex] == borrowID {
+		userData.BorrowId = append(userData.BorrowId[:dataIndex], userData.BorrowId[dataIndex+1:]...)
+		k.SetUserLendBorrowMapping(ctx, userData)
+	}
 }
