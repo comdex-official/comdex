@@ -114,7 +114,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	//}
 	//s.app.MarketKeeper.SetMarket(s.ctx, market)
 
-	//exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
+	// exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
 
 	twa1 := markettypes.TimeWeightedAverage{
 		AssetID:       1,
@@ -153,7 +153,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	s.app.MarketKeeper.SetTwa(s.ctx, twa2)
 	s.app.MarketKeeper.SetTwa(s.ctx, twa3)
 	s.app.MarketKeeper.SetTwa(s.ctx, twa4)
-	//s.Suite.Require().False(exists)
+	// s.Suite.Require().False(exists)
 	s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetID, name)
 
 	return assetID

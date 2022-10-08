@@ -228,7 +228,6 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 						epoch.Count = epoch.Count + types.UInt64One
 						epoch.StartingTime = timeNow + types.SecondsPerDay
 						k.SetEpochTime(ctx, epoch)
-
 					} else {
 						extRewards[i].IsActive = false
 						k.SetExternalRewardLend(ctx, extRewards[i])

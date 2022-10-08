@@ -10,10 +10,10 @@ import (
 )
 
 type (
-	XAddNewLendPairsInputs    addNewLendPairsInputs
-	XAddLendPoolInputs        addLendPoolInputs
+	XAddNewLendPairsInputs     addNewLendPairsInputs
+	XAddLendPoolInputs         addLendPoolInputs
 	XAddAssetRatesParamsInputs addAssetRatesParamsInputs
-	XSetAuctionParamsInputs   addNewAuctionParamsInputs
+	XSetAuctionParamsInputs    addNewAuctionParamsInputs
 )
 
 type XAddNewLendPairsInputsExceptions struct {

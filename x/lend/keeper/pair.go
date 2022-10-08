@@ -36,7 +36,6 @@ func (k Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_P
 }
 
 func (k Keeper) UpdateLendPairsRecords(ctx sdk.Context, msg types.Extended_Pair) error {
-
 	pair, found := k.GetLendPair(ctx, msg.Id)
 	if !found {
 		return types.ErrorPairNotFound

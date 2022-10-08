@@ -2,8 +2,9 @@ package keeper
 
 import (
 	"fmt"
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	"strconv"
+
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -280,7 +281,7 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 		if err = k.SendCoinFromAccountToModule(ctx, lenderAddr, pool.ModuleName, cToken); err != nil {
 			return err
 		}
-		//burn c/Token
+		// burn c/Token
 		err = k.bank.BurnCoins(ctx, pool.ModuleName, cTokens)
 		if err != nil {
 			return err
@@ -297,7 +298,7 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 		if err = k.SendCoinFromAccountToModule(ctx, lenderAddr, pool.ModuleName, cToken); err != nil {
 			return err
 		}
-		//burn c/Token
+		// burn c/Token
 		err = k.bank.BurnCoins(ctx, pool.ModuleName, cTokens)
 		if err != nil {
 			return err
@@ -313,7 +314,6 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 		k.SetLend(ctx, lendPos)
 	}
 	return nil
-
 }
 
 func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendID uint64, deposit sdk.Coin) error {
@@ -563,7 +563,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 	// c. When the borrow is from different pool using Second Transit Asset
 	// else the borrowing pool is not having sufficient tokens to loan
 	if !pair.IsInterPool {
-
 		// take c/Tokens from the user
 		if err = k.SendCoinFromAccountToModule(ctx, lenderAddr, AssetInPool.ModuleName, AmountIn); err != nil {
 			return err
@@ -717,7 +716,6 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 			mappingData, _ := k.GetUserLendBorrowMapping(ctx, addr, lendID)
 			mappingData.BorrowId = append(mappingData.BorrowId, borrowPos.ID)
 			k.SetUserLendBorrowMapping(ctx, mappingData)
-
 		} else if secondBridgedAssetQty.LT(secondBridgedAssetBal) {
 			err = k.VerifyCollateralizationRatio(ctx, secondBridgedAssetQty, secondTransitAsset, loan.Amount, assetOut, secondBridgedAssetRatesStats.Ltv)
 			if err != nil {
@@ -862,7 +860,6 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		amtToReservePool := reservePoolRecords.ReservePoolInterest
 
 		if amtToReservePool.TruncateInt().LTE(payment.Amount) {
-
 			if amtToReservePool.TruncateInt().LT(sdk.ZeroInt()) {
 				return types.ErrReserveRatesNotFound
 			}
@@ -911,7 +908,6 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		amtToReservePool := reservePoolRecords.ReservePoolInterest
 
 		if amtToReservePool.TruncateInt().LTE(payment.Amount) {
-
 			if amtToReservePool.TruncateInt().LT(sdk.ZeroInt()) {
 				return types.ErrReserveRatesNotFound
 			}
@@ -1512,7 +1508,6 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 
 	k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, amoutOutDiff, false)
 	k.SetBorrow(ctx, borrowPos)
-
 }
 
 func (k Keeper) MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string, borrowID uint64) error {

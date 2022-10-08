@@ -45,7 +45,6 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 							// )
 							// k.SetMarket(ctx, market)
 							// above code to be removed
-
 						}
 					}
 				}
@@ -57,6 +56,6 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 
 // set twa
 // get 1 twa
-//get all twa
+// get all twa
 // get current price for asset. - if price not active then error
-//calculate asset price  - if price not active then error
+// calculate asset price  - if price not active then error

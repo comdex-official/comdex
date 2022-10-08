@@ -49,7 +49,7 @@ func GetQueryCmd() *cobra.Command {
 		// queryReserveDepositStats(),
 		queryReserveBuybackAssetData(),
 		// queryBorrowStats(),
-		queryAuctionParams(),//
+		queryAuctionParams(), //
 	)
 
 	return cmd
