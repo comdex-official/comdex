@@ -6,7 +6,6 @@ import (
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
-	protobuftypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
@@ -76,18 +75,18 @@ func newDec(i string) sdk.Dec {
 	return dec
 }
 
-func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
-	var (
-		store = s.app.MarketKeeper.Store(s.ctx)
-		key   = markettypes.PriceForMarketKey(symbol)
-	)
-	value := s.app.AppCodec().MustMarshal(
-		&protobuftypes.UInt64Value{
-			Value: price,
-		},
-	)
-	store.Set(key, value)
-}
+//func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
+//	var (
+//		store = s.app.MarketKeeper.Store(s.ctx)
+//		key   = markettypes.PriceForMarketKey(symbol)
+//	)
+//	value := s.app.AppCodec().MustMarshal(
+//		&protobuftypes.UInt64Value{
+//			Value: price,
+//		},
+//	)
+//	store.Set(key, value)
+//}
 
 func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint64 {
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
@@ -108,20 +107,54 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	}
 	s.Require().NotZero(assetID)
 
-	market := markettypes.Market{
-		Symbol:   name,
-		ScriptID: 12,
-		Rates:    price,
+	//market := markettypes.Market{
+	//	Symbol:   name,
+	//	ScriptID: 12,
+	//	Rates:    price,
+	//}
+	//s.app.MarketKeeper.SetMarket(s.ctx, market)
+
+	//exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
+
+	twa1 := markettypes.TimeWeightedAverage{
+		AssetID:       1,
+		ScriptID:      10,
+		Twa:           1000000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
 	}
-	s.app.MarketKeeper.SetMarket(s.ctx, market)
+	twa2 := markettypes.TimeWeightedAverage{
+		AssetID:       2,
+		ScriptID:      10,
+		Twa:           1000000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
+	}
+	twa3 := markettypes.TimeWeightedAverage{
+		AssetID:       3,
+		ScriptID:      10,
+		Twa:           1000000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
+	}
+	twa4 := markettypes.TimeWeightedAverage{
+		AssetID:       4,
+		ScriptID:      10,
+		Twa:           1000000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
+	}
 
-	exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
-	s.Suite.Require().False(exists)
+	s.app.MarketKeeper.SetTwa(s.ctx, twa1)
+	s.app.MarketKeeper.SetTwa(s.ctx, twa2)
+	s.app.MarketKeeper.SetTwa(s.ctx, twa3)
+	s.app.MarketKeeper.SetTwa(s.ctx, twa4)
+	//s.Suite.Require().False(exists)
 	s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetID, name)
-	exists = s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
-	s.Suite.Require().True(exists)
-
-	s.SetOraclePrice(name, price)
 
 	return assetID
 }
