@@ -201,7 +201,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 
 	var mappingData types.UserAssetLendBorrowMapping
 	mappingData.Owner = lendPos.Owner
-	mappingData.LendId = lendID
+	mappingData.LendId = lendPos.ID
 	mappingData.PoolId = PoolID
 	k.SetUserLendBorrowMapping(ctx, mappingData)
 
@@ -1372,7 +1372,7 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 
 	var mappingData types.UserAssetLendBorrowMapping
 	mappingData.Owner = lendPos.Owner
-	mappingData.LendId = lendID
+	mappingData.LendId = lendPos.ID
 	mappingData.PoolId = PoolID
 	k.SetUserLendBorrowMapping(ctx, mappingData)
 
