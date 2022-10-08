@@ -777,8 +777,8 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 
 func CmdAddNewAssetRatesParamsProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-asset-rates-stats [flags]",
-		Short: "Add lend asset pairs",
+		Use:   "add-asset-rates-params [flags]",
+		Short: "Add lend asset rates params",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
