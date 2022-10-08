@@ -614,7 +614,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		k.SetUserBorrowIDCounter(ctx, borrowPos.ID)
 		k.SetBorrow(ctx, borrowPos)
 
-		mappingData, _ := k.GetUserLendBorrowMapping(ctx, string(lenderAddr), lendID)
+		mappingData, _ := k.GetUserLendBorrowMapping(ctx, addr, lendID)
 		mappingData.BorrowId = append(mappingData.BorrowId, borrowPos.ID)
 		k.SetUserLendBorrowMapping(ctx, mappingData)
 	} else {
@@ -714,7 +714,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 			k.SetLend(ctx, lendPos)
 			k.SetUserBorrowIDCounter(ctx, borrowPos.ID)
 			k.SetBorrow(ctx, borrowPos)
-			mappingData, _ := k.GetUserLendBorrowMapping(ctx, string(lenderAddr), lendID)
+			mappingData, _ := k.GetUserLendBorrowMapping(ctx, addr, lendID)
 			mappingData.BorrowId = append(mappingData.BorrowId, borrowPos.ID)
 			k.SetUserLendBorrowMapping(ctx, mappingData)
 
@@ -775,7 +775,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 			k.SetUserBorrowIDCounter(ctx, borrowPos.ID)
 			k.SetBorrow(ctx, borrowPos)
 
-			mappingData, _ := k.GetUserLendBorrowMapping(ctx, string(lenderAddr), lendID)
+			mappingData, _ := k.GetUserLendBorrowMapping(ctx, addr, lendID)
 			mappingData.BorrowId = append(mappingData.BorrowId, borrowPos.ID)
 			k.SetUserLendBorrowMapping(ctx, mappingData)
 		} else {
