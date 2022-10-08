@@ -9,6 +9,7 @@ import (
 	"github.com/comdex-official/comdex/x/lend/types"
 )
 
+// To calculate pending rewards from last interaction
 func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 	lend, _ := k.GetLend(ctx, ID)
 	lendAPR, _ := k.GetLendAPRByAssetIDAndPoolID(ctx, lend.PoolID, lend.AssetID)
@@ -30,15 +31,17 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 		lendRewardsTracker.RewardsAccumulated = lendRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 	}
 	k.SetLendRewardTracker(ctx, lendRewardsTracker)
+	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lend.PoolID, lend.AssetID)
+	if newInterestPerBlock.GT(poolAssetLBMappingData.TotalInterestAccumulated) {
+		return sdk.Dec{}, types.ErrorInsufficientCTokensForRewards
+	}
 	if newInterestPerBlock.GT(sdk.ZeroInt()) {
-		lend.UpdatedAmountIn = lend.UpdatedAmountIn.Add(newInterestPerBlock)
 		lend.AvailableToBorrow = lend.AvailableToBorrow.Add(newInterestPerBlock)
-		lend.Reward_Accumulated = lend.Reward_Accumulated.Add(newInterestPerBlock)
 
 		pool, _ := k.GetPool(ctx, lend.PoolID)
 		asset, _ := k.GetAsset(ctx, lend.AssetID)
 		Amount := sdk.NewCoin(asset.Denom, newInterestPerBlock)
-		assetRatesStat, _ := k.GetAssetRatesStats(ctx, lend.AssetID)
+		assetRatesStat, _ := k.GetAssetRatesParams(ctx, lend.AssetID)
 
 		cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
 		cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
@@ -67,46 +70,29 @@ func (k Keeper) IterateBorrow(ctx sdk.Context, ID uint64) (sdk.Dec, sdk.Dec, err
 	if err != nil {
 		return sdk.ZeroDec(), sdk.ZeroDec(), err
 	}
-	borrowInterestTracker, found := k.GetBorrowInterestTracker(ctx, borrow.ID)
-	if !found {
-		borrowInterestTracker = types.BorrowInterestTracker{
-			BorrowingId:         borrow.ID,
-			InterestAccumulated: sdk.ZeroDec(),
-		}
-	}
+
 	if !borrow.IsStableBorrow {
-		borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Add(interestPerBlock)
+		borrow.InterestAccumulated = borrow.InterestAccumulated.Add(interestPerBlock)
 	} else {
 		stableInterestPerBlock, err := k.CalculateStableInterest(ctx, borrow.AmountOut.Amount.String(), borrow)
 		if err != nil {
 			return sdk.ZeroDec(), sdk.ZeroDec(), err
 		}
-		borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Add(stableInterestPerBlock)
+		borrow.InterestAccumulated = borrow.InterestAccumulated.Add(stableInterestPerBlock)
 	}
-	newInterestPerBlock := sdk.ZeroInt()
-	if borrowInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
-		newInterestPerBlock = borrowInterestTracker.InterestAccumulated.TruncateInt()
-		newRewardDec := sdk.NewDec(newInterestPerBlock.Int64())
-		borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Sub(newRewardDec)
-	}
-	k.SetBorrowInterestTracker(ctx, borrowInterestTracker)
 
-	reservePoolRecords, found := k.GetReservePoolRecordsForBorrow(ctx, borrow.ID)
+	reservePoolRecords, found := k.GetBorrowInterestTracker(ctx, borrow.ID)
 	if !found {
-		reservePoolRecords = types.ReservePoolRecordsForBorrow{
-			ID:                  borrow.ID,
-			InterestAccumulated: sdk.ZeroDec(),
+		reservePoolRecords = types.BorrowInterestTracker{
+			BorrowingId:         borrow.ID,
+			ReservePoolInterest: sdk.ZeroDec(),
 		}
 	}
 	if reservePoolAmountPerBlock.GT(sdk.ZeroDec()) {
-		reservePoolRecords.InterestAccumulated = reservePoolRecords.InterestAccumulated.Add(reservePoolAmountPerBlock)
+		reservePoolRecords.ReservePoolInterest = reservePoolRecords.ReservePoolInterest.Add(reservePoolAmountPerBlock)
 	}
-	k.SetReservePoolRecordsForBorrow(ctx, reservePoolRecords)
-	if newInterestPerBlock.GT(sdk.ZeroInt()) {
-		borrow.UpdatedAmountOut = borrow.UpdatedAmountOut.Add(newInterestPerBlock)
-		borrow.Interest_Accumulated = borrow.Interest_Accumulated.Add(newInterestPerBlock)
-		k.SetBorrow(ctx, borrow)
-	}
+	k.SetBorrowInterestTracker(ctx, reservePoolRecords)
+	k.SetBorrow(ctx, borrow)
 	return indexGlobalCurrent, reserveGlobalIndex, nil
 }
 
@@ -193,32 +179,34 @@ func (k Keeper) CalculateBorrowInterest(ctx sdk.Context, amount string, rate, re
 func (k Keeper) ReBalanceStableRates(ctx sdk.Context) error {
 	borrows, _ := k.GetBorrows(ctx)
 
-	for _, v := range borrows.BorrowIDs {
+	for _, v := range borrows {
 		borrowPos, found := k.GetBorrow(ctx, v)
 		if !found {
 			continue
 		}
-		if borrowPos.IsStableBorrow {
-			pair, found := k.GetLendPair(ctx, borrowPos.PairID)
-			if !found {
-				continue
-			}
-			assetStats, found := k.UpdateAPR(ctx, pair.AssetOutPoolID, pair.AssetOut)
-			if !found {
-				continue
-			}
-			utilizationRatio, err := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
-			if err != nil {
-				continue
-			}
-			perc1, _ := sdk.NewDecFromStr(types.Perc1)
-			perc2, _ := sdk.NewDecFromStr(types.Perc2)
-			if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {
-				borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-				k.SetBorrow(ctx, borrowPos)
-			} else if utilizationRatio.GT(perc2) && (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) {
-				borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-				k.SetBorrow(ctx, borrowPos)
+		if !borrowPos.IsLiquidated {
+			if borrowPos.IsStableBorrow {
+				pair, found := k.GetLendPair(ctx, borrowPos.PairID)
+				if !found {
+					continue
+				}
+				assetStats, found := k.UpdateAPR(ctx, pair.AssetOutPoolID, pair.AssetOut)
+				if !found {
+					continue
+				}
+				utilizationRatio, err := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
+				if err != nil {
+					continue
+				}
+				perc1, _ := sdk.NewDecFromStr(types.Perc1)
+				perc2, _ := sdk.NewDecFromStr(types.Perc2)
+				if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {
+					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
+					k.SetBorrow(ctx, borrowPos)
+				} else if utilizationRatio.GT(perc2) && (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) {
+					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
+					k.SetBorrow(ctx, borrowPos)
+				}
 			}
 		}
 	}

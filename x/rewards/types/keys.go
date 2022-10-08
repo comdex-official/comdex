@@ -24,6 +24,7 @@ const (
 
 	SecondsPerYear = 31557600
 	SecondsPerDay  = 86400
+	DaysInYear     = "365.242"
 )
 
 var (
@@ -35,6 +36,7 @@ var (
 	ExtRewardsVaultIDKey           = []byte{0x16}
 	EpochTimeIDKey                 = []byte{0x17}
 	EpochForLockerKeyPrefix        = []byte{0x20}
+	ExternalRewardsLendKeyPrefix   = []byte{0x27}
 
 	// EpochInfoByDurationKeyPrefix defines the prefix to store EpochInfo by duration.
 	EpochInfoByDurationKeyPrefix = []byte{0x21}
@@ -84,6 +86,10 @@ func EpochForLockerKey(denom uint64) []byte {
 
 func ExternalRewardsVaultMappingKey(appMappingID uint64) []byte {
 	return append(ExternalRewardsVaultKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
+}
+
+func ExternalRewardsLendMappingKey(appMappingID uint64) []byte {
+	return append(ExternalRewardsLendKeyPrefix, sdk.Uint64ToBigEndian(appMappingID)...)
 }
 
 func LockerRewardsTrackerKey(id, appID uint64) []byte {

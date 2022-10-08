@@ -267,7 +267,7 @@ def AddAssetRates(assetName, jsonData):
     with open(fileName, "w") as jsonFile:
         json.dump(jsonData, jsonFile)
     
-    command = f"""comdex tx gov submit-proposal add-asset-rates-stats --add-asset-rates-stats-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    command = f"""comdex tx gov submit-proposal add-asset-rates-params --add-asset-rates-params-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
     output = subprocess.getstatusoutput(command)[1]
     output = json.loads(output)
     if int(output["code"]) != 0:

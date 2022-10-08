@@ -7,10 +7,6 @@ import "comdex/bandoracle/v1beta1/fetch_price.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
 
-service Msg {
-      rpc FetchPriceData(MsgFetchPriceData) returns (MsgFetchPriceDataResponse);
-}
-
 message MsgFetchPriceData {
   string creator = 1;
   uint64 oracle_script_id = 2 [

@@ -4,28 +4,13 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
-	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-type AddNewAssetsRequest struct {
-	BaseReq     rest.BaseReq `json:"base_req" yaml:"base_req"`
-	Title       string       `json:"title" yaml:"title"`
-	Description string       `json:"description" yaml:"description"`
-	Deposit     sdk.Coins    `json:"deposit" yaml:"deposit"`
-	Asset       types.Asset  `json:"assets" yaml:"assets"`
-}
-
-type (
-	UpdateNewAssetRequest struct{}
-	AddNewPairsRequest    struct{}
-	UpdateNewPairRequest  struct{}
-)
+type UpdateNewAssetRequest struct{}
+type AddNewPairsRequest struct{}
+type UpdateNewPairRequest struct{}
 
 func AddNewAssetsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
@@ -64,35 +49,11 @@ func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRE
 
 func AddNewAssetsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req AddNewAssetsRequest
+		var req UpdateNewAssetRequest
 
 		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			return
 		}
-
-		req.BaseReq = req.BaseReq.Sanitize()
-		if !req.BaseReq.ValidateBasic(w) {
-			return
-		}
-
-		fromAddr, err := sdk.AccAddressFromBech32(req.BaseReq.From)
-		if rest.CheckBadRequestError(w, err) {
-			return
-		}
-
-		content := types.NewAddAssetsProposal(
-			req.Title,
-			req.Description,
-			req.Asset)
-		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, fromAddr)
-		if rest.CheckBadRequestError(w, err) {
-			return
-		}
-		if rest.CheckBadRequestError(w, msg.ValidateBasic()) {
-			return
-		}
-
-		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
 	}
 }
 

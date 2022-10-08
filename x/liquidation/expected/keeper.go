@@ -61,28 +61,23 @@ type EsmKeeper interface {
 }
 
 type LendKeeper interface {
-	GetBorrows(ctx sdk.Context) (userBorrows lendtypes.BorrowMapping, found bool)
+	GetBorrows(ctx sdk.Context) (userBorrows []uint64, found bool)
 	GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool)
 	GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended_Pair, found bool)
-	GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesStats, found bool)
-	VerifyCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error
-	CalculateCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error)
+	GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesParams, found bool)
+	VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error
+	CalculateCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error)
 	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
 	DeleteBorrow(ctx sdk.Context, id uint64)
 
-	DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64)
-	UpdateUserBorrowIDMapping(ctx sdk.Context, lendOwner string, borrowID uint64, isInsert bool) error
-	UpdateBorrowIDByOwnerAndPoolMapping(ctx sdk.Context, borrowOwner string, borrowID uint64, poolID uint64, isInsert bool) error
-	UpdateBorrowIdsMapping(ctx sdk.Context, borrowID uint64, isInsert bool) error
 	CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault)
 	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
-	GetBorrowStats(ctx sdk.Context) (borrowStats lendtypes.DepositStats, found bool)
-	SetBorrowStats(ctx sdk.Context, borrowStats lendtypes.DepositStats)
-	GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats lendtypes.AssetStats, found bool)
-	SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats lendtypes.AssetStats)
-	UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, borrowPos lendtypes.BorrowAsset, amount sdk.Int, inc bool)
+
+	GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats lendtypes.PoolAssetLBMapping, found bool)
+	SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats lendtypes.PoolAssetLBMapping)
 	UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error
 	SetLend(ctx sdk.Context, lend lendtypes.LendAsset)
+	SetBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset)
 }
 
 type RewardsKeeper interface {

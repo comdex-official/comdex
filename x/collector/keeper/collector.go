@@ -736,7 +736,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 	if found {
 		for _, lockID := range lockers.LockerIds {
 			lockerData, _ := k.GetLocker(ctx, lockID)
-			rewards := sdk.ZeroDec()
+			var rewards sdk.Dec
 			var err error
 			if lockerData.BlockHeight == 0 {
 				rewards, err = k.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, collectorBt)
@@ -763,8 +763,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 
 			if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
 				// send rewards
-				newReward := sdk.ZeroInt()
-				newReward = lockerRewardsTracker.RewardsAccumulated.TruncateInt()
+				newReward := lockerRewardsTracker.RewardsAccumulated.TruncateInt()
 				newRewardDec := sdk.NewDec(newReward.Int64())
 				lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 				k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
