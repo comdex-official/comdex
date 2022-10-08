@@ -1,16 +1,18 @@
 package keeper
 
 import (
+	"sort"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/lend/types"
 )
 
-func (k Keeper) SetUserLendIDHistory(ctx sdk.Context, id uint64) {
+func (k Keeper) SetUserLendIDCounter(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendHistoryIDPrefix
+		key   = types.LendCounterIDPrefix
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -20,10 +22,10 @@ func (k Keeper) SetUserLendIDHistory(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetUserLendIDHistory(ctx sdk.Context) uint64 {
+func (k Keeper) GetUserLendIDCounter(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendHistoryIDPrefix
+		key   = types.LendCounterIDPrefix
 		value = store.Get(key)
 	)
 
@@ -215,323 +217,32 @@ func (k Keeper) GetAllAssetToPair(ctx sdk.Context) (assetToPairMapping []types.A
 	return assetToPairMapping
 }
 
-func (k Keeper) SetLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, id, poolID uint64) {
+func (k Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, PoolAssetLBMapping types.PoolAssetLBMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendForAddressByAsset(address, assetID, poolID)
-		value = k.cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: id,
-			},
-		)
+		key   = types.SetAssetStatsByPoolIDAndAssetID(PoolAssetLBMapping.PoolID, PoolAssetLBMapping.AssetID)
+		value = k.cdc.MustMarshal(&PoolAssetLBMapping)
 	)
 
 	store.Set(key, value)
 }
 
-func (k Keeper) HasLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, poolID uint64) bool {
+func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping types.PoolAssetLBMapping, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendForAddressByAsset(address, assetID, poolID)
-	)
-
-	return store.Has(key)
-}
-
-func (k Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, poolID uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendForAddressByAsset(address, assetID, poolID)
-	)
-
-	store.Delete(key)
-}
-
-func (k Keeper) UpdateUserLendIDMapping(
-	ctx sdk.Context,
-	lendOwner string,
-	lendID uint64,
-	isInsert bool,
-) error {
-	userVaults, found := k.GetUserLends(ctx, lendOwner)
-
-	if !found && isInsert {
-		userVaults = types.UserLendIdMapping{
-			Owner:   lendOwner,
-			LendIDs: nil,
-		}
-	} else if !found && !isInsert {
-		return types.ErrorLendOwnerNotFound
-	}
-
-	if isInsert {
-		userVaults.LendIDs = append(userVaults.LendIDs, lendID)
-	} else {
-		for index, id := range userVaults.LendIDs {
-			if id == lendID {
-				userVaults.LendIDs = append(userVaults.LendIDs[:index], userVaults.LendIDs[index+1:]...)
-				break
-			}
-		}
-	}
-
-	k.SetUserLends(ctx, userVaults)
-	return nil
-}
-
-func (k Keeper) GetUserLends(ctx sdk.Context, address string) (userVaults types.UserLendIdMapping, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.UserLendsForAddressKey(address)
-		value = store.Get(key)
-	)
-	if value == nil {
-		return userVaults, false
-	}
-	k.cdc.MustUnmarshal(value, &userVaults)
-
-	return userVaults, true
-}
-
-func (k Keeper) GetAllUserLends(ctx sdk.Context) (userLendIDMapping []types.UserLendIdMapping) {
-	var (
-		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.UserLendsForAddressKeyPrefix)
-	)
-
-	defer func(iter sdk.Iterator) {
-		err := iter.Close()
-		if err != nil {
-			return
-		}
-	}(iter)
-
-	for ; iter.Valid(); iter.Next() {
-		var asset types.UserLendIdMapping
-		k.cdc.MustUnmarshal(iter.Value(), &asset)
-		userLendIDMapping = append(userLendIDMapping, asset)
-	}
-	return userLendIDMapping
-}
-
-func (k Keeper) UserLends(ctx sdk.Context, address string) (userLends []types.LendAsset, found bool) {
-	userLendID, _ := k.GetUserLends(ctx, address)
-	for _, v := range userLendID.LendIDs {
-		userLend, _ := k.GetLend(ctx, v)
-		userLends = append(userLends, userLend)
-	}
-	return userLends, true
-}
-
-func (k Keeper) SetUserLends(ctx sdk.Context, userVaults types.UserLendIdMapping) {
-	var (
-		store = k.Store(ctx)
-		key   = types.UserLendsForAddressKey(userVaults.Owner)
-		value = k.cdc.MustMarshal(&userVaults)
-	)
-	store.Set(key, value)
-}
-
-func (k Keeper) UpdateLendIDByOwnerAndPoolMapping(
-	ctx sdk.Context,
-	lendOwner string,
-	lendID uint64,
-	poolID uint64,
-	isInsert bool,
-) error {
-	userLends, found := k.GetLendIDByOwnerAndPool(ctx, lendOwner, poolID)
-
-	if !found && isInsert {
-		userLends = types.LendIdByOwnerAndPoolMapping{
-			Owner:   lendOwner,
-			PoolID:  poolID,
-			LendIDs: nil,
-		}
-	} else if !found && !isInsert {
-		return types.ErrorLendOwnerNotFound
-	}
-
-	if isInsert {
-		userLends.LendIDs = append(userLends.LendIDs, lendID)
-	} else {
-		for index, id := range userLends.LendIDs {
-			if id == lendID {
-				userLends.LendIDs = append(userLends.LendIDs[:index], userLends.LendIDs[index+1:]...)
-				break
-			}
-		}
-	}
-
-	k.SetLendIDByOwnerAndPool(ctx, userLends)
-	return nil
-}
-
-func (k Keeper) GetLendIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userLends types.LendIdByOwnerAndPoolMapping, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendByUserAndPoolKey(address, poolID)
-		value = store.Get(key)
-	)
-	if value == nil {
-		return userLends, false
-	}
-	k.cdc.MustUnmarshal(value, &userLends)
-
-	return userLends, true
-}
-
-func (k Keeper) GetAllLendIDByOwnerAndPool(ctx sdk.Context) (lendIDByOwnerAndPoolMapping []types.LendIdByOwnerAndPoolMapping) {
-	var (
-		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LendByUserAndPoolPrefix)
-	)
-
-	defer func(iter sdk.Iterator) {
-		err := iter.Close()
-		if err != nil {
-			return
-		}
-	}(iter)
-
-	for ; iter.Valid(); iter.Next() {
-		var asset types.LendIdByOwnerAndPoolMapping
-		k.cdc.MustUnmarshal(iter.Value(), &asset)
-		lendIDByOwnerAndPoolMapping = append(lendIDByOwnerAndPoolMapping, asset)
-	}
-	return lendIDByOwnerAndPoolMapping
-}
-
-func (k Keeper) LendIDByOwnerAndPool(ctx sdk.Context, address string, poolID uint64) (userLends []types.LendAsset, found bool) {
-	userLendID, _ := k.GetLendIDByOwnerAndPool(ctx, address, poolID)
-	for _, v := range userLendID.LendIDs {
-		userLend, _ := k.GetLend(ctx, v)
-		userLends = append(userLends, userLend)
-	}
-	return userLends, true
-}
-
-func (k Keeper) SetLendIDByOwnerAndPool(ctx sdk.Context, userLends types.LendIdByOwnerAndPoolMapping) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendByUserAndPoolKey(userLends.Owner, userLends.PoolID)
-		value = k.cdc.MustMarshal(&userLends)
-	)
-	store.Set(key, value)
-}
-
-func (k Keeper) SetLendIDToBorrowIDMapping(ctx sdk.Context, lendIDToBorrowIDMapping types.LendIdToBorrowIdMapping) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendIDToBorrowIDMappingKey(lendIDToBorrowIDMapping.LendingID)
-		value = k.cdc.MustMarshal(&lendIDToBorrowIDMapping)
-	)
-
-	store.Set(key, value)
-}
-
-func (k Keeper) UpdateLendIDToBorrowIDMapping(
-	ctx sdk.Context,
-	lendID uint64,
-	borrowID uint64,
-	isInsert bool,
-) error {
-	lendIDToBorrowIDMapping, found := k.GetLendIDToBorrowIDMapping(ctx, lendID)
-
-	if !found && isInsert {
-		lendIDToBorrowIDMapping = types.LendIdToBorrowIdMapping{
-			LendingID:   lendID,
-			BorrowingID: nil,
-		}
-	} else if !found && !isInsert {
-		return types.ErrorLendOwnerNotFound
-	}
-
-	if isInsert {
-		lendIDToBorrowIDMapping.BorrowingID = append(lendIDToBorrowIDMapping.BorrowingID, borrowID)
-	} else {
-		for index, id := range lendIDToBorrowIDMapping.BorrowingID {
-			if id == borrowID {
-				lendIDToBorrowIDMapping.BorrowingID = append(lendIDToBorrowIDMapping.BorrowingID[:index], lendIDToBorrowIDMapping.BorrowingID[index+1:]...)
-				break
-			}
-		}
-	}
-
-	k.SetLendIDToBorrowIDMapping(ctx, lendIDToBorrowIDMapping)
-	return nil
-}
-
-func (k Keeper) GetLendIDToBorrowIDMapping(ctx sdk.Context, id uint64) (lendIDToBorrowIDMapping types.LendIdToBorrowIdMapping, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendIDToBorrowIDMappingKey(id)
+		key   = types.SetAssetStatsByPoolIDAndAssetID(poolID, assetID)
 		value = store.Get(key)
 	)
 
 	if value == nil {
-		return lendIDToBorrowIDMapping, false
+		return PoolAssetLBMapping, false
 	}
 
-	k.cdc.MustUnmarshal(value, &lendIDToBorrowIDMapping)
-	return lendIDToBorrowIDMapping, true
+	k.cdc.MustUnmarshal(value, &PoolAssetLBMapping)
+	return PoolAssetLBMapping, true
 }
 
-func (k Keeper) GetAllLendIDToBorrowIDMapping(ctx sdk.Context) (lendIDToBorrowIdMapping []types.LendIdToBorrowIdMapping) {
-	var (
-		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LendIDToBorrowIDMappingKeyPrefix)
-	)
-
-	defer func(iter sdk.Iterator) {
-		err := iter.Close()
-		if err != nil {
-			return
-		}
-	}(iter)
-
-	for ; iter.Valid(); iter.Next() {
-		var asset types.LendIdToBorrowIdMapping
-		k.cdc.MustUnmarshal(iter.Value(), &asset)
-		lendIDToBorrowIdMapping = append(lendIDToBorrowIdMapping, asset)
-	}
-	return lendIDToBorrowIdMapping
-}
-
-func (k Keeper) DeleteLendIDToBorrowIDMapping(ctx sdk.Context, lendingID uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendIDToBorrowIDMappingKey(lendingID)
-	)
-
-	store.Delete(key)
-}
-
-func (k Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats types.AssetStats) {
-	var (
-		store = k.Store(ctx)
-		key   = types.SetAssetStatsByPoolIDAndAssetID(AssetStats.AssetID, AssetStats.PoolID)
-		value = k.cdc.MustMarshal(&AssetStats)
-	)
-
-	store.Set(key, value)
-}
-
-func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats types.AssetStats, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.SetAssetStatsByPoolIDAndAssetID(assetID, poolID)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return AssetStats, false
-	}
-
-	k.cdc.MustUnmarshal(value, &AssetStats)
-	return AssetStats, true
-}
-
-func (k Keeper) GetAllAssetStatsByPoolIDAndAssetID(ctx sdk.Context) (assetStats []types.AssetStats) {
+func (k Keeper) GetAllAssetStatsByPoolIDAndAssetID(ctx sdk.Context) (assetStats []types.PoolAssetLBMapping) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.AssetStatsByPoolIDAndAssetIDKeyPrefix)
@@ -545,191 +256,19 @@ func (k Keeper) GetAllAssetStatsByPoolIDAndAssetID(ctx sdk.Context) (assetStats 
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var asset types.AssetStats
+		var asset types.PoolAssetLBMapping
 		k.cdc.MustUnmarshal(iter.Value(), &asset)
 		assetStats = append(assetStats, asset)
 	}
 	return assetStats
 }
 
-func (k Keeper) AssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats types.AssetStats, found bool) {
-	AssetStats, found = k.UpdateAPR(ctx, poolID, assetID)
+func (k Keeper) AssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping types.PoolAssetLBMapping, found bool) {
+	PoolAssetLBMapping, found = k.UpdateAPR(ctx, poolID, assetID)
 	if !found {
-		return AssetStats, false
+		return PoolAssetLBMapping, false
 	}
-	return AssetStats, true
-}
-
-func (k Keeper) UpdateLendIDsMapping(
-	ctx sdk.Context,
-	lendID uint64,
-	isInsert bool,
-) error {
-	userVaults, found := k.GetLends(ctx)
-
-	if !found && isInsert {
-		userVaults = types.LendMapping{
-			LendIDs: nil,
-		}
-	} else if !found && !isInsert {
-		return types.ErrorLendOwnerNotFound
-	}
-
-	if isInsert {
-		userVaults.LendIDs = append(userVaults.LendIDs, lendID)
-	} else {
-		for index, id := range userVaults.LendIDs {
-			if id == lendID {
-				userVaults.LendIDs = append(userVaults.LendIDs[:index], userVaults.LendIDs[index+1:]...)
-				break
-			}
-		}
-	}
-
-	k.SetLends(ctx, userVaults)
-	return nil
-}
-
-func (k Keeper) GetLends(ctx sdk.Context) (userVaults types.LendMapping, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendsKey
-		value = store.Get(key)
-	)
-	if value == nil {
-		return userVaults, false
-	}
-	k.cdc.MustUnmarshal(value, &userVaults)
-
-	return userVaults, true
-}
-
-func (k Keeper) SetLends(ctx sdk.Context, userLends types.LendMapping) {
-	var (
-		store = k.Store(ctx)
-		key   = types.LendsKey
-		value = k.cdc.MustMarshal(&userLends)
-	)
-	store.Set(key, value)
-}
-
-func (k Keeper) GetModuleBalanceByPoolID(ctx sdk.Context, poolID uint64) (ModuleBalance types.ModuleBalance, found bool) {
-	pool, found := k.GetPool(ctx, poolID)
-	if !found {
-		return ModuleBalance, false
-	}
-	for _, v := range pool.AssetData {
-		asset, _ := k.GetAsset(ctx, v.AssetID)
-		balance := k.ModuleBalance(ctx, pool.ModuleName, asset.Denom)
-		tokenBal := sdk.NewCoin(asset.Denom, balance)
-		modBalStats := types.ModuleBalanceStats{
-			AssetID: asset.Id,
-			Balance: tokenBal,
-		}
-		ModuleBalance.PoolID = poolID
-		ModuleBalance.ModuleBalanceStats = append(ModuleBalance.ModuleBalanceStats, modBalStats)
-	}
-	return ModuleBalance, true
-}
-
-func (k Keeper) SetUserDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
-	var (
-		store = k.Store(ctx)
-		key   = types.UserDepositStatsPrefix
-		value = k.cdc.MustMarshal(&depositStats)
-	)
-
-	store.Set(key, value)
-}
-
-func (k Keeper) GetUserDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.UserDepositStatsPrefix
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return depositStats, false
-	}
-
-	k.cdc.MustUnmarshal(value, &depositStats)
-	return depositStats, true
-}
-
-func (k Keeper) SetReserveDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
-	var (
-		store = k.Store(ctx)
-		key   = types.ReserveDepositStatsPrefix
-		value = k.cdc.MustMarshal(&depositStats)
-	)
-
-	store.Set(key, value)
-}
-
-func (k Keeper) GetReserveDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.ReserveDepositStatsPrefix
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return depositStats, false
-	}
-
-	k.cdc.MustUnmarshal(value, &depositStats)
-	return depositStats, true
-}
-
-func (k Keeper) SetBuyBackDepositStats(ctx sdk.Context, depositStats types.DepositStats) {
-	var (
-		store = k.Store(ctx)
-		key   = types.BuyBackDepositStatsPrefix
-		value = k.cdc.MustMarshal(&depositStats)
-	)
-
-	store.Set(key, value)
-}
-
-func (k Keeper) GetBuyBackDepositStats(ctx sdk.Context) (depositStats types.DepositStats, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.BuyBackDepositStatsPrefix
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return depositStats, false
-	}
-
-	k.cdc.MustUnmarshal(value, &depositStats)
-	return depositStats, true
-}
-
-func (k Keeper) SetBorrowStats(ctx sdk.Context, borrowStats types.DepositStats) {
-	var (
-		store = k.Store(ctx)
-		key   = types.BorrowStatsPrefix
-		value = k.cdc.MustMarshal(&borrowStats)
-	)
-
-	store.Set(key, value)
-}
-
-func (k Keeper) GetBorrowStats(ctx sdk.Context) (borrowStats types.DepositStats, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.BorrowStatsPrefix
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return borrowStats, false
-	}
-
-	k.cdc.MustUnmarshal(value, &borrowStats)
-	return borrowStats, true
+	return PoolAssetLBMapping, true
 }
 
 func (k Keeper) SetLendRewardTracker(ctx sdk.Context, rewards types.LendRewardsTracker) {
@@ -755,4 +294,135 @@ func (k Keeper) GetLendRewardTracker(ctx sdk.Context, id uint64) (rewards types.
 
 	k.cdc.MustUnmarshal(value, &rewards)
 	return rewards, true
+}
+
+// only called while borrowing
+func (k Keeper) SetUserLendBorrowMapping(ctx sdk.Context, userMapping types.UserAssetLendBorrowMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLendBorrowMappingKey(userMapping.Owner, userMapping.LendId)
+		value = k.cdc.MustMarshal(&userMapping)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetUserLendBorrowMapping(ctx sdk.Context, owner string, lendID uint64) (userMapping types.UserAssetLendBorrowMapping, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLendBorrowMappingKey(owner, lendID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return userMapping, false
+	}
+
+	k.cdc.MustUnmarshal(value, &userMapping)
+	return userMapping, true
+}
+
+func (k Keeper) GetUserTotalMappingData(ctx sdk.Context, address string) (mappingData []types.UserAssetLendBorrowMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLendBorrowKey(address)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var mapData types.UserAssetLendBorrowMapping
+		k.cdc.MustUnmarshal(iter.Value(), &mapData)
+		mappingData = append(mappingData, mapData)
+	}
+
+	return mappingData
+}
+
+func (k Keeper) HasLendForAddressByAsset(ctx sdk.Context, address string, assetID, poolID uint64) bool {
+	mappingData := k.GetUserTotalMappingData(ctx, address)
+	for _, data := range mappingData {
+		if data.PoolId == poolID {
+			lend, _ := k.GetLend(ctx, data.LendId)
+			if lend.AssetID == assetID {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (k Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address string, lendingID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLendBorrowMappingKey(address, lendingID)
+	)
+
+	store.Delete(key)
+}
+
+func (k Keeper) DeleteIDFromAssetStatsMapping(ctx sdk.Context, poolID, assetID, id uint64, typeOfId bool) {
+	poolLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
+	if typeOfId {
+		lengthOfIDs := len(poolLBMappingData.LendIds)
+
+		dataIndex := sort.Search(lengthOfIDs, func(i int) bool { return poolLBMappingData.LendIds[i] >= id })
+
+		if dataIndex < lengthOfIDs && poolLBMappingData.LendIds[dataIndex] == id {
+			poolLBMappingData.LendIds = append(poolLBMappingData.LendIds[:dataIndex], poolLBMappingData.LendIds[dataIndex+1:]...)
+			k.SetAssetStatsByPoolIDAndAssetID(ctx, poolLBMappingData)
+		}
+	} else {
+		lengthOfIDs := len(poolLBMappingData.BorrowIds)
+
+		dataIndex := sort.Search(lengthOfIDs, func(i int) bool { return poolLBMappingData.BorrowIds[i] >= id })
+
+		if dataIndex < lengthOfIDs && poolLBMappingData.BorrowIds[dataIndex] == id {
+			poolLBMappingData.BorrowIds = append(poolLBMappingData.BorrowIds[:dataIndex], poolLBMappingData.BorrowIds[dataIndex+1:]...)
+			k.SetAssetStatsByPoolIDAndAssetID(ctx, poolLBMappingData)
+		}
+	}
+}
+
+func (k Keeper) SetReserveBuybackAssetData(ctx sdk.Context, reserve types.ReserveBuybackAssetData) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReserveBuybackAssetDataKey(reserve.AssetID)
+		value = k.cdc.MustMarshal(&reserve)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetReserveBuybackAssetData(ctx sdk.Context, id uint64) (reserve types.ReserveBuybackAssetData, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ReserveBuybackAssetDataKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return reserve, false
+	}
+
+	k.cdc.MustUnmarshal(value, &reserve)
+	return reserve, true
+}
+
+func (k Keeper) DeleteBorrowIDFromUserMapping(ctx sdk.Context, owner string, lendID, borrowID uint64) {
+	userData, _ := k.GetUserLendBorrowMapping(ctx, owner, lendID)
+	lengthOfIDs := len(userData.BorrowId)
+
+	dataIndex := sort.Search(lengthOfIDs, func(i int) bool { return userData.BorrowId[i] >= borrowID })
+
+	if dataIndex < lengthOfIDs && userData.BorrowId[dataIndex] == borrowID {
+		userData.BorrowId = append(userData.BorrowId[:dataIndex], userData.BorrowId[dataIndex+1:]...)
+		k.SetUserLendBorrowMapping(ctx, userData)
+	}
 }

@@ -25,3 +25,7 @@ type VaultKeeper interface {
 	GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool)
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
 }
+
+type Bandoraclekeeper interface {
+	SetCheckFlag(ctx sdk.Context, flag bool)
+}

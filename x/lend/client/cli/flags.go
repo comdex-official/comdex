@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	FlagNewLendPairFile        = "add-lend-pair-file"
-	FlagAddLendPoolFile        = "add-lend-pool-file"
-	FlagAddAssetRatesStatsFile = "add-asset-rates-stats-file"
-	FlagSetAuctionParamsFile   = "add-auction-params-file"
+	FlagNewLendPairFile         = "add-lend-pair-file"
+	FlagAddLendPoolFile         = "add-lend-pool-file"
+	FlagAddAssetRatesParamsFile = "add-asset-rates-params-file"
+	FlagSetAuctionParamsFile    = "add-auction-params-file"
 )
 
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
@@ -51,10 +51,10 @@ func FlagSetAddLendPoolMapping() *flag.FlagSet {
 	return fs
 }
 
-func FlagSetAddAssetRatesStatsMapping() *flag.FlagSet {
+func FlagSetAddAssetRatesParamsMapping() *flag.FlagSet {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 
-	fs.String(FlagAddAssetRatesStatsFile, "", "add asset rates stats json file path")
+	fs.String(FlagAddAssetRatesParamsFile, "", "add asset rates stats json file path")
 	return fs
 }
 
@@ -77,20 +77,18 @@ type addNewLendPairsInputs struct {
 }
 
 type addLendPoolInputs struct {
-	ModuleName           string `json:"module_name"`
-	MainAssetID          string `json:"main_asset_id"`
-	FirstBridgedAssetID  string `json:"first_bridged_asset_id"`
-	SecondBridgedAssetID string `json:"second_bridged_asset_id"`
-	AssetID              string `json:"asset_id"`
-	IsBridgedAsset       string `json:"is_bridged_asset"`
-	CPoolName            string `json:"c_pool_name"`
-	ReserveFunds         string `json:"reserve_funds"`
-	Title                string
-	Description          string
-	Deposit              string
+	ModuleName       string `json:"module_name"`
+	AssetID          string `json:"asset_id"`
+	AssetTransitType string `json:"asset_transit_type"`
+	SupplyCap        string `json:"supply_cap"`
+	CPoolName        string `json:"c_pool_name"`
+	ReserveFunds     string `json:"reserve_funds"`
+	Title            string
+	Description      string
+	Deposit          string
 }
 
-type addAssetRatesStatsInputs struct {
+type addAssetRatesParamsInputs struct {
 	AssetID              string `json:"asset_id"`
 	UOptimal             string `json:"u_optimal"`
 	Base                 string `json:"base"`

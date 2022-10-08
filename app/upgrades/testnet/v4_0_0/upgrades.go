@@ -1,6 +1,9 @@
 package v4_0_0
 
 import (
+	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
+	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -115,6 +118,42 @@ func CreateUpgradeHandlerV430(
 		// This change is only for testnet upgrade
 
 		EditAndSetPair(ctx, assetkeeper)
+		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
+		if err != nil {
+			return newVM, err
+		}
+		return newVM, err
+	}
+}
+
+func UpdateDutchLendAuctions(
+	ctx sdk.Context,
+	liquidationkeeper liquidationkeeper.Keeper,
+	auctionkeeper auctionkeeper.Keeper,
+) {
+	lockedVaults := liquidationkeeper.GetLockedVaults(ctx)
+	for _, v := range lockedVaults {
+		if v.Kind != nil {
+			err := auctionkeeper.LendDutchActivator(ctx, v)
+			if err != nil {
+				return
+			}
+		}
+	}
+}
+
+// CreateUpgradeHandler creates an SDK upgrade handler for v4_4_0
+func CreateUpgradeHandlerV440(
+	mm *module.Manager,
+	configurator module.Configurator,
+	lendkeeper lendkeeper.Keeper,
+	liquidationkeeper liquidationkeeper.Keeper,
+	auctionkeeper auctionkeeper.Keeper,
+) upgradetypes.UpgradeHandler {
+	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		// This change is only for testnet upgrade
+
+		UpdateDutchLendAuctions(ctx, liquidationkeeper, auctionkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return newVM, err

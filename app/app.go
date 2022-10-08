@@ -197,8 +197,9 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 		bandoraclemoduleclient.AddFetchPriceHandler,
 		lendclient.AddLendPairsHandler,
 		lendclient.AddPoolHandler,
+		lendclient.UpdateLendPairsHandler,
 		lendclient.AddAssetToPairHandler,
-		lendclient.AddAssetRatesStatsHandler,
+		lendclient.AddAssetRatesParamsHandler,
 		lendclient.AddAuctionParamsHandler,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
@@ -553,6 +554,7 @@ func New(
 		&app.MarketKeeper,
 		&app.Rewardskeeper,
 		&app.VaultKeeper,
+		&app.BandoracleKeeper,
 	)
 
 	app.LendKeeper = lendkeeper.NewKeeper(
@@ -723,6 +725,7 @@ func New(
 		app.LiquidityKeeper,
 		&app.MarketKeeper,
 		&app.EsmKeeper,
+		&app.LendKeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -1141,8 +1144,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv4_0_0.UpgradeNameV4_3_0,
-		tv4_0_0.CreateUpgradeHandlerV430(a.mm, a.configurator, a.AssetKeeper),
+		tv4_0_0.UpgradeNameV4_4_0,
+		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.LendKeeper, a.LiquidationKeeper, a.AuctionKeeper),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1217,6 +1220,8 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_2_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_3_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{}
+	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	}
 	return storeUpgrades

@@ -49,7 +49,7 @@ func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes
 			outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(AssetInPrice).TruncateInt())
 			inflowToken := sdk.NewCoin(assetOut.Denom, lockedVault.CollateralToBeAuctioned.Quo(AssetOutPrice).TruncateInt())
 
-			AssetRatesStats, found := k.GetAssetRatesStats(ctx, extendedPair.AssetIn)
+			AssetRatesStats, found := k.GetAssetRatesParams(ctx, extendedPair.AssetIn)
 			if !found {
 				ctx.Logger().Error(auctiontypes.ErrorAssetRates.Error(), lockedVault.LockedVaultId)
 				return nil
@@ -101,7 +101,7 @@ func (k Keeper) StartLendDutchAuction(
 	BorrowMetaData := lockedVault.GetBorrowMetaData()
 	LendPos, _ := k.GetLend(ctx, BorrowMetaData.LendingId)
 	pool, _ := k.GetPool(ctx, LendPos.PoolID)
-	assetStat, _ := k.GetAssetRatesStats(ctx, LendPos.AssetID)
+	assetStat, _ := k.GetAssetRatesParams(ctx, LendPos.AssetID)
 	cAsset, _ := k.GetAsset(ctx, assetStat.CAssetID)
 	if outFlowToken.Amount.GT(sdk.ZeroInt()) {
 		err := k.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(outFlowToken))
@@ -220,7 +220,7 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 	if !found {
 		return auctiontypes.ErrorInvalidExtendedPairVault
 	}
-	assetStats, _ := k.GetAssetRatesStats(ctx, ExtendedPairVault.AssetIn)
+	assetStats, _ := k.GetAssetRatesParams(ctx, ExtendedPairVault.AssetIn)
 	assetOutPool, _ := k.GetPool(ctx, ExtendedPairVault.AssetOutPoolID)
 	// dust is in usd * 10*-6 (uusd)
 	dust := sdk.NewIntFromUint64(ExtendedPairVault.MinUsdValueLeft)
@@ -410,7 +410,7 @@ func (k Keeper) CloseDutchLendAuction(
 	borrowMetaData := lockedVault.GetBorrowMetaData()
 	lendPos, _ := k.GetLend(ctx, borrowMetaData.LendingId)
 	lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
-	lendPos.UpdatedAmountIn = lendPos.UpdatedAmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
+	lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
 	k.SetLend(ctx, lendPos)
 
 	lockedVault.AmountOut = lockedVault.AmountOut.Sub(dutchAuction.InflowTokenTargetAmount.Amount)

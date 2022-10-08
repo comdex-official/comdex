@@ -28,6 +28,7 @@ type ScopedKeeper interface {
 }
 
 type AssetKeeper interface {
+	GetAsset(ctx sdk.Context, id uint64) (asset assettypes.Asset, found bool)
 	GetAssets(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 }
@@ -37,4 +38,7 @@ type BandOracleKeeper interface {
 	GetLastFetchPriceID(ctx sdk.Context) int64
 	GetLastBlockHeight(ctx sdk.Context) int64
 	GetFetchPriceMsg(ctx sdk.Context) types.MsgFetchPriceData
+	GetCheckFlag(ctx sdk.Context) bool
+	SetCheckFlag(ctx sdk.Context, flag bool)
+	GetOracleValidationResult(ctx sdk.Context) bool
 }

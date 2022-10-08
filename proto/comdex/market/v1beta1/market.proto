@@ -15,3 +15,27 @@ message Market {
   ];
   uint64 rates = 3;
 }
+
+message TimeWeightedAverage {
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  uint64 script_id = 2 [
+    (gogoproto.customname) = "ScriptID",
+    (gogoproto.moretags) = "yaml:\"script_id\""
+  ];
+  uint64 twa = 3 [
+    (gogoproto.customname) = "Twa",
+    (gogoproto.moretags) = "yaml:\"twa\""
+  ];
+  uint64 current_index = 4 [
+    (gogoproto.customname) = "CurrentIndex",
+    (gogoproto.moretags) = "yaml:\"current_index\""
+  ];
+  bool is_price_active = 5 [(gogoproto.moretags) = "yaml:\"is_price_active\""];
+  repeated  uint64 price_value = 6 [
+    (gogoproto.customname) = "PriceValue",
+    (gogoproto.moretags) = "yaml:\"price_value\""
+  ];
+}

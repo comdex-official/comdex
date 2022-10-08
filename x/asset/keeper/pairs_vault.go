@@ -261,6 +261,7 @@ func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.
 	ExtPairVaultData.ClosingFee = updatePairVault.ClosingFee
 	ExtPairVaultData.LiquidationPenalty = updatePairVault.LiquidationPenalty
 	ExtPairVaultData.DrawDownFee = updatePairVault.DrawDownFee
+	ExtPairVaultData.IsVaultActive = updatePairVault.IsVaultActive
 	ExtPairVaultData.DebtCeiling = sdk.NewInt(int64(updatePairVault.DebtCeiling))
 	ExtPairVaultData.DebtFloor = sdk.NewInt(int64(updatePairVault.DebtFloor))
 	ExtPairVaultData.MinCr = updatePairVault.MinCr
@@ -301,7 +302,7 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 			if !found {
 				continue
 			}
-			interest := sdk.ZeroDec()
+			var interest sdk.Dec
 			var err error
 			if vaultData.BlockHeight == 0 {
 				interest, err = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, collectorBt)
@@ -326,8 +327,7 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
 			}
 			if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
-				newInterest := sdk.ZeroInt()
-				newInterest = vaultInterestTracker.InterestAccumulated.TruncateInt()
+				newInterest := vaultInterestTracker.InterestAccumulated.TruncateInt()
 				newInterestDec := sdk.NewDec(newInterest.Int64())
 				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
 

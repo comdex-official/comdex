@@ -87,6 +87,7 @@ type MsgUpdatePairsVault struct {
 	ClosingFee         sdk.Dec `json:"closing_fee"`
 	LiquidationPenalty sdk.Dec `json:"liquidation_penalty"`
 	DrawDownFee        sdk.Dec `json:"draw_down_fee"`
+	IsVaultActive      bool    `json:"is_vault_active"`
 	MinCr              sdk.Dec `json:"min_cr"`
 	DebtCeiling        uint64  `json:"debt_ceiling"`
 	DebtFloor          uint64  `json:"debt_floor"`

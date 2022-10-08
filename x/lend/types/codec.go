@@ -22,9 +22,10 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgBorrowAlternate{}, "comdex/lend/MsgBorrowAlternate", nil)
 	cdc.RegisterConcrete(&MsgFundModuleAccounts{}, "comdex/lend/MsgFundModuleAccounts", nil)
 	cdc.RegisterConcrete(&LendPairsProposal{}, "comdex/lend/LendPairsProposal", nil)
+	cdc.RegisterConcrete(&UpdateLendPairsProposal{}, "comdex/lend/UpdateLendPairsProposal", nil)
 	cdc.RegisterConcrete(&AddPoolsProposal{}, "comdex/lend/AddPoolsProposal", nil)
 	cdc.RegisterConcrete(&AddAssetToPairProposal{}, "comdex/lend/AddAssetToPairProposal", nil)
-	cdc.RegisterConcrete(&AddAssetRatesStats{}, "comdex/lend/AddAssetRatesStats", nil)
+	cdc.RegisterConcrete(&AddAssetRatesParams{}, "comdex/lend/AddAssetRatesParams", nil)
 	cdc.RegisterConcrete(&AddAuctionParamsProposal{}, "comdex/lend/AddAuctionParamsProposal", nil)
 	cdc.RegisterConcrete(&MsgCalculateBorrowInterest{}, "comdex/lend/MsgCalculateBorrowInterest", nil)
 	cdc.RegisterConcrete(&MsgCalculateLendRewards{}, "comdex/lend/MsgCalculateLendRewards", nil)
@@ -34,9 +35,10 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
 		&LendPairsProposal{},
+		&UpdateLendPairsProposal{},
 		&AddPoolsProposal{},
 		&AddAssetToPairProposal{},
-		&AddAssetRatesStats{},
+		&AddAssetRatesParams{},
 		&AddAuctionParamsProposal{},
 	)
 	registry.RegisterImplementations(

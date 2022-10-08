@@ -97,7 +97,7 @@ func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bo
 	return k.esm.GetESMStatus(ctx, id)
 }
 
-func (k Keeper) GetBorrows(ctx sdk.Context) (userBorrows lendtypes.BorrowMapping, found bool) {
+func (k Keeper) GetBorrows(ctx sdk.Context) (userBorrows []uint64, found bool) {
 	return k.lend.GetBorrows(ctx)
 }
 
@@ -109,16 +109,16 @@ func (k Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended
 	return k.lend.GetLendPair(ctx, id)
 }
 
-func (k Keeper) GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesStats, found bool) {
-	return k.lend.GetAssetRatesStats(ctx, assetID)
+func (k Keeper) GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesParams, found bool) {
+	return k.lend.GetAssetRatesParams(ctx, assetID)
 }
 
-func (k Keeper) VerifyCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error {
-	return k.lend.VerifyCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut, liquidationThreshold)
+func (k Keeper) VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error {
+	return k.lend.VerifyCollateralizationRatio(ctx, amountIn, assetIn, amountOut, assetOut, liquidationThreshold)
 }
 
-func (k Keeper) CalculateLendCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error) {
-	return k.lend.CalculateCollaterlizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
+func (k Keeper) CalculateLendCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error) {
+	return k.lend.CalculateCollateralizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
 }
 
 func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool) {
@@ -129,22 +129,6 @@ func (k Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
 	k.lend.DeleteBorrow(ctx, id)
 }
 
-func (k Keeper) DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64) {
-	k.lend.DeleteBorrowForAddressByPair(ctx, address, pairID)
-}
-
-func (k Keeper) UpdateUserBorrowIDMapping(ctx sdk.Context, borrowOwner string, borrowID uint64, isInsert bool) error {
-	return k.lend.UpdateUserBorrowIDMapping(ctx, borrowOwner, borrowID, isInsert)
-}
-
-func (k Keeper) UpdateBorrowIDByOwnerAndPoolMapping(ctx sdk.Context, borrowOwner string, borrowID uint64, poolID uint64, isInsert bool) error {
-	return k.lend.UpdateBorrowIDByOwnerAndPoolMapping(ctx, borrowOwner, borrowID, poolID, isInsert)
-}
-
-func (k Keeper) UpdateBorrowIdsMapping(ctx sdk.Context, borrowID uint64, isInsert bool) error {
-	return k.lend.UpdateBorrowIdsMapping(ctx, borrowID, isInsert)
-}
-
 func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
 	k.lend.CreteNewBorrow(ctx, liqBorrow)
 }
@@ -153,25 +137,25 @@ func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found 
 	return k.lend.GetPool(ctx, id)
 }
 
-func (k Keeper) GetBorrowStats(ctx sdk.Context) (borrowStats lendtypes.DepositStats, found bool) {
-	return k.lend.GetBorrowStats(ctx)
+//func (k Keeper) GetBorrowStats(ctx sdk.Context) (borrowStats lendtypes.DepositStats, found bool) {
+//	return k.lend.GetBorrowStats(ctx)
+//}
+//
+//func (k Keeper) SetBorrowStats(ctx sdk.Context, borrowStats lendtypes.DepositStats) {
+//	k.lend.SetBorrowStats(ctx, borrowStats)
+//}
+
+func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (AssetStats lendtypes.PoolAssetLBMapping, found bool) {
+	return k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
 }
 
-func (k Keeper) SetBorrowStats(ctx sdk.Context, borrowStats lendtypes.DepositStats) {
-	k.lend.SetBorrowStats(ctx, borrowStats)
-}
-
-func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, assetID, poolID uint64) (AssetStats lendtypes.AssetStats, found bool) {
-	return k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, assetID, poolID)
-}
-
-func (k Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats lendtypes.AssetStats) {
+func (k Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats lendtypes.PoolAssetLBMapping) {
 	k.lend.SetAssetStatsByPoolIDAndAssetID(ctx, AssetStats)
 }
 
-func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, borrowPos lendtypes.BorrowAsset, amount sdk.Int, inc bool) {
-	k.lend.UpdateBorrowStats(ctx, pair, borrowPos, amount, inc)
-}
+//func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, borrowPos lendtypes.BorrowAsset, amount sdk.Int, inc bool) {
+//	k.lend.UpdateBorrowStats(ctx, pair, borrowPos, amount, inc)
+//}
 
 func (k Keeper) SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
@@ -211,4 +195,8 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 
 func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
 	return k.auction.LendDutchActivator(ctx, lockedVault)
+}
+
+func (k Keeper) SetBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset) {
+	k.lend.SetBorrow(ctx, borrow)
 }
