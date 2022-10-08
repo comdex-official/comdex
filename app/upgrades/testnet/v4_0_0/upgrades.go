@@ -155,7 +155,6 @@ func CreateUpgradeHandlerV440(
 
 		UpdateDutchLendAuctions(ctx, liquidationkeeper, auctionkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-
 		if err != nil {
 			return newVM, err
 		}

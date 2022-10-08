@@ -5,12 +5,12 @@ import (
 )
 
 var (
-	ProposalAddLendPairs       = "ProposalAddLendPairs"
-	ProposalUpdateLendPairs    = "ProposalUpdateLendPairs"
-	ProposalAddPool            = "ProposalAddPool"
-	ProposalAddAssetToPair     = "ProposalAddAssetToPair"
+	ProposalAddLendPairs        = "ProposalAddLendPairs"
+	ProposalUpdateLendPairs     = "ProposalUpdateLendPairs"
+	ProposalAddPool             = "ProposalAddPool"
+	ProposalAddAssetToPair      = "ProposalAddAssetToPair"
 	ProposalAddAssetRatesParams = "ProposalAddAssetRatesParams"
-	ProposalAddAuctionParams   = "ProposalAddAuctionParams"
+	ProposalAddAuctionParams    = "ProposalAddAuctionParams"
 )
 
 func init() {
@@ -149,8 +149,8 @@ func (p *AddAssetToPairProposal) ValidateBasic() error {
 
 func NewAddassetRatesParams(title, description string, AssetRatesParams AssetRatesParams) govtypes.Content {
 	return &AddAssetRatesParams{
-		Title:           title,
-		Description:     description,
+		Title:            title,
+		Description:      description,
 		AssetRatesParams: AssetRatesParams,
 	}
 }

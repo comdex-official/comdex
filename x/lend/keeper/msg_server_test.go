@@ -2,14 +2,14 @@ package keeper_test
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"time"
 )
 
 func (s *KeeperTestSuite) TestMsgLend() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -17,7 +17,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 	cAssetOneID := s.CreateNewAsset("CASSETONE", "ucasset1", 1000000)
 	cAssetTwoID := s.CreateNewAsset("CASSETTWO", "ucasset2", 2000000)
 	cAssetThreeID := s.CreateNewAsset("CASSETTHRE", "ucasset3", 2000000)
-	//cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
+	// cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
 
 	var (
 		assetDataPoolOne []*types.AssetDataPoolMapping
@@ -86,7 +86,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
 	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
-	//msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
+	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
 
@@ -247,8 +247,8 @@ func (s *KeeperTestSuite) TestMsgLend() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
@@ -262,7 +262,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 	cAssetOneID := s.CreateNewAsset("CASSETONE", "ucasset1", 1000000)
 	cAssetTwoID := s.CreateNewAsset("CASSETTWO", "ucasset2", 2000000)
 	cAssetThreeID := s.CreateNewAsset("CASSETTHRE", "ucasset3", 2000000)
-	//cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
+	// cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
 
 	var (
 		assetDataPoolOne []*types.AssetDataPoolMapping
@@ -297,7 +297,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
 	s.AddAssetRatesStats(assetOneID, newDec("0.75"), newDec("0.002"), newDec("0.07"), newDec("1.25"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.7"), newDec("0.75"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetOneID)
-	//s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
+	// s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
 	s.AddAssetRatesStats(assetTwoID, newDec("0.5"), newDec("0.002"), newDec("0.08"), newDec("2.0"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.5"), newDec("0.55"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetTwoID)
 
 	pairOneID := s.AddExtendedLendPair(assetTwoID, assetThreeID, false, poolOneID, 1000000)
@@ -386,7 +386,6 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			//if tc.ExpErr == nil {
 			//	s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Lender), sdk.NewCoins(sdk.NewCoin("uasset1", tc.Msg.Amount.Amount)))
@@ -408,11 +407,9 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgDeposit() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -420,7 +417,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 	cAssetOneID := s.CreateNewAsset("CASSETONE", "ucasset1", 1000000)
 	cAssetTwoID := s.CreateNewAsset("CASSETTWO", "ucasset2", 2000000)
 	cAssetThreeID := s.CreateNewAsset("CASSETTHRE", "ucasset3", 2000000)
-	//cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
+	// cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
 
 	var (
 		assetDataPoolOne []*types.AssetDataPoolMapping
@@ -529,7 +526,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 				LendId: 1,
 				Amount: sdk.NewCoin("uasset2", sdk.NewInt(10)),
 			},
-			//AvailableBalance: sdk.NewCoins(sdk.NewCoin("ucasset1", newInt(90))),
+			// AvailableBalance: sdk.NewCoins(sdk.NewCoin("ucasset1", newInt(90))),
 		},
 	}
 	for _, tc := range testCases {
@@ -551,15 +548,14 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
 }
 
 func (s *KeeperTestSuite) TestMsgCloseLend() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -567,7 +563,7 @@ func (s *KeeperTestSuite) TestMsgCloseLend() {
 	cAssetOneID := s.CreateNewAsset("CASSETONE", "ucasset1", 1000000)
 	cAssetTwoID := s.CreateNewAsset("CASSETTWO", "ucasset2", 2000000)
 	cAssetThreeID := s.CreateNewAsset("CASSETTHRE", "ucasset3", 2000000)
-	//cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
+	// cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
 
 	var (
 		assetDataPoolOne []*types.AssetDataPoolMapping
@@ -602,7 +598,7 @@ func (s *KeeperTestSuite) TestMsgCloseLend() {
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
 	s.AddAssetRatesStats(assetOneID, newDec("0.75"), newDec("0.002"), newDec("0.07"), newDec("1.25"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.7"), newDec("0.75"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetOneID)
-	//s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
+	// s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
 	s.AddAssetRatesStats(assetTwoID, newDec("0.5"), newDec("0.002"), newDec("0.08"), newDec("2.0"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.5"), newDec("0.55"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetTwoID)
 
 	pairOneID := s.AddExtendedLendPair(assetTwoID, assetThreeID, false, poolOneID, 1000000)
@@ -666,13 +662,12 @@ func (s *KeeperTestSuite) TestMsgCloseLend() {
 				Lender: "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 				LendId: 1,
 			},
-			//AvailableBalance: sdk.NewCoins(sdk.NewCoin("ucasset1", newInt(90))),
+			// AvailableBalance: sdk.NewCoins(sdk.NewCoin("ucasset1", newInt(90))),
 		},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Lender), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(100))))
@@ -689,16 +684,14 @@ func (s *KeeperTestSuite) TestMsgCloseLend() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgBorrow() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -782,7 +775,7 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
 	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
-	//msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
+	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
 
@@ -940,7 +933,6 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
@@ -958,16 +950,14 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgRepay() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -1046,7 +1036,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
 	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
-	//msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
+	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
 
@@ -1141,7 +1131,6 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
@@ -1159,16 +1148,14 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgDepositBorrow() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -1247,7 +1234,7 @@ func (s *KeeperTestSuite) TestMsgDepositBorrow() {
 	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
 	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
-	//msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
+	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
 
@@ -1336,7 +1323,6 @@ func (s *KeeperTestSuite) TestMsgDepositBorrow() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
@@ -1354,16 +1340,14 @@ func (s *KeeperTestSuite) TestMsgDepositBorrow() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgDraw() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -1443,7 +1427,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
 	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
-	//msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
+	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
 
@@ -1516,7 +1500,6 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
@@ -1534,16 +1517,14 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgCloseBorrow() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -1623,7 +1604,7 @@ func (s *KeeperTestSuite) TestMsgCloseBorrow() {
 	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
 	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
-	//msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
+	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
 
@@ -1700,7 +1681,6 @@ func (s *KeeperTestSuite) TestMsgCloseBorrow() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
@@ -1718,24 +1698,22 @@ func (s *KeeperTestSuite) TestMsgCloseBorrow() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
 	assetFourID := s.CreateNewAsset("ASSETFOUR", "uasset4", 2000000)
 	cAssetOneID := s.CreateNewAsset("CASSETONE", "ucasset1", 1000000)
-	//cAssetTwoID := s.CreateNewAsset("CASSETTWO", "ucasset2", 2000000)
+	// cAssetTwoID := s.CreateNewAsset("CASSETTWO", "ucasset2", 2000000)
 	cAssetThreeID := s.CreateNewAsset("CASSETTHRE", "ucasset3", 2000000)
-	//cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
+	// cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
 
 	var (
 		assetDataPoolOne []*types.AssetDataPoolMapping
@@ -1770,8 +1748,8 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
 	s.AddAssetRatesStats(assetOneID, newDec("0.75"), newDec("0.002"), newDec("0.07"), newDec("1.25"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.7"), newDec("0.75"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetOneID)
-	//s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
-	//s.AddAssetRatesStats(assetTwoID, newDec("0.5"), newDec("0.002"), newDec("0.08"), newDec("2.0"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.5"), newDec("0.55"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetTwoID)
+	// s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
+	// s.AddAssetRatesStats(assetTwoID, newDec("0.5"), newDec("0.002"), newDec("0.08"), newDec("2.0"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.5"), newDec("0.55"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetTwoID)
 
 	pairOneID := s.AddExtendedLendPair(assetTwoID, assetThreeID, false, poolOneID, 1000000)
 	pairTwoID := s.AddExtendedLendPair(assetTwoID, assetOneID, false, poolOneID, 1000000)
@@ -1806,7 +1784,7 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
 	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
-	//msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
+	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
 
@@ -1920,17 +1898,15 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 				AmountOut:      sdk.NewCoin("uasset2", sdk.NewInt(10)),
 				AppId:          appOneID,
 			},
-			//AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(90000000010))),
+			// AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(90000000010))),
 		},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
 				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Lender), sdk.NewCoins(sdk.NewCoin("uasset1", tc.Msg.AmountIn.Amount)))
-
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
@@ -1944,17 +1920,15 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//fmt.Println("availableBalances", availableBalances)
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// fmt.Println("availableBalances", availableBalances)
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgCalculateBorrowInterest() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -1962,7 +1936,7 @@ func (s *KeeperTestSuite) TestMsgCalculateBorrowInterest() {
 	cAssetOneID := s.CreateNewAsset("CASSETONE", "ucasset1", 1000000)
 	cAssetTwoID := s.CreateNewAsset("CASSETTWO", "ucasset2", 2000000)
 	cAssetThreeID := s.CreateNewAsset("CASSETTHRE", "ucasset3", 2000000)
-	//cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
+	// cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
 
 	var (
 		assetDataPoolOne []*types.AssetDataPoolMapping
@@ -1997,7 +1971,7 @@ func (s *KeeperTestSuite) TestMsgCalculateBorrowInterest() {
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
 	s.AddAssetRatesStats(assetOneID, newDec("0.75"), newDec("0.002"), newDec("0.07"), newDec("1.25"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.7"), newDec("0.75"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetOneID)
-	//s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
+	// s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
 	s.AddAssetRatesStats(assetTwoID, newDec("0.5"), newDec("0.002"), newDec("0.08"), newDec("2.0"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.5"), newDec("0.55"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetTwoID)
 
 	pairOneID := s.AddExtendedLendPair(assetTwoID, assetThreeID, false, poolOneID, 1000000)
@@ -2027,14 +2001,14 @@ func (s *KeeperTestSuite) TestMsgCalculateBorrowInterest() {
 	s.AddAssetToPair(assetThreeID, poolTwoID, []uint64{pairElevenID, pairTwelveID, pairSeventeenID})
 
 	appOneID := s.CreateNewApp("commodo", "cmmdo")
-	//appTwoID := s.CreateNewApp("cswap", "cswap")
+	// appTwoID := s.CreateNewApp("cswap", "cswap")
 	msg := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", newInt(300)), poolOneID, appOneID)
 	msgLend2 := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetTwoID, sdk.NewCoin("uasset2", newInt(10000000000)), poolOneID, appOneID)
 
 	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
 	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
-	//msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
+	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
 
@@ -2082,13 +2056,12 @@ func (s *KeeperTestSuite) TestMsgCalculateBorrowInterest() {
 				Borrower: "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 				BorrowId: 1,
 			},
-			//AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(0))),
+			// AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(0))),
 		},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			ctx := sdk.WrapSDKContext(s.ctx)
 			resp, err := s.msgServer.CalculateBorrowInterest(ctx, &tc.Msg)
 			if tc.ExpErr != nil {
@@ -2100,17 +2073,15 @@ func (s *KeeperTestSuite) TestMsgCalculateBorrowInterest() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//fmt.Println("availableBalances", availableBalances)
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// fmt.Println("availableBalances", availableBalances)
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
-
 }
 
 func (s *KeeperTestSuite) TestMsgCalculateLendRewards() {
-
 	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
@@ -2118,7 +2089,7 @@ func (s *KeeperTestSuite) TestMsgCalculateLendRewards() {
 	cAssetOneID := s.CreateNewAsset("CASSETONE", "ucasset1", 1000000)
 	cAssetTwoID := s.CreateNewAsset("CASSETTWO", "ucasset2", 2000000)
 	cAssetThreeID := s.CreateNewAsset("CASSETTHRE", "ucasset3", 2000000)
-	//cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
+	// cAssetFourID := s.CreateNewAsset("CASSETFOUR", "ucasset4", 2000000)
 
 	var (
 		assetDataPoolOne []*types.AssetDataPoolMapping
@@ -2153,7 +2124,7 @@ func (s *KeeperTestSuite) TestMsgCalculateLendRewards() {
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
 	s.AddAssetRatesStats(assetOneID, newDec("0.75"), newDec("0.002"), newDec("0.07"), newDec("1.25"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.7"), newDec("0.75"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetOneID)
-	//s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
+	// s.AddAssetRatesStats(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID)
 	s.AddAssetRatesStats(assetTwoID, newDec("0.5"), newDec("0.002"), newDec("0.08"), newDec("2.0"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.5"), newDec("0.55"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetTwoID)
 
 	pairOneID := s.AddExtendedLendPair(assetTwoID, assetThreeID, false, poolOneID, 1000000)
@@ -2183,14 +2154,14 @@ func (s *KeeperTestSuite) TestMsgCalculateLendRewards() {
 	s.AddAssetToPair(assetThreeID, poolTwoID, []uint64{pairElevenID, pairTwelveID, pairSeventeenID})
 
 	appOneID := s.CreateNewApp("commodo", "cmmdo")
-	//appTwoID := s.CreateNewApp("cswap", "cswap")
+	// appTwoID := s.CreateNewApp("cswap", "cswap")
 	msg := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", newInt(300)), poolOneID, appOneID)
 	msgLend2 := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetTwoID, sdk.NewCoin("uasset2", newInt(10000000000)), poolOneID, appOneID)
 
 	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
 	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
-	//msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
+	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
 
@@ -2238,13 +2209,12 @@ func (s *KeeperTestSuite) TestMsgCalculateLendRewards() {
 				Lender: "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 				LendId: 1,
 			},
-			//AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(0))),
+			// AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(0))),
 		},
 	}
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.Name, func() {
-
 			ctx := sdk.WrapSDKContext(s.ctx)
 			resp, err := s.msgServer.CalculateLendRewards(ctx, &tc.Msg)
 			if tc.ExpErr != nil {
@@ -2256,11 +2226,10 @@ func (s *KeeperTestSuite) TestMsgCalculateLendRewards() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 
-				//availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				//fmt.Println("availableBalances", availableBalances)
-				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				// availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
+				// fmt.Println("availableBalances", availableBalances)
+				// s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 			}
 		})
 	}
-
 }
