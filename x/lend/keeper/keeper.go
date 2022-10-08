@@ -203,6 +203,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 	mappingData.Owner = lendPos.Owner
 	mappingData.LendId = lendPos.ID
 	mappingData.PoolId = PoolID
+	mappingData.BorrowId = nil
 	k.SetUserLendBorrowMapping(ctx, mappingData)
 
 	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, PoolID, AssetID)

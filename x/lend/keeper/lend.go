@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	"sort"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
-	"sort"
 
 	"github.com/comdex-official/comdex/x/lend/types"
 )
@@ -763,7 +764,7 @@ func (k Keeper) SetUserLendBorrowMapping(ctx sdk.Context, userMapping types.User
 func (k Keeper) GetUserLendBorrowMapping(ctx sdk.Context, owner string, lendID uint64) (userMapping types.UserAssetLendBorrowMapping, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.UserLendBorrowMappingKey(userMapping.Owner, userMapping.LendId)
+		key   = types.UserLendBorrowMappingKey(owner, lendID)
 		value = store.Get(key)
 	)
 
@@ -800,7 +801,7 @@ func (k Keeper) GetUserTotalMappingData(ctx sdk.Context, address string) (mappin
 
 func (k Keeper) HasLendForAddressByAsset(ctx sdk.Context, address sdk.AccAddress, assetID, poolID uint64) bool {
 	mappingData := k.GetUserTotalMappingData(ctx, string(address))
-	for _, data := range mappingData {
+	for _, data := range mappingData{
 		if data.PoolId == poolID {
 			lend, _ := k.GetLend(ctx, data.LendId)
 			if lend.AssetID == assetID {
