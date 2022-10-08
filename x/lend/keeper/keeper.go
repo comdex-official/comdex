@@ -144,7 +144,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 
 	addr, _ := sdk.AccAddressFromBech32(lenderAddr)
 
-	if k.HasLendForAddressByAsset(ctx, addr, AssetID, PoolID) {
+	if k.HasLendForAddressByAsset(ctx, lenderAddr, AssetID, PoolID) {
 		return types.ErrorDuplicateLend
 	}
 
@@ -1317,7 +1317,7 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 
 	addr, _ := sdk.AccAddressFromBech32(lenderAddr)
 
-	if k.HasLendForAddressByAsset(ctx, addr, AssetID, PoolID) {
+	if k.HasLendForAddressByAsset(ctx, lenderAddr, AssetID, PoolID) {
 		return types.ErrorDuplicateLend
 	}
 
