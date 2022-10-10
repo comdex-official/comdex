@@ -100,9 +100,8 @@ func (k Keeper) CheckSupplyCap(ctx sdk.Context, assetID, poolID uint64, amt sdk.
 	}
 	if currentSupply.Uint64() <= supplyCap {
 		return true, nil
-	} else {
-		return false, nil
 	}
+	return false, nil
 }
 
 func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Amount sdk.Coin, PoolID, AppID uint64) error {

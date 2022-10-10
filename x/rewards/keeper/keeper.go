@@ -120,7 +120,6 @@ func (k Keeper) ActExternalRewardsLockers(
 	assetID uint64,
 	totalRewards sdk.Coin,
 	durationDays int64,
-	// nolint
 	depositor sdk.AccAddress,
 	minLockupTimeSeconds int64,
 ) error {
@@ -176,7 +175,6 @@ func (k Keeper) ActExternalRewardsVaults(
 	appMappingID uint64, extendedPairID uint64,
 	durationDays, minLockupTimeSeconds int64,
 	totalRewards sdk.Coin,
-	// nolint
 	depositor sdk.AccAddress,
 ) error {
 	id := k.GetExternalRewardsVaultID(ctx)

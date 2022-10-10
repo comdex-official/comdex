@@ -16,7 +16,7 @@ func (k Keeper) GetRewardDistributionData(
 	gaugeType := gauge.Kind
 
 	var rewardDistributionData []types.RewardDistributionDataCollector
-	var err error = nil
+	var err error
 
 	switch gaugeExtraData := gaugeType.(type) {
 	case *types.Gauge_LiquidityMetaData:
