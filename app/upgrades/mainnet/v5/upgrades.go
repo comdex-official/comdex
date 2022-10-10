@@ -5,6 +5,8 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -22,6 +24,7 @@ import (
 func IntializeStates(
 	ctx sdk.Context,
 	assetKeeper assetkeeper.Keeper,
+	liquidityKeeper liquiditykeeper.Keeper,
 ) {
 	apps := []assettypes.AppData{
 		{Name: "CSWAP", ShortName: "cswap", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
@@ -52,6 +55,28 @@ func IntializeStates(
 			panic(err)
 		}
 	}
+
+	type LiquidityPair struct {
+		AppID          uint64
+		From           string
+		BaseCoinDenom  string
+		QuoteCoinDenom string
+	}
+
+	liquidityPairs := []LiquidityPair{
+		{AppID: 1, From: "comdex12gfx7e3p08ljrwhq4lxz0360czcv9jpzajlytv", BaseCoinDenom: "uatom", QuoteCoinDenom: "ucmdx"},
+		{AppID: 1, From: "comdex12gfx7e3p08ljrwhq4lxz0360czcv9jpzajlytv", BaseCoinDenom: "uosmo", QuoteCoinDenom: "ucmdx"},
+	}
+
+	for _, lpair := range liquidityPairs {
+		msg := liquiditytypes.NewMsgCreatePair(
+			lpair.AppID, sdk.MustAccAddressFromBech32(lpair.From), lpair.BaseCoinDenom, lpair.QuoteCoinDenom,
+		)
+		_, err := liquidityKeeper.CreatePair(ctx, msg, true)
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 // CreateUpgradeHandler creates an SDK upgrade handler for v5
@@ -60,6 +85,7 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	wasmKeeper wasmkeeper.Keeper,
 	assetKeeper assetkeeper.Keeper,
+	liquidityKeeper liquiditykeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// Refs:
@@ -107,7 +133,7 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
-		IntializeStates(ctx, assetKeeper)
+		IntializeStates(ctx, assetKeeper, liquidityKeeper)
 
 		// update wasm to permission
 		wasmParams := wasmKeeper.GetParams(ctx)
