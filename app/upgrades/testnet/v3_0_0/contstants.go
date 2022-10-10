@@ -1,4 +1,4 @@
-package v3_0_0
+package v3_0_0 //nolint:revive,stylecheck
 
 const (
 	UpgradeName     = "v3.0.0"

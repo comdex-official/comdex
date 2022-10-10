@@ -84,7 +84,7 @@ func (k Keeper) UpdateGenericParams(ctx sdk.Context, appID uint64, keys, values 
 		if err != nil {
 			return err
 		}
-		validationErr := parseValidateFunctionMap[k][1].(func(interface{}) error)(parsedValueInterface)
+		validationErr := parseValidateFunctionMap[k][1].(func(interface{}) error)(parsedValueInterface) //nolint:forcetypeassert //this is just for validation of error
 		if validationErr != nil {
 			return validationErr
 		}
