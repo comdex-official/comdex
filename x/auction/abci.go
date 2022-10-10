@@ -55,11 +55,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 				if err4 != nil {
 					ctx.Logger().Error("error in restart dutch activator")
 				}
-
-				err6 := k.RestartLendDutch(ctx, app.Id)
-				if err6 != nil {
-					ctx.Logger().Error("error in restart lend dutch activator")
-				}
 			}
 		}
 		return nil

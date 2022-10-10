@@ -26,7 +26,6 @@ type Keeper struct {
 	auction    expected.AuctionKeeper
 	esm        expected.EsmKeeper
 	rewards    expected.RewardsKeeper
-	lend       expected.LendKeeper
 }
 
 func NewKeeper(
@@ -42,7 +41,6 @@ func NewKeeper(
 	auction expected.AuctionKeeper,
 	esm expected.EsmKeeper,
 	rewards expected.RewardsKeeper,
-	lend expected.LendKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -62,7 +60,6 @@ func NewKeeper(
 		auction:    auction,
 		esm:        esm,
 		rewards:    rewards,
-		lend:       lend,
 	}
 }
 

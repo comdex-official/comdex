@@ -27,10 +27,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := server.MsgPlaceDutchBid(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *types.MsgPlaceDutchLendBidRequest:
-			res, err := server.MsgPlaceDutchLendBid(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-
 		default:
 			return nil, sdkerrors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
 		}

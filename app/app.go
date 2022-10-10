@@ -122,10 +122,6 @@ import (
 	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 
-	"github.com/comdex-official/comdex/x/lend"
-	lendclient "github.com/comdex-official/comdex/x/lend/client"
-	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
-	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/locker"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
@@ -195,12 +191,6 @@ func GetWasmEnabledProposals() []wasm.ProposalType {
 func GetGovProposalHandlers() []govclient.ProposalHandler {
 	proposalHandlers := []govclient.ProposalHandler{
 		bandoraclemoduleclient.AddFetchPriceHandler,
-		lendclient.AddLendPairsHandler,
-		lendclient.AddPoolHandler,
-		lendclient.UpdateLendPairsHandler,
-		lendclient.AddAssetToPairHandler,
-		lendclient.AddAssetRatesParamsHandler,
-		lendclient.AddAuctionParamsHandler,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
@@ -250,7 +240,6 @@ var (
 		vault.AppModuleBasic{},
 		asset.AppModuleBasic{},
 		esm.AppModuleBasic{},
-		lend.AppModuleBasic{},
 
 		market.AppModuleBasic{},
 		locker.AppModuleBasic{},
@@ -330,7 +319,6 @@ type App struct {
 	LiquidationKeeper liquidationkeeper.Keeper
 	LockerKeeper      lockerkeeper.Keeper
 	EsmKeeper         esmkeeper.Keeper
-	LendKeeper        lendkeeper.Keeper
 	ScopedWasmKeeper  capabilitykeeper.ScopedKeeper
 	AuctionKeeper     auctionkeeper.Keeper
 	TokenmintKeeper   tokenmintkeeper.Keeper
@@ -371,7 +359,7 @@ func New(
 			vaulttypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
-			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
+			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName,
 		)
 	)
 
@@ -415,7 +403,6 @@ func New(
 	app.ParamsKeeper.Subspace(assettypes.ModuleName)
 	app.ParamsKeeper.Subspace(collectortypes.ModuleName)
 	app.ParamsKeeper.Subspace(esmtypes.ModuleName)
-	app.ParamsKeeper.Subspace(lendtypes.ModuleName)
 	app.ParamsKeeper.Subspace(markettypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquidationtypes.ModuleName)
 	app.ParamsKeeper.Subspace(lockertypes.ModuleName)
@@ -557,18 +544,6 @@ func New(
 		&app.BandoracleKeeper,
 	)
 
-	app.LendKeeper = lendkeeper.NewKeeper(
-		app.cdc,
-		app.keys[lendtypes.StoreKey],
-		app.keys[lendtypes.StoreKey],
-		app.GetSubspace(lendtypes.ModuleName),
-		app.BankKeeper,
-		app.AccountKeeper,
-		&app.AssetKeeper,
-		&app.MarketKeeper,
-		&app.EsmKeeper,
-	)
-
 	app.EsmKeeper = esmkeeper.NewKeeper(
 		app.cdc,
 		app.keys[esmtypes.StoreKey],
@@ -644,7 +619,6 @@ func New(
 		&app.AuctionKeeper,
 		&app.EsmKeeper,
 		&app.Rewardskeeper,
-		&app.LendKeeper,
 	)
 
 	app.AuctionKeeper = auctionkeeper.NewKeeper(
@@ -661,7 +635,6 @@ func New(
 		&app.CollectorKeeper,
 		&app.TokenmintKeeper,
 		&app.EsmKeeper,
-		&app.LendKeeper,
 	)
 
 	app.CollectorKeeper = collectorkeeper.NewKeeper(
@@ -725,7 +698,6 @@ func New(
 		app.LiquidityKeeper,
 		&app.MarketKeeper,
 		&app.EsmKeeper,
-		&app.LendKeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -764,7 +736,6 @@ func New(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
-		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
@@ -843,7 +814,6 @@ func New(
 		locker.NewAppModule(app.cdc, app.LockerKeeper, app.AccountKeeper, app.BankKeeper),
 		collector.NewAppModule(app.cdc, app.CollectorKeeper, app.AccountKeeper, app.BankKeeper),
 		esm.NewAppModule(app.cdc, app.EsmKeeper, app.AccountKeeper, app.BankKeeper),
-		lend.NewAppModule(app.cdc, app.LendKeeper, app.AccountKeeper, app.BankKeeper),
 		wasm.NewAppModule(app.cdc, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper),
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
@@ -863,7 +833,7 @@ func New(
 		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName,
 		liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName,
-		govtypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName, lendtypes.ModuleName, esmtypes.ModuleName,
+		govtypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName, esmtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -872,7 +842,7 @@ func New(
 		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
 		icatypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
 		wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
-		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(), lendtypes.ModuleName,
+		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(),
 		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName, esmtypes.ModuleName,
 	)
 
@@ -899,7 +869,6 @@ func New(
 		assettypes.ModuleName,
 		collectortypes.ModuleName,
 		esmtypes.ModuleName,
-		lendtypes.ModuleName,
 		vaulttypes.ModuleName,
 		tokenminttypes.ModuleName,
 		bandoraclemoduletypes.ModuleName,
@@ -1126,11 +1095,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		collectortypes.ModuleName:      {authtypes.Burner, authtypes.Staking},
 		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
 		tokenminttypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
 		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		auctiontypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
@@ -1145,7 +1110,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		tv4_0_0.UpgradeNameV4_4_0,
-		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.LendKeeper, a.LiquidationKeeper, a.AuctionKeeper),
+		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.LiquidationKeeper, a.AuctionKeeper),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1183,7 +1148,6 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				bandoraclemoduletypes.ModuleName,
 				collectortypes.ModuleName,
 				esmtypes.ModuleName,
-				lendtypes.ModuleName,
 				liquidationtypes.ModuleName,
 				liquiditytypes.ModuleName,
 				lockertypes.ModuleName,
@@ -1212,7 +1176,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 			Deleted: []string{"vaultv1", "rewards", "collector", "locker", "lend", "auction", "liquidation", "esm"},
 			Added: []string{
 				vaulttypes.ModuleName, rewardstypes.ModuleName, liquidationtypes.ModuleName,
-				collectortypes.ModuleName, lockertypes.ModuleName, lendtypes.ModuleName, auctiontypes.ModuleName, esmtypes.ModuleName,
+				collectortypes.ModuleName, lockertypes.ModuleName, auctiontypes.ModuleName, esmtypes.ModuleName,
 			},
 		}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_1_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):

@@ -8,7 +8,6 @@ import (
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
@@ -203,56 +202,4 @@ func (k Keeper) SetVault(ctx sdk.Context, vault vaulttypes.Vault) {
 
 func (k Keeper) GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool) {
 	return k.vault.GetVault(ctx, id)
-}
-
-func (k Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool) {
-	return k.lend.GetBorrow(ctx, id)
-}
-
-func (k Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended_Pair, found bool) {
-	return k.lend.GetLendPair(ctx, id)
-}
-
-func (k Keeper) GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesParams, found bool) {
-	return k.lend.GetAssetRatesParams(ctx, assetID)
-}
-
-func (k Keeper) VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error {
-	return k.lend.VerifyCollateralizationRatio(ctx, amountIn, assetIn, amountOut, assetOut, liquidationThreshold)
-}
-
-func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error) {
-	return k.lend.CalculateCollateralizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
-}
-
-func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool) {
-	return k.lend.GetLend(ctx, id)
-}
-
-func (k Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
-	k.lend.DeleteBorrow(ctx, id)
-}
-
-func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
-	return k.lend.GetPool(ctx, id)
-}
-
-func (k Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams lendtypes.AuctionParams, found bool) {
-	return k.lend.GetAddAuctionParamsData(ctx, appID)
-}
-
-func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int {
-	return k.lend.ModuleBalance(ctx, moduleName, denom)
-}
-
-func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
-	return k.lend.UpdateReserveBalances(ctx, assetID, moduleName, payment, inc)
-}
-
-func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutchAuction auctiontypes.DutchAuction) error {
-	return k.liquidation.UnLiquidateLockedBorrows(ctx, appID, id, dutchAuction)
-}
-
-func (k Keeper) SetLend(ctx sdk.Context, lend lendtypes.LendAsset) {
-	k.lend.SetLend(ctx, lend)
 }

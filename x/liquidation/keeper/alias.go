@@ -7,7 +7,6 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
@@ -97,88 +96,12 @@ func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmtypes.ESMStatus, bo
 	return k.esm.GetESMStatus(ctx, id)
 }
 
-func (k Keeper) GetBorrows(ctx sdk.Context) (userBorrows []uint64, found bool) {
-	return k.lend.GetBorrows(ctx)
-}
-
-func (k Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool) {
-	return k.lend.GetBorrow(ctx, id)
-}
-
-func (k Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended_Pair, found bool) {
-	return k.lend.GetLendPair(ctx, id)
-}
-
-func (k Keeper) GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesParams, found bool) {
-	return k.lend.GetAssetRatesParams(ctx, assetID)
-}
-
-func (k Keeper) VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error {
-	return k.lend.VerifyCollateralizationRatio(ctx, amountIn, assetIn, amountOut, assetOut, liquidationThreshold)
-}
-
-func (k Keeper) CalculateLendCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error) {
-	return k.lend.CalculateCollateralizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
-}
-
-func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool) {
-	return k.lend.GetLend(ctx, id)
-}
-
-func (k Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
-	k.lend.DeleteBorrow(ctx, id)
-}
-
-func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
-	k.lend.CreteNewBorrow(ctx, liqBorrow)
-}
-
-func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
-	return k.lend.GetPool(ctx, id)
-}
-
-//func (k Keeper) GetBorrowStats(ctx sdk.Context) (borrowStats lendtypes.DepositStats, found bool) {
-//	return k.lend.GetBorrowStats(ctx)
-//}
-//
-//func (k Keeper) SetBorrowStats(ctx sdk.Context, borrowStats lendtypes.DepositStats) {
-//	k.lend.SetBorrowStats(ctx, borrowStats)
-//}
-
-func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (AssetStats lendtypes.PoolAssetLBMapping, found bool) {
-	return k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
-}
-
-func (k Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, AssetStats lendtypes.PoolAssetLBMapping) {
-	k.lend.SetAssetStatsByPoolIDAndAssetID(ctx, AssetStats)
-}
-
-//func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, borrowPos lendtypes.BorrowAsset, amount sdk.Int, inc bool) {
-//	k.lend.UpdateBorrowStats(ctx, pair, borrowPos, amount, inc)
-//}
-
 func (k Keeper) SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, coin sdk.Coins) error {
 	if coin.IsZero() {
 		return auctiontypes.SendCoinsFromModuleToModuleInAuctionIsZero
 	}
 
 	return k.bank.SendCoinsFromModuleToModule(ctx, senderModule, recipientModule, coin)
-}
-
-func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
-	return k.lend.UpdateReserveBalances(ctx, assetID, moduleName, payment, inc)
-}
-
-func (k Keeper) SetLend(ctx sdk.Context, lend lendtypes.LendAsset) {
-	k.lend.SetLend(ctx, lend)
-}
-
-func (k Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
-	if coin.IsZero() {
-		return lendtypes.BurnCoinValueInLendIsZero
-	}
-
-	return k.bank.BurnCoins(ctx, name, sdk.NewCoins(coin))
 }
 
 func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error {
@@ -191,12 +114,4 @@ func (k Keeper) DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.V
 
 func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
 	return k.auction.DutchActivator(ctx, lockedVault)
-}
-
-func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
-	return k.auction.LendDutchActivator(ctx, lockedVault)
-}
-
-func (k Keeper) SetBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset) {
-	k.lend.SetBorrow(ctx, borrow)
 }

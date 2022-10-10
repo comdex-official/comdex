@@ -5,10 +5,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
@@ -39,7 +37,6 @@ type LiquidationKeeper interface {
 	SetLockedVault(ctx sdk.Context, lockedVault liquidationtypes.LockedVault)
 	DeleteLockedVault(ctx sdk.Context, appID, id uint64)
 	CreateLockedVaultHistory(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
-	UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutchAuction auctiontypes.DutchAuction) error
 }
 
 type AssetKeeper interface {
@@ -85,19 +82,4 @@ type TokenMintKeeper interface {
 type EsmKeeper interface {
 	GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool)
 	GetESMStatus(ctx sdk.Context, id uint64) (esmStatus esmtypes.ESMStatus, found bool)
-}
-
-type LendKeeper interface {
-	GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool)
-	GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended_Pair, found bool)
-	GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesParams, found bool)
-	VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error
-	CalculateCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error)
-	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
-	DeleteBorrow(ctx sdk.Context, id uint64)
-	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
-	GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams lendtypes.AuctionParams, found bool)
-	ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int
-	UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error
-	SetLend(ctx sdk.Context, lend lendtypes.LendAsset)
 }

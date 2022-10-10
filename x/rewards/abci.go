@@ -24,10 +24,6 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		if err != nil {
 			ctx.Logger().Error("error in DistributeExtRewardVault")
 		}
-		err = k.DistributeExtRewardLend(ctx)
-		if err != nil {
-			ctx.Logger().Error("error in DistributeExtRewardLend")
-		}
 		return nil
 	})
 }

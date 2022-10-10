@@ -59,17 +59,3 @@ func (k msgServer) MsgPlaceDutchBid(goCtx context.Context, msg *types.MsgPlaceDu
 	ctx.GasMeter().ConsumeGas(types.DutchBidGas, "DutchBidGas")
 	return &types.MsgPlaceDutchBidResponse{}, nil
 }
-
-func (k msgServer) MsgPlaceDutchLendBid(goCtx context.Context, msg *types.MsgPlaceDutchLendBidRequest) (*types.MsgPlaceDutchLendBidResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
-	if err != nil {
-		return nil, err
-	}
-	err = k.PlaceLendDutchAuctionBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Amount, msg.Max)
-	if err != nil {
-		return nil, err
-	}
-	ctx.GasMeter().ConsumeGas(types.DutchLendBidGas, "DutchLendBidGas")
-	return &types.MsgPlaceDutchLendBidResponse{}, nil
-}

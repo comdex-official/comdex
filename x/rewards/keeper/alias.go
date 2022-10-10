@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -181,16 +180,4 @@ func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID
 
 func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
 	return k.marketKeeper.CalcAssetPrice(ctx, id, amt)
-}
-
-func (k Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool) {
-	return k.lend.GetBorrow(ctx, id)
-}
-
-func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool) {
-	return k.lend.GetLend(ctx, id)
-}
-
-func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping lendtypes.PoolAssetLBMapping, found bool) {
-	return k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
 }
