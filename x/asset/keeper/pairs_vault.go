@@ -261,6 +261,7 @@ func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.
 	ExtPairVaultData.ClosingFee = updatePairVault.ClosingFee
 	ExtPairVaultData.LiquidationPenalty = updatePairVault.LiquidationPenalty
 	ExtPairVaultData.DrawDownFee = updatePairVault.DrawDownFee
+	ExtPairVaultData.IsVaultActive = updatePairVault.IsVaultActive
 	ExtPairVaultData.DebtCeiling = sdk.NewInt(int64(updatePairVault.DebtCeiling))
 	ExtPairVaultData.DebtFloor = sdk.NewInt(int64(updatePairVault.DebtFloor))
 	ExtPairVaultData.MinCr = updatePairVault.MinCr
@@ -301,7 +302,8 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 			if !found {
 				continue
 			}
-			interest := sdk.ZeroDec() // NOTE: it is hard to tell where this is used.  We've left it in place because the code is assumed to work as is.  Would declare later.
+
+			var interest sdk.Dec
 			var err error
 			if vaultData.BlockHeight == 0 {
 				_, _ = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, collectorBt)

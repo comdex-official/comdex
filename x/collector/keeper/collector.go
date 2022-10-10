@@ -736,7 +736,8 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 	if found {
 		for _, lockID := range lockers.LockerIds {
 			lockerData, _ := k.GetLocker(ctx, lockID)
-			rewards := sdk.ZeroDec() //nolint:ineffassign,staticcheck // this somehow gets used later, and we should just do it like this despite the linter.
+
+			var rewards sdk.Dec
 			var err error
 			if lockerData.BlockHeight == 0 {
 				rewards, err = k.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, collectorBt)

@@ -137,11 +137,9 @@ ADD_ASSET_RATES = [
 ADD_LEND_POOL = [
     {
         "module_name": "cmdx",
-        "main_asset_id": "2",
-        "first_bridged_asset_id": "3",
-        "second_bridged_asset_id": "1",
         "asset_id": "1,2,3",
-        "is_bridged_asset": "1,0,1",
+        "asset_transit_type": "3,1,2",
+        "supply_cap": "5000000000000000000,1000000000000000000,5000000000000000000",
         "c_pool_name": "CMDX-ATOM-CMST",
         "reserve_funds": "100000000",
         "title": "Add pool",
@@ -150,11 +148,9 @@ ADD_LEND_POOL = [
     },
     {
         "module_name": "osmo",
-        "main_asset_id": "4",
-        "first_bridged_asset_id": "3",
-        "second_bridged_asset_id": "1",
         "asset_id": "1,4,3",
-        "is_bridged_asset": "1,0,1",
+        "asset_transit_type": "3,1,2",
+        "supply_cap": "5000000000000000000,3000000000000000000,5000000000000000000",
         "c_pool_name": "OSMO-ATOM-CMST",
         "reserve_funds": "100000000",
         "title": "Add pool",
