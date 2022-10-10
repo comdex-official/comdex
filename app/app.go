@@ -1244,6 +1244,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				feegrant.ModuleName,
 				icacontrollertypes.StoreKey,
 				icahosttypes.StoreKey,
+				authz.ModuleName,
 			},
 		}
 	}
