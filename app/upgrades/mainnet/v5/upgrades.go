@@ -5,10 +5,18 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
+	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
+	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
+	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
+	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/comdex-official/comdex/app/wasm/bindings"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -25,6 +33,11 @@ func IntializeStates(
 	ctx sdk.Context,
 	assetKeeper assetkeeper.Keeper,
 	liquidityKeeper liquiditykeeper.Keeper,
+	collectorkeeper collectorkeeper.Keeper,
+	auctionkeeper auctionkeeper.Keeper,
+	lockerkeeper lockerkeeper.Keeper,
+	rewardskeeper rewardskeeper.Keeper,
+	liquidationkeeper liquidationkeeper.Keeper,
 ) {
 	apps := []assettypes.AppData{
 		{Name: "CSWAP", ShortName: "cswap", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
@@ -54,6 +67,141 @@ func IntializeStates(
 		if err != nil {
 			panic(err)
 		}
+	}
+	// add pairs
+	pairs := []assettypes.Pair{
+		{AssetIn: 1, AssetOut: 3},
+		{AssetIn: 2, AssetOut: 3},
+		{AssetIn: 4, AssetOut: 3},
+	}
+
+	for _, pair := range pairs {
+		err := assetKeeper.AddPairsRecords(ctx, pair)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	// add extended pairs
+	extPairs := []*bindings.MsgAddExtendedPairsVault{
+		{AppID: 2, PairID: 2, StabilityFee: sdk.MustNewDecFromStr("0.045"), ClosingFee: sdk.MustNewDecFromStr("0"), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+	    DrawDownFee: sdk.MustNewDecFromStr("0.01"), IsVaultActive: true, DebtCeiling: 100000000000000, DebtFloor: 1000000, IsStableMintVault: false, MinCr: sdk.MustNewDecFromStr("2.0"),
+		PairName: "CMDX-A", AssetOutOraclePrice: false, AssetOutPrice: 1000000, MinUsdValueLeft: 10000000000,},
+		{AppID: 2, PairID: 2, StabilityFee: sdk.MustNewDecFromStr("0.035"), ClosingFee: sdk.MustNewDecFromStr("0"), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+	    DrawDownFee: sdk.MustNewDecFromStr("0.01"), IsVaultActive: true, DebtCeiling: 100000000000000, DebtFloor: 1000000, IsStableMintVault: false, MinCr: sdk.MustNewDecFromStr("2.4"),
+		PairName: "CMDX-B", AssetOutOraclePrice: false, AssetOutPrice: 1000000, MinUsdValueLeft: 10000000000,},
+		{AppID: 2, PairID: 2, StabilityFee: sdk.MustNewDecFromStr("0.025"), ClosingFee: sdk.MustNewDecFromStr("0"), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+	    DrawDownFee: sdk.MustNewDecFromStr("0.01"), IsVaultActive: true, DebtCeiling: 100000000000000, DebtFloor: 1000000, IsStableMintVault: false, MinCr: sdk.MustNewDecFromStr("2.8"),
+		PairName: "CMDX-C", AssetOutOraclePrice: false, AssetOutPrice: 1000000, MinUsdValueLeft: 10000000000,},
+		{AppID: 2, PairID: 3, StabilityFee: sdk.MustNewDecFromStr("0.045"), ClosingFee: sdk.MustNewDecFromStr("0"), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+	    DrawDownFee: sdk.MustNewDecFromStr("0.01"), IsVaultActive: true, DebtCeiling: 100000000000000, DebtFloor: 1000000, IsStableMintVault: false, MinCr: sdk.MustNewDecFromStr("1.6"),
+		PairName: "OSMO-A", AssetOutOraclePrice: false, AssetOutPrice: 1000000, MinUsdValueLeft: 10000000000,},
+		{AppID: 2, PairID: 3, StabilityFee: sdk.MustNewDecFromStr("0.035"), ClosingFee: sdk.MustNewDecFromStr("0"), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+	    DrawDownFee: sdk.MustNewDecFromStr("0.01"), IsVaultActive: true, DebtCeiling: 100000000000000, DebtFloor: 1000000, IsStableMintVault: false, MinCr: sdk.MustNewDecFromStr("1.9"),
+		PairName: "OSMO-B", AssetOutOraclePrice: false, AssetOutPrice: 1000000, MinUsdValueLeft: 10000000000,},
+		{AppID: 2, PairID: 3, StabilityFee: sdk.MustNewDecFromStr("0.025"), ClosingFee: sdk.MustNewDecFromStr("0"), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+	    DrawDownFee: sdk.MustNewDecFromStr("0.01"), IsVaultActive: true, DebtCeiling: 100000000000000, DebtFloor: 1000000, IsStableMintVault: false, MinCr: sdk.MustNewDecFromStr("2.2"),
+		PairName: "OSMO-C", AssetOutOraclePrice: false, AssetOutPrice: 1000000, MinUsdValueLeft: 10000000000,},
+		{AppID: 2, PairID: 1, StabilityFee: sdk.MustNewDecFromStr("0.045"), ClosingFee: sdk.MustNewDecFromStr("0"), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+	    DrawDownFee: sdk.MustNewDecFromStr("0.01"), IsVaultActive: true, DebtCeiling: 100000000000000, DebtFloor: 1000000, IsStableMintVault: false, MinCr: sdk.MustNewDecFromStr("1.4"),
+		PairName: "ATOM-A", AssetOutOraclePrice: false, AssetOutPrice: 1000000, MinUsdValueLeft: 10000000000,},
+		{AppID: 2, PairID: 1, StabilityFee: sdk.MustNewDecFromStr("0.035"), ClosingFee: sdk.MustNewDecFromStr("0"), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+	    DrawDownFee: sdk.MustNewDecFromStr("0.01"), IsVaultActive: true, DebtCeiling: 100000000000000, DebtFloor: 1000000, IsStableMintVault: false, MinCr: sdk.MustNewDecFromStr("1.7"),
+		PairName: "ATOM-B", AssetOutOraclePrice: false, AssetOutPrice: 1000000, MinUsdValueLeft: 10000000000,},
+		{AppID: 2, PairID: 1, StabilityFee: sdk.MustNewDecFromStr("0.025"), ClosingFee: sdk.MustNewDecFromStr("0"), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+	    DrawDownFee: sdk.MustNewDecFromStr("0.01"), IsVaultActive: true, DebtCeiling: 100000000000000, DebtFloor: 1000000, IsStableMintVault: false, MinCr: sdk.MustNewDecFromStr("2.0"),
+		PairName: "ATOM-C", AssetOutOraclePrice: false, AssetOutPrice: 1000000, MinUsdValueLeft: 10000000000,},
+	}
+
+	for _ , extPair := range extPairs {
+		err := assetKeeper.WasmAddExtendedPairsVaultRecords(ctx, extPair)
+		if err != nil {
+			panic(err)
+		}
+	}
+	// add collector params
+	collector := bindings.MsgSetCollectorLookupTable{
+		AppID: 2,
+		CollectorAssetID: 3,
+		SecondaryAssetID: 9,
+		SurplusThreshold: 100000000000000,
+		DebtThreshold:    1000000000,
+		LockerSavingRate: sdk.MustNewDecFromStr("0.015"),
+		LotSize:          200000000,
+		BidFactor:        sdk.MustNewDecFromStr("0.01"),
+		DebtLotSize:      2000000,
+	}
+
+	err := collectorkeeper.WasmSetCollectorLookupTable(ctx, &collector)
+	if err != nil {
+		panic(err)
+	}
+
+	// add auction params
+
+	auctionParam := bindings.MsgAddAuctionParams{
+		AppID: 2,
+		AuctionDurationSeconds: 21600,
+		BidDurationSeconds: 10800,
+		Buffer: sdk.MustNewDecFromStr("1.5"),
+		Cusp: sdk.MustNewDecFromStr("0.85"),
+		DebtID: 2,
+		DutchID: 3,
+		PriceFunctionType: 1,
+		Step: 360,
+		SurplusID: 1,
+	}
+	err = auctionkeeper.AddAuctionParams(ctx, &auctionParam)
+	if err != nil {
+		panic(err)
+	}
+	// add auction mapping
+	auction := bindings.MsgSetAuctionMappingForApp{
+		AppID: 2,
+		AssetIDs: 3,
+		IsSurplusAuctions: false,
+		IsDebtAuctions: false,
+		IsDistributor: false,
+		AssetOutOraclePrices: false,
+		AssetOutPrices: 1000000,
+	}
+	
+	err = collectorkeeper.WasmSetAuctionMappingForApp(ctx, &auction)
+	if err != nil {
+		panic(err)
+	}
+	
+	// whitlist cmst for locker
+	locker := lockertypes.MsgAddWhiteListedAssetRequest{
+		AppId: 2,
+		AssetId: 3,
+	}
+	_, err = lockerkeeper.AddWhiteListedAsset(ctx.Context(), &locker)
+	if err != nil {
+		panic(err)
+	}
+	//whielist for locker rewards
+	reward := rewardstypes.WhitelistAsset{
+		AppMappingId: 2,
+		AssetId:      3,
+	}
+	_, err = rewardskeeper.Whitelist(sdk.WrapSDKContext(ctx), &reward)
+	if err != nil {
+		panic(err)
+	}
+	// whitlist for vaultInterest
+	vInterest := rewardstypes.WhitelistAppIdVault{
+		AppMappingId: 2,
+	}
+	_, err = rewardskeeper.WhitelistAppVault(ctx.Context(), &vInterest)
+	if err != nil {
+		panic(err)
+	}
+
+	// whitlist for liquidation
+	err = liquidationkeeper.WasmWhitelistAppIDLiquidation(ctx, 2)
+	if err != nil {
+		panic(err)
 	}
 
 	type LiquidityPair struct {
@@ -86,6 +234,11 @@ func CreateUpgradeHandler(
 	wasmKeeper wasmkeeper.Keeper,
 	assetKeeper assetkeeper.Keeper,
 	liquidityKeeper liquiditykeeper.Keeper,
+	collectorkeeper collectorkeeper.Keeper,
+	auctionkeeper auctionkeeper.Keeper,
+	lockerkeeper lockerkeeper.Keeper,
+	rewardskeeper rewardskeeper.Keeper,
+	liquidationkeeper liquidationkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// Refs:
@@ -133,7 +286,7 @@ func CreateUpgradeHandler(
 			return newVM, err
 		}
 
-		IntializeStates(ctx, assetKeeper, liquidityKeeper)
+		IntializeStates(ctx, assetKeeper, liquidityKeeper, collectorkeeper, auctionkeeper, lockerkeeper, rewardskeeper, liquidationkeeper)
 
 		// update wasm to permission
 		wasmParams := wasmKeeper.GetParams(ctx)
