@@ -1,7 +1,10 @@
 package types
 
+import "time"
+
 const (
 	LiquidityGaugeTypeID = 1
+	MinimumEpochDuration = time.Hour * 12
 )
 
 // ValidGaugeTypeIds stores all the gauge types ids
