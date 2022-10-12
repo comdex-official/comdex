@@ -24,7 +24,7 @@ func (k Keeper) ValidateMsgCreateGauge(ctx sdk.Context, msg *types.MsgCreateGaug
 		return types.ErrInvalidGaugeTypeID
 	}
 
-	if msg.TriggerDuration <= 0 {
+	if msg.TriggerDuration < types.MinimumEpochDuration {
 		return types.ErrInvalidDuration
 	}
 
