@@ -141,8 +141,7 @@ func (s *VaultIntegrationTestSuite) CreateNewAsset(name, denom string, price uin
 }
 
 func (s *VaultIntegrationTestSuite) CreateNewPair(assetIn, assetOut uint64) uint64 {
-	_, err := s.app.AssetKeeper.NewAddPair(s.ctx, &assettypes.MsgAddPairRequest{
-		From:     s.val.Address.String(),
+	err := s.app.AssetKeeper.AddPairsRecords(s.ctx, assettypes.Pair{
 		AssetIn:  assetIn,
 		AssetOut: assetOut,
 	})
