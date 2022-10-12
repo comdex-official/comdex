@@ -135,17 +135,18 @@ func (k Keeper) UpdateAPR(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBD
 	stableBorrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, poolID, assetID, true)
 	currentUtilisationRatio, _ := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, poolID, assetID)
 	PoolAssetLBData = types.PoolAssetLBMapping{
-		PoolID:              poolAssetLBData.PoolID,
-		AssetID:             poolAssetLBData.AssetID,
-		LendIds:             poolAssetLBData.LendIds,
-		BorrowIds:           poolAssetLBData.BorrowIds,
-		TotalBorrowed:       poolAssetLBData.TotalBorrowed,
-		TotalStableBorrowed: poolAssetLBData.TotalStableBorrowed,
-		TotalLend:           poolAssetLBData.TotalLend,
-		LendApr:             lendAPR,
-		BorrowApr:           borrowAPR,
-		StableBorrowApr:     stableBorrowAPR,
-		UtilisationRatio:    currentUtilisationRatio,
+		PoolID:                   poolAssetLBData.PoolID,
+		AssetID:                  poolAssetLBData.AssetID,
+		LendIds:                  poolAssetLBData.LendIds,
+		BorrowIds:                poolAssetLBData.BorrowIds,
+		TotalBorrowed:            poolAssetLBData.TotalBorrowed,
+		TotalStableBorrowed:      poolAssetLBData.TotalStableBorrowed,
+		TotalLend:                poolAssetLBData.TotalLend,
+		TotalInterestAccumulated: poolAssetLBData.TotalInterestAccumulated,
+		LendApr:                  lendAPR,
+		BorrowApr:                borrowAPR,
+		StableBorrowApr:          stableBorrowAPR,
+		UtilisationRatio:         currentUtilisationRatio,
 	}
 	return PoolAssetLBData, true
 }
