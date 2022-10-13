@@ -81,6 +81,7 @@ func uint64InAssetData(a uint64, list []*types.AssetDataPoolMapping) bool {
 }
 
 func (k Keeper) CheckSupplyCap(ctx sdk.Context, assetID, poolID uint64, amt sdk.Int) (bool, error) {
+	// this fn checks if while depositing the supply cap of a specific lend asset doesn't exceed specified value
 	var supplyCap uint64
 	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
 
@@ -105,6 +106,11 @@ func (k Keeper) CheckSupplyCap(ctx sdk.Context, assetID, poolID uint64, amt sdk.
 }
 
 func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Amount sdk.Coin, PoolID, AppID uint64) error {
+	// this fn IBC Assets fom the user
+	// sends the asset to pool's module-acc
+	// mints cAsset representative of the lent aasset
+	// creates a lend Position and updates global lend
+
 	killSwitchParams, _ := k.GetKillSwitchData(ctx, AppID)
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
@@ -195,10 +201,11 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 		LastInteractionTime: ctx.BlockTime(),
 		CPoolName:           pool.CPoolName,
 	}
-	k.UpdateLendStats(ctx, AssetID, PoolID, Amount.Amount, true)
+	k.UpdateLendStats(ctx, AssetID, PoolID, Amount.Amount, true) // update global lend data in poolAssetLBMappingData
 	k.SetUserLendIDCounter(ctx, lendPos.ID)
 	k.SetLend(ctx, lendPos)
 
+	// making UserAssetLendBorrowMapping for user
 	var mappingData types.UserAssetLendBorrowMapping
 	mappingData.Owner = lendPos.Owner
 	mappingData.LendId = lendPos.ID
@@ -206,6 +213,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 	mappingData.BorrowId = nil
 	k.SetUserLendBorrowMapping(ctx, mappingData)
 
+	// Adding Lend ID mapping to poolAssetLBMappingData
 	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, PoolID, AssetID)
 	poolAssetLBMappingData.LendIds = append(poolAssetLBMappingData.LendIds, lendPos.ID)
 	k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
@@ -213,6 +221,11 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 }
 
 func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withdrawal sdk.Coin) error {
+	// this fn is used to withdraw IBC assets from previously lent asset
+	//we take the cTokens from the user's account and burn them.
+	// equal amount of IBC Asset is sent back to the user.
+	// global lend data and user's lend position are updated after successful transaction
+
 	lenderAddr, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
 		return err
@@ -276,6 +289,12 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 	if err != nil {
 		return err
 	}
+
+	// here 2 conditions exists
+	// a. if the amount to withdraw is less than equal the AmountIn of lend position then Available to borrow are subtracted by withdraw amt
+	// b. if the user has some lend rewards added to his position and the withdrawal amount is greater tha amountIn then in this case the amountIn is made 0
+	// as no further lend rewards will be available for this user.
+
 	if withdrawal.Amount.LT(lendPos.AmountIn.Amount) {
 		if err = k.SendCoinFromAccountToModule(ctx, lenderAddr, pool.ModuleName, cToken); err != nil {
 			return err
