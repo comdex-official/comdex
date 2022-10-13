@@ -14,7 +14,6 @@ var (
 
 var (
 
-	// nolint
 	// ErrorUnauthorized                  = errors.Register(ModuleName, 203, "unauthorized")
 	// ErrorDuplicateVault                = errors.Register(ModuleName, 204, "duplicate vault")
 

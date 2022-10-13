@@ -3,6 +3,8 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"strconv"
 	"strings"
 	"time"
@@ -12,6 +14,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 
 	"github.com/cosmos/cosmos-sdk/client"
 
@@ -277,4 +280,110 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 		},
 	}
 	return liquidityGaugeExtraData, nil
+}
+
+func SubmitAddLendExternalRewardsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-lend-external-rewards [flags]",
+		Args:  cobra.ExactArgs(0),
+		Short: "Submit External Lend Rewards",
+		Long: `Must provide path to a add lend external rewards in JSON file (--add-lend-rewards) 
+Sample json content
+{
+	"title" :"Add lend external rewards ",
+	"description" :"This proposal it to add lend external rewards for commodo app",
+	"deposit" :"1000000000ucmdx"
+}`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewAddLendExternalRewards(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagAddExternalLendRewardsMapping())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+
+	return cmd
+}
+
+func NewAddLendExternalRewards(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	externalRewardsLendMapping, err := parseAddExternalLendRewardsMappingFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse lend external rewards: %w", err)
+	}
+
+	from := clientCtx.GetFromAddress()
+	appID, err := strconv.ParseUint(externalRewardsLendMapping.AppID, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	cPoolID, err := strconv.ParseUint(externalRewardsLendMapping.AppID, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	assetID, err := ParseUint64SliceFromString(externalRewardsLendMapping.AssetID, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	rewardsAssetPoolData := types.RewardsAssetPoolData{
+		CPoolId: cPoolID,
+		AssetId: assetID,
+	}
+	totatRewards, err := sdk.ParseCoinNormalized(externalRewardsLendMapping.TotalRewards)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	rewardAssetID, err := strconv.ParseUint(externalRewardsLendMapping.RewardAssetID, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	duration, err := strconv.ParseInt(externalRewardsLendMapping.Duration, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	minLockup, err := strconv.ParseInt(externalRewardsLendMapping.MinLockupTime, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	externalRewardsLend := types.LendExternalRewards{
+		AppMappingId:         appID,
+		RewardsAssetPoolData: &rewardsAssetPoolData,
+		TotalRewards:         totatRewards,
+		RewardAssetId:        rewardAssetID,
+		DurationDays:         duration,
+		Depositor:            from.String(),
+		MinLockupTimeSeconds: minLockup,
+	}
+
+	deposit, err := sdk.ParseCoinsNormalized(externalRewardsLendMapping.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewAddExternalLendRewardsProposal(externalRewardsLendMapping.Title, externalRewardsLendMapping.Description, externalRewardsLend)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
 }

@@ -122,10 +122,6 @@ func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, f
 	return k.lend.GetLend(ctx, id)
 }
 
-func (k Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
-	k.lend.DeleteBorrow(ctx, id)
-}
-
 func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
 	k.lend.CreteNewBorrow(ctx, liqBorrow)
 }
@@ -133,14 +129,6 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
 	return k.lend.GetPool(ctx, id)
 }
-
-//func (k Keeper) GetBorrowStats(ctx sdk.Context) (borrowStats lendtypes.DepositStats, found bool) {
-//	return k.lend.GetBorrowStats(ctx)
-//}
-//
-//func (k Keeper) SetBorrowStats(ctx sdk.Context, borrowStats lendtypes.DepositStats) {
-//	k.lend.SetBorrowStats(ctx, borrowStats)
-//}
 
 func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (AssetStats lendtypes.PoolAssetLBMapping, found bool) {
 	return k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)

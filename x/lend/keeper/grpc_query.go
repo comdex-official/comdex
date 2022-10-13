@@ -97,8 +97,8 @@ func (q QueryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 	for _, data := range mappingData {
 		lendIds = append(lendIds, data.LendId)
 	}
-	for _, lendId := range lendIds {
-		lend, _ := q.GetLend(ctx, lendId)
+	for _, lendID := range lendIds {
+		lend, _ := q.GetLend(ctx, lendID)
 		lends = append(lends, lend)
 	}
 	if len(lendIds) == 0 {
@@ -131,8 +131,8 @@ func (q QueryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.Qu
 			lendIds = append(lendIds, data.LendId)
 		}
 	}
-	for _, lendId := range lendIds {
-		lend, _ := q.GetLend(ctx, lendId)
+	for _, lendID := range lendIds {
+		lend, _ := q.GetLend(ctx, lendID)
 		lends = append(lends, lend)
 	}
 	if len(lendIds) == 0 {
@@ -165,8 +165,8 @@ func (q QueryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.
 			borrowIds = append(borrowIds, data.BorrowId...)
 		}
 	}
-	for _, borrowId := range borrowIds {
-		borrow, _ := q.GetBorrow(ctx, borrowId)
+	for _, borrowID := range borrowIds {
+		borrow, _ := q.GetBorrow(ctx, borrowID)
 		borrows = append(borrows, borrow)
 	}
 	if len(borrowIds) == 0 {
@@ -409,8 +409,8 @@ func (q QueryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 	for _, data := range mappingData {
 		borrowIds = append(borrowIds, data.BorrowId...)
 	}
-	for _, borrowId := range borrowIds {
-		borrow, _ := q.GetBorrow(ctx, borrowId)
+	for _, borrowID := range borrowIds {
+		borrow, _ := q.GetBorrow(ctx, borrowID)
 		borrows = append(borrows, borrow)
 	}
 	if len(borrowIds) == 0 {

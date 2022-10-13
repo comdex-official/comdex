@@ -96,7 +96,6 @@ type LendKeeper interface {
 	VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error
 	CalculateCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error)
 	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
-	DeleteBorrow(ctx sdk.Context, id uint64)
 	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
 	GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams lendtypes.AuctionParams, found bool)
 	ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int

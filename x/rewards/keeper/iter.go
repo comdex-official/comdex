@@ -135,7 +135,6 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 // calculate new locker rewards
 func (k Keeper) CalculationOfRewards(
 	ctx sdk.Context,
-	// nolint
 	amount sdk.Int, lsr sdk.Dec, bTime int64,
 ) (sdk.Dec, error) {
 	currentTime := ctx.BlockTime().Unix()
@@ -183,47 +182,45 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					if epoch.Count < uint64(extRewards[i].DurationDays) {
 						// we will only consider the borrows of the pool and assetID defined
 						totalBorrowedAmt := sdk.ZeroInt()
-						for _, rewardsAssetPoolData := range v.RewardsAssetPoolData {
-							for _, assetID := range rewardsAssetPoolData.AssetId {
-								borrowByPoolIDAssetID, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
-								price, err := k.CalcAssetPrice(ctx, assetID, borrowByPoolIDAssetID.TotalBorrowed.Add(borrowByPoolIDAssetID.TotalStableBorrowed))
-								if err != nil {
-									return err
-								}
-								totalBorrowedAmt = totalBorrowedAmt.Add(price)
+						rewardsAssetPoolData := extRewards[i].RewardsAssetPoolData
+						for _, assetID := range rewardsAssetPoolData.AssetId {
+							borrowByPoolIDAssetID, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
+							price, err := k.CalcAssetPrice(ctx, assetID, borrowByPoolIDAssetID.TotalBorrowed.Add(borrowByPoolIDAssetID.TotalStableBorrowed))
+							if err != nil {
+								return err
 							}
+							totalBorrowedAmt = totalBorrowedAmt.Add(price)
 						}
+
 						totalRewardAmt, _ := k.CalcAssetPrice(ctx, v.RewardAssetId, v.TotalRewards.Amount)
 						totalAPR := sdk.NewDecFromInt(totalRewardAmt).Quo(sdk.NewDecFromInt(totalBorrowedAmt))
 						var inverseRatesSum sdk.Dec
-						for _, rewardsAssetPoolData := range v.RewardsAssetPoolData {
-							for _, assetID := range rewardsAssetPoolData.AssetId {
-								inverseRate := k.InversingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
-								inverseRatesSum = inverseRatesSum.Add(inverseRate)
-							}
+
+						for _, assetID := range rewardsAssetPoolData.AssetId {
+							inverseRate := k.InversingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
+							inverseRatesSum = inverseRatesSum.Add(inverseRate)
 						}
 
-						for _, rewardsAssetPoolData := range v.RewardsAssetPoolData {
-							for _, assetID := range rewardsAssetPoolData.AssetId {
-								borrowIDs, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
-								for _, borrowID := range borrowIDs.BorrowIds {
-									borrow, _ := k.GetBorrow(ctx, borrowID)
-									lend, _ := k.GetLend(ctx, borrow.LendingID)
-									inverseRate := k.InversingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
-									numerator := totalAPR.Mul(inverseRate)
-									finalAPR := numerator.Quo(inverseRatesSum)
-									finalDailyRewardsNumerator := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(finalAPR)
-									daysInYear, _ := sdk.NewDecFromStr(types.DaysInYear)
-									finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(daysInYear)
-									user, _ := sdk.AccAddressFromBech32(lend.Owner)
-									if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
-										err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
-										if err != nil {
-											continue
-										}
+						for _, assetID := range rewardsAssetPoolData.AssetId {
+							borrowIDs, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
+							for _, borrowID := range borrowIDs.BorrowIds {
+								borrow, _ := k.GetBorrow(ctx, borrowID)
+								lend, _ := k.GetLend(ctx, borrow.LendingID)
+								inverseRate := k.InversingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
+								numerator := totalAPR.Mul(inverseRate)
+								finalAPR := numerator.Quo(inverseRatesSum)
+								finalDailyRewardsNumerator := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(finalAPR)
+								daysInYear, _ := sdk.NewDecFromStr(types.DaysInYear)
+								finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(daysInYear)
+								user, _ := sdk.AccAddressFromBech32(lend.Owner)
+								if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
+									err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
+									if err != nil {
+										continue
 									}
 								}
 							}
+
 						}
 						epoch.Count = epoch.Count + types.UInt64One
 						epoch.StartingTime = timeNow + types.SecondsPerDay

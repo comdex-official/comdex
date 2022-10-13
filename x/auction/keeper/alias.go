@@ -234,10 +234,6 @@ func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, f
 	return k.lend.GetLend(ctx, id)
 }
 
-func (k Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
-	k.lend.DeleteBorrow(ctx, id)
-}
-
 func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
 	return k.lend.GetPool(ctx, id)
 }

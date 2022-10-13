@@ -9,8 +9,8 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	var (
-		vaultID       uint64 = 0
-		stableVaultID uint64 = 0
+		vaultID       uint64
+		stableVaultID uint64
 	)
 
 	for _, item := range state.Vaults {
