@@ -8,6 +8,7 @@ import (
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/locker/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
@@ -181,6 +182,10 @@ func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID
 
 func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
 	return k.marketKeeper.CalcAssetPrice(ctx, id, amt)
+}
+
+func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool) {
+	return k.marketKeeper.GetTwa(ctx, id)
 }
 
 func (k Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool) {

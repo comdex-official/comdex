@@ -6,6 +6,7 @@ import (
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 )
 
 type BankKeeper interface {
@@ -28,7 +29,7 @@ type AccountKeeper interface {
 }
 
 type MarketKeeper interface {
-	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
 	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error)
 }
 

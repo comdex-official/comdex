@@ -24,16 +24,19 @@ func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes
 
 			assetOut, _ := k.GetAsset(ctx, extendedPair.AssetOut)
 
-			assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-			if !found {
+			assetInTwA, found := k.GetTwa(ctx, assetIn.Id)
+			if !found || !assetInTwA.IsPriceActive {
 				ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
 				return nil
 			}
-			assetOutPrice, found := k.GetPriceForAsset(ctx, assetOut.Id)
-			if !found {
+			assetInPrice := assetInTwA.Twa
+
+			assetOutTwA, found := k.GetTwa(ctx, assetOut.Id)
+			if !found || !assetOutTwA.IsPriceActive {
 				ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
 				return nil
 			}
+			assetOutPrice := assetOutTwA.Twa
 			//assetInPrice is the collateral price
 			////Here collateral to be auctioned is received in ucollateral*uusd so inorder to get back amount we divide with uusd of assetIn
 			AssetInPrice := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))
@@ -89,10 +92,11 @@ func (k Keeper) StartLendDutchAuction(
 	}
 
 	// If oracle Price required for the assetOut
-	inFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetInID)
-	if !found {
+	twaInData, found := k.GetTwa(ctx, assetInID)
+	if !found || !twaInData.IsPriceActive {
 		return auctiontypes.ErrorPrices
 	}
+	inFlowTokenPrice = twaInData.Twa
 
 	auctionParams, found := k.GetAddAuctionParamsData(ctx, appID)
 	if !found {
@@ -113,10 +117,11 @@ func (k Keeper) StartLendDutchAuction(
 			return err
 		}
 	}
-	outFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetOutID)
-	if !found {
+	twaData, found := k.GetTwa(ctx, assetOutID)
+	if !found || !twaData.IsPriceActive {
 		return auctiontypes.ErrorPrices
 	}
+	outFlowTokenPrice = twaData.Twa
 	// set target amount for debt
 	inFlowTokenTargetAmount := inFlowToken.Amount
 	mulfactor := inFlowTokenTargetAmount.ToDec().Mul(liquidationPenalty)
@@ -459,10 +464,11 @@ func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 	}
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
-		inFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetInId)
-		if !found {
+		twaData, found := k.GetTwa(ctx, dutchAuction.AssetInId)
+		if !found || !twaData.IsPriceActive {
 			return auctiontypes.ErrorPrices
 		}
+		inFlowTokenCurrentPrice := twaData.Twa
 
 		// inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
 		// tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
@@ -481,10 +487,11 @@ func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 		}
 		// check if auction need to be restarted
 		if ctx.BlockTime().After(dutchAuction.EndTime) {
-			OutFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
-			if !found {
+			twaData, found := k.GetTwa(ctx, dutchAuction.AssetOutId)
+			if !found || !twaData.IsPriceActive {
 				return auctiontypes.ErrorPrices
 			}
+			OutFlowTokenCurrentPrice := twaData.Twa
 			timeNow := ctx.BlockTime()
 			dutchAuction.StartTime = timeNow
 			dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))

@@ -51,11 +51,11 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				if !found {
 					continue
 				}
-				assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-				if !found {
+				totalRate, err := k.CalcAssetPrice(ctx, assetIn.Id, vault.AmountIn)
+				if err != nil {
 					continue
 				}
-				totalIn := vault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
+				totalIn := totalRate.ToDec()
 
 				liqRatio := extPair.MinCr
 				totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)

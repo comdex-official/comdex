@@ -10,6 +10,7 @@ import (
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
@@ -37,8 +38,8 @@ type AssetKeeper interface {
 }
 
 type MarketKeeper interface {
-	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
 	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error)
+	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
 }
 
 type LockerKeeper interface {

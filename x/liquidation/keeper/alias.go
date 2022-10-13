@@ -41,9 +41,6 @@ func (k Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, addres
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
 
-func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	return k.market.GetPriceForAsset(ctx, id)
-}
 
 func (k Keeper) GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData []types.AppExtendedPairVaultMappingData, found bool) {
 	return k.vault.GetAppMappingData(ctx, appMappingID)
@@ -199,4 +196,8 @@ func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes
 
 func (k Keeper) SetBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset) {
 	k.lend.SetBorrow(ctx, borrow)
+}
+
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
+	return k.market.CalcAssetPrice(ctx, id, amt)
 }

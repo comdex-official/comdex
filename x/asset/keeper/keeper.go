@@ -14,13 +14,12 @@ type Keeper struct {
 	cdc     codec.BinaryCodec
 	key     sdk.StoreKey
 	params  paramstypes.Subspace
-	oracle  expected.MarketKeeper
 	rewards expected.RewardsKeeper
 	vault   expected.VaultKeeper
 	bandoracle expected.Bandoraclekeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, oracle expected.MarketKeeper, rewards expected.RewardsKeeper, vault expected.VaultKeeper, bandoracle expected.Bandoraclekeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, rewards expected.RewardsKeeper, vault expected.VaultKeeper, bandoracle expected.Bandoraclekeeper) Keeper {
 	if !params.HasKeyTable() {
 		params = params.WithKeyTable(assettypes.ParamKeyTable())
 	}
@@ -29,7 +28,6 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subsp
 		cdc:     cdc,
 		key:     key,
 		params:  params,
-		oracle:  oracle,
 		rewards: rewards,
 		vault:   vault,
 		bandoracle: bandoracle,

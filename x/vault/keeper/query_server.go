@@ -604,8 +604,8 @@ func (q QueryServer) QueryTVLByApp(c context.Context, req *types.QueryTVLByAppRe
 		extPairVault, _ := q.GetPairsVault(ctx, data.ExtendedPairId)
 		pairID, _ := q.GetPair(ctx, extPairVault.PairId)
 
-		rate, _ := q.GetPriceForAsset(ctx, pairID.AssetIn)
-		locked = data.CollateralLockedAmount.Mul(sdk.NewIntFromUint64(rate)).Add(locked)
+		twaData, _ := q.CalcAssetPrice(ctx, pairID.AssetIn, data.CollateralLockedAmount)
+		locked = twaData.Add(locked)
 	}
 	locked = locked.Quo(sdk.NewInt(1000000))
 
@@ -655,17 +655,21 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 
 		extPairVault, _ := q.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 		pairID, _ := q.GetPair(ctx, extPairVault.PairId)
+		assetOutData, found := q.GetAsset(ctx, pairID.AssetOut)
+		if !found {
+			continue
+		}
 
-		assetInPrice, _ := q.GetPriceForAsset(ctx, pairID.AssetIn)
-		var assetOutPrice uint64
-		totalLocked = vault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).Add(totalLocked)
+		assetInTotalPrice, _ := q.CalcAssetPrice(ctx, pairID.AssetIn, vault.AmountIn)
+		var assetOutTotalPrice sdk.Int
+		totalLocked = assetInTotalPrice.Add(totalLocked)
 
 		if extPairVault.AssetOutOraclePrice {
-			assetOutPrice, _ = q.GetPriceForAsset(ctx, pairID.AssetOut)
+			assetOutTotalPrice, _ = q.CalcAssetPrice(ctx, pairID.AssetOut, vault.AmountOut)
 		} else {
-			assetOutPrice = extPairVault.AssetOutPrice
+			assetOutTotalPrice = (sdk.NewIntFromUint64(extPairVault.AssetOutPrice).Mul(vault.AmountOut)).Quo(sdk.NewIntFromUint64(uint64(assetOutData.Decimals)))
 		}
-		totalDue = vault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).Add(totalDue)
+		totalDue = assetOutTotalPrice.Add(totalDue)
 
 		collaterlizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
 		if err != nil {
@@ -675,8 +679,8 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 		totalCr = collaterlizationRatio.Add(totalCr)
 		minCr := extPairVault.MinCr
 
-		AmtIn := vault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
-		AmtOut := vault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
+		AmtIn := assetInTotalPrice.ToDec()
+		AmtOut := assetOutTotalPrice.ToDec()
 
 		av := sdk.Int(AmtIn.Quo(minCr))
 		av = av.Sub(sdk.Int(AmtOut))

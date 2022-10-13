@@ -9,8 +9,8 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message GenesisState {
-    repeated Market markets = 1 [
-        (gogoproto.moretags) = "yaml:\"markets\"",
+    repeated TimeWeightedAverage timeWeightedAverage = 1 [
+        (gogoproto.moretags) = "yaml:\"timeWeightedAverage\"",
         (gogoproto.nullable) = false
     ];
 }

@@ -27,10 +27,6 @@ type AssetKeeper interface {
 	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
 }
 
-type OracleKeeper interface {
-	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
-}
-
 type CollectorKeeper interface {
 	UpdateCollector(ctx sdk.Context, appID, assetID uint64, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected sdk.Int) error
 	GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTableData, found bool)

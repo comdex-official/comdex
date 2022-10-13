@@ -66,18 +66,6 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 	}
 }
 
-func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
-	var (
-		store = s.app.MarketKeeper.Store(s.ctx)
-		key   = markettypes.PriceForMarketKey(symbol)
-	)
-	value := s.app.AppCodec().MustMarshal(
-		&protobuftypes.UInt64Value{
-			Value: price,
-		},
-	)
-	store.Set(key, value)
-}
 
 func (s *KeeperTestSuite) SetInitialOraclePriceForSymbols(asset1 string, asset2 string) {
 	s.SetOraclePrice(asset1, 2000000)

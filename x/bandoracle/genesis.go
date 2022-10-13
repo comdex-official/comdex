@@ -11,6 +11,7 @@ import (
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
 	k.SetPort(ctx, genState.PortId)
+	k.SetCheckFlag(ctx, genState.Flag)
 	// Only try to bind to port if it is not already bound, since we may already own
 	// port capability from capability InitGenesis
 	if !k.IsBound(ctx, genState.PortId) {
@@ -30,6 +31,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 
 	genesis.PortId = k.GetPort(ctx)
+	genesis.Flag = k.GetCheckFlag(ctx)
 
 	return genesis
 }

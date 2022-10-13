@@ -28,14 +28,14 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 
 		assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
 
-		assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-		if !found {
+		assetInTwA, found := k.GetTwa(ctx, assetIn.Id)
+		if !found || !assetInTwA.IsPriceActive {
 			ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), lockedVault.LockedVaultId)
 			return nil
 		}
 		//assetInPrice is the collateral price
 		////Here collateral to be auctioned is received in ucollateral*uusd so inorder to get back amount we divide with uusd of assetIn
-		outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))).TruncateInt())
+		outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.CollateralToBeAuctioned.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInTwA.Twa))).TruncateInt())
 		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())
 
 		liquidationPenalty := extendedPair.LiquidationPenalty
@@ -79,10 +79,11 @@ func (k Keeper) StartDutchAuction(
 	}
 	if ExtendedPairVault.AssetOutOraclePrice {
 		// If oracle Price required for the assetOut
-		inFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetInID)
-		if !found {
+		twaData, found := k.GetTwa(ctx, assetInID)
+		if !found || !twaData.IsPriceActive {
 			return auctiontypes.ErrorPrices
 		}
+		inFlowTokenPrice = twaData.Twa
 	} else {
 		// If oracle Price is not required for the assetOut
 		inFlowTokenPrice = ExtendedPairVault.AssetOutPrice
@@ -99,10 +100,11 @@ func (k Keeper) StartDutchAuction(
 		}
 	}
 	// calculate target amount of cmst to collect
-	outFlowTokenPrice, found = k.GetPriceForAsset(ctx, assetOutID)
-	if !found {
+	twaData, found := k.GetTwa(ctx, assetOutID)
+	if !found || !twaData.IsPriceActive {
 		return auctiontypes.ErrorPrices
 	}
+	outFlowTokenPrice = twaData.Twa
 	// set target amount for debt
 	inFlowTokenTargetAmount := lockedVault.AmountOut
 	mulfactor := inFlowTokenTargetAmount.ToDec().Mul(liquidationPenalty)
@@ -462,10 +464,12 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 		var inFlowTokenCurrentPrice uint64
 		if ExtendedPairVault.AssetOutOraclePrice {
 			// If oracle Price required for the assetOut
-			inFlowTokenCurrentPrice, found = k.GetPriceForAsset(ctx, dutchAuction.AssetInId)
-			if !found {
+			twaData, found := k.GetTwa(ctx, dutchAuction.AssetInId)
+			if !found || !twaData.IsPriceActive {
 				return auctiontypes.ErrorPrices
 			}
+			inFlowTokenCurrentPrice = twaData.Twa
+
 		} else {
 			// If oracle Price is not required for the assetOut
 			inFlowTokenCurrentPrice = ExtendedPairVault.AssetOutPrice
@@ -554,10 +558,11 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				}
 				k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 			} else {
-				OutFlowTokenCurrentPrice, found := k.GetPriceForAsset(ctx, dutchAuction.AssetOutId)
-				if !found {
+				twaData, found := k.GetTwa(ctx, dutchAuction.AssetOutId)
+				if !found || !twaData.IsPriceActive {
 					return auctiontypes.ErrorPrices
 				}
+				OutFlowTokenCurrentPrice := twaData.Twa
 				timeNow := ctx.BlockTime()
 				dutchAuction.StartTime = timeNow
 				dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))

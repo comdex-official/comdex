@@ -80,15 +80,15 @@ func request_Query_QueryMarket_0(ctx context.Context, marshaler runtime.Marshale
 		_   = err
 	)
 
-	val, ok = pathParams["symbol"]
+	val, ok = pathParams["assetID"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "symbol")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "assetID")
 	}
 
-	protoReq.Symbol, err = runtime.String(val)
+	protoReq.AssetID, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "symbol", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "assetID", err)
 	}
 
 	msg, err := client.QueryMarket(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -107,15 +107,15 @@ func local_request_Query_QueryMarket_0(ctx context.Context, marshaler runtime.Ma
 		_   = err
 	)
 
-	val, ok = pathParams["symbol"]
+	val, ok = pathParams["assetID"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "symbol")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "assetID")
 	}
 
-	protoReq.Symbol, err = runtime.String(val)
+	protoReq.AssetID, err = runtime.Uint64(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "symbol", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "assetID", err)
 	}
 
 	msg, err := server.QueryMarket(ctx, &protoReq)
@@ -321,9 +321,9 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_QueryMarkets_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "market", "v1beta1", "markets"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryMarkets_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "market", "v1beta1", "timeWeightedAverage"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryMarket_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "market", "v1beta1", "markets", "symbol"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryMarket_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "market", "v1beta1", "timeWeightedAverage", "assetID"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_QueryParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "market", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 )

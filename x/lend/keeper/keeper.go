@@ -1462,15 +1462,15 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 
 	// Adjusting bridged asset qty after auctions
 	if !kind.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
-		priceAssetIn, _ := k.GetPriceForAsset(ctx, pair.AssetIn)
+		priceAssetIn, _ := k.GetTwa(ctx, pair.AssetIn)
 		adjustedBridgedAssetAmt := borrowPos.AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv)
-		amtIn := adjustedBridgedAssetAmt.TruncateInt().Mul(sdk.NewIntFromUint64(priceAssetIn))
-		priceFirstBridgedAsset, _ := k.GetPriceForAsset(ctx, firstTransitAssetID)
-		priceSecondBridgedAsset, _ := k.GetPriceForAsset(ctx, secondTransitAssetID)
+		amtIn := adjustedBridgedAssetAmt.TruncateInt().Mul(sdk.NewIntFromUint64(priceAssetIn.Twa))
+		priceFirstBridgedAsset, _ := k.GetTwa(ctx, firstTransitAssetID)
+		priceSecondBridgedAsset, _ := k.GetTwa(ctx, secondTransitAssetID)
 		firstBridgedAsset, _ := k.GetAsset(ctx, firstTransitAssetID)
 
 		if kind.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
-			firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset))
+			firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset.Twa))
 			diff := borrowPos.BridgedAssetAmount.Amount.Sub(firstBridgedAssetQty)
 			if diff.GT(sdk.ZeroInt()) {
 				err := k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
@@ -1489,7 +1489,7 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 				}
 			}
 		} else {
-			secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset))
+			secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset.Twa))
 			diff := borrowPos.BridgedAssetAmount.Amount.Sub(secondBridgedAssetQty)
 			if diff.GT(sdk.ZeroInt()) {
 				err := k.SendCoinFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))

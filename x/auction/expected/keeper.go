@@ -10,6 +10,7 @@ import (
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
@@ -28,7 +29,8 @@ type BankKeeper interface {
 }
 
 type MarketKeeper interface {
-	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error)
+	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
 }
 
 type LiquidationKeeper interface {

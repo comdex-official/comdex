@@ -194,8 +194,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
 				return nil
 			}
 
-			assetInPrice, _ := k.GetPriceForAsset(ctx, assetIn.Id)
-			assetOutPrice, _ := k.GetPriceForAsset(ctx, assetOut.Id)
+			assetInTotal, _ := k.CalcAssetPrice(ctx, assetIn.Id, lockedVault.AmountIn)
+			assetOutTotal, _ := k.CalcAssetPrice(ctx, assetOut.Id, lockedVault.AmountOut)
 			deductionPercentage, _ := sdk.NewDecFromStr("1.0")
 
 			var c sdk.Dec
@@ -210,8 +210,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
 			}
 			penalty := assetRatesStats.LiquidationPenalty.Add(assetRatesStats.LiquidationBonus)
 			b := deductionPercentage.Add(penalty)
-			totalIn := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
-			totalOut := lockedVault.UpdatedAmountOut.Mul(sdk.NewIntFromUint64(assetOutPrice)).ToDec()
+			totalIn := assetInTotal.ToDec()
+			totalOut := assetOutTotal.ToDec()
 			factor1 := c.Mul(totalIn)
 			factor2 := b.Mul(c)
 			numerator := totalOut.Sub(factor1)
@@ -219,7 +219,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, appID, id uint64) error {
 			selloffAmount := numerator.Quo(denominator)
 			updatedLockedVault := lockedVault
 			if lockedVault.SellOffHistory == nil {
-				aip := sdk.NewDec(int64(assetInPrice))
+				//TODO: revisit
+				aip := sdk.NewDec(int64(1))
 				liquidationDeductionAmt := selloffAmount.Mul(penalty)
 				liquidationDeductionAmount := liquidationDeductionAmt.Quo(aip)
 				bonusToBidderAmt := selloffAmount.Mul(assetRatesStats.LiquidationBonus)

@@ -594,11 +594,11 @@ func (k Keeper) SnapshotOfPrices(ctx sdk.Context, esmStatus types.ESMStatus) err
 	assets := k.GetAssets(ctx)
 	for _, a := range assets {
 		if a.IsOraclePriceRequired {
-			price, found := k.GetPriceForAsset(ctx, a.Id)
-			if !found {
+			price, found := k.GetTwa(ctx, a.Id)
+			if !found || !price.IsPriceActive {
 				continue
 			}
-			k.SetSnapshotOfPrices(ctx, esmStatus.AppId, a.Id, price)
+			k.SetSnapshotOfPrices(ctx, esmStatus.AppId, a.Id, price.Twa)
 		}
 	}
 	esmStatus.SnapshotStatus = true
