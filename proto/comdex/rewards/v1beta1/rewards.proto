@@ -162,7 +162,7 @@ message Lend_external_rewards{
   uint64 app_mapping_id = 2 [
     (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
-  repeated Rewards_asset_pool_data rewards_asset_pool_data = 3 [
+  Rewards_asset_pool_data rewards_asset_pool_data = 3 [
     (gogoproto.moretags) = "yaml:\"rewards_asset_pool_data\""
   ];
   cosmos.base.v1beta1.Coin total_rewards = 4 [

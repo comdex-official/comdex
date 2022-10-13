@@ -11,10 +11,11 @@ import (
 const (
 	FlagStartTime = "start-time"
 
-	FlagPoolID       = "pool-id"
-	FlagAppID        = "app-id"
-	FlagIsMasterPool = "is-master-pool"
-	FlagChildPoolIds = "child-pool-ids"
+	FlagPoolID                     = "pool-id"
+	FlagAppID                      = "app-id"
+	FlagIsMasterPool               = "is-master-pool"
+	FlagChildPoolIds               = "child-pool-ids"
+	FlagAddLendExternalRewardsFile = "add-lend-external-rewards"
 )
 
 // FlagSetCreateGauge returns flags for creating gauge.
@@ -46,4 +47,24 @@ func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
 		parsedInts = append(parsedInts, parsed)
 	}
 	return parsedInts, nil
+}
+
+func FlagAddExternalLendRewardsMapping() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagAddLendExternalRewardsFile, "", "add lend-external-rewards json file path")
+	return fs
+}
+
+type createAddLendExternalRewardsInputs struct {
+	AppID         string `json:"app_id"`
+	CPoolID       string `json:"c_pool_id"`
+	AssetID       string `json:"asset_id"`
+	TotalRewards  string `json:"total_rewards"`
+	RewardAssetID string `json:"reward_asset_id"`
+	Duration      string `json:"duration"`
+	MinLockupTime string `json:"min_lockup_time"`
+	Title         string
+	Description   string
+	Deposit       string
 }
