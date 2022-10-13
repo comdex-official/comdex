@@ -13,8 +13,9 @@ import (
 )
 
 func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
+	// Give external rewards to locker owners for creating locker with specific assetID
 	extRewards := k.GetExternalRewardsLockers(ctx)
-	for i, v := range extRewards {
+	for _, v := range extRewards {
 		klwsParams, _ := k.GetKillSwitchData(ctx, v.AppMappingId)
 		if klwsParams.BreakerEnable {
 			return esmtypes.ErrCircuitBreakerEnabled
@@ -27,44 +28,65 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 		if status {
 			return esmtypes.ErrESMAlreadyExecuted
 		}
+		// checking if rewards are active
+
 		if v.IsActive {
-			epochTime, _ := k.GetEpochTime(ctx, v.EpochId)
-			et := epochTime.StartingTime
+			epoch, _ := k.GetEpochTime(ctx, v.EpochId)
+			et := epoch.StartingTime
 			timeNow := ctx.BlockTime().Unix()
 
-			if et < timeNow {
-				if extRewards[i].IsActive {
-					epoch, _ := k.GetEpochTime(ctx, v.EpochId)
+			// here the epoch starting time is set to the next day whenever any external locker reward is distributed
+			// so when the epoch starting time is less than current time then the condition becomes true and flow passes through the function
 
-					if epoch.Count < uint64(extRewards[i].DurationDays) {
-						lockerLookup, _ := k.GetLockerLookupTable(ctx, v.AppMappingId, v.AssetId)
-						totalShare := lockerLookup.DepositedAmount
-						for _, lockerID := range lockerLookup.LockerIds {
-							locker, found := k.GetLocker(ctx, lockerID)
-							if !found {
+			if et < timeNow {
+				if epoch.Count <= uint64(v.DurationDays) { // rewards will be given till the duration defined in the ext rewards
+					// getting the total share of Deposited amount of Lockers of specific assetID and AppID
+					lockerLookup, _ := k.GetLockerLookupTable(ctx, v.AppMappingId, v.AssetId)
+					totalShare := lockerLookup.DepositedAmount
+
+					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
+					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
+					for _, lockerID := range lockerLookup.LockerIds {
+						locker, found := k.GetLocker(ctx, lockerID)
+						if !found {
+							continue
+						}
+						// checking if the locker was not created just to claim the external rewards, so we apply a basic check here.
+						// last day don't check min lockup time so we should have no remaining amount left
+						if int64(epoch.Count) != v.DurationDays {
+							if locker.CreatedAt.Unix()-timeNow < v.MinLockupTimeSeconds {
 								continue
 							}
-							userShare := (locker.NetBalance.ToDec()).Quo(totalShare.ToDec())
-							totalRewards := k.GetExternalRewardsLocker(ctx, v.Id).TotalRewards
-							Duration := k.GetExternalRewardsLocker(ctx, v.Id).DurationDays
-							rewardsPerEpoch := (totalRewards.Amount.ToDec()).Quo(sdk.NewInt(Duration).ToDec())
-							dailyRewards := userShare.Mul(rewardsPerEpoch)
-							user, _ := sdk.AccAddressFromBech32(locker.Depositor)
-							finalDailyRewards := sdk.NewInt(dailyRewards.TruncateInt64())
-							if finalDailyRewards.GT(sdk.ZeroInt()) {
-								err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
-								if err != nil {
-									continue
-								}
-							}
-							epoch.Count = epoch.Count + types.UInt64One
-							epoch.StartingTime = timeNow + types.Int64SecondsInADay
-							k.SetEpochTime(ctx, epoch)
 						}
-					} else {
-						extRewards[i].IsActive = false
-						k.SetExternalRewardsLockers(ctx, extRewards[i])
+						userShare := (locker.NetBalance.ToDec()).Quo(totalShare.ToDec()) // getting share percentage
+						availableRewards := v.AvailableRewards                           // Available Rewards
+						Duration := v.DurationDays - int64(epoch.Count)                  // duration left (total duration - current count)
+
+						epochRewards := availableRewards.Amount.ToDec().Quo(sdk.NewDec(Duration))
+						dailyRewards := userShare.Mul(epochRewards)
+						user, _ := sdk.AccAddressFromBech32(locker.Depositor)
+						finalDailyRewards := dailyRewards.TruncateInt()
+						// after calculating final daily rewards, the amount is sent to the user
+						if finalDailyRewards.GT(sdk.ZeroInt()) {
+							amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(availableRewards.Denom, finalDailyRewards))
+							err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(availableRewards.Denom, finalDailyRewards))
+							if err != nil {
+								continue
+							}
+						}
 					}
+					// after all the locker owners are rewarded
+					// setting the starting time to next day
+					epoch.Count = epoch.Count + types.UInt64One
+					epoch.StartingTime = timeNow + types.Int64SecondsInADay
+					k.SetEpochTime(ctx, epoch)
+
+					// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
+					v.AvailableRewards = v.AvailableRewards.Sub(amountRewardedTracker)
+					k.SetExternalRewardsLockers(ctx, v)
+				} else {
+					v.IsActive = false
+					k.SetExternalRewardsLockers(ctx, v)
 				}
 			}
 		}
@@ -73,8 +95,9 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 }
 
 func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
+	// Give external rewards to vault owners for opening a vault with specific assetID
 	extRewards := k.GetExternalRewardVaults(ctx)
-	for i, v := range extRewards {
+	for _, v := range extRewards {
 		klwsParams, _ := k.GetKillSwitchData(ctx, v.AppMappingId)
 		if klwsParams.BreakerEnable {
 			return esmtypes.ErrCircuitBreakerEnabled
@@ -87,44 +110,62 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 		if status {
 			return esmtypes.ErrESMAlreadyExecuted
 		}
+		// checking if rewards are active
 		if v.IsActive {
-			epochTime, _ := k.GetEpochTime(ctx, v.EpochId)
-			et := epochTime.StartingTime
-
+			epoch, _ := k.GetEpochTime(ctx, v.EpochId)
+			et := epoch.StartingTime
 			timeNow := ctx.BlockTime().Unix()
 
+			// here the epoch starting time is set to the next day whenever any external vault reward is distributed
+			// so when the epoch starting time is less than current time then the condition becomes true and flow passes through the function
+
 			if et < timeNow {
-				if extRewards[i].IsActive {
-					epoch, _ := k.GetEpochTime(ctx, v.EpochId)
-					if epoch.Count < uint64(extRewards[i].DurationDays) {
-						appExtPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.Extended_Pair_Id)
-						for _, vaultID := range appExtPairVaultData.VaultIds {
-							totalRewards := v.TotalRewards
-							userVault, found := k.GetVault(ctx, vaultID)
-							if !found {
+				if epoch.Count <= uint64(v.DurationDays) { // rewards will be given till the duration defined in the ext rewards
+					appExtPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.Extended_Pair_Id)
+
+					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
+					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
+
+					for _, vaultID := range appExtPairVaultData.VaultIds {
+						totalRewards := v.AvailableRewards
+						userVault, found := k.GetVault(ctx, vaultID)
+						if !found {
+							continue
+						}
+						// checking if the locker was not created just to claim the external rewards, so we apply a basic check here.
+						// last day don't check min lockup time so we should have no remaining amount left
+						if int64(epoch.Count) != v.DurationDays {
+							if userVault.CreatedAt.Unix()-timeNow < v.MinLockupTimeSeconds {
 								continue
 							}
-							individualUserShare := sdk.NewDec(userVault.AmountOut.Int64()).Quo(sdk.NewDec(appExtPairVaultData.CollateralLockedAmount.Int64()))
-							Duration := v.DurationDays
-							rewardsPerEpoch := sdk.NewDec((totalRewards.Amount).Quo(sdk.NewInt(Duration)).Int64())
-							dailyRewards := individualUserShare.Mul(rewardsPerEpoch)
-							finalDailyRewards := sdk.NewInt(dailyRewards.TruncateInt64())
-
-							user, _ := sdk.AccAddressFromBech32(userVault.Owner)
-							if finalDailyRewards.GT(sdk.ZeroInt()) {
-								err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
-								if err != nil {
-									continue
-								}
-							}
-							epoch.Count = epoch.Count + types.UInt64One
-							epoch.StartingTime = timeNow + types.SecondsPerDay
-							k.SetEpochTime(ctx, epoch)
 						}
-					} else {
-						extRewards[i].IsActive = false
-						k.SetExternalRewardVault(ctx, extRewards[i])
+						individualUserShare := userVault.AmountOut.ToDec().Quo(sdk.NewDecFromInt(appExtPairVaultData.CollateralLockedAmount)) // getting share percentage
+						Duration := v.DurationDays - int64(epoch.Count)                                                                       // duration left (total duration - current count)
+						epochRewards := (totalRewards.Amount.ToDec()).Quo(sdk.NewDec(Duration))
+						dailyRewards := individualUserShare.Mul(epochRewards)
+						finalDailyRewards := dailyRewards.TruncateInt()
+
+						user, _ := sdk.AccAddressFromBech32(userVault.Owner)
+						if finalDailyRewards.GT(sdk.ZeroInt()) {
+							amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
+							err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
+							if err != nil {
+								continue
+							}
+						}
 					}
+					// after all the vault owners are rewarded
+					// setting the starting time to next day
+					epoch.Count = epoch.Count + types.UInt64One
+					epoch.StartingTime = timeNow + types.SecondsPerDay
+					k.SetEpochTime(ctx, epoch)
+
+					// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
+					v.AvailableRewards = v.AvailableRewards.Sub(amountRewardedTracker)
+					k.SetExternalRewardVault(ctx, v)
+				} else {
+					v.IsActive = false
+					k.SetExternalRewardVault(ctx, v)
 				}
 			}
 		}
@@ -164,71 +205,86 @@ func (k Keeper) CalculationOfRewards(
 }
 
 func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
+	// Give external rewards to borrowers for opening a vault with specific assetID
 	extRewards := k.GetExternalRewardLends(ctx)
-	for i, v := range extRewards {
+	for _, v := range extRewards {
 		klwsParams, _ := k.GetKillSwitchData(ctx, v.AppMappingId)
 		if klwsParams.BreakerEnable {
 			return esmtypes.ErrCircuitBreakerEnabled
 		}
 		if v.IsActive {
-			epochTime, _ := k.GetEpochTime(ctx, v.EpochId)
-			et := epochTime.StartingTime
-
+			epoch, _ := k.GetEpochTime(ctx, v.EpochId)
+			et := epoch.StartingTime
 			timeNow := ctx.BlockTime().Unix()
 
+			// checking if rewards are active
 			if et < timeNow {
-				if extRewards[i].IsActive {
-					epoch, _ := k.GetEpochTime(ctx, v.EpochId)
-					if epoch.Count < uint64(extRewards[i].DurationDays) {
-						// we will only consider the borrows of the pool and assetID defined
-						totalBorrowedAmt := sdk.ZeroInt()
-						rewardsAssetPoolData := extRewards[i].RewardsAssetPoolData
-						for _, assetID := range rewardsAssetPoolData.AssetId {
-							borrowByPoolIDAssetID, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
-							price, err := k.CalcAssetPrice(ctx, assetID, borrowByPoolIDAssetID.TotalBorrowed.Add(borrowByPoolIDAssetID.TotalStableBorrowed))
-							if err != nil {
-								return err
+				if epoch.Count < uint64(v.DurationDays) {
+					// we will only consider the borrows of the pool and assetID defined
+					// initializing totalBorrowedAmt $ value to store total borrowed across different assetIDs for given cPool
+					totalBorrowedAmt := sdk.ZeroInt()
+					rewardsAssetPoolData := v.RewardsAssetPoolData
+					for _, assetID := range rewardsAssetPoolData.AssetId {
+						borrowByPoolIDAssetID, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
+						price, err := k.CalcAssetPrice(ctx, assetID, borrowByPoolIDAssetID.TotalBorrowed.Add(borrowByPoolIDAssetID.TotalStableBorrowed))
+						if err != nil {
+							return err
+						}
+						totalBorrowedAmt = totalBorrowedAmt.Add(price)
+					}
+					// calculating totalAPR
+					totalRewardAmt, _ := k.CalcAssetPrice(ctx, v.RewardAssetId, v.TotalRewards.Amount)
+					totalAPR := sdk.NewDecFromInt(totalRewardAmt).Quo(sdk.NewDecFromInt(totalBorrowedAmt))
+					var inverseRatesSum sdk.Dec
+					// inverting the rate to enable low apr for assets which are more borrowed
+					for _, assetID := range rewardsAssetPoolData.AssetId {
+						inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
+						inverseRatesSum = inverseRatesSum.Add(inverseRate)
+					}
+
+					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
+					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
+
+					for _, assetID := range rewardsAssetPoolData.AssetId { // iterating over assetIDs
+						borrowIDs, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
+						for _, borrowID := range borrowIDs.BorrowIds { // iterating over borrowIDs
+							borrow, found := k.GetBorrow(ctx, borrowID)
+							if !found {
+								continue
 							}
-							totalBorrowedAmt = totalBorrowedAmt.Add(price)
-						}
-
-						totalRewardAmt, _ := k.CalcAssetPrice(ctx, v.RewardAssetId, v.TotalRewards.Amount)
-						totalAPR := sdk.NewDecFromInt(totalRewardAmt).Quo(sdk.NewDecFromInt(totalBorrowedAmt))
-						var inverseRatesSum sdk.Dec
-
-						for _, assetID := range rewardsAssetPoolData.AssetId {
-							inverseRate := k.InversingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
-							inverseRatesSum = inverseRatesSum.Add(inverseRate)
-						}
-
-						for _, assetID := range rewardsAssetPoolData.AssetId {
-							borrowIDs, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
-							for _, borrowID := range borrowIDs.BorrowIds {
-								borrow, _ := k.GetBorrow(ctx, borrowID)
-								lend, _ := k.GetLend(ctx, borrow.LendingID)
-								inverseRate := k.InversingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
-								numerator := totalAPR.Mul(inverseRate)
-								finalAPR := numerator.Quo(inverseRatesSum)
-								finalDailyRewardsNumerator := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(finalAPR)
-								daysInYear, _ := sdk.NewDecFromStr(types.DaysInYear)
-								finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(daysInYear)
-								user, _ := sdk.AccAddressFromBech32(lend.Owner)
-								if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
-									err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
-									if err != nil {
-										continue
-									}
+							lend, found := k.GetLend(ctx, borrow.LendingID)
+							if !found {
+								continue
+							}
+							inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
+							numerator := totalAPR.Mul(inverseRate)
+							finalAPR := numerator.Quo(inverseRatesSum)
+							finalDailyRewardsNumerator := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(finalAPR)
+							daysInYear, _ := sdk.NewDecFromStr(types.DaysInYear)
+							finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(daysInYear)
+							user, _ := sdk.AccAddressFromBech32(lend.Owner)
+							if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
+								amountRewardedTracker = amountRewardedTracker.Sub(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
+								err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
+								if err != nil {
+									continue
 								}
 							}
-
 						}
-						epoch.Count = epoch.Count + types.UInt64One
-						epoch.StartingTime = timeNow + types.SecondsPerDay
-						k.SetEpochTime(ctx, epoch)
-					} else {
-						extRewards[i].IsActive = false
-						k.SetExternalRewardLend(ctx, extRewards[i])
+
 					}
+					// after all the vault owners are rewarded
+					// setting the starting time to next day
+					epoch.Count = epoch.Count + types.UInt64One
+					epoch.StartingTime = timeNow + types.SecondsPerDay
+					k.SetEpochTime(ctx, epoch)
+
+					// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
+					v.AvailableRewards = v.AvailableRewards.Sub(amountRewardedTracker)
+					k.SetExternalRewardLend(ctx, v)
+				} else {
+					v.IsActive = false
+					k.SetExternalRewardLend(ctx, v)
 				}
 			}
 		}
@@ -236,10 +292,10 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) InversingRates(ctx sdk.Context, assetID, poolID uint64, totalRewardAmt sdk.Int) sdk.Dec {
-	assetBorrowedByPoolIDandAssetID, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
-	assetBorrowedByPoolIDandAssetIDAmt, _ := k.CalcAssetPrice(ctx, assetID, assetBorrowedByPoolIDandAssetID.TotalBorrowed.Add(assetBorrowedByPoolIDandAssetID.TotalStableBorrowed))
-	tempRate := sdk.NewDecFromInt(assetBorrowedByPoolIDandAssetIDAmt).Quo(sdk.NewDecFromInt(totalRewardAmt))
+func (k Keeper) InvertingRates(ctx sdk.Context, assetID, poolID uint64, totalRewardAmt sdk.Int) sdk.Dec {
+	assetBorrowedByPoolIDAndAssetID, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
+	assetBorrowedByPoolIDAndAssetIDAmt, _ := k.CalcAssetPrice(ctx, assetID, assetBorrowedByPoolIDAndAssetID.TotalBorrowed.Add(assetBorrowedByPoolIDAndAssetID.TotalStableBorrowed))
+	tempRate := sdk.NewDecFromInt(assetBorrowedByPoolIDAndAssetIDAmt).Quo(sdk.NewDecFromInt(totalRewardAmt))
 	inverseRate := sdk.OneDec().Sub(tempRate)
 	return inverseRate
 }
