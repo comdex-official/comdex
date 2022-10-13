@@ -20,12 +20,12 @@ type AddNewAssetsRequest struct {
 }
 
 type (
-	AddNewPairsRequest        struct{}
-	UpdateNewPairRequest      struct{}
-	AddPoolRequest            struct{}
-	AddAssetToPairRequest     struct{}
+	AddNewPairsRequest         struct{}
+	UpdateNewPairRequest       struct{}
+	AddPoolRequest             struct{}
+	AddAssetToPairRequest      struct{}
 	AddAssetRatesParamsRequest struct{}
-	AddAuctionParamsRequest   struct{}
+	AddAuctionParamsRequest    struct{}
 )
 
 func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {

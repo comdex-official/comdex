@@ -347,7 +347,7 @@ func (k Keeper) GetUserTotalMappingData(ctx sdk.Context, address string) (mappin
 
 func (k Keeper) HasLendForAddressByAsset(ctx sdk.Context, address string, assetID, poolID uint64) bool {
 	mappingData := k.GetUserTotalMappingData(ctx, address)
-	for _, data := range mappingData{
+	for _, data := range mappingData {
 		if data.PoolId == poolID {
 			lend, _ := k.GetLend(ctx, data.LendId)
 			if lend.AssetID == assetID {

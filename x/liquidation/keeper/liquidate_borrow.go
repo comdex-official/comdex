@@ -86,7 +86,6 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					if err != nil {
 						return nil
 					}
-
 				}
 			} else {
 				currentCollateralizationRatio, _ = k.CalculateLendCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)

@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	FlagNewLendPairFile        = "add-lend-pair-file"
-	FlagAddLendPoolFile        = "add-lend-pool-file"
+	FlagNewLendPairFile         = "add-lend-pair-file"
+	FlagAddLendPoolFile         = "add-lend-pool-file"
 	FlagAddAssetRatesParamsFile = "add-asset-rates-params-file"
-	FlagSetAuctionParamsFile   = "add-auction-params-file"
+	FlagSetAuctionParamsFile    = "add-auction-params-file"
 )
 
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
@@ -77,15 +77,15 @@ type addNewLendPairsInputs struct {
 }
 
 type addLendPoolInputs struct {
-	ModuleName           string `json:"module_name"`
-	AssetID              string `json:"asset_id"`
-	AssetTransitType     string `json:"asset_transit_type"`
-	SupplyCap            string `json:"supply_cap"`
-	CPoolName            string `json:"c_pool_name"`
-	ReserveFunds         string `json:"reserve_funds"`
-	Title                string
-	Description          string
-	Deposit              string
+	ModuleName       string `json:"module_name"`
+	AssetID          string `json:"asset_id"`
+	AssetTransitType string `json:"asset_transit_type"`
+	SupplyCap        string `json:"supply_cap"`
+	CPoolName        string `json:"c_pool_name"`
+	ReserveFunds     string `json:"reserve_funds"`
+	Title            string
+	Description      string
+	Deposit          string
 }
 
 type addAssetRatesParamsInputs struct {

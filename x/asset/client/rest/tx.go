@@ -8,9 +8,11 @@ import (
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 )
 
-type UpdateNewAssetRequest struct{}
-type AddNewPairsRequest struct{}
-type UpdateNewPairRequest struct{}
+type (
+	UpdateNewAssetRequest struct{}
+	AddNewPairsRequest    struct{}
+	UpdateNewPairRequest  struct{}
+)
 
 func AddNewAssetsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{

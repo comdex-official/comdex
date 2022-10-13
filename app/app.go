@@ -164,6 +164,7 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
+	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
 	tv2_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v2_0_0"
 	tv3_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v3_0_0"
@@ -1221,6 +1222,30 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
+
+	// prepare store for main net upgrade v5.0.0
+	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{
+				assettypes.ModuleName,
+				auctiontypes.ModuleName,
+				bandoraclemoduletypes.ModuleName,
+				collectortypes.ModuleName,
+				esmtypes.ModuleName,
+				liquidationtypes.ModuleName,
+				liquiditytypes.ModuleName,
+				lockertypes.ModuleName,
+				markettypes.ModuleName,
+				rewardstypes.ModuleName,
+				tokenminttypes.ModuleName,
+				vaulttypes.ModuleName,
+				feegrant.ModuleName,
+				icacontrollertypes.StoreKey,
+				icahosttypes.StoreKey,
+				authz.ModuleName,
+			},
+		}
 	}
+
 	return storeUpgrades
 }
