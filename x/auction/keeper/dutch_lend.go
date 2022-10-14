@@ -14,14 +14,15 @@ import (
 )
 
 func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
+	// basic check for differentiating between lockedVault of borrow and lockedVault of vault
 	if lockedVault.Kind != nil {
+		// when auction is not in progress
 		if !lockedVault.IsAuctionInProgress {
 			extendedPair, found := k.GetLendPair(ctx, lockedVault.ExtendedPairId)
 			if !found {
 				return auctiontypes.ErrorInvalidPair
 			}
 			assetIn, _ := k.GetAsset(ctx, extendedPair.AssetIn)
-
 			assetOut, _ := k.GetAsset(ctx, extendedPair.AssetOut)
 
 			assetInTwA, found := k.GetTwa(ctx, assetIn.Id)
@@ -58,7 +59,7 @@ func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes
 				return nil
 			}
 			liquidationPenalty := AssetRatesStats.LiquidationPenalty
-
+			// from here the lend dutch auction is started
 			err1 := k.StartLendDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
 			if err1 != nil {
 				ctx.Logger().Error(auctiontypes.ErrorInStartDutchAuction.Error(), lockedVault.LockedVaultId)

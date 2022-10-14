@@ -133,7 +133,7 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 							continue
 						}
 						// checking if the locker was not created just to claim the external rewards, so we apply a basic check here.
-						// last day don't check min lockup time so we should have no remaining amount left
+						// last day don't check min lockup time, so we should have no remaining amount left
 						if int64(epoch.Count) != v.DurationDays {
 							if userVault.CreatedAt.Unix()-timeNow < v.MinLockupTimeSeconds {
 								continue

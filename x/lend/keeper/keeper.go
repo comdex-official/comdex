@@ -1189,6 +1189,9 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 	if !found {
 		return types.ErrBorrowNotFound
 	}
+	if borrowPos.IsLiquidated {
+		return types.ErrorBorrowPosLiquidated
+	}
 	addr, _ := sdk.AccAddressFromBech32(borrowerAddr)
 	pair, found := k.GetLendPair(ctx, borrowPos.PairID)
 	if !found {
@@ -1530,7 +1533,9 @@ func (k Keeper) MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string,
 	if !found {
 		return types.ErrBorrowNotFound
 	}
-
+	if borrowPos.IsLiquidated {
+		return types.ErrorBorrowPosLiquidated
+	}
 	lendPos, found := k.GetLend(ctx, borrowPos.LendingID)
 	if !found {
 		return types.ErrLendNotFound
