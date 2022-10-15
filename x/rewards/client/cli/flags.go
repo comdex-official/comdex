@@ -57,14 +57,16 @@ func FlagAddExternalLendRewardsMapping() *flag.FlagSet {
 }
 
 type createAddLendExternalRewardsInputs struct {
-	AppID         string `json:"app_id"`
-	CPoolID       string `json:"c_pool_id"`
-	AssetID       string `json:"asset_id"`
-	TotalRewards  string `json:"total_rewards"`
-	RewardAssetID string `json:"reward_asset_id"`
-	Duration      string `json:"duration"`
-	MinLockupTime string `json:"min_lockup_time"`
-	Title         string
-	Description   string
-	Deposit       string
+	AppID              string `json:"app_id"`
+	CPoolID            string `json:"c_pool_id"`
+	AssetID            string `json:"asset_id"`
+	TotalRewards       string `json:"total_rewards"`
+	MasterPoolId       string `json:"master_pool_id"`
+	Duration           string `json:"duration"`
+	MinLockupTime      string `json:"min_lockup_time"`
+	CSwapAppID         string `json:"c_swap_app_id"`
+	CSwapMinLockAmount string `json:"c_swap_min_lock_amount"`
+	Title              string
+	Description        string
+	Deposit            string
 }

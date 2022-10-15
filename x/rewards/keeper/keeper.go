@@ -297,7 +297,7 @@ func (k Keeper) AddLendExternalRewards(ctx sdk.Context, msg types.LendExternalRe
 		AppMappingId:         msg.AppMappingId,
 		RewardsAssetPoolData: msg.RewardsAssetPoolData,
 		TotalRewards:         msg.TotalRewards,
-		RewardAssetId:        msg.RewardAssetId,
+		MasterPoolId:         msg.MasterPoolId,
 		DurationDays:         msg.DurationDays,
 		IsActive:             true,
 		AvailableRewards:     msg.TotalRewards,

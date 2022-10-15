@@ -336,17 +336,27 @@ func NewAddLendExternalRewards(clientCtx client.Context, txf tx.Factory, fs *fla
 	if err != nil {
 		return txf, nil, err
 	}
+	cSwapAppId, err := strconv.ParseUint(externalRewardsLendMapping.CSwapAppID, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	cSwapMinLockAmount, err := strconv.ParseUint(externalRewardsLendMapping.CSwapMinLockAmount, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
 
 	rewardsAssetPoolData := types.RewardsAssetPoolData{
-		CPoolId: cPoolID,
-		AssetId: assetID,
+		CPoolId:            cPoolID,
+		AssetId:            assetID,
+		CSwapAppId:         cSwapAppId,
+		CSwapMinLockAmount: cSwapMinLockAmount,
 	}
 	totatRewards, err := sdk.ParseCoinNormalized(externalRewardsLendMapping.TotalRewards)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	rewardAssetID, err := strconv.ParseUint(externalRewardsLendMapping.RewardAssetID, 10, 64)
+	masterPoolId, err := strconv.ParseUint(externalRewardsLendMapping.MasterPoolId, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
@@ -363,7 +373,7 @@ func NewAddLendExternalRewards(clientCtx client.Context, txf tx.Factory, fs *fla
 		AppMappingId:         appID,
 		RewardsAssetPoolData: &rewardsAssetPoolData,
 		TotalRewards:         totatRewards,
-		RewardAssetId:        rewardAssetID,
+		MasterPoolId:         masterPoolId,
 		DurationDays:         duration,
 		Depositor:            from.String(),
 		MinLockupTimeSeconds: minLockup,

@@ -170,8 +170,8 @@ message Lend_external_rewards{
     (gogoproto.moretags) = "yaml:\"total_rewards\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
-  uint64 reward_asset_id = 5 [
-    (gogoproto.moretags) = "yaml:\"epoch_id\""
+  uint64 master_pool_id = 5 [
+    (gogoproto.moretags) = "yaml:\"master_pool_id\""
   ];
   int64 duration_days = 6 [
     (gogoproto.moretags) = "yaml:\"duration_days\""
@@ -211,5 +211,11 @@ message Rewards_asset_pool_data{
   ];
   repeated uint64 asset_id = 2 [
     (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  uint64 c_swap_app_id = 3 [
+  (gogoproto.moretags) = "yaml:\"c_swap_app_id\""
+  ];
+  uint64 c_swap_min_lock_amount = 4 [
+    (gogoproto.moretags) = "yaml:\"c_swap_min_lock_amount\""
   ];
 }

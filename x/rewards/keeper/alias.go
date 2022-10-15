@@ -2,6 +2,8 @@ package keeper
 
 import (
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	"github.com/comdex-official/comdex/x/liquidity/amm"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -198,4 +200,20 @@ func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, f
 
 func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping lendtypes.PoolAssetLBMapping, found bool) {
 	return k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
+}
+
+func (k Keeper) GetActiveFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (activeFarmer liquiditytypes.ActiveFarmer, found bool) {
+	return k.liquidityKeeper.GetActiveFarmer(ctx, appID, poolID, farmer)
+}
+
+func (k Keeper) GetAMMPoolInterfaceObject(ctx sdk.Context, appID, poolID uint64) (*liquiditytypes.Pool, *liquiditytypes.Pair, *amm.BasicPool, error) {
+	return k.liquidityKeeper.GetAMMPoolInterfaceObject(ctx, appID, poolID)
+}
+
+func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error) {
+	return k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
+}
+
+func (k Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool) {
+	return k.asset.GetAssetForDenom(ctx, denom)
 }
