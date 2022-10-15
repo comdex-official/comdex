@@ -39,7 +39,7 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 			// so when the epoch starting time is less than current time then the condition becomes true and flow passes through the function
 
 			if et < timeNow {
-				if epoch.Count <= uint64(v.DurationDays) { // rewards will be given till the duration defined in the ext rewards
+				if epoch.Count < uint64(v.DurationDays) { // rewards will be given till the duration defined in the ext rewards
 					// getting the total share of Deposited amount of Lockers of specific assetID and AppID
 					lockerLookup, _ := k.GetLockerLookupTable(ctx, v.AppMappingId, v.AssetId)
 					totalShare := lockerLookup.DepositedAmount
@@ -52,9 +52,9 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 							continue
 						}
 						// checking if the locker was not created just to claim the external rewards, so we apply a basic check here.
-						// last day don't check min lockup time so we should have no remaining amount left
-						if int64(epoch.Count) != v.DurationDays {
-							if locker.CreatedAt.Unix()-timeNow < v.MinLockupTimeSeconds {
+						// last day don't check min lockup time, so we should have no remaining amount left
+						if int64(epoch.Count) != v.DurationDays-1 {
+							if timeNow-locker.CreatedAt.Unix() < v.MinLockupTimeSeconds {
 								continue
 							}
 						}
@@ -82,7 +82,7 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 					k.SetEpochTime(ctx, epoch)
 
 					// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
-					v.AvailableRewards = v.AvailableRewards.Sub(amountRewardedTracker)
+					v.AvailableRewards.Amount = v.AvailableRewards.Amount.Sub(amountRewardedTracker.Amount)
 					k.SetExternalRewardsLockers(ctx, v)
 				} else {
 					v.IsActive = false
@@ -120,7 +120,7 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 			// so when the epoch starting time is less than current time then the condition becomes true and flow passes through the function
 
 			if et < timeNow {
-				if epoch.Count <= uint64(v.DurationDays) { // rewards will be given till the duration defined in the ext rewards
+				if epoch.Count < uint64(v.DurationDays) { // rewards will be given till the duration defined in the ext rewards
 					appExtPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.Extended_Pair_Id)
 
 					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
@@ -134,13 +134,13 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 						}
 						// checking if the locker was not created just to claim the external rewards, so we apply a basic check here.
 						// last day don't check min lockup time, so we should have no remaining amount left
-						if int64(epoch.Count) != v.DurationDays {
-							if userVault.CreatedAt.Unix()-timeNow < v.MinLockupTimeSeconds {
+						if int64(epoch.Count) != v.DurationDays-1 {
+							if timeNow-userVault.CreatedAt.Unix() < v.MinLockupTimeSeconds {
 								continue
 							}
 						}
-						individualUserShare := userVault.AmountOut.ToDec().Quo(sdk.NewDecFromInt(appExtPairVaultData.CollateralLockedAmount)) // getting share percentage
-						Duration := v.DurationDays - int64(epoch.Count)                                                                       // duration left (total duration - current count)
+						individualUserShare := userVault.AmountOut.ToDec().Quo(sdk.NewDecFromInt(appExtPairVaultData.TokenMintedAmount)) // getting share percentage
+						Duration := v.DurationDays - int64(epoch.Count)                                                                  // duration left (total duration - current count)
 						epochRewards := (totalRewards.Amount.ToDec()).Quo(sdk.NewDec(Duration))
 						dailyRewards := individualUserShare.Mul(epochRewards)
 						finalDailyRewards := dailyRewards.TruncateInt()
@@ -161,7 +161,8 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 					k.SetEpochTime(ctx, epoch)
 
 					// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
-					v.AvailableRewards = v.AvailableRewards.Sub(amountRewardedTracker)
+					v.AvailableRewards.Amount = v.AvailableRewards.Amount.Sub(amountRewardedTracker.Amount)
+
 					k.SetExternalRewardVault(ctx, v)
 				} else {
 					v.IsActive = false
@@ -289,7 +290,7 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					k.SetEpochTime(ctx, epoch)
 
 					// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
-					v.AvailableRewards = v.AvailableRewards.Sub(amountRewardedTracker)
+					v.AvailableRewards.Amount = v.AvailableRewards.Amount.Sub(amountRewardedTracker.Amount)
 					k.SetExternalRewardLend(ctx, v)
 				} else {
 					v.IsActive = false
