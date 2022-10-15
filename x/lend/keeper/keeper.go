@@ -108,8 +108,8 @@ func (k Keeper) CheckSupplyCap(ctx sdk.Context, assetID, poolID uint64, amt sdk.
 func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Amount sdk.Coin, PoolID, AppID uint64) error {
 	// this fn IBC Assets fom the user
 	// sends the asset to pool's module-acc
-	// mints cAsset representative of the lent aasset
-	// creates a lend Position and updates global lend
+	// mints cAsset representative of the lent asset
+	// creates a lent Position and updates global lend
 
 	killSwitchParams, _ := k.GetKillSwitchData(ctx, AppID)
 	if killSwitchParams.BreakerEnable {

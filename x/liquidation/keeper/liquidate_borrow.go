@@ -262,6 +262,12 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVau
 				updatedLockedVault.AmountIn = sdk.ZeroInt()
 				lendPos.AmountIn.Amount = sdk.ZeroInt()
 			}
+			// also global lend data is subtracted by totalDeduction amount
+			assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lendPos.PoolID, lendPos.AssetID)
+			assetStats.TotalLend = assetStats.TotalLend.Sub(totalDeduction)
+			// setting the updated global lend data
+			k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
+
 			// users cToken present in pool's module will be burnt
 			err = k.BurnCoin(ctx, pool.ModuleName, sdk.NewCoin(cAsset.Denom, sdk.NewInt(penaltyToReserveAmount.TruncateInt64())))
 			if err != nil {

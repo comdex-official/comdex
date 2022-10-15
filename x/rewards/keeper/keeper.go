@@ -84,9 +84,9 @@ func uint64InSlice(a uint64, list []uint64) bool {
 	return false
 }
 
-func (k Keeper) WhitelistAsset(ctx sdk.Context, appMappingID uint64, assetID uint64) error {
+// WhitelistAssetForInternalRewards of an app for internal rewards
+func (k Keeper) WhitelistAssetForInternalRewards(ctx sdk.Context, appMappingID uint64, assetID uint64) error {
 	_, found := k.locker.GetLockerProductAssetMapping(ctx, appMappingID, assetID)
-
 	if !found {
 		return types.ErrAssetIDDoesNotExist
 	}
@@ -224,7 +224,7 @@ func (k Keeper) ActExternalRewardsVaults(
 	return nil
 }
 
-// Wasm tx and query binding functions
+// WasmRemoveWhitelistAssetLocker tx and query binding functions
 func (k Keeper) WasmRemoveWhitelistAssetLocker(ctx sdk.Context, appMappingID uint64, assetID uint64) error {
 	klwsParams, _ := k.GetKillSwitchData(ctx, appMappingID)
 	if klwsParams.BreakerEnable {

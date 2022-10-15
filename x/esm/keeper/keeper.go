@@ -72,6 +72,10 @@ func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 }
 
 func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, Amount sdk.Coin) error {
+	// take deposits from the user
+	// send tokens to tokenMint module and burn them
+	// update global deposit stats and user deposit stats checking if trigger params reached
+
 	appData, found := k.GetApp(ctx, AppID)
 	if !found {
 		return types.ErrAppDataNotFound
@@ -141,6 +145,8 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 }
 
 func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error {
+	// checking if target deposit amount is reached
+	// setting end time by adding coolOff period
 	_, found := k.GetApp(ctx, AppID)
 	if !found {
 		return types.ErrAppDataNotFound
@@ -176,12 +182,14 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 }
 
 func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff, from string) error {
+
 	userAddress, err := sdk.AccAddressFromBech32(from)
 	if err != nil {
 		return err
 	}
 	assetInID, _ := k.GetAssetForDenom(ctx, amount.Denom)
 
+	// initializing userWorth
 	userWorth := sdk.ZeroDec()
 	for _, v := range esmDataAfterCoolOff.DebtAsset {
 		if v.AssetID == assetInID.Id {
@@ -189,19 +197,19 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 			break
 		}
 	}
-
+	// TODO: Refactor & remove usd
 	for i, data := range esmDataAfterCoolOff.CollateralAsset {
 		collAsset, _ := k.GetAsset(ctx, data.AssetID)
-		tokenDVaule := data.Share.Mul(userWorth)
-		price, _ := k.GetSnapshotOfPrices(ctx, appID, data.AssetID)
-		oldtokenQuant := tokenDVaule.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
+		tokenDValue := data.Share.Mul(userWorth)
+		price, _ := k.GetSnapshotOfPrices(ctx, appID, data.AssetID) // getting last saved prices
+		oldTokenQuant := tokenDValue.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
 		usd := 1000000
-		tokenQuant := oldtokenQuant.Quo(sdk.NewDec(int64(usd))).TruncateInt()
+		tokenQuant := oldTokenQuant.Quo(sdk.NewDec(int64(usd)))
 		err1 := k.bank.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, sdk.NewCoins(amount))
 		if err1 != nil {
 			return err1
 		}
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(collAsset.Denom, tokenQuant)))
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(collAsset.Denom, tokenQuant.TruncateInt())))
 		if err != nil {
 			return err
 		}
@@ -209,7 +217,7 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 		if err2 != nil {
 			return err2
 		}
-		data.Amount = data.Amount.Sub(tokenQuant)
+		data.Amount = data.Amount.Sub(tokenQuant.TruncateInt())
 		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i], esmDataAfterCoolOff.CollateralAsset[i+1:]...)
 		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i+1], esmDataAfterCoolOff.CollateralAsset[i:]...)
 		esmDataAfterCoolOff.CollateralAsset[i] = data

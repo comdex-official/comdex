@@ -13,6 +13,7 @@ import (
 	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
+// SetReward sets internal rewards for an asset of an app
 func (k Keeper) SetReward(ctx sdk.Context, rewards types.InternalRewards) {
 	var (
 		store = k.Store(ctx)
@@ -23,6 +24,7 @@ func (k Keeper) SetReward(ctx sdk.Context, rewards types.InternalRewards) {
 	store.Set(key, value)
 }
 
+// GetReward gets internal rewards for an asset of an app
 func (k Keeper) GetReward(ctx sdk.Context, appID, assetID uint64) (rewards types.InternalRewards, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -385,6 +387,7 @@ func (k Keeper) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingID uint6
 	return true, ""
 }
 
+// Whitelist an asset of an app for internal rewards
 func (k Keeper) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (*types.MsgWhitelistAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppMappingId)
@@ -400,7 +403,7 @@ func (k Keeper) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (*ty
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
 
-	if err := k.WhitelistAsset(ctx, msg.AppMappingId, msg.AssetId); err != nil {
+	if err := k.WhitelistAssetForInternalRewards(ctx, msg.AppMappingId, msg.AssetId); err != nil {
 		return nil, err
 	}
 	return &types.MsgWhitelistAssetResponse{}, nil
