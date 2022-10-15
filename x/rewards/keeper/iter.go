@@ -68,7 +68,7 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 						finalDailyRewards := dailyRewards.TruncateInt()
 						// after calculating final daily rewards, the amount is sent to the user
 						if finalDailyRewards.GT(sdk.ZeroInt()) {
-							amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(availableRewards.Denom, finalDailyRewards))
+							amountRewardedTracker.Amount = amountRewardedTracker.Amount.Add(finalDailyRewards)
 							err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(availableRewards.Denom, finalDailyRewards))
 							if err != nil {
 								continue
@@ -78,7 +78,7 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 					// after all the locker owners are rewarded
 					// setting the starting time to next day
 					epoch.Count = epoch.Count + types.UInt64One
-					epoch.StartingTime = timeNow + types.Int64SecondsInADay
+					epoch.StartingTime = timeNow + types.SecondsPerDay
 					k.SetEpochTime(ctx, epoch)
 
 					// setting the available rewards by subtracting the amount sent per epoch for the ext rewards

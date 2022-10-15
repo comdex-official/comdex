@@ -129,20 +129,13 @@ func (k Keeper) ActExternalRewardsLockers(
 		return types.ErrAssetIDDoesNotExist
 	}
 
-	extRewards := k.GetExternalRewardsLockers(ctx)
-	for _, v := range extRewards {
-		if v.AppMappingId == appMappingID && v.AssetId == assetID {
-			return types.ErrAssetIDDoesNotExist
-		}
-	}
-
 	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*types.SecondsPerDay))
 
 	epochID := k.GetEpochTimeID(ctx)
 	epoch := types.EpochTime{
 		Id:           epochID + 1,
 		AppMappingId: appMappingID,
-		StartingTime: ctx.BlockTime().Unix() + 84600,
+		StartingTime: ctx.BlockTime().Unix() + types.SecondsPerDay,
 	}
 
 	msg := types.LockerExternalRewards{
