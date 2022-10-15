@@ -328,6 +328,9 @@ func (k Keeper) CheckBorrowersLiquidity(ctx sdk.Context, addr sdk.AccAddress, ma
 	quoteCoinAsset, _ := k.GetAssetForDenom(ctx, pair.QuoteCoinDenom)
 	baseCoinAsset, _ := k.GetAssetForDenom(ctx, pair.BaseCoinDenom)
 	priceQuoteCoin, err := k.CalcAssetPrice(ctx, quoteCoinAsset.Id, x)
+	if err != nil {
+		return false
+	}
 	priceBaseCoin, err := k.CalcAssetPrice(ctx, baseCoinAsset.Id, y)
 	if err != nil {
 		return false
