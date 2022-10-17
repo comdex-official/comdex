@@ -10,6 +10,37 @@ import (
 	"github.com/comdex-official/comdex/x/vault/types"
 )
 
+func (k Keeper) SetLengthOfVault(ctx sdk.Context, length uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.VaultLengthPrefix
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: length,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetLengthOfVault(ctx sdk.Context) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = types.VaultLengthPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return 0
+	}
+
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}
+
 func (k Keeper) SetIDForVault(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
@@ -264,8 +295,8 @@ func (k Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(
 	k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
 }
 
-// CalculateCollaterlizationRatio Calculate Collaterlization Ratio .
-func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
+// CalculateCollateralizationRatio Calculate Collaterlization Ratio .
+func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
 	extendedPairVault, found := k.GetPairsVault(ctx, extendedPairVaultID)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorExtendedPairVaultDoesNotExists
@@ -301,9 +332,9 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 		if !found {
 			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 		}
-		assetInTotalPrice = sdk.NewIntFromUint64(price)
+		assetInTotalPrice = sdk.NewDecFromInt(sdk.NewIntFromUint64(price))
 	}
-	var assetOutTotalPrice sdk.Int
+	var assetOutTotalPrice sdk.Dec
 
 	if extendedPairVault.AssetOutOraclePrice {
 		// If oracle Price required for the assetOut
@@ -313,7 +344,7 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 			if !found {
 				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 			}
-			assetInTotalPrice = sdk.NewIntFromUint64(price)
+			assetInTotalPrice = sdk.NewDecFromInt(sdk.NewIntFromUint64(price))
 		} else {
 			assetOutTotalPrice, err = k.CalcAssetPrice(ctx, assetOutData.Id, amountOut)
 			if err != nil {
@@ -322,19 +353,17 @@ func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaul
 		}
 	} else {
 		// If oracle Price is not required for the assetOut
-		assetOutTotalPrice = (sdk.NewIntFromUint64(extendedPairVault.AssetOutPrice).Mul(amountOut)).Quo(sdk.NewIntFromUint64(uint64(assetOutData.Decimals)))
+		assetOutTotalPrice = (sdk.NewDecFromInt(sdk.NewIntFromUint64(extendedPairVault.AssetOutPrice)).Mul(sdk.NewDecFromInt(amountOut))).Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetOutData.Decimals))))
 	}
 
-	totalIn := sdk.NewDecFromInt(assetInTotalPrice)
-	if totalIn.LTE(sdk.ZeroDec()) {
+	if assetInTotalPrice.LTE(sdk.ZeroDec()) {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountIn
 	}
 
-	totalOut := sdk.NewDecFromInt(assetOutTotalPrice)
-	if totalOut.LTE(sdk.ZeroDec()) {
+	if assetOutTotalPrice.LTE(sdk.ZeroDec()) {
 		return sdk.ZeroDec(), types.ErrorInvalidAmountOut
 	}
-	return totalIn.Quo(totalOut), nil
+	return assetInTotalPrice.Quo(assetOutTotalPrice), nil
 }
 
 func (k Keeper) VerifyCollaterlizationRatio(
@@ -345,7 +374,7 @@ func (k Keeper) VerifyCollaterlizationRatio(
 	minCrRequired sdk.Dec,
 	statusEsm bool,
 ) error {
-	collaterlizationRatio, err := k.CalculateCollaterlizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
+	collaterlizationRatio, err := k.CalculateCollateralizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
 	if err != nil {
 		return err
 	}

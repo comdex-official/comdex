@@ -123,10 +123,10 @@ func (k Keeper) SetBorrowInterestTracker(ctx sdk.Context, interest types.BorrowI
 	store.Set(key, value)
 }
 
-func (k Keeper) GetBorrowInterestTracker(ctx sdk.Context, id uint64) (interest types.BorrowInterestTracker, found bool) {
+func (k Keeper) GetBorrowInterestTracker(ctx sdk.Context, ID uint64) (interest types.BorrowInterestTracker, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.BorrowInterestTrackerKey(id)
+		key   = types.BorrowInterestTrackerKey(ID)
 		value = store.Get(key)
 	)
 
@@ -136,4 +136,13 @@ func (k Keeper) GetBorrowInterestTracker(ctx sdk.Context, id uint64) (interest t
 
 	k.cdc.MustUnmarshal(value, &interest)
 	return interest, true
+}
+
+func (k Keeper) DeleteBorrowInterestTracker(ctx sdk.Context, ID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.BorrowInterestTrackerKey(ID)
+	)
+
+	store.Delete(key)
 }

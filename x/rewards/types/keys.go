@@ -37,6 +37,7 @@ var (
 	EpochTimeIDKey                 = []byte{0x17}
 	EpochForLockerKeyPrefix        = []byte{0x20}
 	ExternalRewardsLendKeyPrefix   = []byte{0x27}
+	ExtRewardsLendIDKey            = []byte{0x28}
 
 	// EpochInfoByDurationKeyPrefix defines the prefix to store EpochInfo by duration.
 	EpochInfoByDurationKeyPrefix = []byte{0x21}

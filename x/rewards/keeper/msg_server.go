@@ -80,15 +80,39 @@ func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.Activa
 	if err != nil {
 		return nil, err
 	}
-	pairVault, found := m.GetPairsVault(ctx, msg.Extended_Pair_Id)
+	pairVault, found := m.GetPairsVault(ctx, msg.ExtendedPairId)
 	if !found {
 		return nil, assettypes.ErrorExtendedPairDoesNotExistForTheApp
 	}
 	if pairVault.IsStableMintVault {
 		return nil, types.ErrStablemintVaultFound
 	}
-	if err := m.Keeper.ActExternalRewardsVaults(ctx, msg.AppMappingId, msg.Extended_Pair_Id, msg.DurationDays, msg.MinLockupTimeSeconds, msg.TotalRewards, Depositor); err != nil {
+	if err := m.Keeper.ActExternalRewardsVaults(ctx, msg.AppMappingId, msg.ExtendedPairId, msg.DurationDays, msg.MinLockupTimeSeconds, msg.TotalRewards, Depositor); err != nil {
 		return nil, err
 	}
 	return &types.ActivateExternalRewardsVaultResponse{}, nil
+}
+
+func (m msgServer) ExternalRewardsLend(goCtx context.Context, msg *types.ActivateExternalRewardsLend) (*types.ActivateExternalRewardsLendResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	klwsParams, _ := m.GetKillSwitchData(ctx, msg.AppMappingId)
+	if klwsParams.BreakerEnable {
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	esmStatus, found := m.GetESMStatus(ctx, msg.AppMappingId)
+	status := false
+	if found {
+		status = esmStatus.Status
+	}
+	if status {
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	_, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		return nil, err
+	}
+	if err = m.Keeper.AddLendExternalRewards(ctx, *msg); err != nil {
+		return nil, err
+	}
+	return &types.ActivateExternalRewardsLendResponse{}, nil
 }

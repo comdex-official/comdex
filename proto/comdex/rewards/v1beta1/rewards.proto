@@ -7,18 +7,16 @@ import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 
-message Internal_rewards{
-  uint64 app_mapping_ID = 1 [
-    (gogoproto.customname) = "App_mapping_ID",
-    (gogoproto.moretags) = "yaml:\"app_mapping_ID\""
+message InternalRewards{
+  uint64 app_mapping_id = 1 [
+    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
-  uint64 asset_ID = 2 [
-    (gogoproto.customname) = "Asset_ID",
-    (gogoproto.moretags) = "yaml:\"asset_ID\""
+  uint64 asset_id = 2 [
+    (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
 }
 
-message Locker_rewards_tracker{
+message LockerRewardsTracker{
   uint64 locker_id = 1 [
     (gogoproto.moretags) = "yaml:\"locker_id\""
   ];
@@ -32,7 +30,7 @@ message Locker_rewards_tracker{
   ];
 }
 
-message Vault_interest_tracker{
+message VaultInterestTracker{
   uint64 vault_id = 1 [
     (gogoproto.moretags) = "yaml:\"vault_id\""
   ];
@@ -46,7 +44,7 @@ message Vault_interest_tracker{
   ];
 }
 
-message Locker_external_rewards{
+message LockerExternalRewards{
   uint64 id = 1 [
     (gogoproto.moretags) = "yaml:\"id\""
   ];
@@ -93,15 +91,15 @@ message Locker_external_rewards{
   ];
 }
 
-message Vault_external_rewards{
+message VaultExternalRewards{
   uint64 id = 1 [
     (gogoproto.moretags) = "yaml:\"id\""
   ];
   uint64 app_mapping_id = 2 [
     (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
-  uint64 extended_Pair_Id = 3 [
-    (gogoproto.moretags) = "yaml:\"extended_Pair_Id\""
+  uint64 extended_pair_id = 3 [
+    (gogoproto.moretags) = "yaml:\"extended_pair_id\""
   ];
   cosmos.base.v1beta1.Coin total_rewards = 4 [
     (gogoproto.nullable) = false,
@@ -155,14 +153,14 @@ message EpochTime{
   ];
 }
 
-message Lend_external_rewards{
+message LendExternalRewards{
   uint64 id = 1 [
     (gogoproto.moretags) = "yaml:\"id\""
   ];
   uint64 app_mapping_id = 2 [
     (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
-  repeated Rewards_asset_pool_data rewards_asset_pool_data = 3 [
+  RewardsAssetPoolData rewards_asset_pool_data = 3 [
     (gogoproto.moretags) = "yaml:\"rewards_asset_pool_data\""
   ];
   cosmos.base.v1beta1.Coin total_rewards = 4 [
@@ -170,8 +168,8 @@ message Lend_external_rewards{
     (gogoproto.moretags) = "yaml:\"total_rewards\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
-  uint64 reward_asset_id = 5 [
-    (gogoproto.moretags) = "yaml:\"epoch_id\""
+  int64 master_pool_id = 5 [
+    (gogoproto.moretags) = "yaml:\"master_pool_id\""
   ];
   int64 duration_days = 6 [
     (gogoproto.moretags) = "yaml:\"duration_days\""
@@ -205,11 +203,17 @@ message Lend_external_rewards{
   ];
 }
 
-message Rewards_asset_pool_data{
+message RewardsAssetPoolData{
   uint64 c_pool_id = 1 [
     (gogoproto.moretags) = "yaml:\"c_pool_id\""
   ];
   repeated uint64 asset_id = 2 [
     (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  uint64 c_swap_app_id = 3 [
+  (gogoproto.moretags) = "yaml:\"c_swap_app_id\""
+  ];
+  uint64 c_swap_min_lock_amount = 4 [
+    (gogoproto.moretags) = "yaml:\"c_swap_min_lock_amount\""
   ];
 }

@@ -32,6 +32,7 @@ func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleNam
 			return err
 		}
 	}
+	k.SetReserveBuybackAssetData(ctx, reserve)
 	return nil
 }
 

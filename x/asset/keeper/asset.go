@@ -256,37 +256,3 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	k.SetAsset(ctx, asset)
 	return nil
 }
-
-func (k Keeper) AddPairsRecords(ctx sdk.Context, msg types.Pair) error {
-	if !k.HasAsset(ctx, msg.AssetIn) {
-		return types.ErrorAssetDoesNotExist
-	}
-	if !k.HasAsset(ctx, msg.AssetOut) {
-		return types.ErrorAssetDoesNotExist
-	}
-	if msg.AssetIn == msg.AssetOut {
-		return types.ErrorDuplicateAsset
-	}
-	pairs := k.GetPairs(ctx)
-	for _, data := range pairs {
-		if data.AssetIn == msg.AssetIn && data.AssetOut == msg.AssetOut {
-			return types.ErrorDuplicatePair
-		} else if (data.AssetIn == msg.AssetOut) && (data.AssetOut == msg.AssetIn) {
-			return types.ErrorReversePairAlreadyExist
-		}
-	}
-
-	var (
-		id   = k.GetPairID(ctx)
-		pair = types.Pair{
-			Id:       id + 1,
-			AssetIn:  msg.AssetIn,
-			AssetOut: msg.AssetOut,
-		}
-	)
-
-	k.SetPairID(ctx, pair.Id)
-	k.SetPair(ctx, pair)
-
-	return nil
-}
