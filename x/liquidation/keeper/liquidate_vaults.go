@@ -28,71 +28,74 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		if !found {
 			liquidationOffsetHolder = types.NewLiquidationOffsetHolder(appIds[i], 0)
 		}
-		vaultsMap, _ := k.GetAppMappingData(ctx, appIds[i])
+		totalVaults := k.GetVaults(ctx)
+		lengthOfVaults := int(k.GetLengthOfVault(ctx))
+		//// get all vaults
+		/// range over those vaults
+		//// for length of vaults use vault counter
+		//// wen inside the vault slice check if the app_id matches with that of app_id[i]
 
-		vaults := vaultsMap
-		for j := range vaults {
-			vaultIds := vaults[j].VaultIds
-			start, end := types.GetSliceStartEndForLiquidations(len(vaultIds), int(liquidationOffsetHolder.CurrentOffset), int(params.LiquidationBatchSize))
-			if start == end {
-				liquidationOffsetHolder.CurrentOffset = 0
-				start, end = types.GetSliceStartEndForLiquidations(len(vaultIds), int(liquidationOffsetHolder.CurrentOffset), int(params.LiquidationBatchSize))
+		start, end := types.GetSliceStartEndForLiquidations(lengthOfVaults, int(liquidationOffsetHolder.CurrentOffset), int(params.LiquidationBatchSize))
+		if start == end {
+			liquidationOffsetHolder.CurrentOffset = 0
+			start, end = types.GetSliceStartEndForLiquidations(lengthOfVaults, int(liquidationOffsetHolder.CurrentOffset), int(params.LiquidationBatchSize))
+		}
+
+		newVaults := totalVaults[start:end]
+		for _, vault := range newVaults {
+			if vault.AppId != appIds[i] {
+				continue
 			}
-			newVaultIDs := vaultIds[start:end]
-			for l := range newVaultIDs {
-				vault, found := k.GetVault(ctx, vaultIds[l])
-				if !found {
-					continue
-				}
+			extPair, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
+			pair, _ := k.GetPair(ctx, extPair.PairId)
+			assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+			if !found {
+				continue
+			}
+			totalRate, err := k.CalcAssetPrice(ctx, assetIn.Id, vault.AmountIn)
+			if err != nil {
+				continue
+			}
+			totalIn := totalRate
 
-				extPair, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
-				pair, _ := k.GetPair(ctx, extPair.PairId)
-				assetIn, found := k.GetAsset(ctx, pair.AssetIn)
-				if !found {
+			liqRatio := extPair.MinCr
+			totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
+			collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
+			if err != nil {
+				continue
+			}
+			if collateralizationRatio.LT(liqRatio) {
+				// calculate interest and update vault
+				totalDebt := vault.AmountOut.Add(vault.InterestAccumulated)
+				err1 := k.CalculateVaultInterest(ctx, vault.AppId, vault.ExtendedPairVaultID, vault.Id, totalDebt, vault.BlockHeight, vault.BlockTime.Unix())
+				if err1 != nil {
 					continue
 				}
-				assetInPrice, found := k.GetPriceForAsset(ctx, assetIn.Id)
-				if !found {
-					continue
-				}
-				totalIn := vault.AmountIn.Mul(sdk.NewIntFromUint64(assetInPrice)).ToDec()
-
-				liqRatio := extPair.MinCr
-				totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
-				collateralitzationRatio, err := k.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
+				vault, _ := k.GetVault(ctx, vault.Id)
+				totalFees := vault.InterestAccumulated.Add(vault.ClosingFeeAccumulated)
+				collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 				if err != nil {
 					continue
 				}
-
-				if sdk.Dec.LT(collateralitzationRatio, liqRatio) {
-					// calculate interest and update vault
-					totalDebt := vault.AmountOut.Add(vault.InterestAccumulated)
-					err1 := k.CalculateVaultInterest(ctx, vault.AppId, vault.ExtendedPairVaultID, vault.Id, totalDebt, vault.BlockHeight, vault.BlockTime.Unix())
-					if err1 != nil {
-						continue
-					}
-					vault, _ := k.GetVault(ctx, vaultIds[l])
-
-					err := k.CreateLockedVault(ctx, vault, totalIn, collateralitzationRatio, appIds[i])
-					if err != nil {
-						continue
-					}
-					k.DeleteVault(ctx, vault.Id)
-					var rewards rewardstypes.VaultInterestTracker
-					rewards.AppMappingId = appIds[i]
-					rewards.VaultId = vaultIds[l]
-					k.DeleteVaultInterestTracker(ctx, rewards)
-					k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, vault.ExtendedPairVaultID, vault.Id, appIds[i])
+				err = k.CreateLockedVault(ctx, vault, totalIn, collateralizationRatio, appIds[i], totalOut, totalFees)
+				if err != nil {
+					continue
 				}
+				k.DeleteVault(ctx, vault.Id)
+				var rewards rewardstypes.VaultInterestTracker
+				rewards.AppMappingId = appIds[i]
+				rewards.VaultId = vault.Id
+				k.DeleteVaultInterestTracker(ctx, rewards)
+				k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, vault.ExtendedPairVaultID, vault.Id, appIds[i])
 			}
-			liquidationOffsetHolder.CurrentOffset = uint64(end)
-			k.SetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, liquidationOffsetHolder)
 		}
+		liquidationOffsetHolder.CurrentOffset = uint64(end)
+		k.SetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, liquidationOffsetHolder)
 	}
 	return nil
 }
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, totalIn sdk.Dec, collateralizationRatio sdk.Dec, appID uint64) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, totalIn sdk.Dec, collateralizationRatio sdk.Dec, appID uint64, totalOut, totalFees sdk.Int) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	value := types.LockedVault{
@@ -103,19 +106,21 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, total
 		Owner:                   vault.Owner,
 		AmountIn:                vault.AmountIn,
 		AmountOut:               vault.AmountOut,
-		UpdatedAmountOut:        vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated),
+		UpdatedAmountOut:        sdk.ZeroInt(),
 		Initiator:               types.ModuleName,
 		IsAuctionComplete:       false,
 		IsAuctionInProgress:     false,
 		CrAtLiquidation:         collateralizationRatio,
 		CollateralToBeAuctioned: totalIn,
 		LiquidationTimestamp:    ctx.BlockTime(),
-		InterestAccumulated:     vault.InterestAccumulated,
+		InterestAccumulated:     totalFees,
 		Kind:                    nil,
 	}
 
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
+	length := k.GetLengthOfVault(ctx)
+	k.SetLengthOfVault(ctx, length-1)
 	err := k.DutchActivator(ctx, value)
 	if err != nil {
 		ctx.Logger().Error("error in dutch activator")

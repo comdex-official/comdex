@@ -39,12 +39,7 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 }
 
 func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, netCollected types.AppAssetIdToFeeCollectedData) error {
-	netCollected.AppId = appID
-
-	var netCollectedFee sdk.Int
-
-	netCollected.AssetId = assetID
-	netCollectedFee = netCollected.NetFeesCollected.Sub(amount)
+	netCollectedFee := netCollected.NetFeesCollected.Sub(amount)
 	if netCollectedFee.IsNegative() {
 		return types.ErrorNetFeesCanNotBeNegative
 	}
@@ -80,7 +75,7 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 		newCollector.CollectedStabilityFee = collectedStabilityFee
 		newCollector.LiquidationRewardsCollected = liquidationRewardsCollected
 
-		collectorNewData.Collector = newCollector
+		collectorNewData.Collector = &newCollector
 
 		k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
 		err := k.SetNetFeeCollectedData(ctx, appID, assetID,
@@ -92,18 +87,12 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 			return err
 		}
 	} else {
-		var collectorNewData types.AppToAssetIdCollectorMapping
-		collectorNewData.AppId = appID
-		collectorNewData.AssetId = assetID
+		collectorData.Collector.CollectedClosingFee = collectorData.Collector.CollectedClosingFee.Add(collectedClosingFee)
+		collectorData.Collector.CollectedOpeningFee = collectorData.Collector.CollectedOpeningFee.Add(collectedOpeningFee)
+		collectorData.Collector.CollectedStabilityFee = collectorData.Collector.CollectedStabilityFee.Add(collectedStabilityFee)
+		collectorData.Collector.LiquidationRewardsCollected = collectorData.Collector.LiquidationRewardsCollected.Add(liquidationRewardsCollected)
 
-		var newCollector types.CollectorData
-		newCollector.CollectedClosingFee = collectorData.Collector.CollectedClosingFee.Add(collectedClosingFee)
-		newCollector.CollectedOpeningFee = collectorData.Collector.CollectedOpeningFee.Add(collectedOpeningFee)
-		newCollector.CollectedStabilityFee = collectorData.Collector.CollectedStabilityFee.Add(collectedStabilityFee)
-		newCollector.LiquidationRewardsCollected = collectorData.Collector.LiquidationRewardsCollected.Add(liquidationRewardsCollected)
-		collectorNewData.Collector = newCollector
-
-		k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
+		k.SetAppidToAssetCollectorMapping(ctx, collectorData)
 		err := k.SetNetFeeCollectedData(ctx, appID, assetID,
 			collectedClosingFee.
 				Add(collectedOpeningFee).
@@ -177,7 +166,7 @@ func (k Keeper) GetCollectorDataForAppIDAssetID(ctx sdk.Context, appID uint64, a
 		return collectorData, false
 	}
 	k.cdc.MustUnmarshal(value, &appAssetCollectorData)
-	collectorData = appAssetCollectorData.Collector
+	collectorData = *appAssetCollectorData.Collector
 
 	return collectorData, true
 }
@@ -470,19 +459,11 @@ func (k Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, f
 
 		store.Set(key, value)
 	} else {
-		var netCollected types.AppAssetIdToFeeCollectedData
-		netCollected.AppId = appID
-
-		var netCollectedFee sdk.Int
-
-		netCollected.AssetId = assetID
-		netCollectedFee = collectorData.NetFeesCollected.Add(fee)
-
-		netCollected.NetFeesCollected = netCollectedFee
+		collectorData.NetFeesCollected = collectorData.NetFeesCollected.Add(fee)
 		var (
 			store = ctx.KVStore(k.storeKey)
 			key   = types.NetFeeCollectedDataKey(appID, assetID)
-			value = k.cdc.MustMarshal(&netCollected)
+			value = k.cdc.MustMarshal(&collectorData)
 		)
 
 		store.Set(key, value)
@@ -698,7 +679,7 @@ func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding
 	if found {
 		if Collector.LockerSavingRate != updateColBinding.LSR {
 			if updateColBinding.LSR.IsZero() {
-				// run script to distrubyte reward
+				// run script to distribute reward
 				k.LockerIterateRewards(ctx, Collector.LockerSavingRate, Collector.BlockHeight, Collector.BlockTime.Unix(), updateColBinding.AppID, updateColBinding.AssetID, false)
 				Collector.BlockTime = ctx.BlockTime()
 				Collector.BlockHeight = 0

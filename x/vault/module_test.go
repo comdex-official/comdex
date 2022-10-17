@@ -15,7 +15,6 @@ import (
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	"github.com/comdex-official/comdex/x/vault/keeper"
 	"github.com/comdex-official/comdex/x/vault/types"
-	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 type ModuleTestSuite struct {
@@ -86,19 +85,6 @@ func (s *ModuleTestSuite) CreateNewApp(appName string) uint64 {
 	return appID
 }
 
-func (s *ModuleTestSuite) SetOraclePrice(symbol string, price uint64) {
-	var (
-		store = s.app.MarketKeeper.Store(s.ctx)
-		key   = markettypes.PriceForMarketKey(symbol)
-	)
-	value := s.app.AppCodec().MustMarshal(
-		&protobuftypes.UInt64Value{
-			Value: price,
-		},
-	)
-	store.Set(key, value)
-}
-
 func (s *ModuleTestSuite) CreateNewAsset(name, denom string, price uint64) uint64 {
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
@@ -118,20 +104,42 @@ func (s *ModuleTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	}
 	s.Require().NotZero(assetID)
 
-	market := markettypes.Market{
-		Symbol:   name,
-		ScriptID: 12,
-		Rates:    price,
+	twa1 := markettypes.TimeWeightedAverage{
+		AssetID:       1,
+		ScriptID:      10,
+		Twa:           12000000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
 	}
-	s.app.MarketKeeper.SetMarket(s.ctx, market)
-
-	exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
-	s.Suite.Require().False(exists)
-	s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetID, name)
-	exists = s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
-	s.Suite.Require().True(exists)
-
-	s.SetOraclePrice(name, price)
+	twa2 := markettypes.TimeWeightedAverage{
+		AssetID:       2,
+		ScriptID:      10,
+		Twa:           100000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
+	}
+	twa3 := markettypes.TimeWeightedAverage{
+		AssetID:       3,
+		ScriptID:      10,
+		Twa:           1000000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
+	}
+	twa4 := markettypes.TimeWeightedAverage{
+		AssetID:       4,
+		ScriptID:      10,
+		Twa:           2500000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
+	}
+	s.app.MarketKeeper.SetTwa(s.ctx, twa1)
+	s.app.MarketKeeper.SetTwa(s.ctx, twa2)
+	s.app.MarketKeeper.SetTwa(s.ctx, twa3)
+	s.app.MarketKeeper.SetTwa(s.ctx, twa4)
 
 	return assetID
 }

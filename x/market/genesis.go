@@ -8,11 +8,11 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
-	for _, item := range state.Markets {
-		k.SetMarket(ctx, item)
+	for _, item := range state.TimeWeightedAverage {
+		k.SetTwa(ctx, item)
 	}
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	return types.NewGenesisState(k.GetMarkets(ctx))
+	return types.NewGenesisState(k.GetAllTwa(ctx))
 }

@@ -3,15 +3,9 @@ package expected
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/market/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
-
-type MarketKeeper interface {
-	GetMarketForAsset(ctx sdk.Context, id uint64) (types.Market, bool)
-	GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool)
-}
 
 type RewardsKeeper interface {
 	GetAppIDByApp(ctx sdk.Context, appID uint64) (uint64, bool)

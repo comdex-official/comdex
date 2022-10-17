@@ -1,8 +1,8 @@
 package types
 
-func NewGenesisState(markets []Market) *GenesisState {
+func NewGenesisState(twa []TimeWeightedAverage) *GenesisState {
 	return &GenesisState{
-		Markets: markets,
+		TimeWeightedAverage: twa,
 	}
 }
 

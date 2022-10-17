@@ -11,9 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/spf13/cobra"
-
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/spf13/cobra"
 
 	"github.com/comdex-official/comdex/x/rewards/types"
 )
@@ -31,7 +30,8 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(
 		NewCreateGaugeCmd(),
 		txActivateExternalRewardsLockers(),
-		txActivateExternalVaultsLockers(),
+		txActivateExternalRewardsVaults(),
+		txActivateExternalRewardsLend(),
 	)
 
 	return cmd
@@ -177,7 +177,7 @@ func txActivateExternalRewardsLockers() *cobra.Command {
 	return cmd
 }
 
-func txActivateExternalVaultsLockers() *cobra.Command {
+func txActivateExternalRewardsVaults() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "activate-external-rewards-vault [appMappingID] [extendedPairID] [totalRewards] [durationDays] [minLockupTimeSeconds]",
 		Short: "activate external reward for vault extendedPairID",
@@ -213,7 +213,7 @@ func txActivateExternalVaultsLockers() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgActivateExternalVaultLockers(
+			msg := types.NewMsgActivateExternalRewardsVault(
 				appMappingID,
 				extendedPairID,
 				totalRewards,
@@ -277,4 +277,81 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 		},
 	}
 	return liquidityGaugeExtraData, nil
+}
+
+func txActivateExternalRewardsLend() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "activate-external-rewards-lend [appMappingID] [cPoolID] [assetIDs] [cSwapAppID] [cSwapMinLockAmount] [totalRewards] [masterPoolID] [duration] [minLockupTimeSeconds]",
+		Short: "activate external reward for borrowers",
+		Args:  cobra.ExactArgs(9),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			cPoolID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			assetIDs, err := ParseUint64SliceFromString(args[2], ",")
+			if err != nil {
+				return err
+			}
+
+			cSwapAppID, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			cSwapMinLockAmount, err := strconv.ParseUint(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			totalRewards, err := sdk.ParseCoinNormalized(args[5])
+			if err != nil {
+				return err
+			}
+
+			masterPoolID, err := strconv.ParseInt(args[6], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			durationDays, err := strconv.ParseInt(args[7], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			minLockupTimeSeconds, err := strconv.ParseInt(args[8], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgActivateExternalRewardsLend(
+				appMappingID,
+				cPoolID,
+				assetIDs,
+				cSwapAppID,
+				cSwapMinLockAmount,
+				totalRewards,
+				masterPoolID,
+				durationDays,
+				minLockupTimeSeconds,
+				ctx.GetFromAddress(),
+			)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

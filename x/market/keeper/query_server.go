@@ -30,15 +30,15 @@ func (q *queryServer) QueryMarkets(c context.Context, req *types.QueryMarketsReq
 	}
 
 	var (
-		items []types.Market
+		items []types.TimeWeightedAverage
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.MarketKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.TwaKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.Market
+			var item types.TimeWeightedAverage
 			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
@@ -55,8 +55,8 @@ func (q *queryServer) QueryMarkets(c context.Context, req *types.QueryMarketsReq
 	}
 
 	return &types.QueryMarketsResponse{
-		Markets:    items,
-		Pagination: pagination,
+		TimeWeightedAverage: items,
+		Pagination:          pagination,
 	}, nil
 }
 
@@ -67,13 +67,13 @@ func (q *queryServer) QueryMarket(c context.Context, req *types.QueryMarketReque
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetMarket(ctx, req.Symbol)
+	item, found := q.GetTwa(ctx, req.AssetID)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "market does not exist for symbol %s", req.Symbol)
+		return nil, status.Errorf(codes.NotFound, "market does not exist for assetID %d", req.AssetID)
 	}
 
 	return &types.QueryMarketResponse{
-		Market: item,
+		TimeWeightedAverage: item,
 	}, nil
 }
 

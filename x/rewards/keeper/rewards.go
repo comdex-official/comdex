@@ -13,16 +13,18 @@ import (
 	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
+// SetReward sets internal rewards for an asset of an app
 func (k Keeper) SetReward(ctx sdk.Context, rewards types.InternalRewards) {
 	var (
 		store = k.Store(ctx)
-		key   = types.RewardsKey(rewards.App_mapping_ID, rewards.Asset_ID)
+		key   = types.RewardsKey(rewards.AppMappingId, rewards.AssetId)
 		value = k.cdc.MustMarshal(&rewards)
 	)
 
 	store.Set(key, value)
 }
 
+// GetReward gets internal rewards for an asset of an app
 func (k Keeper) GetReward(ctx sdk.Context, appID, assetID uint64) (rewards types.InternalRewards, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -347,37 +349,6 @@ func (k Keeper) SetExternalRewardVault(ctx sdk.Context, VaultExternalRewards typ
 	store.Set(key, value)
 }
 
-func (k Keeper) GetExternalRewardLends(ctx sdk.Context) (LendExternalRewards []types.LendExternalRewards) {
-	var (
-		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.ExternalRewardsLendKeyPrefix)
-	)
-
-	defer func(iter sdk.Iterator) {
-		err := iter.Close()
-		if err != nil {
-			return
-		}
-	}(iter)
-
-	for ; iter.Valid(); iter.Next() {
-		var LendExternalReward types.LendExternalRewards
-		k.cdc.MustUnmarshal(iter.Value(), &LendExternalReward)
-		LendExternalRewards = append(LendExternalRewards, LendExternalReward)
-	}
-
-	return LendExternalRewards
-}
-
-func (k Keeper) SetExternalRewardLend(ctx sdk.Context, LendExternalRewards types.LendExternalRewards) {
-	var (
-		store = k.Store(ctx)
-		key   = types.ExternalRewardsLendMappingKey(LendExternalRewards.Id)
-		value = k.cdc.MustMarshal(&LendExternalRewards)
-	)
-	store.Set(key, value)
-}
-
 // Wasm query checks
 
 func (k Keeper) GetRemoveWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetIDs uint64) (found bool, err string) {
@@ -416,6 +387,7 @@ func (k Keeper) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingID uint6
 	return true, ""
 }
 
+// Whitelist an asset of an app for internal rewards
 func (k Keeper) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (*types.MsgWhitelistAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppMappingId)
@@ -431,7 +403,7 @@ func (k Keeper) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (*ty
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
 
-	if err := k.WhitelistAsset(ctx, msg.AppMappingId, msg.AssetId); err != nil {
+	if err := k.WhitelistAssetForInternalRewards(ctx, msg.AppMappingId, msg.AssetId); err != nil {
 		return nil, err
 	}
 	return &types.MsgWhitelistAssetResponse{}, nil
@@ -725,4 +697,79 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 	}
 
 	return nil
+}
+
+func (k Keeper) GetExternalRewardLends(ctx sdk.Context) (LendExternalRewards []types.LendExternalRewards) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.ExternalRewardsLendKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var LendExternalReward types.LendExternalRewards
+		k.cdc.MustUnmarshal(iter.Value(), &LendExternalReward)
+		LendExternalRewards = append(LendExternalRewards, LendExternalReward)
+	}
+
+	return LendExternalRewards
+}
+
+func (k Keeper) SetExternalRewardLend(ctx sdk.Context, LendExternalRewards types.LendExternalRewards) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExternalRewardsLendMappingKey(LendExternalRewards.Id)
+		value = k.cdc.MustMarshal(&LendExternalRewards)
+	)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetExternalRewardLend(ctx sdk.Context, id uint64) (LendExternalRewards types.LendExternalRewards) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExternalRewardsLendMappingKey(id)
+		value = store.Get(key)
+	)
+	if value == nil {
+		return LendExternalRewards
+	}
+	k.cdc.MustUnmarshal(value, &LendExternalRewards)
+	return LendExternalRewards
+}
+
+func (k Keeper) SetExternalRewardsLendID(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExtRewardsLendIDKey
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetExternalRewardsLendID(ctx sdk.Context) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExtRewardsLendIDKey
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return 0
+	}
+
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
 }

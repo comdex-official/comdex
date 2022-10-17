@@ -5,6 +5,7 @@ import (
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
@@ -40,7 +41,7 @@ type BankKeeper interface {
 }
 
 type MarketKeeper interface {
-	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
 }
 
 type Tokenmint interface {

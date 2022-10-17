@@ -41,20 +41,32 @@ func (k Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, addres
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
 
-func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	return k.market.GetPriceForAsset(ctx, id)
-}
-
 func (k Keeper) GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData []types.AppExtendedPairVaultMappingData, found bool) {
 	return k.vault.GetAppMappingData(ctx, appMappingID)
 }
 
-func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
-	return k.vault.CalculateCollaterlizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
+func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
+	return k.vault.CalculateCollateralizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
 }
 
 func (k Keeper) GetVault(ctx sdk.Context, id uint64) (vault types.Vault, found bool) {
 	return k.vault.GetVault(ctx, id)
+}
+
+func (k Keeper) GetVaults(ctx sdk.Context) (vaults []types.Vault) {
+	return k.vault.GetVaults(ctx)
+}
+
+func (k Keeper) GetIDForVault(ctx sdk.Context) uint64 {
+	return k.vault.GetIDForVault(ctx)
+}
+
+func (k Keeper) GetLengthOfVault(ctx sdk.Context) uint64 {
+	return k.vault.GetLengthOfVault(ctx)
+}
+
+func (k Keeper) SetLengthOfVault(ctx sdk.Context, length uint64) {
+	k.vault.SetLengthOfVault(ctx, length)
 }
 
 func (k Keeper) DeleteVault(ctx sdk.Context, id uint64) {
@@ -125,10 +137,6 @@ func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, f
 	return k.lend.GetLend(ctx, id)
 }
 
-func (k Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
-	k.lend.DeleteBorrow(ctx, id)
-}
-
 func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault) {
 	k.lend.CreteNewBorrow(ctx, liqBorrow)
 }
@@ -136,14 +144,6 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {
 	return k.lend.GetPool(ctx, id)
 }
-
-//func (k Keeper) GetBorrowStats(ctx sdk.Context) (borrowStats lendtypes.DepositStats, found bool) {
-//	return k.lend.GetBorrowStats(ctx)
-//}
-//
-//func (k Keeper) SetBorrowStats(ctx sdk.Context, borrowStats lendtypes.DepositStats) {
-//	k.lend.SetBorrowStats(ctx, borrowStats)
-//}
 
 func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (AssetStats lendtypes.PoolAssetLBMapping, found bool) {
 	return k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
@@ -199,4 +199,8 @@ func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes
 
 func (k Keeper) SetBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset) {
 	k.lend.SetBorrow(ctx, borrow)
+}
+
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
+	return k.market.CalcAssetPrice(ctx, id, amt)
 }

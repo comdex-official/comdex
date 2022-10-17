@@ -47,11 +47,11 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
 		return 0, false
 	}
 
-	price, found := k.marketKeeper.GetPriceForAsset(ctx, asset.Id)
-	if !found {
+	price, found := k.marketKeeper.GetTwa(ctx, asset.Id)
+	if !found || !price.IsPriceActive {
 		return 0, false
 	}
-	return price, true
+	return price.Twa, true
 }
 
 func (k Keeper) GetOraclePrices(ctx sdk.Context, quoteCoinDenom, baseCoinDenom string) (sdk.Dec, string, error) {

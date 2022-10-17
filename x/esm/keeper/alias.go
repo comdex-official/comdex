@@ -5,6 +5,7 @@ import (
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
@@ -24,8 +25,8 @@ func (k Keeper) GetAssets(ctx sdk.Context) (assets []assettypes.Asset) {
 	return k.asset.GetAssets(ctx)
 }
 
-func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	return k.market.GetPriceForAsset(ctx, id)
+func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool) {
+	return k.market.GetTwa(ctx, id)
 }
 
 func (k Keeper) GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool) {
