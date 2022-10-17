@@ -222,7 +222,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 
 func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withdrawal sdk.Coin) error {
 	// this fn is used to withdraw IBC assets from previously lent asset
-	//we take the cTokens from the user's account and burn them.
+	// we take the cTokens from the user's account and burn them.
 	// equal amount of IBC Asset is sent back to the user.
 	// global lend data and user's lend position are updated after successful transaction
 

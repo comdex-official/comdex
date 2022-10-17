@@ -115,5 +115,4 @@ func (m msgServer) ExternalRewardsLend(goCtx context.Context, msg *types.Activat
 		return nil, err
 	}
 	return &types.ActivateExternalRewardsLendResponse{}, nil
-
 }

@@ -44,8 +44,8 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 
 func (k Keeper) StartDutchAuction(
 	ctx sdk.Context,
-	outFlowToken sdk.Coin, //cmdx
-	inFlowToken sdk.Coin, //cmst
+	outFlowToken sdk.Coin, // cmdx
+	inFlowToken sdk.Coin, // cmst
 	appID uint64,
 	assetInID uint64, // cmst
 	assetOutID uint64, // cmdx
@@ -127,8 +127,8 @@ func (k Keeper) StartDutchAuction(
 		BiddingIds:                []*auctiontypes.BidOwnerMapping{},
 		AuctionMappingId:          auctionParams.DutchId,
 		AppId:                     appID,
-		AssetInId:                 assetInID,  //cmst
-		AssetOutId:                assetOutID, //cmdx
+		AssetInId:                 assetInID,  // cmst
+		AssetOutId:                assetOutID, // cmdx
 		LockedVaultId:             lockedVaultID,
 		VaultOwner:                vaultOwner,
 		LiquidationPenalty:        liquidationPenalty,
@@ -193,7 +193,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	TargetReachedFlag := false
 	if inFlowTokenAmount.GT(tab) {
 		TargetReachedFlag = true
-		inFlowTokenAmount = tab //with precision
+		inFlowTokenAmount = tab // with precision
 
 		owe, slice, err = k.GetAmountOfOtherToken(ctx, auction.AssetInId, inFlowTokenCurrentPrice, inFlowTokenAmount, auction.AssetOutId, outFlowTokenCurrentPrice)
 		if err != nil {
