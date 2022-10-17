@@ -9,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuftypes "github.com/gogo/protobuf/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
@@ -41,7 +40,7 @@ func MsgCreate(
 	return clitestutil.ExecTestCLICmd(clientCtx, cli.Create(), args)
 }
 
-func (s *LiquidityIntegrationTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
+func (s *LiquidityIntegrationTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) { //nolint:unused
 	s.T().Helper()
 	err := s.app.BankKeeper.MintCoins(s.ctx, types.ModuleName, amt)
 	s.Require().NoError(err)
@@ -74,19 +73,6 @@ func (s *LiquidityIntegrationTestSuite) CreateNewApp(appName string) uint64 {
 	return appID
 }
 
-func (s *LiquidityIntegrationTestSuite) SetOraclePrice(symbol string, price uint64) {
-	var (
-		store = s.app.MarketKeeper.Store(s.ctx)
-		key   = markettypes.PriceForMarketKey(symbol)
-	)
-	value := s.cfg.Codec.MustMarshal(
-		&protobuftypes.UInt64Value{
-			Value: price,
-		},
-	)
-	store.Set(key, value)
-}
-
 func (s *LiquidityIntegrationTestSuite) CreateNewAsset(name, denom string, price uint64) uint64 {
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
@@ -106,20 +92,17 @@ func (s *LiquidityIntegrationTestSuite) CreateNewAsset(name, denom string, price
 	}
 	s.Require().NotZero(assetID)
 
-	market := markettypes.Market{
-		Symbol:   name,
-		ScriptID: 12,
-		Rates:    price,
+	market := markettypes.TimeWeightedAverage{
+		AssetID:       assetID,
+		ScriptID:      12,
+		Twa:           price,
+		CurrentIndex:  0,
+		IsPriceActive: true,
+		PriceValue:    []uint64{price},
 	}
-	s.app.MarketKeeper.SetMarket(s.ctx, market)
-
-	exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
-	s.Suite.Require().False(exists)
-	s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetID, name)
-	exists = s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
-	s.Suite.Require().True(exists)
-
-	s.SetOraclePrice(name, price)
+	s.app.MarketKeeper.SetTwa(s.ctx, market)
+	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, assetID)
+	s.Suite.NoError(err)
 
 	return assetID
 }

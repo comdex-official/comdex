@@ -164,6 +164,7 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
+	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
 	tv2_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v2_0_0"
 	tv3_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v3_0_0"
@@ -551,7 +552,6 @@ func New(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
 		app.GetSubspace(assettypes.ModuleName),
-		&app.MarketKeeper,
 		&app.Rewardskeeper,
 		&app.VaultKeeper,
 		&app.BandoracleKeeper,
@@ -695,7 +695,6 @@ func New(
 		app.GetSubspace(lockertypes.ModuleName),
 		app.BankKeeper,
 		&app.AssetKeeper,
-		&app.MarketKeeper,
 		&app.CollectorKeeper,
 		&app.EsmKeeper,
 		&app.Rewardskeeper,
@@ -847,7 +846,7 @@ func New(
 		wasm.NewAppModule(app.cdc, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper),
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
-		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper),
+		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
@@ -1223,6 +1222,30 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
+
+	// prepare store for main net upgrade v5.0.0
+	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{
+				assettypes.ModuleName,
+				auctiontypes.ModuleName,
+				bandoraclemoduletypes.ModuleName,
+				collectortypes.ModuleName,
+				esmtypes.ModuleName,
+				liquidationtypes.ModuleName,
+				liquiditytypes.ModuleName,
+				lockertypes.ModuleName,
+				markettypes.ModuleName,
+				rewardstypes.ModuleName,
+				tokenminttypes.ModuleName,
+				vaulttypes.ModuleName,
+				feegrant.ModuleName,
+				icacontrollertypes.StoreKey,
+				icahosttypes.StoreKey,
+				authz.ModuleName,
+			},
+		}
 	}
+
 	return storeUpgrades
 }

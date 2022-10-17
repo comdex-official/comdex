@@ -594,11 +594,13 @@ func (k Keeper) SnapshotOfPrices(ctx sdk.Context, esmStatus types.ESMStatus) err
 	assets := k.GetAssets(ctx)
 	for _, a := range assets {
 		if a.IsOraclePriceRequired {
-			price, found := k.GetPriceForAsset(ctx, a.Id)
+			price, found := k.GetTwa(ctx, a.Id)
+			// not checking is price active as this fn is called at the end of protocol and active relayer service is not certain
+			// so, we are not implementing is price active field.
 			if !found {
 				continue
 			}
-			k.SetSnapshotOfPrices(ctx, esmStatus.AppId, a.Id, price)
+			k.SetSnapshotOfPrices(ctx, esmStatus.AppId, a.Id, price.Twa)
 		}
 	}
 	esmStatus.SnapshotStatus = true

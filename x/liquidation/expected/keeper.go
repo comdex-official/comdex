@@ -34,9 +34,13 @@ type AssetKeeper interface {
 
 type VaultKeeper interface {
 	GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData []types.AppExtendedPairVaultMappingData, found bool)
-	CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error)
+	CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error)
 	GetVault(ctx sdk.Context, id uint64) (vault types.Vault, found bool)
+	GetVaults(ctx sdk.Context) (vaults []types.Vault)
+	GetIDForVault(ctx sdk.Context) uint64
 	DeleteVault(ctx sdk.Context, id uint64)
+	GetLengthOfVault(ctx sdk.Context) uint64
+	SetLengthOfVault(ctx sdk.Context, length uint64)
 	UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context, vaultData types.Vault)
 	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
 	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
@@ -46,7 +50,7 @@ type VaultKeeper interface {
 }
 
 type MarketKeeper interface {
-	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error)
 }
 
 type AuctionKeeper interface {
@@ -68,8 +72,6 @@ type LendKeeper interface {
 	VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error
 	CalculateCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error)
 	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
-	DeleteBorrow(ctx sdk.Context, id uint64)
-
 	CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault)
 	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
 

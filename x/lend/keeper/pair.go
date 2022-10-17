@@ -88,6 +88,13 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		assetStats.TotalInterestAccumulated = sdk.ZeroInt()
 		k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 		k.UpdateAPR(ctx, newPool.PoolID, v.AssetID)
+		reserveBuybackStats, found := k.GetReserveBuybackAssetData(ctx, v.AssetID)
+		if !found {
+			reserveBuybackStats.AssetID = v.AssetID
+			reserveBuybackStats.ReserveAmount = sdk.ZeroInt()
+			reserveBuybackStats.BuybackAmount = sdk.ZeroInt()
+			k.SetReserveBuybackAssetData(ctx, reserveBuybackStats)
+		}
 	}
 
 	k.SetPool(ctx, newPool)

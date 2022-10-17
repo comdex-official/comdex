@@ -1,4 +1,4 @@
-package v3_0_0
+package v3_0_0 //nolint:revive,stylecheck
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"

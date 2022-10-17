@@ -100,16 +100,18 @@ type AppModule struct {
 	keeper        keeper.Keeper
 	accountKeeper expected.AccountKeeper
 	bankKeeper    expected.BankKeeper
+	assetKeeper   expected.AssetKeeper
 }
 
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper,
-	accountKeeper expected.AccountKeeper, bankKeeper expected.BankKeeper,
+	accountKeeper expected.AccountKeeper, bankKeeper expected.BankKeeper, assetKeeper expected.AssetKeeper,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
+		assetKeeper:    assetKeeper,
 	}
 }
 
@@ -164,12 +166,12 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	BeginBlocker(ctx, am.keeper)
+	BeginBlocker(ctx, am.keeper, am.assetKeeper)
 }
 
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It
 // returns no validator updates.
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	EndBlocker(ctx, am.keeper)
+	EndBlocker(ctx, am.keeper, am.assetKeeper)
 	return []abci.ValidatorUpdate{}
 }

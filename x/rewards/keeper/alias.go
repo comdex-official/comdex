@@ -2,12 +2,15 @@ package keeper
 
 import (
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	"github.com/comdex-official/comdex/x/liquidity/amm"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/locker/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
@@ -52,8 +55,8 @@ func (k Keeper) GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExte
 	return k.vault.GetAppMappingData(ctx, appMappingID)
 }
 
-func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
-	return k.vault.CalculateCollaterlizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
+func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
+	return k.vault.CalculateCollateralizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
 }
 
 func (k Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
@@ -179,8 +182,12 @@ func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID
 	return k.vault.GetAppExtendedPairVaultMappingData(ctx, appMappingID, pairVaultID)
 }
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
 	return k.marketKeeper.CalcAssetPrice(ctx, id, amt)
+}
+
+func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool) {
+	return k.marketKeeper.GetTwa(ctx, id)
 }
 
 func (k Keeper) GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool) {
@@ -193,4 +200,20 @@ func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, f
 
 func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping lendtypes.PoolAssetLBMapping, found bool) {
 	return k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
+}
+
+func (k Keeper) GetActiveFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (activeFarmer liquiditytypes.ActiveFarmer, found bool) {
+	return k.liquidityKeeper.GetActiveFarmer(ctx, appID, poolID, farmer)
+}
+
+func (k Keeper) GetAMMPoolInterfaceObject(ctx sdk.Context, appID, poolID uint64) (*liquiditytypes.Pool, *liquiditytypes.Pair, *amm.BasicPool, error) {
+	return k.liquidityKeeper.GetAMMPoolInterfaceObject(ctx, appID, poolID)
+}
+
+func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error) {
+	return k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
+}
+
+func (k Keeper) GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool) {
+	return k.asset.GetAssetForDenom(ctx, denom)
 }

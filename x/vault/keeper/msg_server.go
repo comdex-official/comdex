@@ -172,6 +172,8 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 
 	k.SetVault(ctx, newVault)
 	k.SetIDForVault(ctx, updatedID)
+	length := k.GetLengthOfVault(ctx)
+	k.SetLengthOfVault(ctx, length+1)
 
 	// Update mapping data - take proper approach
 	// lookup table already exists
@@ -805,6 +807,9 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 
 	// Delete Vault
 	k.DeleteVault(ctx, userVault.Id)
+
+	length := k.GetLengthOfVault(ctx)
+	k.SetLengthOfVault(ctx, length-1)
 
 	var rewards rewardstypes.VaultInterestTracker
 	rewards.AppMappingId = appMapping.Id

@@ -19,7 +19,6 @@ var (
 )
 
 func NewMsgCreateRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int,
 ) *MsgCreateRequest {
@@ -83,7 +82,6 @@ func (m *MsgCreateRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgDepositRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, extendedPairVaultID uint64, userVaultID uint64, amount sdk.Int,
 ) *MsgDepositRequest {
@@ -141,7 +139,6 @@ func (m *MsgDepositRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgWithdrawRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, extendedPairVaultID uint64, userVaultid uint64, amount sdk.Int,
 ) *MsgWithdrawRequest {
@@ -199,7 +196,6 @@ func (m *MsgWithdrawRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgDrawRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, extendedPairVaultID uint64, userVaultid uint64, amount sdk.Int,
 ) *MsgDrawRequest {
@@ -257,7 +253,6 @@ func (m *MsgDrawRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgRepayRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, extendedPairVaultID uint64, userVaultid uint64, amount sdk.Int,
 ) *MsgRepayRequest {
@@ -315,7 +310,6 @@ func (m *MsgRepayRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgLiquidateRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, extendedPairVaultID uint64, userVaultid uint64,
 ) *MsgCloseRequest {
@@ -363,7 +357,6 @@ func (m *MsgCloseRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgDepositAndDrawRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, extendedPairVaultID uint64, userVaultid uint64, amount sdk.Int,
 ) *MsgDepositAndDrawRequest {
@@ -421,7 +414,6 @@ func (m *MsgDepositAndDrawRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgCreateStableMintRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, extendedPairVaultID uint64, amount sdk.Int,
 ) *MsgCreateStableMintRequest {
@@ -475,7 +467,6 @@ func (m *MsgCreateStableMintRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgDepositStableMintRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, extendedPairVaultID uint64, amount sdk.Int, stablemintID uint64,
 ) *MsgDepositStableMintRequest {
@@ -530,7 +521,6 @@ func (m *MsgDepositStableMintRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgWithdrawStableMintRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, extendedPairVaultID uint64, amount sdk.Int, stablemintID uint64,
 ) *MsgWithdrawStableMintRequest {
@@ -585,7 +575,6 @@ func (m *MsgWithdrawStableMintRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgVaultInterestCalcRequest(
-	// nolint
 	from sdk.AccAddress,
 	appID uint64, userVaultID uint64,
 ) *MsgVaultInterestCalcRequest {

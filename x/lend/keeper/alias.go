@@ -6,6 +6,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 )
 
 func (k Keeper) BurnCoin(ctx sdk.Context, name string, coin sdk.Coin) error {
@@ -56,8 +57,8 @@ func (k Keeper) GetAsset(ctx sdk.Context, ID uint64) (assettypes.Asset, bool) {
 	return k.asset.GetAsset(ctx, ID)
 }
 
-func (k Keeper) GetPriceForAsset(ctx sdk.Context, ID uint64) (uint64, bool) {
-	return k.market.GetPriceForAsset(ctx, ID)
+func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool) {
+	return k.market.GetTwa(ctx, id)
 }
 
 func (k Keeper) SendCoinFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, coin sdk.Coins) error {
@@ -75,6 +76,6 @@ func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillS
 	return k.esm.GetKillSwitchData(ctx, appID)
 }
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
 	return k.market.CalcAssetPrice(ctx, id, amt)
 }

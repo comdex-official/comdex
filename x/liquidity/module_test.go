@@ -18,7 +18,6 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity/keeper"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
-	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 type ModuleTestSuite struct {
@@ -53,8 +52,8 @@ func (suite *ModuleTestSuite) addr(addrNum int) sdk.AccAddress {
 }
 
 func (s *ModuleTestSuite) nextBlock() {
-	liquidity.EndBlocker(s.ctx, s.keeper)
-	liquidity.BeginBlocker(s.ctx, s.keeper)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 }
 
 func (suite *ModuleTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
@@ -94,19 +93,6 @@ func (s *ModuleTestSuite) CreateNewApp(appName string) uint64 {
 	return appID
 }
 
-func (s *ModuleTestSuite) SetOraclePrice(symbol string, price uint64) {
-	var (
-		store = s.app.MarketKeeper.Store(s.ctx)
-		key   = markettypes.PriceForMarketKey(symbol)
-	)
-	value := s.app.AppCodec().MustMarshal(
-		&protobuftypes.UInt64Value{
-			Value: price,
-		},
-	)
-	store.Set(key, value)
-}
-
 func (s *ModuleTestSuite) CreateNewAsset(name, denom string, price uint64) assettypes.Asset {
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
@@ -126,20 +112,17 @@ func (s *ModuleTestSuite) CreateNewAsset(name, denom string, price uint64) asset
 	}
 	s.Require().NotZero(assetObj.Id)
 
-	market := markettypes.Market{
-		Symbol:   name,
-		ScriptID: 12,
-		Rates:    price,
+	market := markettypes.TimeWeightedAverage{
+		AssetID:       assetObj.Id,
+		ScriptID:      12,
+		Twa:           price,
+		CurrentIndex:  0,
+		IsPriceActive: true,
+		PriceValue:    []uint64{price},
 	}
-	s.app.MarketKeeper.SetMarket(s.ctx, market)
-
-	exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetObj.Id)
-	s.Suite.Require().False(exists)
-	s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetObj.Id, name)
-	exists = s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetObj.Id)
-	s.Suite.Require().True(exists)
-
-	s.SetOraclePrice(name, price)
+	s.app.MarketKeeper.SetTwa(s.ctx, market)
+	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, assetObj.Id)
+	s.Suite.NoError(err)
 
 	return assetObj
 }

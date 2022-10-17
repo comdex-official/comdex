@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -12,11 +13,15 @@ import (
 
 func queryMarket() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "market [symbol]",
+		Use:   "market [id]",
 		Short: "Query a market",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -26,7 +31,7 @@ func queryMarket() *cobra.Command {
 			res, err := queryClient.QueryMarket(
 				context.Background(),
 				&types.QueryMarketRequest{
-					Symbol: args[0],
+					AssetID: id,
 				},
 			)
 			if err != nil {

@@ -1,9 +1,8 @@
-package v2_0_0 //nolint:revive,stylecheck
+package v5
 
 const (
-	UpgradeName   = "v2.0.0"
-	UpgradeNameV2 = "v2.1.0"
-	UpgradeHeight = 3573040 // replace this height
+	UpgradeName   = "v5.0.0"
+	UpgradeHeight = ""
 	UpgradeInfo   = `'{
 		"binaries": {
 			"darwin/arm64":"",

@@ -11,10 +11,11 @@ import (
 const (
 	FlagStartTime = "start-time"
 
-	FlagPoolID       = "pool-id"
-	FlagAppID        = "app-id"
-	FlagIsMasterPool = "is-master-pool"
-	FlagChildPoolIds = "child-pool-ids"
+	FlagPoolID                     = "pool-id"
+	FlagAppID                      = "app-id"
+	FlagIsMasterPool               = "is-master-pool"
+	FlagChildPoolIds               = "child-pool-ids"
+	FlagAddLendExternalRewardsFile = "add-lend-external-rewards"
 )
 
 // FlagSetCreateGauge returns flags for creating gauge.

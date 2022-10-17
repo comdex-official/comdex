@@ -10,6 +10,7 @@ import (
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
@@ -57,8 +58,12 @@ func (k Keeper) SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.Acc
 	return k.bank.SendCoinsFromAccountToModule(ctx, senderAddr, recipientModule, coin)
 }
 
-func (k Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	return k.market.GetPriceForAsset(ctx, id)
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
+	return k.market.CalcAssetPrice(ctx, id, amt)
+}
+
+func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool) {
+	return k.market.GetTwa(ctx, id)
 }
 
 func (k Keeper) GetLockedVaults(ctx sdk.Context) (lockedVaults []liquidationtypes.LockedVault) {
@@ -227,10 +232,6 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, amountIn sdk.In
 
 func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool) {
 	return k.lend.GetLend(ctx, id)
-}
-
-func (k Keeper) DeleteBorrow(ctx sdk.Context, id uint64) {
-	k.lend.DeleteBorrow(ctx, id)
 }
 
 func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool) {

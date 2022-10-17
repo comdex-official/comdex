@@ -103,7 +103,6 @@ type AppModule struct {
 }
 
 func NewAppModule(
-	// nolint
 	cdc codec.Codec,
 	keeper keeper.Keeper,
 	accountKeeper types.AccountKeeper,

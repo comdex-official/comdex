@@ -30,32 +30,21 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 							if length > index {
 								k.UpdatePriceList(ctx, asset.Id, scriptID, data.Rates[index])
 							}
-
-							// below code to be removed
-							// k.SetRates(ctx, asset.Name)
-							// k.SetMarketForAsset(ctx, asset.Id, asset.Name)
-							// rate, _ := k.GetRates(ctx, asset.Name)
-							// scriptID := k.GetFetchPriceMsg(ctx).OracleScriptID
-							// var (
-							// 	market = types.Market{
-							// 		Symbol:   asset.Name,
-							// 		ScriptID: scriptID,
-							// 		Rates:    rate,
-							// 	}
-							// )
-							// k.SetMarket(ctx, market)
-							// above code to be removed
 						}
 					}
 				}
+			}
+		} else {
+			assets := k.GetAssets(ctx)
+			for _, asset := range assets {
+				twa, found := k.GetTwa(ctx, asset.Id)
+				if !found {
+					continue
+				}
+				twa.IsPriceActive = false
+				k.SetTwa(ctx, twa)
 			}
 		}
 		return nil
 	})
 }
-
-// set twa
-// get 1 twa
-// get all twa
-// get current price for asset. - if price not active then error
-// calculate asset price  - if price not active then error

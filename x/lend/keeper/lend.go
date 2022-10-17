@@ -367,9 +367,9 @@ func (k Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address string, len
 	store.Delete(key)
 }
 
-func (k Keeper) DeleteIDFromAssetStatsMapping(ctx sdk.Context, poolID, assetID, id uint64, typeOfId bool) {
+func (k Keeper) DeleteIDFromAssetStatsMapping(ctx sdk.Context, poolID, assetID, id uint64, typeOfID bool) {
 	poolLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
-	if typeOfId {
+	if typeOfID {
 		lengthOfIDs := len(poolLBMappingData.LendIds)
 
 		dataIndex := sort.Search(lengthOfIDs, func(i int) bool { return poolLBMappingData.LendIds[i] >= id })

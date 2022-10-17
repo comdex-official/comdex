@@ -17,22 +17,22 @@ message QueryMarketsRequest {
 }
 
 message QueryMarketsResponse {
-  repeated Market markets = 1 [
+  repeated TimeWeightedAverage timeWeightedAverage = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"markets\""
+    (gogoproto.moretags) = "yaml:\"time_weighted_average\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryMarketRequest {
-  string symbol = 1 [(gogoproto.moretags) = "yaml:\"symbol\""];
+  uint64 assetID = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
 }
 
 message QueryMarketResponse {
-  Market market = 1 [
+  TimeWeightedAverage timeWeightedAverage = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"market\""
+    (gogoproto.moretags) = "yaml:\"time_weighted_average\""
   ];
 }
 
@@ -47,10 +47,10 @@ message QueryParamsResponse {
 
 service Query {
   rpc QueryMarkets(QueryMarketsRequest) returns (QueryMarketsResponse) {
-    option (google.api.http).get = "/comdex/market/v1beta1/markets";
+    option (google.api.http).get = "/comdex/market/v1beta1/timeWeightedAverage";
   }
   rpc QueryMarket(QueryMarketRequest) returns (QueryMarketResponse) {
-    option (google.api.http).get = "/comdex/market/v1beta1/markets/{symbol}";
+    option (google.api.http).get = "/comdex/market/v1beta1/timeWeightedAverage/{assetID}";
   }
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/market/v1beta1/params";
