@@ -101,7 +101,7 @@ func (k Keeper) StartDutchAuction(
 	// set target amount for debt
 	inFlowTokenTargetAmount := lockedVault.AmountOut
 	mulfactor := inFlowTokenTargetAmount.ToDec().Mul(liquidationPenalty)
-	inFlowTokenTargetAmount = inFlowTokenTargetAmount.Add(mulfactor.TruncateInt()).Add(lockedVault.UpdatedAmountOut)
+	inFlowTokenTargetAmount = inFlowTokenTargetAmount.Add(mulfactor.TruncateInt()).Add(lockedVault.InterestAccumulated)
 	inFlowTokenTarget := sdk.NewCoin(inFlowToken.Denom, inFlowTokenTargetAmount)
 	// These prices are in uusd
 	outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(outFlowTokenPrice), auctionParams.Buffer)

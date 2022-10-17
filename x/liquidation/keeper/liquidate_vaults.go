@@ -106,14 +106,14 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, total
 		Owner:                   vault.Owner,
 		AmountIn:                vault.AmountIn,
 		AmountOut:               vault.AmountOut,
-		UpdatedAmountOut:        totalFees,
+		UpdatedAmountOut:        sdk.ZeroInt(),
 		Initiator:               types.ModuleName,
 		IsAuctionComplete:       false,
 		IsAuctionInProgress:     false,
 		CrAtLiquidation:         collateralizationRatio,
 		CollateralToBeAuctioned: totalIn,
 		LiquidationTimestamp:    ctx.BlockTime(),
-		InterestAccumulated:     sdk.ZeroInt(),
+		InterestAccumulated:     totalFees,
 		Kind:                    nil,
 	}
 
