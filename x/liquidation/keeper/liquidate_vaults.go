@@ -72,12 +72,12 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 					continue
 				}
 				vault, _ := k.GetVault(ctx, vault.Id)
-				totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
+				totalFees := vault.InterestAccumulated.Add(vault.ClosingFeeAccumulated)
 				collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 				if err != nil {
 					continue
 				}
-				err = k.CreateLockedVault(ctx, vault, totalIn, collateralizationRatio, appIds[i], totalOut)
+				err = k.CreateLockedVault(ctx, vault, totalIn, collateralizationRatio, appIds[i], totalOut, totalFees)
 				if err != nil {
 					continue
 				}
@@ -95,7 +95,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, totalIn sdk.Dec, collateralizationRatio sdk.Dec, appID uint64, totalOut sdk.Int) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, totalIn sdk.Dec, collateralizationRatio sdk.Dec, appID uint64, totalOut, totalFees sdk.Int) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	value := types.LockedVault{
@@ -106,7 +106,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, total
 		Owner:                   vault.Owner,
 		AmountIn:                vault.AmountIn,
 		AmountOut:               vault.AmountOut,
-		UpdatedAmountOut:        totalOut,
+		UpdatedAmountOut:        totalFees,
 		Initiator:               types.ModuleName,
 		IsAuctionComplete:       false,
 		IsAuctionInProgress:     false,
