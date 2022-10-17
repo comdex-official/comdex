@@ -55,8 +55,8 @@ func (k Keeper) GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExte
 	return k.vault.GetAppMappingData(ctx, appMappingID)
 }
 
-func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
-	return k.vault.CalculateCollaterlizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
+func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
+	return k.vault.CalculateCollateralizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
 }
 
 func (k Keeper) GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool) {
@@ -182,7 +182,7 @@ func (k Keeper) GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID
 	return k.vault.GetAppExtendedPairVaultMappingData(ctx, appMappingID, pairVaultID)
 }
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
 	return k.marketKeeper.CalcAssetPrice(ctx, id, amt)
 }
 

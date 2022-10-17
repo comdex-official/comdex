@@ -118,7 +118,7 @@ func (q QueryServer) QueryVaultInfoByVaultID(c context.Context, req *types.Query
 		return &types.QueryVaultInfoByVaultIDResponse{}, nil
 	}
 
-	collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
+	collateralizationRatio, err := q.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +171,7 @@ func (q QueryServer) QueryVaultInfoOfOwnerByApp(c context.Context, req *types.Qu
 			continue
 		}
 
-		collateralizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
+		collateralizationRatio, err := q.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
 		if err != nil {
 			return nil, err
 		}
@@ -585,7 +585,7 @@ func (q QueryServer) QueryTVLByApp(c context.Context, req *types.QueryTVLByAppRe
 	}
 	var (
 		ctx    = sdk.UnwrapSDKContext(c)
-		locked = sdk.ZeroInt()
+		locked = sdk.ZeroDec()
 	)
 	_, found := q.GetApp(ctx, req.AppId)
 	if !found {
@@ -603,10 +603,10 @@ func (q QueryServer) QueryTVLByApp(c context.Context, req *types.QueryTVLByAppRe
 		twaData, _ := q.CalcAssetPrice(ctx, pairID.AssetIn, data.CollateralLockedAmount)
 		locked = twaData.Add(locked)
 	}
-	locked = locked.Quo(sdk.NewInt(1000000))
+	// locked = locked.Quo(sdk.NewInt(1000000))
 
 	return &types.QueryTVLByAppResponse{
-		CollateralLocked: locked,
+		CollateralLocked: locked.TruncateInt(),
 	}, nil
 }
 
@@ -617,9 +617,9 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 	var (
 		ctx             = sdk.UnwrapSDKContext(c)
 		vaultsIds       []uint64
-		totalLocked     = sdk.ZeroInt()
-		totalDue        = sdk.ZeroInt()
-		availableBorrow = sdk.ZeroInt()
+		totalLocked     = sdk.ZeroDec()
+		totalDue        = sdk.ZeroDec()
+		availableBorrow = sdk.ZeroDec()
 		averageCr       sdk.Dec
 		totalCr         = sdk.ZeroDec()
 	)
@@ -657,17 +657,17 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 		}
 
 		assetInTotalPrice, _ := q.CalcAssetPrice(ctx, pairID.AssetIn, vault.AmountIn)
-		var assetOutTotalPrice sdk.Int
+		var assetOutTotalPrice sdk.Dec
 		totalLocked = assetInTotalPrice.Add(totalLocked)
 
 		if extPairVault.AssetOutOraclePrice {
 			assetOutTotalPrice, _ = q.CalcAssetPrice(ctx, pairID.AssetOut, vault.AmountOut)
 		} else {
-			assetOutTotalPrice = (sdk.NewIntFromUint64(extPairVault.AssetOutPrice).Mul(vault.AmountOut)).Quo(sdk.NewIntFromUint64(uint64(assetOutData.Decimals)))
+			assetOutTotalPrice = (sdk.NewDecFromInt(sdk.NewIntFromUint64(extPairVault.AssetOutPrice)).Mul(sdk.NewDecFromInt(vault.AmountOut))).Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetOutData.Decimals))))
 		}
 		totalDue = assetOutTotalPrice.Add(totalDue)
 
-		collaterlizationRatio, err := q.CalculateCollaterlizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
+		collaterlizationRatio, err := q.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
 		if err != nil {
 			return nil, err
 		}
@@ -675,25 +675,25 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 		totalCr = collaterlizationRatio.Add(totalCr)
 		minCr := extPairVault.MinCr
 
-		AmtIn := assetInTotalPrice.ToDec()
-		AmtOut := assetOutTotalPrice.ToDec()
+		AmtIn := assetInTotalPrice
+		AmtOut := assetOutTotalPrice
 
-		av := sdk.Int(AmtIn.Quo(minCr))
-		av = av.Sub(sdk.Int(AmtOut))
+		av := AmtIn.Quo(minCr)
+		av = av.Sub(AmtOut)
 
-		availableBorrow = av.Quo(sdk.Int(sdk.OneDec())).Add(availableBorrow)
+		availableBorrow = av.Quo(sdk.OneDec()).Add(availableBorrow)
 	}
 
-	totalLocked = totalLocked.Quo(sdk.NewInt(1000000))
-	totalDue = totalDue.Quo(sdk.NewInt(1000000))
-	availableBorrow = availableBorrow.Quo(sdk.NewInt(1000000))
+	// totalLocked = totalLocked.Quo(sdk.NewInt(1000000))
+	// totalDue = totalDue.Quo(sdk.NewInt(1000000))
+	// availableBorrow = availableBorrow.Quo(sdk.NewInt(1000000))
 	t, _ := sdk.NewDecFromStr(strconv.Itoa(len(vaultsIds)))
 	averageCr = totalCr.Quo(t)
 
 	return &types.QueryUserMyPositionByAppResponse{
-		CollateralLocked:  totalLocked,
-		TotalDue:          totalDue,
-		AvailableToBorrow: availableBorrow,
+		CollateralLocked:  totalLocked.TruncateInt(),
+		TotalDue:          totalDue.TruncateInt(),
+		AvailableToBorrow: availableBorrow.TruncateInt(),
 		AverageCrRatio:    averageCr,
 	}, nil
 }

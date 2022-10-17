@@ -29,7 +29,7 @@ type AssetKeeper interface {
 }
 
 type MarketKeeper interface {
-	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error)
+	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error)
 }
 
 type CollectorKeeper interface {

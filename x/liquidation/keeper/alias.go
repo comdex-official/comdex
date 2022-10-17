@@ -41,17 +41,32 @@ func (k Keeper) SendCoinFromModuleToAccount(ctx sdk.Context, name string, addres
 	return k.bank.SendCoinsFromModuleToAccount(ctx, name, address, sdk.NewCoins(coin))
 }
 
-
 func (k Keeper) GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData []types.AppExtendedPairVaultMappingData, found bool) {
 	return k.vault.GetAppMappingData(ctx, appMappingID)
 }
 
-func (k Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
-	return k.vault.CalculateCollaterlizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
+func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
+	return k.vault.CalculateCollateralizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
 }
 
 func (k Keeper) GetVault(ctx sdk.Context, id uint64) (vault types.Vault, found bool) {
 	return k.vault.GetVault(ctx, id)
+}
+
+func (k Keeper) GetVaults(ctx sdk.Context) (vaults []types.Vault) {
+	return k.vault.GetVaults(ctx)
+}
+
+func (k Keeper) GetIDForVault(ctx sdk.Context) uint64 {
+	return k.vault.GetIDForVault(ctx)
+}
+
+func (k Keeper) GetLengthOfVault(ctx sdk.Context) uint64 {
+	return k.vault.GetLengthOfVault(ctx)
+}
+
+func (k Keeper) SetLengthOfVault(ctx sdk.Context, length uint64) {
+	k.vault.SetLengthOfVault(ctx, length)
 }
 
 func (k Keeper) DeleteVault(ctx sdk.Context, id uint64) {
@@ -186,6 +201,6 @@ func (k Keeper) SetBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset) {
 	k.lend.SetBorrow(ctx, borrow)
 }
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
 	return k.market.CalcAssetPrice(ctx, id, amt)
 }

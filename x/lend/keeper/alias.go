@@ -76,6 +76,6 @@ func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillS
 	return k.esm.GetKillSwitchData(ctx, appID)
 }
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
 	return k.market.CalcAssetPrice(ctx, id, amt)
 }

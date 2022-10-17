@@ -226,8 +226,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVau
 			// calculations for finding selloff amount and liquidationDeductionAmount
 			penalty := assetRatesStats.LiquidationPenalty.Add(assetRatesStats.LiquidationBonus)
 			b := deductionPercentage.Add(penalty)
-			totalIn := assetInTotal.ToDec()
-			totalOut := assetOutTotal.ToDec()
+			totalIn := assetInTotal
+			totalOut := assetOutTotal
 			factor1 := c.Mul(totalIn)
 			factor2 := b.Mul(c)
 			numerator := totalOut.Sub(factor1)

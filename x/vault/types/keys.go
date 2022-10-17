@@ -32,6 +32,7 @@ var (
 	StableMintVaultKeyPrefix              = []byte{0x14}
 	VaultIDPrefix                         = []byte{0x15}
 	StableVaultIDPrefix                   = []byte{0x16}
+	VaultLengthPrefix                     = []byte{0x17}
 )
 
 func VaultKey(vaultID uint64) []byte {

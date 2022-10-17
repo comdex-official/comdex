@@ -231,7 +231,7 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 						if err != nil {
 							return err
 						}
-						totalBorrowedAmt = totalBorrowedAmt.Add(price)
+						totalBorrowedAmt = totalBorrowedAmt.Add(price.TruncateInt())
 					}
 					// calculating totalAPR
 					rewardAsset, found := k.GetAssetForDenom(ctx, v.TotalRewards.Denom)
@@ -239,11 +239,11 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 						continue
 					}
 					totalRewardAmt, _ := k.CalcAssetPrice(ctx, rewardAsset.Id, v.TotalRewards.Amount)
-					totalAPR := sdk.NewDecFromInt(totalRewardAmt).Quo(sdk.NewDecFromInt(totalBorrowedAmt))
+					totalAPR := totalRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
 					var inverseRatesSum sdk.Dec
 					// inverting the rate to enable low apr for assets which are more borrowed
 					for _, assetID := range rewardsAssetPoolData.AssetId {
-						inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
+						inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt.TruncateInt())
 						inverseRatesSum = inverseRatesSum.Add(inverseRate)
 					}
 
@@ -266,7 +266,7 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 							if !liqFound {
 								continue
 							}
-							inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt)
+							inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt.TruncateInt())
 							numerator := totalAPR.Mul(inverseRate)
 							finalAPR := numerator.Quo(inverseRatesSum)
 							finalDailyRewardsNumerator := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(finalAPR)
@@ -305,7 +305,7 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 func (k Keeper) InvertingRates(ctx sdk.Context, assetID, poolID uint64, totalRewardAmt sdk.Int) sdk.Dec {
 	assetBorrowedByPoolIDAndAssetID, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
 	assetBorrowedByPoolIDAndAssetIDAmt, _ := k.CalcAssetPrice(ctx, assetID, assetBorrowedByPoolIDAndAssetID.TotalBorrowed.Add(assetBorrowedByPoolIDAndAssetID.TotalStableBorrowed))
-	tempRate := sdk.NewDecFromInt(assetBorrowedByPoolIDAndAssetIDAmt).Quo(sdk.NewDecFromInt(totalRewardAmt))
+	tempRate := assetBorrowedByPoolIDAndAssetIDAmt.Quo(sdk.NewDecFromInt(totalRewardAmt))
 	inverseRate := sdk.OneDec().Sub(tempRate)
 	return inverseRate
 }
@@ -336,7 +336,7 @@ func (k Keeper) CheckBorrowersLiquidity(ctx sdk.Context, addr sdk.AccAddress, ma
 	if err != nil {
 		return false
 	}
-	if priceQuoteCoin.Add(priceBaseCoin).GTE(amount) {
+	if priceQuoteCoin.Add(priceBaseCoin).GTE(sdk.NewDecFromInt(amount)) {
 		return true
 	}
 	return false

@@ -30,10 +30,19 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 							if length > index {
 								k.UpdatePriceList(ctx, asset.Id, scriptID, data.Rates[index])
 							}
-
 						}
 					}
 				}
+			}
+		} else {
+			assets := k.GetAssets(ctx)
+			for _, asset := range assets {
+				twa, found := k.GetTwa(ctx, asset.Id)
+				if !found {
+					continue
+				}
+				twa.IsPriceActive = false
+				k.SetTwa(ctx, twa)
 			}
 		}
 		return nil

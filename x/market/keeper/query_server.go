@@ -69,7 +69,7 @@ func (q *queryServer) QueryMarket(c context.Context, req *types.QueryMarketReque
 
 	item, found := q.GetTwa(ctx, req.AssetID)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "market does not exist for assetID %s", req.AssetID)
+		return nil, status.Errorf(codes.NotFound, "market does not exist for assetID %d", req.AssetID)
 	}
 
 	return &types.QueryMarketResponse{

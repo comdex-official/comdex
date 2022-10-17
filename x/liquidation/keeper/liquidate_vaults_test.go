@@ -8,7 +8,6 @@ import (
 	vaultKeeper1 "github.com/comdex-official/comdex/x/vault/keeper"
 	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuftypes "github.com/gogo/protobuf/types"
 )
 
 func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
@@ -18,8 +17,8 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 		name              string
 		pair              assetTypes.Pair
 		extendedPairVault bindings.MsgAddExtendedPairsVault
-		symbol1           string
-		symbol2           string
+		asset1            uint64
+		asset2            uint64
 	}{
 		{
 			"Add Pair , Extended Pair Vault : cmdx cmst",
@@ -44,8 +43,8 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
 			},
-			"ucmdx",
-			"ucmst",
+			2,
+			3,
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -58,31 +57,35 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 			err = liquidationKeeper.WasmWhitelistAppIDLiquidation(*ctx, 1)
 			s.Require().NoError(err)
 
-			s.SetInitialOraclePriceForSymbols(tc.symbol1, tc.symbol2)
+			s.SetInitialOraclePriceForID(tc.asset1, tc.asset2)
 		})
 	}
 }
 
-func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
-	var (
-		store = s.app.MarketKeeper.Store(s.ctx)
-		key   = markettypes.PriceForMarketKey(symbol)
-	)
-	value := s.app.AppCodec().MustMarshal(
-		&protobuftypes.UInt64Value{
-			Value: price,
-		},
-	)
-	store.Set(key, value)
+func (s *KeeperTestSuite) SetInitialOraclePriceForID(asset1 uint64, asset2 uint64) {
+	ctx := &s.ctx
+	twa1 := markettypes.TimeWeightedAverage {
+		AssetID: asset1,
+		IsPriceActive: true,
+		Twa: 2000000,
+	}
+	s.marketKeeper.SetTwa(*ctx, twa1)
+	twa2 := markettypes.TimeWeightedAverage {
+		AssetID: asset1,
+		IsPriceActive: true,
+		Twa: 1000000,
+	}
+	s.marketKeeper.SetTwa(*ctx, twa2)
 }
 
-func (s *KeeperTestSuite) SetInitialOraclePriceForSymbols(asset1 string, asset2 string) {
-	s.SetOraclePrice(asset1, 2000000)
-	s.SetOraclePrice(asset2, 1000000)
-}
-
-func (s *KeeperTestSuite) ChangeOraclePrice(asset string) {
-	s.SetOraclePrice(asset, 1000000)
+func (s *KeeperTestSuite) ChangeOraclePrice(asset uint64) {
+	ctx := &s.ctx
+	twa := markettypes.TimeWeightedAverage {
+		AssetID: asset,
+		IsPriceActive: true,
+		Twa: 1000000,
+	}
+	s.marketKeeper.SetTwa(*ctx, twa)
 }
 
 func (s *KeeperTestSuite) CreateVault() {
@@ -145,9 +148,9 @@ func (s *KeeperTestSuite) GetVaultCountForExtendedPairIDbyAppID(appID, extID uin
 
 func (s *KeeperTestSuite) GetAssetPrice(id uint64) sdk.Dec {
 	marketKeeper, ctx := &s.marketKeeper, &s.ctx
-	price, found := marketKeeper.GetPriceForAsset(*ctx, id)
+	price, found := marketKeeper.GetTwa(*ctx, id)
 	s.Require().True(found)
-	price1 := sdk.NewDecFromInt(sdk.NewIntFromUint64(price))
+	price1 := sdk.NewDecFromInt(sdk.NewIntFromUint64(price.Twa))
 	return price1
 }
 
@@ -167,23 +170,23 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		GovTimeInSeconds: 900,
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
-				3,
-				genesisSupply,
-				true,
-				userAddress1,
+				AssetId :3,
+				GenesisSupply :genesisSupply,
+				IsGovToken :true,
+				Recipient :userAddress1,
 			},
 			{
-				2,
-				genesisSupply,
-				true,
-				userAddress1,
+				AssetId :2,
+				GenesisSupply :genesisSupply,
+				IsGovToken :true,
+				Recipient :userAddress1,
 			},
 		},
 	}
 	err = assetKeeper.AddAppRecords(*ctx, msg1)
 	s.Require().NoError(err)
 
-	for index, tc := range []struct {
+	for _, tc := range []struct {
 		name string
 		msg  assetTypes.Asset
 	}{
@@ -218,15 +221,6 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		s.Run(tc.name, func() {
 			err := assetKeeper.AddAssetRecords(*ctx, tc.msg)
 			s.Require().NoError(err)
-			s.marketKeeper.SetMarketForAsset(*ctx, uint64(index+1), tc.msg.Denom)
-			market := markettypes.Market{
-				Symbol:   tc.msg.Denom,
-				ScriptID: 12,
-				Rates:    1000000,
-			}
-			s.app.MarketKeeper.SetMarket(s.ctx, market)
-			res := s.app.MarketKeeper.HasMarketForAsset(s.ctx, uint64(index+1))
-			s.Require().True(res)
 			s.fundAddr(addr, sdk.NewCoin(tc.msg.Denom, sdk.NewInt(1000000)))
 			s.fundAddr(addr2, sdk.NewCoin(tc.msg.Denom, sdk.NewInt(1000000)))
 		})
@@ -249,7 +243,7 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	s.Require().Equal(id, uint64(0))
 
 	// Liquidation should happen as price changed
-	s.ChangeOraclePrice("ucmdx")
+	s.ChangeOraclePrice(2)
 	err = liquidationKeeper.LiquidateVaults(*ctx)
 	s.Require().NoError(err)
 	id = liquidationKeeper.GetLockedVaultID(*ctx)
@@ -268,9 +262,9 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	s.Require().Equal(lockedVault[0].IsAuctionInProgress, false)
 	s.Require().Equal(lockedVault[0].IsAuctionComplete, false)
 	s.Require().Equal(lockedVault[0].SellOffHistory, []string(nil))
-	price, found := s.app.MarketKeeper.GetPriceForAsset(*ctx, uint64(1))
+	price, found := s.app.MarketKeeper.GetTwa(*ctx, uint64(1))
 	s.Require().True(found)
-	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, beforeVault.AmountIn.ToDec().Mul(sdk.NewIntFromUint64(price).ToDec()))
+	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, beforeVault.AmountIn.ToDec().Mul(sdk.NewIntFromUint64(price.Twa).ToDec()))
 	s.Require().Equal(lockedVault[0].CrAtLiquidation, lockedVault[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault[0].UpdatedAmountOut.ToDec().Mul(s.GetAssetPrice(2))))
 }
 

@@ -58,7 +58,7 @@ func (k Keeper) SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.Acc
 	return k.bank.SendCoinsFromAccountToModule(ctx, senderAddr, recipientModule, coin)
 }
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
 	return k.market.CalcAssetPrice(ctx, id, amt)
 }
 

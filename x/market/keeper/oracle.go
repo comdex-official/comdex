@@ -102,17 +102,72 @@ func (k Keeper) GetLatestPrice(ctx sdk.Context, id uint64) (price uint64, err er
 	return 0, types.ErrorPriceNotActive
 }
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Int, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
 	asset, found := k.GetAsset(ctx, id)
 	if !found {
-		return sdk.ZeroInt(), assetTypes.ErrorAssetDoesNotExist
+		return sdk.ZeroDec(), assetTypes.ErrorAssetDoesNotExist
 	}
 	twa, found := k.GetTwa(ctx, id)
 	if found && twa.IsPriceActive {
 		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
 		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset.Decimals)))
-		result := numerator.Quo(denominator)
-		return result.TruncateInt(), nil
+		return numerator.Quo(denominator), nil
 	}
-	return sdk.ZeroInt(), types.ErrorPriceNotActive
+	return sdk.ZeroDec(), types.ErrorPriceNotActive
 }
+
+
+//LOCAL TESTING FUNCTIONS
+// UNComment below and comment respective functions
+
+// func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
+// 	asset, found := k.GetAsset(ctx, id)
+// 	if !found {
+// 		return sdk.ZeroDec(), assetTypes.ErrorAssetDoesNotExist
+// 	}
+// 	// twa, found := k.GetTwa(ctx, id)
+// 	var rate uint64
+// 	if id == 1 {
+// 		rate = 11632845
+// 	}
+// 	if id == 2 {
+// 		rate = 14053
+// 	}
+// 	if id == 3 {
+// 		rate = 1000000
+// 	}
+// 	if id == 4 {
+// 		rate = 2200000
+// 	}
+// 	if id == 10 {
+// 		rate = 1297119384
+// 	}
+// 	if found {
+// 		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
+// 		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset.Decimals)))
+// 		return numerator.Quo(denominator), nil
+// 	}
+// 	return sdk.ZeroDec(), types.ErrorPriceNotActive
+// }
+
+// func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa types.TimeWeightedAverage, found bool) {
+// 	twa.AssetID = id
+// 	twa.IsPriceActive = true
+// 	if id == 1 {
+// 		twa.Twa = 11632845
+// 	}
+// 	if id == 2 {
+// 		twa.Twa = 140530
+// 	}
+// 	if id == 3 {
+// 		twa.Twa = 1000000
+// 	}
+// 	if id == 4 {
+// 		twa.Twa = 2200000
+// 	}
+// 	if id == 10 {
+// 		twa.Twa = 1297119384
+// 	}
+	
+// 	return twa, true
+// }
