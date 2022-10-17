@@ -65,29 +65,28 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 	}
 }
 
-
 func (s *KeeperTestSuite) SetInitialOraclePriceForID(asset1 uint64, asset2 uint64) {
 	ctx := &s.ctx
-	twa1 := markettypes.TimeWeightedAverage {
-		AssetID: asset1,
+	twa1 := markettypes.TimeWeightedAverage{
+		AssetID:       asset1,
 		IsPriceActive: true,
-		Twa: 2000000,
+		Twa:           2000000,
 	}
 	s.marketKeeper.SetTwa(*ctx, twa1)
-	twa2 := markettypes.TimeWeightedAverage {
-		AssetID: asset1,
+	twa2 := markettypes.TimeWeightedAverage{
+		AssetID:       asset1,
 		IsPriceActive: true,
-		Twa: 1000000,
+		Twa:           1000000,
 	}
 	s.marketKeeper.SetTwa(*ctx, twa2)
 }
 
 func (s *KeeperTestSuite) ChangeOraclePrice(asset uint64) {
 	ctx := &s.ctx
-	twa := markettypes.TimeWeightedAverage {
-		AssetID: asset,
+	twa := markettypes.TimeWeightedAverage{
+		AssetID:       asset,
 		IsPriceActive: true,
-		Twa: 1000000,
+		Twa:           1000000,
 	}
 	s.marketKeeper.SetTwa(*ctx, twa)
 }

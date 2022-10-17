@@ -45,5 +45,5 @@ func TestFucn(t *testing.T) {
 	test123 := sdk.Int(newAmtwithDec.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(1000000)))))
 	fmt.Println("test123 ", test123)
 	fmt.Println("truncate ", finalAMount.TruncateInt())
-	
+
 }

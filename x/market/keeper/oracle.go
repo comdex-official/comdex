@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/market/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k Keeper) SetTwa(ctx sdk.Context, twa types.TimeWeightedAverage) {
@@ -116,8 +116,7 @@ func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price s
 	return sdk.ZeroDec(), types.ErrorPriceNotActive
 }
 
-
-//LOCAL TESTING FUNCTIONS
+//nolint:gofumpt    //LOCAL TESTING FUNCTIONS
 // UNComment below and comment respective functions
 
 // func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
@@ -168,6 +167,6 @@ func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price s
 // 	if id == 10 {
 // 		twa.Twa = 1297119384
 // 	}
-	
+
 // 	return twa, true
 // }

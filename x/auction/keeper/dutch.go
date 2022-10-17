@@ -29,7 +29,7 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 		assetOut, _ := k.GetAsset(ctx, pair.AssetOut) // debt(cmst)
 
 		outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn) // cmdx
-		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt()) // cmst
+		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())        // cmst
 
 		liquidationPenalty := extendedPair.LiquidationPenalty
 
@@ -45,7 +45,7 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 func (k Keeper) StartDutchAuction(
 	ctx sdk.Context,
 	outFlowToken sdk.Coin, //cmdx
-	inFlowToken sdk.Coin,  //cmst
+	inFlowToken sdk.Coin, //cmst
 	appID uint64,
 	assetInID uint64, // cmst
 	assetOutID uint64, // cmdx
@@ -172,7 +172,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	// slice tells amount of collateral user should be given
 	// using ceil as we need extract more from users
 	outFlowTokenCurrentPrice := auction.OutflowTokenCurrentPrice // cmdx
-	inFlowTokenCurrentPrice := auction.InflowTokenCurrentPrice  // cmst
+	inFlowTokenCurrentPrice := auction.InflowTokenCurrentPrice   // cmst
 
 	slice := bid.Amount // cmdx
 
@@ -193,7 +193,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	TargetReachedFlag := false
 	if inFlowTokenAmount.GT(tab) {
 		TargetReachedFlag = true
-		inFlowTokenAmount = tab//with precision
+		inFlowTokenAmount = tab //with precision
 
 		owe, slice, err = k.GetAmountOfOtherToken(ctx, auction.AssetInId, inFlowTokenCurrentPrice, inFlowTokenAmount, auction.AssetOutId, outFlowTokenCurrentPrice)
 		if err != nil {
@@ -217,13 +217,13 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	// dust is in usd * 10*-6 (uusd)
 	dust := sdk.NewIntFromUint64(ExtendedPairVault.MinUsdValueLeft)
 	// here subtracting current amount and slice to get amount left in auction and also converting it to usd * 10**-12
-	outLeft, err := k.CalcDollarValueForToken(ctx, auction.AssetOutId, outFlowTokenCurrentPrice, auction.OutflowTokenCurrentAmount.Amount )
-		if err != nil {
-			return err
+	outLeft, err := k.CalcDollarValueForToken(ctx, auction.AssetOutId, outFlowTokenCurrentPrice, auction.OutflowTokenCurrentAmount.Amount)
+	if err != nil {
+		return err
 	}
-	outLeftDebt, err := k.CalcDollarValueForToken(ctx, auction.AssetInId, inFlowTokenCurrentPrice, tab )
-		if err != nil {
-			return err
+	outLeftDebt, err := k.CalcDollarValueForToken(ctx, auction.AssetInId, inFlowTokenCurrentPrice, tab)
+	if err != nil {
+		return err
 	}
 	amountLeftInPUSD := outLeft.Sub(owe)
 	amountLeftInPUSDforDebt := outLeftDebt.Sub(owe)
@@ -243,7 +243,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "Either bid all the collateral amount %d (UTOKEN) or bid amount by leaving dust greater than %d USD", coll, dust)
 	}
 
-	// Dust check for debt 
+	// Dust check for debt
 	if amountLeftInPUSDforDebt.LT(sdk.NewDecFromInt(dust)) {
 		dust := dust.Uint64()
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "Minimum amount left to be recovered should not be less than %d ", dust)
@@ -489,7 +489,6 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 				return auctiontypes.ErrorPrices
 			}
 			inFlowTokenCurrentPrice = twaData.Twa
-
 		} else {
 			// If oracle Price is not required for the assetOut
 			inFlowTokenCurrentPrice = ExtendedPairVault.AssetOutPrice

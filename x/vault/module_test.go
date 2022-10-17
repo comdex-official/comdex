@@ -85,7 +85,6 @@ func (s *ModuleTestSuite) CreateNewApp(appName string) uint64 {
 	return appID
 }
 
-
 func (s *ModuleTestSuite) CreateNewAsset(name, denom string, price uint64) uint64 {
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,

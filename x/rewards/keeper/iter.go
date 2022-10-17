@@ -281,7 +281,6 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 								}
 							}
 						}
-
 					}
 					// after all the borrowers are rewarded
 					// setting the starting time to next day
