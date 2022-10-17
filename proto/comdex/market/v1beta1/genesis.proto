@@ -9,7 +9,7 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message GenesisState {
-    repeated TimeWeightedAverage timeWeightedAverage = 1 [
+    repeated TimeWeightedAverage time_weighted_average = 1 [
         (gogoproto.moretags) = "yaml:\"time_weighted_average\"",
         (gogoproto.nullable) = false
     ];

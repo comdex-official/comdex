@@ -122,7 +122,7 @@ message QueryRewardsRequest {
 }
 
 message QueryRewardsResponse {
-  repeated Internal_rewards rewards = 1 [
+  repeated InternalRewards rewards = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"rewards\""
   ];
@@ -135,7 +135,7 @@ message QueryRewardRequest {
 }
 
 message QueryRewardResponse {
-  repeated Internal_rewards reward = 1
+  repeated InternalRewards reward = 1
   [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"reward\""];
 }
 
@@ -147,7 +147,7 @@ message QueryExternalRewardsLockersRequest{
 }
 
 message QueryExternalRewardsLockersResponse {
-  repeated Locker_external_rewards locker_external_rewards = 1
+  repeated LockerExternalRewards locker_external_rewards = 1
   [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"locker_external_rewards\""];
 
   cosmos.base.query.v1beta1.PageResponse pagination = 2
@@ -160,7 +160,7 @@ message QueryExternalRewardVaultsRequest{
 }
 
 message QueryExternalRewardVaultsResponse {
-  repeated Vault_external_rewards vault_external_rewards = 1
+  repeated VaultExternalRewards vault_external_rewards = 1
   [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vault_external_rewards\""];
 
   cosmos.base.query.v1beta1.PageResponse pagination = 2
@@ -186,7 +186,7 @@ message QueryExternalRewardLendsRequest{
 }
 
 message QueryExternalRewardLendsResponse {
-  repeated Lend_external_rewards lend_external_rewards = 1
+  repeated LendExternalRewards lend_external_rewards = 1
   [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"lend_external_rewards\""];
 
   cosmos.base.query.v1beta1.PageResponse pagination = 2

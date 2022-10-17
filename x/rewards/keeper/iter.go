@@ -121,7 +121,7 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 
 			if et < timeNow {
 				if epoch.Count < uint64(v.DurationDays) { // rewards will be given till the duration defined in the ext rewards
-					appExtPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.Extended_Pair_Id)
+					appExtPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.ExtendedPairId)
 
 					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
 					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())

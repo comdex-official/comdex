@@ -92,8 +92,8 @@ func (k Keeper) WhitelistAssetForInternalRewards(ctx sdk.Context, appMappingID u
 	}
 	internalReward, found := k.GetReward(ctx, appMappingID, assetID)
 	if !found {
-		internalReward.App_mapping_ID = appMappingID
-		internalReward.Asset_ID = assetID
+		internalReward.AppMappingId = appMappingID
+		internalReward.AssetId = assetID
 		k.SetReward(ctx, internalReward)
 	}
 
@@ -194,7 +194,7 @@ func (k Keeper) ActExternalRewardsVaults(
 	msg := types.VaultExternalRewards{
 		Id:                   id + 1,
 		AppMappingId:         appMappingID,
-		Extended_Pair_Id:     extendedPairID,
+		ExtendedPairId:       extendedPairID,
 		TotalRewards:         totalRewards,
 		DurationDays:         durationDays,
 		IsActive:             true,
@@ -281,7 +281,7 @@ func (k Keeper) AddLendExternalRewards(ctx sdk.Context, msg types.ActivateExtern
 	epochID := k.GetEpochTimeID(ctx)
 
 	RewardsAssetPoolData := types.RewardsAssetPoolData{
-		CPoolId:            msg.CPool_Id,
+		CPoolId:            msg.CPoolId,
 		AssetId:            msg.AssetId,
 		CSwapAppId:         msg.CSwapAppId,
 		CSwapMinLockAmount: msg.CSwapMinLockAmount,

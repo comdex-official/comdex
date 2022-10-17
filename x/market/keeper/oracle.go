@@ -116,7 +116,6 @@ func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price s
 	return sdk.ZeroDec(), types.ErrorPriceNotActive
 }
 
-
 // UNComment below and comment respective functions
 
 // func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {

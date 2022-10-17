@@ -80,14 +80,14 @@ func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.Activa
 	if err != nil {
 		return nil, err
 	}
-	pairVault, found := m.GetPairsVault(ctx, msg.Extended_Pair_Id)
+	pairVault, found := m.GetPairsVault(ctx, msg.ExtendedPairId)
 	if !found {
 		return nil, assettypes.ErrorExtendedPairDoesNotExistForTheApp
 	}
 	if pairVault.IsStableMintVault {
 		return nil, types.ErrStablemintVaultFound
 	}
-	if err := m.Keeper.ActExternalRewardsVaults(ctx, msg.AppMappingId, msg.Extended_Pair_Id, msg.DurationDays, msg.MinLockupTimeSeconds, msg.TotalRewards, Depositor); err != nil {
+	if err := m.Keeper.ActExternalRewardsVaults(ctx, msg.AppMappingId, msg.ExtendedPairId, msg.DurationDays, msg.MinLockupTimeSeconds, msg.TotalRewards, Depositor); err != nil {
 		return nil, err
 	}
 	return &types.ActivateExternalRewardsVaultResponse{}, nil

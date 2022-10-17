@@ -131,8 +131,8 @@ message ActivateExternalRewardsVault {
   uint64 app_mapping_id = 1 [
     (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
-  uint64 extended_Pair_Id = 2 [
-    (gogoproto.moretags) = "yaml:\"extended_Pair_Id\""
+  uint64 extended_pair_id = 2 [
+    (gogoproto.moretags) = "yaml:\"extended_Pair_id\""
   ];
   cosmos.base.v1beta1.Coin total_rewards = 3 [
     (gogoproto.nullable) = false,
@@ -156,8 +156,8 @@ message ActivateExternalRewardsLend {
   uint64 app_mapping_id = 1 [
     (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
-  uint64 c_pool_Id = 2 [
-    (gogoproto.moretags) = "yaml:\"c_pool_Id\""
+  uint64 c_pool_id = 2 [
+    (gogoproto.moretags) = "yaml:\"c_pool_id\""
   ];
   repeated uint64 asset_id= 3 [
     (gogoproto.moretags) = "yaml:\"asset_id\""
