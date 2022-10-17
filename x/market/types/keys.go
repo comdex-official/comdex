@@ -12,9 +12,7 @@ const (
 	StoreKey       = ModuleName
 )
 
-var (
-	TwaKeyPrefix = []byte{0x24}
-)
+var TwaKeyPrefix = []byte{0x24}
 
 func TwaKey(id uint64) []byte {
 	return append(TwaKeyPrefix, sdk.Uint64ToBigEndian(id)...)

@@ -196,7 +196,7 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 			break
 		}
 	}
-	// TODO: Refactor & remove usd
+
 	for i, data := range esmDataAfterCoolOff.CollateralAsset {
 		collAsset, _ := k.GetAsset(ctx, data.AssetID)
 		tokenDValue := data.Share.Mul(userWorth)
