@@ -128,8 +128,8 @@ func (s *KeeperTestSuite) TestIndexesAfterImport() {
 	s.Deposit(appID1, pool1.Id, s.addr(4), "1000000denom1,1000000denom2")
 	s.Deposit(appID1, pool2.Id, s.addr(5), "1000000denom2,1000000denom3")
 
-	liquidity.EndBlocker(s.ctx, s.keeper)
-	liquidity.BeginBlocker(s.ctx, s.keeper)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 
 	depositReq1 := s.Deposit(appID1, pool1.Id, s.addr(4), "1000000denom1,1000000denom2")
 	depositReq2 := s.Deposit(appID1, pool2.Id, s.addr(5), "1000000denom2,1000000denom3")
@@ -140,7 +140,7 @@ func (s *KeeperTestSuite) TestIndexesAfterImport() {
 	order1 := s.LimitOrder(appID1, s.addr(6), pair1.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Minute)
 	order2 := s.LimitOrder(appID1, s.addr(7), pair2.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Minute)
 
-	liquidity.EndBlocker(s.ctx, s.keeper)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 
 	genState := s.keeper.ExportGenesis(s.ctx)
 	s.SetupTest()

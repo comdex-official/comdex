@@ -1286,7 +1286,7 @@ func (s *KeeperTestSuite) TestSingleOrderNoMatch() {
 
 	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(1000000), 10*time.Second)
 	// Execute matching
-	liquidity.EndBlocker(ctx, k)
+	liquidity.EndBlocker(ctx, k, s.app.AssetKeeper)
 
 	order, found := k.GetOrder(ctx, appID1, order.PairId, order.Id)
 	s.Require().True(found)
@@ -1295,7 +1295,7 @@ func (s *KeeperTestSuite) TestSingleOrderNoMatch() {
 	ctx = ctx.WithBlockTime(ctx.BlockTime().Add(10 * time.Second))
 	// Expire the order, here BeginBlocker is not called to check
 	// the request's changed status
-	liquidity.EndBlocker(ctx, k)
+	liquidity.EndBlocker(ctx, k, s.app.AssetKeeper)
 
 	order, _ = k.GetOrder(ctx, appID1, order.PairId, order.Id)
 	s.Require().Equal(types.OrderStatusExpired, order.Status)
@@ -1315,7 +1315,7 @@ func (s *KeeperTestSuite) TestTwoOrderExactMatch() {
 
 	req1 := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), newInt(10000), time.Hour)
 	req2 := s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), newInt(10000), time.Hour)
-	liquidity.EndBlocker(ctx, k)
+	liquidity.EndBlocker(ctx, k, s.app.AssetKeeper)
 
 	req1, _ = k.GetOrder(ctx, appID1, req1.PairId, req1.Id)
 	s.Require().Equal(types.OrderStatusCompleted, req1.Status)
@@ -1368,7 +1368,7 @@ func (s *KeeperTestSuite) TestMatchWithLowPricePool() {
 	// Create a pool with very low price.
 	s.CreateNewLiquidityPool(appID1, pair.Id, s.addr(0), "10000000000000000000000000000000000000000denom1,1000000denom2")
 	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.000000000001000000"), sdk.NewInt(100000000000000000), 10*time.Second)
-	liquidity.EndBlocker(s.ctx, s.keeper)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	order, found := s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
 	s.Require().True(found)
 	s.Require().Equal(types.OrderStatusNotMatched, order.Status)

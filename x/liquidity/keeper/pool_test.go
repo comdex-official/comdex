@@ -585,19 +585,19 @@ func (s *KeeperTestSuite) TestDepositRefund() {
 	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1500000uasset2")
 
 	req := s.Deposit(appID1, pool.Id, addr1, "20000uasset1,15000uasset2")
-	liquidity.EndBlocker(s.ctx, s.keeper)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	req, _ = s.keeper.GetDepositRequest(s.ctx, appID1, req.PoolId, req.Id)
 	s.Require().Equal(types.RequestStatusSucceeded, req.Status)
 
 	s.Require().True(utils.ParseCoin("10000uasset1").IsEqual(s.getBalance(addr1, "uasset1")))
 	s.Require().True(utils.ParseCoin("0uasset2").IsEqual(s.getBalance(addr1, "uasset2")))
-	liquidity.BeginBlocker(s.ctx, s.keeper)
+	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 
 	pair = s.CreateNewLiquidityPair(appID1, addr1, asset2.Denom, asset1.Denom)
 	pool = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000uasset2,1000000000000000uasset1")
 
 	req = s.Deposit(appID1, pool.Id, addr2, "1uasset1,1uasset2")
-	liquidity.EndBlocker(s.ctx, s.keeper)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	req, _ = s.keeper.GetDepositRequest(s.ctx, appID1, req.PoolId, req.Id)
 	s.Require().Equal(types.RequestStatusFailed, req.Status)
 	s.Require().True(req.DepositCoins.IsEqual(s.getBalances(addr2)))
@@ -617,19 +617,19 @@ func (s *KeeperTestSuite) TestDepositRefundTooSmallMintedPoolCoin() {
 	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1500000uasset2")
 
 	req := s.Deposit(appID1, pool.Id, addr2, "20000uasset1,15000uasset2")
-	liquidity.EndBlocker(s.ctx, s.keeper)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	req, _ = s.keeper.GetDepositRequest(s.ctx, appID1, req.PoolId, req.Id)
 	s.Require().Equal(types.RequestStatusSucceeded, req.Status)
 
 	s.Require().True(utils.ParseCoin("10000uasset1").IsEqual(s.getBalance(addr2, "uasset1")))
 	s.Require().True(utils.ParseCoin("0uasset2").IsEqual(s.getBalance(addr2, "uasset2")))
-	liquidity.BeginBlocker(s.ctx, s.keeper)
+	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 
 	pair = s.CreateNewLiquidityPair(appID1, addr1, asset2.Denom, asset1.Denom)
 	pool = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000uasset2,1000000000000000uasset1")
 
 	req = s.Deposit(appID1, pool.Id, addr3, "1uasset1,1uasset2")
-	liquidity.EndBlocker(s.ctx, s.keeper)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	req, _ = s.keeper.GetDepositRequest(s.ctx, appID1, req.PoolId, req.Id)
 	s.Require().Equal(types.RequestStatusFailed, req.Status)
 
@@ -661,7 +661,7 @@ func (s *KeeperTestSuite) TestDepositToDisabledPool() {
 	s.Require().Equal(types.RequestStatusFailed, req.Status)
 
 	// Delete the previous request and refund coins to the depositor.
-	liquidity.BeginBlocker(s.ctx, s.keeper)
+	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 
 	// Now any deposits will result in an error.
 	_, err = s.keeper.Deposit(s.ctx, types.NewMsgDeposit(appID1, addr2, pool.Id, req.DepositCoins))
@@ -846,7 +846,7 @@ func (s *KeeperTestSuite) TestWithdrawFromDisabledPool() {
 	s.Require().Equal(types.RequestStatusFailed, req.Status)
 
 	// Delete the previous request and refund coins to the withdrawer.
-	liquidity.BeginBlocker(s.ctx, s.keeper)
+	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 
 	// Now any withdrawals will result in an error.
 	_, err = s.keeper.Withdraw(s.ctx, types.NewMsgWithdraw(appID1, addr1, pool.Id, s.getBalance(addr1, pool.PoolCoinDenom)))
