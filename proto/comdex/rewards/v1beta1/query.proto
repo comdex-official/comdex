@@ -187,7 +187,7 @@ message QueryExternalRewardLendsRequest{
 
 message QueryExternalRewardLendsResponse {
   repeated Lend_external_rewards lend_external_rewards = 1
-  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vault_external_rewards\""];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"lend_external_rewards\""];
 
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
