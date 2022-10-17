@@ -41,7 +41,7 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 		newRewardDec := sdk.NewDec(newInterestPerInteraction.Int64())
 		lendRewardsTracker.RewardsAccumulated = lendRewardsTracker.RewardsAccumulated.Sub(newRewardDec) // not losing decimal precision
 	}
-	k.SetLendRewardTracker(ctx, lendRewardsTracker) // setting the remaing decimal part
+	k.SetLendRewardTracker(ctx, lendRewardsTracker) // setting the remaining decimal part
 
 	// checking if sufficient cTokens are there to give out as rewards to user
 	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lend.PoolID, lend.AssetID)

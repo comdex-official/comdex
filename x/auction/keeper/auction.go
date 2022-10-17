@@ -71,7 +71,7 @@ func (k Keeper) CalcDollarValueForToken(ctx sdk.Context, id uint64, rate sdk.Dec
 	return numerator.Quo(denominator), nil
 }
 
-func (k Keeper) GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec, amt1 sdk.Int, id2 uint64, rate2 sdk.Dec ) (sdk.Dec, sdk.Int, error) {
+func (k Keeper) GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec, amt1 sdk.Int, id2 uint64, rate2 sdk.Dec) (sdk.Dec, sdk.Int, error) {
 	asset1, found := k.GetAsset(ctx, id1)
 	if !found {
 		return sdk.ZeroDec(), sdk.ZeroInt(), assettypes.ErrorAssetDoesNotExist

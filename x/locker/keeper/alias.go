@@ -38,7 +38,6 @@ func (k Keeper) GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool) {
 	return k.asset.GetPair(ctx, id)
 }
 
-
 func (k Keeper) GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool) {
 	return k.asset.GetApp(ctx, id)
 }

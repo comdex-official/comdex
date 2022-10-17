@@ -182,7 +182,6 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 }
 
 func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff, from string) error {
-
 	userAddress, err := sdk.AccAddressFromBech32(from)
 	if err != nil {
 		return err

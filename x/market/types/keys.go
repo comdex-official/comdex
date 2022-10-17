@@ -13,7 +13,7 @@ const (
 )
 
 var (
-	TwaKeyPrefix            = []byte{0x24}
+	TwaKeyPrefix = []byte{0x24}
 )
 
 func TwaKey(id uint64) []byte {

@@ -885,7 +885,6 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
-
 	} else if payment.Amount.GT(amtToReservePool.TruncateInt()) && payment.Amount.LTE(borrowPos.InterestAccumulated.TruncateInt()) {
 		// from reservePoolRecords amount send tokens to reserve pool
 		// send remaining payment back to cPool and mint additional tokens for that amount
@@ -920,7 +919,6 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 
 		reservePoolRecords.ReservePoolInterest = reservePoolRecords.ReservePoolInterest.Sub(sdk.NewDecFromInt(amtToReservePool.TruncateInt())) // the decimal precision is maintained
 		borrowPos.InterestAccumulated = borrowPos.InterestAccumulated.Sub(sdk.NewDecFromInt(payment.Amount))
-
 	} else { // if payment amt greater than borrowPos.InterestAccumulated
 		// from reservePoolRecords amount send tokens to reserve pool
 		// mint (interest Accumulated - reservePoolRecords) amount cTokens and send to pool
