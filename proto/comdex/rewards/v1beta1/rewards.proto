@@ -170,7 +170,7 @@ message Lend_external_rewards{
     (gogoproto.moretags) = "yaml:\"total_rewards\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
-  uint64 master_pool_id = 5 [
+  int64 master_pool_id = 5 [
     (gogoproto.moretags) = "yaml:\"master_pool_id\""
   ];
   int64 duration_days = 6 [

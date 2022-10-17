@@ -121,7 +121,6 @@ import (
 	"github.com/comdex-official/comdex/x/esm"
 	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	rewardsclient "github.com/comdex-official/comdex/x/rewards/client"
 
 	"github.com/comdex-official/comdex/x/lend"
 	lendclient "github.com/comdex-official/comdex/x/lend/client"
@@ -212,7 +211,6 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 	}
 	proposalHandlers = append(proposalHandlers, wasmclient.ProposalHandlers...)
 	proposalHandlers = append(proposalHandlers, assetclient.AddAssetsHandler...)
-	proposalHandlers = append(proposalHandlers, rewardsclient.AddRewardsHandler...)
 	proposalHandlers = append(proposalHandlers, liquidityclient.LiquidityProposalHandler...)
 	return proposalHandlers
 }
@@ -765,7 +763,6 @@ func New(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
-		AddRoute(rewardstypes.RouterKey, rewards.NewAddRewardsProposalHandler(app.Rewardskeeper)).
 		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).

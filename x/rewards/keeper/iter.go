@@ -310,13 +310,13 @@ func (k Keeper) InvertingRates(ctx sdk.Context, assetID, poolID uint64, totalRew
 	return inverseRate
 }
 
-func (k Keeper) CheckBorrowersLiquidity(ctx sdk.Context, addr sdk.AccAddress, masterPoolID, appID uint64, amount sdk.Int) bool {
-	farmedCoin, found := k.GetActiveFarmer(ctx, appID, masterPoolID, addr)
+func (k Keeper) CheckBorrowersLiquidity(ctx sdk.Context, addr sdk.AccAddress, masterPoolID int64, appID uint64, amount sdk.Int) bool {
+	farmedCoin, found := k.GetActiveFarmer(ctx, appID, uint64(masterPoolID), addr)
 	if !found {
 		return false
 	}
 
-	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, masterPoolID)
+	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, uint64(masterPoolID))
 	if err != nil {
 		return false
 	}

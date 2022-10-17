@@ -92,3 +92,28 @@ func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.Activa
 	}
 	return &types.ActivateExternalRewardsVaultResponse{}, nil
 }
+
+func (m msgServer) ExternalRewardsLend(goCtx context.Context, msg *types.ActivateExternalRewardsLend) (*types.ActivateExternalRewardsLendResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	klwsParams, _ := m.GetKillSwitchData(ctx, msg.AppMappingId)
+	if klwsParams.BreakerEnable {
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	esmStatus, found := m.GetESMStatus(ctx, msg.AppMappingId)
+	status := false
+	if found {
+		status = esmStatus.Status
+	}
+	if status {
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	_, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		return nil, err
+	}
+	if err = m.Keeper.AddLendExternalRewards(ctx, *msg); err != nil {
+		return nil, err
+	}
+	return &types.ActivateExternalRewardsLendResponse{}, nil
+
+}

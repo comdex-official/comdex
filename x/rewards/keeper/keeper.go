@@ -275,20 +275,27 @@ func (k Keeper) WasmRemoveWhitelistAppIDVaultInterestQuery(ctx sdk.Context, appM
 	return true, ""
 }
 
-func (k Keeper) AddLendExternalRewards(ctx sdk.Context, msg types.LendExternalRewards) error {
+func (k Keeper) AddLendExternalRewards(ctx sdk.Context, msg types.ActivateExternalRewardsLend) error {
 	id := k.GetExternalRewardsLendID(ctx)
 	endTime := ctx.BlockTime().Add(time.Second * time.Duration(msg.DurationDays*types.SecondsPerDay))
 	epochID := k.GetEpochTimeID(ctx)
+
+	RewardsAssetPoolData := types.RewardsAssetPoolData{
+		CPoolId:            msg.CPool_Id,
+		AssetId:            msg.AssetId,
+		CSwapAppId:         msg.CSwapAppId,
+		CSwapMinLockAmount: msg.CSwapMinLockAmount,
+	}
 
 	epoch := types.EpochTime{
 		Id:           epochID + 1,
 		AppMappingId: msg.AppMappingId,
 		StartingTime: ctx.BlockTime().Unix() + 84600,
 	}
-	msg = types.LendExternalRewards{
+	newMsg := types.LendExternalRewards{
 		Id:                   id + 1,
 		AppMappingId:         msg.AppMappingId,
-		RewardsAssetPoolData: msg.RewardsAssetPoolData,
+		RewardsAssetPoolData: &RewardsAssetPoolData,
 		TotalRewards:         msg.TotalRewards,
 		MasterPoolId:         msg.MasterPoolId,
 		DurationDays:         msg.DurationDays,
@@ -306,9 +313,9 @@ func (k Keeper) AddLendExternalRewards(ctx sdk.Context, msg types.LendExternalRe
 		return err
 	}
 
-	k.SetEpochTimeID(ctx, msg.EpochId)
-	k.SetExternalRewardLend(ctx, msg)
-	k.SetExternalRewardsLendID(ctx, msg.Id)
+	k.SetEpochTimeID(ctx, newMsg.EpochId)
+	k.SetExternalRewardLend(ctx, newMsg)
+	k.SetExternalRewardsLendID(ctx, newMsg.Id)
 	k.SetEpochTime(ctx, epoch)
 	return nil
 }

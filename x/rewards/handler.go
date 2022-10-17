@@ -2,8 +2,6 @@ package rewards
 
 import (
 	"fmt"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -30,25 +28,13 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := server.ExternalRewardsVault(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
+		case *types.ActivateExternalRewardsLend:
+			res, err := server.ExternalRewardsLend(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 		}
 	}
-}
-
-func NewAddRewardsProposalHandler(k keeper.Keeper) govtypes.Handler {
-	return func(ctx sdk.Context, content govtypes.Content) error {
-		switch c := content.(type) {
-		case *types.AddLendExternalRewardsProposal:
-			return handleAddLendRewardsProposal(ctx, k, c)
-
-		default:
-			return sdkerrors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
-		}
-	}
-}
-
-func handleAddLendRewardsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddLendExternalRewardsProposal) error {
-	return k.HandleProposalAddLendRewards(ctx, p)
 }

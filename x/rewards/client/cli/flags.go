@@ -48,25 +48,3 @@ func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
 	}
 	return parsedInts, nil
 }
-
-func FlagAddExternalLendRewardsMapping() *flag.FlagSet {
-	fs := flag.NewFlagSet("", flag.ContinueOnError)
-
-	fs.String(FlagAddLendExternalRewardsFile, "", "add lend-external-rewards json file path")
-	return fs
-}
-
-type createAddLendExternalRewardsInputs struct {
-	AppID              string `json:"app_id"`
-	CPoolID            string `json:"c_pool_id"`
-	AssetID            string `json:"asset_id"`
-	TotalRewards       string `json:"total_rewards"`
-	MasterPoolId       string `json:"master_pool_id"`
-	Duration           string `json:"duration"`
-	MinLockupTime      string `json:"min_lockup_time"`
-	CSwapAppID         string `json:"c_swap_app_id"`
-	CSwapMinLockAmount string `json:"c_swap_min_lock_amount"`
-	Title              string
-	Description        string
-	Deposit            string
-}
