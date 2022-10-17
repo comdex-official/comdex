@@ -151,8 +151,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 }
 
 func (s *KeeperTestSuite) CreateNewPair(addr sdk.Address, assetIn, assetOut uint64) uint64 {
-	_, err := s.app.AssetKeeper.NewAddPair(s.ctx, &assettypes.MsgAddPairRequest{
-		From:     addr.String(),
+	err := s.app.AssetKeeper.AddPairsRecords(s.ctx, assettypes.Pair{
 		AssetIn:  assetIn,
 		AssetOut: assetOut,
 	})
