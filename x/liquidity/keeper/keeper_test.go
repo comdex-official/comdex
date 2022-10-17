@@ -61,8 +61,8 @@ func (s *KeeperTestSuite) sendCoins(fromAddr, toAddr sdk.AccAddress, amt sdk.Coi
 }
 
 func (s *KeeperTestSuite) nextBlock() {
-	liquidity.EndBlocker(s.ctx, s.keeper)
-	liquidity.BeginBlocker(s.ctx, s.keeper)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 }
 
 // Below are useful helpers to write test code easily.
