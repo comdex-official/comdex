@@ -407,7 +407,7 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 		return err
 	}
 
-	if skip { //nolint TODO: update this when there are more than one pools
+	if skip {
 		return nil
 	}
 
@@ -487,7 +487,6 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 			} else {
 				o.SetStatus(types.OrderStatusPartiallyMatched)
 				k.SetOrder(ctx, pair.AppId, o)
-				// nolint
 				// TODO: emit an event?
 			}
 			bulkOp.QueueSendCoins(pair.GetEscrowAddress(), order.Orderer, sdk.NewCoins(order.ReceivedDemandCoin))

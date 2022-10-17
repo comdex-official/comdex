@@ -1,4 +1,4 @@
-package v4_0_0
+package v4_0_0 //nolint:revive,stylecheck
 
 import (
 	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
