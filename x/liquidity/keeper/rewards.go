@@ -66,35 +66,6 @@ func (k Keeper) GetAssetWhoseOraclePriceExists(ctx sdk.Context, quoteCoinDenom, 
 	return asset, nil
 }
 
-func (k Keeper) CalculateLiquidityAddedValue(
-	ctx sdk.Context,
-	quoteCoinPoolBalance, baseCoinPoolBalance sdk.Coin,
-	quoteCoin, baseCoin sdk.Coin,
-	oraclePrice sdk.Dec,
-	oraclePriceDenom string,
-) sdk.Dec {
-	poolSupplyX := sdk.NewDecFromInt(quoteCoinPoolBalance.Amount)
-	poolSupplyY := sdk.NewDecFromInt(baseCoinPoolBalance.Amount)
-
-	var (
-		baseCoinPoolPrice  sdk.Dec
-		quoteCoinPoolPrice sdk.Dec
-	)
-	if oraclePriceDenom == quoteCoin.Denom {
-		baseCoinPoolPrice = poolSupplyX.Quo(poolSupplyY).Mul(oraclePrice)
-		quoteCoinPoolPrice = poolSupplyY.Quo(poolSupplyX).Mul(baseCoinPoolPrice)
-	} else {
-		quoteCoinPoolPrice = poolSupplyY.Quo(poolSupplyX).Mul(oraclePrice)
-		baseCoinPoolPrice = poolSupplyX.Quo(poolSupplyY).Mul(quoteCoinPoolPrice)
-	}
-
-	supplyX := sdk.NewDecFromInt(quoteCoin.Amount)
-	supplyY := sdk.NewDecFromInt(baseCoin.Amount)
-
-	// returns actual $value of quoteCoin + baseCoin (value returned in 10^-6, i.e 1000000=1$)
-	return supplyX.Mul(quoteCoinPoolPrice).Add(supplyY.Mul(baseCoinPoolPrice)).Quo(sdk.NewDec(1000000))
-}
-
 func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint64, poolIds []uint64, masterPoolSupplyAddresses []sdk.AccAddress) map[string]sdk.Dec {
 	poolSupplyData := make(map[string]sdk.Dec)
 
