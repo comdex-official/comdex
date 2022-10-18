@@ -113,7 +113,7 @@ func (k Keeper) StartLendDutchAuction(
 		if err != nil {
 			return err
 		}
-		err = k.bank.BurnCoins(ctx, pool.ModuleName, sdk.NewCoin(cAsset.Denom, outFlowToken.Amount))
+		err = k.bank.BurnCoins(ctx, pool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, outFlowToken.Amount)))
 		if err != nil {
 			return err
 		}
