@@ -9,7 +9,6 @@ import (
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
 
 var _ types.MsgServer = msgServer{}
@@ -113,7 +112,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	// Mint Tokens for user
 	mintCoin := sdk.NewCoin(assetOutData.Denom, msg.AmountOut)
 	if mintCoin.IsZero() {
-		return nil, vaulttypes.MintCoinValueInVaultIsZero
+		return nil, types.MintCoinValueInVaultIsZero
 	}
 	if err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(mintCoin)); err != nil {
 		return nil, err
@@ -495,7 +494,7 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 
 	mintCoin := sdk.NewCoin(assetOutData.Denom, msg.Amount)
 	if mintCoin.IsZero() {
-		return nil, vaulttypes.MintCoinValueInVaultIsZero
+		return nil, types.MintCoinValueInVaultIsZero
 	}
 	if err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(mintCoin)); err != nil {
 		return nil, err
@@ -664,7 +663,7 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 		if updatedUserSentAmountAfterFeesDeduction.GT(sdk.ZeroInt()) {
 			burnCoin := sdk.NewCoin(assetOutData.Denom, updatedUserSentAmountAfterFeesDeduction)
 			if burnCoin.IsZero() {
-				return nil, vaulttypes.BurnCoinValueInVaultIsZero
+				return nil, types.BurnCoinValueInVaultIsZero
 			}
 			if err := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(burnCoin)); err != nil {
 				return nil, err
@@ -798,7 +797,7 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 	if userVault.AmountOut.GT(sdk.ZeroInt()) {
 		burnCoin := sdk.NewCoin(assetOutData.Denom, userVault.AmountOut)
 		if burnCoin.IsZero() {
-			return nil, vaulttypes.BurnCoinValueInVaultIsZero
+			return nil, types.BurnCoinValueInVaultIsZero
 		}
 		if err := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(burnCoin)); err != nil {
 			return nil, err
@@ -952,7 +951,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 		// Mint Tokens for user
 		mintCoin := sdk.NewCoin(assetOutData.Denom, msg.Amount)
 		if mintCoin.IsZero() {
-			return nil, vaulttypes.MintCoinValueInVaultIsZero
+			return nil, types.MintCoinValueInVaultIsZero
 		}
 		if err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(mintCoin)); err != nil {
 			return nil, err
@@ -1095,7 +1094,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 		// Mint Tokens for user
 		mintCoin := sdk.NewCoin(assetOutData.Denom, msg.Amount)
 		if mintCoin.IsZero() {
-			return nil, vaulttypes.MintCoinValueInVaultIsZero
+			return nil, types.MintCoinValueInVaultIsZero
 		}
 		if err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(mintCoin)); err != nil {
 			return nil, err
@@ -1221,7 +1220,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 		// BurnTokens for user
 		burnCoin := sdk.NewCoin(assetOutData.Denom, msg.Amount)
 		if burnCoin.IsZero() {
-			return nil, vaulttypes.BurnCoinValueInVaultIsZero
+			return nil, types.BurnCoinValueInVaultIsZero
 		}
 		if err := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(burnCoin)); err != nil {
 			return nil, err
@@ -1253,7 +1252,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 			// BurnTokens for user
 			burnCoin := sdk.NewCoin(assetOutData.Denom, updatedAmount)
 			if burnCoin.IsZero() {
-				return nil, vaulttypes.BurnCoinValueInVaultIsZero
+				return nil, types.BurnCoinValueInVaultIsZero
 			}
 			if err := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(burnCoin)); err != nil {
 				return nil, err
