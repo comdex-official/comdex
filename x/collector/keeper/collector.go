@@ -25,7 +25,7 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 		return returnedFee, types.ErrorRequestedAmtExceedsCollectedFee
 	}
 	asset, _ := k.asset.GetAsset(ctx, assetID)
-	err := k.bank.SendCoinFromModuleToModule(ctx, types.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
+	err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
 	if err != nil {
 		return returnedFee, err
 	}
@@ -759,7 +759,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 				assetData, _ := k.asset.GetAsset(ctx, assetID)
 
 				if newReward.GT(sdk.ZeroInt()) {
-					err = k.bank.SendCoinFromModuleToModule(ctx, types.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
+					err = k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
 					if err != nil {
 						continue
 					}
