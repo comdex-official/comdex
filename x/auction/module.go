@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -100,9 +99,16 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 
-	keeper        keeper.Keeper
-	accountKeeper expected.AccountKeeper
-	bankKeeper    expected.BankKeeper
+	keeper            keeper.Keeper
+	accountKeeper     expected.AccountKeeper
+	bankKeeper        expected.BankKeeper
+	collectKeeper     expected.CollectorKeeper
+	liquidationKeeper expected.LiquidationKeeper
+	assetKeeper       expected.AssetKeeper
+	marketKeeper      expected.MarketKeeper
+	esmKeeper         expected.EsmKeeper
+	vaultKeeper       expected.VaultKeeper
+	tokenMintKeeper   expected.TokenMintKeeper
 }
 
 func NewAppModule(
@@ -110,12 +116,26 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	accountKeeper expected.AccountKeeper,
 	bankKeeper expected.BankKeeper,
+	collectorKeeper expected.CollectorKeeper,
+	liquidationKeeper expected.LiquidationKeeper,
+	assetKeeper expected.AssetKeeper,
+	marketKeeper expected.MarketKeeper,
+	esmKeeper expected.EsmKeeper,
+	vaultKeeper expected.VaultKeeper,
+	tokenMintKeeper expected.TokenMintKeeper,
 ) AppModule {
 	return AppModule{
-		AppModuleBasic: NewAppModuleBasic(cdc),
-		keeper:         keeper,
-		accountKeeper:  accountKeeper,
-		bankKeeper:     bankKeeper,
+		AppModuleBasic:    NewAppModuleBasic(cdc),
+		keeper:            keeper,
+		accountKeeper:     accountKeeper,
+		bankKeeper:        bankKeeper,
+		collectKeeper:     collectorKeeper,
+		liquidationKeeper: liquidationKeeper,
+		assetKeeper:       assetKeeper,
+		marketKeeper:      marketKeeper,
+		esmKeeper:         esmKeeper,
+		vaultKeeper:       vaultKeeper,
+		tokenMintKeeper:   tokenMintKeeper,
 	}
 }
 
