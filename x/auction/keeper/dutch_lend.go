@@ -283,11 +283,11 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 	// if inflow token current amount >= InflowTokenTargetAmount
 	if auction.InflowTokenCurrentAmount.IsGTE(auction.InflowTokenTargetAmount) {
 		total := auction.OutflowTokenCurrentAmount
-		err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, sdk.AccAddress(lockedVault.Owner), sdk.NewCoins(total))
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, sdk.AccAddress(lockedVault.Owner), sdk.NewCoins(total))
 		if err != nil {
 			return err
 		}
-		err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(totalAmountToBidder))
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(totalAmountToBidder))
 		if err != nil {
 			return err
 		}
@@ -304,21 +304,21 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 		// take requiredAmount from reserve-pool
 		requiredAmount := auction.InflowTokenTargetAmount.Sub(auction.InflowTokenCurrentAmount)
 		// get reserve balance if the requiredAmount is available in the reserves or not
-		modBal := k.ModuleBalance(ctx, lendtypes.ModuleName, requiredAmount.Denom)
+		modBal := k.lend.ModuleBalance(ctx, lendtypes.ModuleName, requiredAmount.Denom)
 		if modBal.LT(requiredAmount.Amount) {
 			return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "Reserve pool having insufficient balance for this bid")
 		}
 
 		// reduce the qty from reserve pool
 		pairID := lockedVault.ExtendedPairId
-		lendPair, _ := k.GetLendPair(ctx, pairID)
+		lendPair, _ := k.lend.GetLendPair(ctx, pairID)
 		inFlowTokenAssetID := lendPair.AssetOut
 
-		err = k.UpdateReserveBalances(ctx, inFlowTokenAssetID, lendtypes.ModuleName, requiredAmount, false)
+		err = k.lend.UpdateReserveBalances(ctx, inFlowTokenAssetID, lendtypes.ModuleName, requiredAmount, false)
 		if err != nil {
 			return err
 		}
-		err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(totalAmountToBidder))
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(totalAmountToBidder))
 		if err != nil {
 			return err
 		}
@@ -334,7 +334,7 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 			return err
 		}
 	} else if auction.OutflowTokenCurrentAmount.Amount.IsZero() { // entire collateral sold out
-		err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(totalAmountToBidder))
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(totalAmountToBidder))
 		if err != nil {
 			return err
 		}
@@ -405,38 +405,38 @@ func (k Keeper) CloseDutchLendAuction(
 		}
 	}
 
-	lockedVault, found := k.GetLockedVault(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId)
+	lockedVault, found := k.liquidation.GetLockedVault(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId)
 	if !found {
 		return auctiontypes.ErrorVaultNotFound
 	}
 
 	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
 	// set sell of history in locked vault
-	err := k.CreateLockedVaultHistory(ctx, lockedVault)
+	err := k.liquidation.CreateLockedVaultHistory(ctx, lockedVault)
 	if err != nil {
 		return err
 	}
 	borrowMetaData := lockedVault.GetBorrowMetaData()
-	lendPos, _ := k.GetLend(ctx, borrowMetaData.LendingId)
+	lendPos, _ := k.lend.GetLend(ctx, borrowMetaData.LendingId)
 	lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
 	lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
-	k.SetLend(ctx, lendPos)
+	k.lend.SetLend(ctx, lendPos)
 
 	lockedVault.AmountOut = lockedVault.AmountOut.Sub(dutchAuction.InflowTokenTargetAmount.Amount)
 	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(dutchAuction.InflowTokenTargetAmount.Amount)
 	if lockedVault.AmountOut.LTE(sdk.ZeroInt()) {
 		lockedVault.AmountOut = sdk.ZeroInt()
 	}
-	k.SetLockedVault(ctx, lockedVault)
+	k.liquidation.SetLockedVault(ctx, lockedVault)
 	dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
 
 	// update locked vault
-	err = k.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
+	err = k.liquidation.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
 	if err != nil {
 		return err
 	}
 
-	err = k.SetFlagIsAuctionInProgress(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, false)
+	err = k.liquidation.SetFlagIsAuctionInProgress(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, false)
 	if err != nil {
 		return err
 	}
@@ -449,7 +449,7 @@ func (k Keeper) CloseDutchLendAuction(
 	if err != nil {
 		return err
 	}
-	err = k.UnLiquidateLockedBorrows(ctx, lockedVault.AppId, lockedVault.LockedVaultId, dutchAuction)
+	err = k.liquidation.UnLiquidateLockedBorrows(ctx, lockedVault.AppId, lockedVault.LockedVaultId, dutchAuction)
 	if err != nil {
 		return err
 	}
@@ -462,13 +462,13 @@ func (k Keeper) CloseDutchLendAuction(
 
 func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 	dutchAuctions := k.GetDutchLendAuctions(ctx, appID)
-	auctionParams, found := k.GetAddAuctionParamsData(ctx, appID)
+	auctionParams, found := k.lend.GetAddAuctionParamsData(ctx, appID)
 	if !found {
 		return nil
 	}
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
-		twaData, found := k.GetTwa(ctx, dutchAuction.AssetInId)
+		twaData, found := k.market.GetTwa(ctx, dutchAuction.AssetInId)
 		if !found || !twaData.IsPriceActive {
 			return auctiontypes.ErrorPrices
 		}
@@ -491,7 +491,7 @@ func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 		}
 		// check if auction need to be restarted
 		if ctx.BlockTime().After(dutchAuction.EndTime) {
-			twaData, found := k.GetTwa(ctx, dutchAuction.AssetOutId)
+			twaData, found := k.market.GetTwa(ctx, dutchAuction.AssetOutId)
 			if !found || !twaData.IsPriceActive {
 				return auctiontypes.ErrorPrices
 			}
