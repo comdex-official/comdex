@@ -13,7 +13,7 @@ func (k Keeper) SetKillSwitchData(ctx sdk.Context, switchParams types.KillSwitch
 		value = k.cdc.MustMarshal(&switchParams)
 	)
 
-	_, found := k.GetApp(ctx, switchParams.AppId)
+	_, found := k.asset.GetApp(ctx, switchParams.AppId)
 	if !found {
 		return types.ErrorAppDoesNotExists
 	}

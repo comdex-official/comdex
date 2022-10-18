@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/comdex-official/comdex/x/esm/expected"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -99,9 +100,14 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 
-	keeper        keeper.Keeper
-	accountKeeper types.AccountKeeper
-	bankKeeper    types.BankKeeper
+	keeper          keeper.Keeper
+	accountKeeper   types.AccountKeeper
+	bankKeeper      types.BankKeeper
+	assetKeeper     expected.AssetKeeper
+	vaultKeeper     expected.VaultKeeper
+	marketKeeper    expected.MarketKeeper
+	tokenMintKeeper expected.Tokenmint
+	collectKeeper   expected.Collector
 }
 
 func NewAppModule(
@@ -109,12 +115,22 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	assetKeeper expected.AssetKeeper,
+	vaultKeeper expected.VaultKeeper,
+	marketKeeper expected.MarketKeeper,
+	tokenMintKeeper expected.Tokenmint,
+	collectKeeper expected.Collector,
 ) AppModule {
 	return AppModule{
-		AppModuleBasic: NewAppModuleBasic(cdc),
-		keeper:         keeper,
-		accountKeeper:  accountKeeper,
-		bankKeeper:     bankKeeper,
+		AppModuleBasic:  NewAppModuleBasic(cdc),
+		keeper:          keeper,
+		accountKeeper:   accountKeeper,
+		bankKeeper:      bankKeeper,
+		assetKeeper:     assetKeeper,
+		vaultKeeper:     vaultKeeper,
+		marketKeeper:    marketKeeper,
+		tokenMintKeeper: tokenMintKeeper,
+		collectKeeper:   collectKeeper,
 	}
 }
 
@@ -169,7 +185,7 @@ func (AppModule) ConsensusVersion() uint64 { return 2 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
 func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
-	BeginBlocker(ctx, req, am.keeper)
+	BeginBlocker(ctx, req, am.keeper, am.assetKeeper)
 }
 
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It
