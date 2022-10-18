@@ -43,8 +43,8 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
 			},
+			1,
 			2,
-			3,
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -62,30 +62,26 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 	}
 }
 
+func (s *KeeperTestSuite) SetOraclePrice(assetID uint64, price uint64) {
+	market := markettypes.TimeWeightedAverage{
+		AssetID:       assetID,
+		ScriptID:      12,
+		Twa:           price,
+		CurrentIndex:  0,
+		IsPriceActive: true,
+		PriceValue:    []uint64{price},
+	}
+	s.app.MarketKeeper.SetTwa(s.ctx, market)
+
+}
+
 func (s *KeeperTestSuite) SetInitialOraclePriceForID(asset1 uint64, asset2 uint64) {
-	ctx := &s.ctx
-	twa1 := markettypes.TimeWeightedAverage{
-		AssetID:       asset1,
-		IsPriceActive: true,
-		Twa:           2000000,
-	}
-	s.marketKeeper.SetTwa(*ctx, twa1)
-	twa2 := markettypes.TimeWeightedAverage{
-		AssetID:       asset1,
-		IsPriceActive: true,
-		Twa:           1000000,
-	}
-	s.marketKeeper.SetTwa(*ctx, twa2)
+	s.SetOraclePrice(asset1, 2000000)
+	s.SetOraclePrice(asset2, 1000000)
 }
 
 func (s *KeeperTestSuite) ChangeOraclePrice(asset uint64) {
-	ctx := &s.ctx
-	twa := markettypes.TimeWeightedAverage{
-		AssetID:       asset,
-		IsPriceActive: true,
-		Twa:           1000000,
-	}
-	s.marketKeeper.SetTwa(*ctx, twa)
+	s.SetOraclePrice(asset, 1000000)
 }
 
 func (s *KeeperTestSuite) CreateVault() {
@@ -147,10 +143,9 @@ func (s *KeeperTestSuite) GetVaultCountForExtendedPairIDbyAppID(appID, extID uin
 }
 
 func (s *KeeperTestSuite) GetAssetPrice(id uint64) sdk.Dec {
-	marketKeeper, ctx := &s.marketKeeper, &s.ctx
-	price, found := marketKeeper.GetTwa(*ctx, id)
-	s.Require().True(found)
-	price1 := sdk.NewDecFromInt(sdk.NewIntFromUint64(price.Twa))
+	price, err := s.app.MarketKeeper.GetLatestPrice(s.ctx, id)
+	s.Suite.NoError(err)
+	price1 := sdk.NewDecFromInt(sdk.NewIntFromUint64(price))
 	return price1
 }
 
@@ -243,7 +238,7 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	s.Require().Equal(id, uint64(0))
 
 	// Liquidation should happen as price changed
-	s.ChangeOraclePrice(2)
+	s.ChangeOraclePrice(1)
 	err = liquidationKeeper.LiquidateVaults(*ctx)
 	s.Require().NoError(err)
 	id = liquidationKeeper.GetLockedVaultID(*ctx)
@@ -257,15 +252,15 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
 	s.Require().Equal(lockedVault[0].AmountIn, beforeVault.AmountIn)
 	s.Require().Equal(lockedVault[0].AmountOut, beforeVault.AmountOut)
-	s.Require().Equal(lockedVault[0].UpdatedAmountOut, beforeVault.AmountOut.Add(beforeVault.InterestAccumulated).Add(beforeVault.ClosingFeeAccumulated))
+	s.Require().Equal(lockedVault[0].UpdatedAmountOut, sdk.ZeroInt())
 	s.Require().Equal(lockedVault[0].Initiator, liquidationTypes.ModuleName)
 	s.Require().Equal(lockedVault[0].IsAuctionInProgress, false)
 	s.Require().Equal(lockedVault[0].IsAuctionComplete, false)
 	s.Require().Equal(lockedVault[0].SellOffHistory, []string(nil))
-	price, found := s.app.MarketKeeper.GetTwa(*ctx, uint64(1))
-	s.Require().True(found)
-	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, beforeVault.AmountIn.ToDec().Mul(sdk.NewIntFromUint64(price.Twa).ToDec()))
-	s.Require().Equal(lockedVault[0].CrAtLiquidation, lockedVault[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault[0].UpdatedAmountOut.ToDec().Mul(s.GetAssetPrice(2))))
+	price, err := s.app.MarketKeeper.CalcAssetPrice(*ctx, uint64(1), beforeVault.AmountIn)
+	s.Require().NoError(err)
+	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, price)
+	s.Require().Equal(lockedVault[0].CrAtLiquidation, lockedVault[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault[0].AmountOut.ToDec().Mul(s.GetAssetPrice(2))))
 }
 
 func (s *KeeperTestSuite) TestUpdateLockedVaults() {
@@ -273,8 +268,7 @@ func (s *KeeperTestSuite) TestUpdateLockedVaults() {
 	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
 
 	lockedVault1 := liquidationKeeper.GetLockedVaults(*ctx)
-
-	s.Require().Equal(lockedVault1[0].CrAtLiquidation, lockedVault1[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault1[0].UpdatedAmountOut.ToDec().Mul(s.GetAssetPrice(2))))
+	s.Require().Equal(lockedVault1[0].CrAtLiquidation, lockedVault1[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault1[0].AmountOut.ToDec().Mul(s.GetAssetPrice(2))))
 }
 
 func (s *KeeperTestSuite) TestSetFlags() {

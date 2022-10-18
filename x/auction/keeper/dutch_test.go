@@ -46,8 +46,8 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000000000,
 			},
+			1,
 			2,
-			3,
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -65,30 +65,26 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 	}
 }
 
+func (s *KeeperTestSuite) SetOraclePrice(assetID uint64, price uint64) {
+	market := markettypes.TimeWeightedAverage{
+		AssetID:       assetID,
+		ScriptID:      12,
+		Twa:           price,
+		CurrentIndex:  0,
+		IsPriceActive: true,
+		PriceValue:    []uint64{price},
+	}
+	s.app.MarketKeeper.SetTwa(s.ctx, market)
+
+}
+
 func (s *KeeperTestSuite) SetInitialOraclePriceForID(asset1 uint64, asset2 uint64) {
-	ctx := &s.ctx
-	twa1 := markettypes.TimeWeightedAverage{
-		AssetID:       asset1,
-		IsPriceActive: true,
-		Twa:           2000000,
-	}
-	s.marketKeeper.SetTwa(*ctx, twa1)
-	twa2 := markettypes.TimeWeightedAverage{
-		AssetID:       asset1,
-		IsPriceActive: true,
-		Twa:           1000000,
-	}
-	s.marketKeeper.SetTwa(*ctx, twa2)
+	s.SetOraclePrice(asset1, 2000000)
+	s.SetOraclePrice(asset2, 1000000)
 }
 
 func (s *KeeperTestSuite) ChangeOraclePrice(asset uint64) {
-	ctx := &s.ctx
-	twa := markettypes.TimeWeightedAverage{
-		AssetID:       asset,
-		IsPriceActive: true,
-		Twa:           1000000,
-	}
-	s.marketKeeper.SetTwa(*ctx, twa)
+	s.SetOraclePrice(asset, 1000000)
 }
 
 func (s *KeeperTestSuite) CreateVault() {
@@ -171,33 +167,19 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		GovTimeInSeconds: 900,
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
-				3,
-				genesisSupply,
-				true,
-				userAddress1,
+				AssetId: 3,
+				GenesisSupply :genesisSupply,
+				IsGovToken: true,
+				Recipient: userAddress1,
 			},
 			{
-				2,
-				genesisSupply,
-				true,
-				userAddress1,
+				AssetId: 2,
+				GenesisSupply :genesisSupply,
+				IsGovToken: true,
+				Recipient: userAddress1,
 			},
 		},
 	}
-	// {
-	// 	Name:             "commodo",
-	// 	ShortName:        "commodo",
-	// 	MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-	// 	GovTimeInSeconds: 900,
-	// 	GenesisToken: []assetTypes.MintGenesisToken{
-	// 		{
-	// 			3,
-	// 			genesisSupply,
-	// 			true,
-	// 			userAddress1,
-	// 		},
-	// 	},
-	// },
 	err = assetKeeper.AddAppRecords(*ctx, msg1)
 	s.Require().NoError(err)
 
@@ -258,7 +240,7 @@ func (s *KeeperTestSuite) LiquidateVaults1() {
 	s.Require().Equal(id, uint64(0))
 
 	// Liquidation should happen as price changed
-	s.ChangeOraclePrice(2)
+	s.ChangeOraclePrice(1)
 	err = liquidationKeeper.LiquidateVaults(*ctx)
 	s.Require().NoError(err)
 	id = liquidationKeeper.GetLockedVaultID(*ctx)
@@ -272,15 +254,15 @@ func (s *KeeperTestSuite) LiquidateVaults1() {
 	s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
 	s.Require().Equal(lockedVault[0].AmountIn, beforeVault.AmountIn)
 	s.Require().Equal(lockedVault[0].AmountOut, beforeVault.AmountOut)
-	s.Require().Equal(lockedVault[0].UpdatedAmountOut, beforeVault.AmountOut.Add(beforeVault.InterestAccumulated).Add(beforeVault.ClosingFeeAccumulated))
+	s.Require().Equal(lockedVault[0].UpdatedAmountOut, sdk.ZeroInt())
 	s.Require().Equal(lockedVault[0].Initiator, liquidationTypes.ModuleName)
 	s.Require().Equal(lockedVault[0].IsAuctionInProgress, false)
 	s.Require().Equal(lockedVault[0].IsAuctionComplete, false)
 	s.Require().Equal(lockedVault[0].SellOffHistory, []string(nil))
-	price, found := s.app.MarketKeeper.GetTwa(*ctx, uint64(1))
-	s.Require().True(found)
-	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, beforeVault.AmountIn.ToDec().Mul(sdk.NewIntFromUint64(price.Twa).ToDec()))
-	s.Require().Equal(lockedVault[0].CrAtLiquidation, lockedVault[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault[0].UpdatedAmountOut.ToDec().Mul(s.GetAssetPrice(2))))
+	price, err := s.app.MarketKeeper.CalcAssetPrice(*ctx, uint64(1), beforeVault.AmountIn)
+	s.Require().NoError(err)
+	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, price)
+	s.Require().Equal(lockedVault[0].CrAtLiquidation, lockedVault[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault[0].AmountOut.ToDec().Mul(s.GetAssetPrice(2))))
 }
 
 func (s *KeeperTestSuite) AddAuctionParams() {
@@ -334,7 +316,7 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 
 	inFlowTokenTargetAmount := lockedVault.AmountOut
 	mulfactor := inFlowTokenTargetAmount.ToDec().Mul(dutchAuction.LiquidationPenalty)
-	inFlowTokenTargetAmount = inFlowTokenTargetAmount.Add(mulfactor.TruncateInt())
+	inFlowTokenTargetAmount = inFlowTokenTargetAmount.Add(mulfactor.TruncateInt()).Add(lockedVault.InterestAccumulated)
 
 	s.Require().Equal(dutchAuction.InflowTokenTargetAmount.Amount, inFlowTokenTargetAmount)
 
