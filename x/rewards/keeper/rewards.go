@@ -376,7 +376,7 @@ func (k Keeper) GetWhitelistAppIDLockerRewardsCheck(ctx sdk.Context, appMappingI
 }
 
 func (k Keeper) GetExternalLockerRewardsCheck(ctx sdk.Context, appMappingID uint64, assetID uint64) (found bool, err string) {
-	_, found = k.GetLockerProductAssetMapping(ctx, appMappingID, assetID)
+	_, found = k.locker.GetLockerProductAssetMapping(ctx, appMappingID, assetID)
 	if !found {
 		return false, "asset id does not exist"
 	}
@@ -390,11 +390,11 @@ func (k Keeper) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingID uint6
 // Whitelist an asset of an app for internal rewards
 func (k Keeper) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (*types.MsgWhitelistAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppMappingId)
+	klwsParams, _ := k.esm.GetKillSwitchData(ctx, msg.AppMappingId)
 	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
-	esmStatus, found := k.GetESMStatus(ctx, msg.AppMappingId)
+	esmStatus, found := k.esm.GetESMStatus(ctx, msg.AppMappingId)
 	status := false
 	if found {
 		status = esmStatus.Status
@@ -411,11 +411,11 @@ func (k Keeper) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (*ty
 
 func (k Keeper) WhitelistAppVault(goCtx context.Context, msg *types.WhitelistAppIdVault) (*types.MsgWhitelistAppIdVaultResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppMappingId)
+	klwsParams, _ := k.esm.GetKillSwitchData(ctx, msg.AppMappingId)
 	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
-	esmStatus, found := k.GetESMStatus(ctx, msg.AppMappingId)
+	esmStatus, found := k.esm.GetESMStatus(ctx, msg.AppMappingId)
 	status := false
 	if found {
 		status = esmStatus.Status
@@ -544,9 +544,9 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 	if !found {
 		return nil
 	}
-	lockers, _ := k.GetLockerLookupTable(ctx, appID, assetID)
+	lockers, _ := k.locker.GetLockerLookupTable(ctx, appID, assetID)
 
-	collectorLookup, found := k.GetCollectorLookupTable(ctx, appID, assetID)
+	collectorLookup, found := k.collector.GetCollectorLookupTable(ctx, appID, assetID)
 	if !found {
 		return collectortypes.ErrorAssetDoesNotExist
 	}
@@ -569,7 +569,7 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 			return nil
 		}
 	}
-	lockerData, _ := k.GetLocker(ctx, lockerID)
+	lockerData, _ := k.locker.GetLocker(ctx, lockerID)
 	lockerRewardsTracker, found := k.GetLockerRewardTracker(ctx, lockerData.LockerId, appID)
 	if !found {
 		lockerRewardsTracker = types.LockerRewardsTracker{
@@ -587,35 +587,35 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 		newRewardDec := sdk.NewDec(newReward.Int64())
 		lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 		k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
-		netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
+		netFeeCollectedData, found := k.collector.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
 		if !found {
 			return nil
 		}
-		err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward, netFeeCollectedData)
+		err = k.collector.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward, netFeeCollectedData)
 		if err != nil {
 			return nil
 		}
-		assetData, _ := k.GetAsset(ctx, assetID)
+		assetData, _ := k.asset.GetAsset(ctx, assetID)
 
 		if newReward.GT(sdk.ZeroInt()) {
-			err = k.SendCoinFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
+			err = k.bank.SendCoinsFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
 			if err != nil {
 				return nil
 			}
 		}
-		lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appID, lockerData.AssetDepositId)
+		lockerRewardsMapping, found := k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, appID, lockerData.AssetDepositId)
 		if !found {
 			var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
 			lockerReward.AppId = appID
 			lockerReward.AssetId = lockerData.AssetDepositId
 			lockerReward.TotalRewards = newReward
-			err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
+			err = k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
 			if err != nil {
 				return nil
 			}
 		} else {
 			lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
-			err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+			err = k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
 			if err != nil {
 				return nil
 			}
@@ -626,15 +626,15 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 
 		lockerData.NetBalance = lockerData.NetBalance.Add(newReward)
 		lockerData.ReturnsAccumulated = lockerData.ReturnsAccumulated.Add(newReward)
-		k.SetLocker(ctx, lockerData)
+		k.locker.SetLocker(ctx, lockerData)
 		lockers.DepositedAmount = lockers.DepositedAmount.Add(newReward)
-		k.SetLockerLookupTable(ctx, lockers)
+		k.locker.SetLockerLookupTable(ctx, lockers)
 	} else {
 		//	set tracker rewards
 		k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 		lockerData.BlockTime = ctx.BlockTime()
 		lockerData.BlockHeight = ctx.BlockHeight()
-		k.SetLocker(ctx, lockerData)
+		k.locker.SetLocker(ctx, lockerData)
 	}
 
 	return nil
@@ -645,7 +645,7 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 	if !found {
 		return nil
 	}
-	ExtPairVaultData, found := k.GetPairsVault(ctx, extendedPairID)
+	ExtPairVaultData, found := k.asset.GetPairsVault(ctx, extendedPairID)
 	if !found {
 		return assettypes.ErrorPairDoesNotExist
 	}
@@ -664,7 +664,7 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 		return err
 	}
 
-	vaultData, _ := k.GetVault(ctx, vaultID)
+	vaultData, _ := k.vault.GetVault(ctx, vaultID)
 	vaultInterestTracker, found := k.GetVaultInterestTracker(ctx, vaultData.Id, appID)
 	if !found {
 		vaultInterestTracker = types.VaultInterestTracker{
@@ -688,12 +688,12 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 		intAcc := vaultData.InterestAccumulated
 		updatedIntAcc := (intAcc).Add(newInterest)
 		vaultData.InterestAccumulated = updatedIntAcc
-		k.SetVault(ctx, vaultData)
+		k.vault.SetVault(ctx, vaultData)
 	} else {
 		k.SetVaultInterestTracker(ctx, vaultInterestTracker)
 		vaultData.BlockTime = ctx.BlockTime()
 		vaultData.BlockHeight = ctx.BlockHeight()
-		k.SetVault(ctx, vaultData)
+		k.vault.SetVault(ctx, vaultData)
 	}
 
 	return nil

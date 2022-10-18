@@ -40,11 +40,11 @@ func (m msgServer) CreateGauge(goCtx context.Context, msg *types.MsgCreateGauge)
 
 func (m msgServer) ExternalRewardsLockers(goCtx context.Context, msg *types.ActivateExternalRewardsLockers) (*types.ActivateExternalRewardsLockersResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	klwsParams, _ := m.GetKillSwitchData(ctx, msg.AppMappingId)
+	klwsParams, _ := m.esm.GetKillSwitchData(ctx, msg.AppMappingId)
 	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
-	esmStatus, found := m.GetESMStatus(ctx, msg.AppMappingId)
+	esmStatus, found := m.esm.GetESMStatus(ctx, msg.AppMappingId)
 	status := false
 	if found {
 		status = esmStatus.Status
@@ -64,11 +64,11 @@ func (m msgServer) ExternalRewardsLockers(goCtx context.Context, msg *types.Acti
 
 func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.ActivateExternalRewardsVault) (*types.ActivateExternalRewardsVaultResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	klwsParams, _ := m.GetKillSwitchData(ctx, msg.AppMappingId)
+	klwsParams, _ := m.esm.GetKillSwitchData(ctx, msg.AppMappingId)
 	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
-	esmStatus, found := m.GetESMStatus(ctx, msg.AppMappingId)
+	esmStatus, found := m.esm.GetESMStatus(ctx, msg.AppMappingId)
 	status := false
 	if found {
 		status = esmStatus.Status
@@ -80,7 +80,7 @@ func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.Activa
 	if err != nil {
 		return nil, err
 	}
-	pairVault, found := m.GetPairsVault(ctx, msg.ExtendedPairId)
+	pairVault, found := m.asset.GetPairsVault(ctx, msg.ExtendedPairId)
 	if !found {
 		return nil, assettypes.ErrorExtendedPairDoesNotExistForTheApp
 	}
@@ -95,11 +95,11 @@ func (m msgServer) ExternalRewardsVault(goCtx context.Context, msg *types.Activa
 
 func (m msgServer) ExternalRewardsLend(goCtx context.Context, msg *types.ActivateExternalRewardsLend) (*types.ActivateExternalRewardsLendResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	klwsParams, _ := m.GetKillSwitchData(ctx, msg.AppMappingId)
+	klwsParams, _ := m.esm.GetKillSwitchData(ctx, msg.AppMappingId)
 	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
-	esmStatus, found := m.GetESMStatus(ctx, msg.AppMappingId)
+	esmStatus, found := m.esm.GetESMStatus(ctx, msg.AppMappingId)
 	status := false
 	if found {
 		status = esmStatus.Status

@@ -16,11 +16,11 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 	// Give external rewards to locker owners for creating locker with specific assetID
 	extRewards := k.GetExternalRewardsLockers(ctx)
 	for _, v := range extRewards {
-		klwsParams, _ := k.GetKillSwitchData(ctx, v.AppMappingId)
+		klwsParams, _ := k.esm.GetKillSwitchData(ctx, v.AppMappingId)
 		if klwsParams.BreakerEnable {
 			return esmtypes.ErrCircuitBreakerEnabled
 		}
-		esmStatus, found := k.GetESMStatus(ctx, v.AppMappingId)
+		esmStatus, found := k.esm.GetESMStatus(ctx, v.AppMappingId)
 		status := false
 		if found {
 			status = esmStatus.Status
@@ -41,13 +41,13 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 			if et < timeNow {
 				if epoch.Count < uint64(v.DurationDays) { // rewards will be given till the duration defined in the ext rewards
 					// getting the total share of Deposited amount of Lockers of specific assetID and AppID
-					lockerLookup, _ := k.GetLockerLookupTable(ctx, v.AppMappingId, v.AssetId)
+					lockerLookup, _ := k.locker.GetLockerLookupTable(ctx, v.AppMappingId, v.AssetId)
 					totalShare := lockerLookup.DepositedAmount
 
 					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
 					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
 					for _, lockerID := range lockerLookup.LockerIds {
-						locker, found := k.GetLocker(ctx, lockerID)
+						locker, found := k.locker.GetLocker(ctx, lockerID)
 						if !found {
 							continue
 						}
@@ -69,7 +69,7 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 						// after calculating final daily rewards, the amount is sent to the user
 						if finalDailyRewards.GT(sdk.ZeroInt()) {
 							amountRewardedTracker.Amount = amountRewardedTracker.Amount.Add(finalDailyRewards)
-							err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(availableRewards.Denom, finalDailyRewards))
+							err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(availableRewards.Denom, finalDailyRewards)))
 							if err != nil {
 								continue
 							}
@@ -98,11 +98,11 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 	// Give external rewards to vault owners for opening a vault with specific assetID
 	extRewards := k.GetExternalRewardVaults(ctx)
 	for _, v := range extRewards {
-		klwsParams, _ := k.GetKillSwitchData(ctx, v.AppMappingId)
+		klwsParams, _ := k.esm.GetKillSwitchData(ctx, v.AppMappingId)
 		if klwsParams.BreakerEnable {
 			return esmtypes.ErrCircuitBreakerEnabled
 		}
-		esmStatus, found := k.GetESMStatus(ctx, v.AppMappingId)
+		esmStatus, found := k.esm.GetESMStatus(ctx, v.AppMappingId)
 		status := false
 		if found {
 			status = esmStatus.Status
@@ -121,14 +121,14 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 
 			if et < timeNow {
 				if epoch.Count < uint64(v.DurationDays) { // rewards will be given till the duration defined in the ext rewards
-					appExtPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.ExtendedPairId)
+					appExtPairVaultData, _ := k.vault.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.ExtendedPairId)
 
 					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
 					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
 
 					for _, vaultID := range appExtPairVaultData.VaultIds {
 						totalRewards := v.AvailableRewards
-						userVault, found := k.GetVault(ctx, vaultID)
+						userVault, found := k.vault.GetVault(ctx, vaultID)
 						if !found {
 							continue
 						}
@@ -148,7 +148,7 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 						user, _ := sdk.AccAddressFromBech32(userVault.Owner)
 						if finalDailyRewards.GT(sdk.ZeroInt()) {
 							amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
-							err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
+							err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(totalRewards.Denom, finalDailyRewards)))
 							if err != nil {
 								continue
 							}
@@ -209,7 +209,7 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 	// Give external rewards to borrowers for opening a vault with specific assetID
 	extRewards := k.GetExternalRewardLends(ctx)
 	for _, v := range extRewards {
-		klwsParams, _ := k.GetKillSwitchData(ctx, v.AppMappingId)
+		klwsParams, _ := k.esm.GetKillSwitchData(ctx, v.AppMappingId)
 		if klwsParams.BreakerEnable {
 			return esmtypes.ErrCircuitBreakerEnabled
 		}
@@ -226,19 +226,19 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					totalBorrowedAmt := sdk.ZeroInt()
 					rewardsAssetPoolData := v.RewardsAssetPoolData
 					for _, assetID := range rewardsAssetPoolData.AssetId {
-						borrowByPoolIDAssetID, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
-						price, err := k.CalcAssetPrice(ctx, assetID, borrowByPoolIDAssetID.TotalBorrowed.Add(borrowByPoolIDAssetID.TotalStableBorrowed))
+						borrowByPoolIDAssetID, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
+						price, err := k.marketKeeper.CalcAssetPrice(ctx, assetID, borrowByPoolIDAssetID.TotalBorrowed.Add(borrowByPoolIDAssetID.TotalStableBorrowed))
 						if err != nil {
 							return err
 						}
 						totalBorrowedAmt = totalBorrowedAmt.Add(price.TruncateInt())
 					}
 					// calculating totalAPR
-					rewardAsset, found := k.GetAssetForDenom(ctx, v.TotalRewards.Denom)
+					rewardAsset, found := k.asset.GetAssetForDenom(ctx, v.TotalRewards.Denom)
 					if !found {
 						continue
 					}
-					totalRewardAmt, _ := k.CalcAssetPrice(ctx, rewardAsset.Id, v.TotalRewards.Amount)
+					totalRewardAmt, _ := k.marketKeeper.CalcAssetPrice(ctx, rewardAsset.Id, v.TotalRewards.Amount)
 					totalAPR := totalRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
 					var inverseRatesSum sdk.Dec
 					// inverting the rate to enable low apr for assets which are more borrowed
@@ -251,13 +251,13 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
 
 					for _, assetID := range rewardsAssetPoolData.AssetId { // iterating over assetIDs
-						borrowIDs, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
+						borrowIDs, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
 						for _, borrowID := range borrowIDs.BorrowIds { // iterating over borrowIDs
-							borrow, found := k.GetBorrow(ctx, borrowID)
+							borrow, found := k.lend.GetBorrow(ctx, borrowID)
 							if !found {
 								continue
 							}
-							lend, found := k.GetLend(ctx, borrow.LendingID)
+							lend, found := k.lend.GetLend(ctx, borrow.LendingID)
 							if !found {
 								continue
 							}
@@ -275,7 +275,7 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 
 							if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
 								amountRewardedTracker = amountRewardedTracker.Sub(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
-								err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
+								err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt())))
 								if err != nil {
 									continue
 								}
@@ -302,36 +302,36 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 }
 
 func (k Keeper) InvertingRates(ctx sdk.Context, assetID, poolID uint64, totalRewardAmt sdk.Int) sdk.Dec {
-	assetBorrowedByPoolIDAndAssetID, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
-	assetBorrowedByPoolIDAndAssetIDAmt, _ := k.CalcAssetPrice(ctx, assetID, assetBorrowedByPoolIDAndAssetID.TotalBorrowed.Add(assetBorrowedByPoolIDAndAssetID.TotalStableBorrowed))
+	assetBorrowedByPoolIDAndAssetID, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
+	assetBorrowedByPoolIDAndAssetIDAmt, _ := k.marketKeeper.CalcAssetPrice(ctx, assetID, assetBorrowedByPoolIDAndAssetID.TotalBorrowed.Add(assetBorrowedByPoolIDAndAssetID.TotalStableBorrowed))
 	tempRate := assetBorrowedByPoolIDAndAssetIDAmt.Quo(sdk.NewDecFromInt(totalRewardAmt))
 	inverseRate := sdk.OneDec().Sub(tempRate)
 	return inverseRate
 }
 
 func (k Keeper) CheckBorrowersLiquidity(ctx sdk.Context, addr sdk.AccAddress, masterPoolID int64, appID uint64, amount sdk.Int) bool {
-	farmedCoin, found := k.GetActiveFarmer(ctx, appID, uint64(masterPoolID), addr)
+	farmedCoin, found := k.liquidityKeeper.GetActiveFarmer(ctx, appID, uint64(masterPoolID), addr)
 	if !found {
 		return false
 	}
 
-	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, uint64(masterPoolID))
+	pool, pair, ammPool, err := k.liquidityKeeper.GetAMMPoolInterfaceObject(ctx, appID, uint64(masterPoolID))
 	if err != nil {
 		return false
 	}
 	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, farmedCoin.FarmedPoolCoin.Amount)
-	x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
+	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
 	if err != nil {
 		return false
 	}
 
-	quoteCoinAsset, _ := k.GetAssetForDenom(ctx, pair.QuoteCoinDenom)
-	baseCoinAsset, _ := k.GetAssetForDenom(ctx, pair.BaseCoinDenom)
-	priceQuoteCoin, err := k.CalcAssetPrice(ctx, quoteCoinAsset.Id, x)
+	quoteCoinAsset, _ := k.asset.GetAssetForDenom(ctx, pair.QuoteCoinDenom)
+	baseCoinAsset, _ := k.asset.GetAssetForDenom(ctx, pair.BaseCoinDenom)
+	priceQuoteCoin, err := k.marketKeeper.CalcAssetPrice(ctx, quoteCoinAsset.Id, x)
 	if err != nil {
 		return false
 	}
-	priceBaseCoin, err := k.CalcAssetPrice(ctx, baseCoinAsset.Id, y)
+	priceBaseCoin, err := k.marketKeeper.CalcAssetPrice(ctx, baseCoinAsset.Id, y)
 	if err != nil {
 		return false
 	}
