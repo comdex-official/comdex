@@ -52,8 +52,8 @@ func (suite *ModuleTestSuite) addr(addrNum int) sdk.AccAddress {
 }
 
 func (s *ModuleTestSuite) nextBlock() {
-	liquidity.EndBlocker(s.ctx, s.keeper)
-	liquidity.BeginBlocker(s.ctx, s.keeper)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 }
 
 func (suite *ModuleTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {

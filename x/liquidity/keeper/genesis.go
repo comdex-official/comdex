@@ -88,7 +88,7 @@ func (k Keeper) GetActiveAndQueuedFarmersForGenesis(ctx sdk.Context, appID uint6
 
 // ExportGenesis returns the capability module's exported genesis.
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
-	allApps, found := k.GetApps(ctx)
+	allApps, found := k.assetKeeper.GetApps(ctx)
 
 	appGenesisState := []types.AppGenesisState{}
 
