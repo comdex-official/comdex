@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
@@ -41,31 +42,28 @@ func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool,
 	return x, y, nil
 }
 
-func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
+func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool, assettypes.Asset) {
 	asset, found := k.assetKeeper.GetAssetForDenom(ctx, denom)
 	if !found {
-		return 0, false
+		return 0, false, assettypes.Asset{}
 	}
 
 	price, found := k.marketKeeper.GetTwa(ctx, asset.Id)
 	if !found || !price.IsPriceActive {
-		return 0, false
+		return 0, false, assettypes.Asset{}
 	}
-	return price.Twa, true
+	return price.Twa, true, asset
 }
 
-func (k Keeper) GetOraclePrices(ctx sdk.Context, quoteCoinDenom, baseCoinDenom string) (sdk.Dec, string, error) {
-	oraclePrice, found := k.OraclePrice(ctx, quoteCoinDenom)
-	denom := quoteCoinDenom
+func (k Keeper) GetAssetWhoseOraclePriceExists(ctx sdk.Context, quoteCoinDenom, baseCoinDenom string) (assettypes.Asset, error) {
+	_, found, asset := k.OraclePrice(ctx, quoteCoinDenom)
 	if !found {
-		oraclePrice, found = k.OraclePrice(ctx, baseCoinDenom)
-		denom = baseCoinDenom
+		_, found, asset = k.OraclePrice(ctx, baseCoinDenom)
 		if !found {
-			return sdk.NewDec(0), "", types.ErrOraclePricesNotFound
+			return assettypes.Asset{}, types.ErrOraclePricesNotFound
 		}
 	}
-	// considering oracle prices in 10^6
-	return sdk.NewDec(int64(oraclePrice)).Quo(sdk.NewDec(1000000)), denom, nil
+	return asset, nil
 }
 
 func (k Keeper) CalculateLiquidityAddedValue(
@@ -101,17 +99,15 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 	poolSupplyData := make(map[string]sdk.Dec)
 
 	for _, poolID := range poolIds {
-		pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, poolID)
+		_, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, poolID)
 		if err != nil {
 			continue
 		}
 
-		oraclePrice, denom, err := k.GetOraclePrices(ctx, pair.QuoteCoinDenom, pair.BaseCoinDenom)
+		asset, err := k.GetAssetWhoseOraclePriceExists(ctx, pair.QuoteCoinDenom, pair.BaseCoinDenom)
 		if err != nil {
 			continue
 		}
-
-		quoteCoinPoolBalance, baseCoinPoolBalance := k.getPoolBalances(ctx, *pool, *pair)
 
 		for _, address := range masterPoolSupplyAddresses {
 			activeFarmer, found := k.GetActiveFarmer(ctx, appID, poolID, address)
@@ -124,7 +120,16 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 			}
 			quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
 			baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
-			value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
+
+			var assetAmount sdk.Int
+
+			if pair.QuoteCoinDenom == asset.Denom {
+				assetAmount = quoteCoin.Amount
+			} else {
+				assetAmount = baseCoin.Amount
+			}
+			value, _ := k.marketKeeper.CalcAssetPrice(ctx, asset.Id, assetAmount)
+			value = value.Mul(sdk.NewDec(2)) // multiplying the calculated value of sigle asset with 2, since we have 50-50 pools.
 			_, found = poolSupplyData[address.String()]
 			if !found {
 				poolSupplyData[address.String()] = value
@@ -142,12 +147,10 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 		return nil, err
 	}
 
-	oraclePrice, denom, err := k.GetOraclePrices(ctx, pair.QuoteCoinDenom, pair.BaseCoinDenom)
+	asset, err := k.GetAssetWhoseOraclePriceExists(ctx, pair.QuoteCoinDenom, pair.BaseCoinDenom)
 	if err != nil {
 		return nil, err
 	}
-
-	quoteCoinPoolBalance, baseCoinPoolBalance := k.getPoolBalances(ctx, *pool, *pair)
 
 	var lpAddresses []sdk.AccAddress
 	var lpSupplies []sdk.Dec
@@ -164,7 +167,16 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 		}
 		quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
 		baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
-		value := k.CalculateLiquidityAddedValue(ctx, quoteCoinPoolBalance, baseCoinPoolBalance, quoteCoin, baseCoin, oraclePrice, denom)
+
+		var assetAmount sdk.Int
+
+		if pair.QuoteCoinDenom == asset.Denom {
+			assetAmount = quoteCoin.Amount
+		} else {
+			assetAmount = baseCoin.Amount
+		}
+		value, _ := k.marketKeeper.CalcAssetPrice(ctx, asset.Id, assetAmount)
+		value = value.Mul(sdk.NewDec(2)) // multiplying the calculated value of sigle asset with 2, since we have 50-50 pools.
 		lpAddresses = append(lpAddresses, addr)
 		lpSupplies = append(lpSupplies, value)
 	}
