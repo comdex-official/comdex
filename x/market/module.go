@@ -16,6 +16,8 @@ import (
 	"github.com/spf13/cobra"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 
+	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	bandkeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 	"github.com/comdex-official/comdex/x/market/client/cli"
 	"github.com/comdex-official/comdex/x/market/keeper"
 	"github.com/comdex-official/comdex/x/market/types"
@@ -33,10 +35,12 @@ func (a AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
-func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
+func NewAppModule(cdc codec.Codec, keeper keeper.Keeper, bandKeeper bandkeeper.Keeper, assetKeeper assetkeeper.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
+		bandKeeper:     bandKeeper,
+		assetKeeper:    assetKeeper,
 	}
 }
 
@@ -81,8 +85,10 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	cdc    codec.JSONCodec //nolint:unused
-	keeper keeper.Keeper
+	cdc         codec.JSONCodec //nolint:unused
+	keeper      keeper.Keeper
+	bandKeeper  bandkeeper.Keeper
+	assetKeeper assetkeeper.Keeper
 }
 
 func (a AppModule) ConsensusVersion() uint64 {
@@ -118,7 +124,7 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 }
 
 func (a AppModule) BeginBlock(ctx sdk.Context, req abcitypes.RequestBeginBlock) {
-	BeginBlocker(ctx, req, a.keeper)
+	BeginBlocker(ctx, req, a.keeper, a.bandKeeper, a.assetKeeper)
 }
 
 func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
