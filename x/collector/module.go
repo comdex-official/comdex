@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/comdex-official/comdex/x/collector/expected"
 
 	"github.com/gorilla/mux"
@@ -114,7 +115,6 @@ func NewAppModule(
 	auctionKeeper expected.AuctionKeeper,
 	lockerKeeper expected.LockerKeeper,
 	rewardsKeeper expected.RewardsKeeper,
-
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
